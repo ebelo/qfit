@@ -208,14 +208,20 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._set_status("Writing GeoPackage…")
         try:
             writer = GeoPackageWriter(output_path=output_path)
-            result = writer.write_activities(self.activities)
+            result = writer.write_activities(self.activities, sync_metadata=self.last_fetch_context)
             self.output_path = result["path"]
             self.activities_layer, self.starts_layer = self.layer_manager.load_output_layers(self.output_path)
             self.on_apply_filters_clicked()
+            sync = result.get("sync") or {}
             self._set_status(
-                "Loaded {activity_count} activities and {start_count} start points into QGIS".format(
-                    activity_count=result["activity_count"],
-                    start_count=result["start_count"],
+                "Synced {fetched} fetched activities into GeoPackage: inserted {inserted}, updated {updated}, unchanged {unchanged}, stored total {total}. Loaded {track_count} tracks and {start_count} starts into QGIS".format(
+                    fetched=result.get("fetched_count", len(self.activities)),
+                    inserted=sync.get("inserted", 0),
+                    updated=sync.get("updated", 0),
+                    unchanged=sync.get("unchanged", 0),
+                    total=sync.get("total_count", 0),
+                    track_count=result.get("track_count", 0),
+                    start_count=result.get("start_count", 0),
                 )
             )
         except Exception as exc:  # noqa: BLE001

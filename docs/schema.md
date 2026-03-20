@@ -69,6 +69,35 @@ Primary purpose:
 Recommended unique key:
 - (`source`, `source_activity_id`)
 
+## Table: `sync_state`
+
+Geometry type:
+- none
+
+Primary purpose:
+- remember the most recent sync window and status
+- capture rate-limit snapshots and sync counters
+
+Suggested fields:
+- `provider`
+- `last_incremental_sync_at`
+- `last_full_sync_at`
+- `last_before_epoch`
+- `last_after_epoch`
+- `last_success_status`
+- `last_rate_limit_snapshot`
+- `last_sync_stats_json`
+- `updated_at`
+
+## Layer: `activity_tracks`
+
+Geometry type:
+- `LINESTRING`
+
+Primary purpose:
+- visible line layer derived from `activity_registry`
+- main visualization and filtering layer in QGIS
+
 ## Layer: `activity_starts`
 
 Geometry type:

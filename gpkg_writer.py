@@ -1,6 +1,5 @@
 import json
 import os
-from datetime import UTC, datetime
 
 from qgis.PyQt.QtCore import QVariant
 from qgis.core import (
@@ -16,9 +15,10 @@ from qgis.core import (
 )
 
 from .polyline_utils import decode_polyline
+from .sync_repository import REGISTRY_TABLE, SYNC_STATE_TABLE, SyncRepository
 
 
-ACTIVITY_FIELDS = [
+TRACK_FIELDS = [
     ("source", QVariant.String),
     ("source_activity_id", QVariant.String),
     ("external_id", QVariant.String),
@@ -48,8 +48,9 @@ ACTIVITY_FIELDS = [
     ("geometry_source", QVariant.String),
     ("geometry_point_count", QVariant.Int),
     ("details_json", QVariant.String),
-    ("imported_at", QVariant.String),
-    ("updated_at", QVariant.String),
+    ("summary_hash", QVariant.String),
+    ("first_seen_at", QVariant.String),
+    ("last_synced_at", QVariant.String),
 ]
 
 START_FIELDS = [
@@ -60,55 +61,79 @@ START_FIELDS = [
     ("activity_type", QVariant.String),
     ("start_date", QVariant.String),
     ("distance_m", QVariant.Double),
-    ("imported_at", QVariant.String),
+    ("last_synced_at", QVariant.String),
 ]
 
 
 class GeoPackageWriter:
-    """Write QFIT activities and start points to a GeoPackage via QGIS APIs."""
+    """Persist QFIT activity sync data to a GeoPackage and rebuild visible layers from the registry."""
 
     def __init__(self, output_path=None):
         self.output_path = output_path
 
     def schema(self):
         return {
-            "activities": {
+            REGISTRY_TABLE: {
+                "geometry": None,
+                "kind": "table",
+                "primary_key": ["source", "source_activity_id"],
+            },
+            SYNC_STATE_TABLE: {
+                "geometry": None,
+                "kind": "table",
+                "primary_key": ["provider"],
+            },
+            "activity_tracks": {
                 "geometry": "LINESTRING",
-                "fields": [name for name, _ in ACTIVITY_FIELDS],
-                "unique_key": ["source", "source_activity_id"],
+                "kind": "layer",
+                "fields": [name for name, _ in TRACK_FIELDS],
             },
             "activity_starts": {
                 "geometry": "POINT",
+                "kind": "layer",
                 "fields": [name for name, _ in START_FIELDS],
             },
         }
 
-    def write_activities(self, activities):
+    def write_activities(self, activities, sync_metadata=None):
         if not self.output_path:
             raise ValueError("output_path is required")
         os.makedirs(os.path.dirname(self.output_path) or ".", exist_ok=True)
 
-        activity_layer = self._build_activity_layer(activities)
-        start_layer = self._build_start_layer(activities)
-        self._write_layer(activity_layer, "activities", overwrite_file=True)
+        repository = SyncRepository(self.output_path)
+        new_file = not os.path.exists(self.output_path) or os.path.getsize(self.output_path) == 0
+        if new_file:
+            bootstrap_tracks = self._build_track_layer(self._normalize_records(activities))
+            bootstrap_starts = self._build_start_layer(self._normalize_records(activities))
+            self._write_layer(bootstrap_tracks, "activity_tracks", overwrite_file=True)
+            self._write_layer(bootstrap_starts, "activity_starts", overwrite_file=False)
+
+        repository.ensure_schema()
+        sync_result = repository.upsert_activities(activities, sync_metadata=sync_metadata)
+        records = repository.load_all_activity_records()
+
+        track_layer = self._build_track_layer(records)
+        start_layer = self._build_start_layer(records)
+        self._write_layer(track_layer, "activity_tracks", overwrite_file=False)
         self._write_layer(start_layer, "activity_starts", overwrite_file=False)
+
         return {
             "schema": self.schema(),
             "path": self.output_path,
-            "activity_count": len(activities),
+            "fetched_count": len(activities),
+            "track_count": track_layer.featureCount(),
             "start_count": start_layer.featureCount(),
+            "sync": sync_result,
         }
 
-    def _build_activity_layer(self, activities):
-        layer = QgsVectorLayer("LineString?crs=EPSG:4326", "activities", "memory")
+    def _build_track_layer(self, records):
+        layer = QgsVectorLayer("LineString?crs=EPSG:4326", "activity_tracks", "memory")
         provider = layer.dataProvider()
-        provider.addAttributes(self._make_fields(ACTIVITY_FIELDS))
+        provider.addAttributes(self._make_fields(TRACK_FIELDS))
         layer.updateFields()
 
         features = []
-        imported_at = datetime.now(UTC).isoformat()
-        for activity in activities:
-            record = self._normalize_record(activity)
+        for record in records:
             geometry, geometry_source, geometry_point_count = self._activity_geometry(record)
             if geometry is None:
                 continue
@@ -117,10 +142,8 @@ class GeoPackageWriter:
             feature.setGeometry(geometry)
             record["geometry_source"] = geometry_source
             record["geometry_point_count"] = geometry_point_count
-            record["details_json"] = json.dumps(record.get("details_json") or {})
-            record["imported_at"] = imported_at
-            record["updated_at"] = imported_at
-            for field_name, _field_type in ACTIVITY_FIELDS:
+            record["details_json"] = json.dumps(record.get("details_json") or {}, sort_keys=True)
+            for field_name, _field_type in TRACK_FIELDS:
                 feature[field_name] = record.get(field_name)
             features.append(feature)
 
@@ -128,16 +151,14 @@ class GeoPackageWriter:
         layer.updateExtents()
         return layer
 
-    def _build_start_layer(self, activities):
+    def _build_start_layer(self, records):
         layer = QgsVectorLayer("Point?crs=EPSG:4326", "activity_starts", "memory")
         provider = layer.dataProvider()
         provider.addAttributes(self._make_fields(START_FIELDS))
         layer.updateFields()
 
         features = []
-        imported_at = datetime.now(UTC).isoformat()
-        for index, activity in enumerate(activities, start=1):
-            record = self._normalize_record(activity)
+        for index, record in enumerate(records, start=1):
             lat = record.get("start_lat")
             lon = record.get("start_lon")
             if lat is None or lon is None:
@@ -152,7 +173,7 @@ class GeoPackageWriter:
             feature["activity_type"] = record.get("activity_type")
             feature["start_date"] = record.get("start_date")
             feature["distance_m"] = record.get("distance_m")
-            feature["imported_at"] = imported_at
+            feature["last_synced_at"] = record.get("last_synced_at")
             features.append(feature)
 
         provider.addFeatures(features)
@@ -189,10 +210,14 @@ class GeoPackageWriter:
             fields.append(QgsField(name, field_type))
         return fields
 
-    def _normalize_record(self, activity):
-        if hasattr(activity, "to_record"):
-            return activity.to_record()
-        return dict(activity)
+    def _normalize_records(self, activities):
+        records = []
+        for activity in activities:
+            if hasattr(activity, "to_record"):
+                records.append(activity.to_record())
+            else:
+                records.append(dict(activity))
+        return records
 
     def _activity_geometry(self, record):
         geometry_points = record.get("geometry_points") or []

@@ -18,8 +18,14 @@ class LayerManager:
         self.iface = iface
 
     def load_output_layers(self, gpkg_path):
-        activities_layer = self._load_layer(gpkg_path, "activities", "QFIT Activities")
-        starts_layer = self._load_layer(gpkg_path, "activity_starts", "QFIT Activity Starts")
+        activities_layer = self._load_first_available(
+            gpkg_path,
+            [("activity_tracks", "QFIT Activities"), ("activities", "QFIT Activities")],
+        )
+        starts_layer = self._load_first_available(
+            gpkg_path,
+            [("activity_starts", "QFIT Activity Starts")],
+        )
         return activities_layer, starts_layer
 
     def apply_filters(self, layer, activity_type=None, date_from=None, date_to=None, min_distance_km=None):
@@ -53,6 +59,17 @@ class LayerManager:
                 self._apply_clusterish_style(starts_layer)
             else:
                 self._apply_start_point_style(starts_layer)
+
+    def _load_first_available(self, gpkg_path, candidates):
+        last_error = None
+        for layer_name, display_name in candidates:
+            try:
+                return self._load_layer(gpkg_path, layer_name, display_name)
+            except RuntimeError as exc:
+                last_error = exc
+        if last_error is not None:
+            raise last_error
+        return None
 
     def _load_layer(self, gpkg_path, layer_name, display_name):
         uri = f"{gpkg_path}|layername={layer_name}"
