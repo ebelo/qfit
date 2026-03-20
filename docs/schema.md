@@ -1,37 +1,43 @@
 # QFIT GeoPackage schema
 
-This document defines the first-pass internal data model and GeoPackage layout for QFIT.
+This document describes the current QFIT GeoPackage layout and the intended next evolution.
 
 ## Design goals
 
-- Keep the first version simple enough to implement quickly
-- Preserve source identifiers for re-import and deduplication
-- Support both line geometry and point-based visualizations
-- Stay flexible for Strava first, other providers later
+- keep a canonical local source of truth for synced activities
+- separate internal sync tables from visible GIS layers
+- support both lightweight line rendering and richer point-based analysis
+- stay flexible for Strava first, with room for FIT / GPX / TCX providers later
 
-## GeoPackage file
+## GeoPackage contents
 
-Suggested output name:
-- `qfit_activities.gpkg`
+### Internal tables
 
-Suggested layers:
-- `activities` — one feature per activity, line geometry when available
-- `activity_starts` — one point per activity start
-- `activity_bounds` — optional extent/bounding box derived later
+- `activity_registry` — canonical non-spatial activity table used for sync/upsert logic
+- `sync_state` — sync metadata table
 
-## Layer: `activities`
+### Visible layers
+
+- `activity_tracks` — one visible line feature per activity
+- `activity_starts` — one visible point per activity start
+- `activity_points` — optional sampled point layer derived from detailed stream geometry
+
+## Table: `activity_registry`
 
 Geometry type:
-- `LINESTRING`
+- none
 
 Primary purpose:
-- main visualization and filtering layer
+- canonical local source of truth for synced activities
+- stable upsert target keyed by provider activity id
 
-### Fields
+Recommended unique key:
+- (`source`, `source_activity_id`)
+
+### Current fields
 
 | Field | Type | Notes |
 |---|---|---|
-| `id` | INTEGER | local row id |
 | `source` | TEXT | provider name, e.g. `strava` |
 | `source_activity_id` | TEXT | provider-specific activity id |
 | `external_id` | TEXT | optional provider external id |
@@ -51,23 +57,19 @@ Primary purpose:
 | `max_heartrate` | REAL | nullable |
 | `average_watts` | REAL | nullable |
 | `kilojoules` | REAL | nullable |
-| `calories` | REAL | nullable, source dependent |
+| `calories` | REAL | nullable |
 | `suffer_score` | REAL | nullable |
-| `start_lat` | REAL | nullable if no coordinates |
-| `start_lon` | REAL | nullable if no coordinates |
+| `start_lat` | REAL | nullable |
+| `start_lon` | REAL | nullable |
 | `end_lat` | REAL | nullable |
 | `end_lon` | REAL | nullable |
-| `summary_polyline` | TEXT | encoded polyline when provided |
+| `summary_polyline` | TEXT | encoded summary polyline when provided |
 | `geometry_source` | TEXT | `stream`, `summary_polyline`, or `start_end` |
-| `geometry_point_count` | INTEGER | number of points used in the stored geometry |
-| `details_json` | TEXT | raw extra provider attributes as JSON |
-| `imported_at` | TEXT | ISO 8601 import timestamp |
-| `updated_at` | TEXT | ISO 8601 last sync timestamp |
-
-### Uniqueness
-
-Recommended unique key:
-- (`source`, `source_activity_id`)
+| `geometry_points_json` | TEXT | JSON array of detailed geometry points when available |
+| `details_json` | TEXT | provider extras as JSON |
+| `summary_hash` | TEXT | stable change-detection hash |
+| `first_seen_at` | TEXT | first time activity entered the registry |
+| `last_synced_at` | TEXT | last sync/update time |
 
 ## Table: `sync_state`
 
@@ -78,16 +80,19 @@ Primary purpose:
 - remember the most recent sync window and status
 - capture rate-limit snapshots and sync counters
 
-Suggested fields:
-- `provider`
-- `last_incremental_sync_at`
-- `last_full_sync_at`
-- `last_before_epoch`
-- `last_after_epoch`
-- `last_success_status`
-- `last_rate_limit_snapshot`
-- `last_sync_stats_json`
-- `updated_at`
+### Current fields
+
+| Field | Type | Notes |
+|---|---|---|
+| `provider` | TEXT | provider key, e.g. `strava` |
+| `last_incremental_sync_at` | TEXT | most recent successful sync time |
+| `last_full_sync_at` | TEXT | most recent broad/full sync time |
+| `last_before_epoch` | INTEGER | last used upper time bound |
+| `last_after_epoch` | INTEGER | last used lower time bound |
+| `last_success_status` | TEXT | last sync status |
+| `last_rate_limit_snapshot` | TEXT | JSON snapshot of recent API quota state |
+| `last_sync_stats_json` | TEXT | JSON sync counters |
+| `updated_at` | TEXT | metadata update time |
 
 ## Layer: `activity_tracks`
 
@@ -98,90 +103,83 @@ Primary purpose:
 - visible line layer derived from `activity_registry`
 - main visualization and filtering layer in QGIS
 
+### Current fields
+
+Mirrors key activity attributes from the registry, including:
+- identifiers and labels
+- activity type and timing
+- distance / speed / heart-rate summary metrics
+- geometry metadata (`geometry_source`, `geometry_point_count`)
+- sync metadata (`summary_hash`, `first_seen_at`, `last_synced_at`)
+
 ## Layer: `activity_starts`
 
 Geometry type:
 - `POINT`
 
 Primary purpose:
-- start point visualization
-- cluster styling
+- start-point visualization
+- clustering
 - density analysis
 
-### Fields
+### Current fields
 
 | Field | Type | Notes |
 |---|---|---|
-| `id` | INTEGER | local row id |
-| `activity_fk` | INTEGER | link to local activities row when available |
+| `activity_fk` | INTEGER | local sequential reference in the derived layer |
 | `source` | TEXT | provider name |
 | `source_activity_id` | TEXT | provider activity id |
 | `name` | TEXT | activity title |
 | `activity_type` | TEXT | run, ride, etc. |
 | `start_date` | TEXT | ISO 8601 UTC |
-| `distance_m` | REAL | copied for easy styling/filtering |
-| `imported_at` | TEXT | ISO 8601 import timestamp |
+| `distance_m` | REAL | copied for filtering / styling |
+| `last_synced_at` | TEXT | last registry sync time |
 
-## Internal Python model
+## Layer: `activity_points`
 
-First-pass canonical activity object:
+Geometry type:
+- `POINT`
 
-```python
-activity = {
-    "source": "strava",
-    "source_activity_id": "123456",
-    "external_id": None,
-    "name": "Evening Run",
-    "activity_type": "Run",
-    "sport_type": "Run",
-    "start_date": "2026-03-20T18:00:00Z",
-    "start_date_local": "2026-03-20T19:00:00",
-    "timezone": "Europe/Zurich",
-    "distance_m": 10000.0,
-    "moving_time_s": 3200,
-    "elapsed_time_s": 3500,
-    "total_elevation_gain_m": 120.0,
-    "average_speed_mps": 3.12,
-    "max_speed_mps": 5.2,
-    "average_heartrate": None,
-    "max_heartrate": None,
-    "average_watts": None,
-    "kilojoules": None,
-    "calories": None,
-    "suffer_score": None,
-    "start_lat": 47.3769,
-    "start_lon": 8.5417,
-    "end_lat": 47.39,
-    "end_lon": 8.55,
-    "summary_polyline": "...",
-    "details_json": {},
-}
-```
+Primary purpose:
+- point-based analysis and visualization from detailed track streams
+- heatmaps using sampled detailed geometry rather than just activity starts
 
-## Import strategy
+### Current fields
 
-### Phase 1
-- store the Strava summary polyline if available
-- decode to `LINESTRING`
-- create one activity feature
-- create one start point feature when start coordinates exist
+| Field | Type | Notes |
+|---|---|---|
+| `activity_fk` | INTEGER | local sequential reference in the derived layer |
+| `source` | TEXT | provider name |
+| `source_activity_id` | TEXT | provider activity id |
+| `point_index` | INTEGER | original sampled point index |
+| `point_ratio` | REAL | normalized progress across the activity track |
+| `name` | TEXT | activity title |
+| `activity_type` | TEXT | run, ride, etc. |
+| `start_date` | TEXT | ISO 8601 UTC |
+| `distance_m` | REAL | copied for filtering / styling |
+| `geometry_source` | TEXT | usually `stream` |
+| `last_synced_at` | TEXT | last registry sync time |
 
-### Phase 2
-- support detailed streams for richer geometries
-- support activity updates/upserts
-- add optional raw JSON cache table
-- add more provider adapters
+## Geometry priority
 
-## Filtering support
+When rebuilding visible layers, QFIT currently prefers geometry in this order:
+1. detailed stream points from `geometry_points_json`
+2. decoded `summary_polyline`
+3. fallback start/end line from start and end coordinates
 
-The chosen fields support the initial UI filters:
-- activity type
-- date range
-- distance range
-- duration range
+## Current sync flow
 
-## Notes
+1. fetch Strava summaries for the selected window
+2. optionally enrich activities with detailed stream geometry
+3. upsert activities into `activity_registry`
+4. update `sync_state`
+5. rebuild `activity_tracks`, `activity_starts`, and optionally `activity_points`
+6. load those layers into QGIS
 
-- Timestamps are stored as ISO 8601 text for portability
-- Distances are stored in meters; UI can display kilometers
-- Provider-specific extras should go into `details_json` instead of schema bloat in the MVP
+## Next phase
+
+Planned next improvements:
+- richer sampled-stream attributes in `activity_points` such as timestamps, elevation, pace, power, and heart rate when available
+- provider adapters for FIT / GPX / TCX imports using the same registry model
+- more explicit incremental sync cursors / sync policies
+- better QGIS integration testing and packaging polish

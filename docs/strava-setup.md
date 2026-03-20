@@ -1,6 +1,6 @@
 # Strava setup for QFIT
 
-QFIT now includes a built-in helper for the Strava OAuth flow.
+QFIT includes a built-in helper for the Strava OAuth flow.
 
 ## What you need
 
@@ -38,10 +38,11 @@ Once the refresh token is available:
 
 1. Set the date range and paging limits.
 2. Optionally enable detailed streams and choose a detailed-tracks limit.
-3. Click **Fetch from Strava**.
-4. Choose an output `.gpkg` path.
-5. Click **Write + Load**.
-6. Apply filters and style presets as needed.
+3. Optionally enable **Write activity_points layer from detailed stream geometry** and choose a sampling stride.
+4. Click **Fetch from Strava**.
+5. Choose an output `.gpkg` path.
+6. Click **Write + Load**.
+7. Apply filters and style presets as needed.
 
 ## Notes
 
@@ -49,5 +50,5 @@ Once the refresh token is available:
 - QFIT refreshes the access token automatically before downloading activities.
 - When detailed streams are enabled, QFIT caches downloaded stream geometries locally to avoid re-fetching them unnecessarily.
 - QFIT also applies a simple rate-limit guard and may skip some detailed stream downloads if the remaining Strava quota gets too low.
+- The optional `activity_points` layer is derived from detailed geometry and may be sampled to keep the GeoPackage lighter.
 - Credentials are currently stored in local QGIS settings for convenience, not in an encrypted vault.
-not in an encrypted vault.

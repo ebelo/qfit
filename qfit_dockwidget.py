@@ -26,6 +26,8 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.output_path = None
         self.activities_layer = None
         self.starts_layer = None
+        self.points_layer = None
+        self.last_fetch_context = {}
         self.layer_manager = LayerManager(iface)
         self.cache = self._build_cache()
         self.setupUi(self)
@@ -72,6 +74,12 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.maxDetailedActivitiesSpinBox.setValue(
             int(settings.value(f"{self.SETTINGS_PREFIX}/max_detailed_activities", 25))
         )
+        self.writeActivityPointsCheckBox.setChecked(
+            self._settings_bool(settings, f"{self.SETTINGS_PREFIX}/write_activity_points", False)
+        )
+        self.pointSamplingStrideSpinBox.setValue(
+            int(settings.value(f"{self.SETTINGS_PREFIX}/point_sampling_stride", 5))
+        )
 
     def _save_settings(self):
         settings = QSettings()
@@ -86,6 +94,14 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         settings.setValue(
             f"{self.SETTINGS_PREFIX}/max_detailed_activities",
             self.maxDetailedActivitiesSpinBox.value(),
+        )
+        settings.setValue(
+            f"{self.SETTINGS_PREFIX}/write_activity_points",
+            self.writeActivityPointsCheckBox.isChecked(),
+        )
+        settings.setValue(
+            f"{self.SETTINGS_PREFIX}/point_sampling_stride",
+            self.pointSamplingStrideSpinBox.value(),
         )
 
     def _settings_bool(self, settings, key, default=False):
@@ -109,7 +125,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             redirect_uri = self._redirect_uri()
             url = client.build_authorize_url(redirect_uri=redirect_uri)
             if not QDesktopServices.openUrl(QUrl(url)):
-                raise StravaClientError("Could not open the browser automatically. Copy the generated authorization URL manually.")
+                raise StravaClientError(
+                    "Could not open the browser automatically. Copy the generated authorization URL manually."
+                )
             self._set_status(
                 "Strava authorization opened in your browser. Approve access, copy the returned code, then paste it here and click Exchange code."
             )
@@ -179,6 +197,16 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 max_detailed_activities=self.maxDetailedActivitiesSpinBox.value(),
             )
             detailed_count = sum(1 for activity in self.activities if activity.geometry_source == "stream")
+            self.last_fetch_context = {
+                "provider": "strava",
+                "before_epoch": before,
+                "after_epoch": after,
+                "fetched_count": len(self.activities),
+                "detailed_count": detailed_count,
+                "stream_stats": client.last_stream_enrichment_stats,
+                "rate_limit": client.last_rate_limit,
+                "is_full_sync": self._is_full_sync_window(before, after),
+            }
             self._populate_activity_types()
             self.countLabel.setText(
                 "Activities fetched: {count} (detailed tracks: {detailed})".format(
@@ -207,14 +235,20 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
         self._set_status("Writing GeoPackage…")
         try:
-            writer = GeoPackageWriter(output_path=output_path)
+            writer = GeoPackageWriter(
+                output_path=output_path,
+                write_activity_points=self.writeActivityPointsCheckBox.isChecked(),
+                point_stride=self.pointSamplingStrideSpinBox.value(),
+            )
             result = writer.write_activities(self.activities, sync_metadata=self.last_fetch_context)
             self.output_path = result["path"]
-            self.activities_layer, self.starts_layer = self.layer_manager.load_output_layers(self.output_path)
+            self.activities_layer, self.starts_layer, self.points_layer = self.layer_manager.load_output_layers(
+                self.output_path
+            )
             self.on_apply_filters_clicked()
             sync = result.get("sync") or {}
             self._set_status(
-                "Synced {fetched} fetched activities into GeoPackage: inserted {inserted}, updated {updated}, unchanged {unchanged}, stored total {total}. Loaded {track_count} tracks and {start_count} starts into QGIS".format(
+                "Synced {fetched} fetched activities into GeoPackage: inserted {inserted}, updated {updated}, unchanged {unchanged}, stored total {total}. Loaded {track_count} tracks, {start_count} starts, and {point_count} activity points into QGIS".format(
                     fetched=result.get("fetched_count", len(self.activities)),
                     inserted=sync.get("inserted", 0),
                     updated=sync.get("updated", 0),
@@ -222,6 +256,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                     total=sync.get("total_count", 0),
                     track_count=result.get("track_count", 0),
                     start_count=result.get("start_count", 0),
+                    point_count=result.get("point_count", 0),
                 )
             )
         except Exception as exc:  # noqa: BLE001
@@ -229,7 +264,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._set_status("GeoPackage export failed")
 
     def on_apply_filters_clicked(self):
-        if self.activities_layer is None and self.starts_layer is None:
+        if self.activities_layer is None and self.starts_layer is None and self.points_layer is None:
             return
 
         activity_type = self.activityTypeComboBox.currentText()
@@ -240,7 +275,8 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
         self.layer_manager.apply_filters(self.activities_layer, activity_type, date_from, date_to, min_distance_km)
         self.layer_manager.apply_filters(self.starts_layer, activity_type, date_from, date_to, min_distance_km)
-        self.layer_manager.apply_style(self.activities_layer, self.starts_layer, preset)
+        self.layer_manager.apply_filters(self.points_layer, activity_type, date_from, date_to, min_distance_km)
+        self.layer_manager.apply_style(self.activities_layer, self.starts_layer, self.points_layer, preset)
         self._set_status("Applied filters and styling")
 
     def _build_client(self, require_refresh_token=True):
@@ -278,6 +314,11 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
     def _qdate_to_date(self, value):
         return date(value.year(), value.month(), value.day())
+
+    def _is_full_sync_window(self, before_epoch, after_epoch):
+        if before_epoch is None or after_epoch is None:
+            return False
+        return (before_epoch - after_epoch) >= 365 * 24 * 60 * 60
 
     def _populate_activity_types(self):
         values = sorted({activity.activity_type for activity in self.activities if activity.activity_type})
