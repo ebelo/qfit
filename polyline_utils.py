@@ -1,4 +1,7 @@
-def decode_polyline(encoded: str | None) -> list[tuple[float, float]]:
+from typing import List, Optional, Tuple
+
+
+def decode_polyline(encoded: Optional[str]) -> List[Tuple[float, float]]:
     """Decode a Google encoded polyline into (lat, lon) tuples."""
     if not encoded:
         return []

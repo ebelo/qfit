@@ -1,7 +1,9 @@
 import os
+from datetime import date, datetime, time
 
 from qgis.PyQt import uic
-from qgis.PyQt.QtCore import QDate, QSettings
+from qgis.PyQt.QtCore import QDate, QSettings, QUrl
+from qgis.PyQt.QtGui import QDesktopServices
 from qgis.PyQt.QtWidgets import QFileDialog, QDockWidget, QMessageBox
 
 from .gpkg_writer import GeoPackageWriter
@@ -30,6 +32,8 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._set_default_dates()
 
     def _wire_events(self):
+        self.openAuthorizeButton.clicked.connect(self.on_open_authorize_clicked)
+        self.exchangeCodeButton.clicked.connect(self.on_exchange_code_clicked)
         self.browseButton.clicked.connect(self.on_browse_clicked)
         self.refreshButton.clicked.connect(self.on_refresh_clicked)
         self.loadButton.clicked.connect(self.on_load_clicked)
@@ -39,6 +43,13 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         settings = QSettings()
         self.clientIdLineEdit.setText(settings.value(f"{self.SETTINGS_PREFIX}/client_id", ""))
         self.clientSecretLineEdit.setText(settings.value(f"{self.SETTINGS_PREFIX}/client_secret", ""))
+        self.redirectUriLineEdit.setText(
+            settings.value(
+                f"{self.SETTINGS_PREFIX}/redirect_uri",
+                StravaClient.DEFAULT_REDIRECT_URI,
+            )
+        )
+        self.authCodeLineEdit.setText("")
         self.refreshTokenLineEdit.setText(settings.value(f"{self.SETTINGS_PREFIX}/refresh_token", ""))
         default_output = settings.value(
             f"{self.SETTINGS_PREFIX}/output_path",
@@ -52,6 +63,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         settings = QSettings()
         settings.setValue(f"{self.SETTINGS_PREFIX}/client_id", self.clientIdLineEdit.text().strip())
         settings.setValue(f"{self.SETTINGS_PREFIX}/client_secret", self.clientSecretLineEdit.text().strip())
+        settings.setValue(f"{self.SETTINGS_PREFIX}/redirect_uri", self.redirectUriLineEdit.text().strip())
         settings.setValue(f"{self.SETTINGS_PREFIX}/refresh_token", self.refreshTokenLineEdit.text().strip())
         settings.setValue(f"{self.SETTINGS_PREFIX}/output_path", self.outputPathLineEdit.text().strip())
         settings.setValue(f"{self.SETTINGS_PREFIX}/per_page", self.perPageSpinBox.value())
@@ -63,25 +75,83 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         if not self.dateToEdit.date().isValid():
             self.dateToEdit.setDate(QDate.currentDate())
 
+    def on_open_authorize_clicked(self):
+        self._save_settings()
+        try:
+            client = self._build_client(require_refresh_token=False)
+            redirect_uri = self._redirect_uri()
+            url = client.build_authorize_url(redirect_uri=redirect_uri)
+            if not QDesktopServices.openUrl(QUrl(url)):
+                raise StravaClientError("Could not open the browser automatically. Copy the generated authorization URL manually.")
+            self._set_status(
+                "Strava authorization opened in your browser. Approve access, copy the returned code, then paste it here and click Exchange code."
+            )
+        except StravaClientError as exc:
+            self._show_error("Strava authorization failed", str(exc))
+            self._set_status("Could not start the Strava authorization flow")
+
+    def on_exchange_code_clicked(self):
+        self._save_settings()
+        authorization_code = self.authCodeLineEdit.text().strip()
+        if not authorization_code:
+            self._show_error("Missing authorization code", "Paste the code returned by Strava first.")
+            return
+
+        try:
+            client = self._build_client(require_refresh_token=False)
+            payload = client.exchange_code_for_tokens(
+                authorization_code=authorization_code,
+                redirect_uri=self._redirect_uri(),
+            )
+            refresh_token = payload.get("refresh_token")
+            if not refresh_token:
+                raise StravaClientError("Strava returned no refresh token")
+            self.refreshTokenLineEdit.setText(refresh_token)
+            self.authCodeLineEdit.clear()
+            self._save_settings()
+            athlete = payload.get("athlete") or {}
+            athlete_name = " ".join(
+                part for part in [athlete.get("firstname"), athlete.get("lastname")] if part
+            ).strip()
+            if athlete_name:
+                self._set_status(
+                    "Strava connected for {name}. Refresh token saved locally in QGIS settings.".format(
+                        name=athlete_name
+                    )
+                )
+            else:
+                self._set_status("Strava refresh token saved locally in QGIS settings.")
+        except StravaClientError as exc:
+            self._show_error("Token exchange failed", str(exc))
+            self._set_status("Could not exchange the Strava authorization code")
+
     def on_browse_clicked(self):
-        path, _selected = QFileDialog.getSaveFileName(self, "Choose GeoPackage output", self.outputPathLineEdit.text(), "GeoPackage (*.gpkg)")
+        path, _selected = QFileDialog.getSaveFileName(
+            self,
+            "Choose GeoPackage output",
+            self.outputPathLineEdit.text(),
+            "GeoPackage (*.gpkg)",
+        )
         if path:
             if not path.lower().endswith(".gpkg"):
-                path = f"{path}.gpkg"
+                path = "{path}.gpkg".format(path=path)
             self.outputPathLineEdit.setText(path)
 
     def on_refresh_clicked(self):
         self._save_settings()
         self._set_status("Connecting to Strava…")
         try:
-            client = self._build_client()
+            client = self._build_client(require_refresh_token=True)
+            before, after = self._build_fetch_epoch_range()
             self.activities = client.fetch_activities(
                 per_page=self.perPageSpinBox.value(),
                 max_pages=self.maxPagesSpinBox.value(),
+                before=before,
+                after=after,
             )
             self._populate_activity_types()
-            self.countLabel.setText(f"Activities fetched: {len(self.activities)}")
-            self._set_status(f"Fetched {len(self.activities)} activities from Strava")
+            self.countLabel.setText("Activities fetched: {count}".format(count=len(self.activities)))
+            self._set_status("Fetched {count} activities from Strava".format(count=len(self.activities)))
         except StravaClientError as exc:
             self._show_error("Strava import failed", str(exc))
             self._set_status("Strava fetch failed")
@@ -108,7 +178,10 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self.activities_layer, self.starts_layer = self.layer_manager.load_output_layers(self.output_path)
             self.on_apply_filters_clicked()
             self._set_status(
-                f"Loaded {result['activity_count']} activities and {result['start_count']} start points into QGIS"
+                "Loaded {activity_count} activities and {start_count} start points into QGIS".format(
+                    activity_count=result["activity_count"],
+                    start_count=result["start_count"],
+                )
             )
         except Exception as exc:  # noqa: BLE001
             self._show_error("GeoPackage export failed", str(exc))
@@ -129,15 +202,40 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.layer_manager.apply_style(self.activities_layer, self.starts_layer, preset)
         self._set_status("Applied filters and styling")
 
-    def _build_client(self):
+    def _build_client(self, require_refresh_token=True):
         client = StravaClient(
             client_id=self.clientIdLineEdit.text().strip(),
             client_secret=self.clientSecretLineEdit.text().strip(),
             refresh_token=self.refreshTokenLineEdit.text().strip(),
         )
-        if not client.is_configured():
-            raise StravaClientError("Enter Strava client id, client secret, and refresh token.")
+        if not client.has_client_credentials():
+            raise StravaClientError("Enter Strava client ID and client secret first.")
+        if require_refresh_token and not client.refresh_token:
+            raise StravaClientError(
+                "Enter a refresh token, or use the built-in authorization flow to generate one."
+            )
         return client
+
+    def _redirect_uri(self):
+        return self.redirectUriLineEdit.text().strip() or StravaClient.DEFAULT_REDIRECT_URI
+
+    def _build_fetch_epoch_range(self):
+        local_tz = datetime.now().astimezone().tzinfo
+        after = None
+        before = None
+
+        if self.dateFromEdit.date().isValid():
+            start_date = self._qdate_to_date(self.dateFromEdit.date())
+            after = int(datetime.combine(start_date, time(0, 0, 0), tzinfo=local_tz).timestamp())
+
+        if self.dateToEdit.date().isValid():
+            end_date = self._qdate_to_date(self.dateToEdit.date())
+            before = int(datetime.combine(end_date, time(23, 59, 59), tzinfo=local_tz).timestamp())
+
+        return before, after
+
+    def _qdate_to_date(self, value):
+        return date(value.year(), value.month(), value.day())
 
     def _populate_activity_types(self):
         values = sorted({activity.activity_type for activity in self.activities if activity.activity_type})

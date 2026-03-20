@@ -23,16 +23,96 @@
        <string>Strava connection</string>
       </property>
       <layout class="QFormLayout" name="credentialsLayout">
-       <item row="0" column="0"><widget class="QLabel" name="clientIdLabel"><property name="text"><string>Client ID</string></property></widget></item>
-       <item row="0" column="1"><widget class="QLineEdit" name="clientIdLineEdit"/></item>
-       <item row="1" column="0"><widget class="QLabel" name="clientSecretLabel"><property name="text"><string>Client secret</string></property></widget></item>
-       <item row="1" column="1"><widget class="QLineEdit" name="clientSecretLineEdit"><property name="echoMode"><enum>QLineEdit::Password</enum></property></widget></item>
-       <item row="2" column="0"><widget class="QLabel" name="refreshTokenLabel"><property name="text"><string>Refresh token</string></property></widget></item>
-       <item row="2" column="1"><widget class="QLineEdit" name="refreshTokenLineEdit"><property name="echoMode"><enum>QLineEdit::Password</enum></property></widget></item>
-       <item row="3" column="0"><widget class="QLabel" name="perPageLabel"><property name="text"><string>Per page</string></property></widget></item>
-       <item row="3" column="1"><widget class="QSpinBox" name="perPageSpinBox"><property name="minimum"><number>1</number></property><property name="maximum"><number>200</number></property><property name="value"><number>50</number></property></widget></item>
-       <item row="4" column="0"><widget class="QLabel" name="maxPagesLabel"><property name="text"><string>Pages to fetch</string></property></widget></item>
-       <item row="4" column="1"><widget class="QSpinBox" name="maxPagesSpinBox"><property name="minimum"><number>1</number></property><property name="maximum"><number>20</number></property><property name="value"><number>2</number></property></widget></item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="clientIdLabel">
+         <property name="text"><string>Client ID</string></property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="clientIdLineEdit"/>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="clientSecretLabel">
+         <property name="text"><string>Client secret</string></property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="clientSecretLineEdit">
+         <property name="echoMode"><enum>QLineEdit::Password</enum></property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="redirectUriLabel">
+         <property name="text"><string>Redirect URI</string></property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="redirectUriLineEdit"/>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="authCodeLabel">
+         <property name="text"><string>Authorization code</string></property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLineEdit" name="authCodeLineEdit"/>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="refreshTokenLabel">
+         <property name="text"><string>Refresh token</string></property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QLineEdit" name="refreshTokenLineEdit">
+         <property name="echoMode"><enum>QLineEdit::Password</enum></property>
+        </widget>
+       </item>
+       <item row="5" column="0" colspan="2">
+        <layout class="QHBoxLayout" name="oauthButtonsLayout">
+         <item>
+          <widget class="QPushButton" name="openAuthorizeButton">
+           <property name="text"><string>Open Strava authorize page</string></property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="exchangeCodeButton">
+           <property name="text"><string>Exchange code</string></property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="6" column="0" colspan="2">
+        <widget class="QLabel" name="authHelpLabel">
+         <property name="text">
+          <string>Use the built-in auth helper: open the Strava page, approve access, paste the returned code here, then exchange it for a refresh token.</string>
+         </property>
+         <property name="wordWrap"><bool>true</bool></property>
+        </widget>
+       </item>
+       <item row="7" column="0">
+        <widget class="QLabel" name="perPageLabel">
+         <property name="text"><string>Per page</string></property>
+        </widget>
+       </item>
+       <item row="7" column="1">
+        <widget class="QSpinBox" name="perPageSpinBox">
+         <property name="minimum"><number>1</number></property>
+         <property name="maximum"><number>200</number></property>
+         <property name="value"><number>50</number></property>
+        </widget>
+       </item>
+       <item row="8" column="0">
+        <widget class="QLabel" name="maxPagesLabel">
+         <property name="text"><string>Pages to fetch</string></property>
+        </widget>
+       </item>
+       <item row="8" column="1">
+        <widget class="QSpinBox" name="maxPagesSpinBox">
+         <property name="minimum"><number>1</number></property>
+         <property name="maximum"><number>20</number></property>
+         <property name="value"><number>2</number></property>
+        </widget>
+       </item>
       </layout>
      </widget>
     </item>
