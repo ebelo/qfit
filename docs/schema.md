@@ -143,6 +143,7 @@ Geometry type:
 Primary purpose:
 - point-based analysis and visualization from detailed track streams
 - heatmaps using sampled detailed geometry rather than just activity starts
+- foundation for temporal views once QGIS temporal wiring is added
 
 ### Current fields
 
@@ -154,6 +155,8 @@ Primary purpose:
 | `point_index` | INTEGER | original sampled point index |
 | `point_ratio` | REAL | normalized progress across the activity track |
 | `stream_time_s` | INTEGER | sampled stream time offset when available |
+| `point_timestamp_utc` | TEXT | derived absolute UTC timestamp when possible |
+| `point_timestamp_local` | TEXT | derived absolute local activity timestamp when possible |
 | `stream_distance_m` | REAL | sampled cumulative distance when available |
 | `altitude_m` | REAL | sampled altitude when available |
 | `heartrate_bpm` | REAL | sampled heart rate when available |
@@ -189,7 +192,7 @@ When rebuilding visible layers, QFIT currently prefers geometry in this order:
 ## Next phase
 
 Planned next improvements:
-- richer sampled-stream attributes and better timestamp semantics in `activity_points`
+- more explicit QGIS temporal integration using the new sampled timestamps
 - provider adapters for FIT / GPX / TCX imports using the same registry model
 - more explicit incremental sync cursors / sync policies
 - better QGIS integration testing and packaging polish

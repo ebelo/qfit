@@ -50,5 +50,6 @@ Once the refresh token is available:
 - QFIT refreshes the access token automatically before downloading activities.
 - When detailed streams are enabled, QFIT caches downloaded stream bundles locally to avoid re-fetching them unnecessarily.
 - QFIT also applies a simple rate-limit guard and may skip some detailed stream downloads if the remaining Strava quota gets too low.
-- The optional `activity_points` layer is derived from detailed geometry and can now include sampled stream metrics such as time, distance, elevation, heart rate, cadence, power, speed, temperature, grade, and moving-state flags when Strava provides them.
+- The optional `activity_points` layer is derived from detailed geometry and can include sampled stream metrics such as time, distance, elevation, heart rate, cadence, power, speed, temperature, grade, and moving-state flags when Strava provides them.
+- QFIT now also derives absolute sampled timestamps for `activity_points` when the stream time offsets and activity start times are available.
 - Credentials are currently stored in local QGIS settings for convenience, not in an encrypted vault.

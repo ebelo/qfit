@@ -16,6 +16,7 @@ from qgis.core import (
 
 from .polyline_utils import decode_polyline
 from .sync_repository import REGISTRY_TABLE, SYNC_STATE_TABLE, SyncRepository
+from .time_utils import add_seconds_iso
 
 
 TRACK_FIELDS = [
@@ -71,6 +72,8 @@ POINT_FIELDS = [
     ("point_index", QVariant.Int),
     ("point_ratio", QVariant.Double),
     ("stream_time_s", QVariant.Int),
+    ("point_timestamp_utc", QVariant.String),
+    ("point_timestamp_local", QVariant.String),
     ("stream_distance_m", QVariant.Double),
     ("altitude_m", QVariant.Double),
     ("heartrate_bpm", QVariant.Double),
@@ -261,6 +264,7 @@ class GeoPackageWriter:
             sampled_points = self._sample_points(geometry_points)
             total_points = max(1, len(geometry_points) - 1)
             for point_index, lat, lon in sampled_points:
+                stream_time_s = self._metric_value(stream_metrics, "time", point_index, as_int=True)
                 feature = QgsFeature(layer.fields())
                 feature.setGeometry(QgsGeometry.fromPointXY(QgsPointXY(float(lon), float(lat))))
                 feature["activity_fk"] = index
@@ -268,7 +272,9 @@ class GeoPackageWriter:
                 feature["source_activity_id"] = record.get("source_activity_id")
                 feature["point_index"] = point_index
                 feature["point_ratio"] = float(point_index) / float(total_points)
-                feature["stream_time_s"] = self._metric_value(stream_metrics, "time", point_index, as_int=True)
+                feature["stream_time_s"] = stream_time_s
+                feature["point_timestamp_utc"] = add_seconds_iso(record.get("start_date"), stream_time_s)
+                feature["point_timestamp_local"] = add_seconds_iso(record.get("start_date_local"), stream_time_s)
                 feature["stream_distance_m"] = self._metric_value(stream_metrics, "distance", point_index)
                 feature["altitude_m"] = self._metric_value(stream_metrics, "altitude", point_index)
                 feature["heartrate_bpm"] = self._metric_value(stream_metrics, "heartrate", point_index)
