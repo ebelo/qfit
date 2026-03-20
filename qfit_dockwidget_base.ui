@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>QfitDockWidgetBase</class>
+ <widget class="QDockWidget" name="QfitDockWidgetBase">
+  <property name="windowTitle">
+   <string>QFIT</string>
+  </property>
+  <widget class="QWidget" name="dockWidgetContents">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QLabel" name="titleLabel">
+      <property name="text">
+       <string>QFIT — Explore fitness data spatially in QGIS</string>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="sourceGroupBox">
+      <property name="title">
+       <string>Source</string>
+      </property>
+      <layout class="QFormLayout" name="formLayout">
+       <item row="0" column="0">
+        <widget class="QLabel" name="sourceLabel">
+         <property name="text">
+          <string>Provider</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QComboBox" name="providerComboBox">
+         <item><property name="text"><string>Strava</string></property></item>
+         <item><property name="text"><string>FIT file (future)</string></property></item>
+         <item><property name="text"><string>GPX file (future)</string></property></item>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="filterGroupBox">
+      <property name="title">
+       <string>Filters</string>
+      </property>
+      <layout class="QFormLayout" name="filterLayout">
+       <item row="0" column="0"><widget class="QLabel" name="activityTypeLabel"><property name="text"><string>Activity type</string></property></widget></item>
+       <item row="0" column="1"><widget class="QComboBox" name="activityTypeComboBox"/></item>
+       <item row="1" column="0"><widget class="QLabel" name="dateFromLabel"><property name="text"><string>Date from</string></property></widget></item>
+       <item row="1" column="1"><widget class="QDateEdit" name="dateFromEdit"/></item>
+       <item row="2" column="0"><widget class="QLabel" name="dateToLabel"><property name="text"><string>Date to</string></property></widget></item>
+       <item row="2" column="1"><widget class="QDateEdit" name="dateToEdit"/></item>
+       <item row="3" column="0"><widget class="QLabel" name="distanceLabel"><property name="text"><string>Min distance (km)</string></property></widget></item>
+       <item row="3" column="1"><widget class="QDoubleSpinBox" name="minDistanceSpinBox"/></item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="styleGroupBox">
+      <property name="title">
+       <string>Visualization</string>
+      </property>
+      <layout class="QFormLayout" name="styleLayout">
+       <item row="0" column="0"><widget class="QLabel" name="stylePresetLabel"><property name="text"><string>Style preset</string></property></widget></item>
+       <item row="0" column="1"><widget class="QComboBox" name="stylePresetComboBox">
+        <item><property name="text"><string>Simple lines</string></property></item>
+        <item><property name="text"><string>Heatmap</string></property></item>
+        <item><property name="text"><string>Start points</string></property></item>
+        <item><property name="text"><string>Clustered starts</string></property></item>
+       </widget></item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="buttonLayout">
+      <item><widget class="QPushButton" name="refreshButton"><property name="text"><string>Refresh activities</string></property></widget></item>
+      <item><widget class="QPushButton" name="loadButton"><property name="text"><string>Load to QGIS</string></property></widget></item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QLabel" name="statusLabel">
+      <property name="text">
+       <string>Ready</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
