@@ -2,12 +2,13 @@ import os
 from datetime import date, datetime, time
 
 from qgis.PyQt import uic
-from qgis.PyQt.QtCore import QDate, QSettings, QUrl
+from qgis.PyQt.QtCore import QDate, QSettings, QStandardPaths, QUrl
 from qgis.PyQt.QtGui import QDesktopServices
 from qgis.PyQt.QtWidgets import QFileDialog, QDockWidget, QMessageBox
 
 from .gpkg_writer import GeoPackageWriter
 from .layer_manager import LayerManager
+from .qfit_cache import QfitCache
 from .strava_client import StravaClient, StravaClientError
 
 FORM_CLASS, _ = uic.loadUiType(
@@ -26,6 +27,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.activities_layer = None
         self.starts_layer = None
         self.layer_manager = LayerManager(iface)
+        self.cache = self._build_cache()
         self.setupUi(self)
         self._load_settings()
         self._wire_events()
@@ -38,6 +40,12 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.refreshButton.clicked.connect(self.on_refresh_clicked)
         self.loadButton.clicked.connect(self.on_load_clicked)
         self.applyFiltersButton.clicked.connect(self.on_apply_filters_clicked)
+
+    def _build_cache(self):
+        base_path = QStandardPaths.writableLocation(QStandardPaths.AppDataLocation)
+        if not base_path:
+            base_path = os.path.join(os.path.expanduser("~"), ".qfit")
+        return QfitCache(os.path.join(base_path, "QFIT", "cache"))
 
     def _load_settings(self):
         settings = QSettings()
@@ -178,12 +186,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                     detailed=detailed_count,
                 )
             )
-            self._set_status(
-                "Fetched {count} activities from Strava, with {detailed} detailed stream geometries.".format(
-                    count=len(self.activities),
-                    detailed=detailed_count,
-                )
-            )
+            self._set_status(self._fetch_status_text(client, len(self.activities), detailed_count))
         except StravaClientError as exc:
             self._show_error("Strava import failed", str(exc))
             self._set_status("Strava fetch failed")
@@ -239,6 +242,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             client_id=self.clientIdLineEdit.text().strip(),
             client_secret=self.clientSecretLineEdit.text().strip(),
             refresh_token=self.refreshTokenLineEdit.text().strip(),
+            cache=self.cache,
         )
         if not client.has_client_credentials():
             raise StravaClientError("Enter Strava client ID and client secret first.")
@@ -275,6 +279,33 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.activityTypeComboBox.addItem("All")
         for value in values:
             self.activityTypeComboBox.addItem(value)
+
+    def _fetch_status_text(self, client, activity_count, detailed_count):
+        stream_stats = client.last_stream_enrichment_stats or {}
+        rate_limit_note = self._rate_limit_note(client.last_rate_limit)
+        return (
+            "Fetched {activity_count} activities from Strava, detailed tracks: {detailed_count}, "
+            "cached streams: {cached}, downloaded streams: {downloaded}, rate-limit skips: {skipped}.{rate_note}"
+        ).format(
+            activity_count=activity_count,
+            detailed_count=detailed_count,
+            cached=stream_stats.get("cached", 0),
+            downloaded=stream_stats.get("downloaded", 0),
+            skipped=stream_stats.get("skipped_rate_limit", 0),
+            rate_note=rate_limit_note,
+        )
+
+    def _rate_limit_note(self, rate_limit):
+        if not rate_limit:
+            return ""
+        short_remaining = rate_limit.get("short_remaining")
+        long_remaining = rate_limit.get("long_remaining")
+        if short_remaining is None and long_remaining is None:
+            return ""
+        return " Remaining rate limit: short={short}, long={long}.".format(
+            short=short_remaining if short_remaining is not None else "?",
+            long=long_remaining if long_remaining is not None else "?",
+        )
 
     def _set_status(self, text):
         self.statusLabel.setText(text)

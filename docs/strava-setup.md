@@ -47,5 +47,7 @@ Once the refresh token is available:
 
 - Strava access tokens expire quickly; the refresh token is the important long-lived credential.
 - QFIT refreshes the access token automatically before downloading activities.
+- When detailed streams are enabled, QFIT caches downloaded stream geometries locally to avoid re-fetching them unnecessarily.
+- QFIT also applies a simple rate-limit guard and may skip some detailed stream downloads if the remaining Strava quota gets too low.
 - Credentials are currently stored in local QGIS settings for convenience, not in an encrypted vault.
 not in an encrypted vault.

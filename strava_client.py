@@ -1,7 +1,7 @@
 import json
 from dataclasses import asdict
 from datetime import UTC, datetime
-from typing import List, Optional, Tuple
+from typing import Optional
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
@@ -27,11 +27,17 @@ class StravaClient:
         client_secret=None,
         refresh_token=None,
         access_token=None,
+        cache=None,
+        stream_cache_ttl_seconds=7 * 24 * 60 * 60,
     ):
         self.client_id = client_id
         self.client_secret = client_secret
         self.refresh_token = refresh_token
         self.access_token = access_token
+        self.cache = cache
+        self.stream_cache_ttl_seconds = stream_cache_ttl_seconds
+        self.last_rate_limit = None
+        self.last_stream_enrichment_stats = {}
 
     def has_client_credentials(self):
         return bool(self.client_id and self.client_secret)
@@ -101,6 +107,15 @@ class StravaClient:
 
         if use_detailed_streams and activities:
             self.enrich_activities_with_streams(activities, max_activities=max_detailed_activities)
+        else:
+            self.last_stream_enrichment_stats = {
+                "requested": 0,
+                "cached": 0,
+                "downloaded": 0,
+                "skipped_rate_limit": 0,
+                "errors": 0,
+                "empty": 0,
+            }
 
         return activities
 
@@ -136,11 +151,36 @@ class StravaClient:
         else:
             limit = min(int(max_activities), len(activities))
 
+        stats = {
+            "requested": limit,
+            "cached": 0,
+            "downloaded": 0,
+            "skipped_rate_limit": 0,
+            "errors": 0,
+            "empty": 0,
+        }
+
         for activity in activities[:limit]:
+            cached_points = self._load_cached_stream_points(activity)
+            if cached_points is not None:
+                if cached_points:
+                    activity.geometry_points = cached_points
+                    activity.geometry_source = "stream"
+                activity.details_json["stream_cache"] = "hit"
+                activity.details_json["stream_point_count"] = len(cached_points)
+                stats["cached"] += 1
+                continue
+
+            if self._approaching_rate_limit():
+                activity.details_json["stream_skipped_reason"] = "rate_limit_guard"
+                stats["skipped_rate_limit"] += 1
+                continue
+
             try:
                 points = self.fetch_activity_stream_points(activity.source_activity_id)
             except StravaClientError as exc:
                 activity.details_json["stream_error"] = str(exc)
+                stats["errors"] += 1
                 continue
 
             if points:
@@ -148,7 +188,15 @@ class StravaClient:
                 activity.geometry_source = "stream"
                 activity.details_json["stream_point_count"] = len(points)
                 activity.details_json["stream_enriched_at"] = datetime.now(UTC).isoformat()
+                activity.details_json["stream_cache"] = "miss"
+                self._save_cached_stream_points(activity, points)
+                stats["downloaded"] += 1
+            else:
+                activity.details_json["stream_cache"] = "miss-empty"
+                self._save_cached_stream_points(activity, [])
+                stats["empty"] += 1
 
+        self.last_stream_enrichment_stats = stats
         return activities
 
     def fetch_activity_stream_points(self, activity_id):
@@ -202,6 +250,40 @@ class StravaClient:
             geometry_source=geometry_source,
             details_json=self._extract_details_json(payload),
         )
+
+    def _load_cached_stream_points(self, activity):
+        if self.cache is None:
+            return None
+        return self.cache.load_stream_points(
+            activity.source,
+            activity.source_activity_id,
+            max_age_seconds=self.stream_cache_ttl_seconds,
+        )
+
+    def _save_cached_stream_points(self, activity, points):
+        if self.cache is None:
+            return None
+        return self.cache.save_stream_points(
+            activity.source,
+            activity.source_activity_id,
+            points,
+            metadata={
+                "name": activity.name,
+                "activity_type": activity.activity_type,
+                "distance_m": activity.distance_m,
+            },
+        )
+
+    def _approaching_rate_limit(self):
+        if not self.last_rate_limit:
+            return False
+        short_remaining = self.last_rate_limit.get("short_remaining")
+        long_remaining = self.last_rate_limit.get("long_remaining")
+        if short_remaining is not None and short_remaining <= 5:
+            return True
+        if long_remaining is not None and long_remaining <= 25:
+            return True
+        return False
 
     def _default_geometry_source(self, summary_polyline, start_lat, start_lon, end_lat, end_lon):
         if summary_polyline:
@@ -268,6 +350,7 @@ class StravaClient:
     def _request_json(self, request):
         try:
             with urlopen(request, timeout=60) as response:
+                self.last_rate_limit = self._extract_rate_limit(response.headers)
                 raw = response.read().decode("utf-8")
                 return json.loads(raw)
         except HTTPError as exc:
@@ -277,6 +360,34 @@ class StravaClient:
             raise StravaClientError("Network error talking to Strava: {exc}".format(exc=exc)) from exc
         except json.JSONDecodeError as exc:
             raise StravaClientError("Invalid JSON returned by Strava: {exc}".format(exc=exc)) from exc
+
+    def _extract_rate_limit(self, headers):
+        limit_short, limit_long = self._parse_rate_limit_pair(headers.get("X-RateLimit-Limit"))
+        usage_short, usage_long = self._parse_rate_limit_pair(headers.get("X-RateLimit-Usage"))
+        return {
+            "short_limit": limit_short,
+            "long_limit": limit_long,
+            "short_usage": usage_short,
+            "long_usage": usage_long,
+            "short_remaining": self._remaining(limit_short, usage_short),
+            "long_remaining": self._remaining(limit_long, usage_long),
+        }
+
+    def _parse_rate_limit_pair(self, value):
+        if not value:
+            return None, None
+        parts = [part.strip() for part in str(value).split(",")]
+        if len(parts) != 2:
+            return None, None
+        try:
+            return int(parts[0]), int(parts[1])
+        except ValueError:
+            return None, None
+
+    def _remaining(self, limit_value, usage_value):
+        if limit_value is None or usage_value is None:
+            return None
+        return max(0, int(limit_value) - int(usage_value))
 
     @staticmethod
     def as_dict(activity):
