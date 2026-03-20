@@ -6,6 +6,7 @@ from qgis.core import (
     QgsLineSymbol,
     QgsMarkerSymbol,
     QgsProject,
+    QgsRectangle,
     QgsRendererCategory,
     QgsSingleSymbolRenderer,
     QgsStyle,
@@ -24,6 +25,7 @@ class LayerManager:
         )
         starts_layer = self._load_optional_layer(gpkg_path, "activity_starts", "QFIT Activity Starts")
         points_layer = self._load_optional_layer(gpkg_path, "activity_points", "QFIT Activity Points")
+        self._zoom_to_layers([activities_layer, starts_layer, points_layer])
         return activities_layer, starts_layer, points_layer
 
     def apply_filters(self, layer, activity_type=None, date_from=None, date_to=None, min_distance_km=None):
@@ -95,6 +97,29 @@ class LayerManager:
             QgsProject.instance().removeMapLayer(old_layer.id())
         QgsProject.instance().addMapLayer(layer)
         return layer
+
+    def _zoom_to_layers(self, layers):
+        extents = None
+        for layer in layers:
+            if layer is None or not layer.isValid():
+                continue
+            layer_extent = layer.extent()
+            if layer_extent.isEmpty():
+                continue
+            if extents is None:
+                extents = QgsRectangle(layer_extent)
+            else:
+                extents.combineExtentWith(layer_extent)
+
+        if extents is None or extents.isEmpty():
+            return
+
+        canvas = self.iface.mapCanvas() if self.iface is not None else None
+        if canvas is None:
+            return
+
+        canvas.setExtent(extents)
+        canvas.refresh()
 
     def _apply_simple_line_style(self, layer):
         symbol = QgsLineSymbol.createSimple({"line_color": "39,174,96,255", "line_width": "0.8"})
