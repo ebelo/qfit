@@ -66,7 +66,7 @@ Recommended unique key:
 | `summary_polyline` | TEXT | encoded summary polyline when provided |
 | `geometry_source` | TEXT | `stream`, `summary_polyline`, or `start_end` |
 | `geometry_points_json` | TEXT | JSON array of detailed geometry points when available |
-| `details_json` | TEXT | provider extras as JSON |
+| `details_json` | TEXT | provider extras as JSON, including cached stream metrics when available |
 | `summary_hash` | TEXT | stable change-detection hash |
 | `first_seen_at` | TEXT | first time activity entered the registry |
 | `last_synced_at` | TEXT | last sync/update time |
@@ -153,6 +153,16 @@ Primary purpose:
 | `source_activity_id` | TEXT | provider activity id |
 | `point_index` | INTEGER | original sampled point index |
 | `point_ratio` | REAL | normalized progress across the activity track |
+| `stream_time_s` | INTEGER | sampled stream time offset when available |
+| `stream_distance_m` | REAL | sampled cumulative distance when available |
+| `altitude_m` | REAL | sampled altitude when available |
+| `heartrate_bpm` | REAL | sampled heart rate when available |
+| `cadence_rpm` | REAL | sampled cadence when available |
+| `watts` | REAL | sampled power when available |
+| `velocity_mps` | REAL | sampled smoothed speed when available |
+| `temp_c` | REAL | sampled temperature when available |
+| `grade_smooth_pct` | REAL | sampled smoothed grade when available |
+| `moving` | INTEGER | sampled moving-state flag when available |
 | `name` | TEXT | activity title |
 | `activity_type` | TEXT | run, ride, etc. |
 | `start_date` | TEXT | ISO 8601 UTC |
@@ -170,7 +180,7 @@ When rebuilding visible layers, QFIT currently prefers geometry in this order:
 ## Current sync flow
 
 1. fetch Strava summaries for the selected window
-2. optionally enrich activities with detailed stream geometry
+2. optionally enrich activities with detailed stream geometry and extra stream metrics
 3. upsert activities into `activity_registry`
 4. update `sync_state`
 5. rebuild `activity_tracks`, `activity_starts`, and optionally `activity_points`
@@ -179,7 +189,7 @@ When rebuilding visible layers, QFIT currently prefers geometry in this order:
 ## Next phase
 
 Planned next improvements:
-- richer sampled-stream attributes in `activity_points` such as timestamps, elevation, pace, power, and heart rate when available
+- richer sampled-stream attributes and better timestamp semantics in `activity_points`
 - provider adapters for FIT / GPX / TCX imports using the same registry model
 - more explicit incremental sync cursors / sync policies
 - better QGIS integration testing and packaging polish

@@ -1,7 +1,6 @@
 import json
 from dataclasses import asdict
 from datetime import UTC, datetime
-from typing import Optional
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
@@ -18,6 +17,19 @@ class StravaClient:
     TOKEN_URL = "https://www.strava.com/oauth/token"
     ACTIVITIES_URL = "https://www.strava.com/api/v3/athlete/activities"
     STREAMS_URL_TEMPLATE = "https://www.strava.com/api/v3/activities/{activity_id}/streams"
+    STREAM_KEYS = [
+        "latlng",
+        "time",
+        "distance",
+        "altitude",
+        "heartrate",
+        "cadence",
+        "watts",
+        "velocity_smooth",
+        "moving",
+        "temp",
+        "grade_smooth",
+    ]
     DEFAULT_SCOPE = "read,activity:read_all"
     DEFAULT_REDIRECT_URI = "http://localhost/exchange_token"
 
@@ -98,7 +110,10 @@ class StravaClient:
                 params["after"] = int(after)
 
             url = "{base}?{query}".format(base=self.ACTIVITIES_URL, query=urlencode(params))
-            request = Request(url, headers={"Authorization": "Bearer {token}".format(token=token), "Accept": "application/json"})
+            request = Request(
+                url,
+                headers={"Authorization": "Bearer {token}".format(token=token), "Accept": "application/json"},
+            )
             payload = self._request_json(request)
             batch = [self.normalize_activity(item) for item in payload]
             activities.extend(batch)
@@ -161,14 +176,14 @@ class StravaClient:
         }
 
         for activity in activities[:limit]:
-            cached_points = self._load_cached_stream_points(activity)
-            if cached_points is not None:
-                if cached_points:
-                    activity.geometry_points = cached_points
-                    activity.geometry_source = "stream"
-                activity.details_json["stream_cache"] = "hit"
-                activity.details_json["stream_point_count"] = len(cached_points)
-                stats["cached"] += 1
+            cached_bundle = self._load_cached_stream_bundle(activity)
+            if cached_bundle is not None:
+                if self._apply_stream_bundle_to_activity(activity, cached_bundle):
+                    activity.details_json["stream_cache"] = "hit"
+                    stats["cached"] += 1
+                else:
+                    activity.details_json["stream_cache"] = "hit-empty"
+                    stats["empty"] += 1
                 continue
 
             if self._approaching_rate_limit():
@@ -177,32 +192,31 @@ class StravaClient:
                 continue
 
             try:
-                points = self.fetch_activity_stream_points(activity.source_activity_id)
+                stream_bundle = self.fetch_activity_stream_bundle(activity.source_activity_id)
             except StravaClientError as exc:
                 activity.details_json["stream_error"] = str(exc)
                 stats["errors"] += 1
                 continue
 
-            if points:
-                activity.geometry_points = points
-                activity.geometry_source = "stream"
-                activity.details_json["stream_point_count"] = len(points)
-                activity.details_json["stream_enriched_at"] = datetime.now(UTC).isoformat()
+            self._save_cached_stream_bundle(activity, stream_bundle)
+            if self._apply_stream_bundle_to_activity(activity, stream_bundle):
                 activity.details_json["stream_cache"] = "miss"
-                self._save_cached_stream_points(activity, points)
                 stats["downloaded"] += 1
             else:
                 activity.details_json["stream_cache"] = "miss-empty"
-                self._save_cached_stream_points(activity, [])
                 stats["empty"] += 1
 
         self.last_stream_enrichment_stats = stats
         return activities
 
     def fetch_activity_stream_points(self, activity_id):
+        stream_bundle = self.fetch_activity_stream_bundle(activity_id)
+        return self._extract_stream_points(stream_bundle)
+
+    def fetch_activity_stream_bundle(self, activity_id):
         token = self.get_access_token()
         params = {
-            "keys": "latlng",
+            "keys": ",".join(self.STREAM_KEYS),
             "key_by_type": "true",
             "resolution": "high",
             "series_type": "distance",
@@ -211,9 +225,12 @@ class StravaClient:
             base=self.STREAMS_URL_TEMPLATE.format(activity_id=activity_id),
             query=urlencode(params),
         )
-        request = Request(url, headers={"Authorization": "Bearer {token}".format(token=token), "Accept": "application/json"})
+        request = Request(
+            url,
+            headers={"Authorization": "Bearer {token}".format(token=token), "Accept": "application/json"},
+        )
         payload = self._request_json(request)
-        return self._extract_stream_points(payload)
+        return self._extract_stream_bundle(payload)
 
     def normalize_activity(self, payload):
         start_lat, start_lon = self._extract_latlon(payload.get("start_latlng"))
@@ -251,28 +268,55 @@ class StravaClient:
             details_json=self._extract_details_json(payload),
         )
 
-    def _load_cached_stream_points(self, activity):
+    def _load_cached_stream_bundle(self, activity):
         if self.cache is None:
             return None
-        return self.cache.load_stream_points(
+        return self.cache.load_stream_bundle(
             activity.source,
             activity.source_activity_id,
             max_age_seconds=self.stream_cache_ttl_seconds,
         )
 
-    def _save_cached_stream_points(self, activity, points):
+    def _save_cached_stream_bundle(self, activity, stream_bundle):
         if self.cache is None:
             return None
-        return self.cache.save_stream_points(
+        return self.cache.save_stream_bundle(
             activity.source,
             activity.source_activity_id,
-            points,
+            stream_bundle,
             metadata={
                 "name": activity.name,
                 "activity_type": activity.activity_type,
                 "distance_m": activity.distance_m,
             },
         )
+
+    def _apply_stream_bundle_to_activity(self, activity, stream_bundle):
+        points = self._extract_stream_points(stream_bundle)
+        if not points:
+            return False
+
+        activity.geometry_points = points
+        activity.geometry_source = "stream"
+        activity.details_json["stream_point_count"] = len(points)
+        activity.details_json["stream_enriched_at"] = datetime.now(UTC).isoformat()
+        metrics = self._extract_stream_metrics(stream_bundle)
+        if metrics:
+            activity.details_json["stream_metrics"] = metrics
+            activity.details_json["stream_metric_keys"] = sorted(metrics.keys())
+        else:
+            activity.details_json.pop("stream_metrics", None)
+            activity.details_json.pop("stream_metric_keys", None)
+        return True
+
+    def _extract_stream_metrics(self, stream_bundle):
+        metrics = {}
+        for key, values in (stream_bundle or {}).items():
+            if key == "latlng":
+                continue
+            if isinstance(values, list) and values:
+                metrics[key] = values
+        return metrics
 
     def _approaching_rate_limit(self):
         if not self.last_rate_limit:
@@ -292,22 +336,23 @@ class StravaClient:
             return "start_end"
         return None
 
-    def _extract_stream_points(self, payload):
-        stream_object = None
+    def _extract_stream_bundle(self, payload):
+        streams = {}
         if isinstance(payload, dict):
-            stream_object = payload.get("latlng")
-        elif isinstance(payload, list):
+            for key, stream_object in payload.items():
+                if isinstance(stream_object, dict) and isinstance(stream_object.get("data"), list):
+                    streams[key] = stream_object.get("data") or []
+            return streams
+
+        if isinstance(payload, list):
             for item in payload:
-                if isinstance(item, dict) and item.get("type") == "latlng":
-                    stream_object = item
-                    break
+                if isinstance(item, dict) and item.get("type") and isinstance(item.get("data"), list):
+                    streams[item.get("type")] = item.get("data") or []
+        return streams
 
-        if not isinstance(stream_object, dict):
-            return []
-
-        data = stream_object.get("data") or []
+    def _extract_stream_points(self, stream_bundle):
         points = []
-        for value in data:
+        for value in (stream_bundle or {}).get("latlng", []):
             if isinstance(value, (list, tuple)) and len(value) >= 2:
                 points.append((float(value[0]), float(value[1])))
         return points

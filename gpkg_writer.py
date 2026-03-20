@@ -70,6 +70,16 @@ POINT_FIELDS = [
     ("source_activity_id", QVariant.String),
     ("point_index", QVariant.Int),
     ("point_ratio", QVariant.Double),
+    ("stream_time_s", QVariant.Int),
+    ("stream_distance_m", QVariant.Double),
+    ("altitude_m", QVariant.Double),
+    ("heartrate_bpm", QVariant.Double),
+    ("cadence_rpm", QVariant.Double),
+    ("watts", QVariant.Double),
+    ("velocity_mps", QVariant.Double),
+    ("temp_c", QVariant.Double),
+    ("grade_smooth_pct", QVariant.Double),
+    ("moving", QVariant.Int),
     ("name", QVariant.String),
     ("activity_type", QVariant.String),
     ("start_date", QVariant.String),
@@ -247,6 +257,7 @@ class GeoPackageWriter:
             if len(geometry_points) < 1:
                 continue
 
+            stream_metrics = ((record.get("details_json") or {}).get("stream_metrics") or {})
             sampled_points = self._sample_points(geometry_points)
             total_points = max(1, len(geometry_points) - 1)
             for point_index, lat, lon in sampled_points:
@@ -257,6 +268,16 @@ class GeoPackageWriter:
                 feature["source_activity_id"] = record.get("source_activity_id")
                 feature["point_index"] = point_index
                 feature["point_ratio"] = float(point_index) / float(total_points)
+                feature["stream_time_s"] = self._metric_value(stream_metrics, "time", point_index, as_int=True)
+                feature["stream_distance_m"] = self._metric_value(stream_metrics, "distance", point_index)
+                feature["altitude_m"] = self._metric_value(stream_metrics, "altitude", point_index)
+                feature["heartrate_bpm"] = self._metric_value(stream_metrics, "heartrate", point_index)
+                feature["cadence_rpm"] = self._metric_value(stream_metrics, "cadence", point_index)
+                feature["watts"] = self._metric_value(stream_metrics, "watts", point_index)
+                feature["velocity_mps"] = self._metric_value(stream_metrics, "velocity_smooth", point_index)
+                feature["temp_c"] = self._metric_value(stream_metrics, "temp", point_index)
+                feature["grade_smooth_pct"] = self._metric_value(stream_metrics, "grade_smooth", point_index)
+                feature["moving"] = self._metric_value(stream_metrics, "moving", point_index, as_int=True)
                 feature["name"] = record.get("name")
                 feature["activity_type"] = record.get("activity_type")
                 feature["start_date"] = record.get("start_date")
@@ -345,3 +366,22 @@ class GeoPackageWriter:
         if sampled_indexes[-1] != len(points) - 1:
             sampled_indexes.append(len(points) - 1)
         return [(index, points[index][0], points[index][1]) for index in sampled_indexes]
+
+    def _metric_value(self, stream_metrics, key, index, as_int=False):
+        values = stream_metrics.get(key) if isinstance(stream_metrics, dict) else None
+        if not isinstance(values, list) or index >= len(values):
+            return None
+        value = values[index]
+        if value is None:
+            return None
+        if isinstance(value, bool):
+            return int(value) if as_int else value
+        if as_int:
+            try:
+                return int(value)
+            except (TypeError, ValueError):
+                return None
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            return None
