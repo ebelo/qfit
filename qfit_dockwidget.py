@@ -58,6 +58,12 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.outputPathLineEdit.setText(default_output)
         self.perPageSpinBox.setValue(int(settings.value(f"{self.SETTINGS_PREFIX}/per_page", 50)))
         self.maxPagesSpinBox.setValue(int(settings.value(f"{self.SETTINGS_PREFIX}/max_pages", 2)))
+        self.detailedStreamsCheckBox.setChecked(
+            self._settings_bool(settings, f"{self.SETTINGS_PREFIX}/use_detailed_streams", False)
+        )
+        self.maxDetailedActivitiesSpinBox.setValue(
+            int(settings.value(f"{self.SETTINGS_PREFIX}/max_detailed_activities", 25))
+        )
 
     def _save_settings(self):
         settings = QSettings()
@@ -68,6 +74,19 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         settings.setValue(f"{self.SETTINGS_PREFIX}/output_path", self.outputPathLineEdit.text().strip())
         settings.setValue(f"{self.SETTINGS_PREFIX}/per_page", self.perPageSpinBox.value())
         settings.setValue(f"{self.SETTINGS_PREFIX}/max_pages", self.maxPagesSpinBox.value())
+        settings.setValue(f"{self.SETTINGS_PREFIX}/use_detailed_streams", self.detailedStreamsCheckBox.isChecked())
+        settings.setValue(
+            f"{self.SETTINGS_PREFIX}/max_detailed_activities",
+            self.maxDetailedActivitiesSpinBox.value(),
+        )
+
+    def _settings_bool(self, settings, key, default=False):
+        value = settings.value(key, default)
+        if isinstance(value, bool):
+            return value
+        if isinstance(value, str):
+            return value.lower() in ("1", "true", "yes", "on")
+        return bool(value)
 
     def _set_default_dates(self):
         if not self.dateFromEdit.date().isValid():
@@ -148,10 +167,23 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 max_pages=self.maxPagesSpinBox.value(),
                 before=before,
                 after=after,
+                use_detailed_streams=self.detailedStreamsCheckBox.isChecked(),
+                max_detailed_activities=self.maxDetailedActivitiesSpinBox.value(),
             )
+            detailed_count = sum(1 for activity in self.activities if activity.geometry_source == "stream")
             self._populate_activity_types()
-            self.countLabel.setText("Activities fetched: {count}".format(count=len(self.activities)))
-            self._set_status("Fetched {count} activities from Strava".format(count=len(self.activities)))
+            self.countLabel.setText(
+                "Activities fetched: {count} (detailed tracks: {detailed})".format(
+                    count=len(self.activities),
+                    detailed=detailed_count,
+                )
+            )
+            self._set_status(
+                "Fetched {count} activities from Strava, with {detailed} detailed stream geometries.".format(
+                    count=len(self.activities),
+                    detailed=detailed_count,
+                )
+            )
         except StravaClientError as exc:
             self._show_error("Strava import failed", str(exc))
             self._set_status("Strava fetch failed")

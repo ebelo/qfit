@@ -1,5 +1,5 @@
 from dataclasses import asdict, dataclass, field
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 
 @dataclass
@@ -30,6 +30,8 @@ class Activity:
     end_lat: Optional[float] = None
     end_lon: Optional[float] = None
     summary_polyline: Optional[str] = None
+    geometry_source: Optional[str] = None
+    geometry_points: List[Tuple[float, float]] = field(default_factory=list)
     details_json: Dict[str, Any] = field(default_factory=dict)
 
     def to_record(self) -> Dict[str, Any]:

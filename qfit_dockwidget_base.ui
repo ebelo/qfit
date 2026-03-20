@@ -113,6 +113,23 @@
          <property name="value"><number>2</number></property>
         </widget>
        </item>
+       <item row="9" column="0" colspan="2">
+        <widget class="QCheckBox" name="detailedStreamsCheckBox">
+         <property name="text"><string>Use detailed Strava track streams when available</string></property>
+        </widget>
+       </item>
+       <item row="10" column="0">
+        <widget class="QLabel" name="maxDetailedActivitiesLabel">
+         <property name="text"><string>Detailed tracks limit</string></property>
+        </widget>
+       </item>
+       <item row="10" column="1">
+        <widget class="QSpinBox" name="maxDetailedActivitiesSpinBox">
+         <property name="minimum"><number>1</number></property>
+         <property name="maximum"><number>500</number></property>
+         <property name="value"><number>25</number></property>
+        </widget>
+       </item>
       </layout>
      </widget>
     </item>

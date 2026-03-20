@@ -37,13 +37,15 @@ A practical default for local testing is:
 Once the refresh token is available:
 
 1. Set the date range and paging limits.
-2. Click **Fetch from Strava**.
-3. Choose an output `.gpkg` path.
-4. Click **Write + Load**.
-5. Apply filters and style presets as needed.
+2. Optionally enable detailed streams and choose a detailed-tracks limit.
+3. Click **Fetch from Strava**.
+4. Choose an output `.gpkg` path.
+5. Click **Write + Load**.
+6. Apply filters and style presets as needed.
 
 ## Notes
 
 - Strava access tokens expire quickly; the refresh token is the important long-lived credential.
 - QFIT refreshes the access token automatically before downloading activities.
 - Credentials are currently stored in local QGIS settings for convenience, not in an encrypted vault.
+not in an encrypted vault.

@@ -45,6 +45,8 @@ ACTIVITY_FIELDS = [
     ("end_lat", QVariant.Double),
     ("end_lon", QVariant.Double),
     ("summary_polyline", QVariant.String),
+    ("geometry_source", QVariant.String),
+    ("geometry_point_count", QVariant.Int),
     ("details_json", QVariant.String),
     ("imported_at", QVariant.String),
     ("updated_at", QVariant.String),
@@ -107,14 +109,14 @@ class GeoPackageWriter:
         imported_at = datetime.now(UTC).isoformat()
         for activity in activities:
             record = self._normalize_record(activity)
-            geometry = self._polyline_geometry(record.get("summary_polyline"))
-            if geometry is None:
-                geometry = self._fallback_geometry(record)
+            geometry, geometry_source, geometry_point_count = self._activity_geometry(record)
             if geometry is None:
                 continue
 
             feature = QgsFeature(layer.fields())
             feature.setGeometry(geometry)
+            record["geometry_source"] = geometry_source
+            record["geometry_point_count"] = geometry_point_count
             record["details_json"] = json.dumps(record.get("details_json") or {})
             record["imported_at"] = imported_at
             record["updated_at"] = imported_at
@@ -175,7 +177,11 @@ class GeoPackageWriter:
             options,
         )
         if result[0] != QgsVectorFileWriter.NoError:
-            raise RuntimeError(f"Failed to write layer '{layer_name}' to {self.output_path}: {result}")
+            raise RuntimeError("Failed to write layer '{name}' to {path}: {result}".format(
+                name=layer_name,
+                path=self.output_path,
+                result=result,
+            ))
 
     def _make_fields(self, field_defs):
         fields = QgsFields()
@@ -188,11 +194,27 @@ class GeoPackageWriter:
             return activity.to_record()
         return dict(activity)
 
-    def _polyline_geometry(self, encoded_polyline):
-        coordinates = decode_polyline(encoded_polyline)
-        if len(coordinates) < 2:
+    def _activity_geometry(self, record):
+        geometry_points = record.get("geometry_points") or []
+        geometry = self._geometry_from_points(geometry_points)
+        if geometry is not None:
+            return geometry, record.get("geometry_source") or "stream", len(geometry_points)
+
+        polyline_points = decode_polyline(record.get("summary_polyline"))
+        geometry = self._geometry_from_points(polyline_points)
+        if geometry is not None:
+            return geometry, record.get("geometry_source") or "summary_polyline", len(polyline_points)
+
+        geometry = self._fallback_geometry(record)
+        if geometry is not None:
+            return geometry, record.get("geometry_source") or "start_end", 2
+
+        return None, None, 0
+
+    def _geometry_from_points(self, points):
+        if len(points) < 2:
             return None
-        return QgsGeometry.fromPolylineXY([QgsPointXY(lon, lat) for lat, lon in coordinates])
+        return QgsGeometry.fromPolylineXY([QgsPointXY(float(lon), float(lat)) for lat, lon in points])
 
     def _fallback_geometry(self, record):
         start_lat = record.get("start_lat")

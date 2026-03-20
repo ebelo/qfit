@@ -58,6 +58,8 @@ Primary purpose:
 | `end_lat` | REAL | nullable |
 | `end_lon` | REAL | nullable |
 | `summary_polyline` | TEXT | encoded polyline when provided |
+| `geometry_source` | TEXT | `stream`, `summary_polyline`, or `start_end` |
+| `geometry_point_count` | INTEGER | number of points used in the stored geometry |
 | `details_json` | TEXT | raw extra provider attributes as JSON |
 | `imported_at` | TEXT | ISO 8601 import timestamp |
 | `updated_at` | TEXT | ISO 8601 last sync timestamp |

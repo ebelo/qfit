@@ -1,7 +1,7 @@
 import json
 from dataclasses import asdict
 from datetime import UTC, datetime
-from typing import Any, Dict, Optional, Tuple
+from typing import List, Optional, Tuple
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
@@ -17,6 +17,7 @@ class StravaClient:
     AUTHORIZE_URL = "https://www.strava.com/oauth/authorize"
     TOKEN_URL = "https://www.strava.com/oauth/token"
     ACTIVITIES_URL = "https://www.strava.com/api/v3/athlete/activities"
+    STREAMS_URL_TEMPLATE = "https://www.strava.com/api/v3/activities/{activity_id}/streams"
     DEFAULT_SCOPE = "read,activity:read_all"
     DEFAULT_REDIRECT_URI = "http://localhost/exchange_token"
 
@@ -72,7 +73,15 @@ class StravaClient:
         self.refresh_token = payload.get("refresh_token") or self.refresh_token
         return payload
 
-    def fetch_activities(self, per_page=50, max_pages=1, before=None, after=None):
+    def fetch_activities(
+        self,
+        per_page=50,
+        max_pages=1,
+        before=None,
+        after=None,
+        use_detailed_streams=False,
+        max_detailed_activities=None,
+    ):
         token = self.get_access_token()
         activities = []
         for page in range(1, max_pages + 1):
@@ -89,6 +98,10 @@ class StravaClient:
             activities.extend(batch)
             if len(payload) < per_page:
                 break
+
+        if use_detailed_streams and activities:
+            self.enrich_activities_with_streams(activities, max_activities=max_detailed_activities)
+
         return activities
 
     def get_access_token(self):
@@ -117,9 +130,48 @@ class StravaClient:
             raise StravaClientError("Strava did not return an access token")
         return payload
 
+    def enrich_activities_with_streams(self, activities, max_activities=None):
+        if max_activities is None or max_activities <= 0:
+            limit = len(activities)
+        else:
+            limit = min(int(max_activities), len(activities))
+
+        for activity in activities[:limit]:
+            try:
+                points = self.fetch_activity_stream_points(activity.source_activity_id)
+            except StravaClientError as exc:
+                activity.details_json["stream_error"] = str(exc)
+                continue
+
+            if points:
+                activity.geometry_points = points
+                activity.geometry_source = "stream"
+                activity.details_json["stream_point_count"] = len(points)
+                activity.details_json["stream_enriched_at"] = datetime.now(UTC).isoformat()
+
+        return activities
+
+    def fetch_activity_stream_points(self, activity_id):
+        token = self.get_access_token()
+        params = {
+            "keys": "latlng",
+            "key_by_type": "true",
+            "resolution": "high",
+            "series_type": "distance",
+        }
+        url = "{base}?{query}".format(
+            base=self.STREAMS_URL_TEMPLATE.format(activity_id=activity_id),
+            query=urlencode(params),
+        )
+        request = Request(url, headers={"Authorization": "Bearer {token}".format(token=token), "Accept": "application/json"})
+        payload = self._request_json(request)
+        return self._extract_stream_points(payload)
+
     def normalize_activity(self, payload):
         start_lat, start_lon = self._extract_latlon(payload.get("start_latlng"))
         end_lat, end_lon = self._extract_latlon(payload.get("end_latlng"))
+        summary_polyline = (payload.get("map") or {}).get("summary_polyline")
+        geometry_source = self._default_geometry_source(summary_polyline, start_lat, start_lon, end_lat, end_lon)
         return Activity(
             source="strava",
             source_activity_id=str(payload.get("id")),
@@ -146,9 +198,37 @@ class StravaClient:
             start_lon=start_lon,
             end_lat=end_lat,
             end_lon=end_lon,
-            summary_polyline=((payload.get("map") or {}).get("summary_polyline")),
+            summary_polyline=summary_polyline,
+            geometry_source=geometry_source,
             details_json=self._extract_details_json(payload),
         )
+
+    def _default_geometry_source(self, summary_polyline, start_lat, start_lon, end_lat, end_lon):
+        if summary_polyline:
+            return "summary_polyline"
+        if None not in (start_lat, start_lon, end_lat, end_lon):
+            return "start_end"
+        return None
+
+    def _extract_stream_points(self, payload):
+        stream_object = None
+        if isinstance(payload, dict):
+            stream_object = payload.get("latlng")
+        elif isinstance(payload, list):
+            for item in payload:
+                if isinstance(item, dict) and item.get("type") == "latlng":
+                    stream_object = item
+                    break
+
+        if not isinstance(stream_object, dict):
+            return []
+
+        data = stream_object.get("data") or []
+        points = []
+        for value in data:
+            if isinstance(value, (list, tuple)) and len(value) >= 2:
+                points.append((float(value[0]), float(value[1])))
+        return points
 
     def _extract_details_json(self, payload):
         excluded = {
