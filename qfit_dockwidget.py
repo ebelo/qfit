@@ -4,7 +4,7 @@ from datetime import date, datetime, time
 from qgis.PyQt import uic
 from qgis.PyQt.QtCore import QDate, QSettings, QStandardPaths, QUrl
 from qgis.PyQt.QtGui import QDesktopServices
-from qgis.PyQt.QtWidgets import QFileDialog, QDockWidget, QMessageBox
+from qgis.PyQt.QtWidgets import QApplication, QFileDialog, QDockWidget, QMessageBox
 
 from .gpkg_writer import GeoPackageWriter
 from .layer_manager import LayerManager
@@ -125,9 +125,19 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             redirect_uri = self._redirect_uri()
             url = client.build_authorize_url(redirect_uri=redirect_uri)
             if not QDesktopServices.openUrl(QUrl(url)):
-                raise StravaClientError(
-                    "Could not open the browser automatically. Copy the generated authorization URL manually."
+                clipboard = QApplication.clipboard()
+                if clipboard is not None:
+                    clipboard.setText(url)
+                self._show_info(
+                    "Open Strava authorize page manually",
+                    "QFIT could not open the browser automatically. The authorization URL was copied to your clipboard.\n\nOpen this URL in a browser and continue the flow there:\n\n{url}".format(
+                        url=url
+                    ),
                 )
+                self._set_status(
+                    "Could not open browser automatically. Authorization URL copied to clipboard."
+                )
+                return
             self._set_status(
                 "Strava authorization opened in your browser. Approve access, copy the returned code, then paste it here and click Exchange code."
             )
@@ -356,6 +366,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
     def _set_status(self, text):
         self.statusLabel.setText(text)
+
+    def _show_info(self, title, message):
+        QMessageBox.information(self, title, message)
 
     def _show_error(self, title, message):
         QMessageBox.critical(self, title, message)

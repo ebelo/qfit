@@ -26,8 +26,9 @@ A practical default for local testing is:
 2. Enter your `client_id` and `client_secret`.
 3. Enter the same redirect URI you configured in Strava.
 4. Click **Open Strava authorize page**.
-5. Approve access in the browser.
-6. After Strava redirects you, copy the `code` query parameter from the URL.
+5. If QFIT cannot launch the browser automatically, it will copy the authorization URL to your clipboard so you can open it manually.
+6. Approve access in the browser.
+7. After Strava redirects you, copy the `code` query parameter from the URL.
 7. Paste that code into **Authorization code** in QFIT.
 8. Click **Exchange code**.
 9. QFIT will store the returned refresh token in local QGIS settings.
