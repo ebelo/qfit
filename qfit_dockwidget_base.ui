@@ -6,125 +6,164 @@
    <string>QFIT</string>
   </property>
   <widget class="QWidget" name="dockWidgetContents">
-   <layout class="QVBoxLayout" name="verticalLayout">
+   <layout class="QVBoxLayout" name="outerLayout">
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
     <item>
-     <widget class="QLabel" name="titleLabel">
-      <property name="text">
-       <string>QFIT — Explore fitness data spatially in QGIS</string>
-      </property>
-      <property name="wordWrap">
+     <widget class="QScrollArea" name="scrollArea">
+      <property name="widgetResizable">
        <bool>true</bool>
       </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QGroupBox" name="credentialsGroupBox">
-      <property name="title">
-       <string>Strava connection</string>
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
       </property>
-      <layout class="QFormLayout" name="credentialsLayout">
-       <item row="0" column="0"><widget class="QLabel" name="clientIdLabel"><property name="text"><string>Client ID</string></property></widget></item>
-       <item row="0" column="1"><widget class="QLineEdit" name="clientIdLineEdit"/></item>
-       <item row="1" column="0"><widget class="QLabel" name="clientSecretLabel"><property name="text"><string>Client secret</string></property></widget></item>
-       <item row="1" column="1"><widget class="QLineEdit" name="clientSecretLineEdit"><property name="echoMode"><enum>QLineEdit::Password</enum></property></widget></item>
-       <item row="2" column="0"><widget class="QLabel" name="redirectUriLabel"><property name="text"><string>Redirect URI</string></property></widget></item>
-       <item row="2" column="1"><widget class="QLineEdit" name="redirectUriLineEdit"/></item>
-       <item row="3" column="0"><widget class="QLabel" name="authCodeLabel"><property name="text"><string>Authorization code</string></property></widget></item>
-       <item row="3" column="1"><widget class="QLineEdit" name="authCodeLineEdit"/></item>
-       <item row="4" column="0"><widget class="QLabel" name="refreshTokenLabel"><property name="text"><string>Refresh token</string></property></widget></item>
-       <item row="4" column="1"><widget class="QLineEdit" name="refreshTokenLineEdit"><property name="echoMode"><enum>QLineEdit::Password</enum></property></widget></item>
-       <item row="5" column="0" colspan="2">
-        <layout class="QHBoxLayout" name="oauthButtonsLayout">
-         <item><widget class="QPushButton" name="openAuthorizeButton"><property name="text"><string>Open Strava authorize page</string></property></widget></item>
-         <item><widget class="QPushButton" name="exchangeCodeButton"><property name="text"><string>Exchange code</string></property></widget></item>
-        </layout>
-       </item>
-       <item row="6" column="0" colspan="2"><widget class="QLabel" name="authHelpLabel"><property name="text"><string>Use the built-in auth helper: open the Strava page, approve access, paste the returned code here, then exchange it for a refresh token.</string></property><property name="wordWrap"><bool>true</bool></property></widget></item>
-       <item row="7" column="0"><widget class="QLabel" name="perPageLabel"><property name="text"><string>Per page</string></property></widget></item>
-       <item row="7" column="1"><widget class="QSpinBox" name="perPageSpinBox"><property name="minimum"><number>1</number></property><property name="maximum"><number>200</number></property><property name="value"><number>50</number></property></widget></item>
-       <item row="8" column="0"><widget class="QLabel" name="maxPagesLabel"><property name="text"><string>Pages to fetch</string></property></widget></item>
-       <item row="8" column="1"><widget class="QSpinBox" name="maxPagesSpinBox"><property name="minimum"><number>1</number></property><property name="maximum"><number>20</number></property><property name="value"><number>2</number></property></widget></item>
-       <item row="9" column="0" colspan="2"><widget class="QCheckBox" name="detailedStreamsCheckBox"><property name="text"><string>Use detailed Strava track streams when available</string></property></widget></item>
-       <item row="10" column="0"><widget class="QLabel" name="maxDetailedActivitiesLabel"><property name="text"><string>Detailed tracks limit</string></property></widget></item>
-       <item row="10" column="1"><widget class="QSpinBox" name="maxDetailedActivitiesSpinBox"><property name="minimum"><number>1</number></property><property name="maximum"><number>500</number></property><property name="value"><number>25</number></property></widget></item>
-      </layout>
-     </widget>
-    </item>
-    <item>
-     <widget class="QGroupBox" name="outputGroupBox">
-      <property name="title">
-       <string>Output</string>
-      </property>
-      <layout class="QHBoxLayout" name="outputLayout">
-       <item><widget class="QLineEdit" name="outputPathLineEdit"/></item>
-       <item><widget class="QPushButton" name="browseButton"><property name="text"><string>Browse…</string></property></widget></item>
-      </layout>
-     </widget>
-    </item>
-    <item>
-     <widget class="QGroupBox" name="analysisGroupBox">
-      <property name="title">
-       <string>Analysis layers</string>
-      </property>
-      <layout class="QFormLayout" name="analysisLayout">
-       <item row="0" column="0" colspan="2"><widget class="QCheckBox" name="writeActivityPointsCheckBox"><property name="text"><string>Write activity_points layer from detailed stream geometry</string></property></widget></item>
-       <item row="1" column="0"><widget class="QLabel" name="pointSamplingStrideLabel"><property name="text"><string>Point sampling stride</string></property></widget></item>
-       <item row="1" column="1"><widget class="QSpinBox" name="pointSamplingStrideSpinBox"><property name="minimum"><number>1</number></property><property name="maximum"><number>100</number></property><property name="value"><number>5</number></property></widget></item>
-       <item row="2" column="0" colspan="2"><widget class="QLabel" name="analysisHelpLabel"><property name="text"><string>Lower sampling stride keeps more points. This is mainly useful when detailed Strava streams are enabled.</string></property><property name="wordWrap"><bool>true</bool></property></widget></item>
-      </layout>
-     </widget>
-    </item>
-    <item>
-     <widget class="QGroupBox" name="filterGroupBox">
-      <property name="title">
-       <string>Filters</string>
-      </property>
-      <layout class="QFormLayout" name="filterLayout">
-       <item row="0" column="0"><widget class="QLabel" name="activityTypeLabel"><property name="text"><string>Activity type</string></property></widget></item>
-       <item row="0" column="1"><widget class="QComboBox" name="activityTypeComboBox"/></item>
-       <item row="1" column="0"><widget class="QLabel" name="dateFromLabel"><property name="text"><string>Date from</string></property></widget></item>
-       <item row="1" column="1"><widget class="QDateEdit" name="dateFromEdit"><property name="calendarPopup"><bool>true</bool></property></widget></item>
-       <item row="2" column="0"><widget class="QLabel" name="dateToLabel"><property name="text"><string>Date to</string></property></widget></item>
-       <item row="2" column="1"><widget class="QDateEdit" name="dateToEdit"><property name="calendarPopup"><bool>true</bool></property></widget></item>
-       <item row="3" column="0"><widget class="QLabel" name="distanceLabel"><property name="text"><string>Min distance (km)</string></property></widget></item>
-       <item row="3" column="1"><widget class="QDoubleSpinBox" name="minDistanceSpinBox"><property name="decimals"><number>1</number></property><property name="maximum"><double>1000.000000000000000</double></property></widget></item>
-      </layout>
-     </widget>
-    </item>
-    <item>
-     <widget class="QGroupBox" name="styleGroupBox">
-      <property name="title">
-       <string>Visualization</string>
-      </property>
-      <layout class="QFormLayout" name="styleLayout">
-       <item row="0" column="0"><widget class="QLabel" name="stylePresetLabel"><property name="text"><string>Style preset</string></property></widget></item>
-       <item row="0" column="1"><widget class="QComboBox" name="stylePresetComboBox">
-        <item><property name="text"><string>Simple lines</string></property></item>
-        <item><property name="text"><string>By activity type</string></property></item>
-        <item><property name="text"><string>Track points</string></property></item>
-        <item><property name="text"><string>Heatmap</string></property></item>
-        <item><property name="text"><string>Start points</string></property></item>
-        <item><property name="text"><string>Clustered starts</string></property></item>
-       </widget></item>
-      </layout>
-     </widget>
-    </item>
-    <item>
-     <layout class="QHBoxLayout" name="buttonLayout">
-      <item><widget class="QPushButton" name="refreshButton"><property name="text"><string>Fetch from Strava</string></property></widget></item>
-      <item><widget class="QPushButton" name="loadButton"><property name="text"><string>Write + Load</string></property></widget></item>
-      <item><widget class="QPushButton" name="applyFiltersButton"><property name="text"><string>Apply filters</string></property></widget></item>
-     </layout>
-    </item>
-    <item>
-     <widget class="QLabel" name="countLabel">
-      <property name="text"><string>Activities fetched: 0</string></property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QLabel" name="statusLabel">
-      <property name="text"><string>Ready</string></property>
-      <property name="wordWrap"><bool>true</bool></property>
+      <widget class="QWidget" name="scrollAreaWidgetContents">
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="QLabel" name="titleLabel">
+          <property name="text">
+           <string>QFIT — Explore fitness data spatially in QGIS</string>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="credentialsGroupBox">
+          <property name="title">
+           <string>Strava connection</string>
+          </property>
+          <layout class="QFormLayout" name="credentialsLayout">
+           <item row="0" column="0"><widget class="QLabel" name="clientIdLabel"><property name="text"><string>Client ID</string></property></widget></item>
+           <item row="0" column="1"><widget class="QLineEdit" name="clientIdLineEdit"/></item>
+           <item row="1" column="0"><widget class="QLabel" name="clientSecretLabel"><property name="text"><string>Client secret</string></property></widget></item>
+           <item row="1" column="1"><widget class="QLineEdit" name="clientSecretLineEdit"><property name="echoMode"><enum>QLineEdit::Password</enum></property></widget></item>
+           <item row="2" column="0"><widget class="QLabel" name="redirectUriLabel"><property name="text"><string>Redirect URI</string></property></widget></item>
+           <item row="2" column="1"><widget class="QLineEdit" name="redirectUriLineEdit"/></item>
+           <item row="3" column="0"><widget class="QLabel" name="authCodeLabel"><property name="text"><string>Authorization code</string></property></widget></item>
+           <item row="3" column="1"><widget class="QLineEdit" name="authCodeLineEdit"/></item>
+           <item row="4" column="0"><widget class="QLabel" name="refreshTokenLabel"><property name="text"><string>Refresh token</string></property></widget></item>
+           <item row="4" column="1"><widget class="QLineEdit" name="refreshTokenLineEdit"><property name="echoMode"><enum>QLineEdit::Password</enum></property></widget></item>
+           <item row="5" column="0" colspan="2">
+            <layout class="QHBoxLayout" name="oauthButtonsLayout">
+             <item><widget class="QPushButton" name="openAuthorizeButton"><property name="text"><string>Open Strava authorize page</string></property></widget></item>
+             <item><widget class="QPushButton" name="exchangeCodeButton"><property name="text"><string>Exchange code</string></property></widget></item>
+            </layout>
+           </item>
+           <item row="6" column="0" colspan="2"><widget class="QLabel" name="authHelpLabel"><property name="text"><string>Use the built-in auth helper: open the Strava page, approve access, paste the returned code here, then exchange it for a refresh token.</string></property><property name="wordWrap"><bool>true</bool></property></widget></item>
+           <item row="7" column="0"><widget class="QLabel" name="perPageLabel"><property name="text"><string>Per page</string></property></widget></item>
+           <item row="7" column="1"><widget class="QSpinBox" name="perPageSpinBox"><property name="minimum"><number>1</number></property><property name="maximum"><number>200</number></property><property name="value"><number>50</number></property></widget></item>
+           <item row="8" column="0"><widget class="QLabel" name="maxPagesLabel"><property name="text"><string>Pages to fetch</string></property></widget></item>
+           <item row="8" column="1"><widget class="QSpinBox" name="maxPagesSpinBox"><property name="minimum"><number>1</number></property><property name="maximum"><number>20</number></property><property name="value"><number>2</number></property></widget></item>
+           <item row="9" column="0" colspan="2"><widget class="QCheckBox" name="detailedStreamsCheckBox"><property name="text"><string>Use detailed Strava track streams when available</string></property></widget></item>
+           <item row="10" column="0"><widget class="QLabel" name="maxDetailedActivitiesLabel"><property name="text"><string>Detailed tracks limit</string></property></widget></item>
+           <item row="10" column="1"><widget class="QSpinBox" name="maxDetailedActivitiesSpinBox"><property name="minimum"><number>1</number></property><property name="maximum"><number>500</number></property><property name="value"><number>25</number></property></widget></item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="outputGroupBox">
+          <property name="title">
+           <string>Output</string>
+          </property>
+          <layout class="QHBoxLayout" name="outputLayout">
+           <item><widget class="QLineEdit" name="outputPathLineEdit"/></item>
+           <item><widget class="QPushButton" name="browseButton"><property name="text"><string>Browse…</string></property></widget></item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="analysisGroupBox">
+          <property name="title">
+           <string>Analysis layers</string>
+          </property>
+          <layout class="QFormLayout" name="analysisLayout">
+           <item row="0" column="0" colspan="2"><widget class="QCheckBox" name="writeActivityPointsCheckBox"><property name="text"><string>Write activity_points layer from detailed stream geometry</string></property></widget></item>
+           <item row="1" column="0"><widget class="QLabel" name="pointSamplingStrideLabel"><property name="text"><string>Point sampling stride</string></property></widget></item>
+           <item row="1" column="1"><widget class="QSpinBox" name="pointSamplingStrideSpinBox"><property name="minimum"><number>1</number></property><property name="maximum"><number>100</number></property><property name="value"><number>5</number></property></widget></item>
+           <item row="2" column="0" colspan="2"><widget class="QLabel" name="analysisHelpLabel"><property name="text"><string>Lower sampling stride keeps more points. This is mainly useful when detailed Strava streams are enabled.</string></property><property name="wordWrap"><bool>true</bool></property></widget></item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="filterGroupBox">
+          <property name="title">
+           <string>Filters</string>
+          </property>
+          <layout class="QFormLayout" name="filterLayout">
+           <item row="0" column="0"><widget class="QLabel" name="activityTypeLabel"><property name="text"><string>Activity type</string></property></widget></item>
+           <item row="0" column="1"><widget class="QComboBox" name="activityTypeComboBox"/></item>
+           <item row="1" column="0"><widget class="QLabel" name="dateFromLabel"><property name="text"><string>Date from</string></property></widget></item>
+           <item row="1" column="1"><widget class="QDateEdit" name="dateFromEdit"><property name="calendarPopup"><bool>true</bool></property></widget></item>
+           <item row="2" column="0"><widget class="QLabel" name="dateToLabel"><property name="text"><string>Date to</string></property></widget></item>
+           <item row="2" column="1"><widget class="QDateEdit" name="dateToEdit"><property name="calendarPopup"><bool>true</bool></property></widget></item>
+           <item row="3" column="0"><widget class="QLabel" name="distanceLabel"><property name="text"><string>Min distance (km)</string></property></widget></item>
+           <item row="3" column="1"><widget class="QDoubleSpinBox" name="minDistanceSpinBox"><property name="decimals"><number>1</number></property><property name="maximum"><double>1000.000000000000000</double></property></widget></item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="styleGroupBox">
+          <property name="title">
+           <string>Visualization</string>
+          </property>
+          <layout class="QFormLayout" name="styleLayout">
+           <item row="0" column="0"><widget class="QLabel" name="stylePresetLabel"><property name="text"><string>Style preset</string></property></widget></item>
+           <item row="0" column="1"><widget class="QComboBox" name="stylePresetComboBox">
+            <item><property name="text"><string>Simple lines</string></property></item>
+            <item><property name="text"><string>By activity type</string></property></item>
+            <item><property name="text"><string>Track points</string></property></item>
+            <item><property name="text"><string>Heatmap</string></property></item>
+            <item><property name="text"><string>Start points</string></property></item>
+            <item><property name="text"><string>Clustered starts</string></property></item>
+           </widget></item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="buttonLayout">
+          <item><widget class="QPushButton" name="refreshButton"><property name="text"><string>Fetch from Strava</string></property></widget></item>
+          <item><widget class="QPushButton" name="loadButton"><property name="text"><string>Write + Load</string></property></widget></item>
+          <item><widget class="QPushButton" name="applyFiltersButton"><property name="text"><string>Apply filters</string></property></widget></item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QLabel" name="countLabel">
+          <property name="text"><string>Activities fetched: 0</string></property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="statusLabel">
+          <property name="text"><string>Ready</string></property>
+          <property name="wordWrap"><bool>true</bool></property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
    </layout>
