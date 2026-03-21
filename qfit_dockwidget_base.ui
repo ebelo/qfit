@@ -84,6 +84,25 @@
          </widget>
         </item>
         <item>
+         <widget class="QGroupBox" name="backgroundGroupBox">
+          <property name="title">
+           <string>Background map</string>
+          </property>
+          <layout class="QFormLayout" name="backgroundLayout">
+           <item row="0" column="0" colspan="2"><widget class="QCheckBox" name="backgroundMapCheckBox"><property name="text"><string>Load a Mapbox background map in QGIS</string></property></widget></item>
+           <item row="1" column="0"><widget class="QLabel" name="backgroundPresetLabel"><property name="text"><string>Preset</string></property></widget></item>
+           <item row="1" column="1"><widget class="QComboBox" name="backgroundPresetComboBox"/></item>
+           <item row="2" column="0"><widget class="QLabel" name="mapboxAccessTokenLabel"><property name="text"><string>Mapbox access token</string></property></widget></item>
+           <item row="2" column="1"><widget class="QLineEdit" name="mapboxAccessTokenLineEdit"><property name="echoMode"><enum>QLineEdit::Password</enum></property></widget></item>
+           <item row="3" column="0"><widget class="QLabel" name="mapboxStyleOwnerLabel"><property name="text"><string>Style owner</string></property></widget></item>
+           <item row="3" column="1"><widget class="QLineEdit" name="mapboxStyleOwnerLineEdit"><property name="placeholderText"><string>mapbox</string></property></widget></item>
+           <item row="4" column="0"><widget class="QLabel" name="mapboxStyleIdLabel"><property name="text"><string>Style ID</string></property></widget></item>
+           <item row="4" column="1"><widget class="QLineEdit" name="mapboxStyleIdLineEdit"><property name="placeholderText"><string>outdoors-v12 or your own Studio style ID</string></property></widget></item>
+           <item row="5" column="0" colspan="2"><widget class="QLabel" name="backgroundHelpLabel"><property name="text"><string>Built-in examples use Mapbox Outdoors, Light, and Satellite Streets. The Winter preset is intentionally a custom slot for your own winter-themed Mapbox Studio style.</string></property><property name="wordWrap"><bool>true</bool></property></widget></item>
+          </layout>
+         </widget>
+        </item>
+        <item>
          <widget class="QGroupBox" name="analysisGroupBox">
           <property name="title">
            <string>Analysis layers</string>
