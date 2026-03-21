@@ -6,6 +6,16 @@ from qgis.PyQt.QtCore import QDate, QSettings, QStandardPaths, QUrl
 from qgis.PyQt.QtGui import QDesktopServices
 from qgis.PyQt.QtWidgets import QApplication, QFileDialog, QDockWidget, QMessageBox
 
+from .activity_query import (
+    DEFAULT_SORT_LABEL,
+    SORT_OPTIONS,
+    ActivityQuery,
+    build_preview_lines,
+    filter_activities,
+    format_summary_text,
+    sort_activities,
+    summarize_activities,
+)
 from .gpkg_writer import GeoPackageWriter
 from .layer_manager import LayerManager
 from .mapbox_config import (
@@ -41,9 +51,11 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.cache = self._build_cache()
         self.setupUi(self)
         self._configure_background_preset_options()
+        self._configure_preview_sort_options()
         self._load_settings()
         self._wire_events()
         self._set_default_dates()
+        self._refresh_activity_preview()
 
     def _wire_events(self):
         self.openAuthorizeButton.clicked.connect(self.on_open_authorize_clicked)
@@ -54,10 +66,28 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.applyFiltersButton.clicked.connect(self.on_apply_filters_clicked)
         self.backgroundPresetComboBox.currentTextChanged.connect(self.on_background_preset_changed)
 
+        preview_inputs = [
+            self.activityTypeComboBox.currentTextChanged,
+            self.activitySearchLineEdit.textChanged,
+            self.dateFromEdit.dateChanged,
+            self.dateToEdit.dateChanged,
+            self.minDistanceSpinBox.valueChanged,
+            self.maxDistanceSpinBox.valueChanged,
+            self.detailedOnlyCheckBox.toggled,
+            self.previewSortComboBox.currentTextChanged,
+        ]
+        for signal in preview_inputs:
+            signal.connect(self._refresh_activity_preview)
+
     def _configure_background_preset_options(self):
         self.backgroundPresetComboBox.clear()
         for preset_name in background_preset_names():
             self.backgroundPresetComboBox.addItem(preset_name)
+
+    def _configure_preview_sort_options(self):
+        self.previewSortComboBox.clear()
+        for label in SORT_OPTIONS:
+            self.previewSortComboBox.addItem(label)
 
     def _build_cache(self):
         base_path = QStandardPaths.writableLocation(QStandardPaths.AppDataLocation)
@@ -97,6 +127,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._settings_bool(settings, "write_activity_points", False)
         )
         self.pointSamplingStrideSpinBox.setValue(int(self._setting_value(settings, "point_sampling_stride", 5)))
+        self.activitySearchLineEdit.setText(self._setting_value(settings, "activity_search_text", ""))
+        self.maxDistanceSpinBox.setValue(float(self._setting_value(settings, "max_distance_km", 0.0)))
+        self.detailedOnlyCheckBox.setChecked(self._settings_bool(settings, "detailed_only", False))
         self.backgroundMapCheckBox.setChecked(self._settings_bool(settings, "use_background_map", False))
         self.mapboxAccessTokenLineEdit.setText(self._setting_value(settings, "mapbox_access_token", ""))
         self.mapboxStyleOwnerLineEdit.setText(
@@ -110,6 +143,12 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             preset_index = self.backgroundPresetComboBox.findText(DEFAULT_BACKGROUND_PRESET)
         self.backgroundPresetComboBox.setCurrentIndex(max(preset_index, 0))
         self._sync_background_style_fields(self.backgroundPresetComboBox.currentText(), force=False)
+
+        preview_sort = self._setting_value(settings, "preview_sort", DEFAULT_SORT_LABEL)
+        preview_sort_index = self.previewSortComboBox.findText(preview_sort)
+        if preview_sort_index < 0:
+            preview_sort_index = self.previewSortComboBox.findText(DEFAULT_SORT_LABEL)
+        self.previewSortComboBox.setCurrentIndex(max(preview_sort_index, 0))
 
     def _save_settings(self):
         settings = QSettings()
@@ -132,6 +171,22 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         settings.setValue(
             f"{self.SETTINGS_PREFIX}/point_sampling_stride",
             self.pointSamplingStrideSpinBox.value(),
+        )
+        settings.setValue(
+            f"{self.SETTINGS_PREFIX}/activity_search_text",
+            self.activitySearchLineEdit.text().strip(),
+        )
+        settings.setValue(
+            f"{self.SETTINGS_PREFIX}/max_distance_km",
+            self.maxDistanceSpinBox.value(),
+        )
+        settings.setValue(
+            f"{self.SETTINGS_PREFIX}/detailed_only",
+            self.detailedOnlyCheckBox.isChecked(),
+        )
+        settings.setValue(
+            f"{self.SETTINGS_PREFIX}/preview_sort",
+            self.previewSortComboBox.currentText(),
         )
         settings.setValue(
             f"{self.SETTINGS_PREFIX}/use_background_map",
@@ -297,6 +352,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                     detailed=detailed_count,
                 )
             )
+            self._refresh_activity_preview()
             self._set_status(self._fetch_status_text(client, len(self.activities), detailed_count))
         except StravaClientError as exc:
             self._show_error("Strava import failed", str(exc))
@@ -357,16 +413,41 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             return
 
         self._save_settings()
-        activity_type = self.activityTypeComboBox.currentText()
-        date_from = self.dateFromEdit.date().toString("yyyy-MM-dd") if self.dateFromEdit.date().isValid() else None
-        date_to = self.dateToEdit.date().toString("yyyy-MM-dd") if self.dateToEdit.date().isValid() else None
-        min_distance_km = self.minDistanceSpinBox.value()
+        query = self._current_activity_query()
         preset = self.stylePresetComboBox.currentText()
+        filtered_activities = self._refresh_activity_preview()
 
         if has_layers:
-            self.layer_manager.apply_filters(self.activities_layer, activity_type, date_from, date_to, min_distance_km)
-            self.layer_manager.apply_filters(self.starts_layer, activity_type, date_from, date_to, min_distance_km)
-            self.layer_manager.apply_filters(self.points_layer, activity_type, date_from, date_to, min_distance_km)
+            self.layer_manager.apply_filters(
+                self.activities_layer,
+                query.activity_type,
+                query.date_from,
+                query.date_to,
+                query.min_distance_km,
+                query.max_distance_km,
+                query.search_text,
+                query.detailed_only,
+            )
+            self.layer_manager.apply_filters(
+                self.starts_layer,
+                query.activity_type,
+                query.date_from,
+                query.date_to,
+                query.min_distance_km,
+                query.max_distance_km,
+                query.search_text,
+                query.detailed_only,
+            )
+            self.layer_manager.apply_filters(
+                self.points_layer,
+                query.activity_type,
+                query.date_from,
+                query.date_to,
+                query.min_distance_km,
+                query.max_distance_km,
+                query.search_text,
+                query.detailed_only,
+            )
             self.layer_manager.apply_style(self.activities_layer, self.starts_layer, self.points_layer, preset)
 
         try:
@@ -385,14 +466,45 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._set_status(failure_status)
             return
 
+        filtered_count = len(filtered_activities)
         if has_layers and wants_background and self.background_layer is not None:
-            self._set_status("Applied filters, styling, and background map")
+            self._set_status(f"Applied filters, styling, and background map ({filtered_count} matching activities)")
         elif has_layers:
-            self._set_status("Applied filters and styling")
+            self._set_status(f"Applied filters and styling ({filtered_count} matching activities)")
         elif wants_background and self.background_layer is not None:
-            self._set_status("Background map updated")
+            self._set_status(f"Background map updated ({filtered_count} matching activities)")
         else:
-            self._set_status("Background map cleared")
+            self._set_status(f"Background map cleared ({filtered_count} matching activities)")
+
+    def _current_activity_query(self):
+        return ActivityQuery(
+            activity_type=self.activityTypeComboBox.currentText() or "All",
+            date_from=self.dateFromEdit.date().toString("yyyy-MM-dd") if self.dateFromEdit.date().isValid() else None,
+            date_to=self.dateToEdit.date().toString("yyyy-MM-dd") if self.dateToEdit.date().isValid() else None,
+            min_distance_km=self.minDistanceSpinBox.value(),
+            max_distance_km=self.maxDistanceSpinBox.value(),
+            search_text=self.activitySearchLineEdit.text().strip(),
+            detailed_only=self.detailedOnlyCheckBox.isChecked(),
+            sort_label=self.previewSortComboBox.currentText() or DEFAULT_SORT_LABEL,
+        )
+
+    def _refresh_activity_preview(self):
+        if not self.activities:
+            self.querySummaryLabel.setText("Fetch activities to see a query summary.")
+            self.activityPreviewPlainTextEdit.setPlainText("")
+            return []
+
+        query = self._current_activity_query()
+        filtered = filter_activities(self.activities, query)
+        sorted_activities = sort_activities(filtered, query.sort_label)
+        summary = summarize_activities(sorted_activities)
+        self.querySummaryLabel.setText(format_summary_text(summary))
+
+        preview_lines = build_preview_lines(sorted_activities, limit=10)
+        if len(sorted_activities) > len(preview_lines):
+            preview_lines.append("… and {count} more".format(count=len(sorted_activities) - len(preview_lines)))
+        self.activityPreviewPlainTextEdit.setPlainText("\n".join(preview_lines))
+        return sorted_activities
 
     def _build_client(self, require_refresh_token=True):
         client = StravaClient(
@@ -436,11 +548,14 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         return (before_epoch - after_epoch) >= 365 * 24 * 60 * 60
 
     def _populate_activity_types(self):
+        current_value = self.activityTypeComboBox.currentText() or "All"
         values = sorted({activity.activity_type for activity in self.activities if activity.activity_type})
         self.activityTypeComboBox.clear()
         self.activityTypeComboBox.addItem("All")
         for value in values:
             self.activityTypeComboBox.addItem(value)
+        index = self.activityTypeComboBox.findText(current_value)
+        self.activityTypeComboBox.setCurrentIndex(max(index, 0))
 
     def _fetch_status_text(self, client, activity_count, detailed_count):
         stream_stats = client.last_stream_enrichment_stats or {}

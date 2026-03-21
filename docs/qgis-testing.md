@@ -55,7 +55,8 @@ Inside the dock:
 4. optionally enable detailed streams
 5. optionally enable the `activity_points` layer
 6. fetch activities
-7. write and load the output GeoPackage
+7. review the fetched-activity preview and query summary
+8. write and load the output GeoPackage
 
 ## 5. What to expect in QGIS
 
@@ -92,4 +93,4 @@ Once qfit is loaded successfully, good manual checks are:
 - fetch detailed streams for a few activities
 - confirm `activity_tracks` geometries look right
 - confirm `activity_points` attributes contain time / distance / HR / power where available
-- test filtering and style presets
+- test filtering, preview sorting, and style presets
