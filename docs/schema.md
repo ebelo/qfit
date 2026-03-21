@@ -22,7 +22,7 @@ This document describes the current qfit GeoPackage layout and the intended next
 - `activity_tracks` — one visible line feature per activity
 - `activity_starts` — one visible point per activity start
 - `activity_points` — optional sampled point layer derived from detailed stream geometry
-- `activity_atlas_pages` — polygon page/index layer for QGIS atlas or print-layout workflows, now with deterministic page ordering, TOC-friendly labels, Web Mercator-ready extent metadata, and route-profile summary fields when detailed streams are available
+- `activity_atlas_pages` — polygon page/index layer for QGIS atlas or print-layout workflows, now with deterministic page ordering, TOC-friendly labels, Web Mercator-ready extent metadata, and route-profile summary/label fields when detailed streams are available
 
 ## Table: `activity_registry`
 
@@ -185,7 +185,7 @@ Primary purpose:
 - one padded extent polygon per activity with reusable title/subtitle fields
 - extent padding/minimum size controlled by the plugin's publish settings at write time
 - optional Web Mercator aspect-ratio fitting can widen/tallify the padded extent for more layout-consistent framing
-- route-profile summary fields give layouts a cheap way to decide whether to show an elevation chart and how to scale it before full PDF automation exists
+- route-profile summary and label fields give layouts a cheap way to decide whether to show an elevation chart and to reuse publish-friendly text without extra QGIS expression boilerplate before full PDF automation exists
 
 ### Current fields
 
@@ -211,10 +211,15 @@ Primary purpose:
 | `profile_available` | INTEGER | `1` when the activity has enough sampled distance + altitude stream data for a route profile |
 | `profile_point_count` | INTEGER | number of usable sampled profile points contributing to the summary |
 | `profile_distance_m` | REAL | sampled profile length in meters based on the usable distance stream |
+| `profile_distance_label` | TEXT | preformatted profile length such as `3.0 km` for layout text |
 | `profile_min_altitude_m` | REAL | minimum sampled elevation available to a future profile diagram |
 | `profile_max_altitude_m` | REAL | maximum sampled elevation available to a future profile diagram |
+| `profile_altitude_range_label` | TEXT | preformatted altitude span such as `500–560 m` |
+| `profile_relief_m` | REAL | simple max-minus-min altitude relief for profile scaling or legends |
 | `profile_elevation_gain_m` | REAL | cumulative sampled climbing derived from consecutive altitude deltas |
+| `profile_elevation_gain_label` | TEXT | preformatted climb label such as `75 m` |
 | `profile_elevation_loss_m` | REAL | cumulative sampled descent derived from consecutive altitude deltas |
+| `profile_elevation_loss_label` | TEXT | preformatted descent label such as `15 m` |
 | `center_x_3857` | REAL | Web Mercator page center X for EPSG:3857 layouts |
 | `center_y_3857` | REAL | Web Mercator page center Y for EPSG:3857 layouts |
 | `extent_width_deg` | REAL | padded page width in degrees after the configured atlas margin/minimum extent rules |
