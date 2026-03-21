@@ -130,6 +130,7 @@ class GeoPackageWriter:
         point_stride=5,
         atlas_margin_percent=None,
         atlas_min_extent_degrees=None,
+        atlas_target_aspect_ratio=None,
     ):
         self.output_path = output_path
         self.write_activity_points = bool(write_activity_points)
@@ -137,6 +138,7 @@ class GeoPackageWriter:
         self.atlas_page_settings = normalize_atlas_page_settings(
             margin_percent=atlas_margin_percent,
             min_extent_degrees=atlas_min_extent_degrees,
+            target_aspect_ratio=atlas_target_aspect_ratio,
         )
 
     def schema(self):

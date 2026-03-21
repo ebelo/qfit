@@ -147,6 +147,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.mapboxStyleIdLineEdit.setText(self._setting_value(settings, "mapbox_style_id", ""))
         self.atlasMarginPercentSpinBox.setValue(float(self._setting_value(settings, "atlas_margin_percent", 8.0)))
         self.atlasMinExtentSpinBox.setValue(float(self._setting_value(settings, "atlas_min_extent_degrees", 0.01)))
+        self.atlasTargetAspectRatioSpinBox.setValue(
+            float(self._setting_value(settings, "atlas_target_aspect_ratio", 0.0))
+        )
 
         temporal_mode = self._setting_value(settings, "temporal_mode", DEFAULT_TEMPORAL_MODE_LABEL)
         temporal_mode_index = self.temporalModeComboBox.findText(temporal_mode)
@@ -236,6 +239,10 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         settings.setValue(
             f"{self.SETTINGS_PREFIX}/atlas_min_extent_degrees",
             self.atlasMinExtentSpinBox.value(),
+        )
+        settings.setValue(
+            f"{self.SETTINGS_PREFIX}/atlas_target_aspect_ratio",
+            self.atlasTargetAspectRatioSpinBox.value(),
         )
 
     def _setting_value(self, settings, key, default=None):
@@ -430,6 +437,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 point_stride=self.pointSamplingStrideSpinBox.value(),
                 atlas_margin_percent=self.atlasMarginPercentSpinBox.value(),
                 atlas_min_extent_degrees=self.atlasMinExtentSpinBox.value(),
+                atlas_target_aspect_ratio=self.atlasTargetAspectRatioSpinBox.value(),
             )
             result = writer.write_activities(self.activities, sync_metadata=self.last_fetch_context)
             self.output_path = result["path"]
