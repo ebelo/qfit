@@ -41,9 +41,10 @@ Once the refresh token is available:
 2. Optionally enable detailed streams and choose a detailed-tracks limit.
 3. Optionally enable **Write activity_points layer from detailed stream geometry** and choose a sampling stride.
 4. Click **Fetch from Strava**.
-5. Choose an output `.gpkg` path.
-6. Click **Write + Load**.
-7. Apply filters and style presets as needed.
+5. Review the fetched-activity preview and refine filters such as name search, min/max distance, or detailed-only mode if needed.
+6. Choose an output `.gpkg` path.
+7. Click **Write + Load**.
+8. Apply filters and style presets as needed.
 
 ## Notes
 

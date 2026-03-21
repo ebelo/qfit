@@ -123,12 +123,17 @@
           <layout class="QFormLayout" name="filterLayout">
            <item row="0" column="0"><widget class="QLabel" name="activityTypeLabel"><property name="text"><string>Activity type</string></property></widget></item>
            <item row="0" column="1"><widget class="QComboBox" name="activityTypeComboBox"/></item>
-           <item row="1" column="0"><widget class="QLabel" name="dateFromLabel"><property name="text"><string>Date from</string></property></widget></item>
-           <item row="1" column="1"><widget class="QDateEdit" name="dateFromEdit"><property name="calendarPopup"><bool>true</bool></property></widget></item>
-           <item row="2" column="0"><widget class="QLabel" name="dateToLabel"><property name="text"><string>Date to</string></property></widget></item>
-           <item row="2" column="1"><widget class="QDateEdit" name="dateToEdit"><property name="calendarPopup"><bool>true</bool></property></widget></item>
-           <item row="3" column="0"><widget class="QLabel" name="distanceLabel"><property name="text"><string>Min distance (km)</string></property></widget></item>
-           <item row="3" column="1"><widget class="QDoubleSpinBox" name="minDistanceSpinBox"><property name="decimals"><number>1</number></property><property name="maximum"><double>1000.000000000000000</double></property></widget></item>
+           <item row="1" column="0"><widget class="QLabel" name="activityNameLabel"><property name="text"><string>Name contains</string></property></widget></item>
+           <item row="1" column="1"><widget class="QLineEdit" name="activitySearchLineEdit"><property name="placeholderText"><string>gravel, morning, commute…</string></property></widget></item>
+           <item row="2" column="0"><widget class="QLabel" name="dateFromLabel"><property name="text"><string>Date from</string></property></widget></item>
+           <item row="2" column="1"><widget class="QDateEdit" name="dateFromEdit"><property name="calendarPopup"><bool>true</bool></property></widget></item>
+           <item row="3" column="0"><widget class="QLabel" name="dateToLabel"><property name="text"><string>Date to</string></property></widget></item>
+           <item row="3" column="1"><widget class="QDateEdit" name="dateToEdit"><property name="calendarPopup"><bool>true</bool></property></widget></item>
+           <item row="4" column="0"><widget class="QLabel" name="distanceLabel"><property name="text"><string>Min distance (km)</string></property></widget></item>
+           <item row="4" column="1"><widget class="QDoubleSpinBox" name="minDistanceSpinBox"><property name="decimals"><number>1</number></property><property name="maximum"><double>1000.000000000000000</double></property></widget></item>
+           <item row="5" column="0"><widget class="QLabel" name="maxDistanceLabel"><property name="text"><string>Max distance (km)</string></property></widget></item>
+           <item row="5" column="1"><widget class="QDoubleSpinBox" name="maxDistanceSpinBox"><property name="decimals"><number>1</number></property><property name="maximum"><double>1000.000000000000000</double></property></widget></item>
+           <item row="6" column="0" colspan="2"><widget class="QCheckBox" name="detailedOnlyCheckBox"><property name="text"><string>Only detailed-stream activities</string></property></widget></item>
           </layout>
          </widget>
         </item>
@@ -147,6 +152,19 @@
             <item><property name="text"><string>Start points</string></property></item>
             <item><property name="text"><string>Clustered starts</string></property></item>
            </widget></item>
+           <item row="1" column="0"><widget class="QLabel" name="previewSortLabel"><property name="text"><string>Preview sort</string></property></widget></item>
+           <item row="1" column="1"><widget class="QComboBox" name="previewSortComboBox"/></item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="previewGroupBox">
+          <property name="title">
+           <string>Fetched activity preview</string>
+          </property>
+          <layout class="QVBoxLayout" name="previewLayout">
+           <item><widget class="QLabel" name="querySummaryLabel"><property name="text"><string>Fetch activities to see a query summary.</string></property><property name="wordWrap"><bool>true</bool></property></widget></item>
+           <item><widget class="QPlainTextEdit" name="activityPreviewPlainTextEdit"><property name="readOnly"><bool>true</bool></property><property name="placeholderText"><string>Recent activities will appear here after a fetch.</string></property></widget></item>
           </layout>
          </widget>
         </item>
