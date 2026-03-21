@@ -35,7 +35,7 @@ jobs:
         run: coverage xml -o coverage.xml
 
       - name: SonarCloud scan
-        uses: SonarSource/sonarqube-scan-action@v5
+        uses: SonarSource/sonarqube-scan-action@v6
         with:
           projectBaseDir: QFIT
         env:
