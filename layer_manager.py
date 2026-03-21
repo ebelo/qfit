@@ -14,6 +14,7 @@ from qgis.core import (
     QgsVectorLayer,
 )
 
+from .activity_query import ActivityQuery, build_subset_string
 from .mapbox_config import (
     BACKGROUND_LAYER_PREFIX,
     build_background_layer_name,
@@ -54,19 +55,19 @@ class LayerManager:
         project.layerTreeRoot().insertLayer(0, layer)
         return layer
 
-    def apply_filters(self, layer, activity_type=None, date_from=None, date_to=None, min_distance_km=None):
+    def apply_filters(self, layer, activity_type=None, date_from=None, date_to=None, min_distance_km=None, max_distance_km=None, search_text=None, detailed_only=False):
         if layer is None:
             return
-        clauses = []
-        if activity_type and activity_type != "All":
-            clauses.append(f'"activity_type" = \'{activity_type.replace("'", "''")}\'')
-        if date_from:
-            clauses.append(f'"start_date" >= \'{date_from}T00:00:00\'')
-        if date_to:
-            clauses.append(f'"start_date" <= \'{date_to}T23:59:59\'')
-        if min_distance_km and min_distance_km > 0:
-            clauses.append(f'"distance_m" >= {float(min_distance_km) * 1000.0}')
-        layer.setSubsetString(" AND ".join(clauses))
+        query = ActivityQuery(
+            activity_type=activity_type,
+            date_from=date_from,
+            date_to=date_to,
+            min_distance_km=min_distance_km,
+            max_distance_km=max_distance_km,
+            search_text=search_text,
+            detailed_only=detailed_only,
+        )
+        layer.setSubsetString(build_subset_string(query))
         layer.triggerRepaint()
 
     def apply_style(self, activities_layer, starts_layer, points_layer, preset):
