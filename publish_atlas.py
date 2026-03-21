@@ -47,10 +47,15 @@ class AtlasPagePlan:
     profile_available: bool
     profile_point_count: int
     profile_distance_m: float | None
+    profile_distance_label: str | None
     profile_min_altitude_m: float | None
     profile_max_altitude_m: float | None
+    profile_altitude_range_label: str | None
+    profile_relief_m: float | None
     profile_elevation_gain_m: float | None
+    profile_elevation_gain_label: str | None
     profile_elevation_loss_m: float | None
+    profile_elevation_loss_label: str | None
     min_lon: float
     min_lat: float
     max_lon: float
@@ -160,10 +165,18 @@ def build_atlas_page_plans(
                 profile_available=profile_summary.available,
                 profile_point_count=profile_summary.point_count,
                 profile_distance_m=profile_summary.distance_m,
+                profile_distance_label=format_distance_label(profile_summary.distance_m),
                 profile_min_altitude_m=profile_summary.min_altitude_m,
                 profile_max_altitude_m=profile_summary.max_altitude_m,
+                profile_altitude_range_label=format_altitude_range_label(
+                    profile_summary.min_altitude_m,
+                    profile_summary.max_altitude_m,
+                ),
+                profile_relief_m=profile_summary.relief_m,
                 profile_elevation_gain_m=profile_summary.elevation_gain_m,
+                profile_elevation_gain_label=format_elevation_label(profile_summary.elevation_gain_m),
                 profile_elevation_loss_m=profile_summary.elevation_loss_m,
+                profile_elevation_loss_label=format_elevation_label(profile_summary.elevation_loss_m),
                 min_lon=min_lon,
                 min_lat=min_lat,
                 max_lon=max_lon,
@@ -383,6 +396,7 @@ class AtlasProfileSummary:
     distance_m: float | None = None
     min_altitude_m: float | None = None
     max_altitude_m: float | None = None
+    relief_m: float | None = None
     elevation_gain_m: float | None = None
     elevation_loss_m: float | None = None
 
@@ -423,12 +437,15 @@ def build_profile_summary(record: dict) -> AtlasProfileSummary:
         elif delta < 0:
             elevation_loss_m += abs(delta)
 
+    min_altitude_m = min(altitudes)
+    max_altitude_m = max(altitudes)
     return AtlasProfileSummary(
         available=True,
         point_count=len(profile_points),
         distance_m=profile_distance_m,
-        min_altitude_m=min(altitudes),
-        max_altitude_m=max(altitudes),
+        min_altitude_m=min_altitude_m,
+        max_altitude_m=max_altitude_m,
+        relief_m=max_altitude_m - min_altitude_m,
         elevation_gain_m=elevation_gain_m,
         elevation_loss_m=elevation_loss_m,
     )
@@ -455,6 +472,21 @@ def format_duration_label(value) -> str | None:
     if moving_time_s is None:
         return None
     return format_duration(moving_time_s)
+
+
+def format_elevation_label(value) -> str | None:
+    elevation_m = _safe_float(value)
+    if elevation_m is None:
+        return None
+    return f"{round(elevation_m):.0f} m"
+
+
+def format_altitude_range_label(min_value, max_value) -> str | None:
+    min_altitude_m = _safe_float(min_value)
+    max_altitude_m = _safe_float(max_value)
+    if min_altitude_m is None or max_altitude_m is None:
+        return None
+    return f"{round(min_altitude_m):.0f}–{round(max_altitude_m):.0f} m"
 
 
 def _safe_float(value) -> float | None:

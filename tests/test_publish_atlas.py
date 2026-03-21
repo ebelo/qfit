@@ -15,8 +15,10 @@ from qfit.publish_atlas import (
     ensure_minimum_extent,
     expand_bounds,
     fit_bounds_to_target_aspect_ratio,
+    format_altitude_range_label,
     format_distance_label,
     format_duration_label,
+    format_elevation_label,
     lonlat_bounds_to_web_mercator,
     lonlat_to_web_mercator,
     normalize_atlas_page_settings,
@@ -156,10 +158,15 @@ class PublishAtlasTests(unittest.TestCase):
         self.assertTrue(plan.profile_available)
         self.assertEqual(plan.profile_point_count, 4)
         self.assertEqual(plan.profile_distance_m, 3000)
+        self.assertEqual(plan.profile_distance_label, "3.0 km")
         self.assertEqual(plan.profile_min_altitude_m, 500)
         self.assertEqual(plan.profile_max_altitude_m, 560)
+        self.assertEqual(plan.profile_altitude_range_label, "500–560 m")
+        self.assertEqual(plan.profile_relief_m, 60)
         self.assertEqual(plan.profile_elevation_gain_m, 75)
+        self.assertEqual(plan.profile_elevation_gain_label, "75 m")
         self.assertEqual(plan.profile_elevation_loss_m, 15)
+        self.assertEqual(plan.profile_elevation_loss_label, "15 m")
 
     def test_build_profile_summary_ignores_invalid_or_incomplete_stream_metrics(self):
         summary = build_profile_summary(
@@ -235,6 +242,12 @@ class PublishAtlasTests(unittest.TestCase):
         self.assertEqual(build_page_subtitle(record), "Walk")
         self.assertIsNone(format_distance_label(None))
         self.assertIsNone(format_duration_label(None))
+        self.assertIsNone(format_elevation_label(None))
+        self.assertIsNone(format_altitude_range_label(None, 550))
+
+    def test_profile_label_helpers_round_values_for_layout_text(self):
+        self.assertEqual(format_elevation_label(123.6), "124 m")
+        self.assertEqual(format_altitude_range_label(501.2, 559.8), "501–560 m")
 
     def test_atlas_sort_key_normalizes_missing_values(self):
         key = atlas_sort_key({"name": "  Lunch   Walk  "})

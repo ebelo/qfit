@@ -138,7 +138,7 @@ Goal: configure and generate a PDF atlas with:
 ### In progress
 
 - Early atlas-generation groundwork is being explored in feature work
-- Atlas output now carries route-profile summary metadata when detailed stream metrics are available, making future profile panels/layout conditions easier to wire
+- Atlas output now carries route-profile summary metadata when detailed stream metrics are available, plus layout-friendly profile labels/relief for future profile panels and print layouts
 
 ### Planned
 
