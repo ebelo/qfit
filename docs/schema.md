@@ -183,6 +183,7 @@ Geometry type:
 Primary purpose:
 - atlas/page index layer for QGIS print layouts and future PDF export workflows
 - one padded extent polygon per activity with reusable title/subtitle fields
+- extent padding/minimum size controlled by the plugin's publish settings at write time
 
 ### Current fields
 
@@ -200,8 +201,8 @@ Primary purpose:
 | `page_name` | TEXT | atlas-friendly page label, usually `YYYY-MM-DD · Title` |
 | `page_title` | TEXT | large-title label |
 | `page_subtitle` | TEXT | compact summary such as type, distance, and moving time |
-| `extent_width_deg` | REAL | padded page width in degrees |
-| `extent_height_deg` | REAL | padded page height in degrees |
+| `extent_width_deg` | REAL | padded page width in degrees after the configured atlas margin/minimum extent rules |
+| `extent_height_deg` | REAL | padded page height in degrees after the configured atlas margin/minimum extent rules |
 
 ## Geometry priority
 

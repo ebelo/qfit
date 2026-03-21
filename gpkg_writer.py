@@ -16,7 +16,7 @@ from qgis.core import (
 )
 
 from .polyline_utils import decode_polyline
-from .publish_atlas import build_atlas_page_plans
+from .publish_atlas import build_atlas_page_plans, normalize_atlas_page_settings
 from .sync_repository import REGISTRY_TABLE, SYNC_STATE_TABLE, SyncRepository
 from .time_utils import add_seconds_iso
 
@@ -114,10 +114,21 @@ ATLAS_FIELDS = [
 class GeoPackageWriter:
     """Persist qfit sync data to a GeoPackage and rebuild derived visualization layers."""
 
-    def __init__(self, output_path=None, write_activity_points=False, point_stride=5):
+    def __init__(
+        self,
+        output_path=None,
+        write_activity_points=False,
+        point_stride=5,
+        atlas_margin_percent=None,
+        atlas_min_extent_degrees=None,
+    ):
         self.output_path = output_path
         self.write_activity_points = bool(write_activity_points)
         self.point_stride = max(1, int(point_stride or 1))
+        self.atlas_page_settings = normalize_atlas_page_settings(
+            margin_percent=atlas_margin_percent,
+            min_extent_degrees=atlas_min_extent_degrees,
+        )
 
     def schema(self):
         return {
@@ -331,7 +342,10 @@ class GeoPackageWriter:
         layer.updateFields()
 
         features = []
-        for index, plan in enumerate(build_atlas_page_plans(records), start=1):
+        for index, plan in enumerate(
+            build_atlas_page_plans(records, settings=self.atlas_page_settings),
+            start=1,
+        ):
             rect = QgsRectangle(plan.min_lon, plan.min_lat, plan.max_lon, plan.max_lat)
             feature = QgsFeature(layer.fields())
             feature.setGeometry(QgsGeometry.fromRect(rect))

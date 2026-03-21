@@ -9,6 +9,14 @@ from .polyline_utils import decode_polyline
 
 DEFAULT_ATLAS_MARGIN_PERCENT = 8.0
 DEFAULT_MIN_EXTENT_DEGREES = 0.01
+MIN_ALLOWED_ATLAS_MARGIN_PERCENT = 0.0
+MIN_ALLOWED_ATLAS_MIN_EXTENT_DEGREES = 0.0001
+
+
+@dataclass(frozen=True)
+class AtlasPageSettings:
+    margin_percent: float = DEFAULT_ATLAS_MARGIN_PERCENT
+    min_extent_degrees: float = DEFAULT_MIN_EXTENT_DEGREES
 
 
 @dataclass(frozen=True)
@@ -32,21 +40,49 @@ class AtlasPagePlan:
     extent_height_deg: float
 
 
+def normalize_atlas_page_settings(
+    margin_percent: float | None = None,
+    min_extent_degrees: float | None = None,
+) -> AtlasPageSettings:
+    normalized_margin = _safe_float(margin_percent)
+    if normalized_margin is None:
+        normalized_margin = DEFAULT_ATLAS_MARGIN_PERCENT
+    normalized_margin = max(normalized_margin, MIN_ALLOWED_ATLAS_MARGIN_PERCENT)
+
+    normalized_min_extent = _safe_float(min_extent_degrees)
+    if normalized_min_extent is None:
+        normalized_min_extent = DEFAULT_MIN_EXTENT_DEGREES
+    normalized_min_extent = max(normalized_min_extent, MIN_ALLOWED_ATLAS_MIN_EXTENT_DEGREES)
+
+    return AtlasPageSettings(
+        margin_percent=normalized_margin,
+        min_extent_degrees=normalized_min_extent,
+    )
+
+
 def build_atlas_page_plans(
     records: Iterable[dict],
     margin_percent: float = DEFAULT_ATLAS_MARGIN_PERCENT,
     min_extent_degrees: float = DEFAULT_MIN_EXTENT_DEGREES,
+    settings: AtlasPageSettings | None = None,
 ) -> list[AtlasPagePlan]:
+    atlas_settings = settings or normalize_atlas_page_settings(
+        margin_percent=margin_percent,
+        min_extent_degrees=min_extent_degrees,
+    )
     plans = []
     for record in records:
-        bounds, geometry_source = activity_bounds(record, min_extent_degrees=min_extent_degrees)
+        bounds, geometry_source = activity_bounds(
+            record,
+            min_extent_degrees=atlas_settings.min_extent_degrees,
+        )
         if bounds is None:
             continue
 
         min_lon, min_lat, max_lon, max_lat = expand_bounds(
             bounds,
-            margin_percent=margin_percent,
-            min_extent_degrees=min_extent_degrees,
+            margin_percent=atlas_settings.margin_percent,
+            min_extent_degrees=atlas_settings.min_extent_degrees,
         )
         page_title = (record.get("name") or "Untitled activity").strip()
         page_name = build_page_name(record)
