@@ -1,9 +1,15 @@
 from datetime import datetime, timedelta
+from typing import Optional, Union
+
+DateLike = Union[str, datetime, None]
 
 
-def parse_iso_datetime(value):
-    if not value:
+def parse_iso_datetime(value: DateLike) -> Optional[datetime]:
+    if value is None:
         return None
+    if isinstance(value, datetime):
+        return value
+
     text = str(value).strip()
     if not text:
         return None
@@ -15,7 +21,7 @@ def parse_iso_datetime(value):
         return None
 
 
-def format_iso_datetime(value):
+def format_iso_datetime(value: Optional[datetime]) -> Optional[str]:
     if value is None:
         return None
     text = value.isoformat()
@@ -24,7 +30,7 @@ def format_iso_datetime(value):
     return text
 
 
-def add_seconds_iso(value, seconds):
+def add_seconds_iso(value: DateLike, seconds) -> Optional[str]:
     if value is None or seconds is None:
         return None
     base = parse_iso_datetime(value)
