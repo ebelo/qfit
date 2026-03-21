@@ -7,6 +7,7 @@ This document describes the current qfit GeoPackage layout and the intended next
 - keep a canonical local source of truth for synced activities
 - separate internal sync tables from visible GIS layers
 - support both lightweight line rendering and richer point-based analysis
+- create atlas-friendly page extents for publish/layout workflows
 - stay flexible for Strava first, with room for FIT / GPX / TCX providers later
 
 ## GeoPackage contents
@@ -21,6 +22,7 @@ This document describes the current qfit GeoPackage layout and the intended next
 - `activity_tracks` — one visible line feature per activity
 - `activity_starts` — one visible point per activity start
 - `activity_points` — optional sampled point layer derived from detailed stream geometry
+- `activity_atlas_pages` — polygon page/index layer for QGIS atlas or print-layout workflows
 
 ## Table: `activity_registry`
 
@@ -173,6 +175,34 @@ Primary purpose:
 | `geometry_source` | TEXT | usually `stream` |
 | `last_synced_at` | TEXT | last registry sync time |
 
+## Layer: `activity_atlas_pages`
+
+Geometry type:
+- `POLYGON`
+
+Primary purpose:
+- atlas/page index layer for QGIS print layouts and future PDF export workflows
+- one padded extent polygon per activity with reusable title/subtitle fields
+
+### Current fields
+
+| Field | Type | Notes |
+|---|---|---|
+| `activity_fk` | INTEGER | local sequential reference in the derived layer |
+| `source` | TEXT | provider name |
+| `source_activity_id` | TEXT | provider activity id |
+| `name` | TEXT | activity title |
+| `activity_type` | TEXT | run, ride, etc. |
+| `start_date` | TEXT | ISO 8601 UTC |
+| `distance_m` | REAL | copied for filtering / layout text |
+| `moving_time_s` | INTEGER | copied for layout text |
+| `geometry_source` | TEXT | stream/summary/fallback source used to derive the page extent |
+| `page_name` | TEXT | atlas-friendly page label, usually `YYYY-MM-DD · Title` |
+| `page_title` | TEXT | large-title label |
+| `page_subtitle` | TEXT | compact summary such as type, distance, and moving time |
+| `extent_width_deg` | REAL | padded page width in degrees |
+| `extent_height_deg` | REAL | padded page height in degrees |
+
 ## Geometry priority
 
 When rebuilding visible layers, qfit currently prefers geometry in this order:
@@ -186,12 +216,13 @@ When rebuilding visible layers, qfit currently prefers geometry in this order:
 2. optionally enrich activities with detailed stream geometry and extra stream metrics
 3. upsert activities into `activity_registry`
 4. update `sync_state`
-5. rebuild `activity_tracks`, `activity_starts`, and optionally `activity_points`
+5. rebuild `activity_tracks`, `activity_starts`, `activity_atlas_pages`, and optionally `activity_points`
 6. load those layers into QGIS
 
 ## Next phase
 
 Planned next improvements:
+- PDF/layout automation on top of `activity_atlas_pages`
 - richer temporal styling and playback presets on top of the new timestamp wiring
 - provider adapters for FIT / GPX / TCX imports using the same registry model
 - more explicit incremental sync cursors / sync policies

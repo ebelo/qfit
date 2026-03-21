@@ -1,6 +1,7 @@
 from qgis.PyQt.QtGui import QColor
 from qgis.core import (
     QgsCategorizedSymbolRenderer,
+    QgsFillSymbol,
     QgsGradientColorRamp,
     QgsHeatmapRenderer,
     QgsLineSymbol,
@@ -36,8 +37,9 @@ class LayerManager:
         )
         starts_layer = self._load_optional_layer(gpkg_path, "activity_starts", "qfit activity starts")
         points_layer = self._load_optional_layer(gpkg_path, "activity_points", "qfit activity points")
-        self._zoom_to_layers([activities_layer, starts_layer, points_layer])
-        return activities_layer, starts_layer, points_layer
+        atlas_layer = self._load_optional_layer(gpkg_path, "activity_atlas_pages", "qfit atlas pages")
+        self._zoom_to_layers([activities_layer, starts_layer, points_layer, atlas_layer])
+        return activities_layer, starts_layer, points_layer, atlas_layer
 
     def ensure_background_layer(self, enabled, preset_name, access_token, style_owner="", style_id=""):
         if not enabled:
@@ -72,7 +74,7 @@ class LayerManager:
         layer.setSubsetString(build_subset_string(query))
         layer.triggerRepaint()
 
-    def apply_style(self, activities_layer, starts_layer, points_layer, preset):
+    def apply_style(self, activities_layer, starts_layer, points_layer, atlas_layer, preset):
         preset = preset or "Simple lines"
         if activities_layer is not None:
             if preset == "By activity type":
@@ -98,11 +100,15 @@ class LayerManager:
             else:
                 self._apply_start_point_style(starts_layer, subtle=points_layer is not None)
 
-    def apply_temporal_configuration(self, activities_layer, starts_layer, points_layer, mode_label):
+        if atlas_layer is not None:
+            self._apply_atlas_page_style(atlas_layer)
+
+    def apply_temporal_configuration(self, activities_layer, starts_layer, points_layer, atlas_layer, mode_label):
         layer_specs = [
             (activities_layer, "activity_tracks"),
             (starts_layer, "activity_starts"),
             (points_layer, "activity_points"),
+            (atlas_layer, "activity_atlas_pages"),
         ]
         plans = []
         for layer, layer_key in layer_specs:
@@ -268,4 +274,17 @@ class LayerManager:
         )
         layer.setRenderer(QgsSingleSymbolRenderer(symbol))
         layer.setOpacity(0.75)
+        layer.triggerRepaint()
+
+    def _apply_atlas_page_style(self, layer):
+        symbol = QgsFillSymbol.createSimple(
+            {
+                "color": "255,255,255,0",
+                "outline_color": "230,126,34,230",
+                "outline_width": "0.6",
+                "outline_style": "dash",
+            }
+        )
+        layer.setRenderer(QgsSingleSymbolRenderer(symbol))
+        layer.setOpacity(1.0)
         layer.triggerRepaint()

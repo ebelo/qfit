@@ -46,6 +46,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.activities_layer = None
         self.starts_layer = None
         self.points_layer = None
+        self.atlas_layer = None
         self.background_layer = None
         self.last_fetch_context = {}
         self.layer_manager = LayerManager(iface)
@@ -398,7 +399,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             )
             result = writer.write_activities(self.activities, sync_metadata=self.last_fetch_context)
             self.output_path = result["path"]
-            self.activities_layer, self.starts_layer, self.points_layer = self.layer_manager.load_output_layers(
+            self.activities_layer, self.starts_layer, self.points_layer, self.atlas_layer = self.layer_manager.load_output_layers(
                 self.output_path
             )
             self.on_apply_filters_clicked()
@@ -407,7 +408,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             if self.backgroundMapCheckBox.isChecked() and self.background_layer is not None:
                 background_note = " Added the selected Mapbox background map."
             self._set_status(
-                "Synced {fetched} fetched activities into GeoPackage: inserted {inserted}, updated {updated}, unchanged {unchanged}, stored total {total}. Loaded {track_count} tracks, {start_count} starts, and {point_count} activity points into QGIS.{background_note}".format(
+                "Synced {fetched} fetched activities into GeoPackage: inserted {inserted}, updated {updated}, unchanged {unchanged}, stored total {total}. Loaded {track_count} tracks, {start_count} starts, {point_count} activity points, and {atlas_count} atlas pages into QGIS.{background_note}".format(
                     fetched=result.get("fetched_count", len(self.activities)),
                     inserted=sync.get("inserted", 0),
                     updated=sync.get("updated", 0),
@@ -416,6 +417,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                     track_count=result.get("track_count", 0),
                     start_count=result.get("start_count", 0),
                     point_count=result.get("point_count", 0),
+                    atlas_count=result.get("atlas_count", 0),
                     background_note=background_note,
                 )
             )
@@ -424,7 +426,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._set_status("GeoPackage export failed")
 
     def on_apply_filters_clicked(self):
-        has_layers = any(layer is not None for layer in [self.activities_layer, self.starts_layer, self.points_layer])
+        has_layers = any(layer is not None for layer in [self.activities_layer, self.starts_layer, self.points_layer, self.atlas_layer])
         wants_background = self.backgroundMapCheckBox.isChecked()
         if not has_layers and not wants_background:
             return
@@ -466,11 +468,28 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 query.search_text,
                 query.detailed_only,
             )
-            self.layer_manager.apply_style(self.activities_layer, self.starts_layer, self.points_layer, preset)
+            self.layer_manager.apply_filters(
+                self.atlas_layer,
+                query.activity_type,
+                query.date_from,
+                query.date_to,
+                query.min_distance_km,
+                query.max_distance_km,
+                query.search_text,
+                query.detailed_only,
+            )
+            self.layer_manager.apply_style(
+                self.activities_layer,
+                self.starts_layer,
+                self.points_layer,
+                self.atlas_layer,
+                preset,
+            )
             temporal_note = self.layer_manager.apply_temporal_configuration(
                 self.activities_layer,
                 self.starts_layer,
                 self.points_layer,
+                self.atlas_layer,
                 self.temporalModeComboBox.currentText(),
             )
 
