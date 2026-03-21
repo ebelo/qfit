@@ -3,12 +3,14 @@ import unittest
 from tests import _path  # noqa: F401
 from qfit.publish_atlas import (
     DEFAULT_MIN_EXTENT_DEGREES,
+    MIN_ALLOWED_ATLAS_MIN_EXTENT_DEGREES,
     activity_bounds,
     build_atlas_page_plans,
     build_page_name,
     build_page_subtitle,
     ensure_minimum_extent,
     expand_bounds,
+    normalize_atlas_page_settings,
 )
 
 
@@ -38,6 +40,35 @@ class PublishAtlasTests(unittest.TestCase):
         self.assertEqual(plan.page_subtitle, "Ride · 42.5 km · 2h 00m")
         self.assertGreater(plan.extent_width_deg, 0.12)
         self.assertGreater(plan.extent_height_deg, 0.05)
+
+    def test_build_atlas_page_plans_respects_custom_publish_settings(self):
+        records = [
+            {
+                "name": "Lunch Walk",
+                "activity_type": "Walk",
+                "geometry_points": [(46.5000, 6.6000), (46.5002, 6.6002)],
+            }
+        ]
+
+        default_plan = build_atlas_page_plans(records)[0]
+        custom_plan = build_atlas_page_plans(records, margin_percent=25, min_extent_degrees=0.02)[0]
+
+        self.assertGreater(custom_plan.extent_width_deg, default_plan.extent_width_deg)
+        self.assertGreater(custom_plan.extent_height_deg, default_plan.extent_height_deg)
+        self.assertAlmostEqual(custom_plan.extent_width_deg, 0.03)
+        self.assertAlmostEqual(custom_plan.extent_height_deg, 0.03)
+
+    def test_normalize_atlas_page_settings_clamps_invalid_values(self):
+        settings = normalize_atlas_page_settings(margin_percent=-5, min_extent_degrees=0)
+
+        self.assertEqual(settings.margin_percent, 0.0)
+        self.assertEqual(settings.min_extent_degrees, MIN_ALLOWED_ATLAS_MIN_EXTENT_DEGREES)
+
+    def test_normalize_atlas_page_settings_uses_defaults_for_missing_values(self):
+        settings = normalize_atlas_page_settings(margin_percent=None, min_extent_degrees=None)
+
+        self.assertEqual(settings.margin_percent, 8.0)
+        self.assertEqual(settings.min_extent_degrees, DEFAULT_MIN_EXTENT_DEGREES)
 
     def test_activity_bounds_falls_back_to_start_end_coordinates(self):
         bounds, geometry_source = activity_bounds(

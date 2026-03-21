@@ -116,6 +116,20 @@
          </widget>
         </item>
         <item>
+         <widget class="QGroupBox" name="publishGroupBox">
+          <property name="title">
+           <string>Publish / atlas</string>
+          </property>
+          <layout class="QFormLayout" name="publishLayout">
+           <item row="0" column="0"><widget class="QLabel" name="atlasMarginPercentLabel"><property name="text"><string>Page margin (%)</string></property></widget></item>
+           <item row="0" column="1"><widget class="QDoubleSpinBox" name="atlasMarginPercentSpinBox"><property name="decimals"><number>1</number></property><property name="maximum"><double>1000.000000000000000</double></property><property name="singleStep"><double>1.000000000000000</double></property><property name="value"><double>8.000000000000000</double></property></widget></item>
+           <item row="1" column="0"><widget class="QLabel" name="atlasMinExtentLabel"><property name="text"><string>Minimum page extent (°)</string></property></widget></item>
+           <item row="1" column="1"><widget class="QDoubleSpinBox" name="atlasMinExtentSpinBox"><property name="decimals"><number>4</number></property><property name="minimum"><double>0.000100000000000</double></property><property name="maximum"><double>10.000000000000000</double></property><property name="singleStep"><double>0.001000000000000</double></property><property name="value"><double>0.010000000000000</double></property></widget></item>
+           <item row="2" column="0" colspan="2"><widget class="QLabel" name="publishHelpLabel"><property name="text"><string>These controls tune the generated activity_atlas_pages layer. Increase the margin when layouts need more surrounding context, or raise the minimum extent so short activities still get readable atlas pages.</string></property><property name="wordWrap"><bool>true</bool></property></widget></item>
+          </layout>
+         </widget>
+        </item>
+        <item>
          <widget class="QGroupBox" name="filterGroupBox">
           <property name="title">
            <string>Filters</string>
