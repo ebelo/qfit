@@ -6,11 +6,19 @@ from qgis.core import (
     QgsLineSymbol,
     QgsMarkerSymbol,
     QgsProject,
+    QgsRasterLayer,
     QgsRectangle,
     QgsRendererCategory,
     QgsSingleSymbolRenderer,
     QgsStyle,
     QgsVectorLayer,
+)
+
+from .mapbox_config import (
+    BACKGROUND_LAYER_PREFIX,
+    build_background_layer_name,
+    build_xyz_layer_uri,
+    resolve_background_style,
 )
 
 
@@ -27,6 +35,24 @@ class LayerManager:
         points_layer = self._load_optional_layer(gpkg_path, "activity_points", "qfit activity points")
         self._zoom_to_layers([activities_layer, starts_layer, points_layer])
         return activities_layer, starts_layer, points_layer
+
+    def ensure_background_layer(self, enabled, preset_name, access_token, style_owner="", style_id=""):
+        if not enabled:
+            self._remove_background_layers()
+            return None
+
+        resolved_owner, resolved_style_id = resolve_background_style(preset_name, style_owner, style_id)
+        uri = build_xyz_layer_uri(access_token, resolved_owner, resolved_style_id)
+        display_name = build_background_layer_name(preset_name, resolved_owner, resolved_style_id)
+        layer = QgsRasterLayer(uri, display_name, "wms")
+        if not layer.isValid():
+            raise RuntimeError("Could not load the selected Mapbox background layer into QGIS.")
+
+        self._remove_background_layers()
+        project = QgsProject.instance()
+        project.addMapLayer(layer, False)
+        project.layerTreeRoot().insertLayer(0, layer)
+        return layer
 
     def apply_filters(self, layer, activity_type=None, date_from=None, date_to=None, min_distance_km=None):
         if layer is None:
@@ -97,6 +123,12 @@ class LayerManager:
             QgsProject.instance().removeMapLayer(old_layer.id())
         QgsProject.instance().addMapLayer(layer)
         return layer
+
+    def _remove_background_layers(self):
+        project = QgsProject.instance()
+        for layer in list(project.mapLayers().values()):
+            if layer.name().startswith(BACKGROUND_LAYER_PREFIX):
+                project.removeMapLayer(layer.id())
 
     def _zoom_to_layers(self, layers):
         extents = None

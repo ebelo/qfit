@@ -8,6 +8,13 @@ from qgis.PyQt.QtWidgets import QApplication, QFileDialog, QDockWidget, QMessage
 
 from .gpkg_writer import GeoPackageWriter
 from .layer_manager import LayerManager
+from .mapbox_config import (
+    DEFAULT_BACKGROUND_PRESET,
+    MapboxConfigError,
+    background_preset_names,
+    preset_defaults,
+    preset_requires_custom_style,
+)
 from .qfit_cache import QfitCache
 from .strava_client import StravaClient, StravaClientError
 
@@ -28,10 +35,12 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.activities_layer = None
         self.starts_layer = None
         self.points_layer = None
+        self.background_layer = None
         self.last_fetch_context = {}
         self.layer_manager = LayerManager(iface)
         self.cache = self._build_cache()
         self.setupUi(self)
+        self._configure_background_preset_options()
         self._load_settings()
         self._wire_events()
         self._set_default_dates()
@@ -43,6 +52,12 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.refreshButton.clicked.connect(self.on_refresh_clicked)
         self.loadButton.clicked.connect(self.on_load_clicked)
         self.applyFiltersButton.clicked.connect(self.on_apply_filters_clicked)
+        self.backgroundPresetComboBox.currentTextChanged.connect(self.on_background_preset_changed)
+
+    def _configure_background_preset_options(self):
+        self.backgroundPresetComboBox.clear()
+        for preset_name in background_preset_names():
+            self.backgroundPresetComboBox.addItem(preset_name)
 
     def _build_cache(self):
         base_path = QStandardPaths.writableLocation(QStandardPaths.AppDataLocation)
@@ -82,6 +97,19 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._settings_bool(settings, "write_activity_points", False)
         )
         self.pointSamplingStrideSpinBox.setValue(int(self._setting_value(settings, "point_sampling_stride", 5)))
+        self.backgroundMapCheckBox.setChecked(self._settings_bool(settings, "use_background_map", False))
+        self.mapboxAccessTokenLineEdit.setText(self._setting_value(settings, "mapbox_access_token", ""))
+        self.mapboxStyleOwnerLineEdit.setText(
+            self._setting_value(settings, "mapbox_style_owner", "mapbox")
+        )
+        self.mapboxStyleIdLineEdit.setText(self._setting_value(settings, "mapbox_style_id", ""))
+
+        preset_name = self._setting_value(settings, "background_preset", DEFAULT_BACKGROUND_PRESET)
+        preset_index = self.backgroundPresetComboBox.findText(preset_name)
+        if preset_index < 0:
+            preset_index = self.backgroundPresetComboBox.findText(DEFAULT_BACKGROUND_PRESET)
+        self.backgroundPresetComboBox.setCurrentIndex(max(preset_index, 0))
+        self._sync_background_style_fields(self.backgroundPresetComboBox.currentText(), force=False)
 
     def _save_settings(self):
         settings = QSettings()
@@ -104,6 +132,26 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         settings.setValue(
             f"{self.SETTINGS_PREFIX}/point_sampling_stride",
             self.pointSamplingStrideSpinBox.value(),
+        )
+        settings.setValue(
+            f"{self.SETTINGS_PREFIX}/use_background_map",
+            self.backgroundMapCheckBox.isChecked(),
+        )
+        settings.setValue(
+            f"{self.SETTINGS_PREFIX}/background_preset",
+            self.backgroundPresetComboBox.currentText(),
+        )
+        settings.setValue(
+            f"{self.SETTINGS_PREFIX}/mapbox_access_token",
+            self.mapboxAccessTokenLineEdit.text().strip(),
+        )
+        settings.setValue(
+            f"{self.SETTINGS_PREFIX}/mapbox_style_owner",
+            self.mapboxStyleOwnerLineEdit.text().strip(),
+        )
+        settings.setValue(
+            f"{self.SETTINGS_PREFIX}/mapbox_style_id",
+            self.mapboxStyleIdLineEdit.text().strip(),
         )
 
     def _setting_value(self, settings, key, default=None):
@@ -128,6 +176,20 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self.dateFromEdit.setDate(QDate.currentDate().addYears(-1))
         if not self.dateToEdit.date().isValid():
             self.dateToEdit.setDate(QDate.currentDate())
+
+    def on_background_preset_changed(self, preset_name):
+        self._sync_background_style_fields(preset_name, force=True)
+
+    def _sync_background_style_fields(self, preset_name, force=False):
+        if preset_requires_custom_style(preset_name):
+            return
+        current_owner = self.mapboxStyleOwnerLineEdit.text().strip()
+        current_style_id = self.mapboxStyleIdLineEdit.text().strip()
+        if current_owner and current_style_id and not force:
+            return
+        style_owner, style_id = preset_defaults(preset_name)
+        self.mapboxStyleOwnerLineEdit.setText(style_owner)
+        self.mapboxStyleIdLineEdit.setText(style_id)
 
     def on_open_authorize_clicked(self):
         self._save_settings()
@@ -268,8 +330,11 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             )
             self.on_apply_filters_clicked()
             sync = result.get("sync") or {}
+            background_note = ""
+            if self.backgroundMapCheckBox.isChecked() and self.background_layer is not None:
+                background_note = " Added the selected Mapbox background map."
             self._set_status(
-                "Synced {fetched} fetched activities into GeoPackage: inserted {inserted}, updated {updated}, unchanged {unchanged}, stored total {total}. Loaded {track_count} tracks, {start_count} starts, and {point_count} activity points into QGIS".format(
+                "Synced {fetched} fetched activities into GeoPackage: inserted {inserted}, updated {updated}, unchanged {unchanged}, stored total {total}. Loaded {track_count} tracks, {start_count} starts, and {point_count} activity points into QGIS.{background_note}".format(
                     fetched=result.get("fetched_count", len(self.activities)),
                     inserted=sync.get("inserted", 0),
                     updated=sync.get("updated", 0),
@@ -278,6 +343,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                     track_count=result.get("track_count", 0),
                     start_count=result.get("start_count", 0),
                     point_count=result.get("point_count", 0),
+                    background_note=background_note,
                 )
             )
         except Exception as exc:  # noqa: BLE001
@@ -285,20 +351,48 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._set_status("GeoPackage export failed")
 
     def on_apply_filters_clicked(self):
-        if self.activities_layer is None and self.starts_layer is None and self.points_layer is None:
+        has_layers = any(layer is not None for layer in [self.activities_layer, self.starts_layer, self.points_layer])
+        wants_background = self.backgroundMapCheckBox.isChecked()
+        if not has_layers and not wants_background:
             return
 
+        self._save_settings()
         activity_type = self.activityTypeComboBox.currentText()
         date_from = self.dateFromEdit.date().toString("yyyy-MM-dd") if self.dateFromEdit.date().isValid() else None
         date_to = self.dateToEdit.date().toString("yyyy-MM-dd") if self.dateToEdit.date().isValid() else None
         min_distance_km = self.minDistanceSpinBox.value()
         preset = self.stylePresetComboBox.currentText()
 
-        self.layer_manager.apply_filters(self.activities_layer, activity_type, date_from, date_to, min_distance_km)
-        self.layer_manager.apply_filters(self.starts_layer, activity_type, date_from, date_to, min_distance_km)
-        self.layer_manager.apply_filters(self.points_layer, activity_type, date_from, date_to, min_distance_km)
-        self.layer_manager.apply_style(self.activities_layer, self.starts_layer, self.points_layer, preset)
-        self._set_status("Applied filters and styling")
+        if has_layers:
+            self.layer_manager.apply_filters(self.activities_layer, activity_type, date_from, date_to, min_distance_km)
+            self.layer_manager.apply_filters(self.starts_layer, activity_type, date_from, date_to, min_distance_km)
+            self.layer_manager.apply_filters(self.points_layer, activity_type, date_from, date_to, min_distance_km)
+            self.layer_manager.apply_style(self.activities_layer, self.starts_layer, self.points_layer, preset)
+
+        try:
+            self.background_layer = self.layer_manager.ensure_background_layer(
+                enabled=wants_background,
+                preset_name=self.backgroundPresetComboBox.currentText(),
+                access_token=self.mapboxAccessTokenLineEdit.text().strip(),
+                style_owner=self.mapboxStyleOwnerLineEdit.text().strip(),
+                style_id=self.mapboxStyleIdLineEdit.text().strip(),
+            )
+        except (MapboxConfigError, RuntimeError) as exc:
+            self._show_error("Background map failed", str(exc))
+            failure_status = "Applied filters and styling, but the background map could not be updated"
+            if not has_layers:
+                failure_status = "Background map could not be updated"
+            self._set_status(failure_status)
+            return
+
+        if has_layers and wants_background and self.background_layer is not None:
+            self._set_status("Applied filters, styling, and background map")
+        elif has_layers:
+            self._set_status("Applied filters and styling")
+        elif wants_background and self.background_layer is not None:
+            self._set_status("Background map updated")
+        else:
+            self._set_status("Background map cleared")
 
     def _build_client(self, require_refresh_token=True):
         client = StravaClient(
