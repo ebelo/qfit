@@ -2,7 +2,7 @@ from datetime import UTC, datetime
 import unittest
 
 from tests import _path  # noqa: F401
-from QFIT.time_utils import add_seconds_iso, format_iso_datetime, parse_iso_datetime
+from qfit.time_utils import add_seconds_iso, format_iso_datetime, parse_iso_datetime
 
 
 class TimeUtilsTests(unittest.TestCase):

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Install QFIT into a local QGIS plugin profile for development/testing."""
+"""Install qfit into a local QGIS plugin profile for development/testing."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ import shutil
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-PLUGIN_NAME = ROOT.name
+PLUGIN_NAME = "qfit"
 EXCLUDED_DIRS = {".git", "dist", "__pycache__"}
 EXCLUDED_FILES = {".gitignore"}
 EXCLUDED_SUFFIXES = {".pyc", ".pyo"}

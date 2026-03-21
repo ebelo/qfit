@@ -93,7 +93,7 @@ POINT_FIELDS = [
 
 
 class GeoPackageWriter:
-    """Persist QFIT sync data to a GeoPackage and rebuild derived visualization layers."""
+    """Persist qfit sync data to a GeoPackage and rebuild derived visualization layers."""
 
     def __init__(self, output_path=None, write_activity_points=False, point_stride=5):
         self.output_path = output_path

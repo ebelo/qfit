@@ -1,6 +1,6 @@
-# QFIT GeoPackage schema
+# qfit GeoPackage schema
 
-This document describes the current QFIT GeoPackage layout and the intended next evolution.
+This document describes the current qfit GeoPackage layout and the intended next evolution.
 
 ## Design goals
 
@@ -175,7 +175,7 @@ Primary purpose:
 
 ## Geometry priority
 
-When rebuilding visible layers, QFIT currently prefers geometry in this order:
+When rebuilding visible layers, qfit currently prefers geometry in this order:
 1. detailed stream points from `geometry_points_json`
 2. decoded `summary_polyline`
 3. fallback start/end line from start and end coordinates
