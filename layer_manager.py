@@ -12,6 +12,7 @@ from qgis.core import (
     QgsSingleSymbolRenderer,
     QgsStyle,
     QgsVectorLayer,
+    QgsVectorLayerTemporalProperties,
 )
 
 from .activity_query import ActivityQuery, build_subset_string
@@ -21,6 +22,7 @@ from .mapbox_config import (
     build_xyz_layer_uri,
     resolve_background_style,
 )
+from .temporal_config import build_temporal_plan, describe_temporal_configuration, is_temporal_mode_enabled
 
 
 class LayerManager:
@@ -96,6 +98,21 @@ class LayerManager:
             else:
                 self._apply_start_point_style(starts_layer, subtle=points_layer is not None)
 
+    def apply_temporal_configuration(self, activities_layer, starts_layer, points_layer, mode_label):
+        layer_specs = [
+            (activities_layer, "activity_tracks"),
+            (starts_layer, "activity_starts"),
+            (points_layer, "activity_points"),
+        ]
+        plans = []
+        for layer, layer_key in layer_specs:
+            if layer is None:
+                continue
+            plan = self._apply_temporal_plan(layer, layer_key, mode_label)
+            if plan is not None:
+                plans.append(plan)
+        return describe_temporal_configuration(plans, mode_label)
+
     def _load_first_available(self, gpkg_path, candidates):
         last_error = None
         for layer_name, display_name in candidates:
@@ -130,6 +147,29 @@ class LayerManager:
         for layer in list(project.mapLayers().values()):
             if layer.name().startswith(BACKGROUND_LAYER_PREFIX):
                 project.removeMapLayer(layer.id())
+
+    def _apply_temporal_plan(self, layer, layer_key, mode_label):
+        props = layer.temporalProperties()
+        if props is None:
+            return None
+        if not is_temporal_mode_enabled(mode_label):
+            props.setIsActive(False)
+            layer.triggerRepaint()
+            return None
+
+        available_fields = [field.name() for field in layer.fields()]
+        plan = build_temporal_plan(layer_key, available_fields, mode_label)
+        if plan is None:
+            props.setIsActive(False)
+            layer.triggerRepaint()
+            return None
+
+        props.setIsActive(True)
+        props.setMode(QgsVectorLayerTemporalProperties.ModeFeatureDateTimeStartAndEndFromExpressions)
+        props.setStartExpression(plan.expression)
+        props.setEndExpression(plan.expression)
+        layer.triggerRepaint()
+        return plan
 
     def _zoom_to_layers(self, layers):
         extents = None
