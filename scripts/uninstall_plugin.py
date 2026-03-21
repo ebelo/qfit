@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Backward-compatible helper to remove QFIT from a local QGIS plugin profile."""
+"""Backward-compatible helper to remove qfit from a local QGIS plugin profile."""
 
 from __future__ import annotations
 

@@ -3,7 +3,7 @@
  <class>QfitDockWidgetBase</class>
  <widget class="QDockWidget" name="QfitDockWidgetBase">
   <property name="windowTitle">
-   <string>QFIT</string>
+   <string>qfit</string>
   </property>
   <widget class="QWidget" name="dockWidgetContents">
    <layout class="QVBoxLayout" name="outerLayout">
@@ -32,7 +32,7 @@
         <item>
          <widget class="QLabel" name="titleLabel">
           <property name="text">
-           <string>QFIT — Explore fitness data spatially in QGIS</string>
+           <string>qfit — Explore fitness data spatially in QGIS</string>
           </property>
           <property name="wordWrap">
            <bool>true</bool>

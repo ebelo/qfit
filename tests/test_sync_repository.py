@@ -3,8 +3,8 @@ import unittest
 from pathlib import Path
 
 from tests import _path  # noqa: F401
-from QFIT.models import Activity
-from QFIT.sync_repository import SyncRepository
+from qfit.models import Activity
+from qfit.sync_repository import SyncRepository
 
 
 class SyncRepositoryTests(unittest.TestCase):
