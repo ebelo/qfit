@@ -29,9 +29,14 @@ class AtlasPagePlan:
     distance_m: float | None
     moving_time_s: int | None
     geometry_source: str
+    page_number: int
+    page_sort_key: str
     page_name: str
     page_title: str
     page_subtitle: str
+    page_date: str | None
+    page_distance_label: str | None
+    page_duration_label: str | None
     min_lon: float
     min_lat: float
     max_lon: float
@@ -70,7 +75,7 @@ def build_atlas_page_plans(
         margin_percent=margin_percent,
         min_extent_degrees=min_extent_degrees,
     )
-    plans = []
+    candidates = []
     for record in records:
         bounds, geometry_source = activity_bounds(
             record,
@@ -78,7 +83,10 @@ def build_atlas_page_plans(
         )
         if bounds is None:
             continue
+        candidates.append((atlas_sort_key(record), record, geometry_source, bounds))
 
+    plans = []
+    for page_number, (sort_key, record, geometry_source, bounds) in enumerate(sorted(candidates, key=lambda item: item[0]), start=1):
         min_lon, min_lat, max_lon, max_lat = expand_bounds(
             bounds,
             margin_percent=atlas_settings.margin_percent,
@@ -97,9 +105,14 @@ def build_atlas_page_plans(
                 distance_m=_safe_float(record.get("distance_m")),
                 moving_time_s=_safe_int(record.get("moving_time_s")),
                 geometry_source=geometry_source,
+                page_number=page_number,
+                page_sort_key=sort_key,
                 page_name=page_name,
                 page_title=page_title,
                 page_subtitle=page_subtitle,
+                page_date=format_activity_date(record.get("start_date_local") or record.get("start_date")),
+                page_distance_label=format_distance_label(record.get("distance_m")),
+                page_duration_label=format_duration_label(record.get("moving_time_s")),
                 min_lon=min_lon,
                 min_lat=min_lat,
                 max_lon=max_lon,
@@ -109,6 +122,31 @@ def build_atlas_page_plans(
             )
         )
     return plans
+
+
+def atlas_sort_key(record: dict) -> str:
+    activity_date = format_sortable_activity_datetime(record.get("start_date_local") or record.get("start_date"))
+    title = normalize_sort_text(record.get("name") or "Untitled activity")
+    source = normalize_sort_text(record.get("source") or "")
+    source_activity_id = normalize_sort_text(record.get("source_activity_id") or "")
+    return "|".join([activity_date, title, source, source_activity_id])
+
+
+def format_sortable_activity_datetime(value: str | None) -> str:
+    if not value:
+        return "9999-12-31T23:59:59"
+    text = str(value).strip()
+    try:
+        return datetime.fromisoformat(text.replace("Z", "+00:00")).isoformat()
+    except ValueError:
+        if len(text) >= 19:
+            return text[:19]
+        return text or "9999-12-31T23:59:59"
+
+
+def normalize_sort_text(value: str | None) -> str:
+    text = (value or "").strip().casefold()
+    return " ".join(text.split())
 
 
 def activity_bounds(record: dict, min_extent_degrees: float = DEFAULT_MIN_EXTENT_DEGREES) -> tuple[tuple[float, float, float, float] | None, str]:
@@ -198,13 +236,13 @@ def build_page_subtitle(record: dict) -> str:
     activity_type = (record.get("activity_type") or "Activity").strip() or "Activity"
     parts.append(activity_type)
 
-    distance_m = _safe_float(record.get("distance_m"))
-    if distance_m is not None:
-        parts.append(f"{distance_m / 1000.0:.1f} km")
+    distance_label = format_distance_label(record.get("distance_m"))
+    if distance_label:
+        parts.append(distance_label)
 
-    moving_time_s = _safe_int(record.get("moving_time_s"))
-    if moving_time_s is not None:
-        parts.append(format_duration(moving_time_s))
+    duration_label = format_duration_label(record.get("moving_time_s"))
+    if duration_label:
+        parts.append(duration_label)
 
     return " · ".join(parts)
 
@@ -216,6 +254,20 @@ def format_activity_date(value: str | None) -> str | None:
         return datetime.fromisoformat(str(value).replace("Z", "+00:00")).date().isoformat()
     except ValueError:
         return str(value)[:10] or None
+
+
+def format_distance_label(value) -> str | None:
+    distance_m = _safe_float(value)
+    if distance_m is None:
+        return None
+    return f"{distance_m / 1000.0:.1f} km"
+
+
+def format_duration_label(value) -> str | None:
+    moving_time_s = _safe_int(value)
+    if moving_time_s is None:
+        return None
+    return format_duration(moving_time_s)
 
 
 def _safe_float(value) -> float | None:

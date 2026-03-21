@@ -5,11 +5,14 @@ from qfit.publish_atlas import (
     DEFAULT_MIN_EXTENT_DEGREES,
     MIN_ALLOWED_ATLAS_MIN_EXTENT_DEGREES,
     activity_bounds,
+    atlas_sort_key,
     build_atlas_page_plans,
     build_page_name,
     build_page_subtitle,
     ensure_minimum_extent,
     expand_bounds,
+    format_distance_label,
+    format_duration_label,
     normalize_atlas_page_settings,
 )
 
@@ -36,10 +39,55 @@ class PublishAtlasTests(unittest.TestCase):
         self.assertEqual(len(plans), 1)
         plan = plans[0]
         self.assertEqual(plan.geometry_source, "stream")
+        self.assertEqual(plan.page_number, 1)
         self.assertEqual(plan.page_name, "2026-03-18 · Morning Gravel Ride")
         self.assertEqual(plan.page_subtitle, "Ride · 42.5 km · 2h 00m")
+        self.assertEqual(plan.page_date, "2026-03-18")
+        self.assertEqual(plan.page_distance_label, "42.5 km")
+        self.assertEqual(plan.page_duration_label, "2h 00m")
+        self.assertTrue(plan.page_sort_key.startswith("2026-03-18T08:10:00+01:00|morning gravel ride|strava|101"))
         self.assertGreater(plan.extent_width_deg, 0.12)
         self.assertGreater(plan.extent_height_deg, 0.05)
+
+    def test_build_atlas_page_plans_sorts_chronologically_and_assigns_page_numbers(self):
+        records = [
+            {
+                "source": "strava",
+                "source_activity_id": "300",
+                "name": "Evening Run",
+                "activity_type": "Run",
+                "start_date_local": "2026-03-19T18:30:00+01:00",
+                "geometry_points": [(46.51, 6.62), (46.52, 6.63)],
+            },
+            {
+                "source": "strava",
+                "source_activity_id": "100",
+                "name": "Morning Ride",
+                "activity_type": "Ride",
+                "start_date_local": "2026-03-18T08:10:00+01:00",
+                "geometry_points": [(46.52, 6.62), (46.57, 6.74)],
+            },
+            {
+                "source": "strava",
+                "source_activity_id": "200",
+                "name": "Morning Ride",
+                "activity_type": "Ride",
+                "start_date_local": "2026-03-18T08:10:00+01:00",
+                "geometry_points": [(46.42, 6.52), (46.47, 6.54)],
+            },
+        ]
+
+        plans = build_atlas_page_plans(records)
+
+        self.assertEqual([plan.page_number for plan in plans], [1, 2, 3])
+        self.assertEqual(
+            [(plan.source_activity_id, plan.page_name) for plan in plans],
+            [
+                ("100", "2026-03-18 · Morning Ride"),
+                ("200", "2026-03-18 · Morning Ride"),
+                ("300", "2026-03-19 · Evening Run"),
+            ],
+        )
 
     def test_build_atlas_page_plans_respects_custom_publish_settings(self):
         records = [
@@ -105,6 +153,13 @@ class PublishAtlasTests(unittest.TestCase):
 
         self.assertEqual(build_page_name(record), "2026-03-11 · Recovery Walk")
         self.assertEqual(build_page_subtitle(record), "Walk")
+        self.assertIsNone(format_distance_label(None))
+        self.assertIsNone(format_duration_label(None))
+
+    def test_atlas_sort_key_normalizes_missing_values(self):
+        key = atlas_sort_key({"name": "  Lunch   Walk  "})
+
+        self.assertEqual(key, "9999-12-31T23:59:59|lunch walk||")
 
 
 if __name__ == "__main__":
