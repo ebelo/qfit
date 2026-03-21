@@ -4,6 +4,7 @@ from tests import _path  # noqa: F401
 from qfit.publish_atlas import (
     DEFAULT_MIN_EXTENT_DEGREES,
     MIN_ALLOWED_ATLAS_MIN_EXTENT_DEGREES,
+    MIN_ALLOWED_ATLAS_TARGET_ASPECT_RATIO,
     WEB_MERCATOR_EPSG,
     activity_bounds,
     atlas_sort_key,
@@ -12,8 +13,10 @@ from qfit.publish_atlas import (
     build_page_subtitle,
     ensure_minimum_extent,
     expand_bounds,
+    fit_bounds_to_target_aspect_ratio,
     format_distance_label,
     format_duration_label,
+    lonlat_bounds_to_web_mercator,
     lonlat_to_web_mercator,
     normalize_atlas_page_settings,
     web_mercator_to_lonlat,
@@ -113,17 +116,40 @@ class PublishAtlasTests(unittest.TestCase):
         self.assertGreater(custom_plan.extent_width_m, default_plan.extent_width_m)
         self.assertGreater(custom_plan.extent_height_m, default_plan.extent_height_m)
 
+    def test_build_atlas_page_plans_can_fit_web_mercator_target_aspect_ratio(self):
+        records = [
+            {
+                "name": "River Ride",
+                "activity_type": "Ride",
+                "geometry_points": [(46.5000, 6.6000), (46.5080, 6.6030)],
+            }
+        ]
+
+        plan = build_atlas_page_plans(records, target_aspect_ratio=2.0)[0]
+
+        self.assertAlmostEqual(plan.extent_width_m / plan.extent_height_m, 2.0, places=3)
+        self.assertGreater(plan.extent_width_m, 0)
+        self.assertGreater(plan.extent_height_m, 0)
+
     def test_normalize_atlas_page_settings_clamps_invalid_values(self):
-        settings = normalize_atlas_page_settings(margin_percent=-5, min_extent_degrees=0)
+        settings = normalize_atlas_page_settings(margin_percent=-5, min_extent_degrees=0, target_aspect_ratio=0.05)
 
         self.assertEqual(settings.margin_percent, 0.0)
         self.assertEqual(settings.min_extent_degrees, MIN_ALLOWED_ATLAS_MIN_EXTENT_DEGREES)
+        self.assertEqual(settings.target_aspect_ratio, MIN_ALLOWED_ATLAS_TARGET_ASPECT_RATIO)
 
     def test_normalize_atlas_page_settings_uses_defaults_for_missing_values(self):
-        settings = normalize_atlas_page_settings(margin_percent=None, min_extent_degrees=None)
+        settings = normalize_atlas_page_settings(margin_percent=None, min_extent_degrees=None, target_aspect_ratio=None)
 
         self.assertEqual(settings.margin_percent, 8.0)
         self.assertEqual(settings.min_extent_degrees, DEFAULT_MIN_EXTENT_DEGREES)
+        self.assertIsNone(settings.target_aspect_ratio)
+
+    def test_fit_bounds_to_target_aspect_ratio_expands_shorter_dimension_in_web_mercator(self):
+        bounds = fit_bounds_to_target_aspect_ratio(6.6, 46.5, 6.61, 46.53, target_aspect_ratio=1.0)
+        min_x, min_y, max_x, max_y = lonlat_bounds_to_web_mercator(*bounds)
+
+        self.assertAlmostEqual(max_x - min_x, max_y - min_y, places=3)
 
     def test_activity_bounds_falls_back_to_start_end_coordinates(self):
         bounds, geometry_source = activity_bounds(
