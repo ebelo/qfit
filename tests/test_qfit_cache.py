@@ -5,7 +5,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from tests import _path  # noqa: F401
-from QFIT.qfit_cache import QfitCache
+from qfit.qfit_cache import QfitCache
 
 
 class QfitCacheTests(unittest.TestCase):
@@ -25,7 +25,7 @@ class QfitCacheTests(unittest.TestCase):
             cache = QfitCache(base_path=tmpdir)
             cache.save_stream_bundle("strava", "123", {"latlng": [[1.0, 2.0]]})
 
-            with patch("QFIT.qfit_cache.time.time", return_value=10_000_000_000):
+            with patch("qfit.qfit_cache.time.time", return_value=10_000_000_000):
                 self.assertIsNone(cache.load_stream_bundle("strava", "123", max_age_seconds=1))
 
     def test_load_stream_bundle_supports_legacy_point_only_cache(self):

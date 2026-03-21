@@ -17,7 +17,8 @@ FORM_CLASS, _ = uic.loadUiType(
 
 
 class QfitDockWidget(QDockWidget, FORM_CLASS):
-    SETTINGS_PREFIX = "QFIT"
+    SETTINGS_PREFIX = "qfit"
+    LEGACY_SETTINGS_PREFIX = "QFIT"
 
     def __init__(self, iface, parent=None):
         super().__init__(parent)
@@ -47,39 +48,40 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         base_path = QStandardPaths.writableLocation(QStandardPaths.AppDataLocation)
         if not base_path:
             base_path = os.path.join(os.path.expanduser("~"), ".qfit")
-        return QfitCache(os.path.join(base_path, "QFIT", "cache"))
+
+        current_cache_path = os.path.join(base_path, "qfit", "cache")
+        legacy_cache_path = os.path.join(base_path, "QFIT", "cache")
+        if not os.path.exists(current_cache_path) and os.path.exists(legacy_cache_path):
+            return QfitCache(legacy_cache_path)
+        return QfitCache(current_cache_path)
 
     def _load_settings(self):
         settings = QSettings()
-        self.clientIdLineEdit.setText(settings.value(f"{self.SETTINGS_PREFIX}/client_id", ""))
-        self.clientSecretLineEdit.setText(settings.value(f"{self.SETTINGS_PREFIX}/client_secret", ""))
+        self.clientIdLineEdit.setText(self._setting_value(settings, "client_id", ""))
+        self.clientSecretLineEdit.setText(self._setting_value(settings, "client_secret", ""))
         self.redirectUriLineEdit.setText(
-            settings.value(
-                f"{self.SETTINGS_PREFIX}/redirect_uri",
+            self._setting_value(
+                settings,
+                "redirect_uri",
                 StravaClient.DEFAULT_REDIRECT_URI,
             )
         )
         self.authCodeLineEdit.setText("")
-        self.refreshTokenLineEdit.setText(settings.value(f"{self.SETTINGS_PREFIX}/refresh_token", ""))
-        default_output = settings.value(
-            f"{self.SETTINGS_PREFIX}/output_path",
+        self.refreshTokenLineEdit.setText(self._setting_value(settings, "refresh_token", ""))
+        default_output = self._setting_value(
+            settings,
+            "output_path",
             os.path.join(os.path.expanduser("~"), "qfit_activities.gpkg"),
         )
         self.outputPathLineEdit.setText(default_output)
-        self.perPageSpinBox.setValue(int(settings.value(f"{self.SETTINGS_PREFIX}/per_page", 50)))
-        self.maxPagesSpinBox.setValue(int(settings.value(f"{self.SETTINGS_PREFIX}/max_pages", 2)))
-        self.detailedStreamsCheckBox.setChecked(
-            self._settings_bool(settings, f"{self.SETTINGS_PREFIX}/use_detailed_streams", False)
-        )
-        self.maxDetailedActivitiesSpinBox.setValue(
-            int(settings.value(f"{self.SETTINGS_PREFIX}/max_detailed_activities", 25))
-        )
+        self.perPageSpinBox.setValue(int(self._setting_value(settings, "per_page", 50)))
+        self.maxPagesSpinBox.setValue(int(self._setting_value(settings, "max_pages", 2)))
+        self.detailedStreamsCheckBox.setChecked(self._settings_bool(settings, "use_detailed_streams", False))
+        self.maxDetailedActivitiesSpinBox.setValue(int(self._setting_value(settings, "max_detailed_activities", 25)))
         self.writeActivityPointsCheckBox.setChecked(
-            self._settings_bool(settings, f"{self.SETTINGS_PREFIX}/write_activity_points", False)
+            self._settings_bool(settings, "write_activity_points", False)
         )
-        self.pointSamplingStrideSpinBox.setValue(
-            int(settings.value(f"{self.SETTINGS_PREFIX}/point_sampling_stride", 5))
-        )
+        self.pointSamplingStrideSpinBox.setValue(int(self._setting_value(settings, "point_sampling_stride", 5)))
 
     def _save_settings(self):
         settings = QSettings()
@@ -104,8 +106,17 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self.pointSamplingStrideSpinBox.value(),
         )
 
+    def _setting_value(self, settings, key, default=None):
+        value = settings.value(f"{self.SETTINGS_PREFIX}/{key}", None)
+        if value not in (None, ""):
+            return value
+        legacy_value = settings.value(f"{self.LEGACY_SETTINGS_PREFIX}/{key}", None)
+        if legacy_value not in (None, ""):
+            return legacy_value
+        return default
+
     def _settings_bool(self, settings, key, default=False):
-        value = settings.value(key, default)
+        value = self._setting_value(settings, key, default)
         if isinstance(value, bool):
             return value
         if isinstance(value, str):
@@ -130,7 +141,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                     clipboard.setText(url)
                 self._show_info(
                     "Open Strava authorize page manually",
-                    "QFIT could not open the browser automatically. The authorization URL was copied to your clipboard.\n\nOpen this URL in a browser and continue the flow there:\n\n{url}".format(
+                    "qfit could not open the browser automatically. The authorization URL was copied to your clipboard.\n\nOpen this URL in a browser and continue the flow there:\n\n{url}".format(
                         url=url
                     ),
                 )

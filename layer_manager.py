@@ -21,10 +21,10 @@ class LayerManager:
     def load_output_layers(self, gpkg_path):
         activities_layer = self._load_first_available(
             gpkg_path,
-            [("activity_tracks", "QFIT Activities"), ("activities", "QFIT Activities")],
+            [("activity_tracks", "qfit activities"), ("activities", "qfit activities")],
         )
-        starts_layer = self._load_optional_layer(gpkg_path, "activity_starts", "QFIT Activity Starts")
-        points_layer = self._load_optional_layer(gpkg_path, "activity_points", "QFIT Activity Points")
+        starts_layer = self._load_optional_layer(gpkg_path, "activity_starts", "qfit activity starts")
+        points_layer = self._load_optional_layer(gpkg_path, "activity_points", "qfit activity points")
         self._zoom_to_layers([activities_layer, starts_layer, points_layer])
         return activities_layer, starts_layer, points_layer
 

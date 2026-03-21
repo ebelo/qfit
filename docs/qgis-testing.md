@@ -1,6 +1,6 @@
-# QFIT local QGIS testing
+# qfit local QGIS testing
 
-This document describes a practical local testing flow for QFIT inside a desktop QGIS installation.
+This document describes a practical local testing flow for qfit inside a desktop QGIS installation.
 
 ## 1. Install the plugin into your QGIS profile
 
@@ -17,7 +17,7 @@ python3 scripts/install_plugin.py --profile default --mode copy
 ```
 
 Default Linux plugin target:
-- `~/.local/share/QGIS/QGIS3/profiles/default/python/plugins/QFIT`
+- `~/.local/share/QGIS/QGIS3/profiles/default/python/plugins/qfit`
 
 You can also override the plugins directory explicitly:
 
@@ -37,13 +37,13 @@ Open QGIS normally.
 
 Then:
 1. open **Plugins → Manage and Install Plugins…**
-2. look for **QFIT** in the installed plugins list
+2. look for **qfit** in the installed plugins list
 3. enable it if needed
 
 ## 3. Open the plugin
 
 After loading:
-- use the **QFIT** toolbar button, or
+- use the **qfit** toolbar button, or
 - open it from the **Plugins** menu
 
 ## 4. Connect Strava
@@ -60,9 +60,9 @@ Inside the dock:
 ## 5. What to expect in QGIS
 
 Visible layers currently include:
-- `QFIT Activities`
-- `QFIT Activity Starts`
-- `QFIT Activity Points` (optional)
+- `qfit Activities`
+- `qfit Activity Starts`
+- `qfit Activity Points` (optional)
 
 The generated GeoPackage also contains internal sync tables:
 - `activity_registry`
@@ -87,7 +87,7 @@ Check:
 
 ## 8. Next likely manual checks
 
-Once QFIT is loaded successfully, good manual checks are:
+Once qfit is loaded successfully, good manual checks are:
 - fetch summary-only activities
 - fetch detailed streams for a few activities
 - confirm `activity_tracks` geometries look right

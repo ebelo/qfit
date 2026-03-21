@@ -1,7 +1,7 @@
 import unittest
 
 from tests import _path  # noqa: F401
-from QFIT.polyline_utils import decode_polyline
+from qfit.polyline_utils import decode_polyline
 
 
 class DecodePolylineTests(unittest.TestCase):

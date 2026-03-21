@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import patch
 
 from tests import _path  # noqa: F401
-from QFIT.strava_client import StravaClient
+from qfit.strava_client import StravaClient
 
 
 class StravaClientTests(unittest.TestCase):
