@@ -67,6 +67,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.refreshButton.clicked.connect(self.on_refresh_clicked)
         self.loadButton.clicked.connect(self.on_load_clicked)
         self.applyFiltersButton.clicked.connect(self.on_apply_filters_clicked)
+        self.loadBackgroundButton.clicked.connect(self.on_load_background_clicked)
         self.backgroundPresetComboBox.currentTextChanged.connect(self.on_background_preset_changed)
 
         preview_inputs = [
@@ -263,6 +264,27 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def on_background_preset_changed(self, preset_name):
         self._sync_background_style_fields(preset_name, force=True)
 
+    def on_load_background_clicked(self):
+        self._save_settings()
+        enabled = self.backgroundMapCheckBox.isChecked()
+        try:
+            self.background_layer = self.layer_manager.ensure_background_layer(
+                enabled=enabled,
+                preset_name=self.backgroundPresetComboBox.currentText(),
+                access_token=self.mapboxAccessTokenLineEdit.text().strip(),
+                style_owner=self.mapboxStyleOwnerLineEdit.text().strip(),
+                style_id=self.mapboxStyleIdLineEdit.text().strip(),
+            )
+        except (MapboxConfigError, RuntimeError) as exc:
+            self._show_error("Background map failed", str(exc))
+            self._set_status("Background map could not be updated")
+            return
+
+        if enabled and self.background_layer is not None:
+            self._set_status("Background map loaded below the qfit activity layers")
+        else:
+            self._set_status("Background map cleared")
+
     def _sync_background_style_fields(self, preset_name, force=False):
         if preset_requires_custom_style(preset_name):
             return
@@ -414,13 +436,12 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self.activities_layer, self.starts_layer, self.points_layer, self.atlas_layer = self.layer_manager.load_output_layers(
                 self.output_path
             )
-            self.on_apply_filters_clicked()
+            visual_status = self._apply_visual_configuration(apply_subset_filters=False)
             sync = result.get("sync") or {}
-            background_note = ""
-            if self.backgroundMapCheckBox.isChecked() and self.background_layer is not None:
-                background_note = " Added the selected Mapbox background map."
+            if visual_status:
+                visual_status = f" {visual_status}"
             self._set_status(
-                "Synced {fetched} fetched activities into GeoPackage: inserted {inserted}, updated {updated}, unchanged {unchanged}, stored total {total}. Loaded {track_count} tracks, {start_count} starts, {point_count} activity points, and {atlas_count} atlas pages into QGIS.{background_note}".format(
+                "Synced {fetched} fetched activities into GeoPackage: inserted {inserted}, updated {updated}, unchanged {unchanged}, stored total {total}. Loaded {track_count} tracks, {start_count} starts, {point_count} activity points, and {atlas_count} atlas pages into QGIS without auto-filtering the layer tables.{visual_status}".format(
                     fetched=result.get("fetched_count", len(self.activities)),
                     inserted=sync.get("inserted", 0),
                     updated=sync.get("updated", 0),
@@ -430,7 +451,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                     start_count=result.get("start_count", 0),
                     point_count=result.get("point_count", 0),
                     atlas_count=result.get("atlas_count", 0),
-                    background_note=background_note,
+                    visual_status=visual_status,
                 )
             )
         except Exception as exc:  # noqa: BLE001
@@ -444,12 +465,19 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             return
 
         self._save_settings()
+        status = self._apply_visual_configuration(apply_subset_filters=True)
+        if status:
+            self._set_status(status)
+
+    def _apply_visual_configuration(self, apply_subset_filters):
+        has_layers = any(layer is not None for layer in [self.activities_layer, self.starts_layer, self.points_layer, self.atlas_layer])
+        wants_background = self.backgroundMapCheckBox.isChecked()
+        filtered_activities = self._refresh_activity_preview()
         query = self._current_activity_query()
         preset = self.stylePresetComboBox.currentText()
-        filtered_activities = self._refresh_activity_preview()
         temporal_note = ""
 
-        if has_layers:
+        if has_layers and apply_subset_filters:
             self.layer_manager.apply_filters(
                 self.activities_layer,
                 query.activity_type,
@@ -490,6 +518,8 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 query.search_text,
                 query.detailed_only,
             )
+
+        if has_layers:
             self.layer_manager.apply_style(
                 self.activities_layer,
                 self.starts_layer,
@@ -515,27 +545,32 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             )
         except (MapboxConfigError, RuntimeError) as exc:
             self._show_error("Background map failed", str(exc))
-            failure_status = "Applied filters and styling, but the background map could not be updated"
             if not has_layers:
                 failure_status = "Background map could not be updated"
+            elif apply_subset_filters:
+                failure_status = "Applied filters and styling, but the background map could not be updated"
+            else:
+                failure_status = "Loaded layers with styling, but the background map could not be updated"
             if temporal_note:
                 failure_status = f"{failure_status}. {temporal_note}."
-            self._set_status(failure_status)
-            return
+            return failure_status
 
         filtered_count = len(filtered_activities)
         if has_layers and wants_background and self.background_layer is not None:
-            status = f"Applied filters, styling, and background map ({filtered_count} matching activities)"
+            if apply_subset_filters:
+                status = f"Applied filters, styling, and background map ({filtered_count} matching activities)"
+            else:
+                status = "Applied styling and loaded the background map below the qfit activity layers"
         elif has_layers:
-            status = f"Applied filters and styling ({filtered_count} matching activities)"
+            status = f"Applied filters and styling ({filtered_count} matching activities)" if apply_subset_filters else "Applied styling to the loaded qfit layers"
         elif wants_background and self.background_layer is not None:
-            status = f"Background map updated ({filtered_count} matching activities)"
+            status = f"Background map updated ({filtered_count} matching activities)" if apply_subset_filters else "Background map loaded below the qfit activity layers"
         else:
-            status = f"Background map cleared ({filtered_count} matching activities)"
+            status = f"Background map cleared ({filtered_count} matching activities)" if apply_subset_filters else "Background map cleared"
 
         if temporal_note:
             status = f"{status}. {temporal_note}."
-        self._set_status(status)
+        return status
 
     def _current_activity_query(self):
         return ActivityQuery(
