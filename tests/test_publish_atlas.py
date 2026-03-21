@@ -7,6 +7,7 @@ from qfit.publish_atlas import (
     MIN_ALLOWED_ATLAS_TARGET_ASPECT_RATIO,
     WEB_MERCATOR_EPSG,
     activity_bounds,
+    build_profile_summary,
     atlas_sort_key,
     build_atlas_page_plans,
     build_page_name,
@@ -51,6 +52,9 @@ class PublishAtlasTests(unittest.TestCase):
         self.assertEqual(plan.page_date, "2026-03-18")
         self.assertEqual(plan.page_distance_label, "42.5 km")
         self.assertEqual(plan.page_duration_label, "2h 00m")
+        self.assertFalse(plan.profile_available)
+        self.assertEqual(plan.profile_point_count, 0)
+        self.assertIsNone(plan.profile_distance_m)
         self.assertTrue(plan.page_sort_key.startswith("2026-03-18T08:10:00+01:00|morning gravel ride|strava|101"))
         self.assertGreater(plan.extent_width_deg, 0.12)
         self.assertGreater(plan.extent_height_deg, 0.05)
@@ -130,6 +134,49 @@ class PublishAtlasTests(unittest.TestCase):
         self.assertAlmostEqual(plan.extent_width_m / plan.extent_height_m, 2.0, places=3)
         self.assertGreater(plan.extent_width_m, 0)
         self.assertGreater(plan.extent_height_m, 0)
+
+    def test_build_atlas_page_plans_includes_route_profile_metadata_when_stream_metrics_are_available(self):
+        records = [
+            {
+                "name": "Alpine Ride",
+                "activity_type": "Ride",
+                "distance_m": 34000,
+                "geometry_points": [(46.5000, 6.6000), (46.5300, 6.6600)],
+                "details_json": {
+                    "stream_metrics": {
+                        "distance": [0, 1000, 2000, 3000],
+                        "altitude": [500, 525, 510, 560],
+                    }
+                },
+            }
+        ]
+
+        plan = build_atlas_page_plans(records)[0]
+
+        self.assertTrue(plan.profile_available)
+        self.assertEqual(plan.profile_point_count, 4)
+        self.assertEqual(plan.profile_distance_m, 3000)
+        self.assertEqual(plan.profile_min_altitude_m, 500)
+        self.assertEqual(plan.profile_max_altitude_m, 560)
+        self.assertEqual(plan.profile_elevation_gain_m, 75)
+        self.assertEqual(plan.profile_elevation_loss_m, 15)
+
+    def test_build_profile_summary_ignores_invalid_or_incomplete_stream_metrics(self):
+        summary = build_profile_summary(
+            {
+                "details_json": {
+                    "stream_metrics": {
+                        "distance": [0, None, 500],
+                        "altitude": [400, 405, None],
+                    }
+                }
+            }
+        )
+
+        self.assertFalse(summary.available)
+        self.assertEqual(summary.point_count, 0)
+        self.assertIsNone(summary.distance_m)
+
 
     def test_normalize_atlas_page_settings_clamps_invalid_values(self):
         settings = normalize_atlas_page_settings(margin_percent=-5, min_extent_degrees=0, target_aspect_ratio=0.05)
