@@ -10,8 +10,10 @@ from .polyline_utils import decode_polyline
 
 DEFAULT_ATLAS_MARGIN_PERCENT = 8.0
 DEFAULT_MIN_EXTENT_DEGREES = 0.01
+DEFAULT_ATLAS_TARGET_ASPECT_RATIO = 0.0
 MIN_ALLOWED_ATLAS_MARGIN_PERCENT = 0.0
 MIN_ALLOWED_ATLAS_MIN_EXTENT_DEGREES = 0.0001
+MIN_ALLOWED_ATLAS_TARGET_ASPECT_RATIO = 0.1
 WEB_MERCATOR_EPSG = "EPSG:3857"
 WEB_MERCATOR_HALF_WORLD_M = 20037508.342789244
 WEB_MERCATOR_MAX_LAT = 85.05112878
@@ -21,6 +23,7 @@ WEB_MERCATOR_MAX_LAT = 85.05112878
 class AtlasPageSettings:
     margin_percent: float = DEFAULT_ATLAS_MARGIN_PERCENT
     min_extent_degrees: float = DEFAULT_MIN_EXTENT_DEGREES
+    target_aspect_ratio: float | None = None
 
 
 @dataclass(frozen=True)
@@ -56,6 +59,7 @@ class AtlasPagePlan:
 def normalize_atlas_page_settings(
     margin_percent: float | None = None,
     min_extent_degrees: float | None = None,
+    target_aspect_ratio: float | None = None,
 ) -> AtlasPageSettings:
     normalized_margin = _safe_float(margin_percent)
     if normalized_margin is None:
@@ -67,9 +71,21 @@ def normalize_atlas_page_settings(
         normalized_min_extent = DEFAULT_MIN_EXTENT_DEGREES
     normalized_min_extent = max(normalized_min_extent, MIN_ALLOWED_ATLAS_MIN_EXTENT_DEGREES)
 
+    normalized_target_aspect_ratio = _safe_float(target_aspect_ratio)
+    if normalized_target_aspect_ratio is None:
+        normalized_target_aspect_ratio = DEFAULT_ATLAS_TARGET_ASPECT_RATIO
+    if normalized_target_aspect_ratio <= 0:
+        normalized_target_aspect_ratio = None
+    else:
+        normalized_target_aspect_ratio = max(
+            normalized_target_aspect_ratio,
+            MIN_ALLOWED_ATLAS_TARGET_ASPECT_RATIO,
+        )
+
     return AtlasPageSettings(
         margin_percent=normalized_margin,
         min_extent_degrees=normalized_min_extent,
+        target_aspect_ratio=normalized_target_aspect_ratio,
     )
 
 
@@ -77,11 +93,13 @@ def build_atlas_page_plans(
     records: Iterable[dict],
     margin_percent: float = DEFAULT_ATLAS_MARGIN_PERCENT,
     min_extent_degrees: float = DEFAULT_MIN_EXTENT_DEGREES,
+    target_aspect_ratio: float | None = None,
     settings: AtlasPageSettings | None = None,
 ) -> list[AtlasPagePlan]:
     atlas_settings = settings or normalize_atlas_page_settings(
         margin_percent=margin_percent,
         min_extent_degrees=min_extent_degrees,
+        target_aspect_ratio=target_aspect_ratio,
     )
     candidates = []
     for record in records:
@@ -99,6 +117,13 @@ def build_atlas_page_plans(
             bounds,
             margin_percent=atlas_settings.margin_percent,
             min_extent_degrees=atlas_settings.min_extent_degrees,
+        )
+        min_lon, min_lat, max_lon, max_lat = fit_bounds_to_target_aspect_ratio(
+            min_lon,
+            min_lat,
+            max_lon,
+            max_lat,
+            target_aspect_ratio=atlas_settings.target_aspect_ratio,
         )
         projected_bounds = lonlat_bounds_to_web_mercator(min_lon, min_lat, max_lon, max_lat)
         center_x_3857 = (projected_bounds[0] + projected_bounds[2]) / 2.0
@@ -273,6 +298,43 @@ def lonlat_bounds_to_web_mercator(
     min_x, min_y = lonlat_to_web_mercator(min_lon, min_lat)
     max_x, max_y = lonlat_to_web_mercator(max_lon, max_lat)
     return min(min_x, max_x), min(min_y, max_y), max(min_x, max_x), max(min_y, max_y)
+
+
+def fit_bounds_to_target_aspect_ratio(
+    min_lon: float,
+    min_lat: float,
+    max_lon: float,
+    max_lat: float,
+    target_aspect_ratio: float | None,
+) -> tuple[float, float, float, float]:
+    ratio = _safe_float(target_aspect_ratio)
+    if ratio is None or ratio <= 0:
+        return min_lon, min_lat, max_lon, max_lat
+
+    min_x, min_y, max_x, max_y = lonlat_bounds_to_web_mercator(min_lon, min_lat, max_lon, max_lat)
+    width = max(max_x - min_x, 0.0)
+    height = max(max_y - min_y, 0.0)
+    if width <= 0 or height <= 0:
+        return min_lon, min_lat, max_lon, max_lat
+
+    current_ratio = width / height
+    if abs(current_ratio - ratio) < 1e-9:
+        return min_lon, min_lat, max_lon, max_lat
+
+    center_x = (min_x + max_x) / 2.0
+    center_y = (min_y + max_y) / 2.0
+    if current_ratio < ratio:
+        width = height * ratio
+    else:
+        height = width / ratio
+
+    adjusted_min_x = center_x - (width / 2.0)
+    adjusted_max_x = center_x + (width / 2.0)
+    adjusted_min_y = center_y - (height / 2.0)
+    adjusted_max_y = center_y + (height / 2.0)
+    adjusted_min_lon, adjusted_min_lat = web_mercator_to_lonlat(adjusted_min_x, adjusted_min_y)
+    adjusted_max_lon, adjusted_max_lat = web_mercator_to_lonlat(adjusted_max_x, adjusted_max_y)
+    return adjusted_min_lon, adjusted_min_lat, adjusted_max_lon, adjusted_max_lat
 
 
 def build_page_name(record: dict) -> str:

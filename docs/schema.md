@@ -184,6 +184,7 @@ Primary purpose:
 - atlas/page index layer for QGIS print layouts and future PDF export workflows
 - one padded extent polygon per activity with reusable title/subtitle fields
 - extent padding/minimum size controlled by the plugin's publish settings at write time
+- optional Web Mercator aspect-ratio fitting can widen/tallify the padded extent for more layout-consistent framing
 
 ### Current fields
 
