@@ -114,10 +114,15 @@ ATLAS_FIELDS = [
     ("profile_available", QVariant.Int),
     ("profile_point_count", QVariant.Int),
     ("profile_distance_m", QVariant.Double),
+    ("profile_distance_label", QVariant.String),
     ("profile_min_altitude_m", QVariant.Double),
     ("profile_max_altitude_m", QVariant.Double),
+    ("profile_altitude_range_label", QVariant.String),
+    ("profile_relief_m", QVariant.Double),
     ("profile_elevation_gain_m", QVariant.Double),
+    ("profile_elevation_gain_label", QVariant.String),
     ("profile_elevation_loss_m", QVariant.Double),
+    ("profile_elevation_loss_label", QVariant.String),
     ("center_x_3857", QVariant.Double),
     ("center_y_3857", QVariant.Double),
     ("extent_width_deg", QVariant.Double),
@@ -384,10 +389,15 @@ class GeoPackageWriter:
             feature["profile_available"] = int(plan.profile_available)
             feature["profile_point_count"] = plan.profile_point_count
             feature["profile_distance_m"] = plan.profile_distance_m
+            feature["profile_distance_label"] = plan.profile_distance_label
             feature["profile_min_altitude_m"] = plan.profile_min_altitude_m
             feature["profile_max_altitude_m"] = plan.profile_max_altitude_m
+            feature["profile_altitude_range_label"] = plan.profile_altitude_range_label
+            feature["profile_relief_m"] = plan.profile_relief_m
             feature["profile_elevation_gain_m"] = plan.profile_elevation_gain_m
+            feature["profile_elevation_gain_label"] = plan.profile_elevation_gain_label
             feature["profile_elevation_loss_m"] = plan.profile_elevation_loss_m
+            feature["profile_elevation_loss_label"] = plan.profile_elevation_loss_label
             feature["center_x_3857"] = plan.center_x_3857
             feature["center_y_3857"] = plan.center_y_3857
             feature["extent_width_deg"] = plan.extent_width_deg
