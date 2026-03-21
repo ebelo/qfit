@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime
+from math import atan, exp, log, pi, tan
 from typing import Iterable
 
 from .activity_query import format_duration
@@ -11,6 +12,9 @@ DEFAULT_ATLAS_MARGIN_PERCENT = 8.0
 DEFAULT_MIN_EXTENT_DEGREES = 0.01
 MIN_ALLOWED_ATLAS_MARGIN_PERCENT = 0.0
 MIN_ALLOWED_ATLAS_MIN_EXTENT_DEGREES = 0.0001
+WEB_MERCATOR_EPSG = "EPSG:3857"
+WEB_MERCATOR_HALF_WORLD_M = 20037508.342789244
+WEB_MERCATOR_MAX_LAT = 85.05112878
 
 
 @dataclass(frozen=True)
@@ -43,6 +47,10 @@ class AtlasPagePlan:
     max_lat: float
     extent_width_deg: float
     extent_height_deg: float
+    center_x_3857: float
+    center_y_3857: float
+    extent_width_m: float
+    extent_height_m: float
 
 
 def normalize_atlas_page_settings(
@@ -92,6 +100,9 @@ def build_atlas_page_plans(
             margin_percent=atlas_settings.margin_percent,
             min_extent_degrees=atlas_settings.min_extent_degrees,
         )
+        projected_bounds = lonlat_bounds_to_web_mercator(min_lon, min_lat, max_lon, max_lat)
+        center_x_3857 = (projected_bounds[0] + projected_bounds[2]) / 2.0
+        center_y_3857 = (projected_bounds[1] + projected_bounds[3]) / 2.0
         page_title = (record.get("name") or "Untitled activity").strip()
         page_name = build_page_name(record)
         page_subtitle = build_page_subtitle(record)
@@ -119,6 +130,10 @@ def build_atlas_page_plans(
                 max_lat=max_lat,
                 extent_width_deg=max_lon - min_lon,
                 extent_height_deg=max_lat - min_lat,
+                center_x_3857=center_x_3857,
+                center_y_3857=center_y_3857,
+                extent_width_m=projected_bounds[2] - projected_bounds[0],
+                extent_height_m=projected_bounds[3] - projected_bounds[1],
             )
         )
     return plans
@@ -221,6 +236,43 @@ def expand_bounds(
     pad_x = width * margin_ratio
     pad_y = height * margin_ratio
     return min_lon - pad_x, min_lat - pad_y, max_lon + pad_x, max_lat + pad_y
+
+
+def lonlat_to_web_mercator(lon: float, lat: float) -> tuple[float, float]:
+    lon_value = _safe_float(lon)
+    lat_value = _safe_float(lat)
+    if lon_value is None or lat_value is None:
+        raise ValueError("lon and lat must be valid numeric values")
+
+    clamped_lon = max(min(lon_value, 180.0), -180.0)
+    clamped_lat = max(min(lat_value, WEB_MERCATOR_MAX_LAT), -WEB_MERCATOR_MAX_LAT)
+    x = WEB_MERCATOR_HALF_WORLD_M * clamped_lon / 180.0
+    y = WEB_MERCATOR_HALF_WORLD_M * log(tan(pi / 4.0 + (clamped_lat * pi / 180.0) / 2.0)) / pi
+    return x, y
+
+
+def web_mercator_to_lonlat(x: float, y: float) -> tuple[float, float]:
+    x_value = _safe_float(x)
+    y_value = _safe_float(y)
+    if x_value is None or y_value is None:
+        raise ValueError("x and y must be valid numeric values")
+
+    clamped_x = max(min(x_value, WEB_MERCATOR_HALF_WORLD_M), -WEB_MERCATOR_HALF_WORLD_M)
+    clamped_y = max(min(y_value, WEB_MERCATOR_HALF_WORLD_M), -WEB_MERCATOR_HALF_WORLD_M)
+    lon = (clamped_x / WEB_MERCATOR_HALF_WORLD_M) * 180.0
+    lat = (2.0 * atan(exp((clamped_y / WEB_MERCATOR_HALF_WORLD_M) * pi)) - pi / 2.0) * 180.0 / pi
+    return lon, lat
+
+
+def lonlat_bounds_to_web_mercator(
+    min_lon: float,
+    min_lat: float,
+    max_lon: float,
+    max_lat: float,
+) -> tuple[float, float, float, float]:
+    min_x, min_y = lonlat_to_web_mercator(min_lon, min_lat)
+    max_x, max_y = lonlat_to_web_mercator(max_lon, max_lat)
+    return min(min_x, max_x), min(min_y, max_y), max(min_x, max_x), max(min_y, max_y)
 
 
 def build_page_name(record: dict) -> str:

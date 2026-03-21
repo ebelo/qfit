@@ -1,6 +1,7 @@
 from qgis.PyQt.QtGui import QColor
 from qgis.core import (
     QgsCategorizedSymbolRenderer,
+    QgsCoordinateReferenceSystem,
     QgsFillSymbol,
     QgsGradientColorRamp,
     QgsHeatmapRenderer,
@@ -27,10 +28,13 @@ from .temporal_config import build_temporal_plan, describe_temporal_configuratio
 
 
 class LayerManager:
+    WORKING_CRS = "EPSG:3857"
+
     def __init__(self, iface):
         self.iface = iface
 
     def load_output_layers(self, gpkg_path):
+        self._ensure_working_crs()
         activities_layer = self._load_first_available(
             gpkg_path,
             [("activity_tracks", "qfit activities"), ("activities", "qfit activities")],
@@ -38,6 +42,7 @@ class LayerManager:
         starts_layer = self._load_optional_layer(gpkg_path, "activity_starts", "qfit activity starts")
         points_layer = self._load_optional_layer(gpkg_path, "activity_points", "qfit activity points")
         atlas_layer = self._load_optional_layer(gpkg_path, "activity_atlas_pages", "qfit atlas pages")
+        self._move_background_layers_to_bottom()
         self._zoom_to_layers([activities_layer, starts_layer, points_layer, atlas_layer])
         return activities_layer, starts_layer, points_layer, atlas_layer
 
@@ -56,7 +61,8 @@ class LayerManager:
         self._remove_background_layers()
         project = QgsProject.instance()
         project.addMapLayer(layer, False)
-        project.layerTreeRoot().insertLayer(0, layer)
+        project.layerTreeRoot().addLayer(layer)
+        self._move_background_layers_to_bottom()
         return layer
 
     def apply_filters(self, layer, activity_type=None, date_from=None, date_to=None, min_distance_km=None, max_distance_km=None, search_text=None, detailed_only=False):
@@ -153,6 +159,32 @@ class LayerManager:
         for layer in list(project.mapLayers().values()):
             if layer.name().startswith(BACKGROUND_LAYER_PREFIX):
                 project.removeMapLayer(layer.id())
+
+    def _ensure_working_crs(self):
+        project = QgsProject.instance()
+        working_crs = QgsCoordinateReferenceSystem(self.WORKING_CRS)
+        if not working_crs.isValid():
+            return
+
+        project.setCrs(working_crs)
+        canvas = self.iface.mapCanvas() if self.iface is not None else None
+        if canvas is not None:
+            canvas.setDestinationCrs(working_crs)
+
+    def _move_background_layers_to_bottom(self):
+        root = QgsProject.instance().layerTreeRoot()
+        background_nodes = []
+        other_nodes = []
+        for child in list(root.children()):
+            layer = child.layer() if hasattr(child, "layer") else None
+            if layer is not None and layer.name().startswith(BACKGROUND_LAYER_PREFIX):
+                background_nodes.append(child)
+            else:
+                other_nodes.append(child)
+
+        desired_order = other_nodes + background_nodes
+        if desired_order and desired_order != list(root.children()):
+            root.reorderChildren(desired_order)
 
     def _apply_temporal_plan(self, layer, layer_key, mode_label):
         props = layer.temporalProperties()
