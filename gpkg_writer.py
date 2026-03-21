@@ -10,11 +10,13 @@ from qgis.core import (
     QgsGeometry,
     QgsPointXY,
     QgsProject,
+    QgsRectangle,
     QgsVectorFileWriter,
     QgsVectorLayer,
 )
 
 from .polyline_utils import decode_polyline
+from .publish_atlas import build_atlas_page_plans
 from .sync_repository import REGISTRY_TABLE, SYNC_STATE_TABLE, SyncRepository
 from .time_utils import add_seconds_iso
 
@@ -91,6 +93,23 @@ POINT_FIELDS = [
     ("last_synced_at", QVariant.String),
 ]
 
+ATLAS_FIELDS = [
+    ("activity_fk", QVariant.Int),
+    ("source", QVariant.String),
+    ("source_activity_id", QVariant.String),
+    ("name", QVariant.String),
+    ("activity_type", QVariant.String),
+    ("start_date", QVariant.String),
+    ("distance_m", QVariant.Double),
+    ("moving_time_s", QVariant.Int),
+    ("geometry_source", QVariant.String),
+    ("page_name", QVariant.String),
+    ("page_title", QVariant.String),
+    ("page_subtitle", QVariant.String),
+    ("extent_width_deg", QVariant.Double),
+    ("extent_height_deg", QVariant.Double),
+]
+
 
 class GeoPackageWriter:
     """Persist qfit sync data to a GeoPackage and rebuild derived visualization layers."""
@@ -127,6 +146,11 @@ class GeoPackageWriter:
                 "kind": "layer",
                 "fields": [name for name, _ in POINT_FIELDS],
             },
+            "activity_atlas_pages": {
+                "geometry": "POLYGON",
+                "kind": "layer",
+                "fields": [name for name, _ in ATLAS_FIELDS],
+            },
         }
 
     def write_activities(self, activities, sync_metadata=None):
@@ -140,6 +164,7 @@ class GeoPackageWriter:
             self._write_layer(self._build_track_layer([]), "activity_tracks", overwrite_file=True)
             self._write_layer(self._build_start_layer([]), "activity_starts", overwrite_file=False)
             self._write_layer(self._build_point_layer([]), "activity_points", overwrite_file=False)
+            self._write_layer(self._build_atlas_layer([]), "activity_atlas_pages", overwrite_file=False)
 
         repository.ensure_schema()
         sync_result = repository.upsert_activities(activities, sync_metadata=sync_metadata)
@@ -148,9 +173,11 @@ class GeoPackageWriter:
         track_layer = self._build_track_layer(records)
         start_layer = self._build_start_layer(records)
         point_layer = self._build_point_layer(records)
+        atlas_layer = self._build_atlas_layer(records)
         self._write_layer(track_layer, "activity_tracks", overwrite_file=False)
         self._write_layer(start_layer, "activity_starts", overwrite_file=False)
         self._write_layer(point_layer, "activity_points", overwrite_file=False)
+        self._write_layer(atlas_layer, "activity_atlas_pages", overwrite_file=False)
 
         return {
             "schema": self.schema(),
@@ -159,6 +186,7 @@ class GeoPackageWriter:
             "track_count": track_layer.featureCount(),
             "start_count": start_layer.featureCount(),
             "point_count": point_layer.featureCount(),
+            "atlas_count": atlas_layer.featureCount(),
             "sync": sync_result,
         }
 
@@ -291,6 +319,37 @@ class GeoPackageWriter:
                 feature["geometry_source"] = record.get("geometry_source") or "stream"
                 feature["last_synced_at"] = record.get("last_synced_at")
                 features.append(feature)
+
+        provider.addFeatures(features)
+        layer.updateExtents()
+        return layer
+
+    def _build_atlas_layer(self, records):
+        layer = QgsVectorLayer("Polygon?crs=EPSG:4326", "activity_atlas_pages", "memory")
+        provider = layer.dataProvider()
+        provider.addAttributes(self._make_fields(ATLAS_FIELDS))
+        layer.updateFields()
+
+        features = []
+        for index, plan in enumerate(build_atlas_page_plans(records), start=1):
+            rect = QgsRectangle(plan.min_lon, plan.min_lat, plan.max_lon, plan.max_lat)
+            feature = QgsFeature(layer.fields())
+            feature.setGeometry(QgsGeometry.fromRect(rect))
+            feature["activity_fk"] = index
+            feature["source"] = plan.source
+            feature["source_activity_id"] = plan.source_activity_id
+            feature["name"] = plan.name
+            feature["activity_type"] = plan.activity_type
+            feature["start_date"] = plan.start_date
+            feature["distance_m"] = plan.distance_m
+            feature["moving_time_s"] = plan.moving_time_s
+            feature["geometry_source"] = plan.geometry_source
+            feature["page_name"] = plan.page_name
+            feature["page_title"] = plan.page_title
+            feature["page_subtitle"] = plan.page_subtitle
+            feature["extent_width_deg"] = plan.extent_width_deg
+            feature["extent_height_deg"] = plan.extent_height_deg
+            features.append(feature)
 
         provider.addFeatures(features)
         layer.updateExtents()
