@@ -111,8 +111,12 @@ ATLAS_FIELDS = [
     ("page_date", QVariant.String),
     ("page_distance_label", QVariant.String),
     ("page_duration_label", QVariant.String),
+    ("center_x_3857", QVariant.Double),
+    ("center_y_3857", QVariant.Double),
     ("extent_width_deg", QVariant.Double),
     ("extent_height_deg", QVariant.Double),
+    ("extent_width_m", QVariant.Double),
+    ("extent_height_m", QVariant.Double),
 ]
 
 
@@ -368,8 +372,12 @@ class GeoPackageWriter:
             feature["page_date"] = plan.page_date
             feature["page_distance_label"] = plan.page_distance_label
             feature["page_duration_label"] = plan.page_duration_label
+            feature["center_x_3857"] = plan.center_x_3857
+            feature["center_y_3857"] = plan.center_y_3857
             feature["extent_width_deg"] = plan.extent_width_deg
             feature["extent_height_deg"] = plan.extent_height_deg
+            feature["extent_width_m"] = plan.extent_width_m
+            feature["extent_height_m"] = plan.extent_height_m
             features.append(feature)
 
         provider.addFeatures(features)

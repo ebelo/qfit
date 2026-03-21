@@ -22,7 +22,7 @@ This document describes the current qfit GeoPackage layout and the intended next
 - `activity_tracks` — one visible line feature per activity
 - `activity_starts` — one visible point per activity start
 - `activity_points` — optional sampled point layer derived from detailed stream geometry
-- `activity_atlas_pages` — polygon page/index layer for QGIS atlas or print-layout workflows, now with deterministic page ordering and TOC-friendly labels
+- `activity_atlas_pages` — polygon page/index layer for QGIS atlas or print-layout workflows, now with deterministic page ordering, TOC-friendly labels, and Web Mercator-ready extent metadata
 
 ## Table: `activity_registry`
 
@@ -206,8 +206,12 @@ Primary purpose:
 | `page_date` | TEXT | preformatted local/primary activity date for layout labels |
 | `page_distance_label` | TEXT | preformatted distance label such as `42.5 km` |
 | `page_duration_label` | TEXT | preformatted moving-time label such as `2h 00m` |
+| `center_x_3857` | REAL | Web Mercator page center X for EPSG:3857 layouts |
+| `center_y_3857` | REAL | Web Mercator page center Y for EPSG:3857 layouts |
 | `extent_width_deg` | REAL | padded page width in degrees after the configured atlas margin/minimum extent rules |
 | `extent_height_deg` | REAL | padded page height in degrees after the configured atlas margin/minimum extent rules |
+| `extent_width_m` | REAL | padded page width in Web Mercator meters |
+| `extent_height_m` | REAL | padded page height in Web Mercator meters |
 
 ## Geometry priority
 

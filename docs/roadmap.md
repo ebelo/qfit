@@ -86,6 +86,7 @@ Goal: map styling, data filtering, and activity querying.
 - Style presets and layer styling basics
 - Start points / tracks / heatmap-style views
 - Auto-zoom to loaded data extents
+- Working QGIS map/project projection choice aligned to Web Mercator (`EPSG:3857`)
 - Background-map support via Mapbox
 - Background presets:
   - Outdoor
@@ -111,6 +112,7 @@ Goal: map styling, data filtering, and activity querying.
 - Smarter visualization presets per activity type
 - Query saving / reusable view presets
 - More explicit basemap and map-style configuration UX
+- Better separation between preview/query controls and post-load QGIS layer subsetting
 - Route/profile-linked inspection in the visualization flow
 
 ### Notes

@@ -4,6 +4,7 @@ from tests import _path  # noqa: F401
 from qfit.publish_atlas import (
     DEFAULT_MIN_EXTENT_DEGREES,
     MIN_ALLOWED_ATLAS_MIN_EXTENT_DEGREES,
+    WEB_MERCATOR_EPSG,
     activity_bounds,
     atlas_sort_key,
     build_atlas_page_plans,
@@ -13,7 +14,9 @@ from qfit.publish_atlas import (
     expand_bounds,
     format_distance_label,
     format_duration_label,
+    lonlat_to_web_mercator,
     normalize_atlas_page_settings,
+    web_mercator_to_lonlat,
 )
 
 
@@ -48,6 +51,8 @@ class PublishAtlasTests(unittest.TestCase):
         self.assertTrue(plan.page_sort_key.startswith("2026-03-18T08:10:00+01:00|morning gravel ride|strava|101"))
         self.assertGreater(plan.extent_width_deg, 0.12)
         self.assertGreater(plan.extent_height_deg, 0.05)
+        self.assertGreater(plan.extent_width_m, 9000)
+        self.assertGreater(plan.extent_height_m, 7000)
 
     def test_build_atlas_page_plans_sorts_chronologically_and_assigns_page_numbers(self):
         records = [
@@ -105,6 +110,8 @@ class PublishAtlasTests(unittest.TestCase):
         self.assertGreater(custom_plan.extent_height_deg, default_plan.extent_height_deg)
         self.assertAlmostEqual(custom_plan.extent_width_deg, 0.03)
         self.assertAlmostEqual(custom_plan.extent_height_deg, 0.03)
+        self.assertGreater(custom_plan.extent_width_m, default_plan.extent_width_m)
+        self.assertGreater(custom_plan.extent_height_m, default_plan.extent_height_m)
 
     def test_normalize_atlas_page_settings_clamps_invalid_values(self):
         settings = normalize_atlas_page_settings(margin_percent=-5, min_extent_degrees=0)
@@ -160,6 +167,20 @@ class PublishAtlasTests(unittest.TestCase):
         key = atlas_sort_key({"name": "  Lunch   Walk  "})
 
         self.assertEqual(key, "9999-12-31T23:59:59|lunch walk||")
+
+    def test_web_mercator_helpers_round_trip_reasonably(self):
+        x, y = lonlat_to_web_mercator(6.6323, 46.5197)
+        lon, lat = web_mercator_to_lonlat(x, y)
+
+        self.assertEqual(WEB_MERCATOR_EPSG, "EPSG:3857")
+        self.assertAlmostEqual(lon, 6.6323, places=5)
+        self.assertAlmostEqual(lat, 46.5197, places=5)
+
+    def test_web_mercator_helpers_clamp_polar_latitudes(self):
+        _, y = lonlat_to_web_mercator(0.0, 90.0)
+        _, lat = web_mercator_to_lonlat(0.0, y)
+
+        self.assertLessEqual(abs(lat), 85.05112878)
 
 
 if __name__ == "__main__":
