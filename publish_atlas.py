@@ -44,6 +44,13 @@ class AtlasPagePlan:
     page_date: str | None
     page_distance_label: str | None
     page_duration_label: str | None
+    profile_available: bool
+    profile_point_count: int
+    profile_distance_m: float | None
+    profile_min_altitude_m: float | None
+    profile_max_altitude_m: float | None
+    profile_elevation_gain_m: float | None
+    profile_elevation_loss_m: float | None
     min_lon: float
     min_lat: float
     max_lon: float
@@ -131,6 +138,7 @@ def build_atlas_page_plans(
         page_title = (record.get("name") or "Untitled activity").strip()
         page_name = build_page_name(record)
         page_subtitle = build_page_subtitle(record)
+        profile_summary = build_profile_summary(record)
         plans.append(
             AtlasPagePlan(
                 source=record.get("source"),
@@ -149,6 +157,13 @@ def build_atlas_page_plans(
                 page_date=format_activity_date(record.get("start_date_local") or record.get("start_date")),
                 page_distance_label=format_distance_label(record.get("distance_m")),
                 page_duration_label=format_duration_label(record.get("moving_time_s")),
+                profile_available=profile_summary.available,
+                profile_point_count=profile_summary.point_count,
+                profile_distance_m=profile_summary.distance_m,
+                profile_min_altitude_m=profile_summary.min_altitude_m,
+                profile_max_altitude_m=profile_summary.max_altitude_m,
+                profile_elevation_gain_m=profile_summary.elevation_gain_m,
+                profile_elevation_loss_m=profile_summary.elevation_loss_m,
                 min_lon=min_lon,
                 min_lat=min_lat,
                 max_lon=max_lon,
@@ -359,6 +374,64 @@ def build_page_subtitle(record: dict) -> str:
         parts.append(duration_label)
 
     return " · ".join(parts)
+
+
+@dataclass(frozen=True)
+class AtlasProfileSummary:
+    available: bool = False
+    point_count: int = 0
+    distance_m: float | None = None
+    min_altitude_m: float | None = None
+    max_altitude_m: float | None = None
+    elevation_gain_m: float | None = None
+    elevation_loss_m: float | None = None
+
+
+def build_profile_summary(record: dict) -> AtlasProfileSummary:
+    details_json = record.get("details_json") or {}
+    stream_metrics = details_json.get("stream_metrics") if isinstance(details_json, dict) else None
+    if not isinstance(stream_metrics, dict):
+        return AtlasProfileSummary()
+
+    altitude_values = stream_metrics.get("altitude")
+    distance_values = stream_metrics.get("distance")
+    if not isinstance(altitude_values, list) or not isinstance(distance_values, list):
+        return AtlasProfileSummary()
+
+    profile_points = []
+    for distance_value, altitude_value in zip(distance_values, altitude_values):
+        distance_m = _safe_float(distance_value)
+        altitude_m = _safe_float(altitude_value)
+        if distance_m is None or altitude_m is None:
+            continue
+        profile_points.append((distance_m, altitude_m))
+
+    if len(profile_points) < 2:
+        return AtlasProfileSummary()
+
+    profile_distance_m = profile_points[-1][0] - profile_points[0][0]
+    if profile_distance_m <= 0:
+        return AtlasProfileSummary()
+
+    altitudes = [altitude for _, altitude in profile_points]
+    elevation_gain_m = 0.0
+    elevation_loss_m = 0.0
+    for (_, previous_altitude), (_, current_altitude) in zip(profile_points, profile_points[1:]):
+        delta = current_altitude - previous_altitude
+        if delta > 0:
+            elevation_gain_m += delta
+        elif delta < 0:
+            elevation_loss_m += abs(delta)
+
+    return AtlasProfileSummary(
+        available=True,
+        point_count=len(profile_points),
+        distance_m=profile_distance_m,
+        min_altitude_m=min(altitudes),
+        max_altitude_m=max(altitudes),
+        elevation_gain_m=elevation_gain_m,
+        elevation_loss_m=elevation_loss_m,
+    )
 
 
 def format_activity_date(value: str | None) -> str | None:
