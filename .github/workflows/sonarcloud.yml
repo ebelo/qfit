@@ -10,11 +10,15 @@ on:
 jobs:
   sonarcloud:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: QFIT
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          path: QFIT
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -32,6 +36,8 @@ jobs:
 
       - name: SonarCloud scan
         uses: SonarSource/sonarqube-scan-action@v5
+        with:
+          projectBaseDir: QFIT
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
