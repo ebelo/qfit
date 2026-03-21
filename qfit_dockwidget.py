@@ -27,6 +27,7 @@ from .mapbox_config import (
 )
 from .qfit_cache import QfitCache
 from .strava_client import StravaClient, StravaClientError
+from .temporal_config import DEFAULT_TEMPORAL_MODE_LABEL, temporal_mode_labels
 
 FORM_CLASS, _ = uic.loadUiType(
     __import__("os").path.join(__import__("os").path.dirname(__file__), "qfit_dockwidget_base.ui")
@@ -52,6 +53,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.setupUi(self)
         self._configure_background_preset_options()
         self._configure_preview_sort_options()
+        self._configure_temporal_mode_options()
         self._load_settings()
         self._wire_events()
         self._set_default_dates()
@@ -88,6 +90,11 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.previewSortComboBox.clear()
         for label in SORT_OPTIONS:
             self.previewSortComboBox.addItem(label)
+
+    def _configure_temporal_mode_options(self):
+        self.temporalModeComboBox.clear()
+        for label in temporal_mode_labels():
+            self.temporalModeComboBox.addItem(label)
 
     def _build_cache(self):
         base_path = QStandardPaths.writableLocation(QStandardPaths.AppDataLocation)
@@ -136,6 +143,12 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._setting_value(settings, "mapbox_style_owner", "mapbox")
         )
         self.mapboxStyleIdLineEdit.setText(self._setting_value(settings, "mapbox_style_id", ""))
+
+        temporal_mode = self._setting_value(settings, "temporal_mode", DEFAULT_TEMPORAL_MODE_LABEL)
+        temporal_mode_index = self.temporalModeComboBox.findText(temporal_mode)
+        if temporal_mode_index < 0:
+            temporal_mode_index = self.temporalModeComboBox.findText(DEFAULT_TEMPORAL_MODE_LABEL)
+        self.temporalModeComboBox.setCurrentIndex(max(temporal_mode_index, 0))
 
         preset_name = self._setting_value(settings, "background_preset", DEFAULT_BACKGROUND_PRESET)
         preset_index = self.backgroundPresetComboBox.findText(preset_name)
@@ -187,6 +200,10 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         settings.setValue(
             f"{self.SETTINGS_PREFIX}/preview_sort",
             self.previewSortComboBox.currentText(),
+        )
+        settings.setValue(
+            f"{self.SETTINGS_PREFIX}/temporal_mode",
+            self.temporalModeComboBox.currentText(),
         )
         settings.setValue(
             f"{self.SETTINGS_PREFIX}/use_background_map",
@@ -416,6 +433,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         query = self._current_activity_query()
         preset = self.stylePresetComboBox.currentText()
         filtered_activities = self._refresh_activity_preview()
+        temporal_note = ""
 
         if has_layers:
             self.layer_manager.apply_filters(
@@ -449,6 +467,12 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 query.detailed_only,
             )
             self.layer_manager.apply_style(self.activities_layer, self.starts_layer, self.points_layer, preset)
+            temporal_note = self.layer_manager.apply_temporal_configuration(
+                self.activities_layer,
+                self.starts_layer,
+                self.points_layer,
+                self.temporalModeComboBox.currentText(),
+            )
 
         try:
             self.background_layer = self.layer_manager.ensure_background_layer(
@@ -463,18 +487,24 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             failure_status = "Applied filters and styling, but the background map could not be updated"
             if not has_layers:
                 failure_status = "Background map could not be updated"
+            if temporal_note:
+                failure_status = f"{failure_status}. {temporal_note}."
             self._set_status(failure_status)
             return
 
         filtered_count = len(filtered_activities)
         if has_layers and wants_background and self.background_layer is not None:
-            self._set_status(f"Applied filters, styling, and background map ({filtered_count} matching activities)")
+            status = f"Applied filters, styling, and background map ({filtered_count} matching activities)"
         elif has_layers:
-            self._set_status(f"Applied filters and styling ({filtered_count} matching activities)")
+            status = f"Applied filters and styling ({filtered_count} matching activities)"
         elif wants_background and self.background_layer is not None:
-            self._set_status(f"Background map updated ({filtered_count} matching activities)")
+            status = f"Background map updated ({filtered_count} matching activities)"
         else:
-            self._set_status(f"Background map cleared ({filtered_count} matching activities)")
+            status = f"Background map cleared ({filtered_count} matching activities)"
+
+        if temporal_note:
+            status = f"{status}. {temporal_note}."
+        self._set_status(status)
 
     def _current_activity_query(self):
         return ActivityQuery(

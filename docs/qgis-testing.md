@@ -57,6 +57,8 @@ Inside the dock:
 6. fetch activities
 7. review the fetched-activity preview and query summary
 8. write and load the output GeoPackage
+9. optionally switch **Temporal playback** to `Local activity time` or `UTC time`
+10. click **Apply filters** to wire the loaded layers into the QGIS temporal controller
 
 ## 5. What to expect in QGIS
 
@@ -93,4 +95,5 @@ Once qfit is loaded successfully, good manual checks are:
 - fetch detailed streams for a few activities
 - confirm `activity_tracks` geometries look right
 - confirm `activity_points` attributes contain time / distance / HR / power where available
-- test filtering, preview sorting, and style presets
+- test filtering, preview sorting, style presets, and temporal playback wiring
+- open the QGIS Temporal Controller and confirm the loaded layers respond to the chosen local/UTC playback mode

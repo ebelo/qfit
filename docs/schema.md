@@ -143,7 +143,7 @@ Geometry type:
 Primary purpose:
 - point-based analysis and visualization from detailed track streams
 - heatmaps using sampled detailed geometry rather than just activity starts
-- foundation for temporal views once QGIS temporal wiring is added
+- temporal playback in QGIS using sampled local or UTC timestamps
 
 ### Current fields
 
@@ -192,7 +192,7 @@ When rebuilding visible layers, qfit currently prefers geometry in this order:
 ## Next phase
 
 Planned next improvements:
-- more explicit QGIS temporal integration using the new sampled timestamps
+- richer temporal styling and playback presets on top of the new timestamp wiring
 - provider adapters for FIT / GPX / TCX imports using the same registry model
 - more explicit incremental sync cursors / sync policies
 - better QGIS integration testing and packaging polish
