@@ -103,9 +103,14 @@ ATLAS_FIELDS = [
     ("distance_m", QVariant.Double),
     ("moving_time_s", QVariant.Int),
     ("geometry_source", QVariant.String),
+    ("page_number", QVariant.Int),
+    ("page_sort_key", QVariant.String),
     ("page_name", QVariant.String),
     ("page_title", QVariant.String),
     ("page_subtitle", QVariant.String),
+    ("page_date", QVariant.String),
+    ("page_distance_label", QVariant.String),
+    ("page_duration_label", QVariant.String),
     ("extent_width_deg", QVariant.Double),
     ("extent_height_deg", QVariant.Double),
 ]
@@ -342,14 +347,11 @@ class GeoPackageWriter:
         layer.updateFields()
 
         features = []
-        for index, plan in enumerate(
-            build_atlas_page_plans(records, settings=self.atlas_page_settings),
-            start=1,
-        ):
+        for plan in build_atlas_page_plans(records, settings=self.atlas_page_settings):
             rect = QgsRectangle(plan.min_lon, plan.min_lat, plan.max_lon, plan.max_lat)
             feature = QgsFeature(layer.fields())
             feature.setGeometry(QgsGeometry.fromRect(rect))
-            feature["activity_fk"] = index
+            feature["activity_fk"] = plan.page_number
             feature["source"] = plan.source
             feature["source_activity_id"] = plan.source_activity_id
             feature["name"] = plan.name
@@ -358,9 +360,14 @@ class GeoPackageWriter:
             feature["distance_m"] = plan.distance_m
             feature["moving_time_s"] = plan.moving_time_s
             feature["geometry_source"] = plan.geometry_source
+            feature["page_number"] = plan.page_number
+            feature["page_sort_key"] = plan.page_sort_key
             feature["page_name"] = plan.page_name
             feature["page_title"] = plan.page_title
             feature["page_subtitle"] = plan.page_subtitle
+            feature["page_date"] = plan.page_date
+            feature["page_distance_label"] = plan.page_distance_label
+            feature["page_duration_label"] = plan.page_duration_label
             feature["extent_width_deg"] = plan.extent_width_deg
             feature["extent_height_deg"] = plan.extent_height_deg
             features.append(feature)

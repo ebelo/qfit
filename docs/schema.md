@@ -22,7 +22,7 @@ This document describes the current qfit GeoPackage layout and the intended next
 - `activity_tracks` — one visible line feature per activity
 - `activity_starts` — one visible point per activity start
 - `activity_points` — optional sampled point layer derived from detailed stream geometry
-- `activity_atlas_pages` — polygon page/index layer for QGIS atlas or print-layout workflows
+- `activity_atlas_pages` — polygon page/index layer for QGIS atlas or print-layout workflows, now with deterministic page ordering and TOC-friendly labels
 
 ## Table: `activity_registry`
 
@@ -198,9 +198,14 @@ Primary purpose:
 | `distance_m` | REAL | copied for filtering / layout text |
 | `moving_time_s` | INTEGER | copied for layout text |
 | `geometry_source` | TEXT | stream/summary/fallback source used to derive the page extent |
+| `page_number` | INTEGER | stable chronological page number for layouts / table-of-contents workflows |
+| `page_sort_key` | TEXT | deterministic sort key combining activity datetime, name, source, and source id |
 | `page_name` | TEXT | atlas-friendly page label, usually `YYYY-MM-DD · Title` |
 | `page_title` | TEXT | large-title label |
 | `page_subtitle` | TEXT | compact summary such as type, distance, and moving time |
+| `page_date` | TEXT | preformatted local/primary activity date for layout labels |
+| `page_distance_label` | TEXT | preformatted distance label such as `42.5 km` |
+| `page_duration_label` | TEXT | preformatted moving-time label such as `2h 00m` |
 | `extent_width_deg` | REAL | padded page width in degrees after the configured atlas margin/minimum extent rules |
 | `extent_height_deg` | REAL | padded page height in degrees after the configured atlas margin/minimum extent rules |
 
