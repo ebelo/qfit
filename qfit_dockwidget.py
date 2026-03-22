@@ -1,7 +1,7 @@
 import os
 from datetime import date, datetime, time
 
-from qgis.core import QgsApplication
+from qgis.core import QgsApplication, QgsProject
 from qgis.PyQt import uic
 from qgis.PyQt.QtCore import QDate, QSettings, QStandardPaths, QUrl
 from qgis.PyQt.QtGui import QDesktopServices
@@ -12,6 +12,7 @@ from .activity_query import (
     SORT_OPTIONS,
     ActivityQuery,
     build_preview_lines,
+    build_subset_string,
     filter_activities,
     format_summary_text,
     sort_activities,
@@ -91,12 +92,14 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.browseButton.clicked.connect(self.on_browse_clicked)
         self.refreshButton.clicked.connect(self.on_refresh_clicked)
         self.loadButton.clicked.connect(self.on_load_clicked)
+        self.clearDatabaseButton.clicked.connect(self.on_clear_database_clicked)
         self.applyFiltersButton.clicked.connect(self.on_apply_filters_clicked)
         self.loadBackgroundButton.clicked.connect(self.on_load_background_clicked)
         self.backgroundPresetComboBox.currentTextChanged.connect(self.on_background_preset_changed)
         self.detailedStreamsCheckBox.toggled.connect(self._update_detailed_fetch_visibility)
         self.writeActivityPointsCheckBox.toggled.connect(self._update_point_sampling_visibility)
         self.publishGroupBox.toggled.connect(self._update_publish_section_visibility)
+        self.advancedFetchGroupBox.toggled.connect(self._update_advanced_fetch_visibility)
         self.atlasPdfBrowseButton.clicked.connect(self.on_atlas_pdf_browse_clicked)
         self.generateAtlasPdfButton.clicked.connect(self.on_generate_atlas_pdf_clicked)
         self.clientIdLineEdit.textChanged.connect(self._update_connection_status)
@@ -138,6 +141,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._update_detailed_fetch_visibility(self.detailedStreamsCheckBox.isChecked())
         self._update_point_sampling_visibility(self.writeActivityPointsCheckBox.isChecked())
         self._update_publish_section_visibility(self.publishGroupBox.isChecked())
+        self._update_advanced_fetch_visibility(self.advancedFetchGroupBox.isChecked())
         self._update_mapbox_advanced_visibility(self.backgroundPresetComboBox.currentText())
 
     def _update_detailed_fetch_visibility(self, enabled):
@@ -163,6 +167,11 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def _update_publish_section_visibility(self, expanded):
         if hasattr(self, "publishSettingsWidget"):
             self.publishSettingsWidget.setVisible(expanded)
+
+    def _update_advanced_fetch_visibility(self, expanded):
+        widget = getattr(self, "advancedFetchSettingsWidget", None)
+        if widget is not None:
+            widget.setVisible(expanded)
 
     def _update_mapbox_advanced_visibility(self, preset_name):
         show_advanced = preset_requires_custom_style(preset_name)
@@ -210,8 +219,8 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             os.path.join(os.path.expanduser("~"), "qfit_activities.gpkg"),
         )
         self.outputPathLineEdit.setText(default_output)
-        self.perPageSpinBox.setValue(int(self._setting_value(settings, "per_page", 50)))
-        self.maxPagesSpinBox.setValue(int(self._setting_value(settings, "max_pages", 2)))
+        self.perPageSpinBox.setValue(int(self._setting_value(settings, "per_page", 200)))
+        self.maxPagesSpinBox.setValue(int(self._setting_value(settings, "max_pages", 0)))
         self.detailedStreamsCheckBox.setChecked(self._settings_bool(settings, "use_detailed_streams", False))
         self.maxDetailedActivitiesSpinBox.setValue(int(self._setting_value(settings, "max_detailed_activities", 25)))
         self.writeActivityPointsCheckBox.setChecked(
@@ -267,6 +276,10 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         if style_preset_index < 0:
             style_preset_index = self.stylePresetComboBox.findText("By activity type")
         self.stylePresetComboBox.setCurrentIndex(max(style_preset_index, 0))
+
+        last_sync = self._setting_value(settings, "last_sync_date", None)
+        if last_sync:
+            self.countLabel.setText(f"Last sync: {last_sync}")
 
     def _save_settings(self):
         settings = QSettings()
@@ -545,6 +558,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         before, after = self._build_fetch_epoch_range()
         self.activities = activities
         detailed_count = sum(1 for activity in self.activities if activity.geometry_source == "stream")
+        today_str = date.today().isoformat()
         self.last_fetch_context = {
             "provider": "strava",
             "before_epoch": before,
@@ -555,10 +569,15 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             "rate_limit": client.last_rate_limit,
             "is_full_sync": self._is_full_sync_window(before, after),
         }
+        # Persist last sync date
+        settings = QSettings()
+        settings.setValue(f"{self.SETTINGS_PREFIX}/last_sync_date", today_str)
+
         self._populate_activity_types()
         self.countLabel.setText(
-            "Activities fetched: {count} (detailed tracks: {detailed})".format(
+            "{count} activities loaded (last sync: {sync_date}, detailed tracks: {detailed})".format(
                 count=len(self.activities),
+                sync_date=today_str,
                 detailed=detailed_count,
             )
         )
@@ -595,13 +614,25 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             sync = result.get("sync") or {}
             if visual_status:
                 visual_status = f" {visual_status}"
+
+            # Update completeness indicator with last sync date from QSettings
+            settings = QSettings()
+            last_sync = self._setting_value(settings, "last_sync_date", date.today().isoformat())
+            total_stored = sync.get("total_count", 0)
+            self.countLabel.setText(
+                "{total} activities stored (last sync: {sync_date})".format(
+                    total=total_stored,
+                    sync_date=last_sync,
+                )
+            )
+
             self._set_status(
                 "Synced {fetched} fetched activities into GeoPackage: inserted {inserted}, updated {updated}, unchanged {unchanged}, stored total {total}. Loaded {track_count} tracks, {start_count} starts, {point_count} activity points, and {atlas_count} atlas pages into QGIS without auto-filtering the layer tables.{visual_status}".format(
                     fetched=result.get("fetched_count", len(self.activities)),
                     inserted=sync.get("inserted", 0),
                     updated=sync.get("updated", 0),
                     unchanged=sync.get("unchanged", 0),
-                    total=sync.get("total_count", 0),
+                    total=total_stored,
                     track_count=result.get("track_count", 0),
                     start_count=result.get("start_count", 0),
                     point_count=result.get("point_count", 0),
@@ -612,6 +643,62 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         except Exception as exc:  # noqa: BLE001
             self._show_error("GeoPackage export failed", str(exc))
             self._set_status("GeoPackage export failed")
+
+    def on_clear_database_clicked(self):
+        """Delete the GeoPackage, clear loaded layers, and reset status."""
+        output_path = self.outputPathLineEdit.text().strip()
+        if not output_path:
+            self._show_error("No database path", "Set a GeoPackage output path first.")
+            return
+
+        reply = QMessageBox.question(
+            self,
+            "Clear database & re-import",
+            (
+                "This will delete the GeoPackage file and remove all qfit layers from QGIS:\n\n"
+                f"  {output_path}\n\n"
+                "The file cannot be recovered. Continue?"
+            ),
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No,
+        )
+        if reply != QMessageBox.Yes:
+            return
+
+        # Remove layers from QGIS project
+        for layer in [self.activities_layer, self.starts_layer, self.points_layer, self.atlas_layer]:
+            if layer is not None:
+                try:
+                    QgsProject.instance().removeMapLayer(layer)
+                except Exception:  # noqa: BLE001
+                    pass
+
+        self.activities_layer = None
+        self.starts_layer = None
+        self.points_layer = None
+        self.atlas_layer = None
+        self.activities = []
+        self.output_path = None
+        self.last_fetch_context = {}
+
+        # Delete the file
+        deleted = False
+        if os.path.exists(output_path):
+            try:
+                os.remove(output_path)
+                deleted = True
+            except OSError as exc:
+                self._show_error("Could not delete database", str(exc))
+                self._set_status("Failed to delete the GeoPackage file")
+                return
+
+        self.countLabel.setText("Activities fetched: 0")
+        if deleted:
+            self._set_status(
+                f"Database cleared: {output_path} deleted. Fetch and store activities to start fresh."
+            )
+        else:
+            self._set_status("Layers cleared. No file to delete at the specified path.")
 
     def on_apply_filters_clicked(self):
         has_layers = any(layer is not None for layer in [self.activities_layer, self.starts_layer, self.points_layer, self.atlas_layer])
@@ -893,6 +980,12 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self.atlasPdfPathLineEdit.setText(output_path)
 
         self._save_settings()
+
+        # Build the current visualization subset string so the atlas export
+        # respects the active filters without re-fetching.
+        query = self._current_activity_query()
+        current_subset = build_subset_string(query)
+
         self._set_atlas_export_running(True)
         self._set_atlas_pdf_status(
             f"Exporting atlas ({self.atlas_layer.featureCount()} pages)…"
@@ -903,6 +996,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             atlas_layer=self.atlas_layer,
             output_path=output_path,
             on_finished=self._on_atlas_export_finished,
+            subset_string=current_subset,
         )
         QgsApplication.taskManager().addTask(self._atlas_export_task)
 

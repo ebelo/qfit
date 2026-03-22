@@ -77,8 +77,8 @@ class TestStravaFetchTaskSuccess(unittest.TestCase):
 
         self.task = StravaFetchTask(
             client=self.mock_client,
-            per_page=10,
-            max_pages=1,
+            per_page=200,
+            max_pages=0,
             before=None,
             after=None,
             use_detailed_streams=False,
@@ -100,8 +100,8 @@ class TestStravaFetchTaskSuccess(unittest.TestCase):
     def test_fetch_activities_called_with_correct_params(self):
         _run_task(self.task)
         self.mock_client.fetch_activities.assert_called_once_with(
-            per_page=10,
-            max_pages=1,
+            per_page=200,
+            max_pages=0,
             before=None,
             after=None,
             use_detailed_streams=False,
@@ -123,8 +123,8 @@ class TestStravaFetchTaskError(unittest.TestCase):
 
         self.task = StravaFetchTask(
             client=self.mock_client,
-            per_page=10,
-            max_pages=1,
+            per_page=200,
+            max_pages=0,
             before=None,
             after=None,
             use_detailed_streams=False,
@@ -158,8 +158,8 @@ class TestStravaFetchTaskCancellation(unittest.TestCase):
 
         self.task = StravaFetchTask(
             client=self.mock_client,
-            per_page=10,
-            max_pages=1,
+            per_page=200,
+            max_pages=0,
             before=None,
             after=None,
             use_detailed_streams=False,
@@ -185,8 +185,8 @@ class TestStravaFetchTaskNoCallback(unittest.TestCase):
         mock_client.fetch_activities.return_value = []
         task = StravaFetchTask(
             client=mock_client,
-            per_page=10,
-            max_pages=1,
+            per_page=200,
+            max_pages=0,
             before=None,
             after=None,
             use_detailed_streams=False,
