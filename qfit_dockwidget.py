@@ -1,7 +1,7 @@
 import os
 from datetime import date, datetime, time
 
-from qgis.core import QgsApplication
+from qgis.core import QgsApplication, QgsProject
 from qgis.PyQt import uic
 from qgis.PyQt.QtCore import QDate, QSettings, QStandardPaths, QUrl
 from qgis.PyQt.QtGui import QDesktopServices
@@ -92,6 +92,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.browseButton.clicked.connect(self.on_browse_clicked)
         self.refreshButton.clicked.connect(self.on_refresh_clicked)
         self.loadButton.clicked.connect(self.on_load_clicked)
+        self.clearDatabaseButton.clicked.connect(self.on_clear_database_clicked)
         self.applyFiltersButton.clicked.connect(self.on_apply_filters_clicked)
         self.loadBackgroundButton.clicked.connect(self.on_load_background_clicked)
         self.backgroundPresetComboBox.currentTextChanged.connect(self.on_background_preset_changed)
@@ -620,6 +621,62 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         except Exception as exc:  # noqa: BLE001
             self._show_error("GeoPackage export failed", str(exc))
             self._set_status("GeoPackage export failed")
+
+    def on_clear_database_clicked(self):
+        """Delete the GeoPackage, clear loaded layers, and reset status."""
+        output_path = self.outputPathLineEdit.text().strip()
+        if not output_path:
+            self._show_error("No database path", "Set a GeoPackage output path first.")
+            return
+
+        reply = QMessageBox.question(
+            self,
+            "Clear database & re-import",
+            (
+                "This will delete the GeoPackage file and remove all qfit layers from QGIS:\n\n"
+                f"  {output_path}\n\n"
+                "The file cannot be recovered. Continue?"
+            ),
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No,
+        )
+        if reply != QMessageBox.Yes:
+            return
+
+        # Remove layers from QGIS project
+        for layer in [self.activities_layer, self.starts_layer, self.points_layer, self.atlas_layer]:
+            if layer is not None:
+                try:
+                    QgsProject.instance().removeMapLayer(layer)
+                except Exception:  # noqa: BLE001
+                    pass
+
+        self.activities_layer = None
+        self.starts_layer = None
+        self.points_layer = None
+        self.atlas_layer = None
+        self.activities = []
+        self.output_path = None
+        self.last_fetch_context = {}
+
+        # Delete the file
+        deleted = False
+        if os.path.exists(output_path):
+            try:
+                os.remove(output_path)
+                deleted = True
+            except OSError as exc:
+                self._show_error("Could not delete database", str(exc))
+                self._set_status("Failed to delete the GeoPackage file")
+                return
+
+        self.countLabel.setText("Activities fetched: 0")
+        if deleted:
+            self._set_status(
+                f"Database cleared: {output_path} deleted. Fetch and store activities to start fresh."
+            )
+        else:
+            self._set_status("Layers cleared. No file to delete at the specified path.")
 
     def on_apply_filters_clicked(self):
         has_layers = any(layer is not None for layer in [self.activities_layer, self.starts_layer, self.points_layer, self.atlas_layer])

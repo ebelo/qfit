@@ -382,6 +382,16 @@
              </property>
             </widget>
            </item>
+           <item>
+            <widget class="QPushButton" name="clearDatabaseButton">
+             <property name="text">
+              <string>Clear database &amp; re-import</string>
+             </property>
+             <property name="toolTip">
+              <string>Delete the GeoPackage file and clear all loaded layers so you can start a clean import. A confirmation dialog will appear first.</string>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
         </item>
