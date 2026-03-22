@@ -8,7 +8,7 @@ from tests import _path  # noqa: F401
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 try:
-    from qgis.core import QgsApplication, QgsProject
+    from qgis.core import QgsApplication, QgsProject, QgsVectorLayer
 
     from qfit.gpkg_writer import GeoPackageWriter
     from qfit.layer_manager import LayerManager
@@ -18,6 +18,7 @@ try:
 except Exception as exc:  # pragma: no cover - exercised only when QGIS is unavailable
     QgsApplication = None
     QgsProject = None
+    QgsVectorLayer = None
     GeoPackageWriter = None
     LayerManager = None
     QGIS_AVAILABLE = False
@@ -93,6 +94,20 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertEqual(result["start_count"], 2)
             self.assertGreaterEqual(result["point_count"], 4)
             self.assertEqual(result["atlas_count"], 2)
+            self.assertEqual(result["document_summary_count"], 1)
+
+            document_summary_layer = QgsVectorLayer(
+                f"{output_path}|layername=atlas_document_summary",
+                "qfit atlas document summary",
+                "ogr",
+            )
+            self.assertTrue(document_summary_layer.isValid())
+            self.assertEqual(document_summary_layer.featureCount(), 1)
+            document_summary_feature = next(document_summary_layer.getFeatures())
+            self.assertEqual(document_summary_feature["activity_count"], 2)
+            self.assertEqual(document_summary_feature["date_range_label"], "2026-03-20 → 2026-03-21")
+            self.assertEqual(document_summary_feature["total_distance_label"], "35.3 km")
+            self.assertIn("2 activities · 2026-03-20 → 2026-03-21 · 35.3 km · 1h 50m · ↑ 405 m", document_summary_feature["cover_summary"])
 
             background = self.layer_manager.ensure_background_layer(True, "Outdoor", "test-token")
             background_name = background.name()

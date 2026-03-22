@@ -35,32 +35,31 @@ class GeoPackageWriterAtlasTests(unittest.TestCase):
 
     def test_build_atlas_layer_includes_document_summary_fields(self):
         writer = GeoPackageWriter(output_path="/tmp/qfit-test.gpkg")
-        layer = writer._build_atlas_layer(
-            [
-                {
-                    "source": "strava",
-                    "source_activity_id": "100",
-                    "name": "Morning Ride",
-                    "activity_type": "Ride",
-                    "start_date_local": "2026-03-18T08:10:00+01:00",
-                    "distance_m": 42500,
-                    "moving_time_s": 7200,
-                    "total_elevation_gain_m": 640,
-                    "geometry_points": [(46.52, 6.62), (46.57, 6.74)],
-                },
-                {
-                    "source": "strava",
-                    "source_activity_id": "200",
-                    "name": "Lunch Run",
-                    "activity_type": "Run",
-                    "start_date_local": "2026-03-19T12:00:00+01:00",
-                    "distance_m": 10100,
-                    "moving_time_s": 3000,
-                    "total_elevation_gain_m": 85,
-                    "geometry_points": [(46.50, 6.60), (46.51, 6.62)],
-                },
-            ]
-        )
+        records = [
+            {
+                "source": "strava",
+                "source_activity_id": "100",
+                "name": "Morning Ride",
+                "activity_type": "Ride",
+                "start_date_local": "2026-03-18T08:10:00+01:00",
+                "distance_m": 42500,
+                "moving_time_s": 7200,
+                "total_elevation_gain_m": 640,
+                "geometry_points": [(46.52, 6.62), (46.57, 6.74)],
+            },
+            {
+                "source": "strava",
+                "source_activity_id": "200",
+                "name": "Lunch Run",
+                "activity_type": "Run",
+                "start_date_local": "2026-03-19T12:00:00+01:00",
+                "distance_m": 10100,
+                "moving_time_s": 3000,
+                "total_elevation_gain_m": 85,
+                "geometry_points": [(46.50, 6.60), (46.51, 6.62)],
+            },
+        ]
+        layer = writer._build_atlas_layer(records)
 
         self.assertTrue(layer.isValid())
         self.assertEqual(layer.featureCount(), 2)
@@ -76,6 +75,28 @@ class GeoPackageWriterAtlasTests(unittest.TestCase):
         self.assertEqual(first_feature["document_activity_types_label"], "Ride, Run")
         self.assertEqual(
             first_feature["document_cover_summary"],
+            "2 activities · 2026-03-18 → 2026-03-19 · 52.6 km · 2h 50m · ↑ 725 m · Ride, Run",
+        )
+
+        summary_layer = writer._build_document_summary_layer(records)
+        self.assertTrue(summary_layer.isValid())
+        self.assertEqual(summary_layer.featureCount(), 1)
+        self.assertGreaterEqual(summary_layer.fields().indexOf("cover_summary"), 0)
+
+        summary_feature = next(summary_layer.getFeatures())
+        self.assertEqual(summary_feature["activity_count"], 2)
+        self.assertEqual(summary_feature["activity_date_start"], "2026-03-18")
+        self.assertEqual(summary_feature["activity_date_end"], "2026-03-19")
+        self.assertEqual(summary_feature["date_range_label"], "2026-03-18 → 2026-03-19")
+        self.assertEqual(summary_feature["total_distance_m"], 52600.0)
+        self.assertEqual(summary_feature["total_distance_label"], "52.6 km")
+        self.assertEqual(summary_feature["total_moving_time_s"], 10200)
+        self.assertEqual(summary_feature["total_duration_label"], "2h 50m")
+        self.assertEqual(summary_feature["total_elevation_gain_m"], 725.0)
+        self.assertEqual(summary_feature["total_elevation_gain_label"], "725 m")
+        self.assertEqual(summary_feature["activity_types_label"], "Ride, Run")
+        self.assertEqual(
+            summary_feature["cover_summary"],
             "2 activities · 2026-03-18 → 2026-03-19 · 52.6 km · 2h 50m · ↑ 725 m · Ride, Run",
         )
 

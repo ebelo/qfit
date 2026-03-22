@@ -11,7 +11,7 @@ python3 -m unittest tests.test_qgis_smoke -v
 ```
 
 What it checks:
-- writing a sample qfit GeoPackage with tracks, starts, points, and atlas pages
+- writing a sample qfit GeoPackage with tracks, starts, points, atlas pages, and the atlas document-summary table
 - loading those layers back into a live `QgsProject`
 - enforcing qfit's working CRS (`EPSG:3857`) on the project/canvas
 - wiring temporal playback expressions onto loaded layers

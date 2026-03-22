@@ -23,6 +23,7 @@ This document describes the current qfit GeoPackage layout and the intended next
 - `activity_starts` — one visible point per activity start
 - `activity_points` — optional sampled point layer derived from detailed stream geometry
 - `activity_atlas_pages` — polygon page/index layer for QGIS atlas or print-layout workflows, now with deterministic page ordering, TOC-friendly labels, publish-friendly detail labels/summary text, repeated document-summary fields for cover/TOC layouts, Web Mercator-ready extent metadata, and route-profile summary/label fields when detailed streams are available
+- `atlas_document_summary` — non-spatial single-row helper table carrying atlas-wide totals and cover/TOC-ready labels for layouts that prefer a dedicated document-summary source
 
 ## Table: `activity_registry`
 
@@ -186,7 +187,8 @@ Primary purpose:
 - extent padding/minimum size controlled by the plugin's publish settings at write time
 - optional Web Mercator aspect-ratio fitting can widen/tallify the padded extent for more layout-consistent framing
 - publish-friendly detail labels (`page_toc_label`, `page_average_speed_label`, `page_average_pace_label`, `page_elevation_gain_label`) plus `page_stats_summary` and `page_profile_summary` reduce per-layout expression boilerplate for per-activity stat blocks
-- repeated document-summary fields (`document_activity_count`, `document_date_range_label`, `document_total_distance_label`, `document_total_duration_label`, `document_total_elevation_gain_label`, `document_activity_types_label`, `document_cover_summary`) let cover/TOC layouts reuse atlas-wide totals without introducing a separate summary table yet
+- repeated document-summary fields (`document_activity_count`, `document_date_range_label`, `document_total_distance_label`, `document_total_duration_label`, `document_total_elevation_gain_label`, `document_activity_types_label`, `document_cover_summary`) still make it easy for per-page layout expressions to reuse atlas-wide totals
+- the companion `atlas_document_summary` table now provides the same atlas-wide totals/labels as a dedicated single-row source for cover and table-of-contents layouts
 - route-profile summary and label fields give layouts a cheap way to decide whether to show an elevation chart and to reuse publish-friendly text without extra QGIS expression boilerplate before full PDF automation exists
 
 ### Current fields
@@ -242,6 +244,32 @@ Primary purpose:
 | `extent_width_m` | REAL | padded page width in Web Mercator meters |
 | `extent_height_m` | REAL | padded page height in Web Mercator meters |
 
+## Table: `atlas_document_summary`
+
+Geometry type:
+- none
+
+Primary purpose:
+- store atlas-wide totals and cover/TOC-ready labels as a dedicated single-row helper table
+- give QGIS print layouts a clean document-summary source without forcing cover pages to read repeated values from an arbitrary atlas polygon feature
+
+### Current fields
+
+| Field | Type | Notes |
+|---|---|---|
+| `activity_count` | INTEGER | number of atlas pages / usable activities included in the atlas summary |
+| `activity_date_start` | TEXT | first atlas activity date such as `2026-03-18` |
+| `activity_date_end` | TEXT | last atlas activity date such as `2026-03-20` |
+| `date_range_label` | TEXT | preformatted date span such as `2026-03-18 → 2026-03-20` |
+| `total_distance_m` | REAL | total atlas distance in meters |
+| `total_distance_label` | TEXT | preformatted total distance such as `82.6 km` |
+| `total_moving_time_s` | INTEGER | total atlas moving time in seconds |
+| `total_duration_label` | TEXT | preformatted total duration such as `4h 20m` |
+| `total_elevation_gain_m` | REAL | total atlas elevation gain in meters |
+| `total_elevation_gain_label` | TEXT | preformatted total climb such as `1145 m` |
+| `activity_types_label` | TEXT | ordered activity-type list such as `Ride, Run` |
+| `cover_summary` | TEXT | one-line cover summary such as `3 activities · 2026-03-18 → 2026-03-20 · 82.6 km · 4h 20m · ↑ 1145 m · Ride, Run` |
+
 ## Geometry priority
 
 When rebuilding visible layers, qfit currently prefers geometry in this order:
@@ -255,7 +283,7 @@ When rebuilding visible layers, qfit currently prefers geometry in this order:
 2. optionally enrich activities with detailed stream geometry and extra stream metrics
 3. upsert activities into `activity_registry`
 4. update `sync_state`
-5. rebuild `activity_tracks`, `activity_starts`, `activity_atlas_pages`, and optionally `activity_points`
+5. rebuild `activity_tracks`, `activity_starts`, `activity_atlas_pages`, `atlas_document_summary`, and optionally `activity_points`
 6. load those layers into QGIS
 
 ## Next phase
