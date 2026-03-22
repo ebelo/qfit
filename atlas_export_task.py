@@ -317,7 +317,8 @@ class AtlasExportTask(QgsTask):
             if output_dir and not os.path.exists(output_dir):
                 os.makedirs(output_dir, exist_ok=True)
 
-            export_result = exporter.exportToPdf(
+            # The atlas export overload returns (ExportResult, error_string)
+            export_result, export_error = exporter.exportToPdf(
                 atlas,
                 self._output_path,
                 settings,
@@ -325,8 +326,9 @@ class AtlasExportTask(QgsTask):
 
             if export_result != QgsLayoutExporter.Success:
                 self._error = (
-                    f"PDF export failed (QgsLayoutExporter error code {export_result}). "
-                    "Check that the atlas layer has features and the output path is writable."
+                    f"PDF export failed (QgsLayoutExporter error code {export_result}"
+                    + (f": {export_error}" if export_error else "")
+                    + "). Check that the atlas layer has features and the output path is writable."
                 )
                 return False
 
