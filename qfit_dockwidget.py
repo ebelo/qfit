@@ -947,7 +947,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         Used when layers are loaded directly (without fetching), so the combo
         box shows the correct activity types from the existing GeoPackage.
         """
-        if self.activities_layer is None:
+        if self.activities_layer is None or not self.activities_layer.isValid():
             return
         current_value = self.activityTypeComboBox.currentText() or "All"
         try:

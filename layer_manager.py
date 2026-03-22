@@ -109,7 +109,7 @@ class LayerManager:
         return layer
 
     def apply_filters(self, layer, activity_type=None, date_from=None, date_to=None, min_distance_km=None, max_distance_km=None, search_text=None, detailed_only=False):
-        if layer is None:
+        if layer is None or not layer.isValid():
             return
         query = ActivityQuery(
             activity_type=activity_type,
