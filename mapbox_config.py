@@ -281,31 +281,35 @@ def simplify_mapbox_style_expressions(style_definition: dict[str, object]) -> di
         "continent-label": 16.0,
     }
 
-    # Settlement layers: filter by `type` field (reliable in Mapbox Streets v8).
-    # At z8, sizerank=99 for all features. `type` is the correct discriminator:
-    # "city", "town", "village", "hamlet", "suburb", "neighbourhood"
-    _SETTLEMENT_TYPE_FILTERS: dict[str, list | None] = {
-        "settlement-major-label": ["city"],   # only cities (Geneva, Bern, Lyon, Lausanne...)
-        "settlement-minor-label": ["town"],   # towns only, no villages
-        "settlement-subdivision-label": None, # suppress entirely
+    # Settlement layer label policy:
+    # - settlement-major-label: only cities (type=city) — Geneva, Bern, Lyon, Lausanne
+    # - settlement-minor-label: only towns (type=town) with filterrank<=2 — regional centres
+    # - settlement-subdivision-label: suppress entirely
+    # filterrank is available in tiles (verified z10: Cologny=3, Corsier=5, Geneva=1)
+    _SETTLEMENT_FILTERS: dict[str, object] = {
+        "settlement-major-label": ["match", ["get", "type"], ["city"], True, False],
+        "settlement-minor-label": ["all",
+            ["match", ["get", "type"], ["town"], True, False],
+            ["<=", ["get", "filterrank"], 2],
+        ],
+        "settlement-subdivision-label": None,
     }
 
     for layer in style.get("layers", []):
         layer_id = layer.get("id", "")
 
-        # Suppress or filter over-dense settlement label layers
-        type_filter_value = _SETTLEMENT_TYPE_FILTERS.get(layer_id, "NOTSET")
-        if type_filter_value != "NOTSET":
-            if type_filter_value is None:
+        # Suppress or filter settlement label layers
+        settlement_filter = _SETTLEMENT_FILTERS.get(layer_id, "NOTSET")
+        if settlement_filter != "NOTSET":
+            if settlement_filter is None:
                 layer["layout"] = layer.get("layout", {})
                 layer["layout"]["visibility"] = "none"
             else:
                 existing_filter = layer.get("filter")
-                type_expr = ["match", ["get", "type"], type_filter_value, True, False]
                 if existing_filter:
-                    layer["filter"] = ["all", existing_filter, type_expr]
+                    layer["filter"] = ["all", existing_filter, settlement_filter]
                 else:
-                    layer["filter"] = type_expr
+                    layer["filter"] = settlement_filter
 
         for section in ("paint", "layout"):
             props = layer.get(section)
