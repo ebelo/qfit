@@ -1,0 +1,239 @@
+import os
+import tempfile
+import unittest
+from pathlib import Path
+
+from tests import _path  # noqa: F401
+
+os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+
+try:
+    from qgis.core import QgsApplication, QgsProject
+
+    from qfit.gpkg_writer import GeoPackageWriter
+    from qfit.layer_manager import LayerManager
+
+    QGIS_AVAILABLE = True
+    QGIS_IMPORT_ERROR = None
+except Exception as exc:  # pragma: no cover - exercised only when QGIS is unavailable
+    QgsApplication = None
+    QgsProject = None
+    GeoPackageWriter = None
+    LayerManager = None
+    QGIS_AVAILABLE = False
+    QGIS_IMPORT_ERROR = exc
+
+
+class _FakeCanvas:
+    def __init__(self):
+        self.destination_crs_authid = None
+        self.last_extent = None
+        self.refresh_count = 0
+
+    def setDestinationCrs(self, crs):
+        self.destination_crs_authid = crs.authid()
+
+    def setExtent(self, extent):
+        self.last_extent = (
+            extent.xMinimum(),
+            extent.yMinimum(),
+            extent.xMaximum(),
+            extent.yMaximum(),
+        )
+
+    def refresh(self):
+        self.refresh_count += 1
+
+
+class _FakeIface:
+    def __init__(self):
+        self._canvas = _FakeCanvas()
+
+    def mapCanvas(self):
+        return self._canvas
+
+
+@unittest.skipUnless(
+    QGIS_AVAILABLE,
+    "PyQGIS is not available in this environment: {error}".format(error=QGIS_IMPORT_ERROR),
+)
+class QgisSmokeTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        QgsApplication.setPrefixPath("/usr", True)
+        cls.qgs = QgsApplication([], False)
+        cls.qgs.initQgis()
+
+    @classmethod
+    def tearDownClass(cls):
+        QgsProject.instance().clear()
+        cls.qgs.exitQgis()
+
+    def setUp(self):
+        QgsProject.instance().clear()
+        self.iface = _FakeIface()
+        self.layer_manager = LayerManager(self.iface)
+
+    def tearDown(self):
+        QgsProject.instance().clear()
+
+    def test_headless_qgis_smoke_covers_write_load_crs_temporal_and_background_order(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_path = str(Path(temp_dir) / "qfit-smoke.gpkg")
+            result = GeoPackageWriter(
+                output_path,
+                write_activity_points=True,
+                point_stride=2,
+                atlas_margin_percent=10,
+                atlas_min_extent_degrees=0.01,
+                atlas_target_aspect_ratio=1.5,
+            ).write_activities(self._sample_activities(), sync_metadata={"provider": "strava"})
+
+            self.assertEqual(result["track_count"], 2)
+            self.assertEqual(result["start_count"], 2)
+            self.assertGreaterEqual(result["point_count"], 4)
+            self.assertEqual(result["atlas_count"], 2)
+
+            background = self.layer_manager.ensure_background_layer(True, "Outdoor", "test-token")
+            background_name = background.name()
+            self.assertTrue(background.isValid())
+
+            activities_layer, starts_layer, points_layer, atlas_layer = self.layer_manager.load_output_layers(output_path)
+
+            self.assertTrue(activities_layer.isValid())
+            self.assertTrue(starts_layer.isValid())
+            self.assertTrue(points_layer.isValid())
+            self.assertTrue(atlas_layer.isValid())
+            self.assertEqual(activities_layer.featureCount(), 2)
+            self.assertEqual(starts_layer.featureCount(), 2)
+            self.assertGreaterEqual(points_layer.featureCount(), 4)
+            self.assertEqual(atlas_layer.featureCount(), 2)
+
+            self.assertEqual(QgsProject.instance().crs().authid(), "EPSG:3857")
+            self.assertEqual(self.iface.mapCanvas().destination_crs_authid, "EPSG:3857")
+            self.assertIsNotNone(self.iface.mapCanvas().last_extent)
+            self.assertGreaterEqual(self.iface.mapCanvas().refresh_count, 1)
+
+            temporal_summary = self.layer_manager.apply_temporal_configuration(
+                activities_layer,
+                starts_layer,
+                points_layer,
+                atlas_layer,
+                "Local activity time",
+            )
+            self.assertIn("activity tracks (LOCAL)", temporal_summary)
+            self.assertIn("activity points (LOCAL)", temporal_summary)
+            self.assertTrue(activities_layer.temporalProperties().isActive())
+            self.assertEqual(
+                activities_layer.temporalProperties().startExpression(),
+                'to_datetime("start_date_local")',
+            )
+            self.assertTrue(points_layer.temporalProperties().isActive())
+            self.assertEqual(
+                points_layer.temporalProperties().startExpression(),
+                'to_datetime("point_timestamp_local")',
+            )
+
+            atlas_feature = next(atlas_layer.getFeatures())
+            self.assertEqual(atlas_feature["page_number"], 1)
+            self.assertTrue(atlas_feature["page_name"])
+            self.assertEqual(atlas_feature["profile_available"], 1)
+            self.assertTrue(atlas_feature["profile_distance_label"])
+            self.assertGreater(float(atlas_feature["extent_width_m"]), 0)
+            self.assertGreater(float(atlas_feature["extent_height_m"]), 0)
+
+            layer_order = self._layer_order()
+            self.assertEqual(layer_order[-1], background_name)
+            self.assertEqual(layer_order[:-1], [
+                "qfit atlas pages",
+                "qfit activity points",
+                "qfit activity starts",
+                "qfit activities",
+            ])
+
+            self.layer_manager.ensure_background_layer(False, "Outdoor", "test-token")
+            self.assertNotIn(background_name, self._layer_order())
+
+    def _layer_order(self):
+        names = []
+        for child in QgsProject.instance().layerTreeRoot().children():
+            layer = child.layer() if hasattr(child, "layer") else None
+            if layer is not None:
+                names.append(layer.name())
+        return names
+
+    def _sample_activities(self):
+        return [
+            {
+                "source": "strava",
+                "source_activity_id": "1001",
+                "external_id": "strava-1001",
+                "name": "Morning Ride",
+                "activity_type": "Ride",
+                "sport_type": "Ride",
+                "start_date": "2026-03-20T07:00:00+00:00",
+                "start_date_local": "2026-03-20T08:00:00+01:00",
+                "timezone": "Europe/Zurich",
+                "distance_m": 25200,
+                "moving_time_s": 3600,
+                "elapsed_time_s": 3900,
+                "total_elevation_gain_m": 320,
+                "start_lat": 46.5200,
+                "start_lon": 6.6200,
+                "end_lat": 46.5700,
+                "end_lon": 6.7400,
+                "geometry_source": "stream",
+                "geometry_points": [
+                    (46.5200, 6.6200),
+                    (46.5350, 6.6550),
+                    (46.5480, 6.7000),
+                    (46.5700, 6.7400),
+                ],
+                "details_json": {
+                    "stream_metrics": {
+                        "time": [0, 1200, 2400, 3600],
+                        "distance": [0, 8400, 16800, 25200],
+                        "altitude": [450, 510, 480, 530],
+                        "moving": [True, True, True, True],
+                    }
+                },
+            },
+            {
+                "source": "strava",
+                "source_activity_id": "1002",
+                "external_id": "strava-1002",
+                "name": "Lunch Run",
+                "activity_type": "Run",
+                "sport_type": "Run",
+                "start_date": "2026-03-21T11:30:00+00:00",
+                "start_date_local": "2026-03-21T12:30:00+01:00",
+                "timezone": "Europe/Zurich",
+                "distance_m": 10100,
+                "moving_time_s": 3000,
+                "elapsed_time_s": 3120,
+                "total_elevation_gain_m": 85,
+                "start_lat": 46.5100,
+                "start_lon": 6.6000,
+                "end_lat": 46.5250,
+                "end_lon": 6.6300,
+                "geometry_source": "stream",
+                "geometry_points": [
+                    (46.5100, 6.6000),
+                    (46.5140, 6.6090),
+                    (46.5190, 6.6200),
+                    (46.5250, 6.6300),
+                ],
+                "details_json": {
+                    "stream_metrics": {
+                        "time": [0, 1000, 2000, 3000],
+                        "distance": [0, 3300, 6700, 10100],
+                        "altitude": [430, 445, 438, 452],
+                        "moving": [True, True, True, True],
+                    }
+                },
+            },
+        ]
+
+
+if __name__ == "__main__":
+    unittest.main()
