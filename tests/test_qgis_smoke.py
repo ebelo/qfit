@@ -100,6 +100,12 @@ class QgisSmokeTests(unittest.TestCase):
             dock.close()
             dock.deleteLater()
 
+    def test_background_layer_source_uses_high_dpi_xyz_uri(self):
+        background = self.layer_manager.ensure_background_layer(True, "Outdoor", "test-token")
+        self.assertTrue(background.isValid())
+        self.assertIn("tiles/512/{z}/{x}/{y}@2x", background.source())
+        self.assertIn("tilePixelRatio=2", background.source())
+
     def test_headless_qgis_smoke_covers_write_load_crs_temporal_and_background_order(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             output_path = str(Path(temp_dir) / "qfit-smoke.gpkg")
