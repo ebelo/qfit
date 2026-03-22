@@ -60,7 +60,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._load_settings()
         self._wire_events()
         self._set_default_dates()
+        self._configure_workflow_sections()
         self._refresh_activity_preview()
+        self._update_connection_status()
 
     def _apply_contextual_help(self):
         for name in [
@@ -84,6 +86,12 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.applyFiltersButton.clicked.connect(self.on_apply_filters_clicked)
         self.loadBackgroundButton.clicked.connect(self.on_load_background_clicked)
         self.backgroundPresetComboBox.currentTextChanged.connect(self.on_background_preset_changed)
+        self.detailedStreamsCheckBox.toggled.connect(self._update_detailed_fetch_visibility)
+        self.writeActivityPointsCheckBox.toggled.connect(self._update_point_sampling_visibility)
+        self.publishGroupBox.toggled.connect(self._update_publish_section_visibility)
+        self.clientIdLineEdit.textChanged.connect(self._update_connection_status)
+        self.clientSecretLineEdit.textChanged.connect(self._update_connection_status)
+        self.refreshTokenLineEdit.textChanged.connect(self._update_connection_status)
 
         preview_inputs = [
             self.activityTypeComboBox.currentTextChanged,
@@ -112,6 +120,52 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.temporalModeComboBox.clear()
         for label in temporal_mode_labels():
             self.temporalModeComboBox.addItem(label)
+
+    def _configure_workflow_sections(self):
+        self._update_detailed_fetch_visibility(self.detailedStreamsCheckBox.isChecked())
+        self._update_point_sampling_visibility(self.writeActivityPointsCheckBox.isChecked())
+        self._update_publish_section_visibility(self.publishGroupBox.isChecked())
+        self._update_mapbox_advanced_visibility(self.backgroundPresetComboBox.currentText())
+
+    def _update_detailed_fetch_visibility(self, enabled):
+        self.maxDetailedActivitiesLabel.setVisible(enabled)
+        self.maxDetailedActivitiesSpinBox.setVisible(enabled)
+        helper = getattr(self, "maxDetailedActivitiesSpinBoxContextHelpLabel", None)
+        if helper is not None:
+            helper.setVisible(enabled)
+        wrapper = getattr(self, "maxDetailedActivitiesSpinBoxHelpField", None)
+        if wrapper is not None:
+            wrapper.setVisible(enabled)
+
+    def _update_point_sampling_visibility(self, enabled):
+        self.pointSamplingStrideLabel.setVisible(enabled)
+        self.pointSamplingStrideSpinBox.setVisible(enabled)
+        helper = getattr(self, "pointSamplingStrideSpinBoxContextHelpLabel", None)
+        if helper is not None:
+            helper.setVisible(enabled)
+        wrapper = getattr(self, "pointSamplingStrideSpinBoxHelpField", None)
+        if wrapper is not None:
+            wrapper.setVisible(enabled)
+
+    def _update_publish_section_visibility(self, expanded):
+        if hasattr(self, "publishSettingsWidget"):
+            self.publishSettingsWidget.setVisible(expanded)
+
+    def _update_mapbox_advanced_visibility(self, preset_name):
+        show_advanced = preset_requires_custom_style(preset_name)
+        self.mapboxStyleOwnerLabel.setVisible(show_advanced)
+        self.mapboxStyleOwnerLineEdit.setVisible(show_advanced)
+        self.mapboxStyleIdLabel.setVisible(show_advanced)
+        self.mapboxStyleIdLineEdit.setVisible(show_advanced)
+        owner_helper = getattr(self, "mapboxStyleOwnerLineEditContextHelpLabel", None)
+        if owner_helper is not None:
+            owner_helper.setVisible(show_advanced)
+        style_helper = getattr(self, "mapboxStyleIdLineEditContextHelpLabel", None)
+        if style_helper is not None:
+            style_helper.setVisible(show_advanced)
+        style_wrapper = getattr(self, "mapboxStyleIdLineEditHelpField", None)
+        if style_wrapper is not None:
+            style_wrapper.setVisible(show_advanced)
 
     def _build_cache(self):
         base_path = QStandardPaths.writableLocation(QStandardPaths.AppDataLocation)
@@ -285,6 +339,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
     def on_background_preset_changed(self, preset_name):
         self._sync_background_style_fields(preset_name, force=True)
+        self._update_mapbox_advanced_visibility(preset_name)
 
     def on_load_background_clicked(self):
         self._save_settings()
@@ -364,6 +419,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self.refreshTokenLineEdit.setText(refresh_token)
             self.authCodeLineEdit.clear()
             self._save_settings()
+            self._update_connection_status()
             athlete = payload.get("athlete") or {}
             athlete_name = " ".join(
                 part for part in [athlete.get("firstname"), athlete.get("lastname")] if part
@@ -394,7 +450,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
     def on_refresh_clicked(self):
         self._save_settings()
-        self._set_status("Connecting to Strava…")
+        self._set_status("Fetching activities from Strava…")
         try:
             client = self._build_client(require_refresh_token=True)
             before, after = self._build_fetch_epoch_range()
@@ -703,6 +759,17 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             short=short_remaining if short_remaining is not None else "?",
             long=long_remaining if long_remaining is not None else "?",
         )
+
+    def _update_connection_status(self):
+        has_client = bool(self.clientIdLineEdit.text().strip() and self.clientSecretLineEdit.text().strip())
+        has_refresh = bool(self.refreshTokenLineEdit.text().strip())
+        if has_client and has_refresh:
+            message = "Strava connection: ready to fetch activities"
+        elif has_client:
+            message = "Strava connection: app credentials saved; complete OAuth to fetch activities"
+        else:
+            message = "Strava connection: enter your Strava app credentials to begin"
+        self.connectionStatusLabel.setText(message)
 
     def _set_status(self, text):
         self.statusLabel.setText(text)

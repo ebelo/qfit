@@ -90,7 +90,7 @@ DOCK_HELP_ENTRIES: tuple[HelpEntry, ...] = (
     ),
     HelpEntry(
         anchor_name="loadBackgroundButton",
-        target_text="Load / refresh background map",
+        target_text="Load basemap",
         tooltip=(
             "Adds the selected basemap or refreshes the existing one. qfit keeps it below the activity layers so "
             "tracks and points stay visible on top."
@@ -176,8 +176,16 @@ DOCK_HELP_ENTRIES: tuple[HelpEntry, ...] = (
         help_button=True,
     ),
     HelpEntry(
+        anchor_name="refreshButton",
+        target_text="Fetch activities",
+        tooltip=(
+            "Pulls activities from Strava using the current date range, paging, and detailed-track settings without "
+            "writing anything to QGIS yet."
+        ),
+    ),
+    HelpEntry(
         anchor_name="loadButton",
-        target_text="Write + load layers",
+        target_text="Store and load layers",
         tooltip=(
             "Writes the full fetched result to the GeoPackage, then loads the qfit layers into QGIS without turning "
             "the dock query into a subset filter automatically."
@@ -185,7 +193,7 @@ DOCK_HELP_ENTRIES: tuple[HelpEntry, ...] = (
     ),
     HelpEntry(
         anchor_name="applyFiltersButton",
-        target_text="Apply current filters",
+        target_text="Apply current filters to loaded layers",
         tooltip=(
             "Turns the current dock query into real QGIS layer subset filters and reapplies styling/background logic "
             "to the already loaded layers."
@@ -194,8 +202,8 @@ DOCK_HELP_ENTRIES: tuple[HelpEntry, ...] = (
     HelpEntry(
         anchor_name="buttonLayout",
         helper_text=(
-            "Use Write + load layers when you want the complete synced dataset in QGIS. Use Apply current filters only "
-            "when you want the loaded layers and tables to match the current dock query."
+            "Use Store and load layers when you want the complete synced dataset in QGIS. Use Apply current filters to "
+            "loaded layers only when you want the loaded layers and tables to match the current dock query."
         ),
     ),
 )
