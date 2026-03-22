@@ -7,7 +7,7 @@ from tests import _path  # noqa: F401
 
 try:
     from qgis.core import QgsApplication
-except ModuleNotFoundError:  # pragma: no cover - exercised only on non-QGIS runners
+except (ImportError, ModuleNotFoundError):  # pragma: no cover - exercised only on non-QGIS runners
     QgsApplication = None
 
 if QgsApplication is not None:
