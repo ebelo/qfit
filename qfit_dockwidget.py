@@ -666,6 +666,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self.activities_layer, self.starts_layer, self.points_layer, self.atlas_layer = self.layer_manager.load_output_layers(
                 self.output_path
             )
+            self._populate_activity_types_from_layer()
             visual_status = self._apply_visual_configuration(apply_subset_filters=False)
             if visual_status:
                 visual_status = f" {visual_status}"
@@ -933,6 +934,34 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def _populate_activity_types(self):
         current_value = self.activityTypeComboBox.currentText() or "All"
         values = sorted({activity.activity_type for activity in self.activities if activity.activity_type})
+        self.activityTypeComboBox.clear()
+        self.activityTypeComboBox.addItem("All")
+        for value in values:
+            self.activityTypeComboBox.addItem(value)
+        index = self.activityTypeComboBox.findText(current_value)
+        self.activityTypeComboBox.setCurrentIndex(max(index, 0))
+
+    def _populate_activity_types_from_layer(self):
+        """Populate the activity type filter from the loaded activities layer.
+
+        Used when layers are loaded directly (without fetching), so the combo
+        box shows the correct activity types from the existing GeoPackage.
+        """
+        if self.activities_layer is None:
+            return
+        current_value = self.activityTypeComboBox.currentText() or "All"
+        try:
+            field_names = [self.activities_layer.fields().at(i).name() for i in range(self.activities_layer.fields().count())]
+            type_field = next((f for f in ["sport_type", "activity_type"] if f in field_names), None)
+            if type_field is None:
+                return
+            values = sorted({
+                f[type_field]
+                for f in self.activities_layer.getFeatures()
+                if f[type_field]
+            })
+        except Exception:
+            return
         self.activityTypeComboBox.clear()
         self.activityTypeComboBox.addItem("All")
         for value in values:
