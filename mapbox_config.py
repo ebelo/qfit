@@ -287,8 +287,8 @@ def simplify_mapbox_style_expressions(style_definition: dict[str, object]) -> di
     _SETTLEMENT_FILTERS: dict[str, object] = {
         "settlement-major-label": ["match", ["get", "type"], ["city"], True, False],
         "settlement-minor-label": ["all",
-            ["match", ["get", "type"], ["town"], True, False],
-            ["<=", ["get", "filterrank"], 2],
+            ["match", ["get", "type"], ["city", "town"], True, False],
+            ["<=", ["get", "filterrank"], 1],
         ],
         "settlement-subdivision-label": None,
     }
