@@ -987,6 +987,26 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         query = self._current_activity_query()
         current_subset = build_subset_string(query)
 
+        # Switch basemap to vector mode for export if currently raster — vector
+        # tiles embed as true PDF vectors, dramatically reducing file size.
+        # We reload the basemap in vector mode and restore raster after export.
+        pre_export_tile_mode = self.tileModeComboBox.currentText()
+        if (
+            pre_export_tile_mode == TILE_MODE_RASTER
+            and self.backgroundMapCheckBox.isChecked()
+        ):
+            try:
+                self.layer_manager.ensure_background_layer(
+                    enabled=True,
+                    preset_name=self.backgroundPresetComboBox.currentText(),
+                    access_token=self.mapboxAccessTokenLineEdit.text().strip(),
+                    style_owner=self.mapboxStyleOwnerLineEdit.text().strip(),
+                    style_id=self.mapboxStyleIdLineEdit.text().strip(),
+                    tile_mode=TILE_MODE_VECTOR,
+                )
+            except Exception:
+                pass  # fall back to raster if vector fails
+
         self._set_atlas_export_running(True)
         self._set_atlas_pdf_status(
             f"Exporting atlas ({self.atlas_layer.featureCount()} pages)…"
@@ -998,6 +1018,13 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             output_path=output_path,
             on_finished=self._on_atlas_export_finished,
             subset_string=current_subset,
+            restore_tile_mode=pre_export_tile_mode,
+            layer_manager=self.layer_manager,
+            preset_name=self.backgroundPresetComboBox.currentText(),
+            access_token=self.mapboxAccessTokenLineEdit.text().strip(),
+            style_owner=self.mapboxStyleOwnerLineEdit.text().strip(),
+            style_id=self.mapboxStyleIdLineEdit.text().strip(),
+            background_enabled=self.backgroundMapCheckBox.isChecked(),
         )
         QgsApplication.taskManager().addTask(self._atlas_export_task)
 
