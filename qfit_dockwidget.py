@@ -31,7 +31,7 @@ from .mapbox_config import (
     preset_requires_custom_style,
 )
 from .fetch_task import StravaFetchTask
-from .atlas_export_task import AtlasExportTask
+from .atlas_export_task import AtlasExportTask, BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
 from .qfit_cache import QfitCache
 from .strava_client import StravaClient, StravaClientError
 from .temporal_config import DEFAULT_TEMPORAL_MODE_LABEL, temporal_mode_labels
@@ -264,9 +264,12 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.mapboxStyleIdLineEdit.setText(self._setting_value(settings, "mapbox_style_id", ""))
         self.atlasMarginPercentSpinBox.setValue(float(self._setting_value(settings, "atlas_margin_percent", 8.0)))
         self.atlasMinExtentSpinBox.setValue(float(self._setting_value(settings, "atlas_min_extent_degrees", 0.01)))
-        self.atlasTargetAspectRatioSpinBox.setValue(
-            float(self._setting_value(settings, "atlas_target_aspect_ratio", 0.0))
+        stored_atlas_target_aspect_ratio = float(
+            self._setting_value(settings, "atlas_target_aspect_ratio", BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO)
         )
+        if stored_atlas_target_aspect_ratio <= 0:
+            stored_atlas_target_aspect_ratio = BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
+        self.atlasTargetAspectRatioSpinBox.setValue(stored_atlas_target_aspect_ratio)
         default_pdf_path = self._setting_value(
             settings,
             "atlas_pdf_path",

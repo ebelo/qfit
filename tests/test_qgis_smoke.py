@@ -12,6 +12,7 @@ try:
 
     from qfit.gpkg_writer import GeoPackageWriter
     from qfit.layer_manager import LayerManager
+    from qfit.atlas_export_task import BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
     from qfit.qfit_dockwidget import QfitDockWidget
 
     QGIS_AVAILABLE = True
@@ -97,6 +98,11 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertFalse(dock.temporalHelpLabel.isVisible())
             self.assertFalse(dock.publishGroupBox.isChecked())
             self.assertFalse(dock.publishSettingsWidget.isVisible())
+            self.assertAlmostEqual(
+                dock.atlasTargetAspectRatioSpinBox.value(),
+                BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO,
+                places=3,
+            )
             self.assertIsNotNone(dock.findChild(QLabel, "maxDetailedActivitiesSpinBoxContextHelpLabel"))
             self.assertIsNotNone(dock.findChild(QWidget, "maxDetailedActivitiesSpinBoxHelpField"))
         finally:

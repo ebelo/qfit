@@ -1,6 +1,7 @@
 import unittest
 
 from tests import _path  # noqa: F401
+from qfit.atlas_export_task import BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
 from qfit.publish_atlas import (
     DEFAULT_MIN_EXTENT_DEGREES,
     MIN_ALLOWED_ATLAS_MIN_EXTENT_DEGREES,
@@ -344,6 +345,26 @@ class PublishAtlasTests(unittest.TestCase):
         self.assertAlmostEqual(plan.extent_width_m / plan.extent_height_m, 2.0, places=3)
         self.assertGreater(plan.extent_width_m, 0)
         self.assertGreater(plan.extent_height_m, 0)
+
+    def test_builtin_atlas_export_target_aspect_ratio_matches_layout_frame(self):
+        records = [
+            {
+                "name": "River Ride",
+                "activity_type": "Ride",
+                "geometry_points": [(46.5000, 6.6000), (46.5080, 6.6030)],
+            }
+        ]
+
+        plan = build_atlas_page_plans(
+            records,
+            target_aspect_ratio=BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO,
+        )[0]
+
+        self.assertAlmostEqual(
+            plan.extent_width_m / plan.extent_height_m,
+            BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO,
+            places=3,
+        )
 
     def test_build_atlas_page_plans_formats_run_pace_labels_for_layouts(self):
         records = [
