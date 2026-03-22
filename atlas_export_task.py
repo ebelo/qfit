@@ -263,18 +263,18 @@ class AtlasExportTask(QgsTask):
     def run(self) -> bool:
         """Build layout and export in the worker thread."""
         try:
+            feature_count = self._atlas_layer.featureCount() if self._atlas_layer else 0
+            if feature_count == 0:
+                self._error = "No atlas pages found. Store and load activity layers first."
+                return False
+
             layout = build_atlas_layout(
                 self._atlas_layer,
                 project=self._project,
             )
 
             atlas = layout.atlas()
-            feature_count = self._atlas_layer.featureCount() if self._atlas_layer else 0
             self._page_count = feature_count
-
-            if feature_count == 0:
-                self._error = "No atlas pages found. Store and load activity layers first."
-                return False
 
             if self.isCanceled():
                 return False
