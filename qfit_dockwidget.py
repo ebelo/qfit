@@ -549,6 +549,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 self.points_layer,
                 self.atlas_layer,
                 preset,
+                background_preset_name=self.backgroundPresetComboBox.currentText() if wants_background else None,
             )
             temporal_note = self.layer_manager.apply_temporal_configuration(
                 self.activities_layer,

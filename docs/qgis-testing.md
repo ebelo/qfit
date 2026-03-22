@@ -114,4 +114,5 @@ Once qfit is loaded successfully, good manual checks are:
 - confirm `activity_tracks` geometries look right
 - confirm `activity_points` attributes contain time / distance / HR / power where available
 - test filtering, preview sorting, style presets, and temporal playback wiring
+- when the `By activity type` preset is active, verify that runs/rides/winter activities keep their semantic colors and that line casing/opacity adapts sensibly when you switch between Outdoor, Light, and Satellite basemaps
 - open the QGIS Temporal Controller and confirm the loaded layers respond to the chosen local/UTC playback mode

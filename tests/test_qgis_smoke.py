@@ -191,6 +191,14 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertTrue(background.isValid())
 
             activities_layer, starts_layer, points_layer, atlas_layer = self.layer_manager.load_output_layers(output_path)
+            self.layer_manager.apply_style(
+                activities_layer,
+                starts_layer,
+                points_layer,
+                atlas_layer,
+                "By activity type",
+                background_preset_name="Satellite",
+            )
 
             self.assertTrue(activities_layer.isValid())
             self.assertTrue(starts_layer.isValid())
@@ -200,6 +208,21 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertEqual(starts_layer.featureCount(), 2)
             self.assertGreaterEqual(points_layer.featureCount(), 4)
             self.assertEqual(atlas_layer.featureCount(), 2)
+
+            renderer = activities_layer.renderer()
+            self.assertEqual(renderer.classAttribute(), "sport_type")
+            categories = {category.value(): category for category in renderer.categories()}
+            self.assertEqual(set(categories), {"Ride", "Run"})
+            self.assertEqual(round(activities_layer.opacity(), 2), 0.95)
+
+            ride_symbol = categories["Ride"].symbol()
+            run_symbol = categories["Run"].symbol()
+            self.assertEqual(ride_symbol.symbolLayerCount(), 2)
+            self.assertEqual(run_symbol.symbolLayerCount(), 2)
+            self.assertEqual(ride_symbol.symbolLayer(0).color().name().upper(), "#FFFFFF")
+            self.assertEqual(run_symbol.symbolLayer(0).color().name().upper(), "#FFFFFF")
+            self.assertEqual(ride_symbol.symbolLayer(1).color().name().upper(), "#FF8E16")
+            self.assertEqual(run_symbol.symbolLayer(1).color().name().upper(), "#DE3F3F")
 
             self.assertEqual(QgsProject.instance().crs().authid(), "EPSG:3857")
             self.assertEqual(self.iface.mapCanvas().destination_crs_authid, "EPSG:3857")
