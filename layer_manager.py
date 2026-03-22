@@ -223,6 +223,7 @@ class LayerManager:
                     layer.setRenderer(renderer)
                 if labeling is not None:
                     layer.setLabeling(labeling)
+                    layer.setLabelsEnabled(True)
         except Exception:
             pass  # leave the default random-color renderer in place
 

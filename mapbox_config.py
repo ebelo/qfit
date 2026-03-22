@@ -174,9 +174,34 @@ def _extract_fallback_color(expr: object) -> str | None:
     return fallback
 
 
+def _simplify_text_field(expr: object) -> object:
+    """Simplify a Mapbox text-field expression to the first simple field reference.
+
+    QGIS handles ``['get', 'name']`` but not ``['coalesce', ['get', 'name_en'], ['get', 'name'], ...]``.
+    We extract the first ``['get', <field>]`` from a coalesce and return it directly.
+    """
+    if not isinstance(expr, list) or not expr:
+        return expr
+    op = expr[0]
+    if op == "coalesce":
+        # Return the first simple ['get', field] child
+        for child in expr[1:]:
+            if isinstance(child, list) and len(child) == 2 and child[0] == "get" and isinstance(child[1], str):
+                return child
+    if op == "step":
+        # step expressions for text-field — find the first literal string fallback
+        for item in expr[1:]:
+            if isinstance(item, str) and item:
+                return item
+    return expr
+
+
 def simplify_mapbox_style_expressions(style_definition: dict[str, object]) -> dict[str, object]:
     """Return a copy of a Mapbox style with expression-based colors replaced by
     literal fallback colors so QGIS' converter does not render them as black.
+
+    Also simplifies ``text-field`` coalesce expressions to their first simple
+    ``['get', field]`` reference so QGIS can resolve the label field name.
 
     Only color properties whose values are Mapbox expressions (lists) are
     simplified.  Literal strings (``hsl(...)``, ``#rrggbb``) are kept as-is.
@@ -195,13 +220,15 @@ def simplify_mapbox_style_expressions(style_definition: dict[str, object]) -> di
             if not isinstance(props, dict):
                 continue
             for prop in list(props.keys()):
-                if prop not in color_props:
-                    continue
                 val = props[prop]
-                if isinstance(val, list):
+                if not isinstance(val, list):
+                    continue
+                if prop in color_props:
                     fallback = _extract_fallback_color(val)
                     if fallback is not None:
                         props[prop] = fallback
+                elif prop == "text-field":
+                    props[prop] = _simplify_text_field(val)
     return style
 
 
