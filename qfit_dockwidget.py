@@ -210,8 +210,8 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             os.path.join(os.path.expanduser("~"), "qfit_activities.gpkg"),
         )
         self.outputPathLineEdit.setText(default_output)
-        self.perPageSpinBox.setValue(int(self._setting_value(settings, "per_page", 50)))
-        self.maxPagesSpinBox.setValue(int(self._setting_value(settings, "max_pages", 2)))
+        self.perPageSpinBox.setValue(int(self._setting_value(settings, "per_page", 200)))
+        self.maxPagesSpinBox.setValue(int(self._setting_value(settings, "max_pages", 0)))
         self.detailedStreamsCheckBox.setChecked(self._settings_bool(settings, "use_detailed_streams", False))
         self.maxDetailedActivitiesSpinBox.setValue(int(self._setting_value(settings, "max_detailed_activities", 25)))
         self.writeActivityPointsCheckBox.setChecked(

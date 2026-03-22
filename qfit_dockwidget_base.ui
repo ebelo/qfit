@@ -192,27 +192,30 @@
                 <number>200</number>
                </property>
                <property name="value">
-                <number>50</number>
+                <number>200</number>
                </property>
               </widget>
              </item>
              <item row="1" column="0">
               <widget class="QLabel" name="maxPagesLabel">
                <property name="text">
-                <string>Pages to fetch</string>
+                <string>Max pages (0 = all)</string>
                </property>
               </widget>
              </item>
              <item row="1" column="1">
               <widget class="QSpinBox" name="maxPagesSpinBox">
+               <property name="toolTip">
+                <string>Maximum number of pages to fetch from Strava. Set to 0 to fetch all available activities (recommended).</string>
+               </property>
                <property name="minimum">
-                <number>1</number>
+                <number>0</number>
                </property>
                <property name="maximum">
-                <number>20</number>
+                <number>9999</number>
                </property>
                <property name="value">
-                <number>2</number>
+                <number>0</number>
                </property>
               </widget>
              </item>

@@ -93,16 +93,31 @@ class StravaClient:
 
     def fetch_activities(
         self,
-        per_page=50,
-        max_pages=1,
+        per_page=200,
+        max_pages=0,
         before=None,
         after=None,
         use_detailed_streams=False,
         max_detailed_activities=None,
     ):
+        """Fetch activities from Strava, paginating until all results are returned.
+
+        Parameters
+        ----------
+        per_page:
+            Number of activities per API request (1–200).  Defaults to 200
+            (Strava's maximum) so as few round-trips as possible are needed.
+        max_pages:
+            Maximum number of pages to fetch.  ``0`` (the default) means
+            "fetch all pages" — the loop stops when Strava returns fewer
+            results than ``per_page``, indicating the last page.
+        """
         token = self.get_access_token()
         activities = []
-        for page in range(1, max_pages + 1):
+        page = 1
+        while True:
+            if max_pages and page > max_pages:
+                break
             params = {"page": page, "per_page": per_page}
             if before is not None:
                 params["before"] = int(before)
@@ -119,6 +134,7 @@ class StravaClient:
             activities.extend(batch)
             if len(payload) < per_page:
                 break
+            page += 1
 
         if use_detailed_streams and activities:
             self.enrich_activities_with_streams(activities, max_activities=max_detailed_activities)
