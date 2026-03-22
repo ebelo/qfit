@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from urllib.parse import quote
+import json
+from urllib.parse import quote, unquote
+from urllib.request import urlopen
 
 
 class MapboxConfigError(ValueError):
@@ -126,12 +128,7 @@ def build_xyz_layer_uri(access_token: str, style_owner: str, style_id: str) -> s
     )
 
 
-def build_mapbox_vector_tiles_url(
-    access_token: str,
-    style_owner: str,
-    style_id: str,
-) -> str:
-    """Return the Mapbox vector tile endpoint URL for a given style."""
+def _validated_mapbox_style_parts(access_token: str, style_owner: str, style_id: str) -> tuple[str, str, str]:
     token = access_token.strip()
     owner = style_owner.strip()
     resolved_style_id = style_id.strip()
@@ -140,13 +137,70 @@ def build_mapbox_vector_tiles_url(
         raise MapboxConfigError("Enter a Mapbox access token to load the selected background map.")
     if not owner or not resolved_style_id:
         raise MapboxConfigError("Enter a Mapbox style owner and style ID first.")
+    return token, owner, resolved_style_id
+
+
+def fetch_mapbox_style_definition(
+    access_token: str,
+    style_owner: str,
+    style_id: str,
+) -> dict[str, object]:
+    """Fetch and parse the Mapbox style JSON for a style."""
+    style_url = build_mapbox_style_json_url(access_token, style_owner, style_id)
+    with urlopen(style_url, timeout=20) as response:  # noqa: S310
+        return json.loads(response.read().decode("utf-8"))
+
+
+def extract_mapbox_vector_source_ids(style_definition: dict[str, object]) -> list[str]:
+    """Extract vector tileset IDs from a Mapbox style definition.
+
+    Supports sources declared like: {"url": "mapbox://tilesetA,tilesetB"}
+    """
+    sources = style_definition.get("sources") if isinstance(style_definition, dict) else None
+    if not isinstance(sources, dict):
+        raise MapboxConfigError("Mapbox style JSON does not declare any sources.")
+
+    tileset_ids: list[str] = []
+    for source in sources.values():
+        if not isinstance(source, dict) or source.get("type") != "vector":
+            continue
+        url = str(source.get("url") or "").strip()
+        if not url.startswith("mapbox://"):
+            continue
+        raw_ids = url.removeprefix("mapbox://")
+        for tileset_id in raw_ids.split(","):
+            normalized = tileset_id.strip()
+            if normalized and normalized not in tileset_ids:
+                tileset_ids.append(normalized)
+
+    if not tileset_ids:
+        raise MapboxConfigError("Mapbox style JSON does not expose a vector tileset source for QGIS.")
+    return tileset_ids
+
+
+def build_mapbox_vector_tiles_url(
+    access_token: str,
+    style_owner: str,
+    style_id: str,
+    *,
+    tileset_ids: list[str] | tuple[str, ...] | None = None,
+) -> str:
+    """Return the Mapbox vector tile endpoint URL for a given style/source."""
+    token, owner, resolved_style_id = _validated_mapbox_style_parts(access_token, style_owner, style_id)
+
+    if tileset_ids:
+        joined_tilesets = ",".join(quote(tileset_id.strip(), safe=".,-_") for tileset_id in tileset_ids if tileset_id.strip())
+    else:
+        joined_tilesets = "{owner}.{style_id}".format(
+            owner=quote(owner, safe=""),
+            style_id=quote(resolved_style_id, safe=""),
+        )
 
     return (
-        "https://api.mapbox.com/v4/{owner}.{style_id}/{{z}}/{{x}}/{{y}}.mvt"
+        "https://api.mapbox.com/v4/{tilesets}/{{z}}/{{x}}/{{y}}.mvt"
         "?access_token={token}"
     ).format(
-        owner=quote(owner, safe=""),
-        style_id=quote(resolved_style_id, safe=""),
+        tilesets=joined_tilesets,
         token=quote(token, safe=""),
     )
 
@@ -157,14 +211,7 @@ def build_mapbox_style_json_url(
     style_id: str,
 ) -> str:
     """Return the Mapbox style JSON URL for use with QGIS vector tile styling."""
-    token = access_token.strip()
-    owner = style_owner.strip()
-    resolved_style_id = style_id.strip()
-
-    if not token:
-        raise MapboxConfigError("Enter a Mapbox access token to load the selected background map.")
-    if not owner or not resolved_style_id:
-        raise MapboxConfigError("Enter a Mapbox style owner and style ID first.")
+    token, owner, resolved_style_id = _validated_mapbox_style_parts(access_token, style_owner, style_id)
 
     return (
         "https://api.mapbox.com/styles/v1/{owner}/{style_id}?access_token={token}"
@@ -175,12 +222,23 @@ def build_mapbox_style_json_url(
     )
 
 
-def build_vector_tile_layer_uri(access_token: str, style_owner: str, style_id: str) -> str:
+def build_vector_tile_layer_uri(
+    access_token: str,
+    style_owner: str,
+    style_id: str,
+    *,
+    tileset_ids: list[str] | tuple[str, ...] | None = None,
+) -> str:
     """Return a QGIS-compatible vector tile layer URI for a Mapbox style."""
-    tiles_url = build_mapbox_vector_tiles_url(access_token, style_owner, style_id)
+    tiles_url = build_mapbox_vector_tiles_url(
+        access_token,
+        style_owner,
+        style_id,
+        tileset_ids=tileset_ids,
+    )
     style_url = build_mapbox_style_json_url(access_token, style_owner, style_id)
     return "type=xyz&url={url}&styleUrl={style_url}&zmin=0&zmax=22".format(
-        url=quote(tiles_url, safe=":/?{}=%@"),
+        url=quote(tiles_url, safe=":/?{}=%@,"),
         style_url=quote(style_url, safe=":/?{}=%@"),
     )
 

@@ -15,6 +15,7 @@ from mapbox_config import (  # noqa: E402
     build_mapbox_tiles_url,
     build_mapbox_vector_tiles_url,
     build_vector_tile_layer_uri,
+    extract_mapbox_vector_source_ids,
     build_xyz_layer_uri,
     preset_defaults,
     preset_requires_custom_style,
@@ -124,22 +125,57 @@ class VectorTileConfigTests(unittest.TestCase):
         self.assertIn(".mvt", url)
         self.assertIn("access_token=pk.abc", url)
 
+    def test_vector_tiles_url_can_target_composite_tilesets(self):
+        url = build_mapbox_vector_tiles_url(
+            "pk.abc",
+            "mapbox",
+            "outdoors-v12",
+            tileset_ids=["mapbox.mapbox-streets-v8", "mapbox.mapbox-terrain-v2"],
+        )
+        self.assertIn("api.mapbox.com/v4/mapbox.mapbox-streets-v8,mapbox.mapbox-terrain-v2", url)
+
     def test_style_json_url_uses_styles_endpoint(self):
         url = build_mapbox_style_json_url("pk.abc", "mapbox", "outdoors-v12")
         self.assertIn("api.mapbox.com/styles/v1/mapbox/outdoors-v12", url)
         self.assertIn("access_token=pk.abc", url)
 
     def test_vector_tile_layer_uri_contains_both_urls(self):
-        uri = build_vector_tile_layer_uri("pk.abc", "mapbox", "outdoors-v12")
+        uri = build_vector_tile_layer_uri(
+            "pk.abc",
+            "mapbox",
+            "outdoors-v12",
+            tileset_ids=["mapbox.mapbox-streets-v8", "mapbox.mapbox-terrain-v2"],
+        )
         self.assertIn("type=xyz", uri)
         self.assertIn(".mvt", uri)
+        self.assertIn("mapbox.mapbox-streets-v8,mapbox.mapbox-terrain-v2", uri)
         self.assertIn("styles/v1/mapbox/outdoors-v12", uri)
+
+    def test_extract_mapbox_vector_source_ids_reads_composite_source(self):
+        style = {
+            "sources": {
+                "composite": {
+                    "type": "vector",
+                    "url": "mapbox://mapbox.mapbox-streets-v8,mapbox.mapbox-terrain-v2,mapbox.mapbox-bathymetry-v2",
+                }
+            }
+        }
+        self.assertEqual(
+            extract_mapbox_vector_source_ids(style),
+            [
+                "mapbox.mapbox-streets-v8",
+                "mapbox.mapbox-terrain-v2",
+                "mapbox.mapbox-bathymetry-v2",
+            ],
+        )
 
     def test_vector_urls_raise_on_missing_token(self):
         with self.assertRaises(MapboxConfigError):
             build_mapbox_vector_tiles_url("", "mapbox", "outdoors-v12")
         with self.assertRaises(MapboxConfigError):
             build_mapbox_style_json_url("", "mapbox", "outdoors-v12")
+        with self.assertRaises(MapboxConfigError):
+            extract_mapbox_vector_source_ids({"sources": {}})
 
 
 if __name__ == "__main__":

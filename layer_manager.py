@@ -34,6 +34,8 @@ from .mapbox_config import (
     build_background_layer_name,
     build_vector_tile_layer_uri,
     build_xyz_layer_uri,
+    extract_mapbox_vector_source_ids,
+    fetch_mapbox_style_definition,
     resolve_background_style,
 )
 from .temporal_config import build_temporal_plan, describe_temporal_configuration, is_temporal_mode_enabled
@@ -69,10 +71,21 @@ class LayerManager:
         layer = None
         if tile_mode == TILE_MODE_VECTOR:
             try:
-                uri = build_vector_tile_layer_uri(access_token, resolved_owner, resolved_style_id)
+                style_definition = fetch_mapbox_style_definition(access_token, resolved_owner, resolved_style_id)
+                tileset_ids = extract_mapbox_vector_source_ids(style_definition)
+                uri = build_vector_tile_layer_uri(
+                    access_token,
+                    resolved_owner,
+                    resolved_style_id,
+                    tileset_ids=tileset_ids,
+                )
                 layer = QgsVectorTileLayer(uri, display_name)
                 if not layer.isValid():
                     layer = None
+                else:
+                    ok, _sub_layers = layer.loadDefaultStyleAndSubLayers("", [])
+                    if not ok:
+                        layer = None
             except Exception:
                 layer = None
 
