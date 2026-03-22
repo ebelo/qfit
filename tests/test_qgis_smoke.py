@@ -12,6 +12,7 @@ try:
 
     from qfit.gpkg_writer import GeoPackageWriter
     from qfit.layer_manager import LayerManager
+    from qfit.qfit_dockwidget import QfitDockWidget
 
     QGIS_AVAILABLE = True
     QGIS_IMPORT_ERROR = None
@@ -21,6 +22,7 @@ except Exception as exc:  # pragma: no cover - exercised only when QGIS is unava
     QgsVectorLayer = None
     GeoPackageWriter = None
     LayerManager = None
+    QfitDockWidget = None
     QGIS_AVAILABLE = False
     QGIS_IMPORT_ERROR = exc
 
@@ -77,6 +79,26 @@ class QgisSmokeTests(unittest.TestCase):
 
     def tearDown(self):
         QgsProject.instance().clear()
+
+    def test_dock_widget_contextual_help_smoke(self):
+        dock = QfitDockWidget(self.iface)
+        try:
+            from qgis.PyQt.QtWidgets import QLabel, QWidget
+
+            self.assertEqual(dock.maxDetailedActivitiesLabel.text(), "Detailed track fetch limit")
+            self.assertEqual(dock.pointSamplingStrideLabel.text(), "Keep every Nth point")
+            self.assertEqual(dock.temporalModeLabel.text(), "Temporal timestamps")
+            self.assertEqual(dock.loadButton.text(), "Write + load layers")
+            self.assertEqual(dock.applyFiltersButton.text(), "Apply current filters")
+            self.assertFalse(dock.backgroundHelpLabel.isVisible())
+            self.assertFalse(dock.analysisHelpLabel.isVisible())
+            self.assertFalse(dock.publishHelpLabel.isVisible())
+            self.assertFalse(dock.temporalHelpLabel.isVisible())
+            self.assertIsNotNone(dock.findChild(QLabel, "maxDetailedActivitiesSpinBoxContextHelpLabel"))
+            self.assertIsNotNone(dock.findChild(QWidget, "maxDetailedActivitiesSpinBoxHelpField"))
+        finally:
+            dock.close()
+            dock.deleteLater()
 
     def test_headless_qgis_smoke_covers_write_load_crs_temporal_and_background_order(self):
         with tempfile.TemporaryDirectory() as temp_dir:

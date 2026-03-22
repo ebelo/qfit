@@ -74,8 +74,9 @@ Inside the dock:
 6. fetch activities
 7. review the fetched-activity preview and query summary
 8. write and load the output GeoPackage
-9. optionally switch **Temporal playback** to `Local activity time` or `UTC time`
-10. click **Apply filters** to wire the loaded layers into the QGIS temporal controller
+9. optionally switch **Temporal timestamps** to `Local activity time` or `UTC time`
+10. click **Apply current filters** to wire the loaded layers into the QGIS temporal controller
+11. hover the contextual-help tooltips / `?` buttons if you want reminders about detailed-track limits, point sampling, basemap setup, publish framing, or write/load vs filter behavior
 
 ## 5. What to expect in QGIS
 
