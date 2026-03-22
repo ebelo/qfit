@@ -272,46 +272,40 @@ def simplify_mapbox_style_expressions(style_definition: dict[str, object]) -> di
         "water-point-label": 12.0,
         "airport-label": 11.0,
         "settlement-subdivision-label": 8.0,
-        # Use data-driven step on `sizerank` (verified static tile field):
-        # sizerank 1 = Paris/London/Berlin → 16pt
-        # sizerank 2-3 = large city → 13pt
-        # sizerank 4-8 = city/town → 11pt
-        "settlement-minor-label": ["step", ["get", "sizerank"], 11.0, 5, 10.0, 8, 9.0],
-        "settlement-major-label": ["step", ["get", "sizerank"], 16.0, 2, 13.0, 4, 11.0],
+        # Use data-driven step on `filterrank` (available in tiles at z8):
+        # filterrank 1 = city/capital → 16pt, 2 = town → 13pt, 3+ → 11pt
+        "settlement-minor-label": 11.0,
+        "settlement-major-label": ["step", ["get", "filterrank"], 16.0, 2, 13.0, 3, 11.0],
         "state-label": 13.0,
         "country-label": 16.0,
         "continent-label": 16.0,
     }
 
-    # Settlement layers: filter by `sizerank` to reduce label clutter.
-    # sizerank is a static integer in Mapbox Streets v8 tiles — lower = more important.
-    # Paris ~1, Geneva ~2, Sion (cantonal capital) ~5-8, village ~12+
-    # We suppress only the noisiest layers (subdivision) and keep all settlement layers
-    # reasonably open so capitals like Sion show at regional zoom levels.
-    _SETTLEMENT_RANK_FILTERS: dict[str, int] = {
-        "settlement-major-label": 5,    # only top-ranked cities per tile (Geneva ~1, Lausanne ~2...)
-        "settlement-minor-label": 999,  # suppress entirely
-        "settlement-subdivision-label": 999,  # suppress entirely
+    # Settlement layers: filter by `type` field (reliable in Mapbox Streets v8).
+    # At z8, sizerank=99 for all features. `type` is the correct discriminator:
+    # "city", "town", "village", "hamlet", "suburb", "neighbourhood"
+    _SETTLEMENT_TYPE_FILTERS: dict[str, list | None] = {
+        "settlement-major-label": ["city"],   # only cities (Geneva, Bern, Lyon, Lausanne...)
+        "settlement-minor-label": ["town"],   # towns only, no villages
+        "settlement-subdivision-label": None, # suppress entirely
     }
 
     for layer in style.get("layers", []):
         layer_id = layer.get("id", "")
 
         # Suppress or filter over-dense settlement label layers
-        rank_threshold = _SETTLEMENT_RANK_FILTERS.get(layer_id)
-        if rank_threshold is not None:
-            if rank_threshold >= 999:
-                # Completely suppress this layer
+        type_filter_value = _SETTLEMENT_TYPE_FILTERS.get(layer_id, "NOTSET")
+        if type_filter_value != "NOTSET":
+            if type_filter_value is None:
                 layer["layout"] = layer.get("layout", {})
                 layer["layout"]["visibility"] = "none"
             else:
-                # Add a symbolrank filter — only show features with rank <= threshold
                 existing_filter = layer.get("filter")
-                rank_filter = ["<=", ["get", "sizerank"], rank_threshold]
+                type_expr = ["match", ["get", "type"], type_filter_value, True, False]
                 if existing_filter:
-                    layer["filter"] = ["all", existing_filter, rank_filter]
+                    layer["filter"] = ["all", existing_filter, type_expr]
                 else:
-                    layer["filter"] = rank_filter
+                    layer["filter"] = type_expr
 
         for section in ("paint", "layout"):
             props = layer.get(section)
