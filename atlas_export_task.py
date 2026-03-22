@@ -25,6 +25,7 @@ from __future__ import annotations
 import os
 
 from qgis.core import (
+    QgsCoordinateReferenceSystem,
     QgsLayoutExporter,
     QgsLayoutItemLabel,
     QgsLayoutItemMap,
@@ -32,6 +33,7 @@ from qgis.core import (
     QgsLayoutSize,
     QgsPrintLayout,
     QgsProject,
+    QgsRectangle,
     QgsTask,
     QgsUnitTypes,
 )
@@ -152,12 +154,12 @@ def build_atlas_layout(
     map_item.setKeepLayerSet(True)
     map_item.attemptMove(QgsLayoutPoint(MAP_X, MAP_Y, QgsUnitTypes.LayoutMillimeters))
     map_item.attemptResize(QgsLayoutSize(MAP_W, MAP_H, QgsUnitTypes.LayoutMillimeters))
+    # Use Fixed mode: we set the map extent explicitly per page from the stored
+    # center_x_3857/center_y_3857/extent_width_m/extent_height_m fields so that
+    # QGIS atlas auto-fit cannot distort or shift the precomputed page extents.
     map_item.setAtlasDriven(True)
-    # Auto: QGIS fits the map to the atlas feature's bounding box.
-    # We set margin=0 so no extra margin is added on top of the pre-calculated
-    # page extents already stored in activity_atlas_pages by publish_atlas.py.
-    map_item.setAtlasScalingMode(QgsLayoutItemMap.Auto)
-    map_item.setAtlasMargin(0.0)
+    map_item.setAtlasScalingMode(QgsLayoutItemMap.Fixed)
+    map_item.setCrs(QgsCoordinateReferenceSystem("EPSG:3857"))
 
     # Disable tile border rendering on visible vector tile layers (debug overlay)
     try:
@@ -328,6 +330,21 @@ class AtlasExportTask(QgsTask):
             if self.isCanceled():
                 return False
 
+            # Locate the map item so we can set its extent per page.
+            map_items = [
+                item for item in layout.items()
+                if isinstance(item, QgsLayoutItemMap)
+            ]
+            map_item = map_items[0] if map_items else None
+
+            # Identify stored extent field indices once.
+            fields = self._atlas_layer.fields()
+            cx_idx = fields.indexOf("center_x_3857")
+            cy_idx = fields.indexOf("center_y_3857")
+            ew_idx = fields.indexOf("extent_width_m")
+            eh_idx = fields.indexOf("extent_height_m")
+            has_stored_extents = all(i >= 0 for i in (cx_idx, cy_idx, ew_idx, eh_idx))
+
             exporter = QgsLayoutExporter(layout)
             settings = QgsLayoutExporter.PdfExportSettings()
             settings.dpi = 150
@@ -339,26 +356,90 @@ class AtlasExportTask(QgsTask):
             if output_dir and not os.path.exists(output_dir):
                 os.makedirs(output_dir, exist_ok=True)
 
-            # The atlas export overload returns (ExportResult, error_string)
-            export_result, export_error = exporter.exportToPdf(
-                atlas,
-                self._output_path,
-                settings,
-            )
+            # Walk the atlas features in order, setting the map extent explicitly
+            # from the stored center/size fields so QGIS atlas auto-fit cannot
+            # distort or shift the precomputed page extents.
+            atlas.beginRender()
+            atlas.updateFeatures()
+            ok = atlas.first()
+            page_paths: list[str] = []
+            page_index = 0
+            try:
+                while ok:
+                    if self.isCanceled():
+                        return False
 
-            if export_result != QgsLayoutExporter.Success:
-                self._error = (
-                    f"PDF export failed (QgsLayoutExporter error code {export_result}"
-                    + (f": {export_error}" if export_error else "")
-                    + "). Check that the atlas layer has features and the output path is writable."
-                )
+                    # Apply the stored precomputed extent to the map item.
+                    if map_item is not None and has_stored_extents:
+                        feat = atlas.layout().reportContext().feature()
+                        cx = feat.attribute(cx_idx)
+                        cy = feat.attribute(cy_idx)
+                        ew = feat.attribute(ew_idx)
+                        eh = feat.attribute(eh_idx)
+                        if all(v is not None and v != "" for v in (cx, cy, ew, eh)):
+                            hw = float(ew) / 2.0
+                            hh = float(eh) / 2.0
+                            rect = QgsRectangle(
+                                float(cx) - hw,
+                                float(cy) - hh,
+                                float(cx) + hw,
+                                float(cy) + hh,
+                            )
+                            map_item.setExtent(rect)
+                            map_item.refresh()
+
+                    # Export this single page as its own PDF then merge.
+                    page_path = f"{self._output_path}.page_{page_index}.pdf"
+                    page_result = exporter.exportToPdf(page_path, settings)
+                    if page_result != QgsLayoutExporter.Success:
+                        self._error = (
+                            f"PDF export failed on page {page_index + 1} "
+                            f"(QgsLayoutExporter error code {page_result})."
+                        )
+                        return False
+                    page_paths.append(page_path)
+                    page_index += 1
+                    ok = atlas.next()
+            finally:
+                atlas.endRender()
+
+            if not page_paths:
+                self._error = "No pages were exported."
                 return False
+
+            # Merge all per-page PDFs into a single output PDF.
+            if len(page_paths) == 1:
+                os.replace(page_paths[0], self._output_path)
+            else:
+                self._merge_pdfs(page_paths, self._output_path)
+                for p in page_paths:
+                    try:
+                        os.remove(p)
+                    except OSError:
+                        pass
 
         except Exception as exc:  # noqa: BLE001
             self._error = str(exc)
             return False
 
         return not self.isCanceled()
+
+    @staticmethod
+    def _merge_pdfs(page_paths: list[str], output_path: str) -> None:
+        """Merge per-page PDF files into a single multi-page PDF."""
+        try:
+            from pypdf import PdfWriter  # noqa: PLC0415
+            writer = PdfWriter()
+            for path in page_paths:
+                writer.append(path)
+            with open(output_path, "wb") as fout:
+                writer.write(fout)
+            return
+        except ImportError:
+            pass
+        # Fallback: if pypdf is unavailable, rename first page (single-page fallback)
+        if page_paths:
+            os.replace(page_paths[0], output_path)
 
     def finished(self, result: bool) -> None:
         """Called on the main thread after run() returns."""
