@@ -272,10 +272,8 @@ def simplify_mapbox_style_expressions(style_definition: dict[str, object]) -> di
         "water-point-label": 12.0,
         "airport-label": 11.0,
         "settlement-subdivision-label": 8.0,
-        # filterrank is verified in tile data: major cities=1, large towns=2, towns=3
-        # QGIS does evaluate ['step', ['get', field], ...] for vector tile labeling
-        "settlement-minor-label": ["step", ["get", "filterrank"], 11.0, 2, 10.0, 3, 9.0],
-        "settlement-major-label": ["step", ["get", "filterrank"], 16.0, 2, 13.0, 3, 11.0],
+        "settlement-minor-label": 10.0,
+        "settlement-major-label": 14.0,
         "state-label": 13.0,
         "country-label": 16.0,
         "continent-label": 16.0,
