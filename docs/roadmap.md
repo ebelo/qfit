@@ -84,6 +84,7 @@ Goal: map styling, data filtering, and activity querying.
   - date range
   - minimum distance
 - Style presets and layer styling basics
+- Semantic activity-type styling presets with basemap-aware rendering profiles
 - Start points / tracks / heatmap-style views
 - Auto-zoom to loaded data extents
 - Working QGIS map/project projection choice aligned to Web Mercator (`EPSG:3857`)
@@ -109,7 +110,6 @@ Goal: map styling, data filtering, and activity querying.
 
 - Better activity details panel / inspection workflow
 - More polished symbology and map presets
-- Smarter visualization presets per activity type
 - Query saving / reusable view presets
 - More explicit basemap and map-style configuration UX
 - Better separation between preview/query controls and post-load QGIS layer subsetting
