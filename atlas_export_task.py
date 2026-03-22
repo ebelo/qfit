@@ -137,17 +137,27 @@ def build_atlas_layout(
         atlas.setSortExpression(f'"{sort_field}"')
 
     # -- Map frame (atlas-controlled extent) --------------------------------
+    # Only include layers that are checked/visible in the layer tree —
+    # hidden layers (including any with debug tile borders enabled) are excluded.
+    root = proj.layerTreeRoot()
+    visible_layers = [
+        node.layer()
+        for node in root.findLayers()
+        if node.isVisible() and node.layer() is not None
+    ]
+
     map_item = QgsLayoutItemMap(layout)
-    map_item.setLayers(proj.mapLayers().values())
+    map_item.setLayers(visible_layers)
+    map_item.setKeepLayerSet(True)
     map_item.attemptMove(QgsLayoutPoint(MAP_X, MAP_Y, QgsUnitTypes.LayoutMillimeters))
     map_item.attemptResize(QgsLayoutSize(MAP_W, MAP_H, QgsUnitTypes.LayoutMillimeters))
     map_item.setAtlasDriven(True)
     map_item.setAtlasScalingMode(QgsLayoutItemMap.Auto)
 
-    # Disable tile border rendering on vector tile layers (debug overlay)
+    # Disable tile border rendering on visible vector tile layers (debug overlay)
     try:
         from qgis.core import QgsVectorTileLayer  # noqa: PLC0415
-        for layer in proj.mapLayers().values():
+        for layer in visible_layers:
             if isinstance(layer, QgsVectorTileLayer):
                 layer.setTileBorderRenderingEnabled(False)
     except Exception:
