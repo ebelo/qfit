@@ -10,7 +10,10 @@ try:
 except ModuleNotFoundError:  # pragma: no cover - exercised only on non-QGIS runners
     QgsApplication = None
 
-from qfit.gpkg_writer import GeoPackageWriter
+if QgsApplication is not None:
+    from qfit.gpkg_writer import GeoPackageWriter
+else:  # pragma: no cover - exercised only on non-QGIS runners
+    GeoPackageWriter = None
 
 
 _QGIS_APP = None
