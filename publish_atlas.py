@@ -27,6 +27,22 @@ class AtlasPageSettings:
 
 
 @dataclass(frozen=True)
+class AtlasDocumentSummary:
+    activity_count: int = 0
+    activity_date_start: str | None = None
+    activity_date_end: str | None = None
+    date_range_label: str | None = None
+    total_distance_m: float = 0.0
+    total_distance_label: str | None = None
+    total_moving_time_s: int = 0
+    total_duration_label: str | None = None
+    total_elevation_gain_m: float = 0.0
+    total_elevation_gain_label: str | None = None
+    activity_types_label: str | None = None
+    cover_summary: str | None = None
+
+
+@dataclass(frozen=True)
 class AtlasPagePlan:
     source: str | None
     source_activity_id: str | None
@@ -35,6 +51,8 @@ class AtlasPagePlan:
     start_date: str | None
     distance_m: float | None
     moving_time_s: int | None
+    total_elevation_gain_m: float | None
+    average_speed_mps: float | None
     geometry_source: str
     page_number: int
     page_sort_key: str
@@ -42,8 +60,21 @@ class AtlasPagePlan:
     page_title: str
     page_subtitle: str
     page_date: str | None
+    page_toc_label: str | None
     page_distance_label: str | None
     page_duration_label: str | None
+    page_average_speed_label: str | None
+    page_average_pace_label: str | None
+    page_elevation_gain_label: str | None
+    page_stats_summary: str | None
+    page_profile_summary: str | None
+    document_activity_count: int
+    document_date_range_label: str | None
+    document_total_distance_label: str | None
+    document_total_duration_label: str | None
+    document_total_elevation_gain_label: str | None
+    document_activity_types_label: str | None
+    document_cover_summary: str | None
     profile_available: bool
     profile_point_count: int
     profile_distance_m: float | None
@@ -123,6 +154,7 @@ def build_atlas_page_plans(
             continue
         candidates.append((atlas_sort_key(record), record, geometry_source, bounds))
 
+    document_summary = build_atlas_document_summary(record for _, record, _, _ in candidates)
     plans = []
     for page_number, (sort_key, record, geometry_source, bounds) in enumerate(sorted(candidates, key=lambda item: item[0]), start=1):
         min_lon, min_lat, max_lon, max_lat = expand_bounds(
@@ -153,6 +185,8 @@ def build_atlas_page_plans(
                 start_date=record.get("start_date"),
                 distance_m=_safe_float(record.get("distance_m")),
                 moving_time_s=_safe_int(record.get("moving_time_s")),
+                total_elevation_gain_m=_safe_float(record.get("total_elevation_gain_m")),
+                average_speed_mps=_safe_float(record.get("average_speed_mps")),
                 geometry_source=geometry_source,
                 page_number=page_number,
                 page_sort_key=sort_key,
@@ -160,8 +194,25 @@ def build_atlas_page_plans(
                 page_title=page_title,
                 page_subtitle=page_subtitle,
                 page_date=format_activity_date(record.get("start_date_local") or record.get("start_date")),
+                page_toc_label=build_page_toc_label(record),
                 page_distance_label=format_distance_label(record.get("distance_m")),
                 page_duration_label=format_duration_label(record.get("moving_time_s")),
+                page_average_speed_label=format_speed_label(record.get("average_speed_mps")),
+                page_average_pace_label=format_pace_label(
+                    record.get("distance_m"),
+                    record.get("moving_time_s"),
+                    activity_type=record.get("activity_type"),
+                ),
+                page_elevation_gain_label=format_elevation_label(record.get("total_elevation_gain_m")),
+                page_stats_summary=build_page_stats_summary(record),
+                page_profile_summary=build_page_profile_summary(record),
+                document_activity_count=document_summary.activity_count,
+                document_date_range_label=document_summary.date_range_label,
+                document_total_distance_label=document_summary.total_distance_label,
+                document_total_duration_label=document_summary.total_duration_label,
+                document_total_elevation_gain_label=document_summary.total_elevation_gain_label,
+                document_activity_types_label=document_summary.activity_types_label,
+                document_cover_summary=document_summary.cover_summary,
                 profile_available=profile_summary.available,
                 profile_point_count=profile_summary.point_count,
                 profile_distance_m=profile_summary.distance_m,
@@ -190,6 +241,100 @@ def build_atlas_page_plans(
             )
         )
     return plans
+
+
+def build_atlas_document_summary(records: Iterable[dict]) -> AtlasDocumentSummary:
+    record_list = list(records)
+    activity_dates = [
+        activity_date
+        for activity_date in (
+            format_activity_date(record.get("start_date_local") or record.get("start_date"))
+            for record in record_list
+        )
+        if activity_date
+    ]
+    activity_date_start = min(activity_dates) if activity_dates else None
+    activity_date_end = max(activity_dates) if activity_dates else None
+
+    total_distance_m = sum(distance_m for distance_m in (_safe_float(record.get("distance_m")) for record in record_list) if distance_m is not None)
+    total_moving_time_s = sum(moving_time_s for moving_time_s in (_safe_int(record.get("moving_time_s")) for record in record_list) if moving_time_s is not None)
+    total_elevation_gain_m = sum(
+        elevation_gain_m
+        for elevation_gain_m in (_safe_float(record.get("total_elevation_gain_m")) for record in record_list)
+        if elevation_gain_m is not None
+    )
+
+    ordered_activity_types = []
+    for record in record_list:
+        activity_type = (record.get("activity_type") or "").strip()
+        if not activity_type:
+            continue
+        if any(existing.casefold() == activity_type.casefold() for existing in ordered_activity_types):
+            continue
+        ordered_activity_types.append(activity_type)
+
+    summary = AtlasDocumentSummary(
+        activity_count=len(record_list),
+        activity_date_start=activity_date_start,
+        activity_date_end=activity_date_end,
+        date_range_label=build_date_range_label(activity_date_start, activity_date_end),
+        total_distance_m=total_distance_m,
+        total_distance_label=format_distance_label(total_distance_m) if total_distance_m > 0 else None,
+        total_moving_time_s=total_moving_time_s,
+        total_duration_label=format_duration_label(total_moving_time_s) if total_moving_time_s > 0 else None,
+        total_elevation_gain_m=total_elevation_gain_m,
+        total_elevation_gain_label=format_elevation_label(total_elevation_gain_m) if total_elevation_gain_m > 0 else None,
+        activity_types_label=", ".join(ordered_activity_types) if ordered_activity_types else None,
+    )
+    return AtlasDocumentSummary(
+        activity_count=summary.activity_count,
+        activity_date_start=summary.activity_date_start,
+        activity_date_end=summary.activity_date_end,
+        date_range_label=summary.date_range_label,
+        total_distance_m=summary.total_distance_m,
+        total_distance_label=summary.total_distance_label,
+        total_moving_time_s=summary.total_moving_time_s,
+        total_duration_label=summary.total_duration_label,
+        total_elevation_gain_m=summary.total_elevation_gain_m,
+        total_elevation_gain_label=summary.total_elevation_gain_label,
+        activity_types_label=summary.activity_types_label,
+        cover_summary=build_cover_summary(summary),
+    )
+
+
+def build_date_range_label(start_date: str | None, end_date: str | None) -> str | None:
+    if start_date and end_date:
+        if start_date == end_date:
+            return start_date
+        return f"{start_date} → {end_date}"
+    return start_date or end_date
+
+
+def build_cover_summary(summary: AtlasDocumentSummary) -> str | None:
+    parts = []
+
+    if summary.activity_count > 0:
+        activity_label = "activity" if summary.activity_count == 1 else "activities"
+        parts.append(f"{summary.activity_count} {activity_label}")
+
+    if summary.date_range_label:
+        parts.append(summary.date_range_label)
+
+    if summary.total_distance_label:
+        parts.append(summary.total_distance_label)
+
+    if summary.total_duration_label:
+        parts.append(summary.total_duration_label)
+
+    if summary.total_elevation_gain_label:
+        parts.append(f"↑ {summary.total_elevation_gain_label}")
+
+    if summary.activity_types_label:
+        parts.append(summary.activity_types_label)
+
+    if not parts:
+        return None
+    return " · ".join(parts)
 
 
 def atlas_sort_key(record: dict) -> str:
@@ -389,6 +534,94 @@ def build_page_subtitle(record: dict) -> str:
     return " · ".join(parts)
 
 
+def build_page_toc_label(record: dict) -> str | None:
+    parts = []
+
+    activity_date = format_activity_date(record.get("start_date_local") or record.get("start_date"))
+    if activity_date:
+        parts.append(activity_date)
+
+    title = (record.get("name") or "Untitled activity").strip()
+    if title:
+        parts.append(title)
+
+    distance_label = format_distance_label(record.get("distance_m"))
+    if distance_label:
+        parts.append(distance_label)
+
+    duration_label = format_duration_label(record.get("moving_time_s"))
+    if duration_label:
+        parts.append(duration_label)
+
+    if not parts:
+        return None
+    return " · ".join(parts)
+
+
+def build_page_stats_summary(record: dict) -> str | None:
+    parts = []
+
+    distance_label = format_distance_label(record.get("distance_m"))
+    if distance_label:
+        parts.append(distance_label)
+
+    duration_label = format_duration_label(record.get("moving_time_s"))
+    if duration_label:
+        parts.append(duration_label)
+
+    pace_label = format_pace_label(
+        record.get("distance_m"),
+        record.get("moving_time_s"),
+        activity_type=record.get("activity_type"),
+    )
+    speed_label = format_speed_label(record.get("average_speed_mps"))
+    effort_label = pace_label or speed_label
+    if effort_label:
+        parts.append(effort_label)
+
+    elevation_gain_label = format_elevation_label(record.get("total_elevation_gain_m"))
+    if elevation_gain_label:
+        parts.append(f"↑ {elevation_gain_label}")
+
+    if not parts:
+        return None
+    return " · ".join(parts)
+
+
+def build_page_profile_summary(record: dict) -> str | None:
+    profile_summary = build_profile_summary(record)
+    if not profile_summary.available:
+        return None
+
+    parts = []
+    distance_label = format_distance_label(profile_summary.distance_m)
+    if distance_label:
+        parts.append(distance_label)
+
+    altitude_range_label = format_altitude_range_label(
+        profile_summary.min_altitude_m,
+        profile_summary.max_altitude_m,
+    )
+    if altitude_range_label:
+        parts.append(altitude_range_label)
+
+    relief_label = format_elevation_label(profile_summary.relief_m)
+    if relief_label:
+        parts.append(f"relief {relief_label}")
+
+    gain_label = format_elevation_label(profile_summary.elevation_gain_m)
+    if gain_label:
+        parts.append(f"↑ {gain_label}")
+
+    loss_label = format_elevation_label(profile_summary.elevation_loss_m)
+    if loss_label:
+        parts.append(f"↓ {loss_label}")
+
+    if not parts:
+        return None
+    return " · ".join(parts)
+
+
 @dataclass(frozen=True)
 class AtlasProfileSummary:
     available: bool = False
@@ -474,6 +707,31 @@ def format_duration_label(value) -> str | None:
     return format_duration(moving_time_s)
 
 
+def format_speed_label(value) -> str | None:
+    speed_mps = _safe_float(value)
+    if speed_mps is None or speed_mps <= 0:
+        return None
+    return f"{speed_mps * 3.6:.1f} km/h"
+
+
+def format_pace_label(distance_value, moving_time_value, activity_type: str | None = None) -> str | None:
+    if not _activity_type_prefers_pace(activity_type):
+        return None
+
+    distance_m = _safe_float(distance_value)
+    moving_time_s = _safe_int(moving_time_value)
+    if distance_m is None or moving_time_s is None or distance_m <= 0 or moving_time_s <= 0:
+        return None
+
+    pace_seconds = moving_time_s / (distance_m / 1000.0)
+    pace_minutes = int(pace_seconds // 60)
+    pace_remainder_seconds = int(round(pace_seconds - (pace_minutes * 60)))
+    if pace_remainder_seconds == 60:
+        pace_minutes += 1
+        pace_remainder_seconds = 0
+    return f"{pace_minutes}m {pace_remainder_seconds:02d}s/km"
+
+
 def format_elevation_label(value) -> str | None:
     elevation_m = _safe_float(value)
     if elevation_m is None:
@@ -487,6 +745,11 @@ def format_altitude_range_label(min_value, max_value) -> str | None:
     if min_altitude_m is None or max_altitude_m is None:
         return None
     return f"{round(min_altitude_m):.0f}–{round(max_altitude_m):.0f} m"
+
+
+def _activity_type_prefers_pace(activity_type: str | None) -> bool:
+    normalized = normalize_sort_text(activity_type or "")
+    return any(token in normalized for token in ("run", "walk", "hike"))
 
 
 def _safe_float(value) -> float | None:
