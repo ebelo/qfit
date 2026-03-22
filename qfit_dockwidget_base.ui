@@ -378,7 +378,20 @@
            <item>
             <widget class="QPushButton" name="loadButton">
              <property name="text">
-              <string>Store and load layers</string>
+              <string>Fetch &amp; Store</string>
+             </property>
+             <property name="toolTip">
+              <string>Write fetched activities to the GeoPackage database. Run after fetching from Strava.</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="loadLayersButton">
+             <property name="text">
+              <string>Load layers</string>
+             </property>
+             <property name="toolTip">
+              <string>Load an existing GeoPackage into QGIS. Use this when reopening QGIS on an existing database without re-fetching.</string>
              </property>
             </widget>
            </item>
