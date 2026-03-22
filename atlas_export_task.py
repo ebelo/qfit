@@ -331,11 +331,13 @@ class AtlasExportTask(QgsTask):
                 return False
 
             # Locate the map item so we can set its extent per page.
-            map_items = [
-                item for item in layout.items()
-                if isinstance(item, QgsLayoutItemMap)
-            ]
-            map_item = map_items[0] if map_items else None
+            # Use duck-typing (setExtent + layers) so tests can mock without
+            # needing a real QgsLayoutItemMap subclass.
+            map_item = None
+            for item in layout.items():
+                if callable(getattr(item, "setExtent", None)) and callable(getattr(item, "layers", None)):
+                    map_item = item
+                    break
 
             # Identify stored extent field indices once.
             fields = self._atlas_layer.fields()

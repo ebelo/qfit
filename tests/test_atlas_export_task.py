@@ -319,23 +319,15 @@ class TestAtlasExportTaskCancellation(unittest.TestCase):
         layer = _make_atlas_layer(feature_count=3)
         task = AtlasExportTask(
             atlas_layer=layer,
-            output_path="/tmp/qfit_test_atlas.pdf",
+            output_path="/tmp/qfit_test_atlas_cancel.pdf",
             on_finished=lambda **kw: received.update(kw),
         )
         task._cancelled = True
-
-        with patch("qfit.atlas_export_task.build_atlas_layout") as mock_build, \
-             patch("os.path.exists", return_value=True), \
-             patch("qfit.atlas_export_task.QgsLayoutExporter") as mock_exporter_cls:
-            mock_layout = MagicMock()
-            mock_layout.atlas.return_value = MagicMock()
-            mock_build.return_value = mock_layout
-            mock_exporter_cls.Success = 0
-            exporter_mock = MagicMock()
-            exporter_mock.exportToPdf.return_value = (0, "")  # Success tuple
-            mock_exporter_cls.return_value = exporter_mock
+        layout_mock, _, exporter_cls_mock = _make_atlas_mock(feature_count=3)
+        with patch("qfit.atlas_export_task.build_atlas_layout", return_value=layout_mock), \
+             patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
+             patch("os.makedirs"):
             _run_task(task)
-
         self.assertTrue(received.get("cancelled"))
         self.assertIsNone(received.get("output_path"))
 
@@ -350,19 +342,14 @@ class TestAtlasExportTaskNoCallback(unittest.TestCase):
         layer = _make_atlas_layer(feature_count=1)
         task = AtlasExportTask(
             atlas_layer=layer,
-            output_path="/tmp/qfit_test_atlas.pdf",
+            output_path="/tmp/qfit_test_atlas_nocb.pdf",
             on_finished=None,
         )
-        with patch("qfit.atlas_export_task.build_atlas_layout") as mock_build, \
-             patch("os.path.exists", return_value=True), \
-             patch("qfit.atlas_export_task.QgsLayoutExporter") as mock_exporter_cls:
-            mock_layout = MagicMock()
-            mock_layout.atlas.return_value = MagicMock()
-            mock_build.return_value = mock_layout
-            mock_exporter_cls.Success = 0
-            exporter_mock = MagicMock()
-            exporter_mock.exportToPdf.return_value = (0, "")  # Success tuple
-            mock_exporter_cls.return_value = exporter_mock
+        layout_mock, _, exporter_cls_mock = _make_atlas_mock(feature_count=1)
+        with patch("qfit.atlas_export_task.build_atlas_layout", return_value=layout_mock), \
+             patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
+             patch("os.replace"), \
+             patch("os.makedirs"):
             task.run()
             task.finished(True)  # should not raise
 
@@ -391,6 +378,112 @@ class TestAtlasExportTaskLayerSubsetHandling(unittest.TestCase):
             _run_task(task)
         layer.setSubsetString.assert_not_called()
         self.assertIsNotNone(received.get("output_path"))
+
+
+# ---------------------------------------------------------------------------
+# Tests: per-page activity filtering
+# ---------------------------------------------------------------------------
+
+
+class TestAtlasExportTaskPerPageFilter(unittest.TestCase):
+    def _make_filterable_layer(self, sid_value="act_001"):
+        """Return a mock layer that has source_activity_id field and subset tracking."""
+        layer = MagicMock()
+        layer.subsetString.return_value = ""
+        subset_calls = []
+        layer.setSubsetString.side_effect = lambda s: subset_calls.append(s)
+        fields = MagicMock()
+        fields.indexOf = lambda name: 0 if name == "source_activity_id" else -1
+        layer.fields.return_value = fields
+        return layer, subset_calls
+
+    def test_per_page_filter_applied_and_restored(self):
+        """Each page's data layers are filtered to that page's activity and restored after."""
+        track_layer, track_calls = self._make_filterable_layer()
+
+        layout_mock, atlas_mock, exporter_cls_mock = _make_atlas_mock(feature_count=1)
+
+        # Duck-typing: map item needs setExtent and layers callables.
+        map_item = MagicMock()
+        map_item.layers.return_value = [track_layer]
+        map_item.setExtent = MagicMock()
+        layout_mock.items.return_value = [map_item]
+
+        # Atlas layer: all indexOf calls return 0 (all fields present).
+        # All attribute() calls return 1000.0 (numeric, safe for both extent and sid).
+        atlas_layer = _make_atlas_layer(feature_count=1)
+        atlas_layer.fields.return_value.indexOf = lambda name: 0
+
+        feat_mock = atlas_mock.layout.return_value.reportContext.return_value.feature.return_value
+        feat_mock.attribute.return_value = 1000.0
+
+        received = {}
+        task = AtlasExportTask(
+            atlas_layer=atlas_layer,
+            output_path="/tmp/qfit_test_filter.pdf",
+            on_finished=lambda **kw: received.update(kw),
+        )
+
+        with patch("qfit.atlas_export_task.build_atlas_layout", return_value=layout_mock), \
+             patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
+             patch("os.replace"), \
+             patch("os.makedirs"):
+            _run_task(task)
+
+        # A per-page filter was set on the track layer.
+        self.assertTrue(len(track_calls) >= 2, f"Expected ≥2 calls, got: {track_calls}")
+        self.assertTrue(any("source_activity_id" in call for call in track_calls[:-1]))
+        # Original subset string ("") was restored as the final call.
+        self.assertEqual(track_calls[-1], "")
+        self.assertIsNotNone(received.get("output_path"))
+
+    def test_multi_page_merges_pdfs(self):
+        """Multi-page export calls _merge_pdfs and cleans up per-page files."""
+        layer = _make_atlas_layer(feature_count=3)
+        received = {}
+        task = AtlasExportTask(
+            atlas_layer=layer,
+            output_path="/tmp/qfit_test_merge.pdf",
+            on_finished=lambda **kw: received.update(kw),
+        )
+        layout_mock, _, exporter_cls_mock = _make_atlas_mock(feature_count=3)
+        merge_calls = []
+        remove_calls = []
+        with patch("qfit.atlas_export_task.build_atlas_layout", return_value=layout_mock), \
+             patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
+             patch("qfit.atlas_export_task.AtlasExportTask._merge_pdfs",
+                   side_effect=lambda pages, out: merge_calls.append((pages, out))), \
+             patch("os.remove", side_effect=lambda p: remove_calls.append(p)), \
+             patch("os.makedirs"):
+            _run_task(task)
+        # _merge_pdfs was called with 3 page paths
+        self.assertEqual(len(merge_calls), 1)
+        self.assertEqual(len(merge_calls[0][0]), 3)
+        self.assertEqual(merge_calls[0][1], "/tmp/qfit_test_merge.pdf")
+        # All per-page files were removed
+        self.assertEqual(len(remove_calls), 3)
+        self.assertIsNotNone(received.get("output_path"))
+
+    def test_single_page_replaces_without_merge(self):
+        """Single-page export uses os.replace instead of _merge_pdfs."""
+        layer = _make_atlas_layer(feature_count=1)
+        received = {}
+        task = AtlasExportTask(
+            atlas_layer=layer,
+            output_path="/tmp/qfit_test_replace.pdf",
+            on_finished=lambda **kw: received.update(kw),
+        )
+        layout_mock, _, exporter_cls_mock = _make_atlas_mock(feature_count=1)
+        replace_calls = []
+        with patch("qfit.atlas_export_task.build_atlas_layout", return_value=layout_mock), \
+             patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
+             patch("os.replace", side_effect=lambda src, dst: replace_calls.append((src, dst))), \
+             patch("qfit.atlas_export_task.AtlasExportTask._merge_pdfs") as mock_merge, \
+             patch("os.makedirs"):
+            _run_task(task)
+        mock_merge.assert_not_called()
+        self.assertEqual(len(replace_calls), 1)
+        self.assertEqual(replace_calls[0][1], "/tmp/qfit_test_replace.pdf")
 
 
 if __name__ == "__main__":
