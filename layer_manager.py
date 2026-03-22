@@ -200,8 +200,16 @@ class LayerManager:
 
     def _apply_label_priority(self, labeling) -> None:
         """Boost label priority for major city/country layers so they win collision
-        resolution over minor settlements and POIs in QGIS vector tile rendering."""
-        # QgsPalLayerSettings.priority: 0 = lowest, 10 = highest
+        resolution over minor settlements and POIs in QGIS vector tile rendering.
+
+        For settlement layers we also apply a data-defined priority override using
+        ``sizerank`` so that Geneva (sizerank=1) beats Annemasse (sizerank=4)
+        within the same label layer — otherwise QGIS resolves intra-layer collisions
+        by arbitrary feature order.
+        """
+        from qgis.core import QgsProperty  # noqa: PLC0415
+
+        # Layer-level base priorities (0–10, higher wins)
         _LAYER_PRIORITIES = {
             "continent-label":          10,
             "country-label":            10,
@@ -217,6 +225,11 @@ class LayerManager:
             "road-label":               5,
             "airport-label":            5,
         }
+        # For settlement layers use a data-defined expression to give larger cities
+        # higher intra-layer priority. sizerank is inverted (lower = more important)
+        # so we map: max(0, 10 - sizerank)  clamped to [1, 10].
+        _SETTLEMENT_LAYERS = {"settlement-major-label", "settlement-minor-label"}
+
         try:
             for style in labeling.styles():
                 layer_name = style.layerName()
@@ -224,9 +237,20 @@ class LayerManager:
                 if priority is None:
                     continue
                 settings = style.labelSettings()
-                if settings is not None:
-                    settings.priority = priority
-                    style.setLabelSettings(settings)
+                if settings is None:
+                    continue
+                settings.priority = priority
+                if layer_name in _SETTLEMENT_LAYERS:
+                    # Data-defined priority: convert sizerank (1=biggest) to 1–10 scale
+                    dd_props = settings.dataDefinedProperties()
+                    dd_props.setProperty(
+                        87,  # QgsPalLayerSettings.Priority
+                        QgsProperty.fromExpression(
+                            "greatest(1, least(10, 11 - coalesce(\"sizerank\", 10)))"
+                        ),
+                    )
+                    settings.setDataDefinedProperties(dd_props)
+                style.setLabelSettings(settings)
         except Exception:
             pass
 
