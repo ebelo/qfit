@@ -174,6 +174,47 @@ def _extract_fallback_color(expr: object) -> str | None:
     return fallback
 
 
+def _extract_midrange_size(expr: object) -> float | None:
+    """Extract a reasonable representative size from a Mapbox size expression.
+
+    For zoom-interpolated sizes we try to pick the value at a mid-zoom (z12),
+    falling back to a modest literal. This avoids collapsing all text to the
+    extreme (first or last) zoom stop value.
+    """
+    if isinstance(expr, (int, float)):
+        return float(expr)
+    if not isinstance(expr, list) or not expr:
+        return None
+    op = expr[0]
+    if op == "interpolate" and len(expr) >= 5:
+        # ['interpolate', interp_type, ['zoom'], z1, v1, z2, v2, ...]
+        # Try to find value at z12, else take median of numeric stops
+        stops_start = 3
+        stops = []
+        for i in range(stops_start, len(expr) - 1, 2):
+            z = expr[i]
+            v = expr[i + 1]
+            if isinstance(z, (int, float)):
+                v_scalar = _extract_midrange_size(v)
+                if v_scalar is not None:
+                    stops.append((z, v_scalar))
+        if stops:
+            # Return value nearest to z12
+            stops.sort(key=lambda s: abs(s[0] - 12))
+            return stops[0][1]
+    if op == "step" and len(expr) >= 3:
+        # ['step', input, default, threshold, value, ...]
+        default_val = _extract_midrange_size(expr[2])
+        if default_val is not None:
+            return default_val
+    # Recurse for nested expressions, take first reasonable scalar
+    for item in expr[1:]:
+        val = _extract_midrange_size(item)
+        if val is not None:
+            return val
+    return None
+
+
 def _simplify_text_field(expr: object) -> object:
     """Simplify a Mapbox text-field expression to the first simple field reference.
 
@@ -214,7 +255,28 @@ def simplify_mapbox_style_expressions(style_definition: dict[str, object]) -> di
         "icon-color", "icon-halo-color", "background-color",
         "fill-extrusion-color",
     }
+    # Per-layer-id text-size caps to restore cartographic hierarchy.
+    # Values chosen to approximate the Mapbox reference hierarchy at z8–12.
+    _TEXT_SIZE_CAPS: dict[str, float] = {
+        "natural-point-label": 9.0,   # mountain peaks — small
+        "natural-line-label": 10.0,
+        "poi-label": 9.0,
+        "road-label": 10.0,
+        "path-pedestrian-label": 9.0,
+        "waterway-label": 10.0,
+        "water-line-label": 11.0,
+        "water-point-label": 12.0,
+        "airport-label": 11.0,
+        "settlement-subdivision-label": 10.0,
+        "settlement-minor-label": 11.0,
+        "settlement-major-label": 14.0,  # cities — visually prominent
+        "state-label": 13.0,
+        "country-label": 16.0,
+        "continent-label": 16.0,
+    }
+
     for layer in style.get("layers", []):
+        layer_id = layer.get("id", "")
         for section in ("paint", "layout"):
             props = layer.get(section)
             if not isinstance(props, dict):
@@ -229,6 +291,15 @@ def simplify_mapbox_style_expressions(style_definition: dict[str, object]) -> di
                         props[prop] = fallback
                 elif prop == "text-field":
                     props[prop] = _simplify_text_field(val)
+                elif prop == "text-size":
+                    cap = _TEXT_SIZE_CAPS.get(layer_id)
+                    if cap is not None:
+                        # Use the cap directly — it carries cartographic intent
+                        props[prop] = cap
+                    else:
+                        size = _extract_midrange_size(val)
+                        if size is not None:
+                            props[prop] = size
     return style
 
 
