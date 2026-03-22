@@ -1,3 +1,4 @@
+import colorsys
 import unittest
 
 import tests._path  # noqa: F401,E402
@@ -27,12 +28,34 @@ class MapStyleTests(unittest.TestCase):
         self.assertEqual(resolve_activity_color("Kitesurf"), "#00B4D8")
         self.assertEqual(resolve_activity_color(None), "#6C757D")
 
+    def test_truly_unknown_types_fall_back_to_grey(self):
+        # A type with no recognizable token should land in the 'machine' family (grey).
+        grey_hex = resolve_activity_color("SomeRandomSport")
+        r, g, b = int(grey_hex[1:3], 16), int(grey_hex[3:5], 16), int(grey_hex[5:7], 16)
+        _hue, _lightness, saturation = colorsys.rgb_to_hls(r / 255.0, g / 255.0, b / 255.0)
+        # Grey family means very low saturation.
+        self.assertLess(saturation, 0.15, f"Expected grey-ish color for unknown type, got {grey_hex}")
+
     def test_light_and_satellite_contexts_adjust_luminance_without_changing_mapping(self):
         self.assertEqual(resolve_activity_color("Run", "Outdoor"), "#D62828")
         self.assertEqual(resolve_activity_color("Run", "Light"), "#B71E1E")
         self.assertEqual(resolve_activity_color("Run", "Satellite"), "#DE3F3F")
         self.assertEqual(adapt_color_for_basemap(DEFAULT_SIMPLE_LINE_HEX, "Light"), "#21867A")
         self.assertEqual(adapt_color_for_basemap(DEFAULT_SIMPLE_LINE_HEX, "Satellite"), "#2EB4A3")
+
+    def test_basemap_adaptation_does_not_change_hue(self):
+        # Hue must be stable across basemap presets (only lightness/saturation may shift).
+        def hex_hue(hex_color):
+            r, g, b = int(hex_color[1:3], 16), int(hex_color[3:5], 16), int(hex_color[5:7], 16)
+            hue, _l, _s = colorsys.rgb_to_hls(r / 255.0, g / 255.0, b / 255.0)
+            return round(hue, 2)
+
+        for activity in ("Run", "Ride", "Hike", "AlpineSki"):
+            base_hue = hex_hue(resolve_activity_color(activity, "Outdoor"))
+            light_hue = hex_hue(resolve_activity_color(activity, "Light"))
+            satellite_hue = hex_hue(resolve_activity_color(activity, "Satellite"))
+            self.assertAlmostEqual(base_hue, light_hue, places=2, msg=f"{activity}: hue changed on Light basemap")
+            self.assertAlmostEqual(base_hue, satellite_hue, places=2, msg=f"{activity}: hue changed on Satellite basemap")
 
     def test_basemap_line_profiles_follow_style_guide_ranges(self):
         outdoor = resolve_basemap_line_style("Outdoor")
