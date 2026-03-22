@@ -10,6 +10,7 @@ from qfit.publish_atlas import (
     atlas_sort_key,
     build_atlas_document_summary,
     build_atlas_page_plans,
+    build_atlas_toc_entries,
     build_cover_summary,
     build_date_range_label,
     build_page_name,
@@ -126,6 +127,53 @@ class PublishAtlasTests(unittest.TestCase):
         )
         self.assertTrue(all(plan.document_activity_count == 3 for plan in plans))
         self.assertTrue(all(plan.document_date_range_label == "2026-03-18 → 2026-03-19" for plan in plans))
+
+    def test_build_atlas_toc_entries_create_layout_ready_table_rows(self):
+        records = [
+            {
+                "source": "strava",
+                "source_activity_id": "100",
+                "name": "Morning Ride",
+                "activity_type": "Ride",
+                "start_date_local": "2026-03-18T08:10:00+01:00",
+                "distance_m": 42500,
+                "moving_time_s": 7200,
+                "total_elevation_gain_m": 640,
+                "geometry_points": [(46.52, 6.62), (46.57, 6.74)],
+            },
+            {
+                "source": "strava",
+                "source_activity_id": "200",
+                "name": "Lunch Run",
+                "activity_type": "Run",
+                "start_date_local": "2026-03-19T12:00:00+01:00",
+                "distance_m": 10100,
+                "moving_time_s": 3000,
+                "total_elevation_gain_m": 85,
+                "geometry_points": [(46.50, 6.60), (46.51, 6.62)],
+                "details_json": {
+                    "stream_metrics": {
+                        "distance": [0, 3300, 6700, 10100],
+                        "altitude": [430, 445, 438, 452],
+                    }
+                },
+            },
+        ]
+
+        entries = build_atlas_toc_entries(records)
+
+        self.assertEqual(len(entries), 2)
+        self.assertEqual(entries[0].page_number, 1)
+        self.assertEqual(entries[0].page_number_label, "1")
+        self.assertEqual(entries[0].page_title, "Morning Ride")
+        self.assertEqual(entries[0].page_toc_label, "2026-03-18 · Morning Ride · 42.5 km · 2h 00m")
+        self.assertEqual(entries[0].toc_entry_label, "1. 2026-03-18 · Morning Ride · 42.5 km · 2h 00m")
+        self.assertFalse(entries[0].profile_available)
+        self.assertEqual(entries[1].page_number, 2)
+        self.assertEqual(entries[1].page_number_label, "2")
+        self.assertEqual(entries[1].page_stats_summary, "10.1 km · 50m 00s · 4m 57s/km · ↑ 85 m")
+        self.assertTrue(entries[1].profile_available)
+        self.assertEqual(entries[1].page_profile_summary, "10.1 km · 430–452 m · relief 22 m · ↑ 29 m · ↓ 7 m")
 
     def test_build_atlas_page_plans_respects_custom_publish_settings(self):
         records = [
