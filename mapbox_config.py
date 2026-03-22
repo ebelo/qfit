@@ -284,12 +284,13 @@ def simplify_mapbox_style_expressions(style_definition: dict[str, object]) -> di
     # - settlement-minor-label: only towns (type=town) with filterrank<=2 — regional centres
     # - settlement-subdivision-label: suppress entirely
     # filterrank is available in tiles (verified z10: Cologny=3, Corsier=5, Geneva=1)
+    # Filter by `type` only — filterrank is zoom-dependent and unreliable for
+    # consistent cross-zoom filtering. `type` is stable across all zoom levels.
+    # Mapbox Streets v8 settlement types: city, town, village, hamlet, suburb,
+    # neighbourhood, quarter, borough
     _SETTLEMENT_FILTERS: dict[str, object] = {
         "settlement-major-label": ["match", ["get", "type"], ["city"], True, False],
-        "settlement-minor-label": ["all",
-            ["match", ["get", "type"], ["city", "town"], True, False],
-            ["<=", ["get", "filterrank"], 1],
-        ],
+        "settlement-minor-label": ["match", ["get", "type"], ["town"], True, False],
         "settlement-subdivision-label": None,
     }
 
