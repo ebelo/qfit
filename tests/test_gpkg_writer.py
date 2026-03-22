@@ -4,7 +4,11 @@ import unittest
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 from tests import _path  # noqa: F401
-from qgis.core import QgsApplication
+
+try:
+    from qgis.core import QgsApplication
+except ModuleNotFoundError:  # pragma: no cover - exercised only on non-QGIS runners
+    QgsApplication = None
 
 from qfit.gpkg_writer import GeoPackageWriter
 
@@ -20,6 +24,7 @@ def _ensure_qgis_app():
     return _QGIS_APP
 
 
+@unittest.skipIf(QgsApplication is None, "QGIS Python bindings are not available")
 class GeoPackageWriterAtlasTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
