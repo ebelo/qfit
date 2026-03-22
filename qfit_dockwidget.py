@@ -277,6 +277,10 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             style_preset_index = self.stylePresetComboBox.findText("By activity type")
         self.stylePresetComboBox.setCurrentIndex(max(style_preset_index, 0))
 
+        last_sync = self._setting_value(settings, "last_sync_date", None)
+        if last_sync:
+            self.countLabel.setText(f"Last sync: {last_sync}")
+
     def _save_settings(self):
         settings = QSettings()
         settings.setValue(f"{self.SETTINGS_PREFIX}/client_id", self.clientIdLineEdit.text().strip())
@@ -554,6 +558,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         before, after = self._build_fetch_epoch_range()
         self.activities = activities
         detailed_count = sum(1 for activity in self.activities if activity.geometry_source == "stream")
+        today_str = date.today().isoformat()
         self.last_fetch_context = {
             "provider": "strava",
             "before_epoch": before,
@@ -564,10 +569,15 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             "rate_limit": client.last_rate_limit,
             "is_full_sync": self._is_full_sync_window(before, after),
         }
+        # Persist last sync date
+        settings = QSettings()
+        settings.setValue(f"{self.SETTINGS_PREFIX}/last_sync_date", today_str)
+
         self._populate_activity_types()
         self.countLabel.setText(
-            "Activities fetched: {count} (detailed tracks: {detailed})".format(
+            "{count} activities loaded (last sync: {sync_date}, detailed tracks: {detailed})".format(
                 count=len(self.activities),
+                sync_date=today_str,
                 detailed=detailed_count,
             )
         )
@@ -604,13 +614,25 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             sync = result.get("sync") or {}
             if visual_status:
                 visual_status = f" {visual_status}"
+
+            # Update completeness indicator with last sync date from QSettings
+            settings = QSettings()
+            last_sync = self._setting_value(settings, "last_sync_date", date.today().isoformat())
+            total_stored = sync.get("total_count", 0)
+            self.countLabel.setText(
+                "{total} activities stored (last sync: {sync_date})".format(
+                    total=total_stored,
+                    sync_date=last_sync,
+                )
+            )
+
             self._set_status(
                 "Synced {fetched} fetched activities into GeoPackage: inserted {inserted}, updated {updated}, unchanged {unchanged}, stored total {total}. Loaded {track_count} tracks, {start_count} starts, {point_count} activity points, and {atlas_count} atlas pages into QGIS without auto-filtering the layer tables.{visual_status}".format(
                     fetched=result.get("fetched_count", len(self.activities)),
                     inserted=sync.get("inserted", 0),
                     updated=sync.get("updated", 0),
                     unchanged=sync.get("unchanged", 0),
-                    total=sync.get("total_count", 0),
+                    total=total_stored,
                     track_count=result.get("track_count", 0),
                     start_count=result.get("start_count", 0),
                     point_count=result.get("point_count", 0),
