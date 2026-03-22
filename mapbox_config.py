@@ -261,7 +261,7 @@ def simplify_mapbox_style_expressions(style_definition: dict[str, object]) -> di
     _WIDTH_PROPS = {"line-width", "line-gap-width", "line-offset"}
     _MAX_LINE_WIDTH_MM = 3.0  # ~11px at 96 DPI — sane max for cartographic lines
     # Per-layer-id text-size overrides to restore cartographic hierarchy.
-    _TEXT_SIZE_OVERRIDES: dict[str, float] = {
+    _TEXT_SIZE_OVERRIDES: dict[str, object] = {
         "natural-point-label": 9.0,
         "natural-line-label": 10.0,
         "poi-label": 9.0,
@@ -272,20 +272,25 @@ def simplify_mapbox_style_expressions(style_definition: dict[str, object]) -> di
         "water-point-label": 12.0,
         "airport-label": 11.0,
         "settlement-subdivision-label": 8.0,
-        "settlement-minor-label": 10.0,
-        "settlement-major-label": 13.0,
+        # Use data-driven step on `rank` (available in raw tile data):
+        # rank 1-2 = national/country capitals → 16pt
+        # rank 3-4 = regional capital/large city → 13pt
+        # rank 5 = city → 11pt
+        "settlement-minor-label": ["step", ["get", "rank"], 10.0, 6, 9.0],
+        "settlement-major-label": ["step", ["get", "rank"], 16.0, 3, 13.0, 5, 11.0],
         "state-label": 13.0,
         "country-label": 16.0,
         "continent-label": 16.0,
     }
 
-    # Settlement layers: add symbolrank/sizerank filters so QGIS only renders
-    # higher-importance places (cities, towns) and suppresses villages/hamlets.
-    # Mapbox ranks: 1=world capital, 2=country capital, 3=regional capital,
-    #               4=large city, 5=city, 6=town, 7=large village, 9=hamlet
+    # Settlement layers: add `rank` filters so QGIS only renders higher-importance
+    # places. `rank` IS a static property in Mapbox Streets v8 tiles (unlike
+    # `symbolrank` which is computed at render time and unavailable in raw tiles).
+    # Mapbox Streets rank: 1=national capital, 2=country capital, 3=regional capital,
+    #                      4=large city, 5=city, 6=town, 7=village, 9=hamlet
     _SETTLEMENT_RANK_FILTERS: dict[str, int] = {
-        "settlement-major-label": 5,   # cities and above
-        "settlement-minor-label": 7,   # towns and above
+        "settlement-major-label": 5,   # cities and above (rank 1–5)
+        "settlement-minor-label": 7,   # towns and above (rank 1–7)
         "settlement-subdivision-label": 999,  # suppress entirely
     }
 
@@ -302,7 +307,7 @@ def simplify_mapbox_style_expressions(style_definition: dict[str, object]) -> di
             else:
                 # Add a symbolrank filter — only show features with rank <= threshold
                 existing_filter = layer.get("filter")
-                rank_filter = ["<=", ["get", "symbolrank"], rank_threshold]
+                rank_filter = ["<=", ["get", "rank"], rank_threshold]
                 if existing_filter:
                     layer["filter"] = ["all", existing_filter, rank_filter]
                 else:
