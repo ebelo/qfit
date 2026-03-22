@@ -143,6 +143,16 @@ def build_atlas_layout(
     map_item.attemptResize(QgsLayoutSize(MAP_W, MAP_H, QgsUnitTypes.LayoutMillimeters))
     map_item.setAtlasDriven(True)
     map_item.setAtlasScalingMode(QgsLayoutItemMap.Auto)
+
+    # Disable tile border rendering on vector tile layers (debug overlay)
+    try:
+        from qgis.core import QgsVectorTileLayer  # noqa: PLC0415
+        for layer in proj.mapLayers().values():
+            if isinstance(layer, QgsVectorTileLayer):
+                layer.setTileBorderRenderingEnabled(False)
+    except Exception:
+        pass
+
     layout.addLayoutItem(map_item)
 
     # -- Title label (large, left-aligned, atlas expression) ----------------
@@ -196,7 +206,7 @@ def build_atlas_layout(
         )
 
     # -- Footer: page number -----------------------------------------------
-    footer_y = PAGE_HEIGHT_MM - MARGIN_MM - FOOTER_HEIGHT_MM - FOOTER_GAP_MM
+    footer_y = MAP_Y + MAP_H + FOOTER_GAP_MM
     _add_label(
         layout,
         "[% @atlas_featurenumber %] / [% @atlas_totalfeatures %]",
