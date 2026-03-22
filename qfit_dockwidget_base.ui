@@ -167,7 +167,7 @@
            <item>
             <widget class="QLabel" name="activitiesIntroLabel">
              <property name="text">
-              <string>Choose a fetch window and filters, then pull activities from Strava. qfit keeps the preview in sync with your current query.</string>
+              <string>Pull all your activities from Strava into a local GeoPackage. Filters are applied in the Visualize step — no re-fetch needed.</string>
              </property>
              <property name="wordWrap">
               <bool>true</bool>
@@ -175,186 +175,101 @@
             </widget>
            </item>
            <item>
-            <layout class="QFormLayout" name="fetchLayout">
-             <item row="0" column="0">
-              <widget class="QLabel" name="perPageLabel">
-               <property name="text">
-                <string>Activities per page</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QSpinBox" name="perPageSpinBox">
-               <property name="minimum">
-                <number>1</number>
-               </property>
-               <property name="maximum">
-                <number>200</number>
-               </property>
-               <property name="value">
-                <number>200</number>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="maxPagesLabel">
-               <property name="text">
-                <string>Max pages (0 = all)</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="QSpinBox" name="maxPagesSpinBox">
-               <property name="toolTip">
-                <string>Maximum number of pages to fetch from Strava. Set to 0 to fetch all available activities (recommended).</string>
-               </property>
-               <property name="minimum">
-                <number>0</number>
-               </property>
-               <property name="maximum">
-                <number>9999</number>
-               </property>
-               <property name="value">
-                <number>0</number>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0" colspan="2">
-              <widget class="QCheckBox" name="detailedStreamsCheckBox">
-               <property name="text">
-                <string>Fetch detailed Strava track streams when available</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="0">
-              <widget class="QLabel" name="maxDetailedActivitiesLabel">
-               <property name="text">
-                <string>Detailed tracks limit</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="1">
-              <widget class="QSpinBox" name="maxDetailedActivitiesSpinBox">
-               <property name="minimum">
-                <number>1</number>
-               </property>
-               <property name="maximum">
-                <number>500</number>
-               </property>
-               <property name="value">
-                <number>25</number>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <widget class="QGroupBox" name="filterGroupBox">
-             <property name="title">
-              <string>Filters</string>
-             </property>
-             <layout class="QFormLayout" name="filterLayout">
-              <item row="0" column="0">
-               <widget class="QLabel" name="activityTypeLabel">
-                <property name="text">
-                 <string>Activity type</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QComboBox" name="activityTypeComboBox"/>
-              </item>
-              <item row="1" column="0">
-               <widget class="QLabel" name="activityNameLabel">
-                <property name="text">
-                 <string>Name contains</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="1">
-               <widget class="QLineEdit" name="activitySearchLineEdit">
-                <property name="placeholderText">
-                 <string>gravel, morning, commute…</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="0">
-               <widget class="QLabel" name="dateFromLabel">
-                <property name="text">
-                 <string>Date from</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="1">
-               <widget class="QDateEdit" name="dateFromEdit">
-                <property name="calendarPopup">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="0">
-               <widget class="QLabel" name="dateToLabel">
-                <property name="text">
-                 <string>Date to</string>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="1">
-               <widget class="QDateEdit" name="dateToEdit">
-                <property name="calendarPopup">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="0">
-               <widget class="QLabel" name="distanceLabel">
-                <property name="text">
-                 <string>Min distance (km)</string>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="1">
-               <widget class="QDoubleSpinBox" name="minDistanceSpinBox">
-                <property name="decimals">
-                 <number>1</number>
-                </property>
-                <property name="maximum">
-                 <double>1000.000000000000000</double>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="0">
-               <widget class="QLabel" name="maxDistanceLabel">
-                <property name="text">
-                 <string>Max distance (km)</string>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="1">
-               <widget class="QDoubleSpinBox" name="maxDistanceSpinBox">
-                <property name="decimals">
-                 <number>1</number>
-                </property>
-                <property name="maximum">
-                 <double>1000.000000000000000</double>
-                </property>
-               </widget>
-              </item>
-              <item row="6" column="0" colspan="2">
-               <widget class="QCheckBox" name="detailedOnlyCheckBox">
-                <property name="text">
-                 <string>Only activities with detailed tracks</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
             <widget class="QPushButton" name="refreshButton">
              <property name="text">
               <string>Fetch activities</string>
              </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="advancedFetchGroupBox">
+             <property name="title">
+              <string>Advanced fetch settings</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
+             <layout class="QVBoxLayout" name="advancedFetchGroupLayout">
+              <item>
+               <widget class="QWidget" name="advancedFetchSettingsWidget" native="true">
+                <layout class="QFormLayout" name="fetchLayout">
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="perPageLabel">
+                   <property name="text">
+                    <string>Activities per page</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QSpinBox" name="perPageSpinBox">
+                   <property name="minimum">
+                    <number>1</number>
+                   </property>
+                   <property name="maximum">
+                    <number>200</number>
+                   </property>
+                   <property name="value">
+                    <number>200</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="maxPagesLabel">
+                   <property name="text">
+                    <string>Max pages (0 = all)</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QSpinBox" name="maxPagesSpinBox">
+                   <property name="toolTip">
+                    <string>Maximum number of pages to fetch from Strava. Set to 0 to fetch all available activities (recommended).</string>
+                   </property>
+                   <property name="minimum">
+                    <number>0</number>
+                   </property>
+                   <property name="maximum">
+                    <number>9999</number>
+                   </property>
+                   <property name="value">
+                    <number>0</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="0" colspan="2">
+                  <widget class="QCheckBox" name="detailedStreamsCheckBox">
+                   <property name="text">
+                    <string>Fetch detailed Strava track streams when available</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="0">
+                  <widget class="QLabel" name="maxDetailedActivitiesLabel">
+                   <property name="text">
+                    <string>Detailed tracks limit</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="1">
+                  <widget class="QSpinBox" name="maxDetailedActivitiesSpinBox">
+                   <property name="minimum">
+                    <number>1</number>
+                   </property>
+                   <property name="maximum">
+                    <number>500</number>
+                   </property>
+                   <property name="value">
+                    <number>25</number>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+             </layout>
             </widget>
            </item>
            <item>

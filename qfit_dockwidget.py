@@ -97,6 +97,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.detailedStreamsCheckBox.toggled.connect(self._update_detailed_fetch_visibility)
         self.writeActivityPointsCheckBox.toggled.connect(self._update_point_sampling_visibility)
         self.publishGroupBox.toggled.connect(self._update_publish_section_visibility)
+        self.advancedFetchGroupBox.toggled.connect(self._update_advanced_fetch_visibility)
         self.atlasPdfBrowseButton.clicked.connect(self.on_atlas_pdf_browse_clicked)
         self.generateAtlasPdfButton.clicked.connect(self.on_generate_atlas_pdf_clicked)
         self.clientIdLineEdit.textChanged.connect(self._update_connection_status)
@@ -138,6 +139,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._update_detailed_fetch_visibility(self.detailedStreamsCheckBox.isChecked())
         self._update_point_sampling_visibility(self.writeActivityPointsCheckBox.isChecked())
         self._update_publish_section_visibility(self.publishGroupBox.isChecked())
+        self._update_advanced_fetch_visibility(self.advancedFetchGroupBox.isChecked())
         self._update_mapbox_advanced_visibility(self.backgroundPresetComboBox.currentText())
 
     def _update_detailed_fetch_visibility(self, enabled):
@@ -163,6 +165,11 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def _update_publish_section_visibility(self, expanded):
         if hasattr(self, "publishSettingsWidget"):
             self.publishSettingsWidget.setVisible(expanded)
+
+    def _update_advanced_fetch_visibility(self, expanded):
+        widget = getattr(self, "advancedFetchSettingsWidget", None)
+        if widget is not None:
+            widget.setVisible(expanded)
 
     def _update_mapbox_advanced_visibility(self, preset_name):
         show_advanced = preset_requires_custom_style(preset_name)
