@@ -1,3 +1,5 @@
+import json
+
 from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QColor
 from qgis.core import (
@@ -17,6 +19,7 @@ from qgis.core import (
     QgsStyle,
     QgsVectorLayer,
     QgsVectorLayerTemporalProperties,
+    QgsVectorTileLayer,
 )
 
 from .activity_query import ActivityQuery, build_subset_string
@@ -28,8 +31,14 @@ from .map_style import (
 )
 from .mapbox_config import (
     BACKGROUND_LAYER_PREFIX,
+    TILE_MODE_RASTER,
+    TILE_MODE_VECTOR,
     build_background_layer_name,
+    build_vector_tile_layer_uri,
     build_xyz_layer_uri,
+    extract_mapbox_vector_source_ids,
+    fetch_mapbox_style_definition,
+    simplify_mapbox_style_expressions,
     resolve_background_style,
 )
 from .temporal_config import build_temporal_plan, describe_temporal_configuration, is_temporal_mode_enabled
@@ -54,17 +63,43 @@ class LayerManager:
         self._zoom_to_layers([activities_layer, starts_layer, points_layer, atlas_layer])
         return activities_layer, starts_layer, points_layer, atlas_layer
 
-    def ensure_background_layer(self, enabled, preset_name, access_token, style_owner="", style_id=""):
+    def ensure_background_layer(self, enabled, preset_name, access_token, style_owner="", style_id="", tile_mode=TILE_MODE_RASTER):
         if not enabled:
             self._remove_background_layers()
             return None
 
         resolved_owner, resolved_style_id = resolve_background_style(preset_name, style_owner, style_id)
-        uri = build_xyz_layer_uri(access_token, resolved_owner, resolved_style_id)
         display_name = build_background_layer_name(preset_name, resolved_owner, resolved_style_id)
-        layer = QgsRasterLayer(uri, display_name, "wms")
-        if not layer.isValid():
-            raise RuntimeError("Could not load the selected Mapbox background layer into QGIS.")
+
+        layer = None
+        if tile_mode == TILE_MODE_VECTOR:
+            try:
+                style_definition = fetch_mapbox_style_definition(access_token, resolved_owner, resolved_style_id)
+                simplified_style = simplify_mapbox_style_expressions(style_definition)
+                tileset_ids = extract_mapbox_vector_source_ids(style_definition)
+                # Build URI without styleUrl — we apply the pre-processed style manually
+                uri = build_vector_tile_layer_uri(
+                    access_token,
+                    resolved_owner,
+                    resolved_style_id,
+                    tileset_ids=tileset_ids,
+                    include_style_url=False,
+                )
+                layer = QgsVectorTileLayer(uri, display_name)
+                if not layer.isValid():
+                    layer = None
+                else:
+                    # Apply the simplified style JSON (expression colors already
+                    # replaced with literal fallbacks so QGIS doesn't render black)
+                    self._apply_mapbox_gl_style(layer, simplified_style)
+            except Exception:
+                layer = None
+
+        if layer is None:
+            uri = build_xyz_layer_uri(access_token, resolved_owner, resolved_style_id)
+            layer = QgsRasterLayer(uri, display_name, "wms")
+            if not layer.isValid():
+                raise RuntimeError("Could not load the selected Mapbox background layer into QGIS.")
 
         self._remove_background_layers()
         project = QgsProject.instance()
@@ -163,6 +198,35 @@ class LayerManager:
         QgsProject.instance().addMapLayer(layer)
         return layer
 
+    def _apply_mapbox_gl_style(self, layer: QgsVectorTileLayer, style_definition: dict) -> None:
+        """Apply a pre-processed Mapbox GL style dict to a QgsVectorTileLayer.
+
+        We pass the simplified style (with expression colors replaced by literal
+        fallbacks) directly to QgsMapBoxGlStyleConverter so QGIS does not render
+        unresolvable color expressions as black.
+        """
+        try:
+            from qgis.core import (  # noqa: PLC0415
+                QgsMapBoxGlStyleConverter,
+                QgsMapBoxGlStyleConversionContext,
+                Qgis,
+            )
+            ctx = QgsMapBoxGlStyleConversionContext()
+            ctx.setTargetUnit(Qgis.RenderUnit.Millimeters)
+            ctx.setPixelSizeConversionFactor(25.4 / 96.0)
+            converter = QgsMapBoxGlStyleConverter()
+            result = converter.convert(style_definition, ctx)
+            if result == QgsMapBoxGlStyleConverter.Success:
+                renderer = converter.renderer()
+                labeling = converter.labeling()
+                if renderer is not None:
+                    layer.setRenderer(renderer)
+                if labeling is not None:
+                    layer.setLabeling(labeling)
+                    layer.setLabelsEnabled(True)
+        except Exception:
+            pass  # leave the default random-color renderer in place
+
     def _remove_background_layers(self):
         project = QgsProject.instance()
         for layer in list(project.mapLayers().values()):
@@ -175,10 +239,28 @@ class LayerManager:
         if not working_crs.isValid():
             return
 
-        project.setCrs(working_crs)
         canvas = self.iface.mapCanvas() if self.iface is not None else None
+
+        # Preserve the current canvas extent (in map units) before changing CRS
+        # so that reprojection doesn't reset the view to the world extent.
+        current_extent = canvas.extent() if canvas is not None else None
+        current_crs = project.crs()
+
+        project.setCrs(working_crs)
         if canvas is not None:
             canvas.setDestinationCrs(working_crs)
+            # Re-apply the previous extent if the project already had a valid CRS
+            # and it wasn't the default empty/world extent (i.e. user had panned/zoomed).
+            if current_extent is not None and current_crs.isValid() and not current_extent.isEmpty():
+                from qgis.core import QgsCoordinateTransform  # noqa: PLC0415
+                transform = QgsCoordinateTransform(current_crs, working_crs, project)
+                try:
+                    transformed = transform.transformBoundingBox(current_extent)
+                    if not transformed.isEmpty():
+                        canvas.setExtent(transformed)
+                        canvas.refresh()
+                except Exception:
+                    pass
 
     def _move_background_layers_to_bottom(self):
         root = QgsProject.instance().layerTreeRoot()
