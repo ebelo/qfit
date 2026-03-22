@@ -286,6 +286,7 @@ class AtlasExportTask(QgsTask):
         style_owner: str = "",
         style_id: str = "",
         background_enabled: bool = False,
+        data_layers_restore: dict | None = None,
     ):
         super().__init__("Export qfit atlas PDF", QgsTask.CanCancel)
         self._atlas_layer = atlas_layer
@@ -300,6 +301,7 @@ class AtlasExportTask(QgsTask):
         self._style_owner = style_owner
         self._style_id = style_id
         self._background_enabled = background_enabled
+        self._data_layers_restore = data_layers_restore or {}
         self._error: str | None = None
         self._page_count: int = 0
 
@@ -381,6 +383,14 @@ class AtlasExportTask(QgsTask):
 
     def finished(self, result: bool) -> None:
         """Called on the main thread after run() returns."""
+        # Restore visualization subset strings on data layers
+        for lyr, original_subset in self._data_layers_restore.items():
+            try:
+                if lyr is not None and lyr.isValid():
+                    lyr.setSubsetString(original_subset)
+            except Exception:
+                pass
+
         # Restore the original tile mode (raster) on the main thread after export
         if (
             self._restore_tile_mode is not None
