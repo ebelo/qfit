@@ -265,6 +265,13 @@ class AtlasExportTask(QgsTask):
         on_finished,
         project=None,
         subset_string: str | None = None,
+        restore_tile_mode: str | None = None,
+        layer_manager=None,
+        preset_name: str | None = None,
+        access_token: str = "",
+        style_owner: str = "",
+        style_id: str = "",
+        background_enabled: bool = False,
     ):
         super().__init__("Export qfit atlas PDF", QgsTask.CanCancel)
         self._atlas_layer = atlas_layer
@@ -272,6 +279,13 @@ class AtlasExportTask(QgsTask):
         self._on_finished = on_finished
         self._project = project
         self._subset_string = subset_string
+        self._restore_tile_mode = restore_tile_mode
+        self._layer_manager = layer_manager
+        self._preset_name = preset_name
+        self._access_token = access_token
+        self._style_owner = style_owner
+        self._style_id = style_id
+        self._background_enabled = background_enabled
         self._error: str | None = None
         self._page_count: int = 0
 
@@ -353,6 +367,26 @@ class AtlasExportTask(QgsTask):
 
     def finished(self, result: bool) -> None:
         """Called on the main thread after run() returns."""
+        # Restore the original tile mode (raster) on the main thread after export
+        if (
+            self._restore_tile_mode is not None
+            and self._layer_manager is not None
+            and self._background_enabled
+        ):
+            try:
+                from mapbox_config import TILE_MODE_RASTER  # noqa: PLC0415
+                if self._restore_tile_mode == TILE_MODE_RASTER:
+                    self._layer_manager.ensure_background_layer(
+                        enabled=True,
+                        preset_name=self._preset_name,
+                        access_token=self._access_token,
+                        style_owner=self._style_owner,
+                        style_id=self._style_id,
+                        tile_mode=self._restore_tile_mode,
+                    )
+            except Exception:
+                pass
+
         if self._on_finished is not None:
             self._on_finished(
                 output_path=self._output_path if result else None,
