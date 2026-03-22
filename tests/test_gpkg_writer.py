@@ -100,6 +100,40 @@ class GeoPackageWriterAtlasTests(unittest.TestCase):
             "2 activities · 2026-03-18 → 2026-03-19 · 52.6 km · 2h 50m · ↑ 725 m · Ride, Run",
         )
 
+        profile_sample_layer = writer._build_profile_sample_layer(records)
+        self.assertTrue(profile_sample_layer.isValid())
+        self.assertEqual(profile_sample_layer.featureCount(), 0)
+
+        profile_records = [
+            {
+                "source": "strava",
+                "source_activity_id": "300",
+                "name": "Lunch Run",
+                "activity_type": "Run",
+                "start_date_local": "2026-03-19T12:00:00+01:00",
+                "distance_m": 10100,
+                "moving_time_s": 3000,
+                "total_elevation_gain_m": 85,
+                "geometry_points": [(46.50, 6.60), (46.51, 6.62)],
+                "details_json": {
+                    "stream_metrics": {
+                        "distance": [0, 3300, 6700, 10100],
+                        "altitude": [430, 445, 438, 452],
+                    }
+                },
+            }
+        ]
+        profile_sample_layer = writer._build_profile_sample_layer(profile_records)
+        self.assertTrue(profile_sample_layer.isValid())
+        self.assertEqual(profile_sample_layer.featureCount(), 4)
+        self.assertGreaterEqual(profile_sample_layer.fields().indexOf("profile_point_ratio"), 0)
+        profile_features = list(profile_sample_layer.getFeatures())
+        self.assertEqual(profile_features[0]["distance_label"], "0.0 km")
+        self.assertEqual(profile_features[-1]["distance_m"], 10100.0)
+        self.assertEqual(profile_features[-1]["altitude_m"], 452.0)
+        self.assertEqual(profile_features[-1]["profile_point_ratio"], 1.0)
+        self.assertEqual(profile_features[-1]["profile_distance_m"], 10100.0)
+
         toc_layer = writer._build_toc_layer(records)
         self.assertTrue(toc_layer.isValid())
         self.assertEqual(toc_layer.featureCount(), 2)

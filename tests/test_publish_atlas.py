@@ -10,6 +10,7 @@ from qfit.publish_atlas import (
     atlas_sort_key,
     build_atlas_document_summary,
     build_atlas_page_plans,
+    build_atlas_profile_samples,
     build_atlas_toc_entries,
     build_cover_summary,
     build_date_range_label,
@@ -127,6 +128,47 @@ class PublishAtlasTests(unittest.TestCase):
         )
         self.assertTrue(all(plan.document_activity_count == 3 for plan in plans))
         self.assertTrue(all(plan.document_date_range_label == "2026-03-18 → 2026-03-19" for plan in plans))
+
+    def test_build_atlas_profile_samples_create_chart_ready_rows(self):
+        records = [
+            {
+                "source": "strava",
+                "source_activity_id": "200",
+                "name": "Lunch Run",
+                "activity_type": "Run",
+                "start_date_local": "2026-03-19T12:00:00+01:00",
+                "geometry_points": [(46.50, 6.60), (46.51, 6.62)],
+                "details_json": {
+                    "stream_metrics": {
+                        "distance": [0, 3300, 6700, 10100],
+                        "altitude": [430, 445, 438, 452],
+                    }
+                },
+            },
+            {
+                "source": "strava",
+                "source_activity_id": "300",
+                "name": "Short Ride",
+                "activity_type": "Ride",
+                "start_date_local": "2026-03-20T08:00:00+01:00",
+                "geometry_points": [(46.52, 6.62), (46.57, 6.74)],
+            },
+        ]
+
+        samples = build_atlas_profile_samples(records)
+
+        self.assertEqual(len(samples), 4)
+        self.assertEqual(samples[0].page_number, 1)
+        self.assertEqual(samples[0].page_name, "2026-03-19 · Lunch Run")
+        self.assertEqual(samples[0].distance_m, 0)
+        self.assertEqual(samples[0].distance_label, "0.0 km")
+        self.assertEqual(samples[0].altitude_m, 430)
+        self.assertEqual(samples[0].profile_point_ratio, 0.0)
+        self.assertEqual(samples[-1].distance_m, 10100)
+        self.assertEqual(samples[-1].distance_label, "10.1 km")
+        self.assertEqual(samples[-1].altitude_m, 452)
+        self.assertEqual(samples[-1].profile_distance_m, 10100)
+        self.assertEqual(samples[-1].profile_point_ratio, 1.0)
 
     def test_build_atlas_toc_entries_create_layout_ready_table_rows(self):
         records = [
