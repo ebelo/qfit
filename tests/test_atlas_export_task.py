@@ -107,7 +107,7 @@ class TestAtlasExportTaskSuccess(unittest.TestCase):
 
         # Make QgsLayoutExporter.exportToPdf return Success (0)
         exporter_instance = MagicMock()
-        exporter_instance.exportToPdf.return_value = 0  # Success
+        exporter_instance.exportToPdf.return_value = (0, "")  # Success tuple
         _qgis_core.QgsLayoutExporter.return_value = exporter_instance
 
         # Make QgsPrintLayout return a usable mock
@@ -133,7 +133,7 @@ class TestAtlasExportTaskSuccess(unittest.TestCase):
             mock_build.return_value = mock_layout
             mock_exporter_cls.Success = 0
             exporter_mock = MagicMock()
-            exporter_mock.exportToPdf.return_value = 0
+            exporter_mock.exportToPdf.return_value = (0, "")  # Success tuple
             mock_exporter_cls.return_value = exporter_mock
 
             result = self.task.run()
@@ -149,7 +149,7 @@ class TestAtlasExportTaskSuccess(unittest.TestCase):
             mock_build.return_value = mock_layout
             mock_exporter_cls.Success = 0
             exporter_mock = MagicMock()
-            exporter_mock.exportToPdf.return_value = 0
+            exporter_mock.exportToPdf.return_value = (0, "")  # Success tuple
             mock_exporter_cls.return_value = exporter_mock
 
             _run_task(self.task)
@@ -175,7 +175,7 @@ class TestAtlasExportTaskSuccess(unittest.TestCase):
             mock_build.return_value = mock_layout
             mock_exporter_cls.Success = 0
             exporter_mock = MagicMock()
-            exporter_mock.exportToPdf.return_value = 0
+            exporter_mock.exportToPdf.return_value = (0, "")  # Success tuple
             mock_exporter_cls.return_value = exporter_mock
             _run_task(task)
         self.assertEqual(received.get("page_count"), 12)
@@ -225,7 +225,7 @@ class TestAtlasExportTaskExporterError(unittest.TestCase):
             mock_build.return_value = mock_layout
             mock_exporter_cls.Success = 0
             exporter_mock = MagicMock()
-            exporter_mock.exportToPdf.return_value = 1  # non-zero = failure
+            exporter_mock.exportToPdf.return_value = (1, "mock export error")  # failure tuple
             mock_exporter_cls.return_value = exporter_mock
             _run_task(task)
 
@@ -279,7 +279,7 @@ class TestAtlasExportTaskCancellation(unittest.TestCase):
             mock_build.return_value = mock_layout
             mock_exporter_cls.Success = 0
             exporter_mock = MagicMock()
-            exporter_mock.exportToPdf.return_value = 0
+            exporter_mock.exportToPdf.return_value = (0, "")  # Success tuple
             mock_exporter_cls.return_value = exporter_mock
             _run_task(task)
 
@@ -308,7 +308,7 @@ class TestAtlasExportTaskNoCallback(unittest.TestCase):
             mock_build.return_value = mock_layout
             mock_exporter_cls.Success = 0
             exporter_mock = MagicMock()
-            exporter_mock.exportToPdf.return_value = 0
+            exporter_mock.exportToPdf.return_value = (0, "")  # Success tuple
             mock_exporter_cls.return_value = exporter_mock
             task.run()
             task.finished(True)  # should not raise
@@ -342,7 +342,7 @@ class TestAtlasExportTaskSubsetFilter(unittest.TestCase):
             mock_build.return_value = mock_layout
             mock_exporter_cls.Success = 0
             exporter_mock = MagicMock()
-            exporter_mock.exportToPdf.return_value = 0
+            exporter_mock.exportToPdf.return_value = (0, "")  # Success tuple
             mock_exporter_cls.return_value = exporter_mock
             _run_task(task)
 
@@ -373,7 +373,7 @@ class TestAtlasExportTaskSubsetFilter(unittest.TestCase):
             mock_build.return_value = mock_layout
             mock_exporter_cls.Success = 0
             exporter_mock = MagicMock()
-            exporter_mock.exportToPdf.return_value = 0
+            exporter_mock.exportToPdf.return_value = (0, "")  # Success tuple
             mock_exporter_cls.return_value = exporter_mock
             _run_task(task)
 
