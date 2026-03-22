@@ -69,6 +69,13 @@ class PublishAtlasTests(unittest.TestCase):
         self.assertIsNone(plan.page_average_pace_label)
         self.assertEqual(plan.page_elevation_gain_label, "640 m")
         self.assertEqual(plan.page_stats_summary, "42.5 km · 2h 00m · 21.3 km/h · ↑ 640 m")
+        self.assertEqual(plan.document_activity_count, 1)
+        self.assertEqual(plan.document_date_range_label, "2026-03-18")
+        self.assertEqual(plan.document_total_distance_label, "42.5 km")
+        self.assertEqual(plan.document_total_duration_label, "2h 00m")
+        self.assertEqual(plan.document_total_elevation_gain_label, "640 m")
+        self.assertEqual(plan.document_activity_types_label, "Ride")
+        self.assertEqual(plan.document_cover_summary, "1 activity · 2026-03-18 · 42.5 km · 2h 00m · ↑ 640 m · Ride")
         self.assertFalse(plan.profile_available)
         self.assertEqual(plan.profile_point_count, 0)
         self.assertIsNone(plan.profile_distance_m)
@@ -117,6 +124,8 @@ class PublishAtlasTests(unittest.TestCase):
                 ("300", "2026-03-19 · Evening Run"),
             ],
         )
+        self.assertTrue(all(plan.document_activity_count == 3 for plan in plans))
+        self.assertTrue(all(plan.document_date_range_label == "2026-03-18 → 2026-03-19" for plan in plans))
 
     def test_build_atlas_page_plans_respects_custom_publish_settings(self):
         records = [

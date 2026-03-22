@@ -68,6 +68,13 @@ class AtlasPagePlan:
     page_elevation_gain_label: str | None
     page_stats_summary: str | None
     page_profile_summary: str | None
+    document_activity_count: int
+    document_date_range_label: str | None
+    document_total_distance_label: str | None
+    document_total_duration_label: str | None
+    document_total_elevation_gain_label: str | None
+    document_activity_types_label: str | None
+    document_cover_summary: str | None
     profile_available: bool
     profile_point_count: int
     profile_distance_m: float | None
@@ -147,6 +154,7 @@ def build_atlas_page_plans(
             continue
         candidates.append((atlas_sort_key(record), record, geometry_source, bounds))
 
+    document_summary = build_atlas_document_summary(record for _, record, _, _ in candidates)
     plans = []
     for page_number, (sort_key, record, geometry_source, bounds) in enumerate(sorted(candidates, key=lambda item: item[0]), start=1):
         min_lon, min_lat, max_lon, max_lat = expand_bounds(
@@ -198,6 +206,13 @@ def build_atlas_page_plans(
                 page_elevation_gain_label=format_elevation_label(record.get("total_elevation_gain_m")),
                 page_stats_summary=build_page_stats_summary(record),
                 page_profile_summary=build_page_profile_summary(record),
+                document_activity_count=document_summary.activity_count,
+                document_date_range_label=document_summary.date_range_label,
+                document_total_distance_label=document_summary.total_distance_label,
+                document_total_duration_label=document_summary.total_duration_label,
+                document_total_elevation_gain_label=document_summary.total_elevation_gain_label,
+                document_activity_types_label=document_summary.activity_types_label,
+                document_cover_summary=document_summary.cover_summary,
                 profile_available=profile_summary.available,
                 profile_point_count=profile_summary.point_count,
                 profile_distance_m=profile_summary.distance_m,

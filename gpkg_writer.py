@@ -117,6 +117,13 @@ ATLAS_FIELDS = [
     ("page_elevation_gain_label", QVariant.String),
     ("page_stats_summary", QVariant.String),
     ("page_profile_summary", QVariant.String),
+    ("document_activity_count", QVariant.Int),
+    ("document_date_range_label", QVariant.String),
+    ("document_total_distance_label", QVariant.String),
+    ("document_total_duration_label", QVariant.String),
+    ("document_total_elevation_gain_label", QVariant.String),
+    ("document_activity_types_label", QVariant.String),
+    ("document_cover_summary", QVariant.String),
     ("profile_available", QVariant.Int),
     ("profile_point_count", QVariant.Int),
     ("profile_distance_m", QVariant.Double),
@@ -398,6 +405,13 @@ class GeoPackageWriter:
             feature["page_elevation_gain_label"] = plan.page_elevation_gain_label
             feature["page_stats_summary"] = plan.page_stats_summary
             feature["page_profile_summary"] = plan.page_profile_summary
+            feature["document_activity_count"] = plan.document_activity_count
+            feature["document_date_range_label"] = plan.document_date_range_label
+            feature["document_total_distance_label"] = plan.document_total_distance_label
+            feature["document_total_duration_label"] = plan.document_total_duration_label
+            feature["document_total_elevation_gain_label"] = plan.document_total_elevation_gain_label
+            feature["document_activity_types_label"] = plan.document_activity_types_label
+            feature["document_cover_summary"] = plan.document_cover_summary
             feature["profile_available"] = int(plan.profile_available)
             feature["profile_point_count"] = plan.profile_point_count
             feature["profile_distance_m"] = plan.profile_distance_m
