@@ -111,6 +111,16 @@ class GeoPackageWriterAtlasTests(unittest.TestCase):
         self.assertEqual(cover_highlight_features[-1]["highlight_key"], "activity_types")
         self.assertEqual(cover_highlight_features[-1]["highlight_value"], "Ride, Run")
 
+        page_detail_item_layer = writer._build_page_detail_item_layer(records)
+        self.assertTrue(page_detail_item_layer.isValid())
+        self.assertEqual(page_detail_item_layer.featureCount(), 9)
+        self.assertGreaterEqual(page_detail_item_layer.fields().indexOf("detail_value"), 0)
+        page_detail_features = list(page_detail_item_layer.getFeatures())
+        self.assertEqual(page_detail_features[0]["detail_key"], "distance")
+        self.assertEqual(page_detail_features[0]["detail_label"], "Distance")
+        self.assertEqual(page_detail_features[0]["detail_value"], "42.5 km")
+        self.assertEqual(page_detail_features[-1]["detail_key"], "stats_summary")
+
         profile_sample_layer = writer._build_profile_sample_layer(records)
         self.assertTrue(profile_sample_layer.isValid())
         self.assertEqual(profile_sample_layer.featureCount(), 0)

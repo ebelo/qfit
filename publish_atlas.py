@@ -69,6 +69,18 @@ class AtlasCoverHighlight:
 
 
 @dataclass(frozen=True)
+class AtlasPageDetailItem:
+    page_number: int
+    page_sort_key: str
+    page_name: str
+    page_title: str
+    detail_order: int
+    detail_key: str
+    detail_label: str
+    detail_value: str
+
+
+@dataclass(frozen=True)
 class AtlasProfileSample:
     page_number: int
     page_sort_key: str
@@ -353,6 +365,50 @@ def build_atlas_cover_highlights(records: Iterable[dict]) -> list[AtlasCoverHigh
     add_highlight("total_elevation_gain", "Climbing", summary.total_elevation_gain_label)
     add_highlight("activity_types", "Activity types", summary.activity_types_label)
     return highlights
+
+
+def build_atlas_page_detail_items(
+    records: Iterable[dict],
+    margin_percent: float = DEFAULT_ATLAS_MARGIN_PERCENT,
+    min_extent_degrees: float = DEFAULT_MIN_EXTENT_DEGREES,
+    target_aspect_ratio: float | None = None,
+    settings: AtlasPageSettings | None = None,
+) -> list[AtlasPageDetailItem]:
+    items: list[AtlasPageDetailItem] = []
+    for plan in build_atlas_page_plans(
+        records,
+        margin_percent=margin_percent,
+        min_extent_degrees=min_extent_degrees,
+        target_aspect_ratio=target_aspect_ratio,
+        settings=settings,
+    ):
+        page_items: list[tuple[str, str, str | None]] = [
+            ("distance", "Distance", plan.page_distance_label),
+            ("moving_time", "Moving time", plan.page_duration_label),
+            ("average_speed", "Average speed", plan.page_average_speed_label),
+            ("average_pace", "Average pace", plan.page_average_pace_label),
+            ("elevation_gain", "Climbing", plan.page_elevation_gain_label),
+            ("stats_summary", "Summary", plan.page_stats_summary),
+            ("profile_summary", "Profile", plan.page_profile_summary),
+        ]
+        detail_order = 0
+        for detail_key, detail_label, detail_value in page_items:
+            if not detail_value:
+                continue
+            detail_order += 1
+            items.append(
+                AtlasPageDetailItem(
+                    page_number=plan.page_number,
+                    page_sort_key=plan.page_sort_key,
+                    page_name=plan.page_name,
+                    page_title=plan.page_title,
+                    detail_order=detail_order,
+                    detail_key=detail_key,
+                    detail_label=detail_label,
+                    detail_value=detail_value,
+                )
+            )
+    return items
 
 
 def build_atlas_profile_samples(
