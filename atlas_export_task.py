@@ -25,7 +25,6 @@ from __future__ import annotations
 import os
 
 from qgis.core import (
-    QgsAtlasComposition,
     QgsLayoutExporter,
     QgsLayoutItemLabel,
     QgsLayoutItemMap,
