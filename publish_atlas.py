@@ -43,6 +43,24 @@ class AtlasDocumentSummary:
 
 
 @dataclass(frozen=True)
+class AtlasTocEntry:
+    page_number: int
+    page_number_label: str
+    page_sort_key: str
+    page_name: str
+    page_title: str
+    page_subtitle: str
+    page_date: str | None
+    page_toc_label: str | None
+    toc_entry_label: str
+    page_distance_label: str | None
+    page_duration_label: str | None
+    page_stats_summary: str | None
+    profile_available: bool
+    page_profile_summary: str | None
+
+
+@dataclass(frozen=True)
 class AtlasPagePlan:
     source: str | None
     source_activity_id: str | None
@@ -241,6 +259,44 @@ def build_atlas_page_plans(
             )
         )
     return plans
+
+
+def build_atlas_toc_entries(
+    records: Iterable[dict],
+    margin_percent: float = DEFAULT_ATLAS_MARGIN_PERCENT,
+    min_extent_degrees: float = DEFAULT_MIN_EXTENT_DEGREES,
+    target_aspect_ratio: float | None = None,
+    settings: AtlasPageSettings | None = None,
+) -> list[AtlasTocEntry]:
+    entries = []
+    for plan in build_atlas_page_plans(
+        records,
+        margin_percent=margin_percent,
+        min_extent_degrees=min_extent_degrees,
+        target_aspect_ratio=target_aspect_ratio,
+        settings=settings,
+    ):
+        page_number_label = str(plan.page_number)
+        toc_entry_label = f"{page_number_label}. {plan.page_toc_label or plan.page_name}"
+        entries.append(
+            AtlasTocEntry(
+                page_number=plan.page_number,
+                page_number_label=page_number_label,
+                page_sort_key=plan.page_sort_key,
+                page_name=plan.page_name,
+                page_title=plan.page_title,
+                page_subtitle=plan.page_subtitle,
+                page_date=plan.page_date,
+                page_toc_label=plan.page_toc_label,
+                toc_entry_label=toc_entry_label,
+                page_distance_label=plan.page_distance_label,
+                page_duration_label=plan.page_duration_label,
+                page_stats_summary=plan.page_stats_summary,
+                profile_available=plan.profile_available,
+                page_profile_summary=plan.page_profile_summary,
+            )
+        )
+    return entries
 
 
 def build_atlas_document_summary(records: Iterable[dict]) -> AtlasDocumentSummary:

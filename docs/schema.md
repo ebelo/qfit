@@ -24,6 +24,7 @@ This document describes the current qfit GeoPackage layout and the intended next
 - `activity_points` — optional sampled point layer derived from detailed stream geometry
 - `activity_atlas_pages` — polygon page/index layer for QGIS atlas or print-layout workflows, now with deterministic page ordering, TOC-friendly labels, publish-friendly detail labels/summary text, repeated document-summary fields for cover/TOC layouts, Web Mercator-ready extent metadata, and route-profile summary/label fields when detailed streams are available
 - `atlas_document_summary` — non-spatial single-row helper table carrying atlas-wide totals and cover/TOC-ready labels for layouts that prefer a dedicated document-summary source
+- `atlas_toc_entries` — non-spatial one-row-per-page helper table carrying page-number labels plus TOC-ready text/summary fields for contents layouts that should not depend on atlas polygon geometry
 
 ## Table: `activity_registry`
 
@@ -189,6 +190,7 @@ Primary purpose:
 - publish-friendly detail labels (`page_toc_label`, `page_average_speed_label`, `page_average_pace_label`, `page_elevation_gain_label`) plus `page_stats_summary` and `page_profile_summary` reduce per-layout expression boilerplate for per-activity stat blocks
 - repeated document-summary fields (`document_activity_count`, `document_date_range_label`, `document_total_distance_label`, `document_total_duration_label`, `document_total_elevation_gain_label`, `document_activity_types_label`, `document_cover_summary`) still make it easy for per-page layout expressions to reuse atlas-wide totals
 - the companion `atlas_document_summary` table now provides the same atlas-wide totals/labels as a dedicated single-row source for cover and table-of-contents layouts
+- the companion `atlas_toc_entries` table now provides one clean non-spatial row per atlas page, with page-number labels and preformatted TOC entry text for contents-page tables
 - route-profile summary and label fields give layouts a cheap way to decide whether to show an elevation chart and to reuse publish-friendly text without extra QGIS expression boilerplate before full PDF automation exists
 
 ### Current fields
@@ -270,6 +272,34 @@ Primary purpose:
 | `activity_types_label` | TEXT | ordered activity-type list such as `Ride, Run` |
 | `cover_summary` | TEXT | one-line cover summary such as `3 activities · 2026-03-18 → 2026-03-20 · 82.6 km · 4h 20m · ↑ 1145 m · Ride, Run` |
 
+## Table: `atlas_toc_entries`
+
+Geometry type:
+- none
+
+Primary purpose:
+- store one row per atlas page for TOC/layout tables without depending on atlas polygon geometry
+- give QGIS print layouts page-number labels plus preformatted TOC entry text and per-page summary fields
+
+### Current fields
+
+| Field | Type | Notes |
+|---|---|---|
+| `page_number` | INTEGER | stable chronological page number matching `activity_atlas_pages.page_number` |
+| `page_number_label` | TEXT | preformatted page number label such as `1` |
+| `page_sort_key` | TEXT | deterministic sort key matching the atlas-page layer |
+| `page_name` | TEXT | atlas-friendly page label such as `2026-03-18 · Morning Ride` |
+| `page_title` | TEXT | large-title label copied from the atlas page |
+| `page_subtitle` | TEXT | compact detail line copied from the atlas page |
+| `page_date` | TEXT | preformatted page date for contents layouts |
+| `page_toc_label` | TEXT | preformatted TOC-ready line such as `2026-03-18 · Morning Ride · 42.5 km · 2h 00m` |
+| `toc_entry_label` | TEXT | page-number-prefixed TOC line such as `1. 2026-03-18 · Morning Ride · 42.5 km · 2h 00m` |
+| `page_distance_label` | TEXT | preformatted page distance label |
+| `page_duration_label` | TEXT | preformatted page duration label |
+| `page_stats_summary` | TEXT | one-line page stats summary for compact contents layouts |
+| `profile_available` | INTEGER | `1` when route-profile metadata is available for the page |
+| `page_profile_summary` | TEXT | one-line route-profile summary for richer contents/detail tables |
+
 ## Geometry priority
 
 When rebuilding visible layers, qfit currently prefers geometry in this order:
@@ -283,7 +313,7 @@ When rebuilding visible layers, qfit currently prefers geometry in this order:
 2. optionally enrich activities with detailed stream geometry and extra stream metrics
 3. upsert activities into `activity_registry`
 4. update `sync_state`
-5. rebuild `activity_tracks`, `activity_starts`, `activity_atlas_pages`, `atlas_document_summary`, and optionally `activity_points`
+5. rebuild `activity_tracks`, `activity_starts`, `activity_atlas_pages`, `atlas_document_summary`, `atlas_toc_entries`, and optionally `activity_points`
 6. load those layers into QGIS
 
 ## Next phase

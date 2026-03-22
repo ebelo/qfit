@@ -95,6 +95,7 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertGreaterEqual(result["point_count"], 4)
             self.assertEqual(result["atlas_count"], 2)
             self.assertEqual(result["document_summary_count"], 1)
+            self.assertEqual(result["toc_count"], 2)
 
             document_summary_layer = QgsVectorLayer(
                 f"{output_path}|layername=atlas_document_summary",
@@ -108,6 +109,17 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertEqual(document_summary_feature["date_range_label"], "2026-03-20 → 2026-03-21")
             self.assertEqual(document_summary_feature["total_distance_label"], "35.3 km")
             self.assertIn("2 activities · 2026-03-20 → 2026-03-21 · 35.3 km · 1h 50m · ↑ 405 m", document_summary_feature["cover_summary"])
+
+            toc_layer = QgsVectorLayer(
+                f"{output_path}|layername=atlas_toc_entries",
+                "qfit atlas toc entries",
+                "ogr",
+            )
+            self.assertTrue(toc_layer.isValid())
+            self.assertEqual(toc_layer.featureCount(), 2)
+            toc_feature = next(toc_layer.getFeatures())
+            self.assertEqual(toc_feature["page_number"], 1)
+            self.assertEqual(toc_feature["toc_entry_label"], "1. 2026-03-20 · Morning Ride · 25.2 km · 1h 00m")
 
             background = self.layer_manager.ensure_background_layer(True, "Outdoor", "test-token")
             background_name = background.name()

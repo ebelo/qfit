@@ -140,6 +140,7 @@ Goal: configure and generate a PDF atlas with:
 - Early atlas-generation groundwork is being explored in feature work
 - Atlas output now carries route-profile summary metadata when detailed stream metrics are available, plus layout-friendly profile labels/relief for future profile panels and print layouts
 - Atlas planning helpers now also compute cover-ready document summary totals (activity count, date span, totals, activity types, one-line summary text) and the GeoPackage now exposes them through a dedicated `atlas_document_summary` helper table for cover/TOC layouts
+- The GeoPackage now also includes an `atlas_toc_entries` helper table with one non-spatial row per atlas page so QGIS contents-page tables can bind to clean TOC data without depending on atlas polygons
 
 ### Planned
 

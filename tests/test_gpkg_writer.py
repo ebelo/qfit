@@ -100,6 +100,20 @@ class GeoPackageWriterAtlasTests(unittest.TestCase):
             "2 activities · 2026-03-18 → 2026-03-19 · 52.6 km · 2h 50m · ↑ 725 m · Ride, Run",
         )
 
+        toc_layer = writer._build_toc_layer(records)
+        self.assertTrue(toc_layer.isValid())
+        self.assertEqual(toc_layer.featureCount(), 2)
+        self.assertGreaterEqual(toc_layer.fields().indexOf("toc_entry_label"), 0)
+
+        toc_features = list(toc_layer.getFeatures())
+        self.assertEqual(toc_features[0]["page_number"], 1)
+        self.assertEqual(toc_features[0]["page_number_label"], "1")
+        self.assertEqual(toc_features[0]["page_toc_label"], "2026-03-18 · Morning Ride · 42.5 km · 2h 00m")
+        self.assertEqual(toc_features[0]["toc_entry_label"], "1. 2026-03-18 · Morning Ride · 42.5 km · 2h 00m")
+        self.assertEqual(toc_features[1]["page_number"], 2)
+        self.assertEqual(toc_features[1]["page_duration_label"], "50m 00s")
+        self.assertEqual(toc_features[1]["page_stats_summary"], "10.1 km · 50m 00s · 4m 57s/km · ↑ 85 m")
+
 
 if __name__ == "__main__":
     unittest.main()
