@@ -289,8 +289,8 @@ def simplify_mapbox_style_expressions(style_definition: dict[str, object]) -> di
     # We suppress only the noisiest layers (subdivision) and keep all settlement layers
     # reasonably open so capitals like Sion show at regional zoom levels.
     _SETTLEMENT_RANK_FILTERS: dict[str, int] = {
-        "settlement-major-label": 16,   # show all cities/towns
-        "settlement-minor-label": 999,  # suppress entirely — these small communes block major cities
+        "settlement-major-label": 5,    # only top-ranked cities per tile (Geneva ~1, Lausanne ~2...)
+        "settlement-minor-label": 999,  # suppress entirely
         "settlement-subdivision-label": 999,  # suppress entirely
     }
 
