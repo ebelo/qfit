@@ -11,6 +11,7 @@ from qfit.publish_atlas import (
     atlas_sort_key,
     build_atlas_page_plans,
     build_page_name,
+    build_page_profile_summary,
     build_page_stats_summary,
     build_page_subtitle,
     build_page_toc_label,
@@ -188,6 +189,7 @@ class PublishAtlasTests(unittest.TestCase):
         plan = build_atlas_page_plans(records)[0]
 
         self.assertTrue(plan.profile_available)
+        self.assertEqual(plan.page_profile_summary, "3.0 km · 500–560 m · relief 60 m · ↑ 75 m · ↓ 15 m")
         self.assertEqual(plan.profile_point_count, 4)
         self.assertEqual(plan.profile_distance_m, 3000)
         self.assertEqual(plan.profile_distance_label, "3.0 km")
@@ -274,6 +276,7 @@ class PublishAtlasTests(unittest.TestCase):
         self.assertEqual(build_page_subtitle(record), "Walk")
         self.assertEqual(build_page_toc_label(record), "2026-03-11 · Recovery Walk")
         self.assertIsNone(build_page_stats_summary(record))
+        self.assertIsNone(build_page_profile_summary(record))
         self.assertIsNone(format_distance_label(None))
         self.assertIsNone(format_duration_label(None))
         self.assertIsNone(format_elevation_label(None))
@@ -303,6 +306,17 @@ class PublishAtlasTests(unittest.TestCase):
                 "moving_time_s": 7200,
             }),
             "2026-03-18 · Morning Gravel Ride · 42.5 km · 2h 00m",
+        )
+        self.assertEqual(
+            build_page_profile_summary({
+                "details_json": {
+                    "stream_metrics": {
+                        "distance": [0, 1000, 2000, 3000],
+                        "altitude": [500, 525, 510, 560],
+                    }
+                }
+            }),
+            "3.0 km · 500–560 m · relief 60 m · ↑ 75 m · ↓ 15 m",
         )
 
     def test_atlas_sort_key_normalizes_missing_values(self):

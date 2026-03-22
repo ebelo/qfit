@@ -51,6 +51,7 @@ class AtlasPagePlan:
     page_average_pace_label: str | None
     page_elevation_gain_label: str | None
     page_stats_summary: str | None
+    page_profile_summary: str | None
     profile_available: bool
     profile_point_count: int
     profile_distance_m: float | None
@@ -180,6 +181,7 @@ def build_atlas_page_plans(
                 ),
                 page_elevation_gain_label=format_elevation_label(record.get("total_elevation_gain_m")),
                 page_stats_summary=build_page_stats_summary(record),
+                page_profile_summary=build_page_profile_summary(record),
                 profile_available=profile_summary.available,
                 profile_point_count=profile_summary.point_count,
                 profile_distance_m=profile_summary.distance_m,
@@ -455,6 +457,40 @@ def build_page_stats_summary(record: dict) -> str | None:
     elevation_gain_label = format_elevation_label(record.get("total_elevation_gain_m"))
     if elevation_gain_label:
         parts.append(f"↑ {elevation_gain_label}")
+
+    if not parts:
+        return None
+    return " · ".join(parts)
+
+
+def build_page_profile_summary(record: dict) -> str | None:
+    profile_summary = build_profile_summary(record)
+    if not profile_summary.available:
+        return None
+
+    parts = []
+    distance_label = format_distance_label(profile_summary.distance_m)
+    if distance_label:
+        parts.append(distance_label)
+
+    altitude_range_label = format_altitude_range_label(
+        profile_summary.min_altitude_m,
+        profile_summary.max_altitude_m,
+    )
+    if altitude_range_label:
+        parts.append(altitude_range_label)
+
+    relief_label = format_elevation_label(profile_summary.relief_m)
+    if relief_label:
+        parts.append(f"relief {relief_label}")
+
+    gain_label = format_elevation_label(profile_summary.elevation_gain_m)
+    if gain_label:
+        parts.append(f"↑ {gain_label}")
+
+    loss_label = format_elevation_label(profile_summary.elevation_loss_m)
+    if loss_label:
+        parts.append(f"↓ {loss_label}")
 
     if not parts:
         return None
