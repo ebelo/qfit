@@ -12,6 +12,7 @@ from .activity_query import (
     SORT_OPTIONS,
     ActivityQuery,
     build_preview_lines,
+    build_subset_string,
     filter_activities,
     format_summary_text,
     sort_activities,
@@ -900,6 +901,12 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self.atlasPdfPathLineEdit.setText(output_path)
 
         self._save_settings()
+
+        # Build the current visualization subset string so the atlas export
+        # respects the active filters without re-fetching.
+        query = self._current_activity_query()
+        current_subset = build_subset_string(query)
+
         self._set_atlas_export_running(True)
         self._set_atlas_pdf_status(
             f"Exporting atlas ({self.atlas_layer.featureCount()} pages)…"
@@ -910,6 +917,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             atlas_layer=self.atlas_layer,
             output_path=output_path,
             on_finished=self._on_atlas_export_finished,
+            subset_string=current_subset,
         )
         QgsApplication.taskManager().addTask(self._atlas_export_task)
 
