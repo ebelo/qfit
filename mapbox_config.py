@@ -151,6 +151,60 @@ def fetch_mapbox_style_definition(
         return json.loads(response.read().decode("utf-8"))
 
 
+def _extract_fallback_color(expr: object) -> str | None:
+    """Recursively extract a sensible literal color from a Mapbox expression.
+
+    Mapbox uses `['match', field, val1, color1, ..., default_color]` and
+    `['interpolate', ..., zoom, color, ...]` expressions for dynamic colors.
+    QGIS' QgsMapBoxGlStyleConverter does not resolve data-driven expressions
+    and falls back to black.  We extract the *last literal color string* from
+    such expressions as a reasonable representative color.
+    """
+    if isinstance(expr, str):
+        return expr if (expr.startswith("hsl") or expr.startswith("#") or expr.startswith("rgb")) else None
+    if not isinstance(expr, list) or not expr:
+        return None
+    # Walk backwards through list elements looking for the deepest literal
+    fallback: str | None = None
+    for item in reversed(expr):
+        color = _extract_fallback_color(item)
+        if color is not None:
+            fallback = color
+            break
+    return fallback
+
+
+def simplify_mapbox_style_expressions(style_definition: dict[str, object]) -> dict[str, object]:
+    """Return a copy of a Mapbox style with expression-based colors replaced by
+    literal fallback colors so QGIS' converter does not render them as black.
+
+    Only color properties whose values are Mapbox expressions (lists) are
+    simplified.  Literal strings (``hsl(...)``, ``#rrggbb``) are kept as-is.
+    """
+    import copy
+    style = copy.deepcopy(style_definition)
+    color_props = {
+        "line-color", "fill-color", "fill-outline-color", "circle-color",
+        "circle-stroke-color", "text-color", "text-halo-color",
+        "icon-color", "icon-halo-color", "background-color",
+        "fill-extrusion-color",
+    }
+    for layer in style.get("layers", []):
+        for section in ("paint", "layout"):
+            props = layer.get(section)
+            if not isinstance(props, dict):
+                continue
+            for prop in list(props.keys()):
+                if prop not in color_props:
+                    continue
+                val = props[prop]
+                if isinstance(val, list):
+                    fallback = _extract_fallback_color(val)
+                    if fallback is not None:
+                        props[prop] = fallback
+    return style
+
+
 def extract_mapbox_vector_source_ids(style_definition: dict[str, object]) -> list[str]:
     """Extract vector tileset IDs from a Mapbox style definition.
 
@@ -228,6 +282,7 @@ def build_vector_tile_layer_uri(
     style_id: str,
     *,
     tileset_ids: list[str] | tuple[str, ...] | None = None,
+    include_style_url: bool = True,
 ) -> str:
     """Return a QGIS-compatible vector tile layer URI for a Mapbox style."""
     tiles_url = build_mapbox_vector_tiles_url(
@@ -236,11 +291,15 @@ def build_vector_tile_layer_uri(
         style_id,
         tileset_ids=tileset_ids,
     )
-    style_url = build_mapbox_style_json_url(access_token, style_owner, style_id)
-    return "type=xyz&url={url}&styleUrl={style_url}&zmin=0&zmax=22".format(
+    uri = "type=xyz&url={url}&zmin=0&zmax=22".format(
         url=quote(tiles_url, safe=":/?{}=%@,"),
-        style_url=quote(style_url, safe=":/?{}=%@"),
     )
+    if include_style_url:
+        style_url = build_mapbox_style_json_url(access_token, style_owner, style_id)
+        uri += "&styleUrl={style_url}".format(
+            style_url=quote(style_url, safe=":/?{}=%@"),
+        )
+    return uri
 
 
 def build_background_layer_name(preset_name: str | None, style_owner: str, style_id: str) -> str:

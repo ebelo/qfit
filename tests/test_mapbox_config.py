@@ -16,6 +16,7 @@ from mapbox_config import (  # noqa: E402
     build_mapbox_vector_tiles_url,
     build_vector_tile_layer_uri,
     extract_mapbox_vector_source_ids,
+    simplify_mapbox_style_expressions,
     build_xyz_layer_uri,
     preset_defaults,
     preset_requires_custom_style,
@@ -176,6 +177,66 @@ class VectorTileConfigTests(unittest.TestCase):
             build_mapbox_style_json_url("", "mapbox", "outdoors-v12")
         with self.assertRaises(MapboxConfigError):
             extract_mapbox_vector_source_ids({"sources": {}})
+
+
+class SimplifyMapboxStyleTests(unittest.TestCase):
+    def test_literal_color_preserved(self):
+        style = {"layers": [{"paint": {"line-color": "hsl(200, 50%, 60%)"}, "layout": {}}]}
+        result = simplify_mapbox_style_expressions(style)
+        self.assertEqual(result["layers"][0]["paint"]["line-color"], "hsl(200, 50%, 60%)")
+
+    def test_match_expression_resolved_to_fallback(self):
+        style = {
+            "layers": [
+                {
+                    "paint": {
+                        "line-color": ["match", ["get", "class"], "motorway", "hsl(15, 100%, 75%)", "hsl(35, 89%, 75%)"]
+                    },
+                    "layout": {},
+                }
+            ]
+        }
+        result = simplify_mapbox_style_expressions(style)
+        # The last literal color in the match expression is the default
+        self.assertEqual(result["layers"][0]["paint"]["line-color"], "hsl(35, 89%, 75%)")
+
+    def test_interpolate_expression_resolved_to_last_color(self):
+        style = {
+            "layers": [
+                {
+                    "paint": {
+                        "line-color": ["interpolate", ["linear"], ["zoom"], 13, "hsl(75, 25%, 68%)", 16, "hsl(60, 0%, 75%)"]
+                    },
+                    "layout": {},
+                }
+            ]
+        }
+        result = simplify_mapbox_style_expressions(style)
+        self.assertEqual(result["layers"][0]["paint"]["line-color"], "hsl(60, 0%, 75%)")
+
+    def test_non_color_expressions_not_touched(self):
+        style = {
+            "layers": [
+                {
+                    "paint": {
+                        "line-width": ["interpolate", ["exponential", 1.5], ["zoom"], 9, 1, 22, 10],
+                        "line-color": "hsl(100, 50%, 60%)",
+                    },
+                    "layout": {},
+                }
+            ]
+        }
+        result = simplify_mapbox_style_expressions(style)
+        # line-width expression is not touched
+        self.assertIsInstance(result["layers"][0]["paint"]["line-width"], list)
+        self.assertEqual(result["layers"][0]["paint"]["line-color"], "hsl(100, 50%, 60%)")
+
+    def test_original_style_not_mutated(self):
+        expr = ["match", ["get", "class"], "motorway", "hsl(15, 100%, 75%)", "hsl(35, 89%, 75%)"]
+        style = {"layers": [{"paint": {"line-color": expr}, "layout": {}}]}
+        _ = simplify_mapbox_style_expressions(style)
+        # Original should not be changed
+        self.assertIsInstance(style["layers"][0]["paint"]["line-color"], list)
 
 
 if __name__ == "__main__":

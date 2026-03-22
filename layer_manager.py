@@ -1,3 +1,5 @@
+import json
+
 from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QColor
 from qgis.core import (
@@ -36,6 +38,7 @@ from .mapbox_config import (
     build_xyz_layer_uri,
     extract_mapbox_vector_source_ids,
     fetch_mapbox_style_definition,
+    simplify_mapbox_style_expressions,
     resolve_background_style,
 )
 from .temporal_config import build_temporal_plan, describe_temporal_configuration, is_temporal_mode_enabled
@@ -72,20 +75,23 @@ class LayerManager:
         if tile_mode == TILE_MODE_VECTOR:
             try:
                 style_definition = fetch_mapbox_style_definition(access_token, resolved_owner, resolved_style_id)
+                simplified_style = simplify_mapbox_style_expressions(style_definition)
                 tileset_ids = extract_mapbox_vector_source_ids(style_definition)
+                # Build URI without styleUrl — we apply the pre-processed style manually
                 uri = build_vector_tile_layer_uri(
                     access_token,
                     resolved_owner,
                     resolved_style_id,
                     tileset_ids=tileset_ids,
+                    include_style_url=False,
                 )
                 layer = QgsVectorTileLayer(uri, display_name)
                 if not layer.isValid():
                     layer = None
                 else:
-                    ok, _sub_layers = layer.loadDefaultStyleAndSubLayers("", [])
-                    if not ok:
-                        layer = None
+                    # Apply the simplified style JSON (expression colors already
+                    # replaced with literal fallbacks so QGIS doesn't render black)
+                    self._apply_mapbox_gl_style(layer, simplified_style)
             except Exception:
                 layer = None
 
@@ -191,6 +197,34 @@ class LayerManager:
             QgsProject.instance().removeMapLayer(old_layer.id())
         QgsProject.instance().addMapLayer(layer)
         return layer
+
+    def _apply_mapbox_gl_style(self, layer: QgsVectorTileLayer, style_definition: dict) -> None:
+        """Apply a pre-processed Mapbox GL style dict to a QgsVectorTileLayer.
+
+        We pass the simplified style (with expression colors replaced by literal
+        fallbacks) directly to QgsMapBoxGlStyleConverter so QGIS does not render
+        unresolvable color expressions as black.
+        """
+        try:
+            from qgis.core import (  # noqa: PLC0415
+                QgsMapBoxGlStyleConverter,
+                QgsMapBoxGlStyleConversionContext,
+                Qgis,
+            )
+            ctx = QgsMapBoxGlStyleConversionContext()
+            ctx.setTargetUnit(Qgis.RenderUnit.Millimeters)
+            ctx.setPixelSizeConversionFactor(25.4 / 96.0)
+            converter = QgsMapBoxGlStyleConverter()
+            result = converter.convert(style_definition, ctx)
+            if result == QgsMapBoxGlStyleConverter.Success:
+                renderer = converter.renderer()
+                labeling = converter.labeling()
+                if renderer is not None:
+                    layer.setRenderer(renderer)
+                if labeling is not None:
+                    layer.setLabeling(labeling)
+        except Exception:
+            pass  # leave the default random-color renderer in place
 
     def _remove_background_layers(self):
         project = QgsProject.instance()
