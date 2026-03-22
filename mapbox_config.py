@@ -272,24 +272,24 @@ def simplify_mapbox_style_expressions(style_definition: dict[str, object]) -> di
         "water-point-label": 12.0,
         "airport-label": 11.0,
         "settlement-subdivision-label": 8.0,
-        # Use data-driven step on `filterrank` (static tile field):
-        # filterrank 1 = national capital → 16pt
-        # filterrank 2 = large city → 13pt
-        # filterrank 3 = city/town → 11pt
-        "settlement-minor-label": ["step", ["get", "filterrank"], 10.0, 3, 9.0],
-        "settlement-major-label": ["step", ["get", "filterrank"], 16.0, 2, 13.0, 3, 11.0],
+        # Use data-driven step on `sizerank` (verified static tile field):
+        # sizerank 1 = Paris/London/Berlin → 16pt
+        # sizerank 2-3 = large city → 13pt
+        # sizerank 4-8 = city/town → 11pt
+        "settlement-minor-label": ["step", ["get", "sizerank"], 11.0, 5, 10.0, 8, 9.0],
+        "settlement-major-label": ["step", ["get", "sizerank"], 16.0, 2, 13.0, 4, 11.0],
         "state-label": 13.0,
         "country-label": 16.0,
         "continent-label": 16.0,
     }
 
-    # Settlement layers: filter by `filterrank` which IS a static integer field
-    # in Mapbox Streets v8 tiles. Lower = more important.
-    # filterrank 1 = national capital, 2 = large city, 3 = city/town, 4+ = village/hamlet
-    # We keep major cities (filterrank ≤ 2) and towns (filterrank ≤ 3).
+    # Settlement layers: filter by `sizerank` which IS a static integer field
+    # in Mapbox Streets v8 tiles (verified by tile inspection).
+    # Lower sizerank = more important. Paris, London etc. have sizerank 1.
+    # We keep cities (sizerank ≤ 4) for major label layer, towns (≤ 8) for minor.
     _SETTLEMENT_RANK_FILTERS: dict[str, int] = {
-        "settlement-major-label": 2,   # capitals and large cities only
-        "settlement-minor-label": 3,   # cities and towns
+        "settlement-major-label": 4,   # capitals and large cities (sizerank 1-4)
+        "settlement-minor-label": 8,   # cities and towns (sizerank 1-8)
         "settlement-subdivision-label": 999,  # suppress entirely
     }
 
@@ -306,7 +306,7 @@ def simplify_mapbox_style_expressions(style_definition: dict[str, object]) -> di
             else:
                 # Add a symbolrank filter — only show features with rank <= threshold
                 existing_filter = layer.get("filter")
-                rank_filter = ["<=", ["get", "filterrank"], rank_threshold]
+                rank_filter = ["<=", ["get", "sizerank"], rank_threshold]
                 if existing_filter:
                     layer["filter"] = ["all", existing_filter, rank_filter]
                 else:
