@@ -13,6 +13,7 @@ from qfit.publish_atlas import (
     build_page_name,
     build_page_stats_summary,
     build_page_subtitle,
+    build_page_toc_label,
     ensure_minimum_extent,
     expand_bounds,
     fit_bounds_to_target_aspect_ratio,
@@ -57,6 +58,7 @@ class PublishAtlasTests(unittest.TestCase):
         self.assertEqual(plan.page_name, "2026-03-18 · Morning Gravel Ride")
         self.assertEqual(plan.page_subtitle, "Ride · 42.5 km · 2h 00m")
         self.assertEqual(plan.page_date, "2026-03-18")
+        self.assertEqual(plan.page_toc_label, "2026-03-18 · Morning Gravel Ride · 42.5 km · 2h 00m")
         self.assertEqual(plan.page_distance_label, "42.5 km")
         self.assertEqual(plan.page_duration_label, "2h 00m")
         self.assertEqual(plan.page_average_speed_label, "21.3 km/h")
@@ -161,6 +163,7 @@ class PublishAtlasTests(unittest.TestCase):
 
         plan = build_atlas_page_plans(records)[0]
 
+        self.assertEqual(plan.page_toc_label, "Lunch Run · 10.1 km · 50m 00s")
         self.assertEqual(plan.page_average_speed_label, "12.1 km/h")
         self.assertEqual(plan.page_average_pace_label, "4m 57s/km")
         self.assertEqual(plan.page_elevation_gain_label, "85 m")
@@ -269,6 +272,7 @@ class PublishAtlasTests(unittest.TestCase):
 
         self.assertEqual(build_page_name(record), "2026-03-11 · Recovery Walk")
         self.assertEqual(build_page_subtitle(record), "Walk")
+        self.assertEqual(build_page_toc_label(record), "2026-03-11 · Recovery Walk")
         self.assertIsNone(build_page_stats_summary(record))
         self.assertIsNone(format_distance_label(None))
         self.assertIsNone(format_duration_label(None))
@@ -290,6 +294,15 @@ class PublishAtlasTests(unittest.TestCase):
                 "total_elevation_gain_m": 640,
             }),
             "42.5 km · 2h 00m · 21.3 km/h · ↑ 640 m",
+        )
+        self.assertEqual(
+            build_page_toc_label({
+                "name": "Morning Gravel Ride",
+                "start_date_local": "2026-03-18T08:10:00+01:00",
+                "distance_m": 42500,
+                "moving_time_s": 7200,
+            }),
+            "2026-03-18 · Morning Gravel Ride · 42.5 km · 2h 00m",
         )
 
     def test_atlas_sort_key_normalizes_missing_values(self):

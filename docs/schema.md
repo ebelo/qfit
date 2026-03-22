@@ -185,7 +185,7 @@ Primary purpose:
 - one padded extent polygon per activity with reusable title/subtitle fields
 - extent padding/minimum size controlled by the plugin's publish settings at write time
 - optional Web Mercator aspect-ratio fitting can widen/tallify the padded extent for more layout-consistent framing
-- publish-friendly detail labels (`page_average_speed_label`, `page_average_pace_label`, `page_elevation_gain_label`) plus `page_stats_summary` reduce per-layout expression boilerplate for per-activity stat blocks
+- publish-friendly detail labels (`page_toc_label`, `page_average_speed_label`, `page_average_pace_label`, `page_elevation_gain_label`) plus `page_stats_summary` reduce per-layout expression boilerplate for per-activity stat blocks
 - route-profile summary and label fields give layouts a cheap way to decide whether to show an elevation chart and to reuse publish-friendly text without extra QGIS expression boilerplate before full PDF automation exists
 
 ### Current fields
@@ -207,6 +207,7 @@ Primary purpose:
 | `page_title` | TEXT | large-title label |
 | `page_subtitle` | TEXT | compact summary such as type, distance, and moving time |
 | `page_date` | TEXT | preformatted local/primary activity date for layout labels |
+| `page_toc_label` | TEXT | preformatted TOC-ready line such as `2026-03-18 · Morning Gravel Ride · 42.5 km · 2h 00m` |
 | `page_distance_label` | TEXT | preformatted distance label such as `42.5 km` |
 | `page_duration_label` | TEXT | preformatted moving-time label such as `2h 00m` |
 | `page_average_speed_label` | TEXT | preformatted speed label such as `25.2 km/h` for layouts that show average speed |

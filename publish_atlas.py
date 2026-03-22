@@ -44,6 +44,7 @@ class AtlasPagePlan:
     page_title: str
     page_subtitle: str
     page_date: str | None
+    page_toc_label: str | None
     page_distance_label: str | None
     page_duration_label: str | None
     page_average_speed_label: str | None
@@ -168,6 +169,7 @@ def build_atlas_page_plans(
                 page_title=page_title,
                 page_subtitle=page_subtitle,
                 page_date=format_activity_date(record.get("start_date_local") or record.get("start_date")),
+                page_toc_label=build_page_toc_label(record),
                 page_distance_label=format_distance_label(record.get("distance_m")),
                 page_duration_label=format_duration_label(record.get("moving_time_s")),
                 page_average_speed_label=format_speed_label(record.get("average_speed_mps")),
@@ -402,6 +404,30 @@ def build_page_subtitle(record: dict) -> str:
     if duration_label:
         parts.append(duration_label)
 
+    return " · ".join(parts)
+
+
+def build_page_toc_label(record: dict) -> str | None:
+    parts = []
+
+    activity_date = format_activity_date(record.get("start_date_local") or record.get("start_date"))
+    if activity_date:
+        parts.append(activity_date)
+
+    title = (record.get("name") or "Untitled activity").strip()
+    if title:
+        parts.append(title)
+
+    distance_label = format_distance_label(record.get("distance_m"))
+    if distance_label:
+        parts.append(distance_label)
+
+    duration_label = format_duration_label(record.get("moving_time_s"))
+    if duration_label:
+        parts.append(duration_label)
+
+    if not parts:
+        return None
     return " · ".join(parts)
 
 
