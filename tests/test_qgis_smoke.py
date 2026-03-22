@@ -124,6 +124,7 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertEqual(result["atlas_count"], 2)
             self.assertEqual(result["document_summary_count"], 1)
             self.assertEqual(result["cover_highlight_count"], 6)
+            self.assertEqual(result["page_detail_item_count"], 11)
             self.assertEqual(result["profile_sample_count"], 8)
             self.assertEqual(result["toc_count"], 2)
 
@@ -150,6 +151,18 @@ class QgisSmokeTests(unittest.TestCase):
             cover_highlight_feature = next(cover_highlight_layer.getFeatures())
             self.assertEqual(cover_highlight_feature["highlight_key"], "activity_count")
             self.assertEqual(cover_highlight_feature["highlight_value"], "2 activities")
+
+            page_detail_layer = QgsVectorLayer(
+                f"{output_path}|layername=atlas_page_detail_items",
+                "qfit atlas page detail items",
+                "ogr",
+            )
+            self.assertTrue(page_detail_layer.isValid())
+            self.assertEqual(page_detail_layer.featureCount(), 11)
+            page_detail_features = list(page_detail_layer.getFeatures())
+            self.assertEqual(page_detail_features[0]["detail_key"], "distance")
+            self.assertEqual(page_detail_features[0]["detail_value"], "25.2 km")
+            self.assertEqual(page_detail_features[-1]["detail_key"], "profile_summary")
 
             profile_layer = QgsVectorLayer(
                 f"{output_path}|layername=atlas_profile_samples",

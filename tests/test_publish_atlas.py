@@ -10,6 +10,7 @@ from qfit.publish_atlas import (
     atlas_sort_key,
     build_atlas_cover_highlights,
     build_atlas_document_summary,
+    build_atlas_page_detail_items,
     build_atlas_page_plans,
     build_atlas_profile_samples,
     build_atlas_toc_entries,
@@ -169,6 +170,58 @@ class PublishAtlasTests(unittest.TestCase):
         self.assertEqual(highlights[4].highlight_value, "725 m")
         self.assertEqual(highlights[5].highlight_key, "activity_types")
         self.assertEqual(highlights[5].highlight_value, "Ride, Run")
+
+    def test_build_atlas_page_detail_items_create_layout_ready_rows(self):
+        records = [
+            {
+                "source": "strava",
+                "source_activity_id": "100",
+                "name": "Morning Ride",
+                "activity_type": "Ride",
+                "start_date_local": "2026-03-18T08:10:00+01:00",
+                "distance_m": 42500,
+                "moving_time_s": 7200,
+                "total_elevation_gain_m": 640,
+                "average_speed_mps": 5.9027777778,
+                "geometry_points": [(46.52, 6.62), (46.57, 6.74)],
+            },
+            {
+                "source": "strava",
+                "source_activity_id": "200",
+                "name": "Lunch Run",
+                "activity_type": "Run",
+                "start_date_local": "2026-03-19T12:00:00+01:00",
+                "distance_m": 10100,
+                "moving_time_s": 3000,
+                "total_elevation_gain_m": 85,
+                "average_speed_mps": 3.3666666667,
+                "geometry_points": [(46.50, 6.60), (46.51, 6.62)],
+                "details_json": {
+                    "stream_metrics": {
+                        "distance": [0, 3300, 6700, 10100],
+                        "altitude": [430, 445, 438, 452],
+                    }
+                },
+            },
+        ]
+
+        items = build_atlas_page_detail_items(records)
+
+        self.assertEqual(len(items), 12)
+        self.assertEqual(items[0].page_number, 1)
+        self.assertEqual(items[0].detail_order, 1)
+        self.assertEqual(items[0].detail_key, "distance")
+        self.assertEqual(items[0].detail_label, "Distance")
+        self.assertEqual(items[0].detail_value, "42.5 km")
+        self.assertEqual(items[2].detail_key, "average_speed")
+        self.assertEqual(items[2].detail_value, "21.3 km/h")
+        self.assertEqual(items[5].detail_key, "distance")
+        self.assertEqual(items[7].detail_key, "average_speed")
+        self.assertEqual(items[7].detail_value, "12.1 km/h")
+        self.assertEqual(items[8].detail_key, "average_pace")
+        self.assertEqual(items[8].detail_value, "4m 57s/km")
+        self.assertEqual(items[-1].detail_key, "profile_summary")
+        self.assertEqual(items[-1].detail_value, "10.1 km · 430–452 m · relief 22 m · ↑ 29 m · ↓ 7 m")
 
     def test_build_atlas_profile_samples_create_chart_ready_rows(self):
         records = [

@@ -20,6 +20,7 @@ from .publish_atlas import (
     activity_bounds,
     build_atlas_cover_highlights,
     build_atlas_document_summary,
+    build_atlas_page_detail_items,
     build_atlas_page_plans,
     build_atlas_profile_samples,
     build_atlas_toc_entries,
@@ -174,6 +175,17 @@ COVER_HIGHLIGHT_FIELDS = [
     ("highlight_value", QVariant.String),
 ]
 
+PAGE_DETAIL_ITEM_FIELDS = [
+    ("page_number", QVariant.Int),
+    ("page_sort_key", QVariant.String),
+    ("page_name", QVariant.String),
+    ("page_title", QVariant.String),
+    ("detail_order", QVariant.Int),
+    ("detail_key", QVariant.String),
+    ("detail_label", QVariant.String),
+    ("detail_value", QVariant.String),
+]
+
 PROFILE_SAMPLE_FIELDS = [
     ("page_number", QVariant.Int),
     ("page_sort_key", QVariant.String),
@@ -273,6 +285,11 @@ class GeoPackageWriter:
                 "kind": "table",
                 "fields": [name for name, _ in COVER_HIGHLIGHT_FIELDS],
             },
+            "atlas_page_detail_items": {
+                "geometry": None,
+                "kind": "table",
+                "fields": [name for name, _ in PAGE_DETAIL_ITEM_FIELDS],
+            },
             "atlas_profile_samples": {
                 "geometry": None,
                 "kind": "table",
@@ -299,6 +316,7 @@ class GeoPackageWriter:
             self._write_layer(self._build_atlas_layer([]), "activity_atlas_pages", overwrite_file=False)
             self._write_layer(self._build_document_summary_layer([]), "atlas_document_summary", overwrite_file=False)
             self._write_layer(self._build_cover_highlight_layer([]), "atlas_cover_highlights", overwrite_file=False)
+            self._write_layer(self._build_page_detail_item_layer([]), "atlas_page_detail_items", overwrite_file=False)
             self._write_layer(self._build_profile_sample_layer([]), "atlas_profile_samples", overwrite_file=False)
             self._write_layer(self._build_toc_layer([]), "atlas_toc_entries", overwrite_file=False)
 
@@ -312,6 +330,7 @@ class GeoPackageWriter:
         atlas_layer = self._build_atlas_layer(records)
         document_summary_layer = self._build_document_summary_layer(records)
         cover_highlight_layer = self._build_cover_highlight_layer(records)
+        page_detail_item_layer = self._build_page_detail_item_layer(records)
         profile_sample_layer = self._build_profile_sample_layer(records)
         toc_layer = self._build_toc_layer(records)
         self._write_layer(track_layer, "activity_tracks", overwrite_file=False)
@@ -320,6 +339,7 @@ class GeoPackageWriter:
         self._write_layer(atlas_layer, "activity_atlas_pages", overwrite_file=False)
         self._write_layer(document_summary_layer, "atlas_document_summary", overwrite_file=False)
         self._write_layer(cover_highlight_layer, "atlas_cover_highlights", overwrite_file=False)
+        self._write_layer(page_detail_item_layer, "atlas_page_detail_items", overwrite_file=False)
         self._write_layer(profile_sample_layer, "atlas_profile_samples", overwrite_file=False)
         self._write_layer(toc_layer, "atlas_toc_entries", overwrite_file=False)
 
@@ -333,6 +353,7 @@ class GeoPackageWriter:
             "atlas_count": atlas_layer.featureCount(),
             "document_summary_count": document_summary_layer.featureCount(),
             "cover_highlight_count": cover_highlight_layer.featureCount(),
+            "page_detail_item_count": page_detail_item_layer.featureCount(),
             "profile_sample_count": profile_sample_layer.featureCount(),
             "toc_count": toc_layer.featureCount(),
             "sync": sync_result,
@@ -594,6 +615,29 @@ class GeoPackageWriter:
             feature["highlight_key"] = highlight.highlight_key
             feature["highlight_label"] = highlight.highlight_label
             feature["highlight_value"] = highlight.highlight_value
+            features.append(feature)
+
+        provider.addFeatures(features)
+        layer.updateExtents()
+        return layer
+
+    def _build_page_detail_item_layer(self, records):
+        layer = QgsVectorLayer("None", "atlas_page_detail_items", "memory")
+        provider = layer.dataProvider()
+        provider.addAttributes(self._make_fields(PAGE_DETAIL_ITEM_FIELDS))
+        layer.updateFields()
+
+        features = []
+        for item in build_atlas_page_detail_items(records, settings=self.atlas_page_settings):
+            feature = QgsFeature(layer.fields())
+            feature["page_number"] = item.page_number
+            feature["page_sort_key"] = item.page_sort_key
+            feature["page_name"] = item.page_name
+            feature["page_title"] = item.page_title
+            feature["detail_order"] = item.detail_order
+            feature["detail_key"] = item.detail_key
+            feature["detail_label"] = item.detail_label
+            feature["detail_value"] = item.detail_value
             features.append(feature)
 
         provider.addFeatures(features)
