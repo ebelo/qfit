@@ -758,6 +758,60 @@
              </layout>
             </widget>
            </item>
+           <item>
+            <widget class="QGroupBox" name="atlasPdfGroupBox">
+             <property name="title">
+              <string>Generate Atlas PDF</string>
+             </property>
+             <layout class="QVBoxLayout" name="atlasPdfGroupLayout">
+              <item>
+               <widget class="QLabel" name="atlasPdfHelpLabel">
+                <property name="text">
+                 <string>Export a per-activity PDF atlas using the loaded activity_atlas_pages layer. Each page shows the activity title, date, stats, and a map centred on the activity extent. Store and load layers first.</string>
+                </property>
+                <property name="wordWrap">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="atlasPdfPathLayout">
+                <item>
+                 <widget class="QLineEdit" name="atlasPdfPathLineEdit">
+                  <property name="placeholderText">
+                   <string>Output PDF path…</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="atlasPdfBrowseButton">
+                  <property name="text">
+                   <string>Browse…</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <widget class="QPushButton" name="generateAtlasPdfButton">
+                <property name="text">
+                 <string>Generate Atlas PDF</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="atlasPdfStatusLabel">
+                <property name="text">
+                 <string></string>
+                </property>
+                <property name="wordWrap">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
           </layout>
          </widget>
         </item>
