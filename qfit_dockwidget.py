@@ -92,6 +92,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.browseButton.clicked.connect(self.on_browse_clicked)
         self.refreshButton.clicked.connect(self.on_refresh_clicked)
         self.loadButton.clicked.connect(self.on_load_clicked)
+        self.loadLayersButton.clicked.connect(self.on_load_layers_clicked)
         self.clearDatabaseButton.clicked.connect(self.on_clear_database_clicked)
         self.applyFiltersButton.clicked.connect(self.on_apply_filters_clicked)
         self.loadBackgroundButton.clicked.connect(self.on_load_background_clicked)
@@ -645,6 +646,47 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._show_error("GeoPackage export failed", str(exc))
             self._set_status("GeoPackage export failed")
 
+    def on_load_layers_clicked(self):
+        """Load an existing GeoPackage into QGIS without fetching from Strava."""
+        self._save_settings()
+        output_path = self.outputPathLineEdit.text().strip()
+        if not output_path:
+            self._show_error("Missing output path", "Choose a GeoPackage output path first.")
+            return
+        if not os.path.exists(output_path):
+            self._show_error(
+                "GeoPackage not found",
+                f"No database found at:\n  {output_path}\n\nFetch & Store activities first to create it.",
+            )
+            return
+
+        self._set_status("Loading layers from GeoPackage…")
+        try:
+            self.output_path = output_path
+            self.activities_layer, self.starts_layer, self.points_layer, self.atlas_layer = self.layer_manager.load_output_layers(
+                self.output_path
+            )
+            visual_status = self._apply_visual_configuration(apply_subset_filters=False)
+            if visual_status:
+                visual_status = f" {visual_status}"
+
+            settings = QSettings()
+            last_sync = self._setting_value(settings, "last_sync_date", "unknown")
+            total = (self.activities_layer.featureCount() if self.activities_layer else 0)
+            self.countLabel.setText(
+                "{total} activities loaded (last sync: {sync_date})".format(
+                    total=total, sync_date=last_sync
+                )
+            )
+            self._set_status(
+                "Layers loaded from {path}.{visual_status}".format(
+                    path=output_path, visual_status=visual_status
+                )
+            )
+        except Exception as exc:  # noqa: BLE001
+            self._show_error("Load layers failed", str(exc))
+            self._set_status("Load layers failed")
+
     def on_clear_database_clicked(self):
         """Delete the GeoPackage, clear loaded layers, and reset status."""
         output_path = self.outputPathLineEdit.text().strip()
@@ -1033,6 +1075,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             "Cancel export" if running else "Generate Atlas PDF"
         )
         self.loadButton.setEnabled(not running)
+        self.loadLayersButton.setEnabled(not running)
         self.refreshButton.setEnabled(not running)
 
     def _on_atlas_export_finished(
