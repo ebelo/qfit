@@ -198,6 +198,65 @@ class LayerManager:
         QgsProject.instance().addMapLayer(layer)
         return layer
 
+    def _apply_label_priority(self, labeling) -> None:
+        """Boost label priority for major city/country layers so they win collision
+        resolution over minor settlements and POIs in QGIS vector tile rendering.
+
+        For settlement layers we also apply a data-defined priority override using
+        ``sizerank`` so that Geneva (sizerank=1) beats Annemasse (sizerank=4)
+        within the same label layer — otherwise QGIS resolves intra-layer collisions
+        by arbitrary feature order.
+        """
+        from qgis.core import QgsProperty  # noqa: PLC0415
+
+        # Layer-level base priorities (0–10, higher wins)
+        _LAYER_PRIORITIES = {
+            "continent-label":          10,
+            "country-label":            10,
+            "state-label":              9,
+            "settlement-major-label":   8,
+            "settlement-minor-label":   6,
+            "settlement-subdivision-label": 3,
+            "water-point-label":        7,
+            "water-line-label":         6,
+            "natural-line-label":       4,
+            "natural-point-label":      2,
+            "poi-label":                2,
+            "road-label":               5,
+            "airport-label":            5,
+        }
+        # For settlement layers use a data-defined expression to give larger cities
+        # higher intra-layer priority. sizerank is inverted (lower = more important)
+        # so we map: max(0, 10 - sizerank)  clamped to [1, 10].
+        _SETTLEMENT_LAYERS = {"settlement-major-label", "settlement-minor-label"}
+
+        try:
+            for style in labeling.styles():
+                layer_name = style.layerName()
+                priority = _LAYER_PRIORITIES.get(layer_name)
+                if priority is None:
+                    continue
+                settings = style.labelSettings()
+                if settings is None:
+                    continue
+                settings.priority = priority
+                if layer_name in _SETTLEMENT_LAYERS:
+                    # Data-defined priority: convert sizerank (1=biggest) to 1–10 scale.
+                    # The field is named 'sizerank' in Mapbox Streets v8 tiles.
+                    # We invert: sizerank 1 → priority 10, sizerank 10 → priority 1.
+                    # coalesce to 8 so unknown features get mid-range priority.
+                    dd_props = settings.dataDefinedProperties()
+                    dd_props.setProperty(
+                        87,  # QgsPalLayerSettings.Priority
+                        QgsProperty.fromExpression(
+                            "greatest(1, least(10, 10 - coalesce(to_int(\"sizerank\"), 8) + 1))"
+                        ),
+                    )
+                    settings.setDataDefinedProperties(dd_props)
+                style.setLabelSettings(settings)
+        except Exception:
+            pass
+
     def _apply_mapbox_gl_style(self, layer: QgsVectorTileLayer, style_definition: dict) -> None:
         """Apply a pre-processed Mapbox GL style dict to a QgsVectorTileLayer.
 
@@ -222,6 +281,7 @@ class LayerManager:
                 if renderer is not None:
                     layer.setRenderer(renderer)
                 if labeling is not None:
+                    self._apply_label_priority(labeling)
                     layer.setLabeling(labeling)
                     layer.setLabelsEnabled(True)
         except Exception:
