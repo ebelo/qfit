@@ -117,6 +117,7 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertGreaterEqual(result["point_count"], 4)
             self.assertEqual(result["atlas_count"], 2)
             self.assertEqual(result["document_summary_count"], 1)
+            self.assertEqual(result["cover_highlight_count"], 6)
             self.assertEqual(result["profile_sample_count"], 8)
             self.assertEqual(result["toc_count"], 2)
 
@@ -132,6 +133,17 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertEqual(document_summary_feature["date_range_label"], "2026-03-20 → 2026-03-21")
             self.assertEqual(document_summary_feature["total_distance_label"], "35.3 km")
             self.assertIn("2 activities · 2026-03-20 → 2026-03-21 · 35.3 km · 1h 50m · ↑ 405 m", document_summary_feature["cover_summary"])
+
+            cover_highlight_layer = QgsVectorLayer(
+                f"{output_path}|layername=atlas_cover_highlights",
+                "qfit atlas cover highlights",
+                "ogr",
+            )
+            self.assertTrue(cover_highlight_layer.isValid())
+            self.assertEqual(cover_highlight_layer.featureCount(), 6)
+            cover_highlight_feature = next(cover_highlight_layer.getFeatures())
+            self.assertEqual(cover_highlight_feature["highlight_key"], "activity_count")
+            self.assertEqual(cover_highlight_feature["highlight_value"], "2 activities")
 
             profile_layer = QgsVectorLayer(
                 f"{output_path}|layername=atlas_profile_samples",

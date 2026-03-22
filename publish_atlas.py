@@ -61,6 +61,14 @@ class AtlasTocEntry:
 
 
 @dataclass(frozen=True)
+class AtlasCoverHighlight:
+    highlight_order: int
+    highlight_key: str
+    highlight_label: str
+    highlight_value: str
+
+
+@dataclass(frozen=True)
 class AtlasProfileSample:
     page_number: int
     page_sort_key: str
@@ -316,6 +324,35 @@ def build_atlas_toc_entries(
             )
         )
     return entries
+
+
+def build_atlas_cover_highlights(records: Iterable[dict]) -> list[AtlasCoverHighlight]:
+    summary = build_atlas_document_summary(records)
+    if summary.activity_count <= 0:
+        return []
+
+    highlights: list[AtlasCoverHighlight] = []
+
+    def add_highlight(key: str, label: str, value: str | None):
+        if not value:
+            return
+        highlights.append(
+            AtlasCoverHighlight(
+                highlight_order=len(highlights) + 1,
+                highlight_key=key,
+                highlight_label=label,
+                highlight_value=value,
+            )
+        )
+
+    activity_label = "activity" if summary.activity_count == 1 else "activities"
+    add_highlight("activity_count", "Activities", f"{summary.activity_count} {activity_label}")
+    add_highlight("date_range", "Date range", summary.date_range_label)
+    add_highlight("total_distance", "Distance", summary.total_distance_label)
+    add_highlight("total_duration", "Moving time", summary.total_duration_label)
+    add_highlight("total_elevation_gain", "Climbing", summary.total_elevation_gain_label)
+    add_highlight("activity_types", "Activity types", summary.activity_types_label)
+    return highlights
 
 
 def build_atlas_profile_samples(

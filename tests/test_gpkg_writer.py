@@ -100,6 +100,17 @@ class GeoPackageWriterAtlasTests(unittest.TestCase):
             "2 activities · 2026-03-18 → 2026-03-19 · 52.6 km · 2h 50m · ↑ 725 m · Ride, Run",
         )
 
+        cover_highlight_layer = writer._build_cover_highlight_layer(records)
+        self.assertTrue(cover_highlight_layer.isValid())
+        self.assertEqual(cover_highlight_layer.featureCount(), 6)
+        self.assertGreaterEqual(cover_highlight_layer.fields().indexOf("highlight_value"), 0)
+        cover_highlight_features = list(cover_highlight_layer.getFeatures())
+        self.assertEqual(cover_highlight_features[0]["highlight_key"], "activity_count")
+        self.assertEqual(cover_highlight_features[0]["highlight_label"], "Activities")
+        self.assertEqual(cover_highlight_features[0]["highlight_value"], "2 activities")
+        self.assertEqual(cover_highlight_features[-1]["highlight_key"], "activity_types")
+        self.assertEqual(cover_highlight_features[-1]["highlight_value"], "Ride, Run")
+
         profile_sample_layer = writer._build_profile_sample_layer(records)
         self.assertTrue(profile_sample_layer.isValid())
         self.assertEqual(profile_sample_layer.featureCount(), 0)

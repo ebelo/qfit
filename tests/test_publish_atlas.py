@@ -8,6 +8,7 @@ from qfit.publish_atlas import (
     WEB_MERCATOR_EPSG,
     activity_bounds,
     atlas_sort_key,
+    build_atlas_cover_highlights,
     build_atlas_document_summary,
     build_atlas_page_plans,
     build_atlas_profile_samples,
@@ -128,6 +129,46 @@ class PublishAtlasTests(unittest.TestCase):
         )
         self.assertTrue(all(plan.document_activity_count == 3 for plan in plans))
         self.assertTrue(all(plan.document_date_range_label == "2026-03-18 → 2026-03-19" for plan in plans))
+
+    def test_build_atlas_cover_highlights_create_layout_ready_rows(self):
+        records = [
+            {
+                "source": "strava",
+                "source_activity_id": "100",
+                "name": "Morning Ride",
+                "activity_type": "Ride",
+                "start_date_local": "2026-03-18T08:10:00+01:00",
+                "distance_m": 42500,
+                "moving_time_s": 7200,
+                "total_elevation_gain_m": 640,
+                "geometry_points": [(46.52, 6.62), (46.57, 6.74)],
+            },
+            {
+                "source": "strava",
+                "source_activity_id": "200",
+                "name": "Lunch Run",
+                "activity_type": "Run",
+                "start_date_local": "2026-03-19T12:00:00+01:00",
+                "distance_m": 10100,
+                "moving_time_s": 3000,
+                "total_elevation_gain_m": 85,
+                "geometry_points": [(46.50, 6.60), (46.51, 6.62)],
+            },
+        ]
+
+        highlights = build_atlas_cover_highlights(records)
+
+        self.assertEqual(len(highlights), 6)
+        self.assertEqual(highlights[0].highlight_order, 1)
+        self.assertEqual(highlights[0].highlight_key, "activity_count")
+        self.assertEqual(highlights[0].highlight_label, "Activities")
+        self.assertEqual(highlights[0].highlight_value, "2 activities")
+        self.assertEqual(highlights[1].highlight_value, "2026-03-18 → 2026-03-19")
+        self.assertEqual(highlights[2].highlight_value, "52.6 km")
+        self.assertEqual(highlights[3].highlight_value, "2h 50m")
+        self.assertEqual(highlights[4].highlight_value, "725 m")
+        self.assertEqual(highlights[5].highlight_key, "activity_types")
+        self.assertEqual(highlights[5].highlight_value, "Ride, Run")
 
     def test_build_atlas_profile_samples_create_chart_ready_rows(self):
         records = [
