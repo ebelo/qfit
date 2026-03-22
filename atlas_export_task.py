@@ -265,11 +265,6 @@ class AtlasExportTask(QgsTask):
         ``cancelled`` (bool), ``page_count`` (int).
     project:
         Optional :class:`QgsProject`; defaults to ``QgsProject.instance()``.
-    subset_string:
-        Optional QGIS subset string (SQL WHERE clause) to apply to the atlas
-        layer before export.  When provided, only activities that match the
-        current visualization filter are included in the PDF.  If ``None``,
-        the layer's existing subset string (if any) is preserved.
     """
 
     def __init__(
@@ -278,7 +273,6 @@ class AtlasExportTask(QgsTask):
         output_path: str,
         on_finished,
         project=None,
-        subset_string: str | None = None,
         restore_tile_mode: str | None = None,
         layer_manager=None,
         preset_name: str | None = None,
@@ -292,7 +286,6 @@ class AtlasExportTask(QgsTask):
         self._output_path = output_path
         self._on_finished = on_finished
         self._project = project
-        self._subset_string = subset_string
         self._restore_tile_mode = restore_tile_mode
         self._layer_manager = layer_manager
         self._preset_name = preset_name
@@ -310,20 +303,7 @@ class AtlasExportTask(QgsTask):
     def run(self) -> bool:
         """Build layout and export in the worker thread."""
         try:
-            # Apply visualization subset filter if provided (non-destructive:
-            # we restore the original subset string after export)
-            original_subset: str | None = None
-            if self._subset_string is not None and self._atlas_layer is not None:
-                original_subset = self._atlas_layer.subsetString()
-                self._atlas_layer.setSubsetString(self._subset_string)
-
-            try:
-                return self._run_export()
-            finally:
-                # Restore the original subset string regardless of outcome
-                if original_subset is not None and self._atlas_layer is not None:
-                    self._atlas_layer.setSubsetString(original_subset)
-
+            return self._run_export()
         except Exception as exc:  # noqa: BLE001
             self._error = str(exc)
             return False

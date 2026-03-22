@@ -315,54 +315,21 @@ class TestAtlasExportTaskNoCallback(unittest.TestCase):
 
 
 # ---------------------------------------------------------------------------
-# Tests: subset_string applies visualization filter to atlas layer
+# Tests: atlas export leaves layer subset filters alone
 # ---------------------------------------------------------------------------
 
 
-class TestAtlasExportTaskSubsetFilter(unittest.TestCase):
-    def test_subset_string_is_applied_and_restored(self):
-        """Atlas export applies the provided subset string and restores the original."""
+class TestAtlasExportTaskLayerSubsetHandling(unittest.TestCase):
+    def test_export_does_not_modify_layer_subset_string(self):
+        """Atlas export should not clear, apply, or restore atlas layer subsets."""
         received = {}
         layer = _make_atlas_layer(feature_count=5)
-        layer.subsetString.return_value = "original_subset"
         layer.setSubsetString = MagicMock()
 
         task = AtlasExportTask(
             atlas_layer=layer,
             output_path="/tmp/qfit_test_atlas.pdf",
             on_finished=lambda **kw: received.update(kw),
-            subset_string="activity_type = 'Ride'",
-        )
-
-        with patch("qfit.atlas_export_task.build_atlas_layout") as mock_build, \
-             patch("os.path.exists", return_value=True), \
-             patch("qfit.atlas_export_task.QgsLayoutExporter") as mock_exporter_cls:
-            mock_layout = MagicMock()
-            mock_layout.atlas.return_value = MagicMock()
-            mock_build.return_value = mock_layout
-            mock_exporter_cls.Success = 0
-            exporter_mock = MagicMock()
-            exporter_mock.exportToPdf.return_value = (0, "")  # Success tuple
-            mock_exporter_cls.return_value = exporter_mock
-            _run_task(task)
-
-        # Should have applied the filter subset, then restored the original
-        calls = layer.setSubsetString.call_args_list
-        self.assertEqual(calls[0][0][0], "activity_type = 'Ride'")
-        self.assertEqual(calls[1][0][0], "original_subset")
-        self.assertIsNotNone(received.get("output_path"))
-
-    def test_no_subset_string_does_not_call_set_subset(self):
-        """When subset_string=None, setSubsetString is never called."""
-        received = {}
-        layer = _make_atlas_layer(feature_count=3)
-        layer.setSubsetString = MagicMock()
-
-        task = AtlasExportTask(
-            atlas_layer=layer,
-            output_path="/tmp/qfit_test_atlas.pdf",
-            on_finished=lambda **kw: received.update(kw),
-            subset_string=None,
         )
 
         with patch("qfit.atlas_export_task.build_atlas_layout") as mock_build, \
@@ -378,6 +345,7 @@ class TestAtlasExportTaskSubsetFilter(unittest.TestCase):
             _run_task(task)
 
         layer.setSubsetString.assert_not_called()
+        self.assertIsNotNone(received.get("output_path"))
 
 
 if __name__ == "__main__":
