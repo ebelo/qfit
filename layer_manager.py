@@ -198,6 +198,38 @@ class LayerManager:
         QgsProject.instance().addMapLayer(layer)
         return layer
 
+    def _apply_label_priority(self, labeling) -> None:
+        """Boost label priority for major city/country layers so they win collision
+        resolution over minor settlements and POIs in QGIS vector tile rendering."""
+        # QgsPalLayerSettings.priority: 0 = lowest, 10 = highest
+        _LAYER_PRIORITIES = {
+            "continent-label":          10,
+            "country-label":            10,
+            "state-label":              9,
+            "settlement-major-label":   8,
+            "settlement-minor-label":   6,
+            "settlement-subdivision-label": 3,
+            "water-point-label":        7,
+            "water-line-label":         6,
+            "natural-line-label":       4,
+            "natural-point-label":      2,
+            "poi-label":                2,
+            "road-label":               5,
+            "airport-label":            5,
+        }
+        try:
+            for style in labeling.styles():
+                layer_name = style.layerName()
+                priority = _LAYER_PRIORITIES.get(layer_name)
+                if priority is None:
+                    continue
+                settings = style.labelSettings()
+                if settings is not None:
+                    settings.priority = priority
+                    style.setLabelSettings(settings)
+        except Exception:
+            pass
+
     def _apply_mapbox_gl_style(self, layer: QgsVectorTileLayer, style_definition: dict) -> None:
         """Apply a pre-processed Mapbox GL style dict to a QgsVectorTileLayer.
 
@@ -222,6 +254,7 @@ class LayerManager:
                 if renderer is not None:
                     layer.setRenderer(renderer)
                 if labeling is not None:
+                    self._apply_label_priority(labeling)
                     layer.setLabeling(labeling)
                     layer.setLabelsEnabled(True)
         except Exception:
