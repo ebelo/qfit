@@ -62,6 +62,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.layer_manager = LayerManager(iface)
         self.cache = self._build_cache()
         self.setupUi(self)
+        self._remove_stale_qfit_layers()
         self._apply_contextual_help()
         self._configure_background_preset_options()
         self._configure_preview_sort_options()
@@ -72,6 +73,31 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._configure_workflow_sections()
         self._refresh_activity_preview()
         self._update_connection_status()
+
+    def _remove_stale_qfit_layers(self):
+        """Remove qfit layers from the project whose source file no longer exists.
+
+        Stale layers from a previous session generate SQLite errors when QGIS
+        tries to query them.  We clean them up on startup before any signals fire.
+        """
+        _QFIT_LAYER_NAMES = {
+            "qfit activities",
+            "qfit activity starts",
+            "qfit activity points",
+            "qfit atlas pages",
+        }
+        project = QgsProject.instance()
+        to_remove = []
+        for layer in project.mapLayers().values():
+            if layer.name() not in _QFIT_LAYER_NAMES:
+                continue
+            source = layer.source()
+            # GeoPackage URI looks like "/path/to/file.gpkg|layername=..."
+            gpkg_path = source.split("|")[0].strip()
+            if gpkg_path and not os.path.exists(gpkg_path):
+                to_remove.append(layer.id())
+        for layer_id in to_remove:
+            project.removeMapLayer(layer_id)
 
     def _apply_contextual_help(self):
         for name in [
