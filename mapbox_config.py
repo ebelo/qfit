@@ -272,10 +272,8 @@ def simplify_mapbox_style_expressions(style_definition: dict[str, object]) -> di
         "water-point-label": 12.0,
         "airport-label": 11.0,
         "settlement-subdivision-label": 8.0,
-        # Use data-driven step on `filterrank` (available in tiles at z8):
-        # filterrank 1 = city/capital → 16pt, 2 = town → 13pt, 3+ → 11pt
-        "settlement-minor-label": 11.0,
-        "settlement-major-label": ["step", ["get", "filterrank"], 16.0, 2, 13.0, 3, 11.0],
+        "settlement-minor-label": 10.0,
+        "settlement-major-label": 14.0,  # all cities same size — Geneva, Lausanne, Bern, Lyon
         "state-label": 13.0,
         "country-label": 16.0,
         "continent-label": 16.0,
