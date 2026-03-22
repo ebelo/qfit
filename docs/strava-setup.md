@@ -38,13 +38,16 @@ A practical default for local testing is:
 Once the refresh token is available:
 
 1. Set the date range and paging limits.
-2. Optionally enable detailed streams and choose a detailed-tracks limit.
-3. Optionally enable **Write activity_points layer from detailed stream geometry** and choose a sampling stride.
+2. Optionally enable detailed streams and choose a detailed-track fetch limit.
+3. Optionally enable **Write sampled activity_points from detailed tracks** and choose how many points to keep.
 4. Click **Fetch from Strava**.
 5. Review the fetched-activity preview and refine filters such as name search, min/max distance, or detailed-only mode if needed.
 6. Choose an output `.gpkg` path.
-7. Click **Write + Load**.
-8. Apply filters and style presets as needed.
+7. Click **Write + load layers**.
+8. Use **Apply current filters** only when you want the already loaded QGIS layers to match the current dock query.
+
+Tip:
+- Hover the most confusing controls or use the small `?` buttons in the dock for inline guidance about detailed-track limits, point sampling, basemap setup, temporal timestamps, and write/load vs filter behavior.
 
 ## Notes
 
