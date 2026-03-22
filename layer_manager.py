@@ -241,12 +241,15 @@ class LayerManager:
                     continue
                 settings.priority = priority
                 if layer_name in _SETTLEMENT_LAYERS:
-                    # Data-defined priority: convert sizerank (1=biggest) to 1–10 scale
+                    # Data-defined priority: convert sizerank (1=biggest) to 1–10 scale.
+                    # The field is named 'sizerank' in Mapbox Streets v8 tiles.
+                    # We invert: sizerank 1 → priority 10, sizerank 10 → priority 1.
+                    # coalesce to 8 so unknown features get mid-range priority.
                     dd_props = settings.dataDefinedProperties()
                     dd_props.setProperty(
                         87,  # QgsPalLayerSettings.Priority
                         QgsProperty.fromExpression(
-                            "greatest(1, least(10, 11 - coalesce(\"sizerank\", 10)))"
+                            "greatest(1, least(10, 10 - coalesce(to_int(\"sizerank\"), 8) + 1))"
                         ),
                     )
                     settings.setDataDefinedProperties(dd_props)
