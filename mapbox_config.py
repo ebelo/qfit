@@ -255,6 +255,11 @@ def simplify_mapbox_style_expressions(style_definition: dict[str, object]) -> di
         "icon-color", "icon-halo-color", "background-color",
         "fill-extrusion-color",
     }
+    # Line width properties: expression values can reach 200–300 at max zoom;
+    # QGIS may pick a large stop and produce QPen::setWidthF warnings.
+    # We extract a z12-representative value and cap to a sane maximum.
+    _WIDTH_PROPS = {"line-width", "line-gap-width", "line-offset"}
+    _MAX_LINE_WIDTH_MM = 3.0  # ~11px at 96 DPI — sane max for cartographic lines
     # Per-layer-id text-size caps to restore cartographic hierarchy.
     # Values chosen to approximate the Mapbox reference hierarchy at z8–12.
     _TEXT_SIZE_CAPS: dict[str, float] = {
@@ -289,6 +294,12 @@ def simplify_mapbox_style_expressions(style_definition: dict[str, object]) -> di
                     fallback = _extract_fallback_color(val)
                     if fallback is not None:
                         props[prop] = fallback
+                elif prop in _WIDTH_PROPS:
+                    width = _extract_midrange_size(val)
+                    if width is not None:
+                        # Convert px → mm (96 DPI) and clamp to sane range
+                        width_mm = width * 25.4 / 96.0
+                        props[prop] = max(0.1, min(width_mm, _MAX_LINE_WIDTH_MM))
                 elif prop == "text-field":
                     props[prop] = _simplify_text_field(val)
                 elif prop == "text-size":
