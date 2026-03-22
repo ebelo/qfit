@@ -520,13 +520,14 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._set_status("Strava fetch failed")
             return
 
-        before, after = self._build_fetch_epoch_range()
+        # Issue #38: fetch all activities — no date filtering at import time.
+        # Date filters are visualization-only (applied post-import to loaded layers).
         self._fetch_task = StravaFetchTask(
             client=client,
             per_page=self.perPageSpinBox.value(),
             max_pages=self.maxPagesSpinBox.value(),
-            before=before,
-            after=after,
+            before=None,
+            after=None,
             use_detailed_streams=self.detailedStreamsCheckBox.isChecked(),
             max_detailed_activities=self.maxDetailedActivitiesSpinBox.value(),
             on_finished=self._on_fetch_finished,
