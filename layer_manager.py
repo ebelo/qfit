@@ -40,6 +40,7 @@ from .mapbox_config import (
     fetch_mapbox_style_definition,
     simplify_mapbox_style_expressions,
     resolve_background_style,
+    snap_web_mercator_bounds_to_native_zoom,
 )
 from .temporal_config import build_temporal_plan, describe_temporal_configuration, is_temporal_mode_enabled
 
@@ -380,8 +381,37 @@ class LayerManager:
         if canvas is None:
             return
 
+        extents = self._snap_extent_to_background_tile_zoom(extents, canvas)
         canvas.setExtent(extents)
         canvas.refresh()
+
+    def _snap_extent_to_background_tile_zoom(self, extents, canvas):
+        if extents is None or extents.isEmpty():
+            return extents
+        if QgsProject.instance().crs().authid() != self.WORKING_CRS:
+            return extents
+        if not self._has_raster_background_layer():
+            return extents
+
+        viewport_width_px = getattr(canvas, "width", lambda: 1024)()
+        viewport_height_px = getattr(canvas, "height", lambda: 768)()
+        snapped_bounds, _ = snap_web_mercator_bounds_to_native_zoom(
+            (
+                extents.xMinimum(),
+                extents.yMinimum(),
+                extents.xMaximum(),
+                extents.yMaximum(),
+            ),
+            viewport_width_px,
+            viewport_height_px,
+        )
+        return QgsRectangle(*snapped_bounds)
+
+    def _has_raster_background_layer(self) -> bool:
+        for layer in QgsProject.instance().mapLayers().values():
+            if layer.name().startswith(BACKGROUND_LAYER_PREFIX) and isinstance(layer, QgsRasterLayer):
+                return True
+        return False
 
     def _apply_simple_line_style(self, layer, basemap_preset_name=None):
         line_style = resolve_basemap_line_style(basemap_preset_name)
