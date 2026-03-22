@@ -61,6 +61,25 @@ class AtlasTocEntry:
 
 
 @dataclass(frozen=True)
+class AtlasProfileSample:
+    page_number: int
+    page_sort_key: str
+    page_name: str
+    page_title: str
+    page_date: str | None
+    source: str | None
+    source_activity_id: str | None
+    activity_type: str
+    profile_point_index: int
+    profile_point_count: int
+    profile_point_ratio: float
+    distance_m: float
+    distance_label: str | None
+    altitude_m: float
+    profile_distance_m: float
+
+
+@dataclass(frozen=True)
 class AtlasPagePlan:
     source: str | None
     source_activity_id: str | None
@@ -297,6 +316,52 @@ def build_atlas_toc_entries(
             )
         )
     return entries
+
+
+def build_atlas_profile_samples(
+    records: Iterable[dict],
+    margin_percent: float = DEFAULT_ATLAS_MARGIN_PERCENT,
+    min_extent_degrees: float = DEFAULT_MIN_EXTENT_DEGREES,
+    target_aspect_ratio: float | None = None,
+    settings: AtlasPageSettings | None = None,
+) -> list[AtlasProfileSample]:
+    record_list = list(records)
+    record_by_sort_key = {atlas_sort_key(record): record for record in record_list}
+    samples = []
+    for plan in build_atlas_page_plans(
+        record_list,
+        margin_percent=margin_percent,
+        min_extent_degrees=min_extent_degrees,
+        target_aspect_ratio=target_aspect_ratio,
+        settings=settings,
+    ):
+        profile_points = extract_profile_points(record_by_sort_key.get(plan.page_sort_key) or {})
+        profile_point_count = len(profile_points)
+        if profile_point_count < 2:
+            continue
+        total_distance_m = profile_points[-1][0]
+        denominator = max(1, profile_point_count - 1)
+        for index, (distance_m, altitude_m) in enumerate(profile_points):
+            samples.append(
+                AtlasProfileSample(
+                    page_number=plan.page_number,
+                    page_sort_key=plan.page_sort_key,
+                    page_name=plan.page_name,
+                    page_title=plan.page_title,
+                    page_date=plan.page_date,
+                    source=plan.source,
+                    source_activity_id=plan.source_activity_id,
+                    activity_type=plan.activity_type,
+                    profile_point_index=index,
+                    profile_point_count=profile_point_count,
+                    profile_point_ratio=float(index) / float(denominator),
+                    distance_m=distance_m,
+                    distance_label=format_distance_label(distance_m),
+                    altitude_m=altitude_m,
+                    profile_distance_m=total_distance_m,
+                )
+            )
+    return samples
 
 
 def build_atlas_document_summary(records: Iterable[dict]) -> AtlasDocumentSummary:
@@ -690,16 +755,16 @@ class AtlasProfileSummary:
     elevation_loss_m: float | None = None
 
 
-def build_profile_summary(record: dict) -> AtlasProfileSummary:
+def extract_profile_points(record: dict) -> list[tuple[float, float]]:
     details_json = record.get("details_json") or {}
     stream_metrics = details_json.get("stream_metrics") if isinstance(details_json, dict) else None
     if not isinstance(stream_metrics, dict):
-        return AtlasProfileSummary()
+        return []
 
     altitude_values = stream_metrics.get("altitude")
     distance_values = stream_metrics.get("distance")
     if not isinstance(altitude_values, list) or not isinstance(distance_values, list):
-        return AtlasProfileSummary()
+        return []
 
     profile_points = []
     for distance_value, altitude_value in zip(distance_values, altitude_values):
@@ -708,7 +773,11 @@ def build_profile_summary(record: dict) -> AtlasProfileSummary:
         if distance_m is None or altitude_m is None:
             continue
         profile_points.append((distance_m, altitude_m))
+    return profile_points
 
+
+def build_profile_summary(record: dict) -> AtlasProfileSummary:
+    profile_points = extract_profile_points(record)
     if len(profile_points) < 2:
         return AtlasProfileSummary()
 

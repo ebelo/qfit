@@ -95,6 +95,7 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertGreaterEqual(result["point_count"], 4)
             self.assertEqual(result["atlas_count"], 2)
             self.assertEqual(result["document_summary_count"], 1)
+            self.assertEqual(result["profile_sample_count"], 8)
             self.assertEqual(result["toc_count"], 2)
 
             document_summary_layer = QgsVectorLayer(
@@ -109,6 +110,17 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertEqual(document_summary_feature["date_range_label"], "2026-03-20 → 2026-03-21")
             self.assertEqual(document_summary_feature["total_distance_label"], "35.3 km")
             self.assertIn("2 activities · 2026-03-20 → 2026-03-21 · 35.3 km · 1h 50m · ↑ 405 m", document_summary_feature["cover_summary"])
+
+            profile_layer = QgsVectorLayer(
+                f"{output_path}|layername=atlas_profile_samples",
+                "qfit atlas profile samples",
+                "ogr",
+            )
+            self.assertTrue(profile_layer.isValid())
+            self.assertEqual(profile_layer.featureCount(), 8)
+            profile_features = list(profile_layer.getFeatures())
+            self.assertEqual(profile_features[0]["distance_label"], "0.0 km")
+            self.assertEqual(profile_features[-1]["profile_point_ratio"], 1.0)
 
             toc_layer = QgsVectorLayer(
                 f"{output_path}|layername=atlas_toc_entries",
