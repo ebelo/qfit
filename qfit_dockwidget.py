@@ -1110,21 +1110,11 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         )
         self._set_status("Generating atlas PDF…")
 
-        # Clear visualization filters on data layers during export so all tracks
-        # are visible in the map regardless of the active activity-type/date filter.
-        # The atlas pages already controls which activities appear via subset_string.
-        data_layers_with_original_subsets = {}
-        for lyr in [self.activities_layer, self.starts_layer, self.points_layer]:
-            if lyr is not None and lyr.isValid() and lyr.subsetString():
-                data_layers_with_original_subsets[lyr] = lyr.subsetString()
-                lyr.setSubsetString("")
-
         self._atlas_export_task = AtlasExportTask(
             atlas_layer=self.atlas_layer,
             output_path=output_path,
             on_finished=self._on_atlas_export_finished,
             subset_string=current_subset,
-            data_layers_restore=data_layers_with_original_subsets,
             restore_tile_mode=pre_export_tile_mode,
             layer_manager=self.layer_manager,
             preset_name=self.backgroundPresetComboBox.currentText(),
