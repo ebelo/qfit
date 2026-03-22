@@ -20,6 +20,7 @@ from .publish_atlas import (
     activity_bounds,
     build_atlas_document_summary,
     build_atlas_page_plans,
+    build_atlas_profile_samples,
     build_atlas_toc_entries,
     normalize_atlas_page_settings,
 )
@@ -165,6 +166,24 @@ DOCUMENT_SUMMARY_FIELDS = [
     ("cover_summary", QVariant.String),
 ]
 
+PROFILE_SAMPLE_FIELDS = [
+    ("page_number", QVariant.Int),
+    ("page_sort_key", QVariant.String),
+    ("page_name", QVariant.String),
+    ("page_title", QVariant.String),
+    ("page_date", QVariant.String),
+    ("source", QVariant.String),
+    ("source_activity_id", QVariant.String),
+    ("activity_type", QVariant.String),
+    ("profile_point_index", QVariant.Int),
+    ("profile_point_count", QVariant.Int),
+    ("profile_point_ratio", QVariant.Double),
+    ("distance_m", QVariant.Double),
+    ("distance_label", QVariant.String),
+    ("altitude_m", QVariant.Double),
+    ("profile_distance_m", QVariant.Double),
+]
+
 TOC_FIELDS = [
     ("page_number", QVariant.Int),
     ("page_number_label", QVariant.String),
@@ -241,6 +260,11 @@ class GeoPackageWriter:
                 "kind": "table",
                 "fields": [name for name, _ in DOCUMENT_SUMMARY_FIELDS],
             },
+            "atlas_profile_samples": {
+                "geometry": None,
+                "kind": "table",
+                "fields": [name for name, _ in PROFILE_SAMPLE_FIELDS],
+            },
             "atlas_toc_entries": {
                 "geometry": None,
                 "kind": "table",
@@ -261,6 +285,7 @@ class GeoPackageWriter:
             self._write_layer(self._build_point_layer([]), "activity_points", overwrite_file=False)
             self._write_layer(self._build_atlas_layer([]), "activity_atlas_pages", overwrite_file=False)
             self._write_layer(self._build_document_summary_layer([]), "atlas_document_summary", overwrite_file=False)
+            self._write_layer(self._build_profile_sample_layer([]), "atlas_profile_samples", overwrite_file=False)
             self._write_layer(self._build_toc_layer([]), "atlas_toc_entries", overwrite_file=False)
 
         repository.ensure_schema()
@@ -272,12 +297,14 @@ class GeoPackageWriter:
         point_layer = self._build_point_layer(records)
         atlas_layer = self._build_atlas_layer(records)
         document_summary_layer = self._build_document_summary_layer(records)
+        profile_sample_layer = self._build_profile_sample_layer(records)
         toc_layer = self._build_toc_layer(records)
         self._write_layer(track_layer, "activity_tracks", overwrite_file=False)
         self._write_layer(start_layer, "activity_starts", overwrite_file=False)
         self._write_layer(point_layer, "activity_points", overwrite_file=False)
         self._write_layer(atlas_layer, "activity_atlas_pages", overwrite_file=False)
         self._write_layer(document_summary_layer, "atlas_document_summary", overwrite_file=False)
+        self._write_layer(profile_sample_layer, "atlas_profile_samples", overwrite_file=False)
         self._write_layer(toc_layer, "atlas_toc_entries", overwrite_file=False)
 
         return {
@@ -289,6 +316,7 @@ class GeoPackageWriter:
             "point_count": point_layer.featureCount(),
             "atlas_count": atlas_layer.featureCount(),
             "document_summary_count": document_summary_layer.featureCount(),
+            "profile_sample_count": profile_sample_layer.featureCount(),
             "toc_count": toc_layer.featureCount(),
             "sync": sync_result,
         }
@@ -524,6 +552,36 @@ class GeoPackageWriter:
             feature["cover_summary"] = summary.cover_summary
             provider.addFeature(feature)
 
+        layer.updateExtents()
+        return layer
+
+    def _build_profile_sample_layer(self, records):
+        layer = QgsVectorLayer("None", "atlas_profile_samples", "memory")
+        provider = layer.dataProvider()
+        provider.addAttributes(self._make_fields(PROFILE_SAMPLE_FIELDS))
+        layer.updateFields()
+
+        features = []
+        for sample in build_atlas_profile_samples(records, settings=self.atlas_page_settings):
+            feature = QgsFeature(layer.fields())
+            feature["page_number"] = sample.page_number
+            feature["page_sort_key"] = sample.page_sort_key
+            feature["page_name"] = sample.page_name
+            feature["page_title"] = sample.page_title
+            feature["page_date"] = sample.page_date
+            feature["source"] = sample.source
+            feature["source_activity_id"] = sample.source_activity_id
+            feature["activity_type"] = sample.activity_type
+            feature["profile_point_index"] = sample.profile_point_index
+            feature["profile_point_count"] = sample.profile_point_count
+            feature["profile_point_ratio"] = sample.profile_point_ratio
+            feature["distance_m"] = sample.distance_m
+            feature["distance_label"] = sample.distance_label
+            feature["altitude_m"] = sample.altitude_m
+            feature["profile_distance_m"] = sample.profile_distance_m
+            features.append(feature)
+
+        provider.addFeatures(features)
         layer.updateExtents()
         return layer
 
