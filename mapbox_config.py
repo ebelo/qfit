@@ -260,9 +260,11 @@ def simplify_mapbox_style_expressions(style_definition: dict[str, object]) -> di
     # We extract a z12-representative value and cap to a sane maximum.
     _WIDTH_PROPS = {"line-width", "line-gap-width", "line-offset"}
     _MAX_LINE_WIDTH_MM = 3.0  # ~11px at 96 DPI — sane max for cartographic lines
-    # Per-layer-id text-size caps to restore cartographic hierarchy.
-    # Values chosen to approximate the Mapbox reference hierarchy at z8–12.
-    _TEXT_SIZE_CAPS: dict[str, float] = {
+    # Per-layer-id text-size overrides to restore cartographic hierarchy.
+    # Settlement layers use data-driven step expressions (QGIS handles ['get', field])
+    # so cities are visually larger than towns within the same layer.
+    # Other layers get flat caps appropriate for their feature type.
+    _TEXT_SIZE_OVERRIDES: dict[str, object] = {
         "natural-point-label": 9.0,   # mountain peaks — small
         "natural-line-label": 10.0,
         "poi-label": 9.0,
@@ -271,10 +273,11 @@ def simplify_mapbox_style_expressions(style_definition: dict[str, object]) -> di
         "waterway-label": 10.0,
         "water-line-label": 11.0,
         "water-point-label": 12.0,
-        "airport-label": 11.0,
-        "settlement-subdivision-label": 10.0,
-        "settlement-minor-label": 11.0,
-        "settlement-major-label": 14.0,  # cities — visually prominent
+        "airport-label": ["step", ["get", "sizerank"], 14.0, 6, 11.0, 9, 9.0],
+        "settlement-subdivision-label": 9.0,
+        # step(symbolrank): rank 1=capital, 6=town, 9=village
+        "settlement-minor-label": ["step", ["get", "symbolrank"], 12.0, 6, 10.0, 9, 9.0],
+        "settlement-major-label": ["step", ["get", "symbolrank"], 16.0, 4, 13.0, 6, 11.0, 8, 9.0],
         "state-label": 13.0,
         "country-label": 16.0,
         "continent-label": 16.0,
@@ -303,10 +306,9 @@ def simplify_mapbox_style_expressions(style_definition: dict[str, object]) -> di
                 elif prop == "text-field":
                     props[prop] = _simplify_text_field(val)
                 elif prop == "text-size":
-                    cap = _TEXT_SIZE_CAPS.get(layer_id)
-                    if cap is not None:
-                        # Use the cap directly — it carries cartographic intent
-                        props[prop] = cap
+                    override = _TEXT_SIZE_OVERRIDES.get(layer_id)
+                    if override is not None:
+                        props[prop] = override
                     else:
                         size = _extract_midrange_size(val)
                         if size is not None:
