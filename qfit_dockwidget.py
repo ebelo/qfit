@@ -1,6 +1,7 @@
 import os
 from datetime import date, datetime, time
 
+from qgis.core import QgsApplication
 from qgis.PyQt import uic
 from qgis.PyQt.QtCore import QDate, QSettings, QStandardPaths, QUrl
 from qgis.PyQt.QtGui import QDesktopServices
@@ -26,6 +27,7 @@ from .mapbox_config import (
     preset_defaults,
     preset_requires_custom_style,
 )
+from .fetch_task import StravaFetchTask
 from .qfit_cache import QfitCache
 from .strava_client import StravaClient, StravaClientError
 from .temporal_config import DEFAULT_TEMPORAL_MODE_LABEL, temporal_mode_labels
@@ -50,6 +52,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.atlas_layer = None
         self.background_layer = None
         self.last_fetch_context = {}
+        self._fetch_task = None
         self.layer_manager = LayerManager(iface)
         self.cache = self._build_cache()
         self.setupUi(self)
@@ -459,45 +462,79 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self.outputPathLineEdit.setText(path)
 
     def on_refresh_clicked(self):
+        # If a fetch is already running, cancel it.
+        if self._fetch_task is not None:
+            self._fetch_task.cancel()
+            self._set_fetch_running(False)
+            self._set_status("Fetch cancelled.")
+            self._fetch_task = None
+            return
+
         self._save_settings()
-        self._set_status("Fetching activities from Strava…")
         try:
             client = self._build_client(require_refresh_token=True)
-            before, after = self._build_fetch_epoch_range()
-            self.activities = client.fetch_activities(
-                per_page=self.perPageSpinBox.value(),
-                max_pages=self.maxPagesSpinBox.value(),
-                before=before,
-                after=after,
-                use_detailed_streams=self.detailedStreamsCheckBox.isChecked(),
-                max_detailed_activities=self.maxDetailedActivitiesSpinBox.value(),
-            )
-            detailed_count = sum(1 for activity in self.activities if activity.geometry_source == "stream")
-            self.last_fetch_context = {
-                "provider": "strava",
-                "before_epoch": before,
-                "after_epoch": after,
-                "fetched_count": len(self.activities),
-                "detailed_count": detailed_count,
-                "stream_stats": client.last_stream_enrichment_stats,
-                "rate_limit": client.last_rate_limit,
-                "is_full_sync": self._is_full_sync_window(before, after),
-            }
-            self._populate_activity_types()
-            self.countLabel.setText(
-                "Activities fetched: {count} (detailed tracks: {detailed})".format(
-                    count=len(self.activities),
-                    detailed=detailed_count,
-                )
-            )
-            self._refresh_activity_preview()
-            self._set_status(self._fetch_status_text(client, len(self.activities), detailed_count))
         except StravaClientError as exc:
             self._show_error("Strava import failed", str(exc))
             self._set_status("Strava fetch failed")
-        except Exception as exc:  # noqa: BLE001
-            self._show_error("Unexpected error", str(exc))
-            self._set_status("Unexpected error during refresh")
+            return
+
+        before, after = self._build_fetch_epoch_range()
+        self._fetch_task = StravaFetchTask(
+            client=client,
+            per_page=self.perPageSpinBox.value(),
+            max_pages=self.maxPagesSpinBox.value(),
+            before=before,
+            after=after,
+            use_detailed_streams=self.detailedStreamsCheckBox.isChecked(),
+            max_detailed_activities=self.maxDetailedActivitiesSpinBox.value(),
+            on_finished=self._on_fetch_finished,
+        )
+        self._set_fetch_running(True)
+        self._set_status("Fetching activities from Strava…")
+        QgsApplication.taskManager().addTask(self._fetch_task)
+
+    def _set_fetch_running(self, running):
+        """Toggle UI state while a background fetch is in progress."""
+        self.refreshButton.setText("Cancel" if running else "Fetch activities")
+        self.exchangeCodeButton.setEnabled(not running)
+        self.openAuthorizeButton.setEnabled(not running)
+
+    def _on_fetch_finished(self, activities, error, cancelled, client):
+        """Called on the main thread when the background fetch completes."""
+        self._fetch_task = None
+        self._set_fetch_running(False)
+
+        if cancelled:
+            self._set_status("Fetch cancelled.")
+            return
+
+        if error is not None:
+            self._show_error("Strava import failed", error)
+            self._set_status("Strava fetch failed")
+            return
+
+        before, after = self._build_fetch_epoch_range()
+        self.activities = activities
+        detailed_count = sum(1 for activity in self.activities if activity.geometry_source == "stream")
+        self.last_fetch_context = {
+            "provider": "strava",
+            "before_epoch": before,
+            "after_epoch": after,
+            "fetched_count": len(self.activities),
+            "detailed_count": detailed_count,
+            "stream_stats": client.last_stream_enrichment_stats,
+            "rate_limit": client.last_rate_limit,
+            "is_full_sync": self._is_full_sync_window(before, after),
+        }
+        self._populate_activity_types()
+        self.countLabel.setText(
+            "Activities fetched: {count} (detailed tracks: {detailed})".format(
+                count=len(self.activities),
+                detailed=detailed_count,
+            )
+        )
+        self._refresh_activity_preview()
+        self._set_status(self._fetch_status_text(client, len(self.activities), detailed_count))
 
     def on_load_clicked(self):
         if not self.activities:
