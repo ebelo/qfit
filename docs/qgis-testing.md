@@ -2,6 +2,23 @@
 
 This document describes a practical local testing flow for qfit inside a desktop QGIS installation.
 
+## 0. Run the scripted headless smoke test first
+
+Before opening desktop QGIS, you can now run a small headless PyQGIS smoke test that exercises the real qfit write/load path.
+
+```bash
+python3 -m unittest tests.test_qgis_smoke -v
+```
+
+What it checks:
+- writing a sample qfit GeoPackage with tracks, starts, points, and atlas pages
+- loading those layers back into a live `QgsProject`
+- enforcing qfit's working CRS (`EPSG:3857`) on the project/canvas
+- wiring temporal playback expressions onto loaded layers
+- keeping the background basemap below qfit activity layers in the layer tree
+
+If PyQGIS is not available in the current Python environment, the smoke test skips itself instead of failing the whole suite.
+
 ## 1. Install the plugin into your QGIS profile
 
 For development, the easiest option is a symlinked install:
