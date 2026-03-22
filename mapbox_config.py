@@ -261,11 +261,8 @@ def simplify_mapbox_style_expressions(style_definition: dict[str, object]) -> di
     _WIDTH_PROPS = {"line-width", "line-gap-width", "line-offset"}
     _MAX_LINE_WIDTH_MM = 3.0  # ~11px at 96 DPI — sane max for cartographic lines
     # Per-layer-id text-size overrides to restore cartographic hierarchy.
-    # Settlement layers use data-driven step expressions (QGIS handles ['get', field])
-    # so cities are visually larger than towns within the same layer.
-    # Other layers get flat caps appropriate for their feature type.
-    _TEXT_SIZE_OVERRIDES: dict[str, object] = {
-        "natural-point-label": 9.0,   # mountain peaks — small
+    _TEXT_SIZE_OVERRIDES: dict[str, float] = {
+        "natural-point-label": 9.0,
         "natural-line-label": 10.0,
         "poi-label": 9.0,
         "road-label": 10.0,
@@ -273,18 +270,44 @@ def simplify_mapbox_style_expressions(style_definition: dict[str, object]) -> di
         "waterway-label": 10.0,
         "water-line-label": 11.0,
         "water-point-label": 12.0,
-        "airport-label": ["step", ["get", "sizerank"], 14.0, 6, 11.0, 9, 9.0],
-        "settlement-subdivision-label": 9.0,
-        # step(symbolrank): rank 1=capital, 6=town, 9=village
-        "settlement-minor-label": ["step", ["get", "symbolrank"], 12.0, 6, 10.0, 9, 9.0],
-        "settlement-major-label": ["step", ["get", "symbolrank"], 16.0, 4, 13.0, 6, 11.0, 8, 9.0],
+        "airport-label": 11.0,
+        "settlement-subdivision-label": 8.0,
+        "settlement-minor-label": 10.0,
+        "settlement-major-label": 13.0,
         "state-label": 13.0,
         "country-label": 16.0,
         "continent-label": 16.0,
     }
 
+    # Settlement layers: add symbolrank/sizerank filters so QGIS only renders
+    # higher-importance places (cities, towns) and suppresses villages/hamlets.
+    # Mapbox ranks: 1=world capital, 2=country capital, 3=regional capital,
+    #               4=large city, 5=city, 6=town, 7=large village, 9=hamlet
+    _SETTLEMENT_RANK_FILTERS: dict[str, int] = {
+        "settlement-major-label": 5,   # cities and above
+        "settlement-minor-label": 7,   # towns and above
+        "settlement-subdivision-label": 999,  # suppress entirely
+    }
+
     for layer in style.get("layers", []):
         layer_id = layer.get("id", "")
+
+        # Suppress or filter over-dense settlement label layers
+        rank_threshold = _SETTLEMENT_RANK_FILTERS.get(layer_id)
+        if rank_threshold is not None:
+            if rank_threshold >= 999:
+                # Completely suppress this layer
+                layer["layout"] = layer.get("layout", {})
+                layer["layout"]["visibility"] = "none"
+            else:
+                # Add a symbolrank filter — only show features with rank <= threshold
+                existing_filter = layer.get("filter")
+                rank_filter = ["<=", ["get", "symbolrank"], rank_threshold]
+                if existing_filter:
+                    layer["filter"] = ["all", existing_filter, rank_filter]
+                else:
+                    layer["filter"] = rank_filter
+
         for section in ("paint", "layout"):
             props = layer.get(section)
             if not isinstance(props, dict):
