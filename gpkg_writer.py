@@ -18,6 +18,7 @@ from qgis.core import (
 from .polyline_utils import decode_polyline
 from .publish_atlas import (
     activity_bounds,
+    build_atlas_cover_highlights,
     build_atlas_document_summary,
     build_atlas_page_plans,
     build_atlas_profile_samples,
@@ -166,6 +167,13 @@ DOCUMENT_SUMMARY_FIELDS = [
     ("cover_summary", QVariant.String),
 ]
 
+COVER_HIGHLIGHT_FIELDS = [
+    ("highlight_order", QVariant.Int),
+    ("highlight_key", QVariant.String),
+    ("highlight_label", QVariant.String),
+    ("highlight_value", QVariant.String),
+]
+
 PROFILE_SAMPLE_FIELDS = [
     ("page_number", QVariant.Int),
     ("page_sort_key", QVariant.String),
@@ -260,6 +268,11 @@ class GeoPackageWriter:
                 "kind": "table",
                 "fields": [name for name, _ in DOCUMENT_SUMMARY_FIELDS],
             },
+            "atlas_cover_highlights": {
+                "geometry": None,
+                "kind": "table",
+                "fields": [name for name, _ in COVER_HIGHLIGHT_FIELDS],
+            },
             "atlas_profile_samples": {
                 "geometry": None,
                 "kind": "table",
@@ -285,6 +298,7 @@ class GeoPackageWriter:
             self._write_layer(self._build_point_layer([]), "activity_points", overwrite_file=False)
             self._write_layer(self._build_atlas_layer([]), "activity_atlas_pages", overwrite_file=False)
             self._write_layer(self._build_document_summary_layer([]), "atlas_document_summary", overwrite_file=False)
+            self._write_layer(self._build_cover_highlight_layer([]), "atlas_cover_highlights", overwrite_file=False)
             self._write_layer(self._build_profile_sample_layer([]), "atlas_profile_samples", overwrite_file=False)
             self._write_layer(self._build_toc_layer([]), "atlas_toc_entries", overwrite_file=False)
 
@@ -297,6 +311,7 @@ class GeoPackageWriter:
         point_layer = self._build_point_layer(records)
         atlas_layer = self._build_atlas_layer(records)
         document_summary_layer = self._build_document_summary_layer(records)
+        cover_highlight_layer = self._build_cover_highlight_layer(records)
         profile_sample_layer = self._build_profile_sample_layer(records)
         toc_layer = self._build_toc_layer(records)
         self._write_layer(track_layer, "activity_tracks", overwrite_file=False)
@@ -304,6 +319,7 @@ class GeoPackageWriter:
         self._write_layer(point_layer, "activity_points", overwrite_file=False)
         self._write_layer(atlas_layer, "activity_atlas_pages", overwrite_file=False)
         self._write_layer(document_summary_layer, "atlas_document_summary", overwrite_file=False)
+        self._write_layer(cover_highlight_layer, "atlas_cover_highlights", overwrite_file=False)
         self._write_layer(profile_sample_layer, "atlas_profile_samples", overwrite_file=False)
         self._write_layer(toc_layer, "atlas_toc_entries", overwrite_file=False)
 
@@ -316,6 +332,7 @@ class GeoPackageWriter:
             "point_count": point_layer.featureCount(),
             "atlas_count": atlas_layer.featureCount(),
             "document_summary_count": document_summary_layer.featureCount(),
+            "cover_highlight_count": cover_highlight_layer.featureCount(),
             "profile_sample_count": profile_sample_layer.featureCount(),
             "toc_count": toc_layer.featureCount(),
             "sync": sync_result,
@@ -552,6 +569,34 @@ class GeoPackageWriter:
             feature["cover_summary"] = summary.cover_summary
             provider.addFeature(feature)
 
+        layer.updateExtents()
+        return layer
+
+    def _build_cover_highlight_layer(self, records):
+        layer = QgsVectorLayer("None", "atlas_cover_highlights", "memory")
+        provider = layer.dataProvider()
+        provider.addAttributes(self._make_fields(COVER_HIGHLIGHT_FIELDS))
+        layer.updateFields()
+
+        atlas_records = []
+        for record in records:
+            bounds, _ = activity_bounds(
+                record,
+                min_extent_degrees=self.atlas_page_settings.min_extent_degrees,
+            )
+            if bounds is not None:
+                atlas_records.append(record)
+
+        features = []
+        for highlight in build_atlas_cover_highlights(atlas_records):
+            feature = QgsFeature(layer.fields())
+            feature["highlight_order"] = highlight.highlight_order
+            feature["highlight_key"] = highlight.highlight_key
+            feature["highlight_label"] = highlight.highlight_label
+            feature["highlight_value"] = highlight.highlight_value
+            features.append(feature)
+
+        provider.addFeatures(features)
         layer.updateExtents()
         return layer
 
