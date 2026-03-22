@@ -47,11 +47,14 @@ PAGE_HEIGHT_MM = 210.0
 MARGIN_MM = 10.0
 HEADER_HEIGHT_MM = 16.0
 FOOTER_HEIGHT_MM = 8.0
+HEADER_GAP_MM = 3.0   # gap between header and map
+FOOTER_GAP_MM = 3.0   # gap between map and footer
 
 MAP_X = MARGIN_MM
-MAP_Y = MARGIN_MM + HEADER_HEIGHT_MM + 4.0
+MAP_Y = MARGIN_MM + HEADER_HEIGHT_MM + HEADER_GAP_MM
 MAP_W = PAGE_WIDTH_MM - 2 * MARGIN_MM
-MAP_H = PAGE_HEIGHT_MM - MARGIN_MM - HEADER_HEIGHT_MM - 4.0 - FOOTER_HEIGHT_MM - MARGIN_MM
+MAP_H = (PAGE_HEIGHT_MM - MARGIN_MM - HEADER_HEIGHT_MM - HEADER_GAP_MM
+         - FOOTER_GAP_MM - FOOTER_HEIGHT_MM - MARGIN_MM)
 
 
 def _mm(layout, value):
@@ -193,7 +196,7 @@ def build_atlas_layout(
         )
 
     # -- Footer: page number -----------------------------------------------
-    footer_y = PAGE_HEIGHT_MM - MARGIN_MM - FOOTER_HEIGHT_MM
+    footer_y = PAGE_HEIGHT_MM - MARGIN_MM - FOOTER_HEIGHT_MM - FOOTER_GAP_MM
     _add_label(
         layout,
         "[% @atlas_featurenumber %] / [% @atlas_totalfeatures %]",
