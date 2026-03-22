@@ -19,6 +19,8 @@ from qfit.publish_atlas import (
     format_distance_label,
     format_duration_label,
     format_elevation_label,
+    format_pace_label,
+    format_speed_label,
     lonlat_bounds_to_web_mercator,
     lonlat_to_web_mercator,
     normalize_atlas_page_settings,
@@ -38,6 +40,8 @@ class PublishAtlasTests(unittest.TestCase):
                 "start_date_local": "2026-03-18T08:10:00+01:00",
                 "distance_m": 42500,
                 "moving_time_s": 7200,
+                "total_elevation_gain_m": 640,
+                "average_speed_mps": 5.9027777778,
                 "geometry_source": "stream",
                 "geometry_points": [(46.52, 6.62), (46.55, 6.7), (46.57, 6.74)],
             }
@@ -54,6 +58,9 @@ class PublishAtlasTests(unittest.TestCase):
         self.assertEqual(plan.page_date, "2026-03-18")
         self.assertEqual(plan.page_distance_label, "42.5 km")
         self.assertEqual(plan.page_duration_label, "2h 00m")
+        self.assertEqual(plan.page_average_speed_label, "21.3 km/h")
+        self.assertIsNone(plan.page_average_pace_label)
+        self.assertEqual(plan.page_elevation_gain_label, "640 m")
         self.assertFalse(plan.profile_available)
         self.assertEqual(plan.profile_point_count, 0)
         self.assertIsNone(plan.profile_distance_m)
@@ -136,6 +143,25 @@ class PublishAtlasTests(unittest.TestCase):
         self.assertAlmostEqual(plan.extent_width_m / plan.extent_height_m, 2.0, places=3)
         self.assertGreater(plan.extent_width_m, 0)
         self.assertGreater(plan.extent_height_m, 0)
+
+    def test_build_atlas_page_plans_formats_run_pace_labels_for_layouts(self):
+        records = [
+            {
+                "name": "Lunch Run",
+                "activity_type": "Run",
+                "distance_m": 10100,
+                "moving_time_s": 3000,
+                "average_speed_mps": 3.3666666667,
+                "total_elevation_gain_m": 85,
+                "geometry_points": [(46.5000, 6.6000), (46.5100, 6.6200)],
+            }
+        ]
+
+        plan = build_atlas_page_plans(records)[0]
+
+        self.assertEqual(plan.page_average_speed_label, "12.1 km/h")
+        self.assertEqual(plan.page_average_pace_label, "4m 57s/km")
+        self.assertEqual(plan.page_elevation_gain_label, "85 m")
 
     def test_build_atlas_page_plans_includes_route_profile_metadata_when_stream_metrics_are_available(self):
         records = [
@@ -248,6 +274,9 @@ class PublishAtlasTests(unittest.TestCase):
     def test_profile_label_helpers_round_values_for_layout_text(self):
         self.assertEqual(format_elevation_label(123.6), "124 m")
         self.assertEqual(format_altitude_range_label(501.2, 559.8), "501–560 m")
+        self.assertEqual(format_speed_label(5.0), "18.0 km/h")
+        self.assertEqual(format_pace_label(10000, 3000, activity_type="Run"), "5m 00s/km")
+        self.assertIsNone(format_pace_label(10000, 3000, activity_type="Ride"))
 
     def test_atlas_sort_key_normalizes_missing_values(self):
         key = atlas_sort_key({"name": "  Lunch   Walk  "})

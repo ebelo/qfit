@@ -35,6 +35,8 @@ class AtlasPagePlan:
     start_date: str | None
     distance_m: float | None
     moving_time_s: int | None
+    total_elevation_gain_m: float | None
+    average_speed_mps: float | None
     geometry_source: str
     page_number: int
     page_sort_key: str
@@ -44,6 +46,9 @@ class AtlasPagePlan:
     page_date: str | None
     page_distance_label: str | None
     page_duration_label: str | None
+    page_average_speed_label: str | None
+    page_average_pace_label: str | None
+    page_elevation_gain_label: str | None
     profile_available: bool
     profile_point_count: int
     profile_distance_m: float | None
@@ -153,6 +158,8 @@ def build_atlas_page_plans(
                 start_date=record.get("start_date"),
                 distance_m=_safe_float(record.get("distance_m")),
                 moving_time_s=_safe_int(record.get("moving_time_s")),
+                total_elevation_gain_m=_safe_float(record.get("total_elevation_gain_m")),
+                average_speed_mps=_safe_float(record.get("average_speed_mps")),
                 geometry_source=geometry_source,
                 page_number=page_number,
                 page_sort_key=sort_key,
@@ -162,6 +169,13 @@ def build_atlas_page_plans(
                 page_date=format_activity_date(record.get("start_date_local") or record.get("start_date")),
                 page_distance_label=format_distance_label(record.get("distance_m")),
                 page_duration_label=format_duration_label(record.get("moving_time_s")),
+                page_average_speed_label=format_speed_label(record.get("average_speed_mps")),
+                page_average_pace_label=format_pace_label(
+                    record.get("distance_m"),
+                    record.get("moving_time_s"),
+                    activity_type=record.get("activity_type"),
+                ),
+                page_elevation_gain_label=format_elevation_label(record.get("total_elevation_gain_m")),
                 profile_available=profile_summary.available,
                 profile_point_count=profile_summary.point_count,
                 profile_distance_m=profile_summary.distance_m,
@@ -474,6 +488,31 @@ def format_duration_label(value) -> str | None:
     return format_duration(moving_time_s)
 
 
+def format_speed_label(value) -> str | None:
+    speed_mps = _safe_float(value)
+    if speed_mps is None or speed_mps <= 0:
+        return None
+    return f"{speed_mps * 3.6:.1f} km/h"
+
+
+def format_pace_label(distance_value, moving_time_value, activity_type: str | None = None) -> str | None:
+    if not _activity_type_prefers_pace(activity_type):
+        return None
+
+    distance_m = _safe_float(distance_value)
+    moving_time_s = _safe_int(moving_time_value)
+    if distance_m is None or moving_time_s is None or distance_m <= 0 or moving_time_s <= 0:
+        return None
+
+    pace_seconds = moving_time_s / (distance_m / 1000.0)
+    pace_minutes = int(pace_seconds // 60)
+    pace_remainder_seconds = int(round(pace_seconds - (pace_minutes * 60)))
+    if pace_remainder_seconds == 60:
+        pace_minutes += 1
+        pace_remainder_seconds = 0
+    return f"{pace_minutes}m {pace_remainder_seconds:02d}s/km"
+
+
 def format_elevation_label(value) -> str | None:
     elevation_m = _safe_float(value)
     if elevation_m is None:
@@ -487,6 +526,11 @@ def format_altitude_range_label(min_value, max_value) -> str | None:
     if min_altitude_m is None or max_altitude_m is None:
         return None
     return f"{round(min_altitude_m):.0f}–{round(max_altitude_m):.0f} m"
+
+
+def _activity_type_prefers_pace(activity_type: str | None) -> bool:
+    normalized = normalize_sort_text(activity_type or "")
+    return any(token in normalized for token in ("run", "walk", "hike"))
 
 
 def _safe_float(value) -> float | None:

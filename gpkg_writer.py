@@ -111,6 +111,9 @@ ATLAS_FIELDS = [
     ("page_date", QVariant.String),
     ("page_distance_label", QVariant.String),
     ("page_duration_label", QVariant.String),
+    ("page_average_speed_label", QVariant.String),
+    ("page_average_pace_label", QVariant.String),
+    ("page_elevation_gain_label", QVariant.String),
     ("profile_available", QVariant.Int),
     ("profile_point_count", QVariant.Int),
     ("profile_distance_m", QVariant.Double),
@@ -386,6 +389,9 @@ class GeoPackageWriter:
             feature["page_date"] = plan.page_date
             feature["page_distance_label"] = plan.page_distance_label
             feature["page_duration_label"] = plan.page_duration_label
+            feature["page_average_speed_label"] = plan.page_average_speed_label
+            feature["page_average_pace_label"] = plan.page_average_pace_label
+            feature["page_elevation_gain_label"] = plan.page_elevation_gain_label
             feature["profile_available"] = int(plan.profile_available)
             feature["profile_point_count"] = plan.profile_point_count
             feature["profile_distance_m"] = plan.profile_distance_m
