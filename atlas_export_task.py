@@ -356,6 +356,23 @@ class AtlasExportTask(QgsTask):
             if output_dir and not os.path.exists(output_dir):
                 os.makedirs(output_dir, exist_ok=True)
 
+            # Collect layers with source_activity_id field for per-page filtering.
+            # These are the track/start/point layers that should show only the
+            # current page's activity, not the full unfiltered dataset.
+            filterable_layers: list[tuple] = []
+            if map_item is not None:
+                for layer in map_item.layers():
+                    try:
+                        layer_fields = layer.fields()
+                        sid_idx = layer_fields.indexOf("source_activity_id")
+                        if sid_idx >= 0:
+                            filterable_layers.append((layer, layer.subsetString()))
+                    except Exception:  # noqa: BLE001
+                        pass
+
+            # Field index for source_activity_id in the atlas layer.
+            sid_atlas_idx = fields.indexOf("source_activity_id")
+
             # Walk the atlas features in order, setting the map extent explicitly
             # from the stored center/size fields so QGIS atlas auto-fit cannot
             # distort or shift the precomputed page extents.
@@ -369,9 +386,22 @@ class AtlasExportTask(QgsTask):
                     if self.isCanceled():
                         return False
 
+                    feat = atlas.layout().reportContext().feature()
+
+                    # Filter each data layer to show only this page's activity.
+                    if filterable_layers and sid_atlas_idx >= 0:
+                        sid_value = feat.attribute(sid_atlas_idx)
+                        if sid_value is not None and sid_value != "":
+                            safe_sid = str(sid_value).replace("'", "''")
+                            page_filter = f"\"source_activity_id\" = '{safe_sid}'"
+                            for layer, _original_subset in filterable_layers:
+                                try:
+                                    layer.setSubsetString(page_filter)
+                                except Exception:  # noqa: BLE001
+                                    pass
+
                     # Apply the stored precomputed extent to the map item.
                     if map_item is not None and has_stored_extents:
-                        feat = atlas.layout().reportContext().feature()
                         cx = feat.attribute(cx_idx)
                         cy = feat.attribute(cy_idx)
                         ew = feat.attribute(ew_idx)
@@ -401,6 +431,12 @@ class AtlasExportTask(QgsTask):
                     page_index += 1
                     ok = atlas.next()
             finally:
+                # Restore original subset strings on all filtered layers.
+                for layer, original_subset in filterable_layers:
+                    try:
+                        layer.setSubsetString(original_subset)
+                    except Exception:  # noqa: BLE001
+                        pass
                 atlas.endRender()
 
             if not page_paths:
