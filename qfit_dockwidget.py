@@ -239,6 +239,12 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             preview_sort_index = self.previewSortComboBox.findText(DEFAULT_SORT_LABEL)
         self.previewSortComboBox.setCurrentIndex(max(preview_sort_index, 0))
 
+        style_preset = self._setting_value(settings, "style_preset", "By activity type")
+        style_preset_index = self.stylePresetComboBox.findText(style_preset)
+        if style_preset_index < 0:
+            style_preset_index = self.stylePresetComboBox.findText("By activity type")
+        self.stylePresetComboBox.setCurrentIndex(max(style_preset_index, 0))
+
     def _save_settings(self):
         settings = QSettings()
         settings.setValue(f"{self.SETTINGS_PREFIX}/client_id", self.clientIdLineEdit.text().strip())
@@ -276,6 +282,10 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         settings.setValue(
             f"{self.SETTINGS_PREFIX}/preview_sort",
             self.previewSortComboBox.currentText(),
+        )
+        settings.setValue(
+            f"{self.SETTINGS_PREFIX}/style_preset",
+            self.stylePresetComboBox.currentText(),
         )
         settings.setValue(
             f"{self.SETTINGS_PREFIX}/temporal_mode",
