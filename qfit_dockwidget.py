@@ -22,6 +22,9 @@ from .gpkg_writer import GeoPackageWriter
 from .layer_manager import LayerManager
 from .mapbox_config import (
     DEFAULT_BACKGROUND_PRESET,
+    TILE_MODE_RASTER,
+    TILE_MODE_VECTOR,
+    TILE_MODES,
     MapboxConfigError,
     background_preset_names,
     preset_defaults,
@@ -117,6 +120,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.backgroundPresetComboBox.clear()
         for preset_name in background_preset_names():
             self.backgroundPresetComboBox.addItem(preset_name)
+        self.tileModeComboBox.clear()
+        for mode in TILE_MODES:
+            self.tileModeComboBox.addItem(mode)
 
     def _configure_preview_sort_options(self):
         self.previewSortComboBox.clear()
@@ -246,6 +252,10 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.backgroundPresetComboBox.setCurrentIndex(max(preset_index, 0))
         self._sync_background_style_fields(self.backgroundPresetComboBox.currentText(), force=False)
 
+        tile_mode = self._setting_value(settings, "tile_mode", TILE_MODE_RASTER)
+        tile_mode_index = self.tileModeComboBox.findText(tile_mode)
+        self.tileModeComboBox.setCurrentIndex(max(tile_mode_index, 0))
+
         preview_sort = self._setting_value(settings, "preview_sort", DEFAULT_SORT_LABEL)
         preview_sort_index = self.previewSortComboBox.findText(preview_sort)
         if preview_sort_index < 0:
@@ -325,6 +335,10 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self.mapboxStyleIdLineEdit.text().strip(),
         )
         settings.setValue(
+            f"{self.SETTINGS_PREFIX}/tile_mode",
+            self.tileModeComboBox.currentText(),
+        )
+        settings.setValue(
             f"{self.SETTINGS_PREFIX}/atlas_margin_percent",
             self.atlasMarginPercentSpinBox.value(),
         )
@@ -378,6 +392,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 access_token=self.mapboxAccessTokenLineEdit.text().strip(),
                 style_owner=self.mapboxStyleOwnerLineEdit.text().strip(),
                 style_id=self.mapboxStyleIdLineEdit.text().strip(),
+                tile_mode=self.tileModeComboBox.currentText(),
             )
         except (MapboxConfigError, RuntimeError) as exc:
             self._show_error("Background map failed", str(exc))
@@ -683,6 +698,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 access_token=self.mapboxAccessTokenLineEdit.text().strip(),
                 style_owner=self.mapboxStyleOwnerLineEdit.text().strip(),
                 style_id=self.mapboxStyleIdLineEdit.text().strip(),
+                tile_mode=self.tileModeComboBox.currentText(),
             )
         except (MapboxConfigError, RuntimeError) as exc:
             self._show_error("Background map failed", str(exc))
