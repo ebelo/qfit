@@ -108,6 +108,51 @@ class StravaClientTests(unittest.TestCase):
         self.assertEqual(client._remaining(200, 50), 150)
         self.assertIsNone(client._remaining(None, 50))
 
+    def test_fetch_activities_paginates_until_last_page(self):
+        """max_pages=0 should fetch all pages, stopping when a short page is received."""
+        client = StravaClient(client_id="123", client_secret="abc", refresh_token="tok")
+
+        # Simulate: page 1 → full (200), page 2 → partial (3) → done
+        page_responses = [
+            [{"id": i, "name": f"Activity {i}"} for i in range(200)],
+            [{"id": 300, "name": "Last activity"}, {"id": 301, "name": "Also last"}, {"id": 302, "name": "End"}],
+        ]
+        call_count = [0]
+
+        def fake_request_json(request):
+            idx = call_count[0]
+            call_count[0] += 1
+            if idx == 0:
+                # access token refresh
+                return {"access_token": "fake_token"}
+            return page_responses[idx - 1]
+
+        client._request_json = fake_request_json
+
+        activities = client.fetch_activities(per_page=200, max_pages=0)
+        self.assertEqual(len(activities), 203)
+
+    def test_fetch_activities_respects_max_pages_limit(self):
+        """max_pages=1 should stop after the first page even if it is full."""
+        client = StravaClient(client_id="123", client_secret="abc", refresh_token="tok")
+
+        call_count = [0]
+
+        def fake_request_json(request):
+            idx = call_count[0]
+            call_count[0] += 1
+            if idx == 0:
+                return {"access_token": "fake_token"}
+            # Return a full page every time
+            return [{"id": i, "name": f"Activity {i}"} for i in range(50)]
+
+        client._request_json = fake_request_json
+
+        activities = client.fetch_activities(per_page=50, max_pages=1)
+        self.assertEqual(len(activities), 50)
+        # Only 2 calls: token refresh + 1 page
+        self.assertEqual(call_count[0], 2)
+
 
 if __name__ == "__main__":
     unittest.main()
