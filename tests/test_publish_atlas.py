@@ -7,14 +7,17 @@ from qfit.publish_atlas import (
     MIN_ALLOWED_ATLAS_TARGET_ASPECT_RATIO,
     WEB_MERCATOR_EPSG,
     activity_bounds,
-    build_profile_summary,
     atlas_sort_key,
+    build_atlas_document_summary,
     build_atlas_page_plans,
+    build_cover_summary,
+    build_date_range_label,
     build_page_name,
     build_page_profile_summary,
     build_page_stats_summary,
     build_page_subtitle,
     build_page_toc_label,
+    build_profile_summary,
     ensure_minimum_extent,
     expand_bounds,
     fit_bounds_to_target_aspect_ratio,
@@ -218,6 +221,57 @@ class PublishAtlasTests(unittest.TestCase):
         self.assertEqual(summary.point_count, 0)
         self.assertIsNone(summary.distance_m)
 
+    def test_build_atlas_document_summary_aggregates_cover_ready_metrics(self):
+        summary = build_atlas_document_summary(
+            [
+                {
+                    "activity_type": "Ride",
+                    "start_date_local": "2026-03-18T08:10:00+01:00",
+                    "distance_m": 42500,
+                    "moving_time_s": 7200,
+                    "total_elevation_gain_m": 640,
+                },
+                {
+                    "activity_type": "Run",
+                    "start_date_local": "2026-03-19T12:00:00+01:00",
+                    "distance_m": 10100,
+                    "moving_time_s": 3000,
+                    "total_elevation_gain_m": 85,
+                },
+                {
+                    "activity_type": "Ride",
+                    "start_date_local": "2026-03-20T18:45:00+01:00",
+                    "distance_m": 30000,
+                    "moving_time_s": 5400,
+                    "total_elevation_gain_m": 420,
+                },
+            ]
+        )
+
+        self.assertEqual(summary.activity_count, 3)
+        self.assertEqual(summary.activity_date_start, "2026-03-18")
+        self.assertEqual(summary.activity_date_end, "2026-03-20")
+        self.assertEqual(summary.date_range_label, "2026-03-18 → 2026-03-20")
+        self.assertEqual(summary.total_distance_m, 82600)
+        self.assertEqual(summary.total_distance_label, "82.6 km")
+        self.assertEqual(summary.total_moving_time_s, 15600)
+        self.assertEqual(summary.total_duration_label, "4h 20m")
+        self.assertEqual(summary.total_elevation_gain_m, 1145)
+        self.assertEqual(summary.total_elevation_gain_label, "1145 m")
+        self.assertEqual(summary.activity_types_label, "Ride, Run")
+        self.assertEqual(
+            summary.cover_summary,
+            "3 activities · 2026-03-18 → 2026-03-20 · 82.6 km · 4h 20m · ↑ 1145 m · Ride, Run",
+        )
+
+    def test_build_cover_summary_handles_minimal_inputs(self):
+        summary = build_atlas_document_summary([{}])
+
+        self.assertEqual(summary.activity_count, 1)
+        self.assertEqual(summary.cover_summary, "1 activity")
+        self.assertEqual(build_date_range_label("2026-03-18", "2026-03-18"), "2026-03-18")
+        self.assertEqual(build_date_range_label("2026-03-18", "2026-03-20"), "2026-03-18 → 2026-03-20")
+        self.assertIsNone(build_cover_summary(build_atlas_document_summary([])))
 
     def test_normalize_atlas_page_settings_clamps_invalid_values(self):
         settings = normalize_atlas_page_settings(margin_percent=-5, min_extent_degrees=0, target_aspect_ratio=0.05)

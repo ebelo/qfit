@@ -26,6 +26,7 @@ The current implementation supports:
 - adding Web Mercator-ready atlas metadata (`center_x_3857`, `center_y_3857`, `extent_width_m`, `extent_height_m`) for layout work in EPSG:3857
 - precomputing route-profile-ready atlas metadata (`profile_available`, sampled profile distance, min/max elevation, relief, gain/loss, and layout-friendly labels) when detailed stream metrics are available
 - exposing publish-friendly detail labels on atlas pages (`page_toc_label`, `page_average_speed_label`, `page_average_pace_label`, `page_elevation_gain_label`, `page_stats_summary`, `page_profile_summary`) so layouts can show activity stats with less expression boilerplate
+- computing atlas-document / cover-ready summary helpers (activity count, date span, totals, activity types, and a one-line `cover_summary`) for the next publish/layout automation steps
 - loading those layers directly into QGIS with EPSG:3857 as the working project/map CRS
 - adding an optional Mapbox background layer through saved plugin settings, with an explicit background-map Load button and basemap ordering kept below the activity layers
 - filtering by activity type, activity-name search, date range, minimum/maximum distance, and detailed-stream availability
