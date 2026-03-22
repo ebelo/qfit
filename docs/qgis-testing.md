@@ -66,17 +66,19 @@ After loading:
 ## 4. Connect Strava
 
 Inside the dock:
-1. enter `client_id` and `client_secret`
+1. in **Connect**, enter `client_id` and `client_secret`
 2. use the built-in auth helper if you still need the refresh token
-3. set the date window and paging limits
-4. optionally enable detailed streams
-5. optionally enable the `activity_points` layer
-6. fetch activities
-7. review the fetched-activity preview and query summary
-8. write and load the output GeoPackage
-9. optionally switch **Temporal timestamps** to `Local activity time` or `UTC time`
-10. click **Apply current filters** to wire the loaded layers into the QGIS temporal controller
-11. hover the contextual-help tooltips / `?` buttons if you want reminders about detailed-track limits, point sampling, basemap setup, publish framing, or write/load vs filter behavior
+3. in **Fetch activities**, set the date window, paging limits, and any filters you want to preview
+4. optionally enable detailed streams; qfit only reveals the detailed-track limit when that mode is on
+5. click **Fetch activities**
+6. review the fetched-activity preview and query summary
+7. in **Store data**, choose an output `.gpkg` and optionally enable sampled `activity_points`
+8. click **Store and load layers**
+9. in **Visualize**, optionally configure a basemap and click **Load basemap**
+10. in **Analyze**, optionally switch **Temporal timestamps** to `Local activity time` or `UTC time`
+11. click **Apply current filters to loaded layers** if you want the loaded layers and tables to follow the current dock query
+12. expand **Publish / atlas** only when you want to tune atlas framing controls
+13. hover the contextual-help tooltips / `?` buttons if you want reminders about detailed-track limits, point sampling, basemap setup, publish framing, or store/load vs filter behavior
 
 ## 5. What to expect in QGIS
 
