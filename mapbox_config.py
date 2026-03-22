@@ -113,11 +113,75 @@ def build_mapbox_tiles_url(
     )
 
 
+TILE_MODE_RASTER = "Raster"
+TILE_MODE_VECTOR = "Vector"
+TILE_MODES = [TILE_MODE_RASTER, TILE_MODE_VECTOR]
+
+
 def build_xyz_layer_uri(access_token: str, style_owner: str, style_id: str) -> str:
     url = build_mapbox_tiles_url(access_token, style_owner, style_id)
     return "type=xyz&url={url}&zmin=0&zmax=22&tilePixelRatio={tile_pixel_ratio}".format(
         url=quote(url, safe=":/?{}=%@"),
         tile_pixel_ratio=DEFAULT_MAPBOX_TILE_PIXEL_RATIO,
+    )
+
+
+def build_mapbox_vector_tiles_url(
+    access_token: str,
+    style_owner: str,
+    style_id: str,
+) -> str:
+    """Return the Mapbox vector tile endpoint URL for a given style."""
+    token = access_token.strip()
+    owner = style_owner.strip()
+    resolved_style_id = style_id.strip()
+
+    if not token:
+        raise MapboxConfigError("Enter a Mapbox access token to load the selected background map.")
+    if not owner or not resolved_style_id:
+        raise MapboxConfigError("Enter a Mapbox style owner and style ID first.")
+
+    return (
+        "https://api.mapbox.com/v4/{owner}.{style_id}/{{z}}/{{x}}/{{y}}.mvt"
+        "?access_token={token}"
+    ).format(
+        owner=quote(owner, safe=""),
+        style_id=quote(resolved_style_id, safe=""),
+        token=quote(token, safe=""),
+    )
+
+
+def build_mapbox_style_json_url(
+    access_token: str,
+    style_owner: str,
+    style_id: str,
+) -> str:
+    """Return the Mapbox style JSON URL for use with QGIS vector tile styling."""
+    token = access_token.strip()
+    owner = style_owner.strip()
+    resolved_style_id = style_id.strip()
+
+    if not token:
+        raise MapboxConfigError("Enter a Mapbox access token to load the selected background map.")
+    if not owner or not resolved_style_id:
+        raise MapboxConfigError("Enter a Mapbox style owner and style ID first.")
+
+    return (
+        "https://api.mapbox.com/styles/v1/{owner}/{style_id}?access_token={token}"
+    ).format(
+        owner=quote(owner, safe=""),
+        style_id=quote(resolved_style_id, safe=""),
+        token=quote(token, safe=""),
+    )
+
+
+def build_vector_tile_layer_uri(access_token: str, style_owner: str, style_id: str) -> str:
+    """Return a QGIS-compatible vector tile layer URI for a Mapbox style."""
+    tiles_url = build_mapbox_vector_tiles_url(access_token, style_owner, style_id)
+    style_url = build_mapbox_style_json_url(access_token, style_owner, style_id)
+    return "type=xyz&url={url}&styleUrl={style_url}&zmin=0&zmax=22".format(
+        url=quote(tiles_url, safe=":/?{}=%@"),
+        style_url=quote(style_url, safe=":/?{}=%@"),
     )
 
 

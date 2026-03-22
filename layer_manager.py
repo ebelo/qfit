@@ -17,6 +17,7 @@ from qgis.core import (
     QgsStyle,
     QgsVectorLayer,
     QgsVectorLayerTemporalProperties,
+    QgsVectorTileLayer,
 )
 
 from .activity_query import ActivityQuery, build_subset_string
@@ -28,7 +29,10 @@ from .map_style import (
 )
 from .mapbox_config import (
     BACKGROUND_LAYER_PREFIX,
+    TILE_MODE_RASTER,
+    TILE_MODE_VECTOR,
     build_background_layer_name,
+    build_vector_tile_layer_uri,
     build_xyz_layer_uri,
     resolve_background_style,
 )
@@ -54,17 +58,29 @@ class LayerManager:
         self._zoom_to_layers([activities_layer, starts_layer, points_layer, atlas_layer])
         return activities_layer, starts_layer, points_layer, atlas_layer
 
-    def ensure_background_layer(self, enabled, preset_name, access_token, style_owner="", style_id=""):
+    def ensure_background_layer(self, enabled, preset_name, access_token, style_owner="", style_id="", tile_mode=TILE_MODE_RASTER):
         if not enabled:
             self._remove_background_layers()
             return None
 
         resolved_owner, resolved_style_id = resolve_background_style(preset_name, style_owner, style_id)
-        uri = build_xyz_layer_uri(access_token, resolved_owner, resolved_style_id)
         display_name = build_background_layer_name(preset_name, resolved_owner, resolved_style_id)
-        layer = QgsRasterLayer(uri, display_name, "wms")
-        if not layer.isValid():
-            raise RuntimeError("Could not load the selected Mapbox background layer into QGIS.")
+
+        layer = None
+        if tile_mode == TILE_MODE_VECTOR:
+            try:
+                uri = build_vector_tile_layer_uri(access_token, resolved_owner, resolved_style_id)
+                layer = QgsVectorTileLayer(uri, display_name)
+                if not layer.isValid():
+                    layer = None
+            except Exception:
+                layer = None
+
+        if layer is None:
+            uri = build_xyz_layer_uri(access_token, resolved_owner, resolved_style_id)
+            layer = QgsRasterLayer(uri, display_name, "wms")
+            if not layer.isValid():
+                raise RuntimeError("Could not load the selected Mapbox background layer into QGIS.")
 
         self._remove_background_layers()
         project = QgsProject.instance()
@@ -175,10 +191,28 @@ class LayerManager:
         if not working_crs.isValid():
             return
 
-        project.setCrs(working_crs)
         canvas = self.iface.mapCanvas() if self.iface is not None else None
+
+        # Preserve the current canvas extent (in map units) before changing CRS
+        # so that reprojection doesn't reset the view to the world extent.
+        current_extent = canvas.extent() if canvas is not None else None
+        current_crs = project.crs()
+
+        project.setCrs(working_crs)
         if canvas is not None:
             canvas.setDestinationCrs(working_crs)
+            # Re-apply the previous extent if the project already had a valid CRS
+            # and it wasn't the default empty/world extent (i.e. user had panned/zoomed).
+            if current_extent is not None and current_crs.isValid() and not current_extent.isEmpty():
+                from qgis.core import QgsCoordinateTransform  # noqa: PLC0415
+                transform = QgsCoordinateTransform(current_crs, working_crs, project)
+                try:
+                    transformed = transform.transformBoundingBox(current_extent)
+                    if not transformed.isEmpty():
+                        canvas.setExtent(transformed)
+                        canvas.refresh()
+                except Exception:
+                    pass
 
     def _move_background_layers_to_bottom(self):
         root = QgsProject.instance().layerTreeRoot()

@@ -6,9 +6,15 @@ from mapbox_config import (  # noqa: E402
     DEFAULT_MAPBOX_RETINA,
     DEFAULT_MAPBOX_TILE_PIXEL_RATIO,
     DEFAULT_MAPBOX_TILE_SIZE,
+    TILE_MODE_RASTER,
+    TILE_MODE_VECTOR,
+    TILE_MODES,
     MapboxConfigError,
     build_background_layer_name,
+    build_mapbox_style_json_url,
     build_mapbox_tiles_url,
+    build_mapbox_vector_tiles_url,
+    build_vector_tile_layer_uri,
     build_xyz_layer_uri,
     preset_defaults,
     preset_requires_custom_style,
@@ -73,6 +79,67 @@ class MapboxConfigTests(unittest.TestCase):
             build_background_layer_name("Custom", "ebelo", "winter-wonderland"),
             "qfit background — ebelo/winter-wonderland",
         )
+
+
+    def test_vector_tile_url_uses_v4_endpoint(self):
+        url = build_mapbox_vector_tiles_url("pk.token", "mapbox", "outdoors-v12")
+        self.assertIn("api.mapbox.com/v4/mapbox.outdoors-v12", url)
+        self.assertIn("{z}/{x}/{y}.mvt", url)
+        self.assertIn("access_token=pk.token", url)
+
+    def test_style_json_url_uses_styles_endpoint(self):
+        url = build_mapbox_style_json_url("pk.token", "mapbox", "outdoors-v12")
+        self.assertIn("api.mapbox.com/styles/v1/mapbox/outdoors-v12", url)
+        self.assertIn("access_token=pk.token", url)
+
+    def test_vector_tile_layer_uri_contains_both_urls(self):
+        uri = build_vector_tile_layer_uri("pk.token", "mapbox", "outdoors-v12")
+        self.assertTrue(uri.startswith("type=xyz&url="))
+        self.assertIn("styleUrl=", uri)
+        self.assertIn("zmin=0&zmax=22", uri)
+
+    def test_tile_modes_constants_are_defined(self):
+        self.assertEqual(TILE_MODE_RASTER, "Raster")
+        self.assertEqual(TILE_MODE_VECTOR, "Vector")
+        self.assertIn(TILE_MODE_RASTER, TILE_MODES)
+        self.assertIn(TILE_MODE_VECTOR, TILE_MODES)
+
+    def test_vector_tile_url_raises_on_missing_token(self):
+        with self.assertRaises(MapboxConfigError):
+            build_mapbox_vector_tiles_url("", "mapbox", "outdoors-v12")
+
+    def test_style_json_url_raises_on_missing_style_id(self):
+        with self.assertRaises(MapboxConfigError):
+            build_mapbox_style_json_url("pk.token", "mapbox", "")
+
+
+class VectorTileConfigTests(unittest.TestCase):
+    def test_tile_modes_contains_raster_and_vector(self):
+        self.assertIn(TILE_MODE_RASTER, TILE_MODES)
+        self.assertIn(TILE_MODE_VECTOR, TILE_MODES)
+
+    def test_vector_tiles_url_uses_mvt_endpoint(self):
+        url = build_mapbox_vector_tiles_url("pk.abc", "mapbox", "outdoors-v12")
+        self.assertIn("api.mapbox.com/v4/mapbox.outdoors-v12", url)
+        self.assertIn(".mvt", url)
+        self.assertIn("access_token=pk.abc", url)
+
+    def test_style_json_url_uses_styles_endpoint(self):
+        url = build_mapbox_style_json_url("pk.abc", "mapbox", "outdoors-v12")
+        self.assertIn("api.mapbox.com/styles/v1/mapbox/outdoors-v12", url)
+        self.assertIn("access_token=pk.abc", url)
+
+    def test_vector_tile_layer_uri_contains_both_urls(self):
+        uri = build_vector_tile_layer_uri("pk.abc", "mapbox", "outdoors-v12")
+        self.assertIn("type=xyz", uri)
+        self.assertIn(".mvt", uri)
+        self.assertIn("styles/v1/mapbox/outdoors-v12", uri)
+
+    def test_vector_urls_raise_on_missing_token(self):
+        with self.assertRaises(MapboxConfigError):
+            build_mapbox_vector_tiles_url("", "mapbox", "outdoors-v12")
+        with self.assertRaises(MapboxConfigError):
+            build_mapbox_style_json_url("", "mapbox", "outdoors-v12")
 
 
 if __name__ == "__main__":
