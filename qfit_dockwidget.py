@@ -28,6 +28,7 @@ from .mapbox_config import (
     preset_requires_custom_style,
 )
 from .fetch_task import StravaFetchTask
+from .atlas_export_task import AtlasExportTask
 from .qfit_cache import QfitCache
 from .strava_client import StravaClient, StravaClientError
 from .temporal_config import DEFAULT_TEMPORAL_MODE_LABEL, temporal_mode_labels
@@ -53,6 +54,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.background_layer = None
         self.last_fetch_context = {}
         self._fetch_task = None
+        self._atlas_export_task = None
         self.layer_manager = LayerManager(iface)
         self.cache = self._build_cache()
         self.setupUi(self)
@@ -92,6 +94,8 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.detailedStreamsCheckBox.toggled.connect(self._update_detailed_fetch_visibility)
         self.writeActivityPointsCheckBox.toggled.connect(self._update_point_sampling_visibility)
         self.publishGroupBox.toggled.connect(self._update_publish_section_visibility)
+        self.atlasPdfBrowseButton.clicked.connect(self.on_atlas_pdf_browse_clicked)
+        self.generateAtlasPdfButton.clicked.connect(self.on_generate_atlas_pdf_clicked)
         self.clientIdLineEdit.textChanged.connect(self._update_connection_status)
         self.clientSecretLineEdit.textChanged.connect(self._update_connection_status)
         self.refreshTokenLineEdit.textChanged.connect(self._update_connection_status)
@@ -222,6 +226,12 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.atlasTargetAspectRatioSpinBox.setValue(
             float(self._setting_value(settings, "atlas_target_aspect_ratio", 0.0))
         )
+        default_pdf_path = self._setting_value(
+            settings,
+            "atlas_pdf_path",
+            os.path.join(os.path.expanduser("~"), "qfit_atlas.pdf"),
+        )
+        self.atlasPdfPathLineEdit.setText(default_pdf_path)
 
         temporal_mode = self._setting_value(settings, "temporal_mode", DEFAULT_TEMPORAL_MODE_LABEL)
         temporal_mode_index = self.temporalModeComboBox.findText(temporal_mode)
@@ -325,6 +335,10 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         settings.setValue(
             f"{self.SETTINGS_PREFIX}/atlas_target_aspect_ratio",
             self.atlasTargetAspectRatioSpinBox.value(),
+        )
+        settings.setValue(
+            f"{self.SETTINGS_PREFIX}/atlas_pdf_path",
+            self.atlasPdfPathLineEdit.text().strip(),
         )
 
     def _setting_value(self, settings, key, default=None):
@@ -817,6 +831,104 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         else:
             message = "Strava connection: enter your Strava app credentials to begin"
         self.connectionStatusLabel.setText(message)
+
+    def on_atlas_pdf_browse_clicked(self):
+        path, _selected = QFileDialog.getSaveFileName(
+            self,
+            "Save Atlas PDF",
+            self.atlasPdfPathLineEdit.text(),
+            "PDF files (*.pdf)",
+        )
+        if path:
+            if not path.lower().endswith(".pdf"):
+                path = f"{path}.pdf"
+            self.atlasPdfPathLineEdit.setText(path)
+
+    def on_generate_atlas_pdf_clicked(self):
+        # Cancel any running export
+        if self._atlas_export_task is not None:
+            self._atlas_export_task.cancel()
+            self._set_atlas_pdf_status("Atlas PDF export cancelled.")
+            self._set_atlas_export_running(False)
+            self._atlas_export_task = None
+            return
+
+        if self.atlas_layer is None:
+            self._show_error(
+                "No atlas layer",
+                "Store and load activity layers first (step 3: Store and load layers).",
+            )
+            return
+
+        if self.atlas_layer.featureCount() == 0:
+            self._show_error(
+                "Atlas layer is empty",
+                "The atlas_pages layer has no features. "
+                "Fetch activities with geometry and store/load layers first.",
+            )
+            return
+
+        output_path = self.atlasPdfPathLineEdit.text().strip()
+        if not output_path:
+            self._show_error("Missing output path", "Enter or browse to an output PDF path.")
+            return
+        if not output_path.lower().endswith(".pdf"):
+            output_path = f"{output_path}.pdf"
+            self.atlasPdfPathLineEdit.setText(output_path)
+
+        self._save_settings()
+        self._set_atlas_export_running(True)
+        self._set_atlas_pdf_status(
+            f"Exporting atlas ({self.atlas_layer.featureCount()} pages)…"
+        )
+        self._set_status("Generating atlas PDF…")
+
+        self._atlas_export_task = AtlasExportTask(
+            atlas_layer=self.atlas_layer,
+            output_path=output_path,
+            on_finished=self._on_atlas_export_finished,
+        )
+        QgsApplication.taskManager().addTask(self._atlas_export_task)
+
+    def _set_atlas_export_running(self, running: bool) -> None:
+        self.generateAtlasPdfButton.setText(
+            "Cancel export" if running else "Generate Atlas PDF"
+        )
+        self.loadButton.setEnabled(not running)
+        self.refreshButton.setEnabled(not running)
+
+    def _on_atlas_export_finished(
+        self,
+        output_path,
+        error,
+        cancelled,
+        page_count,
+    ) -> None:
+        """Called on the main thread when the atlas export task completes."""
+        self._atlas_export_task = None
+        self._set_atlas_export_running(False)
+
+        if cancelled:
+            self._set_atlas_pdf_status("Atlas PDF export cancelled.")
+            self._set_status("Atlas PDF export cancelled.")
+            return
+
+        if error is not None:
+            self._show_error("Atlas PDF export failed", error)
+            self._set_atlas_pdf_status(f"Export failed: {error}")
+            self._set_status("Atlas PDF export failed.")
+            return
+
+        status = (
+            f"Atlas PDF exported: {page_count} page(s) → {output_path}"
+        )
+        self._set_atlas_pdf_status(status)
+        self._set_status(status)
+
+    def _set_atlas_pdf_status(self, text: str) -> None:
+        label = getattr(self, "atlasPdfStatusLabel", None)
+        if label is not None:
+            label.setText(text)
 
     def _set_status(self, text):
         self.statusLabel.setText(text)
