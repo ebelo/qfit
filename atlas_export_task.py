@@ -144,7 +144,7 @@ def build_atlas_layout(
     visible_layers = [
         node.layer()
         for node in root.findLayers()
-        if node.isVisible() and node.layer() is not None
+        if node.isVisible() and node.layer() is not None and node.layer() is not atlas_layer
     ]
 
     map_item = QgsLayoutItemMap(layout)

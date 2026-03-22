@@ -69,7 +69,7 @@ def _make_qgis_stub():
 
 _qgis_core = _make_qgis_stub()
 
-from qfit.atlas_export_task import AtlasExportTask  # noqa: E402
+from qfit.atlas_export_task import AtlasExportTask, build_atlas_layout  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -94,6 +94,48 @@ def _make_atlas_layer(feature_count=3):
 # ---------------------------------------------------------------------------
 # Tests: successful export
 # ---------------------------------------------------------------------------
+
+
+class TestBuildAtlasLayout(unittest.TestCase):
+    def test_export_map_excludes_atlas_coverage_layer_overlay(self):
+        atlas_layer = _make_atlas_layer(feature_count=1)
+        visible_track_layer = MagicMock(name="visible_track_layer")
+        visible_background_layer = MagicMock(name="visible_background_layer")
+
+        atlas_node = MagicMock()
+        atlas_node.isVisible.return_value = True
+        atlas_node.layer.return_value = atlas_layer
+
+        track_node = MagicMock()
+        track_node.isVisible.return_value = True
+        track_node.layer.return_value = visible_track_layer
+
+        background_node = MagicMock()
+        background_node.isVisible.return_value = True
+        background_node.layer.return_value = visible_background_layer
+
+        project = MagicMock()
+        project.layerTreeRoot.return_value.findLayers.return_value = [
+            atlas_node,
+            track_node,
+            background_node,
+        ]
+
+        with patch("qfit.atlas_export_task.QgsPrintLayout") as mock_layout_cls, \
+             patch("qfit.atlas_export_task.QgsLayoutItemMap") as mock_map_cls:
+            layout = MagicMock()
+            layout.atlas.return_value = MagicMock()
+            layout.pageCollection.return_value.pageCount.return_value = 1
+            layout.pageCollection.return_value.page.return_value = MagicMock()
+            mock_layout_cls.return_value = layout
+            map_item = MagicMock()
+            mock_map_cls.return_value = map_item
+
+            build_atlas_layout(atlas_layer, project=project)
+
+        map_item.setLayers.assert_called_once_with(
+            [visible_track_layer, visible_background_layer]
+        )
 
 
 class TestAtlasExportTaskSuccess(unittest.TestCase):
