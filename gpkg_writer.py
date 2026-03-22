@@ -494,14 +494,24 @@ class GeoPackageWriter:
         return layer
 
     def _build_atlas_layer(self, records):
-        layer = QgsVectorLayer("Polygon?crs=EPSG:4326", "activity_atlas_pages", "memory")
+        # Store atlas page extents in EPSG:3857 (Web Mercator) so that the QGIS
+        # atlas map frame uses them as-is without reprojection distortion.
+        # Using 4326 bounding boxes causes extent mismatch at mid-latitudes.
+        layer = QgsVectorLayer("Polygon?crs=EPSG:3857", "activity_atlas_pages", "memory")
         provider = layer.dataProvider()
         provider.addAttributes(self._make_fields(ATLAS_FIELDS))
         layer.updateFields()
 
         features = []
         for plan in build_atlas_page_plans(records, settings=self.atlas_page_settings):
-            rect = QgsRectangle(plan.min_lon, plan.min_lat, plan.max_lon, plan.max_lat)
+            half_w = plan.extent_width_m / 2.0
+            half_h = plan.extent_height_m / 2.0
+            rect = QgsRectangle(
+                plan.center_x_3857 - half_w,
+                plan.center_y_3857 - half_h,
+                plan.center_x_3857 + half_w,
+                plan.center_y_3857 + half_h,
+            )
             feature = QgsFeature(layer.fields())
             feature.setGeometry(QgsGeometry.fromRect(rect))
             feature["activity_fk"] = plan.page_number
