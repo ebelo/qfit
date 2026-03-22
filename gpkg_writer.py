@@ -16,7 +16,12 @@ from qgis.core import (
 )
 
 from .polyline_utils import decode_polyline
-from .publish_atlas import build_atlas_page_plans, normalize_atlas_page_settings
+from .publish_atlas import (
+    activity_bounds,
+    build_atlas_document_summary,
+    build_atlas_page_plans,
+    normalize_atlas_page_settings,
+)
 from .sync_repository import REGISTRY_TABLE, SYNC_STATE_TABLE, SyncRepository
 from .time_utils import add_seconds_iso
 
@@ -144,6 +149,21 @@ ATLAS_FIELDS = [
     ("extent_height_m", QVariant.Double),
 ]
 
+DOCUMENT_SUMMARY_FIELDS = [
+    ("activity_count", QVariant.Int),
+    ("activity_date_start", QVariant.String),
+    ("activity_date_end", QVariant.String),
+    ("date_range_label", QVariant.String),
+    ("total_distance_m", QVariant.Double),
+    ("total_distance_label", QVariant.String),
+    ("total_moving_time_s", QVariant.Int),
+    ("total_duration_label", QVariant.String),
+    ("total_elevation_gain_m", QVariant.Double),
+    ("total_elevation_gain_label", QVariant.String),
+    ("activity_types_label", QVariant.String),
+    ("cover_summary", QVariant.String),
+]
+
 
 class GeoPackageWriter:
     """Persist qfit sync data to a GeoPackage and rebuild derived visualization layers."""
@@ -198,6 +218,11 @@ class GeoPackageWriter:
                 "kind": "layer",
                 "fields": [name for name, _ in ATLAS_FIELDS],
             },
+            "atlas_document_summary": {
+                "geometry": None,
+                "kind": "table",
+                "fields": [name for name, _ in DOCUMENT_SUMMARY_FIELDS],
+            },
         }
 
     def write_activities(self, activities, sync_metadata=None):
@@ -212,6 +237,7 @@ class GeoPackageWriter:
             self._write_layer(self._build_start_layer([]), "activity_starts", overwrite_file=False)
             self._write_layer(self._build_point_layer([]), "activity_points", overwrite_file=False)
             self._write_layer(self._build_atlas_layer([]), "activity_atlas_pages", overwrite_file=False)
+            self._write_layer(self._build_document_summary_layer([]), "atlas_document_summary", overwrite_file=False)
 
         repository.ensure_schema()
         sync_result = repository.upsert_activities(activities, sync_metadata=sync_metadata)
@@ -221,10 +247,12 @@ class GeoPackageWriter:
         start_layer = self._build_start_layer(records)
         point_layer = self._build_point_layer(records)
         atlas_layer = self._build_atlas_layer(records)
+        document_summary_layer = self._build_document_summary_layer(records)
         self._write_layer(track_layer, "activity_tracks", overwrite_file=False)
         self._write_layer(start_layer, "activity_starts", overwrite_file=False)
         self._write_layer(point_layer, "activity_points", overwrite_file=False)
         self._write_layer(atlas_layer, "activity_atlas_pages", overwrite_file=False)
+        self._write_layer(document_summary_layer, "atlas_document_summary", overwrite_file=False)
 
         return {
             "schema": self.schema(),
@@ -234,6 +262,7 @@ class GeoPackageWriter:
             "start_count": start_layer.featureCount(),
             "point_count": point_layer.featureCount(),
             "atlas_count": atlas_layer.featureCount(),
+            "document_summary_count": document_summary_layer.featureCount(),
             "sync": sync_result,
         }
 
@@ -433,6 +462,41 @@ class GeoPackageWriter:
             features.append(feature)
 
         provider.addFeatures(features)
+        layer.updateExtents()
+        return layer
+
+    def _build_document_summary_layer(self, records):
+        layer = QgsVectorLayer("None", "atlas_document_summary", "memory")
+        provider = layer.dataProvider()
+        provider.addAttributes(self._make_fields(DOCUMENT_SUMMARY_FIELDS))
+        layer.updateFields()
+
+        atlas_records = []
+        for record in records:
+            bounds, _ = activity_bounds(
+                record,
+                min_extent_degrees=self.atlas_page_settings.min_extent_degrees,
+            )
+            if bounds is not None:
+                atlas_records.append(record)
+
+        summary = build_atlas_document_summary(atlas_records)
+        if summary.activity_count > 0:
+            feature = QgsFeature(layer.fields())
+            feature["activity_count"] = summary.activity_count
+            feature["activity_date_start"] = summary.activity_date_start
+            feature["activity_date_end"] = summary.activity_date_end
+            feature["date_range_label"] = summary.date_range_label
+            feature["total_distance_m"] = summary.total_distance_m
+            feature["total_distance_label"] = summary.total_distance_label
+            feature["total_moving_time_s"] = summary.total_moving_time_s
+            feature["total_duration_label"] = summary.total_duration_label
+            feature["total_elevation_gain_m"] = summary.total_elevation_gain_m
+            feature["total_elevation_gain_label"] = summary.total_elevation_gain_label
+            feature["activity_types_label"] = summary.activity_types_label
+            feature["cover_summary"] = summary.cover_summary
+            provider.addFeature(feature)
+
         layer.updateExtents()
         return layer
 
