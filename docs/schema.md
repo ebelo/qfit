@@ -22,7 +22,7 @@ This document describes the current qfit GeoPackage layout and the intended next
 - `activity_tracks` — one visible line feature per activity
 - `activity_starts` — one visible point per activity start
 - `activity_points` — optional sampled point layer derived from detailed stream geometry
-- `activity_atlas_pages` — polygon page/index layer for QGIS atlas or print-layout workflows, now with deterministic page ordering, TOC-friendly labels, Web Mercator-ready extent metadata, and route-profile summary/label fields when detailed streams are available
+- `activity_atlas_pages` — polygon page/index layer for QGIS atlas or print-layout workflows, now with deterministic page ordering, TOC-friendly labels, publish-friendly detail labels/summary text, repeated document-summary fields for cover/TOC layouts, Web Mercator-ready extent metadata, and route-profile summary/label fields when detailed streams are available
 
 ## Table: `activity_registry`
 
@@ -185,6 +185,8 @@ Primary purpose:
 - one padded extent polygon per activity with reusable title/subtitle fields
 - extent padding/minimum size controlled by the plugin's publish settings at write time
 - optional Web Mercator aspect-ratio fitting can widen/tallify the padded extent for more layout-consistent framing
+- publish-friendly detail labels (`page_toc_label`, `page_average_speed_label`, `page_average_pace_label`, `page_elevation_gain_label`) plus `page_stats_summary` and `page_profile_summary` reduce per-layout expression boilerplate for per-activity stat blocks
+- repeated document-summary fields (`document_activity_count`, `document_date_range_label`, `document_total_distance_label`, `document_total_duration_label`, `document_total_elevation_gain_label`, `document_activity_types_label`, `document_cover_summary`) let cover/TOC layouts reuse atlas-wide totals without introducing a separate summary table yet
 - route-profile summary and label fields give layouts a cheap way to decide whether to show an elevation chart and to reuse publish-friendly text without extra QGIS expression boilerplate before full PDF automation exists
 
 ### Current fields
@@ -206,8 +208,21 @@ Primary purpose:
 | `page_title` | TEXT | large-title label |
 | `page_subtitle` | TEXT | compact summary such as type, distance, and moving time |
 | `page_date` | TEXT | preformatted local/primary activity date for layout labels |
+| `page_toc_label` | TEXT | preformatted TOC-ready line such as `2026-03-18 · Morning Gravel Ride · 42.5 km · 2h 00m` |
 | `page_distance_label` | TEXT | preformatted distance label such as `42.5 km` |
 | `page_duration_label` | TEXT | preformatted moving-time label such as `2h 00m` |
+| `page_average_speed_label` | TEXT | preformatted speed label such as `25.2 km/h` for layouts that show average speed |
+| `page_average_pace_label` | TEXT | preformatted pace label such as `4m 57s/km` for run/walk/hike layouts |
+| `page_elevation_gain_label` | TEXT | preformatted total ascent label such as `640 m` for per-page detail blocks |
+| `page_stats_summary` | TEXT | preformatted one-line stat summary such as `42.5 km · 2h 00m · 21.3 km/h · ↑ 640 m` for simple atlas detail text |
+| `page_profile_summary` | TEXT | preformatted one-line route-profile summary such as `3.0 km · 500–560 m · relief 60 m · ↑ 75 m · ↓ 15 m` for layouts that show elevation/profile details |
+| `document_activity_count` | INTEGER | repeated atlas-wide activity count so cover/TOC layouts can read it directly from the atlas layer |
+| `document_date_range_label` | TEXT | repeated atlas-wide date span such as `2026-03-18 → 2026-03-20` |
+| `document_total_distance_label` | TEXT | repeated atlas-wide distance total such as `82.6 km` |
+| `document_total_duration_label` | TEXT | repeated atlas-wide moving-time total such as `4h 20m` |
+| `document_total_elevation_gain_label` | TEXT | repeated atlas-wide climb total such as `1145 m` |
+| `document_activity_types_label` | TEXT | repeated atlas-wide ordered activity-type list such as `Ride, Run` |
+| `document_cover_summary` | TEXT | repeated one-line atlas summary such as `3 activities · 2026-03-18 → 2026-03-20 · 82.6 km · 4h 20m · ↑ 1145 m · Ride, Run` |
 | `profile_available` | INTEGER | `1` when the activity has enough sampled distance + altitude stream data for a route profile |
 | `profile_point_count` | INTEGER | number of usable sampled profile points contributing to the summary |
 | `profile_distance_m` | REAL | sampled profile length in meters based on the usable distance stream |

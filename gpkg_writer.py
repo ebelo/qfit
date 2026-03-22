@@ -109,8 +109,21 @@ ATLAS_FIELDS = [
     ("page_title", QVariant.String),
     ("page_subtitle", QVariant.String),
     ("page_date", QVariant.String),
+    ("page_toc_label", QVariant.String),
     ("page_distance_label", QVariant.String),
     ("page_duration_label", QVariant.String),
+    ("page_average_speed_label", QVariant.String),
+    ("page_average_pace_label", QVariant.String),
+    ("page_elevation_gain_label", QVariant.String),
+    ("page_stats_summary", QVariant.String),
+    ("page_profile_summary", QVariant.String),
+    ("document_activity_count", QVariant.Int),
+    ("document_date_range_label", QVariant.String),
+    ("document_total_distance_label", QVariant.String),
+    ("document_total_duration_label", QVariant.String),
+    ("document_total_elevation_gain_label", QVariant.String),
+    ("document_activity_types_label", QVariant.String),
+    ("document_cover_summary", QVariant.String),
     ("profile_available", QVariant.Int),
     ("profile_point_count", QVariant.Int),
     ("profile_distance_m", QVariant.Double),
@@ -384,8 +397,21 @@ class GeoPackageWriter:
             feature["page_title"] = plan.page_title
             feature["page_subtitle"] = plan.page_subtitle
             feature["page_date"] = plan.page_date
+            feature["page_toc_label"] = plan.page_toc_label
             feature["page_distance_label"] = plan.page_distance_label
             feature["page_duration_label"] = plan.page_duration_label
+            feature["page_average_speed_label"] = plan.page_average_speed_label
+            feature["page_average_pace_label"] = plan.page_average_pace_label
+            feature["page_elevation_gain_label"] = plan.page_elevation_gain_label
+            feature["page_stats_summary"] = plan.page_stats_summary
+            feature["page_profile_summary"] = plan.page_profile_summary
+            feature["document_activity_count"] = plan.document_activity_count
+            feature["document_date_range_label"] = plan.document_date_range_label
+            feature["document_total_distance_label"] = plan.document_total_distance_label
+            feature["document_total_duration_label"] = plan.document_total_duration_label
+            feature["document_total_elevation_gain_label"] = plan.document_total_elevation_gain_label
+            feature["document_activity_types_label"] = plan.document_activity_types_label
+            feature["document_cover_summary"] = plan.document_cover_summary
             feature["profile_available"] = int(plan.profile_available)
             feature["profile_point_count"] = plan.profile_point_count
             feature["profile_distance_m"] = plan.profile_distance_m
