@@ -16,6 +16,7 @@ from .activity_query import (
     sort_activities,
     summarize_activities,
 )
+from .contextual_help import ContextualHelpBinder, build_dock_help_entries
 from .gpkg_writer import GeoPackageWriter
 from .layer_manager import LayerManager
 from .mapbox_config import (
@@ -52,6 +53,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.layer_manager = LayerManager(iface)
         self.cache = self._build_cache()
         self.setupUi(self)
+        self._apply_contextual_help()
         self._configure_background_preset_options()
         self._configure_preview_sort_options()
         self._configure_temporal_mode_options()
@@ -59,6 +61,19 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._wire_events()
         self._set_default_dates()
         self._refresh_activity_preview()
+
+    def _apply_contextual_help(self):
+        for name in [
+            "backgroundHelpLabel",
+            "analysisHelpLabel",
+            "publishHelpLabel",
+            "temporalHelpLabel",
+        ]:
+            label = getattr(self, name, None)
+            if label is not None:
+                label.hide()
+
+        ContextualHelpBinder(self).apply(build_dock_help_entries())
 
     def _wire_events(self):
         self.openAuthorizeButton.clicked.connect(self.on_open_authorize_clicked)
