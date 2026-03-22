@@ -11,6 +11,7 @@ from qfit.publish_atlas import (
     atlas_sort_key,
     build_atlas_page_plans,
     build_page_name,
+    build_page_stats_summary,
     build_page_subtitle,
     ensure_minimum_extent,
     expand_bounds,
@@ -61,6 +62,7 @@ class PublishAtlasTests(unittest.TestCase):
         self.assertEqual(plan.page_average_speed_label, "21.3 km/h")
         self.assertIsNone(plan.page_average_pace_label)
         self.assertEqual(plan.page_elevation_gain_label, "640 m")
+        self.assertEqual(plan.page_stats_summary, "42.5 km · 2h 00m · 21.3 km/h · ↑ 640 m")
         self.assertFalse(plan.profile_available)
         self.assertEqual(plan.profile_point_count, 0)
         self.assertIsNone(plan.profile_distance_m)
@@ -162,6 +164,7 @@ class PublishAtlasTests(unittest.TestCase):
         self.assertEqual(plan.page_average_speed_label, "12.1 km/h")
         self.assertEqual(plan.page_average_pace_label, "4m 57s/km")
         self.assertEqual(plan.page_elevation_gain_label, "85 m")
+        self.assertEqual(plan.page_stats_summary, "10.1 km · 50m 00s · 4m 57s/km · ↑ 85 m")
 
     def test_build_atlas_page_plans_includes_route_profile_metadata_when_stream_metrics_are_available(self):
         records = [
@@ -266,6 +269,7 @@ class PublishAtlasTests(unittest.TestCase):
 
         self.assertEqual(build_page_name(record), "2026-03-11 · Recovery Walk")
         self.assertEqual(build_page_subtitle(record), "Walk")
+        self.assertIsNone(build_page_stats_summary(record))
         self.assertIsNone(format_distance_label(None))
         self.assertIsNone(format_duration_label(None))
         self.assertIsNone(format_elevation_label(None))
@@ -277,6 +281,16 @@ class PublishAtlasTests(unittest.TestCase):
         self.assertEqual(format_speed_label(5.0), "18.0 km/h")
         self.assertEqual(format_pace_label(10000, 3000, activity_type="Run"), "5m 00s/km")
         self.assertIsNone(format_pace_label(10000, 3000, activity_type="Ride"))
+        self.assertEqual(
+            build_page_stats_summary({
+                "activity_type": "Ride",
+                "distance_m": 42500,
+                "moving_time_s": 7200,
+                "average_speed_mps": 5.9027777778,
+                "total_elevation_gain_m": 640,
+            }),
+            "42.5 km · 2h 00m · 21.3 km/h · ↑ 640 m",
+        )
 
     def test_atlas_sort_key_normalizes_missing_values(self):
         key = atlas_sort_key({"name": "  Lunch   Walk  "})

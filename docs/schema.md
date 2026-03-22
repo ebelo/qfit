@@ -22,7 +22,7 @@ This document describes the current qfit GeoPackage layout and the intended next
 - `activity_tracks` — one visible line feature per activity
 - `activity_starts` — one visible point per activity start
 - `activity_points` — optional sampled point layer derived from detailed stream geometry
-- `activity_atlas_pages` — polygon page/index layer for QGIS atlas or print-layout workflows, now with deterministic page ordering, TOC-friendly labels, publish-friendly detail labels, Web Mercator-ready extent metadata, and route-profile summary/label fields when detailed streams are available
+- `activity_atlas_pages` — polygon page/index layer for QGIS atlas or print-layout workflows, now with deterministic page ordering, TOC-friendly labels, publish-friendly detail labels/summary text, Web Mercator-ready extent metadata, and route-profile summary/label fields when detailed streams are available
 
 ## Table: `activity_registry`
 
@@ -185,7 +185,7 @@ Primary purpose:
 - one padded extent polygon per activity with reusable title/subtitle fields
 - extent padding/minimum size controlled by the plugin's publish settings at write time
 - optional Web Mercator aspect-ratio fitting can widen/tallify the padded extent for more layout-consistent framing
-- publish-friendly detail labels (`page_average_speed_label`, `page_average_pace_label`, `page_elevation_gain_label`) reduce per-layout expression boilerplate for per-activity stat blocks
+- publish-friendly detail labels (`page_average_speed_label`, `page_average_pace_label`, `page_elevation_gain_label`) plus `page_stats_summary` reduce per-layout expression boilerplate for per-activity stat blocks
 - route-profile summary and label fields give layouts a cheap way to decide whether to show an elevation chart and to reuse publish-friendly text without extra QGIS expression boilerplate before full PDF automation exists
 
 ### Current fields
@@ -212,6 +212,7 @@ Primary purpose:
 | `page_average_speed_label` | TEXT | preformatted speed label such as `25.2 km/h` for layouts that show average speed |
 | `page_average_pace_label` | TEXT | preformatted pace label such as `4m 57s/km` for run/walk/hike layouts |
 | `page_elevation_gain_label` | TEXT | preformatted total ascent label such as `640 m` for per-page detail blocks |
+| `page_stats_summary` | TEXT | preformatted one-line stat summary such as `42.5 km · 2h 00m · 21.3 km/h · ↑ 640 m` for simple atlas detail text |
 | `profile_available` | INTEGER | `1` when the activity has enough sampled distance + altitude stream data for a route profile |
 | `profile_point_count` | INTEGER | number of usable sampled profile points contributing to the summary |
 | `profile_distance_m` | REAL | sampled profile length in meters based on the usable distance stream |
