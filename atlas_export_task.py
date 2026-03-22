@@ -152,7 +152,10 @@ def build_atlas_layout(
     map_item.attemptMove(QgsLayoutPoint(MAP_X, MAP_Y, QgsUnitTypes.LayoutMillimeters))
     map_item.attemptResize(QgsLayoutSize(MAP_W, MAP_H, QgsUnitTypes.LayoutMillimeters))
     map_item.setAtlasDriven(True)
-    map_item.setAtlasScalingMode(QgsLayoutItemMap.Auto)
+    # Predefined: use the atlas feature's bounding box as the exact map extent.
+    # The activity_atlas_pages layer already stores page extents with margin applied
+    # via publish_atlas.py. Using Auto would add a second automatic margin on top.
+    map_item.setAtlasScalingMode(QgsLayoutItemMap.Predefined)
 
     # Disable tile border rendering on visible vector tile layers (debug overlay)
     try:
