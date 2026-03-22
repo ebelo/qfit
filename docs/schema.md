@@ -25,6 +25,7 @@ This document describes the current qfit GeoPackage layout and the intended next
 - `activity_atlas_pages` — polygon page/index layer for QGIS atlas or print-layout workflows, now with deterministic page ordering, TOC-friendly labels, publish-friendly detail labels/summary text, repeated document-summary fields for cover/TOC layouts, Web Mercator-ready extent metadata, and route-profile summary/label fields when detailed streams are available
 - `atlas_document_summary` — non-spatial single-row helper table carrying atlas-wide totals and cover/TOC-ready labels for layouts that prefer a dedicated document-summary source
 - `atlas_cover_highlights` — non-spatial ordered helper table carrying cover-ready label/value highlight rows for layouts that want simple metric cards or summary lists
+- `atlas_page_detail_items` — non-spatial ordered one-row-per-detail helper table carrying layout-ready per-page label/value pairs for activity detail blocks
 - `atlas_toc_entries` — non-spatial one-row-per-page helper table carrying page-number labels plus TOC-ready text/summary fields for contents layouts that should not depend on atlas polygon geometry
 
 ## Table: `activity_registry`
@@ -192,6 +193,7 @@ Primary purpose:
 - repeated document-summary fields (`document_activity_count`, `document_date_range_label`, `document_total_distance_label`, `document_total_duration_label`, `document_total_elevation_gain_label`, `document_activity_types_label`, `document_cover_summary`) still make it easy for per-page layout expressions to reuse atlas-wide totals
 - the companion `atlas_document_summary` table now provides the same atlas-wide totals/labels as a dedicated single-row source for cover and table-of-contents layouts
 - the companion `atlas_cover_highlights` table now provides ordered cover-metric label/value rows for simple cover-page cards or summary lists
+- the companion `atlas_page_detail_items` table now provides ordered per-page label/value rows for activity detail sidebars or stat grids in atlas layouts
 - the companion `atlas_toc_entries` table now provides one clean non-spatial row per atlas page, with page-number labels and preformatted TOC entry text for contents-page tables
 - route-profile summary and label fields give layouts a cheap way to decide whether to show an elevation chart and to reuse publish-friendly text without extra QGIS expression boilerplate before full PDF automation exists
 
@@ -292,6 +294,28 @@ Primary purpose:
 | `highlight_label` | TEXT | layout-ready label such as `Activities` or `Distance` |
 | `highlight_value` | TEXT | formatted value such as `12 activities` or `420.7 km` |
 
+## Table: `atlas_page_detail_items`
+
+Geometry type:
+- none
+
+Primary purpose:
+- store ordered per-page detail rows as simple label/value pairs
+- let QGIS print layouts bind activity stat sidebars or repeated cards without rebuilding those strings in expressions
+
+### Current fields
+
+| Field | Type | Notes |
+|---|---|---|
+| `page_number` | INTEGER | stable chronological page number matching `activity_atlas_pages.page_number` |
+| `page_sort_key` | TEXT | deterministic sort key matching the atlas-page layer |
+| `page_name` | TEXT | atlas-friendly page label such as `2026-03-18 · Morning Ride` |
+| `page_title` | TEXT | activity title copied from the atlas page |
+| `detail_order` | INTEGER | stable display order for a page-detail table or repeated card frame |
+| `detail_key` | TEXT | stable metric key such as `distance`, `moving_time`, or `profile_summary` |
+| `detail_label` | TEXT | layout-ready label such as `Distance` or `Climbing` |
+| `detail_value` | TEXT | formatted value such as `42.5 km` or `3.0 km · 500–560 m · relief 60 m · ↑ 75 m · ↓ 15 m` |
+
 ## Table: `atlas_toc_entries`
 
 Geometry type:
@@ -333,7 +357,7 @@ When rebuilding visible layers, qfit currently prefers geometry in this order:
 2. optionally enrich activities with detailed stream geometry and extra stream metrics
 3. upsert activities into `activity_registry`
 4. update `sync_state`
-5. rebuild `activity_tracks`, `activity_starts`, `activity_atlas_pages`, `atlas_document_summary`, `atlas_cover_highlights`, `atlas_toc_entries`, and optionally `activity_points`
+5. rebuild `activity_tracks`, `activity_starts`, `activity_atlas_pages`, `atlas_document_summary`, `atlas_cover_highlights`, `atlas_page_detail_items`, `atlas_toc_entries`, and optionally `activity_points`
 6. load those layers into QGIS
 
 ## Next phase
