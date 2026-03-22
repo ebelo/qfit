@@ -283,13 +283,14 @@ def simplify_mapbox_style_expressions(style_definition: dict[str, object]) -> di
         "continent-label": 16.0,
     }
 
-    # Settlement layers: filter by `sizerank` which IS a static integer field
-    # in Mapbox Streets v8 tiles (verified by tile inspection).
-    # Lower sizerank = more important. Paris, London etc. have sizerank 1.
-    # We keep cities (sizerank ≤ 4) for major label layer, towns (≤ 8) for minor.
+    # Settlement layers: filter by `sizerank` to reduce label clutter.
+    # sizerank is a static integer in Mapbox Streets v8 tiles — lower = more important.
+    # Paris ~1, Geneva ~2, Sion (cantonal capital) ~5-8, village ~12+
+    # We suppress only the noisiest layers (subdivision) and keep all settlement layers
+    # reasonably open so capitals like Sion show at regional zoom levels.
     _SETTLEMENT_RANK_FILTERS: dict[str, int] = {
-        "settlement-major-label": 4,   # capitals and large cities (sizerank 1-4)
-        "settlement-minor-label": 8,   # cities and towns (sizerank 1-8)
+        "settlement-major-label": 16,   # show all cities/towns (filter only hamlets)
+        "settlement-minor-label": 12,   # show down to large villages
         "settlement-subdivision-label": 999,  # suppress entirely
     }
 
