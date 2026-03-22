@@ -25,6 +25,7 @@ from __future__ import annotations
 import os
 
 from qgis.core import (
+    QgsCoordinateReferenceSystem,
     QgsLayoutExporter,
     QgsLayoutItemLabel,
     QgsLayoutItemMap,
@@ -32,6 +33,7 @@ from qgis.core import (
     QgsLayoutSize,
     QgsPrintLayout,
     QgsProject,
+    QgsRectangle,
     QgsTask,
     QgsUnitTypes,
 )
@@ -55,6 +57,7 @@ MAP_Y = MARGIN_MM + HEADER_HEIGHT_MM + HEADER_GAP_MM
 MAP_W = PAGE_WIDTH_MM - 2 * MARGIN_MM
 MAP_H = (PAGE_HEIGHT_MM - MARGIN_MM - HEADER_HEIGHT_MM - HEADER_GAP_MM
          - FOOTER_GAP_MM - FOOTER_HEIGHT_MM - MARGIN_MM)
+BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO = MAP_W / MAP_H
 
 
 def _mm(layout, value):
@@ -143,7 +146,7 @@ def build_atlas_layout(
     visible_layers = [
         node.layer()
         for node in root.findLayers()
-        if node.isVisible() and node.layer() is not None
+        if node.isVisible() and node.layer() is not None and node.layer() is not atlas_layer
     ]
 
     map_item = QgsLayoutItemMap(layout)
@@ -151,12 +154,12 @@ def build_atlas_layout(
     map_item.setKeepLayerSet(True)
     map_item.attemptMove(QgsLayoutPoint(MAP_X, MAP_Y, QgsUnitTypes.LayoutMillimeters))
     map_item.attemptResize(QgsLayoutSize(MAP_W, MAP_H, QgsUnitTypes.LayoutMillimeters))
+    # Use Fixed mode: we set the map extent explicitly per page from the stored
+    # center_x_3857/center_y_3857/extent_width_m/extent_height_m fields so that
+    # QGIS atlas auto-fit cannot distort or shift the precomputed page extents.
     map_item.setAtlasDriven(True)
-    # Auto: QGIS fits the map to the atlas feature's bounding box.
-    # We set margin=0 so no extra margin is added on top of the pre-calculated
-    # page extents already stored in activity_atlas_pages by publish_atlas.py.
-    map_item.setAtlasScalingMode(QgsLayoutItemMap.Auto)
-    map_item.setAtlasMargin(0.0)
+    map_item.setAtlasScalingMode(QgsLayoutItemMap.Fixed)
+    map_item.setCrs(QgsCoordinateReferenceSystem("EPSG:3857"))
 
     # Disable tile border rendering on visible vector tile layers (debug overlay)
     try:
@@ -265,11 +268,6 @@ class AtlasExportTask(QgsTask):
         ``cancelled`` (bool), ``page_count`` (int).
     project:
         Optional :class:`QgsProject`; defaults to ``QgsProject.instance()``.
-    subset_string:
-        Optional QGIS subset string (SQL WHERE clause) to apply to the atlas
-        layer before export.  When provided, only activities that match the
-        current visualization filter are included in the PDF.  If ``None``,
-        the layer's existing subset string (if any) is preserved.
     """
 
     def __init__(
@@ -278,7 +276,6 @@ class AtlasExportTask(QgsTask):
         output_path: str,
         on_finished,
         project=None,
-        subset_string: str | None = None,
         restore_tile_mode: str | None = None,
         layer_manager=None,
         preset_name: str | None = None,
@@ -292,7 +289,6 @@ class AtlasExportTask(QgsTask):
         self._output_path = output_path
         self._on_finished = on_finished
         self._project = project
-        self._subset_string = subset_string
         self._restore_tile_mode = restore_tile_mode
         self._layer_manager = layer_manager
         self._preset_name = preset_name
@@ -310,20 +306,7 @@ class AtlasExportTask(QgsTask):
     def run(self) -> bool:
         """Build layout and export in the worker thread."""
         try:
-            # Apply visualization subset filter if provided (non-destructive:
-            # we restore the original subset string after export)
-            original_subset: str | None = None
-            if self._subset_string is not None and self._atlas_layer is not None:
-                original_subset = self._atlas_layer.subsetString()
-                self._atlas_layer.setSubsetString(self._subset_string)
-
-            try:
-                return self._run_export()
-            finally:
-                # Restore the original subset string regardless of outcome
-                if original_subset is not None and self._atlas_layer is not None:
-                    self._atlas_layer.setSubsetString(original_subset)
-
+            return self._run_export()
         except Exception as exc:  # noqa: BLE001
             self._error = str(exc)
             return False
@@ -347,6 +330,23 @@ class AtlasExportTask(QgsTask):
             if self.isCanceled():
                 return False
 
+            # Locate the map item so we can set its extent per page.
+            # Use duck-typing (setExtent + layers) so tests can mock without
+            # needing a real QgsLayoutItemMap subclass.
+            map_item = None
+            for item in layout.items():
+                if callable(getattr(item, "setExtent", None)) and callable(getattr(item, "layers", None)):
+                    map_item = item
+                    break
+
+            # Identify stored extent field indices once.
+            fields = self._atlas_layer.fields()
+            cx_idx = fields.indexOf("center_x_3857")
+            cy_idx = fields.indexOf("center_y_3857")
+            ew_idx = fields.indexOf("extent_width_m")
+            eh_idx = fields.indexOf("extent_height_m")
+            has_stored_extents = all(i >= 0 for i in (cx_idx, cy_idx, ew_idx, eh_idx))
+
             exporter = QgsLayoutExporter(layout)
             settings = QgsLayoutExporter.PdfExportSettings()
             settings.dpi = 150
@@ -358,26 +358,126 @@ class AtlasExportTask(QgsTask):
             if output_dir and not os.path.exists(output_dir):
                 os.makedirs(output_dir, exist_ok=True)
 
-            # The atlas export overload returns (ExportResult, error_string)
-            export_result, export_error = exporter.exportToPdf(
-                atlas,
-                self._output_path,
-                settings,
-            )
+            # Collect layers with source_activity_id field for per-page filtering.
+            # These are the track/start/point layers that should show only the
+            # current page's activity, not the full unfiltered dataset.
+            filterable_layers: list[tuple] = []
+            if map_item is not None:
+                for layer in map_item.layers():
+                    try:
+                        layer_fields = layer.fields()
+                        sid_idx = layer_fields.indexOf("source_activity_id")
+                        if sid_idx >= 0:
+                            filterable_layers.append((layer, layer.subsetString()))
+                    except Exception:  # noqa: BLE001
+                        pass
 
-            if export_result != QgsLayoutExporter.Success:
-                self._error = (
-                    f"PDF export failed (QgsLayoutExporter error code {export_result}"
-                    + (f": {export_error}" if export_error else "")
-                    + "). Check that the atlas layer has features and the output path is writable."
-                )
+            # Field index for source_activity_id in the atlas layer.
+            sid_atlas_idx = fields.indexOf("source_activity_id")
+
+            # Walk the atlas features in order, setting the map extent explicitly
+            # from the stored center/size fields so QGIS atlas auto-fit cannot
+            # distort or shift the precomputed page extents.
+            atlas.beginRender()
+            atlas.updateFeatures()
+            ok = atlas.first()
+            page_paths: list[str] = []
+            page_index = 0
+            try:
+                while ok:
+                    if self.isCanceled():
+                        return False
+
+                    feat = atlas.layout().reportContext().feature()
+
+                    # Filter each data layer to show only this page's activity.
+                    if filterable_layers and sid_atlas_idx >= 0:
+                        sid_value = feat.attribute(sid_atlas_idx)
+                        if sid_value is not None and sid_value != "":
+                            safe_sid = str(sid_value).replace("'", "''")
+                            page_filter = f"\"source_activity_id\" = '{safe_sid}'"
+                            for layer, _original_subset in filterable_layers:
+                                try:
+                                    layer.setSubsetString(page_filter)
+                                except Exception:  # noqa: BLE001
+                                    pass
+
+                    # Apply the stored precomputed extent to the map item.
+                    if map_item is not None and has_stored_extents:
+                        cx = feat.attribute(cx_idx)
+                        cy = feat.attribute(cy_idx)
+                        ew = feat.attribute(ew_idx)
+                        eh = feat.attribute(eh_idx)
+                        if all(v is not None and v != "" for v in (cx, cy, ew, eh)):
+                            hw = float(ew) / 2.0
+                            hh = float(eh) / 2.0
+                            rect = QgsRectangle(
+                                float(cx) - hw,
+                                float(cy) - hh,
+                                float(cx) + hw,
+                                float(cy) + hh,
+                            )
+                            map_item.setExtent(rect)
+                            map_item.refresh()
+
+                    # Export this single page as its own PDF then merge.
+                    page_path = f"{self._output_path}.page_{page_index}.pdf"
+                    page_result = exporter.exportToPdf(page_path, settings)
+                    if page_result != QgsLayoutExporter.Success:
+                        self._error = (
+                            f"PDF export failed on page {page_index + 1} "
+                            f"(QgsLayoutExporter error code {page_result})."
+                        )
+                        return False
+                    page_paths.append(page_path)
+                    page_index += 1
+                    ok = atlas.next()
+            finally:
+                # Restore original subset strings on all filtered layers.
+                for layer, original_subset in filterable_layers:
+                    try:
+                        layer.setSubsetString(original_subset)
+                    except Exception:  # noqa: BLE001
+                        pass
+                atlas.endRender()
+
+            if not page_paths:
+                self._error = "No pages were exported."
                 return False
+
+            # Merge all per-page PDFs into a single output PDF.
+            if len(page_paths) == 1:
+                os.replace(page_paths[0], self._output_path)
+            else:
+                self._merge_pdfs(page_paths, self._output_path)
+                for p in page_paths:
+                    try:
+                        os.remove(p)
+                    except OSError:
+                        pass
 
         except Exception as exc:  # noqa: BLE001
             self._error = str(exc)
             return False
 
         return not self.isCanceled()
+
+    @staticmethod
+    def _merge_pdfs(page_paths: list[str], output_path: str) -> None:
+        """Merge per-page PDF files into a single multi-page PDF."""
+        try:
+            from pypdf import PdfWriter  # noqa: PLC0415
+            writer = PdfWriter()
+            for path in page_paths:
+                writer.append(path)
+            with open(output_path, "wb") as fout:
+                writer.write(fout)
+            return
+        except ImportError:
+            pass
+        # Fallback: if pypdf is unavailable, rename first page (single-page fallback)
+        if page_paths:
+            os.replace(page_paths[0], output_path)
 
     def finished(self, result: bool) -> None:
         """Called on the main thread after run() returns."""

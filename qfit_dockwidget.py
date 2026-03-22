@@ -12,7 +12,6 @@ from .activity_query import (
     SORT_OPTIONS,
     ActivityQuery,
     build_preview_lines,
-    build_subset_string,
     filter_activities,
     format_summary_text,
     sort_activities,
@@ -32,7 +31,7 @@ from .mapbox_config import (
     preset_requires_custom_style,
 )
 from .fetch_task import StravaFetchTask
-from .atlas_export_task import AtlasExportTask
+from .atlas_export_task import AtlasExportTask, BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
 from .qfit_cache import QfitCache
 from .strava_client import StravaClient, StravaClientError
 from .temporal_config import DEFAULT_TEMPORAL_MODE_LABEL, temporal_mode_labels
@@ -265,9 +264,12 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.mapboxStyleIdLineEdit.setText(self._setting_value(settings, "mapbox_style_id", ""))
         self.atlasMarginPercentSpinBox.setValue(float(self._setting_value(settings, "atlas_margin_percent", 8.0)))
         self.atlasMinExtentSpinBox.setValue(float(self._setting_value(settings, "atlas_min_extent_degrees", 0.01)))
-        self.atlasTargetAspectRatioSpinBox.setValue(
-            float(self._setting_value(settings, "atlas_target_aspect_ratio", 0.0))
+        stored_atlas_target_aspect_ratio = float(
+            self._setting_value(settings, "atlas_target_aspect_ratio", BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO)
         )
+        if stored_atlas_target_aspect_ratio <= 0:
+            stored_atlas_target_aspect_ratio = BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
+        self.atlasTargetAspectRatioSpinBox.setValue(stored_atlas_target_aspect_ratio)
         default_pdf_path = self._setting_value(
             settings,
             "atlas_pdf_path",
@@ -1079,11 +1081,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
         self._save_settings()
 
-        # Build the current visualization subset string so the atlas export
-        # respects the active filters without re-fetching.
-        query = self._current_activity_query()
-        current_subset = build_subset_string(query)
-
         # Switch basemap to vector mode for export if currently raster — vector
         # tiles embed as true PDF vectors, dramatically reducing file size.
         # We reload the basemap in vector mode and restore raster after export.
@@ -1114,7 +1111,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             atlas_layer=self.atlas_layer,
             output_path=output_path,
             on_finished=self._on_atlas_export_finished,
-            subset_string=current_subset,
             restore_tile_mode=pre_export_tile_mode,
             layer_manager=self.layer_manager,
             preset_name=self.backgroundPresetComboBox.currentText(),

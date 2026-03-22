@@ -37,6 +37,9 @@ def _make_qgis_stub():
     qgis_core.QgsPrintLayout = MagicMock()
     qgis_core.QgsLayoutItemMap = MagicMock()
     qgis_core.QgsLayoutItemMap.Auto = 1
+    qgis_core.QgsLayoutItemMap.Fixed = 0
+    qgis_core.QgsCoordinateReferenceSystem = MagicMock(return_value=MagicMock())
+    qgis_core.QgsRectangle = MagicMock(return_value=MagicMock())
     qgis_core.QgsLayoutItemLabel = MagicMock()
     qgis_core.QgsLayoutPoint = MagicMock()
     qgis_core.QgsLayoutSize = MagicMock()
@@ -69,7 +72,7 @@ def _make_qgis_stub():
 
 _qgis_core = _make_qgis_stub()
 
-from qfit.atlas_export_task import AtlasExportTask  # noqa: E402
+from qfit.atlas_export_task import AtlasExportTask, build_atlas_layout  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -86,9 +89,52 @@ def _run_task(task):
 def _make_atlas_layer(feature_count=3):
     layer = MagicMock()
     layer.featureCount.return_value = feature_count
-    layer.fields.return_value = MagicMock()
-    layer.fields.return_value.indexOf = lambda name: 0  # all fields exist
+    fields = MagicMock()
+    fields.indexOf = lambda name: 0  # all stored-extent fields exist
+    layer.fields.return_value = fields
     return layer
+
+
+def _make_atlas_mock(feature_count=3):
+    """Return a (layout_mock, atlas_mock, exporter_cls_mock) triple that
+    simulates the new per-page export loop correctly."""
+    # atlas mock: beginRender/first/next/endRender
+    atlas_mock = MagicMock()
+    atlas_mock.beginRender.return_value = True
+    atlas_mock.updateFeatures.return_value = feature_count
+    # first() returns True, then next() returns False after feature_count calls
+    call_count = {"n": 0}
+
+    def _first():
+        call_count["n"] = 1
+        return feature_count > 0
+
+    def _next():
+        call_count["n"] += 1
+        return call_count["n"] <= feature_count
+
+    atlas_mock.first.side_effect = _first
+    atlas_mock.next.side_effect = _next
+
+    # layout.reportContext().feature() returns a feature with stored-extent attrs
+    feat_mock = MagicMock()
+    feat_mock.attribute.return_value = 1000.0  # dummy value for all attrs
+    atlas_mock.layout.return_value.reportContext.return_value.feature.return_value = feat_mock
+
+    layout_mock = MagicMock()
+    layout_mock.atlas.return_value = atlas_mock
+    layout_mock.pageCollection.return_value.pageCount.return_value = 1
+    layout_mock.pageCollection.return_value.page.return_value = MagicMock()
+    layout_mock.items.return_value = []  # no map items → extent override skipped
+
+    exporter_cls_mock = MagicMock()
+    exporter_cls_mock.Success = 0
+    exporter_instance = MagicMock()
+    # per-page exportToPdf(path, settings) → Success int
+    exporter_instance.exportToPdf.return_value = 0
+    exporter_cls_mock.return_value = exporter_instance
+
+    return layout_mock, atlas_mock, exporter_cls_mock
 
 
 # ---------------------------------------------------------------------------
@@ -96,89 +142,101 @@ def _make_atlas_layer(feature_count=3):
 # ---------------------------------------------------------------------------
 
 
-class TestAtlasExportTaskSuccess(unittest.TestCase):
-    def setUp(self):
-        self.received = {}
+class TestBuildAtlasLayout(unittest.TestCase):
+    def test_export_map_excludes_atlas_coverage_layer_overlay(self):
+        atlas_layer = _make_atlas_layer(feature_count=1)
+        visible_track_layer = MagicMock(name="visible_track_layer")
+        visible_background_layer = MagicMock(name="visible_background_layer")
 
-        def on_finished(**kwargs):
-            self.received.update(kwargs)
+        atlas_node = MagicMock()
+        atlas_node.isVisible.return_value = True
+        atlas_node.layer.return_value = atlas_layer
 
-        self.atlas_layer = _make_atlas_layer(feature_count=5)
+        track_node = MagicMock()
+        track_node.isVisible.return_value = True
+        track_node.layer.return_value = visible_track_layer
 
-        # Make QgsLayoutExporter.exportToPdf return Success (0)
-        exporter_instance = MagicMock()
-        exporter_instance.exportToPdf.return_value = (0, "")  # Success tuple
-        _qgis_core.QgsLayoutExporter.return_value = exporter_instance
+        background_node = MagicMock()
+        background_node.isVisible.return_value = True
+        background_node.layer.return_value = visible_background_layer
 
-        # Make QgsPrintLayout return a usable mock
-        layout_mock = MagicMock()
-        layout_mock.atlas.return_value = MagicMock()
-        layout_mock.pageCollection.return_value.pageCount.return_value = 1
-        layout_mock.pageCollection.return_value.page.return_value = MagicMock()
-        layout_mock.mapLayers = MagicMock(return_value={})
-        _qgis_core.QgsPrintLayout.return_value = layout_mock
+        project = MagicMock()
+        project.layerTreeRoot.return_value.findLayers.return_value = [
+            atlas_node,
+            track_node,
+            background_node,
+        ]
 
-        self.task = AtlasExportTask(
-            atlas_layer=self.atlas_layer,
-            output_path="/tmp/qfit_test_atlas.pdf",
-            on_finished=on_finished,
+        with patch("qfit.atlas_export_task.QgsPrintLayout") as mock_layout_cls, \
+             patch("qfit.atlas_export_task.QgsLayoutItemMap") as mock_map_cls:
+            layout = MagicMock()
+            layout.atlas.return_value = MagicMock()
+            layout.pageCollection.return_value.pageCount.return_value = 1
+            layout.pageCollection.return_value.page.return_value = MagicMock()
+            mock_layout_cls.return_value = layout
+            map_item = MagicMock()
+            mock_map_cls.return_value = map_item
+
+            build_atlas_layout(atlas_layer, project=project)
+
+        map_item.setLayers.assert_called_once_with(
+            [visible_track_layer, visible_background_layer]
         )
 
+
+class TestAtlasExportTaskSuccess(unittest.TestCase):
     def test_run_returns_true_on_success(self):
-        with patch("qfit.atlas_export_task.build_atlas_layout") as mock_build, \
-             patch("os.path.exists", return_value=True), \
-             patch("qfit.atlas_export_task.QgsLayoutExporter") as mock_exporter_cls:
-            mock_layout = MagicMock()
-            mock_layout.atlas.return_value = MagicMock()
-            mock_build.return_value = mock_layout
-            mock_exporter_cls.Success = 0
-            exporter_mock = MagicMock()
-            exporter_mock.exportToPdf.return_value = (0, "")  # Success tuple
-            mock_exporter_cls.return_value = exporter_mock
-
-            result = self.task.run()
-
-        self.assertTrue(result)
-
-    def test_finished_callback_receives_output_path(self):
-        with patch("qfit.atlas_export_task.build_atlas_layout") as mock_build, \
-             patch("os.path.exists", return_value=True), \
-             patch("qfit.atlas_export_task.QgsLayoutExporter") as mock_exporter_cls:
-            mock_layout = MagicMock()
-            mock_layout.atlas.return_value = MagicMock()
-            mock_build.return_value = mock_layout
-            mock_exporter_cls.Success = 0
-            exporter_mock = MagicMock()
-            exporter_mock.exportToPdf.return_value = (0, "")  # Success tuple
-            mock_exporter_cls.return_value = exporter_mock
-
-            _run_task(self.task)
-
-        self.assertEqual(self.received.get("output_path"), "/tmp/qfit_test_atlas.pdf")
-        self.assertIsNone(self.received.get("error"))
-        self.assertFalse(self.received.get("cancelled"))
-        self.assertEqual(self.received.get("page_count"), 5)
-
-    def test_page_count_matches_feature_count(self):
-        layer = _make_atlas_layer(feature_count=12)
+        layer = _make_atlas_layer(feature_count=3)
         received = {}
         task = AtlasExportTask(
             atlas_layer=layer,
-            output_path="/tmp/qfit_test_atlas.pdf",
+            output_path="/tmp/qfit_test_atlas_success.pdf",
             on_finished=lambda **kw: received.update(kw),
         )
-        with patch("qfit.atlas_export_task.build_atlas_layout") as mock_build, \
-             patch("os.path.exists", return_value=True), \
-             patch("qfit.atlas_export_task.QgsLayoutExporter") as mock_exporter_cls:
-            mock_layout = MagicMock()
-            mock_layout.atlas.return_value = MagicMock()
-            mock_build.return_value = mock_layout
-            mock_exporter_cls.Success = 0
-            exporter_mock = MagicMock()
-            exporter_mock.exportToPdf.return_value = (0, "")  # Success tuple
-            mock_exporter_cls.return_value = exporter_mock
+        layout_mock, atlas_mock, exporter_cls_mock = _make_atlas_mock(feature_count=3)
+        with patch("qfit.atlas_export_task.build_atlas_layout", return_value=layout_mock), \
+             patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
+             patch("qfit.atlas_export_task.AtlasExportTask._merge_pdfs"), \
+             patch("os.replace"), \
+             patch("os.makedirs"):
+            result = task.run()
+        self.assertTrue(result)
+
+    def test_finished_callback_receives_output_path(self):
+        layer = _make_atlas_layer(feature_count=1)
+        received = {}
+        task = AtlasExportTask(
+            atlas_layer=layer,
+            output_path="/tmp/qfit_test_atlas_cb.pdf",
+            on_finished=lambda **kw: received.update(kw),
+        )
+        layout_mock, _, exporter_cls_mock = _make_atlas_mock(feature_count=1)
+        with patch("qfit.atlas_export_task.build_atlas_layout", return_value=layout_mock), \
+             patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
+             patch("os.replace"), \
+             patch("os.makedirs"):
             _run_task(task)
-        self.assertEqual(received.get("page_count"), 12)
+        self.assertEqual(received.get("output_path"), "/tmp/qfit_test_atlas_cb.pdf")
+        self.assertIsNone(received.get("error"))
+        self.assertFalse(received.get("cancelled"))
+        self.assertEqual(received.get("page_count"), 1)
+
+    def test_page_count_matches_feature_count(self):
+        layer = _make_atlas_layer(feature_count=7)
+        received = {}
+        task = AtlasExportTask(
+            atlas_layer=layer,
+            output_path="/tmp/qfit_test_atlas_pc.pdf",
+            on_finished=lambda **kw: received.update(kw),
+        )
+        layout_mock, _, exporter_cls_mock = _make_atlas_mock(feature_count=7)
+        with patch("qfit.atlas_export_task.build_atlas_layout", return_value=layout_mock), \
+             patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
+             patch("qfit.atlas_export_task.AtlasExportTask._merge_pdfs"), \
+             patch("os.remove"), \
+             patch("os.makedirs"):
+            _run_task(task)
+        self.assertEqual(received.get("page_count"), 7)
 
 
 # ---------------------------------------------------------------------------
@@ -211,27 +269,22 @@ class TestAtlasExportTaskEmptyLayer(unittest.TestCase):
 class TestAtlasExportTaskExporterError(unittest.TestCase):
     def test_finished_callback_receives_error_on_exporter_failure(self):
         received = {}
-        layer = _make_atlas_layer(feature_count=3)
+        layer = _make_atlas_layer(feature_count=2)
         task = AtlasExportTask(
             atlas_layer=layer,
-            output_path="/tmp/qfit_test_atlas.pdf",
+            output_path="/tmp/qfit_test_atlas_err.pdf",
             on_finished=lambda **kw: received.update(kw),
         )
-        with patch("qfit.atlas_export_task.build_atlas_layout") as mock_build, \
-             patch("os.path.exists", return_value=True), \
-             patch("qfit.atlas_export_task.QgsLayoutExporter") as mock_exporter_cls:
-            mock_layout = MagicMock()
-            mock_layout.atlas.return_value = MagicMock()
-            mock_build.return_value = mock_layout
-            mock_exporter_cls.Success = 0
-            exporter_mock = MagicMock()
-            exporter_mock.exportToPdf.return_value = (1, "mock export error")  # failure tuple
-            mock_exporter_cls.return_value = exporter_mock
+        layout_mock, _, exporter_cls_mock = _make_atlas_mock(feature_count=2)
+        # Make the per-page exportToPdf return failure code 1
+        exporter_cls_mock.return_value.exportToPdf.return_value = 1
+        with patch("qfit.atlas_export_task.build_atlas_layout", return_value=layout_mock), \
+             patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
+             patch("os.makedirs"):
             _run_task(task)
-
         self.assertIsNone(received.get("output_path"))
         self.assertIsNotNone(received.get("error"))
-        self.assertIn("error code 1", received["error"])
+        self.assertIn("page 1", received["error"])
 
 
 # ---------------------------------------------------------------------------
@@ -266,23 +319,15 @@ class TestAtlasExportTaskCancellation(unittest.TestCase):
         layer = _make_atlas_layer(feature_count=3)
         task = AtlasExportTask(
             atlas_layer=layer,
-            output_path="/tmp/qfit_test_atlas.pdf",
+            output_path="/tmp/qfit_test_atlas_cancel.pdf",
             on_finished=lambda **kw: received.update(kw),
         )
         task._cancelled = True
-
-        with patch("qfit.atlas_export_task.build_atlas_layout") as mock_build, \
-             patch("os.path.exists", return_value=True), \
-             patch("qfit.atlas_export_task.QgsLayoutExporter") as mock_exporter_cls:
-            mock_layout = MagicMock()
-            mock_layout.atlas.return_value = MagicMock()
-            mock_build.return_value = mock_layout
-            mock_exporter_cls.Success = 0
-            exporter_mock = MagicMock()
-            exporter_mock.exportToPdf.return_value = (0, "")  # Success tuple
-            mock_exporter_cls.return_value = exporter_mock
+        layout_mock, _, exporter_cls_mock = _make_atlas_mock(feature_count=3)
+        with patch("qfit.atlas_export_task.build_atlas_layout", return_value=layout_mock), \
+             patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
+             patch("os.makedirs"):
             _run_task(task)
-
         self.assertTrue(received.get("cancelled"))
         self.assertIsNone(received.get("output_path"))
 
@@ -297,87 +342,148 @@ class TestAtlasExportTaskNoCallback(unittest.TestCase):
         layer = _make_atlas_layer(feature_count=1)
         task = AtlasExportTask(
             atlas_layer=layer,
-            output_path="/tmp/qfit_test_atlas.pdf",
+            output_path="/tmp/qfit_test_atlas_nocb.pdf",
             on_finished=None,
         )
-        with patch("qfit.atlas_export_task.build_atlas_layout") as mock_build, \
-             patch("os.path.exists", return_value=True), \
-             patch("qfit.atlas_export_task.QgsLayoutExporter") as mock_exporter_cls:
-            mock_layout = MagicMock()
-            mock_layout.atlas.return_value = MagicMock()
-            mock_build.return_value = mock_layout
-            mock_exporter_cls.Success = 0
-            exporter_mock = MagicMock()
-            exporter_mock.exportToPdf.return_value = (0, "")  # Success tuple
-            mock_exporter_cls.return_value = exporter_mock
+        layout_mock, _, exporter_cls_mock = _make_atlas_mock(feature_count=1)
+        with patch("qfit.atlas_export_task.build_atlas_layout", return_value=layout_mock), \
+             patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
+             patch("os.replace"), \
+             patch("os.makedirs"):
             task.run()
             task.finished(True)  # should not raise
 
 
 # ---------------------------------------------------------------------------
-# Tests: subset_string applies visualization filter to atlas layer
+# Tests: atlas export leaves layer subset filters alone
 # ---------------------------------------------------------------------------
 
 
-class TestAtlasExportTaskSubsetFilter(unittest.TestCase):
-    def test_subset_string_is_applied_and_restored(self):
-        """Atlas export applies the provided subset string and restores the original."""
+class TestAtlasExportTaskLayerSubsetHandling(unittest.TestCase):
+    def test_export_does_not_modify_layer_subset_string(self):
+        """Atlas export should not clear, apply, or restore atlas layer subsets."""
         received = {}
-        layer = _make_atlas_layer(feature_count=5)
-        layer.subsetString.return_value = "original_subset"
+        layer = _make_atlas_layer(feature_count=1)
         layer.setSubsetString = MagicMock()
-
         task = AtlasExportTask(
             atlas_layer=layer,
-            output_path="/tmp/qfit_test_atlas.pdf",
+            output_path="/tmp/qfit_test_atlas_subset.pdf",
             on_finished=lambda **kw: received.update(kw),
-            subset_string="activity_type = 'Ride'",
         )
-
-        with patch("qfit.atlas_export_task.build_atlas_layout") as mock_build, \
-             patch("os.path.exists", return_value=True), \
-             patch("qfit.atlas_export_task.QgsLayoutExporter") as mock_exporter_cls:
-            mock_layout = MagicMock()
-            mock_layout.atlas.return_value = MagicMock()
-            mock_build.return_value = mock_layout
-            mock_exporter_cls.Success = 0
-            exporter_mock = MagicMock()
-            exporter_mock.exportToPdf.return_value = (0, "")  # Success tuple
-            mock_exporter_cls.return_value = exporter_mock
+        layout_mock, _, exporter_cls_mock = _make_atlas_mock(feature_count=1)
+        with patch("qfit.atlas_export_task.build_atlas_layout", return_value=layout_mock), \
+             patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
+             patch("os.replace"), \
+             patch("os.makedirs"):
             _run_task(task)
-
-        # Should have applied the filter subset, then restored the original
-        calls = layer.setSubsetString.call_args_list
-        self.assertEqual(calls[0][0][0], "activity_type = 'Ride'")
-        self.assertEqual(calls[1][0][0], "original_subset")
+        layer.setSubsetString.assert_not_called()
         self.assertIsNotNone(received.get("output_path"))
 
-    def test_no_subset_string_does_not_call_set_subset(self):
-        """When subset_string=None, setSubsetString is never called."""
-        received = {}
-        layer = _make_atlas_layer(feature_count=3)
-        layer.setSubsetString = MagicMock()
 
+# ---------------------------------------------------------------------------
+# Tests: per-page activity filtering
+# ---------------------------------------------------------------------------
+
+
+class TestAtlasExportTaskPerPageFilter(unittest.TestCase):
+    def _make_filterable_layer(self, sid_value="act_001"):
+        """Return a mock layer that has source_activity_id field and subset tracking."""
+        layer = MagicMock()
+        layer.subsetString.return_value = ""
+        subset_calls = []
+        layer.setSubsetString.side_effect = lambda s: subset_calls.append(s)
+        fields = MagicMock()
+        fields.indexOf = lambda name: 0 if name == "source_activity_id" else -1
+        layer.fields.return_value = fields
+        return layer, subset_calls
+
+    def test_per_page_filter_applied_and_restored(self):
+        """Each page's data layers are filtered to that page's activity and restored after."""
+        track_layer, track_calls = self._make_filterable_layer()
+
+        layout_mock, atlas_mock, exporter_cls_mock = _make_atlas_mock(feature_count=1)
+
+        # Duck-typing: map item needs setExtent and layers callables.
+        map_item = MagicMock()
+        map_item.layers.return_value = [track_layer]
+        map_item.setExtent = MagicMock()
+        layout_mock.items.return_value = [map_item]
+
+        # Atlas layer: all indexOf calls return 0 (all fields present).
+        # All attribute() calls return 1000.0 (numeric, safe for both extent and sid).
+        atlas_layer = _make_atlas_layer(feature_count=1)
+        atlas_layer.fields.return_value.indexOf = lambda name: 0
+
+        feat_mock = atlas_mock.layout.return_value.reportContext.return_value.feature.return_value
+        feat_mock.attribute.return_value = 1000.0
+
+        received = {}
         task = AtlasExportTask(
-            atlas_layer=layer,
-            output_path="/tmp/qfit_test_atlas.pdf",
+            atlas_layer=atlas_layer,
+            output_path="/tmp/qfit_test_filter.pdf",
             on_finished=lambda **kw: received.update(kw),
-            subset_string=None,
         )
 
-        with patch("qfit.atlas_export_task.build_atlas_layout") as mock_build, \
-             patch("os.path.exists", return_value=True), \
-             patch("qfit.atlas_export_task.QgsLayoutExporter") as mock_exporter_cls:
-            mock_layout = MagicMock()
-            mock_layout.atlas.return_value = MagicMock()
-            mock_build.return_value = mock_layout
-            mock_exporter_cls.Success = 0
-            exporter_mock = MagicMock()
-            exporter_mock.exportToPdf.return_value = (0, "")  # Success tuple
-            mock_exporter_cls.return_value = exporter_mock
+        with patch("qfit.atlas_export_task.build_atlas_layout", return_value=layout_mock), \
+             patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
+             patch("os.replace"), \
+             patch("os.makedirs"):
             _run_task(task)
 
-        layer.setSubsetString.assert_not_called()
+        # A per-page filter was set on the track layer.
+        self.assertTrue(len(track_calls) >= 2, f"Expected ≥2 calls, got: {track_calls}")
+        self.assertTrue(any("source_activity_id" in call for call in track_calls[:-1]))
+        # Original subset string ("") was restored as the final call.
+        self.assertEqual(track_calls[-1], "")
+        self.assertIsNotNone(received.get("output_path"))
+
+    def test_multi_page_merges_pdfs(self):
+        """Multi-page export calls _merge_pdfs and cleans up per-page files."""
+        layer = _make_atlas_layer(feature_count=3)
+        received = {}
+        task = AtlasExportTask(
+            atlas_layer=layer,
+            output_path="/tmp/qfit_test_merge.pdf",
+            on_finished=lambda **kw: received.update(kw),
+        )
+        layout_mock, _, exporter_cls_mock = _make_atlas_mock(feature_count=3)
+        merge_calls = []
+        remove_calls = []
+        with patch("qfit.atlas_export_task.build_atlas_layout", return_value=layout_mock), \
+             patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
+             patch("qfit.atlas_export_task.AtlasExportTask._merge_pdfs",
+                   side_effect=lambda pages, out: merge_calls.append((pages, out))), \
+             patch("os.remove", side_effect=lambda p: remove_calls.append(p)), \
+             patch("os.makedirs"):
+            _run_task(task)
+        # _merge_pdfs was called with 3 page paths
+        self.assertEqual(len(merge_calls), 1)
+        self.assertEqual(len(merge_calls[0][0]), 3)
+        self.assertEqual(merge_calls[0][1], "/tmp/qfit_test_merge.pdf")
+        # All per-page files were removed
+        self.assertEqual(len(remove_calls), 3)
+        self.assertIsNotNone(received.get("output_path"))
+
+    def test_single_page_replaces_without_merge(self):
+        """Single-page export uses os.replace instead of _merge_pdfs."""
+        layer = _make_atlas_layer(feature_count=1)
+        received = {}
+        task = AtlasExportTask(
+            atlas_layer=layer,
+            output_path="/tmp/qfit_test_replace.pdf",
+            on_finished=lambda **kw: received.update(kw),
+        )
+        layout_mock, _, exporter_cls_mock = _make_atlas_mock(feature_count=1)
+        replace_calls = []
+        with patch("qfit.atlas_export_task.build_atlas_layout", return_value=layout_mock), \
+             patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
+             patch("os.replace", side_effect=lambda src, dst: replace_calls.append((src, dst))), \
+             patch("qfit.atlas_export_task.AtlasExportTask._merge_pdfs") as mock_merge, \
+             patch("os.makedirs"):
+            _run_task(task)
+        mock_merge.assert_not_called()
+        self.assertEqual(len(replace_calls), 1)
+        self.assertEqual(replace_calls[0][1], "/tmp/qfit_test_replace.pdf")
 
 
 if __name__ == "__main__":
