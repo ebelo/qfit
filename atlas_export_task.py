@@ -252,6 +252,143 @@ def build_atlas_layout(
     return layout
 
 
+def build_cover_layout(
+    atlas_layer,
+    project=None,
+) -> QgsPrintLayout | None:
+    """Build a single-page cover layout from document-level fields on *atlas_layer*.
+
+    Returns ``None`` if the atlas layer has no features or the required
+    document-level fields are absent (cover is simply skipped in that case).
+    """
+    if atlas_layer is None or atlas_layer.featureCount() == 0:
+        return None
+
+    # Read the first feature — all features carry identical document-level fields.
+    feat = next(iter(atlas_layer.getFeatures()), None)
+    if feat is None:
+        return None
+
+    fields = atlas_layer.fields()
+
+    def _get(name: str, default: str = "") -> str:
+        idx = fields.indexOf(name)
+        if idx < 0:
+            return default
+        val = feat.attribute(idx)
+        return str(val) if val is not None else default
+
+    cover_summary = _get("document_cover_summary")
+    activity_count = _get("document_activity_count")
+    date_range_label = _get("document_date_range_label")
+    total_distance_label = _get("document_total_distance_label")
+    total_duration_label = _get("document_total_duration_label")
+    total_elevation_gain_label = _get("document_total_elevation_gain_label")
+    activity_types_label = _get("document_activity_types_label")
+
+    proj = project or QgsProject.instance()
+    layout = QgsPrintLayout(proj)
+    layout.initializeDefaults()
+    layout.setName("qfit Atlas Cover")
+
+    page_collection = layout.pageCollection()
+    if page_collection.pageCount() > 0:
+        page = page_collection.page(0)
+        page.setPageSize(
+            QgsLayoutSize(PAGE_WIDTH_MM, PAGE_HEIGHT_MM, QgsUnitTypes.LayoutMillimeters)
+        )
+
+    # Vertical positioning helpers
+    content_width = PAGE_WIDTH_MM - 2 * MARGIN_MM
+    center_x = MARGIN_MM
+
+    # Title — centred vertically at ~35% of page height
+    title_y = PAGE_HEIGHT_MM * 0.30
+    title_h = 18.0
+    _add_label(
+        layout,
+        "qfit Activity Atlas",
+        x=center_x,
+        y=title_y,
+        w=content_width,
+        h=title_h,
+        font_size=24.0,
+        bold=True,
+        align_right=False,
+    )
+
+    # Subtitle (cover summary) — just below title
+    if cover_summary:
+        _add_label(
+            layout,
+            cover_summary,
+            x=center_x,
+            y=title_y + title_h + 4.0,
+            w=content_width,
+            h=10.0,
+            font_size=11.0,
+            bold=False,
+            color=QColor(60, 60, 60),
+        )
+
+    # Separator line (thin label with underline approximated via background color)
+    sep_y = title_y + title_h + 18.0
+    sep_label = QgsLayoutItemLabel(layout)
+    sep_label.setText("")
+    sep_label.attemptMove(QgsLayoutPoint(center_x, sep_y, QgsUnitTypes.LayoutMillimeters))
+    sep_label.attemptResize(QgsLayoutSize(content_width, 0.3, QgsUnitTypes.LayoutMillimeters))
+    sep_label.setBackgroundColor(QColor(180, 180, 180))
+    sep_label.setBackgroundEnabled(True)
+    layout.addLayoutItem(sep_label)
+
+    # Stats block — label/value rows
+    stats_y = sep_y + 6.0
+    row_h = 8.0
+    label_col_w = 60.0
+    value_col_w = content_width - label_col_w
+    label_color = QColor(100, 100, 100)
+    value_color = QColor(20, 20, 20)
+
+    stats_rows: list[tuple[str, str]] = []
+    if activity_count and activity_count != "0":
+        stats_rows.append(("Activities", activity_count))
+    if date_range_label:
+        stats_rows.append(("Date range", date_range_label))
+    if total_distance_label:
+        stats_rows.append(("Distance", total_distance_label))
+    if total_duration_label:
+        stats_rows.append(("Moving time", total_duration_label))
+    if total_elevation_gain_label:
+        stats_rows.append(("Climbing", total_elevation_gain_label))
+    if activity_types_label:
+        stats_rows.append(("Activity types", activity_types_label))
+
+    for i, (row_label, row_value) in enumerate(stats_rows):
+        row_y = stats_y + i * row_h
+        _add_label(
+            layout,
+            f"{row_label}:",
+            x=center_x,
+            y=row_y,
+            w=label_col_w,
+            h=row_h,
+            font_size=9.0,
+            color=label_color,
+        )
+        _add_label(
+            layout,
+            row_value,
+            x=center_x + label_col_w,
+            y=row_y,
+            w=value_col_w,
+            h=row_h,
+            font_size=9.0,
+            color=value_color,
+        )
+
+    return layout
+
+
 class AtlasExportTask(QgsTask):
     """Export the qfit atlas as a multi-page PDF via QGIS print layout.
 
@@ -445,12 +582,20 @@ class AtlasExportTask(QgsTask):
                 self._error = "No pages were exported."
                 return False
 
+            # Prepend a cover page (silently skipped if generation fails).
+            cover_path = self._export_cover_page(
+                self._atlas_layer,
+                self._output_path,
+                project=self._project,
+            )
+            all_paths = ([cover_path] if cover_path else []) + page_paths
+
             # Merge all per-page PDFs into a single output PDF.
-            if len(page_paths) == 1:
-                os.replace(page_paths[0], self._output_path)
+            if len(all_paths) == 1:
+                os.replace(all_paths[0], self._output_path)
             else:
-                self._merge_pdfs(page_paths, self._output_path)
-                for p in page_paths:
+                self._merge_pdfs(all_paths, self._output_path)
+                for p in all_paths:
                     try:
                         os.remove(p)
                     except OSError:
@@ -461,6 +606,36 @@ class AtlasExportTask(QgsTask):
             return False
 
         return not self.isCanceled()
+
+    @staticmethod
+    def _export_cover_page(
+        atlas_layer,
+        output_path: str,
+        project=None,
+    ) -> str | None:
+        """Export a single cover-page PDF and return its path, or None on failure.
+
+        The cover is built from document-level fields stored on every feature of
+        *atlas_layer*.  Failures are swallowed so they never abort the main export.
+        """
+        try:
+            cover_layout = build_cover_layout(atlas_layer, project=project)
+            if cover_layout is None:
+                return None
+
+            cover_path = f"{output_path}.cover.pdf"
+            exporter = QgsLayoutExporter(cover_layout)
+            settings = QgsLayoutExporter.PdfExportSettings()
+            settings.dpi = 150
+            settings.rasterizeWholeImage = False
+            settings.forceVectorOutput = True
+
+            result = exporter.exportToPdf(cover_path, settings)
+            if result != QgsLayoutExporter.Success:
+                return None
+            return cover_path
+        except Exception:  # noqa: BLE001
+            return None
 
     @staticmethod
     def _merge_pdfs(page_paths: list[str], output_path: str) -> None:

@@ -72,7 +72,7 @@ def _make_qgis_stub():
 
 _qgis_core = _make_qgis_stub()
 
-from qfit.atlas_export_task import AtlasExportTask, build_atlas_layout  # noqa: E402
+from qfit.atlas_export_task import AtlasExportTask, build_atlas_layout, build_cover_layout  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -197,6 +197,7 @@ class TestAtlasExportTaskSuccess(unittest.TestCase):
         with patch("qfit.atlas_export_task.build_atlas_layout", return_value=layout_mock), \
              patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
              patch("qfit.atlas_export_task.AtlasExportTask._merge_pdfs"), \
+             patch("qfit.atlas_export_task.AtlasExportTask._export_cover_page", return_value=None), \
              patch("os.replace"), \
              patch("os.makedirs"):
             result = task.run()
@@ -213,6 +214,7 @@ class TestAtlasExportTaskSuccess(unittest.TestCase):
         layout_mock, _, exporter_cls_mock = _make_atlas_mock(feature_count=1)
         with patch("qfit.atlas_export_task.build_atlas_layout", return_value=layout_mock), \
              patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
+             patch("qfit.atlas_export_task.AtlasExportTask._export_cover_page", return_value=None), \
              patch("os.replace"), \
              patch("os.makedirs"):
             _run_task(task)
@@ -233,6 +235,7 @@ class TestAtlasExportTaskSuccess(unittest.TestCase):
         with patch("qfit.atlas_export_task.build_atlas_layout", return_value=layout_mock), \
              patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
              patch("qfit.atlas_export_task.AtlasExportTask._merge_pdfs"), \
+             patch("qfit.atlas_export_task.AtlasExportTask._export_cover_page", return_value=None), \
              patch("os.remove"), \
              patch("os.makedirs"):
             _run_task(task)
@@ -348,6 +351,7 @@ class TestAtlasExportTaskNoCallback(unittest.TestCase):
         layout_mock, _, exporter_cls_mock = _make_atlas_mock(feature_count=1)
         with patch("qfit.atlas_export_task.build_atlas_layout", return_value=layout_mock), \
              patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
+             patch("qfit.atlas_export_task.AtlasExportTask._export_cover_page", return_value=None), \
              patch("os.replace"), \
              patch("os.makedirs"):
             task.run()
@@ -373,6 +377,7 @@ class TestAtlasExportTaskLayerSubsetHandling(unittest.TestCase):
         layout_mock, _, exporter_cls_mock = _make_atlas_mock(feature_count=1)
         with patch("qfit.atlas_export_task.build_atlas_layout", return_value=layout_mock), \
              patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
+             patch("qfit.atlas_export_task.AtlasExportTask._export_cover_page", return_value=None), \
              patch("os.replace"), \
              patch("os.makedirs"):
             _run_task(task)
@@ -426,6 +431,7 @@ class TestAtlasExportTaskPerPageFilter(unittest.TestCase):
 
         with patch("qfit.atlas_export_task.build_atlas_layout", return_value=layout_mock), \
              patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
+             patch("qfit.atlas_export_task.AtlasExportTask._export_cover_page", return_value=None), \
              patch("os.replace"), \
              patch("os.makedirs"):
             _run_task(task)
@@ -453,6 +459,7 @@ class TestAtlasExportTaskPerPageFilter(unittest.TestCase):
              patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
              patch("qfit.atlas_export_task.AtlasExportTask._merge_pdfs",
                    side_effect=lambda pages, out: merge_calls.append((pages, out))), \
+             patch("qfit.atlas_export_task.AtlasExportTask._export_cover_page", return_value=None), \
              patch("os.remove", side_effect=lambda p: remove_calls.append(p)), \
              patch("os.makedirs"):
             _run_task(task)
@@ -477,6 +484,7 @@ class TestAtlasExportTaskPerPageFilter(unittest.TestCase):
         replace_calls = []
         with patch("qfit.atlas_export_task.build_atlas_layout", return_value=layout_mock), \
              patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
+             patch("qfit.atlas_export_task.AtlasExportTask._export_cover_page", return_value=None), \
              patch("os.replace", side_effect=lambda src, dst: replace_calls.append((src, dst))), \
              patch("qfit.atlas_export_task.AtlasExportTask._merge_pdfs") as mock_merge, \
              patch("os.makedirs"):
@@ -484,6 +492,73 @@ class TestAtlasExportTaskPerPageFilter(unittest.TestCase):
         mock_merge.assert_not_called()
         self.assertEqual(len(replace_calls), 1)
         self.assertEqual(replace_calls[0][1], "/tmp/qfit_test_replace.pdf")
+
+
+# ---------------------------------------------------------------------------
+# Tests: cover page
+# ---------------------------------------------------------------------------
+
+
+class TestCoverPage(unittest.TestCase):
+    def test_cover_page_prepended_to_output(self):
+        """Cover PDF path appears first in the merge call when cover succeeds."""
+        layer = _make_atlas_layer(feature_count=2)
+        received = {}
+        task = AtlasExportTask(
+            atlas_layer=layer,
+            output_path="/tmp/qfit_cover_test.pdf",
+            on_finished=lambda **kw: received.update(kw),
+        )
+        layout_mock, _, exporter_cls_mock = _make_atlas_mock(feature_count=2)
+        merge_calls = []
+        cover_path = "/tmp/qfit_cover_test.pdf.cover.pdf"
+        with patch("qfit.atlas_export_task.build_atlas_layout", return_value=layout_mock), \
+             patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
+             patch("qfit.atlas_export_task.AtlasExportTask._export_cover_page",
+                   return_value=cover_path), \
+             patch("qfit.atlas_export_task.AtlasExportTask._merge_pdfs",
+                   side_effect=lambda pages, out: merge_calls.append((pages, out))), \
+             patch("os.remove"), \
+             patch("os.makedirs"):
+            _run_task(task)
+        # Cover path is first in the merged list, followed by 2 activity pages.
+        self.assertEqual(len(merge_calls), 1)
+        all_pages = merge_calls[0][0]
+        self.assertEqual(len(all_pages), 3)
+        self.assertEqual(all_pages[0], cover_path)
+        self.assertIsNotNone(received.get("output_path"))
+
+    def test_cover_page_skipped_on_failure(self):
+        """Export succeeds even when _export_cover_page raises or returns None."""
+        layer = _make_atlas_layer(feature_count=1)
+        received = {}
+        task = AtlasExportTask(
+            atlas_layer=layer,
+            output_path="/tmp/qfit_cover_fail.pdf",
+            on_finished=lambda **kw: received.update(kw),
+        )
+        layout_mock, _, exporter_cls_mock = _make_atlas_mock(feature_count=1)
+        with patch("qfit.atlas_export_task.build_atlas_layout", return_value=layout_mock), \
+             patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
+             patch("qfit.atlas_export_task.AtlasExportTask._export_cover_page",
+                   return_value=None), \
+             patch("os.replace"), \
+             patch("os.makedirs"):
+            _run_task(task)
+        # Export should still succeed without a cover page.
+        self.assertIsNotNone(received.get("output_path"))
+        self.assertIsNone(received.get("error"))
+
+    def test_build_cover_layout_returns_none_for_empty_layer(self):
+        """build_cover_layout returns None when the atlas layer has no features."""
+        layer = _make_atlas_layer(feature_count=0)
+        result = build_cover_layout(layer)
+        self.assertIsNone(result)
+
+    def test_build_cover_layout_returns_none_for_none_layer(self):
+        """build_cover_layout returns None when atlas_layer is None."""
+        result = build_cover_layout(None)
+        self.assertIsNone(result)
 
 
 if __name__ == "__main__":
