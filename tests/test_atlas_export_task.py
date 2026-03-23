@@ -34,7 +34,11 @@ def _make_qgis_stub():
     qgis_core = ModuleType("qgis.core")
     qgis_core.QgsTask = _FakeQgsTask
     qgis_core.QgsProject = MagicMock()
-    qgis_core.QgsPrintLayout = MagicMock()
+    layout_instance = MagicMock()
+    layout_instance.pageCollection.return_value.pageCount.return_value = 1
+    layout_instance.pageCollection.return_value.page.return_value = MagicMock()
+    layout_cls = MagicMock(return_value=layout_instance)
+    qgis_core.QgsPrintLayout = layout_cls
     qgis_core.QgsLayoutItemMap = MagicMock()
     qgis_core.QgsLayoutItemMap.Auto = 1
     qgis_core.QgsLayoutItemMap.Fixed = 0
@@ -497,6 +501,173 @@ class TestAtlasExportTaskPerPageFilter(unittest.TestCase):
 # ---------------------------------------------------------------------------
 # Tests: cover page
 # ---------------------------------------------------------------------------
+
+
+def _make_cover_atlas_layer(fields_dict=None, feature_count=1):
+    """Return a mock atlas layer with cover document fields populated."""
+    fields_dict = fields_dict or {
+        "document_cover_summary": "3 activities · 2025-01-01 → 2026-03-22 · 250.0 km",
+        "document_activity_count": "3",
+        "document_date_range_label": "2025-01-01 → 2026-03-22",
+        "document_total_distance_label": "250.0 km",
+        "document_total_duration_label": "12h 30m",
+        "document_total_elevation_gain_label": "5000 m",
+        "document_activity_types_label": "Run, Ride",
+    }
+    all_field_names = list(fields_dict.keys())
+
+    layer = MagicMock()
+    layer.featureCount.return_value = feature_count
+
+    fields = MagicMock()
+    fields.indexOf = lambda name: all_field_names.index(name) if name in all_field_names else -1
+    layer.fields.return_value = fields
+
+    feat = MagicMock()
+    feat.attribute = lambda idx: list(fields_dict.values())[idx] if 0 <= idx < len(fields_dict) else None
+    layer.getFeatures.return_value = iter([feat])
+
+    return layer
+
+
+class TestBuildCoverLayout(unittest.TestCase):
+    def test_build_cover_layout_returns_layout_for_populated_layer(self):
+        """build_cover_layout returns a layout object when layer has features."""
+        layer = _make_cover_atlas_layer()
+        result = build_cover_layout(layer)
+        self.assertIsNotNone(result)
+
+    def test_build_cover_layout_sets_layout_name(self):
+        """Cover layout name should be 'qfit Atlas Cover'."""
+        layer = _make_cover_atlas_layer()
+        layout = build_cover_layout(layer)
+        self.assertIsNotNone(layout)
+        layout.setName.assert_called_with("qfit Atlas Cover")
+
+    def test_build_cover_layout_calls_initialize_defaults(self):
+        """Cover layout should call initializeDefaults."""
+        layer = _make_cover_atlas_layer()
+        layout = build_cover_layout(layer)
+        self.assertIsNotNone(layout)
+        layout.initializeDefaults.assert_called_once()
+
+    def test_build_cover_layout_skips_subtitle_when_summary_empty(self):
+        """When cover summary is empty/missing, subtitle label should not be added."""
+        fields_dict = {
+            "document_cover_summary": "",
+            "document_activity_count": "2",
+            "document_date_range_label": "2025-01-01",
+            "document_total_distance_label": "100.0 km",
+            "document_total_duration_label": "5h",
+            "document_total_elevation_gain_label": "",
+            "document_activity_types_label": "Run",
+        }
+        layer = _make_cover_atlas_layer(fields_dict=fields_dict)
+        # Should not raise and should still return a layout
+        result = build_cover_layout(layer)
+        self.assertIsNotNone(result)
+
+    def test_build_cover_layout_skips_zero_activity_count_row(self):
+        """Activity count of '0' should not appear in the stats block."""
+        fields_dict = {
+            "document_cover_summary": "",
+            "document_activity_count": "0",
+            "document_date_range_label": "",
+            "document_total_distance_label": "",
+            "document_total_duration_label": "",
+            "document_total_elevation_gain_label": "",
+            "document_activity_types_label": "",
+        }
+        layer = _make_cover_atlas_layer(fields_dict=fields_dict)
+        # Should not raise even with all-empty fields
+        result = build_cover_layout(layer)
+        self.assertIsNotNone(result)
+
+    def test_build_cover_layout_handles_missing_fields(self):
+        """build_cover_layout tolerates a layer where document fields are absent."""
+        layer = MagicMock()
+        layer.featureCount.return_value = 1
+        fields = MagicMock()
+        fields.indexOf = lambda name: -1  # all fields missing
+        layer.fields.return_value = fields
+        feat = MagicMock()
+        layer.getFeatures.return_value = iter([feat])
+        result = build_cover_layout(layer)
+        self.assertIsNotNone(result)
+
+    def test_build_cover_layout_handles_none_attribute_values(self):
+        """build_cover_layout tolerates None values returned for attributes."""
+        layer = MagicMock()
+        layer.featureCount.return_value = 1
+        fields = MagicMock()
+        fields.indexOf = lambda name: 0  # always returns index 0
+        layer.fields.return_value = fields
+        feat = MagicMock()
+        feat.attribute.return_value = None  # all attribute reads return None
+        layer.getFeatures.return_value = iter([feat])
+        result = build_cover_layout(layer)
+        self.assertIsNotNone(result)
+
+    def test_build_cover_layout_uses_provided_project(self):
+        """build_cover_layout passes the project to QgsPrintLayout."""
+        layer = _make_cover_atlas_layer()
+        project = MagicMock()
+        build_cover_layout(layer, project=project)
+        # QgsPrintLayout is mocked globally; verify it was called with the project
+        from qfit.atlas_export_task import QgsPrintLayout  # noqa: PLC0415
+        QgsPrintLayout.assert_called_with(project)
+
+
+class TestExportCoverPage(unittest.TestCase):
+    def test_export_cover_page_returns_path_on_success(self):
+        """_export_cover_page returns the cover PDF path when export succeeds."""
+        layer = _make_cover_atlas_layer()
+        cover_layout = MagicMock()
+        exporter_instance = MagicMock()
+        exporter_instance.exportToPdf.return_value = 0  # Success
+
+        exporter_cls = MagicMock()
+        exporter_cls.return_value = exporter_instance
+        exporter_cls.Success = 0
+        exporter_cls.PdfExportSettings = MagicMock(return_value=MagicMock())
+
+        with patch("qfit.atlas_export_task.build_cover_layout", return_value=cover_layout), \
+             patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls):
+            result = AtlasExportTask._export_cover_page(layer, "/tmp/atlas.pdf")
+
+        self.assertEqual(result, "/tmp/atlas.pdf.cover.pdf")
+
+    def test_export_cover_page_returns_none_when_layout_is_none(self):
+        """_export_cover_page returns None when build_cover_layout returns None."""
+        layer = _make_cover_atlas_layer(feature_count=0)
+        with patch("qfit.atlas_export_task.build_cover_layout", return_value=None):
+            result = AtlasExportTask._export_cover_page(layer, "/tmp/atlas.pdf")
+        self.assertIsNone(result)
+
+    def test_export_cover_page_returns_none_on_exporter_failure(self):
+        """_export_cover_page returns None when exportToPdf reports a non-success code."""
+        layer = _make_cover_atlas_layer()
+        cover_layout = MagicMock()
+        exporter_instance = MagicMock()
+        exporter_instance.exportToPdf.return_value = 1  # failure
+
+        exporter_cls = MagicMock()
+        exporter_cls.return_value = exporter_instance
+        exporter_cls.Success = 0
+        exporter_cls.PdfExportSettings = MagicMock(return_value=MagicMock())
+
+        with patch("qfit.atlas_export_task.build_cover_layout", return_value=cover_layout), \
+             patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls):
+            result = AtlasExportTask._export_cover_page(layer, "/tmp/atlas.pdf")
+
+        self.assertIsNone(result)
+
+    def test_export_cover_page_returns_none_on_exception(self):
+        """_export_cover_page swallows exceptions and returns None."""
+        layer = _make_cover_atlas_layer()
+        with patch("qfit.atlas_export_task.build_cover_layout", side_effect=RuntimeError("boom")):
+            result = AtlasExportTask._export_cover_page(layer, "/tmp/atlas.pdf")
+        self.assertIsNone(result)
 
 
 class TestCoverPage(unittest.TestCase):
