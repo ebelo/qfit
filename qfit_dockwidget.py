@@ -1,5 +1,5 @@
 import os
-from datetime import date, datetime, time
+from datetime import date
 
 from qgis.core import QgsApplication, QgsProject
 from qgis.PyQt import uic
@@ -585,19 +585,18 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._set_status("Strava fetch failed")
             return
 
-        before, after = self._build_fetch_epoch_range()
         self.activities = activities
         detailed_count = sum(1 for activity in self.activities if activity.geometry_source == "stream")
         today_str = date.today().isoformat()
         self.last_fetch_context = {
             "provider": "strava",
-            "before_epoch": before,
-            "after_epoch": after,
+            "before_epoch": None,
+            "after_epoch": None,
             "fetched_count": len(self.activities),
             "detailed_count": detailed_count,
             "stream_stats": client.last_stream_enrichment_stats,
             "rate_limit": client.last_rate_limit,
-            "is_full_sync": self._is_full_sync_window(before, after),
+            "is_full_sync": True,
         }
         # Persist last sync date
         settings = QSettings()
@@ -936,28 +935,8 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def _redirect_uri(self):
         return self.redirectUriLineEdit.text().strip() or StravaClient.DEFAULT_REDIRECT_URI
 
-    def _build_fetch_epoch_range(self):
-        local_tz = datetime.now().astimezone().tzinfo
-        after = None
-        before = None
-
-        if self.dateFromEdit.date().isValid():
-            start_date = self._qdate_to_date(self.dateFromEdit.date())
-            after = int(datetime.combine(start_date, time(0, 0, 0), tzinfo=local_tz).timestamp())
-
-        if self.dateToEdit.date().isValid():
-            end_date = self._qdate_to_date(self.dateToEdit.date())
-            before = int(datetime.combine(end_date, time(23, 59, 59), tzinfo=local_tz).timestamp())
-
-        return before, after
-
     def _qdate_to_date(self, value):
         return date(value.year(), value.month(), value.day())
-
-    def _is_full_sync_window(self, before_epoch, after_epoch):
-        if before_epoch is None or after_epoch is None:
-            return False
-        return (before_epoch - after_epoch) >= 365 * 24 * 60 * 60
 
     def _populate_activity_types(self):
         current_value = self.activityTypeComboBox.currentText() or "All"
