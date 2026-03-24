@@ -20,6 +20,7 @@ from .activity_query import (
     sort_activities,
     summarize_activities,
 )
+from .background_map_controller import BackgroundMapController
 from .contextual_help import ContextualHelpBinder, build_dock_help_entries
 from .gpkg_writer import GeoPackageWriter
 from .layer_manager import LayerManager
@@ -30,7 +31,6 @@ from .mapbox_config import (
     TILE_MODES,
     MapboxConfigError,
     background_preset_names,
-    preset_defaults,
     preset_requires_custom_style,
 )
 from .fetch_task import StravaFetchTask
@@ -66,6 +66,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.settings = SettingsService()
         self.sync_controller = SyncController()
         self.layer_manager = LayerManager(iface)
+        self.background_controller = BackgroundMapController(self.layer_manager)
         self.cache = self._build_cache()
         self.setupUi(self)
         self._remove_stale_qfit_layers()
@@ -352,7 +353,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._save_settings()
         enabled = self.backgroundMapCheckBox.isChecked()
         try:
-            self.background_layer = self.layer_manager.ensure_background_layer(
+            self.background_layer = self.background_controller.load_background(
                 enabled=enabled,
                 preset_name=self.backgroundPresetComboBox.currentText(),
                 access_token=self.mapboxAccessTokenLineEdit.text().strip(),
@@ -371,15 +372,16 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._set_status("Background map cleared")
 
     def _sync_background_style_fields(self, preset_name, force=False):
-        if preset_requires_custom_style(preset_name):
-            return
-        current_owner = self.mapboxStyleOwnerLineEdit.text().strip()
-        current_style_id = self.mapboxStyleIdLineEdit.text().strip()
-        if current_owner and current_style_id and not force:
-            return
-        style_owner, style_id = preset_defaults(preset_name)
-        self.mapboxStyleOwnerLineEdit.setText(style_owner)
-        self.mapboxStyleIdLineEdit.setText(style_id)
+        result = self.background_controller.resolve_style_defaults(
+            preset_name,
+            current_owner=self.mapboxStyleOwnerLineEdit.text().strip(),
+            current_style_id=self.mapboxStyleIdLineEdit.text().strip(),
+            force=force,
+        )
+        if result is not None:
+            style_owner, style_id = result
+            self.mapboxStyleOwnerLineEdit.setText(style_owner)
+            self.mapboxStyleIdLineEdit.setText(style_id)
 
     def on_open_authorize_clicked(self):
         self._save_settings()
