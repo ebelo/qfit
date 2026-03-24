@@ -87,7 +87,7 @@ class StravaFetchTask(QgsTask):
         except StravaClientError as exc:
             self._error = str(exc)
             return False
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:  # noqa: BLE001 – QgsTask worker thread safety net
             logger.exception("Strava fetch task failed")
             self._error = str(exc)
             return False

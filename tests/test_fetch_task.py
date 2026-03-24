@@ -198,5 +198,29 @@ class TestStravaFetchTaskNoCallback(unittest.TestCase):
         task.finished(True)
 
 
+class TestStravaFetchTaskUnexpectedError(unittest.TestCase):
+    """The worker-thread safety net catches unexpected errors and reports them."""
+
+    def test_unexpected_exception_caught_and_reported(self):
+        received = {}
+        mock_client = MagicMock()
+        mock_client.fetch_activities.side_effect = ValueError("bad data")
+
+        task = StravaFetchTask(
+            client=mock_client,
+            per_page=200,
+            max_pages=0,
+            before=None,
+            after=None,
+            use_detailed_streams=False,
+            max_detailed_activities=0,
+            on_finished=lambda **kw: received.update(kw),
+        )
+        result = task.run()
+        self.assertFalse(result)
+        task.finished(result)
+        self.assertIn("bad data", received.get("error", ""))
+
+
 if __name__ == "__main__":
     unittest.main()

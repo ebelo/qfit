@@ -96,7 +96,7 @@ class LayerManager:
                     # Apply the simplified style JSON (expression colors already
                     # replaced with literal fallbacks so QGIS doesn't render black)
                     self._apply_mapbox_gl_style(layer, simplified_style)
-            except Exception:
+            except (RuntimeError, KeyError, ValueError, OSError):
                 logger.warning("Vector tile layer creation failed, falling back to raster", exc_info=True)
                 layer = None
 
@@ -259,7 +259,7 @@ class LayerManager:
                     )
                     settings.setDataDefinedProperties(dd_props)
                 style.setLabelSettings(settings)
-        except Exception:
+        except (RuntimeError, AttributeError):
             logger.debug("Mapbox GL style application skipped", exc_info=True)
 
     def _apply_mapbox_gl_style(self, layer: QgsVectorTileLayer, style_definition: dict) -> None:
@@ -289,7 +289,7 @@ class LayerManager:
                     self._apply_label_priority(labeling)
                     layer.setLabeling(labeling)
                     layer.setLabelsEnabled(True)
-        except Exception:
+        except (RuntimeError, ImportError):
             logger.debug("Extent transformation failed, using default renderer", exc_info=True)
 
     def _remove_background_layers(self):
@@ -324,7 +324,7 @@ class LayerManager:
                     if not transformed.isEmpty():
                         canvas.setExtent(transformed)
                         canvas.refresh()
-                except Exception:
+                except RuntimeError:
                     logger.debug("Extent transform in CRS switch failed", exc_info=True)
 
     def _move_background_layers_to_bottom(self):
