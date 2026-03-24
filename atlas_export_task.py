@@ -22,7 +22,10 @@ Page template (A4 landscape, 297 × 210 mm):
 
 from __future__ import annotations
 
+import logging
 import os
+
+logger = logging.getLogger(__name__)
 
 from qgis.core import (
     QgsCoordinateReferenceSystem,
@@ -168,7 +171,7 @@ def build_atlas_layout(
             if isinstance(layer, QgsVectorTileLayer):
                 layer.setTileBorderRenderingEnabled(False)
     except Exception:
-        pass
+        logger.debug("Vector tile label priority adjustment skipped", exc_info=True)
 
     layout.addLayoutItem(map_item)
 
@@ -445,6 +448,7 @@ class AtlasExportTask(QgsTask):
         try:
             return self._run_export()
         except Exception as exc:  # noqa: BLE001
+            logger.exception("Atlas export task failed")
             self._error = str(exc)
             return False
 
@@ -507,7 +511,7 @@ class AtlasExportTask(QgsTask):
                         if sid_idx >= 0:
                             filterable_layers.append((layer, layer.subsetString()))
                     except Exception:  # noqa: BLE001
-                        pass
+                        logger.debug("Skipping non-filterable layer", exc_info=True)
 
             # Field index for source_activity_id in the atlas layer.
             sid_atlas_idx = fields.indexOf("source_activity_id")
@@ -537,7 +541,7 @@ class AtlasExportTask(QgsTask):
                                 try:
                                     layer.setSubsetString(page_filter)
                                 except Exception:  # noqa: BLE001
-                                    pass
+                                    logger.debug("Failed to set page filter on layer", exc_info=True)
 
                     # Apply the stored precomputed extent to the map item.
                     if map_item is not None and has_stored_extents:
@@ -575,7 +579,7 @@ class AtlasExportTask(QgsTask):
                     try:
                         layer.setSubsetString(original_subset)
                     except Exception:  # noqa: BLE001
-                        pass
+                        logger.debug("Failed to restore layer subset", exc_info=True)
                 atlas.endRender()
 
             if not page_paths:
@@ -602,6 +606,7 @@ class AtlasExportTask(QgsTask):
                         pass
 
         except Exception as exc:  # noqa: BLE001
+            logger.exception("Atlas export failed")
             self._error = str(exc)
             return False
 
@@ -635,6 +640,7 @@ class AtlasExportTask(QgsTask):
                 return None
             return cover_path
         except Exception:  # noqa: BLE001
+            logger.exception("Cover page export failed")
             return None
 
     @staticmethod
@@ -674,7 +680,7 @@ class AtlasExportTask(QgsTask):
                         tile_mode=self._restore_tile_mode,
                     )
             except Exception:
-                pass
+                logger.warning("Failed to restore tile mode after export", exc_info=True)
 
         if self._on_finished is not None:
             self._on_finished(
