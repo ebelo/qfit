@@ -111,7 +111,23 @@ class ActivityQueryTests(unittest.TestCase):
         self.assertIn('"distance_m" >= 10000.0', subset)
         self.assertIn('"distance_m" <= 50000.0', subset)
         self.assertIn("lower(coalesce(\"name\", '')) LIKE '%o''brien%'", subset)
+        self.assertIn("lower(coalesce(\"activity_type\", '')) LIKE '%o''brien%'", subset)
+        self.assertIn("lower(coalesce(\"sport_type\", '')) LIKE '%o''brien%'", subset)
         self.assertIn('"geometry_source" = \'stream\'', subset)
+
+    def test_build_subset_string_search_spans_name_type_sport(self):
+        query = ActivityQuery(search_text="ride")
+        subset = build_subset_string(query)
+        self.assertIn("lower(coalesce(\"name\", ''))", subset)
+        self.assertIn("lower(coalesce(\"activity_type\", ''))", subset)
+        self.assertIn("lower(coalesce(\"sport_type\", ''))", subset)
+        self.assertIn(" OR ", subset)
+
+    def test_build_subset_string_apostrophe_escaping(self):
+        query = ActivityQuery(search_text="it's")
+        subset = build_subset_string(query)
+        self.assertIn("it''s", subset)
+        self.assertNotIn("it's", subset)
 
     def test_format_helpers_return_human_readable_text(self):
         self.assertEqual(format_duration(3725), "1h 02m")
