@@ -673,9 +673,10 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 )
             )
         except Exception as exc:  # noqa: BLE001
-            logger.exception("GeoPackage export failed")
-            self._show_error("GeoPackage export failed", str(exc))
-            self._set_status("GeoPackage export failed")
+            _msg = "GeoPackage export failed"
+            logger.exception(_msg)
+            self._show_error(_msg, str(exc))
+            self._set_status(_msg)
 
     def on_load_layers_clicked(self):
         """Load an existing GeoPackage into QGIS without fetching from Strava."""
@@ -716,9 +717,10 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 )
             )
         except Exception as exc:  # noqa: BLE001
-            logger.exception("Load layers failed")
-            self._show_error("Load layers failed", str(exc))
-            self._set_status("Load layers failed")
+            _msg = "Load layers failed"
+            logger.exception(_msg)
+            self._show_error(_msg, str(exc))
+            self._set_status(_msg)
 
     def on_clear_database_clicked(self):
         """Delete the GeoPackage, clear loaded layers, and reset status."""
