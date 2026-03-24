@@ -732,5 +732,44 @@ class TestCoverPage(unittest.TestCase):
         self.assertIsNone(result)
 
 
+# ---------------------------------------------------------------------------
+# Tests: narrowed exception handling
+# ---------------------------------------------------------------------------
+
+
+class TestAtlasExportTaskNarrowedExceptions(unittest.TestCase):
+    """Verify narrowed except clauses catch expected types and propagate others."""
+
+    def test_runtime_error_caught_by_inner_handler(self):
+        """RuntimeError in _run_export is caught by the inner (RuntimeError, OSError) handler."""
+        received = {}
+        layer = _make_atlas_layer(feature_count=1)
+        task = AtlasExportTask(
+            atlas_layer=layer,
+            output_path="/tmp/qfit_test_narrow.pdf",
+            on_finished=lambda **kw: received.update(kw),
+        )
+        layout_mock, _, _ = _make_atlas_mock(feature_count=1)
+        with patch("qfit.atlas_export_task.build_atlas_layout", return_value=layout_mock), \
+             patch("qfit.atlas_export_task.QgsLayoutExporter", side_effect=OSError("disk full")), \
+             patch("os.makedirs"):
+            _run_task(task)
+        self.assertIn("disk full", received.get("error", ""))
+
+    def test_cover_page_catches_runtime_error(self):
+        """_export_cover_page returns None on RuntimeError."""
+        layer = _make_cover_atlas_layer()
+        with patch("qfit.atlas_export_task.build_cover_layout", side_effect=RuntimeError("layout fail")):
+            result = AtlasExportTask._export_cover_page(layer, "/tmp/atlas.pdf")
+        self.assertIsNone(result)
+
+    def test_cover_page_catches_os_error(self):
+        """_export_cover_page returns None on OSError."""
+        layer = _make_cover_atlas_layer()
+        with patch("qfit.atlas_export_task.build_cover_layout", side_effect=OSError("no space")):
+            result = AtlasExportTask._export_cover_page(layer, "/tmp/atlas.pdf")
+        self.assertIsNone(result)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -20,6 +20,7 @@ from .activity_query import (
     sort_activities,
     summarize_activities,
 )
+from .atlas_export_controller import AtlasExportController, AtlasExportValidationError
 from .background_map_controller import BackgroundMapController
 from .contextual_help import ContextualHelpBinder, build_dock_help_entries
 from .gpkg_writer import GeoPackageWriter
@@ -65,6 +66,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._atlas_export_task = None
         self.settings = SettingsService()
         self.sync_controller = SyncController()
+        self.atlas_export_controller = AtlasExportController()
         self.layer_manager = LayerManager(iface)
         self.background_controller = BackgroundMapController(self.layer_manager)
         self.cache = self._build_cache()
@@ -603,7 +605,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                     visual_status=visual_status,
                 )
             )
-        except Exception as exc:  # noqa: BLE001
+        except (RuntimeError, OSError, ValueError) as exc:
             _msg = "GeoPackage export failed"
             logger.exception(_msg)
             self._show_error(_msg, str(exc))
@@ -646,7 +648,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                     path=output_path, visual_status=visual_status
                 )
             )
-        except Exception as exc:  # noqa: BLE001
+        except (RuntimeError, OSError) as exc:
             _msg = "Load layers failed"
             logger.exception(_msg)
             self._show_error(_msg, str(exc))
@@ -678,7 +680,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             if layer is not None:
                 try:
                     QgsProject.instance().removeMapLayer(layer)
-                except Exception:  # noqa: BLE001
+                except RuntimeError:
                     logger.debug("Failed to remove layer from project", exc_info=True)
 
         self.activities_layer = None
@@ -890,7 +892,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 for f in self.activities_layer.getFeatures()
                 if f[type_field]
             })
-        except Exception:
+        except (RuntimeError, KeyError):
             logger.debug("Failed to populate activity types from layer", exc_info=True)
             return
         self.activityTypeComboBox.clear()
@@ -933,27 +935,20 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._atlas_export_task = None
             return
 
-        if self.atlas_layer is None:
-            self._show_error(
-                "No atlas layer",
-                "Store and load activity layers first (step 3: Store and load layers).",
-            )
+        try:
+            self.atlas_export_controller.validate_atlas_layer(self.atlas_layer)
+        except AtlasExportValidationError as exc:
+            self._show_error("Atlas export error", str(exc))
             return
 
-        if self.atlas_layer.featureCount() == 0:
-            self._show_error(
-                "Atlas layer is empty",
-                "The atlas_pages layer has no features. "
-                "Fetch activities with geometry and store/load layers first.",
+        try:
+            output_path, changed = self.atlas_export_controller.normalize_pdf_path(
+                self.atlasPdfPathLineEdit.text().strip()
             )
+        except AtlasExportValidationError as exc:
+            self._show_error("Missing output path", str(exc))
             return
-
-        output_path = self.atlasPdfPathLineEdit.text().strip()
-        if not output_path:
-            self._show_error("Missing output path", "Enter or browse to an output PDF path.")
-            return
-        if not output_path.lower().endswith(".pdf"):
-            output_path = f"{output_path}.pdf"
+        if changed:
             self.atlasPdfPathLineEdit.setText(output_path)
 
         self._save_settings()
@@ -975,7 +970,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                     style_id=self.mapboxStyleIdLineEdit.text().strip(),
                     tile_mode=TILE_MODE_VECTOR,
                 )
-            except Exception:
+            except RuntimeError:
                 logger.warning("Vector tile mode failed, falling back to raster", exc_info=True)
 
         self._set_atlas_export_running(True)
