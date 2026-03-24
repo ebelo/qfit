@@ -170,7 +170,7 @@ def build_atlas_layout(
         for layer in visible_layers:
             if isinstance(layer, QgsVectorTileLayer):
                 layer.setTileBorderRenderingEnabled(False)
-    except Exception:
+    except (RuntimeError, ImportError, AttributeError):
         logger.debug("Vector tile label priority adjustment skipped", exc_info=True)
 
     layout.addLayoutItem(map_item)
@@ -447,7 +447,7 @@ class AtlasExportTask(QgsTask):
         """Build layout and export in the worker thread."""
         try:
             return self._run_export()
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:  # noqa: BLE001 – QgsTask worker thread safety net
             logger.exception("Atlas export task failed")
             self._error = str(exc)
             return False
@@ -510,7 +510,7 @@ class AtlasExportTask(QgsTask):
                         sid_idx = layer_fields.indexOf("source_activity_id")
                         if sid_idx >= 0:
                             filterable_layers.append((layer, layer.subsetString()))
-                    except Exception:  # noqa: BLE001
+                    except (RuntimeError, AttributeError):
                         logger.debug("Skipping non-filterable layer", exc_info=True)
 
             # Field index for source_activity_id in the atlas layer.
@@ -540,7 +540,7 @@ class AtlasExportTask(QgsTask):
                             for layer, _original_subset in filterable_layers:
                                 try:
                                     layer.setSubsetString(page_filter)
-                                except Exception:  # noqa: BLE001
+                                except RuntimeError:
                                     logger.debug("Failed to set page filter on layer", exc_info=True)
 
                     # Apply the stored precomputed extent to the map item.
@@ -578,7 +578,7 @@ class AtlasExportTask(QgsTask):
                 for layer, original_subset in filterable_layers:
                     try:
                         layer.setSubsetString(original_subset)
-                    except Exception:  # noqa: BLE001
+                    except RuntimeError:
                         logger.debug("Failed to restore layer subset", exc_info=True)
                 atlas.endRender()
 
@@ -605,7 +605,7 @@ class AtlasExportTask(QgsTask):
                     except OSError:
                         pass
 
-        except Exception as exc:  # noqa: BLE001
+        except (RuntimeError, OSError) as exc:
             logger.exception("Atlas export failed")
             self._error = str(exc)
             return False
@@ -639,7 +639,7 @@ class AtlasExportTask(QgsTask):
             if result != QgsLayoutExporter.Success:
                 return None
             return cover_path
-        except Exception:  # noqa: BLE001
+        except (RuntimeError, OSError):
             logger.exception("Cover page export failed")
             return None
 
@@ -679,7 +679,7 @@ class AtlasExportTask(QgsTask):
                         style_id=self._style_id,
                         tile_mode=self._restore_tile_mode,
                     )
-            except Exception:
+            except (RuntimeError, ImportError):
                 logger.warning("Failed to restore tile mode after export", exc_info=True)
 
         if self._on_finished is not None:
