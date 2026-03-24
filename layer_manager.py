@@ -20,6 +20,7 @@ from qgis.core import (
     QgsSimpleLineSymbolLayer,
     QgsSingleSymbolRenderer,
     QgsStyle,
+    QgsUnitTypes,
     QgsVectorLayer,
     QgsVectorLayerTemporalProperties,
     QgsVectorTileLayer,
@@ -501,13 +502,14 @@ class LayerManager:
 
     def _apply_heatmap_style(self, layer):
         renderer = QgsHeatmapRenderer()
-        renderer.setRadius(12)
+        renderer.setRadius(20)
+        renderer.setRadiusUnit(QgsUnitTypes.RenderPixels)
         renderer.setColorRamp(
             QgsStyle.defaultStyle().colorRamp("Turbo")
-            or QgsGradientColorRamp(QColor("#2c3e50"), QColor("#e74c3c"))
+            or QgsGradientColorRamp(QColor("#00000000"), QColor("#e74c3c"))
         )
         layer.setRenderer(renderer)
-        layer.setOpacity(1.0)
+        layer.setOpacity(0.85)
         layer.triggerRepaint()
 
     def _apply_clusterish_style(self, layer):
