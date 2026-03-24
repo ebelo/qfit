@@ -38,6 +38,7 @@ from .atlas_export_task import AtlasExportTask, BUILTIN_ATLAS_MAP_TARGET_ASPECT_
 from .qfit_cache import QfitCache
 from .strava_client import StravaClient, StravaClientError
 from .settings_service import SettingsService
+from .sync_controller import SyncController
 from .temporal_config import DEFAULT_TEMPORAL_MODE_LABEL, temporal_mode_labels
 
 FORM_CLASS, _ = uic.loadUiType(
@@ -63,6 +64,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._fetch_task = None
         self._atlas_export_task = None
         self.settings = SettingsService()
+        self.sync_controller = SyncController()
         self.layer_manager = LayerManager(iface)
         self.cache = self._build_cache()
         self.setupUi(self)
@@ -382,7 +384,13 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def on_open_authorize_clicked(self):
         self._save_settings()
         try:
-            client = self._build_client(require_refresh_token=False)
+            client = self.sync_controller.build_client(
+                client_id=self.clientIdLineEdit.text().strip(),
+                client_secret=self.clientSecretLineEdit.text().strip(),
+                refresh_token=self.refreshTokenLineEdit.text().strip(),
+                cache=self.cache,
+                require_refresh_token=False,
+            )
             redirect_uri = self._redirect_uri()
             url = client.build_authorize_url(redirect_uri=redirect_uri)
             if not QDesktopServices.openUrl(QUrl(url)):
@@ -414,7 +422,13 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             return
 
         try:
-            client = self._build_client(require_refresh_token=False)
+            client = self.sync_controller.build_client(
+                client_id=self.clientIdLineEdit.text().strip(),
+                client_secret=self.clientSecretLineEdit.text().strip(),
+                refresh_token=self.refreshTokenLineEdit.text().strip(),
+                cache=self.cache,
+                require_refresh_token=False,
+            )
             payload = client.exchange_code_for_tokens(
                 authorization_code=authorization_code,
                 redirect_uri=self._redirect_uri(),
@@ -465,7 +479,13 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
         self._save_settings()
         try:
-            client = self._build_client(require_refresh_token=True)
+            client = self.sync_controller.build_client(
+                client_id=self.clientIdLineEdit.text().strip(),
+                client_secret=self.clientSecretLineEdit.text().strip(),
+                refresh_token=self.refreshTokenLineEdit.text().strip(),
+                cache=self.cache,
+                require_refresh_token=True,
+            )
         except StravaClientError as exc:
             self._show_error("Strava import failed", str(exc))
             self._set_status("Strava fetch failed")
@@ -508,18 +528,10 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             return
 
         self.activities = activities
-        detailed_count = sum(1 for activity in self.activities if activity.geometry_source == "stream")
-        today_str = date.today().isoformat()
-        self.last_fetch_context = {
-            "provider": "strava",
-            "before_epoch": None,
-            "after_epoch": None,
-            "fetched_count": len(self.activities),
-            "detailed_count": detailed_count,
-            "stream_stats": client.last_stream_enrichment_stats,
-            "rate_limit": client.last_rate_limit,
-            "is_full_sync": True,
-        }
+        metadata = self.sync_controller.build_sync_metadata(activities, client)
+        detailed_count = metadata["detailed_count"]
+        today_str = metadata["today_str"]
+        self.last_fetch_context = metadata
         # Persist last sync date
         self.settings.set("last_sync_date", today_str)
 
@@ -532,7 +544,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             )
         )
         self._refresh_activity_preview()
-        self._set_status(self._fetch_status_text(client, len(self.activities), detailed_count))
+        self._set_status(self.sync_controller.fetch_status_text(client, len(self.activities), detailed_count))
 
     def on_load_clicked(self):
         if not self.activities:
@@ -840,20 +852,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.activityPreviewPlainTextEdit.setPlainText("\n".join(preview_lines))
         return sorted_activities
 
-    def _build_client(self, require_refresh_token=True):
-        client = StravaClient(
-            client_id=self.clientIdLineEdit.text().strip(),
-            client_secret=self.clientSecretLineEdit.text().strip(),
-            refresh_token=self.refreshTokenLineEdit.text().strip(),
-            cache=self.cache,
-        )
-        if not client.has_client_credentials():
-            raise StravaClientError("Enter Strava client ID and client secret first.")
-        if require_refresh_token and not client.refresh_token:
-            raise StravaClientError(
-                "Enter a refresh token, or use the built-in authorization flow to generate one."
-            )
-        return client
 
     def _redirect_uri(self):
         return self.redirectUriLineEdit.text().strip() or StravaClient.DEFAULT_REDIRECT_URI
@@ -900,32 +898,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         index = self.activityTypeComboBox.findText(current_value)
         self.activityTypeComboBox.setCurrentIndex(max(index, 0))
 
-    def _fetch_status_text(self, client, activity_count, detailed_count):
-        stream_stats = client.last_stream_enrichment_stats or {}
-        rate_limit_note = self._rate_limit_note(client.last_rate_limit)
-        return (
-            "Fetched {activity_count} activities from Strava, detailed tracks: {detailed_count}, "
-            "cached streams: {cached}, downloaded streams: {downloaded}, rate-limit skips: {skipped}.{rate_note}"
-        ).format(
-            activity_count=activity_count,
-            detailed_count=detailed_count,
-            cached=stream_stats.get("cached", 0),
-            downloaded=stream_stats.get("downloaded", 0),
-            skipped=stream_stats.get("skipped_rate_limit", 0),
-            rate_note=rate_limit_note,
-        )
-
-    def _rate_limit_note(self, rate_limit):
-        if not rate_limit:
-            return ""
-        short_remaining = rate_limit.get("short_remaining")
-        long_remaining = rate_limit.get("long_remaining")
-        if short_remaining is None and long_remaining is None:
-            return ""
-        return " Remaining rate limit: short={short}, long={long}.".format(
-            short=short_remaining if short_remaining is not None else "?",
-            long=long_remaining if long_remaining is not None else "?",
-        )
 
     def _update_connection_status(self):
         has_client = bool(self.clientIdLineEdit.text().strip() and self.clientSecretLineEdit.text().strip())
