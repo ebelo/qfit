@@ -34,7 +34,11 @@ def _make_qgis_stub():
     qgis_core = ModuleType("qgis.core")
     qgis_core.QgsTask = _FakeQgsTask
     qgis_core.QgsProject = MagicMock()
-    qgis_core.QgsPrintLayout = MagicMock()
+    layout_instance = MagicMock()
+    layout_instance.pageCollection.return_value.pageCount.return_value = 1
+    layout_instance.pageCollection.return_value.page.return_value = MagicMock()
+    layout_cls = MagicMock(return_value=layout_instance)
+    qgis_core.QgsPrintLayout = layout_cls
     qgis_core.QgsLayoutItemMap = MagicMock()
     qgis_core.QgsLayoutItemMap.Auto = 1
     qgis_core.QgsLayoutItemMap.Fixed = 0
@@ -72,7 +76,7 @@ def _make_qgis_stub():
 
 _qgis_core = _make_qgis_stub()
 
-from qfit.atlas_export_task import AtlasExportTask, build_atlas_layout  # noqa: E402
+from qfit.atlas_export_task import AtlasExportTask, build_atlas_layout, build_cover_layout  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -197,6 +201,7 @@ class TestAtlasExportTaskSuccess(unittest.TestCase):
         with patch("qfit.atlas_export_task.build_atlas_layout", return_value=layout_mock), \
              patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
              patch("qfit.atlas_export_task.AtlasExportTask._merge_pdfs"), \
+             patch("qfit.atlas_export_task.AtlasExportTask._export_cover_page", return_value=None), \
              patch("os.replace"), \
              patch("os.makedirs"):
             result = task.run()
@@ -213,6 +218,7 @@ class TestAtlasExportTaskSuccess(unittest.TestCase):
         layout_mock, _, exporter_cls_mock = _make_atlas_mock(feature_count=1)
         with patch("qfit.atlas_export_task.build_atlas_layout", return_value=layout_mock), \
              patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
+             patch("qfit.atlas_export_task.AtlasExportTask._export_cover_page", return_value=None), \
              patch("os.replace"), \
              patch("os.makedirs"):
             _run_task(task)
@@ -233,6 +239,7 @@ class TestAtlasExportTaskSuccess(unittest.TestCase):
         with patch("qfit.atlas_export_task.build_atlas_layout", return_value=layout_mock), \
              patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
              patch("qfit.atlas_export_task.AtlasExportTask._merge_pdfs"), \
+             patch("qfit.atlas_export_task.AtlasExportTask._export_cover_page", return_value=None), \
              patch("os.remove"), \
              patch("os.makedirs"):
             _run_task(task)
@@ -348,6 +355,7 @@ class TestAtlasExportTaskNoCallback(unittest.TestCase):
         layout_mock, _, exporter_cls_mock = _make_atlas_mock(feature_count=1)
         with patch("qfit.atlas_export_task.build_atlas_layout", return_value=layout_mock), \
              patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
+             patch("qfit.atlas_export_task.AtlasExportTask._export_cover_page", return_value=None), \
              patch("os.replace"), \
              patch("os.makedirs"):
             task.run()
@@ -373,6 +381,7 @@ class TestAtlasExportTaskLayerSubsetHandling(unittest.TestCase):
         layout_mock, _, exporter_cls_mock = _make_atlas_mock(feature_count=1)
         with patch("qfit.atlas_export_task.build_atlas_layout", return_value=layout_mock), \
              patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
+             patch("qfit.atlas_export_task.AtlasExportTask._export_cover_page", return_value=None), \
              patch("os.replace"), \
              patch("os.makedirs"):
             _run_task(task)
@@ -426,6 +435,7 @@ class TestAtlasExportTaskPerPageFilter(unittest.TestCase):
 
         with patch("qfit.atlas_export_task.build_atlas_layout", return_value=layout_mock), \
              patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
+             patch("qfit.atlas_export_task.AtlasExportTask._export_cover_page", return_value=None), \
              patch("os.replace"), \
              patch("os.makedirs"):
             _run_task(task)
@@ -453,6 +463,7 @@ class TestAtlasExportTaskPerPageFilter(unittest.TestCase):
              patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
              patch("qfit.atlas_export_task.AtlasExportTask._merge_pdfs",
                    side_effect=lambda pages, out: merge_calls.append((pages, out))), \
+             patch("qfit.atlas_export_task.AtlasExportTask._export_cover_page", return_value=None), \
              patch("os.remove", side_effect=lambda p: remove_calls.append(p)), \
              patch("os.makedirs"):
             _run_task(task)
@@ -477,6 +488,7 @@ class TestAtlasExportTaskPerPageFilter(unittest.TestCase):
         replace_calls = []
         with patch("qfit.atlas_export_task.build_atlas_layout", return_value=layout_mock), \
              patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
+             patch("qfit.atlas_export_task.AtlasExportTask._export_cover_page", return_value=None), \
              patch("os.replace", side_effect=lambda src, dst: replace_calls.append((src, dst))), \
              patch("qfit.atlas_export_task.AtlasExportTask._merge_pdfs") as mock_merge, \
              patch("os.makedirs"):
@@ -484,6 +496,240 @@ class TestAtlasExportTaskPerPageFilter(unittest.TestCase):
         mock_merge.assert_not_called()
         self.assertEqual(len(replace_calls), 1)
         self.assertEqual(replace_calls[0][1], "/tmp/qfit_test_replace.pdf")
+
+
+# ---------------------------------------------------------------------------
+# Tests: cover page
+# ---------------------------------------------------------------------------
+
+
+def _make_cover_atlas_layer(fields_dict=None, feature_count=1):
+    """Return a mock atlas layer with cover document fields populated."""
+    fields_dict = fields_dict or {
+        "document_cover_summary": "3 activities · 2025-01-01 → 2026-03-22 · 250.0 km",
+        "document_activity_count": "3",
+        "document_date_range_label": "2025-01-01 → 2026-03-22",
+        "document_total_distance_label": "250.0 km",
+        "document_total_duration_label": "12h 30m",
+        "document_total_elevation_gain_label": "5000 m",
+        "document_activity_types_label": "Run, Ride",
+    }
+    all_field_names = list(fields_dict.keys())
+
+    layer = MagicMock()
+    layer.featureCount.return_value = feature_count
+
+    fields = MagicMock()
+    fields.indexOf = lambda name: all_field_names.index(name) if name in all_field_names else -1
+    layer.fields.return_value = fields
+
+    feat = MagicMock()
+    feat.attribute = lambda idx: list(fields_dict.values())[idx] if 0 <= idx < len(fields_dict) else None
+    layer.getFeatures.return_value = iter([feat])
+
+    return layer
+
+
+class TestBuildCoverLayout(unittest.TestCase):
+    def test_build_cover_layout_returns_layout_for_populated_layer(self):
+        """build_cover_layout returns a layout object when layer has features."""
+        layer = _make_cover_atlas_layer()
+        result = build_cover_layout(layer)
+        self.assertIsNotNone(result)
+
+    def test_build_cover_layout_sets_layout_name(self):
+        """Cover layout name should be 'qfit Atlas Cover'."""
+        layer = _make_cover_atlas_layer()
+        layout = build_cover_layout(layer)
+        self.assertIsNotNone(layout)
+        layout.setName.assert_called_with("qfit Atlas Cover")
+
+    def test_build_cover_layout_calls_initialize_defaults(self):
+        """Cover layout should call initializeDefaults."""
+        layer = _make_cover_atlas_layer()
+        layout = build_cover_layout(layer)
+        self.assertIsNotNone(layout)
+        layout.initializeDefaults.assert_called_once()
+
+    def test_build_cover_layout_skips_subtitle_when_summary_empty(self):
+        """When cover summary is empty/missing, subtitle label should not be added."""
+        fields_dict = {
+            "document_cover_summary": "",
+            "document_activity_count": "2",
+            "document_date_range_label": "2025-01-01",
+            "document_total_distance_label": "100.0 km",
+            "document_total_duration_label": "5h",
+            "document_total_elevation_gain_label": "",
+            "document_activity_types_label": "Run",
+        }
+        layer = _make_cover_atlas_layer(fields_dict=fields_dict)
+        # Should not raise and should still return a layout
+        result = build_cover_layout(layer)
+        self.assertIsNotNone(result)
+
+    def test_build_cover_layout_skips_zero_activity_count_row(self):
+        """Activity count of '0' should not appear in the stats block."""
+        fields_dict = {
+            "document_cover_summary": "",
+            "document_activity_count": "0",
+            "document_date_range_label": "",
+            "document_total_distance_label": "",
+            "document_total_duration_label": "",
+            "document_total_elevation_gain_label": "",
+            "document_activity_types_label": "",
+        }
+        layer = _make_cover_atlas_layer(fields_dict=fields_dict)
+        # Should not raise even with all-empty fields
+        result = build_cover_layout(layer)
+        self.assertIsNotNone(result)
+
+    def test_build_cover_layout_handles_missing_fields(self):
+        """build_cover_layout tolerates a layer where document fields are absent."""
+        layer = MagicMock()
+        layer.featureCount.return_value = 1
+        fields = MagicMock()
+        fields.indexOf = lambda name: -1  # all fields missing
+        layer.fields.return_value = fields
+        feat = MagicMock()
+        layer.getFeatures.return_value = iter([feat])
+        result = build_cover_layout(layer)
+        self.assertIsNotNone(result)
+
+    def test_build_cover_layout_handles_none_attribute_values(self):
+        """build_cover_layout tolerates None values returned for attributes."""
+        layer = MagicMock()
+        layer.featureCount.return_value = 1
+        fields = MagicMock()
+        fields.indexOf = lambda name: 0  # always returns index 0
+        layer.fields.return_value = fields
+        feat = MagicMock()
+        feat.attribute.return_value = None  # all attribute reads return None
+        layer.getFeatures.return_value = iter([feat])
+        result = build_cover_layout(layer)
+        self.assertIsNotNone(result)
+
+    def test_build_cover_layout_uses_provided_project(self):
+        """build_cover_layout passes the project to QgsPrintLayout."""
+        layer = _make_cover_atlas_layer()
+        project = MagicMock()
+        build_cover_layout(layer, project=project)
+        # QgsPrintLayout is mocked globally; verify it was called with the project
+        from qfit.atlas_export_task import QgsPrintLayout  # noqa: PLC0415
+        QgsPrintLayout.assert_called_with(project)
+
+
+class TestExportCoverPage(unittest.TestCase):
+    def test_export_cover_page_returns_path_on_success(self):
+        """_export_cover_page returns the cover PDF path when export succeeds."""
+        layer = _make_cover_atlas_layer()
+        cover_layout = MagicMock()
+        exporter_instance = MagicMock()
+        exporter_instance.exportToPdf.return_value = 0  # Success
+
+        exporter_cls = MagicMock()
+        exporter_cls.return_value = exporter_instance
+        exporter_cls.Success = 0
+        exporter_cls.PdfExportSettings = MagicMock(return_value=MagicMock())
+
+        with patch("qfit.atlas_export_task.build_cover_layout", return_value=cover_layout), \
+             patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls):
+            result = AtlasExportTask._export_cover_page(layer, "/tmp/atlas.pdf")
+
+        self.assertEqual(result, "/tmp/atlas.pdf.cover.pdf")
+
+    def test_export_cover_page_returns_none_when_layout_is_none(self):
+        """_export_cover_page returns None when build_cover_layout returns None."""
+        layer = _make_cover_atlas_layer(feature_count=0)
+        with patch("qfit.atlas_export_task.build_cover_layout", return_value=None):
+            result = AtlasExportTask._export_cover_page(layer, "/tmp/atlas.pdf")
+        self.assertIsNone(result)
+
+    def test_export_cover_page_returns_none_on_exporter_failure(self):
+        """_export_cover_page returns None when exportToPdf reports a non-success code."""
+        layer = _make_cover_atlas_layer()
+        cover_layout = MagicMock()
+        exporter_instance = MagicMock()
+        exporter_instance.exportToPdf.return_value = 1  # failure
+
+        exporter_cls = MagicMock()
+        exporter_cls.return_value = exporter_instance
+        exporter_cls.Success = 0
+        exporter_cls.PdfExportSettings = MagicMock(return_value=MagicMock())
+
+        with patch("qfit.atlas_export_task.build_cover_layout", return_value=cover_layout), \
+             patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls):
+            result = AtlasExportTask._export_cover_page(layer, "/tmp/atlas.pdf")
+
+        self.assertIsNone(result)
+
+    def test_export_cover_page_returns_none_on_exception(self):
+        """_export_cover_page swallows exceptions and returns None."""
+        layer = _make_cover_atlas_layer()
+        with patch("qfit.atlas_export_task.build_cover_layout", side_effect=RuntimeError("boom")):
+            result = AtlasExportTask._export_cover_page(layer, "/tmp/atlas.pdf")
+        self.assertIsNone(result)
+
+
+class TestCoverPage(unittest.TestCase):
+    def test_cover_page_prepended_to_output(self):
+        """Cover PDF path appears first in the merge call when cover succeeds."""
+        layer = _make_atlas_layer(feature_count=2)
+        received = {}
+        task = AtlasExportTask(
+            atlas_layer=layer,
+            output_path="/tmp/qfit_cover_test.pdf",
+            on_finished=lambda **kw: received.update(kw),
+        )
+        layout_mock, _, exporter_cls_mock = _make_atlas_mock(feature_count=2)
+        merge_calls = []
+        cover_path = "/tmp/qfit_cover_test.pdf.cover.pdf"
+        with patch("qfit.atlas_export_task.build_atlas_layout", return_value=layout_mock), \
+             patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
+             patch("qfit.atlas_export_task.AtlasExportTask._export_cover_page",
+                   return_value=cover_path), \
+             patch("qfit.atlas_export_task.AtlasExportTask._merge_pdfs",
+                   side_effect=lambda pages, out: merge_calls.append((pages, out))), \
+             patch("os.remove"), \
+             patch("os.makedirs"):
+            _run_task(task)
+        # Cover path is first in the merged list, followed by 2 activity pages.
+        self.assertEqual(len(merge_calls), 1)
+        all_pages = merge_calls[0][0]
+        self.assertEqual(len(all_pages), 3)
+        self.assertEqual(all_pages[0], cover_path)
+        self.assertIsNotNone(received.get("output_path"))
+
+    def test_cover_page_skipped_on_failure(self):
+        """Export succeeds even when _export_cover_page raises or returns None."""
+        layer = _make_atlas_layer(feature_count=1)
+        received = {}
+        task = AtlasExportTask(
+            atlas_layer=layer,
+            output_path="/tmp/qfit_cover_fail.pdf",
+            on_finished=lambda **kw: received.update(kw),
+        )
+        layout_mock, _, exporter_cls_mock = _make_atlas_mock(feature_count=1)
+        with patch("qfit.atlas_export_task.build_atlas_layout", return_value=layout_mock), \
+             patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
+             patch("qfit.atlas_export_task.AtlasExportTask._export_cover_page",
+                   return_value=None), \
+             patch("os.replace"), \
+             patch("os.makedirs"):
+            _run_task(task)
+        # Export should still succeed without a cover page.
+        self.assertIsNotNone(received.get("output_path"))
+        self.assertIsNone(received.get("error"))
+
+    def test_build_cover_layout_returns_none_for_empty_layer(self):
+        """build_cover_layout returns None when the atlas layer has no features."""
+        layer = _make_atlas_layer(feature_count=0)
+        result = build_cover_layout(layer)
+        self.assertIsNone(result)
+
+    def test_build_cover_layout_returns_none_for_none_layer(self):
+        """build_cover_layout returns None when atlas_layer is None."""
+        result = build_cover_layout(None)
+        self.assertIsNone(result)
 
 
 if __name__ == "__main__":
