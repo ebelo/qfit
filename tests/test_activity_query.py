@@ -134,5 +134,156 @@ class ActivityQueryTests(unittest.TestCase):
         self.assertIn("3 activities", format_summary_text(summarize_activities(self.activities)))
 
 
+class FilterParityTests(unittest.TestCase):
+    """Verify that filter_activities (Python) and build_subset_string (SQL) agree."""
+
+    ACTIVITIES = [
+        Activity(
+            source="strava", source_activity_id="A",
+            name="Morning Gravel Ride", activity_type="Ride", sport_type="GravelRide",
+            start_date="2026-03-15T07:00:00Z", start_date_local="2026-03-15T08:00:00+01:00",
+            distance_m=45000.0, geometry_source="stream",
+        ),
+        Activity(
+            source="strava", source_activity_id="B",
+            name="Lunch Run", activity_type="Run", sport_type="Run",
+            start_date="2026-03-18T11:00:00Z", start_date_local="2026-03-18T12:00:00+01:00",
+            distance_m=8000.0, geometry_source="summary_polyline",
+        ),
+        Activity(
+            source="strava", source_activity_id="C",
+            name="Evening Ride", activity_type="Ride", sport_type="Ride",
+            start_date="2026-03-20T17:00:00Z", start_date_local="2026-03-20T18:00:00+01:00",
+            distance_m=20000.0, geometry_source="stream",
+        ),
+        Activity(
+            source="strava", source_activity_id="D",
+            name="O'Brien's Trail Hike", activity_type="Hike", sport_type="Hike",
+            start_date="2026-03-22T09:00:00Z", start_date_local="2026-03-22T10:00:00+01:00",
+            distance_m=12000.0, geometry_source="summary_polyline",
+        ),
+    ]
+
+    def _sql_filter(self, query):
+        """Run build_subset_string against an in-memory SQLite table and return matching IDs."""
+        import sqlite3
+
+        conn = sqlite3.connect(":memory:")
+        conn.execute(
+            "CREATE TABLE t ("
+            "  source_activity_id TEXT, name TEXT, activity_type TEXT, sport_type TEXT,"
+            "  start_date TEXT, start_date_local TEXT, distance_m REAL, geometry_source TEXT"
+            ")"
+        )
+        for a in self.ACTIVITIES:
+            conn.execute(
+                "INSERT INTO t VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                (a.source_activity_id, a.name, a.activity_type, a.sport_type,
+                 a.start_date, a.start_date_local, a.distance_m, a.geometry_source),
+            )
+        subset = build_subset_string(query)
+        sql = "SELECT source_activity_id FROM t"
+        if subset:
+            sql += f" WHERE {subset}"
+        sql += " ORDER BY source_activity_id"
+        rows = conn.execute(sql).fetchall()
+        conn.close()
+        return [r[0] for r in rows]
+
+    def _python_filter(self, query):
+        """Run filter_activities and return matching IDs."""
+        results = filter_activities(self.ACTIVITIES, query)
+        return sorted(a.source_activity_id for a in results)
+
+    def test_parity_activity_type_filter(self):
+        query = ActivityQuery(activity_type="Ride")
+        self.assertEqual(self._python_filter(query), self._sql_filter(query))
+
+    def test_parity_date_range_filter(self):
+        query = ActivityQuery(date_from="2026-03-18", date_to="2026-03-20")
+        self.assertEqual(self._python_filter(query), self._sql_filter(query))
+
+    def test_parity_distance_range_filter(self):
+        query = ActivityQuery(min_distance_km=10, max_distance_km=25)
+        self.assertEqual(self._python_filter(query), self._sql_filter(query))
+
+    def test_parity_search_text_across_name(self):
+        query = ActivityQuery(search_text="gravel")
+        self.assertEqual(self._python_filter(query), self._sql_filter(query))
+
+    def test_parity_search_text_across_sport_type(self):
+        query = ActivityQuery(search_text="GravelRide")
+        self.assertEqual(self._python_filter(query), self._sql_filter(query))
+
+    def test_parity_search_text_across_activity_type(self):
+        query = ActivityQuery(search_text="Hike")
+        self.assertEqual(self._python_filter(query), self._sql_filter(query))
+
+    def test_parity_search_case_insensitive(self):
+        query = ActivityQuery(search_text="LUNCH")
+        self.assertEqual(self._python_filter(query), self._sql_filter(query))
+
+    def test_parity_detailed_only(self):
+        query = ActivityQuery(detailed_only=True)
+        self.assertEqual(self._python_filter(query), self._sql_filter(query))
+
+    def test_parity_combined_filters(self):
+        query = ActivityQuery(
+            activity_type="Ride",
+            min_distance_km=20,
+            search_text="ride",
+            detailed_only=True,
+        )
+        self.assertEqual(self._python_filter(query), self._sql_filter(query))
+
+    def test_parity_no_filters(self):
+        query = ActivityQuery()
+        self.assertEqual(self._python_filter(query), self._sql_filter(query))
+
+    def test_sql_escaping_single_quote_in_search(self):
+        """Apostrophe in search text is safely escaped in SQL."""
+        query = ActivityQuery(search_text="O'Brien")
+        # Should not raise and should match the hike activity
+        sql_ids = self._sql_filter(query)
+        python_ids = self._python_filter(query)
+        self.assertEqual(python_ids, sql_ids)
+        self.assertIn("D", sql_ids)
+
+    def test_sql_escaping_single_quote_in_activity_type(self):
+        """Apostrophe in activity_type filter is safely escaped."""
+        query = ActivityQuery(activity_type="Rock'n'Roll")
+        subset = build_subset_string(query)
+        self.assertIn("Rock''n''Roll", subset)
+
+    def test_sql_escaping_percent_in_search(self):
+        """Percent sign in search text is passed through (LIKE wildcard)."""
+        query = ActivityQuery(search_text="100%")
+        subset = build_subset_string(query)
+        self.assertIn("100%", subset)
+
+    def test_empty_search_returns_all(self):
+        """Empty search text matches everything."""
+        query = ActivityQuery(search_text="")
+        python_ids = self._python_filter(query)
+        sql_ids = self._sql_filter(query)
+        self.assertEqual(len(python_ids), 4)
+        self.assertEqual(python_ids, sql_ids)
+
+    def test_search_matches_partial_name(self):
+        """Partial name match works in both Python and SQL."""
+        query = ActivityQuery(search_text="Even")
+        python_ids = self._python_filter(query)
+        sql_ids = self._sql_filter(query)
+        self.assertEqual(python_ids, sql_ids)
+        self.assertIn("C", sql_ids)
+
+    def test_deterministic_results(self):
+        """Same query always returns the same results."""
+        query = ActivityQuery(activity_type="Ride", search_text="ride")
+        first = self._python_filter(query)
+        second = self._python_filter(query)
+        self.assertEqual(first, second)
+
+
 if __name__ == "__main__":
     unittest.main()
