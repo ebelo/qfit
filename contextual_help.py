@@ -179,8 +179,8 @@ DOCK_HELP_ENTRIES: tuple[HelpEntry, ...] = (
         anchor_name="refreshButton",
         target_text="Fetch activities",
         tooltip=(
-            "Pulls activities from Strava using the current date range, paging, and detailed-track settings without "
-            "writing anything to QGIS yet."
+            "Pulls all activities from Strava using the current paging and detailed-track settings without "
+            "writing anything to QGIS yet.  Date filters apply only to the preview and loaded layers."
         ),
     ),
     HelpEntry(
