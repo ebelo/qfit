@@ -170,14 +170,16 @@ class SyncRepository:
                     (record.get("source"), record.get("source_activity_id")),
                 ).fetchone()
 
+                if existing is not None and existing[0] == summary_hash:
+                    unchanged += 1
+                    continue
+
                 first_seen_at = now if existing is None else (existing[1] or now)
                 registry_record = self._prepare_registry_record(record, summary_hash, first_seen_at, now)
                 self._upsert_registry_row(cursor, registry_record)
 
                 if existing is None:
                     inserted += 1
-                elif existing[0] == summary_hash:
-                    unchanged += 1
                 else:
                     updated += 1
 
