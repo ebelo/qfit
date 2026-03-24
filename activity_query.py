@@ -161,7 +161,13 @@ def build_subset_string(query: ActivityQuery) -> str:
         clauses.append(f'"distance_m" <= {query.max_distance_km * 1000.0}')
     if query.search_text:
         search_text = _escape_sql_literal(query.search_text.lower())
-        clauses.append(f"lower(coalesce(\"name\", '')) LIKE '%{search_text}%'")
+        clauses.append(
+            "("
+            f"lower(coalesce(\"name\", '')) LIKE '%{search_text}%'"
+            f" OR lower(coalesce(\"activity_type\", '')) LIKE '%{search_text}%'"
+            f" OR lower(coalesce(\"sport_type\", '')) LIKE '%{search_text}%'"
+            ")"
+        )
     if query.detailed_only:
         clauses.append('"geometry_source" = \'stream\'')
     return " AND ".join(clauses)
