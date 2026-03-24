@@ -89,5 +89,179 @@ class SyncRepositoryTests(unittest.TestCase):
             self.assertEqual(rows[0][0], "strava")
 
 
+class SyncUnchangedBehaviorTests(unittest.TestCase):
+    """Verify that re-syncing identical activities does not rewrite rows."""
+
+    def _activity(self, **overrides):
+        payload = {
+            "source": "strava",
+            "source_activity_id": "100",
+            "name": "Evening Run",
+            "activity_type": "Run",
+            "sport_type": "Run",
+            "start_date": "2026-03-20T18:00:00Z",
+            "distance_m": 5000.0,
+            "geometry_source": "summary_polyline",
+            "geometry_points": [(46.2, 6.1)],
+            "details_json": {"device_name": "Forerunner"},
+        }
+        payload.update(overrides)
+        return Activity(**payload)
+
+    def test_unchanged_rows_not_rewritten(self):
+        """Re-upserting the same activity leaves last_synced_at unchanged in the row."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = SyncRepository(str(Path(tmpdir) / "qfit.sqlite"))
+            repo.ensure_schema()
+
+            repo.upsert_activities([self._activity()])
+            conn = repo._connect()
+            row_before = conn.execute(
+                "SELECT last_synced_at, first_seen_at FROM activity_registry WHERE source_activity_id = '100'"
+            ).fetchone()
+            conn.close()
+
+            # Re-upsert the same activity — should be unchanged, no row write
+            result = repo.upsert_activities([self._activity()])
+            self.assertEqual(result["unchanged"], 1)
+            self.assertEqual(result["inserted"], 0)
+            self.assertEqual(result["updated"], 0)
+
+            conn = repo._connect()
+            row_after = conn.execute(
+                "SELECT last_synced_at, first_seen_at FROM activity_registry WHERE source_activity_id = '100'"
+            ).fetchone()
+            conn.close()
+
+            # Row was not rewritten: timestamps match exactly
+            self.assertEqual(row_before[0], row_after[0])
+            self.assertEqual(row_before[1], row_after[1])
+
+    def test_first_seen_at_preserved_on_update(self):
+        """When a row is updated, first_seen_at stays at the original insert time."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = SyncRepository(str(Path(tmpdir) / "qfit.sqlite"))
+            repo.ensure_schema()
+
+            repo.upsert_activities([self._activity(distance_m=1000.0)])
+            conn = repo._connect()
+            original_first_seen = conn.execute(
+                "SELECT first_seen_at FROM activity_registry WHERE source_activity_id = '100'"
+            ).fetchone()[0]
+            conn.close()
+
+            # Update with different distance
+            repo.upsert_activities([self._activity(distance_m=2000.0)])
+            conn = repo._connect()
+            updated_first_seen = conn.execute(
+                "SELECT first_seen_at FROM activity_registry WHERE source_activity_id = '100'"
+            ).fetchone()[0]
+            conn.close()
+
+            self.assertEqual(original_first_seen, updated_first_seen)
+
+    def test_last_synced_at_updated_on_real_change(self):
+        """When a row is genuinely updated, last_synced_at advances."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = SyncRepository(str(Path(tmpdir) / "qfit.sqlite"))
+            repo.ensure_schema()
+
+            repo.upsert_activities([self._activity(distance_m=1000.0)])
+            conn = repo._connect()
+            ts_before = conn.execute(
+                "SELECT last_synced_at FROM activity_registry WHERE source_activity_id = '100'"
+            ).fetchone()[0]
+            conn.close()
+
+            result = repo.upsert_activities([self._activity(distance_m=2000.0)])
+            self.assertEqual(result["updated"], 1)
+
+            conn = repo._connect()
+            ts_after = conn.execute(
+                "SELECT last_synced_at FROM activity_registry WHERE source_activity_id = '100'"
+            ).fetchone()[0]
+            conn.close()
+
+            self.assertGreaterEqual(ts_after, ts_before)
+
+    def test_counters_correct_for_mixed_batch(self):
+        """A batch with new, changed, and unchanged activities reports correct counters."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = SyncRepository(str(Path(tmpdir) / "qfit.sqlite"))
+            repo.ensure_schema()
+
+            # Seed two activities
+            repo.upsert_activities([
+                self._activity(source_activity_id="A", distance_m=100.0),
+                self._activity(source_activity_id="B", distance_m=200.0),
+            ])
+
+            # Re-sync: A unchanged, B updated, C new
+            result = repo.upsert_activities([
+                self._activity(source_activity_id="A", distance_m=100.0),   # unchanged
+                self._activity(source_activity_id="B", distance_m=999.0),   # updated
+                self._activity(source_activity_id="C", distance_m=300.0),   # new
+            ])
+
+            self.assertEqual(result["unchanged"], 1)
+            self.assertEqual(result["updated"], 1)
+            self.assertEqual(result["inserted"], 1)
+            self.assertEqual(result["total_count"], 3)
+
+    def test_volatile_keys_do_not_affect_unchanged_detection(self):
+        """Changing only volatile detail keys keeps the row unchanged."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = SyncRepository(str(Path(tmpdir) / "qfit.sqlite"))
+            repo.ensure_schema()
+
+            repo.upsert_activities([self._activity(
+                details_json={"device_name": "Edge", "stream_enriched_at": "t1", "stream_cache": "c1"}
+            )])
+            result = repo.upsert_activities([self._activity(
+                details_json={"device_name": "Edge", "stream_enriched_at": "t2", "stream_cache": "c2"}
+            )])
+
+            self.assertEqual(result["unchanged"], 1)
+            self.assertEqual(result["updated"], 0)
+
+    def test_non_volatile_detail_change_triggers_update(self):
+        """Changing a non-volatile detail key triggers an update."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = SyncRepository(str(Path(tmpdir) / "qfit.sqlite"))
+            repo.ensure_schema()
+
+            repo.upsert_activities([self._activity(details_json={"device_name": "Edge"})])
+            result = repo.upsert_activities([self._activity(details_json={"device_name": "Fenix"})])
+
+            self.assertEqual(result["updated"], 1)
+            self.assertEqual(result["unchanged"], 0)
+
+    def test_sync_stats_json_records_counters(self):
+        """sync_state.last_sync_stats_json contains the correct counters."""
+        import json
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = SyncRepository(str(Path(tmpdir) / "qfit.sqlite"))
+            repo.ensure_schema()
+
+            repo.upsert_activities([self._activity()])
+            repo.upsert_activities(
+                [self._activity()],
+                sync_metadata={"provider": "strava", "fetched_count": 1},
+            )
+
+            conn = repo._connect()
+            stats_raw = conn.execute(
+                "SELECT last_sync_stats_json FROM sync_state WHERE provider = 'strava'"
+            ).fetchone()[0]
+            conn.close()
+
+            stats = json.loads(stats_raw)
+            self.assertEqual(stats["unchanged"], 1)
+            self.assertEqual(stats["inserted"], 0)
+            self.assertEqual(stats["updated"], 0)
+            self.assertEqual(stats["stored_total"], 1)
+
+
 if __name__ == "__main__":
     unittest.main()
