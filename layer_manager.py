@@ -1,4 +1,7 @@
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QColor
@@ -94,6 +97,7 @@ class LayerManager:
                     # replaced with literal fallbacks so QGIS doesn't render black)
                     self._apply_mapbox_gl_style(layer, simplified_style)
             except Exception:
+                logger.warning("Vector tile layer creation failed, falling back to raster", exc_info=True)
                 layer = None
 
         if layer is None:
@@ -256,7 +260,7 @@ class LayerManager:
                     settings.setDataDefinedProperties(dd_props)
                 style.setLabelSettings(settings)
         except Exception:
-            pass
+            logger.debug("Mapbox GL style application skipped", exc_info=True)
 
     def _apply_mapbox_gl_style(self, layer: QgsVectorTileLayer, style_definition: dict) -> None:
         """Apply a pre-processed Mapbox GL style dict to a QgsVectorTileLayer.
@@ -286,7 +290,7 @@ class LayerManager:
                     layer.setLabeling(labeling)
                     layer.setLabelsEnabled(True)
         except Exception:
-            pass  # leave the default random-color renderer in place
+            logger.debug("Extent transformation failed, using default renderer", exc_info=True)
 
     def _remove_background_layers(self):
         project = QgsProject.instance()
@@ -321,7 +325,7 @@ class LayerManager:
                         canvas.setExtent(transformed)
                         canvas.refresh()
                 except Exception:
-                    pass
+                    logger.debug("Extent transform in CRS switch failed", exc_info=True)
 
     def _move_background_layers_to_bottom(self):
         root = QgsProject.instance().layerTreeRoot()

@@ -4,7 +4,11 @@ Uses :class:`qgis.core.QgsTask` so that fetches appear in the QGIS task
 manager, show progress in the native progress bar, and can be cancelled.
 """
 
+import logging
+
 from qgis.core import QgsTask
+
+logger = logging.getLogger(__name__)
 
 from .strava_client import StravaClient, StravaClientError
 
@@ -84,6 +88,7 @@ class StravaFetchTask(QgsTask):
             self._error = str(exc)
             return False
         except Exception as exc:  # noqa: BLE001
+            logger.exception("Strava fetch task failed")
             self._error = str(exc)
             return False
 

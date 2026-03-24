@@ -1,5 +1,8 @@
+import logging
 import os
 from datetime import date
+
+logger = logging.getLogger(__name__)
 
 from qgis.core import QgsApplication, QgsProject
 from qgis.PyQt import uic
@@ -670,6 +673,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 )
             )
         except Exception as exc:  # noqa: BLE001
+            logger.exception("GeoPackage export failed")
             self._show_error("GeoPackage export failed", str(exc))
             self._set_status("GeoPackage export failed")
 
@@ -712,6 +716,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 )
             )
         except Exception as exc:  # noqa: BLE001
+            logger.exception("Load layers failed")
             self._show_error("Load layers failed", str(exc))
             self._set_status("Load layers failed")
 
@@ -742,7 +747,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 try:
                     QgsProject.instance().removeMapLayer(layer)
                 except Exception:  # noqa: BLE001
-                    pass
+                    logger.debug("Failed to remove layer from project", exc_info=True)
 
         self.activities_layer = None
         self.starts_layer = None
@@ -968,6 +973,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 if f[type_field]
             })
         except Exception:
+            logger.debug("Failed to populate activity types from layer", exc_info=True)
             return
         self.activityTypeComboBox.clear()
         self.activityTypeComboBox.addItem("All")
@@ -1078,7 +1084,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                     tile_mode=TILE_MODE_VECTOR,
                 )
             except Exception:
-                pass  # fall back to raster if vector fails
+                logger.warning("Vector tile mode failed, falling back to raster", exc_info=True)
 
         self._set_atlas_export_running(True)
         self._set_atlas_pdf_status(
