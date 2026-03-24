@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 from qgis.core import QgsApplication, QgsProject
 from qgis.PyQt import uic
-from qgis.PyQt.QtCore import QDate, QSettings, QStandardPaths, QUrl
+from qgis.PyQt.QtCore import QDate, QStandardPaths, QUrl
 from qgis.PyQt.QtGui import QDesktopServices
 from qgis.PyQt.QtWidgets import QApplication, QFileDialog, QDockWidget, QMessageBox
 
@@ -37,6 +37,7 @@ from .fetch_task import StravaFetchTask
 from .atlas_export_task import AtlasExportTask, BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
 from .qfit_cache import QfitCache
 from .strava_client import StravaClient, StravaClientError
+from .settings_service import SettingsService
 from .temporal_config import DEFAULT_TEMPORAL_MODE_LABEL, temporal_mode_labels
 
 FORM_CLASS, _ = uic.loadUiType(
@@ -61,6 +62,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.last_fetch_context = {}
         self._fetch_task = None
         self._atlas_export_task = None
+        self.settings = SettingsService()
         self.layer_manager = LayerManager(iface)
         self.cache = self._build_cache()
         self.setupUi(self)
@@ -230,192 +232,109 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         return QfitCache(current_cache_path)
 
     def _load_settings(self):
-        settings = QSettings()
-        self.clientIdLineEdit.setText(self._setting_value(settings, "client_id", ""))
-        self.clientSecretLineEdit.setText(self._setting_value(settings, "client_secret", ""))
+        s = self.settings
+        self.clientIdLineEdit.setText(s.get("client_id", ""))
+        self.clientSecretLineEdit.setText(s.get("client_secret", ""))
         self.redirectUriLineEdit.setText(
-            self._setting_value(
-                settings,
-                "redirect_uri",
-                StravaClient.DEFAULT_REDIRECT_URI,
-            )
+            s.get("redirect_uri", StravaClient.DEFAULT_REDIRECT_URI)
         )
         self.authCodeLineEdit.setText("")
-        self.refreshTokenLineEdit.setText(self._setting_value(settings, "refresh_token", ""))
-        default_output = self._setting_value(
-            settings,
+        self.refreshTokenLineEdit.setText(s.get("refresh_token", ""))
+        default_output = s.get(
             "output_path",
             os.path.join(os.path.expanduser("~"), "qfit_activities.gpkg"),
         )
         self.outputPathLineEdit.setText(default_output)
-        self.perPageSpinBox.setValue(int(self._setting_value(settings, "per_page", 200)))
-        self.maxPagesSpinBox.setValue(int(self._setting_value(settings, "max_pages", 0)))
-        self.detailedStreamsCheckBox.setChecked(self._settings_bool(settings, "use_detailed_streams", False))
-        self.maxDetailedActivitiesSpinBox.setValue(int(self._setting_value(settings, "max_detailed_activities", 25)))
-        self.writeActivityPointsCheckBox.setChecked(
-            self._settings_bool(settings, "write_activity_points", False)
-        )
-        self.pointSamplingStrideSpinBox.setValue(int(self._setting_value(settings, "point_sampling_stride", 5)))
-        self.activitySearchLineEdit.setText(self._setting_value(settings, "activity_search_text", ""))
-        self.maxDistanceSpinBox.setValue(float(self._setting_value(settings, "max_distance_km", 0.0)))
-        self.detailedOnlyCheckBox.setChecked(self._settings_bool(settings, "detailed_only", False))
-        self.backgroundMapCheckBox.setChecked(self._settings_bool(settings, "use_background_map", False))
-        self.mapboxAccessTokenLineEdit.setText(self._setting_value(settings, "mapbox_access_token", ""))
-        self.mapboxStyleOwnerLineEdit.setText(
-            self._setting_value(settings, "mapbox_style_owner", "mapbox")
-        )
-        self.mapboxStyleIdLineEdit.setText(self._setting_value(settings, "mapbox_style_id", ""))
-        self.atlasMarginPercentSpinBox.setValue(float(self._setting_value(settings, "atlas_margin_percent", 8.0)))
-        self.atlasMinExtentSpinBox.setValue(float(self._setting_value(settings, "atlas_min_extent_degrees", 0.01)))
+        self.perPageSpinBox.setValue(int(s.get("per_page", 200)))
+        self.maxPagesSpinBox.setValue(int(s.get("max_pages", 0)))
+        self.detailedStreamsCheckBox.setChecked(s.get_bool("use_detailed_streams", False))
+        self.maxDetailedActivitiesSpinBox.setValue(int(s.get("max_detailed_activities", 25)))
+        self.writeActivityPointsCheckBox.setChecked(s.get_bool("write_activity_points", False))
+        self.pointSamplingStrideSpinBox.setValue(int(s.get("point_sampling_stride", 5)))
+        self.activitySearchLineEdit.setText(s.get("activity_search_text", ""))
+        self.maxDistanceSpinBox.setValue(float(s.get("max_distance_km", 0.0)))
+        self.detailedOnlyCheckBox.setChecked(s.get_bool("detailed_only", False))
+        self.backgroundMapCheckBox.setChecked(s.get_bool("use_background_map", False))
+        self.mapboxAccessTokenLineEdit.setText(s.get("mapbox_access_token", ""))
+        self.mapboxStyleOwnerLineEdit.setText(s.get("mapbox_style_owner", "mapbox"))
+        self.mapboxStyleIdLineEdit.setText(s.get("mapbox_style_id", ""))
+        self.atlasMarginPercentSpinBox.setValue(float(s.get("atlas_margin_percent", 8.0)))
+        self.atlasMinExtentSpinBox.setValue(float(s.get("atlas_min_extent_degrees", 0.01)))
         stored_atlas_target_aspect_ratio = float(
-            self._setting_value(settings, "atlas_target_aspect_ratio", BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO)
+            s.get("atlas_target_aspect_ratio", BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO)
         )
         if stored_atlas_target_aspect_ratio <= 0:
             stored_atlas_target_aspect_ratio = BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
         self.atlasTargetAspectRatioSpinBox.setValue(stored_atlas_target_aspect_ratio)
-        default_pdf_path = self._setting_value(
-            settings,
+        default_pdf_path = s.get(
             "atlas_pdf_path",
             os.path.join(os.path.expanduser("~"), "qfit_atlas.pdf"),
         )
         self.atlasPdfPathLineEdit.setText(default_pdf_path)
 
-        temporal_mode = self._setting_value(settings, "temporal_mode", DEFAULT_TEMPORAL_MODE_LABEL)
+        temporal_mode = s.get("temporal_mode", DEFAULT_TEMPORAL_MODE_LABEL)
         temporal_mode_index = self.temporalModeComboBox.findText(temporal_mode)
         if temporal_mode_index < 0:
             temporal_mode_index = self.temporalModeComboBox.findText(DEFAULT_TEMPORAL_MODE_LABEL)
         self.temporalModeComboBox.setCurrentIndex(max(temporal_mode_index, 0))
 
-        preset_name = self._setting_value(settings, "background_preset", DEFAULT_BACKGROUND_PRESET)
+        preset_name = s.get("background_preset", DEFAULT_BACKGROUND_PRESET)
         preset_index = self.backgroundPresetComboBox.findText(preset_name)
         if preset_index < 0:
             preset_index = self.backgroundPresetComboBox.findText(DEFAULT_BACKGROUND_PRESET)
         self.backgroundPresetComboBox.setCurrentIndex(max(preset_index, 0))
         self._sync_background_style_fields(self.backgroundPresetComboBox.currentText(), force=False)
 
-        tile_mode = self._setting_value(settings, "tile_mode", TILE_MODE_RASTER)
+        tile_mode = s.get("tile_mode", TILE_MODE_RASTER)
         tile_mode_index = self.tileModeComboBox.findText(tile_mode)
         self.tileModeComboBox.setCurrentIndex(max(tile_mode_index, 0))
 
-        preview_sort = self._setting_value(settings, "preview_sort", DEFAULT_SORT_LABEL)
+        preview_sort = s.get("preview_sort", DEFAULT_SORT_LABEL)
         preview_sort_index = self.previewSortComboBox.findText(preview_sort)
         if preview_sort_index < 0:
             preview_sort_index = self.previewSortComboBox.findText(DEFAULT_SORT_LABEL)
         self.previewSortComboBox.setCurrentIndex(max(preview_sort_index, 0))
 
-        style_preset = self._setting_value(settings, "style_preset", "By activity type")
+        style_preset = s.get("style_preset", "By activity type")
         style_preset_index = self.stylePresetComboBox.findText(style_preset)
         if style_preset_index < 0:
             style_preset_index = self.stylePresetComboBox.findText("By activity type")
         self.stylePresetComboBox.setCurrentIndex(max(style_preset_index, 0))
 
-        last_sync = self._setting_value(settings, "last_sync_date", None)
+        last_sync = s.get("last_sync_date", None)
         if last_sync:
             self.countLabel.setText(f"Last sync: {last_sync}")
 
     def _save_settings(self):
-        settings = QSettings()
-        settings.setValue(f"{self.SETTINGS_PREFIX}/client_id", self.clientIdLineEdit.text().strip())
-        settings.setValue(f"{self.SETTINGS_PREFIX}/client_secret", self.clientSecretLineEdit.text().strip())
-        settings.setValue(f"{self.SETTINGS_PREFIX}/redirect_uri", self.redirectUriLineEdit.text().strip())
-        settings.setValue(f"{self.SETTINGS_PREFIX}/refresh_token", self.refreshTokenLineEdit.text().strip())
-        settings.setValue(f"{self.SETTINGS_PREFIX}/output_path", self.outputPathLineEdit.text().strip())
-        settings.setValue(f"{self.SETTINGS_PREFIX}/per_page", self.perPageSpinBox.value())
-        settings.setValue(f"{self.SETTINGS_PREFIX}/max_pages", self.maxPagesSpinBox.value())
-        settings.setValue(f"{self.SETTINGS_PREFIX}/use_detailed_streams", self.detailedStreamsCheckBox.isChecked())
-        settings.setValue(
-            f"{self.SETTINGS_PREFIX}/max_detailed_activities",
-            self.maxDetailedActivitiesSpinBox.value(),
-        )
-        settings.setValue(
-            f"{self.SETTINGS_PREFIX}/write_activity_points",
-            self.writeActivityPointsCheckBox.isChecked(),
-        )
-        settings.setValue(
-            f"{self.SETTINGS_PREFIX}/point_sampling_stride",
-            self.pointSamplingStrideSpinBox.value(),
-        )
-        settings.setValue(
-            f"{self.SETTINGS_PREFIX}/activity_search_text",
-            self.activitySearchLineEdit.text().strip(),
-        )
-        settings.setValue(
-            f"{self.SETTINGS_PREFIX}/max_distance_km",
-            self.maxDistanceSpinBox.value(),
-        )
-        settings.setValue(
-            f"{self.SETTINGS_PREFIX}/detailed_only",
-            self.detailedOnlyCheckBox.isChecked(),
-        )
-        settings.setValue(
-            f"{self.SETTINGS_PREFIX}/preview_sort",
-            self.previewSortComboBox.currentText(),
-        )
-        settings.setValue(
-            f"{self.SETTINGS_PREFIX}/style_preset",
-            self.stylePresetComboBox.currentText(),
-        )
-        settings.setValue(
-            f"{self.SETTINGS_PREFIX}/temporal_mode",
-            self.temporalModeComboBox.currentText(),
-        )
-        settings.setValue(
-            f"{self.SETTINGS_PREFIX}/use_background_map",
-            self.backgroundMapCheckBox.isChecked(),
-        )
-        settings.setValue(
-            f"{self.SETTINGS_PREFIX}/background_preset",
-            self.backgroundPresetComboBox.currentText(),
-        )
-        settings.setValue(
-            f"{self.SETTINGS_PREFIX}/mapbox_access_token",
-            self.mapboxAccessTokenLineEdit.text().strip(),
-        )
-        settings.setValue(
-            f"{self.SETTINGS_PREFIX}/mapbox_style_owner",
-            self.mapboxStyleOwnerLineEdit.text().strip(),
-        )
-        settings.setValue(
-            f"{self.SETTINGS_PREFIX}/mapbox_style_id",
-            self.mapboxStyleIdLineEdit.text().strip(),
-        )
-        settings.setValue(
-            f"{self.SETTINGS_PREFIX}/tile_mode",
-            self.tileModeComboBox.currentText(),
-        )
-        settings.setValue(
-            f"{self.SETTINGS_PREFIX}/atlas_margin_percent",
-            self.atlasMarginPercentSpinBox.value(),
-        )
-        settings.setValue(
-            f"{self.SETTINGS_PREFIX}/atlas_min_extent_degrees",
-            self.atlasMinExtentSpinBox.value(),
-        )
-        settings.setValue(
-            f"{self.SETTINGS_PREFIX}/atlas_target_aspect_ratio",
-            self.atlasTargetAspectRatioSpinBox.value(),
-        )
-        settings.setValue(
-            f"{self.SETTINGS_PREFIX}/atlas_pdf_path",
-            self.atlasPdfPathLineEdit.text().strip(),
-        )
+        s = self.settings
+        s.set("client_id", self.clientIdLineEdit.text().strip())
+        s.set("client_secret", self.clientSecretLineEdit.text().strip())
+        s.set("redirect_uri", self.redirectUriLineEdit.text().strip())
+        s.set("refresh_token", self.refreshTokenLineEdit.text().strip())
+        s.set("output_path", self.outputPathLineEdit.text().strip())
+        s.set("per_page", self.perPageSpinBox.value())
+        s.set("max_pages", self.maxPagesSpinBox.value())
+        s.set("use_detailed_streams", self.detailedStreamsCheckBox.isChecked())
+        s.set("max_detailed_activities", self.maxDetailedActivitiesSpinBox.value())
+        s.set("write_activity_points", self.writeActivityPointsCheckBox.isChecked())
+        s.set("point_sampling_stride", self.pointSamplingStrideSpinBox.value())
+        s.set("activity_search_text", self.activitySearchLineEdit.text().strip())
+        s.set("max_distance_km", self.maxDistanceSpinBox.value())
+        s.set("detailed_only", self.detailedOnlyCheckBox.isChecked())
+        s.set("preview_sort", self.previewSortComboBox.currentText())
+        s.set("style_preset", self.stylePresetComboBox.currentText())
+        s.set("temporal_mode", self.temporalModeComboBox.currentText())
+        s.set("use_background_map", self.backgroundMapCheckBox.isChecked())
+        s.set("background_preset", self.backgroundPresetComboBox.currentText())
+        s.set("mapbox_access_token", self.mapboxAccessTokenLineEdit.text().strip())
+        s.set("mapbox_style_owner", self.mapboxStyleOwnerLineEdit.text().strip())
+        s.set("mapbox_style_id", self.mapboxStyleIdLineEdit.text().strip())
+        s.set("tile_mode", self.tileModeComboBox.currentText())
+        s.set("atlas_margin_percent", self.atlasMarginPercentSpinBox.value())
+        s.set("atlas_min_extent_degrees", self.atlasMinExtentSpinBox.value())
+        s.set("atlas_target_aspect_ratio", self.atlasTargetAspectRatioSpinBox.value())
+        s.set("atlas_pdf_path", self.atlasPdfPathLineEdit.text().strip())
 
-    def _setting_value(self, settings, key, default=None):
-        value = settings.value(f"{self.SETTINGS_PREFIX}/{key}", None)
-        if value not in (None, ""):
-            return value
-        legacy_value = settings.value(f"{self.LEGACY_SETTINGS_PREFIX}/{key}", None)
-        if legacy_value not in (None, ""):
-            return legacy_value
-        return default
-
-    def _settings_bool(self, settings, key, default=False):
-        value = self._setting_value(settings, key, default)
-        if isinstance(value, bool):
-            return value
-        if isinstance(value, str):
-            return value.lower() in ("1", "true", "yes", "on")
-        return bool(value)
 
     def _set_default_dates(self):
         if not self.dateFromEdit.date().isValid():
@@ -602,8 +521,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             "is_full_sync": True,
         }
         # Persist last sync date
-        settings = QSettings()
-        settings.setValue(f"{self.SETTINGS_PREFIX}/last_sync_date", today_str)
+        self.settings.set("last_sync_date", today_str)
 
         self._populate_activity_types()
         self.countLabel.setText(
@@ -647,9 +565,8 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             if visual_status:
                 visual_status = f" {visual_status}"
 
-            # Update completeness indicator with last sync date from QSettings
-            settings = QSettings()
-            last_sync = self._setting_value(settings, "last_sync_date", date.today().isoformat())
+            # Update completeness indicator with last sync date
+            last_sync = self.settings.get("last_sync_date", date.today().isoformat())
             total_stored = sync.get("total_count", 0)
             self.countLabel.setText(
                 "{total} activities stored (last sync: {sync_date})".format(
@@ -703,8 +620,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             if visual_status:
                 visual_status = f" {visual_status}"
 
-            settings = QSettings()
-            last_sync = self._setting_value(settings, "last_sync_date", "unknown")
+            last_sync = self.settings.get("last_sync_date", "unknown")
             total = (self.activities_layer.featureCount() if self.activities_layer else 0)
             self.countLabel.setText(
                 "{total} activities loaded (last sync: {sync_date})".format(
