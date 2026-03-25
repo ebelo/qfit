@@ -1,12 +1,9 @@
 import json
 import os
 
-from qgis.PyQt.QtCore import QVariant
 from qgis.core import (
     QgsCoordinateTransformContext,
     QgsFeature,
-    QgsField,
-    QgsFields,
     QgsGeometry,
     QgsPointXY,
     QgsProject,
@@ -15,6 +12,19 @@ from qgis.core import (
     QgsVectorLayer,
 )
 
+from .gpkg_schema import (
+    ATLAS_FIELDS,
+    COVER_HIGHLIGHT_FIELDS,
+    DOCUMENT_SUMMARY_FIELDS,
+    GPKG_LAYER_SCHEMA,
+    PAGE_DETAIL_ITEM_FIELDS,
+    POINT_FIELDS,
+    PROFILE_SAMPLE_FIELDS,
+    START_FIELDS,
+    TOC_FIELDS,
+    TRACK_FIELDS,
+    make_qgs_fields,
+)
 from .polyline_utils import decode_polyline
 from .publish_atlas import (
     build_atlas_cover_highlights_from_summary,
@@ -25,200 +35,8 @@ from .publish_atlas import (
     build_atlas_toc_entries,
     normalize_atlas_page_settings,
 )
-from .sync_repository import REGISTRY_TABLE, SYNC_STATE_TABLE, SyncRepository
+from .sync_repository import SyncRepository
 from .time_utils import add_seconds_iso
-
-
-TRACK_FIELDS = [
-    ("source", QVariant.String),
-    ("source_activity_id", QVariant.String),
-    ("external_id", QVariant.String),
-    ("name", QVariant.String),
-    ("activity_type", QVariant.String),
-    ("sport_type", QVariant.String),
-    ("start_date", QVariant.String),
-    ("start_date_local", QVariant.String),
-    ("timezone", QVariant.String),
-    ("distance_m", QVariant.Double),
-    ("moving_time_s", QVariant.Int),
-    ("elapsed_time_s", QVariant.Int),
-    ("total_elevation_gain_m", QVariant.Double),
-    ("average_speed_mps", QVariant.Double),
-    ("max_speed_mps", QVariant.Double),
-    ("average_heartrate", QVariant.Double),
-    ("max_heartrate", QVariant.Double),
-    ("average_watts", QVariant.Double),
-    ("kilojoules", QVariant.Double),
-    ("calories", QVariant.Double),
-    ("suffer_score", QVariant.Double),
-    ("start_lat", QVariant.Double),
-    ("start_lon", QVariant.Double),
-    ("end_lat", QVariant.Double),
-    ("end_lon", QVariant.Double),
-    ("summary_polyline", QVariant.String),
-    ("geometry_source", QVariant.String),
-    ("geometry_point_count", QVariant.Int),
-    ("details_json", QVariant.String),
-    ("summary_hash", QVariant.String),
-    ("first_seen_at", QVariant.String),
-    ("last_synced_at", QVariant.String),
-]
-
-START_FIELDS = [
-    ("activity_fk", QVariant.Int),
-    ("source", QVariant.String),
-    ("source_activity_id", QVariant.String),
-    ("name", QVariant.String),
-    ("activity_type", QVariant.String),
-    ("start_date", QVariant.String),
-    ("distance_m", QVariant.Double),
-    ("last_synced_at", QVariant.String),
-]
-
-POINT_FIELDS = [
-    ("activity_fk", QVariant.Int),
-    ("source", QVariant.String),
-    ("source_activity_id", QVariant.String),
-    ("point_index", QVariant.Int),
-    ("point_ratio", QVariant.Double),
-    ("stream_time_s", QVariant.Int),
-    ("point_timestamp_utc", QVariant.String),
-    ("point_timestamp_local", QVariant.String),
-    ("stream_distance_m", QVariant.Double),
-    ("altitude_m", QVariant.Double),
-    ("heartrate_bpm", QVariant.Double),
-    ("cadence_rpm", QVariant.Double),
-    ("watts", QVariant.Double),
-    ("velocity_mps", QVariant.Double),
-    ("temp_c", QVariant.Double),
-    ("grade_smooth_pct", QVariant.Double),
-    ("moving", QVariant.Int),
-    ("name", QVariant.String),
-    ("activity_type", QVariant.String),
-    ("start_date", QVariant.String),
-    ("distance_m", QVariant.Double),
-    ("geometry_source", QVariant.String),
-    ("last_synced_at", QVariant.String),
-]
-
-ATLAS_FIELDS = [
-    ("activity_fk", QVariant.Int),
-    ("source", QVariant.String),
-    ("source_activity_id", QVariant.String),
-    ("name", QVariant.String),
-    ("activity_type", QVariant.String),
-    ("start_date", QVariant.String),
-    ("distance_m", QVariant.Double),
-    ("moving_time_s", QVariant.Int),
-    ("geometry_source", QVariant.String),
-    ("page_number", QVariant.Int),
-    ("page_sort_key", QVariant.String),
-    ("page_name", QVariant.String),
-    ("page_title", QVariant.String),
-    ("page_subtitle", QVariant.String),
-    ("page_date", QVariant.String),
-    ("page_toc_label", QVariant.String),
-    ("page_distance_label", QVariant.String),
-    ("page_duration_label", QVariant.String),
-    ("page_average_speed_label", QVariant.String),
-    ("page_average_pace_label", QVariant.String),
-    ("page_elevation_gain_label", QVariant.String),
-    ("page_stats_summary", QVariant.String),
-    ("page_profile_summary", QVariant.String),
-    ("document_activity_count", QVariant.Int),
-    ("document_date_range_label", QVariant.String),
-    ("document_total_distance_label", QVariant.String),
-    ("document_total_duration_label", QVariant.String),
-    ("document_total_elevation_gain_label", QVariant.String),
-    ("document_activity_types_label", QVariant.String),
-    ("document_cover_summary", QVariant.String),
-    ("profile_available", QVariant.Int),
-    ("profile_point_count", QVariant.Int),
-    ("profile_distance_m", QVariant.Double),
-    ("profile_distance_label", QVariant.String),
-    ("profile_min_altitude_m", QVariant.Double),
-    ("profile_max_altitude_m", QVariant.Double),
-    ("profile_altitude_range_label", QVariant.String),
-    ("profile_relief_m", QVariant.Double),
-    ("profile_elevation_gain_m", QVariant.Double),
-    ("profile_elevation_gain_label", QVariant.String),
-    ("profile_elevation_loss_m", QVariant.Double),
-    ("profile_elevation_loss_label", QVariant.String),
-    ("center_x_3857", QVariant.Double),
-    ("center_y_3857", QVariant.Double),
-    ("extent_width_deg", QVariant.Double),
-    ("extent_height_deg", QVariant.Double),
-    ("extent_width_m", QVariant.Double),
-    ("extent_height_m", QVariant.Double),
-]
-
-DOCUMENT_SUMMARY_FIELDS = [
-    ("activity_count", QVariant.Int),
-    ("activity_date_start", QVariant.String),
-    ("activity_date_end", QVariant.String),
-    ("date_range_label", QVariant.String),
-    ("total_distance_m", QVariant.Double),
-    ("total_distance_label", QVariant.String),
-    ("total_moving_time_s", QVariant.Int),
-    ("total_duration_label", QVariant.String),
-    ("total_elevation_gain_m", QVariant.Double),
-    ("total_elevation_gain_label", QVariant.String),
-    ("activity_types_label", QVariant.String),
-    ("cover_summary", QVariant.String),
-]
-
-COVER_HIGHLIGHT_FIELDS = [
-    ("highlight_order", QVariant.Int),
-    ("highlight_key", QVariant.String),
-    ("highlight_label", QVariant.String),
-    ("highlight_value", QVariant.String),
-]
-
-PAGE_DETAIL_ITEM_FIELDS = [
-    ("page_number", QVariant.Int),
-    ("page_sort_key", QVariant.String),
-    ("page_name", QVariant.String),
-    ("page_title", QVariant.String),
-    ("detail_order", QVariant.Int),
-    ("detail_key", QVariant.String),
-    ("detail_label", QVariant.String),
-    ("detail_value", QVariant.String),
-]
-
-PROFILE_SAMPLE_FIELDS = [
-    ("page_number", QVariant.Int),
-    ("page_sort_key", QVariant.String),
-    ("page_name", QVariant.String),
-    ("page_title", QVariant.String),
-    ("page_date", QVariant.String),
-    ("source", QVariant.String),
-    ("source_activity_id", QVariant.String),
-    ("activity_type", QVariant.String),
-    ("profile_point_index", QVariant.Int),
-    ("profile_point_count", QVariant.Int),
-    ("profile_point_ratio", QVariant.Double),
-    ("distance_m", QVariant.Double),
-    ("distance_label", QVariant.String),
-    ("altitude_m", QVariant.Double),
-    ("profile_distance_m", QVariant.Double),
-]
-
-TOC_FIELDS = [
-    ("page_number", QVariant.Int),
-    ("page_number_label", QVariant.String),
-    ("page_sort_key", QVariant.String),
-    ("page_name", QVariant.String),
-    ("page_title", QVariant.String),
-    ("page_subtitle", QVariant.String),
-    ("page_date", QVariant.String),
-    ("page_toc_label", QVariant.String),
-    ("toc_entry_label", QVariant.String),
-    ("page_distance_label", QVariant.String),
-    ("page_duration_label", QVariant.String),
-    ("page_stats_summary", QVariant.String),
-    ("profile_available", QVariant.Int),
-    ("page_profile_summary", QVariant.String),
-]
 
 
 class GeoPackageWriter:
@@ -243,63 +61,7 @@ class GeoPackageWriter:
         )
 
     def schema(self):
-        return {
-            REGISTRY_TABLE: {
-                "geometry": None,
-                "kind": "table",
-                "primary_key": ["source", "source_activity_id"],
-            },
-            SYNC_STATE_TABLE: {
-                "geometry": None,
-                "kind": "table",
-                "primary_key": ["provider"],
-            },
-            "activity_tracks": {
-                "geometry": "LINESTRING",
-                "kind": "layer",
-                "fields": [name for name, _ in TRACK_FIELDS],
-            },
-            "activity_starts": {
-                "geometry": "POINT",
-                "kind": "layer",
-                "fields": [name for name, _ in START_FIELDS],
-            },
-            "activity_points": {
-                "geometry": "POINT",
-                "kind": "layer",
-                "fields": [name for name, _ in POINT_FIELDS],
-            },
-            "activity_atlas_pages": {
-                "geometry": "POLYGON",
-                "kind": "layer",
-                "fields": [name for name, _ in ATLAS_FIELDS],
-            },
-            "atlas_document_summary": {
-                "geometry": None,
-                "kind": "table",
-                "fields": [name for name, _ in DOCUMENT_SUMMARY_FIELDS],
-            },
-            "atlas_cover_highlights": {
-                "geometry": None,
-                "kind": "table",
-                "fields": [name for name, _ in COVER_HIGHLIGHT_FIELDS],
-            },
-            "atlas_page_detail_items": {
-                "geometry": None,
-                "kind": "table",
-                "fields": [name for name, _ in PAGE_DETAIL_ITEM_FIELDS],
-            },
-            "atlas_profile_samples": {
-                "geometry": None,
-                "kind": "table",
-                "fields": [name for name, _ in PROFILE_SAMPLE_FIELDS],
-            },
-            "atlas_toc_entries": {
-                "geometry": None,
-                "kind": "table",
-                "fields": [name for name, _ in TOC_FIELDS],
-            },
-        }
+        return GPKG_LAYER_SCHEMA
 
     def write_activities(self, activities, sync_metadata=None):
         if not self.output_path:
@@ -362,7 +124,7 @@ class GeoPackageWriter:
     def _build_track_layer(self, records):
         layer = QgsVectorLayer("LineString?crs=EPSG:4326", "activity_tracks", "memory")
         provider = layer.dataProvider()
-        provider.addAttributes(self._make_fields(TRACK_FIELDS))
+        provider.addAttributes(make_qgs_fields(TRACK_FIELDS))
         layer.updateFields()
 
         features = []
@@ -414,7 +176,7 @@ class GeoPackageWriter:
     def _build_start_layer(self, records):
         layer = QgsVectorLayer("Point?crs=EPSG:4326", "activity_starts", "memory")
         provider = layer.dataProvider()
-        provider.addAttributes(self._make_fields(START_FIELDS))
+        provider.addAttributes(make_qgs_fields(START_FIELDS))
         layer.updateFields()
 
         features = []
@@ -443,7 +205,7 @@ class GeoPackageWriter:
     def _build_point_layer(self, records):
         layer = QgsVectorLayer("Point?crs=EPSG:4326", "activity_points", "memory")
         provider = layer.dataProvider()
-        provider.addAttributes(self._make_fields(POINT_FIELDS))
+        provider.addAttributes(make_qgs_fields(POINT_FIELDS))
         layer.updateFields()
 
         features = []
@@ -499,7 +261,7 @@ class GeoPackageWriter:
         # Using 4326 bounding boxes causes extent mismatch at mid-latitudes.
         layer = QgsVectorLayer("Polygon?crs=EPSG:3857", "activity_atlas_pages", "memory")
         provider = layer.dataProvider()
-        provider.addAttributes(self._make_fields(ATLAS_FIELDS))
+        provider.addAttributes(make_qgs_fields(ATLAS_FIELDS))
         layer.updateFields()
 
         features = []
@@ -572,7 +334,7 @@ class GeoPackageWriter:
     def _build_document_summary_layer(self, records=None, plans=None):
         layer = QgsVectorLayer("None", "atlas_document_summary", "memory")
         provider = layer.dataProvider()
-        provider.addAttributes(self._make_fields(DOCUMENT_SUMMARY_FIELDS))
+        provider.addAttributes(make_qgs_fields(DOCUMENT_SUMMARY_FIELDS))
         layer.updateFields()
 
         resolved_plans = plans if plans is not None else build_atlas_page_plans(
@@ -601,7 +363,7 @@ class GeoPackageWriter:
     def _build_cover_highlight_layer(self, records=None, plans=None):
         layer = QgsVectorLayer("None", "atlas_cover_highlights", "memory")
         provider = layer.dataProvider()
-        provider.addAttributes(self._make_fields(COVER_HIGHLIGHT_FIELDS))
+        provider.addAttributes(make_qgs_fields(COVER_HIGHLIGHT_FIELDS))
         layer.updateFields()
 
         resolved_plans = plans if plans is not None else build_atlas_page_plans(
@@ -625,7 +387,7 @@ class GeoPackageWriter:
     def _build_page_detail_item_layer(self, records, plans=None):
         layer = QgsVectorLayer("None", "atlas_page_detail_items", "memory")
         provider = layer.dataProvider()
-        provider.addAttributes(self._make_fields(PAGE_DETAIL_ITEM_FIELDS))
+        provider.addAttributes(make_qgs_fields(PAGE_DETAIL_ITEM_FIELDS))
         layer.updateFields()
 
         features = []
@@ -648,7 +410,7 @@ class GeoPackageWriter:
     def _build_profile_sample_layer(self, records, plans=None):
         layer = QgsVectorLayer("None", "atlas_profile_samples", "memory")
         provider = layer.dataProvider()
-        provider.addAttributes(self._make_fields(PROFILE_SAMPLE_FIELDS))
+        provider.addAttributes(make_qgs_fields(PROFILE_SAMPLE_FIELDS))
         layer.updateFields()
 
         features = []
@@ -678,7 +440,7 @@ class GeoPackageWriter:
     def _build_toc_layer(self, records, plans=None):
         layer = QgsVectorLayer("None", "atlas_toc_entries", "memory")
         provider = layer.dataProvider()
-        provider.addAttributes(self._make_fields(TOC_FIELDS))
+        provider.addAttributes(make_qgs_fields(TOC_FIELDS))
         layer.updateFields()
 
         features = []
@@ -729,12 +491,6 @@ class GeoPackageWriter:
                     result=result,
                 )
             )
-
-    def _make_fields(self, field_defs):
-        fields = QgsFields()
-        for name, field_type in field_defs:
-            fields.append(QgsField(name, field_type))
-        return fields
 
     def _activity_geometry(self, record):
         geometry_points = record.get("geometry_points") or []
