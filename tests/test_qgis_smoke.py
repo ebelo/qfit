@@ -65,6 +65,12 @@ class _FakeCanvas:
             def yMaximum(self):
                 return self._vals[3]
 
+            def isEmpty(self):
+                return (
+                    self.xMinimum() == self.xMaximum()
+                    or self.yMinimum() == self.yMaximum()
+                )
+
         return _Extent(self.last_extent)
 
     def refresh(self):
