@@ -79,7 +79,7 @@ def _make_qgis_stub():
 
 _qgis_core = _make_qgis_stub()
 
-from qfit.atlas_export_task import AtlasExportTask, build_atlas_layout, build_cover_layout  # noqa: E402
+from qfit.atlas_export_task import AtlasExportTask, build_atlas_layout, build_cover_layout, build_toc_layout  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -205,6 +205,7 @@ class TestAtlasExportTaskSuccess(unittest.TestCase):
              patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
              patch("qfit.atlas_export_task.AtlasExportTask._merge_pdfs"), \
              patch("qfit.atlas_export_task.AtlasExportTask._export_cover_page", return_value=None), \
+             patch("qfit.atlas_export_task.AtlasExportTask._export_toc_page", return_value=None), \
              patch("os.replace"), \
              patch("os.makedirs"):
             result = task.run()
@@ -222,6 +223,7 @@ class TestAtlasExportTaskSuccess(unittest.TestCase):
         with patch("qfit.atlas_export_task.build_atlas_layout", return_value=layout_mock), \
              patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
              patch("qfit.atlas_export_task.AtlasExportTask._export_cover_page", return_value=None), \
+             patch("qfit.atlas_export_task.AtlasExportTask._export_toc_page", return_value=None), \
              patch("os.replace"), \
              patch("os.makedirs"):
             _run_task(task)
@@ -243,6 +245,7 @@ class TestAtlasExportTaskSuccess(unittest.TestCase):
              patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
              patch("qfit.atlas_export_task.AtlasExportTask._merge_pdfs"), \
              patch("qfit.atlas_export_task.AtlasExportTask._export_cover_page", return_value=None), \
+             patch("qfit.atlas_export_task.AtlasExportTask._export_toc_page", return_value=None), \
              patch("os.remove"), \
              patch("os.makedirs"):
             _run_task(task)
@@ -359,6 +362,7 @@ class TestAtlasExportTaskNoCallback(unittest.TestCase):
         with patch("qfit.atlas_export_task.build_atlas_layout", return_value=layout_mock), \
              patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
              patch("qfit.atlas_export_task.AtlasExportTask._export_cover_page", return_value=None), \
+             patch("qfit.atlas_export_task.AtlasExportTask._export_toc_page", return_value=None), \
              patch("os.replace"), \
              patch("os.makedirs"):
             task.run()
@@ -385,6 +389,7 @@ class TestAtlasExportTaskLayerSubsetHandling(unittest.TestCase):
         with patch("qfit.atlas_export_task.build_atlas_layout", return_value=layout_mock), \
              patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
              patch("qfit.atlas_export_task.AtlasExportTask._export_cover_page", return_value=None), \
+             patch("qfit.atlas_export_task.AtlasExportTask._export_toc_page", return_value=None), \
              patch("os.replace"), \
              patch("os.makedirs"):
             _run_task(task)
@@ -439,6 +444,7 @@ class TestAtlasExportTaskPerPageFilter(unittest.TestCase):
         with patch("qfit.atlas_export_task.build_atlas_layout", return_value=layout_mock), \
              patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
              patch("qfit.atlas_export_task.AtlasExportTask._export_cover_page", return_value=None), \
+             patch("qfit.atlas_export_task.AtlasExportTask._export_toc_page", return_value=None), \
              patch("os.replace"), \
              patch("os.makedirs"):
             _run_task(task)
@@ -467,6 +473,7 @@ class TestAtlasExportTaskPerPageFilter(unittest.TestCase):
              patch("qfit.atlas_export_task.AtlasExportTask._merge_pdfs",
                    side_effect=lambda pages, out: merge_calls.append((pages, out))), \
              patch("qfit.atlas_export_task.AtlasExportTask._export_cover_page", return_value=None), \
+             patch("qfit.atlas_export_task.AtlasExportTask._export_toc_page", return_value=None), \
              patch("os.remove", side_effect=lambda p: remove_calls.append(p)), \
              patch("os.makedirs"):
             _run_task(task)
@@ -492,6 +499,7 @@ class TestAtlasExportTaskPerPageFilter(unittest.TestCase):
         with patch("qfit.atlas_export_task.build_atlas_layout", return_value=layout_mock), \
              patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
              patch("qfit.atlas_export_task.AtlasExportTask._export_cover_page", return_value=None), \
+             patch("qfit.atlas_export_task.AtlasExportTask._export_toc_page", return_value=None), \
              patch("os.replace", side_effect=lambda src, dst: replace_calls.append((src, dst))), \
              patch("qfit.atlas_export_task.AtlasExportTask._merge_pdfs") as mock_merge, \
              patch("os.makedirs"):
@@ -888,6 +896,197 @@ class TestLayoutGeometry(unittest.TestCase):
         from qfit.atlas_export_task import PROFILE_CHART_H
 
         self.assertGreater(PROFILE_CHART_H, 20.0, "Profile chart should be at least 20mm tall")
+
+
+# ---------------------------------------------------------------------------
+# Tests: table of contents page
+# ---------------------------------------------------------------------------
+
+
+def _make_toc_atlas_layer(entries=None, feature_count=None):
+    """Return a mock atlas layer with TOC-relevant fields populated.
+
+    *entries* is a list of dicts with keys: page_number, page_toc_label,
+    page_name, page_sort_key.
+    """
+    if entries is None:
+        entries = [
+            {"page_number": 1, "page_toc_label": "2025-06-01 · Morning Ride · 42 km",
+             "page_name": "Morning Ride", "page_sort_key": "2025-06-01|morning_ride"},
+            {"page_number": 2, "page_toc_label": "2025-06-02 · Afternoon Run · 10 km",
+             "page_name": "Afternoon Run", "page_sort_key": "2025-06-02|afternoon_run"},
+            {"page_number": 3, "page_toc_label": None,
+             "page_name": "Evening Walk", "page_sort_key": "2025-06-03|evening_walk"},
+        ]
+    if feature_count is None:
+        feature_count = len(entries)
+
+    all_field_names = ["page_number", "page_toc_label", "page_name", "page_sort_key"]
+    layer = MagicMock()
+    layer.featureCount.return_value = feature_count
+
+    fields = MagicMock()
+    fields.indexOf = lambda name: all_field_names.index(name) if name in all_field_names else -1
+    layer.fields.return_value = fields
+
+    feats = []
+    for entry in entries:
+        feat = MagicMock()
+        feat.attribute = lambda idx, _e=entry: list(_e.values())[idx] if 0 <= idx < len(_e) else None
+        feats.append(feat)
+    layer.getFeatures.return_value = iter(feats)
+
+    return layer
+
+
+class TestBuildTocLayout(unittest.TestCase):
+    def test_build_toc_layout_returns_layout_for_populated_layer(self):
+        layer = _make_toc_atlas_layer()
+        result = build_toc_layout(layer)
+        self.assertIsNotNone(result)
+
+    def test_build_toc_layout_sets_layout_name(self):
+        layer = _make_toc_atlas_layer()
+        layout = build_toc_layout(layer)
+        self.assertIsNotNone(layout)
+        layout.setName.assert_called_with("qfit Atlas Contents")
+
+    def test_build_toc_layout_returns_none_for_empty_layer(self):
+        layer = _make_toc_atlas_layer(entries=[], feature_count=0)
+        result = build_toc_layout(layer)
+        self.assertIsNone(result)
+
+    def test_build_toc_layout_returns_none_for_none_layer(self):
+        result = build_toc_layout(None)
+        self.assertIsNone(result)
+
+    def test_build_toc_layout_returns_none_when_fields_missing(self):
+        layer = MagicMock()
+        layer.featureCount.return_value = 1
+        fields = MagicMock()
+        fields.indexOf = lambda name: -1  # all fields missing
+        layer.fields.return_value = fields
+        result = build_toc_layout(layer)
+        self.assertIsNone(result)
+
+    def test_build_toc_layout_falls_back_to_page_name(self):
+        """When page_toc_label is None, page_name is used instead."""
+        entries = [
+            {"page_number": 1, "page_toc_label": None,
+             "page_name": "Fallback Name", "page_sort_key": "a"},
+        ]
+        layer = _make_toc_atlas_layer(entries=entries)
+        result = build_toc_layout(layer)
+        self.assertIsNotNone(result)
+
+    def test_build_toc_layout_uses_provided_project(self):
+        layer = _make_toc_atlas_layer()
+        project = MagicMock()
+        build_toc_layout(layer, project=project)
+        from qfit.atlas_export_task import QgsPrintLayout  # noqa: PLC0415
+        QgsPrintLayout.assert_called_with(project)
+
+
+class TestExportTocPage(unittest.TestCase):
+    def test_export_toc_page_returns_path_on_success(self):
+        layer = _make_toc_atlas_layer()
+        toc_layout = MagicMock()
+        exporter_instance = MagicMock()
+        exporter_instance.exportToPdf.return_value = 0  # Success
+
+        exporter_cls = MagicMock()
+        exporter_cls.return_value = exporter_instance
+        exporter_cls.Success = 0
+        exporter_cls.PdfExportSettings = MagicMock(return_value=MagicMock())
+
+        with patch("qfit.atlas_export_task.build_toc_layout", return_value=toc_layout), \
+             patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls):
+            result = AtlasExportTask._export_toc_page(layer, "/tmp/atlas.pdf")
+
+        self.assertEqual(result, "/tmp/atlas.pdf.toc.pdf")
+
+    def test_export_toc_page_returns_none_when_layout_is_none(self):
+        layer = _make_toc_atlas_layer(entries=[], feature_count=0)
+        with patch("qfit.atlas_export_task.build_toc_layout", return_value=None):
+            result = AtlasExportTask._export_toc_page(layer, "/tmp/atlas.pdf")
+        self.assertIsNone(result)
+
+    def test_export_toc_page_returns_none_on_exporter_failure(self):
+        layer = _make_toc_atlas_layer()
+        toc_layout = MagicMock()
+        exporter_instance = MagicMock()
+        exporter_instance.exportToPdf.return_value = 1  # failure
+
+        exporter_cls = MagicMock()
+        exporter_cls.return_value = exporter_instance
+        exporter_cls.Success = 0
+        exporter_cls.PdfExportSettings = MagicMock(return_value=MagicMock())
+
+        with patch("qfit.atlas_export_task.build_toc_layout", return_value=toc_layout), \
+             patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls):
+            result = AtlasExportTask._export_toc_page(layer, "/tmp/atlas.pdf")
+
+        self.assertIsNone(result)
+
+    def test_export_toc_page_returns_none_on_exception(self):
+        layer = _make_toc_atlas_layer()
+        with patch("qfit.atlas_export_task.build_toc_layout", side_effect=RuntimeError("boom")):
+            result = AtlasExportTask._export_toc_page(layer, "/tmp/atlas.pdf")
+        self.assertIsNone(result)
+
+
+class TestTocPageInExport(unittest.TestCase):
+    def test_toc_page_inserted_between_cover_and_activity_pages(self):
+        """TOC PDF path appears after cover and before activity pages in merge."""
+        layer = _make_atlas_layer(feature_count=2)
+        received = {}
+        task = AtlasExportTask(
+            atlas_layer=layer,
+            output_path="/tmp/qfit_toc_test.pdf",
+            on_finished=lambda **kw: received.update(kw),
+        )
+        layout_mock, _, exporter_cls_mock = _make_atlas_mock(feature_count=2)
+        merge_calls = []
+        cover_path = "/tmp/qfit_toc_test.pdf.cover.pdf"
+        toc_path = "/tmp/qfit_toc_test.pdf.toc.pdf"
+        with patch("qfit.atlas_export_task.build_atlas_layout", return_value=layout_mock), \
+             patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
+             patch("qfit.atlas_export_task.AtlasExportTask._export_cover_page",
+                   return_value=cover_path), \
+             patch("qfit.atlas_export_task.AtlasExportTask._export_toc_page",
+                   return_value=toc_path), \
+             patch("qfit.atlas_export_task.AtlasExportTask._merge_pdfs",
+                   side_effect=lambda pages, out: merge_calls.append((pages, out))), \
+             patch("os.remove"), \
+             patch("os.makedirs"):
+            _run_task(task)
+        self.assertEqual(len(merge_calls), 1)
+        all_pages = merge_calls[0][0]
+        self.assertEqual(all_pages[0], cover_path)
+        self.assertEqual(all_pages[1], toc_path)
+        self.assertEqual(len(all_pages), 4)  # cover + toc + 2 activity pages
+
+    def test_toc_page_skipped_on_failure(self):
+        """Export succeeds even when _export_toc_page returns None."""
+        layer = _make_atlas_layer(feature_count=1)
+        received = {}
+        task = AtlasExportTask(
+            atlas_layer=layer,
+            output_path="/tmp/qfit_toc_fail.pdf",
+            on_finished=lambda **kw: received.update(kw),
+        )
+        layout_mock, _, exporter_cls_mock = _make_atlas_mock(feature_count=1)
+        with patch("qfit.atlas_export_task.build_atlas_layout", return_value=layout_mock), \
+             patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
+             patch("qfit.atlas_export_task.AtlasExportTask._export_cover_page",
+                   return_value=None), \
+             patch("qfit.atlas_export_task.AtlasExportTask._export_toc_page",
+                   return_value=None), \
+             patch("os.replace"), \
+             patch("os.makedirs"):
+            _run_task(task)
+        self.assertIsNotNone(received.get("output_path"))
+        self.assertIsNone(received.get("error"))
 
 
 if __name__ == "__main__":
