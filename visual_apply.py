@@ -1,6 +1,8 @@
 import logging
 from dataclasses import dataclass
 
+from .mapbox_config import MapboxConfigError
+
 logger = logging.getLogger(__name__)
 
 
@@ -162,7 +164,7 @@ class VisualApplyService:
                 tile_mode=config.tile_mode,
             )
             return layer, None
-        except Exception as exc:
+        except (MapboxConfigError, RuntimeError) as exc:
             return None, str(exc)
 
     @staticmethod
