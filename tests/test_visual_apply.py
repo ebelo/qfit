@@ -276,6 +276,19 @@ class BackgroundFailureTests(unittest.TestCase):
         self.assertNotIn("loaded layers", result.status.lower())
         self.assertIn("could not be updated", result.status.lower())
 
+    def test_unexpected_background_exception_propagates(self):
+        self.layer_manager.ensure_background_layer.side_effect = TypeError("boom")
+        with self.assertRaises(TypeError):
+            self.service.apply(
+                layers=LayerRefs(activities=MagicMock()),
+                query=_make_query(),
+                style_preset="By activity type",
+                temporal_mode="Off",
+                background_config=_make_bg_config(enabled=True),
+                apply_subset_filters=False,
+                filtered_count=0,
+            )
+
 
 class NoLayersTests(unittest.TestCase):
     def setUp(self):

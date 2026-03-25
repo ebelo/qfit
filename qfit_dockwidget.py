@@ -21,14 +21,13 @@ from .activity_query import (
     summarize_activities,
 )
 from .atlas_export_controller import AtlasExportController, AtlasExportValidationError
+from .atlas_export_service import AtlasExportResult, AtlasExportService
 from .background_map_controller import BackgroundMapController
 from .contextual_help import ContextualHelpBinder, build_dock_help_entries
 from .layer_manager import LayerManager
 from .load_workflow import LoadWorkflowError, LoadWorkflowService
 from .mapbox_config import (
     DEFAULT_BACKGROUND_PRESET,
-    TILE_MODE_RASTER,
-    TILE_MODE_VECTOR,
     TILE_MODES,
     MapboxConfigError,
     background_preset_names,
@@ -36,7 +35,7 @@ from .mapbox_config import (
 )
 from .visual_apply import BackgroundConfig, LayerRefs, VisualApplyService
 from .fetch_task import StravaFetchTask
-from .atlas_export_task import AtlasExportTask, BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
+from .atlas_export_task import BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
 from .qfit_cache import QfitCache
 from .strava_client import StravaClient, StravaClientError
 from .settings_service import SettingsService
@@ -72,6 +71,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.background_controller = BackgroundMapController(self.layer_manager)
         self.load_workflow = LoadWorkflowService(self.layer_manager)
         self.visual_apply = VisualApplyService(self.layer_manager)
+        self.atlas_export_service = AtlasExportService(self.layer_manager)
         self.cache = self._build_cache()
         self.setupUi(self)
         self._remove_stale_qfit_layers()
@@ -861,25 +861,15 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
         self._save_settings()
 
-        # Switch basemap to vector mode for export if currently raster — vector
-        # tiles embed as true PDF vectors, dramatically reducing file size.
-        # We reload the basemap in vector mode and restore raster after export.
         pre_export_tile_mode = self.tileModeComboBox.currentText()
-        if (
-            pre_export_tile_mode == TILE_MODE_RASTER
-            and self.backgroundMapCheckBox.isChecked()
-        ):
-            try:
-                self.layer_manager.ensure_background_layer(
-                    enabled=True,
-                    preset_name=self.backgroundPresetComboBox.currentText(),
-                    access_token=self.mapboxAccessTokenLineEdit.text().strip(),
-                    style_owner=self.mapboxStyleOwnerLineEdit.text().strip(),
-                    style_id=self.mapboxStyleIdLineEdit.text().strip(),
-                    tile_mode=TILE_MODE_VECTOR,
-                )
-            except RuntimeError:
-                logger.warning("Vector tile mode failed, falling back to raster", exc_info=True)
+        self.atlas_export_service.prepare_basemap_for_export(
+            pre_export_tile_mode=pre_export_tile_mode,
+            background_enabled=self.backgroundMapCheckBox.isChecked(),
+            preset_name=self.backgroundPresetComboBox.currentText(),
+            access_token=self.mapboxAccessTokenLineEdit.text().strip(),
+            style_owner=self.mapboxStyleOwnerLineEdit.text().strip(),
+            style_id=self.mapboxStyleIdLineEdit.text().strip(),
+        )
 
         self._set_atlas_export_running(True)
         self._set_atlas_pdf_status(
@@ -887,12 +877,11 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         )
         self._set_status("Generating atlas PDF…")
 
-        self._atlas_export_task = AtlasExportTask(
+        self._atlas_export_task = self.atlas_export_service.build_task(
             atlas_layer=self.atlas_layer,
             output_path=output_path,
             on_finished=self._on_atlas_export_finished,
-            restore_tile_mode=pre_export_tile_mode,
-            layer_manager=self.layer_manager,
+            pre_export_tile_mode=pre_export_tile_mode,
             preset_name=self.backgroundPresetComboBox.currentText(),
             access_token=self.mapboxAccessTokenLineEdit.text().strip(),
             style_owner=self.mapboxStyleOwnerLineEdit.text().strip(),
@@ -920,22 +909,11 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._atlas_export_task = None
         self._set_atlas_export_running(False)
 
-        if cancelled:
-            self._set_atlas_pdf_status("Atlas PDF export cancelled.")
-            self._set_status("Atlas PDF export cancelled.")
-            return
-
-        if error is not None:
-            self._show_error("Atlas PDF export failed", error)
-            self._set_atlas_pdf_status(f"Export failed: {error}")
-            self._set_status("Atlas PDF export failed.")
-            return
-
-        status = (
-            f"Atlas PDF exported: {page_count} page(s) → {output_path}"
-        )
-        self._set_atlas_pdf_status(status)
-        self._set_status(status)
+        result = AtlasExportService.build_result(output_path, error, cancelled, page_count)
+        self._set_atlas_pdf_status(result.pdf_status)
+        self._set_status(result.main_status)
+        if result.error is not None and not result.cancelled:
+            self._show_error("Atlas PDF export failed", result.error)
 
     def _set_atlas_pdf_status(self, text: str) -> None:
         label = getattr(self, "atlasPdfStatusLabel", None)
