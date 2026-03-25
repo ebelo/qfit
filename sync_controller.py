@@ -1,55 +1,57 @@
 import logging
 from datetime import date
 
-from .strava_client import StravaClient, StravaClientError
+from .provider import ProviderError
+from .strava_provider import StravaProvider
 
 logger = logging.getLogger(__name__)
 
 
 class SyncController:
-    """Orchestrates Strava fetch/sync logic independent of the UI."""
+    """Orchestrates provider fetch/sync logic independent of the UI."""
 
-    def build_client(self, client_id, client_secret, refresh_token, cache=None, require_refresh_token=True):
-        """Create and validate a :class:`StravaClient`."""
-        client = StravaClient(
+    def build_strava_provider(self, client_id, client_secret, refresh_token, cache=None, require_refresh_token=True):
+        """Create and validate a :class:`StravaProvider`."""
+        provider = StravaProvider(
             client_id=client_id,
             client_secret=client_secret,
             refresh_token=refresh_token,
             cache=cache,
         )
-        if not client.has_client_credentials():
-            raise StravaClientError("Enter Strava client ID and client secret first.")
-        if require_refresh_token and not client.refresh_token:
-            raise StravaClientError(
+        if not provider.has_client_credentials():
+            raise ProviderError("Enter Strava client ID and client secret first.")
+        if require_refresh_token and not provider.has_refresh_token():
+            raise ProviderError(
                 "Enter a refresh token, or use the built-in authorization flow to generate one."
             )
-        return client
+        return provider
 
-    def build_sync_metadata(self, activities, client):
+    def build_sync_metadata(self, activities, provider):
         """Return a sync-context dict from a completed fetch."""
         detailed_count = sum(1 for a in activities if a.geometry_source == "stream")
         today_str = date.today().isoformat()
         return {
-            "provider": "strava",
+            "provider": provider.source_name,
             "before_epoch": None,
             "after_epoch": None,
             "fetched_count": len(activities),
             "detailed_count": detailed_count,
-            "stream_stats": client.last_stream_enrichment_stats,
-            "rate_limit": client.last_rate_limit,
+            "stream_stats": provider.last_stream_enrichment_stats,
+            "rate_limit": provider.last_rate_limit,
             "is_full_sync": True,
             "today_str": today_str,
         }
 
-    def fetch_status_text(self, client, activity_count, detailed_count):
+    def fetch_status_text(self, provider, activity_count, detailed_count):
         """Build a human-readable status string for a completed fetch."""
-        stream_stats = client.last_stream_enrichment_stats or {}
-        rate_limit_note = self._rate_limit_note(client.last_rate_limit)
+        stream_stats = provider.last_stream_enrichment_stats or {}
+        rate_limit_note = self._rate_limit_note(provider.last_rate_limit)
         return (
-            "Fetched {activity_count} activities from Strava, detailed tracks: {detailed_count}, "
+            "Fetched {activity_count} activities from {source}, detailed tracks: {detailed_count}, "
             "cached streams: {cached}, downloaded streams: {downloaded}, rate-limit skips: {skipped}.{rate_note}"
         ).format(
             activity_count=activity_count,
+            source=provider.source_name,
             detailed_count=detailed_count,
             cached=stream_stats.get("cached", 0),
             downloaded=stream_stats.get("downloaded", 0),
