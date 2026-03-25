@@ -298,15 +298,18 @@ def _load_service_with_mock_qgis():
             sys.modules["qfit.layer_style_service"] = saved_lss
 
 
-# Build a mock-backed service class when real QGIS is absent.  Skip this when
-# QGIS is installed so the QGIS-based suite above provides coverage instead.
+# Build a mock-backed service class when a usable QGIS is absent.
+# Use QGIS_AVAILABLE (successful import) rather than _REAL_QGIS_PRESENT
+# (package discoverable) so that an incomplete install (package found but
+# native libs broken) still triggers the mock suite rather than leaving the
+# module uncovered.
 _MockedLayerStyleService = (
-    None if _REAL_QGIS_PRESENT else _load_service_with_mock_qgis()
+    None if QGIS_AVAILABLE else _load_service_with_mock_qgis()
 )
 
 
 @unittest.skipIf(
-    _REAL_QGIS_PRESENT,
+    QGIS_AVAILABLE,
     "QGIS is installed — LayerStyleServiceTests already provides coverage",
 )
 @unittest.skipIf(

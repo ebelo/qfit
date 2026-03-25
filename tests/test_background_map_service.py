@@ -101,10 +101,13 @@ def _load_service_with_mock_qgis():
             sys.modules["qfit.background_map_service"] = saved_bms
 
 
-if not _REAL_QGIS_PRESENT:
+# Use QGIS_AVAILABLE (successful import) rather than _REAL_QGIS_PRESENT
+# (package discoverable) so that an incomplete install (package found but
+# native libs broken) still triggers the mock suite.
+if not QGIS_AVAILABLE:
     _mock_bms_cls, _mock_bms_mod, _qstub = _load_service_with_mock_qgis()
 
-SKIP_MOCK = "QGIS is installed — real-QGIS suite provides coverage" if _REAL_QGIS_PRESENT else ""
+SKIP_MOCK = "QGIS is installed — real-QGIS suite provides coverage" if QGIS_AVAILABLE else ""
 SKIP_MOCK_LOAD = (
     "Could not load BackgroundMapService with mock QGIS"
     if (_mock_bms_cls is None and not _REAL_QGIS_PRESENT)
@@ -329,7 +332,7 @@ class RemoveBackgroundLayersTests(unittest.TestCase):
 # Suite 2 — mock-QGIS (skipped when QGIS is installed)
 # ===========================================================================
 
-@unittest.skipIf(_REAL_QGIS_PRESENT, SKIP_MOCK)
+@unittest.skipIf(QGIS_AVAILABLE, SKIP_MOCK)
 @unittest.skipIf(_mock_bms_cls is None, SKIP_MOCK_LOAD)
 class EnsureBackgroundLayerMockTests(unittest.TestCase):
     """Covers ensure_background_layer paths without a real QGIS session."""
@@ -391,7 +394,7 @@ class EnsureBackgroundLayerMockTests(unittest.TestCase):
                 )
 
 
-@unittest.skipIf(_REAL_QGIS_PRESENT, SKIP_MOCK)
+@unittest.skipIf(QGIS_AVAILABLE, SKIP_MOCK)
 @unittest.skipIf(_mock_bms_cls is None, SKIP_MOCK_LOAD)
 class MoveBackgroundLayersMockTests(unittest.TestCase):
     def setUp(self):
@@ -429,7 +432,7 @@ class MoveBackgroundLayersMockTests(unittest.TestCase):
         mock_root.reorderChildren.assert_not_called()
 
 
-@unittest.skipIf(_REAL_QGIS_PRESENT, SKIP_MOCK)
+@unittest.skipIf(QGIS_AVAILABLE, SKIP_MOCK)
 @unittest.skipIf(_mock_bms_cls is None, SKIP_MOCK_LOAD)
 class RemoveBackgroundLayersMockTests(unittest.TestCase):
     def setUp(self):
@@ -466,7 +469,7 @@ class RemoveBackgroundLayersMockTests(unittest.TestCase):
         self.mock_project.removeMapLayer.assert_not_called()
 
 
-@unittest.skipIf(_REAL_QGIS_PRESENT, SKIP_MOCK)
+@unittest.skipIf(QGIS_AVAILABLE, SKIP_MOCK)
 @unittest.skipIf(_mock_bms_cls is None, SKIP_MOCK_LOAD)
 class SnapExtentMockTests(unittest.TestCase):
     def setUp(self):
@@ -537,7 +540,7 @@ class SnapExtentMockTests(unittest.TestCase):
         self.assertEqual(len(args), 4)
 
 
-@unittest.skipIf(_REAL_QGIS_PRESENT, SKIP_MOCK)
+@unittest.skipIf(QGIS_AVAILABLE, SKIP_MOCK)
 @unittest.skipIf(_mock_bms_cls is None, SKIP_MOCK_LOAD)
 class ApplyLabelPriorityMockTests(unittest.TestCase):
     """Covers the label priority loop with mock styles."""
@@ -609,7 +612,7 @@ class ApplyLabelPriorityMockTests(unittest.TestCase):
         self.service._apply_label_priority(labeling)
 
 
-@unittest.skipIf(_REAL_QGIS_PRESENT, SKIP_MOCK)
+@unittest.skipIf(QGIS_AVAILABLE, SKIP_MOCK)
 @unittest.skipIf(_mock_bms_cls is None, SKIP_MOCK_LOAD)
 class ApplyMapboxGlStyleMockTests(unittest.TestCase):
     def setUp(self):
