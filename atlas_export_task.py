@@ -137,6 +137,39 @@ def _add_label(
     return label
 
 
+def _normalize_extent_to_aspect_ratio(rect: QgsRectangle, target_aspect_ratio: float) -> QgsRectangle:
+    """Return a centered rectangle expanded to match *target_aspect_ratio*.
+
+    The shorter dimension is expanded; the longer one is preserved.
+    Returns the input rect unchanged if geometry values are unavailable/non-numeric
+    (useful for headless tests with mocks).
+    """
+    try:
+        width = float(rect.width())
+        height = float(rect.height())
+        center_x = (float(rect.xMinimum()) + float(rect.xMaximum())) / 2.0
+        center_y = (float(rect.yMinimum()) + float(rect.yMaximum())) / 2.0
+    except (TypeError, ValueError):
+        return rect
+
+    if width <= 0 or height <= 0 or target_aspect_ratio <= 0:
+        return rect
+
+    current_ratio = width / height
+
+    if abs(current_ratio - target_aspect_ratio) < 1e-9:
+        return rect
+
+    if current_ratio < target_aspect_ratio:
+        width = height * target_aspect_ratio
+    else:
+        height = width / target_aspect_ratio
+
+    half_w = width / 2.0
+    half_h = height / 2.0
+    return QgsRectangle(center_x - half_w, center_y - half_h, center_x + half_w, center_y + half_h)
+
+
 def build_atlas_layout(
     atlas_layer,
     project: QgsProject | None = None,
@@ -830,6 +863,10 @@ class AtlasExportTask(QgsTask):
                                 float(cy) - hh,
                                 float(cx) + hw,
                                 float(cy) + hh,
+                            )
+                            rect = _normalize_extent_to_aspect_ratio(
+                                rect,
+                                BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO,
                             )
                             map_item.setExtent(rect)
                             map_item.refresh()

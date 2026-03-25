@@ -692,6 +692,81 @@ class TestAtlasExportTaskPerPageFilter(unittest.TestCase):
         self.assertEqual(track_calls[-1], "")
         self.assertIsNotNone(received.get("output_path"))
 
+    def test_export_normalizes_rectangular_stored_extent_to_square_before_pdf(self):
+        """Export path should square-up stored extents before applying them to the map item."""
+        class _Rect:
+            def __init__(self, xmin, ymin, xmax, ymax):
+                self._xmin = xmin
+                self._ymin = ymin
+                self._xmax = xmax
+                self._ymax = ymax
+
+            def width(self):
+                return self._xmax - self._xmin
+
+            def height(self):
+                return self._ymax - self._ymin
+
+            def xMinimum(self):
+                return self._xmin
+
+            def yMinimum(self):
+                return self._ymin
+
+            def xMaximum(self):
+                return self._xmax
+
+            def yMaximum(self):
+                return self._ymax
+
+        atlas_layer = _make_atlas_layer(feature_count=1)
+        field_positions = {
+            "center_x_3857": 0,
+            "center_y_3857": 1,
+            "extent_width_m": 2,
+            "extent_height_m": 3,
+            "source_activity_id": 4,
+            "page_profile_summary": 5,
+        }
+        atlas_layer.fields.return_value.indexOf = lambda name: field_positions.get(name, -1)
+
+        layout_mock, atlas_mock, exporter_cls_mock = _make_atlas_mock(feature_count=1)
+        map_item = MagicMock()
+        map_item.layers.return_value = []
+        map_item.setExtent = MagicMock()
+        layout_mock.items.return_value = [map_item]
+
+        feat_mock = atlas_mock.layout.return_value.reportContext.return_value.feature.return_value
+        values = {
+            0: 1000.0,   # center_x_3857
+            1: 2000.0,   # center_y_3857
+            2: 200.0,    # extent_width_m (wide)
+            3: 100.0,    # extent_height_m
+            4: "act_001",
+            5: "",
+        }
+        feat_mock.attribute.side_effect = lambda idx: values.get(idx)
+
+        received = {}
+        task = AtlasExportTask(
+            atlas_layer=atlas_layer,
+            output_path="/tmp/qfit_test_square_extent.pdf",
+            on_finished=lambda **kw: received.update(kw),
+        )
+
+        with patch("qfit.atlas_export_task.QgsRectangle", _Rect), \
+             patch("qfit.atlas_export_task.build_atlas_layout", return_value=layout_mock), \
+             patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
+             patch("qfit.atlas_export_task.AtlasExportTask._export_cover_page", return_value=None), \
+             patch("qfit.atlas_export_task.AtlasExportTask._export_toc_page", return_value=None), \
+             patch("os.replace"), \
+             patch("os.makedirs"):
+            _run_task(task)
+
+        applied_rect = map_item.setExtent.call_args[0][0]
+        self.assertAlmostEqual(applied_rect.width(), applied_rect.height(), places=6)
+        self.assertIsNotNone(received.get("output_path"))
+
     def test_multi_page_merges_pdfs(self):
         """Multi-page export calls _merge_pdfs and cleans up per-page files."""
         layer = _make_atlas_layer(feature_count=3)
@@ -1115,6 +1190,55 @@ class TestAtlasExportTaskNarrowedExceptions(unittest.TestCase):
         with patch("qfit.atlas_export_task.build_cover_layout", side_effect=OSError("no space")):
             result = AtlasExportTask._export_cover_page(layer, "/tmp/atlas.pdf")
         self.assertIsNone(result)
+
+
+class TestExtentNormalization(unittest.TestCase):
+    class _Rect:
+        def __init__(self, xmin, ymin, xmax, ymax):
+            self._xmin = xmin
+            self._ymin = ymin
+            self._xmax = xmax
+            self._ymax = ymax
+
+        def width(self):
+            return self._xmax - self._xmin
+
+        def height(self):
+            return self._ymax - self._ymin
+
+        def xMinimum(self):
+            return self._xmin
+
+        def yMinimum(self):
+            return self._ymin
+
+        def xMaximum(self):
+            return self._xmax
+
+        def yMaximum(self):
+            return self._ymax
+
+    def test_normalize_extent_expands_width_for_tall_rect(self):
+        from qfit.atlas_export_task import _normalize_extent_to_aspect_ratio
+
+        rect = self._Rect(0, 0, 10, 20)
+        with patch("qfit.atlas_export_task.QgsRectangle", self._Rect):
+            normalized = _normalize_extent_to_aspect_ratio(rect, 1.0)
+
+        self.assertAlmostEqual(normalized.width(), normalized.height(), places=6)
+        self.assertAlmostEqual((normalized.xMinimum() + normalized.xMaximum()) / 2.0, 5.0, places=6)
+        self.assertAlmostEqual((normalized.yMinimum() + normalized.yMaximum()) / 2.0, 10.0, places=6)
+
+    def test_normalize_extent_expands_height_for_wide_rect(self):
+        from qfit.atlas_export_task import _normalize_extent_to_aspect_ratio
+
+        rect = self._Rect(0, 0, 20, 10)
+        with patch("qfit.atlas_export_task.QgsRectangle", self._Rect):
+            normalized = _normalize_extent_to_aspect_ratio(rect, 1.0)
+
+        self.assertAlmostEqual(normalized.width(), normalized.height(), places=6)
+        self.assertAlmostEqual((normalized.xMinimum() + normalized.xMaximum()) / 2.0, 10.0, places=6)
+        self.assertAlmostEqual((normalized.yMinimum() + normalized.yMaximum()) / 2.0, 5.0, places=6)
 
 
 class TestLayoutGeometry(unittest.TestCase):
