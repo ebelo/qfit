@@ -1,11 +1,6 @@
 import os
 
-from qgis.core import (
-    QgsCoordinateTransformContext,
-    QgsProject,
-    QgsVectorFileWriter,
-)
-
+from .gpkg_io import write_layer_to_gpkg
 from .gpkg_layer_builders import (
     build_atlas_layer,
     build_cover_highlight_layer,
@@ -57,18 +52,18 @@ class GeoPackageWriter:
         repository = SyncRepository(self.output_path)
         new_file = not os.path.exists(self.output_path) or os.path.getsize(self.output_path) == 0
         if new_file:
-            self._write_layer(build_track_layer([]), "activity_tracks", overwrite_file=True)
-            self._write_layer(build_start_layer([]), "activity_starts", overwrite_file=False)
-            self._write_layer(build_point_layer([]), "activity_points", overwrite_file=False)
-            self._write_layer(
+            write_layer_to_gpkg(build_track_layer([]), self.output_path, "activity_tracks", overwrite_file=True)
+            write_layer_to_gpkg(build_start_layer([]), self.output_path, "activity_starts", overwrite_file=False)
+            write_layer_to_gpkg(build_point_layer([]), self.output_path, "activity_points", overwrite_file=False)
+            write_layer_to_gpkg(
                 build_atlas_layer([], self.atlas_page_settings),
-                "activity_atlas_pages", overwrite_file=False,
+                self.output_path, "activity_atlas_pages", overwrite_file=False,
             )
-            self._write_layer(build_document_summary_layer(), "atlas_document_summary", overwrite_file=False)
-            self._write_layer(build_cover_highlight_layer(), "atlas_cover_highlights", overwrite_file=False)
-            self._write_layer(build_page_detail_item_layer([]), "atlas_page_detail_items", overwrite_file=False)
-            self._write_layer(build_profile_sample_layer([]), "atlas_profile_samples", overwrite_file=False)
-            self._write_layer(build_toc_layer([]), "atlas_toc_entries", overwrite_file=False)
+            write_layer_to_gpkg(build_document_summary_layer(), self.output_path, "atlas_document_summary", overwrite_file=False)
+            write_layer_to_gpkg(build_cover_highlight_layer(), self.output_path, "atlas_cover_highlights", overwrite_file=False)
+            write_layer_to_gpkg(build_page_detail_item_layer([]), self.output_path, "atlas_page_detail_items", overwrite_file=False)
+            write_layer_to_gpkg(build_profile_sample_layer([]), self.output_path, "atlas_profile_samples", overwrite_file=False)
+            write_layer_to_gpkg(build_toc_layer([]), self.output_path, "atlas_toc_entries", overwrite_file=False)
 
         repository.ensure_schema()
         sync_result = repository.upsert_activities(activities, sync_metadata=sync_metadata)
@@ -84,15 +79,15 @@ class GeoPackageWriter:
         page_detail_item_layer = build_page_detail_item_layer(records, self.atlas_page_settings, plans=plans)
         profile_sample_layer = build_profile_sample_layer(records, self.atlas_page_settings, plans=plans)
         toc_layer = build_toc_layer(records, self.atlas_page_settings, plans=plans)
-        self._write_layer(track_layer, "activity_tracks", overwrite_file=False)
-        self._write_layer(start_layer, "activity_starts", overwrite_file=False)
-        self._write_layer(point_layer, "activity_points", overwrite_file=False)
-        self._write_layer(atlas_layer, "activity_atlas_pages", overwrite_file=False)
-        self._write_layer(document_summary_layer, "atlas_document_summary", overwrite_file=False)
-        self._write_layer(cover_highlight_layer, "atlas_cover_highlights", overwrite_file=False)
-        self._write_layer(page_detail_item_layer, "atlas_page_detail_items", overwrite_file=False)
-        self._write_layer(profile_sample_layer, "atlas_profile_samples", overwrite_file=False)
-        self._write_layer(toc_layer, "atlas_toc_entries", overwrite_file=False)
+        write_layer_to_gpkg(track_layer, self.output_path, "activity_tracks", overwrite_file=False)
+        write_layer_to_gpkg(start_layer, self.output_path, "activity_starts", overwrite_file=False)
+        write_layer_to_gpkg(point_layer, self.output_path, "activity_points", overwrite_file=False)
+        write_layer_to_gpkg(atlas_layer, self.output_path, "activity_atlas_pages", overwrite_file=False)
+        write_layer_to_gpkg(document_summary_layer, self.output_path, "atlas_document_summary", overwrite_file=False)
+        write_layer_to_gpkg(cover_highlight_layer, self.output_path, "atlas_cover_highlights", overwrite_file=False)
+        write_layer_to_gpkg(page_detail_item_layer, self.output_path, "atlas_page_detail_items", overwrite_file=False)
+        write_layer_to_gpkg(profile_sample_layer, self.output_path, "atlas_profile_samples", overwrite_file=False)
+        write_layer_to_gpkg(toc_layer, self.output_path, "atlas_toc_entries", overwrite_file=False)
 
         return {
             "schema": self.schema(),
@@ -109,29 +104,3 @@ class GeoPackageWriter:
             "toc_count": toc_layer.featureCount(),
             "sync": sync_result,
         }
-
-    def _write_layer(self, layer, layer_name, overwrite_file):
-        options = QgsVectorFileWriter.SaveVectorOptions()
-        options.driverName = "GPKG"
-        options.layerName = layer_name
-        options.fileEncoding = "UTF-8"
-        options.actionOnExistingFile = (
-            QgsVectorFileWriter.CreateOrOverwriteFile
-            if overwrite_file
-            else QgsVectorFileWriter.CreateOrOverwriteLayer
-        )
-
-        result = QgsVectorFileWriter.writeAsVectorFormatV3(
-            layer,
-            self.output_path,
-            QgsProject.instance().transformContext() if QgsProject.instance() else QgsCoordinateTransformContext(),
-            options,
-        )
-        if result[0] != QgsVectorFileWriter.NoError:
-            raise RuntimeError(
-                "Failed to write layer '{name}' to {path}: {result}".format(
-                    name=layer_name,
-                    path=self.output_path,
-                    result=result,
-                )
-            )
