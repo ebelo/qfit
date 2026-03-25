@@ -91,12 +91,21 @@ class SettingsService:
         """
         if key in SENSITIVE_KEYS:
             if self._credential_store.available:
-                self._credential_store.set(key, value)
-                # Remove the plaintext copy that may have been written by an
-                # older version of the plugin.
-                self._settings.remove(f"{self._prefix}/{key}")
-                self._settings.remove(f"{self._legacy_prefix}/{key}")
-                return
+                try:
+                    self._credential_store.set(key, value)
+                    # Remove the plaintext copy that may have been written by
+                    # an older version of the plugin.
+                    self._settings.remove(f"{self._prefix}/{key}")
+                    self._settings.remove(f"{self._legacy_prefix}/{key}")
+                    return
+                except Exception as exc:
+                    logger.warning(
+                        "Keyring write failed for %r (%s); falling back to "
+                        "plain QSettings.  The keyring may be locked or "
+                        "temporarily unavailable.",
+                        key,
+                        exc,
+                    )
             else:
                 logger.warning(
                     "No secure keyring available; storing sensitive key %r in "

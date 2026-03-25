@@ -180,3 +180,17 @@ class SettingsServiceCredentialRoutingTests(unittest.TestCase):
         qs = FakeQSettings({"qfit/mapbox_access_token": "pk.test"})
         svc = SettingsService(qsettings=qs, credential_store=NullCredentialStore())
         self.assertEqual(svc.get("mapbox_access_token"), "pk.test")
+
+    def test_set_sensitive_falls_back_to_qsettings_on_keyring_error(self):
+        """If the keyring write raises, the value must still land in QSettings."""
+        from unittest.mock import MagicMock
+
+        broken_cred = MagicMock()
+        broken_cred.available = True
+        broken_cred.set.side_effect = RuntimeError("keyring locked")
+
+        qs = FakeQSettings()
+        svc = SettingsService(qsettings=qs, credential_store=broken_cred)
+        svc.set("refresh_token", "tok")
+
+        self.assertEqual(qs._data.get("qfit/refresh_token"), "tok")
