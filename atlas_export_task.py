@@ -424,6 +424,108 @@ def build_cover_layout(
     return layout
 
 
+def build_toc_layout(
+    atlas_layer,
+    project=None,
+) -> QgsPrintLayout | None:
+    """Build a single-page table-of-contents layout from *atlas_layer* features.
+
+    Returns ``None`` if the atlas layer has no features or the required
+    fields are absent (the TOC page is simply skipped in that case).
+    """
+    if atlas_layer is None or atlas_layer.featureCount() == 0:
+        return None
+
+    fields = atlas_layer.fields()
+    pn_idx = fields.indexOf("page_number")
+    toc_idx = fields.indexOf("page_toc_label")
+    name_idx = fields.indexOf("page_name")
+    sort_idx = fields.indexOf("page_sort_key")
+
+    # We need at least page_number and one of toc_label/name to build entries.
+    if pn_idx < 0 or (toc_idx < 0 and name_idx < 0):
+        return None
+
+    # Collect TOC entries from all features, sorted by page_sort_key or page_number.
+    entries: list[tuple[str, str]] = []  # (sort_key, display_label)
+    for feat in atlas_layer.getFeatures():
+        page_num = feat.attribute(pn_idx)
+        toc_label = feat.attribute(toc_idx) if toc_idx >= 0 else None
+        page_name = feat.attribute(name_idx) if name_idx >= 0 else None
+        sort_key = feat.attribute(sort_idx) if sort_idx >= 0 else ""
+
+        label_text = toc_label or page_name or ""
+        if not label_text and page_num is None:
+            continue
+
+        display = f"{page_num}.\u2002{label_text}" if label_text else str(page_num)
+        entries.append((str(sort_key or ""), display))
+
+    if not entries:
+        return None
+
+    # Sort by the sort key to match atlas page order.
+    entries.sort(key=lambda e: e[0])
+
+    proj = project or QgsProject.instance()
+    layout = QgsPrintLayout(proj)
+    layout.initializeDefaults()
+    layout.setName("qfit Atlas Contents")
+
+    page_collection = layout.pageCollection()
+    if page_collection.pageCount() > 0:
+        page = page_collection.page(0)
+        page.setPageSize(
+            QgsLayoutSize(PAGE_WIDTH_MM, PAGE_HEIGHT_MM, QgsUnitTypes.LayoutMillimeters)
+        )
+
+    content_width = PAGE_WIDTH_MM - 2 * MARGIN_MM
+
+    # Title
+    title_y = MARGIN_MM
+    title_h = 14.0
+    _add_label(
+        layout,
+        "Contents",
+        x=MARGIN_MM,
+        y=title_y,
+        w=content_width,
+        h=title_h,
+        font_size=16.0,
+        bold=True,
+    )
+
+    # Separator line below title
+    sep_y = title_y + title_h + 2.0
+    sep_label = QgsLayoutItemLabel(layout)
+    sep_label.setText("")
+    sep_label.attemptMove(QgsLayoutPoint(MARGIN_MM, sep_y, QgsUnitTypes.LayoutMillimeters))
+    sep_label.attemptResize(QgsLayoutSize(content_width, 0.3, QgsUnitTypes.LayoutMillimeters))
+    sep_label.setBackgroundColor(QColor(180, 180, 180))
+    sep_label.setBackgroundEnabled(True)
+    layout.addLayoutItem(sep_label)
+
+    # TOC entries
+    entry_y = sep_y + 4.0
+    row_h = 7.0
+    entry_color = QColor(30, 30, 30)
+
+    for _sort_key, display in entries:
+        _add_label(
+            layout,
+            display,
+            x=MARGIN_MM,
+            y=entry_y,
+            w=content_width,
+            h=row_h,
+            font_size=9.0,
+            color=entry_color,
+        )
+        entry_y += row_h
+
+    return layout
+
+
 class AtlasExportTask(QgsTask):
     """Export the qfit atlas as a multi-page PDF via QGIS print layout.
 
@@ -669,7 +771,14 @@ class AtlasExportTask(QgsTask):
                 self._output_path,
                 project=self._project,
             )
-            all_paths = ([cover_path] if cover_path else []) + page_paths
+            # Insert a table-of-contents page (silently skipped if generation fails).
+            toc_path = self._export_toc_page(
+                self._atlas_layer,
+                self._output_path,
+                project=self._project,
+            )
+            front_pages = [p for p in (cover_path, toc_path) if p]
+            all_paths = front_pages + page_paths
 
             # Merge all per-page PDFs into a single output PDF.
             if len(all_paths) == 1:
@@ -725,6 +834,36 @@ class AtlasExportTask(QgsTask):
             return cover_path
         except (RuntimeError, OSError):
             logger.exception("Cover page export failed")
+            return None
+
+    @staticmethod
+    def _export_toc_page(
+        atlas_layer,
+        output_path: str,
+        project=None,
+    ) -> str | None:
+        """Export a single table-of-contents PDF and return its path, or None on failure.
+
+        Failures are swallowed so they never abort the main export.
+        """
+        try:
+            toc_layout = build_toc_layout(atlas_layer, project=project)
+            if toc_layout is None:
+                return None
+
+            toc_path = f"{output_path}.toc.pdf"
+            exporter = QgsLayoutExporter(toc_layout)
+            settings = QgsLayoutExporter.PdfExportSettings()
+            settings.dpi = 150
+            settings.rasterizeWholeImage = False
+            settings.forceVectorOutput = True
+
+            result = exporter.exportToPdf(toc_path, settings)
+            if result != QgsLayoutExporter.Success:
+                return None
+            return toc_path
+        except (RuntimeError, OSError):
+            logger.exception("TOC page export failed")
             return None
 
     @staticmethod
