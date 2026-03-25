@@ -1117,6 +1117,55 @@ class TestAtlasExportTaskNarrowedExceptions(unittest.TestCase):
         self.assertIsNone(result)
 
 
+class TestExtentNormalization(unittest.TestCase):
+    class _Rect:
+        def __init__(self, xmin, ymin, xmax, ymax):
+            self._xmin = xmin
+            self._ymin = ymin
+            self._xmax = xmax
+            self._ymax = ymax
+
+        def width(self):
+            return self._xmax - self._xmin
+
+        def height(self):
+            return self._ymax - self._ymin
+
+        def xMinimum(self):
+            return self._xmin
+
+        def yMinimum(self):
+            return self._ymin
+
+        def xMaximum(self):
+            return self._xmax
+
+        def yMaximum(self):
+            return self._ymax
+
+    def test_normalize_extent_expands_width_for_tall_rect(self):
+        from qfit.atlas_export_task import _normalize_extent_to_aspect_ratio
+
+        rect = self._Rect(0, 0, 10, 20)
+        with patch("qfit.atlas_export_task.QgsRectangle", self._Rect):
+            normalized = _normalize_extent_to_aspect_ratio(rect, 1.0)
+
+        self.assertAlmostEqual(normalized.width(), normalized.height(), places=6)
+        self.assertAlmostEqual((normalized.xMinimum() + normalized.xMaximum()) / 2.0, 5.0, places=6)
+        self.assertAlmostEqual((normalized.yMinimum() + normalized.yMaximum()) / 2.0, 10.0, places=6)
+
+    def test_normalize_extent_expands_height_for_wide_rect(self):
+        from qfit.atlas_export_task import _normalize_extent_to_aspect_ratio
+
+        rect = self._Rect(0, 0, 20, 10)
+        with patch("qfit.atlas_export_task.QgsRectangle", self._Rect):
+            normalized = _normalize_extent_to_aspect_ratio(rect, 1.0)
+
+        self.assertAlmostEqual(normalized.width(), normalized.height(), places=6)
+        self.assertAlmostEqual((normalized.xMinimum() + normalized.xMaximum()) / 2.0, 10.0, places=6)
+        self.assertAlmostEqual((normalized.yMinimum() + normalized.yMaximum()) / 2.0, 5.0, places=6)
+
+
 class TestLayoutGeometry(unittest.TestCase):
     """Verify A4 portrait layout dimensions and square map frame."""
 
