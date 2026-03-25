@@ -45,6 +45,28 @@ class _FakeCanvas:
             extent.yMaximum(),
         )
 
+    def extent(self):
+        if self.last_extent is None:
+            return None
+
+        class _Extent:
+            def __init__(self, vals):
+                self._vals = vals
+
+            def xMinimum(self):
+                return self._vals[0]
+
+            def yMinimum(self):
+                return self._vals[1]
+
+            def xMaximum(self):
+                return self._vals[2]
+
+            def yMaximum(self):
+                return self._vals[3]
+
+        return _Extent(self.last_extent)
+
     def refresh(self):
         self.refresh_count += 1
 
@@ -307,6 +329,8 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertEqual(renderer.radiusUnit(), QgsUnitTypes.RenderMillimeters)
             self.assertEqual(renderer.renderQuality(), 2)
             self.assertIsNotNone(renderer.colorRamp())
+            self.assertEqual(renderer.colorRamp().color1().alpha(), 0)
+            self.assertTrue(renderer.colorRamp().stops(), "Heatmap ramp should include intermediate transparent/soft stops")
             self.assertEqual(round(points_layer.opacity(), 2), 0.75)
 
             # Tracks and start points must be fully hidden so they don't flatten the visual

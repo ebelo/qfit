@@ -10,6 +10,7 @@ from qgis.core import (
     QgsCoordinateReferenceSystem,
     QgsFillSymbol,
     QgsGradientColorRamp,
+    QgsGradientStop,
     QgsHeatmapRenderer,
     QgsLineSymbol,
     QgsMarkerSymbol,
@@ -552,10 +553,21 @@ class LayerManager:
         renderer.setRadius(12)
         renderer.setRadiusUnit(QgsUnitTypes.RenderMillimeters)
         renderer.setRenderQuality(2)
-        renderer.setColorRamp(
-            QgsStyle.defaultStyle().colorRamp("Turbo")
-            or QgsGradientColorRamp(QColor("#00000000"), QColor("#e74c3c"))
+
+        # Use a transparent-first gradient so no-data / very-low-density areas
+        # do not paint the whole map with a dark wash.
+        heat_ramp = QgsGradientColorRamp(
+            QColor("#00000000"),
+            QColor("#E74C3C"),
+            False,
+            [
+                QgsGradientStop(0.15, QColor("#00000000")),
+                QgsGradientStop(0.35, QColor(52, 152, 219, 90)),
+                QgsGradientStop(0.60, QColor(241, 196, 15, 160)),
+                QgsGradientStop(0.82, QColor(230, 126, 34, 220)),
+            ],
         )
+        renderer.setColorRamp(heat_ramp)
         layer.setRenderer(renderer)
         layer.setOpacity(0.75)
         layer.triggerRepaint()
