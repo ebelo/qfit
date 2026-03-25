@@ -61,7 +61,7 @@ class GeoPackageWriter:
         )
 
     def schema(self):
-        return GPKG_LAYER_SCHEMA
+        return dict(GPKG_LAYER_SCHEMA)
 
     def write_activities(self, activities, sync_metadata=None):
         if not self.output_path:
