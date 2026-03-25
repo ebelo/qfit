@@ -17,9 +17,8 @@ from qgis.core import (
 
 from .polyline_utils import decode_polyline
 from .publish_atlas import (
-    activity_bounds,
-    build_atlas_cover_highlights,
-    build_atlas_document_summary,
+    build_atlas_cover_highlights_from_summary,
+    build_atlas_document_summary_from_plans,
     build_atlas_page_detail_items,
     build_atlas_page_plans,
     build_atlas_profile_samples,
@@ -324,15 +323,16 @@ class GeoPackageWriter:
         sync_result = repository.upsert_activities(activities, sync_metadata=sync_metadata)
         records = repository.load_all_activity_records()
 
+        plans = build_atlas_page_plans(records, settings=self.atlas_page_settings)
         track_layer = self._build_track_layer(records)
         start_layer = self._build_start_layer(records)
         point_layer = self._build_point_layer(records)
-        atlas_layer = self._build_atlas_layer(records)
-        document_summary_layer = self._build_document_summary_layer(records)
-        cover_highlight_layer = self._build_cover_highlight_layer(records)
-        page_detail_item_layer = self._build_page_detail_item_layer(records)
-        profile_sample_layer = self._build_profile_sample_layer(records)
-        toc_layer = self._build_toc_layer(records)
+        atlas_layer = self._build_atlas_layer(records, plans=plans)
+        document_summary_layer = self._build_document_summary_layer(plans=plans)
+        cover_highlight_layer = self._build_cover_highlight_layer(plans=plans)
+        page_detail_item_layer = self._build_page_detail_item_layer(records, plans=plans)
+        profile_sample_layer = self._build_profile_sample_layer(records, plans=plans)
+        toc_layer = self._build_toc_layer(records, plans=plans)
         self._write_layer(track_layer, "activity_tracks", overwrite_file=False)
         self._write_layer(start_layer, "activity_starts", overwrite_file=False)
         self._write_layer(point_layer, "activity_points", overwrite_file=False)
@@ -493,7 +493,7 @@ class GeoPackageWriter:
         layer.updateExtents()
         return layer
 
-    def _build_atlas_layer(self, records):
+    def _build_atlas_layer(self, records, plans=None):
         # Store atlas page extents in EPSG:3857 (Web Mercator) so that the QGIS
         # atlas map frame uses them as-is without reprojection distortion.
         # Using 4326 bounding boxes causes extent mismatch at mid-latitudes.
@@ -503,7 +503,8 @@ class GeoPackageWriter:
         layer.updateFields()
 
         features = []
-        for plan in build_atlas_page_plans(records, settings=self.atlas_page_settings):
+        resolved_plans = plans if plans is not None else build_atlas_page_plans(records, settings=self.atlas_page_settings)
+        for plan in resolved_plans:
             half_w = plan.extent_width_m / 2.0
             half_h = plan.extent_height_m / 2.0
             rect = QgsRectangle(
@@ -568,22 +569,16 @@ class GeoPackageWriter:
         layer.updateExtents()
         return layer
 
-    def _build_document_summary_layer(self, records):
+    def _build_document_summary_layer(self, records=None, plans=None):
         layer = QgsVectorLayer("None", "atlas_document_summary", "memory")
         provider = layer.dataProvider()
         provider.addAttributes(self._make_fields(DOCUMENT_SUMMARY_FIELDS))
         layer.updateFields()
 
-        atlas_records = []
-        for record in records:
-            bounds, _ = activity_bounds(
-                record,
-                min_extent_degrees=self.atlas_page_settings.min_extent_degrees,
-            )
-            if bounds is not None:
-                atlas_records.append(record)
-
-        summary = build_atlas_document_summary(atlas_records)
+        resolved_plans = plans if plans is not None else build_atlas_page_plans(
+            records or [], settings=self.atlas_page_settings,
+        )
+        summary = build_atlas_document_summary_from_plans(resolved_plans)
         if summary.activity_count > 0:
             feature = QgsFeature(layer.fields())
             feature["activity_count"] = summary.activity_count
@@ -603,23 +598,19 @@ class GeoPackageWriter:
         layer.updateExtents()
         return layer
 
-    def _build_cover_highlight_layer(self, records):
+    def _build_cover_highlight_layer(self, records=None, plans=None):
         layer = QgsVectorLayer("None", "atlas_cover_highlights", "memory")
         provider = layer.dataProvider()
         provider.addAttributes(self._make_fields(COVER_HIGHLIGHT_FIELDS))
         layer.updateFields()
 
-        atlas_records = []
-        for record in records:
-            bounds, _ = activity_bounds(
-                record,
-                min_extent_degrees=self.atlas_page_settings.min_extent_degrees,
-            )
-            if bounds is not None:
-                atlas_records.append(record)
+        resolved_plans = plans if plans is not None else build_atlas_page_plans(
+            records or [], settings=self.atlas_page_settings,
+        )
+        summary = build_atlas_document_summary_from_plans(resolved_plans)
 
         features = []
-        for highlight in build_atlas_cover_highlights(atlas_records):
+        for highlight in build_atlas_cover_highlights_from_summary(summary):
             feature = QgsFeature(layer.fields())
             feature["highlight_order"] = highlight.highlight_order
             feature["highlight_key"] = highlight.highlight_key
@@ -631,14 +622,14 @@ class GeoPackageWriter:
         layer.updateExtents()
         return layer
 
-    def _build_page_detail_item_layer(self, records):
+    def _build_page_detail_item_layer(self, records, plans=None):
         layer = QgsVectorLayer("None", "atlas_page_detail_items", "memory")
         provider = layer.dataProvider()
         provider.addAttributes(self._make_fields(PAGE_DETAIL_ITEM_FIELDS))
         layer.updateFields()
 
         features = []
-        for item in build_atlas_page_detail_items(records, settings=self.atlas_page_settings):
+        for item in build_atlas_page_detail_items(records, settings=self.atlas_page_settings, plans=plans):
             feature = QgsFeature(layer.fields())
             feature["page_number"] = item.page_number
             feature["page_sort_key"] = item.page_sort_key
@@ -654,14 +645,14 @@ class GeoPackageWriter:
         layer.updateExtents()
         return layer
 
-    def _build_profile_sample_layer(self, records):
+    def _build_profile_sample_layer(self, records, plans=None):
         layer = QgsVectorLayer("None", "atlas_profile_samples", "memory")
         provider = layer.dataProvider()
         provider.addAttributes(self._make_fields(PROFILE_SAMPLE_FIELDS))
         layer.updateFields()
 
         features = []
-        for sample in build_atlas_profile_samples(records, settings=self.atlas_page_settings):
+        for sample in build_atlas_profile_samples(records, settings=self.atlas_page_settings, plans=plans):
             feature = QgsFeature(layer.fields())
             feature["page_number"] = sample.page_number
             feature["page_sort_key"] = sample.page_sort_key
@@ -684,14 +675,14 @@ class GeoPackageWriter:
         layer.updateExtents()
         return layer
 
-    def _build_toc_layer(self, records):
+    def _build_toc_layer(self, records, plans=None):
         layer = QgsVectorLayer("None", "atlas_toc_entries", "memory")
         provider = layer.dataProvider()
         provider.addAttributes(self._make_fields(TOC_FIELDS))
         layer.updateFields()
 
         features = []
-        for entry in build_atlas_toc_entries(records, settings=self.atlas_page_settings):
+        for entry in build_atlas_toc_entries(records, settings=self.atlas_page_settings, plans=plans):
             feature = QgsFeature(layer.fields())
             feature["page_number"] = entry.page_number
             feature["page_number_label"] = entry.page_number_label

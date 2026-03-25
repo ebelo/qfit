@@ -10,7 +10,9 @@ from qfit.publish_atlas import (
     activity_bounds,
     atlas_sort_key,
     build_atlas_cover_highlights,
+    build_atlas_cover_highlights_from_summary,
     build_atlas_document_summary,
+    build_atlas_document_summary_from_plans,
     build_atlas_page_detail_items,
     build_atlas_page_plans,
     build_atlas_profile_samples,
@@ -605,6 +607,235 @@ class PublishAtlasTests(unittest.TestCase):
         _, lat = web_mercator_to_lonlat(0.0, y)
 
         self.assertLessEqual(abs(lat), 85.05112878)
+
+
+    def test_build_atlas_document_summary_from_plans_matches_record_based_summary(self):
+        records = [
+            {
+                "source": "strava",
+                "source_activity_id": "100",
+                "name": "Morning Ride",
+                "activity_type": "Ride",
+                "start_date_local": "2026-03-18T08:10:00+01:00",
+                "distance_m": 42500,
+                "moving_time_s": 7200,
+                "total_elevation_gain_m": 640,
+                "geometry_points": [(46.52, 6.62), (46.57, 6.74)],
+            },
+            {
+                "source": "strava",
+                "source_activity_id": "200",
+                "name": "Lunch Run",
+                "activity_type": "Run",
+                "start_date_local": "2026-03-19T12:00:00+01:00",
+                "distance_m": 10100,
+                "moving_time_s": 3000,
+                "total_elevation_gain_m": 85,
+                "geometry_points": [(46.50, 6.60), (46.51, 6.62)],
+            },
+        ]
+
+        plans = build_atlas_page_plans(records)
+        summary = build_atlas_document_summary_from_plans(plans)
+
+        self.assertEqual(summary.activity_count, 2)
+        self.assertEqual(summary.activity_date_start, "2026-03-18")
+        self.assertEqual(summary.activity_date_end, "2026-03-19")
+        self.assertEqual(summary.date_range_label, "2026-03-18 → 2026-03-19")
+        self.assertEqual(summary.total_distance_m, 52600)
+        self.assertEqual(summary.total_distance_label, "52.6 km")
+        self.assertEqual(summary.total_moving_time_s, 10200)
+        self.assertEqual(summary.total_duration_label, "2h 50m")
+        self.assertEqual(summary.total_elevation_gain_m, 725)
+        self.assertEqual(summary.total_elevation_gain_label, "725 m")
+        self.assertEqual(summary.activity_types_label, "Ride, Run")
+        self.assertEqual(
+            summary.cover_summary,
+            "2 activities · 2026-03-18 → 2026-03-19 · 52.6 km · 2h 50m · ↑ 725 m · Ride, Run",
+        )
+
+    def test_build_atlas_document_summary_from_plans_excludes_activities_without_geometry(self):
+        records = [
+            {
+                "source": "strava",
+                "source_activity_id": "100",
+                "name": "Morning Ride",
+                "activity_type": "Ride",
+                "start_date_local": "2026-03-18T08:10:00+01:00",
+                "distance_m": 42500,
+                "moving_time_s": 7200,
+                "total_elevation_gain_m": 640,
+                "geometry_points": [(46.52, 6.62), (46.57, 6.74)],
+            },
+            {
+                "source": "strava",
+                "source_activity_id": "200",
+                "name": "No-GPS Indoor Ride",
+                "activity_type": "Ride",
+                "start_date_local": "2026-03-20T09:00:00+01:00",
+                "distance_m": 25000,
+                "moving_time_s": 3600,
+                "total_elevation_gain_m": 0,
+            },
+        ]
+
+        plans = build_atlas_page_plans(records)
+        summary = build_atlas_document_summary_from_plans(plans)
+
+        self.assertEqual(summary.activity_count, 1)
+        self.assertEqual(summary.total_distance_m, 42500)
+        self.assertEqual(summary.total_moving_time_s, 7200)
+        self.assertEqual(
+            summary.cover_summary,
+            "1 activity · 2026-03-18 · 42.5 km · 2h 00m · ↑ 640 m · Ride",
+        )
+
+    def test_build_atlas_document_summary_from_plans_returns_empty_for_no_plans(self):
+        summary = build_atlas_document_summary_from_plans([])
+
+        self.assertEqual(summary.activity_count, 0)
+        self.assertIsNone(summary.cover_summary)
+
+    def test_build_atlas_cover_highlights_from_summary_matches_record_based_highlights(self):
+        records = [
+            {
+                "source": "strava",
+                "source_activity_id": "100",
+                "name": "Morning Ride",
+                "activity_type": "Ride",
+                "start_date_local": "2026-03-18T08:10:00+01:00",
+                "distance_m": 42500,
+                "moving_time_s": 7200,
+                "total_elevation_gain_m": 640,
+                "geometry_points": [(46.52, 6.62), (46.57, 6.74)],
+            },
+            {
+                "source": "strava",
+                "source_activity_id": "200",
+                "name": "Lunch Run",
+                "activity_type": "Run",
+                "start_date_local": "2026-03-19T12:00:00+01:00",
+                "distance_m": 10100,
+                "moving_time_s": 3000,
+                "total_elevation_gain_m": 85,
+                "geometry_points": [(46.50, 6.60), (46.51, 6.62)],
+            },
+        ]
+
+        plans = build_atlas_page_plans(records)
+        summary = build_atlas_document_summary_from_plans(plans)
+        highlights = build_atlas_cover_highlights_from_summary(summary)
+
+        record_highlights = build_atlas_cover_highlights(records)
+        self.assertEqual(len(highlights), len(record_highlights))
+        for plan_h, record_h in zip(highlights, record_highlights):
+            self.assertEqual(plan_h.highlight_key, record_h.highlight_key)
+            self.assertEqual(plan_h.highlight_value, record_h.highlight_value)
+
+    def test_build_atlas_cover_highlights_from_summary_returns_empty_for_zero_activities(self):
+        from qfit.publish_atlas import AtlasDocumentSummary
+
+        highlights = build_atlas_cover_highlights_from_summary(AtlasDocumentSummary())
+        self.assertEqual(highlights, [])
+
+    def test_toc_entries_accept_precomputed_plans(self):
+        records = [
+            {
+                "source": "strava",
+                "source_activity_id": "100",
+                "name": "Morning Ride",
+                "activity_type": "Ride",
+                "start_date_local": "2026-03-18T08:10:00+01:00",
+                "distance_m": 42500,
+                "moving_time_s": 7200,
+                "geometry_points": [(46.52, 6.62), (46.57, 6.74)],
+            },
+        ]
+
+        plans = build_atlas_page_plans(records)
+        entries_from_records = build_atlas_toc_entries(records)
+        entries_from_plans = build_atlas_toc_entries([], plans=plans)
+
+        self.assertEqual(len(entries_from_plans), len(entries_from_records))
+        self.assertEqual(entries_from_plans[0].page_title, entries_from_records[0].page_title)
+        self.assertEqual(entries_from_plans[0].toc_entry_label, entries_from_records[0].toc_entry_label)
+
+    def test_detail_items_accept_precomputed_plans(self):
+        records = [
+            {
+                "source": "strava",
+                "source_activity_id": "100",
+                "name": "Morning Ride",
+                "activity_type": "Ride",
+                "start_date_local": "2026-03-18T08:10:00+01:00",
+                "distance_m": 42500,
+                "moving_time_s": 7200,
+                "total_elevation_gain_m": 640,
+                "average_speed_mps": 5.9027777778,
+                "geometry_points": [(46.52, 6.62), (46.57, 6.74)],
+            },
+        ]
+
+        plans = build_atlas_page_plans(records)
+        items_from_records = build_atlas_page_detail_items(records)
+        items_from_plans = build_atlas_page_detail_items([], plans=plans)
+
+        self.assertEqual(len(items_from_plans), len(items_from_records))
+        for plan_item, record_item in zip(items_from_plans, items_from_records):
+            self.assertEqual(plan_item.detail_key, record_item.detail_key)
+            self.assertEqual(plan_item.detail_value, record_item.detail_value)
+
+    def test_all_helper_tables_reflect_same_atlas_subset(self):
+        records = [
+            {
+                "source": "strava",
+                "source_activity_id": "100",
+                "name": "Morning Ride",
+                "activity_type": "Ride",
+                "start_date_local": "2026-03-18T08:10:00+01:00",
+                "distance_m": 42500,
+                "moving_time_s": 7200,
+                "total_elevation_gain_m": 640,
+                "geometry_points": [(46.52, 6.62), (46.57, 6.74)],
+            },
+            {
+                "source": "strava",
+                "source_activity_id": "200",
+                "name": "Indoor Spin",
+                "activity_type": "Ride",
+                "start_date_local": "2026-03-19T18:00:00+01:00",
+                "distance_m": 20000,
+                "moving_time_s": 2400,
+                "total_elevation_gain_m": 0,
+            },
+            {
+                "source": "strava",
+                "source_activity_id": "300",
+                "name": "Evening Run",
+                "activity_type": "Run",
+                "start_date_local": "2026-03-20T19:00:00+01:00",
+                "distance_m": 8000,
+                "moving_time_s": 2400,
+                "total_elevation_gain_m": 50,
+                "geometry_points": [(46.50, 6.60), (46.51, 6.62)],
+            },
+        ]
+
+        plans = build_atlas_page_plans(records)
+        summary = build_atlas_document_summary_from_plans(plans)
+        highlights = build_atlas_cover_highlights_from_summary(summary)
+        toc = build_atlas_toc_entries(records, plans=plans)
+
+        self.assertEqual(len(plans), 2)
+        self.assertEqual(summary.activity_count, 2)
+        self.assertEqual(summary.total_distance_m, 50500)
+        self.assertEqual(summary.activity_types_label, "Ride, Run")
+
+        activity_count_highlight = next(h for h in highlights if h.highlight_key == "activity_count")
+        self.assertEqual(activity_count_highlight.highlight_value, "2 activities")
+
+        self.assertEqual(len(toc), 2)
+        self.assertEqual({e.page_title for e in toc}, {"Morning Ride", "Evening Run"})
 
 
 if __name__ == "__main__":
