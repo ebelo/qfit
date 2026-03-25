@@ -1,11 +1,25 @@
+import importlib
+import importlib.util
 import os
+import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import MagicMock
 
 from tests import _path  # noqa: F401
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+
+# Detect real QGIS without relying on sys.modules — test_atlas_export_task.py
+# unconditionally replaces qgis.core in sys.modules with a stub, so find_spec
+# may raise ValueError.  Fall back to a plain filesystem search.
+try:
+    _REAL_QGIS_PRESENT = importlib.util.find_spec("qgis") is not None
+except ValueError:
+    _REAL_QGIS_PRESENT = any(
+        os.path.isdir(os.path.join(p, "qgis")) for p in sys.path if p
+    )
 
 try:
     from qgis.core import (
@@ -244,6 +258,175 @@ class LayerStyleServiceTests(unittest.TestCase):
                 activities_layer, starts_layer, points_layer, atlas_layer, None
             )
             self.assertIsInstance(activities_layer.renderer(), QgsSingleSymbolRenderer)
+
+
+def _load_service_with_mock_qgis():
+    """Import LayerStyleService backed by MagicMock QGIS stubs.
+
+    Temporarily replaces every qgis.* entry in sys.modules with a MagicMock
+    (regardless of whether real QGIS or a prior stub was there), imports the
+    module fresh so all QGIS class references become callable MagicMocks, then
+    restores the original sys.modules state before returning.
+
+    This lets the unit-test class below exercise every branch in
+    layer_style_service.py without a running QGIS session.
+    """
+    qstub = MagicMock()
+    _QGIS_MODS = ["qgis", "qgis.core", "qgis.PyQt", "qgis.PyQt.QtCore", "qgis.PyQt.QtGui"]
+
+    saved_qgis = {m: sys.modules.get(m) for m in _QGIS_MODS}
+    saved_lss = sys.modules.get("qfit.layer_style_service")
+
+    for mod_name in _QGIS_MODS:
+        sys.modules[mod_name] = qstub
+    sys.modules.pop("qfit.layer_style_service", None)
+
+    try:
+        lss = importlib.import_module("qfit.layer_style_service")
+        return lss.LayerStyleService
+    except Exception:  # pragma: no cover
+        return None
+    finally:
+        for mod_name, original in saved_qgis.items():
+            if original is None:
+                sys.modules.pop(mod_name, None)
+            else:
+                sys.modules[mod_name] = original
+        if saved_lss is None:
+            sys.modules.pop("qfit.layer_style_service", None)
+        else:
+            sys.modules["qfit.layer_style_service"] = saved_lss
+
+
+# Build a mock-backed service class when a usable QGIS is absent.
+# Use QGIS_AVAILABLE (successful import) rather than _REAL_QGIS_PRESENT
+# (package discoverable) so that an incomplete install (package found but
+# native libs broken) still triggers the mock suite rather than leaving the
+# module uncovered.
+_MockedLayerStyleService = (
+    None if QGIS_AVAILABLE else _load_service_with_mock_qgis()
+)
+
+
+@unittest.skipIf(
+    QGIS_AVAILABLE,
+    "QGIS is installed — LayerStyleServiceTests already provides coverage",
+)
+@unittest.skipIf(
+    _MockedLayerStyleService is None,
+    "Could not load LayerStyleService with mock QGIS stubs",
+)
+class LayerStyleServiceUnitTests(unittest.TestCase):
+    """Non-QGIS unit tests for LayerStyleService.
+
+    Run in CI environments that lack a QGIS installation (e.g. SonarCloud).
+    Every QGIS class is a MagicMock, so all branches in the service execute
+    without error and coverage.py can attribute lines to layer_style_service.py.
+    """
+
+    def setUp(self):
+        self.service = _MockedLayerStyleService()
+
+    # ------------------------------------------------------------------
+    # Helpers
+    # ------------------------------------------------------------------
+
+    def _make_layer(self, activity_types=None):
+        """Return a mock QGIS vector layer for style tests."""
+        field = MagicMock()
+        field.name.return_value = "activity_type"
+
+        fields = MagicMock()
+        fields.__iter__ = MagicMock(side_effect=lambda: iter([field]))
+        fields.indexOf.return_value = 0
+
+        layer = MagicMock()
+        layer.fields.return_value = fields
+        layer.uniqueValues.return_value = (
+            activity_types if activity_types is not None else ["Ride", "Run"]
+        )
+        return layer
+
+    # ------------------------------------------------------------------
+    # apply_style — one test per preset branch
+    # ------------------------------------------------------------------
+
+    def test_simple_lines_sets_renderer_and_triggers_repaint(self):
+        acts = self._make_layer()
+        starts = self._make_layer()
+        points = self._make_layer()
+        self.service.apply_style(acts, starts, points, None, "Simple lines")
+        acts.setRenderer.assert_called_once()
+        acts.triggerRepaint.assert_called()
+
+    def test_by_activity_type_sets_renderer_on_tracks(self):
+        acts = self._make_layer()
+        self.service.apply_style(acts, None, None, None, "By activity type")
+        acts.setRenderer.assert_called_once()
+
+    def test_heatmap_hides_tracks_and_starts(self):
+        acts = self._make_layer()
+        starts = self._make_layer()
+        points = self._make_layer()
+        self.service.apply_style(acts, starts, points, None, "Heatmap")
+        acts.setOpacity.assert_called_with(0.0)
+        starts.setOpacity.assert_called_with(0.0)
+
+    def test_heatmap_uses_starts_when_no_points_layer(self):
+        acts = self._make_layer()
+        starts = self._make_layer()
+        self.service.apply_style(acts, starts, None, None, "Heatmap")
+        acts.setOpacity.assert_called_with(0.0)
+        starts.setRenderer.assert_called_once()
+
+    def test_track_points_sets_renderer_on_tracks_and_points(self):
+        acts = self._make_layer()
+        starts = self._make_layer()
+        points = self._make_layer()
+        self.service.apply_style(acts, starts, points, None, "Track points")
+        acts.setRenderer.assert_called_once()
+        points.setRenderer.assert_called_once()
+
+    def test_clustered_starts_sets_renderer_on_starts(self):
+        starts = self._make_layer()
+        self.service.apply_style(None, starts, None, None, "Clustered starts")
+        starts.setRenderer.assert_called_once()
+
+    def test_start_points_makes_starts_prominent(self):
+        starts = self._make_layer()
+        self.service.apply_style(None, starts, None, None, "Start points")
+        starts.setRenderer.assert_called_once()
+
+    def test_atlas_layer_is_styled(self):
+        atlas = self._make_layer()
+        self.service.apply_style(None, None, None, atlas, "Simple lines")
+        atlas.setRenderer.assert_called_once()
+
+    def test_none_preset_defaults_to_simple_lines(self):
+        acts = self._make_layer()
+        self.service.apply_style(acts, None, None, None, None)
+        acts.setRenderer.assert_called_once()
+
+    def test_all_none_layers_no_error(self):
+        self.service.apply_style(None, None, None, None, "Simple lines")
+
+    def test_by_activity_type_unknown_field_falls_back_to_simple(self):
+        unknown = MagicMock()
+        unknown.name.return_value = "unknown_col"
+        fields = MagicMock()
+        fields.__iter__ = MagicMock(side_effect=lambda: iter([unknown]))
+        fields.indexOf.return_value = 0
+        acts = self._make_layer()
+        acts.fields.return_value = fields
+        self.service.apply_style(acts, None, None, None, "By activity type")
+        acts.setRenderer.assert_called_once()
+
+    def test_explicit_background_preset_name_forwarded(self):
+        acts = self._make_layer()
+        self.service.apply_style(
+            acts, None, None, None, "Simple lines", background_preset_name="Outdoor"
+        )
+        acts.setRenderer.assert_called_once()
 
 
 if __name__ == "__main__":
