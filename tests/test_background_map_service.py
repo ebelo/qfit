@@ -353,9 +353,8 @@ class EnsureBackgroundLayerMockTests(unittest.TestCase):
         self.mock_project.removeMapLayer.assert_called_once_with("bg-1")
 
     def test_enabled_raster_creates_and_adds_layer(self):
-        # QgsRasterLayer is a real type (set in _load_service_with_mock_qgis)
-        raster_instance = _qstub.QgsRasterLayer.return_value
-        raster_instance.isValid.return_value = True
+        # QgsRasterLayer is a real type subclassing MagicMock; calling it creates
+        # an instance whose isValid() returns a truthy MagicMock by default.
         self.mock_project.mapLayers.return_value = {}
         self.mock_project.layerTreeRoot.return_value.children.return_value = []
 
@@ -370,17 +369,20 @@ class EnsureBackgroundLayerMockTests(unittest.TestCase):
         self.assertIsNotNone(result)
 
     def test_enabled_raster_raises_when_invalid(self):
-        raster_instance = _qstub.QgsRasterLayer.return_value
-        raster_instance.isValid.return_value = False
+        # Patch QgsRasterLayer to return a layer whose isValid() returns False.
+        invalid_layer = MagicMock()
+        invalid_layer.isValid.return_value = False
         self.mock_project.mapLayers.return_value = {}
 
-        with self.assertRaises(RuntimeError):
-            self.service.ensure_background_layer(
-                enabled=True,
-                preset_name="Outdoor",
-                access_token="tok",
-                tile_mode="Raster",
-            )
+        from unittest.mock import patch as _patch  # noqa: PLC0415
+        with _patch.object(_mock_bms_mod, "QgsRasterLayer", return_value=invalid_layer):
+            with self.assertRaises(RuntimeError):
+                self.service.ensure_background_layer(
+                    enabled=True,
+                    preset_name="Outdoor",
+                    access_token="tok",
+                    tile_mode="Raster",
+                )
 
 
 @unittest.skipIf(_REAL_QGIS_PRESENT, SKIP_MOCK)
