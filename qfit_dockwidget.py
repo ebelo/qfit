@@ -25,6 +25,7 @@ from .background_map_controller import BackgroundMapController
 from .contextual_help import ContextualHelpBinder, build_dock_help_entries
 from .gpkg_writer import GeoPackageWriter
 from .layer_manager import LayerManager
+from .load_workflow import LoadWorkflowError, LoadWorkflowService
 from .mapbox_config import (
     DEFAULT_BACKGROUND_PRESET,
     TILE_MODE_RASTER,
@@ -69,6 +70,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.atlas_export_controller = AtlasExportController()
         self.layer_manager = LayerManager(iface)
         self.background_controller = BackgroundMapController(self.layer_manager)
+        self.load_workflow = LoadWorkflowService(self.layer_manager)
         self.cache = self._build_cache()
         self.setupUi(self)
         self._remove_stale_qfit_layers()
@@ -551,108 +553,83 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._set_status(self.sync_controller.fetch_status_text(client, len(self.activities), detailed_count))
 
     def on_load_clicked(self):
-        if not self.activities:
-            self._show_error("Nothing to load", "Fetch activities from Strava first.")
-            return
-
         self._save_settings()
-        output_path = self.outputPathLineEdit.text().strip()
-        if not output_path:
-            self._show_error("Missing output path", "Choose a GeoPackage output path first.")
-            return
-
-        self._set_status("Writing GeoPackage…")
         try:
-            writer = GeoPackageWriter(
-                output_path=output_path,
+            result = self.load_workflow.write_and_load(
+                activities=self.activities,
+                output_path=self.outputPathLineEdit.text().strip(),
                 write_activity_points=self.writeActivityPointsCheckBox.isChecked(),
                 point_stride=self.pointSamplingStrideSpinBox.value(),
                 atlas_margin_percent=self.atlasMarginPercentSpinBox.value(),
                 atlas_min_extent_degrees=self.atlasMinExtentSpinBox.value(),
                 atlas_target_aspect_ratio=self.atlasTargetAspectRatioSpinBox.value(),
+                sync_metadata=self.last_fetch_context,
+                last_sync_date=self.settings.get("last_sync_date", None),
             )
-            result = writer.write_activities(self.activities, sync_metadata=self.last_fetch_context)
-            self.output_path = result["path"]
-            self.activities_layer, self.starts_layer, self.points_layer, self.atlas_layer = self.layer_manager.load_output_layers(
-                self.output_path
-            )
-            visual_status = self._apply_visual_configuration(apply_subset_filters=False)
-            sync = result.get("sync") or {}
-            if visual_status:
-                visual_status = f" {visual_status}"
-
-            # Update completeness indicator with last sync date
-            last_sync = self.settings.get("last_sync_date", date.today().isoformat())
-            total_stored = sync.get("total_count", 0)
-            self.countLabel.setText(
-                "{total} activities stored (last sync: {sync_date})".format(
-                    total=total_stored,
-                    sync_date=last_sync,
-                )
-            )
-
-            self._set_status(
-                "Synced {fetched} fetched activities into GeoPackage: inserted {inserted}, updated {updated}, unchanged {unchanged}, stored total {total}. Loaded {track_count} tracks, {start_count} starts, {point_count} activity points, and {atlas_count} atlas pages into QGIS without auto-filtering the layer tables.{visual_status}".format(
-                    fetched=result.get("fetched_count", len(self.activities)),
-                    inserted=sync.get("inserted", 0),
-                    updated=sync.get("updated", 0),
-                    unchanged=sync.get("unchanged", 0),
-                    total=total_stored,
-                    track_count=result.get("track_count", 0),
-                    start_count=result.get("start_count", 0),
-                    point_count=result.get("point_count", 0),
-                    atlas_count=result.get("atlas_count", 0),
-                    visual_status=visual_status,
-                )
-            )
+        except LoadWorkflowError as exc:
+            self._show_error("Missing input", str(exc))
+            return
         except (RuntimeError, OSError, ValueError) as exc:
             _msg = "GeoPackage export failed"
             logger.exception(_msg)
             self._show_error(_msg, str(exc))
             self._set_status(_msg)
+            return
+
+        self.output_path = result.output_path
+        self.activities_layer = result.activities_layer
+        self.starts_layer = result.starts_layer
+        self.points_layer = result.points_layer
+        self.atlas_layer = result.atlas_layer
+
+        visual_status = self._apply_visual_configuration(apply_subset_filters=False)
+        last_sync = self.settings.get("last_sync_date", date.today().isoformat())
+        self.countLabel.setText(
+            "{total} activities stored (last sync: {sync_date})".format(
+                total=result.total_stored, sync_date=last_sync,
+            )
+        )
+        status = result.status
+        if visual_status:
+            status = "{status} {visual_status}".format(status=status, visual_status=visual_status)
+        self._set_status(status)
 
     def on_load_layers_clicked(self):
         """Load an existing GeoPackage into QGIS without fetching from Strava."""
         self._save_settings()
-        output_path = self.outputPathLineEdit.text().strip()
-        if not output_path:
-            self._show_error("Missing output path", "Choose a GeoPackage output path first.")
-            return
-        if not os.path.exists(output_path):
-            self._show_error(
-                "GeoPackage not found",
-                f"No database found at:\n  {output_path}\n\nFetch & Store activities first to create it.",
-            )
-            return
-
-        self._set_status("Loading layers from GeoPackage…")
         try:
-            self.output_path = output_path
-            self.activities_layer, self.starts_layer, self.points_layer, self.atlas_layer = self.layer_manager.load_output_layers(
-                self.output_path
+            result = self.load_workflow.load_existing(
+                self.outputPathLineEdit.text().strip(),
             )
-            self._populate_activity_types_from_layer()
-            visual_status = self._apply_visual_configuration(apply_subset_filters=False)
-            if visual_status:
-                visual_status = f" {visual_status}"
-
-            last_sync = self.settings.get("last_sync_date", "unknown")
-            total = (self.activities_layer.featureCount() if self.activities_layer else 0)
-            self.countLabel.setText(
-                "{total} activities loaded (last sync: {sync_date})".format(
-                    total=total, sync_date=last_sync
-                )
-            )
-            self._set_status(
-                "Layers loaded from {path}.{visual_status}".format(
-                    path=output_path, visual_status=visual_status
-                )
-            )
+        except LoadWorkflowError as exc:
+            self._show_error("GeoPackage not found", str(exc))
+            return
         except (RuntimeError, OSError) as exc:
             _msg = "Load layers failed"
             logger.exception(_msg)
             self._show_error(_msg, str(exc))
             self._set_status(_msg)
+            return
+
+        self.output_path = result.output_path
+        self.activities_layer = result.activities_layer
+        self.starts_layer = result.starts_layer
+        self.points_layer = result.points_layer
+        self.atlas_layer = result.atlas_layer
+
+        self._populate_activity_types_from_layer()
+        visual_status = self._apply_visual_configuration(apply_subset_filters=False)
+
+        last_sync = self.settings.get("last_sync_date", "unknown")
+        self.countLabel.setText(
+            "{total} activities loaded (last sync: {sync_date})".format(
+                total=result.total_stored, sync_date=last_sync,
+            )
+        )
+        status = result.status
+        if visual_status:
+            status = "{status} {visual_status}".format(status=status, visual_status=visual_status)
+        self._set_status(status)
 
     def on_clear_database_clicked(self):
         """Delete the GeoPackage, clear loaded layers, and reset status."""
