@@ -1,8 +1,8 @@
 import unittest
 
 from tests import _path  # noqa: F401
-from qfit.atlas_export_task import BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
-from qfit.publish_atlas import (
+from qfit.atlas.export_task import BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
+from qfit.atlas.publish_atlas import (
     DEFAULT_MIN_EXTENT_DEGREES,
     MIN_ALLOWED_ATLAS_MIN_EXTENT_DEGREES,
     MIN_ALLOWED_ATLAS_TARGET_ASPECT_RATIO,
@@ -733,7 +733,7 @@ class PublishAtlasTests(unittest.TestCase):
             self.assertEqual(plan_h.highlight_value, record_h.highlight_value)
 
     def test_build_atlas_cover_highlights_from_summary_returns_empty_for_zero_activities(self):
-        from qfit.publish_atlas import AtlasDocumentSummary
+        from qfit.atlas.publish_atlas import AtlasDocumentSummary
 
         highlights = build_atlas_cover_highlights_from_summary(AtlasDocumentSummary())
         self.assertEqual(highlights, [])

@@ -12,7 +12,7 @@ try:
 
     from qfit.gpkg_writer import GeoPackageWriter
     from qfit.layer_manager import LayerManager
-    from qfit.atlas_export_task import BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
+    from qfit.atlas.export_task import BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
     from qfit.qfit_dockwidget import QfitDockWidget
     from qfit.visual_apply import VisualApplyService
 

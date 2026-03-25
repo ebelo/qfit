@@ -946,7 +946,7 @@ class AtlasExportTask(QgsTask):
                 source = self._atlas_layer.source()
                 gpkg_path = source.split("|")[0] if "|" in source else source
                 if gpkg_path and os.path.isfile(gpkg_path):
-                    from .atlas_profile_renderer import load_profile_samples_from_gpkg  # noqa: PLC0415
+                    from .profile_renderer import load_profile_samples_from_gpkg  # noqa: PLC0415
                     profile_samples = load_profile_samples_from_gpkg(gpkg_path)
             except Exception:  # noqa: BLE001
                 logger.debug("Could not load profile samples", exc_info=True)
@@ -1011,7 +1011,7 @@ class AtlasExportTask(QgsTask):
                         page_points = profile_samples.get(page_sort_key, []) if page_sort_key else []
                         if len(page_points) >= 2:
                             try:
-                                from .atlas_profile_renderer import render_profile_to_file  # noqa: PLC0415
+                                from .profile_renderer import render_profile_to_file  # noqa: PLC0415
                                 svg_path = render_profile_to_file(
                                     page_points,
                                     width_mm=PROFILE_W,
@@ -1326,7 +1326,7 @@ class AtlasExportTask(QgsTask):
             and self._background_enabled
         ):
             try:
-                from .mapbox_config import TILE_MODE_RASTER  # noqa: PLC0415
+                from ..mapbox_config import TILE_MODE_RASTER  # noqa: PLC0415
                 if self._restore_tile_mode == TILE_MODE_RASTER:
                     self._layer_manager.ensure_background_layer(
                         enabled=True,

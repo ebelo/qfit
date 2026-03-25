@@ -5,7 +5,7 @@ import tempfile
 import unittest
 
 from tests import _path  # noqa: F401
-from qfit.atlas_profile_renderer import (
+from qfit.atlas.profile_renderer import (
     render_profile_svg,
     render_profile_to_file,
     load_profile_samples_from_gpkg,
