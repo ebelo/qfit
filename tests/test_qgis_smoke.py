@@ -282,6 +282,71 @@ class QgisSmokeTests(unittest.TestCase):
             self.layer_manager.ensure_background_layer(False, "Outdoor", "test-token")
             self.assertNotIn(background_name, self._layer_order())
 
+    def test_heatmap_preset_renderer_and_layer_visibility(self):
+        """Heatmap preset must produce a density-based renderer and suppress other layers."""
+        from qgis.core import QgsHeatmapRenderer, QgsUnitTypes
+
+        with tempfile.TemporaryDirectory() as tmp:
+            output_path = self._write_sample_gpkg(tmp)
+            activities_layer, starts_layer, points_layer, atlas_layer = (
+                self.layer_manager.load_output_layers(output_path)
+            )
+
+            self.layer_manager.apply_style(
+                activities_layer,
+                starts_layer,
+                points_layer,
+                atlas_layer,
+                "Heatmap",
+            )
+
+            # Points layer carries the heatmap renderer
+            renderer = points_layer.renderer()
+            self.assertIsInstance(renderer, QgsHeatmapRenderer)
+            self.assertEqual(renderer.radius(), 12)
+            self.assertEqual(renderer.radiusUnit(), QgsUnitTypes.RenderMillimeters)
+            self.assertEqual(renderer.renderQuality(), 2)
+            self.assertIsNotNone(renderer.colorRamp())
+            self.assertEqual(round(points_layer.opacity(), 2), 0.75)
+
+            # Tracks and start points must be fully hidden so they don't flatten the visual
+            self.assertEqual(round(activities_layer.opacity(), 2), 0.0)
+            self.assertEqual(round(starts_layer.opacity(), 2), 0.0)
+
+    def test_heatmap_preset_falls_back_to_starts_layer(self):
+        """When points_layer is None the heatmap should render on starts_layer."""
+        from qgis.core import QgsHeatmapRenderer
+
+        with tempfile.TemporaryDirectory() as tmp:
+            output_path = self._write_sample_gpkg(tmp)
+            activities_layer, starts_layer, _points_layer, atlas_layer = (
+                self.layer_manager.load_output_layers(output_path)
+            )
+
+            self.layer_manager.apply_style(
+                activities_layer,
+                starts_layer,
+                None,  # no points layer
+                atlas_layer,
+                "Heatmap",
+            )
+
+            self.assertIsInstance(starts_layer.renderer(), QgsHeatmapRenderer)
+            self.assertEqual(round(starts_layer.opacity(), 2), 0.75)
+            self.assertEqual(round(activities_layer.opacity(), 2), 0.0)
+
+    def _write_sample_gpkg(self, temp_dir):
+        output_path = str(Path(temp_dir) / "qfit-heatmap-test.gpkg")
+        GeoPackageWriter(
+            output_path,
+            write_activity_points=True,
+            point_stride=2,
+            atlas_margin_percent=10,
+            atlas_min_extent_degrees=0.01,
+            atlas_target_aspect_ratio=1.5,
+        ).write_activities(self._sample_activities(), sync_metadata={"provider": "strava"})
+        return output_path
+
     def _layer_order(self):
         names = []
         for child in QgsProject.instance().layerTreeRoot().children():

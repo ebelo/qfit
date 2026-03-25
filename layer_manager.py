@@ -137,8 +137,11 @@ class LayerManager:
         if activities_layer is not None:
             if preset in ("By activity type",):
                 self._apply_categorized_line_style(activities_layer, basemap_preset_name)
-            elif preset in ("Heatmap", "Track points"):
-                # Tracks hidden; user sees points/heatmap instead — show subtle lines
+            elif preset == "Heatmap":
+                # Hide tracks so the density surface reads clearly
+                self._apply_simple_line_style(activities_layer, basemap_preset_name, subtle=True)
+                activities_layer.setOpacity(0.0)
+            elif preset == "Track points":
                 self._apply_simple_line_style(activities_layer, basemap_preset_name, subtle=True)
             else:
                 self._apply_simple_line_style(activities_layer, basemap_preset_name)
@@ -164,7 +167,9 @@ class LayerManager:
                 if points_layer is None:
                     self._apply_heatmap_style(starts_layer)
                 else:
+                    # Hide start markers so only the density surface shows
                     self._apply_start_point_style(starts_layer, subtle=True)
+                    starts_layer.setOpacity(0.0)
             elif preset == "By activity type":
                 self._apply_categorized_point_style(starts_layer, basemap_preset_name, size="3.0")
             else:
@@ -544,14 +549,15 @@ class LayerManager:
 
     def _apply_heatmap_style(self, layer):
         renderer = QgsHeatmapRenderer()
-        renderer.setRadius(20)
-        renderer.setRadiusUnit(QgsUnitTypes.RenderPixels)
+        renderer.setRadius(12)
+        renderer.setRadiusUnit(QgsUnitTypes.RenderMillimeters)
+        renderer.setRenderQuality(2)
         renderer.setColorRamp(
             QgsStyle.defaultStyle().colorRamp("Turbo")
             or QgsGradientColorRamp(QColor("#00000000"), QColor("#e74c3c"))
         )
         layer.setRenderer(renderer)
-        layer.setOpacity(0.85)
+        layer.setOpacity(0.75)
         layer.triggerRepaint()
 
     def _apply_clusterish_style(self, layer):
