@@ -112,8 +112,12 @@ class QgisSmokeTests(unittest.TestCase):
     def test_background_layer_source_uses_high_dpi_xyz_uri(self):
         background = self.layer_manager.ensure_background_layer(True, "Outdoor", "test-token")
         self.assertTrue(background.isValid())
-        self.assertIn("tiles/512/{z}/{x}/{y}@2x", background.source())
+        self.assertIn("tiles/512/{z}/{x}/{y}?access_token=", background.source())
         self.assertIn("tilePixelRatio=2", background.source())
+
+    def test_apply_filters_path_does_not_update_background_layer(self):
+        self.assertFalse(QfitDockWidget._should_update_background_layer(True))
+        self.assertTrue(QfitDockWidget._should_update_background_layer(False))
 
     def test_headless_qgis_smoke_covers_write_load_crs_temporal_and_background_order(self):
         with tempfile.TemporaryDirectory() as temp_dir:
