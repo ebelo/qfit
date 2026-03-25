@@ -33,6 +33,7 @@ from qgis.core import (
     QgsLayoutExporter,
     QgsLayoutItemLabel,
     QgsLayoutItemMap,
+    QgsLayoutItemPicture,
     QgsLayoutPoint,
     QgsLayoutSize,
     QgsPrintLayout,
@@ -69,6 +70,16 @@ PROFILE_Y = MAP_Y + MAP_H + PROFILE_GAP_MM
 PROFILE_W = MAP_W
 PROFILE_H = (PAGE_HEIGHT_MM - MARGIN_MM - FOOTER_HEIGHT_MM
              - FOOTER_GAP_MM - PROFILE_Y)
+
+# Sub-layout within profile area: chart on top, summary text below
+PROFILE_SUMMARY_H = 10.0   # height of the text summary label
+PROFILE_SUMMARY_GAP = 2.0  # gap between chart and summary text
+PROFILE_CHART_H = PROFILE_H - PROFILE_SUMMARY_H - PROFILE_SUMMARY_GAP
+PROFILE_CHART_Y = PROFILE_Y
+PROFILE_SUMMARY_Y = PROFILE_CHART_Y + PROFILE_CHART_H + PROFILE_SUMMARY_GAP
+
+# Identifier for the profile picture item (used to find it during export)
+_PROFILE_PICTURE_ID = "qfit_profile_chart"
 
 
 def _mm(layout, value):
@@ -233,16 +244,29 @@ def build_atlas_layout(
             color=QColor(60, 60, 60),
         )
 
-    # -- Profile area: route profile summary below map ----------------------
+    # -- Profile area: chart image + summary text below map ------------------
+    # Picture item for the SVG elevation profile (source set per page during export)
+    profile_pic = QgsLayoutItemPicture(layout)
+    profile_pic.setId(_PROFILE_PICTURE_ID)
+    profile_pic.attemptMove(
+        QgsLayoutPoint(PROFILE_X, PROFILE_CHART_Y, QgsUnitTypes.LayoutMillimeters)
+    )
+    profile_pic.attemptResize(
+        QgsLayoutSize(PROFILE_W, PROFILE_CHART_H, QgsUnitTypes.LayoutMillimeters)
+    )
+    profile_pic.setResizeMode(QgsLayoutItemPicture.Zoom)
+    layout.addLayoutItem(profile_pic)
+
+    # Text summary below the chart
     profile_field = "page_profile_summary" if fields.indexOf("page_profile_summary") >= 0 else ""
     if profile_field:
         _add_label(
             layout,
             f'[% coalesce("{profile_field}", \'\') %]',
             x=PROFILE_X,
-            y=PROFILE_Y,
+            y=PROFILE_SUMMARY_Y,
             w=PROFILE_W,
-            h=min(PROFILE_H, 10.0),
+            h=PROFILE_SUMMARY_H,
             font_size=8.0,
             color=QColor(80, 80, 80),
         )
@@ -507,6 +531,27 @@ class AtlasExportTask(QgsTask):
             if output_dir and not os.path.exists(output_dir):
                 os.makedirs(output_dir, exist_ok=True)
 
+            # Locate the profile picture item so we can set its source per page.
+            profile_pic = None
+            for item in layout.items():
+                if getattr(item, "id", lambda: None)() == _PROFILE_PICTURE_ID:
+                    profile_pic = item
+                    break
+
+            # Pre-load profile samples grouped by page_sort_key.
+            profile_samples: dict[str, list[tuple[float, float]]] = {}
+            sort_key_idx = fields.indexOf("page_sort_key")
+            try:
+                source = self._atlas_layer.source()
+                gpkg_path = source.split("|")[0] if "|" in source else source
+                if gpkg_path and os.path.isfile(gpkg_path):
+                    from .atlas_profile_renderer import load_profile_samples_from_gpkg  # noqa: PLC0415
+                    profile_samples = load_profile_samples_from_gpkg(gpkg_path)
+            except Exception:  # noqa: BLE001
+                logger.debug("Could not load profile samples", exc_info=True)
+
+            profile_temp_files: list[str] = []
+
             # Collect layers with source_activity_id field for per-page filtering.
             # These are the track/start/point layers that should show only the
             # current page's activity, not the full unfiltered dataset.
@@ -550,6 +595,30 @@ class AtlasExportTask(QgsTask):
                                     layer.setSubsetString(page_filter)
                                 except RuntimeError:
                                     logger.debug("Failed to set page filter on layer", exc_info=True)
+
+                    # Render profile chart SVG for this page.
+                    if profile_pic is not None and sort_key_idx >= 0:
+                        page_sort_key = feat.attribute(sort_key_idx)
+                        page_points = profile_samples.get(page_sort_key, []) if page_sort_key else []
+                        if len(page_points) >= 2:
+                            try:
+                                from .atlas_profile_renderer import render_profile_to_file  # noqa: PLC0415
+                                svg_path = render_profile_to_file(
+                                    page_points,
+                                    width_mm=PROFILE_W,
+                                    height_mm=PROFILE_CHART_H,
+                                    directory=os.path.dirname(self._output_path) or None,
+                                )
+                                if svg_path:
+                                    profile_pic.setPicturePath(svg_path)
+                                    profile_temp_files.append(svg_path)
+                                else:
+                                    profile_pic.setPicturePath("")
+                            except Exception:  # noqa: BLE001
+                                logger.debug("Profile chart render failed", exc_info=True)
+                                profile_pic.setPicturePath("")
+                        else:
+                            profile_pic.setPicturePath("")
 
                     # Apply the stored precomputed extent to the map item.
                     if map_item is not None and has_stored_extents:
@@ -612,6 +681,13 @@ class AtlasExportTask(QgsTask):
                         os.remove(p)
                     except OSError:
                         pass
+
+            # Clean up temporary profile SVG files.
+            for svg_path in profile_temp_files:
+                try:
+                    os.remove(svg_path)
+                except OSError:
+                    pass
 
         except (RuntimeError, OSError) as exc:
             logger.exception("Atlas export failed")
