@@ -119,9 +119,13 @@ class NullCredentialStore(CredentialStore):
         return None
 
     def set(self, key: str, value: str) -> None:
+        # Intentionally a no-op: this store has no backend.
+        # Callers check ``available`` before writing; this path is only reached
+        # when the caller falls back to QSettings instead.
         pass
 
     def delete(self, key: str) -> None:
+        # Intentionally a no-op: nothing was ever stored here.
         pass
 
 
