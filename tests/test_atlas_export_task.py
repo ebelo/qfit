@@ -771,5 +771,50 @@ class TestAtlasExportTaskNarrowedExceptions(unittest.TestCase):
         self.assertIsNone(result)
 
 
+class TestLayoutGeometry(unittest.TestCase):
+    """Verify A4 portrait layout dimensions and square map frame."""
+
+    def test_page_dimensions_are_a4_portrait(self):
+        from qfit.atlas_export_task import PAGE_WIDTH_MM, PAGE_HEIGHT_MM
+
+        self.assertAlmostEqual(PAGE_WIDTH_MM, 210.0)
+        self.assertAlmostEqual(PAGE_HEIGHT_MM, 297.0)
+        self.assertGreater(PAGE_HEIGHT_MM, PAGE_WIDTH_MM, "Page should be portrait (taller than wide)")
+
+    def test_map_frame_is_square(self):
+        from qfit.atlas_export_task import MAP_W, MAP_H
+
+        self.assertAlmostEqual(MAP_W, MAP_H, places=3, msg="Map frame should be square")
+        self.assertGreater(MAP_W, 0)
+
+    def test_map_target_aspect_ratio_is_one(self):
+        from qfit.atlas_export_task import BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
+
+        self.assertAlmostEqual(BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO, 1.0, places=3)
+
+    def test_map_frame_fits_within_page(self):
+        from qfit.atlas_export_task import (
+            MAP_X, MAP_Y, MAP_W, MAP_H,
+            PAGE_WIDTH_MM, PAGE_HEIGHT_MM, MARGIN_MM,
+        )
+
+        self.assertGreaterEqual(MAP_X, MARGIN_MM)
+        self.assertLessEqual(MAP_X + MAP_W, PAGE_WIDTH_MM - MARGIN_MM)
+        self.assertGreater(MAP_Y, MARGIN_MM)
+        self.assertLess(MAP_Y + MAP_H, PAGE_HEIGHT_MM - MARGIN_MM)
+
+    def test_footer_space_below_map(self):
+        from qfit.atlas_export_task import (
+            MAP_Y, MAP_H, PAGE_HEIGHT_MM, MARGIN_MM, FOOTER_HEIGHT_MM, FOOTER_GAP_MM,
+        )
+
+        space_below_map = PAGE_HEIGHT_MM - MARGIN_MM - (MAP_Y + MAP_H)
+        self.assertGreaterEqual(
+            space_below_map,
+            FOOTER_GAP_MM + FOOTER_HEIGHT_MM,
+            "Must be enough space below map for footer",
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

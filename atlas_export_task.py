@@ -5,19 +5,20 @@ keeping the QGIS UI responsive.  The layout is constructed programmatically
 using :class:`qgis.core.QgsPrintLayout` with an atlas coverage from the
 ``activity_atlas_pages`` vector layer.
 
-Page template (A4 landscape, 297 × 210 mm):
+Page template (A4 portrait, 210 × 297 mm):
 
-    ┌──────────────────────────────────────────────────────────────────┐
-    │  [Title]                                      [Date]             │
-    │  [Subtitle / stats]                                              │
-    │  ┌────────────────────────────────────────────────────────────┐  │
-    │  │                                                            │  │
-    │  │                       MAP FRAME                            │  │
-    │  │                  (atlas-controlled extent)                  │  │
-    │  │                                                            │  │
-    │  └────────────────────────────────────────────────────────────┘  │
-    │  Page [% @atlas_featurenumber %] of [% @atlas_totalfeatures %]  │
-    └──────────────────────────────────────────────────────────────────┘
+    ┌────────────────────────────────────────┐
+    │  [Title]                       [Date]  │
+    │  [Subtitle / stats]                    │
+    │  ┌──────────────────────────────────┐  │
+    │  │                                  │  │
+    │  │         MAP FRAME (square)       │  │
+    │  │    (atlas-controlled extent)     │  │
+    │  │                                  │  │
+    │  └──────────────────────────────────┘  │
+    │  [footer / profile area reserved]      │
+    │  Page N / Total                        │
+    └────────────────────────────────────────┘
 """
 
 from __future__ import annotations
@@ -44,11 +45,11 @@ from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QColor, QFont
 
 # ---------------------------------------------------------------------------
-# Page geometry (mm, A4 landscape)
+# Page geometry (mm, A4 portrait with square map)
 # ---------------------------------------------------------------------------
 
-PAGE_WIDTH_MM = 297.0
-PAGE_HEIGHT_MM = 210.0
+PAGE_WIDTH_MM = 210.0
+PAGE_HEIGHT_MM = 297.0
 MARGIN_MM = 10.0
 HEADER_HEIGHT_MM = 16.0
 FOOTER_HEIGHT_MM = 8.0
@@ -57,10 +58,9 @@ FOOTER_GAP_MM = 3.0   # gap between map and footer
 
 MAP_X = MARGIN_MM
 MAP_Y = MARGIN_MM + HEADER_HEIGHT_MM + HEADER_GAP_MM
-MAP_W = PAGE_WIDTH_MM - 2 * MARGIN_MM
-MAP_H = (PAGE_HEIGHT_MM - MARGIN_MM - HEADER_HEIGHT_MM - HEADER_GAP_MM
-         - FOOTER_GAP_MM - FOOTER_HEIGHT_MM - MARGIN_MM)
-BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO = MAP_W / MAP_H
+MAP_W = PAGE_WIDTH_MM - 2 * MARGIN_MM                   # 190 mm
+MAP_H = MAP_W                                            # square
+BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO = MAP_W / MAP_H   # 1.0
 
 
 def _mm(layout, value):
@@ -123,7 +123,7 @@ def build_atlas_layout(
     layout.initializeDefaults()
     layout.setName("qfit Activity Atlas")
 
-    # -- Page size (A4 landscape) ------------------------------------------
+    # -- Page size (A4 portrait) -------------------------------------------
     page_collection = layout.pageCollection()
     if page_collection.pageCount() > 0:
         page = page_collection.page(0)
