@@ -23,7 +23,6 @@ from .activity_query import (
 from .atlas_export_controller import AtlasExportController, AtlasExportValidationError
 from .background_map_controller import BackgroundMapController
 from .contextual_help import ContextualHelpBinder, build_dock_help_entries
-from .gpkg_writer import GeoPackageWriter
 from .layer_manager import LayerManager
 from .load_workflow import LoadWorkflowError, LoadWorkflowService
 from .mapbox_config import (
@@ -35,6 +34,7 @@ from .mapbox_config import (
     background_preset_names,
     preset_requires_custom_style,
 )
+from .visual_apply import BackgroundConfig, LayerRefs, VisualApplyService
 from .fetch_task import StravaFetchTask
 from .atlas_export_task import AtlasExportTask, BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
 from .qfit_cache import QfitCache
@@ -71,6 +71,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.layer_manager = LayerManager(iface)
         self.background_controller = BackgroundMapController(self.layer_manager)
         self.load_workflow = LoadWorkflowService(self.layer_manager)
+        self.visual_apply = VisualApplyService(self.layer_manager)
         self.cache = self._build_cache()
         self.setupUi(self)
         self._remove_stale_qfit_layers()
@@ -697,112 +698,41 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         if status:
             self._set_status(status)
 
-    @staticmethod
-    def _should_update_background_layer(apply_subset_filters):
-        return not apply_subset_filters
-
     def _apply_visual_configuration(self, apply_subset_filters):
-        has_layers = any(layer is not None for layer in [self.activities_layer, self.starts_layer, self.points_layer, self.atlas_layer])
-        wants_background = self.backgroundMapCheckBox.isChecked()
         filtered_activities = self._refresh_activity_preview()
         query = self._current_activity_query()
-        preset = self.stylePresetComboBox.currentText()
-        temporal_note = ""
 
-        if has_layers and apply_subset_filters:
-            self.layer_manager.apply_filters(
-                self.activities_layer,
-                query.activity_type,
-                query.date_from,
-                query.date_to,
-                query.min_distance_km,
-                query.max_distance_km,
-                query.search_text,
-                query.detailed_only,
-            )
-            self.layer_manager.apply_filters(
-                self.starts_layer,
-                query.activity_type,
-                query.date_from,
-                query.date_to,
-                query.min_distance_km,
-                query.max_distance_km,
-                query.search_text,
-                query.detailed_only,
-            )
-            self.layer_manager.apply_filters(
-                self.points_layer,
-                query.activity_type,
-                query.date_from,
-                query.date_to,
-                query.min_distance_km,
-                query.max_distance_km,
-                query.search_text,
-                query.detailed_only,
-            )
-            self.layer_manager.apply_filters(
-                self.atlas_layer,
-                query.activity_type,
-                query.date_from,
-                query.date_to,
-                query.min_distance_km,
-                query.max_distance_km,
-                query.search_text,
-                query.detailed_only,
-            )
+        layers = LayerRefs(
+            activities=self.activities_layer,
+            starts=self.starts_layer,
+            points=self.points_layer,
+            atlas=self.atlas_layer,
+        )
+        bg_config = BackgroundConfig(
+            enabled=self.backgroundMapCheckBox.isChecked(),
+            preset_name=self.backgroundPresetComboBox.currentText(),
+            access_token=self.mapboxAccessTokenLineEdit.text().strip(),
+            style_owner=self.mapboxStyleOwnerLineEdit.text().strip(),
+            style_id=self.mapboxStyleIdLineEdit.text().strip(),
+            tile_mode=self.tileModeComboBox.currentText(),
+        )
 
-        if has_layers:
-            self.layer_manager.apply_style(
-                self.activities_layer,
-                self.starts_layer,
-                self.points_layer,
-                self.atlas_layer,
-                preset,
-                background_preset_name=self.backgroundPresetComboBox.currentText() if wants_background else None,
-            )
-            temporal_note = self.layer_manager.apply_temporal_configuration(
-                self.activities_layer,
-                self.starts_layer,
-                self.points_layer,
-                self.atlas_layer,
-                self.temporalModeComboBox.currentText(),
-            )
+        result = self.visual_apply.apply(
+            layers=layers,
+            query=query,
+            style_preset=self.stylePresetComboBox.currentText(),
+            temporal_mode=self.temporalModeComboBox.currentText(),
+            background_config=bg_config,
+            apply_subset_filters=apply_subset_filters,
+            filtered_count=len(filtered_activities),
+        )
 
-        if self._should_update_background_layer(apply_subset_filters):
-            try:
-                self.background_layer = self.layer_manager.ensure_background_layer(
-                    enabled=wants_background,
-                    preset_name=self.backgroundPresetComboBox.currentText(),
-                    access_token=self.mapboxAccessTokenLineEdit.text().strip(),
-                    style_owner=self.mapboxStyleOwnerLineEdit.text().strip(),
-                    style_id=self.mapboxStyleIdLineEdit.text().strip(),
-                    tile_mode=self.tileModeComboBox.currentText(),
-                )
-            except (MapboxConfigError, RuntimeError) as exc:
-                self._show_error("Background map failed", str(exc))
-                if not has_layers:
-                    failure_status = "Background map could not be updated"
-                else:
-                    failure_status = "Loaded layers with styling, but the background map could not be updated"
-                if temporal_note:
-                    failure_status = f"{failure_status}. {temporal_note}."
-                return failure_status
+        if self.visual_apply.should_update_background(apply_subset_filters):
+            if result.background_error:
+                self._show_error("Background map failed", result.background_error)
+            self.background_layer = result.background_layer
 
-        filtered_count = len(filtered_activities)
-        if apply_subset_filters and has_layers:
-            status = f"Applied filters and styling ({filtered_count} matching activities)"
-        elif has_layers and wants_background and self.background_layer is not None:
-            status = "Applied styling and loaded the background map below the qfit activity layers"
-        elif has_layers:
-            status = "Applied styling to the loaded qfit layers"
-        elif wants_background and self.background_layer is not None:
-            status = "Background map loaded below the qfit activity layers"
-        else:
-            status = "Background map cleared"
-
-        if temporal_note:
-            status = f"{status}. {temporal_note}."
-        return status
+        return result.status
 
     def _current_activity_query(self):
         return ActivityQuery(
