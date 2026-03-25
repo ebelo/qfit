@@ -362,12 +362,15 @@ def build_atlas_layout(
     return layout
 
 
-def _build_cover_summary_from_current_atlas_features(atlas_layer) -> dict[str, str]:
+def _build_cover_summary_from_current_atlas_features(atlas_layer) -> dict:
     """Compute cover-summary strings from the current atlas feature subset.
 
     This intentionally ignores stale per-row `document_*` fields and instead
     aggregates over the currently exported atlas-layer features, so cover stats
     reflect the actual PDF contents after filtering/subsetting.
+
+    Also computes the combined EPSG:3857 bounding box and collects unique
+    ``source_activity_id`` values for the cover heatmap overview map.
     """
     from .publish_atlas import (  # noqa: PLC0415
         build_date_range_label,
@@ -409,14 +412,50 @@ def _build_cover_summary_from_current_atlas_features(atlas_layer) -> dict[str, s
         v for v in (_safe_float(_safe_attr(f, "total_elevation_gain_m")) for f in features) if v is not None
     )
 
+    # Extent field indices for cover heatmap map
+    cx_idx = _idx("center_x_3857")
+    cy_idx = _idx("center_y_3857")
+    ew_idx = _idx("extent_width_m")
+    eh_idx = _idx("extent_height_m")
+    has_extent_fields = all(i >= 0 for i in (cx_idx, cy_idx, ew_idx, eh_idx))
+    sid_idx = _idx("source_activity_id")
+
+    extent_xmin = float("inf")
+    extent_ymin = float("inf")
+    extent_xmax = float("-inf")
+    extent_ymax = float("-inf")
+
     ordered_activity_types: list[str] = []
+    atlas_activity_ids: list[str] = []
+
     for feature in features:
         activity_type = (_safe_attr(feature, "activity_type") or "").strip()
-        if not activity_type:
-            continue
-        if any(existing.casefold() == activity_type.casefold() for existing in ordered_activity_types):
-            continue
-        ordered_activity_types.append(activity_type)
+        if activity_type:
+            if not any(existing.casefold() == activity_type.casefold() for existing in ordered_activity_types):
+                ordered_activity_types.append(activity_type)
+
+        # Accumulate combined extent from stored per-page bounds
+        if has_extent_fields:
+            cx = _safe_float(feature.attribute(cx_idx))
+            cy = _safe_float(feature.attribute(cy_idx))
+            ew = _safe_float(feature.attribute(ew_idx))
+            eh = _safe_float(feature.attribute(eh_idx))
+            if all(v is not None for v in (cx, cy, ew, eh)):
+                hw, hh = ew / 2.0, eh / 2.0
+                extent_xmin = min(extent_xmin, cx - hw)
+                extent_ymin = min(extent_ymin, cy - hh)
+                extent_xmax = max(extent_xmax, cx + hw)
+                extent_ymax = max(extent_ymax, cy + hh)
+
+        # Collect unique activity IDs for subset filtering
+        if sid_idx >= 0:
+            sid = feature.attribute(sid_idx)
+            if sid is not None and sid != "":
+                sid_str = str(sid)
+                if sid_str not in atlas_activity_ids:
+                    atlas_activity_ids.append(sid_str)
+
+    valid_extent = extent_xmin < extent_xmax and extent_ymin < extent_ymax
 
     activity_label = "activity" if activity_count == 1 else "activities"
     date_range_label = build_date_range_label(min(page_dates), max(page_dates)) if page_dates else None
@@ -438,14 +477,60 @@ def _build_cover_summary_from_current_atlas_features(atlas_layer) -> dict[str, s
         "document_total_duration_label": total_duration_label or "",
         "document_total_elevation_gain_label": total_elevation_gain_label or "",
         "document_activity_types_label": activity_types_label or "",
+        # Cover heatmap map data
+        "_cover_extent_xmin": extent_xmin if valid_extent else None,
+        "_cover_extent_ymin": extent_ymin if valid_extent else None,
+        "_cover_extent_xmax": extent_xmax if valid_extent else None,
+        "_cover_extent_ymax": extent_ymax if valid_extent else None,
+        "_atlas_activity_ids": atlas_activity_ids,
     }
+
+
+def _apply_cover_heatmap_renderer(layer) -> None:
+    """Apply a heatmap renderer to *layer* for the cover overview map.
+
+    Uses a slightly larger radius and lower quality than the interactive
+    heatmap preset to suit the zoomed-out overview.  Imports are deferred
+    so the module can load without a full QGIS runtime (e.g. in tests).
+    """
+    try:
+        from qgis.core import (  # noqa: PLC0415
+            QgsHeatmapRenderer,
+            QgsStyle,
+            QgsGradientColorRamp,
+        )
+    except ImportError:
+        return
+    renderer = QgsHeatmapRenderer()
+    renderer.setRadius(8)
+    renderer.setRadiusUnit(QgsUnitTypes.RenderMillimeters)
+    renderer.setRenderQuality(1)
+    color_ramp = QgsStyle.defaultStyle().colorRamp("Turbo")
+    if color_ramp is None:
+        color_ramp = QgsGradientColorRamp(QColor("#00000000"), QColor("#e74c3c"))
+    renderer.setColorRamp(color_ramp)
+    layer.setRenderer(renderer)
+    layer.setOpacity(0.85)
 
 
 def build_cover_layout(
     atlas_layer,
     project=None,
+    map_layers=None,
+    cover_data=None,
 ) -> QgsPrintLayout | None:
     """Build a single-page cover layout from the current atlas-layer subset.
+
+    Parameters
+    ----------
+    map_layers:
+        Optional list of QGIS map layers to include in the cover heatmap
+        overview map.  When provided together with extent data in
+        *cover_data*, a square map is placed below the statistics block.
+    cover_data:
+        Pre-computed cover summary dict (from
+        :func:`_build_cover_summary_from_current_atlas_features`).  If
+        ``None`` it will be computed from *atlas_layer*.
 
     Returns ``None`` if the atlas layer has no features.
     """
@@ -454,7 +539,8 @@ def build_cover_layout(
 
     # Build cover stats from the currently exported atlas features so the cover
     # reflects the actual PDF subset, not stale precomputed document_* values.
-    cover_data = _build_cover_summary_from_current_atlas_features(atlas_layer)
+    if cover_data is None:
+        cover_data = _build_cover_summary_from_current_atlas_features(atlas_layer)
     if not cover_data:
         return None
 
@@ -588,6 +674,45 @@ def build_cover_layout(
             color=value_color,
             v_align_top=is_long_text,
         )
+
+    # -- Cover heatmap overview map (square, centered below stats) ----------
+    grid_bottom_y = (row_y + row_max_h) if highlight_cards else sep_y + 2.0
+    extent_bounds = (
+        cover_data.get("_cover_extent_xmin"),
+        cover_data.get("_cover_extent_ymin"),
+        cover_data.get("_cover_extent_xmax"),
+        cover_data.get("_cover_extent_ymax"),
+    )
+    if map_layers and all(v is not None for v in extent_bounds):
+        xmin, ymin, xmax, ymax = (float(v) for v in extent_bounds)
+        # Add 10% margin around the combined extent
+        span = max(xmax - xmin, ymax - ymin)
+        margin_m = span * 0.10
+        map_extent = QgsRectangle(
+            xmin - margin_m, ymin - margin_m,
+            xmax + margin_m, ymax + margin_m,
+        )
+        map_extent = _normalize_extent_to_aspect_ratio(map_extent, 1.0)
+
+        cover_map_gap = 8.0
+        cover_map_top = grid_bottom_y + cover_map_gap
+        available_h = PAGE_HEIGHT_MM - MARGIN_MM - cover_map_top - 4.0
+        cover_map_size = min(available_h, content_width * 0.60)
+
+        if cover_map_size >= 40.0:
+            cover_map_x = (PAGE_WIDTH_MM - cover_map_size) / 2.0
+            cover_map = QgsLayoutItemMap(layout)
+            cover_map.setLayers(map_layers)
+            cover_map.setKeepLayerSet(True)
+            cover_map.attemptMove(
+                QgsLayoutPoint(cover_map_x, cover_map_top, QgsUnitTypes.LayoutMillimeters)
+            )
+            cover_map.attemptResize(
+                QgsLayoutSize(cover_map_size, cover_map_size, QgsUnitTypes.LayoutMillimeters)
+            )
+            cover_map.setCrs(QgsCoordinateReferenceSystem("EPSG:3857"))
+            cover_map.setExtent(map_extent)
+            layout.addLayoutItem(cover_map)
 
     return layout
 
@@ -1014,10 +1139,108 @@ class AtlasExportTask(QgsTask):
         """Export a single cover-page PDF and return its path, or None on failure.
 
         The cover is built from document-level fields stored on every feature of
-        *atlas_layer*.  Failures are swallowed so they never abort the main export.
+        *atlas_layer*.  When the project contains visible point/start layers a
+        square heatmap overview map is rendered below the statistics block.
+
+        Failures are swallowed so they never abort the main export.
         """
+        saved_state: list[dict] = []
         try:
-            cover_layout = build_cover_layout(atlas_layer, project=project)
+            proj = project or QgsProject.instance()
+
+            # Pre-compute cover data (summary + extent + activity IDs) once.
+            cover_data = _build_cover_summary_from_current_atlas_features(atlas_layer)
+            if not cover_data:
+                return None
+
+            # Determine if we can add a cover heatmap overview map.
+            cover_map_layers = None
+            extent_bounds = (
+                cover_data.get("_cover_extent_xmin"),
+                cover_data.get("_cover_extent_ymin"),
+                cover_data.get("_cover_extent_xmax"),
+                cover_data.get("_cover_extent_ymax"),
+            )
+            has_extent = all(v is not None for v in extent_bounds)
+
+            if has_extent:
+                try:
+                    root = proj.layerTreeRoot()
+                    visible_layers = [
+                        node.layer()
+                        for node in root.findLayers()
+                        if node.isVisible()
+                        and node.layer() is not None
+                        and node.layer() is not atlas_layer
+                    ]
+                except (RuntimeError, AttributeError, TypeError):
+                    visible_layers = []
+
+                if visible_layers:
+                    points_layer = None
+                    starts_layer = None
+                    background_layers: list = []
+
+                    for layer in visible_layers:
+                        try:
+                            name = layer.name()
+                        except (RuntimeError, AttributeError):
+                            continue
+                        if name == "qfit activity points":
+                            points_layer = layer
+                        elif name == "qfit activity starts":
+                            starts_layer = layer
+                        elif name == "qfit activities":
+                            pass  # exclude track lines from cover heatmap
+                        else:
+                            background_layers.append(layer)
+
+                    heatmap_target = points_layer or starts_layer
+
+                    if heatmap_target is not None:
+                        # Save current renderer, opacity and subset for restoration.
+                        try:
+                            old_renderer = heatmap_target.renderer().clone()
+                        except (RuntimeError, AttributeError):
+                            old_renderer = None
+                        saved_state.append({
+                            "layer": heatmap_target,
+                            "renderer": old_renderer,
+                            "opacity": heatmap_target.opacity(),
+                            "subset": heatmap_target.subsetString(),
+                        })
+
+                        _apply_cover_heatmap_renderer(heatmap_target)
+
+                        # Filter to the activities present in the atlas subset.
+                        activity_ids = cover_data.get("_atlas_activity_ids", [])
+                        if activity_ids:
+                            safe_ids = ", ".join(
+                                "'" + str(sid).replace("'", "''") + "'"
+                                for sid in activity_ids
+                            )
+                            heatmap_target.setSubsetString(
+                                f'"source_activity_id" IN ({safe_ids})'
+                            )
+
+                        # Hide start markers when detail points drive the heatmap.
+                        if heatmap_target is points_layer and starts_layer is not None:
+                            saved_state.append({
+                                "layer": starts_layer,
+                                "renderer": None,
+                                "opacity": starts_layer.opacity(),
+                                "subset": starts_layer.subsetString(),
+                            })
+                            starts_layer.setOpacity(0.0)
+
+                        cover_map_layers = [heatmap_target] + background_layers
+
+            cover_layout = build_cover_layout(
+                atlas_layer,
+                project=project,
+                map_layers=cover_map_layers,
+                cover_data=cover_data,
+            )
             if cover_layout is None:
                 return None
 
@@ -1035,6 +1258,17 @@ class AtlasExportTask(QgsTask):
         except (RuntimeError, OSError):
             logger.exception("Cover page export failed")
             return None
+        finally:
+            # Restore original renderer, opacity and subset on modified layers.
+            for state in saved_state:
+                try:
+                    layer = state["layer"]
+                    if state.get("renderer") is not None:
+                        layer.setRenderer(state["renderer"])
+                    layer.setOpacity(state["opacity"])
+                    layer.setSubsetString(state["subset"])
+                except (RuntimeError, AttributeError):
+                    pass
 
     @staticmethod
     def _export_toc_page(
