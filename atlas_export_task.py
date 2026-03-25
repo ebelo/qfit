@@ -53,14 +53,22 @@ PAGE_HEIGHT_MM = 297.0
 MARGIN_MM = 10.0
 HEADER_HEIGHT_MM = 16.0
 FOOTER_HEIGHT_MM = 8.0
-HEADER_GAP_MM = 3.0   # gap between header and map
-FOOTER_GAP_MM = 3.0   # gap between map and footer
+HEADER_GAP_MM = 3.0    # gap between header and map
+PROFILE_GAP_MM = 3.0   # gap between map and profile area
+FOOTER_GAP_MM = 3.0    # gap between profile area and footer
 
 MAP_X = MARGIN_MM
 MAP_Y = MARGIN_MM + HEADER_HEIGHT_MM + HEADER_GAP_MM
 MAP_W = PAGE_WIDTH_MM - 2 * MARGIN_MM                   # 190 mm
 MAP_H = MAP_W                                            # square
 BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO = MAP_W / MAP_H   # 1.0
+
+# Profile area: reserved below the map for route profile content
+PROFILE_X = MARGIN_MM
+PROFILE_Y = MAP_Y + MAP_H + PROFILE_GAP_MM
+PROFILE_W = MAP_W
+PROFILE_H = (PAGE_HEIGHT_MM - MARGIN_MM - FOOTER_HEIGHT_MM
+             - FOOTER_GAP_MM - PROFILE_Y)
 
 
 def _mm(layout, value):
@@ -225,8 +233,22 @@ def build_atlas_layout(
             color=QColor(60, 60, 60),
         )
 
+    # -- Profile area: route profile summary below map ----------------------
+    profile_field = "page_profile_summary" if fields.indexOf("page_profile_summary") >= 0 else ""
+    if profile_field:
+        _add_label(
+            layout,
+            f'[% coalesce("{profile_field}", \'\') %]',
+            x=PROFILE_X,
+            y=PROFILE_Y,
+            w=PROFILE_W,
+            h=min(PROFILE_H, 10.0),
+            font_size=8.0,
+            color=QColor(80, 80, 80),
+        )
+
     # -- Footer: page number -----------------------------------------------
-    footer_y = MAP_Y + MAP_H + FOOTER_GAP_MM
+    footer_y = PROFILE_Y + PROFILE_H + FOOTER_GAP_MM
     _add_label(
         layout,
         "[% @atlas_featurenumber %] / [% @atlas_totalfeatures %]",
@@ -237,20 +259,6 @@ def build_atlas_layout(
         font_size=7.0,
         color=QColor(120, 120, 120),
     )
-
-    # -- Footer: activity type / profile summary ---------------------------
-    profile_field = "page_profile_summary" if fields.indexOf("page_profile_summary") >= 0 else ""
-    if profile_field:
-        _add_label(
-            layout,
-            f'[% coalesce("{profile_field}", \'\') %]',
-            x=MARGIN_MM + 60.0,
-            y=footer_y,
-            w=PAGE_WIDTH_MM - 2 * MARGIN_MM - 60.0,
-            h=FOOTER_HEIGHT_MM,
-            font_size=7.0,
-            color=QColor(120, 120, 120),
-        )
 
     return layout
 

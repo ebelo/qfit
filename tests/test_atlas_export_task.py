@@ -805,15 +805,64 @@ class TestLayoutGeometry(unittest.TestCase):
 
     def test_footer_space_below_map(self):
         from qfit.atlas_export_task import (
-            MAP_Y, MAP_H, PAGE_HEIGHT_MM, MARGIN_MM, FOOTER_HEIGHT_MM, FOOTER_GAP_MM,
+            MAP_Y, MAP_H, PAGE_HEIGHT_MM, MARGIN_MM, FOOTER_HEIGHT_MM,
+            FOOTER_GAP_MM, PROFILE_GAP_MM, PROFILE_H,
         )
 
         space_below_map = PAGE_HEIGHT_MM - MARGIN_MM - (MAP_Y + MAP_H)
         self.assertGreaterEqual(
             space_below_map,
-            FOOTER_GAP_MM + FOOTER_HEIGHT_MM,
-            "Must be enough space below map for footer",
+            PROFILE_GAP_MM + PROFILE_H + FOOTER_GAP_MM + FOOTER_HEIGHT_MM,
+            "Must be enough space below map for profile area + footer",
         )
+
+    def test_profile_area_positioned_below_map(self):
+        from qfit.atlas_export_task import (
+            MAP_Y, MAP_H, PROFILE_X, PROFILE_Y, PROFILE_W, PROFILE_H, MARGIN_MM,
+        )
+
+        self.assertGreater(PROFILE_Y, MAP_Y + MAP_H, "Profile must start below map")
+        self.assertGreaterEqual(PROFILE_X, MARGIN_MM)
+        self.assertGreater(PROFILE_W, 0)
+        self.assertGreater(PROFILE_H, 0)
+
+    def test_profile_area_does_not_overlap_footer(self):
+        from qfit.atlas_export_task import (
+            PROFILE_Y, PROFILE_H, FOOTER_GAP_MM, FOOTER_HEIGHT_MM,
+            PAGE_HEIGHT_MM, MARGIN_MM,
+        )
+
+        profile_bottom = PROFILE_Y + PROFILE_H
+        footer_y = profile_bottom + FOOTER_GAP_MM
+        footer_bottom = footer_y + FOOTER_HEIGHT_MM
+        self.assertLessEqual(
+            footer_bottom,
+            PAGE_HEIGHT_MM - MARGIN_MM,
+            "Footer must not extend beyond bottom margin",
+        )
+
+    def test_profile_area_has_usable_height(self):
+        from qfit.atlas_export_task import PROFILE_H
+
+        self.assertGreaterEqual(PROFILE_H, 40.0, "Profile area should be at least 40mm tall")
+
+    def test_layout_items_do_not_overlap_vertically(self):
+        from qfit.atlas_export_task import (
+            MARGIN_MM, HEADER_HEIGHT_MM, HEADER_GAP_MM,
+            MAP_Y, MAP_H, PROFILE_GAP_MM,
+            PROFILE_Y, PROFILE_H, FOOTER_GAP_MM,
+            FOOTER_HEIGHT_MM, PAGE_HEIGHT_MM,
+        )
+
+        header_bottom = MARGIN_MM + HEADER_HEIGHT_MM
+        self.assertLessEqual(header_bottom + HEADER_GAP_MM, MAP_Y)
+
+        map_bottom = MAP_Y + MAP_H
+        self.assertLessEqual(map_bottom + PROFILE_GAP_MM, PROFILE_Y)
+
+        profile_bottom = PROFILE_Y + PROFILE_H
+        footer_y = profile_bottom + FOOTER_GAP_MM
+        self.assertLessEqual(footer_y + FOOTER_HEIGHT_MM, PAGE_HEIGHT_MM - MARGIN_MM)
 
 
 if __name__ == "__main__":
