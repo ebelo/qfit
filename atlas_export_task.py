@@ -410,48 +410,57 @@ def build_cover_layout(
     sep_label.setBackgroundEnabled(True)
     layout.addLayoutItem(sep_label)
 
-    # Stats block — label/value rows
-    stats_y = sep_y + 6.0
-    row_h = 8.0
-    label_col_w = 60.0
-    value_col_w = content_width - label_col_w
-    label_color = QColor(100, 100, 100)
+    # Highlight-card grid — 2-column layout for cover stats
+    grid_y = sep_y + 8.0
+    grid_cols = 2
+    grid_gap_x = 6.0   # horizontal gap between columns
+    card_w = (content_width - grid_gap_x) / grid_cols
+    card_label_h = 5.0  # height for the label row
+    card_value_h = 8.0  # height for the value row
+    card_h = card_label_h + card_value_h
+    card_gap_y = 4.0    # vertical gap between card rows
+    label_color = QColor(120, 120, 120)
     value_color = QColor(20, 20, 20)
 
-    stats_rows: list[tuple[str, str]] = []
+    highlight_cards: list[tuple[str, str]] = []
     if activity_count and activity_count != "0":
-        stats_rows.append(("Activities", activity_count))
+        highlight_cards.append(("Activities", activity_count))
     if date_range_label:
-        stats_rows.append(("Date range", date_range_label))
+        highlight_cards.append(("Date range", date_range_label))
     if total_distance_label:
-        stats_rows.append(("Distance", total_distance_label))
+        highlight_cards.append(("Distance", total_distance_label))
     if total_duration_label:
-        stats_rows.append(("Moving time", total_duration_label))
+        highlight_cards.append(("Moving time", total_duration_label))
     if total_elevation_gain_label:
-        stats_rows.append(("Climbing", total_elevation_gain_label))
+        highlight_cards.append(("Climbing", total_elevation_gain_label))
     if activity_types_label:
-        stats_rows.append(("Activity types", activity_types_label))
+        highlight_cards.append(("Activity types", activity_types_label))
 
-    for i, (row_label, row_value) in enumerate(stats_rows):
-        row_y = stats_y + i * row_h
+    for i, (card_label, card_value) in enumerate(highlight_cards):
+        col = i % grid_cols
+        row = i // grid_cols
+        card_x = center_x + col * (card_w + grid_gap_x)
+        card_y = grid_y + row * (card_h + card_gap_y)
         _add_label(
             layout,
-            f"{row_label}:",
-            x=center_x,
-            y=row_y,
-            w=label_col_w,
-            h=row_h,
-            font_size=9.0,
+            card_label.upper(),
+            x=card_x,
+            y=card_y,
+            w=card_w,
+            h=card_label_h,
+            font_size=7.0,
             color=label_color,
+            v_align_top=True,
         )
         _add_label(
             layout,
-            row_value,
-            x=center_x + label_col_w,
-            y=row_y,
-            w=value_col_w,
-            h=row_h,
-            font_size=9.0,
+            card_value,
+            x=card_x,
+            y=card_y + card_label_h,
+            w=card_w,
+            h=card_value_h,
+            font_size=12.0,
+            bold=True,
             color=value_color,
         )
 
