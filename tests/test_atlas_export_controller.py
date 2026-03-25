@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import MagicMock
 
 from tests import _path  # noqa: F401
-from qfit.atlas_export_controller import AtlasExportController, AtlasExportValidationError
+from qfit.atlas.export_controller import AtlasExportController, AtlasExportValidationError
 
 
 class ValidateAtlasLayerTests(unittest.TestCase):

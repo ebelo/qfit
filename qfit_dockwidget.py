@@ -20,8 +20,8 @@ from .activity_query import (
     sort_activities,
     summarize_activities,
 )
-from .atlas_export_controller import AtlasExportController, AtlasExportValidationError
-from .atlas_export_service import AtlasExportResult, AtlasExportService
+from .atlas.export_controller import AtlasExportController, AtlasExportValidationError
+from .atlas.export_service import AtlasExportResult, AtlasExportService
 from .background_map_controller import BackgroundMapController
 from .contextual_help import ContextualHelpBinder, build_dock_help_entries
 from .layer_manager import LayerManager
@@ -35,7 +35,7 @@ from .mapbox_config import (
 )
 from .visual_apply import BackgroundConfig, LayerRefs, VisualApplyService
 from .fetch_task import StravaFetchTask
-from .atlas_export_task import BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
+from .atlas.export_task import BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
 from .qfit_cache import QfitCache
 from .strava_client import StravaClient, StravaClientError
 from .settings_service import SettingsService

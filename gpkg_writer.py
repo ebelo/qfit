@@ -13,7 +13,7 @@ from .gpkg_layer_builders import (
     build_track_layer,
 )
 from .gpkg_schema import GPKG_LAYER_SCHEMA
-from .publish_atlas import (
+from .atlas.publish_atlas import (
     build_atlas_page_plans,
     normalize_atlas_page_settings,
 )

@@ -11,7 +11,7 @@ from typing import Callable
 
 logger = logging.getLogger(__name__)
 
-from .mapbox_config import TILE_MODE_RASTER, TILE_MODE_VECTOR
+from ..mapbox_config import TILE_MODE_RASTER, TILE_MODE_VECTOR
 
 
 @dataclass
@@ -95,7 +95,7 @@ class AtlasExportService:
         background_enabled: bool,
     ):
         """Construct an :class:`AtlasExportTask` ready to submit to the QGIS task manager."""
-        from .atlas_export_task import AtlasExportTask  # lazy import: QGIS runtime only
+        from .export_task import AtlasExportTask  # lazy import: QGIS runtime only
         return AtlasExportTask(
             atlas_layer=atlas_layer,
             output_path=output_path,

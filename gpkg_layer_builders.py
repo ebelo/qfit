@@ -29,7 +29,7 @@ from .gpkg_schema import (
     make_qgs_fields,
 )
 from .polyline_utils import decode_polyline
-from .publish_atlas import (
+from .atlas.publish_atlas import (
     build_atlas_cover_highlights_from_summary,
     build_atlas_document_summary_from_plans,
     build_atlas_page_detail_items,

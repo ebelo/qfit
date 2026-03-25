@@ -1,7 +1,7 @@
 """Tests for AtlasExportService and AtlasExportResult.
 
-atlas_export_service.build_task uses a lazy import of atlas_export_task (which
-requires QGIS bindings), so build_task tests patch qfit.atlas_export_task via
+atlas_export_service.build_task uses a lazy import of atlas.export_task (which
+requires QGIS bindings), so build_task tests patch qfit.atlas.export_task via
 patch.dict to avoid polluting sys.modules for the full test run.
 """
 import sys
@@ -10,7 +10,7 @@ from unittest.mock import MagicMock, patch
 
 from tests import _path  # noqa: F401
 
-from qfit.atlas_export_service import AtlasExportResult, AtlasExportService
+from qfit.atlas.export_service import AtlasExportResult, AtlasExportService
 
 
 # ---------------------------------------------------------------------------
@@ -158,7 +158,7 @@ class PrepareBasemapTests(unittest.TestCase):
 
 
 def _make_atlas_task_stub():
-    """Return a (stub_module, MockTask) pair for patching qfit.atlas_export_task."""
+    """Return a (stub_module, MockTask) pair for patching qfit.atlas.export_task."""
     stub_module = MagicMock()
     MockTask = MagicMock()
     stub_module.AtlasExportTask = MockTask
@@ -175,7 +175,7 @@ class BuildTaskTests(unittest.TestCase):
         on_finished = MagicMock()
         atlas_layer = MagicMock()
 
-        with patch.dict(sys.modules, {"qfit.atlas_export_task": stub_module}):
+        with patch.dict(sys.modules, {"qfit.atlas.export_task": stub_module}):
             self.service.build_task(
                 atlas_layer=atlas_layer,
                 output_path="/out.pdf",
@@ -204,7 +204,7 @@ class BuildTaskTests(unittest.TestCase):
     def test_passes_background_enabled_false(self):
         stub_module, MockTask = _make_atlas_task_stub()
 
-        with patch.dict(sys.modules, {"qfit.atlas_export_task": stub_module}):
+        with patch.dict(sys.modules, {"qfit.atlas.export_task": stub_module}):
             self.service.build_task(
                 atlas_layer=MagicMock(),
                 output_path="/out.pdf",
