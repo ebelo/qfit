@@ -191,6 +191,78 @@ class TestBuildAtlasLayout(unittest.TestCase):
         )
 
 
+class TestBuildAtlasLayoutSummaryLabels(unittest.TestCase):
+    """Verify that profile and stats summary labels are added to the layout."""
+
+    def _build_with_fields(self, available_fields):
+        """Build a layout where *available_fields* are present on the atlas layer."""
+        atlas_layer = MagicMock()
+        atlas_layer.featureCount.return_value = 1
+        fields = MagicMock()
+        fields.indexOf = lambda name: 0 if name in available_fields else -1
+        atlas_layer.fields.return_value = fields
+
+        project = MagicMock()
+        project.layerTreeRoot.return_value.findLayers.return_value = []
+
+        with patch("qfit.atlas_export_task.QgsPrintLayout") as mock_layout_cls, \
+             patch("qfit.atlas_export_task.QgsLayoutItemMap"):
+            layout = MagicMock()
+            layout.atlas.return_value = MagicMock()
+            layout.pageCollection.return_value.pageCount.return_value = 1
+            layout.pageCollection.return_value.page.return_value = MagicMock()
+            mock_layout_cls.return_value = layout
+
+            build_atlas_layout(atlas_layer, project=project)
+        return layout
+
+    def _label_texts(self, layout):
+        """Return the list of text strings set on label items added to *layout*."""
+        from qgis.core import QgsLayoutItemLabel
+        texts = []
+        for call in QgsLayoutItemLabel.return_value.setText.call_args_list:
+            texts.append(call[0][0])
+        return texts
+
+    def test_both_summaries_rendered_when_fields_present(self):
+        """Both profile and stats summaries appear when fields exist."""
+        _qgis_core.QgsLayoutItemLabel.reset_mock()
+        available = {
+            "page_sort_key", "page_title", "page_stats_summary",
+            "page_subtitle", "page_date", "page_profile_summary",
+        }
+        self._build_with_fields(available)
+        texts = self._label_texts(None)
+        profile_labels = [t for t in texts if "page_profile_summary" in t]
+        stats_labels = [t for t in texts if "page_stats_summary" in t]
+        self.assertTrue(len(profile_labels) >= 1, "profile summary label missing")
+        self.assertTrue(len(stats_labels) >= 1, "stats summary label missing in detail area")
+
+    def test_stats_summary_omitted_when_field_absent(self):
+        """Stats summary label is not added when the field is missing."""
+        _qgis_core.QgsLayoutItemLabel.reset_mock()
+        available = {
+            "page_sort_key", "page_title", "page_subtitle",
+            "page_date", "page_profile_summary",
+        }
+        self._build_with_fields(available)
+        texts = self._label_texts(None)
+        stats_labels = [t for t in texts if "page_stats_summary" in t]
+        self.assertEqual(len(stats_labels), 0, "stats summary label should not be added")
+
+    def test_profile_summary_omitted_when_field_absent(self):
+        """Profile summary label is not added when the field is missing."""
+        _qgis_core.QgsLayoutItemLabel.reset_mock()
+        available = {
+            "page_sort_key", "page_title", "page_stats_summary",
+            "page_subtitle", "page_date",
+        }
+        self._build_with_fields(available)
+        texts = self._label_texts(None)
+        profile_labels = [t for t in texts if "page_profile_summary" in t]
+        self.assertEqual(len(profile_labels), 0, "profile summary label should not be added")
+
+
 class TestAtlasExportTaskSuccess(unittest.TestCase):
     def test_run_returns_true_on_success(self):
         layer = _make_atlas_layer(feature_count=3)
@@ -875,21 +947,28 @@ class TestLayoutGeometry(unittest.TestCase):
         footer_y = profile_bottom + FOOTER_GAP_MM
         self.assertLessEqual(footer_y + FOOTER_HEIGHT_MM, PAGE_HEIGHT_MM - MARGIN_MM)
 
-    def test_profile_chart_and_summary_fit_within_profile_area(self):
+    def test_profile_chart_and_summaries_fit_within_profile_area(self):
         from qfit.atlas_export_task import (
             PROFILE_Y, PROFILE_H, PROFILE_CHART_Y, PROFILE_CHART_H,
             PROFILE_SUMMARY_Y, PROFILE_SUMMARY_H, PROFILE_SUMMARY_GAP,
+            STATS_SUMMARY_Y, STATS_SUMMARY_H, STATS_SUMMARY_GAP,
         )
 
         # Chart starts at profile area top
         self.assertAlmostEqual(PROFILE_CHART_Y, PROFILE_Y)
-        # Summary is below chart with gap
+        # Profile summary is below chart with gap
         self.assertAlmostEqual(
             PROFILE_SUMMARY_Y,
             PROFILE_CHART_Y + PROFILE_CHART_H + PROFILE_SUMMARY_GAP,
         )
+        # Stats summary is below profile summary with gap
+        self.assertAlmostEqual(
+            STATS_SUMMARY_Y,
+            PROFILE_SUMMARY_Y + PROFILE_SUMMARY_H + STATS_SUMMARY_GAP,
+        )
         # Everything fits within profile area
-        total = PROFILE_CHART_H + PROFILE_SUMMARY_GAP + PROFILE_SUMMARY_H
+        total = (PROFILE_CHART_H + PROFILE_SUMMARY_GAP + PROFILE_SUMMARY_H
+                 + STATS_SUMMARY_GAP + STATS_SUMMARY_H)
         self.assertAlmostEqual(total, PROFILE_H)
 
     def test_profile_chart_has_positive_height(self):

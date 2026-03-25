@@ -16,7 +16,8 @@ Page template (A4 portrait, 210 × 297 mm):
     │  │    (atlas-controlled extent)     │  │
     │  │                                  │  │
     │  └──────────────────────────────────┘  │
-    │  [footer / profile area reserved]      │
+    │  [elevation profile chart]              │
+    │  [profile summary · stats summary]     │
     │  Page N / Total                        │
     └────────────────────────────────────────┘
 """
@@ -71,12 +72,16 @@ PROFILE_W = MAP_W
 PROFILE_H = (PAGE_HEIGHT_MM - MARGIN_MM - FOOTER_HEIGHT_MM
              - FOOTER_GAP_MM - PROFILE_Y)
 
-# Sub-layout within profile area: chart on top, summary text below
-PROFILE_SUMMARY_H = 10.0   # height of the text summary label
-PROFILE_SUMMARY_GAP = 2.0  # gap between chart and summary text
-PROFILE_CHART_H = PROFILE_H - PROFILE_SUMMARY_H - PROFILE_SUMMARY_GAP
+# Sub-layout within profile area: chart on top, two summary lines below
+PROFILE_SUMMARY_H = 5.0    # height of the profile summary label
+STATS_SUMMARY_H = 5.0      # height of the stats summary label
+PROFILE_SUMMARY_GAP = 2.0  # gap between chart and first summary line
+STATS_SUMMARY_GAP = 1.0    # gap between the two summary lines
+PROFILE_CHART_H = (PROFILE_H - PROFILE_SUMMARY_H - STATS_SUMMARY_H
+                   - PROFILE_SUMMARY_GAP - STATS_SUMMARY_GAP)
 PROFILE_CHART_Y = PROFILE_Y
 PROFILE_SUMMARY_Y = PROFILE_CHART_Y + PROFILE_CHART_H + PROFILE_SUMMARY_GAP
+STATS_SUMMARY_Y = PROFILE_SUMMARY_Y + PROFILE_SUMMARY_H + STATS_SUMMARY_GAP
 
 # Identifier for the profile picture item (used to find it during export)
 _PROFILE_PICTURE_ID = "qfit_profile_chart"
@@ -257,7 +262,7 @@ def build_atlas_layout(
     profile_pic.setResizeMode(QgsLayoutItemPicture.Zoom)
     layout.addLayoutItem(profile_pic)
 
-    # Text summary below the chart
+    # Text summaries below the chart: profile summary then stats summary
     profile_field = "page_profile_summary" if fields.indexOf("page_profile_summary") >= 0 else ""
     if profile_field:
         _add_label(
@@ -267,8 +272,21 @@ def build_atlas_layout(
             y=PROFILE_SUMMARY_Y,
             w=PROFILE_W,
             h=PROFILE_SUMMARY_H,
-            font_size=8.0,
-            color=QColor(80, 80, 80),
+            font_size=7.0,
+            color=QColor(100, 100, 100),
+        )
+
+    stats_field = "page_stats_summary" if fields.indexOf("page_stats_summary") >= 0 else ""
+    if stats_field:
+        _add_label(
+            layout,
+            f'[% coalesce("{stats_field}", \'\') %]',
+            x=PROFILE_X,
+            y=STATS_SUMMARY_Y,
+            w=PROFILE_W,
+            h=STATS_SUMMARY_H,
+            font_size=7.0,
+            color=QColor(100, 100, 100),
         )
 
     # -- Footer: page number -----------------------------------------------
