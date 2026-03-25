@@ -60,14 +60,14 @@ HEADER_GAP_MM = 3.0    # gap between header and map
 PROFILE_GAP_MM = 3.0   # gap between map and profile area
 FOOTER_GAP_MM = 3.0    # gap between profile area and footer
 
-MAP_X = MARGIN_MM
 MAP_Y = MARGIN_MM + HEADER_HEIGHT_MM + HEADER_GAP_MM
-MAP_W = PAGE_WIDTH_MM - 2 * MARGIN_MM                   # 190 mm
+MAP_W = (PAGE_WIDTH_MM - 2 * MARGIN_MM) * 0.90          # 10% smaller than full usable width
 MAP_H = MAP_W                                            # square
+MAP_X = (PAGE_WIDTH_MM - MAP_W) / 2.0                    # centered horizontally
 BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO = MAP_W / MAP_H   # 1.0
 
 # Profile area: reserved below the map for route profile content
-PROFILE_X = MARGIN_MM
+PROFILE_X = MAP_X
 PROFILE_Y = MAP_Y + MAP_H + PROFILE_GAP_MM
 PROFILE_W = MAP_W
 PROFILE_H = (PAGE_HEIGHT_MM - MARGIN_MM - FOOTER_HEIGHT_MM
