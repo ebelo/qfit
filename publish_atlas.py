@@ -17,6 +17,7 @@ MIN_ALLOWED_ATLAS_TARGET_ASPECT_RATIO = 0.1
 WEB_MERCATOR_EPSG = "EPSG:3857"
 WEB_MERCATOR_HALF_WORLD_M = 20037508.342789244
 WEB_MERCATOR_MAX_LAT = 85.05112878
+_LABEL_MOVING_TIME = "Moving time"
 
 
 @dataclass(frozen=True)
@@ -363,7 +364,7 @@ def build_atlas_cover_highlights(records: Iterable[dict]) -> list[AtlasCoverHigh
     add_highlight("activity_count", "Activities", f"{summary.activity_count} {activity_label}")
     add_highlight("date_range", "Date range", summary.date_range_label)
     add_highlight("total_distance", "Distance", summary.total_distance_label)
-    add_highlight("total_duration", "Moving time", summary.total_duration_label)
+    add_highlight("total_duration", _LABEL_MOVING_TIME, summary.total_duration_label)
     add_highlight("total_elevation_gain", "Climbing", summary.total_elevation_gain_label)
     add_highlight("activity_types", "Activity types", summary.activity_types_label)
     return highlights
@@ -388,7 +389,7 @@ def build_atlas_page_detail_items(
     for plan in resolved_plans:
         page_items: list[tuple[str, str, str | None]] = [
             ("distance", "Distance", plan.page_distance_label),
-            ("moving_time", "Moving time", plan.page_duration_label),
+            ("moving_time", _LABEL_MOVING_TIME, plan.page_duration_label),
             ("average_speed", "Average speed", plan.page_average_speed_label),
             ("average_pace", "Average pace", plan.page_average_pace_label),
             ("elevation_gain", "Climbing", plan.page_elevation_gain_label),
@@ -594,7 +595,7 @@ def build_atlas_cover_highlights_from_summary(summary: AtlasDocumentSummary) -> 
     add_highlight("activity_count", "Activities", f"{summary.activity_count} {activity_label}")
     add_highlight("date_range", "Date range", summary.date_range_label)
     add_highlight("total_distance", "Distance", summary.total_distance_label)
-    add_highlight("total_duration", "Moving time", summary.total_duration_label)
+    add_highlight("total_duration", _LABEL_MOVING_TIME, summary.total_duration_label)
     add_highlight("total_elevation_gain", "Climbing", summary.total_elevation_gain_label)
     add_highlight("activity_types", "Activity types", summary.activity_types_label)
     return highlights
