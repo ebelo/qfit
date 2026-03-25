@@ -17,7 +17,8 @@ Page template (A4 portrait, 210 × 297 mm):
     │  │                                  │  │
     │  └──────────────────────────────────┘  │
     │  [elevation profile chart]              │
-    │  [profile summary · stats summary]     │
+    │  [profile summary]                     │
+    │  [detail block: per-page metric items] │
     │  Page N / Total                        │
     └────────────────────────────────────────┘
 """
@@ -72,16 +73,16 @@ PROFILE_W = MAP_W
 PROFILE_H = (PAGE_HEIGHT_MM - MARGIN_MM - FOOTER_HEIGHT_MM
              - FOOTER_GAP_MM - PROFILE_Y)
 
-# Sub-layout within profile area: chart on top, two summary lines below
-PROFILE_SUMMARY_H = 5.0    # height of the profile summary label
-STATS_SUMMARY_H = 5.0      # height of the stats summary label
-PROFILE_SUMMARY_GAP = 2.0  # gap between chart and first summary line
-STATS_SUMMARY_GAP = 1.0    # gap between the two summary lines
-PROFILE_CHART_H = (PROFILE_H - PROFILE_SUMMARY_H - STATS_SUMMARY_H
-                   - PROFILE_SUMMARY_GAP - STATS_SUMMARY_GAP)
+# Sub-layout within profile area: chart on top, profile summary, detail block
+PROFILE_SUMMARY_H = 5.0     # height of the profile summary label
+DETAIL_BLOCK_H = 12.0       # height of the per-page detail item block
+PROFILE_SUMMARY_GAP = 2.0   # gap between chart and profile summary line
+DETAIL_BLOCK_GAP = 1.0      # gap between profile summary and detail block
+PROFILE_CHART_H = (PROFILE_H - PROFILE_SUMMARY_H - DETAIL_BLOCK_H
+                   - PROFILE_SUMMARY_GAP - DETAIL_BLOCK_GAP)
 PROFILE_CHART_Y = PROFILE_Y
 PROFILE_SUMMARY_Y = PROFILE_CHART_Y + PROFILE_CHART_H + PROFILE_SUMMARY_GAP
-STATS_SUMMARY_Y = PROFILE_SUMMARY_Y + PROFILE_SUMMARY_H + STATS_SUMMARY_GAP
+DETAIL_BLOCK_Y = PROFILE_SUMMARY_Y + PROFILE_SUMMARY_H + DETAIL_BLOCK_GAP
 
 # Identifier for the profile picture item (used to find it during export)
 _PROFILE_PICTURE_ID = "qfit_profile_chart"
@@ -103,6 +104,7 @@ def _add_label(
     bold: bool = False,
     align_right: bool = False,
     color: QColor | None = None,
+    v_align_top: bool = False,
 ) -> QgsLayoutItemLabel:
     """Add a text label item to *layout* at mm coordinates."""
     label = QgsLayoutItemLabel(layout)
@@ -115,7 +117,7 @@ def _add_label(
         label.setFontColor(color)
     h_align = Qt.AlignRight if align_right else Qt.AlignLeft
     label.setHAlign(h_align)
-    label.setVAlign(Qt.AlignVCenter)
+    label.setVAlign(Qt.AlignTop if v_align_top else Qt.AlignVCenter)
     label.attemptMove(QgsLayoutPoint(x, y, QgsUnitTypes.LayoutMillimeters))
     label.attemptResize(QgsLayoutSize(w, h, QgsUnitTypes.LayoutMillimeters))
     layout.addLayoutItem(label)
@@ -276,17 +278,31 @@ def build_atlas_layout(
             color=QColor(100, 100, 100),
         )
 
-    stats_field = "page_stats_summary" if fields.indexOf("page_stats_summary") >= 0 else ""
-    if stats_field:
+    # Detail block: per-page detail items (label: value lines) from individual fields
+    _DETAIL_ITEM_FIELDS = [
+        ("page_distance_label", "Distance"),
+        ("page_duration_label", "Moving time"),
+        ("page_average_speed_label", "Speed"),
+        ("page_average_pace_label", "Pace"),
+        ("page_elevation_gain_label", "Climbing"),
+    ]
+    detail_parts = []
+    for field_name, label in _DETAIL_ITEM_FIELDS:
+        if fields.indexOf(field_name) >= 0:
+            detail_parts.append(f"'{label}: ' || \"{field_name}\"")
+    if detail_parts:
+        inner = ", ".join(detail_parts)
+        detail_expr = f"[% concat_ws(char(10), {inner}) %]"
         _add_label(
             layout,
-            f'[% coalesce("{stats_field}", \'\') %]',
+            detail_expr,
             x=PROFILE_X,
-            y=STATS_SUMMARY_Y,
+            y=DETAIL_BLOCK_Y,
             w=PROFILE_W,
-            h=STATS_SUMMARY_H,
+            h=DETAIL_BLOCK_H,
             font_size=7.0,
             color=QColor(100, 100, 100),
+            v_align_top=True,
         )
 
     # -- Footer: page number -----------------------------------------------

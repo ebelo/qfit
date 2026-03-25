@@ -225,21 +225,23 @@ class TestBuildAtlasLayoutSummaryLabels(unittest.TestCase):
         return texts
 
     def test_both_summaries_rendered_when_fields_present(self):
-        """Both profile and stats summaries appear when fields exist."""
+        """Both profile summary and detail block appear when fields exist."""
         _qgis_core.QgsLayoutItemLabel.reset_mock()
         available = {
             "page_sort_key", "page_title", "page_stats_summary",
             "page_subtitle", "page_date", "page_profile_summary",
+            "page_distance_label", "page_duration_label",
+            "page_elevation_gain_label",
         }
         self._build_with_fields(available)
         texts = self._label_texts(None)
         profile_labels = [t for t in texts if "page_profile_summary" in t]
-        stats_labels = [t for t in texts if "page_stats_summary" in t]
+        detail_labels = [t for t in texts if "page_distance_label" in t]
         self.assertTrue(len(profile_labels) >= 1, "profile summary label missing")
-        self.assertTrue(len(stats_labels) >= 1, "stats summary label missing in detail area")
+        self.assertTrue(len(detail_labels) >= 1, "detail block label missing")
 
-    def test_stats_summary_omitted_when_field_absent(self):
-        """Stats summary label is not added when the field is missing."""
+    def test_detail_block_omitted_when_fields_absent(self):
+        """Detail block label is not added when no detail fields are present."""
         _qgis_core.QgsLayoutItemLabel.reset_mock()
         available = {
             "page_sort_key", "page_title", "page_subtitle",
@@ -247,8 +249,24 @@ class TestBuildAtlasLayoutSummaryLabels(unittest.TestCase):
         }
         self._build_with_fields(available)
         texts = self._label_texts(None)
-        stats_labels = [t for t in texts if "page_stats_summary" in t]
-        self.assertEqual(len(stats_labels), 0, "stats summary label should not be added")
+        detail_labels = [t for t in texts if "page_distance_label" in t]
+        self.assertEqual(len(detail_labels), 0, "detail block should not be added")
+
+    def test_detail_block_includes_available_fields_only(self):
+        """Detail block expression only references fields present on the layer."""
+        _qgis_core.QgsLayoutItemLabel.reset_mock()
+        available = {
+            "page_sort_key", "page_title", "page_subtitle", "page_date",
+            "page_distance_label", "page_elevation_gain_label",
+        }
+        self._build_with_fields(available)
+        texts = self._label_texts(None)
+        detail_labels = [t for t in texts if "page_distance_label" in t]
+        self.assertEqual(len(detail_labels), 1)
+        expr_text = detail_labels[0]
+        self.assertIn("page_elevation_gain_label", expr_text)
+        self.assertNotIn("page_duration_label", expr_text)
+        self.assertNotIn("page_average_speed_label", expr_text)
 
     def test_profile_summary_omitted_when_field_absent(self):
         """Profile summary label is not added when the field is missing."""
@@ -951,7 +969,7 @@ class TestLayoutGeometry(unittest.TestCase):
         from qfit.atlas_export_task import (
             PROFILE_Y, PROFILE_H, PROFILE_CHART_Y, PROFILE_CHART_H,
             PROFILE_SUMMARY_Y, PROFILE_SUMMARY_H, PROFILE_SUMMARY_GAP,
-            STATS_SUMMARY_Y, STATS_SUMMARY_H, STATS_SUMMARY_GAP,
+            DETAIL_BLOCK_Y, DETAIL_BLOCK_H, DETAIL_BLOCK_GAP,
         )
 
         # Chart starts at profile area top
@@ -961,14 +979,14 @@ class TestLayoutGeometry(unittest.TestCase):
             PROFILE_SUMMARY_Y,
             PROFILE_CHART_Y + PROFILE_CHART_H + PROFILE_SUMMARY_GAP,
         )
-        # Stats summary is below profile summary with gap
+        # Detail block is below profile summary with gap
         self.assertAlmostEqual(
-            STATS_SUMMARY_Y,
-            PROFILE_SUMMARY_Y + PROFILE_SUMMARY_H + STATS_SUMMARY_GAP,
+            DETAIL_BLOCK_Y,
+            PROFILE_SUMMARY_Y + PROFILE_SUMMARY_H + DETAIL_BLOCK_GAP,
         )
         # Everything fits within profile area
         total = (PROFILE_CHART_H + PROFILE_SUMMARY_GAP + PROFILE_SUMMARY_H
-                 + STATS_SUMMARY_GAP + STATS_SUMMARY_H)
+                 + DETAIL_BLOCK_GAP + DETAIL_BLOCK_H)
         self.assertAlmostEqual(total, PROFILE_H)
 
     def test_profile_chart_has_positive_height(self):
