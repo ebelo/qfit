@@ -14,6 +14,7 @@ try:
     from qfit.layer_manager import LayerManager
     from qfit.atlas_export_task import BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
     from qfit.qfit_dockwidget import QfitDockWidget
+    from qfit.visual_apply import VisualApplyService
 
     QGIS_AVAILABLE = True
     QGIS_IMPORT_ERROR = None
@@ -138,8 +139,8 @@ class QgisSmokeTests(unittest.TestCase):
         self.assertIn("tilePixelRatio=2", background.source())
 
     def test_apply_filters_path_does_not_update_background_layer(self):
-        self.assertFalse(QfitDockWidget._should_update_background_layer(True))
-        self.assertTrue(QfitDockWidget._should_update_background_layer(False))
+        self.assertFalse(VisualApplyService.should_update_background(True))
+        self.assertTrue(VisualApplyService.should_update_background(False))
 
     def test_headless_qgis_smoke_covers_write_load_crs_temporal_and_background_order(self):
         with tempfile.TemporaryDirectory() as temp_dir:
