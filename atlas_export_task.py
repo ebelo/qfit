@@ -362,40 +362,109 @@ def build_atlas_layout(
     return layout
 
 
+def _build_cover_summary_from_current_atlas_features(atlas_layer) -> dict[str, str]:
+    """Compute cover-summary strings from the current atlas feature subset.
+
+    This intentionally ignores stale per-row `document_*` fields and instead
+    aggregates over the currently exported atlas-layer features, so cover stats
+    reflect the actual PDF contents after filtering/subsetting.
+    """
+    from .publish_atlas import (  # noqa: PLC0415
+        build_date_range_label,
+        format_distance_label,
+        format_duration_label,
+        format_elevation_label,
+    )
+
+    features = list(atlas_layer.getFeatures())
+    if not features:
+        return {}
+
+    fields = atlas_layer.fields()
+
+    def _idx(name: str) -> int:
+        return fields.indexOf(name)
+
+    def _safe_attr(feature, name: str):
+        idx = _idx(name)
+        return feature.attribute(idx) if idx >= 0 else None
+
+    def _safe_float(value):
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            return None
+
+    def _safe_int(value):
+        try:
+            return int(value)
+        except (TypeError, ValueError):
+            return None
+
+    activity_count = len(features)
+    page_dates = [str(v) for v in (_safe_attr(f, "page_date") for f in features) if v]
+    total_distance_m = sum(v for v in (_safe_float(_safe_attr(f, "distance_m")) for f in features) if v is not None)
+    total_moving_time_s = sum(v for v in (_safe_int(_safe_attr(f, "moving_time_s")) for f in features) if v is not None)
+    total_elevation_gain_m = sum(
+        v for v in (_safe_float(_safe_attr(f, "total_elevation_gain_m")) for f in features) if v is not None
+    )
+
+    ordered_activity_types: list[str] = []
+    for feature in features:
+        activity_type = (_safe_attr(feature, "activity_type") or "").strip()
+        if not activity_type:
+            continue
+        if any(existing.casefold() == activity_type.casefold() for existing in ordered_activity_types):
+            continue
+        ordered_activity_types.append(activity_type)
+
+    activity_label = "activity" if activity_count == 1 else "activities"
+    date_range_label = build_date_range_label(min(page_dates), max(page_dates)) if page_dates else None
+    total_distance_label = format_distance_label(total_distance_m) if total_distance_m > 0 else None
+    total_duration_label = format_duration_label(total_moving_time_s) if total_moving_time_s > 0 else None
+    total_elevation_gain_label = format_elevation_label(total_elevation_gain_m) if total_elevation_gain_m > 0 else None
+    activity_types_label = ", ".join(ordered_activity_types) if ordered_activity_types else None
+
+    cover_parts = [f"{activity_count} {activity_label}"]
+    for part in [date_range_label, total_distance_label, total_duration_label, total_elevation_gain_label, activity_types_label]:
+        if part:
+            cover_parts.append(part)
+
+    return {
+        "document_cover_summary": " · ".join(cover_parts) if cover_parts else "",
+        "document_activity_count": str(activity_count),
+        "document_date_range_label": date_range_label or "",
+        "document_total_distance_label": total_distance_label or "",
+        "document_total_duration_label": total_duration_label or "",
+        "document_total_elevation_gain_label": total_elevation_gain_label or "",
+        "document_activity_types_label": activity_types_label or "",
+    }
+
+
 def build_cover_layout(
     atlas_layer,
     project=None,
 ) -> QgsPrintLayout | None:
-    """Build a single-page cover layout from document-level fields on *atlas_layer*.
+    """Build a single-page cover layout from the current atlas-layer subset.
 
-    Returns ``None`` if the atlas layer has no features or the required
-    document-level fields are absent (cover is simply skipped in that case).
+    Returns ``None`` if the atlas layer has no features.
     """
     if atlas_layer is None or atlas_layer.featureCount() == 0:
         return None
 
-    # Read the first feature — all features carry identical document-level fields.
-    feat = next(iter(atlas_layer.getFeatures()), None)
-    if feat is None:
+    # Build cover stats from the currently exported atlas features so the cover
+    # reflects the actual PDF subset, not stale precomputed document_* values.
+    cover_data = _build_cover_summary_from_current_atlas_features(atlas_layer)
+    if not cover_data:
         return None
 
-    fields = atlas_layer.fields()
-
-    def _get(name: str, default: str = "") -> str:
-        idx = fields.indexOf(name)
-        if idx < 0:
-            return default
-        val = feat.attribute(idx)
-        return str(val) if val is not None else default
-
-    cover_summary = _get("document_cover_summary")
-    activity_count = _get("document_activity_count")
-    date_range_label = _get("document_date_range_label")
-    total_distance_label = _get("document_total_distance_label")
-    total_duration_label = _get("document_total_duration_label")
-    total_elevation_gain_label = _get("document_total_elevation_gain_label")
-    activity_types_label = _get("document_activity_types_label")
-
+    cover_summary = cover_data.get("document_cover_summary", "")
+    activity_count = cover_data.get("document_activity_count", "")
+    date_range_label = cover_data.get("document_date_range_label", "")
+    total_distance_label = cover_data.get("document_total_distance_label", "")
+    total_duration_label = cover_data.get("document_total_duration_label", "")
+    total_elevation_gain_label = cover_data.get("document_total_elevation_gain_label", "")
+    activity_types_label = cover_data.get("document_activity_types_label", "")
     proj = project or QgsProject.instance()
     layout = QgsPrintLayout(proj)
     layout.initializeDefaults()
