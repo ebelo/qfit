@@ -1,11 +1,37 @@
+"""Tests for BackgroundMapService.
+
+Two test suites are provided:
+
+1. ``*Tests`` classes — require a real QGIS installation; skipped elsewhere.
+2. ``*MockTests`` classes — run against a MagicMock-backed module; skipped
+   when QGIS is present (the suite above already provides coverage).
+   These classes exist primarily to give SonarCloud line coverage in CI
+   environments that lack QGIS.
+"""
+import importlib
+import importlib.util
 import os
+import sys
 import unittest
-from unittest.mock import MagicMock, patch, call
+from unittest.mock import MagicMock, patch
 
 from tests import _path  # noqa: F401
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
+# ---------------------------------------------------------------------------
+# Detect whether a real QGIS installation is present
+# ---------------------------------------------------------------------------
+try:
+    _REAL_QGIS_PRESENT = importlib.util.find_spec("qgis") is not None
+except ValueError:
+    _REAL_QGIS_PRESENT = any(
+        os.path.isdir(os.path.join(p, "qgis")) for p in sys.path if p
+    )
+
+# ---------------------------------------------------------------------------
+# Real-QGIS import (used for skip-guarded tests)
+# ---------------------------------------------------------------------------
 try:
     from qfit.background_map_service import BackgroundMapService
     from qfit.mapbox_config import BACKGROUND_LAYER_PREFIX, TILE_MODE_RASTER, TILE_MODE_VECTOR
@@ -20,11 +46,70 @@ except Exception as exc:  # pragma: no cover
     QGIS_AVAILABLE = False
     QGIS_IMPORT_ERROR = exc
 
-SKIP_MSG = f"QGIS not available: {QGIS_IMPORT_ERROR}" if not QGIS_AVAILABLE else ""
+SKIP_REAL = f"QGIS not available: {QGIS_IMPORT_ERROR}" if not QGIS_AVAILABLE else ""
 
+# ---------------------------------------------------------------------------
+# Mock-QGIS loader — mirrors the approach in test_layer_style_service.py
+# ---------------------------------------------------------------------------
+
+_mock_bms_cls = None
+_mock_bms_mod = None
+_qstub = None
+
+
+def _load_service_with_mock_qgis():
+    """Import BackgroundMapService with MagicMock QGIS stubs.
+
+    Returns ``(BackgroundMapService_class, module, qstub)`` or
+    ``(None, None, None)`` on failure.
+    """
+    qstub = MagicMock()
+
+    # QgsRasterLayer needs to be a real type so isinstance() works.
+    _QgsRasterLayer = type("QgsRasterLayer", (MagicMock,), {})
+    qstub.QgsRasterLayer = _QgsRasterLayer
+
+    _QGIS_MODS = ["qgis", "qgis.core", "qgis.PyQt", "qgis.PyQt.QtCore"]
+
+    saved_qgis = {m: sys.modules.get(m) for m in _QGIS_MODS}
+    saved_bms = sys.modules.get("qfit.background_map_service")
+
+    for mod_name in _QGIS_MODS:
+        sys.modules[mod_name] = qstub
+    sys.modules.pop("qfit.background_map_service", None)
+
+    try:
+        bms_mod = importlib.import_module("qfit.background_map_service")
+        return bms_mod.BackgroundMapService, bms_mod, qstub
+    except Exception:  # pragma: no cover
+        return None, None, None
+    finally:
+        for mod_name, original in saved_qgis.items():
+            if original is None:
+                sys.modules.pop(mod_name, None)
+            else:
+                sys.modules[mod_name] = original
+        if saved_bms is None:
+            sys.modules.pop("qfit.background_map_service", None)
+        else:
+            sys.modules["qfit.background_map_service"] = saved_bms
+
+
+if not _REAL_QGIS_PRESENT:
+    _mock_bms_cls, _mock_bms_mod, _qstub = _load_service_with_mock_qgis()
+
+SKIP_MOCK = "QGIS is installed — real-QGIS suite provides coverage" if _REAL_QGIS_PRESENT else ""
+SKIP_MOCK_LOAD = (
+    "Could not load BackgroundMapService with mock QGIS"
+    if (_mock_bms_cls is None and not _REAL_QGIS_PRESENT)
+    else ""
+)
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
 
 def _make_project_mock(layers=None):
-    """Return a mock QgsProject.instance() with the given layers dict."""
     mock_project = MagicMock()
     mock_project.mapLayers.return_value = layers or {}
     mock_root = MagicMock()
@@ -33,21 +118,20 @@ def _make_project_mock(layers=None):
     return mock_project
 
 
-def _make_layer_node(layer_name, layer_class=None):
-    """Return a (node, layer) pair whose node.layer() returns the layer mock."""
-    layer = MagicMock()
+def _make_layer_node(layer_name, layer_cls=None):
+    layer = MagicMock() if layer_cls is None else layer_cls()
     layer.name.return_value = layer_name
-    if layer_class is not None:
-        layer.__class__ = layer_class
     node = MagicMock()
     node.layer.return_value = layer
     return node, layer
 
 
-@unittest.skipUnless(QGIS_AVAILABLE, SKIP_MSG)
-class EnsureBackgroundLayerDisabledTests(unittest.TestCase):
-    """When enabled=False the service removes existing background layers."""
+# ===========================================================================
+# Suite 1 — real-QGIS (skipped when QGIS unavailable)
+# ===========================================================================
 
+@unittest.skipUnless(QGIS_AVAILABLE, SKIP_REAL)
+class EnsureBackgroundLayerDisabledTests(unittest.TestCase):
     def test_returns_none_when_disabled(self):
         service = BackgroundMapService()
         mock_project = _make_project_mock()
@@ -64,7 +148,6 @@ class EnsureBackgroundLayerDisabledTests(unittest.TestCase):
         bg_layer = MagicMock()
         bg_layer.name.return_value = f"{BACKGROUND_LAYER_PREFIX} — Outdoor"
         bg_layer.id.return_value = "bg-id"
-
         other_layer = MagicMock()
         other_layer.name.return_value = "qfit activities"
 
@@ -74,24 +157,18 @@ class EnsureBackgroundLayerDisabledTests(unittest.TestCase):
             service.ensure_background_layer(
                 enabled=False, preset_name="Outdoor", access_token="tok"
             )
-
         mock_project.removeMapLayer.assert_called_once_with("bg-id")
 
 
-@unittest.skipUnless(QGIS_AVAILABLE, SKIP_MSG)
+@unittest.skipUnless(QGIS_AVAILABLE, SKIP_REAL)
 class MoveBackgroundLayersToBottomTests(unittest.TestCase):
-    """Background layer nodes must be placed after all other nodes."""
-
     def test_background_node_moved_to_end(self):
         service = BackgroundMapService()
-
         bg_node, _ = _make_layer_node(f"{BACKGROUND_LAYER_PREFIX} — Outdoor")
         other_node, _ = _make_layer_node("qfit activities")
 
         mock_root = MagicMock()
-        # Start with background first — should be reordered.
         mock_root.children.return_value = [bg_node, other_node]
-
         mock_project = _make_project_mock()
         mock_project.layerTreeRoot.return_value = mock_root
 
@@ -103,14 +180,11 @@ class MoveBackgroundLayersToBottomTests(unittest.TestCase):
 
     def test_no_reorder_when_already_at_bottom(self):
         service = BackgroundMapService()
-
         other_node, _ = _make_layer_node("qfit activities")
         bg_node, _ = _make_layer_node(f"{BACKGROUND_LAYER_PREFIX} — Outdoor")
 
         mock_root = MagicMock()
-        # Background is already last — desired == current, no reorder expected.
         mock_root.children.return_value = [other_node, bg_node]
-
         mock_project = _make_project_mock()
         mock_project.layerTreeRoot.return_value = mock_root
 
@@ -122,10 +196,8 @@ class MoveBackgroundLayersToBottomTests(unittest.TestCase):
 
     def test_empty_tree_does_not_raise(self):
         service = BackgroundMapService()
-
         mock_root = MagicMock()
         mock_root.children.return_value = []
-
         mock_project = _make_project_mock()
         mock_project.layerTreeRoot.return_value = mock_root
 
@@ -136,68 +208,53 @@ class MoveBackgroundLayersToBottomTests(unittest.TestCase):
         mock_root.reorderChildren.assert_not_called()
 
 
-@unittest.skipUnless(QGIS_AVAILABLE, SKIP_MSG)
+@unittest.skipUnless(QGIS_AVAILABLE, SKIP_REAL)
 class SnapExtentToBackgroundTileZoomTests(unittest.TestCase):
-    """snap_extent_to_background_tile_zoom delegates to pure math only when conditions are met."""
-
     def _make_extent(self, xmin, ymin, xmax, ymax):
-        extent = MagicMock()
-        extent.isEmpty.return_value = False
-        extent.xMinimum.return_value = float(xmin)
-        extent.yMinimum.return_value = float(ymin)
-        extent.xMaximum.return_value = float(xmax)
-        extent.yMaximum.return_value = float(ymax)
-        return extent
+        e = MagicMock()
+        e.isEmpty.return_value = False
+        e.xMinimum.return_value = float(xmin)
+        e.yMinimum.return_value = float(ymin)
+        e.xMaximum.return_value = float(xmax)
+        e.yMaximum.return_value = float(ymax)
+        return e
 
-    def test_returns_extent_unchanged_when_empty(self):
+    def test_returns_none_unchanged(self):
+        service = BackgroundMapService()
+        with patch("qfit.background_map_service.QgsProject"):
+            result = service.snap_extent_to_background_tile_zoom(None, MagicMock())
+        self.assertIsNone(result)
+
+    def test_returns_empty_extent_unchanged(self):
         service = BackgroundMapService()
         extent = MagicMock()
         extent.isEmpty.return_value = True
-        canvas = MagicMock()
-
         with patch("qfit.background_map_service.QgsProject"):
-            result = service.snap_extent_to_background_tile_zoom(extent, canvas)
-
+            result = service.snap_extent_to_background_tile_zoom(extent, MagicMock())
         self.assertIs(result, extent)
 
-    def test_returns_extent_unchanged_when_none(self):
-        service = BackgroundMapService()
-        canvas = MagicMock()
-
-        with patch("qfit.background_map_service.QgsProject"):
-            result = service.snap_extent_to_background_tile_zoom(None, canvas)
-
-        self.assertIsNone(result)
-
-    def test_returns_extent_unchanged_when_crs_not_web_mercator(self):
+    def test_returns_unchanged_when_not_web_mercator(self):
         service = BackgroundMapService()
         extent = self._make_extent(0, 0, 1000, 1000)
-        canvas = MagicMock()
-
         mock_project = _make_project_mock()
-        mock_crs = MagicMock()
-        mock_crs.authid.return_value = "EPSG:4326"
-        mock_project.crs.return_value = mock_crs
+        mock_project.crs.return_value.authid.return_value = "EPSG:4326"
 
         with patch("qfit.background_map_service.QgsProject") as qp:
             qp.instance.return_value = mock_project
-            result = service.snap_extent_to_background_tile_zoom(extent, canvas)
+            result = service.snap_extent_to_background_tile_zoom(extent, MagicMock())
 
         self.assertIs(result, extent)
 
-    def test_returns_extent_unchanged_when_no_raster_background(self):
+    def test_returns_unchanged_when_no_raster_background(self):
         service = BackgroundMapService()
         extent = self._make_extent(0, 0, 1_000_000, 1_000_000)
+        mock_project = _make_project_mock()
+        mock_project.crs.return_value.authid.return_value = "EPSG:3857"
+        mock_project.mapLayers.return_value = {}
+
         canvas = MagicMock()
         canvas.width.return_value = 1024
         canvas.height.return_value = 768
-
-        mock_project = _make_project_mock()
-        mock_crs = MagicMock()
-        mock_crs.authid.return_value = "EPSG:3857"
-        mock_project.crs.return_value = mock_crs
-        # No raster background layers
-        mock_project.mapLayers.return_value = {}
 
         with patch("qfit.background_map_service.QgsProject") as qp:
             qp.instance.return_value = mock_project
@@ -206,73 +263,385 @@ class SnapExtentToBackgroundTileZoomTests(unittest.TestCase):
         self.assertIs(result, extent)
 
     def test_snaps_extent_when_raster_background_present(self):
-        """When a raster background exists in EPSG:3857, extent is snapped."""
         try:
             from qgis.core import QgsRasterLayer  # noqa: PLC0415
         except ImportError:  # pragma: no cover
             self.skipTest("QgsRasterLayer not importable")
 
         service = BackgroundMapService()
-
-        # Use a realistic Web Mercator bounding box (roughly Switzerland)
         extent = self._make_extent(700_000, 5_700_000, 1_100_000, 5_980_000)
         canvas = MagicMock()
         canvas.width.return_value = 1024
         canvas.height.return_value = 768
 
-        mock_crs = MagicMock()
-        mock_crs.authid.return_value = "EPSG:3857"
-
         raster_layer = MagicMock(spec=QgsRasterLayer)
         raster_layer.name.return_value = f"{BACKGROUND_LAYER_PREFIX} — Outdoor"
 
         mock_project = _make_project_mock({"bg-id": raster_layer})
-        mock_project.crs.return_value = mock_crs
+        mock_project.crs.return_value.authid.return_value = "EPSG:3857"
 
         with patch("qfit.background_map_service.QgsProject") as qp, \
              patch("qfit.background_map_service.QgsRectangle") as mock_rect:
             qp.instance.return_value = mock_project
             mock_rect.return_value = MagicMock()
-            result = service.snap_extent_to_background_tile_zoom(extent, canvas)
+            service.snap_extent_to_background_tile_zoom(extent, canvas)
 
-        # Snapping was attempted: QgsRectangle was called with snapped coords.
         mock_rect.assert_called_once()
-        args = mock_rect.call_args[0]
-        self.assertEqual(len(args), 4)
+        self.assertEqual(len(mock_rect.call_args[0]), 4)
 
 
-@unittest.skipUnless(QGIS_AVAILABLE, SKIP_MSG)
+@unittest.skipUnless(QGIS_AVAILABLE, SKIP_REAL)
 class RemoveBackgroundLayersTests(unittest.TestCase):
-    """_remove_background_layers removes only background-prefixed layers."""
-
     def test_removes_background_layers_only(self):
         service = BackgroundMapService()
-
         bg_layer = MagicMock()
         bg_layer.name.return_value = f"{BACKGROUND_LAYER_PREFIX} — Outdoor"
         bg_layer.id.return_value = "bg-1"
-
         other_layer = MagicMock()
         other_layer.name.return_value = "qfit activities"
         other_layer.id.return_value = "act-1"
 
-        mock_project = _make_project_mock({"bg-1": bg_layer, "act-1": other_layer})
-
         with patch("qfit.background_map_service.QgsProject") as qp:
-            qp.instance.return_value = mock_project
+            qp.instance.return_value = _make_project_mock({"bg-1": bg_layer, "act-1": other_layer})
             service._remove_background_layers()
 
-        mock_project.removeMapLayer.assert_called_once_with("bg-1")
+        qp.instance.return_value.removeMapLayer.assert_called_once_with("bg-1")
 
     def test_no_removal_when_no_background_layers(self):
         service = BackgroundMapService()
-
         layer = MagicMock()
         layer.name.return_value = "qfit activities"
-        mock_project = _make_project_mock({"act-1": layer})
 
         with patch("qfit.background_map_service.QgsProject") as qp:
-            qp.instance.return_value = mock_project
+            qp.instance.return_value = _make_project_mock({"act-1": layer})
             service._remove_background_layers()
 
-        mock_project.removeMapLayer.assert_not_called()
+        qp.instance.return_value.removeMapLayer.assert_not_called()
+
+
+# ===========================================================================
+# Suite 2 — mock-QGIS (skipped when QGIS is installed)
+# ===========================================================================
+
+@unittest.skipIf(_REAL_QGIS_PRESENT, SKIP_MOCK)
+@unittest.skipIf(_mock_bms_cls is None, SKIP_MOCK_LOAD)
+class EnsureBackgroundLayerMockTests(unittest.TestCase):
+    """Covers ensure_background_layer paths without a real QGIS session."""
+
+    def setUp(self):
+        self._sys_patch = patch.dict(
+            "sys.modules", {"qgis": _qstub, "qgis.core": _qstub}
+        )
+        self._sys_patch.start()
+        self.service = _mock_bms_cls()
+        self.mock_project = _make_project_mock()
+        _mock_bms_mod.QgsProject.instance.return_value = self.mock_project
+
+    def tearDown(self):
+        self._sys_patch.stop()
+
+    def test_disabled_returns_none_and_removes_layers(self):
+        bg = MagicMock()
+        bg.name.return_value = "qfit background — Outdoor"
+        bg.id.return_value = "bg-1"
+        self.mock_project.mapLayers.return_value = {"bg-1": bg}
+
+        result = self.service.ensure_background_layer(
+            enabled=False, preset_name="Outdoor", access_token="tok"
+        )
+        self.assertIsNone(result)
+        self.mock_project.removeMapLayer.assert_called_once_with("bg-1")
+
+    def test_enabled_raster_creates_and_adds_layer(self):
+        # QgsRasterLayer is a real type (set in _load_service_with_mock_qgis)
+        raster_instance = _qstub.QgsRasterLayer.return_value
+        raster_instance.isValid.return_value = True
+        self.mock_project.mapLayers.return_value = {}
+        self.mock_project.layerTreeRoot.return_value.children.return_value = []
+
+        result = self.service.ensure_background_layer(
+            enabled=True,
+            preset_name="Outdoor",
+            access_token="tok",
+            tile_mode="Raster",
+        )
+
+        self.mock_project.addMapLayer.assert_called_once()
+        self.assertIsNotNone(result)
+
+    def test_enabled_raster_raises_when_invalid(self):
+        raster_instance = _qstub.QgsRasterLayer.return_value
+        raster_instance.isValid.return_value = False
+        self.mock_project.mapLayers.return_value = {}
+
+        with self.assertRaises(RuntimeError):
+            self.service.ensure_background_layer(
+                enabled=True,
+                preset_name="Outdoor",
+                access_token="tok",
+                tile_mode="Raster",
+            )
+
+
+@unittest.skipIf(_REAL_QGIS_PRESENT, SKIP_MOCK)
+@unittest.skipIf(_mock_bms_cls is None, SKIP_MOCK_LOAD)
+class MoveBackgroundLayersMockTests(unittest.TestCase):
+    def setUp(self):
+        self._sys_patch = patch.dict(
+            "sys.modules", {"qgis": _qstub, "qgis.core": _qstub}
+        )
+        self._sys_patch.start()
+        self.service = _mock_bms_cls()
+        self.mock_project = _make_project_mock()
+        _mock_bms_mod.QgsProject.instance.return_value = self.mock_project
+
+    def tearDown(self):
+        self._sys_patch.stop()
+
+    def test_background_moved_to_end(self):
+        bg_node, _ = _make_layer_node("qfit background — Outdoor")
+        other_node, _ = _make_layer_node("qfit activities")
+        mock_root = MagicMock()
+        mock_root.children.return_value = [bg_node, other_node]
+        self.mock_project.layerTreeRoot.return_value = mock_root
+
+        self.service.move_background_layers_to_bottom()
+
+        mock_root.reorderChildren.assert_called_once_with([other_node, bg_node])
+
+    def test_no_reorder_when_already_at_bottom(self):
+        other_node, _ = _make_layer_node("qfit activities")
+        bg_node, _ = _make_layer_node("qfit background — Outdoor")
+        mock_root = MagicMock()
+        mock_root.children.return_value = [other_node, bg_node]
+        self.mock_project.layerTreeRoot.return_value = mock_root
+
+        self.service.move_background_layers_to_bottom()
+
+        mock_root.reorderChildren.assert_not_called()
+
+
+@unittest.skipIf(_REAL_QGIS_PRESENT, SKIP_MOCK)
+@unittest.skipIf(_mock_bms_cls is None, SKIP_MOCK_LOAD)
+class RemoveBackgroundLayersMockTests(unittest.TestCase):
+    def setUp(self):
+        self._sys_patch = patch.dict(
+            "sys.modules", {"qgis": _qstub, "qgis.core": _qstub}
+        )
+        self._sys_patch.start()
+        self.service = _mock_bms_cls()
+        self.mock_project = _make_project_mock()
+        _mock_bms_mod.QgsProject.instance.return_value = self.mock_project
+
+    def tearDown(self):
+        self._sys_patch.stop()
+
+    def test_removes_only_background_layers(self):
+        bg = MagicMock()
+        bg.name.return_value = "qfit background — Outdoor"
+        bg.id.return_value = "bg-1"
+        other = MagicMock()
+        other.name.return_value = "qfit activities"
+        self.mock_project.mapLayers.return_value = {"bg-1": bg, "a": other}
+
+        self.service._remove_background_layers()
+
+        self.mock_project.removeMapLayer.assert_called_once_with("bg-1")
+
+    def test_no_removal_when_none_match(self):
+        layer = MagicMock()
+        layer.name.return_value = "qfit activities"
+        self.mock_project.mapLayers.return_value = {"a": layer}
+
+        self.service._remove_background_layers()
+
+        self.mock_project.removeMapLayer.assert_not_called()
+
+
+@unittest.skipIf(_REAL_QGIS_PRESENT, SKIP_MOCK)
+@unittest.skipIf(_mock_bms_cls is None, SKIP_MOCK_LOAD)
+class SnapExtentMockTests(unittest.TestCase):
+    def setUp(self):
+        self._sys_patch = patch.dict(
+            "sys.modules", {"qgis": _qstub, "qgis.core": _qstub}
+        )
+        self._sys_patch.start()
+        self.service = _mock_bms_cls()
+        self.mock_project = _make_project_mock()
+        _mock_bms_mod.QgsProject.instance.return_value = self.mock_project
+
+    def tearDown(self):
+        self._sys_patch.stop()
+
+    def _make_extent(self, xmin, ymin, xmax, ymax):
+        e = MagicMock()
+        e.isEmpty.return_value = False
+        e.xMinimum.return_value = float(xmin)
+        e.yMinimum.return_value = float(ymin)
+        e.xMaximum.return_value = float(xmax)
+        e.yMaximum.return_value = float(ymax)
+        return e
+
+    def test_returns_none_unchanged(self):
+        result = self.service.snap_extent_to_background_tile_zoom(None, MagicMock())
+        self.assertIsNone(result)
+
+    def test_returns_empty_extent_unchanged(self):
+        extent = MagicMock()
+        extent.isEmpty.return_value = True
+        result = self.service.snap_extent_to_background_tile_zoom(extent, MagicMock())
+        self.assertIs(result, extent)
+
+    def test_returns_unchanged_when_not_web_mercator(self):
+        extent = self._make_extent(0, 0, 1000, 1000)
+        self.mock_project.crs.return_value.authid.return_value = "EPSG:4326"
+        result = self.service.snap_extent_to_background_tile_zoom(extent, MagicMock())
+        self.assertIs(result, extent)
+
+    def test_returns_unchanged_when_no_raster_background(self):
+        extent = self._make_extent(0, 0, 1_000_000, 1_000_000)
+        self.mock_project.crs.return_value.authid.return_value = "EPSG:3857"
+        self.mock_project.mapLayers.return_value = {}
+        canvas = MagicMock()
+        canvas.width.return_value = 1024
+        canvas.height.return_value = 768
+        result = self.service.snap_extent_to_background_tile_zoom(extent, canvas)
+        self.assertIs(result, extent)
+
+    def test_snaps_when_raster_background_present(self):
+        extent = self._make_extent(700_000, 5_700_000, 1_100_000, 5_980_000)
+        self.mock_project.crs.return_value.authid.return_value = "EPSG:3857"
+
+        # Create a raster layer as an instance of the stub QgsRasterLayer
+        raster_layer = _qstub.QgsRasterLayer()
+        raster_layer.name.return_value = "qfit background — Outdoor"
+        self.mock_project.mapLayers.return_value = {"bg": raster_layer}
+
+        canvas = MagicMock()
+        canvas.width.return_value = 1024
+        canvas.height.return_value = 768
+
+        result = self.service.snap_extent_to_background_tile_zoom(extent, canvas)
+
+        # QgsRectangle was called with 4 snapped coordinates
+        _mock_bms_mod.QgsRectangle.assert_called()
+        args = _mock_bms_mod.QgsRectangle.call_args[0]
+        self.assertEqual(len(args), 4)
+
+
+@unittest.skipIf(_REAL_QGIS_PRESENT, SKIP_MOCK)
+@unittest.skipIf(_mock_bms_cls is None, SKIP_MOCK_LOAD)
+class ApplyLabelPriorityMockTests(unittest.TestCase):
+    """Covers the label priority loop with mock styles."""
+
+    def setUp(self):
+        self._sys_patch = patch.dict(
+            "sys.modules", {"qgis": _qstub, "qgis.core": _qstub}
+        )
+        self._sys_patch.start()
+        self.service = _mock_bms_cls()
+
+    def tearDown(self):
+        self._sys_patch.stop()
+
+    def _make_style(self, layer_name):
+        style = MagicMock()
+        style.layerName.return_value = layer_name
+        settings = MagicMock()
+        settings.dataDefinedProperties.return_value = MagicMock()
+        style.labelSettings.return_value = settings
+        return style, settings
+
+    def test_priority_set_for_known_layer(self):
+        labeling = MagicMock()
+        style, settings = self._make_style("country-label")
+        labeling.styles.return_value = [style]
+
+        self.service._apply_label_priority(labeling)
+
+        self.assertEqual(settings.priority, 10)
+        style.setLabelSettings.assert_called_once_with(settings)
+
+    def test_data_defined_priority_for_settlement_layer(self):
+        labeling = MagicMock()
+        style, settings = self._make_style("settlement-major-label")
+        labeling.styles.return_value = [style]
+
+        self.service._apply_label_priority(labeling)
+
+        dd_props = settings.dataDefinedProperties.return_value
+        dd_props.setProperty.assert_called_once()
+        args = dd_props.setProperty.call_args[0]
+        self.assertEqual(args[0], 87)  # QgsPalLayerSettings.Priority
+
+    def test_unknown_layer_is_skipped(self):
+        labeling = MagicMock()
+        style, settings = self._make_style("unknown-layer-xyz")
+        labeling.styles.return_value = [style]
+
+        self.service._apply_label_priority(labeling)
+
+        style.setLabelSettings.assert_not_called()
+
+    def test_none_settings_is_skipped(self):
+        labeling = MagicMock()
+        style = MagicMock()
+        style.layerName.return_value = "country-label"
+        style.labelSettings.return_value = None
+        labeling.styles.return_value = [style]
+
+        self.service._apply_label_priority(labeling)
+
+        style.setLabelSettings.assert_not_called()
+
+    def test_runtime_error_is_swallowed(self):
+        labeling = MagicMock()
+        labeling.styles.side_effect = RuntimeError("boom")
+        # Should not raise
+        self.service._apply_label_priority(labeling)
+
+
+@unittest.skipIf(_REAL_QGIS_PRESENT, SKIP_MOCK)
+@unittest.skipIf(_mock_bms_cls is None, SKIP_MOCK_LOAD)
+class ApplyMapboxGlStyleMockTests(unittest.TestCase):
+    def setUp(self):
+        self._sys_patch = patch.dict(
+            "sys.modules", {"qgis": _qstub, "qgis.core": _qstub}
+        )
+        self._sys_patch.start()
+        self.service = _mock_bms_cls()
+
+        # Wire up converter to return Success so the renderer/labeling branch runs.
+        success_sentinel = object()
+        _qstub.QgsMapBoxGlStyleConverter.Success = success_sentinel
+        _qstub.QgsMapBoxGlStyleConverter.return_value.convert.return_value = success_sentinel
+
+        mock_renderer = MagicMock()
+        mock_labeling = MagicMock()
+        mock_style = MagicMock()
+        mock_style.layerName.return_value = "unknown"
+        mock_labeling.styles.return_value = [mock_style]
+        _qstub.QgsMapBoxGlStyleConverter.return_value.renderer.return_value = mock_renderer
+        _qstub.QgsMapBoxGlStyleConverter.return_value.labeling.return_value = mock_labeling
+
+    def tearDown(self):
+        self._sys_patch.stop()
+
+    def test_applies_renderer_and_labeling_on_success(self):
+        layer = MagicMock()
+        self.service._apply_mapbox_gl_style(layer, {"layers": []})
+        layer.setRenderer.assert_called_once()
+        layer.setLabeling.assert_called_once()
+        layer.setLabelsEnabled.assert_called_once_with(True)
+
+    def test_skips_when_renderer_is_none(self):
+        _qstub.QgsMapBoxGlStyleConverter.return_value.renderer.return_value = None
+        layer = MagicMock()
+        self.service._apply_mapbox_gl_style(layer, {"layers": []})
+        layer.setRenderer.assert_not_called()
+
+    def test_skips_when_labeling_is_none(self):
+        _qstub.QgsMapBoxGlStyleConverter.return_value.labeling.return_value = None
+        layer = MagicMock()
+        self.service._apply_mapbox_gl_style(layer, {"layers": []})
+        layer.setLabeling.assert_not_called()

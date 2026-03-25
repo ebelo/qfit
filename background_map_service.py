@@ -162,8 +162,6 @@ class BackgroundMapService:
         within the same label layer — otherwise QGIS resolves intra-layer collisions
         by arbitrary feature order.
         """
-        from qgis.core import QgsProperty  # noqa: PLC0415
-
         # Layer-level base priorities (0–10, higher wins)
         _LAYER_PRIORITIES = {
             "continent-label":          10,
@@ -186,6 +184,7 @@ class BackgroundMapService:
         _SETTLEMENT_LAYERS = {"settlement-major-label", "settlement-minor-label"}
 
         try:
+            from qgis.core import QgsProperty  # noqa: PLC0415
             for style in labeling.styles():
                 layer_name = style.layerName()
                 priority = _LAYER_PRIORITIES.get(layer_name)
