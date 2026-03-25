@@ -45,6 +45,9 @@ def _make_qgis_stub():
     qgis_core.QgsCoordinateReferenceSystem = MagicMock(return_value=MagicMock())
     qgis_core.QgsRectangle = MagicMock(return_value=MagicMock())
     qgis_core.QgsLayoutItemLabel = MagicMock()
+    pic_cls = MagicMock()
+    pic_cls.Zoom = 0
+    qgis_core.QgsLayoutItemPicture = pic_cls
     qgis_core.QgsLayoutPoint = MagicMock()
     qgis_core.QgsLayoutSize = MagicMock()
     qgis_core.QgsLayoutExporter = MagicMock()
@@ -863,6 +866,28 @@ class TestLayoutGeometry(unittest.TestCase):
         profile_bottom = PROFILE_Y + PROFILE_H
         footer_y = profile_bottom + FOOTER_GAP_MM
         self.assertLessEqual(footer_y + FOOTER_HEIGHT_MM, PAGE_HEIGHT_MM - MARGIN_MM)
+
+    def test_profile_chart_and_summary_fit_within_profile_area(self):
+        from qfit.atlas_export_task import (
+            PROFILE_Y, PROFILE_H, PROFILE_CHART_Y, PROFILE_CHART_H,
+            PROFILE_SUMMARY_Y, PROFILE_SUMMARY_H, PROFILE_SUMMARY_GAP,
+        )
+
+        # Chart starts at profile area top
+        self.assertAlmostEqual(PROFILE_CHART_Y, PROFILE_Y)
+        # Summary is below chart with gap
+        self.assertAlmostEqual(
+            PROFILE_SUMMARY_Y,
+            PROFILE_CHART_Y + PROFILE_CHART_H + PROFILE_SUMMARY_GAP,
+        )
+        # Everything fits within profile area
+        total = PROFILE_CHART_H + PROFILE_SUMMARY_GAP + PROFILE_SUMMARY_H
+        self.assertAlmostEqual(total, PROFILE_H)
+
+    def test_profile_chart_has_positive_height(self):
+        from qfit.atlas_export_task import PROFILE_CHART_H
+
+        self.assertGreater(PROFILE_CHART_H, 20.0, "Profile chart should be at least 20mm tall")
 
 
 if __name__ == "__main__":
