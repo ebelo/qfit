@@ -306,15 +306,17 @@ def build_atlas_toc_entries(
     min_extent_degrees: float = DEFAULT_MIN_EXTENT_DEGREES,
     target_aspect_ratio: float | None = None,
     settings: AtlasPageSettings | None = None,
+    plans: list[AtlasPagePlan] | None = None,
 ) -> list[AtlasTocEntry]:
     entries = []
-    for plan in build_atlas_page_plans(
+    resolved_plans = plans if plans is not None else build_atlas_page_plans(
         records,
         margin_percent=margin_percent,
         min_extent_degrees=min_extent_degrees,
         target_aspect_ratio=target_aspect_ratio,
         settings=settings,
-    ):
+    )
+    for plan in resolved_plans:
         page_number_label = str(plan.page_number)
         toc_entry_label = f"{page_number_label}. {plan.page_toc_label or plan.page_name}"
         entries.append(
@@ -373,15 +375,17 @@ def build_atlas_page_detail_items(
     min_extent_degrees: float = DEFAULT_MIN_EXTENT_DEGREES,
     target_aspect_ratio: float | None = None,
     settings: AtlasPageSettings | None = None,
+    plans: list[AtlasPagePlan] | None = None,
 ) -> list[AtlasPageDetailItem]:
     items: list[AtlasPageDetailItem] = []
-    for plan in build_atlas_page_plans(
+    resolved_plans = plans if plans is not None else build_atlas_page_plans(
         records,
         margin_percent=margin_percent,
         min_extent_degrees=min_extent_degrees,
         target_aspect_ratio=target_aspect_ratio,
         settings=settings,
-    ):
+    )
+    for plan in resolved_plans:
         page_items: list[tuple[str, str, str | None]] = [
             ("distance", "Distance", plan.page_distance_label),
             ("moving_time", "Moving time", plan.page_duration_label),
@@ -417,17 +421,19 @@ def build_atlas_profile_samples(
     min_extent_degrees: float = DEFAULT_MIN_EXTENT_DEGREES,
     target_aspect_ratio: float | None = None,
     settings: AtlasPageSettings | None = None,
+    plans: list[AtlasPagePlan] | None = None,
 ) -> list[AtlasProfileSample]:
     record_list = list(records)
     record_by_sort_key = {atlas_sort_key(record): record for record in record_list}
     samples = []
-    for plan in build_atlas_page_plans(
+    resolved_plans = plans if plans is not None else build_atlas_page_plans(
         record_list,
         margin_percent=margin_percent,
         min_extent_degrees=min_extent_degrees,
         target_aspect_ratio=target_aspect_ratio,
         settings=settings,
-    ):
+    )
+    for plan in resolved_plans:
         profile_points = extract_profile_points(record_by_sort_key.get(plan.page_sort_key) or {})
         profile_point_count = len(profile_points)
         if profile_point_count < 2:
@@ -514,6 +520,84 @@ def build_atlas_document_summary(records: Iterable[dict]) -> AtlasDocumentSummar
         activity_types_label=summary.activity_types_label,
         cover_summary=build_cover_summary(summary),
     )
+
+
+def build_atlas_document_summary_from_plans(plans: list[AtlasPagePlan]) -> AtlasDocumentSummary:
+    if not plans:
+        return AtlasDocumentSummary()
+
+    activity_dates = [plan.page_date for plan in plans if plan.page_date]
+    activity_date_start = min(activity_dates) if activity_dates else None
+    activity_date_end = max(activity_dates) if activity_dates else None
+
+    total_distance_m = sum(plan.distance_m for plan in plans if plan.distance_m is not None)
+    total_moving_time_s = sum(plan.moving_time_s for plan in plans if plan.moving_time_s is not None)
+    total_elevation_gain_m = sum(plan.total_elevation_gain_m for plan in plans if plan.total_elevation_gain_m is not None)
+
+    ordered_activity_types: list[str] = []
+    for plan in plans:
+        activity_type = (plan.activity_type or "").strip()
+        if not activity_type:
+            continue
+        if any(existing.casefold() == activity_type.casefold() for existing in ordered_activity_types):
+            continue
+        ordered_activity_types.append(activity_type)
+
+    summary = AtlasDocumentSummary(
+        activity_count=len(plans),
+        activity_date_start=activity_date_start,
+        activity_date_end=activity_date_end,
+        date_range_label=build_date_range_label(activity_date_start, activity_date_end),
+        total_distance_m=total_distance_m,
+        total_distance_label=format_distance_label(total_distance_m) if total_distance_m > 0 else None,
+        total_moving_time_s=total_moving_time_s,
+        total_duration_label=format_duration_label(total_moving_time_s) if total_moving_time_s > 0 else None,
+        total_elevation_gain_m=total_elevation_gain_m,
+        total_elevation_gain_label=format_elevation_label(total_elevation_gain_m) if total_elevation_gain_m > 0 else None,
+        activity_types_label=", ".join(ordered_activity_types) if ordered_activity_types else None,
+    )
+    return AtlasDocumentSummary(
+        activity_count=summary.activity_count,
+        activity_date_start=summary.activity_date_start,
+        activity_date_end=summary.activity_date_end,
+        date_range_label=summary.date_range_label,
+        total_distance_m=summary.total_distance_m,
+        total_distance_label=summary.total_distance_label,
+        total_moving_time_s=summary.total_moving_time_s,
+        total_duration_label=summary.total_duration_label,
+        total_elevation_gain_m=summary.total_elevation_gain_m,
+        total_elevation_gain_label=summary.total_elevation_gain_label,
+        activity_types_label=summary.activity_types_label,
+        cover_summary=build_cover_summary(summary),
+    )
+
+
+def build_atlas_cover_highlights_from_summary(summary: AtlasDocumentSummary) -> list[AtlasCoverHighlight]:
+    if summary.activity_count <= 0:
+        return []
+
+    highlights: list[AtlasCoverHighlight] = []
+
+    def add_highlight(key: str, label: str, value: str | None):
+        if not value:
+            return
+        highlights.append(
+            AtlasCoverHighlight(
+                highlight_order=len(highlights) + 1,
+                highlight_key=key,
+                highlight_label=label,
+                highlight_value=value,
+            )
+        )
+
+    activity_label = "activity" if summary.activity_count == 1 else "activities"
+    add_highlight("activity_count", "Activities", f"{summary.activity_count} {activity_label}")
+    add_highlight("date_range", "Date range", summary.date_range_label)
+    add_highlight("total_distance", "Distance", summary.total_distance_label)
+    add_highlight("total_duration", "Moving time", summary.total_duration_label)
+    add_highlight("total_elevation_gain", "Climbing", summary.total_elevation_gain_label)
+    add_highlight("activity_types", "Activity types", summary.activity_types_label)
+    return highlights
 
 
 def build_date_range_label(start_date: str | None, end_date: str | None) -> str | None:
