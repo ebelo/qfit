@@ -30,10 +30,10 @@ class SyncRepositoryTests(unittest.TestCase):
             repo.ensure_schema()
 
             result = repo.upsert_activities([self._activity()], sync_metadata={"provider": "strava"})
-            self.assertEqual(result["inserted"], 1)
-            self.assertEqual(result["updated"], 0)
-            self.assertEqual(result["unchanged"], 0)
-            self.assertEqual(result["total_count"], 1)
+            self.assertEqual(result.inserted, 1)
+            self.assertEqual(result.updated, 0)
+            self.assertEqual(result.unchanged, 0)
+            self.assertEqual(result.total_count, 1)
 
             activities = repo.load_all_activities()
             self.assertEqual(len(activities), 1)
@@ -51,9 +51,9 @@ class SyncRepositoryTests(unittest.TestCase):
                 [self._activity(details_json={"normalized_at": "two", "device_name": "Edge"})]
             )
 
-            self.assertEqual(result["inserted"], 0)
-            self.assertEqual(result["updated"], 0)
-            self.assertEqual(result["unchanged"], 1)
+            self.assertEqual(result.inserted, 0)
+            self.assertEqual(result.updated, 0)
+            self.assertEqual(result.unchanged, 1)
 
     def test_meaningful_changes_are_reported_as_updates(self):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -63,9 +63,9 @@ class SyncRepositoryTests(unittest.TestCase):
             repo.upsert_activities([self._activity(distance_m=1000.0)])
             result = repo.upsert_activities([self._activity(distance_m=2000.0)])
 
-            self.assertEqual(result["inserted"], 0)
-            self.assertEqual(result["updated"], 1)
-            self.assertEqual(result["unchanged"], 0)
+            self.assertEqual(result.inserted, 0)
+            self.assertEqual(result.updated, 1)
+            self.assertEqual(result.unchanged, 0)
 
     def test_sync_state_is_written(self):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -123,9 +123,9 @@ class SyncUnchangedBehaviorTests(unittest.TestCase):
 
             # Re-upsert the same activity — should be unchanged, no row write
             result = repo.upsert_activities([self._activity()])
-            self.assertEqual(result["unchanged"], 1)
-            self.assertEqual(result["inserted"], 0)
-            self.assertEqual(result["updated"], 0)
+            self.assertEqual(result.unchanged, 1)
+            self.assertEqual(result.inserted, 0)
+            self.assertEqual(result.updated, 0)
 
             conn = repo._connect()
             row_after = conn.execute(
@@ -174,7 +174,7 @@ class SyncUnchangedBehaviorTests(unittest.TestCase):
             conn.close()
 
             result = repo.upsert_activities([self._activity(distance_m=2000.0)])
-            self.assertEqual(result["updated"], 1)
+            self.assertEqual(result.updated, 1)
 
             conn = repo._connect()
             ts_after = conn.execute(
@@ -203,10 +203,10 @@ class SyncUnchangedBehaviorTests(unittest.TestCase):
                 self._activity(source_activity_id="C", distance_m=300.0),   # new
             ])
 
-            self.assertEqual(result["unchanged"], 1)
-            self.assertEqual(result["updated"], 1)
-            self.assertEqual(result["inserted"], 1)
-            self.assertEqual(result["total_count"], 3)
+            self.assertEqual(result.unchanged, 1)
+            self.assertEqual(result.updated, 1)
+            self.assertEqual(result.inserted, 1)
+            self.assertEqual(result.total_count, 3)
 
     def test_volatile_keys_do_not_affect_unchanged_detection(self):
         """Changing only volatile detail keys keeps the row unchanged."""
@@ -221,8 +221,8 @@ class SyncUnchangedBehaviorTests(unittest.TestCase):
                 details_json={"device_name": "Edge", "stream_enriched_at": "t2", "stream_cache": "c2"}
             )])
 
-            self.assertEqual(result["unchanged"], 1)
-            self.assertEqual(result["updated"], 0)
+            self.assertEqual(result.unchanged, 1)
+            self.assertEqual(result.updated, 0)
 
     def test_non_volatile_detail_change_triggers_update(self):
         """Changing a non-volatile detail key triggers an update."""
@@ -233,8 +233,8 @@ class SyncUnchangedBehaviorTests(unittest.TestCase):
             repo.upsert_activities([self._activity(details_json={"device_name": "Edge"})])
             result = repo.upsert_activities([self._activity(details_json={"device_name": "Fenix"})])
 
-            self.assertEqual(result["updated"], 1)
-            self.assertEqual(result["unchanged"], 0)
+            self.assertEqual(result.updated, 1)
+            self.assertEqual(result.unchanged, 0)
 
     def test_sync_stats_json_records_counters(self):
         """sync_state.last_sync_stats_json contains the correct counters."""

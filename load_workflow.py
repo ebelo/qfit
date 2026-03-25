@@ -3,6 +3,8 @@ import os
 from dataclasses import dataclass, field
 from datetime import date
 
+from .sync_repository import SyncStats
+
 logger = logging.getLogger(__name__)
 
 
@@ -17,7 +19,7 @@ class LoadResult:
     atlas_layer: object = None
     total_stored: int = 0
     status: str = ""
-    sync: dict = field(default_factory=dict)
+    sync: SyncStats | None = None
     fetched_count: int = 0
     track_count: int = 0
     start_count: int = 0
@@ -74,8 +76,8 @@ class LoadWorkflowService:
             self.layer_manager.load_output_layers(resolved_path)
         )
 
-        sync = write_result.get("sync") or {}
-        total_stored = sync.get("total_count", 0)
+        sync: SyncStats | None = write_result.get("sync") or None
+        total_stored = sync.total_count if sync else 0
         last_sync = last_sync_date or date.today().isoformat()
 
         status = (
@@ -87,9 +89,9 @@ class LoadWorkflowService:
             "into QGIS without auto-filtering the layer tables."
         ).format(
             fetched=write_result.get("fetched_count", len(activities)),
-            inserted=sync.get("inserted", 0),
-            updated=sync.get("updated", 0),
-            unchanged=sync.get("unchanged", 0),
+            inserted=sync.inserted if sync else 0,
+            updated=sync.updated if sync else 0,
+            unchanged=sync.unchanged if sync else 0,
             total=total_stored,
             track_count=write_result.get("track_count", 0),
             start_count=write_result.get("start_count", 0),

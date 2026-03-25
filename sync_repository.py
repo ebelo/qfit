@@ -2,9 +2,18 @@ import hashlib
 import json
 import os
 import sqlite3
+from dataclasses import dataclass
 from datetime import UTC, datetime
 
 from .models import Activity
+
+
+@dataclass(frozen=True)
+class SyncStats:
+    inserted: int
+    updated: int
+    unchanged: int
+    total_count: int
 
 
 REGISTRY_TABLE = "activity_registry"
@@ -187,12 +196,12 @@ class SyncRepository:
             self._update_sync_state(cursor, activities, sync_metadata, now, inserted, updated, unchanged, total_count)
             connection.commit()
 
-        return {
-            "inserted": inserted,
-            "updated": updated,
-            "unchanged": unchanged,
-            "total_count": total_count,
-        }
+        return SyncStats(
+            inserted=inserted,
+            updated=updated,
+            unchanged=unchanged,
+            total_count=total_count,
+        )
 
     def load_all_activity_records(self):
         with self._connect() as connection:

@@ -1,10 +1,21 @@
 from __future__ import annotations
 
 from collections import Counter
+from dataclasses import dataclass
 from datetime import date, datetime
 from typing import Iterable, Sequence
 
 from .activity_classification import canonical_activity_label
+
+
+@dataclass(frozen=True)
+class ActivitySummary:
+    count: int
+    total_distance_km: float
+    total_moving_time_s: int
+    detailed_count: int
+    by_type: dict[str, int]
+    latest_date: str | None
 
 DEFAULT_SORT_LABEL = "Start date (newest first)"
 SORT_OPTIONS = (
@@ -108,7 +119,7 @@ def sort_activities(activities: Sequence[object], sort_label: str | None) -> lis
     return sorted(items, key=lambda activity: (_sort_datetime(activity) or datetime.min, (getattr(activity, "name", None) or "").casefold()), reverse=True)
 
 
-def summarize_activities(activities: Sequence[object]) -> dict[str, object]:
+def summarize_activities(activities: Sequence[object]) -> ActivitySummary:
     total_distance_km = 0.0
     total_moving_time_s = 0
     detailed_count = 0
@@ -130,14 +141,14 @@ def summarize_activities(activities: Sequence[object]) -> dict[str, object]:
         if activity_date is not None and (latest_date is None or activity_date > latest_date):
             latest_date = activity_date
 
-    return {
-        "count": len(activities),
-        "total_distance_km": round(total_distance_km, 1),
-        "total_moving_time_s": total_moving_time_s,
-        "detailed_count": detailed_count,
-        "by_type": dict(sorted(by_type.items())),
-        "latest_date": latest_date.isoformat() if latest_date is not None else None,
-    }
+    return ActivitySummary(
+        count=len(activities),
+        total_distance_km=round(total_distance_km, 1),
+        total_moving_time_s=total_moving_time_s,
+        detailed_count=detailed_count,
+        by_type=dict(sorted(by_type.items())),
+        latest_date=latest_date.isoformat() if latest_date is not None else None,
+    )
 
 
 def build_preview_lines(activities: Sequence[object], limit: int = 8) -> list[str]:
@@ -194,21 +205,20 @@ def format_duration(value: int | float | None) -> str:
     return f"{seconds}s"
 
 
-def format_summary_text(summary: dict[str, object]) -> str:
-    if not summary.get("count"):
+def format_summary_text(summary: ActivitySummary) -> str:
+    if not summary.count:
         return "0 activities match the current filters."
 
-    type_counts = summary.get("by_type") or {}
-    top_types = ", ".join(f"{name}: {count}" for name, count in list(type_counts.items())[:3])
-    latest_date = summary.get("latest_date") or "unknown"
+    top_types = ", ".join(f"{name}: {count}" for name, count in list(summary.by_type.items())[:3])
+    latest_date = summary.latest_date or "unknown"
     return (
         "{count} activities · {distance:.1f} km · {duration} moving · detailed tracks: {detailed} · latest: {latest}"
         "\nTop activity types: {top_types}"
     ).format(
-        count=summary.get("count", 0),
-        distance=summary.get("total_distance_km", 0.0),
-        duration=format_duration(summary.get("total_moving_time_s")),
-        detailed=summary.get("detailed_count", 0),
+        count=summary.count,
+        distance=summary.total_distance_km,
+        duration=format_duration(summary.total_moving_time_s),
+        detailed=summary.detailed_count,
         latest=latest_date,
         top_types=top_types or "n/a",
     )

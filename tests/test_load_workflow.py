@@ -5,6 +5,7 @@ from unittest.mock import MagicMock, patch
 
 from tests import _path  # noqa: F401
 from qfit.load_workflow import LoadResult, LoadWorkflowError, LoadWorkflowService
+from qfit.sync_repository import SyncStats
 
 # Ensure a stub ``qfit.gpkg_writer`` is present in ``sys.modules`` so the lazy
 # import inside ``write_and_load`` does not trigger the real module (which
@@ -65,12 +66,7 @@ class WriteAndLoadSuccessTests(unittest.TestCase):
             "start_count": 3,
             "point_count": 0,
             "atlas_count": 3,
-            "sync": {
-                "total_count": 10,
-                "inserted": 2,
-                "updated": 1,
-                "unchanged": 0,
-            },
+            "sync": SyncStats(total_count=10, inserted=2, updated=1, unchanged=0),
         }
         mock_gpkg = self._make_writer_mock(write_result)
         mock_layers = (
@@ -114,7 +110,7 @@ class WriteAndLoadSuccessTests(unittest.TestCase):
             "start_count": 1,
             "point_count": 0,
             "atlas_count": 1,
-            "sync": {"total_count": 1, "inserted": 1, "updated": 0, "unchanged": 0},
+            "sync": SyncStats(total_count=1, inserted=1, updated=0, unchanged=0),
         }
         mock_gpkg = self._make_writer_mock(write_result)
         self.layer_manager.load_output_layers.return_value = (None, None, None, None)
@@ -144,7 +140,7 @@ class WriteAndLoadSuccessTests(unittest.TestCase):
             "start_count": 0,
             "point_count": 0,
             "atlas_count": 0,
-            "sync": {"total_count": 1, "inserted": 1, "updated": 0, "unchanged": 0},
+            "sync": SyncStats(total_count=1, inserted=1, updated=0, unchanged=0),
         }
         mock_gpkg = self._make_writer_mock(write_result)
         self.layer_manager.load_output_layers.return_value = (None, None, None, None)
@@ -228,7 +224,7 @@ class LoadResultTests(unittest.TestCase):
         self.assertIsNone(result.activities_layer)
         self.assertEqual(result.total_stored, 0)
         self.assertEqual(result.status, "")
-        self.assertEqual(result.sync, {})
+        self.assertIsNone(result.sync)
 
     def test_custom_values(self):
         result = LoadResult(
