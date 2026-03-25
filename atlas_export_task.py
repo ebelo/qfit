@@ -971,7 +971,7 @@ class AtlasExportTask(QgsTask):
             and self._background_enabled
         ):
             try:
-                from mapbox_config import TILE_MODE_RASTER  # noqa: PLC0415
+                from .mapbox_config import TILE_MODE_RASTER  # noqa: PLC0415
                 if self._restore_tile_mode == TILE_MODE_RASTER:
                     self._layer_manager.ensure_background_layer(
                         enabled=True,
