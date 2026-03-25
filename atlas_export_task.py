@@ -86,6 +86,19 @@ DETAIL_BLOCK_Y = PROFILE_SUMMARY_Y + PROFILE_SUMMARY_H + DETAIL_BLOCK_GAP
 
 # Identifier for the profile picture item (used to find it during export)
 _PROFILE_PICTURE_ID = "qfit_profile_chart"
+_PROFILE_SUMMARY_ID = "qfit_profile_summary"
+_DETAIL_BLOCK_ID = "qfit_detail_block"
+
+# Per-page detail item fields: (field_name, human_label).  Shared between
+# build_atlas_layout (to decide whether to create the label) and the export
+# loop (to build the plain-text content per page).
+_DETAIL_ITEM_FIELDS = [
+    ("page_distance_label", "Distance"),
+    ("page_duration_label", "Moving time"),
+    ("page_average_speed_label", "Speed"),
+    ("page_average_pace_label", "Pace"),
+    ("page_elevation_gain_label", "Climbing"),
+]
 
 
 def _mm(layout, value):
@@ -264,12 +277,14 @@ def build_atlas_layout(
     profile_pic.setResizeMode(QgsLayoutItemPicture.Zoom)
     layout.addLayoutItem(profile_pic)
 
-    # Text summaries below the chart: profile summary then stats summary
-    profile_field = "page_profile_summary" if fields.indexOf("page_profile_summary") >= 0 else ""
-    if profile_field:
-        _add_label(
+    # Text summaries below the chart — text is set per page during the export
+    # loop so that no [% %] expressions remain in the layout.  This avoids raw
+    # template syntax leaking into the final PDF when QGIS fails to evaluate
+    # inline atlas expressions (see issue #108).
+    if fields.indexOf("page_profile_summary") >= 0:
+        lbl = _add_label(
             layout,
-            f'[% coalesce("{profile_field}", \'\') %]',
+            "",
             x=PROFILE_X,
             y=PROFILE_SUMMARY_Y,
             w=PROFILE_W,
@@ -277,25 +292,17 @@ def build_atlas_layout(
             font_size=7.0,
             color=QColor(100, 100, 100),
         )
+        lbl.setId(_PROFILE_SUMMARY_ID)
 
-    # Detail block: per-page detail items (label: value lines) from individual fields
-    _DETAIL_ITEM_FIELDS = [
-        ("page_distance_label", "Distance"),
-        ("page_duration_label", "Moving time"),
-        ("page_average_speed_label", "Speed"),
-        ("page_average_pace_label", "Pace"),
-        ("page_elevation_gain_label", "Climbing"),
-    ]
-    detail_parts = []
-    for field_name, label in _DETAIL_ITEM_FIELDS:
-        if fields.indexOf(field_name) >= 0:
-            detail_parts.append(f"'{label}: ' || \"{field_name}\"")
-    if detail_parts:
-        inner = ", ".join(detail_parts)
-        detail_expr = f"[% concat_ws(char(10), {inner}) %]"
-        _add_label(
+    # Detail block: per-page detail items (label: value lines) from individual
+    # fields.  Like the profile summary the text is set per page during export.
+    has_any_detail_field = any(
+        fields.indexOf(fn) >= 0 for fn, _ in _DETAIL_ITEM_FIELDS
+    )
+    if has_any_detail_field:
+        lbl = _add_label(
             layout,
-            detail_expr,
+            "",
             x=PROFILE_X,
             y=DETAIL_BLOCK_Y,
             w=PROFILE_W,
@@ -304,6 +311,7 @@ def build_atlas_layout(
             color=QColor(100, 100, 100),
             v_align_top=True,
         )
+        lbl.setId(_DETAIL_BLOCK_ID)
 
     # -- Footer: page number -----------------------------------------------
     footer_y = PROFILE_Y + PROFILE_H + FOOTER_GAP_MM
@@ -676,12 +684,18 @@ class AtlasExportTask(QgsTask):
             if output_dir and not os.path.exists(output_dir):
                 os.makedirs(output_dir, exist_ok=True)
 
-            # Locate the profile picture item so we can set its source per page.
+            # Locate per-page layout items so we can update them each iteration.
             profile_pic = None
+            profile_summary_label = None
+            detail_block_label = None
             for item in layout.items():
-                if getattr(item, "id", lambda: None)() == _PROFILE_PICTURE_ID:
+                item_id = getattr(item, "id", lambda: None)()
+                if item_id == _PROFILE_PICTURE_ID:
                     profile_pic = item
-                    break
+                elif item_id == _PROFILE_SUMMARY_ID:
+                    profile_summary_label = item
+                elif item_id == _DETAIL_BLOCK_ID:
+                    detail_block_label = item
 
             # Pre-load profile samples grouped by page_sort_key.
             profile_samples: dict[str, list[tuple[float, float]]] = {}
@@ -713,6 +727,14 @@ class AtlasExportTask(QgsTask):
 
             # Field index for source_activity_id in the atlas layer.
             sid_atlas_idx = fields.indexOf("source_activity_id")
+
+            # Field indices for per-page text labels (profile summary + detail).
+            profile_summary_idx = fields.indexOf("page_profile_summary")
+            detail_field_indices = [
+                (fields.indexOf(fn), human_label)
+                for fn, human_label in _DETAIL_ITEM_FIELDS
+                if fields.indexOf(fn) >= 0
+            ]
 
             # Walk the atlas features in order, setting the map extent explicitly
             # from the stored center/size fields so QGIS atlas auto-fit cannot
@@ -764,6 +786,20 @@ class AtlasExportTask(QgsTask):
                                 profile_pic.setPicturePath("")
                         else:
                             profile_pic.setPicturePath("")
+
+                    # Set profile summary text directly from the feature so that
+                    # no raw [% %] template syntax can leak (issue #108).
+                    if profile_summary_label is not None and profile_summary_idx >= 0:
+                        val = feat.attribute(profile_summary_idx)
+                        profile_summary_label.setText(str(val) if val else "")
+
+                    if detail_block_label is not None and detail_field_indices:
+                        lines = []
+                        for idx, human_label in detail_field_indices:
+                            val = feat.attribute(idx)
+                            if val is not None and val != "":
+                                lines.append(f"{human_label}: {val}")
+                        detail_block_label.setText("\n".join(lines))
 
                     # Apply the stored precomputed extent to the map item.
                     if map_item is not None and has_stored_extents:

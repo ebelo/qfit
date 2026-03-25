@@ -224,8 +224,35 @@ class TestBuildAtlasLayoutSummaryLabels(unittest.TestCase):
             texts.append(call[0][0])
         return texts
 
+    def _label_ids(self):
+        """Return the list of IDs set on label items."""
+        from qgis.core import QgsLayoutItemLabel
+        ids = []
+        for call in QgsLayoutItemLabel.return_value.setId.call_args_list:
+            ids.append(call[0][0])
+        return ids
+
     def test_both_summaries_rendered_when_fields_present(self):
-        """Both profile summary and detail block appear when fields exist."""
+        """Both profile summary and detail block labels are created when fields exist."""
+        _qgis_core.QgsLayoutItemLabel.reset_mock()
+        available = {
+            "page_sort_key", "page_title", "page_stats_summary",
+            "page_subtitle", "page_date", "page_profile_summary",
+            "page_distance_label", "page_duration_label",
+            "page_elevation_gain_label",
+        }
+        self._build_with_fields(available)
+        ids = self._label_ids()
+        from qfit.atlas_export_task import _PROFILE_SUMMARY_ID, _DETAIL_BLOCK_ID
+        self.assertIn(_PROFILE_SUMMARY_ID, ids, "profile summary label missing")
+        self.assertIn(_DETAIL_BLOCK_ID, ids, "detail block label missing")
+
+    def test_no_raw_expression_in_profile_area_labels(self):
+        """Profile summary and detail block labels must not contain [% %] syntax.
+
+        These labels are populated per-page from feature attributes during export
+        to prevent raw template syntax leaking into the PDF (issue #108).
+        """
         _qgis_core.QgsLayoutItemLabel.reset_mock()
         available = {
             "page_sort_key", "page_title", "page_stats_summary",
@@ -235,10 +262,16 @@ class TestBuildAtlasLayoutSummaryLabels(unittest.TestCase):
         }
         self._build_with_fields(available)
         texts = self._label_texts(None)
-        profile_labels = [t for t in texts if "page_profile_summary" in t]
-        detail_labels = [t for t in texts if "page_distance_label" in t]
-        self.assertTrue(len(profile_labels) >= 1, "profile summary label missing")
-        self.assertTrue(len(detail_labels) >= 1, "detail block label missing")
+        # No label text should reference profile-area field names inside [% %].
+        profile_area_fields = {"page_profile_summary", "page_distance_label",
+                               "page_duration_label", "page_elevation_gain_label"}
+        for t in texts:
+            if "[%" in t:
+                for field in profile_area_fields:
+                    self.assertNotIn(
+                        field, t,
+                        f"raw [% %] expression referencing {field} found: {t!r}",
+                    )
 
     def test_detail_block_omitted_when_fields_absent(self):
         """Detail block label is not added when no detail fields are present."""
@@ -248,25 +281,21 @@ class TestBuildAtlasLayoutSummaryLabels(unittest.TestCase):
             "page_date", "page_profile_summary",
         }
         self._build_with_fields(available)
-        texts = self._label_texts(None)
-        detail_labels = [t for t in texts if "page_distance_label" in t]
-        self.assertEqual(len(detail_labels), 0, "detail block should not be added")
+        ids = self._label_ids()
+        from qfit.atlas_export_task import _DETAIL_BLOCK_ID
+        self.assertNotIn(_DETAIL_BLOCK_ID, ids, "detail block should not be added")
 
-    def test_detail_block_includes_available_fields_only(self):
-        """Detail block expression only references fields present on the layer."""
+    def test_detail_block_created_with_subset_of_fields(self):
+        """Detail block label is created when at least some detail fields exist."""
         _qgis_core.QgsLayoutItemLabel.reset_mock()
         available = {
             "page_sort_key", "page_title", "page_subtitle", "page_date",
             "page_distance_label", "page_elevation_gain_label",
         }
         self._build_with_fields(available)
-        texts = self._label_texts(None)
-        detail_labels = [t for t in texts if "page_distance_label" in t]
-        self.assertEqual(len(detail_labels), 1)
-        expr_text = detail_labels[0]
-        self.assertIn("page_elevation_gain_label", expr_text)
-        self.assertNotIn("page_duration_label", expr_text)
-        self.assertNotIn("page_average_speed_label", expr_text)
+        ids = self._label_ids()
+        from qfit.atlas_export_task import _DETAIL_BLOCK_ID
+        self.assertIn(_DETAIL_BLOCK_ID, ids, "detail block should be created")
 
     def test_profile_summary_omitted_when_field_absent(self):
         """Profile summary label is not added when the field is missing."""
@@ -276,9 +305,126 @@ class TestBuildAtlasLayoutSummaryLabels(unittest.TestCase):
             "page_subtitle", "page_date",
         }
         self._build_with_fields(available)
-        texts = self._label_texts(None)
-        profile_labels = [t for t in texts if "page_profile_summary" in t]
-        self.assertEqual(len(profile_labels), 0, "profile summary label should not be added")
+        ids = self._label_ids()
+        from qfit.atlas_export_task import _PROFILE_SUMMARY_ID
+        self.assertNotIn(_PROFILE_SUMMARY_ID, ids, "profile summary label should not be added")
+
+
+class TestPerPageLabelTextSetting(unittest.TestCase):
+    """Verify that profile-area label text is set from feature attributes per page (issue #108)."""
+
+    def test_profile_summary_set_per_page(self):
+        """Profile summary label receives plain text from feature attribute each page."""
+        from qfit.atlas_export_task import _PROFILE_SUMMARY_ID, _DETAIL_BLOCK_ID
+
+        layout_mock, atlas_mock, exporter_cls_mock = _make_atlas_mock(feature_count=1)
+
+        # Create mock label items with IDs matching the profile-area constants.
+        summary_label = MagicMock()
+        summary_label.id.return_value = _PROFILE_SUMMARY_ID
+        detail_label = MagicMock()
+        detail_label.id.return_value = _DETAIL_BLOCK_ID
+        layout_mock.items.return_value = [summary_label, detail_label]
+
+        # Atlas layer with profile summary and detail fields present.
+        atlas_layer = _make_atlas_layer(feature_count=1)
+        field_names = [
+            "page_sort_key", "page_profile_summary",
+            "page_distance_label", "page_elevation_gain_label",
+            "center_x_3857", "center_y_3857", "extent_width_m", "extent_height_m",
+        ]
+        atlas_layer.fields.return_value.indexOf = (
+            lambda name: field_names.index(name) if name in field_names else -1
+        )
+
+        # Feature attributes: return realistic values per field index.
+        attr_values = {
+            0: "sort_key_1",               # page_sort_key
+            1: "5.2 km · 120–450 m",       # page_profile_summary
+            2: "5.2 km",                    # page_distance_label
+            3: "330 m",                     # page_elevation_gain_label
+            4: 1000.0, 5: 2000.0, 6: 500.0, 7: 500.0,  # extents
+        }
+        feat_mock = atlas_mock.layout.return_value.reportContext.return_value.feature.return_value
+        feat_mock.attribute.side_effect = lambda idx: attr_values.get(idx)
+
+        received = {}
+        task = AtlasExportTask(
+            atlas_layer=atlas_layer,
+            output_path="/tmp/qfit_test_perpage.pdf",
+            on_finished=lambda **kw: received.update(kw),
+        )
+
+        with patch("qfit.atlas_export_task.build_atlas_layout", return_value=layout_mock), \
+             patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
+             patch("qfit.atlas_export_task.AtlasExportTask._export_cover_page", return_value=None), \
+             patch("qfit.atlas_export_task.AtlasExportTask._export_toc_page", return_value=None), \
+             patch("os.replace"), \
+             patch("os.makedirs"):
+            _run_task(task)
+
+        # Profile summary label should have been set to the resolved attribute value.
+        summary_label.setText.assert_called()
+        summary_text = summary_label.setText.call_args[0][0]
+        self.assertEqual(summary_text, "5.2 km · 120–450 m")
+        self.assertNotIn("[%", summary_text)
+
+        # Detail block label should have resolved label:value lines.
+        detail_label.setText.assert_called()
+        detail_text = detail_label.setText.call_args[0][0]
+        self.assertIn("Distance: 5.2 km", detail_text)
+        self.assertIn("Climbing: 330 m", detail_text)
+        self.assertNotIn("[%", detail_text)
+        # Fields not in the layer should not appear.
+        self.assertNotIn("Moving time:", detail_text)
+        self.assertNotIn("Speed:", detail_text)
+
+    def test_null_attributes_produce_empty_text(self):
+        """NULL or empty feature attributes produce empty label text, not raw syntax."""
+        from qfit.atlas_export_task import _PROFILE_SUMMARY_ID, _DETAIL_BLOCK_ID
+
+        layout_mock, atlas_mock, exporter_cls_mock = _make_atlas_mock(feature_count=1)
+
+        summary_label = MagicMock()
+        summary_label.id.return_value = _PROFILE_SUMMARY_ID
+        detail_label = MagicMock()
+        detail_label.id.return_value = _DETAIL_BLOCK_ID
+        layout_mock.items.return_value = [summary_label, detail_label]
+
+        atlas_layer = _make_atlas_layer(feature_count=1)
+        field_names = [
+            "page_sort_key", "page_profile_summary",
+            "page_distance_label", "page_elevation_gain_label",
+            "center_x_3857", "center_y_3857", "extent_width_m", "extent_height_m",
+        ]
+        atlas_layer.fields.return_value.indexOf = (
+            lambda name: field_names.index(name) if name in field_names else -1
+        )
+
+        # All label attributes are None (e.g. activity with no profile data).
+        feat_mock = atlas_mock.layout.return_value.reportContext.return_value.feature.return_value
+        feat_mock.attribute.side_effect = lambda idx: {4: 1000.0, 5: 2000.0, 6: 500.0, 7: 500.0}.get(idx)
+
+        received = {}
+        task = AtlasExportTask(
+            atlas_layer=atlas_layer,
+            output_path="/tmp/qfit_test_null.pdf",
+            on_finished=lambda **kw: received.update(kw),
+        )
+
+        with patch("qfit.atlas_export_task.build_atlas_layout", return_value=layout_mock), \
+             patch("qfit.atlas_export_task.QgsLayoutExporter", exporter_cls_mock), \
+             patch("qfit.atlas_export_task.AtlasExportTask._export_cover_page", return_value=None), \
+             patch("qfit.atlas_export_task.AtlasExportTask._export_toc_page", return_value=None), \
+             patch("os.replace"), \
+             patch("os.makedirs"):
+            _run_task(task)
+
+        summary_label.setText.assert_called()
+        self.assertEqual(summary_label.setText.call_args[0][0], "")
+
+        detail_label.setText.assert_called()
+        self.assertEqual(detail_label.setText.call_args[0][0], "")
 
 
 class TestAtlasExportTaskSuccess(unittest.TestCase):
