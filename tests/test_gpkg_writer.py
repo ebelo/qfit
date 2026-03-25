@@ -11,8 +11,22 @@ except (ImportError, ModuleNotFoundError):  # pragma: no cover - exercised only 
     QgsApplication = None
 
 if QgsApplication is not None:
+    from qfit.gpkg_layer_builders import (
+        build_atlas_layer,
+        build_cover_highlight_layer,
+        build_document_summary_layer,
+        build_page_detail_item_layer,
+        build_profile_sample_layer,
+        build_toc_layer,
+    )
     from qfit.gpkg_writer import GeoPackageWriter
 else:  # pragma: no cover - exercised only on non-QGIS runners
+    build_atlas_layer = None
+    build_cover_highlight_layer = None
+    build_document_summary_layer = None
+    build_page_detail_item_layer = None
+    build_profile_sample_layer = None
+    build_toc_layer = None
     GeoPackageWriter = None
 
 
@@ -32,10 +46,8 @@ class GeoPackageWriterAtlasTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         _ensure_qgis_app()
-
-    def test_build_atlas_layer_includes_document_summary_fields(self):
-        writer = GeoPackageWriter(output_path="/tmp/qfit-test.gpkg")
-        records = [
+        cls.writer = GeoPackageWriter(output_path="/tmp/qfit-test.gpkg")
+        cls.records = [
             {
                 "source": "strava",
                 "source_activity_id": "100",
@@ -59,7 +71,9 @@ class GeoPackageWriterAtlasTests(unittest.TestCase):
                 "geometry_points": [(46.50, 6.60), (46.51, 6.62)],
             },
         ]
-        layer = writer._build_atlas_layer(records)
+
+    def test_build_atlas_layer_includes_document_summary_fields(self):
+        layer = build_atlas_layer(self.records, self.writer.atlas_page_settings)
 
         self.assertTrue(layer.isValid())
         self.assertEqual(layer.featureCount(), 2)
@@ -78,7 +92,8 @@ class GeoPackageWriterAtlasTests(unittest.TestCase):
             "2 activities · 2026-03-18 → 2026-03-19 · 52.6 km · 2h 50m · ↑ 725 m · Ride, Run",
         )
 
-        summary_layer = writer._build_document_summary_layer(records)
+    def test_build_document_summary_layer(self):
+        summary_layer = build_document_summary_layer(self.records)
         self.assertTrue(summary_layer.isValid())
         self.assertEqual(summary_layer.featureCount(), 1)
         self.assertGreaterEqual(summary_layer.fields().indexOf("cover_summary"), 0)
@@ -100,7 +115,8 @@ class GeoPackageWriterAtlasTests(unittest.TestCase):
             "2 activities · 2026-03-18 → 2026-03-19 · 52.6 km · 2h 50m · ↑ 725 m · Ride, Run",
         )
 
-        cover_highlight_layer = writer._build_cover_highlight_layer(records)
+    def test_build_cover_highlight_layer(self):
+        cover_highlight_layer = build_cover_highlight_layer(self.records)
         self.assertTrue(cover_highlight_layer.isValid())
         self.assertEqual(cover_highlight_layer.featureCount(), 6)
         self.assertGreaterEqual(cover_highlight_layer.fields().indexOf("highlight_value"), 0)
@@ -111,7 +127,8 @@ class GeoPackageWriterAtlasTests(unittest.TestCase):
         self.assertEqual(cover_highlight_features[-1]["highlight_key"], "activity_types")
         self.assertEqual(cover_highlight_features[-1]["highlight_value"], "Ride, Run")
 
-        page_detail_item_layer = writer._build_page_detail_item_layer(records)
+    def test_build_page_detail_item_layer(self):
+        page_detail_item_layer = build_page_detail_item_layer(self.records)
         self.assertTrue(page_detail_item_layer.isValid())
         self.assertEqual(page_detail_item_layer.featureCount(), 9)
         self.assertGreaterEqual(page_detail_item_layer.fields().indexOf("detail_value"), 0)
@@ -121,10 +138,12 @@ class GeoPackageWriterAtlasTests(unittest.TestCase):
         self.assertEqual(page_detail_features[0]["detail_value"], "42.5 km")
         self.assertEqual(page_detail_features[-1]["detail_key"], "stats_summary")
 
-        profile_sample_layer = writer._build_profile_sample_layer(records)
+    def test_build_profile_sample_layer_empty(self):
+        profile_sample_layer = build_profile_sample_layer(self.records)
         self.assertTrue(profile_sample_layer.isValid())
         self.assertEqual(profile_sample_layer.featureCount(), 0)
 
+    def test_build_profile_sample_layer_with_stream(self):
         profile_records = [
             {
                 "source": "strava",
@@ -144,7 +163,7 @@ class GeoPackageWriterAtlasTests(unittest.TestCase):
                 },
             }
         ]
-        profile_sample_layer = writer._build_profile_sample_layer(profile_records)
+        profile_sample_layer = build_profile_sample_layer(profile_records)
         self.assertTrue(profile_sample_layer.isValid())
         self.assertEqual(profile_sample_layer.featureCount(), 4)
         self.assertGreaterEqual(profile_sample_layer.fields().indexOf("profile_point_ratio"), 0)
@@ -155,7 +174,8 @@ class GeoPackageWriterAtlasTests(unittest.TestCase):
         self.assertEqual(profile_features[-1]["profile_point_ratio"], 1.0)
         self.assertEqual(profile_features[-1]["profile_distance_m"], 10100.0)
 
-        toc_layer = writer._build_toc_layer(records)
+    def test_build_toc_layer(self):
+        toc_layer = build_toc_layer(self.records)
         self.assertTrue(toc_layer.isValid())
         self.assertEqual(toc_layer.featureCount(), 2)
         self.assertGreaterEqual(toc_layer.fields().indexOf("toc_entry_label"), 0)
