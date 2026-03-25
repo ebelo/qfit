@@ -1,12 +1,12 @@
-"""Tests for StravaFetchTask.
+"""Tests for FetchTask.
 
 These tests exercise the task logic without a live QGIS instance by
-subclassing StravaFetchTask and stubbing out the QgsTask infrastructure
+subclassing FetchTask and stubbing out the QgsTask infrastructure
 (``isCanceled``, ``finished``).
 """
 
 import unittest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 from tests import _path  # noqa: F401
 
@@ -42,7 +42,8 @@ _qgis.core = _qgis_core
 sys.modules.setdefault("qgis", _qgis)
 sys.modules.setdefault("qgis.core", _qgis_core)
 
-from qfit.fetch_task import StravaFetchTask  # noqa: E402  (import after stub)
+from qfit.fetch_task import FetchTask  # noqa: E402  (import after stub)
+from qfit.provider import ProviderError  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -60,7 +61,7 @@ def _run_task(task):
 # Tests
 # ---------------------------------------------------------------------------
 
-class TestStravaFetchTaskSuccess(unittest.TestCase):
+class TestFetchTaskSuccess(unittest.TestCase):
     def setUp(self):
         self.received = {}
 
@@ -70,13 +71,13 @@ class TestStravaFetchTaskSuccess(unittest.TestCase):
         mock_activity = MagicMock()
         mock_activity.geometry_source = "summary_polyline"
 
-        self.mock_client = MagicMock()
-        self.mock_client.fetch_activities.return_value = [mock_activity]
-        self.mock_client.last_stream_enrichment_stats = {}
-        self.mock_client.last_rate_limit = None
+        self.mock_provider = MagicMock()
+        self.mock_provider.fetch_activities.return_value = [mock_activity]
+        self.mock_provider.last_stream_enrichment_stats = {}
+        self.mock_provider.last_rate_limit = None
 
-        self.task = StravaFetchTask(
-            client=self.mock_client,
+        self.task = FetchTask(
+            provider=self.mock_provider,
             per_page=200,
             max_pages=0,
             before=None,
@@ -97,9 +98,13 @@ class TestStravaFetchTaskSuccess(unittest.TestCase):
         self.assertIsNone(self.received.get("error"))
         self.assertFalse(self.received.get("cancelled"))
 
+    def test_finished_callback_receives_provider(self):
+        _run_task(self.task)
+        self.assertIs(self.received.get("provider"), self.mock_provider)
+
     def test_fetch_activities_called_with_correct_params(self):
         _run_task(self.task)
-        self.mock_client.fetch_activities.assert_called_once_with(
+        self.mock_provider.fetch_activities.assert_called_once_with(
             per_page=200,
             max_pages=0,
             before=None,
@@ -109,20 +114,18 @@ class TestStravaFetchTaskSuccess(unittest.TestCase):
         )
 
 
-class TestStravaFetchTaskError(unittest.TestCase):
+class TestFetchTaskError(unittest.TestCase):
     def setUp(self):
         self.received = {}
 
         def on_finished(**kwargs):
             self.received.update(kwargs)
 
-        from qfit.strava_client import StravaClientError
+        self.mock_provider = MagicMock()
+        self.mock_provider.fetch_activities.side_effect = ProviderError("rate limit hit")
 
-        self.mock_client = MagicMock()
-        self.mock_client.fetch_activities.side_effect = StravaClientError("rate limit hit")
-
-        self.task = StravaFetchTask(
-            client=self.mock_client,
+        self.task = FetchTask(
+            provider=self.mock_provider,
             per_page=200,
             max_pages=0,
             before=None,
@@ -143,7 +146,7 @@ class TestStravaFetchTaskError(unittest.TestCase):
         self.assertFalse(self.received.get("cancelled"))
 
 
-class TestStravaFetchTaskCancellation(unittest.TestCase):
+class TestFetchTaskCancellation(unittest.TestCase):
     def setUp(self):
         self.received = {}
 
@@ -153,11 +156,11 @@ class TestStravaFetchTaskCancellation(unittest.TestCase):
         mock_activity = MagicMock()
         mock_activity.geometry_source = "summary_polyline"
 
-        self.mock_client = MagicMock()
-        self.mock_client.fetch_activities.return_value = [mock_activity]
+        self.mock_provider = MagicMock()
+        self.mock_provider.fetch_activities.return_value = [mock_activity]
 
-        self.task = StravaFetchTask(
-            client=self.mock_client,
+        self.task = FetchTask(
+            provider=self.mock_provider,
             per_page=200,
             max_pages=0,
             before=None,
@@ -177,14 +180,14 @@ class TestStravaFetchTaskCancellation(unittest.TestCase):
         self.assertTrue(self.received.get("cancelled"))
 
 
-class TestStravaFetchTaskNoCallback(unittest.TestCase):
+class TestFetchTaskNoCallback(unittest.TestCase):
     """finished() must not raise even if on_finished is None."""
 
     def test_finished_without_callback(self):
-        mock_client = MagicMock()
-        mock_client.fetch_activities.return_value = []
-        task = StravaFetchTask(
-            client=mock_client,
+        mock_provider = MagicMock()
+        mock_provider.fetch_activities.return_value = []
+        task = FetchTask(
+            provider=mock_provider,
             per_page=200,
             max_pages=0,
             before=None,
@@ -198,16 +201,16 @@ class TestStravaFetchTaskNoCallback(unittest.TestCase):
         task.finished(True)
 
 
-class TestStravaFetchTaskUnexpectedError(unittest.TestCase):
+class TestFetchTaskUnexpectedError(unittest.TestCase):
     """The worker-thread safety net catches unexpected errors and reports them."""
 
     def test_unexpected_exception_caught_and_reported(self):
         received = {}
-        mock_client = MagicMock()
-        mock_client.fetch_activities.side_effect = ValueError("bad data")
+        mock_provider = MagicMock()
+        mock_provider.fetch_activities.side_effect = ValueError("bad data")
 
-        task = StravaFetchTask(
-            client=mock_client,
+        task = FetchTask(
+            provider=mock_provider,
             per_page=200,
             max_pages=0,
             before=None,
