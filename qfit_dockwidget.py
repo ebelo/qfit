@@ -712,14 +712,17 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
     def on_apply_filters_clicked(self):
         has_layers = any(layer is not None for layer in [self.activities_layer, self.starts_layer, self.points_layer, self.atlas_layer])
-        wants_background = self.backgroundMapCheckBox.isChecked()
-        if not has_layers and not wants_background:
+        if not has_layers:
             return
 
         self._save_settings()
         status = self._apply_visual_configuration(apply_subset_filters=True)
         if status:
             self._set_status(status)
+
+    @staticmethod
+    def _should_update_background_layer(apply_subset_filters):
+        return not apply_subset_filters
 
     def _apply_visual_configuration(self, apply_subset_filters):
         has_layers = any(layer is not None for layer in [self.activities_layer, self.starts_layer, self.points_layer, self.atlas_layer])
@@ -788,39 +791,37 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 self.temporalModeComboBox.currentText(),
             )
 
-        try:
-            self.background_layer = self.layer_manager.ensure_background_layer(
-                enabled=wants_background,
-                preset_name=self.backgroundPresetComboBox.currentText(),
-                access_token=self.mapboxAccessTokenLineEdit.text().strip(),
-                style_owner=self.mapboxStyleOwnerLineEdit.text().strip(),
-                style_id=self.mapboxStyleIdLineEdit.text().strip(),
-                tile_mode=self.tileModeComboBox.currentText(),
-            )
-        except (MapboxConfigError, RuntimeError) as exc:
-            self._show_error("Background map failed", str(exc))
-            if not has_layers:
-                failure_status = "Background map could not be updated"
-            elif apply_subset_filters:
-                failure_status = "Applied filters and styling, but the background map could not be updated"
-            else:
-                failure_status = "Loaded layers with styling, but the background map could not be updated"
-            if temporal_note:
-                failure_status = f"{failure_status}. {temporal_note}."
-            return failure_status
+        if self._should_update_background_layer(apply_subset_filters):
+            try:
+                self.background_layer = self.layer_manager.ensure_background_layer(
+                    enabled=wants_background,
+                    preset_name=self.backgroundPresetComboBox.currentText(),
+                    access_token=self.mapboxAccessTokenLineEdit.text().strip(),
+                    style_owner=self.mapboxStyleOwnerLineEdit.text().strip(),
+                    style_id=self.mapboxStyleIdLineEdit.text().strip(),
+                    tile_mode=self.tileModeComboBox.currentText(),
+                )
+            except (MapboxConfigError, RuntimeError) as exc:
+                self._show_error("Background map failed", str(exc))
+                if not has_layers:
+                    failure_status = "Background map could not be updated"
+                else:
+                    failure_status = "Loaded layers with styling, but the background map could not be updated"
+                if temporal_note:
+                    failure_status = f"{failure_status}. {temporal_note}."
+                return failure_status
 
         filtered_count = len(filtered_activities)
-        if has_layers and wants_background and self.background_layer is not None:
-            if apply_subset_filters:
-                status = f"Applied filters, styling, and background map ({filtered_count} matching activities)"
-            else:
-                status = "Applied styling and loaded the background map below the qfit activity layers"
+        if apply_subset_filters and has_layers:
+            status = f"Applied filters and styling ({filtered_count} matching activities)"
+        elif has_layers and wants_background and self.background_layer is not None:
+            status = "Applied styling and loaded the background map below the qfit activity layers"
         elif has_layers:
-            status = f"Applied filters and styling ({filtered_count} matching activities)" if apply_subset_filters else "Applied styling to the loaded qfit layers"
+            status = "Applied styling to the loaded qfit layers"
         elif wants_background and self.background_layer is not None:
-            status = f"Background map updated ({filtered_count} matching activities)" if apply_subset_filters else "Background map loaded below the qfit activity layers"
+            status = "Background map loaded below the qfit activity layers"
         else:
-            status = f"Background map cleared ({filtered_count} matching activities)" if apply_subset_filters else "Background map cleared"
+            status = "Background map cleared"
 
         if temporal_note:
             status = f"{status}. {temporal_note}."
