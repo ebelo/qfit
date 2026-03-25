@@ -3,9 +3,6 @@ import os
 from dataclasses import dataclass, field
 from datetime import date
 
-from .gpkg_writer import GeoPackageWriter
-from .layer_manager import LayerManager
-
 logger = logging.getLogger(__name__)
 
 
@@ -35,7 +32,7 @@ class LoadWorkflowError(Exception):
 class LoadWorkflowService:
     """Orchestrates GeoPackage write and layer-load workflows independent of UI."""
 
-    def __init__(self, layer_manager: LayerManager):
+    def __init__(self, layer_manager):
         self.layer_manager = layer_manager
 
     def write_and_load(
@@ -60,7 +57,9 @@ class LoadWorkflowService:
         if not output_path:
             raise LoadWorkflowError("Choose a GeoPackage output path first.")
 
-        writer = GeoPackageWriter(
+        from . import gpkg_writer
+
+        writer = gpkg_writer.GeoPackageWriter(
             output_path=output_path,
             write_activity_points=write_activity_points,
             point_stride=point_stride,

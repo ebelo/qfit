@@ -1,26 +1,19 @@
-import os
+import sys
 import unittest
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
-os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
-
 from tests import _path  # noqa: F401
+from qfit.load_workflow import LoadResult, LoadWorkflowError, LoadWorkflowService
 
-try:
-    from qgis.core import QgsApplication
-except (ImportError, ModuleNotFoundError):  # pragma: no cover
-    QgsApplication = None
-
-if QgsApplication is not None:
-    from qfit.load_workflow import LoadResult, LoadWorkflowError, LoadWorkflowService
-else:  # pragma: no cover
-    LoadResult = None
-    LoadWorkflowError = None
-    LoadWorkflowService = None
+# Ensure a stub ``qfit.gpkg_writer`` is present in ``sys.modules`` so the lazy
+# import inside ``write_and_load`` does not trigger the real module (which
+# requires full QGIS bindings that may be unavailable or mocked out by other
+# test modules).
+_gpkg_writer_stub = MagicMock()
+sys.modules.setdefault("qfit.gpkg_writer", _gpkg_writer_stub)
 
 
-@unittest.skipIf(LoadWorkflowService is None, "QGIS Python bindings are not available")
 class WriteAndLoadValidationTests(unittest.TestCase):
     def setUp(self):
         self.layer_manager = MagicMock()
@@ -53,16 +46,19 @@ class WriteAndLoadValidationTests(unittest.TestCase):
         self.assertIn("output path", str(ctx.exception))
 
 
-@unittest.skipIf(LoadWorkflowService is None, "QGIS Python bindings are not available")
 class WriteAndLoadSuccessTests(unittest.TestCase):
     def setUp(self):
         self.layer_manager = MagicMock()
         self.service = LoadWorkflowService(self.layer_manager)
 
-    @patch("qfit.load_workflow.GeoPackageWriter")
-    def test_returns_load_result_with_layers(self, MockWriter):
-        mock_writer_instance = MockWriter.return_value
-        mock_writer_instance.write_activities.return_value = {
+    def _make_writer_mock(self, write_result):
+        mock_module = MagicMock()
+        mock_writer_instance = mock_module.GeoPackageWriter.return_value
+        mock_writer_instance.write_activities.return_value = write_result
+        return mock_module
+
+    def test_returns_load_result_with_layers(self):
+        write_result = {
             "path": "/tmp/out.gpkg",
             "fetched_count": 3,
             "track_count": 3,
@@ -76,6 +72,7 @@ class WriteAndLoadSuccessTests(unittest.TestCase):
                 "unchanged": 0,
             },
         }
+        mock_gpkg = self._make_writer_mock(write_result)
         mock_layers = (
             MagicMock(name="activities"),
             MagicMock(name="starts"),
@@ -85,16 +82,17 @@ class WriteAndLoadSuccessTests(unittest.TestCase):
         self.layer_manager.load_output_layers.return_value = mock_layers
 
         activities = [SimpleNamespace(name="a1"), SimpleNamespace(name="a2"), SimpleNamespace(name="a3")]
-        result = self.service.write_and_load(
-            activities=activities,
-            output_path="/tmp/out.gpkg",
-            write_activity_points=False,
-            point_stride=5,
-            atlas_margin_percent=8.0,
-            atlas_min_extent_degrees=0.01,
-            atlas_target_aspect_ratio=1.5,
-            last_sync_date="2026-01-01",
-        )
+        with patch.dict(sys.modules, {"qfit.gpkg_writer": mock_gpkg}):
+            result = self.service.write_and_load(
+                activities=activities,
+                output_path="/tmp/out.gpkg",
+                write_activity_points=False,
+                point_stride=5,
+                atlas_margin_percent=8.0,
+                atlas_min_extent_degrees=0.01,
+                atlas_target_aspect_ratio=1.5,
+                last_sync_date="2026-01-01",
+            )
 
         self.assertIsInstance(result, LoadResult)
         self.assertEqual(result.output_path, "/tmp/out.gpkg")
@@ -108,10 +106,8 @@ class WriteAndLoadSuccessTests(unittest.TestCase):
         self.assertIn("inserted 2", result.status)
         self.assertIn("updated 1", result.status)
 
-    @patch("qfit.load_workflow.GeoPackageWriter")
-    def test_passes_sync_metadata_to_writer(self, MockWriter):
-        mock_writer_instance = MockWriter.return_value
-        mock_writer_instance.write_activities.return_value = {
+    def test_passes_sync_metadata_to_writer(self):
+        write_result = {
             "path": "/tmp/out.gpkg",
             "fetched_count": 1,
             "track_count": 1,
@@ -120,28 +116,28 @@ class WriteAndLoadSuccessTests(unittest.TestCase):
             "atlas_count": 1,
             "sync": {"total_count": 1, "inserted": 1, "updated": 0, "unchanged": 0},
         }
+        mock_gpkg = self._make_writer_mock(write_result)
         self.layer_manager.load_output_layers.return_value = (None, None, None, None)
 
         metadata = {"provider": "strava"}
-        self.service.write_and_load(
-            activities=["a"],
-            output_path="/tmp/out.gpkg",
-            write_activity_points=True,
-            point_stride=10,
-            atlas_margin_percent=5.0,
-            atlas_min_extent_degrees=0.02,
-            atlas_target_aspect_ratio=1.0,
-            sync_metadata=metadata,
-        )
+        with patch.dict(sys.modules, {"qfit.gpkg_writer": mock_gpkg}):
+            self.service.write_and_load(
+                activities=["a"],
+                output_path="/tmp/out.gpkg",
+                write_activity_points=True,
+                point_stride=10,
+                atlas_margin_percent=5.0,
+                atlas_min_extent_degrees=0.02,
+                atlas_target_aspect_ratio=1.0,
+                sync_metadata=metadata,
+            )
 
-        mock_writer_instance.write_activities.assert_called_once_with(
+        mock_gpkg.GeoPackageWriter.return_value.write_activities.assert_called_once_with(
             ["a"], sync_metadata=metadata,
         )
 
-    @patch("qfit.load_workflow.GeoPackageWriter")
-    def test_constructs_writer_with_correct_params(self, MockWriter):
-        mock_writer_instance = MockWriter.return_value
-        mock_writer_instance.write_activities.return_value = {
+    def test_constructs_writer_with_correct_params(self):
+        write_result = {
             "path": "/tmp/out.gpkg",
             "fetched_count": 1,
             "track_count": 0,
@@ -150,10 +146,21 @@ class WriteAndLoadSuccessTests(unittest.TestCase):
             "atlas_count": 0,
             "sync": {"total_count": 1, "inserted": 1, "updated": 0, "unchanged": 0},
         }
+        mock_gpkg = self._make_writer_mock(write_result)
         self.layer_manager.load_output_layers.return_value = (None, None, None, None)
 
-        self.service.write_and_load(
-            activities=["a"],
+        with patch.dict(sys.modules, {"qfit.gpkg_writer": mock_gpkg}):
+            self.service.write_and_load(
+                activities=["a"],
+                output_path="/tmp/test.gpkg",
+                write_activity_points=True,
+                point_stride=10,
+                atlas_margin_percent=5.0,
+                atlas_min_extent_degrees=0.02,
+                atlas_target_aspect_ratio=2.0,
+            )
+
+        mock_gpkg.GeoPackageWriter.assert_called_once_with(
             output_path="/tmp/test.gpkg",
             write_activity_points=True,
             point_stride=10,
@@ -162,17 +169,7 @@ class WriteAndLoadSuccessTests(unittest.TestCase):
             atlas_target_aspect_ratio=2.0,
         )
 
-        MockWriter.assert_called_once_with(
-            output_path="/tmp/test.gpkg",
-            write_activity_points=True,
-            point_stride=10,
-            atlas_margin_percent=5.0,
-            atlas_min_extent_degrees=0.02,
-            atlas_target_aspect_ratio=2.0,
-        )
 
-
-@unittest.skipIf(LoadWorkflowService is None, "QGIS Python bindings are not available")
 class LoadExistingValidationTests(unittest.TestCase):
     def setUp(self):
         self.layer_manager = MagicMock()
@@ -189,7 +186,6 @@ class LoadExistingValidationTests(unittest.TestCase):
         self.assertIn("No database found", str(ctx.exception))
 
 
-@unittest.skipIf(LoadWorkflowService is None, "QGIS Python bindings are not available")
 class LoadExistingSuccessTests(unittest.TestCase):
     def setUp(self):
         self.layer_manager = MagicMock()
@@ -225,7 +221,6 @@ class LoadExistingSuccessTests(unittest.TestCase):
         self.assertEqual(result.total_stored, 0)
 
 
-@unittest.skipIf(LoadResult is None, "QGIS Python bindings are not available")
 class LoadResultTests(unittest.TestCase):
     def test_default_values(self):
         result = LoadResult()
