@@ -380,8 +380,8 @@ def build_cover_layout(
     center_x = MARGIN_MM
 
     # Title — centred vertically at ~35% of page height
-    title_y = PAGE_HEIGHT_MM * 0.30
-    title_h = 18.0
+    title_y = PAGE_HEIGHT_MM * 0.28
+    title_h = 14.0
     _add_label(
         layout,
         "qfit Activity Atlas",
@@ -389,7 +389,7 @@ def build_cover_layout(
         y=title_y,
         w=content_width,
         h=title_h,
-        font_size=24.0,
+        font_size=18.0,
         bold=True,
         align_right=False,
     )
@@ -400,16 +400,16 @@ def build_cover_layout(
             layout,
             cover_summary,
             x=center_x,
-            y=title_y + title_h + 4.0,
+            y=title_y + title_h + 3.0,
             w=content_width,
-            h=10.0,
-            font_size=11.0,
+            h=8.0,
+            font_size=8.5,
             bold=False,
             color=QColor(60, 60, 60),
         )
 
     # Separator line (thin label with underline approximated via background color)
-    sep_y = title_y + title_h + 18.0
+    sep_y = title_y + title_h + 13.0
     sep_label = QgsLayoutItemLabel(layout)
     sep_label.setText("")
     sep_label.attemptMove(QgsLayoutPoint(center_x, sep_y, QgsUnitTypes.LayoutMillimeters))
@@ -419,14 +419,16 @@ def build_cover_layout(
     layout.addLayoutItem(sep_label)
 
     # Highlight-card grid — 2-column layout for cover stats
-    grid_y = sep_y + 8.0
+    grid_y = sep_y + 7.0
     grid_cols = 2
     grid_gap_x = 6.0   # horizontal gap between columns
     card_w = (content_width - grid_gap_x) / grid_cols
-    card_label_h = 5.0  # height for the label row
-    card_value_h = 8.0  # height for the value row
+    card_label_h = 4.0   # height for the label row
+    card_value_h = 6.0   # height for the default value row
+    card_value_h_long = 10.0  # extra room for long text values like activity types
     card_h = card_label_h + card_value_h
-    card_gap_y = 4.0    # vertical gap between card rows
+    card_h_long = card_label_h + card_value_h_long
+    card_gap_y = 3.0     # vertical gap between card rows
     label_color = QColor(120, 120, 120)
     value_color = QColor(20, 20, 20)
 
@@ -444,11 +446,23 @@ def build_cover_layout(
     if activity_types_label:
         highlight_cards.append(("Activity types", activity_types_label))
 
+    row_y = grid_y
+    row_max_h = 0.0
     for i, (card_label, card_value) in enumerate(highlight_cards):
         col = i % grid_cols
-        row = i // grid_cols
+        if col == 0 and i > 0:
+            row_y += row_max_h + card_gap_y
+            row_max_h = 0.0
+
+        is_long_text = card_label == "Activity types" or len(card_value) > 24
+        value_h = card_value_h_long if is_long_text else card_value_h
+        value_font = 8.5 if is_long_text else 10.0
+        value_bold = not is_long_text
+        card_total_h = card_label_h + value_h
+        row_max_h = max(row_max_h, card_total_h)
+
         card_x = center_x + col * (card_w + grid_gap_x)
-        card_y = grid_y + row * (card_h + card_gap_y)
+        card_y = row_y
         _add_label(
             layout,
             card_label.upper(),
@@ -456,7 +470,7 @@ def build_cover_layout(
             y=card_y,
             w=card_w,
             h=card_label_h,
-            font_size=7.0,
+            font_size=6.5,
             color=label_color,
             v_align_top=True,
         )
@@ -466,10 +480,11 @@ def build_cover_layout(
             x=card_x,
             y=card_y + card_label_h,
             w=card_w,
-            h=card_value_h,
-            font_size=12.0,
-            bold=True,
+            h=value_h,
+            font_size=value_font,
+            bold=value_bold,
             color=value_color,
+            v_align_top=is_long_text,
         )
 
     return layout
