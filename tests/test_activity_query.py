@@ -108,6 +108,7 @@ class ActivityQueryTests(unittest.TestCase):
         subset = build_subset_string(query)
 
         self.assertIn('"activity_type" = \'Ride\'', subset)
+        self.assertIn('"sport_type" = \'Ride\'', subset)
         self.assertIn('"distance_m" >= 10000.0', subset)
         self.assertIn('"distance_m" <= 50000.0', subset)
         self.assertIn("lower(coalesce(\"name\", '')) LIKE '%o''brien%'", subset)
@@ -198,6 +199,15 @@ class FilterParityTests(unittest.TestCase):
     def test_parity_activity_type_filter(self):
         query = ActivityQuery(activity_type="Ride")
         self.assertEqual(self._python_filter(query), self._sql_filter(query))
+
+    def test_parity_sport_type_filter(self):
+        """Filtering by a sport_type value (e.g. 'GravelRide') works in both paths."""
+        query = ActivityQuery(activity_type="GravelRide")
+        python_ids = self._python_filter(query)
+        sql_ids = self._sql_filter(query)
+        self.assertEqual(python_ids, sql_ids)
+        # Only activity A has sport_type="GravelRide"
+        self.assertEqual(python_ids, ["A"])
 
     def test_parity_date_range_filter(self):
         query = ActivityQuery(date_from="2026-03-18", date_to="2026-03-20")

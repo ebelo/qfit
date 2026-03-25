@@ -1,9 +1,9 @@
 import colorsys
 import unittest
 
-import tests._path  # noqa: F401,E402
+from tests import _path  # noqa: F401
 
-from map_style import (  # noqa: E402
+from qfit.map_style import (
     DEFAULT_SIMPLE_LINE_HEX,
     adapt_color_for_basemap,
     pick_activity_style_field,

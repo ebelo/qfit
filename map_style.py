@@ -2,8 +2,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import colorsys
-import re
 from typing import Iterable
+
+from .activity_classification import (
+    normalize_activity_type as normalize_activity_value,
+    resolve_activity_family,
+)
 
 DEFAULT_SIMPLE_LINE_HEX = "#2A9D8F"
 _DEFAULT_CONTEXT = "Outdoor"
@@ -70,11 +74,6 @@ _BASEMAP_LINE_STYLES = {
 }
 
 
-def normalize_activity_value(value: object) -> str:
-    text = str(value or "").strip().casefold()
-    return re.sub(r"[^a-z0-9]+", "", text)
-
-
 def pick_activity_style_field(available_fields: Iterable[str]) -> str | None:
     field_names = {str(name) for name in available_fields}
     for candidate in ("sport_type", "activity_type"):
@@ -93,29 +92,6 @@ def resolve_activity_color(activity_value: object, basemap_preset_name: str | No
     if base_hex is None:
         base_hex = _FAMILY_FALLBACKS[resolve_activity_family(activity_value)]
     return adapt_color_for_basemap(base_hex, basemap_preset_name)
-
-
-def resolve_activity_family(activity_value: object) -> str:
-    normalized = normalize_activity_value(activity_value)
-    if not normalized:
-        return "machine"
-    if any(token in normalized for token in ("virtual", "trainer", "commute", "ebike", "machine")):
-        return "machine"
-    if any(token in normalized for token in ("ski", "snow", "sled")):
-        return "winter"
-    if any(token in normalized for token in ("swim", "surf", "paddle", "row", "kayak", "canoe", "sup")):
-        return "water"
-    if any(token in normalized for token in ("iceclimb", "climb", "mountain", "boulder", "alpinism")):
-        return "mountain"
-    if any(token in normalized for token in ("run", "jog")):
-        return "running"
-    if any(token in normalized for token in ("walk", "hike", "trek", "backpack")):
-        return "walking"
-    if any(token in normalized for token in ("crossfit", "workout", "yoga", "weight", "gym", "pilates")):
-        return "fitness"
-    if any(token in normalized for token in ("ride", "bike", "cycle")):
-        return "cycling"
-    return "machine"
 
 
 def adapt_color_for_basemap(color_hex: str, basemap_preset_name: str | None) -> str:

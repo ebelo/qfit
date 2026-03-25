@@ -5,6 +5,7 @@ from datetime import datetime
 from math import atan, exp, log, pi, tan
 from typing import Iterable
 
+from .activity_classification import activity_prefers_pace
 from .activity_query import format_duration
 from .polyline_utils import decode_polyline
 
@@ -1021,8 +1022,7 @@ def format_altitude_range_label(min_value, max_value) -> str | None:
 
 
 def _activity_type_prefers_pace(activity_type: str | None) -> bool:
-    normalized = normalize_sort_text(activity_type or "")
-    return any(token in normalized for token in ("run", "walk", "hike"))
+    return activity_prefers_pace(activity_type)
 
 
 def _safe_float(value) -> float | None:

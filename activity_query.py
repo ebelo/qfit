@@ -4,6 +4,8 @@ from collections import Counter
 from datetime import date, datetime
 from typing import Iterable, Sequence
 
+from .activity_classification import canonical_activity_label
+
 DEFAULT_SORT_LABEL = "Start date (newest first)"
 SORT_OPTIONS = (
     DEFAULT_SORT_LABEL,
@@ -45,7 +47,12 @@ def filter_activities(activities: Iterable[object], query: ActivityQuery) -> lis
 
     for activity in activities:
         if query.activity_type and query.activity_type != "All":
-            if (getattr(activity, "activity_type", None) or "") != query.activity_type:
+            act_label = canonical_activity_label(
+                getattr(activity, "activity_type", None),
+                getattr(activity, "sport_type", None),
+            )
+            act_type = getattr(activity, "activity_type", None) or ""
+            if act_type != query.activity_type and (act_label or "") != query.activity_type:
                 continue
 
         activity_date = _activity_date(activity)
@@ -150,7 +157,8 @@ def build_preview_lines(activities: Sequence[object], limit: int = 8) -> list[st
 def build_subset_string(query: ActivityQuery) -> str:
     clauses = []
     if query.activity_type and query.activity_type != "All":
-        clauses.append(f'"activity_type" = \'{_escape_sql_literal(query.activity_type)}\'')
+        escaped = _escape_sql_literal(query.activity_type)
+        clauses.append(f'("activity_type" = \'{escaped}\' OR "sport_type" = \'{escaped}\')')
     if query.date_from:
         clauses.append(f'"start_date" >= \'{_escape_sql_literal(query.date_from)}T00:00:00\'')
     if query.date_to:
