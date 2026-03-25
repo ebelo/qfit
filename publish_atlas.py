@@ -342,32 +342,7 @@ def build_atlas_toc_entries(
 
 
 def build_atlas_cover_highlights(records: Iterable[dict]) -> list[AtlasCoverHighlight]:
-    summary = build_atlas_document_summary(records)
-    if summary.activity_count <= 0:
-        return []
-
-    highlights: list[AtlasCoverHighlight] = []
-
-    def add_highlight(key: str, label: str, value: str | None):
-        if not value:
-            return
-        highlights.append(
-            AtlasCoverHighlight(
-                highlight_order=len(highlights) + 1,
-                highlight_key=key,
-                highlight_label=label,
-                highlight_value=value,
-            )
-        )
-
-    activity_label = "activity" if summary.activity_count == 1 else "activities"
-    add_highlight("activity_count", "Activities", f"{summary.activity_count} {activity_label}")
-    add_highlight("date_range", "Date range", summary.date_range_label)
-    add_highlight("total_distance", "Distance", summary.total_distance_label)
-    add_highlight("total_duration", _LABEL_MOVING_TIME, summary.total_duration_label)
-    add_highlight("total_elevation_gain", "Climbing", summary.total_elevation_gain_label)
-    add_highlight("activity_types", "Activity types", summary.activity_types_label)
-    return highlights
+    return build_atlas_cover_highlights_from_summary(build_atlas_document_summary(records))
 
 
 def build_atlas_page_detail_items(
@@ -474,9 +449,6 @@ def build_atlas_document_summary(records: Iterable[dict]) -> AtlasDocumentSummar
         )
         if activity_date
     ]
-    activity_date_start = min(activity_dates) if activity_dates else None
-    activity_date_end = max(activity_dates) if activity_dates else None
-
     total_distance_m = sum(distance_m for distance_m in (_safe_float(record.get("distance_m")) for record in record_list) if distance_m is not None)
     total_moving_time_s = sum(moving_time_s for moving_time_s in (_safe_int(record.get("moving_time_s")) for record in record_list) if moving_time_s is not None)
     total_elevation_gain_m = sum(
@@ -485,7 +457,7 @@ def build_atlas_document_summary(records: Iterable[dict]) -> AtlasDocumentSummar
         if elevation_gain_m is not None
     )
 
-    ordered_activity_types = []
+    ordered_activity_types: list[str] = []
     for record in record_list:
         activity_type = (record.get("activity_type") or "").strip()
         if not activity_type:
@@ -494,32 +466,13 @@ def build_atlas_document_summary(records: Iterable[dict]) -> AtlasDocumentSummar
             continue
         ordered_activity_types.append(activity_type)
 
-    summary = AtlasDocumentSummary(
+    return _assemble_document_summary(
         activity_count=len(record_list),
-        activity_date_start=activity_date_start,
-        activity_date_end=activity_date_end,
-        date_range_label=build_date_range_label(activity_date_start, activity_date_end),
+        activity_dates=activity_dates,
         total_distance_m=total_distance_m,
-        total_distance_label=format_distance_label(total_distance_m) if total_distance_m > 0 else None,
         total_moving_time_s=total_moving_time_s,
-        total_duration_label=format_duration_label(total_moving_time_s) if total_moving_time_s > 0 else None,
         total_elevation_gain_m=total_elevation_gain_m,
-        total_elevation_gain_label=format_elevation_label(total_elevation_gain_m) if total_elevation_gain_m > 0 else None,
-        activity_types_label=", ".join(ordered_activity_types) if ordered_activity_types else None,
-    )
-    return AtlasDocumentSummary(
-        activity_count=summary.activity_count,
-        activity_date_start=summary.activity_date_start,
-        activity_date_end=summary.activity_date_end,
-        date_range_label=summary.date_range_label,
-        total_distance_m=summary.total_distance_m,
-        total_distance_label=summary.total_distance_label,
-        total_moving_time_s=summary.total_moving_time_s,
-        total_duration_label=summary.total_duration_label,
-        total_elevation_gain_m=summary.total_elevation_gain_m,
-        total_elevation_gain_label=summary.total_elevation_gain_label,
-        activity_types_label=summary.activity_types_label,
-        cover_summary=build_cover_summary(summary),
+        ordered_activity_types=ordered_activity_types,
     )
 
 
@@ -528,9 +481,6 @@ def build_atlas_document_summary_from_plans(plans: list[AtlasPagePlan]) -> Atlas
         return AtlasDocumentSummary()
 
     activity_dates = [plan.page_date for plan in plans if plan.page_date]
-    activity_date_start = min(activity_dates) if activity_dates else None
-    activity_date_end = max(activity_dates) if activity_dates else None
-
     total_distance_m = sum(plan.distance_m for plan in plans if plan.distance_m is not None)
     total_moving_time_s = sum(plan.moving_time_s for plan in plans if plan.moving_time_s is not None)
     total_elevation_gain_m = sum(plan.total_elevation_gain_m for plan in plans if plan.total_elevation_gain_m is not None)
@@ -544,32 +494,13 @@ def build_atlas_document_summary_from_plans(plans: list[AtlasPagePlan]) -> Atlas
             continue
         ordered_activity_types.append(activity_type)
 
-    summary = AtlasDocumentSummary(
+    return _assemble_document_summary(
         activity_count=len(plans),
-        activity_date_start=activity_date_start,
-        activity_date_end=activity_date_end,
-        date_range_label=build_date_range_label(activity_date_start, activity_date_end),
+        activity_dates=activity_dates,
         total_distance_m=total_distance_m,
-        total_distance_label=format_distance_label(total_distance_m) if total_distance_m > 0 else None,
         total_moving_time_s=total_moving_time_s,
-        total_duration_label=format_duration_label(total_moving_time_s) if total_moving_time_s > 0 else None,
         total_elevation_gain_m=total_elevation_gain_m,
-        total_elevation_gain_label=format_elevation_label(total_elevation_gain_m) if total_elevation_gain_m > 0 else None,
-        activity_types_label=", ".join(ordered_activity_types) if ordered_activity_types else None,
-    )
-    return AtlasDocumentSummary(
-        activity_count=summary.activity_count,
-        activity_date_start=summary.activity_date_start,
-        activity_date_end=summary.activity_date_end,
-        date_range_label=summary.date_range_label,
-        total_distance_m=summary.total_distance_m,
-        total_distance_label=summary.total_distance_label,
-        total_moving_time_s=summary.total_moving_time_s,
-        total_duration_label=summary.total_duration_label,
-        total_elevation_gain_m=summary.total_elevation_gain_m,
-        total_elevation_gain_label=summary.total_elevation_gain_label,
-        activity_types_label=summary.activity_types_label,
-        cover_summary=build_cover_summary(summary),
+        ordered_activity_types=ordered_activity_types,
     )
 
 
@@ -599,6 +530,45 @@ def build_atlas_cover_highlights_from_summary(summary: AtlasDocumentSummary) -> 
     add_highlight("total_elevation_gain", "Climbing", summary.total_elevation_gain_label)
     add_highlight("activity_types", "Activity types", summary.activity_types_label)
     return highlights
+
+
+def _assemble_document_summary(
+    activity_count: int,
+    activity_dates: list[str],
+    total_distance_m: float,
+    total_moving_time_s: int,
+    total_elevation_gain_m: float,
+    ordered_activity_types: list[str],
+) -> AtlasDocumentSummary:
+    activity_date_start = min(activity_dates) if activity_dates else None
+    activity_date_end = max(activity_dates) if activity_dates else None
+    summary = AtlasDocumentSummary(
+        activity_count=activity_count,
+        activity_date_start=activity_date_start,
+        activity_date_end=activity_date_end,
+        date_range_label=build_date_range_label(activity_date_start, activity_date_end),
+        total_distance_m=total_distance_m,
+        total_distance_label=format_distance_label(total_distance_m) if total_distance_m > 0 else None,
+        total_moving_time_s=total_moving_time_s,
+        total_duration_label=format_duration_label(total_moving_time_s) if total_moving_time_s > 0 else None,
+        total_elevation_gain_m=total_elevation_gain_m,
+        total_elevation_gain_label=format_elevation_label(total_elevation_gain_m) if total_elevation_gain_m > 0 else None,
+        activity_types_label=", ".join(ordered_activity_types) if ordered_activity_types else None,
+    )
+    return AtlasDocumentSummary(
+        activity_count=summary.activity_count,
+        activity_date_start=summary.activity_date_start,
+        activity_date_end=summary.activity_date_end,
+        date_range_label=summary.date_range_label,
+        total_distance_m=summary.total_distance_m,
+        total_distance_label=summary.total_distance_label,
+        total_moving_time_s=summary.total_moving_time_s,
+        total_duration_label=summary.total_duration_label,
+        total_elevation_gain_m=summary.total_elevation_gain_m,
+        total_elevation_gain_label=summary.total_elevation_gain_label,
+        activity_types_label=summary.activity_types_label,
+        cover_summary=build_cover_summary(summary),
+    )
 
 
 def build_date_range_label(start_date: str | None, end_date: str | None) -> str | None:
