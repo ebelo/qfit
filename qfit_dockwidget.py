@@ -554,7 +554,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
     def on_load_clicked(self):
         self._save_settings()
-        self._set_status("Writing GeoPackage…")
         try:
             result = self.load_workflow.write_and_load(
                 activities=self.activities,
@@ -568,7 +567,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 last_sync_date=self.settings.get("last_sync_date", None),
             )
         except LoadWorkflowError as exc:
-            self._show_error("Nothing to load", str(exc))
+            self._show_error("Missing input", str(exc))
             return
         except (RuntimeError, OSError, ValueError) as exc:
             _msg = "GeoPackage export failed"
@@ -598,13 +597,12 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def on_load_layers_clicked(self):
         """Load an existing GeoPackage into QGIS without fetching from Strava."""
         self._save_settings()
-        self._set_status("Loading layers from GeoPackage…")
         try:
             result = self.load_workflow.load_existing(
                 self.outputPathLineEdit.text().strip(),
             )
         except LoadWorkflowError as exc:
-            self._show_error("Load layers failed", str(exc))
+            self._show_error("GeoPackage not found", str(exc))
             return
         except (RuntimeError, OSError) as exc:
             _msg = "Load layers failed"
