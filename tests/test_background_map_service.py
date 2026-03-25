@@ -66,7 +66,13 @@ def _load_service_with_mock_qgis():
     qstub = MagicMock()
 
     # QgsRasterLayer needs to be a real type so isinstance() works.
-    _QgsRasterLayer = type("QgsRasterLayer", (MagicMock,), {})
+    # We subclass MagicMock but override __init__ to ignore the QGIS constructor
+    # positional args (uri, name, provider) that would otherwise be interpreted
+    # as MagicMock's `spec=` parameter, constraining attribute access.
+    class _QgsRasterLayer(MagicMock):
+        def __init__(self, *args, **kwargs):
+            super().__init__()  # no spec — full MagicMock attribute access
+
     qstub.QgsRasterLayer = _QgsRasterLayer
 
     _QGIS_MODS = ["qgis", "qgis.core", "qgis.PyQt", "qgis.PyQt.QtCore"]
