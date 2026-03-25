@@ -718,6 +718,105 @@ class TestBuildCoverLayout(unittest.TestCase):
         from qfit.atlas_export_task import QgsPrintLayout  # noqa: PLC0415
         QgsPrintLayout.assert_called_with(project)
 
+    def test_build_cover_layout_highlight_grid_item_count(self):
+        """Each stat produces two layout items: an uppercase label and a bold value."""
+        layer = _make_cover_atlas_layer()
+        # Use a fresh layout mock to isolate item counts from other tests.
+        fresh_layout = MagicMock()
+        fresh_layout.pageCollection.return_value.pageCount.return_value = 1
+        fresh_layout.pageCollection.return_value.page.return_value = MagicMock()
+        with patch("qfit.atlas_export_task.QgsPrintLayout", return_value=fresh_layout):
+            result = build_cover_layout(layer)
+        self.assertIsNotNone(result)
+        # With all 6 stats present, we expect:
+        #   title (1) + subtitle (1) + separator (1) + 6×2 highlight items = 15
+        add_calls = fresh_layout.addLayoutItem.call_args_list
+        self.assertEqual(len(add_calls), 15)
+
+    def test_build_cover_layout_highlight_labels_uppercased(self):
+        """Highlight card labels are rendered in uppercase."""
+        layer = _make_cover_atlas_layer()
+        fresh_label_cls = MagicMock()
+        fresh_layout = MagicMock()
+        fresh_layout.pageCollection.return_value.pageCount.return_value = 1
+        fresh_layout.pageCollection.return_value.page.return_value = MagicMock()
+        with patch("qfit.atlas_export_task.QgsPrintLayout", return_value=fresh_layout), \
+             patch("qfit.atlas_export_task.QgsLayoutItemLabel", fresh_label_cls):
+            build_cover_layout(layer)
+        label_texts = [
+            call[0][0]
+            for call in fresh_label_cls.return_value.setText.call_args_list
+        ]
+        expected_upper_labels = [
+            "ACTIVITIES", "DATE RANGE", "DISTANCE",
+            "MOVING TIME", "CLIMBING", "ACTIVITY TYPES",
+        ]
+        for expected in expected_upper_labels:
+            self.assertIn(expected, label_texts)
+
+    def test_build_cover_layout_highlight_grid_two_columns(self):
+        """Highlight cards are positioned in a 2-column grid pattern."""
+        from qfit.atlas_export_task import MARGIN_MM  # noqa: PLC0415
+        layer = _make_cover_atlas_layer()
+        fresh_point_cls = MagicMock()
+        fresh_layout = MagicMock()
+        fresh_layout.pageCollection.return_value.pageCount.return_value = 1
+        fresh_layout.pageCollection.return_value.page.return_value = MagicMock()
+        with patch("qfit.atlas_export_task.QgsPrintLayout", return_value=fresh_layout), \
+             patch("qfit.atlas_export_task.QgsLayoutPoint", fresh_point_cls):
+            build_cover_layout(layer)
+        # Collect x-coordinates from all QgsLayoutPoint calls.
+        x_coords = sorted({call[0][0] for call in fresh_point_cls.call_args_list})
+        # There should be at least 2 distinct x positions for the grid columns
+        # (beyond the title/subtitle x position at MARGIN_MM)
+        grid_x_positions = [x for x in x_coords if x > MARGIN_MM]
+        self.assertGreaterEqual(len(grid_x_positions), 1,
+                                "Highlight cards should use at least two distinct x positions")
+
+    def test_build_cover_layout_fewer_stats_fewer_items(self):
+        """With only 2 stats, the grid renders 2×2 = 4 highlight items."""
+        fields_dict = {
+            "document_cover_summary": "2 activities · 100 km",
+            "document_activity_count": "2",
+            "document_date_range_label": "",
+            "document_total_distance_label": "100 km",
+            "document_total_duration_label": "",
+            "document_total_elevation_gain_label": "",
+            "document_activity_types_label": "",
+        }
+        layer = _make_cover_atlas_layer(fields_dict=fields_dict)
+        fresh_layout = MagicMock()
+        fresh_layout.pageCollection.return_value.pageCount.return_value = 1
+        fresh_layout.pageCollection.return_value.page.return_value = MagicMock()
+        with patch("qfit.atlas_export_task.QgsPrintLayout", return_value=fresh_layout):
+            result = build_cover_layout(layer)
+        self.assertIsNotNone(result)
+        # title (1) + subtitle (1) + separator (1) + 2×2 highlight items = 7
+        add_calls = fresh_layout.addLayoutItem.call_args_list
+        self.assertEqual(len(add_calls), 7)
+
+    def test_build_cover_layout_no_stats_no_highlight_items(self):
+        """When all stats are empty, no highlight cards are rendered."""
+        fields_dict = {
+            "document_cover_summary": "",
+            "document_activity_count": "0",
+            "document_date_range_label": "",
+            "document_total_distance_label": "",
+            "document_total_duration_label": "",
+            "document_total_elevation_gain_label": "",
+            "document_activity_types_label": "",
+        }
+        layer = _make_cover_atlas_layer(fields_dict=fields_dict)
+        fresh_layout = MagicMock()
+        fresh_layout.pageCollection.return_value.pageCount.return_value = 1
+        fresh_layout.pageCollection.return_value.page.return_value = MagicMock()
+        with patch("qfit.atlas_export_task.QgsPrintLayout", return_value=fresh_layout):
+            result = build_cover_layout(layer)
+        self.assertIsNotNone(result)
+        # title (1) + separator (1) = 2 (no subtitle since summary is empty)
+        add_calls = fresh_layout.addLayoutItem.call_args_list
+        self.assertEqual(len(add_calls), 2)
+
 
 class TestExportCoverPage(unittest.TestCase):
     def test_export_cover_page_returns_path_on_success(self):
