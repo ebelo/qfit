@@ -912,7 +912,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         result = AtlasExportService.build_result(output_path, error, cancelled, page_count)
         self._set_atlas_pdf_status(result.pdf_status)
         self._set_status(result.main_status)
-        if result.error is not None:
+        if result.error is not None and not result.cancelled:
             self._show_error("Atlas PDF export failed", result.error)
 
     def _set_atlas_pdf_status(self, text: str) -> None:
