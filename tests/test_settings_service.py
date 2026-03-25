@@ -2,6 +2,7 @@ import unittest
 from unittest.mock import MagicMock
 
 from tests import _path  # noqa: F401
+from qfit.credential_store import InMemoryCredentialStore, NullCredentialStore
 from qfit.settings_service import SettingsService
 
 
@@ -16,6 +17,9 @@ class FakeQSettings:
 
     def setValue(self, key, value):
         self._data[key] = value
+
+    def remove(self, key):
+        self._data.pop(key, None)
 
 
 class SettingsServiceGetTests(unittest.TestCase):
@@ -102,3 +106,91 @@ class SettingsServiceSetTests(unittest.TestCase):
         self.assertEqual(svc.get("key"), "val")
         svc.set("key2", "v2")
         self.assertEqual(qs._data["custom/key2"], "v2")
+
+
+# ---------------------------------------------------------------------------
+# Credential-store routing (issue #126)
+# ---------------------------------------------------------------------------
+
+
+class SettingsServiceCredentialRoutingTests(unittest.TestCase):
+    """Sensitive keys must be routed through the credential store."""
+
+    def _svc(self, qs_data=None, cred_data=None):
+        qs = FakeQSettings(qs_data or {})
+        cred = InMemoryCredentialStore(cred_data or {})
+        return SettingsService(qsettings=qs, credential_store=cred), qs, cred
+
+    # -- get ------------------------------------------------------------------
+
+    def test_get_sensitive_reads_from_cred_store(self):
+        svc, _, cred = self._svc(cred_data={"client_secret": "from_keyring"})
+        self.assertEqual(svc.get("client_secret"), "from_keyring")
+
+    def test_get_sensitive_falls_back_to_qsettings(self):
+        """Legacy: secret in QSettings, nothing in cred store → still readable."""
+        svc, _, _ = self._svc(qs_data={"qfit/client_secret": "plain"})
+        self.assertEqual(svc.get("client_secret"), "plain")
+
+    def test_get_sensitive_prefers_cred_store_over_qsettings(self):
+        svc, _, _ = self._svc(
+            qs_data={"qfit/refresh_token": "plaintext"},
+            cred_data={"refresh_token": "from_keyring"},
+        )
+        self.assertEqual(svc.get("refresh_token"), "from_keyring")
+
+    def test_get_non_sensitive_uses_qsettings(self):
+        svc, _, cred = self._svc(qs_data={"qfit/client_id": "app123"})
+        # Non-sensitive key must NOT go to the credential store
+        cred.set("client_id", "WRONG")
+        self.assertEqual(svc.get("client_id"), "app123")
+
+    # -- set ------------------------------------------------------------------
+
+    def test_set_sensitive_writes_to_cred_store(self):
+        svc, qs, cred = self._svc()
+        svc.set("client_secret", "newsecret")
+        self.assertEqual(cred.get("client_secret"), "newsecret")
+
+    def test_set_sensitive_does_not_write_to_qsettings(self):
+        svc, qs, _ = self._svc()
+        svc.set("refresh_token", "tok")
+        self.assertNotIn("qfit/refresh_token", qs._data)
+
+    def test_set_sensitive_removes_plaintext_from_qsettings(self):
+        """Writing a secret must purge any pre-existing plaintext QSettings entry."""
+        svc, qs, _ = self._svc(qs_data={"qfit/client_secret": "old_plain"})
+        svc.set("client_secret", "newval")
+        self.assertNotIn("qfit/client_secret", qs._data)
+
+    def test_set_non_sensitive_writes_to_qsettings(self):
+        svc, qs, _ = self._svc()
+        svc.set("client_id", "appid")
+        self.assertEqual(qs._data.get("qfit/client_id"), "appid")
+
+    # -- NullCredentialStore (no keyring available) ---------------------------
+
+    def test_set_sensitive_falls_back_to_qsettings_when_no_keyring(self):
+        qs = FakeQSettings()
+        svc = SettingsService(qsettings=qs, credential_store=NullCredentialStore())
+        svc.set("mapbox_access_token", "pk.test")
+        self.assertEqual(qs._data.get("qfit/mapbox_access_token"), "pk.test")
+
+    def test_get_sensitive_reads_qsettings_when_no_keyring(self):
+        qs = FakeQSettings({"qfit/mapbox_access_token": "pk.test"})
+        svc = SettingsService(qsettings=qs, credential_store=NullCredentialStore())
+        self.assertEqual(svc.get("mapbox_access_token"), "pk.test")
+
+    def test_set_sensitive_falls_back_to_qsettings_on_keyring_error(self):
+        """If the keyring write raises, the value must still land in QSettings."""
+        from unittest.mock import MagicMock
+
+        broken_cred = MagicMock()
+        broken_cred.available = True
+        broken_cred.set.side_effect = RuntimeError("keyring locked")
+
+        qs = FakeQSettings()
+        svc = SettingsService(qsettings=qs, credential_store=broken_cred)
+        svc.set("refresh_token", "tok")
+
+        self.assertEqual(qs._data.get("qfit/refresh_token"), "tok")

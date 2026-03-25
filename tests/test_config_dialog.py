@@ -18,6 +18,9 @@ class FakeQSettings:
     def setValue(self, key, value):
         self._data[key] = value
 
+    def remove(self, key):
+        self._data.pop(key, None)
+
 
 class TestStravaStatusText(unittest.TestCase):
     def _settings(self, data=None):
