@@ -162,7 +162,7 @@ class VisualApplyService:
                 tile_mode=config.tile_mode,
             )
             return layer, None
-        except (RuntimeError, Exception) as exc:
+        except Exception as exc:
             return None, str(exc)
 
     @staticmethod
