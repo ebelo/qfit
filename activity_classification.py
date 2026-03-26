@@ -39,12 +39,19 @@ def canonical_activity_label(
     """Return the canonical label for an activity.
 
     Prefers the more-specific ``sport_type`` when set, otherwise falls back to
-    ``activity_type``.  Returns ``None`` when both are absent.
+    ``activity_type``. Blank/whitespace-only values are ignored. Returns
+    ``None`` when both are absent.
 
     This is the agreed field-priority contract used by filtering, the UI
     combo-box, and map styling.
     """
-    return sport_type or activity_type or None
+    for candidate in (sport_type, activity_type):
+        if candidate is None:
+            continue
+        label = str(candidate).strip()
+        if label:
+            return label
+    return None
 
 
 def resolve_activity_family(activity_value: object) -> str:
