@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from datetime import date, datetime
 from typing import Iterable, Sequence
 
-from .activity_classification import canonical_activity_label
+from .activity_classification import ACTIVITY_LABEL_FIELDS, canonical_activity_label
 
 
 @dataclass(frozen=True)
@@ -175,7 +175,8 @@ def build_subset_string(query: ActivityQuery) -> str:
     clauses = []
     if query.activity_type and query.activity_type != "All":
         escaped = _escape_sql_literal(query.activity_type)
-        clauses.append(f'("activity_type" = \'{escaped}\' OR "sport_type" = \'{escaped}\')')
+        type_matches = [f'"{field_name}" = \'{escaped}\'' for field_name in reversed(ACTIVITY_LABEL_FIELDS)]
+        clauses.append(f"({' OR '.join(type_matches)})")
     if query.date_from:
         clauses.append(f'"start_date" >= \'{_escape_sql_literal(query.date_from)}T00:00:00\'')
     if query.date_to:
@@ -186,13 +187,8 @@ def build_subset_string(query: ActivityQuery) -> str:
         clauses.append(f'"distance_m" <= {query.max_distance_km * 1000.0}')
     if query.search_text:
         search_text = _escape_sql_literal(query.search_text.lower())
-        clauses.append(
-            "("
-            f"lower(coalesce(\"name\", '')) LIKE '%{search_text}%'"
-            f" OR lower(coalesce(\"activity_type\", '')) LIKE '%{search_text}%'"
-            f" OR lower(coalesce(\"sport_type\", '')) LIKE '%{search_text}%'"
-            ")"
-        )
+        search_clauses = [f"lower(coalesce(\"{field_name}\", '')) LIKE '%{search_text}%'" for field_name in ("name", *reversed(ACTIVITY_LABEL_FIELDS))]
+        clauses.append(f"({' OR '.join(search_clauses)})")
     if query.detailed_only:
         clauses.append('"geometry_source" = \'stream\'')
     return " AND ".join(clauses)

@@ -7,6 +7,9 @@ here instead of defining their own normalization or family-mapping logic.
 from __future__ import annotations
 
 import re
+from typing import Iterable
+
+ACTIVITY_LABEL_FIELDS: tuple[str, ...] = ("sport_type", "activity_type")
 
 # Resolution order matters: first matching family wins.
 _FAMILY_TOKENS: tuple[tuple[str, tuple[str, ...]], ...] = (
@@ -51,6 +54,23 @@ def canonical_activity_label(
         label = str(candidate).strip()
         if label:
             return label
+    return None
+
+
+def preferred_activity_field(available_fields: Iterable[str]) -> str | None:
+    """Return the best activity-label field from *available_fields*.
+
+    Prefers the more-specific ``sport_type`` when present, otherwise falls back
+    to ``activity_type``.  Returns ``None`` when neither is available.
+
+    This encodes the same field-priority contract as
+    :func:`canonical_activity_label` but operates on layer/table field names
+    rather than individual values.
+    """
+    field_set = {str(name) for name in available_fields}
+    for candidate in ACTIVITY_LABEL_FIELDS:
+        if candidate in field_set:
+            return candidate
     return None
 
 
