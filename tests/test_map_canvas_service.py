@@ -29,6 +29,7 @@ except Exception as exc:  # pragma: no cover
 SKIP_REAL = f"QGIS not available: {QGIS_IMPORT_ERROR}" if not QGIS_AVAILABLE else ""
 
 _def_service_cls = None
+_def_service_module = None
 
 
 def _load_service_with_mock_qgis():
@@ -61,7 +62,7 @@ def _load_service_with_mock_qgis():
 
 
 if not QGIS_AVAILABLE:
-    _def_service_cls, _ = _load_service_with_mock_qgis()
+    _def_service_cls, _def_service_module = _load_service_with_mock_qgis()
 
 SKIP_MOCK = "QGIS is installed — real-QGIS suite provides coverage" if QGIS_AVAILABLE else ""
 SKIP_MOCK_LOAD = (
@@ -87,11 +88,20 @@ def _make_layer(extent_vals=None, valid=True):
     """
     layer = MagicMock()
     layer.isValid.return_value = valid
-    extent = MagicMock()
-    if extent_vals is None:
-        extent.isEmpty.return_value = True
+    if QGIS_AVAILABLE and extent_vals is not None:
+        from qgis.core import QgsRectangle
+
+        extent = QgsRectangle(*extent_vals)
+    elif QGIS_AVAILABLE:
+        from qgis.core import QgsRectangle
+
+        extent = QgsRectangle()
     else:
-        extent.isEmpty.return_value = False
+        extent = MagicMock()
+        if extent_vals is None:
+            extent.isEmpty.return_value = True
+        else:
+            extent.isEmpty.return_value = False
     layer.extent.return_value = extent
     return layer, extent
 
@@ -125,24 +135,31 @@ class MapCanvasServiceRealTests(unittest.TestCase):
         project.setCrs.assert_called_once()
         canvas.setDestinationCrs.assert_called_once()
 
+    @patch("qfit.map_canvas_service.QgsCoordinateTransform")
     @patch("qfit.map_canvas_service.QgsProject")
-    def test_ensure_working_crs_preserves_extent_on_crs_change(self, mock_project_cls):
-        from qgis.core import QgsCoordinateReferenceSystem
+    def test_ensure_working_crs_preserves_extent_on_crs_change(
+        self, mock_project_cls, mock_transform_cls
+    ):
+        from qgis.core import QgsCoordinateReferenceSystem, QgsRectangle
 
         project = MagicMock()
         old_crs = QgsCoordinateReferenceSystem("EPSG:4326")
         project.crs.return_value = old_crs
         mock_project_cls.instance.return_value = project
 
+        transformed_extent = QgsRectangle(0, 0, 1, 1)
+        transform = MagicMock()
+        transform.transformBoundingBox.return_value = transformed_extent
+        mock_transform_cls.return_value = transform
+
         iface, canvas = _make_iface()
-        old_extent = MagicMock()
-        old_extent.isEmpty.return_value = False
-        canvas.extent.return_value = old_extent
+        canvas.extent.return_value = QgsRectangle(6, 46, 7, 47)
 
         self.service.ensure_working_crs(iface)
 
         project.setCrs.assert_called_once()
         canvas.setDestinationCrs.assert_called_once()
+        canvas.setExtent.assert_called_once_with(transformed_extent)
 
     @patch("qfit.map_canvas_service.QgsProject")
     def test_ensure_working_crs_noop_when_iface_is_none(self, mock_project_cls):
@@ -214,6 +231,8 @@ class MapCanvasServiceMockTests(unittest.TestCase):
 
     def setUp(self):
         self._bg = MagicMock()
+        if _def_service_module is not None:
+            _def_service_module.QgsRectangle.side_effect = lambda rect=None: rect
         self.service = _def_service_cls(self._bg)
 
     def test_zoom_to_layers_sets_canvas_extent(self):
