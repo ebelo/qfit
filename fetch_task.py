@@ -1,4 +1,4 @@
-"""Background task for fetching Strava activities without blocking the QGIS UI.
+"""Background task for fetching activities without blocking the QGIS UI.
 
 Uses :class:`qgis.core.QgsTask` so that fetches appear in the QGIS task
 manager, show progress in the native progress bar, and can be cancelled.
@@ -10,28 +10,28 @@ from qgis.core import QgsTask
 
 logger = logging.getLogger(__name__)
 
-from .strava_client import StravaClient, StravaClientError
+from .provider import ProviderError
 
 
-class StravaFetchTask(QgsTask):
-    """Wraps :meth:`StravaClient.fetch_activities` in a ``QgsTask``.
+class FetchTask(QgsTask):
+    """Wraps an :class:`ActivityProvider`'s ``fetch_activities`` in a ``QgsTask``.
 
     The task runs in a QGIS-managed worker thread so the main thread (and
     therefore the QGIS UI) stays responsive while activities are being
-    downloaded from Strava.
+    downloaded.
 
     Parameters
     ----------
-    client:
-        A fully-configured :class:`StravaClient` instance.
+    provider:
+        A fully-configured :class:`ActivityProvider` instance.
     per_page:
         Number of activities to request per API page.
     max_pages:
         Maximum number of pages to fetch.
     before:
-        Upper bound epoch timestamp (passed to Strava API).
+        Upper bound epoch timestamp.
     after:
-        Lower bound epoch timestamp (passed to Strava API).
+        Lower bound epoch timestamp.
     use_detailed_streams:
         Whether to enrich activities with per-point stream data.
     max_detailed_activities:
@@ -40,12 +40,12 @@ class StravaFetchTask(QgsTask):
         Callable invoked **on the main thread** when the task completes.
         It receives keyword arguments:
         ``activities`` (list | None), ``error`` (str | None),
-        ``cancelled`` (bool), ``client`` (:class:`StravaClient`).
+        ``cancelled`` (bool), ``provider`` (:class:`ActivityProvider`).
     """
 
     def __init__(
         self,
-        client,
+        provider,
         per_page,
         max_pages,
         before,
@@ -54,8 +54,8 @@ class StravaFetchTask(QgsTask):
         max_detailed_activities,
         on_finished,
     ):
-        super().__init__("Fetch Strava activities", QgsTask.CanCancel)
-        self._client = client
+        super().__init__("Fetch activities", QgsTask.CanCancel)
+        self._provider = provider
         self._per_page = per_page
         self._max_pages = max_pages
         self._before = before
@@ -71,12 +71,12 @@ class StravaFetchTask(QgsTask):
     # ------------------------------------------------------------------
 
     def run(self):
-        """Execute the Strava fetch in the worker thread.
+        """Execute the fetch in the worker thread.
 
         Returns ``True`` on success, ``False`` on error or cancellation.
         """
         try:
-            self._activities = self._client.fetch_activities(
+            self._activities = self._provider.fetch_activities(
                 per_page=self._per_page,
                 max_pages=self._max_pages,
                 before=self._before,
@@ -84,11 +84,11 @@ class StravaFetchTask(QgsTask):
                 use_detailed_streams=self._use_detailed_streams,
                 max_detailed_activities=self._max_detailed_activities,
             )
-        except StravaClientError as exc:
+        except ProviderError as exc:
             self._error = str(exc)
             return False
         except Exception as exc:  # noqa: BLE001 – QgsTask worker thread safety net
-            logger.exception("Strava fetch task failed")
+            logger.exception("Fetch task failed")
             self._error = str(exc)
             return False
 
@@ -105,5 +105,5 @@ class StravaFetchTask(QgsTask):
                 activities=self._activities if result else None,
                 error=self._error,
                 cancelled=self.isCanceled(),
-                client=self._client,
+                provider=self._provider,
             )
