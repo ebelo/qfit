@@ -3,6 +3,7 @@ import unittest
 from tests import _path  # noqa: F401
 from qfit.atlas.export_task import BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
 from qfit.atlas.publish_atlas import (
+    DEFAULT_ATLAS_TARGET_ASPECT_RATIO,
     DEFAULT_MIN_EXTENT_DEGREES,
     MIN_ALLOWED_ATLAS_MIN_EXTENT_DEGREES,
     MIN_ALLOWED_ATLAS_TARGET_ASPECT_RATIO,
@@ -324,7 +325,12 @@ class PublishAtlasTests(unittest.TestCase):
         ]
 
         default_plan = build_atlas_page_plans(records)[0]
-        custom_plan = build_atlas_page_plans(records, margin_percent=25, min_extent_degrees=0.02)[0]
+        custom_plan = build_atlas_page_plans(
+            records,
+            margin_percent=25,
+            min_extent_degrees=0.02,
+            target_aspect_ratio=0,
+        )[0]
 
         self.assertGreater(custom_plan.extent_width_deg, default_plan.extent_width_deg)
         self.assertGreater(custom_plan.extent_height_deg, default_plan.extent_height_deg)
@@ -496,12 +502,29 @@ class PublishAtlasTests(unittest.TestCase):
         self.assertEqual(settings.min_extent_degrees, MIN_ALLOWED_ATLAS_MIN_EXTENT_DEGREES)
         self.assertEqual(settings.target_aspect_ratio, MIN_ALLOWED_ATLAS_TARGET_ASPECT_RATIO)
 
-    def test_normalize_atlas_page_settings_uses_defaults_for_missing_values(self):
+    def test_normalize_atlas_page_settings_uses_square_export_defaults_for_missing_values(self):
         settings = normalize_atlas_page_settings(margin_percent=None, min_extent_degrees=None, target_aspect_ratio=None)
 
         self.assertEqual(settings.margin_percent, 8.0)
         self.assertEqual(settings.min_extent_degrees, DEFAULT_MIN_EXTENT_DEGREES)
-        self.assertIsNone(settings.target_aspect_ratio)
+        self.assertEqual(settings.target_aspect_ratio, DEFAULT_ATLAS_TARGET_ASPECT_RATIO)
+
+    def test_build_atlas_page_plans_default_to_builtin_square_map_ratio(self):
+        records = [
+            {
+                "name": "River Ride",
+                "activity_type": "Ride",
+                "geometry_points": [(46.5000, 6.6000), (46.5080, 6.6030)],
+            }
+        ]
+
+        plan = build_atlas_page_plans(records)[0]
+
+        self.assertAlmostEqual(
+            plan.extent_width_m / plan.extent_height_m,
+            DEFAULT_ATLAS_TARGET_ASPECT_RATIO,
+            places=3,
+        )
 
     def test_fit_bounds_to_target_aspect_ratio_expands_shorter_dimension_in_web_mercator(self):
         bounds = fit_bounds_to_target_aspect_ratio(6.6, 46.5, 6.61, 46.53, target_aspect_ratio=1.0)
