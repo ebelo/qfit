@@ -135,7 +135,10 @@ def summarize_activities(activities: Sequence[object]) -> ActivitySummary:
             total_moving_time_s += int(moving_time_s)
         if getattr(activity, "geometry_source", None) == "stream":
             detailed_count += 1
-        activity_type = getattr(activity, "activity_type", None) or "Unknown"
+        activity_type = canonical_activity_label(
+            getattr(activity, "activity_type", None),
+            getattr(activity, "sport_type", None),
+        ) or "Unknown"
         by_type[activity_type] += 1
         activity_date = _activity_date(activity)
         if activity_date is not None and (latest_date is None or activity_date > latest_date):
@@ -155,7 +158,10 @@ def build_preview_lines(activities: Sequence[object], limit: int = 8) -> list[st
     lines = []
     for activity in list(activities)[: max(limit, 0)]:
         date_label = _activity_date(activity).isoformat() if _activity_date(activity) is not None else "unknown date"
-        activity_type = getattr(activity, "activity_type", None) or "Activity"
+        activity_type = canonical_activity_label(
+            getattr(activity, "activity_type", None),
+            getattr(activity, "sport_type", None),
+        ) or "Activity"
         distance_km = _distance_km(activity)
         distance_label = "? km" if distance_km is None else f"{distance_km:.1f} km"
         moving_time_label = format_duration(getattr(activity, "moving_time_s", None))

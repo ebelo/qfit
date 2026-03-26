@@ -34,6 +34,11 @@ class CanonicalActivityLabelTests(unittest.TestCase):
     def test_falls_back_to_activity_type(self):
         self.assertEqual(canonical_activity_label("Ride", None), "Ride")
         self.assertEqual(canonical_activity_label("Ride", ""), "Ride")
+        self.assertEqual(canonical_activity_label("Ride", "   "), "Ride")
+
+    def test_strips_non_empty_values(self):
+        self.assertEqual(canonical_activity_label("  Ride  ", None), "Ride")
+        self.assertEqual(canonical_activity_label("Run", "  Trail Run  "), "Trail Run")
 
     def test_returns_none_when_both_absent(self):
         self.assertIsNone(canonical_activity_label(None, None))

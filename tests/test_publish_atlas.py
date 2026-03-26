@@ -861,5 +861,84 @@ class PublishAtlasTests(unittest.TestCase):
         self.assertEqual({e.page_title for e in toc}, {"Morning Ride", "Evening Run"})
 
 
+    def test_build_page_subtitle_prefers_sport_type_over_activity_type(self):
+        """build_page_subtitle shows sport_type when present."""
+        record = {
+            "activity_type": "Ride",
+            "sport_type": "GravelRide",
+            "distance_m": 42500,
+            "moving_time_s": 7200,
+        }
+
+        subtitle = build_page_subtitle(record)
+
+        self.assertEqual(subtitle, "GravelRide · 42.5 km · 2h 00m")
+
+    def test_build_atlas_page_plans_activity_type_field_prefers_sport_type(self):
+        """AtlasPagePlan.activity_type is set from sport_type when available."""
+        records = [
+            {
+                "name": "Gravel Grinder",
+                "activity_type": "Ride",
+                "sport_type": "GravelRide",
+                "geometry_points": [(46.52, 6.62), (46.57, 6.74)],
+            }
+        ]
+
+        plan = build_atlas_page_plans(records)[0]
+
+        self.assertEqual(plan.activity_type, "GravelRide")
+
+    def test_format_pace_label_uses_sport_type_for_pace_decision(self):
+        """sport_type drives pace vs speed selection when activity_type is generic."""
+        # activity_type="Ride" alone → no pace; sport_type="TrailRun" → pace
+        self.assertIsNone(format_pace_label(10000, 3000, activity_type="Ride"))
+        self.assertIsNotNone(
+            format_pace_label(10000, 3000, activity_type="Ride", sport_type="TrailRun")
+        )
+
+    def test_build_atlas_document_summary_uses_sport_type_for_activity_types_label(self):
+        """activity_types_label uses canonical (sport_type-preferred) label."""
+        summary = build_atlas_document_summary(
+            [
+                {
+                    "activity_type": "Ride",
+                    "sport_type": "GravelRide",
+                    "start_date_local": "2026-03-18T08:10:00+01:00",
+                    "distance_m": 42500,
+                    "moving_time_s": 7200,
+                },
+                {
+                    "activity_type": "Run",
+                    "sport_type": "TrailRun",
+                    "start_date_local": "2026-03-19T12:00:00+01:00",
+                    "distance_m": 10000,
+                    "moving_time_s": 3000,
+                },
+            ]
+        )
+
+        self.assertEqual(summary.activity_types_label, "GravelRide, TrailRun")
+
+    def test_build_atlas_page_plans_pace_label_uses_sport_type(self):
+        """page_average_pace_label is computed using sport_type when available."""
+        records = [
+            {
+                "name": "Trail Run",
+                "activity_type": "Ride",  # wrong/legacy field
+                "sport_type": "TrailRun",  # canonical: should trigger pace
+                "distance_m": 10000,
+                "moving_time_s": 3000,
+                "average_speed_mps": 3.3333,
+                "geometry_points": [(46.50, 6.60), (46.51, 6.62)],
+            }
+        ]
+
+        plan = build_atlas_page_plans(records)[0]
+
+        self.assertIsNotNone(plan.page_average_pace_label)
+        self.assertIn("km", plan.page_average_pace_label)
+
+
 if __name__ == "__main__":
     unittest.main()
