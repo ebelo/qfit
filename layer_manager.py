@@ -6,7 +6,6 @@ from qgis.core import (
     QgsCoordinateReferenceSystem,
     QgsProject,
     QgsRectangle,
-    QgsVectorLayer,
     QgsVectorLayerTemporalProperties,
 )
 
@@ -14,6 +13,7 @@ from .activity_query import ActivityQuery, build_subset_string
 from .background_map_service import BackgroundMapService
 from .layer_style_service import LayerStyleService
 from .mapbox_config import TILE_MODE_RASTER
+from .project_layer_loader import ProjectLayerLoader
 from .temporal_config import build_temporal_plan, describe_temporal_configuration, is_temporal_mode_enabled
 
 
@@ -24,16 +24,13 @@ class LayerManager:
         self.iface = iface
         self._style_service = LayerStyleService()
         self._background_service = BackgroundMapService()
+        self._project_layer_loader = ProjectLayerLoader()
 
     def load_output_layers(self, gpkg_path):
         self._ensure_working_crs()
-        activities_layer = self._load_first_available(
-            gpkg_path,
-            [("activity_tracks", "qfit activities"), ("activities", "qfit activities")],
+        activities_layer, starts_layer, points_layer, atlas_layer = (
+            self._project_layer_loader.load_output_layers(gpkg_path)
         )
-        starts_layer = self._load_optional_layer(gpkg_path, "activity_starts", "qfit activity starts")
-        points_layer = self._load_optional_layer(gpkg_path, "activity_points", "qfit activity points")
-        atlas_layer = self._load_optional_layer(gpkg_path, "activity_atlas_pages", "qfit atlas pages")
         self._move_background_layers_to_bottom()
         self._zoom_to_layers([activities_layer, starts_layer, points_layer, atlas_layer])
         return activities_layer, starts_layer, points_layer, atlas_layer
@@ -83,35 +80,6 @@ class LayerManager:
             if plan is not None:
                 plans.append(plan)
         return describe_temporal_configuration(plans, mode_label)
-
-    def _load_first_available(self, gpkg_path, candidates):
-        last_error = None
-        for layer_name, display_name in candidates:
-            try:
-                return self._load_layer(gpkg_path, layer_name, display_name)
-            except RuntimeError as exc:
-                last_error = exc
-        if last_error is not None:
-            raise last_error
-        return None
-
-    def _load_optional_layer(self, gpkg_path, layer_name, display_name):
-        try:
-            return self._load_layer(gpkg_path, layer_name, display_name)
-        except RuntimeError:
-            return None
-
-    def _load_layer(self, gpkg_path, layer_name, display_name):
-        uri = f"{gpkg_path}|layername={layer_name}"
-        layer = QgsVectorLayer(uri, display_name, "ogr")
-        if not layer.isValid():
-            raise RuntimeError(f"Could not load layer '{layer_name}' from {gpkg_path}")
-
-        existing = QgsProject.instance().mapLayersByName(display_name)
-        for old_layer in existing:
-            QgsProject.instance().removeMapLayer(old_layer.id())
-        QgsProject.instance().addMapLayer(layer)
-        return layer
 
     def _ensure_working_crs(self):
         project = QgsProject.instance()
