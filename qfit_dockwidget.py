@@ -34,6 +34,7 @@ from .mapbox_config import (
     preset_requires_custom_style,
 )
 from .visual_apply import BackgroundConfig, LayerRefs, VisualApplyService
+from .fetch_result_service import FetchResultService
 from .fetch_task import FetchTask
 from .atlas.export_task import BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
 from .qfit_cache import QfitCache
@@ -73,6 +74,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.load_workflow = LoadWorkflowService(self.layer_manager)
         self.visual_apply = VisualApplyService(self.layer_manager)
         self.atlas_export_service = AtlasExportService(self.layer_manager)
+        self.fetch_result_service = FetchResultService(self.sync_controller)
         self.cache = self._build_cache()
         self.setupUi(self)
         self._remove_stale_qfit_layers()
@@ -526,33 +528,29 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._fetch_task = None
         self._set_fetch_running(False)
 
+        result = self.fetch_result_service.build_result(
+            activities=activities, error=error, cancelled=cancelled,
+            provider=provider,
+        )
+
         if cancelled:
-            self._set_status("Fetch cancelled.")
+            self._set_status(result.status_text)
             return
 
         if error is not None:
             self._show_error("Strava import failed", error)
-            self._set_status("Strava fetch failed")
+            self._set_status(result.status_text)
             return
 
-        self.activities = activities
-        metadata = self.sync_controller.build_sync_metadata(activities, provider)
-        detailed_count = metadata["detailed_count"]
-        today_str = metadata["today_str"]
-        self.last_fetch_context = metadata
+        self.activities = result.activities
+        self.last_fetch_context = result.metadata
         # Persist last sync date
-        self.settings.set("last_sync_date", today_str)
+        self.settings.set("last_sync_date", result.today_str)
 
         self._populate_activity_types()
-        self.countLabel.setText(
-            "{count} activities loaded (last sync: {sync_date}, detailed tracks: {detailed})".format(
-                count=len(self.activities),
-                sync_date=today_str,
-                detailed=detailed_count,
-            )
-        )
+        self.countLabel.setText(result.count_label_text)
         self._refresh_activity_preview()
-        self._set_status(self.sync_controller.fetch_status_text(provider, len(self.activities), detailed_count))
+        self._set_status(result.status_text)
 
     def on_load_clicked(self):
         self._save_settings()
