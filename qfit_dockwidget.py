@@ -10,7 +10,7 @@ from qgis.PyQt.QtCore import QDate, QStandardPaths, QUrl
 from qgis.PyQt.QtGui import QDesktopServices
 from qgis.PyQt.QtWidgets import QApplication, QFileDialog, QDockWidget, QMessageBox
 
-from .activity_classification import preferred_activity_field
+from .activity_classification import ordered_canonical_activity_labels
 from .activity_query import (
     DEFAULT_SORT_LABEL,
     SORT_OPTIONS,
@@ -773,7 +773,12 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
     def _populate_activity_types(self):
         current_value = self.activityTypeComboBox.currentText() or "All"
-        values = sorted({activity.activity_type for activity in self.activities if activity.activity_type})
+        values = sorted(
+            ordered_canonical_activity_labels(
+                (getattr(activity, "activity_type", None), getattr(activity, "sport_type", None))
+                for activity in self.activities
+            )
+        )
         self.activityTypeComboBox.clear()
         self.activityTypeComboBox.addItem("All")
         for value in values:
@@ -792,14 +797,17 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         current_value = self.activityTypeComboBox.currentText() or "All"
         try:
             field_names = [self.activities_layer.fields().at(i).name() for i in range(self.activities_layer.fields().count())]
-            type_field = preferred_activity_field(field_names)
-            if type_field is None:
+            if not any(name in field_names for name in ("activity_type", "sport_type")):
                 return
-            values = sorted({
-                f[type_field]
-                for f in self.activities_layer.getFeatures()
-                if f[type_field]
-            })
+            values = sorted(
+                ordered_canonical_activity_labels(
+                    (
+                        feature["activity_type"] if "activity_type" in field_names else None,
+                        feature["sport_type"] if "sport_type" in field_names else None,
+                    )
+                    for feature in self.activities_layer.getFeatures()
+                )
+            )
         except (RuntimeError, KeyError):
             logger.debug("Failed to populate activity types from layer", exc_info=True)
             return

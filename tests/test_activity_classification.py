@@ -7,6 +7,7 @@ from qfit.activity_classification import (
     activity_prefers_pace,
     canonical_activity_label,
     normalize_activity_type,
+    ordered_canonical_activity_labels,
     preferred_activity_field,
     resolve_activity_family,
 )
@@ -60,6 +61,32 @@ class PreferredActivityFieldTests(unittest.TestCase):
 
     def test_returns_none_when_neither_field_exists(self):
         self.assertIsNone(preferred_activity_field(["name", "distance_m"]))
+
+
+class OrderedCanonicalActivityLabelsTests(unittest.TestCase):
+    def test_prefers_sport_type_and_preserves_first_seen_order(self):
+        labels = ordered_canonical_activity_labels([
+            ("Ride", "GravelRide"),
+            ("Run", "TrailRun"),
+            ("Ride", None),
+        ])
+        self.assertEqual(labels, ["GravelRide", "TrailRun", "Ride"])
+
+    def test_deduplicates_case_insensitively_after_normalization(self):
+        labels = ordered_canonical_activity_labels([
+            ("Ride", "Trail Run"),
+            ("Ride", "trail-run"),
+            ("Ride", "TRAILRUN"),
+        ])
+        self.assertEqual(labels, ["Trail Run"])
+
+    def test_skips_blank_pairs(self):
+        labels = ordered_canonical_activity_labels([
+            (None, None),
+            ("", "   "),
+            ("Ride", None),
+        ])
+        self.assertEqual(labels, ["Ride"])
 
 
 class ResolveActivityFamilyTests(unittest.TestCase):
