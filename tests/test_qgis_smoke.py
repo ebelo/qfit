@@ -10,6 +10,7 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 try:
     from qgis.core import QgsApplication, QgsProject, QgsVectorLayer
 
+    from qfit.activity_query import ActivityQuery, build_subset_string
     from qfit.gpkg_writer import GeoPackageWriter
     from qfit.layer_manager import LayerManager
     from qfit.atlas.export_task import BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
@@ -22,6 +23,8 @@ except Exception as exc:  # pragma: no cover - exercised only when QGIS is unava
     QgsApplication = None
     QgsProject = None
     QgsVectorLayer = None
+    ActivityQuery = None
+    build_subset_string = None
     GeoPackageWriter = None
     LayerManager = None
     QfitDockWidget = None
@@ -141,6 +144,47 @@ class QgisSmokeTests(unittest.TestCase):
     def test_apply_filters_path_does_not_update_background_layer(self):
         self.assertFalse(VisualApplyService.should_update_background(True))
         self.assertTrue(VisualApplyService.should_update_background(False))
+
+    def test_apply_filters_updates_activity_subset_string(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_path = str(Path(temp_dir) / "qfit-filters.gpkg")
+            GeoPackageWriter(
+                output_path,
+                write_activity_points=True,
+                point_stride=2,
+                atlas_margin_percent=10,
+                atlas_min_extent_degrees=0.01,
+                atlas_target_aspect_ratio=1.5,
+            ).write_activities(self._sample_activities(), sync_metadata={"provider": "strava"})
+
+            activities_layer, _starts_layer, _points_layer, _atlas_layer = (
+                self.layer_manager.load_output_layers(output_path)
+            )
+            self.layer_manager.apply_filters(
+                activities_layer,
+                activity_type="Run",
+                date_from="2026-03-21",
+                date_to="2026-03-21",
+                min_distance_km=5,
+                max_distance_km=10,
+                search_text="Run",
+                detailed_only=True,
+            )
+
+            self.assertEqual(
+                activities_layer.subsetString(),
+                build_subset_string(
+                    ActivityQuery(
+                        activity_type="Run",
+                        date_from="2026-03-21",
+                        date_to="2026-03-21",
+                        min_distance_km=5,
+                        max_distance_km=10,
+                        search_text="Run",
+                        detailed_only=True,
+                    )
+                ),
+            )
 
     def test_headless_qgis_smoke_covers_write_load_crs_temporal_and_background_order(self):
         with tempfile.TemporaryDirectory() as temp_dir:
