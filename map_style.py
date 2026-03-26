@@ -6,6 +6,7 @@ from typing import Iterable
 
 from .activity_classification import (
     normalize_activity_type as normalize_activity_value,
+    preferred_activity_field,
     resolve_activity_family,
 )
 
@@ -75,11 +76,7 @@ _BASEMAP_LINE_STYLES = {
 
 
 def pick_activity_style_field(available_fields: Iterable[str]) -> str | None:
-    field_names = {str(name) for name in available_fields}
-    for candidate in ("sport_type", "activity_type"):
-        if candidate in field_names:
-            return candidate
-    return None
+    return preferred_activity_field(available_fields)
 
 
 def resolve_basemap_line_style(preset_name: str | None) -> BasemapLineStyle:

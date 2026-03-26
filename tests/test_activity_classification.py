@@ -3,9 +3,11 @@ import unittest
 from tests import _path  # noqa: F401
 
 from qfit.activity_classification import (
+    ACTIVITY_LABEL_FIELDS,
     activity_prefers_pace,
     canonical_activity_label,
     normalize_activity_type,
+    preferred_activity_field,
     resolve_activity_family,
 )
 
@@ -44,6 +46,20 @@ class CanonicalActivityLabelTests(unittest.TestCase):
         self.assertIsNone(canonical_activity_label(None, None))
         self.assertIsNone(canonical_activity_label("", None))
         self.assertIsNone(canonical_activity_label(None, ""))
+
+
+class PreferredActivityFieldTests(unittest.TestCase):
+    def test_prefers_sport_type_when_available(self):
+        self.assertEqual(preferred_activity_field(["name", "sport_type", "activity_type"]), "sport_type")
+
+    def test_falls_back_to_activity_type(self):
+        self.assertEqual(preferred_activity_field(["name", "activity_type"]), "activity_type")
+
+    def test_uses_shared_field_priority_order(self):
+        self.assertEqual(ACTIVITY_LABEL_FIELDS, ("sport_type", "activity_type"))
+
+    def test_returns_none_when_neither_field_exists(self):
+        self.assertIsNone(preferred_activity_field(["name", "distance_m"]))
 
 
 class ResolveActivityFamilyTests(unittest.TestCase):

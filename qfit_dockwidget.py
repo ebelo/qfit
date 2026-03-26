@@ -10,6 +10,7 @@ from qgis.PyQt.QtCore import QDate, QStandardPaths, QUrl
 from qgis.PyQt.QtGui import QDesktopServices
 from qgis.PyQt.QtWidgets import QApplication, QFileDialog, QDockWidget, QMessageBox
 
+from .activity_classification import preferred_activity_field
 from .activity_query import (
     DEFAULT_SORT_LABEL,
     SORT_OPTIONS,
@@ -791,7 +792,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         current_value = self.activityTypeComboBox.currentText() or "All"
         try:
             field_names = [self.activities_layer.fields().at(i).name() for i in range(self.activities_layer.fields().count())]
-            type_field = next((f for f in ["sport_type", "activity_type"] if f in field_names), None)
+            type_field = preferred_activity_field(field_names)
             if type_field is None:
                 return
             values = sorted({
