@@ -5,7 +5,11 @@ from dataclasses import dataclass
 from datetime import date, datetime
 from typing import Iterable, Sequence
 
-from .activity_classification import ACTIVITY_LABEL_FIELDS, canonical_activity_label
+from .activity_classification import (
+    ACTIVITY_LABEL_FIELDS,
+    canonical_activity_label,
+    normalize_activity_type,
+)
 
 
 @dataclass(frozen=True)
@@ -58,12 +62,11 @@ def filter_activities(activities: Iterable[object], query: ActivityQuery) -> lis
 
     for activity in activities:
         if query.activity_type and query.activity_type != "All":
-            act_label = canonical_activity_label(
-                getattr(activity, "activity_type", None),
-                getattr(activity, "sport_type", None),
-            )
-            act_type = getattr(activity, "activity_type", None) or ""
-            if act_type != query.activity_type and (act_label or "") != query.activity_type:
+            query_norm = normalize_activity_type(query.activity_type)
+            if not any(
+                normalize_activity_type(getattr(activity, field, None)) == query_norm
+                for field in ACTIVITY_LABEL_FIELDS
+            ):
                 continue
 
         activity_date = _activity_date(activity)
@@ -174,8 +177,11 @@ def build_preview_lines(activities: Sequence[object], limit: int = 8) -> list[st
 def build_subset_string(query: ActivityQuery) -> str:
     clauses = []
     if query.activity_type and query.activity_type != "All":
-        escaped = _escape_sql_literal(query.activity_type)
-        type_matches = [f'"{field_name}" = \'{escaped}\'' for field_name in reversed(ACTIVITY_LABEL_FIELDS)]
+        normalized = _escape_sql_literal(normalize_activity_type(query.activity_type))
+        type_matches = [
+            f"{_sql_normalize_expr(field_name)} = '{normalized}'"
+            for field_name in reversed(ACTIVITY_LABEL_FIELDS)
+        ]
         clauses.append(f"({' OR '.join(type_matches)})")
     if query.date_from:
         clauses.append(f'"start_date" >= \'{_escape_sql_literal(query.date_from)}T00:00:00\'')
@@ -271,6 +277,11 @@ def _moving_time_sort_value(activity: object) -> int:
     if not isinstance(value, (int, float)):
         return -1
     return int(value)
+
+
+def _sql_normalize_expr(field: str) -> str:
+    """SQL expression approximating normalize_activity_type for a column."""
+    return f"LOWER(REPLACE(REPLACE(REPLACE(\"{field}\", ' ', ''), '-', ''), '_', ''))"
 
 
 def _escape_sql_literal(value: str) -> str:

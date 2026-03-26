@@ -107,8 +107,8 @@ class ActivityQueryTests(unittest.TestCase):
 
         subset = build_subset_string(query)
 
-        self.assertIn('"activity_type" = \'Ride\'', subset)
-        self.assertIn('"sport_type" = \'Ride\'', subset)
+        self.assertIn("LOWER(REPLACE(REPLACE(REPLACE(\"activity_type\", ' ', ''), '-', ''), '_', '')) = 'ride'", subset)
+        self.assertIn("LOWER(REPLACE(REPLACE(REPLACE(\"sport_type\", ' ', ''), '-', ''), '_', '')) = 'ride'", subset)
         self.assertIn('"distance_m" >= 10000.0', subset)
         self.assertIn('"distance_m" <= 50000.0', subset)
         self.assertIn("lower(coalesce(\"name\", '')) LIKE '%o''brien%'", subset)
@@ -275,10 +275,11 @@ class FilterParityTests(unittest.TestCase):
         self.assertIn("D", sql_ids)
 
     def test_sql_escaping_single_quote_in_activity_type(self):
-        """Apostrophe in activity_type filter is safely escaped."""
+        """Apostrophe in activity_type filter is safely escaped and normalized."""
         query = ActivityQuery(activity_type="Rock'n'Roll")
         subset = build_subset_string(query)
-        self.assertIn("Rock''n''Roll", subset)
+        # normalize_activity_type strips apostrophes, so no escaping needed
+        self.assertIn("rocknroll", subset)
 
     def test_sql_escaping_percent_in_search(self):
         """Percent sign in search text is passed through (LIKE wildcard)."""
@@ -308,6 +309,68 @@ class FilterParityTests(unittest.TestCase):
         first = self._python_filter(query)
         second = self._python_filter(query)
         self.assertEqual(first, second)
+
+    def test_parity_normalized_activity_type_variants(self):
+        """Selecting a canonical label matches records whose raw labels differ only in formatting.
+
+        Regression test: ordered_canonical_activity_labels collapses 'Trail Run'
+        and 'TrailRun' via normalize_activity_type, but filter_activities and
+        build_subset_string must also use normalized comparison so the surviving
+        UI option still matches all equivalent records.
+        """
+        activities = [
+            Activity(
+                source="strava", source_activity_id="X",
+                name="Morning trail", activity_type="Run", sport_type="Trail Run",
+                start_date="2026-03-15T07:00:00Z", start_date_local="2026-03-15T08:00:00+01:00",
+                distance_m=10000.0, geometry_source="stream",
+            ),
+            Activity(
+                source="strava", source_activity_id="Y",
+                name="Afternoon trail", activity_type="Run", sport_type="TrailRun",
+                start_date="2026-03-16T14:00:00Z", start_date_local="2026-03-16T15:00:00+01:00",
+                distance_m=12000.0, geometry_source="stream",
+            ),
+            Activity(
+                source="strava", source_activity_id="Z",
+                name="Dashed trail", activity_type="Run", sport_type="trail-run",
+                start_date="2026-03-17T08:00:00Z", start_date_local="2026-03-17T09:00:00+01:00",
+                distance_m=8000.0, geometry_source="summary_polyline",
+            ),
+        ]
+
+        # The UI would show one of the variants (e.g. "Trail Run") after dedup.
+        # All three must match regardless of which variant the user selects.
+        for label in ("Trail Run", "TrailRun", "trail-run"):
+            query = ActivityQuery(activity_type=label)
+            py_ids = sorted(a.source_activity_id for a in filter_activities(activities, query))
+            self.assertEqual(py_ids, ["X", "Y", "Z"], f"Python filter failed for label={label!r}")
+
+        # SQL parity — use inline activities list for _sql_filter
+        import sqlite3
+        for label in ("Trail Run", "TrailRun", "trail-run"):
+            query = ActivityQuery(activity_type=label)
+            conn = sqlite3.connect(":memory:")
+            conn.execute(
+                "CREATE TABLE t ("
+                "  source_activity_id TEXT, name TEXT, activity_type TEXT, sport_type TEXT,"
+                "  start_date TEXT, start_date_local TEXT, distance_m REAL, geometry_source TEXT"
+                ")"
+            )
+            for a in activities:
+                conn.execute(
+                    "INSERT INTO t VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                    (a.source_activity_id, a.name, a.activity_type, a.sport_type,
+                     a.start_date, a.start_date_local, a.distance_m, a.geometry_source),
+                )
+            subset = build_subset_string(query)
+            rows = conn.execute(
+                f"SELECT source_activity_id FROM t WHERE {subset} ORDER BY source_activity_id"
+            ).fetchall()
+            conn.close()
+            sql_ids = [r[0] for r in rows]
+            self.assertEqual(sql_ids, ["X", "Y", "Z"], f"SQL filter failed for label={label!r}")
+            self.assertEqual(py_ids, sql_ids, f"Python/SQL parity failed for label={label!r}")
 
 
 if __name__ == "__main__":
