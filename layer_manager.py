@@ -6,7 +6,6 @@ from qgis.core import (
     QgsCoordinateReferenceSystem,
     QgsProject,
     QgsRectangle,
-    QgsVectorLayerTemporalProperties,
 )
 
 from .activity_query import ActivityQuery, build_subset_string
@@ -14,7 +13,7 @@ from .background_map_service import BackgroundMapService
 from .layer_style_service import LayerStyleService
 from .mapbox_config import TILE_MODE_RASTER
 from .project_layer_loader import ProjectLayerLoader
-from .temporal_config import build_temporal_plan, describe_temporal_configuration, is_temporal_mode_enabled
+from .temporal_service import TemporalService
 
 
 class LayerManager:
@@ -25,6 +24,7 @@ class LayerManager:
         self._style_service = LayerStyleService()
         self._background_service = BackgroundMapService()
         self._project_layer_loader = ProjectLayerLoader()
+        self._temporal_service = TemporalService()
 
     def load_output_layers(self, gpkg_path):
         self._ensure_working_crs()
@@ -66,20 +66,9 @@ class LayerManager:
         )
 
     def apply_temporal_configuration(self, activities_layer, starts_layer, points_layer, atlas_layer, mode_label):
-        layer_specs = [
-            (activities_layer, "activity_tracks"),
-            (starts_layer, "activity_starts"),
-            (points_layer, "activity_points"),
-            (atlas_layer, "activity_atlas_pages"),
-        ]
-        plans = []
-        for layer, layer_key in layer_specs:
-            if layer is None:
-                continue
-            plan = self._apply_temporal_plan(layer, layer_key, mode_label)
-            if plan is not None:
-                plans.append(plan)
-        return describe_temporal_configuration(plans, mode_label)
+        return self._temporal_service.apply_temporal_configuration(
+            activities_layer, starts_layer, points_layer, atlas_layer, mode_label
+        )
 
     def _ensure_working_crs(self):
         project = QgsProject.instance()
@@ -112,29 +101,6 @@ class LayerManager:
 
     def _move_background_layers_to_bottom(self):
         self._background_service.move_background_layers_to_bottom()
-
-    def _apply_temporal_plan(self, layer, layer_key, mode_label):
-        props = layer.temporalProperties()
-        if props is None:
-            return None
-        if not is_temporal_mode_enabled(mode_label):
-            props.setIsActive(False)
-            layer.triggerRepaint()
-            return None
-
-        available_fields = [field.name() for field in layer.fields()]
-        plan = build_temporal_plan(layer_key, available_fields, mode_label)
-        if plan is None:
-            props.setIsActive(False)
-            layer.triggerRepaint()
-            return None
-
-        props.setIsActive(True)
-        props.setMode(QgsVectorLayerTemporalProperties.ModeFeatureDateTimeStartAndEndFromExpressions)
-        props.setStartExpression(plan.expression)
-        props.setEndExpression(plan.expression)
-        layer.triggerRepaint()
-        return plan
 
     def _zoom_to_layers(self, layers):
         extents = None
