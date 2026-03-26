@@ -5,7 +5,7 @@ from datetime import datetime
 from math import atan, exp, log, pi, tan
 from typing import Iterable
 
-from ..activity_classification import activity_prefers_pace
+from ..activity_classification import activity_prefers_pace, canonical_activity_label
 from ..activity_query import format_duration
 from ..polyline_utils import decode_polyline
 
@@ -240,7 +240,7 @@ def build_atlas_page_plans(
                 source=record.get("source"),
                 source_activity_id=record.get("source_activity_id"),
                 name=page_title,
-                activity_type=(record.get("activity_type") or "Activity").strip() or "Activity",
+                activity_type=(canonical_activity_label(record.get("activity_type"), record.get("sport_type")) or "Activity").strip() or "Activity",
                 start_date=record.get("start_date"),
                 distance_m=_safe_float(record.get("distance_m")),
                 moving_time_s=_safe_int(record.get("moving_time_s")),
@@ -261,6 +261,7 @@ def build_atlas_page_plans(
                     record.get("distance_m"),
                     record.get("moving_time_s"),
                     activity_type=record.get("activity_type"),
+                    sport_type=record.get("sport_type"),
                 ),
                 page_elevation_gain_label=format_elevation_label(record.get("total_elevation_gain_m")),
                 page_stats_summary=build_page_stats_summary(record),
@@ -460,7 +461,7 @@ def build_atlas_document_summary(records: Iterable[dict]) -> AtlasDocumentSummar
 
     ordered_activity_types: list[str] = []
     for record in record_list:
-        activity_type = (record.get("activity_type") or "").strip()
+        activity_type = (canonical_activity_label(record.get("activity_type"), record.get("sport_type")) or "").strip()
         if not activity_type:
             continue
         if any(existing.casefold() == activity_type.casefold() for existing in ordered_activity_types):
@@ -790,7 +791,7 @@ def build_page_name(record: dict) -> str:
 
 def build_page_subtitle(record: dict) -> str:
     parts = []
-    activity_type = (record.get("activity_type") or "Activity").strip() or "Activity"
+    activity_type = (canonical_activity_label(record.get("activity_type"), record.get("sport_type")) or "Activity").strip() or "Activity"
     parts.append(activity_type)
 
     distance_label = format_distance_label(record.get("distance_m"))
@@ -843,6 +844,7 @@ def build_page_stats_summary(record: dict) -> str | None:
         record.get("distance_m"),
         record.get("moving_time_s"),
         activity_type=record.get("activity_type"),
+        sport_type=record.get("sport_type"),
     )
     speed_label = format_speed_label(record.get("average_speed_mps"))
     effort_label = pace_label or speed_label
@@ -988,8 +990,8 @@ def format_speed_label(value) -> str | None:
     return f"{speed_mps * 3.6:.1f} km/h"
 
 
-def format_pace_label(distance_value, moving_time_value, activity_type: str | None = None) -> str | None:
-    if not _activity_type_prefers_pace(activity_type):
+def format_pace_label(distance_value, moving_time_value, activity_type: str | None = None, sport_type: str | None = None) -> str | None:
+    if not _activity_type_prefers_pace(activity_type, sport_type):
         return None
 
     distance_m = _safe_float(distance_value)
@@ -1021,8 +1023,8 @@ def format_altitude_range_label(min_value, max_value) -> str | None:
     return f"{round(min_altitude_m):.0f}–{round(max_altitude_m):.0f} m"
 
 
-def _activity_type_prefers_pace(activity_type: str | None) -> bool:
-    return activity_prefers_pace(activity_type)
+def _activity_type_prefers_pace(activity_type: str | None, sport_type: str | None = None) -> bool:
+    return activity_prefers_pace(activity_type, sport_type)
 
 
 def _safe_float(value) -> float | None:

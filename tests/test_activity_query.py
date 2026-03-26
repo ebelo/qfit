@@ -88,7 +88,7 @@ class ActivityQueryTests(unittest.TestCase):
         self.assertEqual(summary.count, 3)
         self.assertEqual(summary.total_distance_km, 70.7)
         self.assertEqual(summary.detailed_count, 1)
-        self.assertEqual(summary.by_type, {"Ride": 2, "Run": 1})
+        self.assertEqual(summary.by_type, {"GravelRide": 1, "Ride": 1, "Run": 1})
         self.assertEqual(summary.latest_date, "2026-03-20")
         self.assertEqual(len(lines), 2)
         self.assertIn("Easy Evening Ride", lines[0])
@@ -129,6 +129,21 @@ class ActivityQueryTests(unittest.TestCase):
         subset = build_subset_string(query)
         self.assertIn("it''s", subset)
         self.assertNotIn("it's", subset)
+
+    def test_summarize_activities_uses_sport_type_when_available(self):
+        """sport_type is preferred over activity_type in by_type counts."""
+        summary = summarize_activities(self.activities)
+
+        # Activity 1: sport_type="GravelRide" overrides activity_type="Ride"
+        self.assertIn("GravelRide", summary.by_type)
+        self.assertNotIn("GravelRide", {"Ride": 2, "Run": 1})  # old (wrong) behaviour
+
+    def test_build_preview_lines_uses_sport_type_label(self):
+        """Preview lines show canonical (sport_type-preferred) label."""
+        lines = build_preview_lines([self.activities[0]])
+
+        self.assertIn("GravelRide", lines[0])
+        self.assertNotIn("· Ride ·", lines[0])
 
     def test_format_helpers_return_human_readable_text(self):
         self.assertEqual(format_duration(3725), "1h 02m")
