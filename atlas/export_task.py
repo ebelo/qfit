@@ -47,6 +47,8 @@ from qgis.core import (
 from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QColor, QFont
 
+from ..activity_classification import ordered_canonical_activity_labels
+
 # ---------------------------------------------------------------------------
 # Page geometry (mm, A4 portrait with square map)
 # ---------------------------------------------------------------------------
@@ -425,15 +427,16 @@ def _build_cover_summary_from_current_atlas_features(atlas_layer) -> dict:
     extent_xmax = float("-inf")
     extent_ymax = float("-inf")
 
-    ordered_activity_types: list[str] = []
+    ordered_activity_types = ordered_canonical_activity_labels(
+        (
+            _safe_attr(feature, "activity_type"),
+            _safe_attr(feature, "sport_type"),
+        )
+        for feature in features
+    )
     atlas_activity_ids: list[str] = []
 
     for feature in features:
-        activity_type = (_safe_attr(feature, "activity_type") or "").strip()
-        if activity_type:
-            if not any(existing.casefold() == activity_type.casefold() for existing in ordered_activity_types):
-                ordered_activity_types.append(activity_type)
-
         # Accumulate combined extent from stored per-page bounds
         if has_extent_fields:
             cx = _safe_float(feature.attribute(cx_idx))

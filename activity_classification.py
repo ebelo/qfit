@@ -57,6 +57,28 @@ def canonical_activity_label(
     return None
 
 
+def ordered_canonical_activity_labels(
+    label_pairs: Iterable[tuple[str | None, str | None]],
+) -> list[str]:
+    """Return ordered unique canonical activity labels from ``(activity, sport)`` pairs.
+
+    Uses :func:`canonical_activity_label` for field-priority semantics and
+    deduplicates case-insensitively while preserving first-seen order.
+    """
+    ordered_labels: list[str] = []
+    seen_normalized: set[str] = set()
+    for activity_type, sport_type in label_pairs:
+        label = canonical_activity_label(activity_type, sport_type)
+        if not label:
+            continue
+        normalized = normalize_activity_type(label)
+        if normalized in seen_normalized:
+            continue
+        seen_normalized.add(normalized)
+        ordered_labels.append(label)
+    return ordered_labels
+
+
 def preferred_activity_field(available_fields: Iterable[str]) -> str | None:
     """Return the best activity-label field from *available_fields*.
 

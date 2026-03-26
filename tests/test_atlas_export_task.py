@@ -874,6 +874,48 @@ def _make_cover_atlas_layer(fields_dict=None, feature_count=1):
 
 
 class TestBuildCoverLayout(unittest.TestCase):
+    def test_cover_summary_prefers_sport_type_for_activity_labels(self):
+        from qfit.atlas.export_task import _build_cover_summary_from_current_atlas_features
+
+        field_names = [
+            "page_date",
+            "activity_type",
+            "sport_type",
+            "distance_m",
+            "moving_time_s",
+            "total_elevation_gain_m",
+            "document_cover_summary",
+            "document_activity_count",
+            "document_date_range_label",
+            "document_total_distance_label",
+            "document_total_duration_label",
+            "document_total_elevation_gain_label",
+            "document_activity_types_label",
+        ]
+
+        rows = [
+            ["2026-03-01", "Ride", "GravelRide", 12000.0, 3600, 300.0, "stale all data", "99", "", "", "", "", "Ride"],
+            ["2026-03-02", "Ride", "Trail Run", 8000.0, 2400, 200.0, "stale all data", "99", "", "", "", "", "Ride"],
+        ]
+
+        layer = MagicMock()
+        layer.featureCount.return_value = 2
+        fields = MagicMock()
+        fields.indexOf = lambda name: field_names.index(name) if name in field_names else -1
+        layer.fields.return_value = fields
+        feats = []
+        for row in rows:
+            feat = MagicMock()
+            feat.attribute = lambda idx, _row=row: _row[idx] if 0 <= idx < len(_row) else None
+            feats.append(feat)
+        layer.getFeatures.side_effect = lambda: iter(feats)
+
+        summary = _build_cover_summary_from_current_atlas_features(layer)
+
+        self.assertEqual(summary["document_activity_types_label"], "GravelRide, Trail Run")
+        self.assertIn("GravelRide, Trail Run", summary["document_cover_summary"])
+        self.assertNotIn("Ride, Ride", summary["document_cover_summary"])
+
     def test_cover_summary_is_recomputed_from_current_atlas_subset(self):
         from qfit.atlas.export_task import _build_cover_summary_from_current_atlas_features
 
