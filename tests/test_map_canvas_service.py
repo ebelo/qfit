@@ -235,6 +235,81 @@ class MapCanvasServiceMockTests(unittest.TestCase):
             _def_service_module.QgsRectangle.side_effect = lambda rect=None: rect
         self.service = _def_service_cls(self._bg)
 
+    def test_ensure_working_crs_sets_project_and_canvas_crs(self):
+        iface, canvas = _make_iface()
+        current_extent = MagicMock()
+        current_extent.isEmpty.return_value = True
+        canvas.extent.return_value = current_extent
+
+        project = MagicMock()
+        project.crs.return_value = MagicMock(isValid=MagicMock(return_value=False))
+        _def_service_module.QgsProject.instance.return_value = project
+
+        working_crs = MagicMock()
+        working_crs.isValid.return_value = True
+        _def_service_module.QgsCoordinateReferenceSystem.return_value = working_crs
+
+        self.service.ensure_working_crs(iface)
+
+        project.setCrs.assert_called_once_with(working_crs)
+        canvas.setDestinationCrs.assert_called_once_with(working_crs)
+        canvas.setExtent.assert_not_called()
+
+    def test_ensure_working_crs_preserves_extent_on_crs_change(self):
+        iface, canvas = _make_iface()
+        current_extent = MagicMock()
+        current_extent.isEmpty.return_value = False
+        canvas.extent.return_value = current_extent
+
+        current_crs = MagicMock()
+        current_crs.isValid.return_value = True
+        project = MagicMock()
+        project.crs.return_value = current_crs
+        _def_service_module.QgsProject.instance.return_value = project
+
+        working_crs = MagicMock()
+        working_crs.isValid.return_value = True
+        _def_service_module.QgsCoordinateReferenceSystem.return_value = working_crs
+
+        transformed = MagicMock()
+        transformed.isEmpty.return_value = False
+        transform = MagicMock()
+        transform.transformBoundingBox.return_value = transformed
+        _def_service_module.QgsCoordinateTransform.return_value = transform
+
+        self.service.ensure_working_crs(iface)
+
+        project.setCrs.assert_called_once_with(working_crs)
+        canvas.setDestinationCrs.assert_called_once_with(working_crs)
+        canvas.setExtent.assert_called_once_with(transformed)
+        canvas.refresh.assert_called_once()
+
+    def test_ensure_working_crs_swallows_transform_runtime_error(self):
+        iface, canvas = _make_iface()
+        current_extent = MagicMock()
+        current_extent.isEmpty.return_value = False
+        canvas.extent.return_value = current_extent
+
+        current_crs = MagicMock()
+        current_crs.isValid.return_value = True
+        project = MagicMock()
+        project.crs.return_value = current_crs
+        _def_service_module.QgsProject.instance.return_value = project
+
+        working_crs = MagicMock()
+        working_crs.isValid.return_value = True
+        _def_service_module.QgsCoordinateReferenceSystem.return_value = working_crs
+
+        transform = MagicMock()
+        transform.transformBoundingBox.side_effect = RuntimeError("boom")
+        _def_service_module.QgsCoordinateTransform.return_value = transform
+
+        self.service.ensure_working_crs(iface)
+
+        project.setCrs.assert_called_once_with(working_crs)
+        canvas.setDestinationCrs.assert_called_once_with(working_crs)
+        canvas.setExtent.assert_not_called()
+
     def test_zoom_to_layers_sets_canvas_extent(self):
         iface, canvas = _make_iface()
         layer, _ = _make_layer((0, 0, 1, 1))
