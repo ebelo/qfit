@@ -65,12 +65,6 @@ DOCK_HELP_ENTRIES: tuple[HelpEntry, ...] = (
         help_button=True,
     ),
     HelpEntry(
-        anchor_name="mapboxAccessTokenLineEdit",
-        label_name="mapboxAccessTokenLabel",
-        label_text="Mapbox access token",
-        tooltip="Required for loading any Mapbox basemap from inside qfit.",
-    ),
-    HelpEntry(
         anchor_name="mapboxStyleOwnerLineEdit",
         label_name="mapboxStyleOwnerLabel",
         label_text="Custom style owner",

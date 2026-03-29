@@ -19,10 +19,12 @@ class SyncController:
             cache=cache,
         )
         if not provider.has_client_credentials():
-            raise ProviderError("Enter Strava client ID and client secret first.")
+            raise ProviderError(
+                "Open qfit → Configuration and enter your Strava client ID and client secret first."
+            )
         if require_refresh_token and not provider.has_refresh_token():
             raise ProviderError(
-                "Enter a refresh token, or use the built-in authorization flow to generate one."
+                "Open qfit → Configuration and enter a Strava refresh token first."
             )
         return provider
 

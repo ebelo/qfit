@@ -9,11 +9,14 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 try:
     from qgis.core import QgsApplication, QgsProject, QgsVectorLayer
+    from qgis.PyQt.QtCore import QDate
 
     from qfit.activity_query import ActivityQuery, build_subset_string
     from qfit.gpkg_writer import GeoPackageWriter
     from qfit.layer_manager import LayerManager
     from qfit.atlas.export_task import BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
+    from qfit.mapbox_config import TILE_MODE_RASTER
+    from qfit.models import Activity
     from qfit.qfit_dockwidget import QfitDockWidget
     from qfit.visual_apply import VisualApplyService
 
@@ -23,10 +26,13 @@ except Exception as exc:  # pragma: no cover - exercised only when QGIS is unava
     QgsApplication = None
     QgsProject = None
     QgsVectorLayer = None
+    QDate = None
     ActivityQuery = None
     build_subset_string = None
     GeoPackageWriter = None
     LayerManager = None
+    TILE_MODE_RASTER = None
+    Activity = None
     QfitDockWidget = None
     QGIS_AVAILABLE = False
     QGIS_IMPORT_ERROR = exc
@@ -115,6 +121,11 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertEqual(dock.maxDetailedActivitiesLabel.text(), "Detailed track fetch limit")
             self.assertEqual(dock.pointSamplingStrideLabel.text(), "Keep every Nth point")
             self.assertEqual(dock.temporalModeLabel.text(), "Temporal timestamps")
+            self.assertEqual(dock.workflowLabel.text(), "Workflow: Fetch → Store → Visualize → Analyze → Publish")
+            self.assertFalse(dock.credentialsGroupBox.isVisible())
+            self.assertEqual(dock.activitiesGroupBox.title(), "1. Fetch activities")
+            self.assertFalse(dock.mapboxAccessTokenLabel.isVisible())
+            self.assertFalse(dock.mapboxAccessTokenLineEdit.isVisible())
             self.assertEqual(dock.refreshButton.text(), "Fetch activities")
             self.assertEqual(dock.loadButton.text(), "Store and load layers")
             self.assertEqual(dock.applyFiltersButton.text(), "Apply current filters to loaded layers")
@@ -124,6 +135,11 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertFalse(dock.temporalHelpLabel.isVisible())
             self.assertFalse(dock.publishGroupBox.isChecked())
             self.assertFalse(dock.publishSettingsWidget.isVisible())
+            self.assertEqual(dock.outputGroupBox.title(), "2. Store data")
+            self.assertEqual(dock.styleGroupBox.title(), "3. Visualize")
+            self.assertEqual(dock.analysisWorkflowGroupBox.title(), "4. Analyze")
+            self.assertEqual(dock.publishGroupBox.title(), "5. Publish / atlas")
+            self.assertEqual(dock.tileModeComboBox.currentText(), TILE_MODE_RASTER)
             self.assertAlmostEqual(
                 dock.atlasTargetAspectRatioSpinBox.value(),
                 BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO,
@@ -131,6 +147,24 @@ class QgisSmokeTests(unittest.TestCase):
             )
             self.assertIsNotNone(dock.findChild(QLabel, "maxDetailedActivitiesSpinBoxContextHelpLabel"))
             self.assertIsNotNone(dock.findChild(QWidget, "maxDetailedActivitiesSpinBoxHelpField"))
+        finally:
+            dock.close()
+            dock.deleteLater()
+
+    def test_fetch_preview_shows_fetched_count_even_when_visualize_filters_match_zero(self):
+        dock = QfitDockWidget(self.iface)
+        try:
+            dock.activities = [Activity(**payload) for payload in self._sample_activities()]
+            dock._populate_activity_types()
+            dock.dateFromEdit.setDate(QDate(2030, 1, 1))
+
+            dock._refresh_activity_preview()
+
+            self.assertIn("2 activities", dock.querySummaryLabel.text())
+            self.assertIn("Visualize filters currently match 0 activities.", dock.querySummaryLabel.text())
+            preview_text = dock.activityPreviewPlainTextEdit.toPlainText()
+            self.assertIn("Lunch Run", preview_text)
+            self.assertIn("Morning Ride", preview_text)
         finally:
             dock.close()
             dock.deleteLater()

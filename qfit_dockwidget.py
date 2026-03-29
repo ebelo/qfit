@@ -29,6 +29,7 @@ from .layer_manager import LayerManager
 from .load_workflow import LoadWorkflowError, LoadWorkflowService
 from .mapbox_config import (
     DEFAULT_BACKGROUND_PRESET,
+    TILE_MODE_RASTER,
     TILE_MODES,
     MapboxConfigError,
     background_preset_names,
@@ -78,6 +79,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.fetch_result_service = FetchResultService(self.sync_controller)
         self.cache = self._build_cache()
         self.setupUi(self)
+        self._configure_starting_sections()
         self._remove_stale_qfit_layers()
         self._apply_contextual_help()
         self._configure_background_preset_options()
@@ -89,6 +91,27 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._configure_workflow_sections()
         self._refresh_activity_preview()
         self._update_connection_status()
+
+    def _configure_starting_sections(self):
+        """Hide inline credential entry and start the dock at fetch/import.
+
+        Strava credentials now live in the separate Configuration dialog, so
+        the main Activities dock should begin with fetching rather than an
+        embedded OAuth/setup flow.
+        """
+        self.workflowLabel.setText("Workflow: Fetch → Store → Visualize → Analyze → Publish")
+        self.credentialsGroupBox.hide()
+        self.activitiesGroupBox.setTitle("1. Fetch activities")
+        self.activitiesIntroLabel.setText(
+            "Fetch your activities from Strava using the credentials saved in qfit → Configuration. "
+            "Filters are applied later in the Visualize step — no re-fetch needed."
+        )
+        self.outputGroupBox.setTitle("2. Store data")
+        self.styleGroupBox.setTitle("3. Visualize")
+        self.analysisWorkflowGroupBox.setTitle("4. Analyze")
+        self.publishGroupBox.setTitle("5. Publish / atlas")
+        self.mapboxAccessTokenLabel.hide()
+        self.mapboxAccessTokenLineEdit.hide()
 
     def _remove_stale_qfit_layers(self):
         """Remove qfit layers from the project whose source file no longer exists.
@@ -267,7 +290,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.maxDistanceSpinBox.setValue(float(s.get("max_distance_km", 0.0)))
         self.detailedOnlyCheckBox.setChecked(s.get_bool("detailed_only", False))
         self.backgroundMapCheckBox.setChecked(s.get_bool("use_background_map", False))
-        self.mapboxAccessTokenLineEdit.setText(s.get("mapbox_access_token", ""))
         self.mapboxStyleOwnerLineEdit.setText(s.get("mapbox_style_owner", "mapbox"))
         self.mapboxStyleIdLineEdit.setText(s.get("mapbox_style_id", ""))
         self.atlasMarginPercentSpinBox.setValue(float(s.get("atlas_margin_percent", 8.0)))
@@ -338,7 +360,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         s.set("temporal_mode", self.temporalModeComboBox.currentText())
         s.set("use_background_map", self.backgroundMapCheckBox.isChecked())
         s.set("background_preset", self.backgroundPresetComboBox.currentText())
-        s.set("mapbox_access_token", self.mapboxAccessTokenLineEdit.text().strip())
         s.set("mapbox_style_owner", self.mapboxStyleOwnerLineEdit.text().strip())
         s.set("mapbox_style_id", self.mapboxStyleIdLineEdit.text().strip())
         s.set("tile_mode", self.tileModeComboBox.currentText())
@@ -365,7 +386,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self.background_layer = self.background_controller.load_background(
                 enabled=enabled,
                 preset_name=self.backgroundPresetComboBox.currentText(),
-                access_token=self.mapboxAccessTokenLineEdit.text().strip(),
+                access_token=self._mapbox_access_token(),
                 style_owner=self.mapboxStyleOwnerLineEdit.text().strip(),
                 style_id=self.mapboxStyleIdLineEdit.text().strip(),
                 tile_mode=self.tileModeComboBox.currentText(),
@@ -699,7 +720,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._set_status(status)
 
     def _apply_visual_configuration(self, apply_subset_filters):
-        filtered_activities = self._refresh_activity_preview()
+        filtered_activities = self._filtered_activities()
         query = self._current_activity_query()
 
         layers = LayerRefs(
@@ -711,7 +732,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         bg_config = BackgroundConfig(
             enabled=self.backgroundMapCheckBox.isChecked(),
             preset_name=self.backgroundPresetComboBox.currentText(),
-            access_token=self.mapboxAccessTokenLineEdit.text().strip(),
+            access_token=self._mapbox_access_token(),
             style_owner=self.mapboxStyleOwnerLineEdit.text().strip(),
             style_id=self.mapboxStyleIdLineEdit.text().strip(),
             tile_mode=self.tileModeComboBox.currentText(),
@@ -748,25 +769,37 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
     def _refresh_activity_preview(self):
         if not self.activities:
-            self.querySummaryLabel.setText("Fetch activities to see a query summary.")
+            self.querySummaryLabel.setText("Fetch activities to preview your latest synced activities.")
             self.activityPreviewPlainTextEdit.setPlainText("")
             return []
 
-        query = self._current_activity_query()
-        filtered = filter_activities(self.activities, query)
-        sorted_activities = sort_activities(filtered, query.sort_label)
-        summary = summarize_activities(sorted_activities)
-        self.querySummaryLabel.setText(format_summary_text(summary))
+        fetched_activities = sort_activities(self.activities, DEFAULT_SORT_LABEL)
+        summary = summarize_activities(fetched_activities)
 
-        preview_lines = build_preview_lines(sorted_activities, limit=10)
-        if len(sorted_activities) > len(preview_lines):
-            preview_lines.append("… and {count} more".format(count=len(sorted_activities) - len(preview_lines)))
+        query_summary = format_summary_text(summary)
+        filtered_count = len(self._filtered_activities())
+        if filtered_count != len(self.activities):
+            query_summary = (
+                f"{query_summary}\n"
+                f"Visualize filters currently match {filtered_count} activities."
+            )
+        self.querySummaryLabel.setText(query_summary)
+
+        preview_lines = build_preview_lines(fetched_activities, limit=10)
+        if len(fetched_activities) > len(preview_lines):
+            preview_lines.append("… and {count} more".format(count=len(fetched_activities) - len(preview_lines)))
         self.activityPreviewPlainTextEdit.setPlainText("\n".join(preview_lines))
-        return sorted_activities
+        return fetched_activities
+
+    def _filtered_activities(self):
+        return filter_activities(self.activities, self._current_activity_query())
 
 
     def _redirect_uri(self):
         return self.redirectUriLineEdit.text().strip() or StravaProvider.DEFAULT_REDIRECT_URI
+
+    def _mapbox_access_token(self):
+        return (self.settings.get("mapbox_access_token", "") or "").strip()
 
     def _qdate_to_date(self, value):
         return date(value.year(), value.month(), value.day())
@@ -825,9 +858,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         if has_client and has_refresh:
             message = "Strava connection: ready to fetch activities"
         elif has_client:
-            message = "Strava connection: app credentials saved; complete OAuth to fetch activities"
+            message = "Strava connection: app credentials saved; add a refresh token in Configuration to fetch activities"
         else:
-            message = "Strava connection: enter your Strava app credentials to begin"
+            message = "Strava connection: open qfit → Configuration to add your Strava credentials"
         self.connectionStatusLabel.setText(message)
 
     def on_atlas_pdf_browse_clicked(self):
@@ -874,7 +907,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             pre_export_tile_mode=pre_export_tile_mode,
             background_enabled=self.backgroundMapCheckBox.isChecked(),
             preset_name=self.backgroundPresetComboBox.currentText(),
-            access_token=self.mapboxAccessTokenLineEdit.text().strip(),
+            access_token=self._mapbox_access_token(),
             style_owner=self.mapboxStyleOwnerLineEdit.text().strip(),
             style_id=self.mapboxStyleIdLineEdit.text().strip(),
         )
@@ -891,7 +924,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             on_finished=self._on_atlas_export_finished,
             pre_export_tile_mode=pre_export_tile_mode,
             preset_name=self.backgroundPresetComboBox.currentText(),
-            access_token=self.mapboxAccessTokenLineEdit.text().strip(),
+            access_token=self._mapbox_access_token(),
             style_owner=self.mapboxStyleOwnerLineEdit.text().strip(),
             style_id=self.mapboxStyleIdLineEdit.text().strip(),
             background_enabled=self.backgroundMapCheckBox.isChecked(),

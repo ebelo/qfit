@@ -256,7 +256,6 @@ class ContextualHelpTests(unittest.TestCase):
             "pointSamplingStrideSpinBox",
             "temporalModeComboBox",
             "backgroundPresetComboBox",
-            "mapboxAccessTokenLineEdit",
             "atlasTargetAspectRatioSpinBox",
             "refreshButton",
             "loadButton",
