@@ -107,6 +107,7 @@ class AtlasPagePlan:
     source_activity_id: str | None
     name: str
     activity_type: str
+    sport_type: str | None
     start_date: str | None
     distance_m: float | None
     moving_time_s: int | None
@@ -241,6 +242,7 @@ def build_atlas_page_plans(
                 source_activity_id=record.get("source_activity_id"),
                 name=page_title,
                 activity_type=(canonical_activity_label(record.get("activity_type"), record.get("sport_type")) or "Activity").strip() or "Activity",
+                sport_type=record.get("sport_type"),
                 start_date=record.get("start_date"),
                 distance_m=_safe_float(record.get("distance_m")),
                 moving_time_s=_safe_int(record.get("moving_time_s")),
