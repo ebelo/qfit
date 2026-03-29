@@ -99,19 +99,43 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         the main Activities dock should begin with fetching rather than an
         embedded OAuth/setup flow.
         """
-        self.workflowLabel.setText("Workflow: Fetch → Store → Visualize → Analyze → Publish")
+        self.workflowLabel.setText("Workflow: Fetch & store → Visualize → Analyze → Publish")
         self.credentialsGroupBox.hide()
-        self.activitiesGroupBox.setTitle("1. Fetch activities")
+        self.activitiesGroupBox.setTitle("1. Fetch / store database")
         self.activitiesIntroLabel.setText(
             "Fetch your activities from Strava using the credentials saved in qfit → Configuration. "
-            "Filters are applied later in the Visualize step — no re-fetch needed."
+            "Store or clear the local GeoPackage here too. Filters are applied later in the Visualize step — no re-fetch needed."
         )
-        self.outputGroupBox.setTitle("2. Store data")
-        self.styleGroupBox.setTitle("3. Visualize")
-        self.analysisWorkflowGroupBox.setTitle("4. Analyze")
-        self.publishGroupBox.setTitle("5. Publish / atlas")
+        self._move_store_section_under_fetch()
+        self._move_load_layers_to_visualize()
+        self.outputGroupBox.setTitle("Store / database")
+        self.styleGroupBox.setTitle("2. Visualize")
+        self.analysisWorkflowGroupBox.setTitle("3. Analyze")
+        self.publishGroupBox.setTitle("4. Publish / atlas")
         self.mapboxAccessTokenLabel.hide()
         self.mapboxAccessTokenLineEdit.hide()
+
+    def _move_store_section_under_fetch(self):
+        outer_layout = getattr(self, "verticalLayout", None)
+        activities_layout = getattr(self, "activitiesGroupLayout", None)
+        if outer_layout is None or activities_layout is None:
+            return
+        if self.outputGroupBox.parent() is self.activitiesGroupBox:
+            return
+        outer_layout.removeWidget(self.outputGroupBox)
+        self.outputGroupBox.setParent(self.activitiesGroupBox)
+        activities_layout.addWidget(self.outputGroupBox)
+
+    def _move_load_layers_to_visualize(self):
+        output_layout = getattr(self, "outputGroupLayout", None)
+        style_layout = getattr(self, "styleGroupLayout", None)
+        if output_layout is None or style_layout is None:
+            return
+        if self.loadLayersButton.parent() is self.styleGroupBox:
+            return
+        output_layout.removeWidget(self.loadLayersButton)
+        self.loadLayersButton.setParent(self.styleGroupBox)
+        style_layout.insertWidget(0, self.loadLayersButton)
 
     def _remove_stale_qfit_layers(self):
         """Remove qfit layers from the project whose source file no longer exists.
