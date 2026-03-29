@@ -2,9 +2,16 @@ import unittest
 from unittest.mock import MagicMock
 
 from tests import _path  # noqa: F401
-from qfit.layer_manager import LayerManager
+
+try:
+    from qfit.layer_manager import LayerManager
+    _LAYER_MANAGER_IMPORT_ERROR = None
+except ImportError as exc:  # pragma: no cover - depends on QGIS bindings in CI
+    LayerManager = None
+    _LAYER_MANAGER_IMPORT_ERROR = exc
 
 
+@unittest.skipIf(LayerManager is None, f"LayerManager unavailable: {_LAYER_MANAGER_IMPORT_ERROR}")
 class LayerManagerTests(unittest.TestCase):
     def test_load_output_layers_switches_crs_without_preserving_old_extent(self):
         iface = MagicMock()
