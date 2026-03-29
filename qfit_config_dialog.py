@@ -29,6 +29,8 @@ from .ui_settings_binding import UIFieldBinding, load_bindings, save_bindings
 
 logger = logging.getLogger(__name__)
 
+_NOT_TESTED_LABEL = "Not tested"
+
 
 class QfitConfigDialog(QDialog):
     """Editable configuration dialog for qfit plugin connection settings.
@@ -93,7 +95,7 @@ class QfitConfigDialog(QDialog):
         self._refresh_token_edit.setPlaceholderText("Obtained via OAuth flow in Activities")
         form.addRow("Refresh token:", self._refresh_token_edit)
 
-        self._strava_test_status_label = QLabel("Not tested")
+        self._strava_test_status_label = QLabel(_NOT_TESTED_LABEL)
         self._strava_test_status_label.setObjectName("stravaTestStatusLabel")
         self._strava_test_status_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
         form.addRow("Last test:", self._strava_test_status_label)
@@ -120,7 +122,7 @@ class QfitConfigDialog(QDialog):
         self._mapbox_token_edit.setPlaceholderText("pk.eyJ1Ijo...")
         form.addRow("Access token:", self._mapbox_token_edit)
 
-        self._mapbox_test_status_label = QLabel("Not tested")
+        self._mapbox_test_status_label = QLabel(_NOT_TESTED_LABEL)
         self._mapbox_test_status_label.setObjectName("mapboxTestStatusLabel")
         self._mapbox_test_status_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
         form.addRow("Last test:", self._mapbox_test_status_label)
@@ -169,8 +171,8 @@ class QfitConfigDialog(QDialog):
         """Read current settings and populate all fields."""
         load_bindings(self._bindings, self._settings)
         self._refresh_status_labels()
-        self._strava_test_status_label.setText("Not tested")
-        self._mapbox_test_status_label.setText("Not tested")
+        self._strava_test_status_label.setText(_NOT_TESTED_LABEL)
+        self._mapbox_test_status_label.setText(_NOT_TESTED_LABEL)
 
     def _save(self) -> None:
         """Persist edited fields to QSettings and refresh status labels."""

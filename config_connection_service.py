@@ -7,8 +7,6 @@ so they can be unit-tested in isolation and reused by the configuration UI.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from urllib.error import HTTPError, URLError
-
 from .mapbox_config import DEFAULT_BACKGROUND_PRESET, fetch_mapbox_style_definition, preset_defaults
 from .strava_client import StravaClient, StravaClientError
 
@@ -66,7 +64,7 @@ def validate_mapbox_connection(
 
     try:
         style_definition = fetch_style_definition(token, style_owner, style_id)
-    except (HTTPError, URLError, OSError, ValueError) as exc:
+    except (OSError, ValueError) as exc:
         return ConnectionTestResult(False, f"Mapbox connection failed: {exc}")
     except Exception as exc:  # noqa: BLE001
         return ConnectionTestResult(False, f"Mapbox connection failed: {exc}")
