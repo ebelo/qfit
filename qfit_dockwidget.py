@@ -108,21 +108,27 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         )
         self._move_store_section_under_fetch()
         self._move_load_layers_to_visualize()
-        self._install_collapsible_activities_section("1. Fetch and store activities")
         self.outputGroupBox.setTitle("Store / database")
-        self.styleGroupBox.setTitle("2. Visualize")
-        self.analysisWorkflowGroupBox.setTitle("3. Analyze")
-        self.publishGroupBox.setTitle("4. Publish / atlas")
+        self.publishGroupBox.setCheckable(False)
+        self.publishSettingsWidget.setVisible(True)
+        self._install_collapsible_section(self.activitiesGroupBox, "activitiesGroupLayout", "1. Fetch and store activities", "activities")
+        self._install_collapsible_section(self.styleGroupBox, "styleGroupLayout", "2. Visualize", "style")
+        self._install_collapsible_section(self.analysisWorkflowGroupBox, "analysisWorkflowLayout", "3. Analyze", "analysis")
+        self._install_collapsible_section(self.publishGroupBox, "publishGroupLayout", "4. Publish / atlas", "publish")
         self.mapboxAccessTokenLabel.hide()
         self.mapboxAccessTokenLineEdit.hide()
 
-    def _install_collapsible_activities_section(self, title: str):
-        layout = getattr(self, "activitiesGroupLayout", None)
-        if layout is None or hasattr(self, "activitiesSectionToggleButton"):
+    def _install_collapsible_section(self, group_box, layout_attr: str, title: str, key: str):
+        layout = getattr(self, layout_attr, None)
+        toggle_attr = f"{key}SectionToggleButton"
+        content_attr = f"{key}SectionContentWidget"
+        if layout is None or hasattr(self, toggle_attr):
             return
 
-        content_widget = QWidget(self.activitiesGroupBox)
-        content_widget.setObjectName("activitiesSectionContentWidget")
+        group_box.setTitle("")
+
+        content_widget = QWidget(group_box)
+        content_widget.setObjectName(f"{key}SectionContentWidget")
         content_layout = QVBoxLayout(content_widget)
         content_layout.setContentsMargins(0, 0, 0, 0)
         content_layout.setSpacing(layout.spacing())
@@ -139,26 +145,28 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             elif spacer is not None:
                 content_layout.addItem(spacer)
 
-        toggle = QToolButton(self.activitiesGroupBox)
-        toggle.setObjectName("activitiesSectionToggleButton")
+        toggle = QToolButton(group_box)
+        toggle.setObjectName(f"{key}SectionToggleButton")
         toggle.setText(title)
         toggle.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
         toggle.setArrowType(Qt.DownArrow)
         toggle.setCheckable(True)
         toggle.setChecked(True)
         toggle.setStyleSheet("QToolButton { border: none; font-weight: bold; }")
-        toggle.toggled.connect(self._set_activities_section_expanded)
+        toggle.toggled.connect(lambda expanded, key=key: self._set_section_expanded(key, expanded))
 
-        self.activitiesSectionToggleButton = toggle
-        self.activitiesSectionContentWidget = content_widget
+        setattr(self, toggle_attr, toggle)
+        setattr(self, content_attr, content_widget)
         layout.addWidget(toggle)
         layout.addWidget(content_widget)
 
-    def _set_activities_section_expanded(self, expanded: bool):
-        if hasattr(self, "activitiesSectionToggleButton"):
-            self.activitiesSectionToggleButton.setArrowType(Qt.DownArrow if expanded else Qt.RightArrow)
-        if hasattr(self, "activitiesSectionContentWidget"):
-            self.activitiesSectionContentWidget.setVisible(expanded)
+    def _set_section_expanded(self, key: str, expanded: bool):
+        toggle = getattr(self, f"{key}SectionToggleButton", None)
+        content = getattr(self, f"{key}SectionContentWidget", None)
+        if toggle is not None:
+            toggle.setArrowType(Qt.DownArrow if expanded else Qt.RightArrow)
+        if content is not None:
+            content.setVisible(expanded)
 
     def _move_store_section_under_fetch(self):
         outer_layout = getattr(self, "verticalLayout", None)
@@ -233,7 +241,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.backgroundPresetComboBox.currentTextChanged.connect(self.on_background_preset_changed)
         self.detailedStreamsCheckBox.toggled.connect(self._update_detailed_fetch_visibility)
         self.writeActivityPointsCheckBox.toggled.connect(self._update_point_sampling_visibility)
-        self.publishGroupBox.toggled.connect(self._update_publish_section_visibility)
         self.advancedFetchGroupBox.toggled.connect(self._update_advanced_fetch_visibility)
         self.atlasPdfBrowseButton.clicked.connect(self.on_atlas_pdf_browse_clicked)
         self.generateAtlasPdfButton.clicked.connect(self.on_generate_atlas_pdf_clicked)
@@ -275,7 +282,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def _configure_workflow_sections(self):
         self._update_detailed_fetch_visibility(self.detailedStreamsCheckBox.isChecked())
         self._update_point_sampling_visibility(self.writeActivityPointsCheckBox.isChecked())
-        self._update_publish_section_visibility(self.publishGroupBox.isChecked())
         self._update_advanced_fetch_visibility(self.advancedFetchGroupBox.isChecked())
         self._update_mapbox_advanced_visibility(self.backgroundPresetComboBox.currentText())
 
@@ -298,10 +304,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         wrapper = getattr(self, "pointSamplingStrideSpinBoxHelpField", None)
         if wrapper is not None:
             wrapper.setVisible(enabled)
-
-    def _update_publish_section_visibility(self, expanded):
-        if hasattr(self, "publishSettingsWidget"):
-            self.publishSettingsWidget.setVisible(expanded)
 
     def _update_advanced_fetch_visibility(self, expanded):
         widget = getattr(self, "advancedFetchSettingsWidget", None)
