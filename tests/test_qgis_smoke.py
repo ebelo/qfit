@@ -14,6 +14,7 @@ try:
     from qfit.gpkg_writer import GeoPackageWriter
     from qfit.layer_manager import LayerManager
     from qfit.atlas.export_task import BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
+    from qfit.mapbox_config import TILE_MODE_RASTER
     from qfit.qfit_dockwidget import QfitDockWidget
     from qfit.visual_apply import VisualApplyService
 
@@ -27,6 +28,7 @@ except Exception as exc:  # pragma: no cover - exercised only when QGIS is unava
     build_subset_string = None
     GeoPackageWriter = None
     LayerManager = None
+    TILE_MODE_RASTER = None
     QfitDockWidget = None
     QGIS_AVAILABLE = False
     QGIS_IMPORT_ERROR = exc
@@ -124,6 +126,7 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertFalse(dock.temporalHelpLabel.isVisible())
             self.assertFalse(dock.publishGroupBox.isChecked())
             self.assertFalse(dock.publishSettingsWidget.isVisible())
+            self.assertEqual(dock.tileModeComboBox.currentText(), TILE_MODE_RASTER)
             self.assertAlmostEqual(
                 dock.atlasTargetAspectRatioSpinBox.value(),
                 BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO,

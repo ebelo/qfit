@@ -29,6 +29,7 @@ from .layer_manager import LayerManager
 from .load_workflow import LoadWorkflowError, LoadWorkflowService
 from .mapbox_config import (
     DEFAULT_BACKGROUND_PRESET,
+    TILE_MODE_RASTER,
     TILE_MODES,
     MapboxConfigError,
     background_preset_names,
