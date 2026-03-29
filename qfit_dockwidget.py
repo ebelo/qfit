@@ -79,6 +79,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.fetch_result_service = FetchResultService(self.sync_controller)
         self.cache = self._build_cache()
         self.setupUi(self)
+        self._configure_starting_sections()
         self._remove_stale_qfit_layers()
         self._apply_contextual_help()
         self._configure_background_preset_options()
@@ -90,6 +91,25 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._configure_workflow_sections()
         self._refresh_activity_preview()
         self._update_connection_status()
+
+    def _configure_starting_sections(self):
+        """Hide inline credential entry and start the dock at fetch/import.
+
+        Strava credentials now live in the separate Configuration dialog, so
+        the main Activities dock should begin with fetching rather than an
+        embedded OAuth/setup flow.
+        """
+        self.workflowLabel.setText("Workflow: Fetch → Store → Visualize → Analyze → Publish")
+        self.credentialsGroupBox.hide()
+        self.activitiesGroupBox.setTitle("1. Fetch activities")
+        self.activitiesIntroLabel.setText(
+            "Fetch your activities from Strava using the credentials saved in qfit → Configuration. "
+            "Filters are applied later in the Visualize step — no re-fetch needed."
+        )
+        self.outputGroupBox.setTitle("2. Store data")
+        self.styleGroupBox.setTitle("3. Visualize")
+        self.analysisWorkflowGroupBox.setTitle("4. Analyze")
+        self.publishGroupBox.setTitle("5. Publish / atlas")
 
     def _remove_stale_qfit_layers(self):
         """Remove qfit layers from the project whose source file no longer exists.
@@ -826,9 +846,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         if has_client and has_refresh:
             message = "Strava connection: ready to fetch activities"
         elif has_client:
-            message = "Strava connection: app credentials saved; complete OAuth to fetch activities"
+            message = "Strava connection: app credentials saved; add a refresh token in Configuration to fetch activities"
         else:
-            message = "Strava connection: enter your Strava app credentials to begin"
+            message = "Strava connection: open qfit → Configuration to add your Strava credentials"
         self.connectionStatusLabel.setText(message)
 
     def on_atlas_pdf_browse_clicked(self):

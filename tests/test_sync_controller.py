@@ -15,12 +15,18 @@ class BuildStravaProviderTests(unittest.TestCase):
 
     def test_build_strava_provider_raises_without_credentials(self):
         ctrl = SyncController()
-        with self.assertRaises(ProviderError):
+        with self.assertRaisesRegex(
+            ProviderError,
+            "Configuration and enter your Strava client ID and client secret first",
+        ):
             ctrl.build_strava_provider("", "", "token")
 
     def test_build_strava_provider_raises_without_refresh_token(self):
         ctrl = SyncController()
-        with self.assertRaises(ProviderError):
+        with self.assertRaisesRegex(
+            ProviderError,
+            "Configuration and enter a Strava refresh token first",
+        ):
             ctrl.build_strava_provider("id", "secret", "")
 
     def test_build_strava_provider_allows_missing_refresh_token_when_not_required(self):

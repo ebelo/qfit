@@ -117,6 +117,9 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertEqual(dock.maxDetailedActivitiesLabel.text(), "Detailed track fetch limit")
             self.assertEqual(dock.pointSamplingStrideLabel.text(), "Keep every Nth point")
             self.assertEqual(dock.temporalModeLabel.text(), "Temporal timestamps")
+            self.assertEqual(dock.workflowLabel.text(), "Workflow: Fetch → Store → Visualize → Analyze → Publish")
+            self.assertFalse(dock.credentialsGroupBox.isVisible())
+            self.assertEqual(dock.activitiesGroupBox.title(), "1. Fetch activities")
             self.assertEqual(dock.refreshButton.text(), "Fetch activities")
             self.assertEqual(dock.loadButton.text(), "Store and load layers")
             self.assertEqual(dock.applyFiltersButton.text(), "Apply current filters to loaded layers")
@@ -126,6 +129,10 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertFalse(dock.temporalHelpLabel.isVisible())
             self.assertFalse(dock.publishGroupBox.isChecked())
             self.assertFalse(dock.publishSettingsWidget.isVisible())
+            self.assertEqual(dock.outputGroupBox.title(), "2. Store data")
+            self.assertEqual(dock.styleGroupBox.title(), "3. Visualize")
+            self.assertEqual(dock.analysisWorkflowGroupBox.title(), "4. Analyze")
+            self.assertEqual(dock.publishGroupBox.title(), "5. Publish / atlas")
             self.assertEqual(dock.tileModeComboBox.currentText(), TILE_MODE_RASTER)
             self.assertAlmostEqual(
                 dock.atlasTargetAspectRatioSpinBox.value(),
