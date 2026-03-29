@@ -166,6 +166,48 @@ class WriteAndLoadSuccessTests(unittest.TestCase):
         )
 
 
+class WriteDatabaseSuccessTests(unittest.TestCase):
+    def setUp(self):
+        self.layer_manager = MagicMock()
+        self.service = LoadWorkflowService(self.layer_manager)
+
+    def _make_writer_mock(self, write_result):
+        mock_module = MagicMock()
+        mock_writer_instance = mock_module.GeoPackageWriter.return_value
+        mock_writer_instance.write_activities.return_value = write_result
+        return mock_module
+
+    def test_write_database_does_not_load_layers(self):
+        write_result = {
+            "path": "/tmp/out.gpkg",
+            "fetched_count": 2,
+            "track_count": 2,
+            "start_count": 2,
+            "point_count": 0,
+            "atlas_count": 2,
+            "sync": SyncStats(total_count=8, inserted=2, updated=0, unchanged=0),
+        }
+        mock_gpkg = self._make_writer_mock(write_result)
+
+        with patch.dict(sys.modules, {"qfit.gpkg_writer": mock_gpkg}):
+            result = self.service.write_database(
+                activities=["a", "b"],
+                output_path="/tmp/out.gpkg",
+                write_activity_points=False,
+                point_stride=5,
+                atlas_margin_percent=8.0,
+                atlas_min_extent_degrees=0.01,
+                atlas_target_aspect_ratio=1.5,
+                last_sync_date="2026-01-01",
+            )
+
+        self.layer_manager.load_output_layers.assert_not_called()
+        self.assertEqual(result.output_path, "/tmp/out.gpkg")
+        self.assertEqual(result.total_stored, 8)
+        self.assertIsNone(result.activities_layer)
+        self.assertIn("Use Load activity layers in Visualize", result.status)
+
+
 class LoadExistingValidationTests(unittest.TestCase):
     def setUp(self):
         self.layer_manager = MagicMock()
@@ -180,6 +222,7 @@ class LoadExistingValidationTests(unittest.TestCase):
         with self.assertRaises(LoadWorkflowError) as ctx:
             self.service.load_existing("/nonexistent/path.gpkg")
         self.assertIn("No database found", str(ctx.exception))
+        self.assertIn("Store activities first", str(ctx.exception))
 
 
 class LoadExistingSuccessTests(unittest.TestCase):

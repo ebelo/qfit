@@ -9,7 +9,7 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 try:
     from qgis.core import QgsApplication, QgsProject, QgsVectorLayer
-    from qgis.PyQt.QtCore import QDate
+    from qgis.PyQt.QtCore import QDate, Qt
 
     from qfit.activity_query import ActivityQuery, build_subset_string
     from qfit.gpkg_writer import GeoPackageWriter
@@ -27,6 +27,7 @@ except Exception as exc:  # pragma: no cover - exercised only when QGIS is unava
     QgsProject = None
     QgsVectorLayer = None
     QDate = None
+    Qt = None
     ActivityQuery = None
     build_subset_string = None
     GeoPackageWriter = None
@@ -84,9 +85,13 @@ class _FakeCanvas:
 class _FakeIface:
     def __init__(self):
         self._canvas = _FakeCanvas()
+        self._main_window = None
 
     def mapCanvas(self):
         return self._canvas
+
+    def mainWindow(self):
+        return self._main_window
 
 
 @unittest.skipUnless(
@@ -121,24 +126,42 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertEqual(dock.maxDetailedActivitiesLabel.text(), "Detailed track fetch limit")
             self.assertEqual(dock.pointSamplingStrideLabel.text(), "Keep every Nth point")
             self.assertEqual(dock.temporalModeLabel.text(), "Temporal timestamps")
-            self.assertEqual(dock.workflowLabel.text(), "Workflow: Fetch → Store → Visualize → Analyze → Publish")
+            self.assertEqual(dock.workflowLabel.text(), "Workflow: Fetch & store → Visualize → Analyze → Publish")
             self.assertFalse(dock.credentialsGroupBox.isVisible())
-            self.assertEqual(dock.activitiesGroupBox.title(), "1. Fetch activities")
+            self.assertTrue(bool(dock.features() & dock.DockWidgetMovable))
+            self.assertTrue(bool(dock.features() & dock.DockWidgetFloatable))
+            self.assertEqual(dock.activitiesGroupBox.title(), "")
+            self.assertEqual(dock.activitiesSectionToggleButton.text(), "1. Fetch and store activities")
+            self.assertTrue(dock.activitiesSectionToggleButton.isChecked())
+            self.assertEqual(dock.activitiesSectionToggleButton.arrowType(), Qt.DownArrow)
+            self.assertFalse(dock.activitiesSectionContentWidget.isHidden())
             self.assertFalse(dock.mapboxAccessTokenLabel.isVisible())
             self.assertFalse(dock.mapboxAccessTokenLineEdit.isVisible())
             self.assertEqual(dock.refreshButton.text(), "Fetch activities")
-            self.assertEqual(dock.loadButton.text(), "Store and load layers")
+            self.assertEqual(dock.loadButton.text(), "Store activities")
+            self.assertEqual(dock.loadLayersButton.text(), "Load activity layers")
+            self.assertEqual(dock.clearDatabaseButton.text(), "Clear database")
             self.assertEqual(dock.applyFiltersButton.text(), "Apply current filters to loaded layers")
             self.assertFalse(dock.backgroundHelpLabel.isVisible())
             self.assertFalse(dock.analysisHelpLabel.isVisible())
             self.assertFalse(dock.publishHelpLabel.isVisible())
             self.assertFalse(dock.temporalHelpLabel.isVisible())
-            self.assertFalse(dock.publishGroupBox.isChecked())
-            self.assertFalse(dock.publishSettingsWidget.isVisible())
-            self.assertEqual(dock.outputGroupBox.title(), "2. Store data")
-            self.assertEqual(dock.styleGroupBox.title(), "3. Visualize")
-            self.assertEqual(dock.analysisWorkflowGroupBox.title(), "4. Analyze")
-            self.assertEqual(dock.publishGroupBox.title(), "5. Publish / atlas")
+            self.assertEqual(dock.outputGroupBox.title(), "Store / database")
+            self.assertEqual(dock.outputGroupBox.parent(), dock.activitiesSectionContentWidget)
+            self.assertGreater(dock.activitiesSectionContentWidget.layout().indexOf(dock.outputGroupBox), dock.activitiesSectionContentWidget.layout().indexOf(dock.previewGroupBox))
+            self.assertEqual(dock.styleGroupBox.title(), "")
+            self.assertEqual(dock.styleSectionToggleButton.text(), "2. Visualize")
+            self.assertEqual(dock.styleSectionToggleButton.arrowType(), Qt.DownArrow)
+            self.assertFalse(dock.styleSectionContentWidget.isHidden())
+            self.assertEqual(dock.loadLayersButton.parent(), dock.styleSectionContentWidget)
+            self.assertLess(dock.styleSectionContentWidget.layout().indexOf(dock.loadLayersButton), dock.styleSectionContentWidget.layout().indexOf(dock.backgroundGroupBox))
+            self.assertEqual(dock.analysisWorkflowGroupBox.title(), "")
+            self.assertEqual(dock.analysisSectionToggleButton.text(), "3. Analyze")
+            self.assertFalse(dock.analysisSectionContentWidget.isHidden())
+            self.assertEqual(dock.publishGroupBox.title(), "")
+            self.assertEqual(dock.publishSectionToggleButton.text(), "4. Publish / atlas")
+            self.assertFalse(dock.publishSectionContentWidget.isHidden())
+            self.assertTrue(dock.publishSettingsWidget.parent() is dock.publishSectionContentWidget or dock.publishSettingsWidget.isVisible())
             self.assertEqual(dock.tileModeComboBox.currentText(), TILE_MODE_RASTER)
             self.assertAlmostEqual(
                 dock.atlasTargetAspectRatioSpinBox.value(),
@@ -147,6 +170,19 @@ class QgisSmokeTests(unittest.TestCase):
             )
             self.assertIsNotNone(dock.findChild(QLabel, "maxDetailedActivitiesSpinBoxContextHelpLabel"))
             self.assertIsNotNone(dock.findChild(QWidget, "maxDetailedActivitiesSpinBoxHelpField"))
+            temporal_helper = dock.findChild(QLabel, "temporalModeComboBoxContextHelpLabel")
+            self.assertIsNotNone(temporal_helper)
+            self.assertEqual(temporal_helper.parentWidget(), dock.analysisSectionContentWidget)
+            dock.activitiesSectionToggleButton.click()
+            self.assertFalse(dock.activitiesSectionToggleButton.isChecked())
+            self.assertEqual(dock.activitiesSectionToggleButton.arrowType(), Qt.RightArrow)
+            self.assertTrue(dock.activitiesSectionContentWidget.isHidden())
+            dock.styleSectionToggleButton.click()
+            self.assertTrue(dock.styleSectionContentWidget.isHidden())
+            dock.analysisSectionToggleButton.click()
+            self.assertTrue(dock.analysisSectionContentWidget.isHidden())
+            dock.publishSectionToggleButton.click()
+            self.assertTrue(dock.publishSectionContentWidget.isHidden())
         finally:
             dock.close()
             dock.deleteLater()

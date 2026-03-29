@@ -161,6 +161,28 @@ class MapCanvasServiceRealTests(unittest.TestCase):
         canvas.setDestinationCrs.assert_called_once()
         canvas.setExtent.assert_called_once_with(transformed_extent)
 
+    @patch("qfit.map_canvas_service.QgsCoordinateTransform")
+    @patch("qfit.map_canvas_service.QgsProject")
+    def test_ensure_working_crs_can_skip_extent_preservation(
+        self, mock_project_cls, mock_transform_cls
+    ):
+        from qgis.core import QgsCoordinateReferenceSystem, QgsRectangle
+
+        project = MagicMock()
+        old_crs = QgsCoordinateReferenceSystem("EPSG:4326")
+        project.crs.return_value = old_crs
+        mock_project_cls.instance.return_value = project
+
+        iface, canvas = _make_iface()
+        canvas.extent.return_value = QgsRectangle(6, 46, 7, 47)
+
+        self.service.ensure_working_crs(iface, preserve_extent=False)
+
+        project.setCrs.assert_called_once()
+        canvas.setDestinationCrs.assert_called_once()
+        mock_transform_cls.assert_not_called()
+        canvas.setExtent.assert_not_called()
+
     @patch("qfit.map_canvas_service.QgsProject")
     def test_ensure_working_crs_noop_when_iface_is_none(self, mock_project_cls):
         project = MagicMock()
@@ -283,6 +305,29 @@ class MapCanvasServiceMockTests(unittest.TestCase):
         canvas.setDestinationCrs.assert_called_once_with(working_crs)
         canvas.setExtent.assert_called_once_with(transformed)
         canvas.refresh.assert_called_once()
+
+    def test_ensure_working_crs_can_skip_extent_preservation(self):
+        iface, canvas = _make_iface()
+        current_extent = MagicMock()
+        current_extent.isEmpty.return_value = False
+        canvas.extent.return_value = current_extent
+
+        current_crs = MagicMock()
+        current_crs.isValid.return_value = True
+        project = MagicMock()
+        project.crs.return_value = current_crs
+        _def_service_module.QgsProject.instance.return_value = project
+
+        working_crs = MagicMock()
+        working_crs.isValid.return_value = True
+        _def_service_module.QgsCoordinateReferenceSystem.return_value = working_crs
+
+        self.service.ensure_working_crs(iface, preserve_extent=False)
+
+        project.setCrs.assert_called_once_with(working_crs)
+        canvas.setDestinationCrs.assert_called_once_with(working_crs)
+        _def_service_module.QgsCoordinateTransform.assert_not_called()
+        canvas.setExtent.assert_not_called()
 
     def test_ensure_working_crs_swallows_transform_runtime_error(self):
         iface, canvas = _make_iface()

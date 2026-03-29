@@ -272,7 +272,7 @@ class ContextualHelpTests(unittest.TestCase):
         self.assertEqual(entries["backgroundPresetComboBox"].label_text, "Basemap preset")
         self.assertEqual(entries["atlasTargetAspectRatioSpinBox"].label_text, "Target page aspect ratio")
         self.assertEqual(entries["refreshButton"].target_text, "Fetch activities")
-        self.assertIn("Store and load layers", entries["buttonLayout"].helper_text)
+        self.assertIn("Store activities", entries["buttonLayout"].helper_text)
 
     def test_contextual_help_binder_is_importable_without_instantiating_qgis_widgets(self):
         binder = ContextualHelpBinder(root=object())

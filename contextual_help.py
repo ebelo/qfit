@@ -179,10 +179,18 @@ DOCK_HELP_ENTRIES: tuple[HelpEntry, ...] = (
     ),
     HelpEntry(
         anchor_name="loadButton",
-        target_text="Store and load layers",
+        target_text="Store activities",
         tooltip=(
-            "Writes the full fetched result to the GeoPackage, then loads the qfit layers into QGIS without turning "
-            "the dock query into a subset filter automatically."
+            "Writes the full fetched result to the GeoPackage only. Use Load activity layers in Visualize when you want to "
+            "bring the stored qfit layers into QGIS."
+        ),
+    ),
+    HelpEntry(
+        anchor_name="loadLayersButton",
+        target_text="Load activity layers",
+        tooltip=(
+            "Loads the stored qfit layers from the GeoPackage into QGIS. Use this after storing activities or when "
+            "reopening an existing qfit database."
         ),
     ),
     HelpEntry(
@@ -196,8 +204,9 @@ DOCK_HELP_ENTRIES: tuple[HelpEntry, ...] = (
     HelpEntry(
         anchor_name="buttonLayout",
         helper_text=(
-            "Use Store and load layers when you want the complete synced dataset in QGIS. Use Apply current filters to "
-            "loaded layers only when you want the loaded layers and tables to match the current dock query."
+            "Use Store activities to update the GeoPackage database. Then use Load activity layers in Visualize when you want "
+            "the stored dataset in QGIS. Apply current filters only when you want loaded layers and tables to match "
+            "the current dock query."
         ),
     ),
 )
@@ -259,7 +268,8 @@ class ContextualHelpBinder:
             return
 
         qtwidgets = self._qtwidgets()
-        helper = qtwidgets.QLabel(text, self.root)
+        helper_parent = self._helper_parent(anchor)
+        helper = qtwidgets.QLabel(text, helper_parent)
         helper.setObjectName(helper_name)
         helper.setWordWrap(True)
         helper.setTextInteractionFlags(self._qtcore().Qt.TextSelectableByMouse)
@@ -344,6 +354,18 @@ class ContextualHelpBinder:
             if row >= 0:
                 return candidate
         return None
+
+    def _helper_parent(self, anchor: Any) -> Any:
+        form_layout = self._find_direct_form_layout(anchor) if hasattr(anchor, "parentWidget") else None
+        if form_layout is not None and hasattr(form_layout, "parentWidget"):
+            parent = form_layout.parentWidget()
+            if parent is not None:
+                return parent
+        if hasattr(anchor, "parentWidget"):
+            parent = anchor.parentWidget()
+            if parent is not None:
+                return parent
+        return self.root
 
     def _find_layout_and_index(self, layout: Any, anchor: Any) -> Any:
         if layout is None:

@@ -6,9 +6,9 @@ logger = logging.getLogger(__name__)
 
 from qgis.core import QgsApplication, QgsProject
 from qgis.PyQt import uic
-from qgis.PyQt.QtCore import QDate, QStandardPaths, QUrl
+from qgis.PyQt.QtCore import QDate, QStandardPaths, Qt, QUrl
 from qgis.PyQt.QtGui import QDesktopServices
-from qgis.PyQt.QtWidgets import QApplication, QFileDialog, QDockWidget, QMessageBox
+from qgis.PyQt.QtWidgets import QApplication, QFileDialog, QDockWidget, QMessageBox, QToolButton, QVBoxLayout, QWidget
 
 from .activity_classification import ordered_canonical_activity_labels
 from .activity_query import (
@@ -54,8 +54,15 @@ FORM_CLASS, _ = uic.loadUiType(
 class QfitDockWidget(QDockWidget, FORM_CLASS):
     SETTINGS_PREFIX = "qfit"
     LEGACY_SETTINGS_PREFIX = "QFIT"
+    DEFAULT_DOCK_FEATURES = (
+        QDockWidget.DockWidgetClosable
+        | QDockWidget.DockWidgetMovable
+        | QDockWidget.DockWidgetFloatable
+    )
 
     def __init__(self, iface, parent=None):
+        if parent is None and iface is not None and hasattr(iface, "mainWindow"):
+            parent = iface.mainWindow()
         super().__init__(parent)
         self.iface = iface
         self.activities = []
@@ -79,6 +86,8 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.fetch_result_service = FetchResultService(self.sync_controller)
         self.cache = self._build_cache()
         self.setupUi(self)
+        self.setFeatures(self.DEFAULT_DOCK_FEATURES)
+        self.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
         self._configure_starting_sections()
         self._remove_stale_qfit_layers()
         self._apply_contextual_help()
@@ -99,19 +108,96 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         the main Activities dock should begin with fetching rather than an
         embedded OAuth/setup flow.
         """
-        self.workflowLabel.setText("Workflow: Fetch → Store → Visualize → Analyze → Publish")
+        self.workflowLabel.setText("Workflow: Fetch & store → Visualize → Analyze → Publish")
         self.credentialsGroupBox.hide()
-        self.activitiesGroupBox.setTitle("1. Fetch activities")
+        self.activitiesGroupBox.setTitle("")
         self.activitiesIntroLabel.setText(
             "Fetch your activities from Strava using the credentials saved in qfit → Configuration. "
-            "Filters are applied later in the Visualize step — no re-fetch needed."
+            "Store or clear the local GeoPackage here too. Filters are applied later in the Visualize step — no re-fetch needed."
         )
-        self.outputGroupBox.setTitle("2. Store data")
-        self.styleGroupBox.setTitle("3. Visualize")
-        self.analysisWorkflowGroupBox.setTitle("4. Analyze")
-        self.publishGroupBox.setTitle("5. Publish / atlas")
+        self._move_store_section_under_fetch()
+        self._move_load_layers_to_visualize()
+        self.outputGroupBox.setTitle("Store / database")
+        self.publishGroupBox.setCheckable(False)
+        self.publishSettingsWidget.setVisible(True)
+        self._install_collapsible_section(self.activitiesGroupBox, "activitiesGroupLayout", "1. Fetch and store activities", "activities")
+        self._install_collapsible_section(self.styleGroupBox, "styleGroupLayout", "2. Visualize", "style")
+        self._install_collapsible_section(self.analysisWorkflowGroupBox, "analysisWorkflowLayout", "3. Analyze", "analysis")
+        self._install_collapsible_section(self.publishGroupBox, "publishGroupLayout", "4. Publish / atlas", "publish")
         self.mapboxAccessTokenLabel.hide()
         self.mapboxAccessTokenLineEdit.hide()
+
+    def _install_collapsible_section(self, group_box, layout_attr: str, title: str, key: str):
+        layout = getattr(self, layout_attr, None)
+        toggle_attr = f"{key}SectionToggleButton"
+        content_attr = f"{key}SectionContentWidget"
+        if layout is None or hasattr(self, toggle_attr):
+            return
+
+        group_box.setTitle("")
+
+        content_widget = QWidget(group_box)
+        content_widget.setObjectName(f"{key}SectionContentWidget")
+        content_layout = QVBoxLayout(content_widget)
+        content_layout.setContentsMargins(0, 0, 0, 0)
+        content_layout.setSpacing(layout.spacing())
+
+        while layout.count():
+            item = layout.takeAt(0)
+            widget = item.widget()
+            child_layout = item.layout()
+            spacer = item.spacerItem()
+            if widget is not None:
+                content_layout.addWidget(widget)
+            elif child_layout is not None:
+                content_layout.addLayout(child_layout)
+            elif spacer is not None:
+                content_layout.addItem(spacer)
+
+        toggle = QToolButton(group_box)
+        toggle.setObjectName(f"{key}SectionToggleButton")
+        toggle.setText(title)
+        toggle.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        toggle.setArrowType(Qt.DownArrow)
+        toggle.setCheckable(True)
+        toggle.setChecked(True)
+        toggle.setStyleSheet("QToolButton { border: none; font-weight: bold; }")
+        toggle.toggled.connect(lambda expanded, key=key: self._set_section_expanded(key, expanded))
+
+        setattr(self, toggle_attr, toggle)
+        setattr(self, content_attr, content_widget)
+        layout.addWidget(toggle)
+        layout.addWidget(content_widget)
+
+    def _set_section_expanded(self, key: str, expanded: bool):
+        toggle = getattr(self, f"{key}SectionToggleButton", None)
+        content = getattr(self, f"{key}SectionContentWidget", None)
+        if toggle is not None:
+            toggle.setArrowType(Qt.DownArrow if expanded else Qt.RightArrow)
+        if content is not None:
+            content.setVisible(expanded)
+
+    def _move_store_section_under_fetch(self):
+        outer_layout = getattr(self, "verticalLayout", None)
+        activities_layout = getattr(self, "activitiesGroupLayout", None)
+        if outer_layout is None or activities_layout is None:
+            return
+        if self.outputGroupBox.parent() is self.activitiesGroupBox:
+            return
+        outer_layout.removeWidget(self.outputGroupBox)
+        self.outputGroupBox.setParent(self.activitiesGroupBox)
+        activities_layout.addWidget(self.outputGroupBox)
+
+    def _move_load_layers_to_visualize(self):
+        output_layout = getattr(self, "outputGroupLayout", None)
+        style_layout = getattr(self, "styleGroupLayout", None)
+        if output_layout is None or style_layout is None:
+            return
+        if self.loadLayersButton.parent() is self.styleGroupBox:
+            return
+        output_layout.removeWidget(self.loadLayersButton)
+        self.loadLayersButton.setParent(self.styleGroupBox)
+        style_layout.insertWidget(0, self.loadLayersButton)
 
     def _remove_stale_qfit_layers(self):
         """Remove qfit layers from the project whose source file no longer exists.
@@ -164,7 +250,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.backgroundPresetComboBox.currentTextChanged.connect(self.on_background_preset_changed)
         self.detailedStreamsCheckBox.toggled.connect(self._update_detailed_fetch_visibility)
         self.writeActivityPointsCheckBox.toggled.connect(self._update_point_sampling_visibility)
-        self.publishGroupBox.toggled.connect(self._update_publish_section_visibility)
         self.advancedFetchGroupBox.toggled.connect(self._update_advanced_fetch_visibility)
         self.atlasPdfBrowseButton.clicked.connect(self.on_atlas_pdf_browse_clicked)
         self.generateAtlasPdfButton.clicked.connect(self.on_generate_atlas_pdf_clicked)
@@ -206,7 +291,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def _configure_workflow_sections(self):
         self._update_detailed_fetch_visibility(self.detailedStreamsCheckBox.isChecked())
         self._update_point_sampling_visibility(self.writeActivityPointsCheckBox.isChecked())
-        self._update_publish_section_visibility(self.publishGroupBox.isChecked())
         self._update_advanced_fetch_visibility(self.advancedFetchGroupBox.isChecked())
         self._update_mapbox_advanced_visibility(self.backgroundPresetComboBox.currentText())
 
@@ -229,10 +313,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         wrapper = getattr(self, "pointSamplingStrideSpinBoxHelpField", None)
         if wrapper is not None:
             wrapper.setVisible(enabled)
-
-    def _update_publish_section_visibility(self, expanded):
-        if hasattr(self, "publishSettingsWidget"):
-            self.publishSettingsWidget.setVisible(expanded)
 
     def _update_advanced_fetch_visibility(self, expanded):
         widget = getattr(self, "advancedFetchSettingsWidget", None)
@@ -577,7 +657,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def on_load_clicked(self):
         self._save_settings()
         try:
-            result = self.load_workflow.write_and_load(
+            result = self.load_workflow.write_database(
                 activities=self.activities,
                 output_path=self.outputPathLineEdit.text().strip(),
                 write_activity_points=self.writeActivityPointsCheckBox.isChecked(),
@@ -599,22 +679,13 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             return
 
         self.output_path = result.output_path
-        self.activities_layer = result.activities_layer
-        self.starts_layer = result.starts_layer
-        self.points_layer = result.points_layer
-        self.atlas_layer = result.atlas_layer
-
-        visual_status = self._apply_visual_configuration(apply_subset_filters=False)
         last_sync = self.settings.get("last_sync_date", date.today().isoformat())
         self.countLabel.setText(
-            "{total} activities stored (last sync: {sync_date})".format(
+            "{total} activities stored in database (last sync: {sync_date})".format(
                 total=result.total_stored, sync_date=last_sync,
             )
         )
-        status = result.status
-        if visual_status:
-            status = "{status} {visual_status}".format(status=status, visual_status=visual_status)
-        self._set_status(status)
+        self._set_status(result.status)
 
     def on_load_layers_clicked(self):
         """Load an existing GeoPackage into QGIS without fetching from Strava."""
@@ -627,7 +698,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._show_error("GeoPackage not found", str(exc))
             return
         except (RuntimeError, OSError) as exc:
-            _msg = "Load layers failed"
+            _msg = "Load activity layers failed"
             logger.exception(_msg)
             self._show_error(_msg, str(exc))
             self._set_status(_msg)
@@ -662,7 +733,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
         reply = QMessageBox.question(
             self,
-            "Clear database & re-import",
+            "Clear database",
             (
                 "This will delete the GeoPackage file and remove all qfit layers from QGIS:\n\n"
                 f"  {output_path}\n\n"

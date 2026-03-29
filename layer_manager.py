@@ -24,7 +24,7 @@ class LayerManager:
         self._canvas_service = MapCanvasService(self._background_service)
 
     def load_output_layers(self, gpkg_path):
-        self._canvas_service.ensure_working_crs(self.iface)
+        self._canvas_service.ensure_working_crs(self.iface, preserve_extent=False)
         activities_layer, starts_layer, points_layer, atlas_layer = (
             self._project_layer_loader.load_output_layers(gpkg_path)
         )

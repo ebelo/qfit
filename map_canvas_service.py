@@ -23,8 +23,16 @@ class MapCanvasService:
     def __init__(self, background_service):
         self._background_service = background_service
 
-    def ensure_working_crs(self, iface):
-        """Set the project CRS to Web Mercator, preserving the current canvas extent."""
+    def ensure_working_crs(self, iface, preserve_extent: bool = True):
+        """Set the project CRS to Web Mercator.
+
+        Parameters
+        ----------
+        preserve_extent : bool, default True
+            When true, transforms and reapplies the current canvas extent across
+            the CRS switch. When false, only switches the CRS and leaves extent
+            management to the caller (for example a later zoom-to-layers step).
+        """
         project = QgsProject.instance()
         working_crs = QgsCoordinateReferenceSystem(WORKING_CRS)
         if not working_crs.isValid():
@@ -38,7 +46,7 @@ class MapCanvasService:
         project.setCrs(working_crs)
         if canvas is not None:
             canvas.setDestinationCrs(working_crs)
-            if current_extent is not None and current_crs.isValid() and not current_extent.isEmpty():
+            if preserve_extent and current_extent is not None and current_crs.isValid() and not current_extent.isEmpty():
                 transform = QgsCoordinateTransform(current_crs, working_crs, project)
                 try:
                     transformed = transform.transformBoundingBox(current_extent)
