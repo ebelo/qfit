@@ -268,7 +268,8 @@ class ContextualHelpBinder:
             return
 
         qtwidgets = self._qtwidgets()
-        helper = qtwidgets.QLabel(text, self.root)
+        helper_parent = self._helper_parent(anchor)
+        helper = qtwidgets.QLabel(text, helper_parent)
         helper.setObjectName(helper_name)
         helper.setWordWrap(True)
         helper.setTextInteractionFlags(self._qtcore().Qt.TextSelectableByMouse)
@@ -353,6 +354,18 @@ class ContextualHelpBinder:
             if row >= 0:
                 return candidate
         return None
+
+    def _helper_parent(self, anchor: Any) -> Any:
+        form_layout = self._find_direct_form_layout(anchor) if hasattr(anchor, "parentWidget") else None
+        if form_layout is not None and hasattr(form_layout, "parentWidget"):
+            parent = form_layout.parentWidget()
+            if parent is not None:
+                return parent
+        if hasattr(anchor, "parentWidget"):
+            parent = anchor.parentWidget()
+            if parent is not None:
+                return parent
+        return self.root
 
     def _find_layout_and_index(self, layout: Any, anchor: Any) -> Any:
         if layout is None:
