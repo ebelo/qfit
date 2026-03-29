@@ -66,10 +66,7 @@ class TestMapboxStatusText(unittest.TestCase):
             "qfit/mapbox_style_owner": "myuser",
             "qfit/mapbox_style_id": "winter-v1",
         })
-        self.assertEqual(
-            mapbox_status_text(s),
-            "Access token saved · style myuser/winter-v1",
-        )
+        self.assertEqual(mapbox_status_text(s), "Access token saved")
 
     def test_style_without_token_still_not_configured(self):
         s = self._settings({
@@ -97,17 +94,11 @@ class TestConfigDialogSavePersists(unittest.TestCase):
         self.assertEqual(s.get("redirect_uri"), "http://localhost/cb")
         self.assertEqual(s.get("refresh_token"), "new_token")
 
-    def test_save_mapbox_settings(self):
+    def test_save_mapbox_token(self):
         s = self._settings()
         s.set("mapbox_access_token", "pk.xyz")
-        s.set("mapbox_style_owner", "alice")
-        s.set("mapbox_style_id", "dark-v2")
-        s.set("tile_mode", "Vector")
 
         self.assertEqual(s.get("mapbox_access_token"), "pk.xyz")
-        self.assertEqual(s.get("mapbox_style_owner"), "alice")
-        self.assertEqual(s.get("mapbox_style_id"), "dark-v2")
-        self.assertEqual(s.get("tile_mode"), "Vector")
 
     def test_status_updates_after_save(self):
         s = self._settings()
@@ -123,10 +114,6 @@ class TestConfigDialogSavePersists(unittest.TestCase):
 
         s.set("mapbox_access_token", "pk.test")
         self.assertEqual(mapbox_status_text(s), "Access token saved")
-
-        s.set("mapbox_style_owner", "owner")
-        s.set("mapbox_style_id", "style")
-        self.assertEqual(mapbox_status_text(s), "Access token saved · style owner/style")
 
 
 if __name__ == "__main__":

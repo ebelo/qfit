@@ -113,9 +113,11 @@ def _plan(**overrides):
         "source_activity_id": "100",
         "name": "Morning Ride",
         "activity_type": "Ride",
+        "sport_type": "GravelRide",
         "start_date": "2026-03-18T07:10:00Z",
         "distance_m": 42500.0,
         "moving_time_s": 7200,
+        "total_elevation_gain_m": 640.0,
         "geometry_source": "stream",
         "page_sort_key": "0001",
         "page_name": "morning-ride",
@@ -197,6 +199,8 @@ class BuildAtlasLayerPureTests(unittest.TestCase):
         self.assertEqual(rect.xMaximum, 1800.0)
         self.assertEqual(rect.yMaximum, 2650.0)
         self.assertEqual(feature["page_title"], "Morning Ride")
+        self.assertEqual(feature["sport_type"], "GravelRide")
+        self.assertEqual(feature["total_elevation_gain_m"], 640.0)
         self.assertEqual(feature["document_cover_summary"], plan.document_cover_summary)
         self.assertEqual(feature["profile_available"], 1)
 

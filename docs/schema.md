@@ -206,9 +206,11 @@ Primary purpose:
 | `source_activity_id` | TEXT | provider activity id |
 | `name` | TEXT | activity title |
 | `activity_type` | TEXT | run, ride, etc. |
+| `sport_type` | TEXT | raw/provider sport type when available, preserved so subset-aware cover summaries can reuse canonical labels |
 | `start_date` | TEXT | ISO 8601 UTC |
 | `distance_m` | REAL | copied for filtering / layout text |
 | `moving_time_s` | INTEGER | copied for layout text |
+| `total_elevation_gain_m` | REAL | copied numeric climb total so subset-aware cover summaries can recompute aggregate climbing from exported atlas features |
 | `geometry_source` | TEXT | stream/summary/fallback source used to derive the page extent |
 | `page_number` | INTEGER | stable chronological page number for layouts / table-of-contents workflows |
 | `page_sort_key` | TEXT | deterministic sort key combining activity datetime, name, source, and source id |

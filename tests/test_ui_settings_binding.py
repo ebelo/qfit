@@ -36,38 +36,11 @@ class TextWidget:
         self._value = value
 
 
-class ComboWidget:
-    """Minimal mock for QComboBox-style widgets."""
-
-    def __init__(self, options, current=""):
-        self._options = list(options)
-        self._index = max(self._options.index(current) if current in self._options else 0, 0)
-
-    def currentText(self):
-        return self._options[self._index] if self._options else ""
-
-    def findText(self, text):
-        try:
-            return self._options.index(text)
-        except ValueError:
-            return -1
-
-    def setCurrentIndex(self, idx):
-        self._index = idx
-
-
 def _settings(data=None):
     return SettingsService(
         qsettings=FakeQSettings(data or {}),
         credential_store=InMemoryCredentialStore(),
     )
-
-
-def _combo_setter(combo):
-    def setter(value):
-        idx = combo.findText(value)
-        combo.setCurrentIndex(max(idx, 0))
-    return setter
 
 
 class TestUIFieldBindingLoadSave(unittest.TestCase):
@@ -133,28 +106,6 @@ class TestUIFieldBindingLoadSave(unittest.TestCase):
         self.assertEqual(s.get("key1"), "a")
         self.assertEqual(s.get("key2"), "b")
 
-    def test_combo_setter_selects_matching_index(self):
-        combo = ComboWidget(["Raster", "Vector"], "Raster")
-        b = UIFieldBinding("tile_mode", "Raster", combo.currentText, _combo_setter(combo))
-        s = _settings({"qfit/tile_mode": "Vector"})
-        load_bindings([b], s)
-        self.assertEqual(combo.currentText(), "Vector")
-
-    def test_combo_setter_falls_back_to_first_on_unknown_value(self):
-        combo = ComboWidget(["Raster", "Vector"], "Raster")
-        b = UIFieldBinding("tile_mode", "Raster", combo.currentText, _combo_setter(combo))
-        s = _settings({"qfit/tile_mode": "Unknown"})
-        load_bindings([b], s)
-        self.assertEqual(combo.currentText(), "Raster")
-
-    def test_combo_save_persists_current_selection(self):
-        combo = ComboWidget(["Raster", "Vector"], "Vector")
-        b = UIFieldBinding("tile_mode", "Raster", combo.currentText, _combo_setter(combo))
-        s = _settings()
-        save_bindings([b], s)
-        self.assertEqual(s.get("tile_mode"), "Vector")
-
-
 class TestConfigDialogBindings(unittest.TestCase):
     """Verify the binding table covers the expected config dialog keys."""
 
@@ -164,14 +115,10 @@ class TestConfigDialogBindings(unittest.TestCase):
         "redirect_uri",
         "refresh_token",
         "mapbox_access_token",
-        "mapbox_style_owner",
-        "mapbox_style_id",
-        "tile_mode",
     }
 
     def _make_dialog_bindings(self):
         """Build a minimal stand-in for the QfitConfigDialog binding table."""
-        from qfit.mapbox_config import TILE_MODE_RASTER, TILE_MODES
         from qfit.strava_client import StravaClient
 
         client_id = TextWidget()
@@ -179,9 +126,6 @@ class TestConfigDialogBindings(unittest.TestCase):
         redirect_uri = TextWidget()
         refresh_token = TextWidget()
         mapbox_token = TextWidget()
-        mapbox_style_owner = TextWidget()
-        mapbox_style_id = TextWidget()
-        tile_mode = ComboWidget(TILE_MODES)
 
         return [
             UIFieldBinding("client_id", "", lambda w=client_id: w.text().strip(), client_id.setText),
@@ -189,9 +133,6 @@ class TestConfigDialogBindings(unittest.TestCase):
             UIFieldBinding("redirect_uri", StravaClient.DEFAULT_REDIRECT_URI, lambda w=redirect_uri: w.text().strip(), redirect_uri.setText),
             UIFieldBinding("refresh_token", "", lambda w=refresh_token: w.text().strip(), refresh_token.setText),
             UIFieldBinding("mapbox_access_token", "", lambda w=mapbox_token: w.text().strip(), mapbox_token.setText),
-            UIFieldBinding("mapbox_style_owner", "mapbox", lambda w=mapbox_style_owner: w.text().strip(), mapbox_style_owner.setText),
-            UIFieldBinding("mapbox_style_id", "", lambda w=mapbox_style_id: w.text().strip(), mapbox_style_id.setText),
-            UIFieldBinding("tile_mode", TILE_MODE_RASTER, tile_mode.currentText, _combo_setter(tile_mode)),
         ]
 
     def test_all_expected_keys_covered(self):
@@ -207,17 +148,14 @@ class TestConfigDialogBindings(unittest.TestCase):
         load_bindings(bindings, s)
         save_bindings(bindings, s)
         from qfit.strava_client import StravaClient
-        from qfit.mapbox_config import TILE_MODE_RASTER
         self.assertEqual(s.get("redirect_uri"), StravaClient.DEFAULT_REDIRECT_URI)
-        self.assertEqual(s.get("mapbox_style_owner"), "mapbox")
-        self.assertEqual(s.get("tile_mode"), TILE_MODE_RASTER)
 
     def test_stored_values_survive_roundtrip(self):
         bindings = self._make_dialog_bindings()
         stored = {
             "qfit/client_id": "myid",
             "qfit/redirect_uri": "http://example.com/cb",
-            "qfit/mapbox_style_owner": "alice",
+            "qfit/mapbox_access_token": "pk.abc123",
         }
         s = _settings(stored)
         load_bindings(bindings, s)
@@ -225,7 +163,7 @@ class TestConfigDialogBindings(unittest.TestCase):
         save_bindings(bindings, s2)
         self.assertEqual(s2.get("client_id"), "myid")
         self.assertEqual(s2.get("redirect_uri"), "http://example.com/cb")
-        self.assertEqual(s2.get("mapbox_style_owner"), "alice")
+        self.assertEqual(s2.get("mapbox_access_token"), "pk.abc123")
 
 
 if __name__ == "__main__":

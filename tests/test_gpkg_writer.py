@@ -53,6 +53,7 @@ class GeoPackageWriterAtlasTests(unittest.TestCase):
                 "source_activity_id": "100",
                 "name": "Morning Ride",
                 "activity_type": "Ride",
+                "sport_type": "GravelRide",
                 "start_date_local": "2026-03-18T08:10:00+01:00",
                 "distance_m": 42500,
                 "moving_time_s": 7200,
@@ -86,10 +87,12 @@ class GeoPackageWriterAtlasTests(unittest.TestCase):
         self.assertEqual(first_feature["document_total_distance_label"], "52.6 km")
         self.assertEqual(first_feature["document_total_duration_label"], "2h 50m")
         self.assertEqual(first_feature["document_total_elevation_gain_label"], "725 m")
-        self.assertEqual(first_feature["document_activity_types_label"], "Ride, Run")
+        self.assertEqual(first_feature["document_activity_types_label"], "GravelRide, Run")
+        self.assertEqual(first_feature["sport_type"], "GravelRide")
+        self.assertEqual(first_feature["total_elevation_gain_m"], 640.0)
         self.assertEqual(
             first_feature["document_cover_summary"],
-            "2 activities · 2026-03-18 → 2026-03-19 · 52.6 km · 2h 50m · ↑ 725 m · Ride, Run",
+            "2 activities · 2026-03-18 → 2026-03-19 · 52.6 km · 2h 50m · ↑ 725 m · GravelRide, Run",
         )
 
     def test_build_document_summary_layer(self):
@@ -109,10 +112,10 @@ class GeoPackageWriterAtlasTests(unittest.TestCase):
         self.assertEqual(summary_feature["total_duration_label"], "2h 50m")
         self.assertEqual(summary_feature["total_elevation_gain_m"], 725.0)
         self.assertEqual(summary_feature["total_elevation_gain_label"], "725 m")
-        self.assertEqual(summary_feature["activity_types_label"], "Ride, Run")
+        self.assertEqual(summary_feature["activity_types_label"], "GravelRide, Run")
         self.assertEqual(
             summary_feature["cover_summary"],
-            "2 activities · 2026-03-18 → 2026-03-19 · 52.6 km · 2h 50m · ↑ 725 m · Ride, Run",
+            "2 activities · 2026-03-18 → 2026-03-19 · 52.6 km · 2h 50m · ↑ 725 m · GravelRide, Run",
         )
 
     def test_build_cover_highlight_layer(self):
@@ -125,7 +128,7 @@ class GeoPackageWriterAtlasTests(unittest.TestCase):
         self.assertEqual(cover_highlight_features[0]["highlight_label"], "Activities")
         self.assertEqual(cover_highlight_features[0]["highlight_value"], "2 activities")
         self.assertEqual(cover_highlight_features[-1]["highlight_key"], "activity_types")
-        self.assertEqual(cover_highlight_features[-1]["highlight_value"], "Ride, Run")
+        self.assertEqual(cover_highlight_features[-1]["highlight_value"], "GravelRide, Run")
 
     def test_build_page_detail_item_layer(self):
         page_detail_item_layer = build_page_detail_item_layer(self.records)

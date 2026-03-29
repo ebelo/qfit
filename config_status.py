@@ -24,8 +24,4 @@ def mapbox_status_text(settings: SettingsService) -> str:
     token = settings.get("mapbox_access_token", "")
     if not token:
         return "Not configured"
-    style_owner = settings.get("mapbox_style_owner", "")
-    style_id = settings.get("mapbox_style_id", "")
-    if style_owner and style_id:
-        return f"Access token saved · style {style_owner}/{style_id}"
     return "Access token saved"

@@ -392,7 +392,20 @@ def _build_cover_summary_from_current_atlas_features(atlas_layer) -> dict:
 
     def _safe_attr(feature, name: str):
         idx = _idx(name)
-        return feature.attribute(idx) if idx >= 0 else None
+        if idx < 0:
+            return None
+        value = feature.attribute(idx)
+        if value is None:
+            return None
+        is_null = getattr(value, "isNull", None)
+        try:
+            if callable(is_null) and is_null():
+                return None
+        except Exception:  # noqa: BLE001
+            logger.debug("Failed to inspect QVariant null state", exc_info=True)
+        if isinstance(value, str) and value.strip().upper() == "NULL":
+            return None
+        return value
 
     def _safe_float(value):
         try:
