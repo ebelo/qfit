@@ -9,12 +9,14 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 try:
     from qgis.core import QgsApplication, QgsProject, QgsVectorLayer
+    from qgis.PyQt.QtCore import QDate
 
     from qfit.activity_query import ActivityQuery, build_subset_string
     from qfit.gpkg_writer import GeoPackageWriter
     from qfit.layer_manager import LayerManager
     from qfit.atlas.export_task import BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
     from qfit.mapbox_config import TILE_MODE_RASTER
+    from qfit.models import Activity
     from qfit.qfit_dockwidget import QfitDockWidget
     from qfit.visual_apply import VisualApplyService
 
@@ -24,11 +26,13 @@ except Exception as exc:  # pragma: no cover - exercised only when QGIS is unava
     QgsApplication = None
     QgsProject = None
     QgsVectorLayer = None
+    QDate = None
     ActivityQuery = None
     build_subset_string = None
     GeoPackageWriter = None
     LayerManager = None
     TILE_MODE_RASTER = None
+    Activity = None
     QfitDockWidget = None
     QGIS_AVAILABLE = False
     QGIS_IMPORT_ERROR = exc
@@ -143,6 +147,24 @@ class QgisSmokeTests(unittest.TestCase):
             )
             self.assertIsNotNone(dock.findChild(QLabel, "maxDetailedActivitiesSpinBoxContextHelpLabel"))
             self.assertIsNotNone(dock.findChild(QWidget, "maxDetailedActivitiesSpinBoxHelpField"))
+        finally:
+            dock.close()
+            dock.deleteLater()
+
+    def test_fetch_preview_shows_fetched_count_even_when_visualize_filters_match_zero(self):
+        dock = QfitDockWidget(self.iface)
+        try:
+            dock.activities = [Activity(**payload) for payload in self._sample_activities()]
+            dock._populate_activity_types()
+            dock.dateFromEdit.setDate(QDate(2030, 1, 1))
+
+            dock._refresh_activity_preview()
+
+            self.assertIn("2 activities", dock.querySummaryLabel.text())
+            self.assertIn("Visualize filters currently match 0 activities.", dock.querySummaryLabel.text())
+            preview_text = dock.activityPreviewPlainTextEdit.toPlainText()
+            self.assertIn("Lunch Run", preview_text)
+            self.assertIn("Morning Ride", preview_text)
         finally:
             dock.close()
             dock.deleteLater()

@@ -720,7 +720,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._set_status(status)
 
     def _apply_visual_configuration(self, apply_subset_filters):
-        filtered_activities = self._refresh_activity_preview()
+        filtered_activities = self._filtered_activities()
         query = self._current_activity_query()
 
         layers = LayerRefs(
@@ -769,21 +769,30 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
     def _refresh_activity_preview(self):
         if not self.activities:
-            self.querySummaryLabel.setText("Fetch activities to see a query summary.")
+            self.querySummaryLabel.setText("Fetch activities to preview your latest synced activities.")
             self.activityPreviewPlainTextEdit.setPlainText("")
             return []
 
-        query = self._current_activity_query()
-        filtered = filter_activities(self.activities, query)
-        sorted_activities = sort_activities(filtered, query.sort_label)
-        summary = summarize_activities(sorted_activities)
-        self.querySummaryLabel.setText(format_summary_text(summary))
+        fetched_activities = sort_activities(self.activities, DEFAULT_SORT_LABEL)
+        summary = summarize_activities(fetched_activities)
 
-        preview_lines = build_preview_lines(sorted_activities, limit=10)
-        if len(sorted_activities) > len(preview_lines):
-            preview_lines.append("… and {count} more".format(count=len(sorted_activities) - len(preview_lines)))
+        query_summary = format_summary_text(summary)
+        filtered_count = len(self._filtered_activities())
+        if filtered_count != len(self.activities):
+            query_summary = (
+                f"{query_summary}\n"
+                f"Visualize filters currently match {filtered_count} activities."
+            )
+        self.querySummaryLabel.setText(query_summary)
+
+        preview_lines = build_preview_lines(fetched_activities, limit=10)
+        if len(fetched_activities) > len(preview_lines):
+            preview_lines.append("… and {count} more".format(count=len(fetched_activities) - len(preview_lines)))
         self.activityPreviewPlainTextEdit.setPlainText("\n".join(preview_lines))
-        return sorted_activities
+        return fetched_activities
+
+    def _filtered_activities(self):
+        return filter_activities(self.activities, self._current_activity_query())
 
 
     def _redirect_uri(self):
