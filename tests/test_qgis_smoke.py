@@ -120,6 +120,8 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertEqual(dock.workflowLabel.text(), "Workflow: Fetch → Store → Visualize → Analyze → Publish")
             self.assertFalse(dock.credentialsGroupBox.isVisible())
             self.assertEqual(dock.activitiesGroupBox.title(), "1. Fetch activities")
+            self.assertFalse(dock.mapboxAccessTokenLabel.isVisible())
+            self.assertFalse(dock.mapboxAccessTokenLineEdit.isVisible())
             self.assertEqual(dock.refreshButton.text(), "Fetch activities")
             self.assertEqual(dock.loadButton.text(), "Store and load layers")
             self.assertEqual(dock.applyFiltersButton.text(), "Apply current filters to loaded layers")

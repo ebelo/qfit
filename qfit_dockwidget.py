@@ -110,6 +110,8 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.styleGroupBox.setTitle("3. Visualize")
         self.analysisWorkflowGroupBox.setTitle("4. Analyze")
         self.publishGroupBox.setTitle("5. Publish / atlas")
+        self.mapboxAccessTokenLabel.hide()
+        self.mapboxAccessTokenLineEdit.hide()
 
     def _remove_stale_qfit_layers(self):
         """Remove qfit layers from the project whose source file no longer exists.
@@ -288,7 +290,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.maxDistanceSpinBox.setValue(float(s.get("max_distance_km", 0.0)))
         self.detailedOnlyCheckBox.setChecked(s.get_bool("detailed_only", False))
         self.backgroundMapCheckBox.setChecked(s.get_bool("use_background_map", False))
-        self.mapboxAccessTokenLineEdit.setText(s.get("mapbox_access_token", ""))
         self.mapboxStyleOwnerLineEdit.setText(s.get("mapbox_style_owner", "mapbox"))
         self.mapboxStyleIdLineEdit.setText(s.get("mapbox_style_id", ""))
         self.atlasMarginPercentSpinBox.setValue(float(s.get("atlas_margin_percent", 8.0)))
@@ -359,7 +360,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         s.set("temporal_mode", self.temporalModeComboBox.currentText())
         s.set("use_background_map", self.backgroundMapCheckBox.isChecked())
         s.set("background_preset", self.backgroundPresetComboBox.currentText())
-        s.set("mapbox_access_token", self.mapboxAccessTokenLineEdit.text().strip())
         s.set("mapbox_style_owner", self.mapboxStyleOwnerLineEdit.text().strip())
         s.set("mapbox_style_id", self.mapboxStyleIdLineEdit.text().strip())
         s.set("tile_mode", self.tileModeComboBox.currentText())
@@ -386,7 +386,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self.background_layer = self.background_controller.load_background(
                 enabled=enabled,
                 preset_name=self.backgroundPresetComboBox.currentText(),
-                access_token=self.mapboxAccessTokenLineEdit.text().strip(),
+                access_token=self._mapbox_access_token(),
                 style_owner=self.mapboxStyleOwnerLineEdit.text().strip(),
                 style_id=self.mapboxStyleIdLineEdit.text().strip(),
                 tile_mode=self.tileModeComboBox.currentText(),
@@ -732,7 +732,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         bg_config = BackgroundConfig(
             enabled=self.backgroundMapCheckBox.isChecked(),
             preset_name=self.backgroundPresetComboBox.currentText(),
-            access_token=self.mapboxAccessTokenLineEdit.text().strip(),
+            access_token=self._mapbox_access_token(),
             style_owner=self.mapboxStyleOwnerLineEdit.text().strip(),
             style_id=self.mapboxStyleIdLineEdit.text().strip(),
             tile_mode=self.tileModeComboBox.currentText(),
@@ -788,6 +788,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
     def _redirect_uri(self):
         return self.redirectUriLineEdit.text().strip() or StravaProvider.DEFAULT_REDIRECT_URI
+
+    def _mapbox_access_token(self):
+        return (self.settings.get("mapbox_access_token", "") or "").strip()
 
     def _qdate_to_date(self, value):
         return date(value.year(), value.month(), value.day())
@@ -895,7 +898,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             pre_export_tile_mode=pre_export_tile_mode,
             background_enabled=self.backgroundMapCheckBox.isChecked(),
             preset_name=self.backgroundPresetComboBox.currentText(),
-            access_token=self.mapboxAccessTokenLineEdit.text().strip(),
+            access_token=self._mapbox_access_token(),
             style_owner=self.mapboxStyleOwnerLineEdit.text().strip(),
             style_id=self.mapboxStyleIdLineEdit.text().strip(),
         )
@@ -912,7 +915,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             on_finished=self._on_atlas_export_finished,
             pre_export_tile_mode=pre_export_tile_mode,
             preset_name=self.backgroundPresetComboBox.currentText(),
-            access_token=self.mapboxAccessTokenLineEdit.text().strip(),
+            access_token=self._mapbox_access_token(),
             style_owner=self.mapboxStyleOwnerLineEdit.text().strip(),
             style_id=self.mapboxStyleIdLineEdit.text().strip(),
             background_enabled=self.backgroundMapCheckBox.isChecked(),
