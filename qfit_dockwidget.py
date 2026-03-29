@@ -54,8 +54,15 @@ FORM_CLASS, _ = uic.loadUiType(
 class QfitDockWidget(QDockWidget, FORM_CLASS):
     SETTINGS_PREFIX = "qfit"
     LEGACY_SETTINGS_PREFIX = "QFIT"
+    DEFAULT_DOCK_FEATURES = (
+        QDockWidget.DockWidgetClosable
+        | QDockWidget.DockWidgetMovable
+        | QDockWidget.DockWidgetFloatable
+    )
 
     def __init__(self, iface, parent=None):
+        if parent is None and iface is not None and hasattr(iface, "mainWindow"):
+            parent = iface.mainWindow()
         super().__init__(parent)
         self.iface = iface
         self.activities = []
@@ -79,6 +86,8 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.fetch_result_service = FetchResultService(self.sync_controller)
         self.cache = self._build_cache()
         self.setupUi(self)
+        self.setFeatures(self.DEFAULT_DOCK_FEATURES)
+        self.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
         self._configure_starting_sections()
         self._remove_stale_qfit_layers()
         self._apply_contextual_help()

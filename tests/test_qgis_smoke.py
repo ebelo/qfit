@@ -85,9 +85,13 @@ class _FakeCanvas:
 class _FakeIface:
     def __init__(self):
         self._canvas = _FakeCanvas()
+        self._main_window = None
 
     def mapCanvas(self):
         return self._canvas
+
+    def mainWindow(self):
+        return self._main_window
 
 
 @unittest.skipUnless(
@@ -124,6 +128,8 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertEqual(dock.temporalModeLabel.text(), "Temporal timestamps")
             self.assertEqual(dock.workflowLabel.text(), "Workflow: Fetch & store → Visualize → Analyze → Publish")
             self.assertFalse(dock.credentialsGroupBox.isVisible())
+            self.assertTrue(bool(dock.features() & dock.DockWidgetMovable))
+            self.assertTrue(bool(dock.features() & dock.DockWidgetFloatable))
             self.assertEqual(dock.activitiesGroupBox.title(), "")
             self.assertEqual(dock.activitiesSectionToggleButton.text(), "1. Fetch and store activities")
             self.assertTrue(dock.activitiesSectionToggleButton.isChecked())
