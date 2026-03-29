@@ -1,28 +1,28 @@
 """Dedicated configuration dialog for persistent qfit plugin settings.
 
 This dialog is the second step toward separating setup concerns
-(Strava/Mapbox connections, defaults) from the day-to-day activity
-workflow in the main dock widget.  It now exposes editable fields
-for Strava credentials and Mapbox connection settings.
+(Strava/Mapbox credentials and connection checks) from the day-to-day activity
+workflow in the main dock widget. It intentionally avoids visualization-
+specific Mapbox styling options, which belong in the main map workflow.
 """
 
 import logging
 
 from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtWidgets import (
-    QComboBox,
     QDialog,
     QDialogButtonBox,
     QFormLayout,
     QGroupBox,
     QLabel,
     QLineEdit,
+    QPushButton,
     QVBoxLayout,
     QWidget,
 )
 
+from .config_connection_service import validate_mapbox_connection, validate_strava_connection
 from .config_status import mapbox_status_text, strava_status_text
-from .mapbox_config import TILE_MODE_RASTER, TILE_MODES
 from .settings_service import SettingsService
 from .strava_client import StravaClient
 from .ui_settings_binding import UIFieldBinding, load_bindings, save_bindings
@@ -33,8 +33,9 @@ logger = logging.getLogger(__name__)
 class QfitConfigDialog(QDialog):
     """Editable configuration dialog for qfit plugin connection settings.
 
-    Allows the user to view and edit Strava credentials and Mapbox
-    connection parameters.  Changes are persisted to QSettings on save.
+    Allows the user to view and edit Strava credentials plus the Mapbox
+    access token, and to run provider-specific connection tests before
+    saving. Changes are persisted to QSettings on save.
     """
 
     def __init__(self, settings_service: SettingsService | None = None, parent: QWidget | None = None):
@@ -92,6 +93,16 @@ class QfitConfigDialog(QDialog):
         self._refresh_token_edit.setPlaceholderText("Obtained via OAuth flow in Activities")
         form.addRow("Refresh token:", self._refresh_token_edit)
 
+        self._strava_test_status_label = QLabel("Not tested")
+        self._strava_test_status_label.setObjectName("stravaTestStatusLabel")
+        self._strava_test_status_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        form.addRow("Last test:", self._strava_test_status_label)
+
+        self._test_strava_button = QPushButton("Test connection")
+        self._test_strava_button.setObjectName("testStravaConnectionButton")
+        self._test_strava_button.clicked.connect(self._test_strava)
+        form.addRow("", self._test_strava_button)
+
         return group
 
     def _build_mapbox_group(self) -> QGroupBox:
@@ -109,21 +120,15 @@ class QfitConfigDialog(QDialog):
         self._mapbox_token_edit.setPlaceholderText("pk.eyJ1Ijo...")
         form.addRow("Access token:", self._mapbox_token_edit)
 
-        self._mapbox_style_owner_edit = QLineEdit()
-        self._mapbox_style_owner_edit.setObjectName("cfgMapboxStyleOwnerEdit")
-        self._mapbox_style_owner_edit.setPlaceholderText("mapbox")
-        form.addRow("Style owner:", self._mapbox_style_owner_edit)
+        self._mapbox_test_status_label = QLabel("Not tested")
+        self._mapbox_test_status_label.setObjectName("mapboxTestStatusLabel")
+        self._mapbox_test_status_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        form.addRow("Last test:", self._mapbox_test_status_label)
 
-        self._mapbox_style_id_edit = QLineEdit()
-        self._mapbox_style_id_edit.setObjectName("cfgMapboxStyleIdEdit")
-        self._mapbox_style_id_edit.setPlaceholderText("outdoors-v12")
-        form.addRow("Style ID:", self._mapbox_style_id_edit)
-
-        self._tile_mode_combo = QComboBox()
-        self._tile_mode_combo.setObjectName("cfgTileModeCombo")
-        for mode in TILE_MODES:
-            self._tile_mode_combo.addItem(mode)
-        form.addRow("Tile mode:", self._tile_mode_combo)
+        self._test_mapbox_button = QPushButton("Test connection")
+        self._test_mapbox_button.setObjectName("testMapboxConnectionButton")
+        self._test_mapbox_button.clicked.connect(self._test_mapbox)
+        form.addRow("", self._test_mapbox_button)
 
         return group
 
@@ -131,12 +136,6 @@ class QfitConfigDialog(QDialog):
 
     def _make_bindings(self) -> list[UIFieldBinding]:
         """Build the explicit UI field → settings key mapping for this dialog."""
-
-        def _combo_setter(combo):
-            def setter(value: str) -> None:
-                idx = combo.findText(value)
-                combo.setCurrentIndex(max(idx, 0))
-            return setter
 
         return [
             UIFieldBinding(
@@ -164,34 +163,35 @@ class QfitConfigDialog(QDialog):
                 lambda w=self._mapbox_token_edit: w.text().strip(),
                 self._mapbox_token_edit.setText,
             ),
-            UIFieldBinding(
-                "mapbox_style_owner", "mapbox",
-                lambda w=self._mapbox_style_owner_edit: w.text().strip(),
-                self._mapbox_style_owner_edit.setText,
-            ),
-            UIFieldBinding(
-                "mapbox_style_id", "",
-                lambda w=self._mapbox_style_id_edit: w.text().strip(),
-                self._mapbox_style_id_edit.setText,
-            ),
-            UIFieldBinding(
-                "tile_mode", TILE_MODE_RASTER,
-                self._tile_mode_combo.currentText,
-                _combo_setter(self._tile_mode_combo),
-            ),
         ]
 
     def _load(self) -> None:
         """Read current settings and populate all fields."""
         load_bindings(self._bindings, self._settings)
-        self._strava_status_label.setText(strava_status_text(self._settings))
-        self._mapbox_status_label.setText(mapbox_status_text(self._settings))
+        self._refresh_status_labels()
+        self._strava_test_status_label.setText("Not tested")
+        self._mapbox_test_status_label.setText("Not tested")
 
     def _save(self) -> None:
         """Persist edited fields to QSettings and refresh status labels."""
         save_bindings(self._bindings, self._settings)
+        self._refresh_status_labels()
+
+    def _refresh_status_labels(self) -> None:
         self._strava_status_label.setText(strava_status_text(self._settings))
         self._mapbox_status_label.setText(mapbox_status_text(self._settings))
+
+    def _test_strava(self) -> None:
+        result = validate_strava_connection(
+            self._client_id_edit.text(),
+            self._client_secret_edit.text(),
+            self._refresh_token_edit.text(),
+        )
+        self._strava_test_status_label.setText(result.message)
+
+    def _test_mapbox(self) -> None:
+        result = validate_mapbox_connection(self._mapbox_token_edit.text())
+        self._mapbox_test_status_label.setText(result.message)
 
     # -- Visibility ----------------------------------------------------------
 
