@@ -601,7 +601,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def on_load_clicked(self):
         self._save_settings()
         try:
-            result = self.load_workflow.write_and_load(
+            result = self.load_workflow.write_database(
                 activities=self.activities,
                 output_path=self.outputPathLineEdit.text().strip(),
                 write_activity_points=self.writeActivityPointsCheckBox.isChecked(),
@@ -623,22 +623,13 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             return
 
         self.output_path = result.output_path
-        self.activities_layer = result.activities_layer
-        self.starts_layer = result.starts_layer
-        self.points_layer = result.points_layer
-        self.atlas_layer = result.atlas_layer
-
-        visual_status = self._apply_visual_configuration(apply_subset_filters=False)
         last_sync = self.settings.get("last_sync_date", date.today().isoformat())
         self.countLabel.setText(
-            "{total} activities stored (last sync: {sync_date})".format(
+            "{total} activities stored in database (last sync: {sync_date})".format(
                 total=result.total_stored, sync_date=last_sync,
             )
         )
-        status = result.status
-        if visual_status:
-            status = "{status} {visual_status}".format(status=status, visual_status=visual_status)
-        self._set_status(status)
+        self._set_status(result.status)
 
     def on_load_layers_clicked(self):
         """Load an existing GeoPackage into QGIS without fetching from Strava."""

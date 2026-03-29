@@ -179,10 +179,10 @@ DOCK_HELP_ENTRIES: tuple[HelpEntry, ...] = (
     ),
     HelpEntry(
         anchor_name="loadButton",
-        target_text="Store and load layers",
+        target_text="Store activities",
         tooltip=(
-            "Writes the full fetched result to the GeoPackage, then loads the qfit layers into QGIS without turning "
-            "the dock query into a subset filter automatically."
+            "Writes the full fetched result to the GeoPackage only. Use Load layers in Visualize when you want to "
+            "bring the stored qfit layers into QGIS."
         ),
     ),
     HelpEntry(
@@ -196,8 +196,9 @@ DOCK_HELP_ENTRIES: tuple[HelpEntry, ...] = (
     HelpEntry(
         anchor_name="buttonLayout",
         helper_text=(
-            "Use Store and load layers when you want the complete synced dataset in QGIS. Use Apply current filters to "
-            "loaded layers only when you want the loaded layers and tables to match the current dock query."
+            "Use Store activities to update the GeoPackage database. Then use Load layers in Visualize when you want "
+            "the stored dataset in QGIS. Apply current filters only when you want loaded layers and tables to match "
+            "the current dock query."
         ),
     ),
 )
