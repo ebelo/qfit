@@ -6,9 +6,9 @@ logger = logging.getLogger(__name__)
 
 from qgis.core import QgsApplication, QgsProject
 from qgis.PyQt import uic
-from qgis.PyQt.QtCore import QDate, QStandardPaths, QUrl
+from qgis.PyQt.QtCore import QDate, QStandardPaths, Qt, QUrl
 from qgis.PyQt.QtGui import QDesktopServices
-from qgis.PyQt.QtWidgets import QApplication, QFileDialog, QDockWidget, QMessageBox
+from qgis.PyQt.QtWidgets import QApplication, QFileDialog, QDockWidget, QMessageBox, QToolButton, QVBoxLayout, QWidget
 
 from .activity_classification import ordered_canonical_activity_labels
 from .activity_query import (
@@ -101,19 +101,64 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         """
         self.workflowLabel.setText("Workflow: Fetch & store → Visualize → Analyze → Publish")
         self.credentialsGroupBox.hide()
-        self.activitiesGroupBox.setTitle("1. Fetch and store activities")
+        self.activitiesGroupBox.setTitle("")
         self.activitiesIntroLabel.setText(
             "Fetch your activities from Strava using the credentials saved in qfit → Configuration. "
             "Store or clear the local GeoPackage here too. Filters are applied later in the Visualize step — no re-fetch needed."
         )
         self._move_store_section_under_fetch()
         self._move_load_layers_to_visualize()
+        self._install_collapsible_activities_section("1. Fetch and store activities")
         self.outputGroupBox.setTitle("Store / database")
         self.styleGroupBox.setTitle("2. Visualize")
         self.analysisWorkflowGroupBox.setTitle("3. Analyze")
         self.publishGroupBox.setTitle("4. Publish / atlas")
         self.mapboxAccessTokenLabel.hide()
         self.mapboxAccessTokenLineEdit.hide()
+
+    def _install_collapsible_activities_section(self, title: str):
+        layout = getattr(self, "activitiesGroupLayout", None)
+        if layout is None or hasattr(self, "activitiesSectionToggleButton"):
+            return
+
+        content_widget = QWidget(self.activitiesGroupBox)
+        content_widget.setObjectName("activitiesSectionContentWidget")
+        content_layout = QVBoxLayout(content_widget)
+        content_layout.setContentsMargins(0, 0, 0, 0)
+        content_layout.setSpacing(layout.spacing())
+
+        while layout.count():
+            item = layout.takeAt(0)
+            widget = item.widget()
+            child_layout = item.layout()
+            spacer = item.spacerItem()
+            if widget is not None:
+                content_layout.addWidget(widget)
+            elif child_layout is not None:
+                content_layout.addLayout(child_layout)
+            elif spacer is not None:
+                content_layout.addItem(spacer)
+
+        toggle = QToolButton(self.activitiesGroupBox)
+        toggle.setObjectName("activitiesSectionToggleButton")
+        toggle.setText(title)
+        toggle.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        toggle.setArrowType(Qt.DownArrow)
+        toggle.setCheckable(True)
+        toggle.setChecked(True)
+        toggle.setStyleSheet("QToolButton { border: none; font-weight: bold; }")
+        toggle.toggled.connect(self._set_activities_section_expanded)
+
+        self.activitiesSectionToggleButton = toggle
+        self.activitiesSectionContentWidget = content_widget
+        layout.addWidget(toggle)
+        layout.addWidget(content_widget)
+
+    def _set_activities_section_expanded(self, expanded: bool):
+        if hasattr(self, "activitiesSectionToggleButton"):
+            self.activitiesSectionToggleButton.setArrowType(Qt.DownArrow if expanded else Qt.RightArrow)
+        if hasattr(self, "activitiesSectionContentWidget"):
+            self.activitiesSectionContentWidget.setVisible(expanded)
 
     def _move_store_section_under_fetch(self):
         outer_layout = getattr(self, "verticalLayout", None)

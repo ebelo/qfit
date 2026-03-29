@@ -9,7 +9,7 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 try:
     from qgis.core import QgsApplication, QgsProject, QgsVectorLayer
-    from qgis.PyQt.QtCore import QDate
+    from qgis.PyQt.QtCore import QDate, Qt
 
     from qfit.activity_query import ActivityQuery, build_subset_string
     from qfit.gpkg_writer import GeoPackageWriter
@@ -27,6 +27,7 @@ except Exception as exc:  # pragma: no cover - exercised only when QGIS is unava
     QgsProject = None
     QgsVectorLayer = None
     QDate = None
+    Qt = None
     ActivityQuery = None
     build_subset_string = None
     GeoPackageWriter = None
@@ -123,7 +124,11 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertEqual(dock.temporalModeLabel.text(), "Temporal timestamps")
             self.assertEqual(dock.workflowLabel.text(), "Workflow: Fetch & store → Visualize → Analyze → Publish")
             self.assertFalse(dock.credentialsGroupBox.isVisible())
-            self.assertEqual(dock.activitiesGroupBox.title(), "1. Fetch and store activities")
+            self.assertEqual(dock.activitiesGroupBox.title(), "")
+            self.assertEqual(dock.activitiesSectionToggleButton.text(), "1. Fetch and store activities")
+            self.assertTrue(dock.activitiesSectionToggleButton.isChecked())
+            self.assertEqual(dock.activitiesSectionToggleButton.arrowType(), Qt.DownArrow)
+            self.assertFalse(dock.activitiesSectionContentWidget.isHidden())
             self.assertFalse(dock.mapboxAccessTokenLabel.isVisible())
             self.assertFalse(dock.mapboxAccessTokenLineEdit.isVisible())
             self.assertEqual(dock.refreshButton.text(), "Fetch activities")
@@ -138,8 +143,8 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertFalse(dock.publishGroupBox.isChecked())
             self.assertFalse(dock.publishSettingsWidget.isVisible())
             self.assertEqual(dock.outputGroupBox.title(), "Store / database")
-            self.assertEqual(dock.outputGroupBox.parent(), dock.activitiesGroupBox)
-            self.assertGreater(dock.activitiesGroupLayout.indexOf(dock.outputGroupBox), dock.activitiesGroupLayout.indexOf(dock.previewGroupBox))
+            self.assertEqual(dock.outputGroupBox.parent(), dock.activitiesSectionContentWidget)
+            self.assertGreater(dock.activitiesSectionContentWidget.layout().indexOf(dock.outputGroupBox), dock.activitiesSectionContentWidget.layout().indexOf(dock.previewGroupBox))
             self.assertEqual(dock.styleGroupBox.title(), "2. Visualize")
             self.assertEqual(dock.loadLayersButton.parent(), dock.styleGroupBox)
             self.assertLess(dock.styleGroupLayout.indexOf(dock.loadLayersButton), dock.styleGroupLayout.indexOf(dock.backgroundGroupBox))
@@ -153,6 +158,10 @@ class QgisSmokeTests(unittest.TestCase):
             )
             self.assertIsNotNone(dock.findChild(QLabel, "maxDetailedActivitiesSpinBoxContextHelpLabel"))
             self.assertIsNotNone(dock.findChild(QWidget, "maxDetailedActivitiesSpinBoxHelpField"))
+            dock.activitiesSectionToggleButton.click()
+            self.assertFalse(dock.activitiesSectionToggleButton.isChecked())
+            self.assertEqual(dock.activitiesSectionToggleButton.arrowType(), Qt.RightArrow)
+            self.assertTrue(dock.activitiesSectionContentWidget.isHidden())
         finally:
             dock.close()
             dock.deleteLater()
