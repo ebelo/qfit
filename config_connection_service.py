@@ -24,7 +24,7 @@ def validate_strava_connection(
     *,
     client_factory=StravaClient,
 ) -> ConnectionTestResult:
-    """Validate the current Strava credentials by refreshing the access token."""
+    """Validate current Strava credentials and activity-read access."""
     resolved_client_id = (client_id or "").strip()
     resolved_client_secret = (client_secret or "").strip()
     resolved_refresh_token = (refresh_token or "").strip()
@@ -41,12 +41,22 @@ def validate_strava_connection(
             refresh_token=resolved_refresh_token,
         )
         client.refresh_access_token()
+        client.fetch_activities(per_page=1, max_pages=1)
     except StravaClientError as exc:
-        return ConnectionTestResult(False, f"Strava connection failed: {exc}")
+        return ConnectionTestResult(False, _format_strava_validation_error(str(exc)))
     except Exception as exc:  # noqa: BLE001
-        return ConnectionTestResult(False, f"Strava connection failed: {exc}")
+        return ConnectionTestResult(False, _format_strava_validation_error(str(exc)))
 
-    return ConnectionTestResult(True, "Strava connection OK")
+    return ConnectionTestResult(True, "Strava activity access OK")
+
+
+def _format_strava_validation_error(message: str) -> str:
+    if "activity.read_permission" in message:
+        return (
+            "Strava connection failed: token refresh succeeded, but activity-read permission is missing. "
+            "Re-authorize Strava and save a refresh token with activity:read_all scope."
+        )
+    return f"Strava connection failed: {message}"
 
 
 def validate_mapbox_connection(
