@@ -80,7 +80,7 @@ class LoadWorkflowService:
             "Synced {fetched} fetched activities into GeoPackage: "
             "inserted {inserted}, updated {updated}, unchanged {unchanged}, "
             "stored total {total}. GeoPackage updated at {path}. "
-            "Use Load layers in Visualize when you want the stored data in QGIS."
+            "Use Load activity layers in Visualize when you want the stored data in QGIS."
         ).format(
             fetched=write_result.get("fetched_count", len(activities)),
             inserted=sync.inserted if sync else 0,

@@ -101,7 +101,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         """
         self.workflowLabel.setText("Workflow: Fetch & store → Visualize → Analyze → Publish")
         self.credentialsGroupBox.hide()
-        self.activitiesGroupBox.setTitle("1. Fetch / store database")
+        self.activitiesGroupBox.setTitle("1. Fetch and store activities")
         self.activitiesIntroLabel.setText(
             "Fetch your activities from Strava using the credentials saved in qfit → Configuration. "
             "Store or clear the local GeoPackage here too. Filters are applied later in the Visualize step — no re-fetch needed."
@@ -642,7 +642,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._show_error("GeoPackage not found", str(exc))
             return
         except (RuntimeError, OSError) as exc:
-            _msg = "Load layers failed"
+            _msg = "Load activity layers failed"
             logger.exception(_msg)
             self._show_error(_msg, str(exc))
             self._set_status(_msg)
@@ -677,7 +677,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
         reply = QMessageBox.question(
             self,
-            "Clear database & re-import",
+            "Clear database",
             (
                 "This will delete the GeoPackage file and remove all qfit layers from QGIS:\n\n"
                 f"  {output_path}\n\n"

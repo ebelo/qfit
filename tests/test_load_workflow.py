@@ -205,7 +205,7 @@ class WriteDatabaseSuccessTests(unittest.TestCase):
         self.assertEqual(result.output_path, "/tmp/out.gpkg")
         self.assertEqual(result.total_stored, 8)
         self.assertIsNone(result.activities_layer)
-        self.assertIn("Use Load layers in Visualize", result.status)
+        self.assertIn("Use Load activity layers in Visualize", result.status)
 
 
 class LoadExistingValidationTests(unittest.TestCase):

@@ -388,17 +388,17 @@
            <item>
             <widget class="QPushButton" name="loadLayersButton">
              <property name="text">
-              <string>Load layers</string>
+              <string>Load activity layers</string>
              </property>
              <property name="toolTip">
-              <string>Load an existing GeoPackage into QGIS. Use this when reopening QGIS on an existing database without re-fetching.</string>
+              <string>Load the stored qfit layers from an existing GeoPackage into QGIS. Use this when reopening QGIS on an existing database without re-fetching.</string>
              </property>
             </widget>
            </item>
            <item>
             <widget class="QPushButton" name="clearDatabaseButton">
              <property name="text">
-              <string>Clear database &amp; re-import</string>
+              <string>Clear database</string>
              </property>
              <property name="toolTip">
               <string>Delete the GeoPackage file and clear all loaded layers so you can start a clean import. A confirmation dialog will appear first.</string>
@@ -820,7 +820,7 @@
               <item>
                <widget class="QLabel" name="atlasPdfHelpLabel">
                 <property name="text">
-                 <string>Export a per-activity PDF atlas using the loaded activity_atlas_pages layer. Each page shows the activity title, date, stats, and a map centred on the activity extent. Store activities first, then load layers.</string>
+                 <string>Export a per-activity PDF atlas using the loaded activity_atlas_pages layer. Each page shows the activity title, date, stats, and a map centred on the activity extent. Store activities first, then load activity layers.</string>
                 </property>
                 <property name="wordWrap">
                  <bool>true</bool>
