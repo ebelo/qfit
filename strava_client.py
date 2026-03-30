@@ -20,6 +20,7 @@ class StravaClient:
     ACTIVITIES_URL = "https://www.strava.com/api/v3/athlete/activities"
     STREAMS_URL_TEMPLATE = "https://www.strava.com/api/v3/activities/{activity_id}/streams"
     DEFAULT_NETWORK_RETRY_ATTEMPTS = 3
+    PAGE_REQUEST_DELAY_SECONDS = 0.2
     RETRYABLE_ERRNOS = {104}
     RETRYABLE_WINERRORS = {10054}
     STREAM_KEYS = [
@@ -143,6 +144,7 @@ class StravaClient:
             activities.extend(batch)
             if len(payload) < per_page:
                 break
+            self._sleep_between_activity_pages()
             page += 1
 
         if use_detailed_streams and activities:
@@ -497,7 +499,12 @@ class StravaClient:
             current = getattr(current, "reason", None)
 
     def _retry_delay_seconds(self, attempt):
-        return min(2.0, 0.5 * attempt)
+        return min(8.0, float(2 ** (attempt - 1)))
+
+    def _sleep_between_activity_pages(self):
+        delay = float(self.PAGE_REQUEST_DELAY_SECONDS)
+        if delay > 0:
+            time.sleep(delay)
 
     def _format_network_error(self, operation, exc, attempts):
         detail = self._describe_network_error(exc)

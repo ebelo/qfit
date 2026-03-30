@@ -164,6 +164,27 @@ class StravaClientTests(unittest.TestCase):
         # Only 2 calls: token refresh + 1 page
         self.assertEqual(call_count[0], 2)
 
+    def test_fetch_activities_paces_between_full_pages(self):
+        client = StravaClient(client_id="123", client_secret="abc", refresh_token="tok")
+        call_count = [0]
+
+        def fake_request_json(request, operation=None):
+            idx = call_count[0]
+            call_count[0] += 1
+            if idx == 0:
+                return {"access_token": "fake_token"}
+            if idx == 1:
+                return [{"id": i, "name": f"Activity {i}"} for i in range(2)]
+            return [{"id": 3, "name": "Last activity"}]
+
+        client._request_json = fake_request_json
+
+        with patch("qfit.strava_client.time.sleep") as sleep_mock:
+            activities = client.fetch_activities(per_page=2, max_pages=0)
+
+        self.assertEqual(len(activities), 3)
+        sleep_mock.assert_any_call(client.PAGE_REQUEST_DELAY_SECONDS)
+
     def test_request_json_retries_transient_connection_reset(self):
         client = StravaClient()
         calls = []
@@ -221,6 +242,13 @@ class StravaClientTests(unittest.TestCase):
                 client._request_json(object(), operation="Fetching Strava detailed stream for activity 42")
 
         sleep_mock.assert_not_called()
+
+    def test_retry_delay_seconds_uses_exponential_backoff(self):
+        client = StravaClient()
+
+        self.assertEqual(client._retry_delay_seconds(1), 1.0)
+        self.assertEqual(client._retry_delay_seconds(2), 2.0)
+        self.assertEqual(client._retry_delay_seconds(3), 4.0)
 
 
 if __name__ == "__main__":
