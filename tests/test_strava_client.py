@@ -143,6 +143,34 @@ class StravaClientTests(unittest.TestCase):
         activities = client.fetch_activities(per_page=200, max_pages=0)
         self.assertEqual(len(activities), 203)
 
+    def test_fetch_activities_full_sync_uses_before_cursor(self):
+        client = StravaClient(client_id="123", client_secret="abc", refresh_token="tok")
+        seen_urls = []
+        call_count = [0]
+
+        def fake_request_json(request, operation=None):
+            idx = call_count[0]
+            call_count[0] += 1
+            if idx == 0:
+                return {"access_token": "fake_token"}
+
+            seen_urls.append(request.full_url)
+            if idx == 1:
+                return [
+                    {"id": 1, "name": "A1", "start_date": "2026-03-30T08:00:00Z"},
+                    {"id": 2, "name": "A2", "start_date": "2026-03-29T08:00:00Z"},
+                ]
+            return [{"id": 3, "name": "A3", "start_date": "2026-03-28T08:00:00Z"}]
+
+        client._request_json = fake_request_json
+
+        with patch("qfit.strava_client.time.sleep"):
+            activities = client.fetch_activities(per_page=2, max_pages=0)
+
+        self.assertEqual(len(activities), 3)
+        self.assertIn("page=1&per_page=2", seen_urls[0])
+        self.assertIn("page=1&per_page=2&before=1774771199", seen_urls[1])
+
     def test_fetch_activities_respects_max_pages_limit(self):
         """max_pages=1 should stop after the first page even if it is full."""
         client = StravaClient(client_id="123", client_secret="abc", refresh_token="tok")
@@ -249,6 +277,15 @@ class StravaClientTests(unittest.TestCase):
         self.assertEqual(client._retry_delay_seconds(1), 1.0)
         self.assertEqual(client._retry_delay_seconds(2), 2.0)
         self.assertEqual(client._retry_delay_seconds(3), 4.0)
+
+    def test_next_activities_before_uses_oldest_activity_start(self):
+        client = StravaClient()
+        activities = [
+            client.normalize_activity({"id": 1, "name": "A1", "start_date": "2026-03-30T08:00:00Z"}),
+            client.normalize_activity({"id": 2, "name": "A2", "start_date": "2026-03-29T08:00:00Z"}),
+        ]
+
+        self.assertEqual(client._next_activities_before(activities), 1774771199)
 
 
 if __name__ == "__main__":

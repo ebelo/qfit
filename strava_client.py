@@ -125,12 +125,13 @@ class StravaClient:
         token = self.get_access_token()
         activities = []
         page = 1
+        current_before = before
         while True:
             if max_pages and page > max_pages:
                 break
-            params = {"page": page, "per_page": per_page}
-            if before is not None:
-                params["before"] = int(before)
+            params = {"page": 1 if max_pages == 0 else page, "per_page": per_page}
+            if current_before is not None:
+                params["before"] = int(current_before)
             if after is not None:
                 params["after"] = int(after)
 
@@ -144,6 +145,10 @@ class StravaClient:
             activities.extend(batch)
             if len(payload) < per_page:
                 break
+            if max_pages == 0:
+                next_before = self._next_activities_before(batch)
+                if next_before is not None:
+                    current_before = next_before
             self._sleep_between_activity_pages()
             page += 1
 
@@ -435,6 +440,36 @@ class StravaClient:
         filtered = {key: value for key, value in payload.items() if key not in excluded}
         filtered["normalized_at"] = datetime.now(UTC).isoformat()
         return filtered
+
+    def _next_activities_before(self, activities):
+        if not activities:
+            return None
+
+        oldest_epoch = None
+        for activity in activities:
+            start_epoch = self._activity_start_epoch(activity)
+            if start_epoch is None:
+                continue
+            if oldest_epoch is None or start_epoch < oldest_epoch:
+                oldest_epoch = start_epoch
+
+        if oldest_epoch is None:
+            return None
+        return oldest_epoch - 1
+
+    def _activity_start_epoch(self, activity):
+        start_value = getattr(activity, "start_date", None) or getattr(activity, "start_date_local", None)
+        if not start_value:
+            return None
+
+        try:
+            parsed = datetime.fromisoformat(str(start_value).replace("Z", "+00:00"))
+        except ValueError:
+            return None
+
+        if parsed.tzinfo is None:
+            parsed = parsed.replace(tzinfo=UTC)
+        return int(parsed.timestamp())
 
     def _extract_latlon(self, value):
         if not value or len(value) != 2:
