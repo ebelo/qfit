@@ -90,7 +90,11 @@ class StravaClient:
                 "redirect_uri": redirect_uri or self.DEFAULT_REDIRECT_URI,
             }
         ).encode("utf-8")
-        request = Request(self.TOKEN_URL, data=data, headers={"Content-Type": "application/x-www-form-urlencoded"})
+        request = Request(
+            self.TOKEN_URL,
+            data=data,
+            headers=self._build_request_headers(content_type="application/x-www-form-urlencoded"),
+        )
         payload = self._request_json(request, operation="Exchanging Strava authorization code for tokens")
         self.access_token = payload.get("access_token")
         self.refresh_token = payload.get("refresh_token") or self.refresh_token
@@ -132,7 +136,7 @@ class StravaClient:
             url = "{base}?{query}".format(base=self.ACTIVITIES_URL, query=urlencode(params))
             request = Request(
                 url,
-                headers={"Authorization": "Bearer {token}".format(token=token), "Accept": "application/json"},
+                headers=self._build_request_headers(token=token),
             )
             payload = self._request_json(request, operation="Fetching Strava activities page {page}".format(page=page))
             batch = [self.normalize_activity(item) for item in payload]
@@ -173,7 +177,11 @@ class StravaClient:
                 "grant_type": "refresh_token",
             }
         ).encode("utf-8")
-        request = Request(self.TOKEN_URL, data=data, headers={"Content-Type": "application/x-www-form-urlencoded"})
+        request = Request(
+            self.TOKEN_URL,
+            data=data,
+            headers=self._build_request_headers(content_type="application/x-www-form-urlencoded"),
+        )
         payload = self._request_json(request, operation="Refreshing Strava access token")
         self.access_token = payload.get("access_token")
         self.refresh_token = payload.get("refresh_token") or self.refresh_token
@@ -248,13 +256,28 @@ class StravaClient:
         )
         request = Request(
             url,
-            headers={"Authorization": "Bearer {token}".format(token=token), "Accept": "application/json"},
+            headers=self._build_request_headers(token=token),
         )
         payload = self._request_json(
             request,
             operation="Fetching Strava detailed stream for activity {activity_id}".format(activity_id=activity_id),
         )
         return self._extract_stream_bundle(payload)
+
+    def _build_request_headers(self, token=None, content_type=None):
+        headers = {
+            "Accept": "application/json",
+            "Connection": "close",
+            "User-Agent": "qfit/{version}".format(version=self._plugin_version()),
+        }
+        if token:
+            headers["Authorization"] = "Bearer {token}".format(token=token)
+        if content_type:
+            headers["Content-Type"] = content_type
+        return headers
+
+    def _plugin_version(self):
+        return "0.42.0"
 
     def normalize_activity(self, payload):
         start_lat, start_lon = self._extract_latlon(payload.get("start_latlng"))

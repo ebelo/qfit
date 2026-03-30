@@ -109,6 +109,16 @@ class StravaClientTests(unittest.TestCase):
         self.assertEqual(client._remaining(200, 50), 150)
         self.assertIsNone(client._remaining(None, 50))
 
+    def test_build_request_headers_disables_connection_reuse(self):
+        client = StravaClient()
+
+        headers = client._build_request_headers(token="abc", content_type="application/x-www-form-urlencoded")
+
+        self.assertEqual(headers["Connection"], "close")
+        self.assertEqual(headers["Authorization"], "Bearer abc")
+        self.assertEqual(headers["Content-Type"], "application/x-www-form-urlencoded")
+        self.assertIn("qfit/", headers["User-Agent"])
+
     def test_fetch_activities_paginates_until_last_page(self):
         """max_pages=0 should fetch all pages, stopping when a short page is received."""
         client = StravaClient(client_id="123", client_secret="abc", refresh_token="tok")
