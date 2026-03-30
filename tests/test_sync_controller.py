@@ -84,6 +84,7 @@ class FetchStatusTextTests(unittest.TestCase):
             source_name="strava",
             last_stream_enrichment_stats={"cached": 2, "downloaded": 3, "skipped_rate_limit": 0},
             last_rate_limit=None,
+            last_fetch_notice=None,
         )
         text = ctrl.fetch_status_text(provider, 10, 5)
         self.assertIn("10 activities", text)
@@ -96,6 +97,7 @@ class FetchStatusTextTests(unittest.TestCase):
             source_name="strava",
             last_stream_enrichment_stats={},
             last_rate_limit=None,
+            last_fetch_notice=None,
         )
         text = ctrl.fetch_status_text(provider, 3, 0)
         self.assertIn("strava", text)
@@ -106,6 +108,7 @@ class FetchStatusTextTests(unittest.TestCase):
             source_name="strava",
             last_stream_enrichment_stats={},
             last_rate_limit={"short_remaining": 50, "long_remaining": 900},
+            last_fetch_notice=None,
         )
         text = ctrl.fetch_status_text(provider, 1, 0)
         self.assertIn("Remaining rate limit", text)
@@ -118,6 +121,18 @@ class FetchStatusTextTests(unittest.TestCase):
             source_name="strava",
             last_stream_enrichment_stats=None,
             last_rate_limit=None,
+            last_fetch_notice=None,
         )
         text = ctrl.fetch_status_text(provider, 0, 0)
         self.assertNotIn("rate limit", text.lower().replace("rate-limit", ""))
+
+    def test_fetch_notice_included(self):
+        ctrl = SyncController()
+        provider = SimpleNamespace(
+            source_name="strava",
+            last_stream_enrichment_stats={},
+            last_rate_limit={"short_remaining": 3, "long_remaining": 80},
+            last_fetch_notice="Stopped early to avoid hitting the Strava rate limit.",
+        )
+        text = ctrl.fetch_status_text(provider, 40, 0)
+        self.assertIn("Stopped early to avoid hitting the Strava rate limit", text)

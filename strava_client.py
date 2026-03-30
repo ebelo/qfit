@@ -21,6 +21,8 @@ class StravaClient:
     STREAMS_URL_TEMPLATE = "https://www.strava.com/api/v3/activities/{activity_id}/streams"
     DEFAULT_NETWORK_RETRY_ATTEMPTS = 3
     MIN_ACTIVITY_PAGE_SIZE = 5
+    FULL_SYNC_MIN_SHORT_REMAINING = 3
+    FULL_SYNC_MIN_LONG_REMAINING = 15
     PAGE_REQUEST_DELAY_SECONDS = 0.2
     RETRYABLE_ERRNOS = {104}
     RETRYABLE_WINERRORS = {10054}
@@ -57,6 +59,7 @@ class StravaClient:
         self.stream_cache_ttl_seconds = stream_cache_ttl_seconds
         self.last_rate_limit = None
         self.last_stream_enrichment_stats = {}
+        self.last_fetch_notice = None
         self.session = requests.Session()
 
     def has_client_credentials(self):
@@ -130,6 +133,7 @@ class StravaClient:
         page = 1
         current_before = before
         current_per_page = max(1, int(per_page))
+        self.last_fetch_notice = None
         while True:
             if max_pages and page > max_pages:
                 break
@@ -156,6 +160,9 @@ class StravaClient:
             batch = [self.normalize_activity(item) for item in payload]
             activities.extend(batch)
             if len(payload) < current_per_page:
+                break
+            if max_pages == 0 and self._should_pause_full_sync_for_rate_limit():
+                self.last_fetch_notice = self._rate_limit_pause_notice()
                 break
             if max_pages == 0:
                 next_before = self._next_activities_before(batch)
@@ -500,6 +507,8 @@ class StravaClient:
                 response = getattr(exc, "response", None)
                 status_code = response.status_code if response is not None else "unknown"
                 body = response.text if response is not None else str(exc)
+                if response is not None and int(status_code) == 429:
+                    raise StravaClientError(self._format_rate_limit_error(operation, response)) from exc
                 raise StravaClientError(
                     "{operation} failed with Strava API error {code}: {body}".format(
                         operation=operation,
@@ -576,6 +585,58 @@ class StravaClient:
 
     def _is_transient_network_message(self, message):
         return "transient network error" in str(message).lower()
+
+    def _should_pause_full_sync_for_rate_limit(self):
+        if not self.last_rate_limit:
+            return False
+        short_remaining = self.last_rate_limit.get("short_remaining")
+        long_remaining = self.last_rate_limit.get("long_remaining")
+        if short_remaining is not None and short_remaining <= self.FULL_SYNC_MIN_SHORT_REMAINING:
+            return True
+        if long_remaining is not None and long_remaining <= self.FULL_SYNC_MIN_LONG_REMAINING:
+            return True
+        return False
+
+    def _rate_limit_pause_notice(self):
+        rate_limit = self.last_rate_limit or {}
+        short_remaining = rate_limit.get("short_remaining")
+        long_remaining = rate_limit.get("long_remaining")
+        guidance = self._rate_limit_retry_guidance(rate_limit)
+        return (
+            "Stopped early to avoid hitting the Strava rate limit. Remaining read quota: short={short}, long={long}. {guidance}"
+        ).format(
+            short=short_remaining if short_remaining is not None else "?",
+            long=long_remaining if long_remaining is not None else "?",
+            guidance=guidance,
+        )
+
+    def _format_rate_limit_error(self, operation, response):
+        rate_limit = self._extract_rate_limit(response.headers)
+        self.last_rate_limit = rate_limit
+        guidance = self._rate_limit_retry_guidance(rate_limit)
+        short_limit = rate_limit.get("short_limit")
+        long_limit = rate_limit.get("long_limit")
+        short_remaining = rate_limit.get("short_remaining")
+        long_remaining = rate_limit.get("long_remaining")
+        return (
+            "{operation} hit the Strava rate limit (read limit {short_limit}/15 min, {long_limit}/day; remaining short={short_remaining}, long={long_remaining}). {guidance}"
+        ).format(
+            operation=operation,
+            short_limit=short_limit if short_limit is not None else "?",
+            long_limit=long_limit if long_limit is not None else "?",
+            short_remaining=short_remaining if short_remaining is not None else "?",
+            long_remaining=long_remaining if long_remaining is not None else "?",
+            guidance=guidance,
+        )
+
+    def _rate_limit_retry_guidance(self, rate_limit):
+        long_remaining = rate_limit.get("long_remaining") if rate_limit else None
+        short_remaining = rate_limit.get("short_remaining") if rate_limit else None
+        if long_remaining is not None and long_remaining <= 0:
+            return "The daily quota looks exhausted; wait until Strava resets the day limit before retrying."
+        if short_remaining is not None and short_remaining <= 0:
+            return "Wait about 15 minutes before retrying the full sync."
+        return "Retry with a smaller window or wait a bit before continuing the full sync."
 
     def _format_network_error(self, operation, exc, attempts):
         detail = self._describe_network_error(exc)

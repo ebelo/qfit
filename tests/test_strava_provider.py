@@ -83,6 +83,11 @@ class TestStravaProviderProperties(unittest.TestCase):
         provider._client.last_rate_limit = {"short_remaining": 100}
         self.assertEqual(provider.last_rate_limit, {"short_remaining": 100})
 
+    def test_last_fetch_notice_proxied(self):
+        provider = self._make_provider()
+        provider._client.last_fetch_notice = "Stopped early"
+        self.assertEqual(provider.last_fetch_notice, "Stopped early")
+
 
 class TestStravaProviderCredentials(unittest.TestCase):
     def test_has_client_credentials_delegates(self):

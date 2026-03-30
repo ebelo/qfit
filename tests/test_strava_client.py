@@ -367,6 +367,66 @@ class StravaClientTests(unittest.TestCase):
             )
         )
 
+    def test_rate_limit_retry_guidance_for_short_window(self):
+        client = StravaClient()
+        message = client._rate_limit_retry_guidance({"short_remaining": 0, "long_remaining": 800})
+        self.assertIn("15 minutes", message)
+
+    def test_rate_limit_retry_guidance_for_daily_limit(self):
+        client = StravaClient()
+        message = client._rate_limit_retry_guidance({"short_remaining": 0, "long_remaining": 0})
+        self.assertIn("daily quota", message)
+
+    def test_rate_limit_pause_notice_uses_remaining_quota(self):
+        client = StravaClient()
+        client.last_rate_limit = {"short_remaining": 2, "long_remaining": 40}
+
+        message = client._rate_limit_pause_notice()
+
+        self.assertIn("Stopped early", message)
+        self.assertIn("short=2", message)
+        self.assertIn("long=40", message)
+
+    def test_should_pause_full_sync_for_rate_limit(self):
+        client = StravaClient()
+        client.last_rate_limit = {"short_remaining": 3, "long_remaining": 100}
+        self.assertTrue(client._should_pause_full_sync_for_rate_limit())
+
+    def test_fetch_activities_stops_early_when_rate_limit_headroom_is_low(self):
+        client = StravaClient(client_id="123", client_secret="abc", refresh_token="tok")
+        call_count = [0]
+
+        def fake_request_json(request, operation=None, **kwargs):
+            idx = call_count[0]
+            call_count[0] += 1
+            if idx == 0:
+                return {"access_token": "fake_token"}
+            client.last_rate_limit = {"short_remaining": 3, "long_remaining": 200}
+            return [{"id": i, "name": f"Activity {i}", "start_date": "2026-03-30T08:00:00Z"} for i in range(2)]
+
+        client._request_json = fake_request_json
+
+        with patch("qfit.strava_client.time.sleep"):
+            activities = client.fetch_activities(per_page=2, max_pages=0)
+
+        self.assertEqual(len(activities), 2)
+        self.assertIn("Stopped early", client.last_fetch_notice)
+
+    def test_request_json_reports_rate_limit_error(self):
+        client = StravaClient()
+
+        response = requests.Response()
+        response.status_code = 429
+        response._content = b'{"message":"Rate Limit Exceeded"}'
+        response.headers["X-RateLimit-Limit"] = "100,1000"
+        response.headers["X-RateLimit-Usage"] = "100,62"
+        response.url = "https://example.test"
+        http_error = requests.HTTPError(response=response)
+
+        with patch.object(client.session, "request", side_effect=http_error):
+            with self.assertRaisesRegex(StravaClientError, "Strava rate limit"):
+                client._request_json("https://example.test", operation="Fetching Strava activities page 62")
+
 
 if __name__ == "__main__":
     unittest.main()
