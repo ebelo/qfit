@@ -1,4 +1,6 @@
 import json
+import socket
+import time
 from dataclasses import asdict
 from datetime import UTC, datetime
 from urllib.error import HTTPError, URLError
@@ -17,6 +19,9 @@ class StravaClient:
     TOKEN_URL = "https://www.strava.com/oauth/token"
     ACTIVITIES_URL = "https://www.strava.com/api/v3/athlete/activities"
     STREAMS_URL_TEMPLATE = "https://www.strava.com/api/v3/activities/{activity_id}/streams"
+    DEFAULT_NETWORK_RETRY_ATTEMPTS = 3
+    RETRYABLE_ERRNOS = {104}
+    RETRYABLE_WINERRORS = {10054}
     STREAM_KEYS = [
         "latlng",
         "time",
@@ -86,7 +91,7 @@ class StravaClient:
             }
         ).encode("utf-8")
         request = Request(self.TOKEN_URL, data=data, headers={"Content-Type": "application/x-www-form-urlencoded"})
-        payload = self._request_json(request)
+        payload = self._request_json(request, operation="Exchanging Strava authorization code for tokens")
         self.access_token = payload.get("access_token")
         self.refresh_token = payload.get("refresh_token") or self.refresh_token
         return payload
@@ -129,7 +134,7 @@ class StravaClient:
                 url,
                 headers={"Authorization": "Bearer {token}".format(token=token), "Accept": "application/json"},
             )
-            payload = self._request_json(request)
+            payload = self._request_json(request, operation="Fetching Strava activities page {page}".format(page=page))
             batch = [self.normalize_activity(item) for item in payload]
             activities.extend(batch)
             if len(payload) < per_page:
@@ -169,7 +174,7 @@ class StravaClient:
             }
         ).encode("utf-8")
         request = Request(self.TOKEN_URL, data=data, headers={"Content-Type": "application/x-www-form-urlencoded"})
-        payload = self._request_json(request)
+        payload = self._request_json(request, operation="Refreshing Strava access token")
         self.access_token = payload.get("access_token")
         self.refresh_token = payload.get("refresh_token") or self.refresh_token
         if not self.access_token:
@@ -245,7 +250,10 @@ class StravaClient:
             url,
             headers={"Authorization": "Bearer {token}".format(token=token), "Accept": "application/json"},
         )
-        payload = self._request_json(request)
+        payload = self._request_json(
+            request,
+            operation="Fetching Strava detailed stream for activity {activity_id}".format(activity_id=activity_id),
+        )
         return self._extract_stream_bundle(payload)
 
     def normalize_activity(self, payload):
@@ -408,19 +416,91 @@ class StravaClient:
             return None, None
         return value[0], value[1]
 
-    def _request_json(self, request):
-        try:
-            with urlopen(request, timeout=60) as response:
-                self.last_rate_limit = self._extract_rate_limit(response.headers)
-                raw = response.read().decode("utf-8")
-                return json.loads(raw)
-        except HTTPError as exc:
-            body = exc.read().decode("utf-8", errors="replace")
-            raise StravaClientError("Strava API error {code}: {body}".format(code=exc.code, body=body)) from exc
-        except URLError as exc:
-            raise StravaClientError("Network error talking to Strava: {exc}".format(exc=exc)) from exc
-        except json.JSONDecodeError as exc:
-            raise StravaClientError("Invalid JSON returned by Strava: {exc}".format(exc=exc)) from exc
+    def _request_json(self, request, operation="Request to Strava"):
+        attempts = max(1, int(self.DEFAULT_NETWORK_RETRY_ATTEMPTS))
+        last_error = None
+
+        for attempt in range(1, attempts + 1):
+            try:
+                with urlopen(request, timeout=60) as response:
+                    self.last_rate_limit = self._extract_rate_limit(response.headers)
+                    raw = response.read().decode("utf-8")
+                    return json.loads(raw)
+            except HTTPError as exc:
+                body = exc.read().decode("utf-8", errors="replace")
+                raise StravaClientError(
+                    "{operation} failed with Strava API error {code}: {body}".format(
+                        operation=operation,
+                        code=exc.code,
+                        body=body,
+                    )
+                ) from exc
+            except (URLError, OSError, TimeoutError) as exc:
+                last_error = exc
+                if attempt < attempts and self._is_retryable_network_error(exc):
+                    time.sleep(self._retry_delay_seconds(attempt))
+                    continue
+                raise StravaClientError(self._format_network_error(operation, exc, attempts)) from exc
+            except json.JSONDecodeError as exc:
+                raise StravaClientError(
+                    "{operation} returned invalid JSON: {exc}".format(operation=operation, exc=exc)
+                ) from exc
+
+        raise StravaClientError(self._format_network_error(operation, last_error, attempts))
+
+    def _is_retryable_network_error(self, exc):
+        for error in self._iter_network_errors(exc):
+            if isinstance(error, ConnectionResetError):
+                return True
+            if isinstance(error, (socket.timeout, TimeoutError)):
+                return True
+
+            errno_value = getattr(error, "errno", None)
+            if errno_value in self.RETRYABLE_ERRNOS:
+                return True
+
+            winerror_value = getattr(error, "winerror", None)
+            if winerror_value in self.RETRYABLE_WINERRORS:
+                return True
+
+        return False
+
+    def _iter_network_errors(self, exc):
+        seen = set()
+        current = exc
+        while current is not None and id(current) not in seen:
+            seen.add(id(current))
+            yield current
+            current = getattr(current, "reason", None)
+
+    def _retry_delay_seconds(self, attempt):
+        return min(2.0, 0.5 * attempt)
+
+    def _format_network_error(self, operation, exc, attempts):
+        detail = self._describe_network_error(exc)
+        if exc is not None and self._is_retryable_network_error(exc) and attempts > 1:
+            return "{operation} failed after {attempts} attempts due to a transient network error: {detail}".format(
+                operation=operation,
+                attempts=attempts,
+                detail=detail,
+            )
+        return "{operation} failed due to a network error: {detail}".format(operation=operation, detail=detail)
+
+    def _describe_network_error(self, exc):
+        if exc is None:
+            return "unknown network error"
+
+        parts = []
+        for error in self._iter_network_errors(exc):
+            text = str(error).strip()
+            if not text:
+                continue
+            if not parts or parts[-1] != text:
+                parts.append(text)
+
+        if parts:
+            return ": ".join(parts)
+        return exc.__class__.__name__
 
     def _extract_rate_limit(self, headers):
         limit_short, limit_long = self._parse_rate_limit_pair(headers.get("X-RateLimit-Limit"))

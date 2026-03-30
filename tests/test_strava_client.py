@@ -1,8 +1,9 @@
 import unittest
+from urllib.error import URLError
 from unittest.mock import patch
 
 from tests import _path  # noqa: F401
-from qfit.strava_client import StravaClient
+from qfit.strava_client import StravaClient, StravaClientError
 
 
 class StravaClientTests(unittest.TestCase):
@@ -119,7 +120,7 @@ class StravaClientTests(unittest.TestCase):
         ]
         call_count = [0]
 
-        def fake_request_json(request):
+        def fake_request_json(request, operation=None):
             idx = call_count[0]
             call_count[0] += 1
             if idx == 0:
@@ -138,7 +139,7 @@ class StravaClientTests(unittest.TestCase):
 
         call_count = [0]
 
-        def fake_request_json(request):
+        def fake_request_json(request, operation=None):
             idx = call_count[0]
             call_count[0] += 1
             if idx == 0:
@@ -152,6 +153,64 @@ class StravaClientTests(unittest.TestCase):
         self.assertEqual(len(activities), 50)
         # Only 2 calls: token refresh + 1 page
         self.assertEqual(call_count[0], 2)
+
+    def test_request_json_retries_transient_connection_reset(self):
+        client = StravaClient()
+        calls = []
+
+        class _FakeResponse:
+            headers = {}
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, exc_type, exc, tb):
+                return False
+
+            def read(self):
+                return b'{"ok": true}'
+
+        def fake_urlopen(request, timeout=60):
+            calls.append(timeout)
+            if len(calls) < 3:
+                raise URLError(ConnectionResetError(10054, "forcibly closed by remote host"))
+            return _FakeResponse()
+
+        with patch("qfit.strava_client.urlopen", side_effect=fake_urlopen), patch(
+            "qfit.strava_client.time.sleep"
+        ) as sleep_mock:
+            payload = client._request_json(object(), operation="Fetching Strava activities page 1")
+
+        self.assertEqual(payload, {"ok": True})
+        self.assertEqual(len(calls), 3)
+        self.assertEqual(sleep_mock.call_count, 2)
+
+    def test_request_json_reports_operation_after_retry_exhaustion(self):
+        client = StravaClient()
+
+        with patch(
+            "qfit.strava_client.urlopen",
+            side_effect=URLError(ConnectionResetError(10054, "forcibly closed by remote host")),
+        ), patch("qfit.strava_client.time.sleep"):
+            with self.assertRaisesRegex(
+                StravaClientError,
+                "Refreshing Strava access token failed after 3 attempts due to a transient network error",
+            ):
+                client._request_json(object(), operation="Refreshing Strava access token")
+
+    def test_request_json_reports_non_retryable_network_error_with_operation(self):
+        client = StravaClient()
+
+        with patch("qfit.strava_client.urlopen", side_effect=URLError("certificate verify failed")), patch(
+            "qfit.strava_client.time.sleep"
+        ) as sleep_mock:
+            with self.assertRaisesRegex(
+                StravaClientError,
+                "Fetching Strava detailed stream for activity 42 failed due to a network error",
+            ):
+                client._request_json(object(), operation="Fetching Strava detailed stream for activity 42")
+
+        sleep_mock.assert_not_called()
 
 
 if __name__ == "__main__":
