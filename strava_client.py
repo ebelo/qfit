@@ -3,9 +3,9 @@ import socket
 import time
 from dataclasses import asdict
 from datetime import UTC, datetime
-from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
-from urllib.request import Request, urlopen
+
+import requests
 
 from .models import Activity
 
@@ -57,6 +57,7 @@ class StravaClient:
         self.stream_cache_ttl_seconds = stream_cache_ttl_seconds
         self.last_rate_limit = None
         self.last_stream_enrichment_stats = {}
+        self.session = requests.Session()
 
     def has_client_credentials(self):
         return bool(self.client_id and self.client_secret)
@@ -92,12 +93,13 @@ class StravaClient:
                 "redirect_uri": redirect_uri or self.DEFAULT_REDIRECT_URI,
             }
         ).encode("utf-8")
-        request = Request(
+        payload = self._request_json(
             self.TOKEN_URL,
+            method="POST",
             data=data,
             headers=self._build_request_headers(content_type="application/x-www-form-urlencoded"),
+            operation="Exchanging Strava authorization code for tokens",
         )
-        payload = self._request_json(request, operation="Exchanging Strava authorization code for tokens")
         self.access_token = payload.get("access_token")
         self.refresh_token = payload.get("refresh_token") or self.refresh_token
         return payload
@@ -138,12 +140,12 @@ class StravaClient:
                 params["after"] = int(after)
 
             url = "{base}?{query}".format(base=self.ACTIVITIES_URL, query=urlencode(params))
-            request = Request(
-                url,
-                headers=self._build_request_headers(token=token),
-            )
             try:
-                payload = self._request_json(request, operation="Fetching Strava activities page {page}".format(page=page))
+                payload = self._request_json(
+                    url,
+                    headers=self._build_request_headers(token=token),
+                    operation="Fetching Strava activities page {page}".format(page=page),
+                )
             except StravaClientError as exc:
                 reduced_per_page = self._reduced_activity_page_size(current_per_page, exc, max_pages=max_pages)
                 if reduced_per_page is None:
@@ -194,12 +196,13 @@ class StravaClient:
                 "grant_type": "refresh_token",
             }
         ).encode("utf-8")
-        request = Request(
+        payload = self._request_json(
             self.TOKEN_URL,
+            method="POST",
             data=data,
             headers=self._build_request_headers(content_type="application/x-www-form-urlencoded"),
+            operation="Refreshing Strava access token",
         )
-        payload = self._request_json(request, operation="Refreshing Strava access token")
         self.access_token = payload.get("access_token")
         self.refresh_token = payload.get("refresh_token") or self.refresh_token
         if not self.access_token:
@@ -271,12 +274,9 @@ class StravaClient:
             base=self.STREAMS_URL_TEMPLATE.format(activity_id=activity_id),
             query=urlencode(params),
         )
-        request = Request(
+        payload = self._request_json(
             url,
             headers=self._build_request_headers(token=token),
-        )
-        payload = self._request_json(
-            request,
             operation="Fetching Strava detailed stream for activity {activity_id}".format(activity_id=activity_id),
         )
         return self._extract_stream_bundle(payload)
@@ -486,32 +486,34 @@ class StravaClient:
             return None, None
         return value[0], value[1]
 
-    def _request_json(self, request, operation="Request to Strava"):
+    def _request_json(self, url, method="GET", data=None, headers=None, operation="Request to Strava"):
         attempts = max(1, int(self.DEFAULT_NETWORK_RETRY_ATTEMPTS))
         last_error = None
 
         for attempt in range(1, attempts + 1):
             try:
-                with urlopen(request, timeout=60) as response:
-                    self.last_rate_limit = self._extract_rate_limit(response.headers)
-                    raw = response.read().decode("utf-8")
-                    return json.loads(raw)
-            except HTTPError as exc:
-                body = exc.read().decode("utf-8", errors="replace")
+                response = self.session.request(method=method, url=url, data=data, headers=headers, timeout=60)
+                self.last_rate_limit = self._extract_rate_limit(response.headers)
+                response.raise_for_status()
+                return response.json()
+            except requests.HTTPError as exc:
+                response = getattr(exc, "response", None)
+                status_code = response.status_code if response is not None else "unknown"
+                body = response.text if response is not None else str(exc)
                 raise StravaClientError(
                     "{operation} failed with Strava API error {code}: {body}".format(
                         operation=operation,
-                        code=exc.code,
+                        code=status_code,
                         body=body,
                     )
                 ) from exc
-            except (URLError, OSError, TimeoutError) as exc:
+            except (requests.RequestException, OSError, TimeoutError) as exc:
                 last_error = exc
                 if attempt < attempts and self._is_retryable_network_error(exc):
                     time.sleep(self._retry_delay_seconds(attempt))
                     continue
                 raise StravaClientError(self._format_network_error(operation, exc, attempts)) from exc
-            except json.JSONDecodeError as exc:
+            except (json.JSONDecodeError, ValueError) as exc:
                 raise StravaClientError(
                     "{operation} returned invalid JSON: {exc}".format(operation=operation, exc=exc)
                 ) from exc
@@ -537,11 +539,23 @@ class StravaClient:
 
     def _iter_network_errors(self, exc):
         seen = set()
-        current = exc
-        while current is not None and id(current) not in seen:
+        stack = [exc]
+        while stack:
+            current = stack.pop()
+            if current is None or id(current) in seen:
+                continue
             seen.add(id(current))
             yield current
-            current = getattr(current, "reason", None)
+            for next_error in (
+                getattr(current, "reason", None),
+                getattr(current, "__cause__", None),
+                getattr(current, "__context__", None),
+            ):
+                if next_error is not None:
+                    stack.append(next_error)
+            for arg in getattr(current, "args", ()):
+                if isinstance(arg, BaseException):
+                    stack.append(arg)
 
     def _retry_delay_seconds(self, attempt):
         return min(8.0, float(2 ** (attempt - 1)))

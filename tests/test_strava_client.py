@@ -1,6 +1,7 @@
 import unittest
-from urllib.error import URLError
 from unittest.mock import patch
+
+import requests
 
 from tests import _path  # noqa: F401
 from qfit.strava_client import StravaClient, StravaClientError
@@ -130,7 +131,7 @@ class StravaClientTests(unittest.TestCase):
         ]
         call_count = [0]
 
-        def fake_request_json(request, operation=None):
+        def fake_request_json(request, operation=None, **kwargs):
             idx = call_count[0]
             call_count[0] += 1
             if idx == 0:
@@ -148,13 +149,13 @@ class StravaClientTests(unittest.TestCase):
         seen_urls = []
         call_count = [0]
 
-        def fake_request_json(request, operation=None):
+        def fake_request_json(request, operation=None, **kwargs):
             idx = call_count[0]
             call_count[0] += 1
             if idx == 0:
                 return {"access_token": "fake_token"}
 
-            seen_urls.append(request.full_url)
+            seen_urls.append(request)
             if idx == 1:
                 return [
                     {"id": 1, "name": "A1", "start_date": "2026-03-30T08:00:00Z"},
@@ -176,13 +177,13 @@ class StravaClientTests(unittest.TestCase):
         seen_urls = []
         call_count = [0]
 
-        def fake_request_json(request, operation=None):
+        def fake_request_json(request, operation=None, **kwargs):
             idx = call_count[0]
             call_count[0] += 1
             if idx == 0:
                 return {"access_token": "fake_token"}
 
-            seen_urls.append(request.full_url)
+            seen_urls.append(request)
             if idx == 1:
                 raise StravaClientError("Fetching Strava activities page 1 failed after 3 attempts due to a transient network error")
             return [{"id": 1, "name": "A1", "start_date": "2026-03-30T08:00:00Z"}]
@@ -202,7 +203,7 @@ class StravaClientTests(unittest.TestCase):
 
         call_count = [0]
 
-        def fake_request_json(request, operation=None):
+        def fake_request_json(request, operation=None, **kwargs):
             idx = call_count[0]
             call_count[0] += 1
             if idx == 0:
@@ -221,7 +222,7 @@ class StravaClientTests(unittest.TestCase):
         client = StravaClient(client_id="123", client_secret="abc", refresh_token="tok")
         call_count = [0]
 
-        def fake_request_json(request, operation=None):
+        def fake_request_json(request, operation=None, **kwargs):
             idx = call_count[0]
             call_count[0] += 1
             if idx == 0:
@@ -245,25 +246,22 @@ class StravaClientTests(unittest.TestCase):
         class _FakeResponse:
             headers = {}
 
-            def __enter__(self):
-                return self
+            def raise_for_status(self):
+                return None
 
-            def __exit__(self, exc_type, exc, tb):
-                return False
+            def json(self):
+                return {"ok": True}
 
-            def read(self):
-                return b'{"ok": true}'
-
-        def fake_urlopen(request, timeout=60):
+        def fake_request(method, url, data=None, headers=None, timeout=60):
             calls.append(timeout)
             if len(calls) < 3:
-                raise URLError(ConnectionResetError(10054, "forcibly closed by remote host"))
+                raise requests.ConnectionError(ConnectionResetError(10054, "forcibly closed by remote host"))
             return _FakeResponse()
 
-        with patch("qfit.strava_client.urlopen", side_effect=fake_urlopen), patch(
+        with patch.object(client.session, "request", side_effect=fake_request), patch(
             "qfit.strava_client.time.sleep"
         ) as sleep_mock:
-            payload = client._request_json(object(), operation="Fetching Strava activities page 1")
+            payload = client._request_json("https://example.test", operation="Fetching Strava activities page 1")
 
         self.assertEqual(payload, {"ok": True})
         self.assertEqual(len(calls), 3)
@@ -272,29 +270,60 @@ class StravaClientTests(unittest.TestCase):
     def test_request_json_reports_operation_after_retry_exhaustion(self):
         client = StravaClient()
 
-        with patch(
-            "qfit.strava_client.urlopen",
-            side_effect=URLError(ConnectionResetError(10054, "forcibly closed by remote host")),
+        with patch.object(
+            client.session,
+            "request",
+            side_effect=requests.ConnectionError(ConnectionResetError(10054, "forcibly closed by remote host")),
         ), patch("qfit.strava_client.time.sleep"):
             with self.assertRaisesRegex(
                 StravaClientError,
                 "Refreshing Strava access token failed after 3 attempts due to a transient network error",
             ):
-                client._request_json(object(), operation="Refreshing Strava access token")
+                client._request_json("https://example.test", operation="Refreshing Strava access token")
 
     def test_request_json_reports_non_retryable_network_error_with_operation(self):
         client = StravaClient()
 
-        with patch("qfit.strava_client.urlopen", side_effect=URLError("certificate verify failed")), patch(
+        with patch.object(client.session, "request", side_effect=requests.ConnectionError("certificate verify failed")), patch(
             "qfit.strava_client.time.sleep"
         ) as sleep_mock:
             with self.assertRaisesRegex(
                 StravaClientError,
                 "Fetching Strava detailed stream for activity 42 failed due to a network error",
             ):
-                client._request_json(object(), operation="Fetching Strava detailed stream for activity 42")
+                client._request_json("https://example.test", operation="Fetching Strava detailed stream for activity 42")
 
         sleep_mock.assert_not_called()
+
+    def test_request_json_uses_configured_session(self):
+        client = StravaClient()
+
+        class _FakeResponse:
+            headers = {"X-RateLimit-Limit": "200,2000", "X-RateLimit-Usage": "1,10"}
+
+            def raise_for_status(self):
+                return None
+
+            def json(self):
+                return {"ok": True}
+
+        with patch.object(client.session, "request", return_value=_FakeResponse()) as request_mock:
+            payload = client._request_json(
+                "https://example.test",
+                method="POST",
+                data=b"abc",
+                headers={"X-Test": "1"},
+                operation="Example request",
+            )
+
+        self.assertEqual(payload, {"ok": True})
+        request_mock.assert_called_once_with(
+            method="POST",
+            url="https://example.test",
+            data=b"abc",
+            headers={"X-Test": "1"},
+            timeout=60,
+        )
 
     def test_retry_delay_seconds_uses_exponential_backoff(self):
         client = StravaClient()
