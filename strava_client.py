@@ -1,9 +1,78 @@
 import json
+import socket
+import time
 from dataclasses import asdict
 from datetime import UTC, datetime
-from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
-from urllib.request import Request, urlopen
+from urllib.error import HTTPError as UrllibHTTPError, URLError
+from urllib.request import Request as UrllibRequest, urlopen
+
+try:
+    import requests as _requests
+except ModuleNotFoundError:  # pragma: no cover - exercised in CI fallback path
+    _requests = None
+
+
+class _FallbackRequestException(Exception):
+    pass
+
+
+class _FallbackHTTPError(_FallbackRequestException):
+    def __init__(self, response):
+        super().__init__(str(getattr(response, "status_code", "HTTP error")))
+        self.response = response
+
+
+class _FallbackConnectionError(_FallbackRequestException):
+    pass
+
+
+class _FallbackResponse:
+    def __init__(self, body, headers, status_code, url):
+        self._body = body
+        self.headers = headers
+        self.status_code = status_code
+        self.url = url
+        self.text = body.decode("utf-8", errors="replace")
+
+    def raise_for_status(self):
+        if int(self.status_code) >= 400:
+            raise _FallbackHTTPError(self)
+
+    def json(self):
+        return json.loads(self.text)
+
+
+class _FallbackSession:
+    def request(self, method, url, data=None, headers=None, timeout=60):
+        request = UrllibRequest(url, data=data, headers=headers or {}, method=method)
+        try:
+            with urlopen(request, timeout=timeout) as response:
+                return _FallbackResponse(
+                    body=response.read(),
+                    headers=response.headers,
+                    status_code=getattr(response, "status", 200),
+                    url=url,
+                )
+        except UrllibHTTPError as exc:
+            return _FallbackResponse(
+                body=exc.read(),
+                headers=exc.headers,
+                status_code=exc.code,
+                url=url,
+            )
+        except (URLError, OSError, TimeoutError) as exc:
+            raise _FallbackConnectionError(exc) from exc
+
+
+class _RequestsCompat:
+    Session = _requests.Session if _requests is not None else _FallbackSession
+    RequestException = _requests.RequestException if _requests is not None else _FallbackRequestException
+    HTTPError = _requests.HTTPError if _requests is not None else _FallbackHTTPError
+    ConnectionError = _requests.ConnectionError if _requests is not None else _FallbackConnectionError
+
+
+requests = _RequestsCompat()
 
 from .models import Activity
 
@@ -17,6 +86,13 @@ class StravaClient:
     TOKEN_URL = "https://www.strava.com/oauth/token"
     ACTIVITIES_URL = "https://www.strava.com/api/v3/athlete/activities"
     STREAMS_URL_TEMPLATE = "https://www.strava.com/api/v3/activities/{activity_id}/streams"
+    DEFAULT_NETWORK_RETRY_ATTEMPTS = 3
+    MIN_ACTIVITY_PAGE_SIZE = 5
+    FULL_SYNC_MIN_SHORT_REMAINING = 3
+    FULL_SYNC_MIN_LONG_REMAINING = 15
+    PAGE_REQUEST_DELAY_SECONDS = 0.2
+    RETRYABLE_ERRNOS = {104}
+    RETRYABLE_WINERRORS = {10054}
     STREAM_KEYS = [
         "latlng",
         "time",
@@ -50,6 +126,8 @@ class StravaClient:
         self.stream_cache_ttl_seconds = stream_cache_ttl_seconds
         self.last_rate_limit = None
         self.last_stream_enrichment_stats = {}
+        self.last_fetch_notice = None
+        self.session = requests.Session()
 
     def has_client_credentials(self):
         return bool(self.client_id and self.client_secret)
@@ -85,8 +163,13 @@ class StravaClient:
                 "redirect_uri": redirect_uri or self.DEFAULT_REDIRECT_URI,
             }
         ).encode("utf-8")
-        request = Request(self.TOKEN_URL, data=data, headers={"Content-Type": "application/x-www-form-urlencoded"})
-        payload = self._request_json(request)
+        payload = self._request_json(
+            self.TOKEN_URL,
+            method="POST",
+            data=data,
+            headers=self._build_request_headers(content_type="application/x-www-form-urlencoded"),
+            operation="Exchanging Strava authorization code for tokens",
+        )
         self.access_token = payload.get("access_token")
         self.refresh_token = payload.get("refresh_token") or self.refresh_token
         return payload
@@ -114,26 +197,28 @@ class StravaClient:
         """
         token = self.get_access_token()
         activities = []
+        current_before = before
+        current_per_page = max(1, int(per_page))
+        self.last_fetch_notice = None
         page = 1
-        while True:
-            if max_pages and page > max_pages:
-                break
-            params = {"page": page, "per_page": per_page}
-            if before is not None:
-                params["before"] = int(before)
-            if after is not None:
-                params["after"] = int(after)
-
-            url = "{base}?{query}".format(base=self.ACTIVITIES_URL, query=urlencode(params))
-            request = Request(
-                url,
-                headers={"Authorization": "Bearer {token}".format(token=token), "Accept": "application/json"},
+        while not max_pages or page <= max_pages:
+            payload, current_per_page = self._fetch_activity_page(
+                token=token,
+                page=page,
+                per_page=current_per_page,
+                current_before=current_before,
+                after=after,
+                max_pages=max_pages,
             )
-            payload = self._request_json(request)
             batch = [self.normalize_activity(item) for item in payload]
             activities.extend(batch)
-            if len(payload) < per_page:
+            if len(payload) < current_per_page:
                 break
+            if max_pages == 0 and self._should_pause_full_sync_for_rate_limit():
+                self.last_fetch_notice = self._rate_limit_pause_notice()
+                break
+            current_before = self._next_full_sync_before(current_before, batch, max_pages)
+            self._sleep_between_activity_pages()
             page += 1
 
         if use_detailed_streams and activities:
@@ -149,6 +234,40 @@ class StravaClient:
             }
 
         return activities
+
+    def _fetch_activity_page(self, token, page, per_page, current_before, after, max_pages):
+        while True:
+            payload = None
+            url = self._activity_page_url(page, per_page, current_before, after, max_pages)
+            try:
+                payload = self._request_json(
+                    url,
+                    headers=self._build_request_headers(token=token),
+                    operation="Fetching Strava activities page {page}".format(page=page),
+                )
+                return payload, per_page
+            except StravaClientError as exc:
+                reduced_per_page = self._reduced_activity_page_size(per_page, exc, max_pages=max_pages)
+                if reduced_per_page is None:
+                    raise
+                per_page = reduced_per_page
+                self._sleep_between_activity_pages()
+
+    def _activity_page_url(self, page, per_page, current_before, after, max_pages):
+        params = {"page": 1 if max_pages == 0 else page, "per_page": per_page}
+        if current_before is not None:
+            params["before"] = int(current_before)
+        if after is not None:
+            params["after"] = int(after)
+        return "{base}?{query}".format(base=self.ACTIVITIES_URL, query=urlencode(params))
+
+    def _next_full_sync_before(self, current_before, batch, max_pages):
+        if max_pages != 0:
+            return current_before
+        next_before = self._next_activities_before(batch)
+        if next_before is None:
+            return current_before
+        return next_before
 
     def get_access_token(self):
         if self.access_token:
@@ -168,8 +287,13 @@ class StravaClient:
                 "grant_type": "refresh_token",
             }
         ).encode("utf-8")
-        request = Request(self.TOKEN_URL, data=data, headers={"Content-Type": "application/x-www-form-urlencoded"})
-        payload = self._request_json(request)
+        payload = self._request_json(
+            self.TOKEN_URL,
+            method="POST",
+            data=data,
+            headers=self._build_request_headers(content_type="application/x-www-form-urlencoded"),
+            operation="Refreshing Strava access token",
+        )
         self.access_token = payload.get("access_token")
         self.refresh_token = payload.get("refresh_token") or self.refresh_token
         if not self.access_token:
@@ -241,12 +365,27 @@ class StravaClient:
             base=self.STREAMS_URL_TEMPLATE.format(activity_id=activity_id),
             query=urlencode(params),
         )
-        request = Request(
+        payload = self._request_json(
             url,
-            headers={"Authorization": "Bearer {token}".format(token=token), "Accept": "application/json"},
+            headers=self._build_request_headers(token=token),
+            operation="Fetching Strava detailed stream for activity {activity_id}".format(activity_id=activity_id),
         )
-        payload = self._request_json(request)
         return self._extract_stream_bundle(payload)
+
+    def _build_request_headers(self, token=None, content_type=None):
+        headers = {
+            "Accept": "application/json",
+            "Connection": "close",
+            "User-Agent": "qfit/{version}".format(version=self._plugin_version()),
+        }
+        if token:
+            headers["Authorization"] = "Bearer {token}".format(token=token)
+        if content_type:
+            headers["Content-Type"] = content_type
+        return headers
+
+    def _plugin_version(self):
+        return "0.42.0"
 
     def normalize_activity(self, payload):
         start_lat, start_lon = self._extract_latlon(payload.get("start_latlng"))
@@ -403,24 +542,211 @@ class StravaClient:
         filtered["normalized_at"] = datetime.now(UTC).isoformat()
         return filtered
 
+    def _next_activities_before(self, activities):
+        if not activities:
+            return None
+
+        oldest_epoch = None
+        for activity in activities:
+            start_epoch = self._activity_start_epoch(activity)
+            if start_epoch is None:
+                continue
+            if oldest_epoch is None or start_epoch < oldest_epoch:
+                oldest_epoch = start_epoch
+
+        if oldest_epoch is None:
+            return None
+        return oldest_epoch - 1
+
+    def _activity_start_epoch(self, activity):
+        start_value = getattr(activity, "start_date", None) or getattr(activity, "start_date_local", None)
+        if not start_value:
+            return None
+
+        try:
+            parsed = datetime.fromisoformat(str(start_value).replace("Z", "+00:00"))
+        except ValueError:
+            return None
+
+        if parsed.tzinfo is None:
+            parsed = parsed.replace(tzinfo=UTC)
+        return int(parsed.timestamp())
+
     def _extract_latlon(self, value):
         if not value or len(value) != 2:
             return None, None
         return value[0], value[1]
 
-    def _request_json(self, request):
-        try:
-            with urlopen(request, timeout=60) as response:
+    def _request_json(self, url, method="GET", data=None, headers=None, operation="Request to Strava"):
+        attempts = max(1, int(self.DEFAULT_NETWORK_RETRY_ATTEMPTS))
+        last_error = None
+
+        for attempt in range(1, attempts + 1):
+            try:
+                response = self.session.request(method=method, url=url, data=data, headers=headers, timeout=60)
                 self.last_rate_limit = self._extract_rate_limit(response.headers)
-                raw = response.read().decode("utf-8")
-                return json.loads(raw)
-        except HTTPError as exc:
-            body = exc.read().decode("utf-8", errors="replace")
-            raise StravaClientError("Strava API error {code}: {body}".format(code=exc.code, body=body)) from exc
-        except URLError as exc:
-            raise StravaClientError("Network error talking to Strava: {exc}".format(exc=exc)) from exc
-        except json.JSONDecodeError as exc:
-            raise StravaClientError("Invalid JSON returned by Strava: {exc}".format(exc=exc)) from exc
+                response.raise_for_status()
+                return response.json()
+            except requests.HTTPError as exc:
+                response = getattr(exc, "response", None)
+                status_code = response.status_code if response is not None else "unknown"
+                body = response.text if response is not None else str(exc)
+                if response is not None and int(status_code) == 429:
+                    raise StravaClientError(self._format_rate_limit_error(operation, response)) from exc
+                raise StravaClientError(
+                    "{operation} failed with Strava API error {code}: {body}".format(
+                        operation=operation,
+                        code=status_code,
+                        body=body,
+                    )
+                ) from exc
+            except (requests.RequestException, OSError, TimeoutError) as exc:
+                last_error = exc
+                if attempt < attempts and self._is_retryable_network_error(exc):
+                    time.sleep(self._retry_delay_seconds(attempt))
+                    continue
+                raise StravaClientError(self._format_network_error(operation, exc, attempts)) from exc
+            except ValueError as exc:
+                raise StravaClientError(
+                    "{operation} returned invalid JSON: {exc}".format(operation=operation, exc=exc)
+                ) from exc
+
+        raise StravaClientError(self._format_network_error(operation, last_error, attempts))
+
+    def _is_retryable_network_error(self, exc):
+        for error in self._iter_network_errors(exc):
+            if isinstance(error, ConnectionResetError):
+                return True
+            if isinstance(error, (socket.timeout, TimeoutError)):
+                return True
+
+            errno_value = getattr(error, "errno", None)
+            if errno_value in self.RETRYABLE_ERRNOS:
+                return True
+
+            winerror_value = getattr(error, "winerror", None)
+            if winerror_value in self.RETRYABLE_WINERRORS:
+                return True
+
+        return False
+
+    def _iter_network_errors(self, exc):
+        seen = set()
+        stack = [exc]
+        while stack:
+            current = stack.pop()
+            if current is None or id(current) in seen:
+                continue
+            seen.add(id(current))
+            yield current
+            for next_error in (
+                getattr(current, "reason", None),
+                getattr(current, "__cause__", None),
+                getattr(current, "__context__", None),
+            ):
+                if next_error is not None:
+                    stack.append(next_error)
+            for arg in getattr(current, "args", ()):
+                if isinstance(arg, BaseException):
+                    stack.append(arg)
+
+    def _retry_delay_seconds(self, attempt):
+        return min(8.0, float(2 ** (attempt - 1)))
+
+    def _sleep_between_activity_pages(self):
+        delay = float(self.PAGE_REQUEST_DELAY_SECONDS)
+        if delay > 0:
+            time.sleep(delay)
+
+    def _reduced_activity_page_size(self, current_per_page, exc, *, max_pages):
+        if max_pages != 0:
+            return None
+        if not self._is_transient_network_message(str(exc)):
+            return None
+        if current_per_page <= self.MIN_ACTIVITY_PAGE_SIZE:
+            return None
+        return max(self.MIN_ACTIVITY_PAGE_SIZE, current_per_page // 2)
+
+    def _is_transient_network_message(self, message):
+        return "transient network error" in str(message).lower()
+
+    def _should_pause_full_sync_for_rate_limit(self):
+        if not self.last_rate_limit:
+            return False
+        short_remaining = self.last_rate_limit.get("short_remaining")
+        long_remaining = self.last_rate_limit.get("long_remaining")
+        if short_remaining is not None and short_remaining <= self.FULL_SYNC_MIN_SHORT_REMAINING:
+            return True
+        if long_remaining is not None and long_remaining <= self.FULL_SYNC_MIN_LONG_REMAINING:
+            return True
+        return False
+
+    def _rate_limit_pause_notice(self):
+        rate_limit = self.last_rate_limit or {}
+        short_remaining = rate_limit.get("short_remaining")
+        long_remaining = rate_limit.get("long_remaining")
+        guidance = self._rate_limit_retry_guidance(rate_limit)
+        return (
+            "Stopped early to avoid hitting the Strava rate limit. Remaining read quota: short={short}, long={long}. {guidance}"
+        ).format(
+            short=short_remaining if short_remaining is not None else "?",
+            long=long_remaining if long_remaining is not None else "?",
+            guidance=guidance,
+        )
+
+    def _format_rate_limit_error(self, operation, response):
+        rate_limit = self._extract_rate_limit(response.headers)
+        self.last_rate_limit = rate_limit
+        guidance = self._rate_limit_retry_guidance(rate_limit)
+        short_limit = rate_limit.get("short_limit")
+        long_limit = rate_limit.get("long_limit")
+        short_remaining = rate_limit.get("short_remaining")
+        long_remaining = rate_limit.get("long_remaining")
+        return (
+            "{operation} hit the Strava rate limit (read limit {short_limit}/15 min, {long_limit}/day; remaining short={short_remaining}, long={long_remaining}). {guidance}"
+        ).format(
+            operation=operation,
+            short_limit=short_limit if short_limit is not None else "?",
+            long_limit=long_limit if long_limit is not None else "?",
+            short_remaining=short_remaining if short_remaining is not None else "?",
+            long_remaining=long_remaining if long_remaining is not None else "?",
+            guidance=guidance,
+        )
+
+    def _rate_limit_retry_guidance(self, rate_limit):
+        long_remaining = rate_limit.get("long_remaining") if rate_limit else None
+        short_remaining = rate_limit.get("short_remaining") if rate_limit else None
+        if long_remaining is not None and long_remaining <= 0:
+            return "The daily quota looks exhausted; wait until Strava resets the day limit before retrying."
+        if short_remaining is not None and short_remaining <= 0:
+            return "Wait about 15 minutes before retrying the full sync."
+        return "Retry with a smaller window or wait a bit before continuing the full sync."
+
+    def _format_network_error(self, operation, exc, attempts):
+        detail = self._describe_network_error(exc)
+        if exc is not None and self._is_retryable_network_error(exc) and attempts > 1:
+            return "{operation} failed after {attempts} attempts due to a transient network error: {detail}".format(
+                operation=operation,
+                attempts=attempts,
+                detail=detail,
+            )
+        return "{operation} failed due to a network error: {detail}".format(operation=operation, detail=detail)
+
+    def _describe_network_error(self, exc):
+        if exc is None:
+            return "unknown network error"
+
+        parts = []
+        for error in self._iter_network_errors(exc):
+            text = str(error).strip()
+            if not text:
+                continue
+            if not parts or parts[-1] != text:
+                parts.append(text)
+
+        if parts:
+            return ": ".join(parts)
+        return exc.__class__.__name__
 
     def _extract_rate_limit(self, headers):
         limit_short, limit_long = self._parse_rate_limit_pair(headers.get("X-RateLimit-Limit"))

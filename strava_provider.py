@@ -39,6 +39,10 @@ class StravaProvider:
     def last_rate_limit(self):
         return self._client.last_rate_limit
 
+    @property
+    def last_fetch_notice(self):
+        return self._client.last_fetch_notice
+
     def fetch_activities(
         self,
         per_page=200,

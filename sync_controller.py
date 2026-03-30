@@ -48,9 +48,10 @@ class SyncController:
         """Build a human-readable status string for a completed fetch."""
         stream_stats = provider.last_stream_enrichment_stats or {}
         rate_limit_note = self._rate_limit_note(provider.last_rate_limit)
+        fetch_notice = self._fetch_notice(provider)
         return (
             "Fetched {activity_count} activities from {source}, detailed tracks: {detailed_count}, "
-            "cached streams: {cached}, downloaded streams: {downloaded}, rate-limit skips: {skipped}.{rate_note}"
+            "cached streams: {cached}, downloaded streams: {downloaded}, rate-limit skips: {skipped}.{rate_note}{fetch_notice}"
         ).format(
             activity_count=activity_count,
             source=provider.source_name,
@@ -59,6 +60,7 @@ class SyncController:
             downloaded=stream_stats.get("downloaded", 0),
             skipped=stream_stats.get("skipped_rate_limit", 0),
             rate_note=rate_limit_note,
+            fetch_notice=fetch_notice,
         )
 
     @staticmethod
@@ -73,3 +75,10 @@ class SyncController:
             short=short_remaining if short_remaining is not None else "?",
             long=long_remaining if long_remaining is not None else "?",
         )
+
+    @staticmethod
+    def _fetch_notice(provider):
+        notice = getattr(provider, "last_fetch_notice", None)
+        if not notice:
+            return ""
+        return " {notice}".format(notice=notice)
