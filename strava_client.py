@@ -4,8 +4,75 @@ import time
 from dataclasses import asdict
 from datetime import UTC, datetime
 from urllib.parse import urlencode
+from urllib.error import HTTPError as UrllibHTTPError, URLError
+from urllib.request import Request as UrllibRequest, urlopen
 
-import requests
+try:
+    import requests as _requests
+except ModuleNotFoundError:  # pragma: no cover - exercised in CI fallback path
+    _requests = None
+
+
+class _FallbackRequestException(Exception):
+    pass
+
+
+class _FallbackHTTPError(_FallbackRequestException):
+    def __init__(self, response):
+        super().__init__(str(getattr(response, "status_code", "HTTP error")))
+        self.response = response
+
+
+class _FallbackConnectionError(_FallbackRequestException):
+    pass
+
+
+class _FallbackResponse:
+    def __init__(self, body, headers, status_code, url):
+        self._body = body
+        self.headers = headers
+        self.status_code = status_code
+        self.url = url
+        self.text = body.decode("utf-8", errors="replace")
+
+    def raise_for_status(self):
+        if int(self.status_code) >= 400:
+            raise _FallbackHTTPError(self)
+
+    def json(self):
+        return json.loads(self.text)
+
+
+class _FallbackSession:
+    def request(self, method, url, data=None, headers=None, timeout=60):
+        request = UrllibRequest(url, data=data, headers=headers or {}, method=method)
+        try:
+            with urlopen(request, timeout=timeout) as response:
+                return _FallbackResponse(
+                    body=response.read(),
+                    headers=response.headers,
+                    status_code=getattr(response, "status", 200),
+                    url=url,
+                )
+        except UrllibHTTPError as exc:
+            return _FallbackResponse(
+                body=exc.read(),
+                headers=exc.headers,
+                status_code=exc.code,
+                url=url,
+            )
+        except (URLError, OSError, TimeoutError) as exc:
+            raise _FallbackConnectionError(exc) from exc
+
+
+class _RequestsCompat:
+    Session = _requests.Session if _requests is not None else _FallbackSession
+    RequestException = _requests.RequestException if _requests is not None else _FallbackRequestException
+    HTTPError = _requests.HTTPError if _requests is not None else _FallbackHTTPError
+    ConnectionError = _requests.ConnectionError if _requests is not None else _FallbackConnectionError
+
+
+requests = _RequestsCompat()
 
 from .models import Activity
 
@@ -130,33 +197,19 @@ class StravaClient:
         """
         token = self.get_access_token()
         activities = []
-        page = 1
         current_before = before
         current_per_page = max(1, int(per_page))
         self.last_fetch_notice = None
-        while True:
-            if max_pages and page > max_pages:
-                break
-            params = {"page": 1 if max_pages == 0 else page, "per_page": current_per_page}
-            if current_before is not None:
-                params["before"] = int(current_before)
-            if after is not None:
-                params["after"] = int(after)
-
-            url = "{base}?{query}".format(base=self.ACTIVITIES_URL, query=urlencode(params))
-            try:
-                payload = self._request_json(
-                    url,
-                    headers=self._build_request_headers(token=token),
-                    operation="Fetching Strava activities page {page}".format(page=page),
-                )
-            except StravaClientError as exc:
-                reduced_per_page = self._reduced_activity_page_size(current_per_page, exc, max_pages=max_pages)
-                if reduced_per_page is None:
-                    raise
-                current_per_page = reduced_per_page
-                self._sleep_between_activity_pages()
-                continue
+        page = 1
+        while not max_pages or page <= max_pages:
+            payload, current_per_page = self._fetch_activity_page(
+                token=token,
+                page=page,
+                per_page=current_per_page,
+                current_before=current_before,
+                after=after,
+                max_pages=max_pages,
+            )
             batch = [self.normalize_activity(item) for item in payload]
             activities.extend(batch)
             if len(payload) < current_per_page:
@@ -164,10 +217,7 @@ class StravaClient:
             if max_pages == 0 and self._should_pause_full_sync_for_rate_limit():
                 self.last_fetch_notice = self._rate_limit_pause_notice()
                 break
-            if max_pages == 0:
-                next_before = self._next_activities_before(batch)
-                if next_before is not None:
-                    current_before = next_before
+            current_before = self._next_full_sync_before(current_before, batch, max_pages)
             self._sleep_between_activity_pages()
             page += 1
 
@@ -184,6 +234,40 @@ class StravaClient:
             }
 
         return activities
+
+    def _fetch_activity_page(self, token, page, per_page, current_before, after, max_pages):
+        while True:
+            payload = None
+            url = self._activity_page_url(page, per_page, current_before, after, max_pages)
+            try:
+                payload = self._request_json(
+                    url,
+                    headers=self._build_request_headers(token=token),
+                    operation="Fetching Strava activities page {page}".format(page=page),
+                )
+                return payload, per_page
+            except StravaClientError as exc:
+                reduced_per_page = self._reduced_activity_page_size(per_page, exc, max_pages=max_pages)
+                if reduced_per_page is None:
+                    raise
+                per_page = reduced_per_page
+                self._sleep_between_activity_pages()
+
+    def _activity_page_url(self, page, per_page, current_before, after, max_pages):
+        params = {"page": 1 if max_pages == 0 else page, "per_page": per_page}
+        if current_before is not None:
+            params["before"] = int(current_before)
+        if after is not None:
+            params["after"] = int(after)
+        return "{base}?{query}".format(base=self.ACTIVITIES_URL, query=urlencode(params))
+
+    def _next_full_sync_before(self, current_before, batch, max_pages):
+        if max_pages != 0:
+            return current_before
+        next_before = self._next_activities_before(batch)
+        if next_before is None:
+            return current_before
+        return next_before
 
     def get_access_token(self):
         if self.access_token:
@@ -522,7 +606,7 @@ class StravaClient:
                     time.sleep(self._retry_delay_seconds(attempt))
                     continue
                 raise StravaClientError(self._format_network_error(operation, exc, attempts)) from exc
-            except (json.JSONDecodeError, ValueError) as exc:
+            except ValueError as exc:
                 raise StravaClientError(
                     "{operation} returned invalid JSON: {exc}".format(operation=operation, exc=exc)
                 ) from exc

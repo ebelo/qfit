@@ -1,10 +1,11 @@
 import unittest
 from unittest.mock import patch
 
-import requests
-
 from tests import _path  # noqa: F401
+from qfit import strava_client as strava_client_module
 from qfit.strava_client import StravaClient, StravaClientError
+
+requests = strava_client_module.requests
 
 
 class StravaClientTests(unittest.TestCase):
@@ -415,12 +416,13 @@ class StravaClientTests(unittest.TestCase):
     def test_request_json_reports_rate_limit_error(self):
         client = StravaClient()
 
-        response = requests.Response()
-        response.status_code = 429
-        response._content = b'{"message":"Rate Limit Exceeded"}'
-        response.headers["X-RateLimit-Limit"] = "100,1000"
-        response.headers["X-RateLimit-Usage"] = "100,62"
-        response.url = "https://example.test"
+        class _FakeResponse:
+            status_code = 429
+            text = '{"message":"Rate Limit Exceeded"}'
+            headers = {"X-RateLimit-Limit": "100,1000", "X-RateLimit-Usage": "100,62"}
+            url = "https://example.test"
+
+        response = _FakeResponse()
         http_error = requests.HTTPError(response=response)
 
         with patch.object(client.session, "request", side_effect=http_error):
