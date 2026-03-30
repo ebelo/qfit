@@ -88,6 +88,7 @@ from qfit.atlas.export_task import (  # noqa: E402
     build_atlas_layout,
     build_cover_layout,
     build_toc_layout,
+    _normalize_profile_sample_key,
     _build_cover_summary_from_current_atlas_features,
     _apply_cover_heatmap_renderer,
 )
@@ -436,6 +437,83 @@ class TestPerPageLabelTextSetting(unittest.TestCase):
 
         detail_label.setText.assert_called()
         self.assertEqual(detail_label.setText.call_args[0][0], "")
+
+
+class TestProfileChartRendering(unittest.TestCase):
+    def test_normalize_profile_sample_key_casts_to_string(self):
+        class _Key:
+            def __str__(self):
+                return " sort-key-1 "
+
+        self.assertEqual(_normalize_profile_sample_key(_Key()), "sort-key-1")
+        self.assertIsNone(_normalize_profile_sample_key(None))
+        self.assertIsNone(_normalize_profile_sample_key("   "))
+
+    def test_profile_chart_uses_normalized_sort_key_and_refreshes_picture(self):
+        from qfit.atlas.export_task import _PROFILE_PICTURE_ID
+
+        layout_mock, atlas_mock, exporter_cls_mock = _make_atlas_mock(feature_count=1)
+
+        profile_pic = MagicMock()
+        profile_pic.id.return_value = _PROFILE_PICTURE_ID
+        layout_mock.items.return_value = [profile_pic]
+
+        atlas_layer = _make_atlas_layer(feature_count=1)
+        field_names = [
+            "page_sort_key",
+            "source_activity_id",
+            "center_x_3857",
+            "center_y_3857",
+            "extent_width_m",
+            "extent_height_m",
+        ]
+        atlas_layer.fields.return_value.indexOf = (
+            lambda name: field_names.index(name) if name in field_names else -1
+        )
+        atlas_layer.source.return_value = "/tmp/fake.gpkg|layername=activity_atlas_pages"
+
+        class _Key:
+            def __str__(self):
+                return " sort-key-1 "
+
+        attr_values = {
+            0: _Key(),
+            1: "activity-1",
+            2: 1000.0,
+            3: 2000.0,
+            4: 500.0,
+            5: 500.0,
+        }
+        feat_mock = atlas_mock.layout.return_value.reportContext.return_value.feature.return_value
+        feat_mock.attribute.side_effect = lambda idx: attr_values.get(idx)
+
+        task = AtlasExportTask(
+            atlas_layer=atlas_layer,
+            output_path="/tmp/qfit_test_profile_chart.pdf",
+            on_finished=lambda **kw: None,
+        )
+
+        with patch("qfit.atlas.export_task.build_atlas_layout", return_value=layout_mock), \
+             patch("qfit.atlas.export_task.QgsLayoutExporter", exporter_cls_mock), \
+             patch("qfit.atlas.export_task.AtlasExportTask._export_cover_page", return_value=None), \
+             patch("qfit.atlas.export_task.AtlasExportTask._export_toc_page", return_value=None), \
+             patch("qfit.atlas.export_task.os.path.isfile", return_value=True), \
+             patch(
+                 "qfit.atlas.export_task.load_profile_samples_from_gpkg",
+                 return_value={"sort-key-1": [(0.0, 420.0), (1000.0, 470.0)]},
+                 create=True,
+             ), \
+             patch(
+                 "qfit.atlas.profile_renderer.load_profile_samples_from_gpkg",
+                 return_value={"sort-key-1": [(0.0, 420.0), (1000.0, 470.0)]},
+             ), \
+             patch("qfit.atlas.profile_renderer.render_profile_to_file", return_value="/tmp/profile.svg"), \
+             patch("os.replace"), \
+             patch("os.makedirs"):
+            _run_task(task)
+
+        profile_pic.setPicturePath.assert_any_call("/tmp/profile.svg")
+        profile_pic.refresh.assert_called()
 
 
 class TestAtlasExportTaskSuccess(unittest.TestCase):

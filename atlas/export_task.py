@@ -103,6 +103,14 @@ _DETAIL_ITEM_FIELDS = [
 ]
 
 
+def _normalize_profile_sample_key(value) -> str | None:
+    """Return a stable string key for atlas profile sample lookup."""
+    if value is None:
+        return None
+    text = str(value).strip()
+    return text or None
+
+
 def _mm(layout, value):
     """Return a :class:`QgsLayoutSize` / helper in millimetres."""
     return value  # used directly; callers build QgsLayoutSize themselves
@@ -1023,7 +1031,7 @@ class AtlasExportTask(QgsTask):
 
                     # Render profile chart SVG for this page.
                     if profile_pic is not None and sort_key_idx >= 0:
-                        page_sort_key = feat.attribute(sort_key_idx)
+                        page_sort_key = _normalize_profile_sample_key(feat.attribute(sort_key_idx))
                         page_points = profile_samples.get(page_sort_key, []) if page_sort_key else []
                         if len(page_points) >= 2:
                             try:
@@ -1036,14 +1044,26 @@ class AtlasExportTask(QgsTask):
                                 )
                                 if svg_path:
                                     profile_pic.setPicturePath(svg_path)
+                                    refresh = getattr(profile_pic, "refresh", None)
+                                    if callable(refresh):
+                                        refresh()
                                     profile_temp_files.append(svg_path)
                                 else:
                                     profile_pic.setPicturePath("")
+                                    refresh = getattr(profile_pic, "refresh", None)
+                                    if callable(refresh):
+                                        refresh()
                             except Exception:  # noqa: BLE001
                                 logger.debug("Profile chart render failed", exc_info=True)
                                 profile_pic.setPicturePath("")
+                                refresh = getattr(profile_pic, "refresh", None)
+                                if callable(refresh):
+                                    refresh()
                         else:
                             profile_pic.setPicturePath("")
+                            refresh = getattr(profile_pic, "refresh", None)
+                            if callable(refresh):
+                                refresh()
 
                     # Set profile summary text directly from the feature so that
                     # no raw [% %] template syntax can leak (issue #108).
