@@ -171,6 +171,31 @@ class StravaClientTests(unittest.TestCase):
         self.assertIn("page=1&per_page=2", seen_urls[0])
         self.assertIn("page=1&per_page=2&before=1774771199", seen_urls[1])
 
+    def test_fetch_activities_full_sync_reduces_page_size_after_transient_failure(self):
+        client = StravaClient(client_id="123", client_secret="abc", refresh_token="tok")
+        seen_urls = []
+        call_count = [0]
+
+        def fake_request_json(request, operation=None):
+            idx = call_count[0]
+            call_count[0] += 1
+            if idx == 0:
+                return {"access_token": "fake_token"}
+
+            seen_urls.append(request.full_url)
+            if idx == 1:
+                raise StravaClientError("Fetching Strava activities page 1 failed after 3 attempts due to a transient network error")
+            return [{"id": 1, "name": "A1", "start_date": "2026-03-30T08:00:00Z"}]
+
+        client._request_json = fake_request_json
+
+        with patch("qfit.strava_client.time.sleep"):
+            activities = client.fetch_activities(per_page=50, max_pages=0)
+
+        self.assertEqual(len(activities), 1)
+        self.assertIn("per_page=50", seen_urls[0])
+        self.assertIn("per_page=25", seen_urls[1])
+
     def test_fetch_activities_respects_max_pages_limit(self):
         """max_pages=1 should stop after the first page even if it is full."""
         client = StravaClient(client_id="123", client_secret="abc", refresh_token="tok")
@@ -286,6 +311,32 @@ class StravaClientTests(unittest.TestCase):
         ]
 
         self.assertEqual(client._next_activities_before(activities), 1774771199)
+
+    def test_reduced_activity_page_size_only_for_full_sync_transient_errors(self):
+        client = StravaClient()
+
+        self.assertEqual(
+            client._reduced_activity_page_size(
+                50,
+                StravaClientError("failed after 3 attempts due to a transient network error"),
+                max_pages=0,
+            ),
+            25,
+        )
+        self.assertIsNone(
+            client._reduced_activity_page_size(
+                50,
+                StravaClientError("some other error"),
+                max_pages=0,
+            )
+        )
+        self.assertIsNone(
+            client._reduced_activity_page_size(
+                50,
+                StravaClientError("failed after 3 attempts due to a transient network error"),
+                max_pages=2,
+            )
+        )
 
 
 if __name__ == "__main__":

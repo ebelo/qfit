@@ -20,6 +20,7 @@ class StravaClient:
     ACTIVITIES_URL = "https://www.strava.com/api/v3/athlete/activities"
     STREAMS_URL_TEMPLATE = "https://www.strava.com/api/v3/activities/{activity_id}/streams"
     DEFAULT_NETWORK_RETRY_ATTEMPTS = 3
+    MIN_ACTIVITY_PAGE_SIZE = 5
     PAGE_REQUEST_DELAY_SECONDS = 0.2
     RETRYABLE_ERRNOS = {104}
     RETRYABLE_WINERRORS = {10054}
@@ -126,10 +127,11 @@ class StravaClient:
         activities = []
         page = 1
         current_before = before
+        current_per_page = max(1, int(per_page))
         while True:
             if max_pages and page > max_pages:
                 break
-            params = {"page": 1 if max_pages == 0 else page, "per_page": per_page}
+            params = {"page": 1 if max_pages == 0 else page, "per_page": current_per_page}
             if current_before is not None:
                 params["before"] = int(current_before)
             if after is not None:
@@ -140,10 +142,18 @@ class StravaClient:
                 url,
                 headers=self._build_request_headers(token=token),
             )
-            payload = self._request_json(request, operation="Fetching Strava activities page {page}".format(page=page))
+            try:
+                payload = self._request_json(request, operation="Fetching Strava activities page {page}".format(page=page))
+            except StravaClientError as exc:
+                reduced_per_page = self._reduced_activity_page_size(current_per_page, exc, max_pages=max_pages)
+                if reduced_per_page is None:
+                    raise
+                current_per_page = reduced_per_page
+                self._sleep_between_activity_pages()
+                continue
             batch = [self.normalize_activity(item) for item in payload]
             activities.extend(batch)
-            if len(payload) < per_page:
+            if len(payload) < current_per_page:
                 break
             if max_pages == 0:
                 next_before = self._next_activities_before(batch)
@@ -540,6 +550,18 @@ class StravaClient:
         delay = float(self.PAGE_REQUEST_DELAY_SECONDS)
         if delay > 0:
             time.sleep(delay)
+
+    def _reduced_activity_page_size(self, current_per_page, exc, *, max_pages):
+        if max_pages != 0:
+            return None
+        if not self._is_transient_network_message(str(exc)):
+            return None
+        if current_per_page <= self.MIN_ACTIVITY_PAGE_SIZE:
+            return None
+        return max(self.MIN_ACTIVITY_PAGE_SIZE, current_per_page // 2)
+
+    def _is_transient_network_message(self, message):
+        return "transient network error" in str(message).lower()
 
     def _format_network_error(self, operation, exc, attempts):
         detail = self._describe_network_error(exc)
