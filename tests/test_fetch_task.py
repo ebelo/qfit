@@ -40,6 +40,10 @@ _qgis_core = ModuleType("qgis.core")
 _qgis_core.QgsTask = _FakeQgsTask
 _qgis = ModuleType("qgis")
 _qgis.core = _qgis_core
+
+_ORIGINAL_QGIS = sys.modules.get("qgis")
+_ORIGINAL_QGIS_CORE = sys.modules.get("qgis.core")
+
 sys.modules["qgis"] = _qgis
 sys.modules["qgis.core"] = _qgis_core
 
@@ -48,6 +52,16 @@ from qfit.provider import ProviderError  # noqa: E402
 
 fetch_task_module = importlib.reload(fetch_task_module)
 FetchTask = fetch_task_module.FetchTask
+
+if _ORIGINAL_QGIS is not None:
+    sys.modules["qgis"] = _ORIGINAL_QGIS
+else:
+    sys.modules.pop("qgis", None)
+
+if _ORIGINAL_QGIS_CORE is not None:
+    sys.modules["qgis.core"] = _ORIGINAL_QGIS_CORE
+else:
+    sys.modules.pop("qgis.core", None)
 
 
 # ---------------------------------------------------------------------------
