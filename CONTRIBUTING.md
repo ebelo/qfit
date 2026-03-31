@@ -2,6 +2,11 @@
 
 ## Code Quality Rules
 
+Before making non-trivial structural changes, also read:
+
+- `docs/architecture.md` — architectural boundaries, dependency direction, and placement rules
+
+
 All PRs must pass the following before merging:
 
 ### SonarCloud (mandatory gate)
@@ -24,6 +29,24 @@ All PRs must pass the following before merging:
 
 ### Tests must pass
 - `python3 -m pytest tests/ -x -q` must be green before opening a PR.
+
+## Architecture rules
+
+Keep these rules lightweight and practical:
+
+- Prefer feature/workflow ownership over adding more unrelated top-level modules.
+- Keep `QfitDockWidget` and other UI classes focused on widget wiring, input mapping, and result rendering.
+- Put workflow orchestration into controllers/services/use cases instead of the dock widget where practical.
+- Keep provider-neutral activity logic free of direct UI imports and avoid unnecessary QGIS coupling.
+- Isolate Strava, GeoPackage, QGIS settings, and QGIS layer details behind clearer seams when that improves clarity or testability.
+- Do not add interface/adapter boilerplate unless it solves a real workflow or testing problem.
+- Favor small, behavior-preserving refactors over big-bang rewrites.
+
+Preferred dependency direction:
+
+```text
+UI -> application/workflow -> domain + ports -> infrastructure adapters
+```
 
 ### Commit style
 - `fix: <description> (#<issue>)` for bug fixes
