@@ -4,7 +4,7 @@ from dataclasses import dataclass
 import colorsys
 from typing import Iterable
 
-from .activity_classification import (
+from .activities.domain.activity_classification import (
     normalize_activity_type as normalize_activity_value,
     preferred_activity_field,
     resolve_activity_family,

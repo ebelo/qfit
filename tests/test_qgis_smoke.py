@@ -11,12 +11,12 @@ try:
     from qgis.core import QgsApplication, QgsProject, QgsVectorLayer
     from qgis.PyQt.QtCore import QDate, Qt
 
-    from qfit.activity_query import ActivityQuery, build_subset_string
+    from qfit.activities.domain.activity_query import ActivityQuery, build_subset_string
     from qfit.gpkg_writer import GeoPackageWriter
     from qfit.layer_manager import LayerManager
     from qfit.atlas.export_task import BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
     from qfit.mapbox_config import TILE_MODE_RASTER
-    from qfit.models import Activity
+    from qfit.activities.domain.models import Activity
     from qfit.qfit_dockwidget import QfitDockWidget
     from qfit.visual_apply import VisualApplyService
 

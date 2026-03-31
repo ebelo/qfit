@@ -74,7 +74,7 @@ class _RequestsCompat:
 
 requests = _RequestsCompat()
 
-from .models import Activity
+from .activities.domain.models import Activity
 
 
 class StravaClientError(RuntimeError):

@@ -10,8 +10,8 @@ from qgis.PyQt.QtCore import QDate, QStandardPaths, Qt, QUrl
 from qgis.PyQt.QtGui import QDesktopServices
 from qgis.PyQt.QtWidgets import QApplication, QFileDialog, QDockWidget, QMessageBox, QToolButton, QVBoxLayout, QWidget
 
-from .activity_classification import ordered_canonical_activity_labels
-from .activity_query import (
+from .activities.domain.activity_classification import ordered_canonical_activity_labels
+from .activities.domain.activity_query import (
     DEFAULT_SORT_LABEL,
     SORT_OPTIONS,
     ActivityQuery,
