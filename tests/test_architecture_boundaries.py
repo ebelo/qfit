@@ -34,7 +34,7 @@ class CoreModuleBoundaryTests(unittest.TestCase):
         "activities/domain/models.py",
         "map_style.py",
         "polyline_utils.py",
-        "provider.py",
+        "providers/domain/provider.py",
         "qfit_cache.py",
         "temporal_config.py",
         "time_utils.py",

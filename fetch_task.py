@@ -10,7 +10,7 @@ from qgis.core import QgsTask
 
 logger = logging.getLogger(__name__)
 
-from .provider import ProviderError
+from .providers.domain.provider import ProviderError
 
 
 class FetchTask(QgsTask):

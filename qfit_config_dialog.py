@@ -25,7 +25,7 @@ from .config_connection_service import validate_mapbox_connection, validate_stra
 from .config_status import mapbox_status_text, strava_status_text
 from .settings_port import SettingsPort
 from .settings_service import SettingsService
-from .strava_client import StravaClient
+from .providers.infrastructure.strava_client import StravaClient
 from .ui_settings_binding import UIFieldBinding, load_bindings, save_bindings
 
 logger = logging.getLogger(__name__)
