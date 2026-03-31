@@ -68,11 +68,12 @@ class CoreModuleBoundaryTests(unittest.TestCase):
 
 class WorkflowBoundaryTests(unittest.TestCase):
     WORKFLOW_MODULES = [
+        "activities/application/fetch_result_service.py",
+        "activities/application/fetch_task.py",
+        "activities/application/load_workflow.py",
+        "activities/application/sync_controller.py",
         "atlas/export_controller.py",
         "background_map_controller.py",
-        "fetch_result_service.py",
-        "load_workflow.py",
-        "sync_controller.py",
         "visual_apply.py",
     ]
 
