@@ -2,6 +2,7 @@ import os
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from tests import _path  # noqa: F401
 
@@ -18,6 +19,7 @@ try:
     from qfit.mapbox_config import TILE_MODE_RASTER
     from qfit.activities.domain.models import Activity
     from qfit.qfit_dockwidget import QfitDockWidget
+    from qfit.ui.dockwidget_dependencies import build_dockwidget_dependencies
     from qfit.visual_apply import VisualApplyService
 
     QGIS_AVAILABLE = True
@@ -35,6 +37,7 @@ except Exception as exc:  # pragma: no cover - exercised only when QGIS is unava
     TILE_MODE_RASTER = None
     Activity = None
     QfitDockWidget = None
+    build_dockwidget_dependencies = None
     QGIS_AVAILABLE = False
     QGIS_IMPORT_ERROR = exc
 
@@ -117,6 +120,30 @@ class QgisSmokeTests(unittest.TestCase):
 
     def tearDown(self):
         QgsProject.instance().clear()
+
+    def test_dock_widget_uses_injected_dependencies_without_rebuilding_defaults(self):
+        dependencies = build_dockwidget_dependencies(self.iface)
+
+        with patch(
+            "qfit.qfit_dockwidget.build_dockwidget_dependencies",
+            side_effect=AssertionError("default dependency factory should not run"),
+        ):
+            dock = QfitDockWidget(self.iface, dependencies=dependencies)
+        try:
+            self.assertIs(dock._dependencies, dependencies)
+            self.assertIs(dock.settings, dependencies.settings)
+            self.assertIs(dock.sync_controller, dependencies.sync_controller)
+            self.assertIs(dock.atlas_export_controller, dependencies.atlas_export_controller)
+            self.assertIs(dock.layer_gateway, dependencies.layer_gateway)
+            self.assertIs(dock.background_controller, dependencies.background_controller)
+            self.assertIs(dock.load_workflow, dependencies.load_workflow)
+            self.assertIs(dock.visual_apply, dependencies.visual_apply)
+            self.assertIs(dock.atlas_export_service, dependencies.atlas_export_service)
+            self.assertIs(dock.fetch_result_service, dependencies.fetch_result_service)
+            self.assertIs(dock.cache, dependencies.cache)
+        finally:
+            dock.close()
+            dock.deleteLater()
 
     def test_dock_widget_contextual_help_smoke(self):
         dock = QfitDockWidget(self.iface)
