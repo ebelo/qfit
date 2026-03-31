@@ -4,10 +4,10 @@ These functions depend only on ``SettingsService`` and can be tested
 without a running Qt/QGIS environment.
 """
 
-from .settings_service import SettingsService
+from .settings_port import SettingsPort
 
 
-def strava_status_text(settings: SettingsService) -> str:
+def strava_status_text(settings: SettingsPort) -> str:
     """Return a human-readable Strava connection status."""
     client_id = settings.get("client_id", "")
     client_secret = settings.get("client_secret", "")
@@ -19,7 +19,7 @@ def strava_status_text(settings: SettingsService) -> str:
     return "Not configured"
 
 
-def mapbox_status_text(settings: SettingsService) -> str:
+def mapbox_status_text(settings: SettingsPort) -> str:
     """Return a human-readable Mapbox connection status."""
     token = settings.get("mapbox_access_token", "")
     if not token:

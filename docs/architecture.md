@@ -138,7 +138,7 @@ Good candidates in qfit:
 
 - activity provider
 - activity storage
-- settings/configuration access
+- settings/configuration access (now via a small `SettingsPort` with the current QGIS-backed adapter behind it)
 - QGIS layer/visualization operations
 - atlas export orchestration boundaries
 

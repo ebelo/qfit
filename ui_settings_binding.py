@@ -27,7 +27,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Callable
 
-from .settings_service import SettingsService
+from .settings_port import SettingsPort
 
 
 @dataclass
@@ -54,7 +54,7 @@ class UIFieldBinding:
 
 def load_bindings(
     bindings: list[UIFieldBinding],
-    settings: SettingsService,
+    settings: SettingsPort,
 ) -> None:
     """Populate each widget from *settings* using the explicit binding table."""
     for b in bindings:
@@ -63,7 +63,7 @@ def load_bindings(
 
 def save_bindings(
     bindings: list[UIFieldBinding],
-    settings: SettingsService,
+    settings: SettingsPort,
 ) -> None:
     """Persist each widget value to *settings* using the explicit binding table."""
     for b in bindings:
