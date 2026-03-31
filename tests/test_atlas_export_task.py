@@ -908,6 +908,39 @@ class TestAtlasExportTaskPerPageFilter(unittest.TestCase):
         self.assertEqual(len(replace_calls), 1)
         self.assertEqual(replace_calls[0][1], "/tmp/qfit_test_replace.pdf")
 
+    def test_merge_pdfs_uses_vendored_qfit_pypdf_when_top_level_module_missing(self):
+        """Fall back to qfit.pypdf when a system-wide pypdf install is unavailable."""
+        import builtins
+        import types
+        from unittest.mock import mock_open
+
+        calls = []
+
+        class FakeWriter:
+            def append(self, path):
+                calls.append(("append", path))
+
+            def write(self, handle):
+                calls.append(("write", handle))
+
+        vendored_module = types.ModuleType("qfit.pypdf")
+        vendored_module.PdfWriter = FakeWriter
+        original_import = builtins.__import__
+
+        def fake_import(name, globals=None, locals=None, fromlist=(), level=0):
+            if name == "pypdf":
+                raise ImportError("missing top-level pypdf")
+            return original_import(name, globals, locals, fromlist, level)
+
+        with patch.dict("sys.modules", {"qfit.pypdf": vendored_module}, clear=False), \
+             patch("builtins.__import__", side_effect=fake_import), \
+             patch("builtins.open", mock_open()):
+            AtlasExportTask._merge_pdfs(["/tmp/one.pdf", "/tmp/two.pdf"], "/tmp/out.pdf")
+
+        self.assertEqual(calls[0], ("append", "/tmp/one.pdf"))
+        self.assertEqual(calls[1], ("append", "/tmp/two.pdf"))
+        self.assertEqual(calls[2][0], "write")
+
 
 # ---------------------------------------------------------------------------
 # Tests: cover page

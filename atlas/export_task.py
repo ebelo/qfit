@@ -1339,16 +1339,25 @@ class AtlasExportTask(QgsTask):
     @staticmethod
     def _merge_pdfs(page_paths: list[str], output_path: str) -> None:
         """Merge per-page PDF files into a single multi-page PDF."""
+        PdfWriter = None
         try:
-            from pypdf import PdfWriter  # noqa: PLC0415
+            from pypdf import PdfWriter as _PdfWriter  # noqa: PLC0415
+            PdfWriter = _PdfWriter
+        except ImportError:
+            try:
+                from qfit.pypdf import PdfWriter as _PdfWriter  # noqa: PLC0415
+                PdfWriter = _PdfWriter
+            except ImportError:
+                logger.warning("pypdf unavailable during atlas export; falling back to first-page-only PDF")
+
+        if PdfWriter is not None:
             writer = PdfWriter()
             for path in page_paths:
                 writer.append(path)
             with open(output_path, "wb") as fout:
                 writer.write(fout)
             return
-        except ImportError:
-            pass
+
         # Fallback: if pypdf is unavailable, rename first page (single-page fallback)
         if page_paths:
             os.replace(page_paths[0], output_path)
