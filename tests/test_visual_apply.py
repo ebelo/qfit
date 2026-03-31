@@ -6,6 +6,7 @@ from tests import _path  # noqa: F401
 from qfit.visual_apply import (
     BackgroundConfig,
     LayerRefs,
+    VisualApplyRequest,
     VisualApplyResult,
     VisualApplyService,
 )
@@ -413,3 +414,51 @@ class VisualApplyResultTests(unittest.TestCase):
         self.assertEqual(result.status, "ok")
         self.assertEqual(result.background_layer, "layer")
         self.assertEqual(result.background_error, "err")
+
+
+class VisualApplyRequestContractTests(unittest.TestCase):
+    def test_build_request_returns_dataclass(self):
+        request = VisualApplyService.build_request(
+            layers=LayerRefs(activities=MagicMock()),
+            query=_make_query(activity_type="Ride"),
+            style_preset="By activity type",
+            temporal_mode="Off",
+            background_config=_make_bg_config(enabled=True),
+            apply_subset_filters=True,
+            filtered_count=7,
+        )
+
+        self.assertIsInstance(request, VisualApplyRequest)
+        self.assertTrue(request.apply_subset_filters)
+        self.assertEqual(request.filtered_count, 7)
+        self.assertEqual(request.query.activity_type, "Ride")
+
+    def test_apply_request_matches_legacy_wrapper(self):
+        layer_manager = MagicMock()
+        layer_manager.apply_temporal_configuration.return_value = ""
+        layer_manager.ensure_background_layer.return_value = None
+        service = VisualApplyService(layer_manager)
+        layers = LayerRefs(activities=MagicMock())
+        request = service.build_request(
+            layers=layers,
+            query=_make_query(),
+            style_preset="By activity type",
+            temporal_mode="Off",
+            background_config=_make_bg_config(enabled=False),
+            apply_subset_filters=False,
+            filtered_count=0,
+        )
+
+        via_request = service.apply_request(request)
+        via_wrapper = service.apply(
+            layers=layers,
+            query=request.query,
+            style_preset=request.style_preset,
+            temporal_mode=request.temporal_mode,
+            background_config=request.background_config,
+            apply_subset_filters=request.apply_subset_filters,
+            filtered_count=request.filtered_count,
+        )
+
+        self.assertEqual(via_request.status, via_wrapper.status)
+        self.assertEqual(via_request.background_error, via_wrapper.background_error)

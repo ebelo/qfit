@@ -10,7 +10,11 @@ from unittest.mock import MagicMock, patch
 
 from tests import _path  # noqa: F401
 
-from qfit.atlas.export_service import AtlasExportResult, AtlasExportService
+from qfit.atlas.export_service import (
+    AtlasExportResult,
+    AtlasExportService,
+    GenerateAtlasPdfRequest,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -220,3 +224,22 @@ class BuildTaskTests(unittest.TestCase):
         kwargs = MockTask.call_args.kwargs
         self.assertFalse(kwargs["background_enabled"])
         self.assertEqual(kwargs["restore_tile_mode"], "Vector")
+
+
+class AtlasExportRequestContractTests(unittest.TestCase):
+    def test_build_request_returns_dataclass(self):
+        request = AtlasExportService.build_request(
+            atlas_layer=MagicMock(),
+            output_path="/tmp/atlas.pdf",
+            on_finished=MagicMock(),
+            pre_export_tile_mode="Raster",
+            preset_name="Dark",
+            access_token="tok",
+            style_owner="mapbox",
+            style_id="dark-v11",
+            background_enabled=True,
+        )
+
+        self.assertIsInstance(request, GenerateAtlasPdfRequest)
+        self.assertEqual(request.output_path, "/tmp/atlas.pdf")
+        self.assertTrue(request.background_enabled)

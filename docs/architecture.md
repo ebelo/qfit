@@ -73,6 +73,10 @@ Responsibilities:
 - depend on ports/gateways where useful
 - return structured results the UI can render
 
+Prefer explicit request/result dataclasses for substantial workflows when they
+replace long parameter lists or framework-heavy state. qfit now uses that shape
+for load/store, visualization apply, and atlas export orchestration.
+
 This layer should prefer describing *what qfit wants done*, not *how QGIS or Strava does it internally*.
 
 ### Domain / core layer
