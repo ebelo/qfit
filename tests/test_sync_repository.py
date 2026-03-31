@@ -3,7 +3,7 @@ import unittest
 from pathlib import Path
 
 from tests import _path  # noqa: F401
-from qfit.models import Activity
+from qfit.activities.domain.models import Activity
 from qfit.sync_repository import SyncRepository
 
 

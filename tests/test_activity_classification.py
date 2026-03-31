@@ -2,7 +2,7 @@ import unittest
 
 from tests import _path  # noqa: F401
 
-from qfit.activity_classification import (
+from qfit.activities.domain.activity_classification import (
     ACTIVITY_LABEL_FIELDS,
     activity_prefers_pace,
     canonical_activity_label,

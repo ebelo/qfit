@@ -5,7 +5,7 @@ import sqlite3
 from dataclasses import dataclass
 from datetime import UTC, datetime
 
-from .models import Activity
+from .activities.domain.models import Activity
 
 
 @dataclass(frozen=True)

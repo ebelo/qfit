@@ -1,7 +1,7 @@
 import unittest
 
 from tests import _path  # noqa: F401
-from qfit.activity_query import (
+from qfit.activities.domain.activity_query import (
     ActivityQuery,
     build_preview_lines,
     build_subset_string,
@@ -11,7 +11,7 @@ from qfit.activity_query import (
     sort_activities,
     summarize_activities,
 )
-from qfit.models import Activity
+from qfit.activities.domain.models import Activity
 
 
 class ActivityQueryTests(unittest.TestCase):

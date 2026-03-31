@@ -1,4 +1,4 @@
-from .activity_query import ActivityQuery, build_subset_string
+from .activities.domain.activity_query import ActivityQuery, build_subset_string
 
 
 class LayerFilterService:

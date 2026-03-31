@@ -7,7 +7,7 @@ from unittest.mock import MagicMock
 
 from tests import _path  # noqa: F401
 
-from qfit.activity_query import ActivityQuery, build_subset_string
+from qfit.activities.domain.activity_query import ActivityQuery, build_subset_string
 from qfit.layer_filter_service import LayerFilterService
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")

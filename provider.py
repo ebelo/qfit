@@ -6,7 +6,7 @@ implement, as well as the common error type they should raise.
 
 from typing import Dict, List, Optional, Protocol, runtime_checkable
 
-from .models import Activity
+from .activities.domain.models import Activity
 
 
 class ProviderError(RuntimeError):

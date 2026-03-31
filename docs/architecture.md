@@ -79,9 +79,9 @@ This layer should prefer describing *what qfit wants done*, not *how QGIS or Str
 
 Examples:
 
-- canonical activity models
-- activity filtering/querying/sorting/summaries
-- activity classification and provider-neutral derived metadata
+- `activities/domain/models.py` for canonical activity models
+- `activities/domain/activity_query.py` for activity filtering/querying/sorting/summaries
+- `activities/domain/activity_classification.py` for provider-neutral classification and derived metadata
 - time/polyline utilities and similar reusable core helpers
 
 Responsibilities:

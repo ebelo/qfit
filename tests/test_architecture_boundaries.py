@@ -29,10 +29,10 @@ def _import_targets(relative_path: str) -> set[str]:
 
 class CoreModuleBoundaryTests(unittest.TestCase):
     CORE_MODULES = [
-        "activity_classification.py",
-        "activity_query.py",
+        "activities/domain/activity_classification.py",
+        "activities/domain/activity_query.py",
+        "activities/domain/models.py",
         "map_style.py",
-        "models.py",
         "polyline_utils.py",
         "provider.py",
         "qfit_cache.py",
