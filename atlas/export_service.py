@@ -12,6 +12,7 @@ from typing import Callable
 logger = logging.getLogger(__name__)
 
 from ..mapbox_config import TILE_MODE_RASTER, TILE_MODE_VECTOR
+from ..visualization.application.layer_gateway import LayerGateway
 
 
 @dataclass
@@ -64,8 +65,8 @@ class AtlasExportService:
     making both independently testable.
     """
 
-    def __init__(self, layer_manager) -> None:
-        self.layer_manager = layer_manager
+    def __init__(self, layer_gateway: LayerGateway) -> None:
+        self.layer_gateway = layer_gateway
 
     @staticmethod
     def build_request(
@@ -106,7 +107,7 @@ class AtlasExportService:
         if request.pre_export_tile_mode != TILE_MODE_RASTER or not request.background_enabled:
             return
         try:
-            self.layer_manager.ensure_background_layer(
+            self.layer_gateway.ensure_background_layer(
                 enabled=True,
                 preset_name=request.preset_name,
                 access_token=request.access_token,
@@ -127,7 +128,7 @@ class AtlasExportService:
             output_path=request.output_path,
             on_finished=request.on_finished,
             restore_tile_mode=request.pre_export_tile_mode,
-            layer_manager=self.layer_manager,
+            layer_manager=self.layer_gateway,
             preset_name=request.preset_name,
             access_token=request.access_token,
             style_owner=request.style_owner,
