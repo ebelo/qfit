@@ -1,9 +1,13 @@
 """Sanity checks for GitHub Actions workflow files."""
 
+import importlib.util
 import pathlib
 import tempfile
+import types
 import unittest
 import zipfile
+from importlib import metadata
+from unittest.mock import patch
 
 WORKFLOWS_DIR = pathlib.Path(__file__).resolve().parents[1] / ".github" / "workflows"
 
@@ -67,32 +71,28 @@ class ReleaseWorkflowTests(unittest.TestCase):
 
 
 class PackageScriptTests(unittest.TestCase):
+    @staticmethod
+    def _load_module():
+        spec = importlib.util.spec_from_file_location(
+            "package_plugin",
+            WORKFLOWS_DIR.parents[1] / "scripts" / "package_plugin.py",
+        )
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return mod
+
     def test_script_exists(self):
         script = WORKFLOWS_DIR.parents[1] / "scripts" / "package_plugin.py"
         self.assertTrue(script.exists(), "scripts/package_plugin.py must exist")
 
     def test_script_is_importable(self):
         """Verify the packaging module can be imported without side effects."""
-        import importlib.util
-
-        spec = importlib.util.spec_from_file_location(
-            "package_plugin",
-            WORKFLOWS_DIR.parents[1] / "scripts" / "package_plugin.py",
-        )
-        mod = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(mod)
+        mod = self._load_module()
         self.assertTrue(callable(mod.build_zip))
 
     def test_build_zip_vendors_pypdf_into_plugin_archive(self):
         """The packaged plugin ZIP should be self-contained for atlas PDF export."""
-        import importlib.util
-
-        spec = importlib.util.spec_from_file_location(
-            "package_plugin",
-            WORKFLOWS_DIR.parents[1] / "scripts" / "package_plugin.py",
-        )
-        mod = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(mod)
+        mod = self._load_module()
 
         with tempfile.TemporaryDirectory() as tmpdir:
             original_dist_dir = mod.DIST_DIR
@@ -107,6 +107,46 @@ class PackageScriptTests(unittest.TestCase):
 
         self.assertIn("qfit/vendor/pypdf/__init__.py", names)
         self.assertIn("qfit/vendor/licenses/pypdf_LICENSE.txt", names)
+
+    def test_resolve_package_dir_raises_when_dependency_missing(self):
+        mod = self._load_module()
+
+        with patch.object(mod.importlib.util, "find_spec", return_value=None):
+            with self.assertRaisesRegex(RuntimeError, "pip install definitely-missing"):
+                mod._resolve_package_dir("definitely-missing")
+
+    def test_resolve_distribution_license_handles_missing_distribution(self):
+        mod = self._load_module()
+
+        with patch.object(
+            mod.metadata,
+            "distribution",
+            side_effect=metadata.PackageNotFoundError,
+        ):
+            self.assertIsNone(mod._resolve_distribution_license("missing-dist"))
+
+    def test_resolve_distribution_license_prefers_nested_licenses_dir(self):
+        mod = self._load_module()
+        fake_dist = types.SimpleNamespace(
+            files=[pathlib.Path("foo"), pathlib.Path("pkg/licenses/LICENSE.txt")],
+            locate_file=lambda file: pathlib.Path("/tmp") / file,
+        )
+
+        with patch.object(mod.metadata, "distribution", return_value=fake_dist):
+            resolved = mod._resolve_distribution_license("pypdf")
+
+        self.assertEqual(resolved, pathlib.Path("/tmp/pkg/licenses/LICENSE.txt").resolve())
+
+    def test_main_prints_built_archive_path(self):
+        mod = self._load_module()
+        archive_path = pathlib.Path("/tmp/qfit-test.zip")
+
+        with patch.object(mod, "build_zip", return_value=archive_path), \
+             patch("builtins.print") as mock_print:
+            result = mod.main()
+
+        self.assertEqual(result, 0)
+        mock_print.assert_called_once_with(f"Built {archive_path}")
 
 
 if __name__ == "__main__":

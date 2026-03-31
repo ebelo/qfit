@@ -83,6 +83,8 @@ def _make_qgis_stub():
 
 _qgis_core = _make_qgis_stub()
 
+import qfit.atlas.export_task as atlas_export_task  # noqa: E402
+
 from qfit.atlas.export_task import (  # noqa: E402
     AtlasExportTask,
     build_atlas_layout,
@@ -940,6 +942,61 @@ class TestAtlasExportTaskPerPageFilter(unittest.TestCase):
         self.assertEqual(calls[0], ("append", "/tmp/one.pdf"))
         self.assertEqual(calls[1], ("append", "/tmp/two.pdf"))
         self.assertEqual(calls[2][0], "write")
+
+    def test_load_pdf_writer_prefers_top_level_pypdf(self):
+        """Use a normal top-level pypdf install when available."""
+        writer_cls = atlas_export_task._load_pdf_writer()
+        self.assertEqual(writer_cls.__name__, "PdfWriter")
+
+    def test_load_pdf_writer_uses_vendor_dir_after_sys_path_injection(self):
+        """If top-level pypdf is initially missing, retry after adding vendor dir."""
+        import builtins
+        import os
+        import types
+
+        original_import = builtins.__import__
+        import_calls = {"pypdf": 0}
+        fake_module = types.ModuleType("pypdf")
+
+        class FakeWriter:
+            pass
+
+        fake_module.PdfWriter = FakeWriter
+        sentinel_vendor_dir = os.path.join(os.path.dirname(os.path.dirname(atlas_export_task.__file__)), "vendor")
+
+        def fake_import(name, globals=None, locals=None, fromlist=(), level=0):
+            if name == "pypdf":
+                import_calls["pypdf"] += 1
+                if import_calls["pypdf"] == 1:
+                    raise ImportError("missing before vendor path is added")
+                if sentinel_vendor_dir in sys.path:
+                    return fake_module
+            return original_import(name, globals, locals, fromlist, level)
+
+        with patch("os.path.isdir", return_value=True), \
+             patch("builtins.__import__", side_effect=fake_import):
+            if sentinel_vendor_dir in sys.path:
+                sys.path.remove(sentinel_vendor_dir)
+            writer_cls = atlas_export_task._load_pdf_writer()
+
+        self.assertIs(writer_cls, FakeWriter)
+        self.assertIn(sentinel_vendor_dir, sys.path)
+
+    def test_load_pdf_writer_raises_when_no_pdf_support_is_available(self):
+        """Surface a clear ImportError when neither bundled nor external pypdf exists."""
+        import builtins
+
+        original_import = builtins.__import__
+
+        def fake_import(name, globals=None, locals=None, fromlist=(), level=0):
+            if name in {"pypdf", "qfit.pypdf"}:
+                raise ImportError("missing")
+            return original_import(name, globals, locals, fromlist, level)
+
+        with patch("os.path.isdir", return_value=False), \
+             patch("builtins.__import__", side_effect=fake_import):
+            with self.assertRaisesRegex(ImportError, "pypdf is unavailable"):
+                atlas_export_task._load_pdf_writer()
 
 
 # ---------------------------------------------------------------------------
