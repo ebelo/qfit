@@ -546,7 +546,7 @@ class TestAtlasExportTaskSuccess(unittest.TestCase):
             output_path="/tmp/qfit_test_atlas_cb.pdf",
             on_finished=lambda **kw: received.update(kw),
         )
-        layout_mock, _, exporter_cls_mock = _make_atlas_mock(feature_count=1)
+        layout_mock, atlas_mock, exporter_cls_mock = _make_atlas_mock(feature_count=1)
         with patch("qfit.atlas.export_task.build_atlas_layout", return_value=layout_mock), \
              patch("qfit.atlas.export_task.QgsLayoutExporter", exporter_cls_mock), \
              patch("qfit.atlas.export_task.AtlasExportTask._export_cover_page", return_value=None), \
@@ -685,7 +685,7 @@ class TestAtlasExportTaskNoCallback(unittest.TestCase):
             output_path="/tmp/qfit_test_atlas_nocb.pdf",
             on_finished=None,
         )
-        layout_mock, _, exporter_cls_mock = _make_atlas_mock(feature_count=1)
+        layout_mock, atlas_mock, exporter_cls_mock = _make_atlas_mock(feature_count=1)
         with patch("qfit.atlas.export_task.build_atlas_layout", return_value=layout_mock), \
              patch("qfit.atlas.export_task.QgsLayoutExporter", exporter_cls_mock), \
              patch("qfit.atlas.export_task.AtlasExportTask._export_cover_page", return_value=None), \
@@ -712,7 +712,7 @@ class TestAtlasExportTaskLayerSubsetHandling(unittest.TestCase):
             output_path="/tmp/qfit_test_atlas_subset.pdf",
             on_finished=lambda **kw: received.update(kw),
         )
-        layout_mock, _, exporter_cls_mock = _make_atlas_mock(feature_count=1)
+        layout_mock, atlas_mock, exporter_cls_mock = _make_atlas_mock(feature_count=1)
         with patch("qfit.atlas.export_task.build_atlas_layout", return_value=layout_mock), \
              patch("qfit.atlas.export_task.QgsLayoutExporter", exporter_cls_mock), \
              patch("qfit.atlas.export_task.AtlasExportTask._export_cover_page", return_value=None), \
@@ -896,7 +896,7 @@ class TestAtlasExportTaskPerPageFilter(unittest.TestCase):
             output_path="/tmp/qfit_test_replace.pdf",
             on_finished=lambda **kw: received.update(kw),
         )
-        layout_mock, _, exporter_cls_mock = _make_atlas_mock(feature_count=1)
+        layout_mock, atlas_mock, exporter_cls_mock = _make_atlas_mock(feature_count=1)
         replace_calls = []
         with patch("qfit.atlas.export_task.build_atlas_layout", return_value=layout_mock), \
              patch("qfit.atlas.export_task.QgsLayoutExporter", exporter_cls_mock), \
@@ -997,6 +997,122 @@ class TestAtlasExportTaskPerPageFilter(unittest.TestCase):
              patch("builtins.__import__", side_effect=fake_import):
             with self.assertRaisesRegex(ImportError, "pypdf is unavailable"):
                 atlas_export_task._load_pdf_writer()
+
+    def test_merge_pdfs_falls_back_to_first_page_when_pypdf_is_unavailable(self):
+        """Fallback path should log and keep the first page when merging is unavailable."""
+        with patch("qfit.atlas.export_task._load_pdf_writer", side_effect=ImportError("missing")), \
+             patch("qfit.atlas.export_task.logger.warning") as mock_warning, \
+             patch("os.replace") as mock_replace:
+            AtlasExportTask._merge_pdfs(["/tmp/one.pdf", "/tmp/two.pdf"], "/tmp/out.pdf")
+
+        mock_warning.assert_called_once()
+        mock_replace.assert_called_once_with("/tmp/one.pdf", "/tmp/out.pdf")
+
+    def test_profile_chart_clears_picture_when_svg_render_returns_none(self):
+        """If chart rendering yields no SVG, the profile picture is cleared and refreshed."""
+        from qfit.atlas.export_task import _PROFILE_PICTURE_ID
+
+        layout_mock, atlas_mock, exporter_cls_mock = _make_atlas_mock(feature_count=1)
+        profile_pic = MagicMock()
+        profile_pic.id.return_value = _PROFILE_PICTURE_ID
+        layout_mock.items.return_value = [profile_pic]
+
+        atlas_layer = _make_atlas_layer(feature_count=1)
+        field_names = [
+            "page_sort_key",
+            "source_activity_id",
+            "center_x_3857",
+            "center_y_3857",
+            "extent_width_m",
+            "extent_height_m",
+        ]
+        atlas_layer.fields.return_value.indexOf = (
+            lambda name: field_names.index(name) if name in field_names else -1
+        )
+        atlas_layer.source.return_value = "/tmp/fake.gpkg|layername=activity_atlas_pages"
+
+        feat_mock = atlas_mock.layout.return_value.reportContext.return_value.feature.return_value
+        feat_mock.attribute.side_effect = lambda idx: {
+            0: " page-2 ",
+            1: "activity-2",
+            2: 10.0,
+            3: 20.0,
+            4: 30.0,
+            5: 40.0,
+        }.get(idx)
+
+        task = AtlasExportTask(
+            atlas_layer=atlas_layer,
+            output_path="/tmp/qfit_profile_none.pdf",
+            on_finished=lambda **_: None,
+        )
+
+        with patch("qfit.atlas.export_task.build_atlas_layout", return_value=layout_mock), \
+             patch("qfit.atlas.export_task.QgsLayoutExporter", exporter_cls_mock), \
+             patch("qfit.atlas.export_task.AtlasExportTask._export_cover_page", return_value=None), \
+             patch("qfit.atlas.export_task.AtlasExportTask._export_toc_page", return_value=None), \
+             patch("qfit.atlas.export_task.os.path.isfile", return_value=True), \
+             patch("qfit.atlas.profile_renderer.load_profile_samples_from_gpkg", return_value={"page-2": [1, 2, 3]}), \
+             patch("qfit.atlas.profile_renderer.render_profile_to_file", return_value=None), \
+             patch("qfit.atlas.export_task.AtlasExportTask._merge_pdfs"), \
+             patch("os.makedirs"):
+            _run_task(task)
+
+        profile_pic.setPicturePath.assert_any_call("")
+        profile_pic.refresh.assert_called()
+
+    def test_profile_chart_clears_picture_when_svg_render_raises(self):
+        """Exceptions while rendering the SVG should clear the profile image cleanly."""
+        from qfit.atlas.export_task import _PROFILE_PICTURE_ID
+
+        layout_mock, atlas_mock, exporter_cls_mock = _make_atlas_mock(feature_count=1)
+        profile_pic = MagicMock()
+        profile_pic.id.return_value = _PROFILE_PICTURE_ID
+        layout_mock.items.return_value = [profile_pic]
+
+        atlas_layer = _make_atlas_layer(feature_count=1)
+        field_names = [
+            "page_sort_key",
+            "source_activity_id",
+            "center_x_3857",
+            "center_y_3857",
+            "extent_width_m",
+            "extent_height_m",
+        ]
+        atlas_layer.fields.return_value.indexOf = (
+            lambda name: field_names.index(name) if name in field_names else -1
+        )
+        atlas_layer.source.return_value = "/tmp/fake.gpkg|layername=activity_atlas_pages"
+
+        feat_mock = atlas_mock.layout.return_value.reportContext.return_value.feature.return_value
+        feat_mock.attribute.side_effect = lambda idx: {
+            0: "page-3",
+            1: "activity-3",
+            2: 10.0,
+            3: 20.0,
+            4: 30.0,
+            5: 40.0,
+        }.get(idx)
+
+        task = AtlasExportTask(
+            atlas_layer=atlas_layer,
+            output_path="/tmp/qfit_profile_error.pdf",
+            on_finished=lambda **_: None,
+        )
+
+        with patch("qfit.atlas.export_task.build_atlas_layout", return_value=layout_mock), \
+             patch("qfit.atlas.export_task.QgsLayoutExporter", exporter_cls_mock), \
+             patch("qfit.atlas.export_task.AtlasExportTask._export_cover_page", return_value=None), \
+             patch("qfit.atlas.export_task.AtlasExportTask._export_toc_page", return_value=None), \
+             patch("qfit.atlas.export_task.os.path.isfile", return_value=True), \
+             patch("qfit.atlas.profile_renderer.load_profile_samples_from_gpkg", return_value={"page-3": [1, 2, 3]}), \
+             patch("qfit.atlas.profile_renderer.render_profile_to_file", side_effect=RuntimeError("boom")), \
+             patch("qfit.atlas.export_task.AtlasExportTask._merge_pdfs"), \
+             patch("os.makedirs"):
+            _run_task(task)
+
+        profile_pic.setPicturePath.assert_any_call("")
+        profile_pic.refresh.assert_called()
 
 
 # ---------------------------------------------------------------------------
