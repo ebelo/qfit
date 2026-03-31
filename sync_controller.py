@@ -1,4 +1,5 @@
 import logging
+from dataclasses import dataclass
 from datetime import date
 
 from .provider import ProviderError
@@ -7,22 +8,68 @@ from .strava_provider import StravaProvider
 logger = logging.getLogger(__name__)
 
 
+@dataclass
+class BuildStravaProviderRequest:
+    """Structured input for constructing a validated Strava provider."""
+
+    client_id: str = ""
+    client_secret: str = ""
+    refresh_token: str = ""
+    cache: object = None
+    require_refresh_token: bool = True
+
+
 class SyncController:
     """Orchestrates provider fetch/sync logic independent of the UI."""
 
-    def build_strava_provider(self, client_id, client_secret, refresh_token, cache=None, require_refresh_token=True):
-        """Create and validate a :class:`StravaProvider`."""
-        provider = StravaProvider(
+    @staticmethod
+    def build_provider_request(
+        client_id,
+        client_secret,
+        refresh_token,
+        cache=None,
+        require_refresh_token=True,
+    ) -> BuildStravaProviderRequest:
+        """Build a structured request for Strava-provider creation."""
+        return BuildStravaProviderRequest(
             client_id=client_id,
             client_secret=client_secret,
             refresh_token=refresh_token,
             cache=cache,
+            require_refresh_token=require_refresh_token,
+        )
+
+    def build_strava_provider(
+        self,
+        request: BuildStravaProviderRequest | str | None = None,
+        client_secret=None,
+        refresh_token=None,
+        **legacy_kwargs,
+    ):
+        """Create and validate a :class:`StravaProvider`."""
+        if isinstance(request, BuildStravaProviderRequest):
+            pass
+        elif request is None:
+            request = self.build_provider_request(**legacy_kwargs)
+        else:
+            request = self.build_provider_request(
+                client_id=request,
+                client_secret=client_secret,
+                refresh_token=refresh_token,
+                **legacy_kwargs,
+            )
+
+        provider = StravaProvider(
+            client_id=request.client_id,
+            client_secret=request.client_secret,
+            refresh_token=request.refresh_token,
+            cache=request.cache,
         )
         if not provider.has_client_credentials():
             raise ProviderError(
                 "Open qfit → Configuration and enter your Strava client ID and client secret first."
             )
-        if require_refresh_token and not provider.has_refresh_token():
+        if request.require_refresh_token and not provider.has_refresh_token():
             raise ProviderError(
                 "Open qfit → Configuration and enter a Strava refresh token first."
             )

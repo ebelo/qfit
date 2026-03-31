@@ -4,15 +4,30 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 from tests import _path  # noqa: F401
-from qfit.load_workflow import LoadResult, LoadWorkflowError, LoadWorkflowService
+from qfit.load_workflow import (
+    LoadDatabaseRequest,
+    LoadExistingRequest,
+    LoadResult,
+    LoadWorkflowError,
+    LoadWorkflowService,
+)
 from qfit.sync_repository import SyncStats
 
 # Ensure a stub ``qfit.gpkg_writer`` is present in ``sys.modules`` so the lazy
 # import inside ``write_and_load`` does not trigger the real module (which
 # requires full QGIS bindings that may be unavailable or mocked out by other
-# test modules).
+# test modules). Restore the original module afterwards so other tests do not
+# inherit the stub via import-order leakage.
+_original_gpkg_writer = sys.modules.get("qfit.gpkg_writer")
 _gpkg_writer_stub = MagicMock()
-sys.modules.setdefault("qfit.gpkg_writer", _gpkg_writer_stub)
+sys.modules["qfit.gpkg_writer"] = _gpkg_writer_stub
+
+
+def tearDownModule():
+    if _original_gpkg_writer is None:
+        sys.modules.pop("qfit.gpkg_writer", None)
+    else:
+        sys.modules["qfit.gpkg_writer"] = _original_gpkg_writer
 
 
 class WriteAndLoadValidationTests(unittest.TestCase):
@@ -45,6 +60,23 @@ class WriteAndLoadValidationTests(unittest.TestCase):
                 atlas_target_aspect_ratio=1.5,
             )
         self.assertIn("output path", str(ctx.exception))
+
+    def test_build_write_request_returns_structured_request(self):
+        request = self.service.build_write_request(
+            activities=["activity"],
+            output_path="/tmp/test.gpkg",
+            write_activity_points=True,
+            point_stride=5,
+            atlas_margin_percent=8.0,
+            atlas_min_extent_degrees=0.01,
+            atlas_target_aspect_ratio=1.5,
+            sync_metadata={"provider": "strava"},
+            last_sync_date="2026-01-01",
+        )
+
+        self.assertIsInstance(request, LoadDatabaseRequest)
+        self.assertEqual(request.output_path, "/tmp/test.gpkg")
+        self.assertTrue(request.write_activity_points)
 
 
 class WriteAndLoadSuccessTests(unittest.TestCase):
@@ -224,6 +256,12 @@ class LoadExistingValidationTests(unittest.TestCase):
         self.assertIn("No database found", str(ctx.exception))
         self.assertIn("Store activities first", str(ctx.exception))
 
+    def test_build_load_existing_request_returns_structured_request(self):
+        request = self.service.build_load_existing_request("/tmp/existing.gpkg")
+
+        self.assertIsInstance(request, LoadExistingRequest)
+        self.assertEqual(request.output_path, "/tmp/existing.gpkg")
+
 
 class LoadExistingSuccessTests(unittest.TestCase):
     def setUp(self):
@@ -278,3 +316,40 @@ class LoadResultTests(unittest.TestCase):
         self.assertEqual(result.output_path, "/tmp/test.gpkg")
         self.assertEqual(result.total_stored, 5)
         self.assertEqual(result.status, "ok")
+
+
+class LoadRequestContractTests(unittest.TestCase):
+    def test_build_write_request_returns_dataclass(self):
+        request = LoadWorkflowService.build_write_request(
+            activities=["a"],
+            output_path="/tmp/test.gpkg",
+            write_activity_points=True,
+            point_stride=10,
+            atlas_margin_percent=5.0,
+            atlas_min_extent_degrees=0.02,
+            atlas_target_aspect_ratio=1.5,
+            sync_metadata={"provider": "strava"},
+            last_sync_date="2026-03-31",
+        )
+
+        self.assertIsInstance(request, LoadDatabaseRequest)
+        self.assertEqual(request.output_path, "/tmp/test.gpkg")
+        self.assertTrue(request.write_activity_points)
+        self.assertEqual(request.sync_metadata["provider"], "strava")
+
+    def test_build_load_existing_request_returns_dataclass(self):
+        request = LoadWorkflowService.build_load_existing_request("/tmp/existing.gpkg")
+        self.assertEqual(request, LoadExistingRequest(output_path="/tmp/existing.gpkg"))
+
+    @patch("qfit.load_workflow.os.path.exists", return_value=True)
+    def test_load_existing_request_matches_legacy_wrapper(self, _mock_exists):
+        layer_manager = MagicMock()
+        layer_manager.load_output_layers.return_value = (None, None, None, None)
+        service = LoadWorkflowService(layer_manager)
+
+        request = service.build_load_existing_request("/tmp/existing.gpkg")
+        via_request = service.load_existing_request(request)
+        via_wrapper = service.load_existing("/tmp/existing.gpkg")
+
+        self.assertEqual(via_request.output_path, via_wrapper.output_path)
+        self.assertEqual(via_request.total_stored, via_wrapper.total_stored)

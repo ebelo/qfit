@@ -22,11 +22,17 @@ from .activities.domain.activity_query import (
     summarize_activities,
 )
 from .atlas.export_controller import AtlasExportController, AtlasExportValidationError
-from .atlas.export_service import AtlasExportResult, AtlasExportService
+from .atlas.export_service import (
+    AtlasExportResult,
+    AtlasExportService,
+)
 from .background_map_controller import BackgroundMapController
 from .contextual_help import ContextualHelpBinder, build_dock_help_entries
 from .layer_manager import LayerManager
-from .load_workflow import LoadWorkflowError, LoadWorkflowService
+from .load_workflow import (
+    LoadWorkflowError,
+    LoadWorkflowService,
+)
 from .mapbox_config import (
     DEFAULT_BACKGROUND_PRESET,
     TILE_MODE_RASTER,
@@ -35,7 +41,11 @@ from .mapbox_config import (
     background_preset_names,
     preset_requires_custom_style,
 )
-from .visual_apply import BackgroundConfig, LayerRefs, VisualApplyService
+from .visual_apply import (
+    BackgroundConfig,
+    LayerRefs,
+    VisualApplyService,
+)
 from .fetch_result_service import FetchResultService
 from .fetch_task import FetchTask
 from .atlas.export_task import BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
@@ -496,13 +506,14 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def on_open_authorize_clicked(self):
         self._save_settings()
         try:
-            client = self.sync_controller.build_strava_provider(
+            provider_request = self.sync_controller.build_provider_request(
                 client_id=self.clientIdLineEdit.text().strip(),
                 client_secret=self.clientSecretLineEdit.text().strip(),
                 refresh_token=self.refreshTokenLineEdit.text().strip(),
                 cache=self.cache,
                 require_refresh_token=False,
             )
+            client = self.sync_controller.build_strava_provider(provider_request)
             redirect_uri = self._redirect_uri()
             url = client.build_authorize_url(redirect_uri=redirect_uri)
             if not QDesktopServices.openUrl(QUrl(url)):
@@ -534,13 +545,14 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             return
 
         try:
-            client = self.sync_controller.build_strava_provider(
+            provider_request = self.sync_controller.build_provider_request(
                 client_id=self.clientIdLineEdit.text().strip(),
                 client_secret=self.clientSecretLineEdit.text().strip(),
                 refresh_token=self.refreshTokenLineEdit.text().strip(),
                 cache=self.cache,
                 require_refresh_token=False,
             )
+            client = self.sync_controller.build_strava_provider(provider_request)
             payload = client.exchange_code_for_tokens(
                 authorization_code=authorization_code,
                 redirect_uri=self._redirect_uri(),
@@ -591,13 +603,14 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
         self._save_settings()
         try:
-            client = self.sync_controller.build_strava_provider(
+            provider_request = self.sync_controller.build_provider_request(
                 client_id=self.clientIdLineEdit.text().strip(),
                 client_secret=self.clientSecretLineEdit.text().strip(),
                 refresh_token=self.refreshTokenLineEdit.text().strip(),
                 cache=self.cache,
                 require_refresh_token=True,
             )
+            client = self.sync_controller.build_strava_provider(provider_request)
         except ProviderError as exc:
             self._show_error("Strava import failed", str(exc))
             self._set_status("Strava fetch failed")
@@ -630,10 +643,13 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._fetch_task = None
         self._set_fetch_running(False)
 
-        result = self.fetch_result_service.build_result(
-            activities=activities, error=error, cancelled=cancelled,
+        fetch_request = self.fetch_result_service.build_request(
+            activities=activities,
+            error=error,
+            cancelled=cancelled,
             provider=provider,
         )
+        result = self.fetch_result_service.build_result_request(fetch_request)
 
         if cancelled:
             self._set_status(result.status_text)
@@ -657,7 +673,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def on_load_clicked(self):
         self._save_settings()
         try:
-            result = self.load_workflow.write_database(
+            request = self.load_workflow.build_write_request(
                 activities=self.activities,
                 output_path=self.outputPathLineEdit.text().strip(),
                 write_activity_points=self.writeActivityPointsCheckBox.isChecked(),
@@ -668,6 +684,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 sync_metadata=self.last_fetch_context,
                 last_sync_date=self.settings.get("last_sync_date", None),
             )
+            result = self.load_workflow.write_database_request(request)
         except LoadWorkflowError as exc:
             self._show_error("Missing input", str(exc))
             return
@@ -691,9 +708,10 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         """Load an existing GeoPackage into QGIS without fetching from Strava."""
         self._save_settings()
         try:
-            result = self.load_workflow.load_existing(
+            request = self.load_workflow.build_load_existing_request(
                 self.outputPathLineEdit.text().strip(),
             )
+            result = self.load_workflow.load_existing_request(request)
         except LoadWorkflowError as exc:
             self._show_error("GeoPackage not found", str(exc))
             return
@@ -809,7 +827,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             tile_mode=self.tileModeComboBox.currentText(),
         )
 
-        result = self.visual_apply.apply(
+        request = self.visual_apply.build_request(
             layers=layers,
             query=query,
             style_preset=self.stylePresetComboBox.currentText(),
@@ -818,6 +836,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             apply_subset_filters=apply_subset_filters,
             filtered_count=len(filtered_activities),
         )
+        result = self.visual_apply.apply_request(request)
 
         if self.visual_apply.should_update_background(apply_subset_filters):
             if result.background_error:
@@ -974,22 +993,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._save_settings()
 
         pre_export_tile_mode = self.tileModeComboBox.currentText()
-        self.atlas_export_service.prepare_basemap_for_export(
-            pre_export_tile_mode=pre_export_tile_mode,
-            background_enabled=self.backgroundMapCheckBox.isChecked(),
-            preset_name=self.backgroundPresetComboBox.currentText(),
-            access_token=self._mapbox_access_token(),
-            style_owner=self.mapboxStyleOwnerLineEdit.text().strip(),
-            style_id=self.mapboxStyleIdLineEdit.text().strip(),
-        )
-
-        self._set_atlas_export_running(True)
-        self._set_atlas_pdf_status(
-            f"Exporting atlas ({self.atlas_layer.featureCount()} pages)…"
-        )
-        self._set_status("Generating atlas PDF…")
-
-        self._atlas_export_task = self.atlas_export_service.build_task(
+        export_request = self.atlas_export_service.build_request(
             atlas_layer=self.atlas_layer,
             output_path=output_path,
             on_finished=self._on_atlas_export_finished,
@@ -1000,6 +1004,15 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             style_id=self.mapboxStyleIdLineEdit.text().strip(),
             background_enabled=self.backgroundMapCheckBox.isChecked(),
         )
+        self.atlas_export_service.prepare_basemap_for_export(export_request)
+
+        self._set_atlas_export_running(True)
+        self._set_atlas_pdf_status(
+            f"Exporting atlas ({self.atlas_layer.featureCount()} pages)…"
+        )
+        self._set_status("Generating atlas PDF…")
+
+        self._atlas_export_task = self.atlas_export_service.build_task(export_request)
         QgsApplication.taskManager().addTask(self._atlas_export_task)
 
     def _set_atlas_export_running(self, running: bool) -> None:

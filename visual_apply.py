@@ -1,5 +1,5 @@
 import logging
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from .mapbox_config import MapboxConfigError
 
@@ -35,6 +35,23 @@ class BackgroundConfig:
 
 
 @dataclass
+class ApplyVisualizationRequest:
+    """Structured input for the visualization/apply workflow."""
+
+    layers: LayerRefs = field(default_factory=LayerRefs)
+    query: object = None
+    style_preset: str = ""
+    temporal_mode: str = ""
+    background_config: BackgroundConfig = field(default_factory=BackgroundConfig)
+    apply_subset_filters: bool = False
+    filtered_count: int = 0
+
+
+# Backward-compatible alias while the request-object migration lands incrementally.
+VisualApplyRequest = ApplyVisualizationRequest
+
+
+@dataclass
 class VisualApplyResult:
     """Structured result from a visual-apply operation."""
 
@@ -58,8 +75,8 @@ class VisualApplyService:
         """Background layer is only updated on initial load, not on filter-only applies."""
         return not apply_subset_filters
 
-    def apply(
-        self,
+    @staticmethod
+    def build_request(
         layers,
         query,
         style_preset,
@@ -67,54 +84,52 @@ class VisualApplyService:
         background_config,
         apply_subset_filters,
         filtered_count,
-    ):
-        """Apply visual configuration to layers and return a result.
+    ) -> ApplyVisualizationRequest:
+        return ApplyVisualizationRequest(
+            layers=layers,
+            query=query,
+            style_preset=style_preset,
+            temporal_mode=temporal_mode,
+            background_config=background_config,
+            apply_subset_filters=apply_subset_filters,
+            filtered_count=filtered_count,
+        )
 
-        Parameters
-        ----------
-        layers : LayerRefs
-            References to the four qfit output layers.
-        query : ActivityQuery
-            Current filter/sort query built from UI state.
-        style_preset : str
-            Name of the selected style preset.
-        temporal_mode : str
-            Name of the selected temporal mode.
-        background_config : BackgroundConfig
-            Background map settings.
-        apply_subset_filters : bool
-            Whether to apply subset filters to layers.
-        filtered_count : int
-            Number of activities matching the current query (for status text).
-        """
-        has_layers = layers.has_any()
+    def apply(self, request: ApplyVisualizationRequest | None = None, **legacy_kwargs):
+        """Apply visual configuration to layers and return a result."""
+        if request is None:
+            request = self.build_request(**legacy_kwargs)
+
+        has_layers = request.layers.has_any()
         temporal_note = ""
 
-        if has_layers and apply_subset_filters:
-            self._apply_filters_to_all_layers(layers, query)
+        if has_layers and request.apply_subset_filters:
+            self._apply_filters_to_all_layers(request.layers, request.query)
 
         if has_layers:
             self.layer_manager.apply_style(
-                layers.activities,
-                layers.starts,
-                layers.points,
-                layers.atlas,
-                style_preset,
+                request.layers.activities,
+                request.layers.starts,
+                request.layers.points,
+                request.layers.atlas,
+                request.style_preset,
                 background_preset_name=(
-                    background_config.preset_name if background_config.enabled else None
+                    request.background_config.preset_name
+                    if request.background_config.enabled
+                    else None
                 ),
             )
             temporal_note = self.layer_manager.apply_temporal_configuration(
-                layers.activities,
-                layers.starts,
-                layers.points,
-                layers.atlas,
-                temporal_mode,
+                request.layers.activities,
+                request.layers.starts,
+                request.layers.points,
+                request.layers.atlas,
+                request.temporal_mode,
             )
 
         background_layer = None
-        if self.should_update_background(apply_subset_filters):
-            background_layer, bg_error = self._ensure_background(background_config)
+        if self.should_update_background(request.apply_subset_filters):
+            background_layer, bg_error = self._ensure_background(request.background_config)
             if bg_error is not None:
                 failure_status = self._background_failure_status(
                     has_layers, temporal_note, bg_error
@@ -127,13 +142,16 @@ class VisualApplyService:
 
         status = self._build_status(
             has_layers=has_layers,
-            apply_subset_filters=apply_subset_filters,
-            filtered_count=filtered_count,
-            wants_background=background_config.enabled,
+            apply_subset_filters=request.apply_subset_filters,
+            filtered_count=request.filtered_count,
+            wants_background=request.background_config.enabled,
             background_layer=background_layer,
             temporal_note=temporal_note,
         )
         return VisualApplyResult(status=status, background_layer=background_layer)
+
+    def apply_request(self, request: ApplyVisualizationRequest):
+        return self.apply(request=request)
 
     def _apply_filters_to_all_layers(self, layers, query):
         for layer in [layers.activities, layers.starts, layers.points, layers.atlas]:

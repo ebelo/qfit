@@ -4,13 +4,30 @@ from types import SimpleNamespace
 from tests import _path  # noqa: F401
 from qfit.provider import ProviderError
 from qfit.strava_provider import StravaProvider
-from qfit.sync_controller import SyncController
+from qfit.sync_controller import BuildStravaProviderRequest, SyncController
 
 
 class BuildStravaProviderTests(unittest.TestCase):
+    def test_build_provider_request_returns_structured_request(self):
+        ctrl = SyncController()
+        request = ctrl.build_provider_request("id", "secret", "token", cache="cache")
+
+        self.assertIsInstance(request, BuildStravaProviderRequest)
+        self.assertEqual(request.client_id, "id")
+        self.assertEqual(request.client_secret, "secret")
+        self.assertEqual(request.refresh_token, "token")
+
     def test_build_strava_provider_returns_strava_provider(self):
         ctrl = SyncController()
         provider = ctrl.build_strava_provider("id", "secret", "token")
+        self.assertIsInstance(provider, StravaProvider)
+
+    def test_build_strava_provider_accepts_request_object(self):
+        ctrl = SyncController()
+        request = ctrl.build_provider_request("id", "secret", "token")
+
+        provider = ctrl.build_strava_provider(request)
+
         self.assertIsInstance(provider, StravaProvider)
 
     def test_build_strava_provider_raises_without_credentials(self):

@@ -13,6 +13,16 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass
+class FetchActivitiesRequest:
+    """Structured input for building a completed-fetch workflow result."""
+
+    activities: list = field(default_factory=list)
+    error: str | None = None
+    cancelled: bool = False
+    provider: object = None
+
+
+@dataclass
 class FetchResult:
     """Structured outcome from a completed activity fetch."""
 
@@ -63,33 +73,49 @@ class FetchResultService:
     def __init__(self, sync_controller) -> None:
         self.sync_controller = sync_controller
 
-    def build_result(
-        self,
+    @staticmethod
+    def build_request(
         activities,
         error,
         cancelled,
         provider,
-    ) -> FetchResult:
-        """Wrap raw :class:`FetchTask` callback parameters into a :class:`FetchResult`.
+    ) -> FetchActivitiesRequest:
+        """Build a structured request from raw fetch-task callback values."""
+        return FetchActivitiesRequest(
+            activities=[] if activities is None else list(activities),
+            error=error,
+            cancelled=cancelled,
+            provider=provider,
+        )
 
-        Parameters match the keyword arguments emitted by
-        :meth:`FetchTask.finished`.
-        """
-        if cancelled:
+    def build_result(
+        self,
+        request: FetchActivitiesRequest | None = None,
+        **legacy_kwargs,
+    ) -> FetchResult:
+        """Wrap a completed-fetch callback into a structured :class:`FetchResult`."""
+        if request is None:
+            request = self.build_request(**legacy_kwargs)
+
+        if request.cancelled:
             return FetchResult(cancelled=True, status_text="Fetch cancelled.")
 
-        if error is not None:
+        if request.error is not None:
             return FetchResult(
-                error=error,
+                error=request.error,
                 status_text="Strava fetch failed",
             )
 
-        metadata = self.sync_controller.build_sync_metadata(activities, provider)
+        metadata = self.sync_controller.build_sync_metadata(request.activities, request.provider)
         status_text = self.sync_controller.fetch_status_text(
-            provider, len(activities), metadata["detailed_count"],
+            request.provider, len(request.activities), metadata["detailed_count"],
         )
         return FetchResult(
-            activities=activities,
+            activities=request.activities,
             metadata=metadata,
             status_text=status_text,
         )
+
+    def build_result_request(self, request: FetchActivitiesRequest) -> FetchResult:
+        """Request-object variant kept explicit for workflow callers."""
+        return self.build_result(request=request)
