@@ -114,9 +114,9 @@ def _load_pdf_writer():
     3. legacy/manual ``qfit.pypdf`` fallback used during ad-hoc debugging
     """
     try:
-        from pypdf import PdfWriter as _pdf_writer_cls  # noqa: PLC0415
+        import pypdf as _pypdf_module  # noqa: PLC0415
 
-        return _pdf_writer_cls
+        return _pypdf_module.PdfWriter
     except ImportError:
         pass
 
@@ -126,16 +126,16 @@ def _load_pdf_writer():
         sys.path.insert(0, vendor_dir)
 
     try:
-        from pypdf import PdfWriter as _pdf_writer_cls  # noqa: PLC0415
+        import pypdf as _pypdf_module  # noqa: PLC0415
 
-        return _pdf_writer_cls
+        return _pypdf_module.PdfWriter
     except ImportError:
         pass
 
     try:
-        from qfit.pypdf import PdfWriter as _pdf_writer_cls  # noqa: PLC0415
+        import qfit.pypdf as _vendored_pypdf_module  # noqa: PLC0415
 
-        return _pdf_writer_cls
+        return _vendored_pypdf_module.PdfWriter
     except ImportError as exc:
         raise ImportError("pypdf is unavailable for atlas PDF merging") from exc
 
