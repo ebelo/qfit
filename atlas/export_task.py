@@ -27,6 +27,7 @@ from __future__ import annotations
 
 import logging
 import os
+import sys
 
 logger = logging.getLogger(__name__)
 
@@ -101,6 +102,50 @@ _DETAIL_ITEM_FIELDS = [
     ("page_average_pace_label", "Pace"),
     ("page_elevation_gain_label", "Climbing"),
 ]
+
+
+def _load_pdf_writer():
+    """Return :class:`pypdf.PdfWriter`, preferring bundled plugin vendoring.
+
+    Resolution order:
+
+    1. top-level ``pypdf`` from the current Python environment
+    2. vendored ``qfit/vendor/pypdf`` packaged inside the plugin zip
+    3. legacy/manual ``qfit.pypdf`` fallback used during ad-hoc debugging
+    """
+    try:
+        import pypdf as _pypdf_module  # noqa: PLC0415
+
+        return _pypdf_module.PdfWriter
+    except ImportError:
+        pass
+
+    plugin_root = os.path.dirname(os.path.dirname(__file__))
+    vendor_dir = os.path.join(plugin_root, "vendor")
+    if os.path.isdir(vendor_dir) and vendor_dir not in sys.path:
+        sys.path.insert(0, vendor_dir)
+
+    try:
+        import pypdf as _pypdf_module  # noqa: PLC0415
+
+        return _pypdf_module.PdfWriter
+    except ImportError:
+        pass
+
+    try:
+        import qfit.pypdf as _vendored_pypdf_module  # noqa: PLC0415
+
+        return _vendored_pypdf_module.PdfWriter
+    except ImportError as exc:
+        raise ImportError("pypdf is unavailable for atlas PDF merging") from exc
+
+
+def _normalize_profile_sample_key(value) -> str | None:
+    """Return a stable string key for atlas profile sample lookup."""
+    if value is None:
+        return None
+    text = str(value).strip()
+    return text or None
 
 
 def _mm(layout, value):
@@ -1023,7 +1068,7 @@ class AtlasExportTask(QgsTask):
 
                     # Render profile chart SVG for this page.
                     if profile_pic is not None and sort_key_idx >= 0:
-                        page_sort_key = feat.attribute(sort_key_idx)
+                        page_sort_key = _normalize_profile_sample_key(feat.attribute(sort_key_idx))
                         page_points = profile_samples.get(page_sort_key, []) if page_sort_key else []
                         if len(page_points) >= 2:
                             try:
@@ -1036,14 +1081,26 @@ class AtlasExportTask(QgsTask):
                                 )
                                 if svg_path:
                                     profile_pic.setPicturePath(svg_path)
+                                    refresh = getattr(profile_pic, "refresh", None)
+                                    if callable(refresh):
+                                        refresh()
                                     profile_temp_files.append(svg_path)
                                 else:
                                     profile_pic.setPicturePath("")
+                                    refresh = getattr(profile_pic, "refresh", None)
+                                    if callable(refresh):
+                                        refresh()
                             except Exception:  # noqa: BLE001
                                 logger.debug("Profile chart render failed", exc_info=True)
                                 profile_pic.setPicturePath("")
+                                refresh = getattr(profile_pic, "refresh", None)
+                                if callable(refresh):
+                                    refresh()
                         else:
                             profile_pic.setPicturePath("")
+                            refresh = getattr(profile_pic, "refresh", None)
+                            if callable(refresh):
+                                refresh()
 
                     # Set profile summary text directly from the feature so that
                     # no raw [% %] template syntax can leak (issue #108).
@@ -1320,15 +1377,19 @@ class AtlasExportTask(QgsTask):
     def _merge_pdfs(page_paths: list[str], output_path: str) -> None:
         """Merge per-page PDF files into a single multi-page PDF."""
         try:
-            from pypdf import PdfWriter  # noqa: PLC0415
-            writer = PdfWriter()
+            pdf_writer_cls = _load_pdf_writer()
+        except ImportError:
+            pdf_writer_cls = None
+            logger.warning("pypdf unavailable during atlas export; falling back to first-page-only PDF")
+
+        if pdf_writer_cls is not None:
+            writer = pdf_writer_cls()
             for path in page_paths:
                 writer.append(path)
             with open(output_path, "wb") as fout:
                 writer.write(fout)
             return
-        except ImportError:
-            pass
+
         # Fallback: if pypdf is unavailable, rename first page (single-page fallback)
         if page_paths:
             os.replace(page_paths[0], output_path)
