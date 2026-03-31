@@ -48,6 +48,8 @@ Preferred dependency direction:
 UI -> application/workflow -> domain + ports -> infrastructure adapters
 ```
 
+Architecture guardrails live in `tests/test_architecture_boundaries.py`. Keep them small, readable, and high-signal.
+
 ### Commit style
 - `fix: <description> (#<issue>)` for bug fixes
 - `feat: <description>` for new features
