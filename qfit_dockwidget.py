@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 from qgis.core import QgsApplication, QgsProject
 from qgis.PyQt import uic
-from qgis.PyQt.QtCore import QDate, QStandardPaths, Qt, QUrl
+from qgis.PyQt.QtCore import QDate, Qt, QUrl
 from qgis.PyQt.QtGui import QDesktopServices
 from qgis.PyQt.QtWidgets import QApplication, QFileDialog, QDockWidget, QMessageBox, QToolButton, QVBoxLayout, QWidget
 
@@ -21,18 +21,13 @@ from .activities.domain.activity_query import (
     sort_activities,
     summarize_activities,
 )
-from .atlas.export_controller import AtlasExportController, AtlasExportValidationError
+from .atlas.export_controller import AtlasExportValidationError
 from .atlas.export_service import (
     AtlasExportResult,
     AtlasExportService,
 )
-from .background_map_controller import BackgroundMapController
 from .contextual_help import ContextualHelpBinder, build_dock_help_entries
-from .visualization.infrastructure.qgis_layer_gateway import QgisLayerGateway
-from .load_workflow import (
-    LoadWorkflowError,
-    LoadWorkflowService,
-)
+from .load_workflow import LoadWorkflowError
 from .mapbox_config import (
     DEFAULT_BACKGROUND_PRESET,
     TILE_MODE_RASTER,
@@ -41,20 +36,13 @@ from .mapbox_config import (
     background_preset_names,
     preset_requires_custom_style,
 )
-from .visual_apply import (
-    BackgroundConfig,
-    LayerRefs,
-    VisualApplyService,
-)
-from .fetch_result_service import FetchResultService
+from .visual_apply import BackgroundConfig, LayerRefs
 from .fetch_task import FetchTask
 from .atlas.export_task import BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
-from .qfit_cache import QfitCache
 from .provider import ProviderError
 from .strava_provider import StravaProvider
-from .settings_service import SettingsService
-from .sync_controller import SyncController
 from .temporal_config import DEFAULT_TEMPORAL_MODE_LABEL, temporal_mode_labels
+from .ui.dockwidget_dependencies import DockWidgetDependencies, build_dockwidget_dependencies
 
 FORM_CLASS, _ = uic.loadUiType(
     __import__("os").path.join(__import__("os").path.dirname(__file__), "qfit_dockwidget_base.ui")
@@ -70,7 +58,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         | QDockWidget.DockWidgetFloatable
     )
 
-    def __init__(self, iface, parent=None):
+    def __init__(self, iface, parent=None, dependencies: DockWidgetDependencies | None = None):
         if parent is None and iface is not None and hasattr(iface, "mainWindow"):
             parent = iface.mainWindow()
         super().__init__(parent)
@@ -85,16 +73,8 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.last_fetch_context = {}
         self._fetch_task = None
         self._atlas_export_task = None
-        self.settings = SettingsService()
-        self.sync_controller = SyncController()
-        self.atlas_export_controller = AtlasExportController()
-        self.layer_gateway = QgisLayerGateway(iface)
-        self.background_controller = BackgroundMapController(self.layer_gateway)
-        self.load_workflow = LoadWorkflowService(self.layer_gateway)
-        self.visual_apply = VisualApplyService(self.layer_gateway)
-        self.atlas_export_service = AtlasExportService(self.layer_gateway)
-        self.fetch_result_service = FetchResultService(self.sync_controller)
-        self.cache = self._build_cache()
+        self._dependencies = dependencies or build_dockwidget_dependencies(iface)
+        self._bind_dependencies(self._dependencies)
         self.setupUi(self)
         self.setFeatures(self.DEFAULT_DOCK_FEATURES)
         self.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
@@ -345,16 +325,17 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         if style_wrapper is not None:
             style_wrapper.setVisible(show_advanced)
 
-    def _build_cache(self):
-        base_path = QStandardPaths.writableLocation(QStandardPaths.AppDataLocation)
-        if not base_path:
-            base_path = os.path.join(os.path.expanduser("~"), ".qfit")
-
-        current_cache_path = os.path.join(base_path, "qfit", "cache")
-        legacy_cache_path = os.path.join(base_path, "QFIT", "cache")
-        if not os.path.exists(current_cache_path) and os.path.exists(legacy_cache_path):
-            return QfitCache(legacy_cache_path)
-        return QfitCache(current_cache_path)
+    def _bind_dependencies(self, dependencies: DockWidgetDependencies) -> None:
+        self.settings = dependencies.settings
+        self.sync_controller = dependencies.sync_controller
+        self.atlas_export_controller = dependencies.atlas_export_controller
+        self.layer_gateway = dependencies.layer_gateway
+        self.background_controller = dependencies.background_controller
+        self.load_workflow = dependencies.load_workflow
+        self.visual_apply = dependencies.visual_apply
+        self.atlas_export_service = dependencies.atlas_export_service
+        self.fetch_result_service = dependencies.fetch_result_service
+        self.cache = dependencies.cache
 
     def _load_settings(self):
         s = self.settings
