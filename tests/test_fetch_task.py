@@ -6,6 +6,7 @@ subclassing FetchTask and stubbing out the QgsTask infrastructure
 """
 
 import unittest
+import importlib
 from unittest.mock import MagicMock
 
 from tests import _path  # noqa: F401
@@ -39,11 +40,14 @@ _qgis_core = ModuleType("qgis.core")
 _qgis_core.QgsTask = _FakeQgsTask
 _qgis = ModuleType("qgis")
 _qgis.core = _qgis_core
-sys.modules.setdefault("qgis", _qgis)
-sys.modules.setdefault("qgis.core", _qgis_core)
+sys.modules["qgis"] = _qgis
+sys.modules["qgis.core"] = _qgis_core
 
-from qfit.fetch_task import FetchTask  # noqa: E402  (import after stub)
+from qfit.activities.application import fetch_task as fetch_task_module  # noqa: E402  (import after stub)
 from qfit.provider import ProviderError  # noqa: E402
+
+fetch_task_module = importlib.reload(fetch_task_module)
+FetchTask = fetch_task_module.FetchTask
 
 
 # ---------------------------------------------------------------------------

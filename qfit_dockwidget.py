@@ -22,12 +22,13 @@ from .activities.domain.activity_query import (
     summarize_activities,
 )
 from .atlas.export_controller import AtlasExportValidationError
+from .activities.application.fetch_task import FetchTask
+from .activities.application.load_workflow import LoadWorkflowError
 from .atlas.export_service import (
     AtlasExportResult,
     AtlasExportService,
 )
 from .contextual_help import ContextualHelpBinder, build_dock_help_entries
-from .load_workflow import LoadWorkflowError
 from .mapbox_config import (
     DEFAULT_BACKGROUND_PRESET,
     TILE_MODE_RASTER,
@@ -37,7 +38,6 @@ from .mapbox_config import (
     preset_requires_custom_style,
 )
 from .visual_apply import BackgroundConfig, LayerRefs
-from .fetch_task import FetchTask
 from .atlas.export_task import BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
 from .providers.domain.provider import ProviderError
 from .providers.infrastructure.strava_provider import StravaProvider

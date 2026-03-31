@@ -268,7 +268,7 @@ class LoadExistingSuccessTests(unittest.TestCase):
         self.layer_manager = MagicMock()
         self.service = LoadWorkflowService(self.layer_manager)
 
-    @patch("qfit.load_workflow.os.path.exists", return_value=True)
+    @patch("qfit.activities.application.load_workflow.os.path.exists", return_value=True)
     def test_returns_load_result(self, mock_exists):
         mock_activities_layer = MagicMock()
         mock_activities_layer.featureCount.return_value = 42
@@ -289,7 +289,7 @@ class LoadExistingSuccessTests(unittest.TestCase):
         self.assertIn("/tmp/existing.gpkg", result.status)
         self.layer_manager.load_output_layers.assert_called_once_with("/tmp/existing.gpkg")
 
-    @patch("qfit.load_workflow.os.path.exists", return_value=True)
+    @patch("qfit.activities.application.load_workflow.os.path.exists", return_value=True)
     def test_handles_none_activities_layer(self, mock_exists):
         self.layer_manager.load_output_layers.return_value = (None, None, None, None)
 
@@ -341,7 +341,7 @@ class LoadRequestContractTests(unittest.TestCase):
         request = LoadWorkflowService.build_load_existing_request("/tmp/existing.gpkg")
         self.assertEqual(request, LoadExistingRequest(output_path="/tmp/existing.gpkg"))
 
-    @patch("qfit.load_workflow.os.path.exists", return_value=True)
+    @patch("qfit.activities.application.load_workflow.os.path.exists", return_value=True)
     def test_load_existing_request_matches_legacy_wrapper(self, _mock_exists):
         layer_manager = MagicMock()
         layer_manager.load_output_layers.return_value = (None, None, None, None)
