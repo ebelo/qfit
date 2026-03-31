@@ -506,13 +506,14 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def on_open_authorize_clicked(self):
         self._save_settings()
         try:
-            client = self.sync_controller.build_strava_provider(
+            provider_request = self.sync_controller.build_provider_request(
                 client_id=self.clientIdLineEdit.text().strip(),
                 client_secret=self.clientSecretLineEdit.text().strip(),
                 refresh_token=self.refreshTokenLineEdit.text().strip(),
                 cache=self.cache,
                 require_refresh_token=False,
             )
+            client = self.sync_controller.build_strava_provider(provider_request)
             redirect_uri = self._redirect_uri()
             url = client.build_authorize_url(redirect_uri=redirect_uri)
             if not QDesktopServices.openUrl(QUrl(url)):
@@ -544,13 +545,14 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             return
 
         try:
-            client = self.sync_controller.build_strava_provider(
+            provider_request = self.sync_controller.build_provider_request(
                 client_id=self.clientIdLineEdit.text().strip(),
                 client_secret=self.clientSecretLineEdit.text().strip(),
                 refresh_token=self.refreshTokenLineEdit.text().strip(),
                 cache=self.cache,
                 require_refresh_token=False,
             )
+            client = self.sync_controller.build_strava_provider(provider_request)
             payload = client.exchange_code_for_tokens(
                 authorization_code=authorization_code,
                 redirect_uri=self._redirect_uri(),
@@ -601,13 +603,14 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
         self._save_settings()
         try:
-            client = self.sync_controller.build_strava_provider(
+            provider_request = self.sync_controller.build_provider_request(
                 client_id=self.clientIdLineEdit.text().strip(),
                 client_secret=self.clientSecretLineEdit.text().strip(),
                 refresh_token=self.refreshTokenLineEdit.text().strip(),
                 cache=self.cache,
                 require_refresh_token=True,
             )
+            client = self.sync_controller.build_strava_provider(provider_request)
         except ProviderError as exc:
             self._show_error("Strava import failed", str(exc))
             self._set_status("Strava fetch failed")
@@ -640,10 +643,13 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._fetch_task = None
         self._set_fetch_running(False)
 
-        result = self.fetch_result_service.build_result(
-            activities=activities, error=error, cancelled=cancelled,
+        fetch_request = self.fetch_result_service.build_request(
+            activities=activities,
+            error=error,
+            cancelled=cancelled,
             provider=provider,
         )
+        result = self.fetch_result_service.build_result_request(fetch_request)
 
         if cancelled:
             self._set_status(result.status_text)

@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 
 from tests import _path  # noqa: F401
 
-from qfit.fetch_result_service import FetchResult, FetchResultService
+from qfit.fetch_result_service import FetchActivitiesRequest, FetchResult, FetchResultService
 
 
 # ---------------------------------------------------------------------------
@@ -103,6 +103,20 @@ class BuildResultCancelledTests(unittest.TestCase):
         self.sync.build_sync_metadata.assert_not_called()
 
 
+class BuildRequestTests(unittest.TestCase):
+    def test_build_request_returns_structured_request(self):
+        request = FetchResultService.build_request(
+            activities=["a1"],
+            error=None,
+            cancelled=False,
+            provider=MagicMock(),
+        )
+
+        self.assertIsInstance(request, FetchActivitiesRequest)
+        self.assertEqual(request.activities, ["a1"])
+        self.assertFalse(request.cancelled)
+
+
 class BuildResultErrorTests(unittest.TestCase):
     def setUp(self):
         self.sync = MagicMock()
@@ -167,6 +181,19 @@ class BuildResultSuccessTests(unittest.TestCase):
         self.assertIn("10 activities loaded", text)
         self.assertIn("2026-03-26", text)
         self.assertIn("detailed tracks: 5", text)
+
+    def test_build_result_request_accepts_structured_request(self):
+        request = self.service.build_request(
+            activities=self.activities,
+            error=None,
+            cancelled=False,
+            provider=self.provider,
+        )
+
+        result = self.service.build_result_request(request)
+
+        self.assertTrue(result.ok)
+        self.assertEqual(result.activities, self.activities)
 
 
 if __name__ == "__main__":

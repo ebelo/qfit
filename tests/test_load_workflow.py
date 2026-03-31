@@ -61,6 +61,23 @@ class WriteAndLoadValidationTests(unittest.TestCase):
             )
         self.assertIn("output path", str(ctx.exception))
 
+    def test_build_write_request_returns_structured_request(self):
+        request = self.service.build_write_request(
+            activities=["activity"],
+            output_path="/tmp/test.gpkg",
+            write_activity_points=True,
+            point_stride=5,
+            atlas_margin_percent=8.0,
+            atlas_min_extent_degrees=0.01,
+            atlas_target_aspect_ratio=1.5,
+            sync_metadata={"provider": "strava"},
+            last_sync_date="2026-01-01",
+        )
+
+        self.assertIsInstance(request, LoadDatabaseRequest)
+        self.assertEqual(request.output_path, "/tmp/test.gpkg")
+        self.assertTrue(request.write_activity_points)
+
 
 class WriteAndLoadSuccessTests(unittest.TestCase):
     def setUp(self):
@@ -238,6 +255,12 @@ class LoadExistingValidationTests(unittest.TestCase):
             self.service.load_existing("/nonexistent/path.gpkg")
         self.assertIn("No database found", str(ctx.exception))
         self.assertIn("Store activities first", str(ctx.exception))
+
+    def test_build_load_existing_request_returns_structured_request(self):
+        request = self.service.build_load_existing_request("/tmp/existing.gpkg")
+
+        self.assertIsInstance(request, LoadExistingRequest)
+        self.assertEqual(request.output_path, "/tmp/existing.gpkg")
 
 
 class LoadExistingSuccessTests(unittest.TestCase):

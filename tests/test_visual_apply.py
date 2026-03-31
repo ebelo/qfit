@@ -59,6 +59,23 @@ class ShouldUpdateBackgroundTests(unittest.TestCase):
         self.assertFalse(VisualApplyService.should_update_background(True))
 
 
+class BuildRequestTests(unittest.TestCase):
+    def test_build_request_returns_structured_request(self):
+        request = VisualApplyService.build_request(
+            layers=LayerRefs(activities=MagicMock()),
+            query=_make_query(),
+            style_preset="By activity type",
+            temporal_mode="Off",
+            background_config=_make_bg_config(),
+            apply_subset_filters=True,
+            filtered_count=7,
+        )
+
+        self.assertIsInstance(request, VisualApplyRequest)
+        self.assertEqual(request.style_preset, "By activity type")
+        self.assertTrue(request.apply_subset_filters)
+
+
 class ApplyWithSubsetFiltersTests(unittest.TestCase):
     def setUp(self):
         self.layer_manager = MagicMock()
@@ -130,6 +147,21 @@ class ApplyWithSubsetFiltersTests(unittest.TestCase):
         )
 
         self.layer_manager.ensure_background_layer.assert_not_called()
+
+    def test_apply_request_accepts_structured_request(self):
+        request = self.service.build_request(
+            layers=self.layers,
+            query=_make_query(activity_type="Run"),
+            style_preset="By activity type",
+            temporal_mode="Off",
+            background_config=_make_bg_config(enabled=True),
+            apply_subset_filters=True,
+            filtered_count=2,
+        )
+
+        result = self.service.apply_request(request)
+
+        self.assertIn("Applied filters and styling", result.status)
 
 
 class ApplyWithoutSubsetFiltersTests(unittest.TestCase):
