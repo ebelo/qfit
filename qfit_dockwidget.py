@@ -39,8 +39,8 @@ from .mapbox_config import (
 from .visual_apply import BackgroundConfig, LayerRefs
 from .fetch_task import FetchTask
 from .atlas.export_task import BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
-from .provider import ProviderError
-from .strava_provider import StravaProvider
+from .providers.domain.provider import ProviderError
+from .providers.infrastructure.strava_provider import StravaProvider
 from .temporal_config import DEFAULT_TEMPORAL_MODE_LABEL, temporal_mode_labels
 from .ui.dockwidget_dependencies import DockWidgetDependencies, build_dockwidget_dependencies
 

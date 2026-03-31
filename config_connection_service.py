@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from .mapbox_config import DEFAULT_BACKGROUND_PRESET, fetch_mapbox_style_definition, preset_defaults
-from .strava_client import StravaClient, StravaClientError
+from .providers.infrastructure.strava_client import StravaClient, StravaClientError
 
 
 @dataclass(frozen=True)

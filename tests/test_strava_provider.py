@@ -5,11 +5,24 @@ from unittest.mock import MagicMock
 
 from tests import _path  # noqa: F401
 from qfit.provider import ActivityProvider, ProviderError
+from qfit.providers.domain.provider import ActivityProvider as PackagedActivityProvider
+from qfit.providers.domain.provider import ProviderError as PackagedProviderError
+from qfit.providers.infrastructure.strava_provider import StravaProvider as PackagedStravaProvider
 from qfit.strava_provider import StravaProvider
 
 
 class TestStravaProviderProtocol(unittest.TestCase):
     """StravaProvider must satisfy the ActivityProvider protocol."""
+
+    def test_top_level_shims_re_export_packaged_contracts(self):
+        import qfit.providers as providers
+
+        self.assertIs(ActivityProvider, PackagedActivityProvider)
+        self.assertIs(ProviderError, PackagedProviderError)
+        self.assertIs(StravaProvider, PackagedStravaProvider)
+        self.assertIs(providers.ActivityProvider, PackagedActivityProvider)
+        self.assertIs(providers.ProviderError, PackagedProviderError)
+        self.assertIs(providers.StravaProvider, PackagedStravaProvider)
 
     def test_strava_provider_satisfies_activity_provider(self):
         provider = StravaProvider(client_id="id", client_secret="secret", refresh_token="token")

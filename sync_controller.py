@@ -2,8 +2,8 @@ import logging
 from dataclasses import dataclass
 from datetime import date
 
-from .provider import ProviderError
-from .strava_provider import StravaProvider
+from .providers.domain.provider import ProviderError
+from .providers.infrastructure.strava_provider import StravaProvider
 
 logger = logging.getLogger(__name__)
 

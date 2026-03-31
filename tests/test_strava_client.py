@@ -2,8 +2,8 @@ import unittest
 from unittest.mock import patch
 
 from tests import _path  # noqa: F401
-from qfit import strava_client as strava_client_module
 from qfit.strava_client import StravaClient, StravaClientError
+from qfit.providers.infrastructure import strava_client as strava_client_module
 
 requests = strava_client_module.requests
 
@@ -17,6 +17,13 @@ class StravaClientTests(unittest.TestCase):
         self.assertIn("response_type=code", url)
         self.assertIn("approval_prompt=force", url)
         self.assertIn("scope=read%2Cactivity%3Aread_all", url)
+
+    def test_top_level_module_re_exports_provider_package_types(self):
+        from qfit import strava_client as compat_module
+
+        self.assertIs(compat_module.StravaClient, StravaClient)
+        self.assertIs(compat_module.StravaClientError, StravaClientError)
+        self.assertIs(compat_module.requests, requests)
 
     def test_normalize_activity_maps_core_fields(self):
         client = StravaClient()
@@ -166,7 +173,7 @@ class StravaClientTests(unittest.TestCase):
 
         client._request_json = fake_request_json
 
-        with patch("qfit.strava_client.time.sleep"):
+        with patch("qfit.providers.infrastructure.strava_client.time.sleep"):
             activities = client.fetch_activities(per_page=2, max_pages=0)
 
         self.assertEqual(len(activities), 3)
@@ -191,7 +198,7 @@ class StravaClientTests(unittest.TestCase):
 
         client._request_json = fake_request_json
 
-        with patch("qfit.strava_client.time.sleep"):
+        with patch("qfit.providers.infrastructure.strava_client.time.sleep"):
             activities = client.fetch_activities(per_page=50, max_pages=0)
 
         self.assertEqual(len(activities), 1)
@@ -234,7 +241,7 @@ class StravaClientTests(unittest.TestCase):
 
         client._request_json = fake_request_json
 
-        with patch("qfit.strava_client.time.sleep") as sleep_mock:
+        with patch("qfit.providers.infrastructure.strava_client.time.sleep") as sleep_mock:
             activities = client.fetch_activities(per_page=2, max_pages=0)
 
         self.assertEqual(len(activities), 3)
@@ -260,7 +267,7 @@ class StravaClientTests(unittest.TestCase):
             return _FakeResponse()
 
         with patch.object(client.session, "request", side_effect=fake_request), patch(
-            "qfit.strava_client.time.sleep"
+            "qfit.providers.infrastructure.strava_client.time.sleep"
         ) as sleep_mock:
             payload = client._request_json("https://example.test", operation="Fetching Strava activities page 1")
 
@@ -275,7 +282,7 @@ class StravaClientTests(unittest.TestCase):
             client.session,
             "request",
             side_effect=requests.ConnectionError(ConnectionResetError(10054, "forcibly closed by remote host")),
-        ), patch("qfit.strava_client.time.sleep"):
+        ), patch("qfit.providers.infrastructure.strava_client.time.sleep"):
             with self.assertRaisesRegex(
                 StravaClientError,
                 "Refreshing Strava access token failed after 3 attempts due to a transient network error",
@@ -286,7 +293,7 @@ class StravaClientTests(unittest.TestCase):
         client = StravaClient()
 
         with patch.object(client.session, "request", side_effect=requests.ConnectionError("certificate verify failed")), patch(
-            "qfit.strava_client.time.sleep"
+            "qfit.providers.infrastructure.strava_client.time.sleep"
         ) as sleep_mock:
             with self.assertRaisesRegex(
                 StravaClientError,
@@ -407,7 +414,7 @@ class StravaClientTests(unittest.TestCase):
 
         client._request_json = fake_request_json
 
-        with patch("qfit.strava_client.time.sleep"):
+        with patch("qfit.providers.infrastructure.strava_client.time.sleep"):
             activities = client.fetch_activities(per_page=2, max_pages=0)
 
         self.assertEqual(len(activities), 2)
