@@ -3,7 +3,8 @@ from unittest.mock import MagicMock
 
 from tests import _path  # noqa: F401
 from qfit.credential_store import InMemoryCredentialStore, NullCredentialStore
-from qfit.settings_service import SettingsService
+from qfit.settings_port import SettingsPort
+from qfit.settings_service import QgisSettingsAdapter, SettingsService
 
 
 class FakeQSettings:
@@ -20,6 +21,13 @@ class FakeQSettings:
 
     def remove(self, key):
         self._data.pop(key, None)
+
+
+class SettingsPortAdapterTests(unittest.TestCase):
+    def test_qgis_settings_adapter_satisfies_settings_port(self):
+        adapter = QgisSettingsAdapter(qsettings=FakeQSettings())
+        self.assertIsInstance(adapter, SettingsPort)
+        self.assertIsInstance(SettingsService(qsettings=FakeQSettings()), SettingsPort)
 
 
 class SettingsServiceGetTests(unittest.TestCase):

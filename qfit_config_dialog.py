@@ -23,6 +23,7 @@ from qgis.PyQt.QtWidgets import (
 
 from .config_connection_service import validate_mapbox_connection, validate_strava_connection
 from .config_status import mapbox_status_text, strava_status_text
+from .settings_port import SettingsPort
 from .settings_service import SettingsService
 from .strava_client import StravaClient
 from .ui_settings_binding import UIFieldBinding, load_bindings, save_bindings
@@ -40,7 +41,7 @@ class QfitConfigDialog(QDialog):
     saving. Changes are persisted to QSettings on save.
     """
 
-    def __init__(self, settings_service: SettingsService | None = None, parent: QWidget | None = None):
+    def __init__(self, settings_service: SettingsPort | None = None, parent: QWidget | None = None):
         super().__init__(parent)
         self._settings = settings_service or SettingsService()
         self.setWindowTitle("qfit — Configuration")

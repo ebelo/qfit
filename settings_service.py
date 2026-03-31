@@ -6,6 +6,7 @@ from .credential_store import (
     SENSITIVE_KEYS,
     make_credential_store,
 )
+from .settings_port import SettingsPort
 
 logger = logging.getLogger(__name__)
 
@@ -13,8 +14,8 @@ SETTINGS_PREFIX = "qfit"
 LEGACY_SETTINGS_PREFIX = "QFIT"
 
 
-class SettingsService:
-    """Centralised get/set wrapper around QSettings with legacy-prefix fallback.
+class QgisSettingsAdapter(SettingsPort):
+    """QGIS-backed implementation of the :class:`~qfit.settings_port.SettingsPort`.
 
     Sensitive keys (see :data:`~qfit.credential_store.SENSITIVE_KEYS`) are
     routed through a :class:`~qfit.credential_store.CredentialStore` so they
@@ -114,3 +115,8 @@ class SettingsService:
                     key,
                 )
         self._settings.setValue(f"{self._prefix}/{key}", value)
+
+
+# Backward-compatible name kept while qfit incrementally moves callers toward
+# the SettingsPort abstraction.
+SettingsService = QgisSettingsAdapter
