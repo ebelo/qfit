@@ -27,6 +27,7 @@ from __future__ import annotations
 
 import logging
 import os
+import sys
 
 logger = logging.getLogger(__name__)
 
@@ -101,6 +102,42 @@ _DETAIL_ITEM_FIELDS = [
     ("page_average_pace_label", "Pace"),
     ("page_elevation_gain_label", "Climbing"),
 ]
+
+
+def _load_pdf_writer():
+    """Return :class:`pypdf.PdfWriter`, preferring bundled plugin vendoring.
+
+    Resolution order:
+
+    1. top-level ``pypdf`` from the current Python environment
+    2. vendored ``qfit/vendor/pypdf`` packaged inside the plugin zip
+    3. legacy/manual ``qfit.pypdf`` fallback used during ad-hoc debugging
+    """
+    try:
+        from pypdf import PdfWriter as _PdfWriter  # noqa: PLC0415
+
+        return _PdfWriter
+    except ImportError:
+        pass
+
+    plugin_root = os.path.dirname(os.path.dirname(__file__))
+    vendor_dir = os.path.join(plugin_root, "vendor")
+    if os.path.isdir(vendor_dir) and vendor_dir not in sys.path:
+        sys.path.insert(0, vendor_dir)
+
+    try:
+        from pypdf import PdfWriter as _PdfWriter  # noqa: PLC0415
+
+        return _PdfWriter
+    except ImportError:
+        pass
+
+    try:
+        from qfit.pypdf import PdfWriter as _PdfWriter  # noqa: PLC0415
+
+        return _PdfWriter
+    except ImportError as exc:
+        raise ImportError("pypdf is unavailable for atlas PDF merging") from exc
 
 
 def _normalize_profile_sample_key(value) -> str | None:
@@ -1339,16 +1376,11 @@ class AtlasExportTask(QgsTask):
     @staticmethod
     def _merge_pdfs(page_paths: list[str], output_path: str) -> None:
         """Merge per-page PDF files into a single multi-page PDF."""
-        PdfWriter = None
         try:
-            from pypdf import PdfWriter as _PdfWriter  # noqa: PLC0415
-            PdfWriter = _PdfWriter
+            PdfWriter = _load_pdf_writer()
         except ImportError:
-            try:
-                from qfit.pypdf import PdfWriter as _PdfWriter  # noqa: PLC0415
-                PdfWriter = _PdfWriter
-            except ImportError:
-                logger.warning("pypdf unavailable during atlas export; falling back to first-page-only PDF")
+            PdfWriter = None
+            logger.warning("pypdf unavailable during atlas export; falling back to first-page-only PDF")
 
         if PdfWriter is not None:
             writer = PdfWriter()

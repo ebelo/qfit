@@ -1,7 +1,9 @@
 """Sanity checks for GitHub Actions workflow files."""
 
 import pathlib
+import tempfile
 import unittest
+import zipfile
 
 WORKFLOWS_DIR = pathlib.Path(__file__).resolve().parents[1] / ".github" / "workflows"
 
@@ -80,6 +82,31 @@ class PackageScriptTests(unittest.TestCase):
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)
         self.assertTrue(callable(mod.build_zip))
+
+    def test_build_zip_vendors_pypdf_into_plugin_archive(self):
+        """The packaged plugin ZIP should be self-contained for atlas PDF export."""
+        import importlib.util
+
+        spec = importlib.util.spec_from_file_location(
+            "package_plugin",
+            WORKFLOWS_DIR.parents[1] / "scripts" / "package_plugin.py",
+        )
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            original_dist_dir = mod.DIST_DIR
+            mod.DIST_DIR = pathlib.Path(tmpdir)
+            try:
+                archive_path = mod.build_zip()
+            finally:
+                mod.DIST_DIR = original_dist_dir
+
+            with zipfile.ZipFile(archive_path) as archive:
+                names = set(archive.namelist())
+
+        self.assertIn("qfit/vendor/pypdf/__init__.py", names)
+        self.assertIn("qfit/vendor/licenses/pypdf_LICENSE.txt", names)
 
 
 if __name__ == "__main__":
