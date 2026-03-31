@@ -6,15 +6,7 @@ from tests import _path  # noqa: F401
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
-try:
-    from qfit.ui.dockwidget_dependencies import build_dockwidget_dependencies
-
-    QGIS_AVAILABLE = True
-    QGIS_IMPORT_ERROR = None
-except Exception as exc:  # pragma: no cover - exercised only when QGIS is unavailable
-    build_dockwidget_dependencies = None
-    QGIS_AVAILABLE = False
-    QGIS_IMPORT_ERROR = exc
+from qfit.ui.dockwidget_dependencies import build_dockwidget_dependencies, _build_cache
 
 
 class _FakeIface:
@@ -25,10 +17,6 @@ class _FakeIface:
         return None
 
 
-@unittest.skipUnless(
-    QGIS_AVAILABLE,
-    "PyQGIS is not available in this environment: {error}".format(error=QGIS_IMPORT_ERROR),
-)
 class DockWidgetDependenciesTests(unittest.TestCase):
     def test_build_dockwidget_dependencies_wires_shared_gateway_and_sync_controller(self):
         iface = _FakeIface()
@@ -40,7 +28,10 @@ class DockWidgetDependenciesTests(unittest.TestCase):
                 "qfit.ui.dockwidget_dependencies.AtlasExportController",
                 return_value=sentinel.atlas_export_controller,
             ),
-            patch("qfit.ui.dockwidget_dependencies.QgisLayerGateway", return_value=sentinel.layer_gateway),
+            patch(
+                "qfit.ui.dockwidget_dependencies._build_layer_gateway",
+                return_value=sentinel.layer_gateway,
+            ),
             patch(
                 "qfit.ui.dockwidget_dependencies.BackgroundMapController",
                 return_value=sentinel.background_controller,
@@ -81,6 +72,35 @@ class DockWidgetDependenciesTests(unittest.TestCase):
         visual_apply.assert_called_once_with(sentinel.layer_gateway)
         atlas_export_service.assert_called_once_with(sentinel.layer_gateway)
         fetch_result_service.assert_called_once_with(sentinel.sync_controller)
+
+    def test_build_cache_prefers_legacy_cache_path_when_current_path_is_missing(self):
+        with (
+            patch(
+                "qfit.ui.dockwidget_dependencies._writable_app_data_location",
+                return_value="/tmp/appdata",
+            ),
+            patch(
+                "qfit.ui.dockwidget_dependencies.os.path.exists",
+                side_effect=lambda path: path == "/tmp/appdata/QFIT/cache",
+            ),
+            patch("qfit.ui.dockwidget_dependencies.QfitCache", return_value=sentinel.cache) as cache_class,
+        ):
+            cache = _build_cache()
+
+        self.assertIs(cache, sentinel.cache)
+        cache_class.assert_called_once_with("/tmp/appdata/QFIT/cache")
+
+    def test_build_cache_falls_back_to_home_dot_qfit_when_appdata_is_blank(self):
+        with (
+            patch("qfit.ui.dockwidget_dependencies._writable_app_data_location", return_value=""),
+            patch("qfit.ui.dockwidget_dependencies.os.path.expanduser", return_value="/home/tester"),
+            patch("qfit.ui.dockwidget_dependencies.os.path.exists", return_value=False),
+            patch("qfit.ui.dockwidget_dependencies.QfitCache", return_value=sentinel.cache) as cache_class,
+        ):
+            cache = _build_cache()
+
+        self.assertIs(cache, sentinel.cache)
+        cache_class.assert_called_once_with("/home/tester/.qfit/qfit/cache")
 
 
 if __name__ == "__main__":

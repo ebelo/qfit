@@ -1,4 +1,6 @@
+import os
 from dataclasses import dataclass
+from typing import Any
 
 from ..atlas.export_controller import AtlasExportController
 from ..atlas.export_service import AtlasExportService
@@ -9,7 +11,6 @@ from ..qfit_cache import QfitCache
 from ..settings_service import SettingsService
 from ..sync_controller import SyncController
 from ..visual_apply import VisualApplyService
-from ..visualization.infrastructure.qgis_layer_gateway import QgisLayerGateway
 
 
 @dataclass(frozen=True)
@@ -24,7 +25,7 @@ class DockWidgetDependencies:
     settings: SettingsService
     sync_controller: SyncController
     atlas_export_controller: AtlasExportController
-    layer_gateway: QgisLayerGateway
+    layer_gateway: Any
     background_controller: BackgroundMapController
     load_workflow: LoadWorkflowService
     visual_apply: VisualApplyService
@@ -39,7 +40,7 @@ def build_dockwidget_dependencies(iface) -> DockWidgetDependencies:
     settings = SettingsService()
     sync_controller = SyncController()
     atlas_export_controller = AtlasExportController()
-    layer_gateway = QgisLayerGateway(iface)
+    layer_gateway = _build_layer_gateway(iface)
     cache = _build_cache()
     return DockWidgetDependencies(
         settings=settings,
@@ -55,11 +56,22 @@ def build_dockwidget_dependencies(iface) -> DockWidgetDependencies:
     )
 
 
-def _build_cache() -> QfitCache:
-    from qgis.PyQt.QtCore import QStandardPaths
-    import os
+def _build_layer_gateway(iface):
+    from ..visualization.infrastructure.qgis_layer_gateway import QgisLayerGateway
 
-    base_path = QStandardPaths.writableLocation(QStandardPaths.AppDataLocation)
+    return QgisLayerGateway(iface)
+
+
+
+def _writable_app_data_location() -> str:
+    from qgis.PyQt.QtCore import QStandardPaths
+
+    return QStandardPaths.writableLocation(QStandardPaths.AppDataLocation)
+
+
+
+def _build_cache() -> QfitCache:
+    base_path = _writable_app_data_location()
     if not base_path:
         base_path = os.path.join(os.path.expanduser("~"), ".qfit")
 
