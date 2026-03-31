@@ -78,7 +78,7 @@ class WriteAndLoadSuccessTests(unittest.TestCase):
         self.layer_manager.load_output_layers.return_value = mock_layers
 
         activities = [SimpleNamespace(name="a1"), SimpleNamespace(name="a2"), SimpleNamespace(name="a3")]
-        with patch.dict(sys.modules, {"qfit.gpkg_writer": mock_gpkg}):
+        with patch("qfit.gpkg_writer.GeoPackageWriter", mock_gpkg.GeoPackageWriter):
             result = self.service.write_and_load(
                 activities=activities,
                 output_path="/tmp/out.gpkg",
@@ -116,7 +116,7 @@ class WriteAndLoadSuccessTests(unittest.TestCase):
         self.layer_manager.load_output_layers.return_value = (None, None, None, None)
 
         metadata = {"provider": "strava"}
-        with patch.dict(sys.modules, {"qfit.gpkg_writer": mock_gpkg}):
+        with patch("qfit.gpkg_writer.GeoPackageWriter", mock_gpkg.GeoPackageWriter):
             self.service.write_and_load(
                 activities=["a"],
                 output_path="/tmp/out.gpkg",
@@ -145,7 +145,7 @@ class WriteAndLoadSuccessTests(unittest.TestCase):
         mock_gpkg = self._make_writer_mock(write_result)
         self.layer_manager.load_output_layers.return_value = (None, None, None, None)
 
-        with patch.dict(sys.modules, {"qfit.gpkg_writer": mock_gpkg}):
+        with patch("qfit.gpkg_writer.GeoPackageWriter", mock_gpkg.GeoPackageWriter):
             self.service.write_and_load(
                 activities=["a"],
                 output_path="/tmp/test.gpkg",
@@ -189,7 +189,7 @@ class WriteDatabaseSuccessTests(unittest.TestCase):
         }
         mock_gpkg = self._make_writer_mock(write_result)
 
-        with patch.dict(sys.modules, {"qfit.gpkg_writer": mock_gpkg}):
+        with patch("qfit.gpkg_writer.GeoPackageWriter", mock_gpkg.GeoPackageWriter):
             result = self.service.write_database(
                 activities=["a", "b"],
                 output_path="/tmp/out.gpkg",

@@ -137,7 +137,7 @@ Introduce a port/gateway when at least one of these is true:
 Good candidates in qfit:
 
 - activity provider
-- activity storage
+- activity storage (now starting to take shape through a small storage port plus the GeoPackage-backed adapter)
 - settings/configuration access (now via a small `SettingsPort` with the current QGIS-backed adapter behind it)
 - QGIS layer/visualization operations
 - atlas export orchestration boundaries
