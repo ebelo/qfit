@@ -28,7 +28,7 @@ from .atlas.export_service import (
 )
 from .background_map_controller import BackgroundMapController
 from .contextual_help import ContextualHelpBinder, build_dock_help_entries
-from .layer_manager import LayerManager
+from .visualization.infrastructure.qgis_layer_gateway import QgisLayerGateway
 from .load_workflow import (
     LoadWorkflowError,
     LoadWorkflowService,
@@ -88,11 +88,11 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.settings = SettingsService()
         self.sync_controller = SyncController()
         self.atlas_export_controller = AtlasExportController()
-        self.layer_manager = LayerManager(iface)
-        self.background_controller = BackgroundMapController(self.layer_manager)
-        self.load_workflow = LoadWorkflowService(self.layer_manager)
-        self.visual_apply = VisualApplyService(self.layer_manager)
-        self.atlas_export_service = AtlasExportService(self.layer_manager)
+        self.layer_gateway = QgisLayerGateway(iface)
+        self.background_controller = BackgroundMapController(self.layer_gateway)
+        self.load_workflow = LoadWorkflowService(self.layer_gateway)
+        self.visual_apply = VisualApplyService(self.layer_gateway)
+        self.atlas_export_service = AtlasExportService(self.layer_gateway)
         self.fetch_result_service = FetchResultService(self.sync_controller)
         self.cache = self._build_cache()
         self.setupUi(self)

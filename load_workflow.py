@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from datetime import date
 
 from .sync_repository import SyncStats
+from .visualization.application.layer_gateway import LayerGateway
 
 logger = logging.getLogger(__name__)
 
@@ -61,8 +62,8 @@ class LoadWorkflowError(Exception):
 class LoadWorkflowService:
     """Orchestrates GeoPackage write and layer-load workflows independent of UI."""
 
-    def __init__(self, layer_manager):
-        self.layer_manager = layer_manager
+    def __init__(self, layer_gateway: LayerGateway):
+        self.layer_gateway = layer_gateway
 
     @staticmethod
     def build_write_request(
@@ -162,7 +163,7 @@ class LoadWorkflowService:
         result = self._write_database(request)
 
         activities_layer, starts_layer, points_layer, atlas_layer = (
-            self.layer_manager.load_output_layers(result.output_path)
+            self.layer_gateway.load_output_layers(result.output_path)
         )
 
         result.activities_layer = activities_layer
@@ -208,7 +209,7 @@ class LoadWorkflowService:
             )
 
         activities_layer, starts_layer, points_layer, atlas_layer = (
-            self.layer_manager.load_output_layers(request.output_path)
+            self.layer_gateway.load_output_layers(request.output_path)
         )
 
         total = activities_layer.featureCount() if activities_layer else 0

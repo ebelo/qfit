@@ -2,6 +2,7 @@ import logging
 from dataclasses import dataclass, field
 
 from .mapbox_config import MapboxConfigError
+from .visualization.application.layer_gateway import LayerGateway
 
 logger = logging.getLogger(__name__)
 
@@ -67,8 +68,8 @@ class VisualApplyService:
     orchestration logic can be tested without a live UI.
     """
 
-    def __init__(self, layer_manager):
-        self.layer_manager = layer_manager
+    def __init__(self, layer_gateway: LayerGateway):
+        self.layer_gateway = layer_gateway
 
     @staticmethod
     def should_update_background(apply_subset_filters):
@@ -107,7 +108,7 @@ class VisualApplyService:
             self._apply_filters_to_all_layers(request.layers, request.query)
 
         if has_layers:
-            self.layer_manager.apply_style(
+            self.layer_gateway.apply_style(
                 request.layers.activities,
                 request.layers.starts,
                 request.layers.points,
@@ -119,7 +120,7 @@ class VisualApplyService:
                     else None
                 ),
             )
-            temporal_note = self.layer_manager.apply_temporal_configuration(
+            temporal_note = self.layer_gateway.apply_temporal_configuration(
                 request.layers.activities,
                 request.layers.starts,
                 request.layers.points,
@@ -155,7 +156,7 @@ class VisualApplyService:
 
     def _apply_filters_to_all_layers(self, layers, query):
         for layer in [layers.activities, layers.starts, layers.points, layers.atlas]:
-            self.layer_manager.apply_filters(
+            self.layer_gateway.apply_filters(
                 layer,
                 query.activity_type,
                 query.date_from,
@@ -173,7 +174,7 @@ class VisualApplyService:
         failure.
         """
         try:
-            layer = self.layer_manager.ensure_background_layer(
+            layer = self.layer_gateway.ensure_background_layer(
                 enabled=config.enabled,
                 preset_name=config.preset_name,
                 access_token=config.access_token,
