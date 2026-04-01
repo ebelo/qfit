@@ -9,14 +9,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from qgis.core import (
-    QgsCoordinateReferenceSystem,
-    QgsLayoutItemElevationProfile,
-    QgsLayoutItemPicture,
-    QgsLayoutPoint,
-    QgsLayoutSize,
-    QgsUnitTypes,
-)
+from qgis.core import QgsLayoutItemPicture, QgsLayoutPoint, QgsLayoutSize, QgsUnitTypes
+
+try:  # pragma: no cover - availability depends on QGIS build
+    from qgis.core import QgsCoordinateReferenceSystem, QgsLayoutItemElevationProfile
+except ImportError:  # pragma: no cover - exercised in stubbed/unit-test mode
+    QgsCoordinateReferenceSystem = None
+    QgsLayoutItemElevationProfile = None
 
 
 @dataclass
@@ -46,23 +45,11 @@ class ProfileItemAdapter:
 def build_profile_item(layout, *, item_id: str, x: float, y: float, w: float, h: float) -> ProfileItemAdapter:
     """Create the current profile layout item and return an adapter for it.
 
-    Prefer a native :class:`QgsLayoutItemElevationProfile` when QGIS exposes
-    it; otherwise fall back to the legacy picture-backed SVG item.
+    Today this continues to use the legacy picture-backed SVG item.  The
+    adapter exists so a future slice can switch to a native
+    ``QgsLayoutItemElevationProfile`` implementation without rewriting atlas
+    export again.
     """
-    if _native_profile_item_available():
-        profile_item = QgsLayoutItemElevationProfile(layout)
-        profile_item.setId(item_id)
-        profile_item.attemptMove(QgsLayoutPoint(x, y, QgsUnitTypes.LayoutMillimeters))
-        profile_item.attemptResize(QgsLayoutSize(w, h, QgsUnitTypes.LayoutMillimeters))
-        set_crs = getattr(profile_item, "setCrs", None)
-        if callable(set_crs):
-            set_crs(QgsCoordinateReferenceSystem("EPSG:3857"))
-        set_atlas_driven = getattr(profile_item, "setAtlasDriven", None)
-        if callable(set_atlas_driven):
-            set_atlas_driven(True)
-        layout.addLayoutItem(profile_item)
-        return ProfileItemAdapter(item=profile_item, kind="native")
-
     profile_item = QgsLayoutItemPicture(layout)
     profile_item.setId(item_id)
     profile_item.attemptMove(QgsLayoutPoint(x, y, QgsUnitTypes.LayoutMillimeters))
