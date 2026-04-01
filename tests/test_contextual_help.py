@@ -264,9 +264,9 @@ class ContextualHelpTests(unittest.TestCase):
         ]:
             self.assertIn(anchor_name, entries)
 
-        self.assertEqual(entries["maxDetailedActivitiesSpinBox"].label_text, "Detailed track fetch limit")
+        self.assertEqual(entries["maxDetailedActivitiesSpinBox"].label_text, "Max new detailed routes this run")
         self.assertTrue(entries["maxDetailedActivitiesSpinBox"].help_button)
-        self.assertIn("only enriches up to 25", entries["maxDetailedActivitiesSpinBox"].helper_text)
+        self.assertIn("downloads up to 25 new detailed routes", entries["maxDetailedActivitiesSpinBox"].helper_text)
         self.assertEqual(entries["pointSamplingStrideSpinBox"].label_text, "Keep every Nth point")
         self.assertEqual(entries["temporalModeComboBox"].label_text, "Temporal timestamps")
         self.assertEqual(entries["backgroundPresetComboBox"].label_text, "Basemap preset")

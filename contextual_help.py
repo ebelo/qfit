@@ -18,27 +18,28 @@ class HelpEntry:
 DOCK_HELP_ENTRIES: tuple[HelpEntry, ...] = (
     HelpEntry(
         anchor_name="detailedStreamsCheckBox",
-        target_text="Fetch detailed Strava tracks when available",
+        target_text="Fetch detailed routes when available",
         tooltip=(
-            "Downloads higher-fidelity Strava stream data for some activities so qfit can write richer "
+            "Downloads higher-fidelity Strava route data for some activities so qfit can write richer "
             "geometry, timestamps, sampled points, and publish/profile metadata."
         ),
         helper_text=(
-            "Turn this on when you want more than start/end points. qfit caches downloaded streams locally "
-            "and may skip extra downloads when Strava quota gets tight."
+            "Turn this on when you want more than start/end points. qfit caches downloaded routes locally, "
+            "and already detailed or cached routes do not consume the per-run download budget."
         ),
     ),
     HelpEntry(
         anchor_name="maxDetailedActivitiesSpinBox",
         label_name="maxDetailedActivitiesLabel",
-        label_text="Detailed track fetch limit",
+        label_text="Max new detailed routes this run",
         tooltip=(
-            "Maximum number of fetched activities that qfit will enrich with detailed Strava streams during "
-            "this fetch. Lower values keep imports faster and burn less Strava quota."
+            "Maximum number of still-missing activities that qfit will newly enrich with detailed Strava "
+            "routes during this fetch. Lower values keep imports faster and burn less Strava quota."
         ),
         helper_text=(
-            "This limit only applies when detailed tracks are enabled. Example: with 100 fetched activities and a "
-            "limit of 25, qfit still writes all 100 activities but only enriches up to 25 with full stream detail."
+            "This limit only applies when detailed routes are enabled. Example: with 100 fetched activities and a "
+            "limit of 25, qfit still writes all 100 activities but only downloads up to 25 new detailed routes. "
+            "Already detailed or cached routes do not count against that limit."
         ),
         help_button=True,
     ),

@@ -240,18 +240,18 @@
                   </widget>
                  </item>
                  <item row="2" column="0" colspan="2">
-                  <widget class="QCheckBox" name="detailedStreamsCheckBox">
-                   <property name="text">
-                    <string>Fetch detailed Strava track streams when available</string>
-                   </property>
-                  </widget>
+                 <widget class="QCheckBox" name="detailedStreamsCheckBox">
+                  <property name="text">
+                    <string>Fetch detailed routes when available</string>
+                  </property>
+                 </widget>
                  </item>
                  <item row="3" column="0">
-                  <widget class="QLabel" name="maxDetailedActivitiesLabel">
-                   <property name="text">
-                    <string>Detailed tracks limit</string>
-                   </property>
-                  </widget>
+                 <widget class="QLabel" name="maxDetailedActivitiesLabel">
+                  <property name="text">
+                    <string>Max new detailed routes this run</string>
+                  </property>
+                 </widget>
                  </item>
                  <item row="3" column="1">
                   <widget class="QSpinBox" name="maxDetailedActivitiesSpinBox">

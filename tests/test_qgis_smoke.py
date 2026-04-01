@@ -167,7 +167,7 @@ class QgisSmokeTests(unittest.TestCase):
         try:
             from qgis.PyQt.QtWidgets import QLabel, QWidget
 
-            self.assertEqual(dock.maxDetailedActivitiesLabel.text(), "Detailed track fetch limit")
+            self.assertEqual(dock.maxDetailedActivitiesLabel.text(), "Max new detailed routes this run")
             self.assertEqual(dock.pointSamplingStrideLabel.text(), "Keep every Nth point")
             self.assertEqual(dock.temporalModeLabel.text(), "Temporal timestamps")
             self.assertEqual(dock.workflowLabel.text(), "Workflow: Fetch & store → Visualize → Analyze → Publish")
@@ -350,6 +350,21 @@ class QgisSmokeTests(unittest.TestCase):
             task_manager.return_value.addTask.assert_called_once_with(fake_task)
             self.assertIs(dock._fetch_task, fake_task)
             self.assertEqual(dock.refreshButton.text(), "Cancel")
+        finally:
+            dock.close()
+            dock.deleteLater()
+
+    def test_detailed_route_controls_use_missing_route_wording(self):
+        dock = QfitDockWidget(self.iface)
+        try:
+            self.assertEqual(
+                dock.detailedStreamsCheckBox.text(),
+                "Fetch detailed routes when available",
+            )
+            self.assertEqual(
+                dock.maxDetailedActivitiesLabel.text(),
+                "Max new detailed routes this run",
+            )
         finally:
             dock.close()
             dock.deleteLater()
