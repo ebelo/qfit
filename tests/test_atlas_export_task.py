@@ -553,7 +553,7 @@ class TestBuildAtlasLayout(unittest.TestCase):
         native_item.setTolerance.assert_called_once_with(12.5)
         native_item.setCrs.assert_called_once()
         layout.addLayoutItem.assert_called_once_with(native_item)
-        style_defaults.assert_called_once_with(native_item)
+        style_defaults.assert_called_once_with(native_item, style=None)
 
     def test_build_native_profile_item_passes_configured_layers(self):
         layout = MagicMock()
@@ -574,6 +574,37 @@ class TestBuildAtlasLayout(unittest.TestCase):
         )
 
         native_item.setLayers.assert_called_once_with([first_layer, second_layer])
+
+    def test_build_native_profile_item_passes_configured_plot_style(self):
+        layout = MagicMock()
+        custom_style = NativeProfilePlotStyle(
+            background_fill_props={"color": "1,2,3,255"},
+            border_fill_props={"color": "4,5,6,255"},
+            x_axis=NativeProfilePlotAxisStyle(
+                suffix=" mi",
+                major_grid_props={"color": "7,8,9,255"},
+                minor_grid_props={"color": "10,11,12,255"},
+            ),
+            y_axis=NativeProfilePlotAxisStyle(
+                suffix=" ft",
+                major_grid_props={"color": "13,14,15,255"},
+                minor_grid_props={"color": "16,17,18,255"},
+            ),
+        )
+
+        with patch("qfit.atlas.profile_item.configure_native_profile_plot_defaults") as style_defaults:
+            build_native_profile_item(
+                layout,
+                item_id="profile",
+                x=10.0,
+                y=20.0,
+                w=30.0,
+                h=40.0,
+                config=NativeProfileItemConfig(plot_style=custom_style),
+            )
+
+        style_defaults.assert_called_once()
+        self.assertIs(style_defaults.call_args.kwargs["style"], custom_style)
 
     def test_configure_native_profile_plot_defaults_styles_axes_and_grid(self):
         item = MagicMock(name="native_item")

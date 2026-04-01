@@ -159,6 +159,7 @@ class NativeProfileItemConfig:
     atlas_driven: bool = True
     tolerance: float | None = None
     layers: list[object] | None = None
+    plot_style: NativeProfilePlotStyle | None = None
 
 
 @dataclass
@@ -433,7 +434,7 @@ def build_native_profile_item(
         tolerance=cfg.tolerance,
         layers=cfg.layers,
     )
-    configure_native_profile_plot_defaults(profile_item)
+    configure_native_profile_plot_defaults(profile_item, style=cfg.plot_style)
     return adapter
 
 
