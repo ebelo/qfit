@@ -45,6 +45,7 @@ def _make_qgis_stub():
     qgis_core.QgsCoordinateReferenceSystem = MagicMock(return_value=MagicMock())
     qgis_core.QgsRectangle = MagicMock(return_value=MagicMock())
     qgis_core.QgsLayoutItemLabel = MagicMock()
+    qgis_core.QgsLayoutItemElevationProfile = MagicMock()
     pic_cls = MagicMock()
     pic_cls.Zoom = 0
     qgis_core.QgsLayoutItemPicture = pic_cls
@@ -169,7 +170,7 @@ def _make_atlas_mock(feature_count=3):
 
 
 class TestBuildAtlasLayout(unittest.TestCase):
-    def test_build_profile_item_creates_adapter_wrapped_picture_item(self):
+    def test_build_profile_item_creates_picture_backed_adapter(self):
         layout = MagicMock()
 
         adapter = build_profile_item(
@@ -182,6 +183,7 @@ class TestBuildAtlasLayout(unittest.TestCase):
         )
 
         self.assertIsInstance(adapter, ProfileItemAdapter)
+        self.assertEqual(adapter.kind, "picture")
         self.assertIs(adapter.item, _qgis_core.QgsLayoutItemPicture.return_value)
         _qgis_core.QgsLayoutItemPicture.return_value.setId.assert_called_once_with("profile")
         layout.addLayoutItem.assert_called_once_with(_qgis_core.QgsLayoutItemPicture.return_value)
@@ -195,6 +197,14 @@ class TestBuildAtlasLayout(unittest.TestCase):
 
         self.assertEqual(item.setPicturePath.call_args_list[0][0][0], "/tmp/profile.svg")
         self.assertEqual(item.setPicturePath.call_args_list[1][0][0], "")
+
+    def test_build_profile_item_adapter_detects_native_profile_items(self):
+        native_item = _qgis_core.QgsLayoutItemElevationProfile.return_value
+        native_item.__class__.__name__ = "QgsLayoutItemElevationProfile"
+
+        adapter = build_profile_item_adapter(native_item)
+
+        self.assertEqual(adapter.kind, "native")
 
     def test_export_map_excludes_atlas_coverage_layer_overlay(self):
         atlas_layer = _make_atlas_layer(feature_count=1)
