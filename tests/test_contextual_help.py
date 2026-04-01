@@ -251,6 +251,7 @@ class ContextualHelpTests(unittest.TestCase):
         entries = {entry.anchor_name: entry for entry in build_dock_help_entries()}
 
         for anchor_name in [
+            "detailedRouteStrategyComboBox",
             "maxDetailedActivitiesSpinBox",
             "writeActivityPointsCheckBox",
             "pointSamplingStrideSpinBox",
@@ -264,6 +265,8 @@ class ContextualHelpTests(unittest.TestCase):
         ]:
             self.assertIn(anchor_name, entries)
 
+        self.assertEqual(entries["detailedRouteStrategyComboBox"].label_text, "Detailed route strategy")
+        self.assertIn("Missing routes only", entries["detailedRouteStrategyComboBox"].helper_text)
         self.assertEqual(entries["maxDetailedActivitiesSpinBox"].label_text, "Max new detailed routes this run")
         self.assertTrue(entries["maxDetailedActivitiesSpinBox"].help_button)
         self.assertIn("downloads up to 25 new detailed routes", entries["maxDetailedActivitiesSpinBox"].helper_text)

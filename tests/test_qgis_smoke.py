@@ -212,6 +212,9 @@ class QgisSmokeTests(unittest.TestCase):
                 BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO,
                 places=3,
             )
+            self.assertEqual(dock.detailedRouteStrategyComboBox.currentText(), "Missing routes only")
+            self.assertIsNotNone(dock.findChild(QLabel, "detailedRouteStrategyComboBoxContextHelpLabel"))
+            self.assertIsNotNone(dock.findChild(QWidget, "detailedRouteStrategyComboBoxHelpField"))
             self.assertIsNotNone(dock.findChild(QLabel, "maxDetailedActivitiesSpinBoxContextHelpLabel"))
             self.assertIsNotNone(dock.findChild(QWidget, "maxDetailedActivitiesSpinBoxHelpField"))
             temporal_helper = dock.findChild(QLabel, "temporalModeComboBoxContextHelpLabel")
@@ -260,6 +263,7 @@ class QgisSmokeTests(unittest.TestCase):
             dock.outputPathLineEdit.setText("/tmp/roundtrip.gpkg")
             dock.perPageSpinBox.setValue(123)
             dock.detailedStreamsCheckBox.setChecked(True)
+            dock.detailedRouteStrategyComboBox.setCurrentText("Recent fetch only")
             dock.backgroundMapCheckBox.setChecked(True)
             dock.backgroundPresetComboBox.setCurrentText(background_preset_text)
             dock.previewSortComboBox.setCurrentText(preview_sort_text)
@@ -274,6 +278,7 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertEqual(settings.get("output_path"), "/tmp/roundtrip.gpkg")
             self.assertEqual(int(settings.get("per_page")), 123)
             self.assertTrue(settings.get_bool("use_detailed_streams"))
+            self.assertEqual(settings.get("detailed_route_strategy"), "Recent fetch only")
             self.assertTrue(settings.get_bool("use_background_map"))
             self.assertEqual(settings.get("background_preset"), background_preset_text)
             self.assertEqual(settings.get("preview_sort"), preview_sort_text)
@@ -291,6 +296,7 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertEqual(dock_reloaded.outputPathLineEdit.text(), "/tmp/roundtrip.gpkg")
             self.assertEqual(dock_reloaded.perPageSpinBox.value(), 123)
             self.assertTrue(dock_reloaded.detailedStreamsCheckBox.isChecked())
+            self.assertEqual(dock_reloaded.detailedRouteStrategyComboBox.currentText(), "Recent fetch only")
             self.assertTrue(dock_reloaded.backgroundMapCheckBox.isChecked())
             self.assertEqual(dock_reloaded.backgroundPresetComboBox.currentText(), background_preset_text)
             self.assertEqual(dock_reloaded.previewSortComboBox.currentText(), preview_sort_text)
@@ -343,9 +349,14 @@ class QgisSmokeTests(unittest.TestCase):
 
             with patch("qfit.qfit_dockwidget.QgsApplication.taskManager") as task_manager:
                 task_manager.return_value.addTask = MagicMock()
+                dock.detailedRouteStrategyComboBox.setCurrentText("Recent fetch only")
                 dock.on_refresh_clicked()
 
             dock.sync_controller.build_fetch_task_request.assert_called_once()
+            self.assertEqual(
+                dock.sync_controller.build_fetch_task_request.call_args.kwargs["detailed_route_strategy"],
+                "Recent fetch only",
+            )
             dock.sync_controller.build_fetch_task.assert_called_once_with("fetch-request")
             task_manager.return_value.addTask.assert_called_once_with(fake_task)
             self.assertIs(dock._fetch_task, fake_task)
@@ -361,6 +372,7 @@ class QgisSmokeTests(unittest.TestCase):
                 dock.detailedStreamsCheckBox.text(),
                 "Fetch detailed routes when available",
             )
+            self.assertEqual(dock.detailedRouteStrategyLabel.text(), "Detailed route strategy")
             self.assertEqual(
                 dock.maxDetailedActivitiesLabel.text(),
                 "Max new detailed routes this run",

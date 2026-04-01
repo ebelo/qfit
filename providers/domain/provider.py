@@ -7,6 +7,7 @@ implement, as well as the common error type they should raise.
 from typing import Dict, List, Optional, Protocol, runtime_checkable
 
 from ...activities.domain.models import Activity
+from ...detailed_route_strategy import DEFAULT_DETAILED_ROUTE_STRATEGY
 
 
 class ProviderError(RuntimeError):
@@ -34,5 +35,6 @@ class ActivityProvider(Protocol):
         after: Optional[float] = None,
         use_detailed_streams: bool = False,
         max_detailed_activities: Optional[int] = None,
+        detailed_route_strategy: str = DEFAULT_DETAILED_ROUTE_STRATEGY,
     ) -> List[Activity]:
         ...

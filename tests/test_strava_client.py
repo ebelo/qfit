@@ -147,6 +147,32 @@ class StravaClientTests(unittest.TestCase):
         self.assertEqual(client.last_stream_enrichment_stats["downloaded"], 1)
         self.assertEqual(client.last_stream_enrichment_stats["remaining_missing"], 1)
 
+    def test_recent_fetch_strategy_keeps_old_first_n_behavior(self):
+        client = StravaClient()
+        cached = client.normalize_activity({"id": 1, "name": "Cached"})
+        missing = client.normalize_activity({"id": 2, "name": "Missing"})
+
+        def fake_cache_lookup(activity):
+            if activity.source_activity_id == "1":
+                return {"latlng": [[46.5, 6.6], [46.6, 6.7]]}
+            return None
+
+        with (
+            patch.object(client, "_load_cached_stream_bundle", side_effect=fake_cache_lookup),
+            patch.object(client, "fetch_activity_stream_bundle") as fetch_mock,
+        ):
+            client.enrich_activities_with_streams(
+                [cached, missing],
+                max_activities=1,
+                strategy="Recent fetch only",
+            )
+
+        fetch_mock.assert_not_called()
+        self.assertEqual(client.last_stream_enrichment_stats["requested"], 1)
+        self.assertEqual(client.last_stream_enrichment_stats["cached"], 1)
+        self.assertEqual(client.last_stream_enrichment_stats["missing_before"], 2)
+        self.assertEqual(client.last_stream_enrichment_stats["remaining_missing"], 1)
+
     def test_enrich_activities_reports_remaining_missing_after_rate_limit_skip(self):
         client = StravaClient()
         activity = client.normalize_activity({"id": 42, "name": "Run"})

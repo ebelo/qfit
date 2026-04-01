@@ -28,6 +28,10 @@ from .atlas.export_service import (
     AtlasExportService,
 )
 from .contextual_help import ContextualHelpBinder, build_dock_help_entries
+from .detailed_route_strategy import (
+    DEFAULT_DETAILED_ROUTE_STRATEGY,
+    detailed_route_strategy_labels,
+)
 from .mapbox_config import (
     DEFAULT_BACKGROUND_PRESET,
     TILE_MODE_RASTER,
@@ -82,6 +86,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._remove_stale_qfit_layers()
         self._apply_contextual_help()
         self._configure_background_preset_options()
+        self._configure_detailed_route_strategy_options()
         self._configure_preview_sort_options()
         self._configure_temporal_mode_options()
         self._load_settings()
@@ -268,6 +273,14 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         for mode in TILE_MODES:
             self.tileModeComboBox.addItem(mode)
 
+    def _configure_detailed_route_strategy_options(self):
+        combo = getattr(self, "detailedRouteStrategyComboBox", None)
+        if combo is None:
+            return
+        combo.clear()
+        for label in detailed_route_strategy_labels():
+            combo.addItem(label)
+
     def _configure_preview_sort_options(self):
         self.previewSortComboBox.clear()
         for label in SORT_OPTIONS:
@@ -285,6 +298,14 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._update_mapbox_advanced_visibility(self.backgroundPresetComboBox.currentText())
 
     def _update_detailed_fetch_visibility(self, enabled):
+        self.detailedRouteStrategyLabel.setVisible(enabled)
+        self.detailedRouteStrategyComboBox.setVisible(enabled)
+        strategy_helper = getattr(self, "detailedRouteStrategyComboBoxContextHelpLabel", None)
+        if strategy_helper is not None:
+            strategy_helper.setVisible(enabled)
+        strategy_wrapper = getattr(self, "detailedRouteStrategyComboBoxHelpField", None)
+        if strategy_wrapper is not None:
+            strategy_wrapper.setVisible(enabled)
         self.maxDetailedActivitiesLabel.setVisible(enabled)
         self.maxDetailedActivitiesSpinBox.setVisible(enabled)
         helper = getattr(self, "maxDetailedActivitiesSpinBoxContextHelpLabel", None)
@@ -410,6 +431,16 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 25,
                 lambda: self.maxDetailedActivitiesSpinBox.value(),
                 lambda value: self._set_int_value(self.maxDetailedActivitiesSpinBox, value, 25),
+            ),
+            UIFieldBinding(
+                "detailed_route_strategy",
+                DEFAULT_DETAILED_ROUTE_STRATEGY,
+                lambda: self.detailedRouteStrategyComboBox.currentText(),
+                lambda value: self._set_combo_value(
+                    self.detailedRouteStrategyComboBox,
+                    value,
+                    DEFAULT_DETAILED_ROUTE_STRATEGY,
+                ),
             ),
             UIFieldBinding(
                 "write_activity_points",
@@ -672,6 +703,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 max_pages=self.maxPagesSpinBox.value(),
                 use_detailed_streams=self.detailedStreamsCheckBox.isChecked(),
                 max_detailed_activities=self.maxDetailedActivitiesSpinBox.value(),
+                detailed_route_strategy=self.detailedRouteStrategyComboBox.currentText(),
                 on_finished=self._on_fetch_finished,
             )
             self._fetch_task = self.sync_controller.build_fetch_task(fetch_request)

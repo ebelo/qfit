@@ -247,13 +247,23 @@
                  </widget>
                  </item>
                  <item row="3" column="0">
+                  <widget class="QLabel" name="detailedRouteStrategyLabel">
+                   <property name="text">
+                    <string>Detailed route strategy</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="1">
+                  <widget class="QComboBox" name="detailedRouteStrategyComboBox"/>
+                 </item>
+                 <item row="4" column="0">
                  <widget class="QLabel" name="maxDetailedActivitiesLabel">
                   <property name="text">
                     <string>Max new detailed routes this run</string>
                   </property>
                  </widget>
                  </item>
-                 <item row="3" column="1">
+                 <item row="4" column="1">
                   <widget class="QSpinBox" name="maxDetailedActivitiesSpinBox">
                    <property name="minimum">
                     <number>1</number>

@@ -5,6 +5,7 @@ provider-neutral :class:`ProviderError`.
 """
 
 from ..domain.provider import ProviderError
+from ...detailed_route_strategy import DEFAULT_DETAILED_ROUTE_STRATEGY
 from .strava_client import StravaClient, StravaClientError
 
 
@@ -51,6 +52,7 @@ class StravaProvider:
         after=None,
         use_detailed_streams=False,
         max_detailed_activities=None,
+        detailed_route_strategy=DEFAULT_DETAILED_ROUTE_STRATEGY,
     ):
         """Fetch activities from Strava.
 
@@ -65,6 +67,7 @@ class StravaProvider:
                 after=after,
                 use_detailed_streams=use_detailed_streams,
                 max_detailed_activities=max_detailed_activities,
+                detailed_route_strategy=detailed_route_strategy,
             )
         except StravaClientError as exc:
             raise ProviderError(str(exc)) from exc

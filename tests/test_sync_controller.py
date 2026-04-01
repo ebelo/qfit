@@ -72,6 +72,7 @@ class BuildFetchTaskTests(unittest.TestCase):
             max_pages=4,
             use_detailed_streams=True,
             max_detailed_activities=9,
+            detailed_route_strategy="Recent fetch only",
             on_finished="callback",
         )
 
@@ -79,6 +80,7 @@ class BuildFetchTaskTests(unittest.TestCase):
         self.assertEqual(request.client_id, "id")
         self.assertEqual(request.per_page, 123)
         self.assertTrue(request.use_detailed_streams)
+        self.assertEqual(request.detailed_route_strategy, "Recent fetch only")
 
     def test_build_fetch_task_validates_provider_and_constructs_fetch_task(self):
         ctrl = SyncController()
@@ -97,6 +99,7 @@ class BuildFetchTaskTests(unittest.TestCase):
                 max_pages=2,
                 use_detailed_streams=True,
                 max_detailed_activities=7,
+                detailed_route_strategy="Recent fetch only",
                 on_finished="callback",
             )
 
@@ -109,6 +112,7 @@ class BuildFetchTaskTests(unittest.TestCase):
             after=None,
             use_detailed_streams=True,
             max_detailed_activities=7,
+            detailed_route_strategy="Recent fetch only",
             on_finished="callback",
         )
         self.assertIs(task, fetch_task_class.return_value)

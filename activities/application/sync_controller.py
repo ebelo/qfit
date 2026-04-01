@@ -2,6 +2,7 @@ import logging
 from dataclasses import dataclass
 from datetime import date
 
+from ...detailed_route_strategy import DEFAULT_DETAILED_ROUTE_STRATEGY
 from .fetch_task import FetchTask
 from ...providers.domain.provider import ProviderError
 from ...providers.infrastructure.strava_provider import StravaProvider
@@ -32,6 +33,7 @@ class BuildFetchTaskRequest:
     max_pages: int = 0
     use_detailed_streams: bool = False
     max_detailed_activities: int = 25
+    detailed_route_strategy: str = DEFAULT_DETAILED_ROUTE_STRATEGY
     on_finished: object = None
 
 
@@ -124,6 +126,7 @@ class SyncController:
         max_pages,
         use_detailed_streams,
         max_detailed_activities,
+        detailed_route_strategy,
         on_finished,
     ) -> BuildFetchTaskRequest:
         """Build a structured request for creating a fetch task."""
@@ -136,6 +139,7 @@ class SyncController:
             max_pages=max_pages,
             use_detailed_streams=use_detailed_streams,
             max_detailed_activities=max_detailed_activities,
+            detailed_route_strategy=detailed_route_strategy,
             on_finished=on_finished,
         )
 
@@ -165,6 +169,7 @@ class SyncController:
             after=None,
             use_detailed_streams=request.use_detailed_streams,
             max_detailed_activities=request.max_detailed_activities,
+            detailed_route_strategy=request.detailed_route_strategy,
             on_finished=request.on_finished,
         )
 

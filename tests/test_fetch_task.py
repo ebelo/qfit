@@ -129,6 +129,7 @@ class TestFetchTaskSuccess(unittest.TestCase):
             after=None,
             use_detailed_streams=False,
             max_detailed_activities=0,
+            detailed_route_strategy="Missing routes only",
         )
 
 

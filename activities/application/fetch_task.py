@@ -8,6 +8,8 @@ import logging
 
 from qgis.core import QgsTask
 
+from ...detailed_route_strategy import DEFAULT_DETAILED_ROUTE_STRATEGY
+
 logger = logging.getLogger(__name__)
 
 from ...providers.domain.provider import ProviderError
@@ -52,7 +54,8 @@ class FetchTask(QgsTask):
         after,
         use_detailed_streams,
         max_detailed_activities,
-        on_finished,
+        detailed_route_strategy=DEFAULT_DETAILED_ROUTE_STRATEGY,
+        on_finished=None,
     ):
         super().__init__("Fetch activities", QgsTask.CanCancel)
         self._provider = provider
@@ -62,6 +65,7 @@ class FetchTask(QgsTask):
         self._after = after
         self._use_detailed_streams = use_detailed_streams
         self._max_detailed_activities = max_detailed_activities
+        self._detailed_route_strategy = detailed_route_strategy
         self._on_finished = on_finished
         self._activities = []
         self._error = None
@@ -83,6 +87,7 @@ class FetchTask(QgsTask):
                 after=self._after,
                 use_detailed_streams=self._use_detailed_streams,
                 max_detailed_activities=self._max_detailed_activities,
+                detailed_route_strategy=self._detailed_route_strategy,
             )
         except ProviderError as exc:
             self._error = str(exc)
