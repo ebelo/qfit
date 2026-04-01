@@ -339,6 +339,43 @@ class QgisSmokeTests(unittest.TestCase):
             dock.close()
             dock.deleteLater()
 
+    def test_generate_atlas_pdf_passes_profile_plot_style_from_settings(self):
+        dock = QfitDockWidget(self.iface)
+        try:
+            fake_task = MagicMock(name="atlas_export_task")
+            dock.atlas_layer = MagicMock()
+            dock.atlas_layer.featureCount.return_value = 3
+            dock.atlasPdfPathLineEdit.setText("/tmp/qfit-atlas.pdf")
+
+            dock.atlas_export_controller.validate_atlas_layer = MagicMock()
+            dock.atlas_export_controller.normalize_pdf_path = MagicMock(
+                return_value=("/tmp/qfit-atlas.pdf", False)
+            )
+            dock.atlas_export_service.check_pdf_export_prerequisites = MagicMock(return_value=None)
+            dock.atlas_export_service.build_request = MagicMock(return_value="atlas-request")
+            dock.atlas_export_service.prepare_basemap_for_export = MagicMock()
+            dock.atlas_export_service.build_task = MagicMock(return_value=fake_task)
+            dock._save_settings = MagicMock()
+
+            with (
+                patch("qfit.qfit_dockwidget.build_native_profile_plot_style_from_settings", return_value="style-override") as build_style,
+                patch("qfit.qfit_dockwidget.QgsApplication.taskManager") as task_manager,
+            ):
+                task_manager.return_value.addTask = MagicMock()
+
+                dock.on_generate_atlas_pdf_clicked()
+
+            build_style.assert_called_once_with(dock.settings)
+            self.assertEqual(
+                dock.atlas_export_service.build_request.call_args.kwargs["profile_plot_style"],
+                "style-override",
+            )
+            dock.atlas_export_service.build_task.assert_called_once_with("atlas-request")
+            task_manager.return_value.addTask.assert_called_once_with(fake_task)
+        finally:
+            dock.close()
+            dock.deleteLater()
+
     def test_refresh_clicked_builds_fetch_task_via_sync_controller(self):
         dock = QfitDockWidget(self.iface)
         try:

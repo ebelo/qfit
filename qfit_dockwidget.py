@@ -27,6 +27,7 @@ from .atlas.export_service import (
     AtlasExportResult,
     AtlasExportService,
 )
+from .atlas.profile_style import build_native_profile_plot_style_from_settings
 from .contextual_help import ContextualHelpBinder, build_dock_help_entries
 from .detailed_route_strategy import (
     DEFAULT_DETAILED_ROUTE_STRATEGY,
@@ -1089,6 +1090,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             style_owner=self.mapboxStyleOwnerLineEdit.text().strip(),
             style_id=self.mapboxStyleIdLineEdit.text().strip(),
             background_enabled=self.backgroundMapCheckBox.isChecked(),
+            profile_plot_style=build_native_profile_plot_style_from_settings(self.settings),
         )
         self.atlas_export_service.prepare_basemap_for_export(export_request)
 

@@ -7,12 +7,17 @@ profile item without rewriting the whole export loop at once.
 
 from __future__ import annotations
 
-from collections.abc import Mapping
 from dataclasses import dataclass
 import math
-from types import MappingProxyType
+from collections.abc import Mapping
 
 from qgis.core import QgsLayoutItemPicture, QgsLayoutPoint, QgsLayoutSize, QgsUnitTypes
+
+from .profile_style import (
+    DEFAULT_NATIVE_PROFILE_PLOT_STYLE,
+    NativeProfilePlotAxisStyle,
+    NativeProfilePlotStyle,
+)
 
 try:  # pragma: no cover - availability depends on QGIS build
     from qgis.core import QgsCoordinateReferenceSystem
@@ -169,52 +174,6 @@ class NativeProfileRequestConfig:
     crs_auth_id: str = "EPSG:3857"
     tolerance: float | None = None
     step_distance: float | None = None
-
-
-@dataclass(frozen=True)
-class NativeProfilePlotAxisStyle:
-    """Styling defaults for one axis of a native profile plot."""
-
-    suffix: str
-    major_grid_props: Mapping[str, str]
-    minor_grid_props: Mapping[str, str]
-
-
-@dataclass(frozen=True)
-class NativeProfilePlotStyle:
-    """Styling defaults for native QGIS profile plots."""
-
-    background_fill_props: Mapping[str, str]
-    border_fill_props: Mapping[str, str]
-    x_axis: NativeProfilePlotAxisStyle
-    y_axis: NativeProfilePlotAxisStyle
-
-
-def _immutable_props(**properties: str) -> Mapping[str, str]:
-    return MappingProxyType(dict(properties))
-
-
-DEFAULT_NATIVE_PROFILE_PLOT_STYLE = NativeProfilePlotStyle(
-    background_fill_props=_immutable_props(
-        color="255,255,255,230",
-        outline_style="no",
-    ),
-    border_fill_props=_immutable_props(
-        color="255,255,255,0",
-        outline_color="160,160,160,255",
-        outline_width="0.2",
-    ),
-    x_axis=NativeProfilePlotAxisStyle(
-        suffix=" km",
-        major_grid_props=_immutable_props(color="210,210,210,255", width="0.25"),
-        minor_grid_props=_immutable_props(color="235,235,235,255", width="0.15"),
-    ),
-    y_axis=NativeProfilePlotAxisStyle(
-        suffix=" m",
-        major_grid_props=_immutable_props(color="210,210,210,255", width="0.25"),
-        minor_grid_props=_immutable_props(color="235,235,235,255", width="0.15"),
-    ),
-)
 
 
 def _build_fill_symbol(properties: Mapping[str, str]):
