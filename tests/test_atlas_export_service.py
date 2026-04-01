@@ -228,6 +228,7 @@ class BuildTaskTests(unittest.TestCase):
             style_owner="mapbox",
             style_id="dark-v11",
             background_enabled=True,
+            profile_plot_style=None,
         )
 
     def test_passes_background_enabled_false(self):
@@ -250,6 +251,26 @@ class BuildTaskTests(unittest.TestCase):
         self.assertFalse(kwargs["background_enabled"])
         self.assertEqual(kwargs["restore_tile_mode"], "Vector")
 
+    def test_passes_profile_plot_style_through_to_task(self):
+        stub_module, MockTask = _make_atlas_task_stub()
+        style = object()
+
+        with patch.dict(sys.modules, {"qfit.atlas.export_task": stub_module}):
+            self.service.build_task(
+                atlas_layer=MagicMock(),
+                output_path="/out.pdf",
+                on_finished=MagicMock(),
+                pre_export_tile_mode="Vector",
+                preset_name="Light",
+                access_token="",
+                style_owner="",
+                style_id="",
+                background_enabled=False,
+                profile_plot_style=style,
+            )
+
+        self.assertIs(MockTask.call_args.kwargs["profile_plot_style"], style)
+
 
 class AtlasExportRequestContractTests(unittest.TestCase):
     def test_build_request_returns_dataclass(self):
@@ -268,3 +289,21 @@ class AtlasExportRequestContractTests(unittest.TestCase):
         self.assertIsInstance(request, GenerateAtlasPdfRequest)
         self.assertEqual(request.output_path, "/tmp/atlas.pdf")
         self.assertTrue(request.background_enabled)
+
+    def test_build_request_preserves_profile_plot_style(self):
+        style = object()
+
+        request = AtlasExportService.build_request(
+            atlas_layer=MagicMock(),
+            output_path="/tmp/atlas.pdf",
+            on_finished=MagicMock(),
+            pre_export_tile_mode="Raster",
+            preset_name="Dark",
+            access_token="tok",
+            style_owner="mapbox",
+            style_id="dark-v11",
+            background_enabled=True,
+            profile_plot_style=style,
+        )
+
+        self.assertIs(request.profile_plot_style, style)

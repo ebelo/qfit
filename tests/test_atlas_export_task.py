@@ -350,14 +350,16 @@ class TestBuildAtlasLayout(unittest.TestCase):
         _qgis_core.QgsLayoutItemPicture.reset_mock()
         _qgis_core.QgsLayoutItemPicture.return_value.reset_mock()
 
-        adapter = build_profile_item(
-            layout,
-            item_id="profile",
-            x=10.0,
-            y=20.0,
-            w=30.0,
-            h=40.0,
-        )
+        with patch("qfit.atlas.profile_item.QgsLayoutItemElevationProfile", _qgis_core.QgsLayoutItemElevationProfile), \
+             patch("qfit.atlas.profile_item.QgsLayoutItemPicture", _qgis_core.QgsLayoutItemPicture):
+            adapter = build_profile_item(
+                layout,
+                item_id="profile",
+                x=10.0,
+                y=20.0,
+                w=30.0,
+                h=40.0,
+            )
 
         self.assertIsInstance(adapter, ProfileItemAdapter)
         self.assertEqual(adapter.kind, "native")
@@ -372,15 +374,17 @@ class TestBuildAtlasLayout(unittest.TestCase):
         _qgis_core.QgsLayoutItemPicture.reset_mock()
         _qgis_core.QgsLayoutItemPicture.return_value.reset_mock()
 
-        adapter = build_profile_item(
-            layout,
-            item_id="profile",
-            x=10.0,
-            y=20.0,
-            w=30.0,
-            h=40.0,
-            native_config=NativeProfileItemConfig(atlas_driven=False),
-        )
+        with patch("qfit.atlas.profile_item.QgsLayoutItemElevationProfile", _qgis_core.QgsLayoutItemElevationProfile), \
+             patch("qfit.atlas.profile_item.QgsLayoutItemPicture", _qgis_core.QgsLayoutItemPicture):
+            adapter = build_profile_item(
+                layout,
+                item_id="profile",
+                x=10.0,
+                y=20.0,
+                w=30.0,
+                h=40.0,
+                native_config=NativeProfileItemConfig(atlas_driven=False),
+            )
 
         self.assertEqual(adapter.kind, "native")
         self.assertIs(adapter.svg_fallback_item, _qgis_core.QgsLayoutItemPicture.return_value)
@@ -394,15 +398,16 @@ class TestBuildAtlasLayout(unittest.TestCase):
         picture_item.reset_mock()
 
         with patch("qfit.atlas.profile_item.build_native_profile_item", return_value=native_adapter):
-            adapter = build_profile_item(
-                layout,
-                item_id="profile",
-                x=10.0,
-                y=20.0,
-                w=30.0,
-                h=40.0,
-                native_config=NativeProfileItemConfig(atlas_driven=True),
-            )
+            with patch("qfit.atlas.profile_item.QgsLayoutItemPicture", _qgis_core.QgsLayoutItemPicture):
+                adapter = build_profile_item(
+                    layout,
+                    item_id="profile",
+                    x=10.0,
+                    y=20.0,
+                    w=30.0,
+                    h=40.0,
+                    native_config=NativeProfileItemConfig(atlas_driven=True),
+                )
 
         self.assertIs(adapter, native_adapter)
         self.assertIs(adapter.svg_fallback_item, picture_item)
@@ -432,14 +437,15 @@ class TestBuildAtlasLayout(unittest.TestCase):
         _qgis_core.QgsLayoutItemPicture.return_value.reset_mock()
 
         with patch("qfit.atlas.profile_item.build_native_profile_item", return_value=None):
-            adapter = build_profile_item(
-                layout,
-                item_id="profile",
-                x=10.0,
-                y=20.0,
-                w=30.0,
-                h=40.0,
-            )
+            with patch("qfit.atlas.profile_item.QgsLayoutItemPicture", _qgis_core.QgsLayoutItemPicture):
+                adapter = build_profile_item(
+                    layout,
+                    item_id="profile",
+                    x=10.0,
+                    y=20.0,
+                    w=30.0,
+                    h=40.0,
+                )
 
         self.assertEqual(adapter.kind, "picture")
         self.assertIs(adapter.item, _qgis_core.QgsLayoutItemPicture.return_value)
@@ -520,6 +526,7 @@ class TestBuildAtlasLayout(unittest.TestCase):
 
         with (
             patch("qfit.atlas.profile_item.QgsLayoutItemElevationProfile", None),
+            patch("qfit.atlas.profile_item.QgsProfileRequest", _qgis_core.QgsProfileRequest),
             patch("qfit.atlas.profile_item.QgsCoordinateReferenceSystem", _qgis_core.QgsCoordinateReferenceSystem),
         ):
             request = build_native_profile_request(curve)
@@ -535,15 +542,16 @@ class TestBuildAtlasLayout(unittest.TestCase):
         native_item.__class__.__name__ = "QgsLayoutItemElevationProfile"
 
         with patch("qfit.atlas.profile_item.configure_native_profile_plot_defaults") as style_defaults:
-            adapter = build_native_profile_item(
-                layout,
-                item_id="profile",
-                x=10.0,
-                y=20.0,
-                w=30.0,
-                h=40.0,
-                config=NativeProfileItemConfig(tolerance=12.5, layers=[]),
-            )
+            with patch("qfit.atlas.profile_item.QgsLayoutItemElevationProfile", _qgis_core.QgsLayoutItemElevationProfile):
+                adapter = build_native_profile_item(
+                    layout,
+                    item_id="profile",
+                    x=10.0,
+                    y=20.0,
+                    w=30.0,
+                    h=40.0,
+                    config=NativeProfileItemConfig(tolerance=12.5, layers=[]),
+                )
 
         self.assertIsNotNone(adapter)
         self.assertEqual(adapter.kind, "native")
@@ -557,26 +565,29 @@ class TestBuildAtlasLayout(unittest.TestCase):
 
     def test_build_native_profile_item_passes_configured_layers(self):
         layout = MagicMock()
+        _qgis_core.QgsLayoutItemElevationProfile.reset_mock()
         native_item = _qgis_core.QgsLayoutItemElevationProfile.return_value
         native_item.reset_mock()
 
         first_layer = MagicMock(name="first_layer")
         second_layer = MagicMock(name="second_layer")
 
-        build_native_profile_item(
-            layout,
-            item_id="profile",
-            x=10.0,
-            y=20.0,
-            w=30.0,
-            h=40.0,
-            config=NativeProfileItemConfig(layers=[first_layer, second_layer]),
-        )
+        with patch("qfit.atlas.profile_item.QgsLayoutItemElevationProfile", _qgis_core.QgsLayoutItemElevationProfile):
+            build_native_profile_item(
+                layout,
+                item_id="profile",
+                x=10.0,
+                y=20.0,
+                w=30.0,
+                h=40.0,
+                config=NativeProfileItemConfig(layers=[first_layer, second_layer]),
+            )
 
         native_item.setLayers.assert_called_once_with([first_layer, second_layer])
 
     def test_build_native_profile_item_passes_configured_plot_style(self):
         layout = MagicMock()
+        _qgis_core.QgsLayoutItemElevationProfile.reset_mock()
         custom_style = NativeProfilePlotStyle(
             background_fill_props={"color": "1,2,3,255"},
             border_fill_props={"color": "4,5,6,255"},
@@ -593,15 +604,16 @@ class TestBuildAtlasLayout(unittest.TestCase):
         )
 
         with patch("qfit.atlas.profile_item.configure_native_profile_plot_defaults") as style_defaults:
-            build_native_profile_item(
-                layout,
-                item_id="profile",
-                x=10.0,
-                y=20.0,
-                w=30.0,
-                h=40.0,
-                config=NativeProfileItemConfig(plot_style=custom_style),
-            )
+            with patch("qfit.atlas.profile_item.QgsLayoutItemElevationProfile", _qgis_core.QgsLayoutItemElevationProfile):
+                build_native_profile_item(
+                    layout,
+                    item_id="profile",
+                    x=10.0,
+                    y=20.0,
+                    w=30.0,
+                    h=40.0,
+                    config=NativeProfileItemConfig(plot_style=custom_style),
+                )
 
         style_defaults.assert_called_once()
         self.assertIs(style_defaults.call_args.kwargs["style"], custom_style)
@@ -780,10 +792,11 @@ class TestBuildAtlasLayout(unittest.TestCase):
     def test_build_native_profile_request_returns_configured_request(self):
         curve = MagicMock(name="curve")
 
-        request = build_native_profile_request(
-            curve,
-            config=NativeProfileRequestConfig(tolerance=25.0, step_distance=5.0),
-        )
+        with patch("qfit.atlas.profile_item.QgsProfileRequest", _qgis_core.QgsProfileRequest):
+            request = build_native_profile_request(
+                curve,
+                config=NativeProfileRequestConfig(tolerance=25.0, step_distance=5.0),
+            )
 
         self.assertIs(request, _qgis_core.QgsProfileRequest.return_value)
         _qgis_core.QgsProfileRequest.assert_called_once_with(curve)
@@ -1164,7 +1177,8 @@ class TestBuildAtlasLayout(unittest.TestCase):
         ]
 
         with patch("qfit.atlas.export_task.QgsPrintLayout") as mock_layout_cls, \
-             patch("qfit.atlas.export_task.QgsLayoutItemMap") as mock_map_cls:
+             patch("qfit.atlas.export_task.QgsLayoutItemMap") as mock_map_cls, \
+             patch("qfit.atlas.export_task.build_profile_item"):
             layout = MagicMock()
             layout.atlas.return_value = MagicMock()
             layout.pageCollection.return_value.pageCount.return_value = 1
@@ -1255,6 +1269,46 @@ class TestBuildAtlasLayout(unittest.TestCase):
         self.assertEqual(native_config.layers, [visible_track_layer, visible_background_layer])
         self.assertTrue(native_config.atlas_driven)
 
+    def test_build_atlas_layout_passes_profile_plot_style_to_native_config(self):
+        atlas_layer = _make_atlas_layer(feature_count=1)
+        atlas_layer.geometryType.return_value = "LineGeometry"
+        profile_style = NativeProfilePlotStyle(
+            background_fill_props={"color": "1,2,3,255"},
+            border_fill_props={"color": "4,5,6,255"},
+            x_axis=NativeProfilePlotAxisStyle(
+                suffix=" mi",
+                major_grid_props={"color": "7,8,9,255"},
+                minor_grid_props={"color": "10,11,12,255"},
+            ),
+            y_axis=NativeProfilePlotAxisStyle(
+                suffix=" ft",
+                major_grid_props={"color": "13,14,15,255"},
+                minor_grid_props={"color": "16,17,18,255"},
+            ),
+        )
+
+        project = MagicMock()
+        project.layerTreeRoot.return_value.findLayers.return_value = []
+
+        with (
+            patch("qfit.atlas.export_task.QgsPrintLayout") as mock_layout_cls,
+            patch("qfit.atlas.export_task.QgsLayoutItemMap"),
+            patch("qfit.atlas.export_task.build_profile_item") as build_profile_item_mock,
+            patch("qfit.atlas.export_task.QgsCoordinateReferenceSystem"),
+            patch("qfit.atlas.export_task.QgsLayoutItemLabel"),
+            patch("qfit.atlas.export_task._add_label", return_value=MagicMock()),
+        ):
+            layout = MagicMock()
+            layout.atlas.return_value = MagicMock()
+            layout.pageCollection.return_value.pageCount.return_value = 1
+            layout.pageCollection.return_value.page.return_value = MagicMock()
+            mock_layout_cls.return_value = layout
+
+            build_atlas_layout(atlas_layer, project=project, profile_plot_style=profile_style)
+
+        native_config = build_profile_item_mock.call_args.kwargs["native_config"]
+        self.assertIs(native_config.plot_style, profile_style)
+
 
 class TestBuildAtlasLayoutSummaryLabels(unittest.TestCase):
     """Verify that profile and stats summary labels are added to the layout."""
@@ -1271,7 +1325,8 @@ class TestBuildAtlasLayoutSummaryLabels(unittest.TestCase):
         project.layerTreeRoot.return_value.findLayers.return_value = []
 
         with patch("qfit.atlas.export_task.QgsPrintLayout") as mock_layout_cls, \
-             patch("qfit.atlas.export_task.QgsLayoutItemMap"):
+             patch("qfit.atlas.export_task.QgsLayoutItemMap"), \
+             patch("qfit.atlas.export_task.build_profile_item"):
             layout = MagicMock()
             layout.atlas.return_value = MagicMock()
             layout.pageCollection.return_value.pageCount.return_value = 1
