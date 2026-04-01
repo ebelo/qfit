@@ -28,6 +28,7 @@ class GenerateAtlasPdfRequest:
     style_owner: str = ""
     style_id: str = ""
     background_enabled: bool = False
+    profile_plot_style: object | None = None
 
 
 @dataclass
@@ -79,6 +80,7 @@ class AtlasExportService:
         style_owner: str,
         style_id: str,
         background_enabled: bool,
+        profile_plot_style: object | None = None,
     ) -> GenerateAtlasPdfRequest:
         return GenerateAtlasPdfRequest(
             atlas_layer=atlas_layer,
@@ -90,6 +92,7 @@ class AtlasExportService:
             style_owner=style_owner,
             style_id=style_id,
             background_enabled=background_enabled,
+            profile_plot_style=profile_plot_style,
         )
 
     def prepare_basemap_for_export(
@@ -154,6 +157,7 @@ class AtlasExportService:
             style_owner=request.style_owner,
             style_id=request.style_id,
             background_enabled=request.background_enabled,
+            profile_plot_style=request.profile_plot_style,
         )
 
     @staticmethod

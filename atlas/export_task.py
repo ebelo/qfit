@@ -300,6 +300,7 @@ def _normalize_extent_to_aspect_ratio(rect: QgsRectangle, target_aspect_ratio: f
 def build_atlas_layout(
     atlas_layer,
     project: QgsProject | None = None,
+    profile_plot_style=None,
 ) -> QgsPrintLayout:
     """Build a :class:`QgsPrintLayout` with per-activity atlas pages.
 
@@ -438,6 +439,7 @@ def build_atlas_layout(
         native_config=NativeProfileItemConfig(
             atlas_driven=atlas_layer_supports_native_profile_atlas(atlas_layer),
             layers=visible_layers,
+            plot_style=profile_plot_style,
         ),
     )
 
@@ -995,6 +997,7 @@ class AtlasExportTask(QgsTask):
         style_owner: str = "",
         style_id: str = "",
         background_enabled: bool = False,
+        profile_plot_style=None,
     ):
         super().__init__("Export qfit atlas PDF", QgsTask.CanCancel)
         self._atlas_layer = atlas_layer
@@ -1008,6 +1011,7 @@ class AtlasExportTask(QgsTask):
         self._style_owner = style_owner
         self._style_id = style_id
         self._background_enabled = background_enabled
+        self._profile_plot_style = profile_plot_style
         self._error: str | None = None
         self._page_count: int = 0
 
@@ -1035,6 +1039,7 @@ class AtlasExportTask(QgsTask):
             layout = build_atlas_layout(
                 self._atlas_layer,
                 project=self._project,
+                profile_plot_style=self._profile_plot_style,
             )
 
             atlas = layout.atlas()
