@@ -346,6 +346,16 @@ class TestBuildAtlasLayout(unittest.TestCase):
         self.assertIsNone(build_native_profile_curve(None))
         self.assertIsNone(build_native_profile_curve(geometry))
 
+    def test_build_native_profile_curve_rejects_polygon_like_geometries(self):
+        polygon = MagicMock(name="polygon")
+        polygon.__class__.__name__ = "QgsPolygon"
+        polygon.exteriorRing.return_value = MagicMock()
+        geometry = MagicMock(name="geometry")
+        geometry.constGet.return_value = polygon
+
+        self.assertIsNone(build_native_profile_curve(geometry))
+        polygon.clone.assert_not_called()
+
     def test_native_adapter_binds_curve_when_supported(self):
         item = MagicMock()
         adapter = ProfileItemAdapter(item=item, kind="native")
