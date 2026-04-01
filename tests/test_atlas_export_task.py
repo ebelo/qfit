@@ -246,6 +246,23 @@ class TestBuildAtlasLayout(unittest.TestCase):
         render_profile.assert_not_called()
         self.assertEqual(profile_temp_files, [])
 
+    def test_apply_page_profile_payload_clears_native_profile_when_curve_missing(self):
+        adapter = MagicMock(name="adapter")
+        adapter.supports_native_profile = True
+        payload = MagicMock(name="payload")
+        payload.native_inputs.return_value = (None, None)
+
+        atlas_export_task._apply_page_profile_payload(
+            adapter,
+            payload,
+            output_path="/tmp/out.pdf",
+            profile_temp_files=[],
+        )
+
+        payload.native_inputs.assert_called_once_with()
+        adapter.clear_profile.assert_called_once_with()
+        adapter.bind_native_profile.assert_not_called()
+
     def test_apply_page_profile_payload_renders_svg_for_picture_adapter(self):
         adapter = MagicMock(name="adapter")
         adapter.supports_native_profile = False
@@ -413,6 +430,14 @@ class TestBuildAtlasLayout(unittest.TestCase):
         item.setCrs.assert_not_called()
         item.setAtlasDriven.assert_not_called()
         item.setTolerance.assert_not_called()
+
+    def test_native_adapter_clear_profile_resets_native_curve_when_supported(self):
+        item = MagicMock()
+        adapter = ProfileItemAdapter(item=item, kind="native")
+
+        adapter.clear_profile()
+
+        item.setProfileCurve.assert_called_once_with(None)
 
     def test_picture_adapter_ignores_native_profile_binding(self):
         item = MagicMock()

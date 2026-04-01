@@ -39,6 +39,13 @@ class ProfileItemAdapter:
         return self.kind == "native"
 
     def clear_profile(self) -> None:
+        if self.supports_native_profile:
+            set_profile_curve = getattr(self.item, "setProfileCurve", None)
+            if callable(set_profile_curve):
+                try:
+                    set_profile_curve(None)
+                except Exception:  # noqa: BLE001
+                    pass
         set_picture_path = getattr(self.item, "setPicturePath", None)
         if callable(set_picture_path):
             set_picture_path("")
