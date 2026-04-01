@@ -51,6 +51,8 @@ from qgis.PyQt.QtGui import QColor, QFont
 
 from ..activity_classification import ordered_canonical_activity_labels
 from .profile_item import (
+    NativeProfileItemConfig,
+    atlas_layer_supports_native_profile_atlas,
     build_native_profile_inputs,
     build_profile_item,
     build_profile_item_adapter,
@@ -431,6 +433,9 @@ def build_atlas_layout(
         y=PROFILE_CHART_Y,
         w=PROFILE_W,
         h=PROFILE_CHART_H,
+        native_config=NativeProfileItemConfig(
+            atlas_driven=atlas_layer_supports_native_profile_atlas(atlas_layer),
+        ),
     )
 
     # Text summaries below the chart — text is set per page during the export
