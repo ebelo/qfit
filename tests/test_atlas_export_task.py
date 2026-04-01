@@ -305,6 +305,24 @@ class TestBuildAtlasLayout(unittest.TestCase):
         self.assertIs(adapter.item, _qgis_core.QgsLayoutItemElevationProfile.return_value)
         _qgis_core.QgsLayoutItemElevationProfile.return_value.setId.assert_called_once_with("profile")
 
+    def test_build_profile_item_adapter_finds_native_svg_fallback_by_id(self):
+        layout = MagicMock()
+        native_item = MagicMock()
+        native_item.__class__.__name__ = "QgsLayoutItemElevationProfile"
+        native_item.id.return_value = "profile"
+        native_item.layout.return_value = layout
+
+        fallback_item = MagicMock()
+        fallback_item.id.return_value = "profile_svg_fallback"
+        other_item = MagicMock()
+        other_item.id.return_value = "something_else"
+        layout.items.return_value = [other_item, fallback_item]
+
+        adapter = build_profile_item_adapter(native_item)
+
+        self.assertEqual(adapter.kind, "native")
+        self.assertIs(adapter.svg_fallback_item, fallback_item)
+
     def test_build_profile_item_falls_back_to_picture_when_native_unavailable(self):
         layout = MagicMock()
         _qgis_core.QgsLayoutItemPicture.reset_mock()

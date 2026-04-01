@@ -162,7 +162,6 @@ def build_profile_item(layout, *, item_id: str, x: float, y: float, w: float, h:
         fallback_item.setResizeMode(QgsLayoutItemPicture.Zoom)
         layout.addLayoutItem(fallback_item)
         native_adapter.svg_fallback_item = fallback_item
-        setattr(native_adapter.item, "_qfit_svg_fallback_item", fallback_item)
         return native_adapter
 
     profile_item = QgsLayoutItemPicture(layout)
@@ -208,11 +207,35 @@ def build_native_profile_item(
     return adapter
 
 
+def _find_svg_fallback_item(item) -> object | None:
+    """Locate the hidden SVG fallback item paired with a native profile item."""
+    item_id_getter = getattr(item, "id", None)
+    layout_getter = getattr(item, "layout", None)
+    if not callable(item_id_getter) or not callable(layout_getter):
+        return None
+
+    item_id = item_id_getter()
+    if not item_id:
+        return None
+
+    layout = layout_getter()
+    items_getter = getattr(layout, "items", None)
+    if not callable(items_getter):
+        return None
+
+    fallback_id = f"{item_id}_svg_fallback"
+    for candidate in items_getter():
+        candidate_id_getter = getattr(candidate, "id", None)
+        if callable(candidate_id_getter) and candidate_id_getter() == fallback_id:
+            return candidate
+    return None
+
+
 def build_profile_item_adapter(item) -> ProfileItemAdapter:
     """Wrap an already-created layout item in the shared adapter type."""
     item_type = type(item).__name__.lower()
     kind = "native" if "elevationprofile" in item_type else "picture"
-    fallback_item = vars(item).get("_qfit_svg_fallback_item") if hasattr(item, "__dict__") else None
+    fallback_item = _find_svg_fallback_item(item) if kind == "native" else None
     return ProfileItemAdapter(item=item, kind=kind, svg_fallback_item=fallback_item)
 
 
