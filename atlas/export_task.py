@@ -28,6 +28,7 @@ from __future__ import annotations
 import logging
 import os
 import sys
+from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +50,11 @@ from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QColor, QFont
 
 from ..activity_classification import ordered_canonical_activity_labels
-from .profile_item import build_profile_item, build_profile_item_adapter
+from .profile_item import (
+    build_native_profile_inputs,
+    build_profile_item,
+    build_profile_item_adapter,
+)
 
 # ---------------------------------------------------------------------------
 # Page geometry (mm, A4 portrait with square map)
@@ -147,6 +152,34 @@ def _normalize_profile_sample_key(value) -> str | None:
         return None
     text = str(value).strip()
     return text or None
+
+
+@dataclass
+class PageProfilePayload:
+    """Per-page profile inputs for both legacy and future native rendering paths."""
+
+    sample_key: str | None
+    page_points: list
+    feature_geometry: object | None
+
+    def native_inputs(self):
+        return build_native_profile_inputs(self.feature_geometry)
+
+
+def _build_page_profile_payload(feat, sort_key_idx, profile_samples) -> PageProfilePayload:
+    sample_key = None
+    if sort_key_idx >= 0:
+        sample_key = _normalize_profile_sample_key(feat.attribute(sort_key_idx))
+
+    page_points = profile_samples.get(sample_key, []) if sample_key else []
+
+    geometry_getter = getattr(feat, "geometry", None)
+    geometry = geometry_getter() if callable(geometry_getter) else None
+    return PageProfilePayload(
+        sample_key=sample_key,
+        page_points=page_points,
+        feature_geometry=geometry,
+    )
 
 
 def _mm(layout, value):
@@ -1070,8 +1103,12 @@ class AtlasExportTask(QgsTask):
                     # Render profile chart SVG for this page.
                     if profile_pic is not None and sort_key_idx >= 0:
                         profile_adapter = build_profile_item_adapter(profile_pic)
-                        page_sort_key = _normalize_profile_sample_key(feat.attribute(sort_key_idx))
-                        page_points = profile_samples.get(page_sort_key, []) if page_sort_key else []
+                        profile_payload = _build_page_profile_payload(
+                            feat,
+                            sort_key_idx,
+                            profile_samples,
+                        )
+                        page_points = profile_payload.page_points
                         if len(page_points) >= 2:
                             try:
                                 from .profile_renderer import render_profile_to_file  # noqa: PLC0415

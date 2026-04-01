@@ -179,6 +179,53 @@ def _make_atlas_mock(feature_count=3):
 
 
 class TestBuildAtlasLayout(unittest.TestCase):
+    def test_build_page_profile_payload_collects_svg_and_native_inputs(self):
+        feat = MagicMock(name="feature")
+        feat.attribute.return_value = "activity-1"
+        feat.geometry.return_value = "feature-geometry"
+
+        payload = atlas_export_task._build_page_profile_payload(
+            feat,
+            0,
+            {"activity-1": [(0.0, 100.0), (1.0, 120.0)]},
+        )
+
+        self.assertEqual(payload.sample_key, "activity-1")
+        self.assertEqual(payload.page_points, [(0.0, 100.0), (1.0, 120.0)])
+        self.assertEqual(payload.feature_geometry, "feature-geometry")
+
+        with patch.object(
+            atlas_export_task,
+            "build_native_profile_inputs",
+            return_value=("curve", "request"),
+        ) as build_native_inputs:
+            native_curve, native_request = payload.native_inputs()
+
+        self.assertEqual(native_curve, "curve")
+        self.assertEqual(native_request, "request")
+        build_native_inputs.assert_called_once_with("feature-geometry")
+
+    def test_build_page_profile_payload_handles_missing_sort_key_and_geometry(self):
+        feat = MagicMock(name="feature")
+        feat.geometry.return_value = None
+
+        payload = atlas_export_task._build_page_profile_payload(feat, -1, {})
+
+        self.assertIsNone(payload.sample_key)
+        self.assertEqual(payload.page_points, [])
+        self.assertIsNone(payload.feature_geometry)
+
+        with patch.object(
+            atlas_export_task,
+            "build_native_profile_inputs",
+            return_value=(None, None),
+        ) as build_native_inputs:
+            native_curve, native_request = payload.native_inputs()
+
+        self.assertIsNone(native_curve)
+        self.assertIsNone(native_request)
+        build_native_inputs.assert_called_once_with(None)
+
     def test_build_profile_item_creates_picture_backed_adapter(self):
         layout = MagicMock()
 
