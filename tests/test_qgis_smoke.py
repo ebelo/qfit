@@ -354,6 +354,50 @@ class QgisSmokeTests(unittest.TestCase):
             dock.close()
             dock.deleteLater()
 
+    def test_open_authorize_clicked_builds_authorize_url_via_sync_controller(self):
+        dock = QfitDockWidget(self.iface)
+        try:
+            dock._save_settings = MagicMock()
+            dock.sync_controller.build_authorize_request = MagicMock(return_value="authorize-request")
+            dock.sync_controller.build_authorize_url = MagicMock(return_value="https://strava.test/auth")
+
+            with patch("qfit.qfit_dockwidget.QDesktopServices.openUrl", return_value=True) as open_url:
+                dock.on_open_authorize_clicked()
+
+            dock.sync_controller.build_authorize_request.assert_called_once()
+            dock.sync_controller.build_authorize_url.assert_called_once_with("authorize-request")
+            open_url.assert_called_once()
+            self.assertIn("Strava authorization opened", dock.statusLabel.text())
+        finally:
+            dock.close()
+            dock.deleteLater()
+
+    def test_exchange_code_clicked_uses_sync_controller_exchange_workflow(self):
+        dock = QfitDockWidget(self.iface)
+        try:
+            dock.authCodeLineEdit.setText("abc123")
+            dock._save_settings = MagicMock()
+            dock._update_connection_status = MagicMock()
+            dock.sync_controller.build_exchange_code_request = MagicMock(return_value="exchange-request")
+            dock.sync_controller.exchange_code_for_tokens = MagicMock(
+                return_value={
+                    "refresh_token": "rtok",
+                    "athlete": {"firstname": "Ada", "lastname": "Lovelace"},
+                }
+            )
+
+            dock.on_exchange_code_clicked()
+
+            dock.sync_controller.build_exchange_code_request.assert_called_once()
+            dock.sync_controller.exchange_code_for_tokens.assert_called_once_with("exchange-request")
+            self.assertEqual(dock.refreshTokenLineEdit.text(), "rtok")
+            self.assertEqual(dock.authCodeLineEdit.text(), "")
+            dock._update_connection_status.assert_called_once()
+            self.assertIn("Ada Lovelace", dock.statusLabel.text())
+        finally:
+            dock.close()
+            dock.deleteLater()
+
     def test_fetch_preview_shows_fetched_count_even_when_visualize_filters_match_zero(self):
         dock = QfitDockWidget(self.iface)
         try:

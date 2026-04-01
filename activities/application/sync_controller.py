@@ -35,6 +35,29 @@ class BuildFetchTaskRequest:
     on_finished: object = None
 
 
+@dataclass
+class StravaAuthorizeRequest:
+    """Structured input for building a Strava authorization URL."""
+
+    client_id: str = ""
+    client_secret: str = ""
+    refresh_token: str = ""
+    cache: object = None
+    redirect_uri: str = ""
+
+
+@dataclass
+class ExchangeStravaCodeRequest:
+    """Structured input for exchanging a Strava authorization code."""
+
+    client_id: str = ""
+    client_secret: str = ""
+    refresh_token: str = ""
+    cache: object = None
+    authorization_code: str = ""
+    redirect_uri: str = ""
+
+
 class SyncController:
     """Orchestrates provider fetch/sync logic independent of the UI."""
 
@@ -144,6 +167,83 @@ class SyncController:
             max_detailed_activities=request.max_detailed_activities,
             on_finished=request.on_finished,
         )
+
+    @staticmethod
+    def build_authorize_request(
+        client_id,
+        client_secret,
+        refresh_token,
+        cache,
+        redirect_uri,
+    ) -> StravaAuthorizeRequest:
+        return StravaAuthorizeRequest(
+            client_id=client_id,
+            client_secret=client_secret,
+            refresh_token=refresh_token,
+            cache=cache,
+            redirect_uri=redirect_uri,
+        )
+
+    def build_authorize_url(
+        self,
+        request: StravaAuthorizeRequest | None = None,
+        **legacy_kwargs,
+    ) -> str:
+        if request is None:
+            request = self.build_authorize_request(**legacy_kwargs)
+
+        provider_request = self.build_provider_request(
+            client_id=request.client_id,
+            client_secret=request.client_secret,
+            refresh_token=request.refresh_token,
+            cache=request.cache,
+            require_refresh_token=False,
+        )
+        provider = self.build_strava_provider(provider_request)
+        return provider.build_authorize_url(redirect_uri=request.redirect_uri)
+
+    @staticmethod
+    def build_exchange_code_request(
+        client_id,
+        client_secret,
+        refresh_token,
+        cache,
+        authorization_code,
+        redirect_uri,
+    ) -> ExchangeStravaCodeRequest:
+        return ExchangeStravaCodeRequest(
+            client_id=client_id,
+            client_secret=client_secret,
+            refresh_token=refresh_token,
+            cache=cache,
+            authorization_code=authorization_code,
+            redirect_uri=redirect_uri,
+        )
+
+    def exchange_code_for_tokens(
+        self,
+        request: ExchangeStravaCodeRequest | None = None,
+        **legacy_kwargs,
+    ):
+        if request is None:
+            request = self.build_exchange_code_request(**legacy_kwargs)
+
+        provider_request = self.build_provider_request(
+            client_id=request.client_id,
+            client_secret=request.client_secret,
+            refresh_token=request.refresh_token,
+            cache=request.cache,
+            require_refresh_token=False,
+        )
+        provider = self.build_strava_provider(provider_request)
+        payload = provider.exchange_code_for_tokens(
+            authorization_code=request.authorization_code,
+            redirect_uri=request.redirect_uri,
+        )
+        refresh_token = payload.get("refresh_token")
+        if not refresh_token:
+            raise ProviderError("Strava returned no refresh token")
+        return payload
 
     def build_sync_metadata(self, activities, provider):
         """Return a sync-context dict from a completed fetch."""

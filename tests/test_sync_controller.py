@@ -5,7 +5,13 @@ from unittest.mock import MagicMock, patch
 from tests import _path  # noqa: F401
 from qfit.provider import ProviderError
 from qfit.strava_provider import StravaProvider
-from qfit.sync_controller import BuildFetchTaskRequest, BuildStravaProviderRequest, SyncController
+from qfit.sync_controller import (
+    BuildFetchTaskRequest,
+    BuildStravaProviderRequest,
+    ExchangeStravaCodeRequest,
+    StravaAuthorizeRequest,
+    SyncController,
+)
 
 
 class BuildStravaProviderTests(unittest.TestCase):
@@ -106,6 +112,96 @@ class BuildFetchTaskTests(unittest.TestCase):
             on_finished="callback",
         )
         self.assertIs(task, fetch_task_class.return_value)
+
+
+class StravaAuthorizationWorkflowTests(unittest.TestCase):
+    def test_build_authorize_request_returns_dataclass(self):
+        ctrl = SyncController()
+
+        request = ctrl.build_authorize_request(
+            client_id="id",
+            client_secret="secret",
+            refresh_token="token",
+            cache="cache",
+            redirect_uri="https://example.com/callback",
+        )
+
+        self.assertIsInstance(request, StravaAuthorizeRequest)
+        self.assertEqual(request.redirect_uri, "https://example.com/callback")
+
+    def test_build_authorize_url_uses_validated_provider(self):
+        ctrl = SyncController()
+        provider = MagicMock(name="provider")
+        provider.build_authorize_url.return_value = "https://strava.test/auth"
+
+        with patch.object(ctrl, "build_strava_provider", return_value=provider):
+            url = ctrl.build_authorize_url(
+                client_id="id",
+                client_secret="secret",
+                refresh_token="",
+                cache="cache",
+                redirect_uri="https://example.com/callback",
+            )
+
+        provider.build_authorize_url.assert_called_once_with(
+            redirect_uri="https://example.com/callback"
+        )
+        self.assertEqual(url, "https://strava.test/auth")
+
+    def test_build_exchange_code_request_returns_dataclass(self):
+        ctrl = SyncController()
+
+        request = ctrl.build_exchange_code_request(
+            client_id="id",
+            client_secret="secret",
+            refresh_token="",
+            cache="cache",
+            authorization_code="abc123",
+            redirect_uri="https://example.com/callback",
+        )
+
+        self.assertIsInstance(request, ExchangeStravaCodeRequest)
+        self.assertEqual(request.authorization_code, "abc123")
+
+    def test_exchange_code_for_tokens_returns_payload(self):
+        ctrl = SyncController()
+        provider = MagicMock(name="provider")
+        payload = {"refresh_token": "rtok", "athlete": {"firstname": "Ada"}}
+        provider.exchange_code_for_tokens.return_value = payload
+
+        with patch.object(ctrl, "build_strava_provider", return_value=provider):
+            result = ctrl.exchange_code_for_tokens(
+                client_id="id",
+                client_secret="secret",
+                refresh_token="",
+                cache="cache",
+                authorization_code="abc123",
+                redirect_uri="https://example.com/callback",
+            )
+
+        provider.exchange_code_for_tokens.assert_called_once_with(
+            authorization_code="abc123",
+            redirect_uri="https://example.com/callback",
+        )
+        self.assertEqual(result, payload)
+
+    def test_exchange_code_for_tokens_requires_refresh_token_in_payload(self):
+        ctrl = SyncController()
+        provider = MagicMock(name="provider")
+        provider.exchange_code_for_tokens.return_value = {"athlete": {"firstname": "Ada"}}
+
+        with (
+            patch.object(ctrl, "build_strava_provider", return_value=provider),
+            self.assertRaisesRegex(ProviderError, "no refresh token"),
+        ):
+            ctrl.exchange_code_for_tokens(
+                client_id="id",
+                client_secret="secret",
+                refresh_token="",
+                cache="cache",
+                authorization_code="abc123",
+                redirect_uri="https://example.com/callback",
+            )
 
 
 class BuildSyncMetadataTests(unittest.TestCase):
