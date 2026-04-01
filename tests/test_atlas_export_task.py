@@ -229,6 +229,7 @@ class TestBuildAtlasLayout(unittest.TestCase):
     def test_apply_page_profile_payload_binds_native_curve_without_svg_render(self):
         adapter = MagicMock(name="adapter")
         adapter.supports_native_profile = True
+        adapter.bind_native_profile.return_value = True
         payload = MagicMock(name="payload")
         payload.native_inputs.return_value = ("curve", "request")
         profile_temp_files = []
@@ -245,6 +246,33 @@ class TestBuildAtlasLayout(unittest.TestCase):
         adapter.bind_native_profile.assert_called_once_with(profile_curve="curve")
         render_profile.assert_not_called()
         self.assertEqual(profile_temp_files, [])
+
+    def test_apply_page_profile_payload_falls_back_to_svg_when_native_bind_is_unavailable(self):
+        adapter = MagicMock(name="adapter")
+        adapter.supports_native_profile = True
+        adapter.bind_native_profile.return_value = False
+        payload = MagicMock(name="payload")
+        payload.native_inputs.return_value = ("curve", "request")
+        payload.page_points = [(0.0, 100.0), (1.0, 120.0)]
+        profile_temp_files = []
+
+        with patch.object(
+            atlas_export_task,
+            "_render_page_profile_svg",
+            return_value="/tmp/profile.svg",
+        ) as render_profile:
+            atlas_export_task._apply_page_profile_payload(
+                adapter,
+                payload,
+                output_path="/tmp/out.pdf",
+                profile_temp_files=profile_temp_files,
+            )
+
+        payload.native_inputs.assert_called_once_with()
+        adapter.bind_native_profile.assert_called_once_with(profile_curve="curve")
+        render_profile.assert_called_once_with(payload.page_points, output_path="/tmp/out.pdf")
+        adapter.set_svg_profile.assert_called_once_with("/tmp/profile.svg")
+        self.assertEqual(profile_temp_files, ["/tmp/profile.svg"])
 
     def test_apply_page_profile_payload_clears_native_profile_when_curve_missing(self):
         adapter = MagicMock(name="adapter")

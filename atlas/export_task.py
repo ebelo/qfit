@@ -188,8 +188,7 @@ def _apply_page_profile_payload(
     """Apply per-page profile data to the active layout item backend."""
     if profile_adapter.supports_native_profile:
         native_curve, _native_request = profile_payload.native_inputs()
-        if native_curve is not None:
-            profile_adapter.bind_native_profile(profile_curve=native_curve)
+        if native_curve is not None and profile_adapter.bind_native_profile(profile_curve=native_curve):
             return
 
     page_points = profile_payload.page_points
