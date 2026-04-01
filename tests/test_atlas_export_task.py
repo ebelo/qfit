@@ -90,6 +90,7 @@ from qfit.atlas.profile_item import (  # noqa: E402
     NativeProfileItemConfig,
     NativeProfileRequestConfig,
     ProfileItemAdapter,
+    build_native_profile_curve,
     build_profile_item,
     build_profile_item_adapter,
     build_native_profile_item,
@@ -326,6 +327,24 @@ class TestBuildAtlasLayout(unittest.TestCase):
 
         with patch("qfit.atlas.profile_item.native_profile_request_available", return_value=False):
             self.assertIsNone(build_native_profile_request(MagicMock(name="curve")))
+
+    def test_build_native_profile_curve_clones_geometry_curve(self):
+        curve = MagicMock(name="curve")
+        curve.clone.return_value = "curve-clone"
+        geometry = MagicMock(name="geometry")
+        geometry.constGet.return_value = curve
+
+        result = build_native_profile_curve(geometry)
+
+        self.assertEqual(result, "curve-clone")
+        curve.clone.assert_called_once_with()
+
+    def test_build_native_profile_curve_returns_none_when_unavailable(self):
+        geometry = MagicMock(name="geometry")
+        geometry.constGet.return_value = None
+
+        self.assertIsNone(build_native_profile_curve(None))
+        self.assertIsNone(build_native_profile_curve(geometry))
 
     def test_native_adapter_binds_curve_when_supported(self):
         item = MagicMock()
