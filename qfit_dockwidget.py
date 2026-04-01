@@ -22,7 +22,6 @@ from .activities.domain.activity_query import (
     summarize_activities,
 )
 from .atlas.export_controller import AtlasExportValidationError
-from .activities.application.fetch_task import FetchTask
 from .activities.application.load_workflow import LoadWorkflowError
 from .atlas.export_service import (
     AtlasExportResult,
@@ -673,31 +672,23 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
         self._save_settings()
         try:
-            provider_request = self.sync_controller.build_provider_request(
+            fetch_request = self.sync_controller.build_fetch_task_request(
                 client_id=self.clientIdLineEdit.text().strip(),
                 client_secret=self.clientSecretLineEdit.text().strip(),
                 refresh_token=self.refreshTokenLineEdit.text().strip(),
                 cache=self.cache,
-                require_refresh_token=True,
+                per_page=self.perPageSpinBox.value(),
+                max_pages=self.maxPagesSpinBox.value(),
+                use_detailed_streams=self.detailedStreamsCheckBox.isChecked(),
+                max_detailed_activities=self.maxDetailedActivitiesSpinBox.value(),
+                on_finished=self._on_fetch_finished,
             )
-            client = self.sync_controller.build_strava_provider(provider_request)
+            self._fetch_task = self.sync_controller.build_fetch_task(fetch_request)
         except ProviderError as exc:
             self._show_error("Strava import failed", str(exc))
             self._set_status("Strava fetch failed")
             return
 
-        # Issue #38: fetch all activities — no date filtering at import time.
-        # Date filters are visualization-only (applied post-import to loaded layers).
-        self._fetch_task = FetchTask(
-            provider=client,
-            per_page=self.perPageSpinBox.value(),
-            max_pages=self.maxPagesSpinBox.value(),
-            before=None,
-            after=None,
-            use_detailed_streams=self.detailedStreamsCheckBox.isChecked(),
-            max_detailed_activities=self.maxDetailedActivitiesSpinBox.value(),
-            on_finished=self._on_fetch_finished,
-        )
         self._set_fetch_running(True)
         self._set_status("Fetching activities from Strava…")
         QgsApplication.taskManager().addTask(self._fetch_task)
