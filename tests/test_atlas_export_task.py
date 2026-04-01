@@ -428,6 +428,16 @@ class TestBuildAtlasLayout(unittest.TestCase):
         self.assertTrue(adapter.supports_native_profile)
         self.assertTrue(adapter.atlas_driven)
 
+    def test_native_adapter_requires_no_manual_page_updates_when_atlas_driven(self):
+        adapter = ProfileItemAdapter(item=MagicMock(), kind="native", atlas_driven=True)
+
+        self.assertFalse(adapter.requires_manual_page_updates)
+
+    def test_picture_adapter_still_requires_manual_page_updates(self):
+        adapter = ProfileItemAdapter(item=MagicMock(), kind="picture", atlas_driven=False)
+
+        self.assertTrue(adapter.requires_manual_page_updates)
+
     def test_native_profile_item_available_reflects_optional_qgis_class(self):
         self.assertTrue(native_profile_item_available())
 
@@ -1363,6 +1373,61 @@ class TestProfileChartRendering(unittest.TestCase):
 
 
 class TestAtlasExportTaskSuccess(unittest.TestCase):
+    def test_atlas_driven_native_profile_skips_manual_sample_loading(self):
+        from qfit.atlas.export_task import _PROFILE_PICTURE_ID
+
+        atlas_layer = _make_atlas_layer(feature_count=1)
+        field_names = [
+            "page_sort_key",
+            "source_activity_id",
+            "center_x_3857",
+            "center_y_3857",
+            "extent_width_m",
+            "extent_height_m",
+        ]
+        atlas_layer.fields.return_value.indexOf = (
+            lambda name: field_names.index(name) if name in field_names else -1
+        )
+        atlas_layer.source.return_value = "/tmp/fake.gpkg|layername=activity_atlas_pages"
+
+        layout_mock, atlas_mock, exporter_cls_mock = _make_atlas_mock(feature_count=1)
+        native_profile_item = MagicMock(name="native_profile_item")
+        native_profile_item.__class__.__name__ = "QgsLayoutItemElevationProfile"
+        native_profile_item.id.return_value = _PROFILE_PICTURE_ID
+        native_profile_item.atlasDriven.return_value = True
+        native_profile_item.layout.return_value = layout_mock
+        layout_mock.items.return_value = [native_profile_item]
+
+        feat_mock = atlas_mock.layout.return_value.reportContext.return_value.feature.return_value
+        feat_mock.attribute.side_effect = lambda idx: {
+            0: "page-1",
+            1: "activity-1",
+            2: 10.0,
+            3: 20.0,
+            4: 30.0,
+            5: 40.0,
+        }.get(idx)
+
+        task = AtlasExportTask(
+            atlas_layer=atlas_layer,
+            output_path="/tmp/qfit_native_atlas_driven.pdf",
+            on_finished=lambda **_: None,
+        )
+
+        with patch("qfit.atlas.export_task.build_atlas_layout", return_value=layout_mock), \
+             patch("qfit.atlas.export_task.QgsLayoutExporter", exporter_cls_mock), \
+             patch("qfit.atlas.export_task.AtlasExportTask._export_cover_page", return_value=None), \
+             patch("qfit.atlas.export_task.AtlasExportTask._export_toc_page", return_value=None), \
+             patch("qfit.atlas.profile_renderer.load_profile_samples_from_gpkg") as load_samples, \
+             patch("qfit.atlas.profile_renderer.render_profile_to_file") as render_profile, \
+             patch("qfit.atlas.export_task.AtlasExportTask._merge_pdfs"), \
+             patch("os.replace"), \
+             patch("os.makedirs"):
+            _run_task(task)
+
+        load_samples.assert_not_called()
+        render_profile.assert_not_called()
+
     def test_run_returns_true_on_success(self):
         layer = _make_atlas_layer(feature_count=3)
         received = {}
