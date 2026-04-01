@@ -606,6 +606,22 @@ class TestBuildAtlasLayout(unittest.TestCase):
         x_axis.setGridMinorSymbol.assert_called_once_with("x-minor")
         y_axis.setGridMajorSymbol.assert_called_once_with("y-major")
         y_axis.setGridMinorSymbol.assert_called_once_with("y-minor")
+        self.assertEqual(
+            fill_symbol_cls.createSimple.call_args_list[0].args[0],
+            dict(DEFAULT_NATIVE_PROFILE_PLOT_STYLE.background_fill_props),
+        )
+        self.assertIsNot(
+            fill_symbol_cls.createSimple.call_args_list[0].args[0],
+            DEFAULT_NATIVE_PROFILE_PLOT_STYLE.background_fill_props,
+        )
+        self.assertEqual(
+            line_symbol_cls.createSimple.call_args_list[0].args[0],
+            dict(DEFAULT_NATIVE_PROFILE_PLOT_STYLE.x_axis.major_grid_props),
+        )
+        self.assertIsNot(
+            line_symbol_cls.createSimple.call_args_list[0].args[0],
+            DEFAULT_NATIVE_PROFILE_PLOT_STYLE.x_axis.major_grid_props,
+        )
 
     def test_configure_native_profile_plot_defaults_accepts_custom_style(self):
         item = MagicMock(name="native_item")
