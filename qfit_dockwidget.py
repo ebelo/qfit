@@ -1060,6 +1060,13 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         if changed:
             self.atlasPdfPathLineEdit.setText(output_path)
 
+        prereq_error = self.atlas_export_service.check_pdf_export_prerequisites()
+        if prereq_error is not None:
+            self._set_atlas_pdf_status("Atlas PDF export unavailable.")
+            self._set_status("Atlas PDF export unavailable.")
+            self._show_error("Atlas PDF export unavailable", prereq_error)
+            return
+
         self._save_settings()
 
         pre_export_tile_mode = self.tileModeComboBox.currentText()

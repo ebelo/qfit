@@ -118,6 +118,26 @@ class AtlasExportService:
         except RuntimeError:
             logger.warning("Vector tile mode failed, falling back to raster", exc_info=True)
 
+    @staticmethod
+    def check_pdf_export_prerequisites() -> str | None:
+        """Return a user-facing error when atlas PDF export prerequisites are missing.
+
+        Export produces one PDF per page and requires a PDF merger to assemble
+        the final multi-page document. If ``pypdf`` is unavailable, fail fast so
+        the UI can show a clear message instead of generating a misleading
+        first-page-only PDF.
+        """
+        from .export_task import _load_pdf_writer  # lazy import: QGIS runtime only
+
+        try:
+            _load_pdf_writer()
+        except ImportError:
+            return (
+                "Atlas PDF export requires the 'pypdf' runtime, but it is not available in this qfit install. "
+                "Reinstall/update the plugin so bundled dependencies are included, then try again."
+            )
+        return None
+
     def build_task(self, request: GenerateAtlasPdfRequest | None = None, **legacy_kwargs):
         """Construct an :class:`AtlasExportTask` ready to submit to the QGIS task manager."""
         if request is None:
