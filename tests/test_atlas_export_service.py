@@ -15,7 +15,6 @@ from qfit.atlas.export_service import (
     AtlasExportService,
     GenerateAtlasPdfRequest,
 )
-from qfit.atlas.profile_item import NativeProfilePlotAxisStyle, NativeProfilePlotStyle
 
 
 # ---------------------------------------------------------------------------
@@ -254,20 +253,7 @@ class BuildTaskTests(unittest.TestCase):
 
     def test_passes_profile_plot_style_through_to_task(self):
         stub_module, MockTask = _make_atlas_task_stub()
-        style = NativeProfilePlotStyle(
-            background_fill_props={"color": "1,2,3,255"},
-            border_fill_props={"color": "4,5,6,255"},
-            x_axis=NativeProfilePlotAxisStyle(
-                suffix=" mi",
-                major_grid_props={"color": "7,8,9,255"},
-                minor_grid_props={"color": "10,11,12,255"},
-            ),
-            y_axis=NativeProfilePlotAxisStyle(
-                suffix=" ft",
-                major_grid_props={"color": "13,14,15,255"},
-                minor_grid_props={"color": "16,17,18,255"},
-            ),
-        )
+        style = object()
 
         with patch.dict(sys.modules, {"qfit.atlas.export_task": stub_module}):
             self.service.build_task(
