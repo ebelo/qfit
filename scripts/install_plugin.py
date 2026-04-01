@@ -4,10 +4,13 @@
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import os
 import pathlib
 import shutil
 import sys
+
+from importlib import metadata
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 PLUGIN_NAME = "qfit"
@@ -36,6 +39,50 @@ def should_copy(path: pathlib.Path) -> bool:
     return path.is_file()
 
 
+def _resolve_package_dir(package_name: str) -> pathlib.Path:
+    spec = importlib.util.find_spec(package_name)
+    origin = getattr(spec, "origin", None) if spec is not None else None
+    if not origin:
+        raise RuntimeError(
+            f"Installing qfit for local testing requires the '{package_name}' package to be installed locally. "
+            f"Run: python -m pip install {package_name}"
+        )
+    return pathlib.Path(origin).resolve().parent
+
+
+def _resolve_distribution_license(package_name: str) -> pathlib.Path | None:
+    try:
+        dist = metadata.distribution(package_name)
+    except metadata.PackageNotFoundError:
+        return None
+
+    for file in dist.files or []:
+        parts = pathlib.Path(file).parts
+        if not parts:
+            continue
+        lowered = [part.lower() for part in parts]
+        filename = lowered[-1]
+        if filename.startswith("license") or filename.startswith("copying"):
+            return pathlib.Path(dist.locate_file(file)).resolve()
+        if "licenses" in lowered:
+            return pathlib.Path(dist.locate_file(file)).resolve()
+    return None
+
+
+def _vendor_runtime_dependencies(destination: pathlib.Path) -> None:
+    vendor_dir = destination / "vendor"
+    vendor_dir.mkdir(parents=True, exist_ok=True)
+
+    pypdf_source = _resolve_package_dir("pypdf")
+    shutil.copytree(pypdf_source, vendor_dir / "pypdf", dirs_exist_ok=True)
+
+    license_path = _resolve_distribution_license("pypdf")
+    if license_path and license_path.is_file():
+        licenses_dir = vendor_dir / "licenses"
+        licenses_dir.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(license_path, licenses_dir / "pypdf_LICENSE.txt")
+
+
 def install_copy(destination: pathlib.Path) -> None:
     if destination.exists() or destination.is_symlink():
         remove_destination(destination)
@@ -48,6 +95,8 @@ def install_copy(destination: pathlib.Path) -> None:
         target = destination / relative
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(path, target)
+
+    _vendor_runtime_dependencies(destination)
 
 
 def install_symlink(destination: pathlib.Path) -> None:
