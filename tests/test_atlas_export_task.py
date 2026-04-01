@@ -46,6 +46,7 @@ def _make_qgis_stub():
     qgis_core.QgsRectangle = MagicMock(return_value=MagicMock())
     qgis_core.QgsLayoutItemLabel = MagicMock()
     qgis_core.QgsLayoutItemElevationProfile = MagicMock()
+    qgis_core.QgsProfileRequest = MagicMock()
     pic_cls = MagicMock()
     pic_cls.Zoom = 0
     qgis_core.QgsLayoutItemPicture = pic_cls
@@ -87,11 +88,14 @@ _qgis_core = _make_qgis_stub()
 import qfit.atlas.export_task as atlas_export_task  # noqa: E402
 from qfit.atlas.profile_item import (  # noqa: E402
     NativeProfileItemConfig,
+    NativeProfileRequestConfig,
     ProfileItemAdapter,
     build_profile_item,
     build_profile_item_adapter,
     build_native_profile_item,
+    build_native_profile_request,
     native_profile_item_available,
+    native_profile_request_available,
 )
 
 from qfit.atlas.export_task import (  # noqa: E402
@@ -213,6 +217,42 @@ class TestBuildAtlasLayout(unittest.TestCase):
     def test_native_profile_item_available_reflects_optional_qgis_class(self):
         self.assertTrue(native_profile_item_available())
 
+    def test_native_profile_request_available_reflects_optional_qgis_class(self):
+        self.assertTrue(native_profile_request_available())
+
+    def test_native_profile_item_support_is_decoupled_from_profile_request_support(self):
+        with (
+            patch("qfit.atlas.profile_item.QgsLayoutItemElevationProfile", _qgis_core.QgsLayoutItemElevationProfile),
+            patch("qfit.atlas.profile_item.QgsProfileRequest", None),
+        ):
+            self.assertTrue(native_profile_item_available())
+            self.assertFalse(native_profile_request_available())
+
+            adapter = build_native_profile_item(
+                MagicMock(),
+                item_id="profile",
+                x=10.0,
+                y=20.0,
+                w=30.0,
+                h=40.0,
+            )
+
+        self.assertIsNotNone(adapter)
+        self.assertEqual(adapter.kind, "native")
+
+    def test_native_profile_request_keeps_crs_when_native_item_class_is_missing(self):
+        curve = MagicMock(name="curve")
+        _qgis_core.QgsProfileRequest.return_value.setCrs.reset_mock()
+
+        with (
+            patch("qfit.atlas.profile_item.QgsLayoutItemElevationProfile", None),
+            patch("qfit.atlas.profile_item.QgsCoordinateReferenceSystem", _qgis_core.QgsCoordinateReferenceSystem),
+        ):
+            request = build_native_profile_request(curve)
+
+        self.assertIs(request, _qgis_core.QgsProfileRequest.return_value)
+        request.setCrs.assert_called_once()
+
     def test_build_native_profile_item_returns_native_adapter_when_available(self):
         layout = MagicMock()
         native_item = _qgis_core.QgsLayoutItemElevationProfile.return_value
@@ -258,6 +298,42 @@ class TestBuildAtlasLayout(unittest.TestCase):
         item.setCrs.assert_not_called()
         item.setAtlasDriven.assert_not_called()
         item.setTolerance.assert_not_called()
+
+    def test_picture_adapter_ignores_native_profile_binding(self):
+        item = MagicMock()
+        adapter = ProfileItemAdapter(item=item, kind="picture")
+
+        adapter.bind_native_profile(profile_curve="curve")
+
+        item.setProfileCurve.assert_not_called()
+
+    def test_build_native_profile_request_returns_configured_request(self):
+        curve = MagicMock(name="curve")
+
+        request = build_native_profile_request(
+            curve,
+            config=NativeProfileRequestConfig(tolerance=25.0, step_distance=5.0),
+        )
+
+        self.assertIs(request, _qgis_core.QgsProfileRequest.return_value)
+        _qgis_core.QgsProfileRequest.assert_called_once_with(curve)
+        request.setCrs.assert_called_once()
+        request.setTolerance.assert_called_once_with(25.0)
+        request.setStepDistance.assert_called_once_with(5.0)
+
+    def test_build_native_profile_request_returns_none_without_curve_or_support(self):
+        self.assertIsNone(build_native_profile_request(None))
+
+        with patch("qfit.atlas.profile_item.native_profile_request_available", return_value=False):
+            self.assertIsNone(build_native_profile_request(MagicMock(name="curve")))
+
+    def test_native_adapter_binds_curve_when_supported(self):
+        item = MagicMock()
+        adapter = ProfileItemAdapter(item=item, kind="native")
+
+        adapter.bind_native_profile(profile_curve="curve")
+
+        item.setProfileCurve.assert_called_once_with("curve")
 
     def test_export_map_excludes_atlas_coverage_layer_overlay(self):
         atlas_layer = _make_atlas_layer(feature_count=1)

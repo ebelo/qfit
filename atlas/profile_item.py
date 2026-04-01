@@ -12,10 +12,19 @@ from dataclasses import dataclass
 from qgis.core import QgsLayoutItemPicture, QgsLayoutPoint, QgsLayoutSize, QgsUnitTypes
 
 try:  # pragma: no cover - availability depends on QGIS build
-    from qgis.core import QgsCoordinateReferenceSystem, QgsLayoutItemElevationProfile
+    from qgis.core import QgsCoordinateReferenceSystem
 except ImportError:  # pragma: no cover - exercised in stubbed/unit-test mode
     QgsCoordinateReferenceSystem = None
+
+try:  # pragma: no cover - availability depends on QGIS build
+    from qgis.core import QgsLayoutItemElevationProfile
+except ImportError:  # pragma: no cover - exercised in stubbed/unit-test mode
     QgsLayoutItemElevationProfile = None
+
+try:  # pragma: no cover - availability depends on QGIS build
+    from qgis.core import QgsProfileRequest
+except ImportError:  # pragma: no cover - exercised in stubbed/unit-test mode
+    QgsProfileRequest = None
 
 
 @dataclass
@@ -67,6 +76,26 @@ class ProfileItemAdapter:
         if callable(set_tolerance) and tolerance is not None:
             set_tolerance(float(tolerance))
 
+    def bind_native_profile(
+        self,
+        *,
+        profile_curve=None,
+    ) -> None:
+        """Bind native profile inputs when the underlying item supports them.
+
+        Picture-backed adapters intentionally ignore these calls so callers can
+        prepare native curve binding logic before the atlas export loop switches
+        away from the legacy SVG renderer. Native profile *request* objects are
+        prepared separately, because supported QGIS versions expose
+        ``profileRequest()`` but not a matching public setter.
+        """
+        if not self.supports_native_profile:
+            return
+
+        set_profile_curve = getattr(self.item, "setProfileCurve", None)
+        if callable(set_profile_curve) and profile_curve is not None:
+            set_profile_curve(profile_curve)
+
 
 @dataclass
 class NativeProfileItemConfig:
@@ -75,6 +104,15 @@ class NativeProfileItemConfig:
     crs_auth_id: str = "EPSG:3857"
     atlas_driven: bool = True
     tolerance: float | None = None
+
+
+@dataclass
+class NativeProfileRequestConfig:
+    """Configuration for building a native QGIS profile request."""
+
+    crs_auth_id: str = "EPSG:3857"
+    tolerance: float | None = None
+    step_distance: float | None = None
 
 
 def build_profile_item(layout, *, item_id: str, x: float, y: float, w: float, h: float) -> ProfileItemAdapter:
@@ -137,3 +175,34 @@ def build_profile_item_adapter(item) -> ProfileItemAdapter:
 
 def native_profile_item_available() -> bool:
     return QgsLayoutItemElevationProfile is not None
+
+
+def native_profile_request_available() -> bool:
+    return QgsProfileRequest is not None
+
+
+def build_native_profile_request(
+    profile_curve,
+    *,
+    config: NativeProfileRequestConfig | None = None,
+):
+    """Create a configured QGIS native profile request when supported."""
+    if not native_profile_request_available() or profile_curve is None:
+        return None
+
+    cfg = config or NativeProfileRequestConfig()
+    request = QgsProfileRequest(profile_curve)
+
+    set_crs = getattr(request, "setCrs", None)
+    if callable(set_crs) and QgsCoordinateReferenceSystem is not None and cfg.crs_auth_id:
+        set_crs(QgsCoordinateReferenceSystem(cfg.crs_auth_id))
+
+    set_tolerance = getattr(request, "setTolerance", None)
+    if callable(set_tolerance) and cfg.tolerance is not None:
+        set_tolerance(float(cfg.tolerance))
+
+    set_step_distance = getattr(request, "setStepDistance", None)
+    if callable(set_step_distance) and cfg.step_distance is not None:
+        set_step_distance(float(cfg.step_distance))
+
+    return request
