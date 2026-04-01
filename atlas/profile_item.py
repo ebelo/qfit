@@ -12,9 +12,13 @@ from dataclasses import dataclass
 from qgis.core import QgsLayoutItemPicture, QgsLayoutPoint, QgsLayoutSize, QgsUnitTypes
 
 try:  # pragma: no cover - availability depends on QGIS build
-    from qgis.core import QgsCoordinateReferenceSystem, QgsLayoutItemElevationProfile
+    from qgis.core import QgsCoordinateReferenceSystem
 except ImportError:  # pragma: no cover - exercised in stubbed/unit-test mode
     QgsCoordinateReferenceSystem = None
+
+try:  # pragma: no cover - availability depends on QGIS build
+    from qgis.core import QgsLayoutItemElevationProfile
+except ImportError:  # pragma: no cover - exercised in stubbed/unit-test mode
     QgsLayoutItemElevationProfile = None
 
 try:  # pragma: no cover - availability depends on QGIS build

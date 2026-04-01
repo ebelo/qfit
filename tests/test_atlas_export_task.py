@@ -240,6 +240,19 @@ class TestBuildAtlasLayout(unittest.TestCase):
         self.assertIsNotNone(adapter)
         self.assertEqual(adapter.kind, "native")
 
+    def test_native_profile_request_keeps_crs_when_native_item_class_is_missing(self):
+        curve = MagicMock(name="curve")
+        _qgis_core.QgsProfileRequest.return_value.setCrs.reset_mock()
+
+        with (
+            patch("qfit.atlas.profile_item.QgsLayoutItemElevationProfile", None),
+            patch("qfit.atlas.profile_item.QgsCoordinateReferenceSystem", _qgis_core.QgsCoordinateReferenceSystem),
+        ):
+            request = build_native_profile_request(curve)
+
+        self.assertIs(request, _qgis_core.QgsProfileRequest.return_value)
+        request.setCrs.assert_called_once()
+
     def test_build_native_profile_item_returns_native_adapter_when_available(self):
         layout = MagicMock()
         native_item = _qgis_core.QgsLayoutItemElevationProfile.return_value
