@@ -9,6 +9,8 @@ import pathlib
 import shutil
 import sys
 
+from package_plugin import _vendor_runtime_dependencies
+
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 PLUGIN_NAME = "qfit"
 EXCLUDED_DIRS = {".git", "dist", "__pycache__"}
@@ -48,6 +50,8 @@ def install_copy(destination: pathlib.Path) -> None:
         target = destination / relative
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(path, target)
+
+    _vendor_runtime_dependencies(destination)
 
 
 def install_symlink(destination: pathlib.Path) -> None:
