@@ -398,6 +398,35 @@ class QgisSmokeTests(unittest.TestCase):
             dock.close()
             dock.deleteLater()
 
+    def test_load_background_clicked_uses_structured_background_workflow(self):
+        dock = QfitDockWidget(self.iface)
+        try:
+            fake_layer = MagicMock(name="background_layer")
+            dock._save_settings = MagicMock()
+            dock.backgroundMapCheckBox.setChecked(True)
+            dock.background_controller.build_load_request = MagicMock(return_value="background-request")
+            dock.background_controller.load_background_request = MagicMock(
+                return_value=MagicMock(
+                    layer=fake_layer,
+                    status="Background map loaded below the qfit activity layers",
+                )
+            )
+
+            dock.on_load_background_clicked()
+
+            dock.background_controller.build_load_request.assert_called_once()
+            dock.background_controller.load_background_request.assert_called_once_with(
+                "background-request"
+            )
+            self.assertIs(dock.background_layer, fake_layer)
+            self.assertEqual(
+                dock.statusLabel.text(),
+                "Background map loaded below the qfit activity layers",
+            )
+        finally:
+            dock.close()
+            dock.deleteLater()
+
     def test_fetch_preview_shows_fetched_count_even_when_visualize_filters_match_zero(self):
         dock = QfitDockWidget(self.iface)
         try:
