@@ -4,6 +4,10 @@ Prefer importing from ``qfit.activities.application.sync_controller``.
 This module remains as a stable forwarding import during the package move.
 """
 
-from .activities.application.sync_controller import BuildStravaProviderRequest, SyncController
+from .activities.application.sync_controller import (
+    BuildFetchTaskRequest,
+    BuildStravaProviderRequest,
+    SyncController,
+)
 
-__all__ = ["BuildStravaProviderRequest", "SyncController"]
+__all__ = ["BuildFetchTaskRequest", "BuildStravaProviderRequest", "SyncController"]

@@ -2,6 +2,7 @@ import logging
 from dataclasses import dataclass
 from datetime import date
 
+from .fetch_task import FetchTask
 from ...providers.domain.provider import ProviderError
 from ...providers.infrastructure.strava_provider import StravaProvider
 
@@ -17,6 +18,21 @@ class BuildStravaProviderRequest:
     refresh_token: str = ""
     cache: object = None
     require_refresh_token: bool = True
+
+
+@dataclass
+class BuildFetchTaskRequest:
+    """Structured input for creating a validated activity-fetch task."""
+
+    client_id: str = ""
+    client_secret: str = ""
+    refresh_token: str = ""
+    cache: object = None
+    per_page: int = 200
+    max_pages: int = 0
+    use_detailed_streams: bool = False
+    max_detailed_activities: int = 25
+    on_finished: object = None
 
 
 class SyncController:
@@ -74,6 +90,60 @@ class SyncController:
                 "Open qfit → Configuration and enter a Strava refresh token first."
             )
         return provider
+
+    @staticmethod
+    def build_fetch_task_request(
+        client_id,
+        client_secret,
+        refresh_token,
+        cache,
+        per_page,
+        max_pages,
+        use_detailed_streams,
+        max_detailed_activities,
+        on_finished,
+    ) -> BuildFetchTaskRequest:
+        """Build a structured request for creating a fetch task."""
+        return BuildFetchTaskRequest(
+            client_id=client_id,
+            client_secret=client_secret,
+            refresh_token=refresh_token,
+            cache=cache,
+            per_page=per_page,
+            max_pages=max_pages,
+            use_detailed_streams=use_detailed_streams,
+            max_detailed_activities=max_detailed_activities,
+            on_finished=on_finished,
+        )
+
+    def build_fetch_task(
+        self,
+        request: BuildFetchTaskRequest | None = None,
+        **legacy_kwargs,
+    ) -> FetchTask:
+        """Create a validated :class:`FetchTask` for background activity import."""
+        if request is None:
+            request = self.build_fetch_task_request(**legacy_kwargs)
+
+        provider_request = self.build_provider_request(
+            client_id=request.client_id,
+            client_secret=request.client_secret,
+            refresh_token=request.refresh_token,
+            cache=request.cache,
+            require_refresh_token=True,
+        )
+        provider = self.build_strava_provider(provider_request)
+
+        return FetchTask(
+            provider=provider,
+            per_page=request.per_page,
+            max_pages=request.max_pages,
+            before=None,
+            after=None,
+            use_detailed_streams=request.use_detailed_streams,
+            max_detailed_activities=request.max_detailed_activities,
+            on_finished=request.on_finished,
+        )
 
     def build_sync_metadata(self, activities, provider):
         """Return a sync-context dict from a completed fetch."""

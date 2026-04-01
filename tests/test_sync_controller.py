@@ -1,10 +1,11 @@
 import unittest
 from types import SimpleNamespace
+from unittest.mock import MagicMock, patch
 
 from tests import _path  # noqa: F401
 from qfit.provider import ProviderError
 from qfit.strava_provider import StravaProvider
-from qfit.sync_controller import BuildStravaProviderRequest, SyncController
+from qfit.sync_controller import BuildFetchTaskRequest, BuildStravaProviderRequest, SyncController
 
 
 class BuildStravaProviderTests(unittest.TestCase):
@@ -50,6 +51,61 @@ class BuildStravaProviderTests(unittest.TestCase):
         ctrl = SyncController()
         provider = ctrl.build_strava_provider("id", "secret", "", require_refresh_token=False)
         self.assertIsInstance(provider, StravaProvider)
+
+
+class BuildFetchTaskTests(unittest.TestCase):
+    def test_build_fetch_task_request_returns_structured_request(self):
+        ctrl = SyncController()
+
+        request = ctrl.build_fetch_task_request(
+            client_id="id",
+            client_secret="secret",
+            refresh_token="token",
+            cache="cache",
+            per_page=123,
+            max_pages=4,
+            use_detailed_streams=True,
+            max_detailed_activities=9,
+            on_finished="callback",
+        )
+
+        self.assertIsInstance(request, BuildFetchTaskRequest)
+        self.assertEqual(request.client_id, "id")
+        self.assertEqual(request.per_page, 123)
+        self.assertTrue(request.use_detailed_streams)
+
+    def test_build_fetch_task_validates_provider_and_constructs_fetch_task(self):
+        ctrl = SyncController()
+        provider = MagicMock(name="provider")
+
+        with (
+            patch.object(ctrl, "build_strava_provider", return_value=provider) as build_provider,
+            patch("qfit.activities.application.sync_controller.FetchTask") as fetch_task_class,
+        ):
+            task = ctrl.build_fetch_task(
+                client_id="id",
+                client_secret="secret",
+                refresh_token="token",
+                cache="cache",
+                per_page=50,
+                max_pages=2,
+                use_detailed_streams=True,
+                max_detailed_activities=7,
+                on_finished="callback",
+            )
+
+        build_provider.assert_called_once()
+        fetch_task_class.assert_called_once_with(
+            provider=provider,
+            per_page=50,
+            max_pages=2,
+            before=None,
+            after=None,
+            use_detailed_streams=True,
+            max_detailed_activities=7,
+            on_finished="callback",
+        )
+        self.assertIs(task, fetch_task_class.return_value)
 
 
 class BuildSyncMetadataTests(unittest.TestCase):

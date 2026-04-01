@@ -332,6 +332,28 @@ class QgisSmokeTests(unittest.TestCase):
         finally:
             dock.close()
             dock.deleteLater()
+
+    def test_refresh_clicked_builds_fetch_task_via_sync_controller(self):
+        dock = QfitDockWidget(self.iface)
+        try:
+            fake_task = MagicMock(name="fetch_task")
+            dock._save_settings = MagicMock()
+            dock.sync_controller.build_fetch_task_request = MagicMock(return_value="fetch-request")
+            dock.sync_controller.build_fetch_task = MagicMock(return_value=fake_task)
+
+            with patch("qfit.qfit_dockwidget.QgsApplication.taskManager") as task_manager:
+                task_manager.return_value.addTask = MagicMock()
+                dock.on_refresh_clicked()
+
+            dock.sync_controller.build_fetch_task_request.assert_called_once()
+            dock.sync_controller.build_fetch_task.assert_called_once_with("fetch-request")
+            task_manager.return_value.addTask.assert_called_once_with(fake_task)
+            self.assertIs(dock._fetch_task, fake_task)
+            self.assertEqual(dock.refreshButton.text(), "Cancel")
+        finally:
+            dock.close()
+            dock.deleteLater()
+
     def test_fetch_preview_shows_fetched_count_even_when_visualize_filters_match_zero(self):
         dock = QfitDockWidget(self.iface)
         try:
