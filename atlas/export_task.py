@@ -166,6 +166,48 @@ class PageProfilePayload:
         return build_native_profile_inputs(self.feature_geometry)
 
 
+def _render_page_profile_svg(page_points, *, output_path: str) -> str | None:
+    """Render the legacy sampled SVG profile for a single atlas page."""
+    from .profile_renderer import render_profile_to_file  # noqa: PLC0415
+
+    return render_profile_to_file(
+        page_points,
+        width_mm=PROFILE_W,
+        height_mm=PROFILE_CHART_H,
+        directory=os.path.dirname(output_path) or None,
+    )
+
+
+def _apply_page_profile_payload(
+    profile_adapter,
+    profile_payload: PageProfilePayload,
+    *,
+    output_path: str,
+    profile_temp_files: list[str],
+) -> None:
+    """Apply per-page profile data to the active layout item backend."""
+    if profile_adapter.supports_native_profile:
+        native_curve, _native_request = profile_payload.native_inputs()
+        if native_curve is not None and profile_adapter.bind_native_profile(profile_curve=native_curve):
+            return
+
+    page_points = profile_payload.page_points
+    if len(page_points) < 2:
+        profile_adapter.clear_profile()
+        return
+
+    try:
+        svg_path = _render_page_profile_svg(page_points, output_path=output_path)
+        if svg_path:
+            profile_adapter.set_svg_profile(svg_path)
+            profile_temp_files.append(svg_path)
+        else:
+            profile_adapter.clear_profile()
+    except Exception:  # noqa: BLE001
+        logger.debug("Profile chart render failed", exc_info=True)
+        profile_adapter.clear_profile()
+
+
 def _build_page_profile_payload(feat, sort_key_idx, profile_samples) -> PageProfilePayload:
     sample_key = None
     if sort_key_idx >= 0:
@@ -1108,26 +1150,12 @@ class AtlasExportTask(QgsTask):
                             sort_key_idx,
                             profile_samples,
                         )
-                        page_points = profile_payload.page_points
-                        if len(page_points) >= 2:
-                            try:
-                                from .profile_renderer import render_profile_to_file  # noqa: PLC0415
-                                svg_path = render_profile_to_file(
-                                    page_points,
-                                    width_mm=PROFILE_W,
-                                    height_mm=PROFILE_CHART_H,
-                                    directory=os.path.dirname(self._output_path) or None,
-                                )
-                                if svg_path:
-                                    profile_adapter.set_svg_profile(svg_path)
-                                    profile_temp_files.append(svg_path)
-                                else:
-                                    profile_adapter.clear_profile()
-                            except Exception:  # noqa: BLE001
-                                logger.debug("Profile chart render failed", exc_info=True)
-                                profile_adapter.clear_profile()
-                        else:
-                            profile_adapter.clear_profile()
+                        _apply_page_profile_payload(
+                            profile_adapter,
+                            profile_payload,
+                            output_path=self._output_path,
+                            profile_temp_files=profile_temp_files,
+                        )
 
                     # Set profile summary text directly from the feature so that
                     # no raw [% %] template syntax can leak (issue #108).

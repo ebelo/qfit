@@ -226,8 +226,98 @@ class TestBuildAtlasLayout(unittest.TestCase):
         self.assertIsNone(native_request)
         build_native_inputs.assert_called_once_with(None)
 
-    def test_build_profile_item_creates_picture_backed_adapter(self):
+    def test_apply_page_profile_payload_binds_native_curve_without_svg_render(self):
+        adapter = MagicMock(name="adapter")
+        adapter.supports_native_profile = True
+        adapter.bind_native_profile.return_value = True
+        payload = MagicMock(name="payload")
+        payload.native_inputs.return_value = ("curve", "request")
+        profile_temp_files = []
+
+        with patch.object(atlas_export_task, "_render_page_profile_svg") as render_profile:
+            atlas_export_task._apply_page_profile_payload(
+                adapter,
+                payload,
+                output_path="/tmp/out.pdf",
+                profile_temp_files=profile_temp_files,
+            )
+
+        payload.native_inputs.assert_called_once_with()
+        adapter.bind_native_profile.assert_called_once_with(profile_curve="curve")
+        render_profile.assert_not_called()
+        self.assertEqual(profile_temp_files, [])
+
+    def test_apply_page_profile_payload_falls_back_to_svg_when_native_bind_is_unavailable(self):
+        adapter = MagicMock(name="adapter")
+        adapter.supports_native_profile = True
+        adapter.bind_native_profile.return_value = False
+        payload = MagicMock(name="payload")
+        payload.native_inputs.return_value = ("curve", "request")
+        payload.page_points = [(0.0, 100.0), (1.0, 120.0)]
+        profile_temp_files = []
+
+        with patch.object(
+            atlas_export_task,
+            "_render_page_profile_svg",
+            return_value="/tmp/profile.svg",
+        ) as render_profile:
+            atlas_export_task._apply_page_profile_payload(
+                adapter,
+                payload,
+                output_path="/tmp/out.pdf",
+                profile_temp_files=profile_temp_files,
+            )
+
+        payload.native_inputs.assert_called_once_with()
+        adapter.bind_native_profile.assert_called_once_with(profile_curve="curve")
+        render_profile.assert_called_once_with(payload.page_points, output_path="/tmp/out.pdf")
+        adapter.set_svg_profile.assert_called_once_with("/tmp/profile.svg")
+        self.assertEqual(profile_temp_files, ["/tmp/profile.svg"])
+
+    def test_apply_page_profile_payload_clears_native_profile_when_curve_missing(self):
+        adapter = MagicMock(name="adapter")
+        adapter.supports_native_profile = True
+        payload = MagicMock(name="payload")
+        payload.native_inputs.return_value = (None, None)
+
+        atlas_export_task._apply_page_profile_payload(
+            adapter,
+            payload,
+            output_path="/tmp/out.pdf",
+            profile_temp_files=[],
+        )
+
+        payload.native_inputs.assert_called_once_with()
+        adapter.clear_profile.assert_called_once_with()
+        adapter.bind_native_profile.assert_not_called()
+
+    def test_apply_page_profile_payload_renders_svg_for_picture_adapter(self):
+        adapter = MagicMock(name="adapter")
+        adapter.supports_native_profile = False
+        payload = MagicMock(name="payload")
+        payload.page_points = [(0.0, 100.0), (1.0, 120.0)]
+        profile_temp_files = []
+
+        with patch.object(
+            atlas_export_task,
+            "_render_page_profile_svg",
+            return_value="/tmp/profile.svg",
+        ) as render_profile:
+            atlas_export_task._apply_page_profile_payload(
+                adapter,
+                payload,
+                output_path="/tmp/out.pdf",
+                profile_temp_files=profile_temp_files,
+            )
+
+        render_profile.assert_called_once()
+        adapter.set_svg_profile.assert_called_once_with("/tmp/profile.svg")
+        self.assertEqual(profile_temp_files, ["/tmp/profile.svg"])
+
+    def test_build_profile_item_prefers_native_adapter_when_available(self):
         layout = MagicMock()
+        _qgis_core.QgsLayoutItemElevationProfile.reset_mock()
+        _qgis_core.QgsLayoutItemElevationProfile.return_value.reset_mock()
 
         adapter = build_profile_item(
             layout,
@@ -239,6 +329,43 @@ class TestBuildAtlasLayout(unittest.TestCase):
         )
 
         self.assertIsInstance(adapter, ProfileItemAdapter)
+        self.assertEqual(adapter.kind, "native")
+        self.assertIs(adapter.item, _qgis_core.QgsLayoutItemElevationProfile.return_value)
+        _qgis_core.QgsLayoutItemElevationProfile.return_value.setId.assert_called_once_with("profile")
+
+    def test_build_profile_item_adapter_finds_native_svg_fallback_by_id(self):
+        layout = MagicMock()
+        native_item = MagicMock()
+        native_item.__class__.__name__ = "QgsLayoutItemElevationProfile"
+        native_item.id.return_value = "profile"
+        native_item.layout.return_value = layout
+
+        fallback_item = MagicMock()
+        fallback_item.id.return_value = "profile_svg_fallback"
+        other_item = MagicMock()
+        other_item.id.return_value = "something_else"
+        layout.items.return_value = [other_item, fallback_item]
+
+        adapter = build_profile_item_adapter(native_item)
+
+        self.assertEqual(adapter.kind, "native")
+        self.assertIs(adapter.svg_fallback_item, fallback_item)
+
+    def test_build_profile_item_falls_back_to_picture_when_native_unavailable(self):
+        layout = MagicMock()
+        _qgis_core.QgsLayoutItemPicture.reset_mock()
+        _qgis_core.QgsLayoutItemPicture.return_value.reset_mock()
+
+        with patch("qfit.atlas.profile_item.build_native_profile_item", return_value=None):
+            adapter = build_profile_item(
+                layout,
+                item_id="profile",
+                x=10.0,
+                y=20.0,
+                w=30.0,
+                h=40.0,
+            )
+
         self.assertEqual(adapter.kind, "picture")
         self.assertIs(adapter.item, _qgis_core.QgsLayoutItemPicture.return_value)
         _qgis_core.QgsLayoutItemPicture.return_value.setId.assert_called_once_with("profile")
@@ -304,6 +431,8 @@ class TestBuildAtlasLayout(unittest.TestCase):
 
     def test_build_native_profile_item_returns_native_adapter_when_available(self):
         layout = MagicMock()
+        _qgis_core.QgsLayoutItemElevationProfile.reset_mock()
+        _qgis_core.QgsLayoutItemElevationProfile.return_value.reset_mock()
         native_item = _qgis_core.QgsLayoutItemElevationProfile.return_value
         native_item.__class__.__name__ = "QgsLayoutItemElevationProfile"
 
@@ -347,6 +476,14 @@ class TestBuildAtlasLayout(unittest.TestCase):
         item.setCrs.assert_not_called()
         item.setAtlasDriven.assert_not_called()
         item.setTolerance.assert_not_called()
+
+    def test_native_adapter_clear_profile_resets_native_curve_when_supported(self):
+        item = MagicMock()
+        adapter = ProfileItemAdapter(item=item, kind="native")
+
+        adapter.clear_profile()
+
+        item.setProfileCurve.assert_called_once_with(None)
 
     def test_picture_adapter_ignores_native_profile_binding(self):
         item = MagicMock()
