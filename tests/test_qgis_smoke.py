@@ -1,6 +1,7 @@
 import os
 import tempfile
 import unittest
+from dataclasses import replace
 from pathlib import Path
 from unittest.mock import patch
 
@@ -13,12 +14,14 @@ try:
     from qgis.PyQt.QtCore import QDate, Qt
 
     from qfit.activities.domain.activity_query import ActivityQuery, build_subset_string
+    from qfit.credential_store import InMemoryCredentialStore
     from qfit.gpkg_writer import GeoPackageWriter
     from qfit.layer_manager import LayerManager
     from qfit.atlas.export_task import BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
     from qfit.mapbox_config import TILE_MODE_RASTER
     from qfit.activities.domain.models import Activity
     from qfit.qfit_dockwidget import QfitDockWidget
+    from qfit.settings_service import SettingsService
     from qfit.ui.dockwidget_dependencies import build_dockwidget_dependencies
     from qfit.visual_apply import VisualApplyService
 
@@ -95,6 +98,20 @@ class _FakeIface:
 
     def mainWindow(self):
         return self._main_window
+
+
+class _FakeQSettings:
+    def __init__(self, data=None):
+        self._data = data or {}
+
+    def value(self, key, default=None):
+        return self._data.get(key, default)
+
+    def setValue(self, key, value):
+        self._data[key] = value
+
+    def remove(self, key):
+        self._data.pop(key, None)
 
 
 @unittest.skipUnless(
@@ -213,6 +230,77 @@ class QgisSmokeTests(unittest.TestCase):
         finally:
             dock.close()
             dock.deleteLater()
+
+    def test_dock_widget_round_trips_settings_through_canonical_binding_table(self):
+        settings = SettingsService(
+            qsettings=_FakeQSettings(),
+            credential_store=InMemoryCredentialStore(),
+        )
+        dependencies = replace(
+            build_dockwidget_dependencies(self.iface),
+            settings=settings,
+        )
+
+        dock = QfitDockWidget(self.iface, dependencies=dependencies)
+        try:
+            preview_sort_text = dock.previewSortComboBox.itemText(
+                1 if dock.previewSortComboBox.count() > 1 else 0
+            )
+            style_preset_text = dock.stylePresetComboBox.itemText(
+                1 if dock.stylePresetComboBox.count() > 1 else 0
+            )
+            temporal_mode_text = dock.temporalModeComboBox.itemText(
+                1 if dock.temporalModeComboBox.count() > 1 else 0
+            )
+            background_preset_text = dock.backgroundPresetComboBox.itemText(
+                1 if dock.backgroundPresetComboBox.count() > 1 else 0
+            )
+
+            dock.clientIdLineEdit.setText("client-123")
+            dock.outputPathLineEdit.setText("/tmp/roundtrip.gpkg")
+            dock.perPageSpinBox.setValue(123)
+            dock.detailedStreamsCheckBox.setChecked(True)
+            dock.backgroundMapCheckBox.setChecked(True)
+            dock.backgroundPresetComboBox.setCurrentText(background_preset_text)
+            dock.previewSortComboBox.setCurrentText(preview_sort_text)
+            dock.stylePresetComboBox.setCurrentText(style_preset_text)
+            dock.temporalModeComboBox.setCurrentText(temporal_mode_text)
+            dock.atlasTargetAspectRatioSpinBox.setValue(1.75)
+            dock.atlasPdfPathLineEdit.setText("/tmp/roundtrip.pdf")
+
+            dock._save_settings()
+
+            self.assertEqual(settings.get("client_id"), "client-123")
+            self.assertEqual(settings.get("output_path"), "/tmp/roundtrip.gpkg")
+            self.assertEqual(int(settings.get("per_page")), 123)
+            self.assertTrue(settings.get_bool("use_detailed_streams"))
+            self.assertTrue(settings.get_bool("use_background_map"))
+            self.assertEqual(settings.get("background_preset"), background_preset_text)
+            self.assertEqual(settings.get("preview_sort"), preview_sort_text)
+            self.assertEqual(settings.get("style_preset"), style_preset_text)
+            self.assertEqual(settings.get("temporal_mode"), temporal_mode_text)
+            self.assertAlmostEqual(float(settings.get("atlas_target_aspect_ratio")), 1.75, places=2)
+            self.assertEqual(settings.get("atlas_pdf_path"), "/tmp/roundtrip.pdf")
+        finally:
+            dock.close()
+            dock.deleteLater()
+
+        dock_reloaded = QfitDockWidget(self.iface, dependencies=dependencies)
+        try:
+            self.assertEqual(dock_reloaded.clientIdLineEdit.text(), "client-123")
+            self.assertEqual(dock_reloaded.outputPathLineEdit.text(), "/tmp/roundtrip.gpkg")
+            self.assertEqual(dock_reloaded.perPageSpinBox.value(), 123)
+            self.assertTrue(dock_reloaded.detailedStreamsCheckBox.isChecked())
+            self.assertTrue(dock_reloaded.backgroundMapCheckBox.isChecked())
+            self.assertEqual(dock_reloaded.backgroundPresetComboBox.currentText(), background_preset_text)
+            self.assertEqual(dock_reloaded.previewSortComboBox.currentText(), preview_sort_text)
+            self.assertEqual(dock_reloaded.stylePresetComboBox.currentText(), style_preset_text)
+            self.assertEqual(dock_reloaded.temporalModeComboBox.currentText(), temporal_mode_text)
+            self.assertAlmostEqual(dock_reloaded.atlasTargetAspectRatioSpinBox.value(), 1.75, places=2)
+            self.assertEqual(dock_reloaded.atlasPdfPathLineEdit.text(), "/tmp/roundtrip.pdf")
+        finally:
+            dock_reloaded.close()
+            dock_reloaded.deleteLater()
 
     def test_fetch_preview_shows_fetched_count_even_when_visualize_filters_match_zero(self):
         dock = QfitDockWidget(self.iface)

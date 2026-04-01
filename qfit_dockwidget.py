@@ -43,6 +43,7 @@ from .providers.domain.provider import ProviderError
 from .providers.infrastructure.strava_provider import StravaProvider
 from .temporal_config import DEFAULT_TEMPORAL_MODE_LABEL, temporal_mode_labels
 from .ui.dockwidget_dependencies import DockWidgetDependencies, build_dockwidget_dependencies
+from .ui_settings_binding import UIFieldBinding, load_bindings, save_bindings
 
 FORM_CLASS, _ = uic.loadUiType(
     __import__("os").path.join(__import__("os").path.dirname(__file__), "qfit_dockwidget_base.ui")
@@ -337,107 +338,195 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.fetch_result_service = dependencies.fetch_result_service
         self.cache = dependencies.cache
 
+    @staticmethod
+    def _set_combo_value(combo_box, value, default_text) -> None:
+        selected = default_text if value in (None, "") else str(value)
+        index = combo_box.findText(selected)
+        if index < 0:
+            index = combo_box.findText(default_text)
+        combo_box.setCurrentIndex(max(index, 0))
+
+    @staticmethod
+    def _set_bool_value(check_box, value, default: bool) -> None:
+        if isinstance(value, str):
+            check_box.setChecked(value.lower() in ("1", "true", "yes", "on"))
+            return
+        if value is None:
+            check_box.setChecked(default)
+            return
+        check_box.setChecked(bool(value))
+
+    @staticmethod
+    def _set_int_value(spin_box, value, default: int) -> None:
+        try:
+            spin_box.setValue(int(value))
+        except (TypeError, ValueError):
+            spin_box.setValue(int(default))
+
+    @staticmethod
+    def _set_float_value(spin_box, value, default: float) -> None:
+        try:
+            spin_box.setValue(float(value))
+        except (TypeError, ValueError):
+            spin_box.setValue(float(default))
+
+    def _set_atlas_target_aspect_ratio_value(self, value) -> None:
+        try:
+            aspect_ratio = float(value)
+        except (TypeError, ValueError):
+            aspect_ratio = BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
+        if aspect_ratio <= 0:
+            aspect_ratio = BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
+        self.atlasTargetAspectRatioSpinBox.setValue(aspect_ratio)
+
+    def _default_output_path(self) -> str:
+        return os.path.join(os.path.expanduser("~"), "qfit_activities.gpkg")
+
+    def _default_atlas_pdf_path(self) -> str:
+        return os.path.join(os.path.expanduser("~"), "qfit_atlas.pdf")
+
+    def _settings_bindings(self) -> list[UIFieldBinding]:
+        default_style_preset = "By activity type"
+        return [
+            UIFieldBinding("client_id", "", lambda: self.clientIdLineEdit.text().strip(), self.clientIdLineEdit.setText),
+            UIFieldBinding("client_secret", "", lambda: self.clientSecretLineEdit.text().strip(), self.clientSecretLineEdit.setText),
+            UIFieldBinding(
+                "redirect_uri",
+                StravaProvider.DEFAULT_REDIRECT_URI,
+                lambda: self.redirectUriLineEdit.text().strip(),
+                self.redirectUriLineEdit.setText,
+            ),
+            UIFieldBinding("refresh_token", "", lambda: self.refreshTokenLineEdit.text().strip(), self.refreshTokenLineEdit.setText),
+            UIFieldBinding("output_path", self._default_output_path(), lambda: self.outputPathLineEdit.text().strip(), self.outputPathLineEdit.setText),
+            UIFieldBinding("per_page", 200, lambda: self.perPageSpinBox.value(), lambda value: self._set_int_value(self.perPageSpinBox, value, 200)),
+            UIFieldBinding("max_pages", 0, lambda: self.maxPagesSpinBox.value(), lambda value: self._set_int_value(self.maxPagesSpinBox, value, 0)),
+            UIFieldBinding(
+                "use_detailed_streams",
+                False,
+                lambda: self.detailedStreamsCheckBox.isChecked(),
+                lambda value: self._set_bool_value(self.detailedStreamsCheckBox, value, False),
+            ),
+            UIFieldBinding(
+                "max_detailed_activities",
+                25,
+                lambda: self.maxDetailedActivitiesSpinBox.value(),
+                lambda value: self._set_int_value(self.maxDetailedActivitiesSpinBox, value, 25),
+            ),
+            UIFieldBinding(
+                "write_activity_points",
+                False,
+                lambda: self.writeActivityPointsCheckBox.isChecked(),
+                lambda value: self._set_bool_value(self.writeActivityPointsCheckBox, value, False),
+            ),
+            UIFieldBinding(
+                "point_sampling_stride",
+                5,
+                lambda: self.pointSamplingStrideSpinBox.value(),
+                lambda value: self._set_int_value(self.pointSamplingStrideSpinBox, value, 5),
+            ),
+            UIFieldBinding(
+                "activity_search_text",
+                "",
+                lambda: self.activitySearchLineEdit.text().strip(),
+                self.activitySearchLineEdit.setText,
+            ),
+            UIFieldBinding(
+                "max_distance_km",
+                0.0,
+                lambda: self.maxDistanceSpinBox.value(),
+                lambda value: self._set_float_value(self.maxDistanceSpinBox, value, 0.0),
+            ),
+            UIFieldBinding(
+                "detailed_only",
+                False,
+                lambda: self.detailedOnlyCheckBox.isChecked(),
+                lambda value: self._set_bool_value(self.detailedOnlyCheckBox, value, False),
+            ),
+            UIFieldBinding(
+                "use_background_map",
+                False,
+                lambda: self.backgroundMapCheckBox.isChecked(),
+                lambda value: self._set_bool_value(self.backgroundMapCheckBox, value, False),
+            ),
+            UIFieldBinding(
+                "mapbox_style_owner",
+                "mapbox",
+                lambda: self.mapboxStyleOwnerLineEdit.text().strip(),
+                self.mapboxStyleOwnerLineEdit.setText,
+            ),
+            UIFieldBinding(
+                "mapbox_style_id",
+                "",
+                lambda: self.mapboxStyleIdLineEdit.text().strip(),
+                self.mapboxStyleIdLineEdit.setText,
+            ),
+            UIFieldBinding(
+                "atlas_margin_percent",
+                8.0,
+                lambda: self.atlasMarginPercentSpinBox.value(),
+                lambda value: self._set_float_value(self.atlasMarginPercentSpinBox, value, 8.0),
+            ),
+            UIFieldBinding(
+                "atlas_min_extent_degrees",
+                0.01,
+                lambda: self.atlasMinExtentSpinBox.value(),
+                lambda value: self._set_float_value(self.atlasMinExtentSpinBox, value, 0.01),
+            ),
+            UIFieldBinding(
+                "atlas_target_aspect_ratio",
+                BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO,
+                lambda: self.atlasTargetAspectRatioSpinBox.value(),
+                self._set_atlas_target_aspect_ratio_value,
+            ),
+            UIFieldBinding(
+                "atlas_pdf_path",
+                self._default_atlas_pdf_path(),
+                lambda: self.atlasPdfPathLineEdit.text().strip(),
+                self.atlasPdfPathLineEdit.setText,
+            ),
+            UIFieldBinding(
+                "temporal_mode",
+                DEFAULT_TEMPORAL_MODE_LABEL,
+                lambda: self.temporalModeComboBox.currentText(),
+                lambda value: self._set_combo_value(self.temporalModeComboBox, value, DEFAULT_TEMPORAL_MODE_LABEL),
+            ),
+            UIFieldBinding(
+                "background_preset",
+                DEFAULT_BACKGROUND_PRESET,
+                lambda: self.backgroundPresetComboBox.currentText(),
+                lambda value: self._set_combo_value(self.backgroundPresetComboBox, value, DEFAULT_BACKGROUND_PRESET),
+            ),
+            UIFieldBinding(
+                "tile_mode",
+                TILE_MODE_RASTER,
+                lambda: self.tileModeComboBox.currentText(),
+                lambda value: self._set_combo_value(self.tileModeComboBox, value, TILE_MODE_RASTER),
+            ),
+            UIFieldBinding(
+                "preview_sort",
+                DEFAULT_SORT_LABEL,
+                lambda: self.previewSortComboBox.currentText(),
+                lambda value: self._set_combo_value(self.previewSortComboBox, value, DEFAULT_SORT_LABEL),
+            ),
+            UIFieldBinding(
+                "style_preset",
+                default_style_preset,
+                lambda: self.stylePresetComboBox.currentText(),
+                lambda value: self._set_combo_value(self.stylePresetComboBox, value, default_style_preset),
+            ),
+        ]
+
     def _load_settings(self):
-        s = self.settings
-        self.clientIdLineEdit.setText(s.get("client_id", ""))
-        self.clientSecretLineEdit.setText(s.get("client_secret", ""))
-        self.redirectUriLineEdit.setText(
-            s.get("redirect_uri", StravaProvider.DEFAULT_REDIRECT_URI)
-        )
+        load_bindings(self._settings_bindings(), self.settings)
         self.authCodeLineEdit.setText("")
-        self.refreshTokenLineEdit.setText(s.get("refresh_token", ""))
-        default_output = s.get(
-            "output_path",
-            os.path.join(os.path.expanduser("~"), "qfit_activities.gpkg"),
-        )
-        self.outputPathLineEdit.setText(default_output)
-        self.perPageSpinBox.setValue(int(s.get("per_page", 200)))
-        self.maxPagesSpinBox.setValue(int(s.get("max_pages", 0)))
-        self.detailedStreamsCheckBox.setChecked(s.get_bool("use_detailed_streams", False))
-        self.maxDetailedActivitiesSpinBox.setValue(int(s.get("max_detailed_activities", 25)))
-        self.writeActivityPointsCheckBox.setChecked(s.get_bool("write_activity_points", False))
-        self.pointSamplingStrideSpinBox.setValue(int(s.get("point_sampling_stride", 5)))
-        self.activitySearchLineEdit.setText(s.get("activity_search_text", ""))
-        self.maxDistanceSpinBox.setValue(float(s.get("max_distance_km", 0.0)))
-        self.detailedOnlyCheckBox.setChecked(s.get_bool("detailed_only", False))
-        self.backgroundMapCheckBox.setChecked(s.get_bool("use_background_map", False))
-        self.mapboxStyleOwnerLineEdit.setText(s.get("mapbox_style_owner", "mapbox"))
-        self.mapboxStyleIdLineEdit.setText(s.get("mapbox_style_id", ""))
-        self.atlasMarginPercentSpinBox.setValue(float(s.get("atlas_margin_percent", 8.0)))
-        self.atlasMinExtentSpinBox.setValue(float(s.get("atlas_min_extent_degrees", 0.01)))
-        stored_atlas_target_aspect_ratio = float(
-            s.get("atlas_target_aspect_ratio", BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO)
-        )
-        if stored_atlas_target_aspect_ratio <= 0:
-            stored_atlas_target_aspect_ratio = BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
-        self.atlasTargetAspectRatioSpinBox.setValue(stored_atlas_target_aspect_ratio)
-        default_pdf_path = s.get(
-            "atlas_pdf_path",
-            os.path.join(os.path.expanduser("~"), "qfit_atlas.pdf"),
-        )
-        self.atlasPdfPathLineEdit.setText(default_pdf_path)
-
-        temporal_mode = s.get("temporal_mode", DEFAULT_TEMPORAL_MODE_LABEL)
-        temporal_mode_index = self.temporalModeComboBox.findText(temporal_mode)
-        if temporal_mode_index < 0:
-            temporal_mode_index = self.temporalModeComboBox.findText(DEFAULT_TEMPORAL_MODE_LABEL)
-        self.temporalModeComboBox.setCurrentIndex(max(temporal_mode_index, 0))
-
-        preset_name = s.get("background_preset", DEFAULT_BACKGROUND_PRESET)
-        preset_index = self.backgroundPresetComboBox.findText(preset_name)
-        if preset_index < 0:
-            preset_index = self.backgroundPresetComboBox.findText(DEFAULT_BACKGROUND_PRESET)
-        self.backgroundPresetComboBox.setCurrentIndex(max(preset_index, 0))
         self._sync_background_style_fields(self.backgroundPresetComboBox.currentText(), force=False)
 
-        tile_mode = s.get("tile_mode", TILE_MODE_RASTER)
-        tile_mode_index = self.tileModeComboBox.findText(tile_mode)
-        self.tileModeComboBox.setCurrentIndex(max(tile_mode_index, 0))
-
-        preview_sort = s.get("preview_sort", DEFAULT_SORT_LABEL)
-        preview_sort_index = self.previewSortComboBox.findText(preview_sort)
-        if preview_sort_index < 0:
-            preview_sort_index = self.previewSortComboBox.findText(DEFAULT_SORT_LABEL)
-        self.previewSortComboBox.setCurrentIndex(max(preview_sort_index, 0))
-
-        style_preset = s.get("style_preset", "By activity type")
-        style_preset_index = self.stylePresetComboBox.findText(style_preset)
-        if style_preset_index < 0:
-            style_preset_index = self.stylePresetComboBox.findText("By activity type")
-        self.stylePresetComboBox.setCurrentIndex(max(style_preset_index, 0))
-
-        last_sync = s.get("last_sync_date", None)
+        last_sync = self.settings.get("last_sync_date", None)
         if last_sync:
             self.countLabel.setText(f"Last sync: {last_sync}")
 
     def _save_settings(self):
-        s = self.settings
-        s.set("client_id", self.clientIdLineEdit.text().strip())
-        s.set("client_secret", self.clientSecretLineEdit.text().strip())
-        s.set("redirect_uri", self.redirectUriLineEdit.text().strip())
-        s.set("refresh_token", self.refreshTokenLineEdit.text().strip())
-        s.set("output_path", self.outputPathLineEdit.text().strip())
-        s.set("per_page", self.perPageSpinBox.value())
-        s.set("max_pages", self.maxPagesSpinBox.value())
-        s.set("use_detailed_streams", self.detailedStreamsCheckBox.isChecked())
-        s.set("max_detailed_activities", self.maxDetailedActivitiesSpinBox.value())
-        s.set("write_activity_points", self.writeActivityPointsCheckBox.isChecked())
-        s.set("point_sampling_stride", self.pointSamplingStrideSpinBox.value())
-        s.set("activity_search_text", self.activitySearchLineEdit.text().strip())
-        s.set("max_distance_km", self.maxDistanceSpinBox.value())
-        s.set("detailed_only", self.detailedOnlyCheckBox.isChecked())
-        s.set("preview_sort", self.previewSortComboBox.currentText())
-        s.set("style_preset", self.stylePresetComboBox.currentText())
-        s.set("temporal_mode", self.temporalModeComboBox.currentText())
-        s.set("use_background_map", self.backgroundMapCheckBox.isChecked())
-        s.set("background_preset", self.backgroundPresetComboBox.currentText())
-        s.set("mapbox_style_owner", self.mapboxStyleOwnerLineEdit.text().strip())
-        s.set("mapbox_style_id", self.mapboxStyleIdLineEdit.text().strip())
-        s.set("tile_mode", self.tileModeComboBox.currentText())
-        s.set("atlas_margin_percent", self.atlasMarginPercentSpinBox.value())
-        s.set("atlas_min_extent_degrees", self.atlasMinExtentSpinBox.value())
-        s.set("atlas_target_aspect_ratio", self.atlasTargetAspectRatioSpinBox.value())
-        s.set("atlas_pdf_path", self.atlasPdfPathLineEdit.text().strip())
+        save_bindings(self._settings_bindings(), self.settings)
 
 
     def _set_default_dates(self):
