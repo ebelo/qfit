@@ -40,6 +40,7 @@ class ProfileItemAdapter:
     item: object
     kind: str = "picture"
     svg_fallback_item: object | None = None
+    atlas_driven: bool = False
 
     @property
     def supports_native_profile(self) -> bool:
@@ -102,6 +103,7 @@ class ProfileItemAdapter:
         set_atlas_driven = getattr(self.item, "setAtlasDriven", None)
         if callable(set_atlas_driven):
             set_atlas_driven(bool(atlas_driven))
+        self.atlas_driven = bool(atlas_driven)
 
         set_tolerance = getattr(self.item, "setTolerance", None)
         if callable(set_tolerance) and tolerance is not None:
@@ -309,7 +311,17 @@ def build_profile_item_adapter(item) -> ProfileItemAdapter:
     item_type = type(item).__name__.lower()
     kind = "native" if "elevationprofile" in item_type else "picture"
     fallback_item = _find_svg_fallback_item(item) if kind == "native" else None
-    return ProfileItemAdapter(item=item, kind=kind, svg_fallback_item=fallback_item)
+    atlas_driven = False
+    if kind == "native":
+        atlas_driven_getter = getattr(item, "atlasDriven", None)
+        if callable(atlas_driven_getter):
+            try:
+                atlas_driven_value = _coerce_boolish(atlas_driven_getter())
+            except Exception:  # noqa: BLE001
+                atlas_driven = False
+            else:
+                atlas_driven = bool(atlas_driven_value) if atlas_driven_value is not None else False
+    return ProfileItemAdapter(item=item, kind=kind, svg_fallback_item=fallback_item, atlas_driven=atlas_driven)
 
 
 def native_profile_item_available() -> bool:
