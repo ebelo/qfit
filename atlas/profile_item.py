@@ -10,6 +10,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from qgis.core import (
+    QgsCoordinateReferenceSystem,
+    QgsLayoutItemElevationProfile,
     QgsLayoutItemPicture,
     QgsLayoutPoint,
     QgsLayoutSize,
@@ -22,6 +24,7 @@ class ProfileItemAdapter:
     """Thin wrapper around the current layout item used for atlas profiles."""
 
     item: object
+    kind: str = "picture"
 
     def clear_profile(self) -> None:
         set_picture_path = getattr(self.item, "setPicturePath", None)
@@ -43,19 +46,38 @@ class ProfileItemAdapter:
 def build_profile_item(layout, *, item_id: str, x: float, y: float, w: float, h: float) -> ProfileItemAdapter:
     """Create the current profile layout item and return an adapter for it.
 
-    Today this still uses :class:`QgsLayoutItemPicture`, but callers interact
-    with the returned adapter so the rendering backend can be replaced later by
-    a native QGIS elevation profile item.
+    Prefer a native :class:`QgsLayoutItemElevationProfile` when QGIS exposes
+    it; otherwise fall back to the legacy picture-backed SVG item.
     """
+    if _native_profile_item_available():
+        profile_item = QgsLayoutItemElevationProfile(layout)
+        profile_item.setId(item_id)
+        profile_item.attemptMove(QgsLayoutPoint(x, y, QgsUnitTypes.LayoutMillimeters))
+        profile_item.attemptResize(QgsLayoutSize(w, h, QgsUnitTypes.LayoutMillimeters))
+        set_crs = getattr(profile_item, "setCrs", None)
+        if callable(set_crs):
+            set_crs(QgsCoordinateReferenceSystem("EPSG:3857"))
+        set_atlas_driven = getattr(profile_item, "setAtlasDriven", None)
+        if callable(set_atlas_driven):
+            set_atlas_driven(True)
+        layout.addLayoutItem(profile_item)
+        return ProfileItemAdapter(item=profile_item, kind="native")
+
     profile_item = QgsLayoutItemPicture(layout)
     profile_item.setId(item_id)
     profile_item.attemptMove(QgsLayoutPoint(x, y, QgsUnitTypes.LayoutMillimeters))
     profile_item.attemptResize(QgsLayoutSize(w, h, QgsUnitTypes.LayoutMillimeters))
     profile_item.setResizeMode(QgsLayoutItemPicture.Zoom)
     layout.addLayoutItem(profile_item)
-    return ProfileItemAdapter(item=profile_item)
+    return ProfileItemAdapter(item=profile_item, kind="picture")
 
 
 def build_profile_item_adapter(item) -> ProfileItemAdapter:
     """Wrap an already-created layout item in the shared adapter type."""
-    return ProfileItemAdapter(item=item)
+    item_type = type(item).__name__.lower()
+    kind = "native" if "elevationprofile" in item_type else "picture"
+    return ProfileItemAdapter(item=item, kind=kind)
+
+
+def _native_profile_item_available() -> bool:
+    return QgsLayoutItemElevationProfile is not None

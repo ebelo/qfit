@@ -45,6 +45,7 @@ def _make_qgis_stub():
     qgis_core.QgsCoordinateReferenceSystem = MagicMock(return_value=MagicMock())
     qgis_core.QgsRectangle = MagicMock(return_value=MagicMock())
     qgis_core.QgsLayoutItemLabel = MagicMock()
+    qgis_core.QgsLayoutItemElevationProfile = MagicMock()
     pic_cls = MagicMock()
     pic_cls.Zoom = 0
     qgis_core.QgsLayoutItemPicture = pic_cls
@@ -169,7 +170,7 @@ def _make_atlas_mock(feature_count=3):
 
 
 class TestBuildAtlasLayout(unittest.TestCase):
-    def test_build_profile_item_creates_adapter_wrapped_picture_item(self):
+    def test_build_profile_item_prefers_native_elevation_profile_item_when_available(self):
         layout = MagicMock()
 
         adapter = build_profile_item(
@@ -182,9 +183,26 @@ class TestBuildAtlasLayout(unittest.TestCase):
         )
 
         self.assertIsInstance(adapter, ProfileItemAdapter)
+        self.assertEqual(adapter.kind, "native")
+        self.assertIs(adapter.item, _qgis_core.QgsLayoutItemElevationProfile.return_value)
+        _qgis_core.QgsLayoutItemElevationProfile.return_value.setId.assert_called_once_with("profile")
+        layout.addLayoutItem.assert_called_once_with(_qgis_core.QgsLayoutItemElevationProfile.return_value)
+
+    def test_build_profile_item_falls_back_to_picture_when_native_item_unavailable(self):
+        layout = MagicMock()
+
+        with patch("qfit.atlas.profile_item._native_profile_item_available", return_value=False):
+            adapter = build_profile_item(
+                layout,
+                item_id="profile",
+                x=10.0,
+                y=20.0,
+                w=30.0,
+                h=40.0,
+            )
+
+        self.assertEqual(adapter.kind, "picture")
         self.assertIs(adapter.item, _qgis_core.QgsLayoutItemPicture.return_value)
-        _qgis_core.QgsLayoutItemPicture.return_value.setId.assert_called_once_with("profile")
-        layout.addLayoutItem.assert_called_once_with(_qgis_core.QgsLayoutItemPicture.return_value)
 
     def test_build_profile_item_adapter_can_clear_and_set_svg(self):
         item = MagicMock()
@@ -195,6 +213,14 @@ class TestBuildAtlasLayout(unittest.TestCase):
 
         self.assertEqual(item.setPicturePath.call_args_list[0][0][0], "/tmp/profile.svg")
         self.assertEqual(item.setPicturePath.call_args_list[1][0][0], "")
+
+    def test_build_profile_item_adapter_detects_native_profile_items(self):
+        native_item = _qgis_core.QgsLayoutItemElevationProfile.return_value
+        native_item.__class__.__name__ = "QgsLayoutItemElevationProfile"
+
+        adapter = build_profile_item_adapter(native_item)
+
+        self.assertEqual(adapter.kind, "native")
 
     def test_export_map_excludes_atlas_coverage_layer_overlay(self):
         atlas_layer = _make_atlas_layer(feature_count=1)
