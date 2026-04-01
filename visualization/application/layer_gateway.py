@@ -9,6 +9,8 @@ class LayerGateway(Protocol):
 
     def load_output_layers(self, gpkg_path): ...
 
+    def remove_layers(self, layers): ...
+
     def ensure_background_layer(
         self,
         enabled,

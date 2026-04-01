@@ -5,6 +5,8 @@ This module remains as a stable forwarding import during the package move.
 """
 
 from .activities.application.load_workflow import (
+    ClearDatabaseRequest,
+    ClearDatabaseResult,
     LoadDatabaseRequest,
     LoadDatasetRequest,
     LoadExistingRequest,
@@ -15,6 +17,8 @@ from .activities.application.load_workflow import (
 )
 
 __all__ = [
+    "ClearDatabaseRequest",
+    "ClearDatabaseResult",
     "LoadDatabaseRequest",
     "LoadDatasetRequest",
     "LoadExistingRequest",

@@ -833,13 +833,24 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         if reply != QMessageBox.Yes:
             return
 
-        # Remove layers from QGIS project
-        for layer in [self.activities_layer, self.starts_layer, self.points_layer, self.atlas_layer]:
-            if layer is not None:
-                try:
-                    QgsProject.instance().removeMapLayer(layer)
-                except RuntimeError:
-                    logger.debug("Failed to remove layer from project", exc_info=True)
+        try:
+            request = self.load_workflow.build_clear_database_request(
+                output_path=output_path,
+                layers=[
+                    self.activities_layer,
+                    self.starts_layer,
+                    self.points_layer,
+                    self.atlas_layer,
+                ],
+            )
+            result = self.load_workflow.clear_database_request(request)
+        except LoadWorkflowError as exc:
+            self._show_error("No database path", str(exc))
+            return
+        except (RuntimeError, OSError) as exc:
+            self._show_error("Could not delete database", str(exc))
+            self._set_status("Failed to delete the GeoPackage file")
+            return
 
         self.activities_layer = None
         self.starts_layer = None
@@ -849,24 +860,8 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.output_path = None
         self.last_fetch_context = {}
 
-        # Delete the file
-        deleted = False
-        if os.path.exists(output_path):
-            try:
-                os.remove(output_path)
-                deleted = True
-            except OSError as exc:
-                self._show_error("Could not delete database", str(exc))
-                self._set_status("Failed to delete the GeoPackage file")
-                return
-
         self.countLabel.setText("Activities fetched: 0")
-        if deleted:
-            self._set_status(
-                f"Database cleared: {output_path} deleted. Fetch and store activities to start fresh."
-            )
-        else:
-            self._set_status("Layers cleared. No file to delete at the specified path.")
+        self._set_status(result.status)
 
     def on_apply_filters_clicked(self):
         has_layers = any(layer is not None for layer in [self.activities_layer, self.starts_layer, self.points_layer, self.atlas_layer])
