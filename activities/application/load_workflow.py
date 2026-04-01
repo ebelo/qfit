@@ -31,6 +31,14 @@ class LoadDatasetRequest:
     output_path: str = ""
 
 
+@dataclass
+class ClearDatabaseRequest:
+    """Structured input for clearing a qfit GeoPackage and loaded layers."""
+
+    output_path: str = ""
+    layers: list = field(default_factory=list)
+
+
 # Backward-compatible aliases while issue #175 lands incrementally.
 LoadDatabaseRequest = StoreActivitiesRequest
 LoadExistingRequest = LoadDatasetRequest
@@ -53,6 +61,15 @@ class LoadResult:
     start_count: int = 0
     point_count: int = 0
     atlas_count: int = 0
+
+
+@dataclass
+class ClearDatabaseResult:
+    """Structured result from clearing a qfit GeoPackage and loaded layers."""
+
+    output_path: str = ""
+    deleted: bool = False
+    status: str = ""
 
 
 class LoadWorkflowError(Exception):
@@ -92,6 +109,13 @@ class LoadWorkflowService:
     @staticmethod
     def build_load_existing_request(output_path) -> LoadDatasetRequest:
         return LoadDatasetRequest(output_path=output_path)
+
+    @staticmethod
+    def build_clear_database_request(output_path, layers=None) -> ClearDatabaseRequest:
+        return ClearDatabaseRequest(
+            output_path=output_path,
+            layers=list(layers or []),
+        )
 
     def _write_database(self, request: StoreActivitiesRequest) -> LoadResult:
         """Write activities to the GeoPackage without loading layers into QGIS.
@@ -226,3 +250,39 @@ class LoadWorkflowService:
 
     def load_existing_request(self, request: LoadDatasetRequest) -> LoadResult:
         return self.load_existing(request)
+
+    def clear_database(
+        self,
+        request: ClearDatabaseRequest | None = None,
+        **legacy_kwargs,
+    ) -> ClearDatabaseResult:
+        """Remove qfit layers from QGIS and delete the GeoPackage when present."""
+        if request is None:
+            request = self.build_clear_database_request(**legacy_kwargs)
+
+        if not request.output_path:
+            raise LoadWorkflowError("Set a GeoPackage output path first.")
+
+        self.layer_gateway.remove_layers(request.layers)
+
+        deleted = False
+        if os.path.exists(request.output_path):
+            os.remove(request.output_path)
+            deleted = True
+
+        if deleted:
+            status = (
+                f"Database cleared: {request.output_path} deleted. "
+                "Fetch and store activities to start fresh."
+            )
+        else:
+            status = "Layers cleared. No file to delete at the specified path."
+
+        return ClearDatabaseResult(
+            output_path=request.output_path,
+            deleted=deleted,
+            status=status,
+        )
+
+    def clear_database_request(self, request: ClearDatabaseRequest) -> ClearDatabaseResult:
+        return self.clear_database(request=request)

@@ -5,6 +5,8 @@ from unittest.mock import MagicMock, patch
 
 from tests import _path  # noqa: F401
 from qfit.load_workflow import (
+    ClearDatabaseRequest,
+    ClearDatabaseResult,
     LoadDatabaseRequest,
     LoadExistingRequest,
     LoadResult,
@@ -296,6 +298,61 @@ class LoadExistingSuccessTests(unittest.TestCase):
         result = self.service.load_existing("/tmp/empty.gpkg")
 
         self.assertEqual(result.total_stored, 0)
+
+
+class ClearDatabaseValidationTests(unittest.TestCase):
+    def setUp(self):
+        self.layer_manager = MagicMock()
+        self.service = LoadWorkflowService(self.layer_manager)
+
+    def test_raises_when_no_output_path(self):
+        with self.assertRaises(LoadWorkflowError) as ctx:
+            self.service.clear_database(output_path="", layers=[])
+
+        self.assertIn("output path", str(ctx.exception))
+
+    def test_build_clear_database_request_returns_dataclass(self):
+        request = self.service.build_clear_database_request(
+            "/tmp/test.gpkg",
+            layers=["activities", "atlas"],
+        )
+
+        self.assertIsInstance(request, ClearDatabaseRequest)
+        self.assertEqual(request.output_path, "/tmp/test.gpkg")
+        self.assertEqual(request.layers, ["activities", "atlas"])
+
+
+class ClearDatabaseSuccessTests(unittest.TestCase):
+    def setUp(self):
+        self.layer_manager = MagicMock()
+        self.service = LoadWorkflowService(self.layer_manager)
+
+    @patch("qfit.activities.application.load_workflow.os.path.exists", return_value=True)
+    @patch("qfit.activities.application.load_workflow.os.remove")
+    def test_removes_layers_and_deletes_file_when_present(self, mock_remove, _mock_exists):
+        result = self.service.clear_database(
+            output_path="/tmp/test.gpkg",
+            layers=["activities", None, "atlas"],
+        )
+
+        self.assertIsInstance(result, ClearDatabaseResult)
+        self.assertTrue(result.deleted)
+        self.assertIn("/tmp/test.gpkg deleted", result.status)
+        self.layer_manager.remove_layers.assert_called_once_with(["activities", None, "atlas"])
+        mock_remove.assert_called_once_with("/tmp/test.gpkg")
+
+    @patch("qfit.activities.application.load_workflow.os.path.exists", return_value=False)
+    @patch("qfit.activities.application.load_workflow.os.remove")
+    def test_clears_layers_without_delete_when_file_missing(self, mock_remove, _mock_exists):
+        result = self.service.clear_database(
+            output_path="/tmp/missing.gpkg",
+            layers=["activities"],
+        )
+
+        self.assertFalse(result.deleted)
+        self.assertEqual(result.status, "Layers cleared. No file to delete at the specified path.")
+        self.layer_manager.remove_layers.assert_called_once_with(["activities"])
+        mock_remove.assert_not_called()
 
 
 class LoadResultTests(unittest.TestCase):

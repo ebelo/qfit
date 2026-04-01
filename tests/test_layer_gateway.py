@@ -61,6 +61,24 @@ class LayerGatewayBoundaryTests(unittest.TestCase):
         )
         background.move_background_layers_to_bottom.assert_called_once_with()
 
+    def test_qgis_gateway_remove_layers_delegates_to_qgsproject(self):
+        modules = self._qgis_gateway_modules()
+
+        with patch.dict(sys.modules, modules, clear=False):
+            self._reset_qgis_gateway_imports()
+            adapter_module = importlib.import_module(
+                "qfit.visualization.infrastructure.qgis_layer_gateway"
+            )
+
+            gateway = adapter_module.QgisLayerGateway(MagicMock(name="iface"))
+            layer_a = MagicMock(name="layer_a")
+            layer_b = MagicMock(name="layer_b")
+
+            gateway.remove_layers([layer_a, None, layer_b])
+
+        modules["qgis.core"].QgsProject.instance.return_value.removeMapLayer.assert_any_call(layer_a)
+        modules["qgis.core"].QgsProject.instance.return_value.removeMapLayer.assert_any_call(layer_b)
+
     @staticmethod
     def _reset_qgis_gateway_imports():
         for name in [
@@ -93,7 +111,11 @@ class LayerGatewayBoundaryTests(unittest.TestCase):
         mapbox_config = ModuleType("qfit.mapbox_config")
         mapbox_config.TILE_MODE_RASTER = "raster"
 
+        qgis_core = ModuleType("qgis.core")
+        qgis_core.QgsProject = MagicMock(name="QgsProject")
+
         return {
+            "qgis.core": qgis_core,
             "qfit.background_map_service": class_module(
                 "qfit.background_map_service",
                 "BackgroundMapService",

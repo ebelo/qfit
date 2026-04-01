@@ -1,5 +1,7 @@
 import logging
 
+from qgis.core import QgsProject
+
 logger = logging.getLogger(__name__)
 
 from ...background_map_service import BackgroundMapService
@@ -35,6 +37,15 @@ class QgisLayerGateway:
             self.iface, [activities_layer, starts_layer, points_layer, atlas_layer]
         )
         return activities_layer, starts_layer, points_layer, atlas_layer
+
+    def remove_layers(self, layers):
+        for layer in layers or []:
+            if layer is None:
+                continue
+            try:
+                QgsProject.instance().removeMapLayer(layer)
+            except RuntimeError:
+                logger.debug("Failed to remove layer from project", exc_info=True)
 
     def ensure_background_layer(self, enabled, preset_name, access_token, style_owner="", style_id="", tile_mode=TILE_MODE_RASTER):
         return self._background_service.ensure_background_layer(
