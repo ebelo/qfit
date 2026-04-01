@@ -25,6 +25,10 @@ class ProfileItemAdapter:
     item: object
     kind: str = "picture"
 
+    @property
+    def supports_native_profile(self) -> bool:
+        return self.kind == "native"
+
     def clear_profile(self) -> None:
         set_picture_path = getattr(self.item, "setPicturePath", None)
         if callable(set_picture_path):
@@ -40,6 +44,16 @@ class ProfileItemAdapter:
         refresh = getattr(self.item, "refresh", None)
         if callable(refresh):
             refresh()
+
+    def configure_native_defaults(self, *, crs_authid: str = "EPSG:3857", atlas_driven: bool = True) -> None:
+        if not self.supports_native_profile:
+            return
+        set_crs = getattr(self.item, "setCrs", None)
+        if callable(set_crs) and QgsCoordinateReferenceSystem is not None:
+            set_crs(QgsCoordinateReferenceSystem(crs_authid))
+        set_atlas_driven = getattr(self.item, "setAtlasDriven", None)
+        if callable(set_atlas_driven):
+            set_atlas_driven(atlas_driven)
 
 
 def build_profile_item(layout, *, item_id: str, x: float, y: float, w: float, h: float) -> ProfileItemAdapter:
@@ -68,3 +82,33 @@ def build_profile_item_adapter(item) -> ProfileItemAdapter:
 
 def _native_profile_item_available() -> bool:
     return QgsLayoutItemElevationProfile is not None
+
+
+def build_native_profile_item(
+    layout,
+    *,
+    item_id: str,
+    x: float,
+    y: float,
+    w: float,
+    h: float,
+    crs_authid: str = "EPSG:3857",
+    atlas_driven: bool = True,
+) -> ProfileItemAdapter | None:
+    """Create a native elevation-profile item when the QGIS build supports it.
+
+    Returns ``None`` when the native item class is not available, so callers
+    can keep using the picture-backed fallback path.
+    """
+    if not _native_profile_item_available():
+        return None
+
+    profile_item = QgsLayoutItemElevationProfile(layout)
+    profile_item.setId(item_id)
+    profile_item.attemptMove(QgsLayoutPoint(x, y, QgsUnitTypes.LayoutMillimeters))
+    profile_item.attemptResize(QgsLayoutSize(w, h, QgsUnitTypes.LayoutMillimeters))
+    layout.addLayoutItem(profile_item)
+
+    adapter = ProfileItemAdapter(item=profile_item, kind="native")
+    adapter.configure_native_defaults(crs_authid=crs_authid, atlas_driven=atlas_driven)
+    return adapter

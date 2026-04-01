@@ -89,6 +89,7 @@ from qfit.atlas.profile_item import (  # noqa: E402
     ProfileItemAdapter,
     build_profile_item,
     build_profile_item_adapter,
+    build_native_profile_item,
 )
 
 from qfit.atlas.export_task import (  # noqa: E402
@@ -205,6 +206,49 @@ class TestBuildAtlasLayout(unittest.TestCase):
         adapter = build_profile_item_adapter(native_item)
 
         self.assertEqual(adapter.kind, "native")
+        self.assertTrue(adapter.supports_native_profile)
+
+    def test_build_native_profile_item_returns_native_adapter_when_available(self):
+        layout = MagicMock()
+        native_item = _qgis_core.QgsLayoutItemElevationProfile.return_value
+        native_item.__class__.__name__ = "QgsLayoutItemElevationProfile"
+
+        adapter = build_native_profile_item(
+            layout,
+            item_id="profile",
+            x=10.0,
+            y=20.0,
+            w=30.0,
+            h=40.0,
+        )
+
+        self.assertIsNotNone(adapter)
+        self.assertEqual(adapter.kind, "native")
+        native_item.setId.assert_called_once_with("profile")
+        native_item.setAtlasDriven.assert_called_once_with(True)
+        layout.addLayoutItem.assert_called_once_with(native_item)
+
+    def test_build_native_profile_item_returns_none_when_unavailable(self):
+        with patch("qfit.atlas.profile_item._native_profile_item_available", return_value=False):
+            adapter = build_native_profile_item(
+                MagicMock(),
+                item_id="profile",
+                x=10.0,
+                y=20.0,
+                w=30.0,
+                h=40.0,
+            )
+
+        self.assertIsNone(adapter)
+
+    def test_picture_adapter_ignores_native_default_configuration(self):
+        item = MagicMock()
+        adapter = ProfileItemAdapter(item=item, kind="picture")
+
+        adapter.configure_native_defaults()
+
+        item.setCrs.assert_not_called()
+        item.setAtlasDriven.assert_not_called()
 
     def test_export_map_excludes_atlas_coverage_layer_overlay(self):
         atlas_layer = _make_atlas_layer(feature_count=1)
