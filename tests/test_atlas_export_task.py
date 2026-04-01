@@ -97,6 +97,7 @@ from qfit.atlas.profile_item import (  # noqa: E402
     build_profile_item_adapter,
     build_native_profile_item,
     build_native_profile_request,
+    configure_native_profile_plot_defaults,
     native_profile_item_available,
     native_profile_request_available,
 )
@@ -530,15 +531,16 @@ class TestBuildAtlasLayout(unittest.TestCase):
         native_item = _qgis_core.QgsLayoutItemElevationProfile.return_value
         native_item.__class__.__name__ = "QgsLayoutItemElevationProfile"
 
-        adapter = build_native_profile_item(
-            layout,
-            item_id="profile",
-            x=10.0,
-            y=20.0,
-            w=30.0,
-            h=40.0,
-            config=NativeProfileItemConfig(tolerance=12.5, layers=[]),
-        )
+        with patch("qfit.atlas.profile_item.configure_native_profile_plot_defaults") as style_defaults:
+            adapter = build_native_profile_item(
+                layout,
+                item_id="profile",
+                x=10.0,
+                y=20.0,
+                w=30.0,
+                h=40.0,
+                config=NativeProfileItemConfig(tolerance=12.5, layers=[]),
+            )
 
         self.assertIsNotNone(adapter)
         self.assertEqual(adapter.kind, "native")
@@ -548,6 +550,7 @@ class TestBuildAtlasLayout(unittest.TestCase):
         native_item.setTolerance.assert_called_once_with(12.5)
         native_item.setCrs.assert_called_once()
         layout.addLayoutItem.assert_called_once_with(native_item)
+        style_defaults.assert_called_once_with(native_item)
 
     def test_build_native_profile_item_passes_configured_layers(self):
         layout = MagicMock()
@@ -568,6 +571,58 @@ class TestBuildAtlasLayout(unittest.TestCase):
         )
 
         native_item.setLayers.assert_called_once_with([first_layer, second_layer])
+
+    def test_configure_native_profile_plot_defaults_styles_axes_and_grid(self):
+        item = MagicMock(name="native_item")
+        plot = MagicMock(name="plot")
+        x_axis = MagicMock(name="x_axis")
+        y_axis = MagicMock(name="y_axis")
+        plot.xAxis.return_value = x_axis
+        plot.yAxis.return_value = y_axis
+        item.plot.return_value = plot
+
+        with (
+            patch("qfit.atlas.profile_item.QgsFillSymbol") as fill_symbol_cls,
+            patch("qfit.atlas.profile_item.QgsLineSymbol") as line_symbol_cls,
+        ):
+            fill_symbol_cls.createSimple.side_effect = ["background-fill", "border-fill"]
+            line_symbol_cls.createSimple.side_effect = [
+                "x-major",
+                "x-minor",
+                "y-major",
+                "y-minor",
+            ]
+
+            configure_native_profile_plot_defaults(item)
+
+        plot.setChartBackgroundSymbol.assert_called_once_with("background-fill")
+        plot.setChartBorderSymbol.assert_called_once_with("border-fill")
+        x_axis.setLabelSuffix.assert_called_once_with(" km")
+        y_axis.setLabelSuffix.assert_called_once_with(" m")
+        x_axis.setGridMajorSymbol.assert_called_once_with("x-major")
+        x_axis.setGridMinorSymbol.assert_called_once_with("x-minor")
+        y_axis.setGridMajorSymbol.assert_called_once_with("y-major")
+        y_axis.setGridMinorSymbol.assert_called_once_with("y-minor")
+
+    def test_configure_native_profile_plot_defaults_tolerates_missing_plot_api(self):
+        item = MagicMock(name="native_item")
+        plot = MagicMock(name="plot")
+        del plot.setChartBackgroundSymbol
+        del plot.setChartBorderSymbol
+        del plot.xAxis
+        del plot.yAxis
+        item.plot.return_value = plot
+
+        with (
+            patch("qfit.atlas.profile_item.QgsFillSymbol") as fill_symbol_cls,
+            patch("qfit.atlas.profile_item.QgsLineSymbol") as line_symbol_cls,
+        ):
+            fill_symbol_cls.createSimple.return_value = "fill"
+            line_symbol_cls.createSimple.return_value = "line"
+
+            configure_native_profile_plot_defaults(item)
+
+        item.plot.assert_called_once_with()
 
     def test_atlas_layer_supports_native_profile_atlas_for_line_geometry(self):
         atlas_layer = MagicMock(name="atlas_layer")
