@@ -87,6 +87,7 @@ _qgis_core = _make_qgis_stub()
 
 import qfit.atlas.export_task as atlas_export_task  # noqa: E402
 from qfit.atlas.profile_item import (  # noqa: E402
+    build_native_profile_inputs,
     NativeProfileItemConfig,
     NativeProfileRequestConfig,
     ProfileItemAdapter,
@@ -355,6 +356,32 @@ class TestBuildAtlasLayout(unittest.TestCase):
 
         self.assertIsNone(build_native_profile_curve(geometry))
         polygon.clone.assert_not_called()
+
+    def test_build_native_profile_inputs_returns_curve_and_request_together(self):
+        geometry = MagicMock(name="geometry")
+
+        with (
+            patch("qfit.atlas.profile_item.build_native_profile_curve", return_value="curve") as build_curve,
+            patch("qfit.atlas.profile_item.build_native_profile_request", return_value="request") as build_request,
+        ):
+            curve, request = build_native_profile_inputs(
+                geometry,
+                request_config=NativeProfileRequestConfig(tolerance=12.0),
+            )
+
+        self.assertEqual(curve, "curve")
+        self.assertEqual(request, "request")
+        build_curve.assert_called_once_with(geometry)
+        build_request.assert_called_once()
+
+    def test_build_native_profile_inputs_returns_none_pair_when_curve_missing(self):
+        geometry = MagicMock(name="geometry")
+
+        with patch("qfit.atlas.profile_item.build_native_profile_curve", return_value=None):
+            curve, request = build_native_profile_inputs(geometry)
+
+        self.assertIsNone(curve)
+        self.assertIsNone(request)
 
     def test_native_adapter_binds_curve_when_supported(self):
         item = MagicMock()
