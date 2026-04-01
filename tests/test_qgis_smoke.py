@@ -3,7 +3,7 @@ import tempfile
 import unittest
 from dataclasses import replace
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from tests import _path  # noqa: F401
 
@@ -302,6 +302,36 @@ class QgisSmokeTests(unittest.TestCase):
             dock_reloaded.close()
             dock_reloaded.deleteLater()
 
+    def test_generate_atlas_pdf_shows_clear_error_when_pypdf_is_missing(self):
+        dock = QfitDockWidget(self.iface)
+        try:
+            dock.atlas_layer = MagicMock()
+            dock.atlas_layer.featureCount.return_value = 3
+            dock.atlasPdfPathLineEdit.setText("/tmp/qfit-atlas.pdf")
+
+            dock.atlas_export_controller.validate_atlas_layer = MagicMock()
+            dock.atlas_export_controller.normalize_pdf_path = MagicMock(
+                return_value=("/tmp/qfit-atlas.pdf", False)
+            )
+            dock.atlas_export_service.check_pdf_export_prerequisites = MagicMock(
+                return_value="Atlas PDF export requires the 'pypdf' runtime."
+            )
+            dock._save_settings = MagicMock()
+            dock._show_error = MagicMock()
+
+            dock.on_generate_atlas_pdf_clicked()
+
+            dock._show_error.assert_called_once_with(
+                "Atlas PDF export unavailable",
+                "Atlas PDF export requires the 'pypdf' runtime.",
+            )
+            dock._save_settings.assert_not_called()
+            self.assertIsNone(dock._atlas_export_task)
+            self.assertEqual(dock.atlasPdfStatusLabel.text(), "Atlas PDF export unavailable.")
+            self.assertEqual(dock.statusLabel.text(), "Atlas PDF export unavailable.")
+        finally:
+            dock.close()
+            dock.deleteLater()
     def test_fetch_preview_shows_fetched_count_even_when_visualize_filters_match_zero(self):
         dock = QfitDockWidget(self.iface)
         try:
