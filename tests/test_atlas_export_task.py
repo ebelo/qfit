@@ -46,6 +46,7 @@ def _make_qgis_stub():
     qgis_core.QgsRectangle = MagicMock(return_value=MagicMock())
     qgis_core.QgsLayoutItemLabel = MagicMock()
     qgis_core.QgsLayoutItemElevationProfile = MagicMock()
+    qgis_core.QgsProfileRequest = MagicMock()
     pic_cls = MagicMock()
     pic_cls.Zoom = 0
     qgis_core.QgsLayoutItemPicture = pic_cls
@@ -87,11 +88,14 @@ _qgis_core = _make_qgis_stub()
 import qfit.atlas.export_task as atlas_export_task  # noqa: E402
 from qfit.atlas.profile_item import (  # noqa: E402
     NativeProfileItemConfig,
+    NativeProfileRequestConfig,
     ProfileItemAdapter,
     build_profile_item,
     build_profile_item_adapter,
     build_native_profile_item,
+    build_native_profile_request,
     native_profile_item_available,
+    native_profile_request_available,
 )
 
 from qfit.atlas.export_task import (  # noqa: E402
@@ -213,6 +217,9 @@ class TestBuildAtlasLayout(unittest.TestCase):
     def test_native_profile_item_available_reflects_optional_qgis_class(self):
         self.assertTrue(native_profile_item_available())
 
+    def test_native_profile_request_available_reflects_optional_qgis_class(self):
+        self.assertTrue(native_profile_request_available())
+
     def test_build_native_profile_item_returns_native_adapter_when_available(self):
         layout = MagicMock()
         native_item = _qgis_core.QgsLayoutItemElevationProfile.return_value
@@ -267,6 +274,26 @@ class TestBuildAtlasLayout(unittest.TestCase):
 
         item.setProfileCurve.assert_not_called()
         item.setProfileRequest.assert_not_called()
+
+    def test_build_native_profile_request_returns_configured_request(self):
+        curve = MagicMock(name="curve")
+
+        request = build_native_profile_request(
+            curve,
+            config=NativeProfileRequestConfig(tolerance=25.0, step_distance=5.0),
+        )
+
+        self.assertIs(request, _qgis_core.QgsProfileRequest.return_value)
+        _qgis_core.QgsProfileRequest.assert_called_once_with(curve)
+        request.setCrs.assert_called_once()
+        request.setTolerance.assert_called_once_with(25.0)
+        request.setStepDistance.assert_called_once_with(5.0)
+
+    def test_build_native_profile_request_returns_none_without_curve_or_support(self):
+        self.assertIsNone(build_native_profile_request(None))
+
+        with patch("qfit.atlas.profile_item.native_profile_request_available", return_value=False):
+            self.assertIsNone(build_native_profile_request(MagicMock(name="curve")))
 
     def test_native_adapter_binds_curve_and_request_when_supported(self):
         item = MagicMock()

@@ -12,10 +12,15 @@ from dataclasses import dataclass
 from qgis.core import QgsLayoutItemPicture, QgsLayoutPoint, QgsLayoutSize, QgsUnitTypes
 
 try:  # pragma: no cover - availability depends on QGIS build
-    from qgis.core import QgsCoordinateReferenceSystem, QgsLayoutItemElevationProfile
+    from qgis.core import (
+        QgsCoordinateReferenceSystem,
+        QgsLayoutItemElevationProfile,
+        QgsProfileRequest,
+    )
 except ImportError:  # pragma: no cover - exercised in stubbed/unit-test mode
     QgsCoordinateReferenceSystem = None
     QgsLayoutItemElevationProfile = None
+    QgsProfileRequest = None
 
 
 @dataclass
@@ -100,6 +105,15 @@ class NativeProfileItemConfig:
     tolerance: float | None = None
 
 
+@dataclass
+class NativeProfileRequestConfig:
+    """Configuration for building a native QGIS profile request."""
+
+    crs_auth_id: str = "EPSG:3857"
+    tolerance: float | None = None
+    step_distance: float | None = None
+
+
 def build_profile_item(layout, *, item_id: str, x: float, y: float, w: float, h: float) -> ProfileItemAdapter:
     """Create the current profile layout item and return an adapter for it.
 
@@ -160,3 +174,34 @@ def build_profile_item_adapter(item) -> ProfileItemAdapter:
 
 def native_profile_item_available() -> bool:
     return QgsLayoutItemElevationProfile is not None
+
+
+def native_profile_request_available() -> bool:
+    return QgsProfileRequest is not None
+
+
+def build_native_profile_request(
+    profile_curve,
+    *,
+    config: NativeProfileRequestConfig | None = None,
+):
+    """Create a configured QGIS native profile request when supported."""
+    if not native_profile_request_available() or profile_curve is None:
+        return None
+
+    cfg = config or NativeProfileRequestConfig()
+    request = QgsProfileRequest(profile_curve)
+
+    set_crs = getattr(request, "setCrs", None)
+    if callable(set_crs) and QgsCoordinateReferenceSystem is not None and cfg.crs_auth_id:
+        set_crs(QgsCoordinateReferenceSystem(cfg.crs_auth_id))
+
+    set_tolerance = getattr(request, "setTolerance", None)
+    if callable(set_tolerance) and cfg.tolerance is not None:
+        set_tolerance(float(cfg.tolerance))
+
+    set_step_distance = getattr(request, "setStepDistance", None)
+    if callable(set_step_distance) and cfg.step_distance is not None:
+        set_step_distance(float(cfg.step_distance))
+
+    return request
