@@ -343,6 +343,8 @@ class TestBuildAtlasLayout(unittest.TestCase):
         layout = MagicMock()
         _qgis_core.QgsLayoutItemElevationProfile.reset_mock()
         _qgis_core.QgsLayoutItemElevationProfile.return_value.reset_mock()
+        _qgis_core.QgsLayoutItemPicture.reset_mock()
+        _qgis_core.QgsLayoutItemPicture.return_value.reset_mock()
 
         adapter = build_profile_item(
             layout,
@@ -357,6 +359,28 @@ class TestBuildAtlasLayout(unittest.TestCase):
         self.assertEqual(adapter.kind, "native")
         self.assertIs(adapter.item, _qgis_core.QgsLayoutItemElevationProfile.return_value)
         _qgis_core.QgsLayoutItemElevationProfile.return_value.setId.assert_called_once_with("profile")
+        _qgis_core.QgsLayoutItemPicture.assert_not_called()
+
+    def test_build_profile_item_keeps_svg_fallback_for_manual_native_updates(self):
+        layout = MagicMock()
+        _qgis_core.QgsLayoutItemElevationProfile.reset_mock()
+        _qgis_core.QgsLayoutItemElevationProfile.return_value.reset_mock()
+        _qgis_core.QgsLayoutItemPicture.reset_mock()
+        _qgis_core.QgsLayoutItemPicture.return_value.reset_mock()
+
+        adapter = build_profile_item(
+            layout,
+            item_id="profile",
+            x=10.0,
+            y=20.0,
+            w=30.0,
+            h=40.0,
+            native_config=NativeProfileItemConfig(atlas_driven=False),
+        )
+
+        self.assertEqual(adapter.kind, "native")
+        self.assertIs(adapter.svg_fallback_item, _qgis_core.QgsLayoutItemPicture.return_value)
+        _qgis_core.QgsLayoutItemPicture.return_value.setId.assert_called_once_with("profile_svg_fallback")
 
     def test_build_profile_item_adapter_finds_native_svg_fallback_by_id(self):
         layout = MagicMock()
@@ -1057,6 +1081,7 @@ class TestBuildAtlasLayout(unittest.TestCase):
         native_config = build_profile_item_mock.call_args.kwargs["native_config"]
         self.assertIsInstance(native_config, NativeProfileItemConfig)
         self.assertEqual(native_config.layers, [visible_track_layer, visible_background_layer])
+        self.assertTrue(native_config.atlas_driven)
 
 
 class TestBuildAtlasLayoutSummaryLabels(unittest.TestCase):
