@@ -251,7 +251,13 @@ class FetchStatusTextTests(unittest.TestCase):
         ctrl = SyncController()
         provider = SimpleNamespace(
             source_name="strava",
-            last_stream_enrichment_stats={"cached": 2, "downloaded": 3, "skipped_rate_limit": 0},
+            last_stream_enrichment_stats={
+                "cached": 2,
+                "downloaded": 3,
+                "skipped_rate_limit": 0,
+                "missing_before": 4,
+                "remaining_missing": 1,
+            },
             last_rate_limit=None,
             last_fetch_notice=None,
         )
@@ -259,6 +265,8 @@ class FetchStatusTextTests(unittest.TestCase):
         self.assertIn("10 activities", text)
         self.assertIn("detailed tracks: 5", text)
         self.assertIn("cached streams: 2", text)
+        self.assertIn("missing detailed routes before run: 4", text)
+        self.assertIn("remaining missing: 1", text)
 
     def test_status_text_includes_source_name(self):
         ctrl = SyncController()
