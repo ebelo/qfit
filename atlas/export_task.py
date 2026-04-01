@@ -160,8 +160,10 @@ class PageProfilePayload:
 
     sample_key: str | None
     page_points: list
-    native_curve: object | None
-    native_request: object | None
+    feature_geometry: object | None
+
+    def native_inputs(self):
+        return build_native_profile_inputs(self.feature_geometry)
 
 
 def _build_page_profile_payload(feat, sort_key_idx, profile_samples) -> PageProfilePayload:
@@ -173,13 +175,10 @@ def _build_page_profile_payload(feat, sort_key_idx, profile_samples) -> PageProf
 
     geometry_getter = getattr(feat, "geometry", None)
     geometry = geometry_getter() if callable(geometry_getter) else None
-    native_curve, native_request = build_native_profile_inputs(geometry)
-
     return PageProfilePayload(
         sample_key=sample_key,
         page_points=page_points,
-        native_curve=native_curve,
-        native_request=native_request,
+        feature_geometry=geometry,
     )
 
 
