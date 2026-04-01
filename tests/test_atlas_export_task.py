@@ -1473,6 +1473,89 @@ class TestProfileChartRendering(unittest.TestCase):
         profile_pic.setPicturePath.assert_any_call("/tmp/profile.svg")
         profile_pic.refresh.assert_called()
 
+    def test_profile_chart_changes_per_activity_page(self):
+        from qfit.atlas.export_task import _PROFILE_PICTURE_ID
+
+        layout_mock, atlas_mock, exporter_cls_mock = _make_atlas_mock(feature_count=2)
+
+        profile_pic = MagicMock()
+        profile_pic.id.return_value = _PROFILE_PICTURE_ID
+        layout_mock.items.return_value = [profile_pic]
+
+        atlas_layer = _make_atlas_layer(feature_count=2)
+        field_names = [
+            "page_sort_key",
+            "source_activity_id",
+            "center_x_3857",
+            "center_y_3857",
+            "extent_width_m",
+            "extent_height_m",
+        ]
+        atlas_layer.fields.return_value.indexOf = (
+            lambda name: field_names.index(name) if name in field_names else -1
+        )
+        atlas_layer.source.return_value = "/tmp/fake.gpkg|layername=activity_atlas_pages"
+
+        feature_one = MagicMock(name="feature_one")
+        feature_one.attribute.side_effect = lambda idx: {
+            0: "page-1",
+            1: "activity-1",
+            2: 1000.0,
+            3: 2000.0,
+            4: 500.0,
+            5: 500.0,
+        }.get(idx)
+
+        feature_two = MagicMock(name="feature_two")
+        feature_two.attribute.side_effect = lambda idx: {
+            0: "page-2",
+            1: "activity-2",
+            2: 1100.0,
+            3: 2100.0,
+            4: 550.0,
+            5: 550.0,
+        }.get(idx)
+
+        atlas_mock.layout.return_value.reportContext.return_value.feature.side_effect = [
+            feature_one,
+            feature_two,
+        ]
+
+        task = AtlasExportTask(
+            atlas_layer=atlas_layer,
+            output_path="/tmp/qfit_test_profile_pages.pdf",
+            on_finished=lambda **kw: None,
+        )
+
+        with patch("qfit.atlas.export_task.build_atlas_layout", return_value=layout_mock), \
+             patch("qfit.atlas.export_task.QgsLayoutExporter", exporter_cls_mock), \
+             patch("qfit.atlas.export_task.AtlasExportTask._export_cover_page", return_value=None), \
+             patch("qfit.atlas.export_task.AtlasExportTask._export_toc_page", return_value=None), \
+             patch("qfit.atlas.export_task.os.path.isfile", return_value=True), \
+             patch(
+                 "qfit.atlas.profile_renderer.load_profile_samples_from_gpkg",
+                 return_value={
+                     "page-1": [(0.0, 100.0), (1.0, 120.0)],
+                     "page-2": [(0.0, 220.0), (1.0, 260.0)],
+                 },
+             ), \
+             patch(
+                 "qfit.atlas.profile_renderer.render_profile_to_file",
+                 side_effect=["/tmp/profile_page_1.svg", "/tmp/profile_page_2.svg"],
+             ) as render_profile, \
+             patch("qfit.atlas.export_task.AtlasExportTask._merge_pdfs"), \
+             patch("os.makedirs"):
+            _run_task(task)
+
+        self.assertEqual(render_profile.call_args_list[0].args[0], [(0.0, 100.0), (1.0, 120.0)])
+        self.assertEqual(render_profile.call_args_list[1].args[0], [(0.0, 220.0), (1.0, 260.0)])
+        self.assertEqual(render_profile.call_args_list[0].kwargs["directory"], "/tmp")
+        self.assertEqual(render_profile.call_args_list[1].kwargs["directory"], "/tmp")
+        self.assertEqual(
+            [args[0][0] for args in profile_pic.setPicturePath.call_args_list[:2]],
+            ["/tmp/profile_page_1.svg", "/tmp/profile_page_2.svg"],
+        )
+
 
 class TestAtlasExportTaskSuccess(unittest.TestCase):
     def test_atlas_driven_native_profile_skips_manual_sample_loading(self):
