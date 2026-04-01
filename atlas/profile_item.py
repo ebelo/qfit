@@ -7,8 +7,10 @@ profile item without rewriting the whole export loop at once.
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
 import math
+from types import MappingProxyType
 
 from qgis.core import QgsLayoutItemPicture, QgsLayoutPoint, QgsLayoutSize, QgsUnitTypes
 
@@ -168,24 +170,70 @@ class NativeProfileRequestConfig:
     step_distance: float | None = None
 
 
-def _build_fill_symbol(properties: dict[str, str]):
+@dataclass(frozen=True)
+class NativeProfilePlotAxisStyle:
+    """Styling defaults for one axis of a native profile plot."""
+
+    suffix: str
+    major_grid_props: Mapping[str, str]
+    minor_grid_props: Mapping[str, str]
+
+
+@dataclass(frozen=True)
+class NativeProfilePlotStyle:
+    """Styling defaults for native QGIS profile plots."""
+
+    background_fill_props: Mapping[str, str]
+    border_fill_props: Mapping[str, str]
+    x_axis: NativeProfilePlotAxisStyle
+    y_axis: NativeProfilePlotAxisStyle
+
+
+def _immutable_props(**properties: str) -> Mapping[str, str]:
+    return MappingProxyType(dict(properties))
+
+
+DEFAULT_NATIVE_PROFILE_PLOT_STYLE = NativeProfilePlotStyle(
+    background_fill_props=_immutable_props(
+        color="255,255,255,230",
+        outline_style="no",
+    ),
+    border_fill_props=_immutable_props(
+        color="255,255,255,0",
+        outline_color="160,160,160,255",
+        outline_width="0.2",
+    ),
+    x_axis=NativeProfilePlotAxisStyle(
+        suffix=" km",
+        major_grid_props=_immutable_props(color="210,210,210,255", width="0.25"),
+        minor_grid_props=_immutable_props(color="235,235,235,255", width="0.15"),
+    ),
+    y_axis=NativeProfilePlotAxisStyle(
+        suffix=" m",
+        major_grid_props=_immutable_props(color="210,210,210,255", width="0.25"),
+        minor_grid_props=_immutable_props(color="235,235,235,255", width="0.15"),
+    ),
+)
+
+
+def _build_fill_symbol(properties: Mapping[str, str]):
     create_simple = getattr(QgsFillSymbol, "createSimple", None)
     if QgsFillSymbol is None or not callable(create_simple):
         return None
 
     try:
-        return create_simple(properties)
+        return create_simple(dict(properties))
     except Exception:  # noqa: BLE001
         return None
 
 
-def _build_line_symbol(properties: dict[str, str]):
+def _build_line_symbol(properties: Mapping[str, str]):
     create_simple = getattr(QgsLineSymbol, "createSimple", None)
     if QgsLineSymbol is None or not callable(create_simple):
         return None
 
     try:
-        return create_simple(properties)
+        return create_simple(dict(properties))
     except Exception:  # noqa: BLE001
         return None
 
@@ -196,19 +244,25 @@ def _configure_plot_axis_suffix(axis, suffix: str) -> None:
         set_label_suffix(suffix)
 
 
-def _configure_plot_axis_grid(axis, *, major_props: dict[str, str], minor_props: dict[str, str]) -> None:
+def _configure_plot_axis_style(axis, style: NativeProfilePlotAxisStyle) -> None:
+    _configure_plot_axis_suffix(axis, style.suffix)
+
     set_major_symbol = getattr(axis, "setGridMajorSymbol", None)
-    major_symbol = _build_line_symbol(major_props)
+    major_symbol = _build_line_symbol(style.major_grid_props)
     if callable(set_major_symbol) and major_symbol is not None:
         set_major_symbol(major_symbol)
 
     set_minor_symbol = getattr(axis, "setGridMinorSymbol", None)
-    minor_symbol = _build_line_symbol(minor_props)
+    minor_symbol = _build_line_symbol(style.minor_grid_props)
     if callable(set_minor_symbol) and minor_symbol is not None:
         set_minor_symbol(minor_symbol)
 
 
-def configure_native_profile_plot_defaults(item) -> None:
+def configure_native_profile_plot_defaults(
+    item,
+    *,
+    style: NativeProfilePlotStyle | None = None,
+) -> None:
     """Apply conservative default styling to native profile plot items."""
     plot_getter = getattr(item, "plot", None)
     if not callable(plot_getter):
@@ -222,24 +276,15 @@ def configure_native_profile_plot_defaults(item) -> None:
     if plot is None:
         return
 
+    resolved_style = style or DEFAULT_NATIVE_PROFILE_PLOT_STYLE
+
     set_chart_background = getattr(plot, "setChartBackgroundSymbol", None)
-    background_symbol = _build_fill_symbol(
-        {
-            "color": "255,255,255,230",
-            "outline_style": "no",
-        }
-    )
+    background_symbol = _build_fill_symbol(resolved_style.background_fill_props)
     if callable(set_chart_background) and background_symbol is not None:
         set_chart_background(background_symbol)
 
     set_chart_border = getattr(plot, "setChartBorderSymbol", None)
-    border_symbol = _build_fill_symbol(
-        {
-            "color": "255,255,255,0",
-            "outline_color": "160,160,160,255",
-            "outline_width": "0.2",
-        }
-    )
+    border_symbol = _build_fill_symbol(resolved_style.border_fill_props)
     if callable(set_chart_border) and border_symbol is not None:
         set_chart_border(border_symbol)
 
@@ -250,12 +295,7 @@ def configure_native_profile_plot_defaults(item) -> None:
         except Exception:  # noqa: BLE001
             x_axis = None
         if x_axis is not None:
-            _configure_plot_axis_suffix(x_axis, " km")
-            _configure_plot_axis_grid(
-                x_axis,
-                major_props={"color": "210,210,210,255", "width": "0.25"},
-                minor_props={"color": "235,235,235,255", "width": "0.15"},
-            )
+            _configure_plot_axis_style(x_axis, resolved_style.x_axis)
 
     y_axis_getter = getattr(plot, "yAxis", None)
     if callable(y_axis_getter):
@@ -264,12 +304,7 @@ def configure_native_profile_plot_defaults(item) -> None:
         except Exception:  # noqa: BLE001
             y_axis = None
         if y_axis is not None:
-            _configure_plot_axis_suffix(y_axis, " m")
-            _configure_plot_axis_grid(
-                y_axis,
-                major_props={"color": "210,210,210,255", "width": "0.25"},
-                minor_props={"color": "235,235,235,255", "width": "0.15"},
-            )
+            _configure_plot_axis_style(y_axis, resolved_style.y_axis)
 
 
 def _matches_line_geometry_type(geometry_type) -> bool:

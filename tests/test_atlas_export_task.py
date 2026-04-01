@@ -87,8 +87,11 @@ _qgis_core = _make_qgis_stub()
 
 import qfit.atlas.export_task as atlas_export_task  # noqa: E402
 from qfit.atlas.profile_item import (  # noqa: E402
+    DEFAULT_NATIVE_PROFILE_PLOT_STYLE,
     build_native_profile_inputs,
     NativeProfileItemConfig,
+    NativeProfilePlotAxisStyle,
+    NativeProfilePlotStyle,
     NativeProfileRequestConfig,
     ProfileItemAdapter,
     atlas_layer_supports_native_profile_atlas,
@@ -597,12 +600,73 @@ class TestBuildAtlasLayout(unittest.TestCase):
 
         plot.setChartBackgroundSymbol.assert_called_once_with("background-fill")
         plot.setChartBorderSymbol.assert_called_once_with("border-fill")
-        x_axis.setLabelSuffix.assert_called_once_with(" km")
-        y_axis.setLabelSuffix.assert_called_once_with(" m")
+        x_axis.setLabelSuffix.assert_called_once_with(DEFAULT_NATIVE_PROFILE_PLOT_STYLE.x_axis.suffix)
+        y_axis.setLabelSuffix.assert_called_once_with(DEFAULT_NATIVE_PROFILE_PLOT_STYLE.y_axis.suffix)
         x_axis.setGridMajorSymbol.assert_called_once_with("x-major")
         x_axis.setGridMinorSymbol.assert_called_once_with("x-minor")
         y_axis.setGridMajorSymbol.assert_called_once_with("y-major")
         y_axis.setGridMinorSymbol.assert_called_once_with("y-minor")
+        self.assertEqual(
+            fill_symbol_cls.createSimple.call_args_list[0].args[0],
+            dict(DEFAULT_NATIVE_PROFILE_PLOT_STYLE.background_fill_props),
+        )
+        self.assertIsNot(
+            fill_symbol_cls.createSimple.call_args_list[0].args[0],
+            DEFAULT_NATIVE_PROFILE_PLOT_STYLE.background_fill_props,
+        )
+        self.assertEqual(
+            line_symbol_cls.createSimple.call_args_list[0].args[0],
+            dict(DEFAULT_NATIVE_PROFILE_PLOT_STYLE.x_axis.major_grid_props),
+        )
+        self.assertIsNot(
+            line_symbol_cls.createSimple.call_args_list[0].args[0],
+            DEFAULT_NATIVE_PROFILE_PLOT_STYLE.x_axis.major_grid_props,
+        )
+
+    def test_configure_native_profile_plot_defaults_accepts_custom_style(self):
+        item = MagicMock(name="native_item")
+        plot = MagicMock(name="plot")
+        x_axis = MagicMock(name="x_axis")
+        y_axis = MagicMock(name="y_axis")
+        plot.xAxis.return_value = x_axis
+        plot.yAxis.return_value = y_axis
+        item.plot.return_value = plot
+
+        style = NativeProfilePlotStyle(
+            background_fill_props={"color": "1,2,3,255"},
+            border_fill_props={"color": "4,5,6,255"},
+            x_axis=NativeProfilePlotAxisStyle(
+                suffix=" mi",
+                major_grid_props={"color": "7,8,9,255"},
+                minor_grid_props={"color": "10,11,12,255"},
+            ),
+            y_axis=NativeProfilePlotAxisStyle(
+                suffix=" ft",
+                major_grid_props={"color": "13,14,15,255"},
+                minor_grid_props={"color": "16,17,18,255"},
+            ),
+        )
+
+        with (
+            patch("qfit.atlas.profile_item.QgsFillSymbol") as fill_symbol_cls,
+            patch("qfit.atlas.profile_item.QgsLineSymbol") as line_symbol_cls,
+        ):
+            fill_symbol_cls.createSimple.side_effect = ["custom-background", "custom-border"]
+            line_symbol_cls.createSimple.side_effect = [
+                "custom-x-major",
+                "custom-x-minor",
+                "custom-y-major",
+                "custom-y-minor",
+            ]
+
+            configure_native_profile_plot_defaults(item, style=style)
+
+        x_axis.setLabelSuffix.assert_called_once_with(" mi")
+        y_axis.setLabelSuffix.assert_called_once_with(" ft")
+        x_axis.setGridMajorSymbol.assert_called_once_with("custom-x-major")
+        x_axis.setGridMinorSymbol.assert_called_once_with("custom-x-minor")
+        y_axis.setGridMajorSymbol.assert_called_once_with("custom-y-major")
+        y_axis.setGridMinorSymbol.assert_called_once_with("custom-y-minor")
 
     def test_configure_native_profile_plot_defaults_tolerates_missing_plot_api(self):
         item = MagicMock(name="native_item")
