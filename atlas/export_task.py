@@ -166,6 +166,18 @@ class PageProfilePayload:
         return build_native_profile_inputs(self.feature_geometry)
 
 
+def _render_page_profile_svg(page_points, *, output_path: str) -> str | None:
+    """Render the legacy sampled SVG profile for a single atlas page."""
+    from .profile_renderer import render_profile_to_file  # noqa: PLC0415
+
+    return render_profile_to_file(
+        page_points,
+        width_mm=PROFILE_W,
+        height_mm=PROFILE_CHART_H,
+        directory=os.path.dirname(output_path) or None,
+    )
+
+
 def _apply_page_profile_payload(
     profile_adapter,
     profile_payload: PageProfilePayload,
@@ -178,9 +190,7 @@ def _apply_page_profile_payload(
         native_curve, _native_request = profile_payload.native_inputs()
         if native_curve is not None:
             profile_adapter.bind_native_profile(profile_curve=native_curve)
-        else:
-            profile_adapter.clear_profile()
-        return
+            return
 
     page_points = profile_payload.page_points
     if len(page_points) < 2:
@@ -188,14 +198,7 @@ def _apply_page_profile_payload(
         return
 
     try:
-        from .profile_renderer import render_profile_to_file  # noqa: PLC0415
-
-        svg_path = render_profile_to_file(
-            page_points,
-            width_mm=PROFILE_W,
-            height_mm=PROFILE_CHART_H,
-            directory=os.path.dirname(output_path) or None,
-        )
+        svg_path = _render_page_profile_svg(page_points, output_path=output_path)
         if svg_path:
             profile_adapter.set_svg_profile(svg_path)
             profile_temp_files.append(svg_path)

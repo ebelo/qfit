@@ -33,33 +33,46 @@ class ProfileItemAdapter:
 
     item: object
     kind: str = "picture"
+    svg_fallback_item: object | None = None
 
     @property
     def supports_native_profile(self) -> bool:
         return self.kind == "native"
 
-    def clear_profile(self) -> None:
-        if self.supports_native_profile:
-            set_profile_curve = getattr(self.item, "setProfileCurve", None)
-            if callable(set_profile_curve):
-                try:
-                    set_profile_curve(None)
-                except Exception:  # noqa: BLE001
-                    pass
-        set_picture_path = getattr(self.item, "setPicturePath", None)
-        if callable(set_picture_path):
-            set_picture_path("")
-        refresh = getattr(self.item, "refresh", None)
+    def _refresh_item(self, item: object | None) -> None:
+        refresh = getattr(item, "refresh", None)
         if callable(refresh):
             refresh()
 
-    def set_svg_profile(self, svg_path: str) -> None:
-        set_picture_path = getattr(self.item, "setPicturePath", None)
+    def _set_picture_path(self, item: object | None, path: str) -> None:
+        set_picture_path = getattr(item, "setPicturePath", None)
         if callable(set_picture_path):
-            set_picture_path(svg_path)
-        refresh = getattr(self.item, "refresh", None)
-        if callable(refresh):
-            refresh()
+            set_picture_path(path)
+
+    def _clear_native_curve(self) -> None:
+        if not self.supports_native_profile:
+            return
+
+        set_profile_curve = getattr(self.item, "setProfileCurve", None)
+        if callable(set_profile_curve):
+            try:
+                set_profile_curve(None)
+            except Exception:  # noqa: BLE001
+                pass
+
+    def clear_profile(self) -> None:
+        self._clear_native_curve()
+        self._set_picture_path(self.item, "")
+        self._set_picture_path(self.svg_fallback_item, "")
+        self._refresh_item(self.item)
+        self._refresh_item(self.svg_fallback_item)
+
+    def set_svg_profile(self, svg_path: str) -> None:
+        self._clear_native_curve()
+        picture_item = self.svg_fallback_item or self.item
+        self._set_picture_path(picture_item, svg_path)
+        self._refresh_item(self.item)
+        self._refresh_item(picture_item)
 
     def configure_native_defaults(
         self,
@@ -99,9 +112,13 @@ class ProfileItemAdapter:
         if not self.supports_native_profile:
             return
 
+        self._set_picture_path(self.svg_fallback_item, "")
+
         set_profile_curve = getattr(self.item, "setProfileCurve", None)
         if callable(set_profile_curve) and profile_curve is not None:
             set_profile_curve(profile_curve)
+        self._refresh_item(self.svg_fallback_item)
+        self._refresh_item(self.item)
 
 
 @dataclass
@@ -126,7 +143,8 @@ def build_profile_item(layout, *, item_id: str, x: float, y: float, w: float, h:
     """Create the current profile layout item and return an adapter for it.
 
     Prefer a native ``QgsLayoutItemElevationProfile`` when the QGIS build
-    exposes it; otherwise fall back to the legacy picture-backed SVG item.
+    exposes it, while keeping a hidden picture-backed fallback so atlas pages
+    with unusable native curve input can still render the sampled SVG chart.
     """
     native_adapter = build_native_profile_item(
         layout,
@@ -137,6 +155,14 @@ def build_profile_item(layout, *, item_id: str, x: float, y: float, w: float, h:
         h=h,
     )
     if native_adapter is not None:
+        fallback_item = QgsLayoutItemPicture(layout)
+        fallback_item.setId(f"{item_id}_svg_fallback")
+        fallback_item.attemptMove(QgsLayoutPoint(x, y, QgsUnitTypes.LayoutMillimeters))
+        fallback_item.attemptResize(QgsLayoutSize(w, h, QgsUnitTypes.LayoutMillimeters))
+        fallback_item.setResizeMode(QgsLayoutItemPicture.Zoom)
+        layout.addLayoutItem(fallback_item)
+        native_adapter.svg_fallback_item = fallback_item
+        setattr(native_adapter.item, "_qfit_svg_fallback_item", fallback_item)
         return native_adapter
 
     profile_item = QgsLayoutItemPicture(layout)
@@ -186,7 +212,8 @@ def build_profile_item_adapter(item) -> ProfileItemAdapter:
     """Wrap an already-created layout item in the shared adapter type."""
     item_type = type(item).__name__.lower()
     kind = "native" if "elevationprofile" in item_type else "picture"
-    return ProfileItemAdapter(item=item, kind=kind)
+    fallback_item = vars(item).get("_qfit_svg_fallback_item") if hasattr(item, "__dict__") else None
+    return ProfileItemAdapter(item=item, kind=kind, svg_fallback_item=fallback_item)
 
 
 def native_profile_item_available() -> bool:
