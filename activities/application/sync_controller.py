@@ -269,10 +269,14 @@ class SyncController:
         progress_note = ""
         if "missing_before" in stream_stats or "remaining_missing" in stream_stats:
             progress_note = (
-                ", missing detailed routes before run: {before}, remaining missing: {after}"
+                ", already detailed before run: {already}, missing detailed routes before run: {before}, "
+                "remaining missing: {after}, empty detailed-route responses: {empty}, errors: {errors}"
             ).format(
+                already=stream_stats.get("already_detailed", 0),
                 before=stream_stats.get("missing_before", 0),
                 after=stream_stats.get("remaining_missing", 0),
+                empty=stream_stats.get("empty", 0),
+                errors=stream_stats.get("errors", 0),
             )
         return (
             "Fetched {activity_count} activities from {source}, detailed tracks: {detailed_count}, "
