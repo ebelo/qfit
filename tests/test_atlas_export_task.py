@@ -754,6 +754,8 @@ class TestBuildAtlasLayout(unittest.TestCase):
         self.assertFalse(profile_item_module._coerce_boolish(0))
         self.assertIsNone(profile_item_module._coerce_boolish("yes"))
         self.assertFalse(profile_item_module._candidate_has_z_dimension(None))
+        self.assertFalse(profile_item_module._matches_line_geometry_type(None))
+        self.assertFalse(profile_item_module.atlas_layer_supports_native_profile_atlas(None))
 
         candidate = MagicMock()
         del candidate.is3D
@@ -764,13 +766,36 @@ class TestBuildAtlasLayout(unittest.TestCase):
         self.assertIsNone(profile_item_module._read_boolish_flag(candidate, "is3D"))
 
         with patch("qfit.atlas.profile_item.QgsWkbTypes", None):
+            self.assertTrue(profile_item_module._matches_line_geometry_type("LineString"))
+            broken_layer = MagicMock()
+            broken_layer.geometryType.side_effect = RuntimeError("boom")
+            self.assertFalse(profile_item_module.atlas_layer_supports_native_profile_atlas(broken_layer))
             self.assertIsNone(profile_item_module._wkb_type_has_z_dimension(MagicMock()))
 
         with patch("qfit.atlas.profile_item.QgsWkbTypes") as qgs_wkb_types:
+            qgs_wkb_types.LineGeometry = object()
+            self.assertTrue(
+                profile_item_module._matches_line_geometry_type(qgs_wkb_types.LineGeometry)
+            )
             qgs_wkb_types.hasZ.side_effect = RuntimeError("boom")
             candidate = MagicMock()
             candidate.wkbType.return_value = "LineStringZ"
             self.assertIsNone(profile_item_module._wkb_type_has_z_dimension(candidate))
+
+        with patch("qfit.atlas.profile_item.QgsWkbTypes") as qgs_wkb_types:
+            qgs_wkb_types.LineGeometry = "LineGeometry"
+            del qgs_wkb_types.geometryType
+            atlas_layer = MagicMock()
+            del atlas_layer.geometryType
+            atlas_layer.wkbType.return_value = "LineStringZ"
+            self.assertFalse(profile_item_module.atlas_layer_supports_native_profile_atlas(atlas_layer))
+
+        with patch("qfit.atlas.profile_item.QgsWkbTypes") as qgs_wkb_types:
+            qgs_wkb_types.geometryType.side_effect = RuntimeError("boom")
+            atlas_layer = MagicMock()
+            del atlas_layer.geometryType
+            atlas_layer.wkbType.return_value = "LineStringZ"
+            self.assertFalse(profile_item_module.atlas_layer_supports_native_profile_atlas(atlas_layer))
 
         curve = MagicMock()
         del curve.numPoints
@@ -813,6 +838,25 @@ class TestBuildAtlasLayout(unittest.TestCase):
         curve.numPoints.return_value = 1
         curve.pointN.side_effect = RuntimeError("boom")
         self.assertFalse(profile_item_module._curve_points_have_z(curve))
+
+        native_item = MagicMock()
+        del native_item.id
+        self.assertIsNone(profile_item_module._find_svg_fallback_item(native_item))
+
+        candidate = MagicMock()
+        del candidate.wkbType
+        with patch("qfit.atlas.profile_item.QgsWkbTypes") as qgs_wkb_types:
+            qgs_wkb_types.hasZ.return_value = True
+            self.assertIsNone(profile_item_module._wkb_type_has_z_dimension(candidate))
+
+        curve = MagicMock()
+        curve.exteriorRing.return_value = MagicMock()
+        del curve.curveToLine
+        del curve.numPoints
+        del curve.pointN
+        geometry = MagicMock()
+        geometry.constGet.return_value = curve
+        self.assertIsNone(build_native_profile_curve(geometry))
 
     def test_build_native_profile_request_tolerates_missing_optional_setters(self):
         curve = MagicMock(name="curve")
