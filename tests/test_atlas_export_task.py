@@ -382,6 +382,28 @@ class TestBuildAtlasLayout(unittest.TestCase):
         self.assertIs(adapter.svg_fallback_item, _qgis_core.QgsLayoutItemPicture.return_value)
         _qgis_core.QgsLayoutItemPicture.return_value.setId.assert_called_once_with("profile_svg_fallback")
 
+    def test_build_profile_item_keeps_svg_fallback_when_native_atlas_driven_api_is_unavailable(self):
+        layout = MagicMock()
+        native_adapter = ProfileItemAdapter(item=MagicMock(), kind="native", atlas_driven=False)
+        picture_item = _qgis_core.QgsLayoutItemPicture.return_value
+        _qgis_core.QgsLayoutItemPicture.reset_mock()
+        picture_item.reset_mock()
+
+        with patch("qfit.atlas.profile_item.build_native_profile_item", return_value=native_adapter):
+            adapter = build_profile_item(
+                layout,
+                item_id="profile",
+                x=10.0,
+                y=20.0,
+                w=30.0,
+                h=40.0,
+                native_config=NativeProfileItemConfig(atlas_driven=True),
+            )
+
+        self.assertIs(adapter, native_adapter)
+        self.assertIs(adapter.svg_fallback_item, picture_item)
+        picture_item.setId.assert_called_once_with("profile_svg_fallback")
+
     def test_build_profile_item_adapter_finds_native_svg_fallback_by_id(self):
         layout = MagicMock()
         native_item = MagicMock()

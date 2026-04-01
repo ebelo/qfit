@@ -105,9 +105,11 @@ class ProfileItemAdapter:
             set_crs(QgsCoordinateReferenceSystem(crs_authid))
 
         set_atlas_driven = getattr(self.item, "setAtlasDriven", None)
+        native_atlas_driven = False
         if callable(set_atlas_driven):
-            set_atlas_driven(bool(atlas_driven))
-        self.atlas_driven = bool(atlas_driven)
+            native_atlas_driven = bool(atlas_driven)
+            set_atlas_driven(native_atlas_driven)
+        self.atlas_driven = native_atlas_driven
 
         set_tolerance = getattr(self.item, "setTolerance", None)
         if callable(set_tolerance) and tolerance is not None:
