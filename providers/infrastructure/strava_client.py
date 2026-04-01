@@ -317,15 +317,18 @@ class StravaClient:
         for activity in activities:
             if self._activity_has_detailed_route(activity):
                 stats["already_detailed"] += 1
+                self._set_detailed_route_status(activity, "downloaded")
                 continue
 
             cached_bundle = self._load_cached_stream_bundle(activity)
             if cached_bundle is not None:
                 if self._apply_stream_bundle_to_activity(activity, cached_bundle):
                     activity.details_json["stream_cache"] = "hit"
+                    self._set_detailed_route_status(activity, "cached")
                     stats["cached"] += 1
                 else:
                     activity.details_json["stream_cache"] = "hit-empty"
+                    self._set_detailed_route_status(activity, "empty")
                     stats["empty"] += 1
                 continue
 
@@ -341,6 +344,7 @@ class StravaClient:
         for activity in candidates[:limit]:
             if self._approaching_rate_limit():
                 activity.details_json["stream_skipped_reason"] = "rate_limit_guard"
+                self._set_detailed_route_status(activity, "skipped_rate_limit")
                 stats["skipped_rate_limit"] += 1
                 continue
 
@@ -348,15 +352,18 @@ class StravaClient:
                 stream_bundle = self.fetch_activity_stream_bundle(activity.source_activity_id)
             except StravaClientError as exc:
                 activity.details_json["stream_error"] = str(exc)
+                self._set_detailed_route_status(activity, "error")
                 stats["errors"] += 1
                 continue
 
             self._save_cached_stream_bundle(activity, stream_bundle)
             if self._apply_stream_bundle_to_activity(activity, stream_bundle):
                 activity.details_json["stream_cache"] = "miss"
+                self._set_detailed_route_status(activity, "downloaded")
                 stats["downloaded"] += 1
             else:
                 activity.details_json["stream_cache"] = "miss-empty"
+                self._set_detailed_route_status(activity, "empty")
                 stats["empty"] += 1
 
         stats["remaining_missing"] = sum(
@@ -368,6 +375,10 @@ class StravaClient:
     @staticmethod
     def _activity_has_detailed_route(activity):
         return getattr(activity, "geometry_source", None) == "stream"
+
+    @staticmethod
+    def _set_detailed_route_status(activity, status):
+        activity.details_json["detailed_route_status"] = status
 
     def fetch_activity_stream_points(self, activity_id):
         stream_bundle = self.fetch_activity_stream_bundle(activity_id)

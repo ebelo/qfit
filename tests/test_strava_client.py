@@ -110,6 +110,7 @@ class StravaClientTests(unittest.TestCase):
         fetch_mock.assert_not_called()
         self.assertEqual(client.last_stream_enrichment_stats["cached"], 1)
         self.assertEqual(activity.details_json["stream_cache"], "hit")
+        self.assertEqual(activity.details_json["detailed_route_status"], "cached")
 
     def test_enrich_activities_only_spends_limit_on_missing_routes(self):
         client = StravaClient()
@@ -139,6 +140,7 @@ class StravaClientTests(unittest.TestCase):
 
         fetch_mock.assert_called_once_with("3")
         self.assertEqual(client.last_stream_enrichment_stats["already_detailed"], 1)
+        self.assertEqual(already_detailed.details_json["detailed_route_status"], "downloaded")
         self.assertEqual(client.last_stream_enrichment_stats["cached"], 1)
         self.assertEqual(client.last_stream_enrichment_stats["requested"], 1)
         self.assertEqual(client.last_stream_enrichment_stats["missing_before"], 2)
@@ -158,6 +160,45 @@ class StravaClientTests(unittest.TestCase):
         self.assertEqual(client.last_stream_enrichment_stats["missing_before"], 1)
         self.assertEqual(client.last_stream_enrichment_stats["remaining_missing"], 1)
         self.assertEqual(activity.details_json["stream_skipped_reason"], "rate_limit_guard")
+        self.assertEqual(activity.details_json["detailed_route_status"], "skipped_rate_limit")
+
+    def test_enrich_activities_marks_downloaded_route_status(self):
+        client = StravaClient()
+        activity = client.normalize_activity({"id": 42, "name": "Run"})
+
+        with (
+            patch.object(client, "_load_cached_stream_bundle", return_value=None),
+            patch.object(client, "fetch_activity_stream_bundle", return_value={"latlng": [[46.5, 6.6], [46.6, 6.7]]}),
+            patch.object(client, "_save_cached_stream_bundle"),
+        ):
+            client.enrich_activities_with_streams([activity], max_activities=1)
+
+        self.assertEqual(activity.details_json["detailed_route_status"], "downloaded")
+
+    def test_enrich_activities_marks_error_route_status(self):
+        client = StravaClient()
+        activity = client.normalize_activity({"id": 42, "name": "Run"})
+
+        with (
+            patch.object(client, "_load_cached_stream_bundle", return_value=None),
+            patch.object(client, "fetch_activity_stream_bundle", side_effect=StravaClientError("boom")),
+        ):
+            client.enrich_activities_with_streams([activity], max_activities=1)
+
+        self.assertEqual(activity.details_json["detailed_route_status"], "error")
+
+    def test_enrich_activities_marks_empty_route_status(self):
+        client = StravaClient()
+        activity = client.normalize_activity({"id": 42, "name": "Run"})
+
+        with (
+            patch.object(client, "_load_cached_stream_bundle", return_value=None),
+            patch.object(client, "fetch_activity_stream_bundle", return_value={"latlng": []}),
+            patch.object(client, "_save_cached_stream_bundle"),
+        ):
+            client.enrich_activities_with_streams([activity], max_activities=1)
+
+        self.assertEqual(activity.details_json["detailed_route_status"], "empty")
 
     def test_parse_rate_limit_pair_and_remaining(self):
         client = StravaClient()
