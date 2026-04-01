@@ -45,22 +45,43 @@ class ProfileItemAdapter:
         if callable(refresh):
             refresh()
 
-    def configure_native_defaults(self, *, crs_authid: str = "EPSG:3857", atlas_driven: bool = True) -> None:
+    def configure_native_defaults(
+        self,
+        *,
+        crs_authid: str = "EPSG:3857",
+        atlas_driven: bool = True,
+        tolerance: float | None = None,
+    ) -> None:
         if not self.supports_native_profile:
             return
+
         set_crs = getattr(self.item, "setCrs", None)
-        if callable(set_crs) and QgsCoordinateReferenceSystem is not None:
+        if callable(set_crs) and QgsCoordinateReferenceSystem is not None and crs_authid:
             set_crs(QgsCoordinateReferenceSystem(crs_authid))
+
         set_atlas_driven = getattr(self.item, "setAtlasDriven", None)
         if callable(set_atlas_driven):
-            set_atlas_driven(atlas_driven)
+            set_atlas_driven(bool(atlas_driven))
+
+        set_tolerance = getattr(self.item, "setTolerance", None)
+        if callable(set_tolerance) and tolerance is not None:
+            set_tolerance(float(tolerance))
+
+
+@dataclass
+class NativeProfileItemConfig:
+    """Configuration for a native QGIS elevation profile layout item."""
+
+    crs_auth_id: str = "EPSG:3857"
+    atlas_driven: bool = True
+    tolerance: float | None = None
 
 
 def build_profile_item(layout, *, item_id: str, x: float, y: float, w: float, h: float) -> ProfileItemAdapter:
     """Create the current profile layout item and return an adapter for it.
 
-    Today this continues to use the legacy picture-backed SVG item.  The
-    adapter exists so a future slice can switch to a native
+    Today this continues to use the legacy picture-backed SVG item. The adapter
+    exists so a future slice can switch to a native
     ``QgsLayoutItemElevationProfile`` implementation without rewriting atlas
     export again.
     """
@@ -73,17 +94,6 @@ def build_profile_item(layout, *, item_id: str, x: float, y: float, w: float, h:
     return ProfileItemAdapter(item=profile_item, kind="picture")
 
 
-def build_profile_item_adapter(item) -> ProfileItemAdapter:
-    """Wrap an already-created layout item in the shared adapter type."""
-    item_type = type(item).__name__.lower()
-    kind = "native" if "elevationprofile" in item_type else "picture"
-    return ProfileItemAdapter(item=item, kind=kind)
-
-
-def _native_profile_item_available() -> bool:
-    return QgsLayoutItemElevationProfile is not None
-
-
 def build_native_profile_item(
     layout,
     *,
@@ -92,15 +102,14 @@ def build_native_profile_item(
     y: float,
     w: float,
     h: float,
-    crs_authid: str = "EPSG:3857",
-    atlas_driven: bool = True,
+    config: NativeProfileItemConfig | None = None,
 ) -> ProfileItemAdapter | None:
     """Create a native elevation-profile item when the QGIS build supports it.
 
     Returns ``None`` when the native item class is not available, so callers
     can keep using the picture-backed fallback path.
     """
-    if not _native_profile_item_available():
+    if not native_profile_item_available():
         return None
 
     profile_item = QgsLayoutItemElevationProfile(layout)
@@ -110,5 +119,21 @@ def build_native_profile_item(
     layout.addLayoutItem(profile_item)
 
     adapter = ProfileItemAdapter(item=profile_item, kind="native")
-    adapter.configure_native_defaults(crs_authid=crs_authid, atlas_driven=atlas_driven)
+    cfg = config or NativeProfileItemConfig()
+    adapter.configure_native_defaults(
+        crs_authid=cfg.crs_auth_id,
+        atlas_driven=cfg.atlas_driven,
+        tolerance=cfg.tolerance,
+    )
     return adapter
+
+
+def build_profile_item_adapter(item) -> ProfileItemAdapter:
+    """Wrap an already-created layout item in the shared adapter type."""
+    item_type = type(item).__name__.lower()
+    kind = "native" if "elevationprofile" in item_type else "picture"
+    return ProfileItemAdapter(item=item, kind=kind)
+
+
+def native_profile_item_available() -> bool:
+    return QgsLayoutItemElevationProfile is not None
