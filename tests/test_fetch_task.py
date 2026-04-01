@@ -244,5 +244,36 @@ class TestFetchTaskUnexpectedError(unittest.TestCase):
         self.assertIn("bad data", received.get("error", ""))
 
 
+class TestFetchTaskBackwardCompatibility(unittest.TestCase):
+    def test_positional_on_finished_argument_still_works(self):
+        received = {}
+        mock_provider = MagicMock()
+        mock_provider.fetch_activities.return_value = []
+
+        task = FetchTask(
+            mock_provider,
+            200,
+            0,
+            None,
+            None,
+            False,
+            0,
+            lambda **kw: received.update(kw),
+        )
+
+        _run_task(task)
+
+        self.assertIn("activities", received)
+        mock_provider.fetch_activities.assert_called_once_with(
+            per_page=200,
+            max_pages=0,
+            before=None,
+            after=None,
+            use_detailed_streams=False,
+            max_detailed_activities=0,
+            detailed_route_strategy="Missing routes only",
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

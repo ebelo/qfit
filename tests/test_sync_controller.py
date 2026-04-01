@@ -117,6 +117,38 @@ class BuildFetchTaskTests(unittest.TestCase):
         )
         self.assertIs(task, fetch_task_class.return_value)
 
+    def test_build_fetch_task_supports_legacy_kwargs_without_strategy(self):
+        ctrl = SyncController()
+        provider = MagicMock(name="provider")
+
+        with (
+            patch.object(ctrl, "build_strava_provider", return_value=provider),
+            patch("qfit.activities.application.sync_controller.FetchTask") as fetch_task_class,
+        ):
+            ctrl.build_fetch_task(
+                client_id="id",
+                client_secret="secret",
+                refresh_token="token",
+                cache="cache",
+                per_page=50,
+                max_pages=2,
+                use_detailed_streams=True,
+                max_detailed_activities=7,
+                on_finished="callback",
+            )
+
+        fetch_task_class.assert_called_once_with(
+            provider=provider,
+            per_page=50,
+            max_pages=2,
+            before=None,
+            after=None,
+            use_detailed_streams=True,
+            max_detailed_activities=7,
+            detailed_route_strategy="Missing routes only",
+            on_finished="callback",
+        )
+
 
 class StravaAuthorizationWorkflowTests(unittest.TestCase):
     def test_build_authorize_request_returns_dataclass(self):
