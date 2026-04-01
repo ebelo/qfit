@@ -230,6 +230,7 @@ class TestBuildAtlasLayout(unittest.TestCase):
     def test_apply_page_profile_payload_binds_native_curve_without_svg_render(self):
         adapter = MagicMock(name="adapter")
         adapter.supports_native_profile = True
+        adapter.atlas_driven = False
         adapter.bind_native_profile.return_value = True
         payload = MagicMock(name="payload")
         payload.native_inputs.return_value = ("curve", "request")
@@ -248,9 +249,31 @@ class TestBuildAtlasLayout(unittest.TestCase):
         render_profile.assert_not_called()
         self.assertEqual(profile_temp_files, [])
 
+    def test_apply_page_profile_payload_skips_manual_updates_for_atlas_driven_native_item(self):
+        adapter = MagicMock(name="adapter")
+        adapter.supports_native_profile = True
+        adapter.atlas_driven = True
+        payload = MagicMock(name="payload")
+        profile_temp_files = []
+
+        with patch.object(atlas_export_task, "_render_page_profile_svg") as render_profile:
+            atlas_export_task._apply_page_profile_payload(
+                adapter,
+                payload,
+                output_path="/tmp/out.pdf",
+                profile_temp_files=profile_temp_files,
+            )
+
+        payload.native_inputs.assert_not_called()
+        adapter.bind_native_profile.assert_not_called()
+        adapter.clear_profile.assert_not_called()
+        render_profile.assert_not_called()
+        self.assertEqual(profile_temp_files, [])
+
     def test_apply_page_profile_payload_falls_back_to_svg_when_native_bind_is_unavailable(self):
         adapter = MagicMock(name="adapter")
         adapter.supports_native_profile = True
+        adapter.atlas_driven = False
         adapter.bind_native_profile.return_value = False
         payload = MagicMock(name="payload")
         payload.native_inputs.return_value = ("curve", "request")
@@ -278,6 +301,7 @@ class TestBuildAtlasLayout(unittest.TestCase):
     def test_apply_page_profile_payload_clears_native_profile_when_curve_missing(self):
         adapter = MagicMock(name="adapter")
         adapter.supports_native_profile = True
+        adapter.atlas_driven = False
         payload = MagicMock(name="payload")
         payload.native_inputs.return_value = (None, None)
 
@@ -390,6 +414,19 @@ class TestBuildAtlasLayout(unittest.TestCase):
 
         self.assertEqual(adapter.kind, "native")
         self.assertTrue(adapter.supports_native_profile)
+        self.assertFalse(adapter.atlas_driven)
+
+    def test_build_profile_item_adapter_reads_native_atlas_driven_flag(self):
+        native_item = MagicMock()
+        native_item.__class__.__name__ = "QgsLayoutItemElevationProfile"
+        native_item.id.return_value = "profile"
+        native_item.layout.return_value = MagicMock(items=MagicMock(return_value=[]))
+        native_item.atlasDriven.return_value = True
+
+        adapter = build_profile_item_adapter(native_item)
+
+        self.assertTrue(adapter.supports_native_profile)
+        self.assertTrue(adapter.atlas_driven)
 
     def test_native_profile_item_available_reflects_optional_qgis_class(self):
         self.assertTrue(native_profile_item_available())
@@ -516,6 +553,7 @@ class TestBuildAtlasLayout(unittest.TestCase):
         item.setCrs.assert_not_called()
         item.setAtlasDriven.assert_not_called()
         item.setTolerance.assert_not_called()
+        self.assertFalse(adapter.atlas_driven)
 
     def test_native_adapter_clear_profile_resets_native_curve_when_supported(self):
         item = MagicMock()
