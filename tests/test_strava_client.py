@@ -111,6 +111,54 @@ class StravaClientTests(unittest.TestCase):
         self.assertEqual(client.last_stream_enrichment_stats["cached"], 1)
         self.assertEqual(activity.details_json["stream_cache"], "hit")
 
+    def test_enrich_activities_only_spends_limit_on_missing_routes(self):
+        client = StravaClient()
+        already_detailed = client.normalize_activity({"id": 1, "name": "Detailed"})
+        already_detailed.geometry_source = "stream"
+        cached = client.normalize_activity({"id": 2, "name": "Cached"})
+        missing_a = client.normalize_activity({"id": 3, "name": "Missing A"})
+        missing_b = client.normalize_activity({"id": 4, "name": "Missing B"})
+
+        def fake_cache_lookup(activity):
+            if activity.source_activity_id == "2":
+                return {"latlng": [[46.5, 6.6], [46.6, 6.7]]}
+            return None
+
+        def fake_fetch(activity_id):
+            return {"latlng": [[46.0, 6.0], [46.1, 6.1]], "time": [0, 1]}
+
+        with (
+            patch.object(client, "_load_cached_stream_bundle", side_effect=fake_cache_lookup),
+            patch.object(client, "fetch_activity_stream_bundle", side_effect=fake_fetch) as fetch_mock,
+            patch.object(client, "_save_cached_stream_bundle"),
+        ):
+            client.enrich_activities_with_streams(
+                [already_detailed, cached, missing_a, missing_b],
+                max_activities=1,
+            )
+
+        fetch_mock.assert_called_once_with("3")
+        self.assertEqual(client.last_stream_enrichment_stats["already_detailed"], 1)
+        self.assertEqual(client.last_stream_enrichment_stats["cached"], 1)
+        self.assertEqual(client.last_stream_enrichment_stats["requested"], 1)
+        self.assertEqual(client.last_stream_enrichment_stats["missing_before"], 2)
+        self.assertEqual(client.last_stream_enrichment_stats["downloaded"], 1)
+        self.assertEqual(client.last_stream_enrichment_stats["remaining_missing"], 1)
+
+    def test_enrich_activities_reports_remaining_missing_after_rate_limit_skip(self):
+        client = StravaClient()
+        activity = client.normalize_activity({"id": 42, "name": "Run"})
+
+        with (
+            patch.object(client, "_load_cached_stream_bundle", return_value=None),
+            patch.object(client, "_approaching_rate_limit", return_value=True),
+        ):
+            client.enrich_activities_with_streams([activity], max_activities=1)
+
+        self.assertEqual(client.last_stream_enrichment_stats["missing_before"], 1)
+        self.assertEqual(client.last_stream_enrichment_stats["remaining_missing"], 1)
+        self.assertEqual(activity.details_json["stream_skipped_reason"], "rate_limit_guard")
+
     def test_parse_rate_limit_pair_and_remaining(self):
         client = StravaClient()
         self.assertEqual(client._parse_rate_limit_pair("200, 2000"), (200, 2000))

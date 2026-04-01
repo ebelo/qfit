@@ -266,9 +266,17 @@ class SyncController:
         stream_stats = provider.last_stream_enrichment_stats or {}
         rate_limit_note = self._rate_limit_note(provider.last_rate_limit)
         fetch_notice = self._fetch_notice(provider)
+        progress_note = ""
+        if "missing_before" in stream_stats or "remaining_missing" in stream_stats:
+            progress_note = (
+                ", missing detailed routes before run: {before}, remaining missing: {after}"
+            ).format(
+                before=stream_stats.get("missing_before", 0),
+                after=stream_stats.get("remaining_missing", 0),
+            )
         return (
             "Fetched {activity_count} activities from {source}, detailed tracks: {detailed_count}, "
-            "cached streams: {cached}, downloaded streams: {downloaded}, rate-limit skips: {skipped}.{rate_note}{fetch_notice}"
+            "cached streams: {cached}, downloaded streams: {downloaded}, rate-limit skips: {skipped}{progress}.{rate_note}{fetch_notice}"
         ).format(
             activity_count=activity_count,
             source=provider.source_name,
@@ -276,6 +284,7 @@ class SyncController:
             cached=stream_stats.get("cached", 0),
             downloaded=stream_stats.get("downloaded", 0),
             skipped=stream_stats.get("skipped_rate_limit", 0),
+            progress=progress_note,
             rate_note=rate_limit_note,
             fetch_notice=fetch_notice,
         )

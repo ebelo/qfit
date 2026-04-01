@@ -301,21 +301,24 @@ class StravaClient:
         return payload
 
     def enrich_activities_with_streams(self, activities, max_activities=None):
-        if max_activities is None or max_activities <= 0:
-            limit = len(activities)
-        else:
-            limit = min(int(max_activities), len(activities))
-
         stats = {
-            "requested": limit,
+            "requested": 0,
+            "already_detailed": 0,
+            "missing_before": 0,
             "cached": 0,
             "downloaded": 0,
             "skipped_rate_limit": 0,
             "errors": 0,
             "empty": 0,
+            "remaining_missing": 0,
         }
 
-        for activity in activities[:limit]:
+        candidates = []
+        for activity in activities:
+            if self._activity_has_detailed_route(activity):
+                stats["already_detailed"] += 1
+                continue
+
             cached_bundle = self._load_cached_stream_bundle(activity)
             if cached_bundle is not None:
                 if self._apply_stream_bundle_to_activity(activity, cached_bundle):
@@ -326,6 +329,16 @@ class StravaClient:
                     stats["empty"] += 1
                 continue
 
+            candidates.append(activity)
+
+        stats["missing_before"] = len(candidates)
+        if max_activities is None or max_activities <= 0:
+            limit = len(candidates)
+        else:
+            limit = min(int(max_activities), len(candidates))
+        stats["requested"] = limit
+
+        for activity in candidates[:limit]:
             if self._approaching_rate_limit():
                 activity.details_json["stream_skipped_reason"] = "rate_limit_guard"
                 stats["skipped_rate_limit"] += 1
@@ -346,8 +359,15 @@ class StravaClient:
                 activity.details_json["stream_cache"] = "miss-empty"
                 stats["empty"] += 1
 
+        stats["remaining_missing"] = sum(
+            1 for activity in activities if not self._activity_has_detailed_route(activity)
+        )
         self.last_stream_enrichment_stats = stats
         return activities
+
+    @staticmethod
+    def _activity_has_detailed_route(activity):
+        return getattr(activity, "geometry_source", None) == "stream"
 
     def fetch_activity_stream_points(self, activity_id):
         stream_bundle = self.fetch_activity_stream_bundle(activity_id)
