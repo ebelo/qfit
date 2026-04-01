@@ -240,3 +240,17 @@ def build_native_profile_request(
         set_step_distance(float(cfg.step_distance))
 
     return request
+
+
+def build_native_profile_inputs(
+    feature_geometry,
+    *,
+    request_config: NativeProfileRequestConfig | None = None,
+):
+    """Build the native profile curve/request pair for a feature geometry."""
+    curve = build_native_profile_curve(feature_geometry)
+    if curve is None:
+        return None, None
+
+    request = build_native_profile_request(curve, config=request_config)
+    return curve, request
