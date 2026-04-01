@@ -118,11 +118,20 @@ class NativeProfileRequestConfig:
 def build_profile_item(layout, *, item_id: str, x: float, y: float, w: float, h: float) -> ProfileItemAdapter:
     """Create the current profile layout item and return an adapter for it.
 
-    Today this continues to use the legacy picture-backed SVG item. The adapter
-    exists so a future slice can switch to a native
-    ``QgsLayoutItemElevationProfile`` implementation without rewriting atlas
-    export again.
+    Prefer a native ``QgsLayoutItemElevationProfile`` when the QGIS build
+    exposes it; otherwise fall back to the legacy picture-backed SVG item.
     """
+    native_adapter = build_native_profile_item(
+        layout,
+        item_id=item_id,
+        x=x,
+        y=y,
+        w=w,
+        h=h,
+    )
+    if native_adapter is not None:
+        return native_adapter
+
     profile_item = QgsLayoutItemPicture(layout)
     profile_item.setId(item_id)
     profile_item.attemptMove(QgsLayoutPoint(x, y, QgsUnitTypes.LayoutMillimeters))
