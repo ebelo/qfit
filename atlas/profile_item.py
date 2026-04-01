@@ -181,6 +181,40 @@ def native_profile_request_available() -> bool:
     return QgsProfileRequest is not None
 
 
+def build_native_profile_curve(feature_geometry):
+    """Extract a native profile curve from a QGIS feature geometry when possible."""
+    if feature_geometry is None:
+        return None
+
+    const_get = getattr(feature_geometry, "constGet", None)
+    curve = const_get() if callable(const_get) else feature_geometry
+    if curve is None:
+        return None
+
+    type_name = type(curve).__name__.lower()
+    if "polygon" in type_name or "surface" in type_name:
+        return None
+
+    is_curve_type = any(
+        callable(getattr(curve, name, None))
+        for name in ("curveToLine", "numPoints", "pointN")
+    )
+    has_polygon_api = any(
+        callable(getattr(curve, name, None))
+        for name in ("exteriorRing", "interiorRing", "asPolygon")
+    )
+    if has_polygon_api and not is_curve_type:
+        return None
+    if not is_curve_type:
+        return None
+
+    clone = getattr(curve, "clone", None)
+    if callable(clone):
+        return clone()
+
+    return None
+
+
 def build_native_profile_request(
     profile_curve,
     *,
