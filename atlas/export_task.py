@@ -1091,7 +1091,7 @@ class AtlasExportTask(QgsTask):
 
             # Pre-load profile samples grouped by page_sort_key.
             profile_samples: dict[str, list[tuple[float, float]]] = {}
-            sort_key_idx = fields.indexOf("page_sort_key")
+            sort_key_idx = fields.indexOf("page_sort_key") if manual_profile_updates_enabled else -1
             if manual_profile_updates_enabled:
                 try:
                     source = self._atlas_layer.source()
