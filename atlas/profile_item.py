@@ -256,50 +256,91 @@ def native_profile_request_available() -> bool:
     return QgsProfileRequest is not None
 
 
+def _coerce_boolish(value) -> bool | None:
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)):
+        return bool(value)
+    return None
+
+
+def _read_boolish_flag(candidate, method_name: str) -> bool | None:
+    reader = getattr(candidate, method_name, None)
+    if not callable(reader):
+        return None
+
+    try:
+        return _coerce_boolish(reader())
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def _wkb_type_has_z_dimension(candidate) -> bool | None:
+    if QgsWkbTypes is None:
+        return None
+
+    wkb_type = getattr(candidate, "wkbType", None)
+    has_z = getattr(QgsWkbTypes, "hasZ", None)
+    if not callable(wkb_type) or not callable(has_z):
+        return None
+
+    try:
+        return _coerce_boolish(has_z(wkb_type()))
+    except Exception:  # noqa: BLE001
+        return None
+
+
 def _candidate_has_z_dimension(candidate) -> bool:
     if candidate is None:
         return False
 
-    is_3d = getattr(candidate, "is3D", None)
-    if callable(is_3d):
-        try:
-            is_3d_value = is_3d()
-        except Exception:  # noqa: BLE001
-            pass
-        else:
-            if isinstance(is_3d_value, bool):
-                return is_3d_value
-            if isinstance(is_3d_value, (int, float)):
-                return bool(is_3d_value)
-
-    if QgsWkbTypes is None:
-        return False
-
-    wkb_type = getattr(candidate, "wkbType", None)
-    has_z = getattr(QgsWkbTypes, "hasZ", None)
-    if callable(wkb_type) and callable(has_z):
-        try:
-            has_z_value = has_z(wkb_type())
-        except Exception:  # noqa: BLE001
-            return False
-
-        if isinstance(has_z_value, bool):
-            return has_z_value
-        if isinstance(has_z_value, (int, float)):
-            return bool(has_z_value)
+    for probe in (
+        _read_boolish_flag(candidate, "is3D"),
+        _wkb_type_has_z_dimension(candidate),
+    ):
+        if probe is not None:
+            return probe
 
     return False
 
 
-def _curve_points_have_z(curve) -> bool:
+def _curve_point_count(curve) -> int | None:
     num_points = getattr(curve, "numPoints", None)
-    point_n = getattr(curve, "pointN", None)
-    if not callable(num_points) or not callable(point_n):
+    if not callable(num_points):
+        return None
+
+    try:
+        return max(0, int(num_points()))
+    except (TypeError, ValueError):
+        return None
+
+
+def _point_has_z_value(point) -> bool:
+    if _candidate_has_z_dimension(point):
+        return True
+
+    z_getter = getattr(point, "z", None)
+    if not callable(z_getter):
         return False
 
     try:
-        point_count = max(0, int(num_points()))
-    except (TypeError, ValueError):
+        z_value = z_getter()
+    except Exception:  # noqa: BLE001
+        return False
+
+    if z_value is None:
+        return False
+
+    try:
+        return not math.isnan(z_value)
+    except TypeError:
+        return True
+
+
+def _curve_points_have_z(curve) -> bool:
+    point_count = _curve_point_count(curve)
+    point_n = getattr(curve, "pointN", None)
+    if point_count is None or not callable(point_n):
         return False
 
     for idx in range(point_count):
@@ -307,29 +348,8 @@ def _curve_points_have_z(curve) -> bool:
             point = point_n(idx)
         except Exception:  # noqa: BLE001
             return False
-
-        if _candidate_has_z_dimension(point):
+        if _point_has_z_value(point):
             return True
-
-        z_getter = getattr(point, "z", None)
-        if not callable(z_getter):
-            continue
-
-        try:
-            z_value = z_getter()
-        except Exception:  # noqa: BLE001
-            continue
-
-        if z_value is None:
-            continue
-
-        try:
-            if math.isnan(z_value):
-                continue
-        except TypeError:
-            pass
-
-        return True
 
     return False
 
