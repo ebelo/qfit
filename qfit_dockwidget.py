@@ -540,25 +540,23 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
     def on_load_background_clicked(self):
         self._save_settings()
-        enabled = self.backgroundMapCheckBox.isChecked()
         try:
-            self.background_layer = self.background_controller.load_background(
-                enabled=enabled,
+            request = self.background_controller.build_load_request(
+                enabled=self.backgroundMapCheckBox.isChecked(),
                 preset_name=self.backgroundPresetComboBox.currentText(),
                 access_token=self._mapbox_access_token(),
                 style_owner=self.mapboxStyleOwnerLineEdit.text().strip(),
                 style_id=self.mapboxStyleIdLineEdit.text().strip(),
                 tile_mode=self.tileModeComboBox.currentText(),
             )
+            result = self.background_controller.load_background_request(request)
+            self.background_layer = result.layer
         except (MapboxConfigError, RuntimeError) as exc:
             self._show_error("Background map failed", str(exc))
             self._set_status("Background map could not be updated")
             return
 
-        if enabled and self.background_layer is not None:
-            self._set_status("Background map loaded below the qfit activity layers")
-        else:
-            self._set_status("Background map cleared")
+        self._set_status(result.status)
 
     def _sync_background_style_fields(self, preset_name, force=False):
         result = self.background_controller.resolve_style_defaults(

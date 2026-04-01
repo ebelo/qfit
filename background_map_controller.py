@@ -1,9 +1,30 @@
 import logging
+from dataclasses import dataclass
 
 from .mapbox_config import preset_defaults, preset_requires_custom_style
 from .visualization.application.layer_gateway import LayerGateway
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass
+class LoadBackgroundRequest:
+    """Structured input for the background-map workflow."""
+
+    enabled: bool = False
+    preset_name: str = ""
+    access_token: str = ""
+    style_owner: str = ""
+    style_id: str = ""
+    tile_mode: str = "raster"
+
+
+@dataclass
+class LoadBackgroundResult:
+    """Structured result from loading or clearing a background map."""
+
+    layer: object = None
+    status: str = ""
 
 
 class BackgroundMapController:
@@ -23,9 +44,16 @@ class BackgroundMapController:
             return None
         return preset_defaults(preset_name)
 
-    def load_background(self, enabled, preset_name, access_token, style_owner, style_id, tile_mode):
-        """Apply the background layer via the layer gateway and return the layer (or *None*)."""
-        layer = self._layer_gateway.ensure_background_layer(
+    @staticmethod
+    def build_load_request(
+        enabled,
+        preset_name,
+        access_token,
+        style_owner,
+        style_id,
+        tile_mode,
+    ) -> LoadBackgroundRequest:
+        return LoadBackgroundRequest(
             enabled=enabled,
             preset_name=preset_name,
             access_token=access_token,
@@ -33,4 +61,30 @@ class BackgroundMapController:
             style_id=style_id,
             tile_mode=tile_mode,
         )
-        return layer
+
+    def load_background(
+        self,
+        request: LoadBackgroundRequest | None = None,
+        **legacy_kwargs,
+    ) -> LoadBackgroundResult:
+        """Apply the background layer via the layer gateway and return a structured result."""
+        if request is None:
+            request = self.build_load_request(**legacy_kwargs)
+
+        layer = self._layer_gateway.ensure_background_layer(
+            enabled=request.enabled,
+            preset_name=request.preset_name,
+            access_token=request.access_token,
+            style_owner=request.style_owner,
+            style_id=request.style_id,
+            tile_mode=request.tile_mode,
+        )
+        status = (
+            "Background map loaded below the qfit activity layers"
+            if request.enabled and layer is not None
+            else "Background map cleared"
+        )
+        return LoadBackgroundResult(layer=layer, status=status)
+
+    def load_background_request(self, request: LoadBackgroundRequest) -> LoadBackgroundResult:
+        return self.load_background(request=request)

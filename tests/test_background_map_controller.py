@@ -2,7 +2,11 @@ import unittest
 from unittest.mock import MagicMock
 
 from tests import _path  # noqa: F401
-from qfit.background_map_controller import BackgroundMapController
+from qfit.background_map_controller import (
+    BackgroundMapController,
+    LoadBackgroundRequest,
+    LoadBackgroundResult,
+)
 
 
 class ResolveStyleDefaultsTests(unittest.TestCase):
@@ -35,6 +39,23 @@ class ResolveStyleDefaultsTests(unittest.TestCase):
 
 
 class LoadBackgroundTests(unittest.TestCase):
+    def test_build_load_request_returns_dataclass(self):
+        lm = MagicMock()
+        ctrl = BackgroundMapController(lm)
+
+        request = ctrl.build_load_request(
+            enabled=True,
+            preset_name="Mapbox Dark",
+            access_token="tok",
+            style_owner="mapbox",
+            style_id="dark-v11",
+            tile_mode="raster",
+        )
+
+        self.assertIsInstance(request, LoadBackgroundRequest)
+        self.assertTrue(request.enabled)
+        self.assertEqual(request.style_id, "dark-v11")
+
     def test_delegates_to_layer_manager(self):
         lm = MagicMock()
         sentinel = object()
@@ -48,7 +69,9 @@ class LoadBackgroundTests(unittest.TestCase):
             style_id="dark-v11",
             tile_mode="raster",
         )
-        self.assertIs(result, sentinel)
+        self.assertIsInstance(result, LoadBackgroundResult)
+        self.assertIs(result.layer, sentinel)
+        self.assertEqual(result.status, "Background map loaded below the qfit activity layers")
         lm.ensure_background_layer.assert_called_once_with(
             enabled=True,
             preset_name="Mapbox Dark",
@@ -70,4 +93,5 @@ class LoadBackgroundTests(unittest.TestCase):
             style_id="",
             tile_mode="raster",
         )
-        self.assertIsNone(result)
+        self.assertIsNone(result.layer)
+        self.assertEqual(result.status, "Background map cleared")
