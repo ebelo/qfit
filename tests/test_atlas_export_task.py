@@ -84,6 +84,11 @@ def _make_qgis_stub():
 _qgis_core = _make_qgis_stub()
 
 import qfit.atlas.export_task as atlas_export_task  # noqa: E402
+from qfit.atlas.profile_item import (  # noqa: E402
+    ProfileItemAdapter,
+    build_profile_item,
+    build_profile_item_adapter,
+)
 
 from qfit.atlas.export_task import (  # noqa: E402
     AtlasExportTask,
@@ -164,6 +169,33 @@ def _make_atlas_mock(feature_count=3):
 
 
 class TestBuildAtlasLayout(unittest.TestCase):
+    def test_build_profile_item_creates_adapter_wrapped_picture_item(self):
+        layout = MagicMock()
+
+        adapter = build_profile_item(
+            layout,
+            item_id="profile",
+            x=10.0,
+            y=20.0,
+            w=30.0,
+            h=40.0,
+        )
+
+        self.assertIsInstance(adapter, ProfileItemAdapter)
+        self.assertIs(adapter.item, _qgis_core.QgsLayoutItemPicture.return_value)
+        _qgis_core.QgsLayoutItemPicture.return_value.setId.assert_called_once_with("profile")
+        layout.addLayoutItem.assert_called_once_with(_qgis_core.QgsLayoutItemPicture.return_value)
+
+    def test_build_profile_item_adapter_can_clear_and_set_svg(self):
+        item = MagicMock()
+        adapter = build_profile_item_adapter(item)
+
+        adapter.set_svg_profile("/tmp/profile.svg")
+        adapter.clear_profile()
+
+        self.assertEqual(item.setPicturePath.call_args_list[0][0][0], "/tmp/profile.svg")
+        self.assertEqual(item.setPicturePath.call_args_list[1][0][0], "")
+
     def test_export_map_excludes_atlas_coverage_layer_overlay(self):
         atlas_layer = _make_atlas_layer(feature_count=1)
         visible_track_layer = MagicMock(name="visible_track_layer")
