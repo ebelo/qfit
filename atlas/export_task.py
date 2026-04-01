@@ -49,6 +49,7 @@ from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QColor, QFont
 
 from ..activity_classification import ordered_canonical_activity_labels
+from .profile_item import build_profile_item, build_profile_item_adapter
 
 # ---------------------------------------------------------------------------
 # Page geometry (mm, A4 portrait with square map)
@@ -344,18 +345,18 @@ def build_atlas_layout(
             color=QColor(60, 60, 60),
         )
 
-    # -- Profile area: chart image + summary text below map ------------------
-    # Picture item for the SVG elevation profile (source set per page during export)
-    profile_pic = QgsLayoutItemPicture(layout)
-    profile_pic.setId(_PROFILE_PICTURE_ID)
-    profile_pic.attemptMove(
-        QgsLayoutPoint(PROFILE_X, PROFILE_CHART_Y, QgsUnitTypes.LayoutMillimeters)
+    # -- Profile area: chart item + summary text below map -------------------
+    # The profile item currently wraps the legacy SVG/picture implementation,
+    # but is created through an adapter so the export loop can later swap in a
+    # native QGIS elevation-profile item without another large rewrite.
+    build_profile_item(
+        layout,
+        item_id=_PROFILE_PICTURE_ID,
+        x=PROFILE_X,
+        y=PROFILE_CHART_Y,
+        w=PROFILE_W,
+        h=PROFILE_CHART_H,
     )
-    profile_pic.attemptResize(
-        QgsLayoutSize(PROFILE_W, PROFILE_CHART_H, QgsUnitTypes.LayoutMillimeters)
-    )
-    profile_pic.setResizeMode(QgsLayoutItemPicture.Zoom)
-    layout.addLayoutItem(profile_pic)
 
     # Text summaries below the chart — text is set per page during the export
     # loop so that no [% %] expressions remain in the layout.  This avoids raw
@@ -1068,6 +1069,7 @@ class AtlasExportTask(QgsTask):
 
                     # Render profile chart SVG for this page.
                     if profile_pic is not None and sort_key_idx >= 0:
+                        profile_adapter = build_profile_item_adapter(profile_pic)
                         page_sort_key = _normalize_profile_sample_key(feat.attribute(sort_key_idx))
                         page_points = profile_samples.get(page_sort_key, []) if page_sort_key else []
                         if len(page_points) >= 2:
@@ -1080,27 +1082,15 @@ class AtlasExportTask(QgsTask):
                                     directory=os.path.dirname(self._output_path) or None,
                                 )
                                 if svg_path:
-                                    profile_pic.setPicturePath(svg_path)
-                                    refresh = getattr(profile_pic, "refresh", None)
-                                    if callable(refresh):
-                                        refresh()
+                                    profile_adapter.set_svg_profile(svg_path)
                                     profile_temp_files.append(svg_path)
                                 else:
-                                    profile_pic.setPicturePath("")
-                                    refresh = getattr(profile_pic, "refresh", None)
-                                    if callable(refresh):
-                                        refresh()
+                                    profile_adapter.clear_profile()
                             except Exception:  # noqa: BLE001
                                 logger.debug("Profile chart render failed", exc_info=True)
-                                profile_pic.setPicturePath("")
-                                refresh = getattr(profile_pic, "refresh", None)
-                                if callable(refresh):
-                                    refresh()
+                                profile_adapter.clear_profile()
                         else:
-                            profile_pic.setPicturePath("")
-                            refresh = getattr(profile_pic, "refresh", None)
-                            if callable(refresh):
-                                refresh()
+                            profile_adapter.clear_profile()
 
                     # Set profile summary text directly from the feature so that
                     # no raw [% %] template syntax can leak (issue #108).
