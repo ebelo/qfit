@@ -56,6 +56,7 @@ class TestStravaProviderFetchActivities(unittest.TestCase):
             after=None,
             use_detailed_streams=False,
             max_detailed_activities=None,
+            detailed_route_strategy="Missing routes only",
         )
         self.assertEqual(result, [])
 

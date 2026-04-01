@@ -44,6 +44,20 @@ DOCK_HELP_ENTRIES: tuple[HelpEntry, ...] = (
         help_button=True,
     ),
     HelpEntry(
+        anchor_name="detailedRouteStrategyComboBox",
+        label_name="detailedRouteStrategyLabel",
+        label_text="Detailed route strategy",
+        tooltip=(
+            "Choose whether qfit spends the detailed-route budget on the first fetched activities or on "
+            "activities still missing detailed routes."
+        ),
+        helper_text=(
+            "Missing routes only is the recommended default for archive backfill because repeated runs keep "
+            "making forward progress. Recent fetch only behaves more like the older recent-sync workflow."
+        ),
+        help_button=True,
+    ),
+    HelpEntry(
         anchor_name="backgroundMapCheckBox",
         target_text="Load a Mapbox basemap in QGIS",
         tooltip=(
