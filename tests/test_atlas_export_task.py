@@ -220,6 +220,26 @@ class TestBuildAtlasLayout(unittest.TestCase):
     def test_native_profile_request_available_reflects_optional_qgis_class(self):
         self.assertTrue(native_profile_request_available())
 
+    def test_native_profile_item_support_is_decoupled_from_profile_request_support(self):
+        with (
+            patch("qfit.atlas.profile_item.QgsLayoutItemElevationProfile", _qgis_core.QgsLayoutItemElevationProfile),
+            patch("qfit.atlas.profile_item.QgsProfileRequest", None),
+        ):
+            self.assertTrue(native_profile_item_available())
+            self.assertFalse(native_profile_request_available())
+
+            adapter = build_native_profile_item(
+                MagicMock(),
+                item_id="profile",
+                x=10.0,
+                y=20.0,
+                w=30.0,
+                h=40.0,
+            )
+
+        self.assertIsNotNone(adapter)
+        self.assertEqual(adapter.kind, "native")
+
     def test_build_native_profile_item_returns_native_adapter_when_available(self):
         layout = MagicMock()
         native_item = _qgis_core.QgsLayoutItemElevationProfile.return_value
