@@ -575,16 +575,14 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def on_open_authorize_clicked(self):
         self._save_settings()
         try:
-            provider_request = self.sync_controller.build_provider_request(
+            authorize_request = self.sync_controller.build_authorize_request(
                 client_id=self.clientIdLineEdit.text().strip(),
                 client_secret=self.clientSecretLineEdit.text().strip(),
                 refresh_token=self.refreshTokenLineEdit.text().strip(),
                 cache=self.cache,
-                require_refresh_token=False,
+                redirect_uri=self._redirect_uri(),
             )
-            client = self.sync_controller.build_strava_provider(provider_request)
-            redirect_uri = self._redirect_uri()
-            url = client.build_authorize_url(redirect_uri=redirect_uri)
+            url = self.sync_controller.build_authorize_url(authorize_request)
             if not QDesktopServices.openUrl(QUrl(url)):
                 clipboard = QApplication.clipboard()
                 if clipboard is not None:
@@ -614,21 +612,16 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             return
 
         try:
-            provider_request = self.sync_controller.build_provider_request(
+            exchange_request = self.sync_controller.build_exchange_code_request(
                 client_id=self.clientIdLineEdit.text().strip(),
                 client_secret=self.clientSecretLineEdit.text().strip(),
                 refresh_token=self.refreshTokenLineEdit.text().strip(),
                 cache=self.cache,
-                require_refresh_token=False,
-            )
-            client = self.sync_controller.build_strava_provider(provider_request)
-            payload = client.exchange_code_for_tokens(
                 authorization_code=authorization_code,
                 redirect_uri=self._redirect_uri(),
             )
-            refresh_token = payload.get("refresh_token")
-            if not refresh_token:
-                raise ProviderError("Strava returned no refresh token")
+            payload = self.sync_controller.exchange_code_for_tokens(exchange_request)
+            refresh_token = payload["refresh_token"]
             self.refreshTokenLineEdit.setText(refresh_token)
             self.authCodeLineEdit.clear()
             self._save_settings()
