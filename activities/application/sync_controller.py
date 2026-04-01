@@ -126,8 +126,8 @@ class SyncController:
         max_pages,
         use_detailed_streams,
         max_detailed_activities,
-        detailed_route_strategy=DEFAULT_DETAILED_ROUTE_STRATEGY,
         on_finished=None,
+        detailed_route_strategy=DEFAULT_DETAILED_ROUTE_STRATEGY,
     ) -> BuildFetchTaskRequest:
         """Build a structured request for creating a fetch task."""
         return BuildFetchTaskRequest(

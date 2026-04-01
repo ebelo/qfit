@@ -82,6 +82,25 @@ class BuildFetchTaskTests(unittest.TestCase):
         self.assertTrue(request.use_detailed_streams)
         self.assertEqual(request.detailed_route_strategy, "Recent fetch only")
 
+    def test_build_fetch_task_request_preserves_legacy_positional_callback_slot(self):
+        ctrl = SyncController()
+        callback = object()
+
+        request = ctrl.build_fetch_task_request(
+            "id",
+            "secret",
+            "token",
+            "cache",
+            123,
+            4,
+            True,
+            9,
+            callback,
+        )
+
+        self.assertIs(request.on_finished, callback)
+        self.assertEqual(request.detailed_route_strategy, "Missing routes only")
+
     def test_build_fetch_task_validates_provider_and_constructs_fetch_task(self):
         ctrl = SyncController()
         provider = MagicMock(name="provider")
