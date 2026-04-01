@@ -46,6 +46,10 @@ class ProfileItemAdapter:
     def supports_native_profile(self) -> bool:
         return self.kind == "native"
 
+    @property
+    def requires_manual_page_updates(self) -> bool:
+        return not (self.supports_native_profile and self.atlas_driven)
+
     def _refresh_item(self, item: object | None) -> None:
         refresh = getattr(item, "refresh", None)
         if callable(refresh):

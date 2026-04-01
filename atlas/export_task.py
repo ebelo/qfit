@@ -1084,17 +1084,23 @@ class AtlasExportTask(QgsTask):
                 elif item_id == _DETAIL_BLOCK_ID:
                     detail_block_label = item
 
+            profile_adapter = build_profile_item_adapter(profile_pic) if profile_pic is not None else None
+            manual_profile_updates_enabled = bool(
+                profile_adapter is not None and profile_adapter.requires_manual_page_updates
+            )
+
             # Pre-load profile samples grouped by page_sort_key.
             profile_samples: dict[str, list[tuple[float, float]]] = {}
             sort_key_idx = fields.indexOf("page_sort_key")
-            try:
-                source = self._atlas_layer.source()
-                gpkg_path = source.split("|")[0] if "|" in source else source
-                if gpkg_path and os.path.isfile(gpkg_path):
-                    from .profile_renderer import load_profile_samples_from_gpkg  # noqa: PLC0415
-                    profile_samples = load_profile_samples_from_gpkg(gpkg_path)
-            except Exception:  # noqa: BLE001
-                logger.debug("Could not load profile samples", exc_info=True)
+            if manual_profile_updates_enabled:
+                try:
+                    source = self._atlas_layer.source()
+                    gpkg_path = source.split("|")[0] if "|" in source else source
+                    if gpkg_path and os.path.isfile(gpkg_path):
+                        from .profile_renderer import load_profile_samples_from_gpkg  # noqa: PLC0415
+                        profile_samples = load_profile_samples_from_gpkg(gpkg_path)
+                except Exception:  # noqa: BLE001
+                    logger.debug("Could not load profile samples", exc_info=True)
 
             profile_temp_files: list[str] = []
 
@@ -1151,8 +1157,7 @@ class AtlasExportTask(QgsTask):
                                     logger.debug("Failed to set page filter on layer", exc_info=True)
 
                     # Render profile chart SVG for this page.
-                    if profile_pic is not None and sort_key_idx >= 0:
-                        profile_adapter = build_profile_item_adapter(profile_pic)
+                    if manual_profile_updates_enabled and profile_adapter is not None and sort_key_idx >= 0:
                         profile_payload = _build_page_profile_payload(
                             feat,
                             sort_key_idx,
