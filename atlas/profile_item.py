@@ -148,7 +148,63 @@ class NativeProfileRequestConfig:
     step_distance: float | None = None
 
 
-def build_profile_item(layout, *, item_id: str, x: float, y: float, w: float, h: float) -> ProfileItemAdapter:
+def _matches_line_geometry_type(geometry_type) -> bool:
+    if geometry_type is None:
+        return False
+
+    line_geometry = getattr(QgsWkbTypes, "LineGeometry", None) if QgsWkbTypes is not None else None
+    if line_geometry is not None and geometry_type == line_geometry:
+        return True
+
+    return "line" in str(geometry_type).lower()
+
+
+def atlas_layer_supports_native_profile_atlas(atlas_layer) -> bool:
+    """Return whether *atlas_layer* can drive a native layout profile item.
+
+    QGIS only supports atlas-driven layout elevation profiles when the active
+    coverage layer uses a line geometry type. Our current atlas coverage layer
+    is polygon-based, so the native item must stay on the manual per-page path
+    until a line-based atlas source exists.
+    """
+    if atlas_layer is None:
+        return False
+
+    geometry_type_getter = getattr(atlas_layer, "geometryType", None)
+    if callable(geometry_type_getter):
+        try:
+            geometry_type = geometry_type_getter()
+        except Exception:  # noqa: BLE001
+            geometry_type = None
+        else:
+            return _matches_line_geometry_type(geometry_type)
+
+    if QgsWkbTypes is None:
+        return False
+
+    wkb_type_getter = getattr(atlas_layer, "wkbType", None)
+    geometry_type_resolver = getattr(QgsWkbTypes, "geometryType", None)
+    if not callable(wkb_type_getter) or not callable(geometry_type_resolver):
+        return False
+
+    try:
+        geometry_type = geometry_type_resolver(wkb_type_getter())
+    except Exception:  # noqa: BLE001
+        return False
+
+    return _matches_line_geometry_type(geometry_type)
+
+
+def build_profile_item(
+    layout,
+    *,
+    item_id: str,
+    x: float,
+    y: float,
+    w: float,
+    h: float,
+    native_config: NativeProfileItemConfig | None = None,
+) -> ProfileItemAdapter:
     """Create the current profile layout item and return an adapter for it.
 
     Prefer a native ``QgsLayoutItemElevationProfile`` when the QGIS build
@@ -162,6 +218,7 @@ def build_profile_item(layout, *, item_id: str, x: float, y: float, w: float, h:
         y=y,
         w=w,
         h=h,
+        config=native_config,
     )
     if native_adapter is not None:
         fallback_item = QgsLayoutItemPicture(layout)
