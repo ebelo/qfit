@@ -105,9 +105,11 @@ class ProfileItemAdapter:
             set_crs(QgsCoordinateReferenceSystem(crs_authid))
 
         set_atlas_driven = getattr(self.item, "setAtlasDriven", None)
+        native_atlas_driven = False
         if callable(set_atlas_driven):
-            set_atlas_driven(bool(atlas_driven))
-        self.atlas_driven = bool(atlas_driven)
+            native_atlas_driven = bool(atlas_driven)
+            set_atlas_driven(native_atlas_driven)
+        self.atlas_driven = native_atlas_driven
 
         set_tolerance = getattr(self.item, "setTolerance", None)
         if callable(set_tolerance) and tolerance is not None:
@@ -233,6 +235,9 @@ def build_profile_item(
         config=native_config,
     )
     if native_adapter is not None:
+        if not native_adapter.requires_manual_page_updates:
+            return native_adapter
+
         fallback_item = QgsLayoutItemPicture(layout)
         fallback_item.setId(f"{item_id}_svg_fallback")
         fallback_item.attemptMove(QgsLayoutPoint(x, y, QgsUnitTypes.LayoutMillimeters))
