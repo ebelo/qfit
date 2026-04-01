@@ -199,6 +199,19 @@ class StravaClientTests(unittest.TestCase):
             client.enrich_activities_with_streams([activity], max_activities=1)
 
         self.assertEqual(activity.details_json["detailed_route_status"], "empty")
+        self.assertEqual(client.last_stream_enrichment_stats["remaining_missing"], 0)
+
+    def test_cache_hit_empty_does_not_count_as_remaining_missing(self):
+        client = StravaClient()
+        activity = client.normalize_activity({"id": 42, "name": "Run"})
+
+        with patch.object(client, "_load_cached_stream_bundle", return_value={"latlng": []}):
+            client.enrich_activities_with_streams([activity], max_activities=1)
+
+        self.assertEqual(client.last_stream_enrichment_stats["missing_before"], 0)
+        self.assertEqual(client.last_stream_enrichment_stats["remaining_missing"], 0)
+        self.assertEqual(activity.details_json["stream_cache"], "hit-empty")
+        self.assertEqual(activity.details_json["detailed_route_status"], "empty")
 
     def test_parse_rate_limit_pair_and_remaining(self):
         client = StravaClient()

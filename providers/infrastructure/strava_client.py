@@ -367,7 +367,7 @@ class StravaClient:
                 stats["empty"] += 1
 
         stats["remaining_missing"] = sum(
-            1 for activity in activities if not self._activity_has_detailed_route(activity)
+            1 for activity in activities if self._activity_needs_detailed_route(activity)
         )
         self.last_stream_enrichment_stats = stats
         return activities
@@ -375,6 +375,13 @@ class StravaClient:
     @staticmethod
     def _activity_has_detailed_route(activity):
         return getattr(activity, "geometry_source", None) == "stream"
+
+    @staticmethod
+    def _activity_needs_detailed_route(activity):
+        if getattr(activity, "geometry_source", None) == "stream":
+            return False
+        status = (getattr(activity, "details_json", None) or {}).get("detailed_route_status")
+        return status not in {"cached", "downloaded", "empty"}
 
     @staticmethod
     def _set_detailed_route_status(activity, status):
