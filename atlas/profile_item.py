@@ -76,13 +76,14 @@ class ProfileItemAdapter:
         self,
         *,
         profile_curve=None,
-        profile_request=None,
     ) -> None:
         """Bind native profile inputs when the underlying item supports them.
 
         Picture-backed adapters intentionally ignore these calls so callers can
-        prepare native binding logic before the atlas export loop switches away
-        from the legacy SVG renderer.
+        prepare native curve binding logic before the atlas export loop switches
+        away from the legacy SVG renderer. Native profile *request* objects are
+        prepared separately, because supported QGIS versions expose
+        ``profileRequest()`` but not a matching public setter.
         """
         if not self.supports_native_profile:
             return
@@ -90,10 +91,6 @@ class ProfileItemAdapter:
         set_profile_curve = getattr(self.item, "setProfileCurve", None)
         if callable(set_profile_curve) and profile_curve is not None:
             set_profile_curve(profile_curve)
-
-        set_profile_request = getattr(self.item, "setProfileRequest", None)
-        if callable(set_profile_request) and profile_request is not None:
-            set_profile_request(profile_request)
 
 
 @dataclass

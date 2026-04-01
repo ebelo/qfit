@@ -270,10 +270,9 @@ class TestBuildAtlasLayout(unittest.TestCase):
         item = MagicMock()
         adapter = ProfileItemAdapter(item=item, kind="picture")
 
-        adapter.bind_native_profile(profile_curve="curve", profile_request="request")
+        adapter.bind_native_profile(profile_curve="curve")
 
         item.setProfileCurve.assert_not_called()
-        item.setProfileRequest.assert_not_called()
 
     def test_build_native_profile_request_returns_configured_request(self):
         curve = MagicMock(name="curve")
@@ -295,14 +294,13 @@ class TestBuildAtlasLayout(unittest.TestCase):
         with patch("qfit.atlas.profile_item.native_profile_request_available", return_value=False):
             self.assertIsNone(build_native_profile_request(MagicMock(name="curve")))
 
-    def test_native_adapter_binds_curve_and_request_when_supported(self):
+    def test_native_adapter_binds_curve_when_supported(self):
         item = MagicMock()
         adapter = ProfileItemAdapter(item=item, kind="native")
 
-        adapter.bind_native_profile(profile_curve="curve", profile_request="request")
+        adapter.bind_native_profile(profile_curve="curve")
 
         item.setProfileCurve.assert_called_once_with("curve")
-        item.setProfileRequest.assert_called_once_with("request")
 
     def test_export_map_excludes_atlas_coverage_layer_overlay(self):
         atlas_layer = _make_atlas_layer(feature_count=1)
