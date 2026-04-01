@@ -224,6 +224,23 @@ class SyncUnchangedBehaviorTests(unittest.TestCase):
             self.assertEqual(result.unchanged, 1)
             self.assertEqual(result.updated, 0)
 
+    def test_detailed_route_status_is_persisted_and_treated_as_meaningful(self):
+        """Detailed-route status should be stored and should trigger updates when it changes."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = SyncRepository(str(Path(tmpdir) / "qfit.sqlite"))
+            repo.ensure_schema()
+
+            repo.upsert_activities([self._activity(details_json={"device_name": "Edge", "detailed_route_status": "cached"})])
+            stored = repo.load_all_activities()[0]
+            self.assertEqual(stored.details_json["detailed_route_status"], "cached")
+
+            result = repo.upsert_activities(
+                [self._activity(details_json={"device_name": "Edge", "detailed_route_status": "downloaded"})]
+            )
+
+            self.assertEqual(result.updated, 1)
+            self.assertEqual(result.unchanged, 0)
+
     def test_non_volatile_detail_change_triggers_update(self):
         """Changing a non-volatile detail key triggers an update."""
         with tempfile.TemporaryDirectory() as tmpdir:

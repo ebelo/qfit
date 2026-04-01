@@ -72,7 +72,7 @@ Recommended unique key:
 | `summary_polyline` | TEXT | encoded summary polyline when provided |
 | `geometry_source` | TEXT | `stream`, `summary_polyline`, or `start_end` |
 | `geometry_points_json` | TEXT | JSON array of detailed geometry points when available |
-| `details_json` | TEXT | provider extras as JSON, including cached stream metrics when available |
+| `details_json` | TEXT | provider extras as JSON, including cached stream metrics and `detailed_route_status` (`cached`, `downloaded`, `empty`, `error`, `skipped_rate_limit`) when available |
 | `summary_hash` | TEXT | stable change-detection hash |
 | `first_seen_at` | TEXT | first time activity entered the registry |
 | `last_synced_at` | TEXT | last sync/update time |
