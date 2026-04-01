@@ -444,16 +444,37 @@ class TestBuildAtlasLayout(unittest.TestCase):
             y=20.0,
             w=30.0,
             h=40.0,
-            config=NativeProfileItemConfig(tolerance=12.5),
+            config=NativeProfileItemConfig(tolerance=12.5, layers=[]),
         )
 
         self.assertIsNotNone(adapter)
         self.assertEqual(adapter.kind, "native")
         native_item.setId.assert_called_once_with("profile")
+        native_item.setLayers.assert_called_once_with([])
         native_item.setAtlasDriven.assert_called_once_with(True)
         native_item.setTolerance.assert_called_once_with(12.5)
         native_item.setCrs.assert_called_once()
         layout.addLayoutItem.assert_called_once_with(native_item)
+
+    def test_build_native_profile_item_passes_configured_layers(self):
+        layout = MagicMock()
+        native_item = _qgis_core.QgsLayoutItemElevationProfile.return_value
+        native_item.reset_mock()
+
+        first_layer = MagicMock(name="first_layer")
+        second_layer = MagicMock(name="second_layer")
+
+        build_native_profile_item(
+            layout,
+            item_id="profile",
+            x=10.0,
+            y=20.0,
+            w=30.0,
+            h=40.0,
+            config=NativeProfileItemConfig(layers=[first_layer, second_layer]),
+        )
+
+        native_item.setLayers.assert_called_once_with([first_layer, second_layer])
 
     def test_atlas_layer_supports_native_profile_atlas_for_line_geometry(self):
         atlas_layer = MagicMock(name="atlas_layer")
@@ -491,6 +512,7 @@ class TestBuildAtlasLayout(unittest.TestCase):
 
         adapter.configure_native_defaults()
 
+        item.setLayers.assert_not_called()
         item.setCrs.assert_not_called()
         item.setAtlasDriven.assert_not_called()
         item.setTolerance.assert_not_called()
@@ -944,6 +966,49 @@ class TestBuildAtlasLayout(unittest.TestCase):
         native_config = build_profile_item_mock.call_args.kwargs["native_config"]
         self.assertIsInstance(native_config, NativeProfileItemConfig)
         self.assertFalse(native_config.atlas_driven)
+        self.assertEqual(native_config.layers, [])
+
+    def test_build_atlas_layout_passes_visible_layers_to_native_profile_config(self):
+        atlas_layer = _make_atlas_layer(feature_count=1)
+        atlas_layer.geometryType.return_value = "LineGeometry"
+
+        visible_track_layer = MagicMock(name="visible_track_layer")
+        visible_background_layer = MagicMock(name="visible_background_layer")
+
+        track_node = MagicMock()
+        track_node.isVisible.return_value = True
+        track_node.layer.return_value = visible_track_layer
+
+        background_node = MagicMock()
+        background_node.isVisible.return_value = True
+        background_node.layer.return_value = visible_background_layer
+
+        atlas_node = MagicMock()
+        atlas_node.isVisible.return_value = True
+        atlas_node.layer.return_value = atlas_layer
+
+        project = MagicMock()
+        project.layerTreeRoot.return_value.findLayers.return_value = [atlas_node, track_node, background_node]
+
+        with (
+            patch("qfit.atlas.export_task.QgsPrintLayout") as mock_layout_cls,
+            patch("qfit.atlas.export_task.QgsLayoutItemMap"),
+            patch("qfit.atlas.export_task.build_profile_item") as build_profile_item_mock,
+            patch("qfit.atlas.export_task.QgsCoordinateReferenceSystem"),
+            patch("qfit.atlas.export_task.QgsLayoutItemLabel"),
+            patch("qfit.atlas.export_task._add_label", return_value=MagicMock()),
+        ):
+            layout = MagicMock()
+            layout.atlas.return_value = MagicMock()
+            layout.pageCollection.return_value.pageCount.return_value = 1
+            layout.pageCollection.return_value.page.return_value = MagicMock()
+            mock_layout_cls.return_value = layout
+
+            build_atlas_layout(atlas_layer, project=project)
+
+        native_config = build_profile_item_mock.call_args.kwargs["native_config"]
+        self.assertIsInstance(native_config, NativeProfileItemConfig)
+        self.assertEqual(native_config.layers, [visible_track_layer, visible_background_layer])
 
 
 class TestBuildAtlasLayoutSummaryLabels(unittest.TestCase):

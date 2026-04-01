@@ -86,9 +86,14 @@ class ProfileItemAdapter:
         crs_authid: str = "EPSG:3857",
         atlas_driven: bool = True,
         tolerance: float | None = None,
+        layers: list[object] | None = None,
     ) -> None:
         if not self.supports_native_profile:
             return
+
+        set_layers = getattr(self.item, "setLayers", None)
+        if callable(set_layers) and layers is not None:
+            set_layers(list(layers))
 
         set_crs = getattr(self.item, "setCrs", None)
         if callable(set_crs) and QgsCoordinateReferenceSystem is not None and crs_authid:
@@ -137,6 +142,7 @@ class NativeProfileItemConfig:
     crs_auth_id: str = "EPSG:3857"
     atlas_driven: bool = True
     tolerance: float | None = None
+    layers: list[object] | None = None
 
 
 @dataclass
@@ -269,6 +275,7 @@ def build_native_profile_item(
         crs_authid=cfg.crs_auth_id,
         atlas_driven=cfg.atlas_driven,
         tolerance=cfg.tolerance,
+        layers=cfg.layers,
     )
     return adapter
 

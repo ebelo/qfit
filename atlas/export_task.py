@@ -435,6 +435,7 @@ def build_atlas_layout(
         h=PROFILE_CHART_H,
         native_config=NativeProfileItemConfig(
             atlas_driven=atlas_layer_supports_native_profile_atlas(atlas_layer),
+            layers=visible_layers,
         ),
     )
 
