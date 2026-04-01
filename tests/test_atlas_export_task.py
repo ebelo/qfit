@@ -541,6 +541,86 @@ class TestBuildAtlasLayout(unittest.TestCase):
         self.assertIsNone(build_native_profile_curve(geometry))
         polygon.clone.assert_not_called()
 
+    def test_build_native_profile_curve_returns_none_when_geometry_lacks_z_values(self):
+        point = MagicMock(name="point")
+        point.is3D.return_value = False
+        point.z.return_value = float("nan")
+
+        curve = MagicMock(name="curve")
+        curve.__class__.__name__ = "QgsLineString"
+        curve.numPoints.return_value = 1
+        curve.pointN.return_value = point
+
+        geometry = MagicMock(name="geometry")
+        geometry.constGet.return_value = curve
+        geometry.is3D.return_value = False
+
+        self.assertIsNone(build_native_profile_curve(geometry))
+        curve.clone.assert_not_called()
+
+    def test_build_native_profile_curve_accepts_z_aware_geometry_even_without_point_flags(self):
+        point = MagicMock(name="point")
+        point.is3D.return_value = False
+        point.z.return_value = float("nan")
+
+        curve = MagicMock(name="curve")
+        curve.__class__.__name__ = "QgsLineString"
+        curve.numPoints.return_value = 1
+        curve.pointN.return_value = point
+        curve.clone.return_value = "curve-clone"
+
+        geometry = MagicMock(name="geometry")
+        geometry.constGet.return_value = curve
+        geometry.is3D.return_value = True
+
+        result = build_native_profile_curve(geometry)
+
+        self.assertEqual(result, "curve-clone")
+        curve.clone.assert_called_once_with()
+
+    def test_build_native_profile_curve_accepts_wkb_z_dimension_without_is3d_flag(self):
+        point = MagicMock(name="point")
+        point.is3D.return_value = False
+        point.z.return_value = float("nan")
+
+        curve = MagicMock(name="curve")
+        curve.__class__.__name__ = "QgsLineString"
+        curve.numPoints.return_value = 1
+        curve.pointN.return_value = point
+        curve.wkbType.return_value = "LineStringZ"
+        curve.clone.return_value = "curve-clone"
+
+        geometry = MagicMock(name="geometry")
+        geometry.constGet.return_value = curve
+        geometry.is3D.return_value = False
+
+        with patch("qfit.atlas.profile_item.QgsWkbTypes") as qgs_wkb_types:
+            qgs_wkb_types.hasZ.return_value = True
+            result = build_native_profile_curve(geometry)
+
+        self.assertEqual(result, "curve-clone")
+        qgs_wkb_types.hasZ.assert_any_call("LineStringZ")
+
+    def test_build_native_profile_curve_accepts_finite_point_z_value(self):
+        point = MagicMock(name="point")
+        point.is3D.return_value = False
+        point.z.return_value = 123.4
+
+        curve = MagicMock(name="curve")
+        curve.__class__.__name__ = "QgsLineString"
+        curve.numPoints.return_value = 1
+        curve.pointN.return_value = point
+        curve.clone.return_value = "curve-clone"
+
+        geometry = MagicMock(name="geometry")
+        geometry.constGet.return_value = curve
+        geometry.is3D.return_value = False
+
+        result = build_native_profile_curve(geometry)
+
+        self.assertEqual(result, "curve-clone")
+        curve.clone.assert_called_once_with()
+
     def test_build_native_profile_inputs_returns_curve_and_request_together(self):
         geometry = MagicMock(name="geometry")
 
@@ -574,6 +654,162 @@ class TestBuildAtlasLayout(unittest.TestCase):
         adapter.bind_native_profile(profile_curve="curve")
 
         item.setProfileCurve.assert_called_once_with("curve")
+
+    def test_native_adapter_clear_profile_swallow_set_profile_curve_errors(self):
+        item = MagicMock()
+        item.setProfileCurve.side_effect = RuntimeError("boom")
+        adapter = ProfileItemAdapter(item=item, kind="native")
+
+        adapter.clear_profile()
+
+        item.setPicturePath.assert_called_once_with("")
+        item.refresh.assert_called_once_with()
+
+    def test_native_adapter_bind_returns_false_without_curve_or_setter(self):
+        item = object()
+        adapter = ProfileItemAdapter(item=item, kind="native")
+
+        self.assertFalse(adapter.bind_native_profile(profile_curve="curve"))
+
+        item = MagicMock()
+        adapter = ProfileItemAdapter(item=item, kind="native")
+        self.assertFalse(adapter.bind_native_profile(profile_curve=None))
+        item.setProfileCurve.assert_not_called()
+
+    def test_build_profile_item_adapter_returns_picture_when_native_item_lacks_lookup_helpers(self):
+        adapter = build_profile_item_adapter(object())
+        self.assertEqual(adapter.kind, "picture")
+        self.assertIsNone(adapter.svg_fallback_item)
+
+    def test_build_profile_item_adapter_native_without_id_or_layout_items_has_no_fallback(self):
+        native_item = MagicMock()
+        native_item.__class__.__name__ = "QgsLayoutItemElevationProfile"
+        native_item.id.return_value = ""
+        native_item.layout.return_value = object()
+
+        adapter = build_profile_item_adapter(native_item)
+        self.assertEqual(adapter.kind, "native")
+        self.assertIsNone(adapter.svg_fallback_item)
+
+        native_item.id.return_value = "profile"
+        native_item.layout.return_value = object()
+        adapter = build_profile_item_adapter(native_item)
+        self.assertIsNone(adapter.svg_fallback_item)
+
+    def test_build_native_profile_curve_rejects_polygon_api_objects_without_curve_api(self):
+        class _PolygonLike:
+            def exteriorRing(self):
+                return object()
+
+        geometry = MagicMock(name="geometry")
+        geometry.constGet.return_value = _PolygonLike()
+
+        self.assertIsNone(build_native_profile_curve(geometry))
+
+    def test_build_native_profile_curve_rejects_non_curve_geometry_without_polygon_api(self):
+        geometry = MagicMock(name="geometry")
+        geometry.constGet.return_value = object()
+
+        self.assertIsNone(build_native_profile_curve(geometry))
+
+    def test_build_native_profile_curve_returns_none_when_clone_is_unavailable(self):
+        point = MagicMock(name="point")
+        point.is3D.return_value = False
+        point.z.return_value = 123.4
+
+        curve = MagicMock(name="curve")
+        curve.__class__.__name__ = "QgsLineString"
+        curve.numPoints.return_value = 1
+        curve.pointN.return_value = point
+        del curve.clone
+
+        geometry = MagicMock(name="geometry")
+        geometry.constGet.return_value = curve
+        geometry.is3D.return_value = False
+
+        self.assertIsNone(build_native_profile_curve(geometry))
+
+    def test_profile_item_helper_branch_coverage(self):
+        from qfit.atlas import profile_item as profile_item_module
+
+        self.assertTrue(profile_item_module._coerce_boolish(True))
+        self.assertFalse(profile_item_module._coerce_boolish(0))
+        self.assertIsNone(profile_item_module._coerce_boolish("yes"))
+        self.assertFalse(profile_item_module._candidate_has_z_dimension(None))
+
+        candidate = MagicMock()
+        del candidate.is3D
+        self.assertIsNone(profile_item_module._read_boolish_flag(candidate, "is3D"))
+
+        candidate = MagicMock()
+        candidate.is3D.side_effect = RuntimeError("boom")
+        self.assertIsNone(profile_item_module._read_boolish_flag(candidate, "is3D"))
+
+        with patch("qfit.atlas.profile_item.QgsWkbTypes", None):
+            self.assertIsNone(profile_item_module._wkb_type_has_z_dimension(MagicMock()))
+
+        with patch("qfit.atlas.profile_item.QgsWkbTypes") as qgs_wkb_types:
+            qgs_wkb_types.hasZ.side_effect = RuntimeError("boom")
+            candidate = MagicMock()
+            candidate.wkbType.return_value = "LineStringZ"
+            self.assertIsNone(profile_item_module._wkb_type_has_z_dimension(candidate))
+
+        curve = MagicMock()
+        del curve.numPoints
+        self.assertIsNone(profile_item_module._curve_point_count(curve))
+
+        curve = MagicMock()
+        curve.numPoints.return_value = "nope"
+        self.assertIsNone(profile_item_module._curve_point_count(curve))
+
+        point = MagicMock()
+        point.is3D.return_value = True
+        self.assertTrue(profile_item_module._point_has_z_value(point))
+
+        point = MagicMock()
+        point.is3D.return_value = False
+        del point.z
+        self.assertFalse(profile_item_module._point_has_z_value(point))
+
+        point = MagicMock()
+        point.is3D.return_value = False
+        point.z.side_effect = RuntimeError("boom")
+        self.assertFalse(profile_item_module._point_has_z_value(point))
+
+        point = MagicMock()
+        point.is3D.return_value = False
+        point.z.return_value = None
+        self.assertFalse(profile_item_module._point_has_z_value(point))
+
+        point = MagicMock()
+        point.is3D.return_value = False
+        point.z.return_value = object()
+        self.assertTrue(profile_item_module._point_has_z_value(point))
+
+        curve = MagicMock()
+        curve.numPoints.return_value = 1
+        del curve.pointN
+        self.assertFalse(profile_item_module._curve_points_have_z(curve))
+
+        curve = MagicMock()
+        curve.numPoints.return_value = 1
+        curve.pointN.side_effect = RuntimeError("boom")
+        self.assertFalse(profile_item_module._curve_points_have_z(curve))
+
+    def test_build_native_profile_request_tolerates_missing_optional_setters(self):
+        curve = MagicMock(name="curve")
+        request = MagicMock(name="request")
+        del request.setTolerance
+        del request.setStepDistance
+
+        with patch("qfit.atlas.profile_item.QgsProfileRequest", return_value=request):
+            built = build_native_profile_request(
+                curve,
+                config=NativeProfileRequestConfig(tolerance=25.0, step_distance=5.0),
+            )
+
+        self.assertIs(built, request)
+        request.setCrs.assert_called_once()
 
     def test_export_map_excludes_atlas_coverage_layer_overlay(self):
         atlas_layer = _make_atlas_layer(feature_count=1)

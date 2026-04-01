@@ -8,6 +8,7 @@ profile item without rewriting the whole export loop at once.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import math
 
 from qgis.core import QgsLayoutItemPicture, QgsLayoutPoint, QgsLayoutSize, QgsUnitTypes
 
@@ -25,6 +26,11 @@ try:  # pragma: no cover - availability depends on QGIS build
     from qgis.core import QgsProfileRequest
 except ImportError:  # pragma: no cover - exercised in stubbed/unit-test mode
     QgsProfileRequest = None
+
+try:  # pragma: no cover - availability depends on QGIS build
+    from qgis.core import QgsWkbTypes
+except ImportError:  # pragma: no cover - exercised in stubbed/unit-test mode
+    QgsWkbTypes = None
 
 
 @dataclass
@@ -250,6 +256,111 @@ def native_profile_request_available() -> bool:
     return QgsProfileRequest is not None
 
 
+def _coerce_boolish(value) -> bool | None:
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)):
+        return bool(value)
+    return None
+
+
+def _read_boolish_flag(candidate, method_name: str) -> bool | None:
+    reader = getattr(candidate, method_name, None)
+    if not callable(reader):
+        return None
+
+    try:
+        return _coerce_boolish(reader())
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def _wkb_type_has_z_dimension(candidate) -> bool | None:
+    if QgsWkbTypes is None:
+        return None
+
+    wkb_type = getattr(candidate, "wkbType", None)
+    has_z = getattr(QgsWkbTypes, "hasZ", None)
+    if not callable(wkb_type) or not callable(has_z):
+        return None
+
+    try:
+        return _coerce_boolish(has_z(wkb_type()))
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def _candidate_has_z_dimension(candidate) -> bool:
+    if candidate is None:
+        return False
+
+    for probe in (
+        _read_boolish_flag(candidate, "is3D"),
+        _wkb_type_has_z_dimension(candidate),
+    ):
+        if probe is not None:
+            return probe
+
+    return False
+
+
+def _curve_point_count(curve) -> int | None:
+    num_points = getattr(curve, "numPoints", None)
+    if not callable(num_points):
+        return None
+
+    try:
+        return max(0, int(num_points()))
+    except (TypeError, ValueError):
+        return None
+
+
+def _point_has_z_value(point) -> bool:
+    if _candidate_has_z_dimension(point):
+        return True
+
+    z_getter = getattr(point, "z", None)
+    if not callable(z_getter):
+        return False
+
+    try:
+        z_value = z_getter()
+    except Exception:  # noqa: BLE001
+        return False
+
+    if z_value is None:
+        return False
+
+    try:
+        return not math.isnan(z_value)
+    except TypeError:
+        return True
+
+
+def _curve_points_have_z(curve) -> bool:
+    point_count = _curve_point_count(curve)
+    point_n = getattr(curve, "pointN", None)
+    if point_count is None or not callable(point_n):
+        return False
+
+    for idx in range(point_count):
+        try:
+            point = point_n(idx)
+        except Exception:  # noqa: BLE001
+            return False
+        if _point_has_z_value(point):
+            return True
+
+    return False
+
+
+def _geometry_has_z_values(feature_geometry, curve) -> bool:
+    return any(
+        _candidate_has_z_dimension(candidate)
+        for candidate in (feature_geometry, curve)
+    ) or _curve_points_have_z(curve)
+
+
 def build_native_profile_curve(feature_geometry):
     """Extract a native profile curve from a QGIS feature geometry when possible."""
     if feature_geometry is None:
@@ -275,6 +386,8 @@ def build_native_profile_curve(feature_geometry):
     if has_polygon_api and not is_curve_type:
         return None
     if not is_curve_type:
+        return None
+    if not _geometry_has_z_values(feature_geometry, curve):
         return None
 
     clone = getattr(curve, "clone", None)
