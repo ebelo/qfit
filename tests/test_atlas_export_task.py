@@ -541,6 +541,43 @@ class TestBuildAtlasLayout(unittest.TestCase):
         self.assertIsNone(build_native_profile_curve(geometry))
         polygon.clone.assert_not_called()
 
+    def test_build_native_profile_curve_returns_none_when_geometry_lacks_z_values(self):
+        point = MagicMock(name="point")
+        point.is3D.return_value = False
+        point.z.return_value = float("nan")
+
+        curve = MagicMock(name="curve")
+        curve.__class__.__name__ = "QgsLineString"
+        curve.numPoints.return_value = 1
+        curve.pointN.return_value = point
+
+        geometry = MagicMock(name="geometry")
+        geometry.constGet.return_value = curve
+        geometry.is3D.return_value = False
+
+        self.assertIsNone(build_native_profile_curve(geometry))
+        curve.clone.assert_not_called()
+
+    def test_build_native_profile_curve_accepts_z_aware_geometry_even_without_point_flags(self):
+        point = MagicMock(name="point")
+        point.is3D.return_value = False
+        point.z.return_value = float("nan")
+
+        curve = MagicMock(name="curve")
+        curve.__class__.__name__ = "QgsLineString"
+        curve.numPoints.return_value = 1
+        curve.pointN.return_value = point
+        curve.clone.return_value = "curve-clone"
+
+        geometry = MagicMock(name="geometry")
+        geometry.constGet.return_value = curve
+        geometry.is3D.return_value = True
+
+        result = build_native_profile_curve(geometry)
+
+        self.assertEqual(result, "curve-clone")
+        curve.clone.assert_called_once_with()
+
     def test_build_native_profile_inputs_returns_curve_and_request_together(self):
         geometry = MagicMock(name="geometry")
 
