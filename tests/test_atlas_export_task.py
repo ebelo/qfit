@@ -257,7 +257,10 @@ class TestBuildAtlasLayout(unittest.TestCase):
         atlas_export_task._apply_page_profile_payload(adapter, payload)
 
         payload.native_inputs.assert_called_once_with()
-        adapter.bind_native_profile.assert_called_once_with(profile_curve="curve")
+        adapter.bind_native_profile.assert_called_once_with(
+            profile_curve="curve",
+            profile_request="request",
+        )
 
     def test_apply_page_profile_payload_skips_manual_updates_for_atlas_driven_native_item(self):
         adapter = MagicMock(name="adapter")
@@ -282,7 +285,10 @@ class TestBuildAtlasLayout(unittest.TestCase):
         atlas_export_task._apply_page_profile_payload(adapter, payload)
 
         payload.native_inputs.assert_called_once_with()
-        adapter.bind_native_profile.assert_called_once_with(profile_curve="curve")
+        adapter.bind_native_profile.assert_called_once_with(
+            profile_curve="curve",
+            profile_request="request",
+        )
         adapter.clear_profile.assert_called_once_with()
 
     def test_apply_page_profile_payload_clears_native_profile_when_curve_missing(self):
@@ -875,6 +881,39 @@ class TestBuildAtlasLayout(unittest.TestCase):
         adapter.bind_native_profile(profile_curve="curve")
 
         item.setProfileCurve.assert_called_once_with("curve")
+
+    def test_native_adapter_applies_request_state_via_item_setters(self):
+        item = MagicMock()
+        profile_request = MagicMock(name="profile_request")
+        profile_request.crs.return_value = "EPSG:3857"
+        profile_request.tolerance.return_value = 25.0
+        profile_request.stepDistance.return_value = 5.0
+        adapter = ProfileItemAdapter(item=item, kind="native")
+
+        adapter.bind_native_profile(
+            profile_curve="curve",
+            profile_request=profile_request,
+        )
+
+        item.setProfileCurve.assert_called_once_with("curve")
+        item.setCrs.assert_called_once_with("EPSG:3857")
+        item.setTolerance.assert_called_once_with(25.0)
+        self.assertFalse(item.profileRequest.called)
+
+    def test_native_adapter_skips_missing_item_request_setters(self):
+        item = MagicMock()
+        del item.setTolerance
+        profile_request = MagicMock(name="profile_request")
+        del profile_request.tolerance
+        adapter = ProfileItemAdapter(item=item, kind="native")
+
+        adapter.bind_native_profile(
+            profile_curve="curve",
+            profile_request=profile_request,
+        )
+
+        item.setProfileCurve.assert_called_once_with("curve")
+        item.setCrs.assert_called_once_with(profile_request.crs.return_value)
 
     def test_native_adapter_clear_profile_swallow_set_profile_curve_errors(self):
         item = MagicMock()
@@ -1512,19 +1551,25 @@ class TestProfileChartRendering(unittest.TestCase):
             output_path="/tmp/qfit_test_profile_chart.pdf",
             on_finished=lambda **kw: None,
         )
+        native_request = MagicMock(name="native_request")
+        native_request.crs.return_value = "EPSG:3857"
+        native_request.tolerance.return_value = 25.0
+        native_request.stepDistance.return_value = 5.0
 
         with patch("qfit.atlas.export_task.build_atlas_layout", return_value=layout_mock), \
              patch("qfit.atlas.export_task.QgsLayoutExporter", exporter_cls_mock), \
              patch("qfit.atlas.export_task.AtlasExportTask._export_cover_page", return_value=None), \
              patch("qfit.atlas.export_task.AtlasExportTask._export_toc_page", return_value=None), \
              patch("qfit.atlas.export_task._geometry_supports_native_profile", side_effect=lambda geometry: geometry == "track-geometry"), \
-             patch("qfit.atlas.export_task.build_native_profile_inputs", return_value=("curve", "request")) as build_native_inputs, \
+             patch("qfit.atlas.export_task.build_native_profile_inputs", return_value=("curve", native_request)) as build_native_inputs, \
              patch("os.replace"), \
              patch("os.makedirs"):
             _run_task(task)
 
         build_native_inputs.assert_called_once_with("track-geometry")
         native_profile_item.setProfileCurve.assert_called_once_with("curve")
+        native_profile_item.setCrs.assert_called_once_with("EPSG:3857")
+        native_profile_item.setTolerance.assert_called_once_with(25.0)
         native_profile_item.refresh.assert_called()
 
     def test_profile_chart_changes_per_activity_page(self):

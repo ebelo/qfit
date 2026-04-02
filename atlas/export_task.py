@@ -172,12 +172,15 @@ def _apply_page_profile_payload(
     if getattr(profile_adapter, "atlas_driven", False):
         return
 
-    native_curve, _native_request = profile_payload.native_inputs()
+    native_curve, native_request = profile_payload.native_inputs()
     if native_curve is None:
         profile_adapter.clear_profile()
         return
 
-    if profile_adapter.bind_native_profile(profile_curve=native_curve):
+    if profile_adapter.bind_native_profile(
+        profile_curve=native_curve,
+        profile_request=native_request,
+    ):
         return
 
     profile_adapter.clear_profile()
