@@ -37,7 +37,6 @@ from qgis.core import (
     QgsLayoutExporter,
     QgsLayoutItemLabel,
     QgsLayoutItemMap,
-    QgsLayoutItemPicture,
     QgsLayoutPoint,
     QgsLayoutSize,
     QgsPrintLayout,
@@ -146,91 +145,43 @@ def _load_pdf_writer():
         return _vendored_pypdf_module.PdfWriter
     except ImportError as exc:
         raise ImportError("pypdf is unavailable for atlas PDF merging") from exc
-
-
-def _normalize_profile_sample_key(value) -> str | None:
-    """Return a stable string key for atlas profile sample lookup."""
-    if value is None:
-        return None
-    text = str(value).strip()
-    return text or None
-
-
 @dataclass
 class PageProfilePayload:
-    """Per-page profile inputs for both legacy and future native rendering paths."""
+    """Per-page profile inputs for native profile binding."""
 
-    sample_key: str | None
-    page_points: list
     feature_geometry: object | None
 
     def native_inputs(self):
         return build_native_profile_inputs(self.feature_geometry)
 
 
-def _render_page_profile_svg(page_points, *, output_path: str) -> str | None:
-    """Render the legacy sampled SVG profile for a single atlas page."""
-    from .profile_renderer import render_profile_to_file  # noqa: PLC0415
-
-    return render_profile_to_file(
-        page_points,
-        width_mm=PROFILE_W,
-        height_mm=PROFILE_CHART_H,
-        directory=os.path.dirname(output_path) or None,
-    )
-
-
 def _apply_page_profile_payload(
     profile_adapter,
     profile_payload: PageProfilePayload,
-    *,
-    output_path: str,
-    profile_temp_files: list[str],
 ) -> None:
-    """Apply per-page profile data to the active layout item backend."""
-    if profile_adapter.supports_native_profile:
-        if getattr(profile_adapter, "atlas_driven", False):
-            return
-        native_curve, _native_request = profile_payload.native_inputs()
-        if native_curve is None:
-            profile_adapter.clear_profile()
-            return
-        if profile_adapter.bind_native_profile(profile_curve=native_curve):
-            return
+    """Apply per-page profile data to the active native layout item backend."""
+    if not profile_adapter.supports_native_profile:
         profile_adapter.clear_profile()
         return
 
-    page_points = profile_payload.page_points
-    if len(page_points) < 2:
+    if getattr(profile_adapter, "atlas_driven", False):
+        return
+
+    native_curve, _native_request = profile_payload.native_inputs()
+    if native_curve is None:
         profile_adapter.clear_profile()
         return
 
-    try:
-        svg_path = _render_page_profile_svg(page_points, output_path=output_path)
-        if svg_path:
-            profile_adapter.set_svg_profile(svg_path)
-            profile_temp_files.append(svg_path)
-        else:
-            profile_adapter.clear_profile()
-    except Exception:  # noqa: BLE001
-        logger.debug("Profile chart render failed", exc_info=True)
-        profile_adapter.clear_profile()
+    if profile_adapter.bind_native_profile(profile_curve=native_curve):
+        return
+
+    profile_adapter.clear_profile()
 
 
-def _build_page_profile_payload(feat, sort_key_idx, profile_samples) -> PageProfilePayload:
-    sample_key = None
-    if sort_key_idx >= 0:
-        sample_key = _normalize_profile_sample_key(feat.attribute(sort_key_idx))
-
-    page_points = profile_samples.get(sample_key, []) if sample_key else []
-
+def _build_page_profile_payload(feat) -> PageProfilePayload:
     geometry_getter = getattr(feat, "geometry", None)
     geometry = geometry_getter() if callable(geometry_getter) else None
-    return PageProfilePayload(
-        sample_key=sample_key,
-        page_points=page_points,
-        feature_geometry=geometry,
-    )
+    return PageProfilePayload(feature_geometry=geometry)
 
 
 def _mm(layout, value):
@@ -430,10 +381,7 @@ def build_atlas_layout(
             color=QColor(60, 60, 60),
         )
 
-    # -- Profile area: chart item + summary text below map -------------------
-    # The profile item currently wraps the legacy SVG/picture implementation,
-    # but is created through an adapter so the export loop can later swap in a
-    # native QGIS elevation-profile item without another large rewrite.
+    # -- Profile area: native chart item + summary text below map ------------
     build_profile_item(
         layout,
         item_id=_PROFILE_PICTURE_ID,
@@ -1099,26 +1047,6 @@ class AtlasExportTask(QgsTask):
                 profile_adapter is not None and profile_adapter.requires_manual_page_updates
             )
 
-            # Pre-load sampled profile points only for picture-backed layouts.
-            profile_samples: dict[str, list[tuple[float, float]]] = {}
-            sort_key_idx = -1
-            if (
-                manual_profile_updates_enabled
-                and profile_adapter is not None
-                and not profile_adapter.supports_native_profile
-            ):
-                sort_key_idx = fields.indexOf("page_sort_key")
-                try:
-                    source = self._atlas_layer.source()
-                    gpkg_path = source.split("|")[0] if "|" in source else source
-                    if gpkg_path and os.path.isfile(gpkg_path):
-                        from .profile_renderer import load_profile_samples_from_gpkg  # noqa: PLC0415
-                        profile_samples = load_profile_samples_from_gpkg(gpkg_path)
-                except Exception:  # noqa: BLE001
-                    logger.debug("Could not load profile samples", exc_info=True)
-
-            profile_temp_files: list[str] = []
-
             # Collect layers with source_activity_id field for per-page filtering.
             # These are the track/start/point layers that should show only the
             # current page's activity, not the full unfiltered dataset.
@@ -1171,20 +1099,11 @@ class AtlasExportTask(QgsTask):
                                 except RuntimeError:
                                     logger.debug("Failed to set page filter on layer", exc_info=True)
 
-                    # Update per-page profile content for backends that do not
-                    # follow the atlas feature automatically.
+                    # Update per-page profile content for native backends that
+                    # cannot follow the atlas feature automatically.
                     if manual_profile_updates_enabled and profile_adapter is not None:
-                        profile_payload = _build_page_profile_payload(
-                            feat,
-                            sort_key_idx,
-                            profile_samples,
-                        )
-                        _apply_page_profile_payload(
-                            profile_adapter,
-                            profile_payload,
-                            output_path=self._output_path,
-                            profile_temp_files=profile_temp_files,
-                        )
+                        profile_payload = _build_page_profile_payload(feat)
+                        _apply_page_profile_payload(profile_adapter, profile_payload)
 
                     # Set profile summary text directly from the feature so that
                     # no raw [% %] template syntax can leak (issue #108).
@@ -1272,14 +1191,6 @@ class AtlasExportTask(QgsTask):
                         os.remove(p)
                     except OSError:
                         pass
-
-            # Clean up temporary profile SVG files.
-            for svg_path in profile_temp_files:
-                try:
-                    os.remove(svg_path)
-                except OSError:
-                    pass
-
         except (RuntimeError, OSError) as exc:
             logger.exception("Atlas export failed")
             self._error = str(exc)
