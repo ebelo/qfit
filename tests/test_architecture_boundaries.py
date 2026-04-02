@@ -38,7 +38,6 @@ class CoreModuleBoundaryTests(unittest.TestCase):
         "qfit_cache.py",
         "temporal_config.py",
         "time_utils.py",
-        "atlas/profile_renderer.py",
         "atlas/publish_atlas.py",
     ]
 

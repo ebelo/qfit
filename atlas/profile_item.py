@@ -1,9 +1,4 @@
-"""Helpers for atlas elevation profile layout items.
-
-This module introduces a small abstraction layer so atlas export can swap the
-legacy picture/SVG profile implementation for a future native QGIS elevation
-profile item without rewriting the whole export loop at once.
-"""
+"""Helpers for atlas elevation profile layout items."""
 
 from __future__ import annotations
 
@@ -11,7 +6,7 @@ from dataclasses import dataclass
 import math
 from collections.abc import Mapping
 
-from qgis.core import QgsLayoutItemPicture, QgsLayoutPoint, QgsLayoutSize, QgsUnitTypes
+from qgis.core import QgsLayoutPoint, QgsLayoutSize, QgsUnitTypes
 
 from .profile_style import (
     DEFAULT_NATIVE_PROFILE_PLOT_STYLE,
@@ -317,12 +312,7 @@ def build_profile_item(
     h: float,
     native_config: NativeProfileItemConfig | None = None,
 ) -> ProfileItemAdapter:
-    """Create the current profile layout item and return an adapter for it.
-
-    Prefer a native ``QgsLayoutItemElevationProfile`` when the QGIS build
-    exposes it, while still falling back to a picture-backed item when native
-    profile support is unavailable.
-    """
+    """Create the native profile layout item and return an adapter for it."""
     native_adapter = build_native_profile_item(
         layout,
         item_id=item_id,
@@ -335,13 +325,9 @@ def build_profile_item(
     if native_adapter is not None:
         return native_adapter
 
-    profile_item = QgsLayoutItemPicture(layout)
-    profile_item.setId(item_id)
-    profile_item.attemptMove(QgsLayoutPoint(x, y, QgsUnitTypes.LayoutMillimeters))
-    profile_item.attemptResize(QgsLayoutSize(w, h, QgsUnitTypes.LayoutMillimeters))
-    profile_item.setResizeMode(QgsLayoutItemPicture.Zoom)
-    layout.addLayoutItem(profile_item)
-    return ProfileItemAdapter(item=profile_item, kind="picture")
+    raise RuntimeError(
+        "QgsLayoutItemElevationProfile is required for atlas profile export on supported QGIS versions"
+    )
 
 
 def build_native_profile_item(
@@ -354,11 +340,7 @@ def build_native_profile_item(
     h: float,
     config: NativeProfileItemConfig | None = None,
 ) -> ProfileItemAdapter | None:
-    """Create a native elevation-profile item when the QGIS build supports it.
-
-    Returns ``None`` when the native item class is not available, so callers
-    can keep using the picture-backed fallback path.
-    """
+    """Create a native elevation-profile item when the QGIS build supports it."""
     if not native_profile_item_available():
         return None
 
