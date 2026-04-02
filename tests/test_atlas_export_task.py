@@ -306,7 +306,7 @@ class TestBuildAtlasLayout(unittest.TestCase):
             lookup = atlas_export_task._AtlasProfileSampleLookup(atlas_layer)
 
             self.assertEqual(lookup.lookup("activity-1"), [450.0, 490.0, 530.0])
-            self.assertEqual(lookup.lookup("missing"), None)
+            self.assertIsNone(lookup.lookup("missing"))
 
     def test_apply_page_profile_payload_binds_native_curve_without_svg_render(self):
         adapter = MagicMock(name="adapter")

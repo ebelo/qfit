@@ -11,6 +11,7 @@ from unittest.mock import MagicMock, patch
 from tests import _path  # noqa: F401
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+REPO_ROOT = Path(__file__).resolve().parents[1]
 
 try:
     from qgis.core import QgsApplication, QgsLayoutExporter, QgsProject, QgsRectangle, QgsVectorLayer
@@ -1001,7 +1002,7 @@ class QgisSmokeTests(unittest.TestCase):
             [sys.executable, "-c", script],
             capture_output=True,
             text=True,
-            cwd="/home/ebelo/.openclaw/workspace/qfit",
+            cwd=REPO_ROOT,
             env={**os.environ, "QT_QPA_PLATFORM": "offscreen"},
             timeout=180,
         )

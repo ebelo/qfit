@@ -301,26 +301,31 @@ def _resolve_page_profile_source(feat, filterable_layers) -> tuple[object | None
             if not _geometry_looks_line_like(geometry):
                 continue
 
-            layer_crs = None
-            crs_getter = getattr(layer, "crs", None)
-            if callable(crs_getter):
-                try:
-                    layer_crs = crs_getter()
-                except Exception:  # noqa: BLE001
-                    layer_crs = None
-            authid = None
-            authid_getter = getattr(layer_crs, "authid", None)
-            if callable(authid_getter):
-                try:
-                    authid = authid_getter()
-                except Exception:  # noqa: BLE001
-                    authid = None
-
-            return geometry, layer_feature, authid
+            return geometry, layer_feature, _layer_crs_authid(layer)
 
     geometry_getter = getattr(feat, "geometry", None)
     geometry = geometry_getter() if callable(geometry_getter) else None
     return geometry, feat, None
+
+
+def _layer_crs_authid(layer) -> str | None:
+    crs_getter = getattr(layer, "crs", None)
+    if not callable(crs_getter):
+        return None
+
+    try:
+        layer_crs = crs_getter()
+    except Exception:  # noqa: BLE001
+        return None
+
+    authid_getter = getattr(layer_crs, "authid", None)
+    if not callable(authid_getter):
+        return None
+
+    try:
+        return authid_getter()
+    except Exception:  # noqa: BLE001
+        return None
 
 
 def _build_page_profile_payload(

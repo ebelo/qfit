@@ -560,7 +560,7 @@ def _load_details_json(feature) -> dict:
 
     try:
         parsed = json.loads(raw_value)
-    except (TypeError, ValueError, json.JSONDecodeError):
+    except (TypeError, ValueError):
         return {}
     return parsed if isinstance(parsed, dict) else {}
 
