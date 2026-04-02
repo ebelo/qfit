@@ -67,6 +67,37 @@ class ProfileItemAdapter:
         if callable(set_picture_path):
             set_picture_path(path)
 
+    def _copy_profile_request_setting_to_item(
+        self,
+        profile_request,
+        *,
+        setter_name: str,
+        getter_name: str,
+    ) -> None:
+        setter = getattr(self.item, setter_name, None)
+        getter = getattr(profile_request, getter_name, None)
+        if not callable(setter) or not callable(getter):
+            return
+
+        try:
+            setter(getter())
+        except Exception:  # noqa: BLE001
+            pass
+
+    def _apply_profile_request_to_item(self, profile_request) -> None:
+        if profile_request is None:
+            return
+
+        for setter_name, getter_name in (
+            ("setCrs", "crs"),
+            ("setTolerance", "tolerance"),
+        ):
+            self._copy_profile_request_setting_to_item(
+                profile_request,
+                setter_name=setter_name,
+                getter_name=getter_name,
+            )
+
     def _clear_native_curve(self) -> None:
         if not self.supports_native_profile:
             return
@@ -122,6 +153,7 @@ class ProfileItemAdapter:
         self,
         *,
         profile_curve=None,
+        profile_request=None,
     ) -> bool:
         """Bind native profile inputs when the underlying item supports them.
 
@@ -134,6 +166,8 @@ class ProfileItemAdapter:
         """
         if not self.supports_native_profile:
             return False
+
+        self._apply_profile_request_to_item(profile_request)
 
         set_profile_curve = getattr(self.item, "setProfileCurve", None)
         if not callable(set_profile_curve) or profile_curve is None:
