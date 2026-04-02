@@ -52,7 +52,6 @@ class ProfileItemAdapter:
 
     item: object
     kind: str = "picture"
-    svg_fallback_item: object | None = None
     atlas_driven: bool = False
 
     @property
@@ -87,16 +86,12 @@ class ProfileItemAdapter:
     def clear_profile(self) -> None:
         self._clear_native_curve()
         self._set_picture_path(self.item, "")
-        self._set_picture_path(self.svg_fallback_item, "")
         self._refresh_item(self.item)
-        self._refresh_item(self.svg_fallback_item)
 
     def set_svg_profile(self, svg_path: str) -> None:
         self._clear_native_curve()
-        picture_item = self.svg_fallback_item or self.item
-        self._set_picture_path(picture_item, svg_path)
+        self._set_picture_path(self.item, svg_path)
         self._refresh_item(self.item)
-        self._refresh_item(picture_item)
 
     def configure_native_defaults(
         self,
@@ -149,9 +144,7 @@ class ProfileItemAdapter:
         if not callable(set_profile_curve) or profile_curve is None:
             return False
 
-        self._set_picture_path(self.svg_fallback_item, "")
         set_profile_curve(profile_curve)
-        self._refresh_item(self.svg_fallback_item)
         self._refresh_item(self.item)
         return True
 
@@ -327,8 +320,8 @@ def build_profile_item(
     """Create the current profile layout item and return an adapter for it.
 
     Prefer a native ``QgsLayoutItemElevationProfile`` when the QGIS build
-    exposes it, while keeping a hidden picture-backed fallback so atlas pages
-    with unusable native curve input can still render the sampled SVG chart.
+    exposes it, while still falling back to a picture-backed item when native
+    profile support is unavailable.
     """
     native_adapter = build_native_profile_item(
         layout,
@@ -340,16 +333,6 @@ def build_profile_item(
         config=native_config,
     )
     if native_adapter is not None:
-        if not native_adapter.requires_manual_page_updates:
-            return native_adapter
-
-        fallback_item = QgsLayoutItemPicture(layout)
-        fallback_item.setId(f"{item_id}_svg_fallback")
-        fallback_item.attemptMove(QgsLayoutPoint(x, y, QgsUnitTypes.LayoutMillimeters))
-        fallback_item.attemptResize(QgsLayoutSize(w, h, QgsUnitTypes.LayoutMillimeters))
-        fallback_item.setResizeMode(QgsLayoutItemPicture.Zoom)
-        layout.addLayoutItem(fallback_item)
-        native_adapter.svg_fallback_item = fallback_item
         return native_adapter
 
     profile_item = QgsLayoutItemPicture(layout)
@@ -397,35 +380,10 @@ def build_native_profile_item(
     return adapter
 
 
-def _find_svg_fallback_item(item) -> object | None:
-    """Locate the hidden SVG fallback item paired with a native profile item."""
-    item_id_getter = getattr(item, "id", None)
-    layout_getter = getattr(item, "layout", None)
-    if not callable(item_id_getter) or not callable(layout_getter):
-        return None
-
-    item_id = item_id_getter()
-    if not item_id:
-        return None
-
-    layout = layout_getter()
-    items_getter = getattr(layout, "items", None)
-    if not callable(items_getter):
-        return None
-
-    fallback_id = f"{item_id}_svg_fallback"
-    for candidate in items_getter():
-        candidate_id_getter = getattr(candidate, "id", None)
-        if callable(candidate_id_getter) and candidate_id_getter() == fallback_id:
-            return candidate
-    return None
-
-
 def build_profile_item_adapter(item) -> ProfileItemAdapter:
     """Wrap an already-created layout item in the shared adapter type."""
     item_type = type(item).__name__.lower()
     kind = "native" if "elevationprofile" in item_type else "picture"
-    fallback_item = _find_svg_fallback_item(item) if kind == "native" else None
     atlas_driven = False
     if kind == "native":
         atlas_driven_getter = getattr(item, "atlasDriven", None)
@@ -436,7 +394,7 @@ def build_profile_item_adapter(item) -> ProfileItemAdapter:
                 atlas_driven = False
             else:
                 atlas_driven = bool(atlas_driven_value) if atlas_driven_value is not None else False
-    return ProfileItemAdapter(item=item, kind=kind, svg_fallback_item=fallback_item, atlas_driven=atlas_driven)
+    return ProfileItemAdapter(item=item, kind=kind, atlas_driven=atlas_driven)
 
 
 def native_profile_item_available() -> bool:

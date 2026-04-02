@@ -364,7 +364,7 @@ class TestBuildAtlasLayout(unittest.TestCase):
         _qgis_core.QgsLayoutItemElevationProfile.return_value.setId.assert_called_once_with("profile")
         _qgis_core.QgsLayoutItemPicture.assert_not_called()
 
-    def test_build_profile_item_keeps_svg_fallback_for_manual_native_updates(self):
+    def test_build_profile_item_does_not_create_svg_fallback_for_manual_native_updates(self):
         layout = MagicMock()
         _qgis_core.QgsLayoutItemElevationProfile.reset_mock()
         _qgis_core.QgsLayoutItemElevationProfile.return_value.reset_mock()
@@ -384,15 +384,12 @@ class TestBuildAtlasLayout(unittest.TestCase):
             )
 
         self.assertEqual(adapter.kind, "native")
-        self.assertIs(adapter.svg_fallback_item, _qgis_core.QgsLayoutItemPicture.return_value)
-        _qgis_core.QgsLayoutItemPicture.return_value.setId.assert_called_once_with("profile_svg_fallback")
+        _qgis_core.QgsLayoutItemPicture.assert_not_called()
 
-    def test_build_profile_item_keeps_svg_fallback_when_native_atlas_driven_api_is_unavailable(self):
+    def test_build_profile_item_uses_native_item_when_manual_updates_are_required(self):
         layout = MagicMock()
         native_adapter = ProfileItemAdapter(item=MagicMock(), kind="native", atlas_driven=False)
-        picture_item = _qgis_core.QgsLayoutItemPicture.return_value
         _qgis_core.QgsLayoutItemPicture.reset_mock()
-        picture_item.reset_mock()
 
         with patch("qfit.atlas.profile_item.build_native_profile_item", return_value=native_adapter):
             with patch("qfit.atlas.profile_item.QgsLayoutItemPicture", _qgis_core.QgsLayoutItemPicture):
@@ -407,26 +404,7 @@ class TestBuildAtlasLayout(unittest.TestCase):
                 )
 
         self.assertIs(adapter, native_adapter)
-        self.assertIs(adapter.svg_fallback_item, picture_item)
-        picture_item.setId.assert_called_once_with("profile_svg_fallback")
-
-    def test_build_profile_item_adapter_finds_native_svg_fallback_by_id(self):
-        layout = MagicMock()
-        native_item = MagicMock()
-        native_item.__class__.__name__ = "QgsLayoutItemElevationProfile"
-        native_item.id.return_value = "profile"
-        native_item.layout.return_value = layout
-
-        fallback_item = MagicMock()
-        fallback_item.id.return_value = "profile_svg_fallback"
-        other_item = MagicMock()
-        other_item.id.return_value = "something_else"
-        layout.items.return_value = [other_item, fallback_item]
-
-        adapter = build_profile_item_adapter(native_item)
-
-        self.assertEqual(adapter.kind, "native")
-        self.assertIs(adapter.svg_fallback_item, fallback_item)
+        _qgis_core.QgsLayoutItemPicture.assert_not_called()
 
     def test_build_profile_item_falls_back_to_picture_when_native_unavailable(self):
         layout = MagicMock()
@@ -973,22 +951,15 @@ class TestBuildAtlasLayout(unittest.TestCase):
     def test_build_profile_item_adapter_returns_picture_when_native_item_lacks_lookup_helpers(self):
         adapter = build_profile_item_adapter(object())
         self.assertEqual(adapter.kind, "picture")
-        self.assertIsNone(adapter.svg_fallback_item)
 
-    def test_build_profile_item_adapter_native_without_id_or_layout_items_has_no_fallback(self):
+    def test_build_profile_item_adapter_detects_native_without_layout_lookup_helpers(self):
         native_item = MagicMock()
         native_item.__class__.__name__ = "QgsLayoutItemElevationProfile"
-        native_item.id.return_value = ""
-        native_item.layout.return_value = object()
+        del native_item.atlasDriven
 
         adapter = build_profile_item_adapter(native_item)
         self.assertEqual(adapter.kind, "native")
-        self.assertIsNone(adapter.svg_fallback_item)
-
-        native_item.id.return_value = "profile"
-        native_item.layout.return_value = object()
-        adapter = build_profile_item_adapter(native_item)
-        self.assertIsNone(adapter.svg_fallback_item)
+        self.assertFalse(adapter.atlas_driven)
 
     def test_build_native_profile_curve_rejects_polygon_api_objects_without_curve_api(self):
         class _PolygonLike:
@@ -1114,10 +1085,6 @@ class TestBuildAtlasLayout(unittest.TestCase):
         curve.numPoints.return_value = 1
         curve.pointN.side_effect = RuntimeError("boom")
         self.assertFalse(profile_item_module._curve_points_have_z(curve))
-
-        native_item = MagicMock()
-        del native_item.id
-        self.assertIsNone(profile_item_module._find_svg_fallback_item(native_item))
 
         candidate = MagicMock()
         del candidate.wkbType
