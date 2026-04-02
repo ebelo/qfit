@@ -187,7 +187,7 @@ class TestBuildAtlasLayout(unittest.TestCase):
         feat = MagicMock(name="feature")
         feat.geometry.return_value = "feature-geometry"
 
-        payload = atlas_export_task._build_page_profile_payload(feat)
+        payload = atlas_export_task._build_page_profile_payload(feat, [])
 
         self.assertEqual(payload.feature_geometry, "feature-geometry")
 
@@ -206,7 +206,7 @@ class TestBuildAtlasLayout(unittest.TestCase):
         feat = MagicMock(name="feature")
         feat.geometry.return_value = None
 
-        payload = atlas_export_task._build_page_profile_payload(feat)
+        payload = atlas_export_task._build_page_profile_payload(feat, [])
 
         self.assertIsNone(payload.feature_geometry)
 
@@ -220,6 +220,32 @@ class TestBuildAtlasLayout(unittest.TestCase):
         self.assertIsNone(native_curve)
         self.assertIsNone(native_request)
         build_native_inputs.assert_called_once_with(None)
+
+    def test_build_page_profile_payload_prefers_filtered_activity_line_geometry(self):
+        atlas_feature = MagicMock(name="atlas_feature")
+        atlas_feature.geometry.return_value = "atlas-polygon"
+
+        point_feature = MagicMock(name="point_feature")
+        point_feature.geometry.return_value = "point-geometry"
+        point_layer = MagicMock(name="point_layer")
+        point_layer.getFeatures.side_effect = lambda: iter([point_feature])
+
+        line_feature = MagicMock(name="line_feature")
+        line_feature.geometry.return_value = "line-geometry"
+        line_layer = MagicMock(name="line_layer")
+        line_layer.getFeatures.side_effect = lambda: iter([line_feature])
+
+        with patch.object(
+            atlas_export_task,
+            "_geometry_supports_native_profile",
+            side_effect=lambda geometry: geometry == "line-geometry",
+        ):
+            payload = atlas_export_task._build_page_profile_payload(
+                atlas_feature,
+                [(point_layer, ""), (line_layer, "")],
+            )
+
+        self.assertEqual(payload.feature_geometry, "line-geometry")
 
     def test_apply_page_profile_payload_binds_native_curve_without_svg_render(self):
         adapter = MagicMock(name="adapter")
@@ -1445,7 +1471,18 @@ class TestProfileChartRendering(unittest.TestCase):
         native_profile_item.id.return_value = _PROFILE_PICTURE_ID
         native_profile_item.atlasDriven.return_value = False
         native_profile_item.layout.return_value = layout_mock
-        layout_mock.items.return_value = [native_profile_item]
+
+        track_feature = MagicMock(name="track_feature")
+        track_feature.geometry.return_value = "track-geometry"
+        track_layer = MagicMock(name="track_layer")
+        track_layer.subsetString.return_value = ""
+        track_layer.fields.return_value.indexOf = lambda name: 0 if name == "source_activity_id" else -1
+        track_layer.getFeatures.side_effect = lambda: iter([track_feature])
+
+        map_item = MagicMock(name="map_item")
+        map_item.layers.return_value = [track_layer]
+        map_item.setExtent = MagicMock()
+        layout_mock.items.return_value = [map_item, native_profile_item]
 
         atlas_layer = _make_atlas_layer(feature_count=1)
         field_names = [
@@ -1468,7 +1505,7 @@ class TestProfileChartRendering(unittest.TestCase):
         }
         feat_mock = atlas_mock.layout.return_value.reportContext.return_value.feature.return_value
         feat_mock.attribute.side_effect = lambda idx: attr_values.get(idx)
-        feat_mock.geometry.return_value = "feature-geometry"
+        feat_mock.geometry.return_value = "atlas-polygon"
 
         task = AtlasExportTask(
             atlas_layer=atlas_layer,
@@ -1480,12 +1517,13 @@ class TestProfileChartRendering(unittest.TestCase):
              patch("qfit.atlas.export_task.QgsLayoutExporter", exporter_cls_mock), \
              patch("qfit.atlas.export_task.AtlasExportTask._export_cover_page", return_value=None), \
              patch("qfit.atlas.export_task.AtlasExportTask._export_toc_page", return_value=None), \
+             patch("qfit.atlas.export_task._geometry_supports_native_profile", side_effect=lambda geometry: geometry == "track-geometry"), \
              patch("qfit.atlas.export_task.build_native_profile_inputs", return_value=("curve", "request")) as build_native_inputs, \
              patch("os.replace"), \
              patch("os.makedirs"):
             _run_task(task)
 
-        build_native_inputs.assert_called_once_with("feature-geometry")
+        build_native_inputs.assert_called_once_with("track-geometry")
         native_profile_item.setProfileCurve.assert_called_once_with("curve")
         native_profile_item.refresh.assert_called()
 

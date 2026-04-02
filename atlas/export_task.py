@@ -52,6 +52,7 @@ from ..activity_classification import ordered_canonical_activity_labels
 from .profile_item import (
     NativeProfileItemConfig,
     atlas_layer_supports_native_profile_atlas,
+    build_native_profile_curve,
     build_native_profile_inputs,
     build_profile_item,
     build_profile_item_adapter,
@@ -155,6 +156,10 @@ class PageProfilePayload:
         return build_native_profile_inputs(self.feature_geometry)
 
 
+def _geometry_supports_native_profile(feature_geometry) -> bool:
+    return build_native_profile_curve(feature_geometry) is not None
+
+
 def _apply_page_profile_payload(
     profile_adapter,
     profile_payload: PageProfilePayload,
@@ -178,9 +183,30 @@ def _apply_page_profile_payload(
     profile_adapter.clear_profile()
 
 
-def _build_page_profile_payload(feat) -> PageProfilePayload:
+def _resolve_page_profile_geometry(feat, filterable_layers) -> object | None:
+    for layer, _original_subset in filterable_layers:
+        get_features = getattr(layer, "getFeatures", None)
+        if not callable(get_features):
+            continue
+
+        try:
+            layer_features = get_features()
+        except Exception:  # noqa: BLE001
+            logger.debug("Could not inspect filtered layer features for native profile geometry", exc_info=True)
+            continue
+
+        for layer_feature in layer_features:
+            geometry_getter = getattr(layer_feature, "geometry", None)
+            geometry = geometry_getter() if callable(geometry_getter) else None
+            if _geometry_supports_native_profile(geometry):
+                return geometry
+
     geometry_getter = getattr(feat, "geometry", None)
-    geometry = geometry_getter() if callable(geometry_getter) else None
+    return geometry_getter() if callable(geometry_getter) else None
+
+
+def _build_page_profile_payload(feat, filterable_layers) -> PageProfilePayload:
+    geometry = _resolve_page_profile_geometry(feat, filterable_layers)
     return PageProfilePayload(feature_geometry=geometry)
 
 
@@ -1102,7 +1128,7 @@ class AtlasExportTask(QgsTask):
                     # Update per-page profile content for native backends that
                     # cannot follow the atlas feature automatically.
                     if manual_profile_updates_enabled and profile_adapter is not None:
-                        profile_payload = _build_page_profile_payload(feat)
+                        profile_payload = _build_page_profile_payload(feat, filterable_layers)
                         _apply_page_profile_payload(profile_adapter, profile_payload)
 
                     # Set profile summary text directly from the feature so that
