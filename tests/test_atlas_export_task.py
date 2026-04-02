@@ -274,7 +274,7 @@ class TestBuildAtlasLayout(unittest.TestCase):
         render_profile.assert_not_called()
         self.assertEqual(profile_temp_files, [])
 
-    def test_apply_page_profile_payload_falls_back_to_svg_when_native_bind_is_unavailable(self):
+    def test_apply_page_profile_payload_clears_native_profile_when_bind_is_unavailable(self):
         adapter = MagicMock(name="adapter")
         adapter.supports_native_profile = True
         adapter.atlas_driven = False
@@ -284,11 +284,7 @@ class TestBuildAtlasLayout(unittest.TestCase):
         payload.page_points = [(0.0, 100.0), (1.0, 120.0)]
         profile_temp_files = []
 
-        with patch.object(
-            atlas_export_task,
-            "_render_page_profile_svg",
-            return_value="/tmp/profile.svg",
-        ) as render_profile:
+        with patch.object(atlas_export_task, "_render_page_profile_svg") as render_profile:
             atlas_export_task._apply_page_profile_payload(
                 adapter,
                 payload,
@@ -298,9 +294,10 @@ class TestBuildAtlasLayout(unittest.TestCase):
 
         payload.native_inputs.assert_called_once_with()
         adapter.bind_native_profile.assert_called_once_with(profile_curve="curve")
-        render_profile.assert_called_once_with(payload.page_points, output_path="/tmp/out.pdf")
-        adapter.set_svg_profile.assert_called_once_with("/tmp/profile.svg")
-        self.assertEqual(profile_temp_files, ["/tmp/profile.svg"])
+        adapter.clear_profile.assert_called_once_with()
+        render_profile.assert_not_called()
+        adapter.set_svg_profile.assert_not_called()
+        self.assertEqual(profile_temp_files, [])
 
     def test_apply_page_profile_payload_clears_native_profile_when_curve_missing(self):
         adapter = MagicMock(name="adapter")
@@ -1813,6 +1810,63 @@ class TestAtlasExportTaskSuccess(unittest.TestCase):
              patch("os.makedirs"):
             self.assertTrue(_run_task(task))
 
+        load_samples.assert_not_called()
+        render_profile.assert_not_called()
+
+    def test_manual_native_profile_does_not_require_page_sort_key_or_svg_samples(self):
+        from qfit.atlas.export_task import _PROFILE_PICTURE_ID
+
+        atlas_layer = _make_atlas_layer(feature_count=1)
+        field_names = [
+            "source_activity_id",
+            "center_x_3857",
+            "center_y_3857",
+            "extent_width_m",
+            "extent_height_m",
+        ]
+        atlas_layer.fields.return_value.indexOf = (
+            lambda name: field_names.index(name) if name in field_names else -1
+        )
+        atlas_layer.source.return_value = "/tmp/fake.gpkg|layername=activity_atlas_pages"
+
+        layout_mock, atlas_mock, exporter_cls_mock = _make_atlas_mock(feature_count=1)
+        native_profile_item = MagicMock(name="native_profile_item")
+        native_profile_item.__class__.__name__ = "QgsLayoutItemElevationProfile"
+        native_profile_item.id.return_value = _PROFILE_PICTURE_ID
+        native_profile_item.atlasDriven.return_value = False
+        native_profile_item.layout.return_value = layout_mock
+        layout_mock.items.return_value = [native_profile_item]
+
+        feat_mock = atlas_mock.layout.return_value.reportContext.return_value.feature.return_value
+        feat_mock.attribute.side_effect = lambda idx: {
+            0: "activity-1",
+            1: 10.0,
+            2: 20.0,
+            3: 30.0,
+            4: 40.0,
+        }.get(idx)
+        feat_mock.geometry.return_value = "feature-geometry"
+
+        task = AtlasExportTask(
+            atlas_layer=atlas_layer,
+            output_path="/tmp/qfit_native_manual_without_sort_key.pdf",
+            on_finished=lambda **_: None,
+        )
+
+        with patch("qfit.atlas.export_task.build_atlas_layout", return_value=layout_mock), \
+             patch("qfit.atlas.export_task.QgsLayoutExporter", exporter_cls_mock), \
+             patch("qfit.atlas.export_task.AtlasExportTask._export_cover_page", return_value=None), \
+             patch("qfit.atlas.export_task.AtlasExportTask._export_toc_page", return_value=None), \
+             patch("qfit.atlas.export_task.build_native_profile_inputs", return_value=("curve", "request")) as build_native_inputs, \
+             patch("qfit.atlas.profile_renderer.load_profile_samples_from_gpkg") as load_samples, \
+             patch("qfit.atlas.profile_renderer.render_profile_to_file") as render_profile, \
+             patch("qfit.atlas.export_task.AtlasExportTask._merge_pdfs"), \
+             patch("os.replace"), \
+             patch("os.makedirs"):
+            self.assertTrue(_run_task(task))
+
+        build_native_inputs.assert_called_once_with("feature-geometry")
+        native_profile_item.setProfileCurve.assert_called_once_with("curve")
         load_samples.assert_not_called()
         render_profile.assert_not_called()
 

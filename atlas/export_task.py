@@ -192,8 +192,13 @@ def _apply_page_profile_payload(
         if getattr(profile_adapter, "atlas_driven", False):
             return
         native_curve, _native_request = profile_payload.native_inputs()
-        if native_curve is not None and profile_adapter.bind_native_profile(profile_curve=native_curve):
+        if native_curve is None:
+            profile_adapter.clear_profile()
             return
+        if profile_adapter.bind_native_profile(profile_curve=native_curve):
+            return
+        profile_adapter.clear_profile()
+        return
 
     page_points = profile_payload.page_points
     if len(page_points) < 2:
@@ -1094,10 +1099,15 @@ class AtlasExportTask(QgsTask):
                 profile_adapter is not None and profile_adapter.requires_manual_page_updates
             )
 
-            # Pre-load profile samples grouped by page_sort_key.
+            # Pre-load sampled profile points only for picture-backed layouts.
             profile_samples: dict[str, list[tuple[float, float]]] = {}
-            sort_key_idx = fields.indexOf("page_sort_key") if manual_profile_updates_enabled else -1
-            if manual_profile_updates_enabled:
+            sort_key_idx = -1
+            if (
+                manual_profile_updates_enabled
+                and profile_adapter is not None
+                and not profile_adapter.supports_native_profile
+            ):
+                sort_key_idx = fields.indexOf("page_sort_key")
                 try:
                     source = self._atlas_layer.source()
                     gpkg_path = source.split("|")[0] if "|" in source else source
@@ -1161,8 +1171,9 @@ class AtlasExportTask(QgsTask):
                                 except RuntimeError:
                                     logger.debug("Failed to set page filter on layer", exc_info=True)
 
-                    # Render profile chart SVG for this page.
-                    if manual_profile_updates_enabled and profile_adapter is not None and sort_key_idx >= 0:
+                    # Update per-page profile content for backends that do not
+                    # follow the atlas feature automatically.
+                    if manual_profile_updates_enabled and profile_adapter is not None:
                         profile_payload = _build_page_profile_payload(
                             feat,
                             sort_key_idx,
