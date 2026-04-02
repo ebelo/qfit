@@ -90,6 +90,7 @@ def _make_qgis_stub():
 _qgis_core = _make_qgis_stub()
 
 import qfit.atlas.export_task as atlas_export_task  # noqa: E402
+import qfit.atlas.profile_item as profile_item  # noqa: E402
 from qfit.atlas.profile_item import (  # noqa: E402
     DEFAULT_NATIVE_PROFILE_PLOT_STYLE,
     build_native_profile_inputs,
@@ -307,6 +308,72 @@ class TestBuildAtlasLayout(unittest.TestCase):
 
             self.assertEqual(lookup.lookup("activity-1"), [450.0, 490.0, 530.0])
             self.assertIsNone(lookup.lookup("missing"))
+
+    def test_atlas_profile_sample_lookup_returns_none_for_missing_path_and_bad_altitudes(self):
+        lookup = atlas_export_task._AtlasProfileSampleLookup(MagicMock(source=None))
+        self.assertIsNone(lookup.lookup("activity-1"))
+        self.assertIsNone(lookup.lookup(""))
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            gpkg_path = os.path.join(tmp_dir, "profile-samples.gpkg")
+            with sqlite3.connect(gpkg_path) as conn:
+                conn.execute(
+                    """
+                    CREATE TABLE atlas_profile_samples (
+                        source_activity_id TEXT,
+                        profile_point_index INTEGER,
+                        altitude_m TEXT
+                    )
+                    """
+                )
+                conn.execute(
+                    "INSERT INTO atlas_profile_samples VALUES (?, ?, ?)",
+                    ("activity-1", 0, "not-a-number"),
+                )
+
+            atlas_layer = MagicMock(name="atlas_layer")
+            atlas_layer.source.return_value = f"{gpkg_path}|layername=activity_atlas_pages"
+            lookup = atlas_export_task._AtlasProfileSampleLookup(atlas_layer)
+
+            self.assertIsNone(lookup.lookup("activity-1"))
+            self.assertIsNone(lookup.lookup("activity-1"))
+
+    def test_layer_crs_authid_handles_missing_and_erroring_getters(self):
+        self.assertIsNone(atlas_export_task._layer_crs_authid(object()))
+
+        layer = MagicMock(name="layer")
+        layer.crs.side_effect = RuntimeError("boom")
+        self.assertIsNone(atlas_export_task._layer_crs_authid(layer))
+
+        crs_without_authid = MagicMock(name="crs_without_authid")
+        del crs_without_authid.authid
+        layer = MagicMock(name="layer_without_authid")
+        layer.crs.return_value = crs_without_authid
+        self.assertIsNone(atlas_export_task._layer_crs_authid(layer))
+
+        crs = MagicMock(name="crs")
+        crs.authid.side_effect = RuntimeError("boom")
+        layer = MagicMock(name="layer_with_erroring_authid")
+        layer.crs.return_value = crs
+        self.assertIsNone(atlas_export_task._layer_crs_authid(layer))
+
+    def test_apply_page_profile_payload_logs_crs_errors_and_keeps_binding(self):
+        adapter = MagicMock(name="adapter")
+        adapter.supports_native_profile = True
+        adapter.atlas_driven = False
+        adapter.bind_native_profile.return_value = True
+        adapter.item.setCrs.side_effect = RuntimeError("boom")
+        payload = MagicMock(name="payload")
+        payload.native_inputs.return_value = ("curve", None)
+        payload.crs_auth_id = "EPSG:3857"
+
+        atlas_export_task._apply_page_profile_payload(adapter, payload)
+
+        adapter.item.setCrs.assert_called_once()
+        adapter.bind_native_profile.assert_called_once_with(
+            profile_curve="curve",
+            profile_request=None,
+        )
 
     def test_apply_page_profile_payload_binds_native_curve_without_svg_render(self):
         adapter = MagicMock(name="adapter")
@@ -992,6 +1059,99 @@ class TestBuildAtlasLayout(unittest.TestCase):
         )
         self.assertEqual(build_curve.call_args_list[0].args, (geometry,))
         self.assertEqual(build_curve.call_args_list[1].args, (synthetic_geometry,))
+
+    def test_profile_item_helper_functions_cover_invalid_fallback_inputs(self):
+        self.assertIsNone(profile_item._feature_attribute(None, "details_json"))
+
+        feature = MagicMock(name="feature")
+        feature.attribute.side_effect = RuntimeError("boom")
+        self.assertIsNone(profile_item._feature_attribute(feature, "details_json"))
+
+        self.assertIsNone(profile_item._feature_attribute({}, "details_json"))
+        self.assertEqual(profile_item._load_details_json(MagicMock(attribute=MagicMock(return_value={}))), {})
+        self.assertEqual(profile_item._load_details_json(MagicMock(attribute=MagicMock(return_value=5))), {})
+        self.assertEqual(profile_item._load_details_json(MagicMock(attribute=MagicMock(return_value="{"))), {})
+        self.assertEqual(profile_item._load_details_json(MagicMock(attribute=MagicMock(return_value='[1, 2]'))), {})
+
+        bad_curve = MagicMock(name="bad_curve")
+        bad_curve.vertices.side_effect = RuntimeError("boom")
+        self.assertEqual(profile_item._curve_vertices(bad_curve), [])
+
+        point_curve = MagicMock(name="point_curve")
+        del point_curve.vertices
+        point_curve.numPoints.return_value = 2
+        point_curve.pointN.side_effect = ["p0", RuntimeError("boom")]
+        self.assertEqual(profile_item._curve_vertices(point_curve), [])
+
+        point_curve = MagicMock(name="point_curve_success")
+        del point_curve.vertices
+        point_curve.numPoints.return_value = 2
+        point_curve.pointN.side_effect = ["p0", "p1"]
+        self.assertEqual(profile_item._curve_vertices(point_curve), ["p0", "p1"])
+
+        self.assertIsNone(profile_item._synthetic_curve_wkt([object()], [1]))
+        vertex = MagicMock(name="vertex")
+        vertex.x.return_value = 6.62
+        vertex.y.return_value = 46.52
+        self.assertIsNone(profile_item._synthetic_curve_wkt([vertex], [float("nan")]))
+        self.assertIsNone(profile_item._synthetic_curve_wkt([vertex], ["bad"]))
+
+        details_feature = MagicMock(name="details_feature")
+        details_feature.attribute.return_value = '{"stream_metrics": {"altitude": [1, 2]}}'
+        self.assertEqual(profile_item._resolve_profile_altitudes(feature=details_feature), [1, 2])
+        self.assertEqual(profile_item._resolve_profile_altitudes(altitudes=[3, 4]), [3, 4])
+        details_feature.attribute.return_value = '{"stream_metrics": {"altitude": "bad"}}'
+        self.assertIsNone(profile_item._resolve_profile_altitudes(feature=details_feature))
+
+    def test_build_native_profile_curve_from_feature_handles_invalid_fallback_paths(self):
+        geometry = MagicMock(name="geometry")
+
+        with patch("qfit.atlas.profile_item.build_native_profile_curve", return_value="existing-curve"):
+            self.assertEqual(profile_item.build_native_profile_curve_from_feature(geometry), "existing-curve")
+
+        with patch("qfit.atlas.profile_item.build_native_profile_curve", return_value=None), patch(
+            "qfit.atlas.profile_item.QgsGeometry", None
+        ):
+            self.assertIsNone(profile_item.build_native_profile_curve_from_feature(geometry))
+
+        with patch("qfit.atlas.profile_item.build_native_profile_curve", return_value=None):
+            self.assertIsNone(profile_item.build_native_profile_curve_from_feature(None, altitudes=[1, 2]))
+            self.assertIsNone(profile_item.build_native_profile_curve_from_feature(geometry, feature=MagicMock()))
+
+        source_curve = MagicMock(name="source_curve")
+        geometry.constGet.return_value = source_curve
+        source_curve.vertices.return_value = [MagicMock(), MagicMock()]
+
+        with (
+            patch("qfit.atlas.profile_item.build_native_profile_curve", return_value=None),
+            patch("qfit.atlas.profile_item._resolve_profile_altitudes", return_value=[1.0]),
+        ):
+            self.assertIsNone(profile_item.build_native_profile_curve_from_feature(geometry))
+
+        with (
+            patch("qfit.atlas.profile_item.build_native_profile_curve", return_value=None),
+            patch("qfit.atlas.profile_item._resolve_profile_altitudes", return_value=[1.0, 2.0]),
+            patch("qfit.atlas.profile_item._synthetic_curve_wkt", return_value=None),
+        ):
+            self.assertIsNone(profile_item.build_native_profile_curve_from_feature(geometry))
+
+        with (
+            patch("qfit.atlas.profile_item.build_native_profile_curve", return_value=None),
+            patch("qfit.atlas.profile_item._resolve_profile_altitudes", return_value=[1.0, 2.0]),
+            patch("qfit.atlas.profile_item._synthetic_curve_wkt", return_value="LineString Z (0 0 1, 1 1 2)"),
+            patch("qfit.atlas.profile_item.QgsGeometry") as qgs_geometry,
+        ):
+            qgs_geometry.fromWkt = None
+            self.assertIsNone(profile_item.build_native_profile_curve_from_feature(geometry))
+
+        with (
+            patch("qfit.atlas.profile_item.build_native_profile_curve", return_value=None),
+            patch("qfit.atlas.profile_item._resolve_profile_altitudes", return_value=[1.0, 2.0]),
+            patch("qfit.atlas.profile_item._synthetic_curve_wkt", return_value="LineString Z (0 0 1, 1 1 2)"),
+            patch("qfit.atlas.profile_item.QgsGeometry") as qgs_geometry,
+        ):
+            qgs_geometry.fromWkt.side_effect = RuntimeError("boom")
+            self.assertIsNone(profile_item.build_native_profile_curve_from_feature(geometry))
 
     def test_native_adapter_binds_curve_when_supported(self):
         item = MagicMock()
