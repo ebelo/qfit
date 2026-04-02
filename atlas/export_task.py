@@ -27,6 +27,7 @@ from __future__ import annotations
 
 import logging
 import os
+import sqlite3
 import sys
 from dataclasses import dataclass
 
@@ -53,7 +54,7 @@ from .profile_item import (
     NativeProfileItemConfig,
     atlas_layer_supports_native_profile_atlas,
     build_native_profile_curve,
-    build_native_profile_inputs,
+    build_native_profile_curve_from_feature,
     build_profile_item,
     build_profile_item_adapter,
 )
@@ -151,13 +152,42 @@ class PageProfilePayload:
     """Per-page profile inputs for native profile binding."""
 
     feature_geometry: object | None
+    feature: object | None = None
+    crs_auth_id: str | None = None
+    profile_altitudes: list[float] | None = None
 
     def native_inputs(self):
-        return build_native_profile_inputs(self.feature_geometry)
+        return (
+            build_native_profile_curve_from_feature(
+                self.feature_geometry,
+                feature=self.feature,
+                altitudes=self.profile_altitudes,
+            ),
+            None,
+        )
 
 
 def _geometry_supports_native_profile(feature_geometry) -> bool:
     return build_native_profile_curve(feature_geometry) is not None
+
+
+def _geometry_looks_line_like(feature_geometry) -> bool:
+    if feature_geometry is None:
+        return False
+
+    if _geometry_supports_native_profile(feature_geometry):
+        return True
+
+    const_get = getattr(feature_geometry, "constGet", None)
+    curve = const_get() if callable(const_get) else feature_geometry
+    if curve is None:
+        return False
+
+    type_name = type(curve).__name__.lower()
+    if "line" in type_name or "curve" in type_name:
+        return True
+
+    return any(callable(getattr(curve, name, None)) for name in ("curveToLine", "numPoints", "pointN"))
 
 
 def _apply_page_profile_payload(
@@ -172,21 +202,88 @@ def _apply_page_profile_payload(
     if getattr(profile_adapter, "atlas_driven", False):
         return
 
-    native_curve, native_request = profile_payload.native_inputs()
+    native_curve, _native_request = profile_payload.native_inputs()
     if native_curve is None:
         profile_adapter.clear_profile()
         return
 
+    if profile_payload.crs_auth_id:
+        set_crs = getattr(profile_adapter.item, "setCrs", None)
+        if callable(set_crs):
+            try:
+                set_crs(QgsCoordinateReferenceSystem(profile_payload.crs_auth_id))
+            except Exception:  # noqa: BLE001
+                logger.debug("Could not apply page profile CRS to native layout item", exc_info=True)
+
     if profile_adapter.bind_native_profile(
         profile_curve=native_curve,
-        profile_request=native_request,
+        profile_request=None,
     ):
         return
 
     profile_adapter.clear_profile()
 
 
-def _resolve_page_profile_geometry(feat, filterable_layers) -> object | None:
+def _feature_attribute(feature, field_name: str):
+    if feature is None:
+        return None
+
+    attribute = getattr(feature, "attribute", None)
+    if callable(attribute):
+        try:
+            return attribute(field_name)
+        except Exception:  # noqa: BLE001
+            return None
+
+    try:
+        return feature[field_name]
+    except Exception:  # noqa: BLE001
+        return None
+
+
+class _AtlasProfileSampleLookup:
+    def __init__(self, atlas_layer):
+        source = getattr(atlas_layer, "source", None)
+        source_value = source() if callable(source) else source
+        self._gpkg_path = str(source_value).split("|", 1)[0] if source_value else None
+        self._cache: dict[str, list[float] | None] = {}
+
+    def lookup(self, source_activity_id) -> list[float] | None:
+        if not self._gpkg_path or source_activity_id in (None, ""):
+            return None
+
+        cache_key = str(source_activity_id)
+        if cache_key not in self._cache:
+            self._cache[cache_key] = self._query_altitudes(cache_key)
+        return self._cache[cache_key]
+
+    def _query_altitudes(self, source_activity_id: str) -> list[float] | None:
+        try:
+            with sqlite3.connect(f"file:{self._gpkg_path}?mode=ro", uri=True) as conn:
+                rows = conn.execute(
+                    """
+                    SELECT altitude_m
+                    FROM atlas_profile_samples
+                    WHERE source_activity_id = ?
+                    ORDER BY profile_point_index
+                    """,
+                    (source_activity_id,),
+                ).fetchall()
+        except sqlite3.Error:
+            logger.debug("Could not read atlas_profile_samples fallback altitudes", exc_info=True)
+            return None
+
+        altitudes: list[float] = []
+        for (altitude_value,) in rows:
+            try:
+                altitudes.append(float(altitude_value))
+            except (TypeError, ValueError):
+                return None
+
+        return altitudes or None
+
+
+def _resolve_page_profile_source(feat, filterable_layers) -> tuple[object | None, object | None, str | None]:
     for layer, _original_subset in filterable_layers:
         get_features = getattr(layer, "getFeatures", None)
         if not callable(get_features):
@@ -201,16 +298,51 @@ def _resolve_page_profile_geometry(feat, filterable_layers) -> object | None:
         for layer_feature in layer_features:
             geometry_getter = getattr(layer_feature, "geometry", None)
             geometry = geometry_getter() if callable(geometry_getter) else None
-            if _geometry_supports_native_profile(geometry):
-                return geometry
+            if not _geometry_looks_line_like(geometry):
+                continue
+
+            layer_crs = None
+            crs_getter = getattr(layer, "crs", None)
+            if callable(crs_getter):
+                try:
+                    layer_crs = crs_getter()
+                except Exception:  # noqa: BLE001
+                    layer_crs = None
+            authid = None
+            authid_getter = getattr(layer_crs, "authid", None)
+            if callable(authid_getter):
+                try:
+                    authid = authid_getter()
+                except Exception:  # noqa: BLE001
+                    authid = None
+
+            return geometry, layer_feature, authid
 
     geometry_getter = getattr(feat, "geometry", None)
-    return geometry_getter() if callable(geometry_getter) else None
+    geometry = geometry_getter() if callable(geometry_getter) else None
+    return geometry, feat, None
 
 
-def _build_page_profile_payload(feat, filterable_layers) -> PageProfilePayload:
-    geometry = _resolve_page_profile_geometry(feat, filterable_layers)
-    return PageProfilePayload(feature_geometry=geometry)
+def _build_page_profile_payload(
+    feat,
+    filterable_layers,
+    profile_altitude_lookup=None,
+) -> PageProfilePayload:
+    geometry, source_feature, crs_auth_id = _resolve_page_profile_source(feat, filterable_layers)
+    source_activity_id = _feature_attribute(source_feature, "source_activity_id")
+    if source_activity_id in (None, ""):
+        source_activity_id = _feature_attribute(feat, "source_activity_id")
+    profile_altitudes = (
+        profile_altitude_lookup(source_activity_id)
+        if callable(profile_altitude_lookup)
+        else None
+    )
+    return PageProfilePayload(
+        feature_geometry=geometry,
+        feature=source_feature,
+        crs_auth_id=crs_auth_id,
+        profile_altitudes=profile_altitudes,
+    )
 
 
 def _mm(layout, value):
@@ -1075,6 +1207,7 @@ class AtlasExportTask(QgsTask):
             manual_profile_updates_enabled = bool(
                 profile_adapter is not None and profile_adapter.requires_manual_page_updates
             )
+            profile_sample_lookup = _AtlasProfileSampleLookup(self._atlas_layer)
 
             # Collect layers with source_activity_id field for per-page filtering.
             # These are the track/start/point layers that should show only the
@@ -1131,7 +1264,11 @@ class AtlasExportTask(QgsTask):
                     # Update per-page profile content for native backends that
                     # cannot follow the atlas feature automatically.
                     if manual_profile_updates_enabled and profile_adapter is not None:
-                        profile_payload = _build_page_profile_payload(feat, filterable_layers)
+                        profile_payload = _build_page_profile_payload(
+                            feat,
+                            filterable_layers,
+                            profile_altitude_lookup=profile_sample_lookup.lookup,
+                        )
                         _apply_page_profile_payload(profile_adapter, profile_payload)
 
                     # Set profile summary text directly from the feature so that

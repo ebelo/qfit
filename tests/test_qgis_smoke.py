@@ -1,5 +1,8 @@
 import os
+import subprocess
+import sys
 import tempfile
+import textwrap
 import unittest
 from dataclasses import replace
 from pathlib import Path
@@ -10,14 +13,29 @@ from tests import _path  # noqa: F401
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 try:
-    from qgis.core import QgsApplication, QgsProject, QgsVectorLayer
+    from qgis.core import QgsApplication, QgsLayoutExporter, QgsProject, QgsRectangle, QgsVectorLayer
     from qgis.PyQt.QtCore import QDate, Qt
+    from qgis.PyQt.QtGui import QImage
 
     from qfit.activities.domain.activity_query import ActivityQuery, build_subset_string
+    from qfit.atlas.export_task import (
+        BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO,
+        PAGE_HEIGHT_MM,
+        PAGE_WIDTH_MM,
+        PROFILE_CHART_H,
+        PROFILE_CHART_Y,
+        PROFILE_W,
+        PROFILE_X,
+        _PROFILE_PICTURE_ID,
+        _apply_page_profile_payload,
+        _build_page_profile_payload,
+        _normalize_extent_to_aspect_ratio,
+        build_atlas_layout,
+    )
+    from qfit.atlas.profile_item import build_profile_item_adapter
     from qfit.credential_store import InMemoryCredentialStore
     from qfit.gpkg_writer import GeoPackageWriter
     from qfit.layer_manager import LayerManager
-    from qfit.atlas.export_task import BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
     from qfit.mapbox_config import TILE_MODE_RASTER
     from qfit.activities.domain.models import Activity
     from qfit.qfit_dockwidget import QfitDockWidget
@@ -29,9 +47,12 @@ try:
     QGIS_IMPORT_ERROR = None
 except Exception as exc:  # pragma: no cover - exercised only when QGIS is unavailable
     QgsApplication = None
+    QgsLayoutExporter = None
     QgsProject = None
+    QgsRectangle = None
     QgsVectorLayer = None
     QDate = None
+    QImage = None
     Qt = None
     ActivityQuery = None
     build_subset_string = None
@@ -778,6 +799,225 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertEqual(round(starts_layer.opacity(), 2), 0.75)
             self.assertEqual(round(activities_layer.opacity(), 2), 0.0)
 
+    def test_offscreen_profile_chart_export_contains_rendered_curve(self):
+        """Bound profile exports should differ visibly from the same chart when cleared."""
+        script = textwrap.dedent(
+            """
+            import os
+            import sys
+            import tempfile
+            from pathlib import Path
+
+            os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+            sys.path.insert(0, "/home/ebelo/.openclaw/workspace")
+
+            from qgis.core import QgsApplication, QgsLayoutExporter, QgsProject, QgsRectangle
+            from qgis.PyQt.QtGui import QImage
+
+            from qfit.atlas.export_task import (
+                BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO,
+                PAGE_HEIGHT_MM,
+                PAGE_WIDTH_MM,
+                PROFILE_CHART_H,
+                PROFILE_CHART_Y,
+                PROFILE_W,
+                PROFILE_X,
+                _PROFILE_PICTURE_ID,
+                _apply_page_profile_payload,
+                _build_page_profile_payload,
+                _normalize_extent_to_aspect_ratio,
+                build_atlas_layout,
+            )
+            from qfit.atlas.profile_item import build_profile_item_adapter
+            from qfit.gpkg_writer import GeoPackageWriter
+            from qfit.layer_manager import LayerManager
+
+            class _FakeCanvas:
+                def __init__(self):
+                    self.last_extent = None
+                def setDestinationCrs(self, crs):
+                    pass
+                def setExtent(self, extent):
+                    self.last_extent = extent
+                def extent(self):
+                    return self.last_extent
+                def refresh(self):
+                    pass
+
+            class _FakeIface:
+                def __init__(self):
+                    self._canvas = _FakeCanvas()
+                def mapCanvas(self):
+                    return self._canvas
+
+            def count_changed_pixels(bound_path, blank_path):
+                bound = QImage(bound_path)
+                blank = QImage(blank_path)
+                if bound.isNull() or blank.isNull() or bound.size() != blank.size():
+                    raise RuntimeError("Failed to load exported profile smoke-test images")
+
+                scale_x = bound.width() / PAGE_WIDTH_MM
+                scale_y = bound.height() / PAGE_HEIGHT_MM
+                x0 = int(PROFILE_X * scale_x)
+                y0 = int(PROFILE_CHART_Y * scale_y)
+                width = int(PROFILE_W * scale_x)
+                height = int(PROFILE_CHART_H * scale_y)
+
+                changed = 0
+                for y in range(y0, y0 + height):
+                    for x in range(x0, x0 + width):
+                        a = bound.pixelColor(x, y)
+                        b = blank.pixelColor(x, y)
+                        delta = abs(a.red() - b.red()) + abs(a.green() - b.green()) + abs(a.blue() - b.blue())
+                        if delta > 30:
+                            changed += 1
+                return changed
+
+            app = QgsApplication([], False)
+            app.initQgis()
+            with tempfile.TemporaryDirectory() as tmp:
+                    output_path = str(Path(tmp) / "qfit-profile-smoke.gpkg")
+                    GeoPackageWriter(
+                        output_path,
+                        write_activity_points=True,
+                        point_stride=1,
+                        atlas_margin_percent=10,
+                        atlas_min_extent_degrees=0.01,
+                        atlas_target_aspect_ratio=1.0,
+                    ).write_activities([
+                        {
+                            "source": "strava",
+                            "source_activity_id": "profile-1",
+                            "external_id": "strava-profile-1",
+                            "name": "Profile Smoke Ride",
+                            "activity_type": "Ride",
+                            "sport_type": "Ride",
+                            "start_date": "2026-03-22T07:00:00+00:00",
+                            "start_date_local": "2026-03-22T08:00:00+01:00",
+                            "timezone": "Europe/Zurich",
+                            "distance_m": 30000,
+                            "moving_time_s": 4200,
+                            "elapsed_time_s": 4320,
+                            "total_elevation_gain_m": 540,
+                            "start_lat": 46.5000,
+                            "start_lon": 6.6000,
+                            "end_lat": 46.5900,
+                            "end_lon": 6.7800,
+                            "geometry_source": "stream",
+                            "geometry_points": [
+                                (46.5000, 6.6000),
+                                (46.5080, 6.6180),
+                                (46.5200, 6.6400),
+                                (46.5340, 6.6650),
+                                (46.5480, 6.6980),
+                                (46.5600, 6.7240),
+                                (46.5720, 6.7480),
+                                (46.5900, 6.7800),
+                            ],
+                            "details_json": {
+                                "stream_metrics": {
+                                    "time": [0, 600, 1200, 1800, 2400, 3000, 3600, 4200],
+                                    "distance": [0, 4200, 8600, 12800, 17200, 21400, 25600, 30000],
+                                    "altitude": [410, 515, 470, 620, 560, 710, 650, 780],
+                                    "moving": [True, True, True, True, True, True, True, True],
+                                }
+                            },
+                        }
+                    ], sync_metadata={"provider": "strava"})
+
+                    layer_manager = LayerManager(_FakeIface())
+                    QgsProject.instance().clear()
+                    activities_layer, starts_layer, points_layer, atlas_layer = layer_manager.load_output_layers(output_path)
+                    layer_manager.apply_style(
+                        activities_layer,
+                        starts_layer,
+                        points_layer,
+                        atlas_layer,
+                        "By activity type",
+                        background_preset_name="Satellite",
+                    )
+
+                    layout = build_atlas_layout(atlas_layer, project=QgsProject.instance())
+                    atlas = layout.atlas()
+                    atlas.beginRender()
+                    atlas.updateFeatures()
+                    try:
+                        if not atlas.first():
+                            raise RuntimeError("Atlas smoke test found no pages")
+
+                        map_item = next(
+                            item
+                            for item in layout.items()
+                            if callable(getattr(item, "setExtent", None)) and callable(getattr(item, "layers", None))
+                        )
+                        profile_item = next(
+                            item for item in layout.items() if getattr(item, "id", lambda: None)() == _PROFILE_PICTURE_ID
+                        )
+                        profile_adapter = build_profile_item_adapter(profile_item)
+
+                        current_feature = atlas.layout().reportContext().feature()
+                        filterable_layers = []
+                        for layer in map_item.layers():
+                            try:
+                                if layer.fields().indexOf("source_activity_id") >= 0:
+                                    filterable_layers.append((layer, layer.subsetString()))
+                            except Exception:
+                                continue
+
+                        profile_payload = _build_page_profile_payload(current_feature, filterable_layers)
+                        _apply_page_profile_payload(profile_adapter, profile_payload)
+
+                        extent = QgsRectangle(
+                            float(current_feature["center_x_3857"]) - float(current_feature["extent_width_m"]) / 2.0,
+                            float(current_feature["center_y_3857"]) - float(current_feature["extent_height_m"]) / 2.0,
+                            float(current_feature["center_x_3857"]) + float(current_feature["extent_width_m"]) / 2.0,
+                            float(current_feature["center_y_3857"]) + float(current_feature["extent_height_m"]) / 2.0,
+                        )
+                        map_item.setExtent(
+                            _normalize_extent_to_aspect_ratio(extent, BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO)
+                        )
+                        map_item.refresh()
+
+                        exporter = QgsLayoutExporter(layout)
+                        image_settings = QgsLayoutExporter.ImageExportSettings()
+                        image_settings.dpi = 150
+                        bound_path = str(Path(tmp) / "profile-bound.png")
+                        blank_path = str(Path(tmp) / "profile-blank.png")
+                        if exporter.exportToImage(bound_path, image_settings) != QgsLayoutExporter.Success:
+                            raise RuntimeError("Bound profile image export failed")
+                        profile_adapter.clear_profile()
+                        if exporter.exportToImage(blank_path, image_settings) != QgsLayoutExporter.Success:
+                            raise RuntimeError("Blank profile image export failed")
+
+                        print(count_changed_pixels(bound_path, blank_path), flush=True)
+                        os._exit(0)
+                    finally:
+                        atlas.endRender()
+                        QgsProject.instance().clear()
+            """
+        )
+
+        result = subprocess.run(
+            [sys.executable, "-c", script],
+            capture_output=True,
+            text=True,
+            cwd="/home/ebelo/.openclaw/workspace/qfit",
+            env={**os.environ, "QT_QPA_PLATFORM": "offscreen"},
+            timeout=180,
+        )
+
+        self.assertEqual(
+            result.returncode,
+            0,
+            f"Profile smoke subprocess failed with code {result.returncode}\nSTDOUT:\n{result.stdout}\nSTDERR:\n{result.stderr}",
+        )
+        changed_pixels = int(result.stdout.strip().splitlines()[-1])
+        self.assertGreater(
+            changed_pixels,
+            80,
+            f"Expected rendered profile content in exported chart, but only {changed_pixels} profile-chart pixels changed",
+        )
+
     def _write_sample_gpkg(self, temp_dir):
         output_path = str(Path(temp_dir) / "qfit-heatmap-test.gpkg")
         GeoPackageWriter(
@@ -789,6 +1029,7 @@ class QgisSmokeTests(unittest.TestCase):
             atlas_target_aspect_ratio=1.5,
         ).write_activities(self._sample_activities(), sync_metadata={"provider": "strava"})
         return output_path
+
 
     def _layer_order(self):
         names = []

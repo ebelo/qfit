@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 import math
 from collections.abc import Mapping
@@ -13,6 +14,11 @@ from .profile_style import (
     NativeProfilePlotAxisStyle,
     NativeProfilePlotStyle,
 )
+
+try:  # pragma: no cover - availability depends on QGIS build
+    from qgis.core import QgsGeometry
+except ImportError:  # pragma: no cover - exercised in stubbed/unit-test mode
+    QgsGeometry = None
 
 try:  # pragma: no cover - availability depends on QGIS build
     from qgis.core import QgsCoordinateReferenceSystem
@@ -526,6 +532,132 @@ def _geometry_has_z_values(feature_geometry, curve) -> bool:
     ) or _curve_points_have_z(curve)
 
 
+def _feature_attribute(feature, field_name: str):
+    if feature is None:
+        return None
+
+    attribute = getattr(feature, "attribute", None)
+    if callable(attribute):
+        try:
+            return attribute(field_name)
+        except Exception:  # noqa: BLE001
+            return None
+
+    try:
+        return feature[field_name]
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def _load_details_json(feature) -> dict:
+    raw_value = _feature_attribute(feature, "details_json")
+    if not raw_value:
+        return {}
+    if isinstance(raw_value, dict):
+        return raw_value
+    if not isinstance(raw_value, str):
+        return {}
+
+    try:
+        parsed = json.loads(raw_value)
+    except (TypeError, ValueError, json.JSONDecodeError):
+        return {}
+    return parsed if isinstance(parsed, dict) else {}
+
+
+def _curve_vertices(curve):
+    vertices = getattr(curve, "vertices", None)
+    if callable(vertices):
+        try:
+            return list(vertices())
+        except Exception:  # noqa: BLE001
+            return []
+
+    point_count = _curve_point_count(curve)
+    point_n = getattr(curve, "pointN", None)
+    if point_count is None or not callable(point_n):
+        return []
+
+    result = []
+    for index in range(point_count):
+        try:
+            result.append(point_n(index))
+        except Exception:  # noqa: BLE001
+            return []
+    return result
+
+
+def _synthetic_curve_wkt(vertices, altitudes) -> str | None:
+    coords: list[str] = []
+    for vertex, altitude in zip(vertices, altitudes):
+        x_getter = getattr(vertex, "x", None)
+        y_getter = getattr(vertex, "y", None)
+        if not callable(x_getter) or not callable(y_getter):
+            return None
+
+        try:
+            x_value = float(x_getter())
+            y_value = float(y_getter())
+            z_value = float(altitude)
+        except (TypeError, ValueError):
+            return None
+
+        if math.isnan(z_value):
+            return None
+        coords.append(f"{x_value} {y_value} {z_value}")
+
+    if len(coords) < 2:
+        return None
+    return f"LineString Z ({', '.join(coords)})"
+
+
+def _resolve_profile_altitudes(feature=None, altitudes=None) -> list[float] | None:
+    if isinstance(altitudes, list):
+        return altitudes
+
+    details = _load_details_json(feature)
+    stream_metrics = details.get("stream_metrics") if isinstance(details, dict) else None
+    candidate_altitudes = stream_metrics.get("altitude") if isinstance(stream_metrics, dict) else None
+    return candidate_altitudes if isinstance(candidate_altitudes, list) else None
+
+
+def build_native_profile_curve_from_feature(feature_geometry, feature=None, altitudes=None):
+    """Build a native profile curve, falling back to sampled altitude data."""
+    curve = build_native_profile_curve(feature_geometry)
+    if curve is not None:
+        return curve
+
+    if QgsGeometry is None or feature_geometry is None:
+        return None
+
+    resolved_altitudes = _resolve_profile_altitudes(feature=feature, altitudes=altitudes)
+    if not isinstance(resolved_altitudes, list):
+        return None
+
+    const_get = getattr(feature_geometry, "constGet", None)
+    source_curve = const_get() if callable(const_get) else feature_geometry
+    if source_curve is None:
+        return None
+
+    vertices = _curve_vertices(source_curve)
+    if len(vertices) != len(resolved_altitudes):
+        return None
+
+    wkt = _synthetic_curve_wkt(vertices, resolved_altitudes)
+    if not wkt:
+        return None
+
+    from_wkt = getattr(QgsGeometry, "fromWkt", None)
+    if not callable(from_wkt):
+        return None
+
+    try:
+        geometry = from_wkt(wkt)
+    except Exception:  # noqa: BLE001
+        return None
+    return build_native_profile_curve(geometry)
+
+
 def build_native_profile_curve(feature_geometry):
     """Extract a native profile curve from a QGIS feature geometry when possible."""
     if feature_geometry is None:
@@ -592,10 +724,16 @@ def build_native_profile_request(
 def build_native_profile_inputs(
     feature_geometry,
     *,
+    feature=None,
+    altitudes=None,
     request_config: NativeProfileRequestConfig | None = None,
 ):
     """Build the native profile curve/request pair for a feature geometry."""
-    curve = build_native_profile_curve(feature_geometry)
+    curve = build_native_profile_curve_from_feature(
+        feature_geometry,
+        feature=feature,
+        altitudes=altitudes,
+    )
     if curve is None:
         return None, None
 

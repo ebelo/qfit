@@ -4,7 +4,10 @@ Uses the same stub-QgsTask pattern as test_fetch_task.py so that tests run
 without a live QGIS instance.
 """
 
+import os
+import sqlite3
 import sys
+import tempfile
 import unittest
 from types import ModuleType
 from unittest.mock import MagicMock, patch
@@ -47,6 +50,7 @@ def _make_qgis_stub():
     qgis_core.QgsLayoutItemLabel = MagicMock()
     qgis_core.QgsLayoutItemElevationProfile = MagicMock()
     qgis_core.QgsProfileRequest = MagicMock()
+    qgis_core.QgsGeometry = MagicMock()
     pic_cls = MagicMock()
     pic_cls.Zoom = 0
     qgis_core.QgsLayoutItemPicture = pic_cls
@@ -89,6 +93,7 @@ import qfit.atlas.export_task as atlas_export_task  # noqa: E402
 from qfit.atlas.profile_item import (  # noqa: E402
     DEFAULT_NATIVE_PROFILE_PLOT_STYLE,
     build_native_profile_inputs,
+    build_native_profile_curve_from_feature,
     NativeProfileItemConfig,
     NativeProfilePlotAxisStyle,
     NativeProfilePlotStyle,
@@ -190,17 +195,22 @@ class TestBuildAtlasLayout(unittest.TestCase):
         payload = atlas_export_task._build_page_profile_payload(feat, [])
 
         self.assertEqual(payload.feature_geometry, "feature-geometry")
+        self.assertIs(payload.feature, feat)
 
         with patch.object(
             atlas_export_task,
-            "build_native_profile_inputs",
-            return_value=("curve", "request"),
-        ) as build_native_inputs:
+            "build_native_profile_curve_from_feature",
+            return_value="curve",
+        ) as build_native_curve:
             native_curve, native_request = payload.native_inputs()
 
         self.assertEqual(native_curve, "curve")
-        self.assertEqual(native_request, "request")
-        build_native_inputs.assert_called_once_with("feature-geometry")
+        self.assertIsNone(native_request)
+        build_native_curve.assert_called_once_with(
+            "feature-geometry",
+            feature=feat,
+            altitudes=None,
+        )
 
     def test_build_page_profile_payload_handles_missing_geometry(self):
         feat = MagicMock(name="feature")
@@ -209,17 +219,22 @@ class TestBuildAtlasLayout(unittest.TestCase):
         payload = atlas_export_task._build_page_profile_payload(feat, [])
 
         self.assertIsNone(payload.feature_geometry)
+        self.assertIs(payload.feature, feat)
 
         with patch.object(
             atlas_export_task,
-            "build_native_profile_inputs",
-            return_value=(None, None),
-        ) as build_native_inputs:
+            "build_native_profile_curve_from_feature",
+            return_value=None,
+        ) as build_native_curve:
             native_curve, native_request = payload.native_inputs()
 
         self.assertIsNone(native_curve)
         self.assertIsNone(native_request)
-        build_native_inputs.assert_called_once_with(None)
+        build_native_curve.assert_called_once_with(
+            None,
+            feature=feat,
+            altitudes=None,
+        )
 
     def test_build_page_profile_payload_prefers_filtered_activity_line_geometry(self):
         atlas_feature = MagicMock(name="atlas_feature")
@@ -247,6 +262,52 @@ class TestBuildAtlasLayout(unittest.TestCase):
 
         self.assertEqual(payload.feature_geometry, "line-geometry")
 
+    def test_build_page_profile_payload_uses_profile_sample_lookup_for_source_activity(self):
+        feat = MagicMock(name="feature")
+        feat.geometry.return_value = "feature-geometry"
+        feat.attribute.side_effect = lambda name: "activity-42" if name == "source_activity_id" else None
+
+        lookup = MagicMock(return_value=[450.0, 530.0])
+
+        payload = atlas_export_task._build_page_profile_payload(
+            feat,
+            [],
+            profile_altitude_lookup=lookup,
+        )
+
+        self.assertEqual(payload.profile_altitudes, [450.0, 530.0])
+        lookup.assert_called_once_with("activity-42")
+
+    def test_atlas_profile_sample_lookup_reads_ordered_altitudes_from_gpkg(self):
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            gpkg_path = os.path.join(tmp_dir, "profile-samples.gpkg")
+            with sqlite3.connect(gpkg_path) as conn:
+                conn.execute(
+                    """
+                    CREATE TABLE atlas_profile_samples (
+                        source_activity_id TEXT,
+                        profile_point_index INTEGER,
+                        altitude_m REAL
+                    )
+                    """
+                )
+                conn.executemany(
+                    "INSERT INTO atlas_profile_samples VALUES (?, ?, ?)",
+                    [
+                        ("activity-1", 2, 530.0),
+                        ("activity-1", 0, 450.0),
+                        ("activity-1", 1, 490.0),
+                    ],
+                )
+
+            atlas_layer = MagicMock(name="atlas_layer")
+            atlas_layer.source.return_value = f"{gpkg_path}|layername=activity_atlas_pages"
+
+            lookup = atlas_export_task._AtlasProfileSampleLookup(atlas_layer)
+
+            self.assertEqual(lookup.lookup("activity-1"), [450.0, 490.0, 530.0])
+            self.assertEqual(lookup.lookup("missing"), None)
+
     def test_apply_page_profile_payload_binds_native_curve_without_svg_render(self):
         adapter = MagicMock(name="adapter")
         adapter.supports_native_profile = True
@@ -259,7 +320,7 @@ class TestBuildAtlasLayout(unittest.TestCase):
         payload.native_inputs.assert_called_once_with()
         adapter.bind_native_profile.assert_called_once_with(
             profile_curve="curve",
-            profile_request="request",
+            profile_request=None,
         )
 
     def test_apply_page_profile_payload_skips_manual_updates_for_atlas_driven_native_item(self):
@@ -287,7 +348,7 @@ class TestBuildAtlasLayout(unittest.TestCase):
         payload.native_inputs.assert_called_once_with()
         adapter.bind_native_profile.assert_called_once_with(
             profile_curve="curve",
-            profile_request="request",
+            profile_request=None,
         )
         adapter.clear_profile.assert_called_once_with()
 
@@ -852,27 +913,85 @@ class TestBuildAtlasLayout(unittest.TestCase):
         geometry = MagicMock(name="geometry")
 
         with (
-            patch("qfit.atlas.profile_item.build_native_profile_curve", return_value="curve") as build_curve,
+            patch("qfit.atlas.profile_item.build_native_profile_curve_from_feature", return_value="curve") as build_curve,
             patch("qfit.atlas.profile_item.build_native_profile_request", return_value="request") as build_request,
         ):
             curve, request = build_native_profile_inputs(
                 geometry,
+                feature="feature",
                 request_config=NativeProfileRequestConfig(tolerance=12.0),
             )
 
         self.assertEqual(curve, "curve")
         self.assertEqual(request, "request")
-        build_curve.assert_called_once_with(geometry)
+        build_curve.assert_called_once_with(geometry, feature="feature", altitudes=None)
         build_request.assert_called_once()
 
     def test_build_native_profile_inputs_returns_none_pair_when_curve_missing(self):
         geometry = MagicMock(name="geometry")
 
-        with patch("qfit.atlas.profile_item.build_native_profile_curve", return_value=None):
+        with patch("qfit.atlas.profile_item.build_native_profile_curve_from_feature", return_value=None):
             curve, request = build_native_profile_inputs(geometry)
 
         self.assertIsNone(curve)
         self.assertIsNone(request)
+
+    def test_build_native_profile_curve_from_feature_uses_details_json_altitudes_for_2d_tracks(self):
+        geometry = MagicMock(name="geometry")
+        source_curve = MagicMock(name="source_curve")
+        source_curve.vertices.return_value = [
+            MagicMock(x=MagicMock(return_value=6.62), y=MagicMock(return_value=46.52)),
+            MagicMock(x=MagicMock(return_value=6.74), y=MagicMock(return_value=46.57)),
+        ]
+        geometry.constGet.return_value = source_curve
+
+        feature = MagicMock(name="feature")
+        feature.attribute.return_value = '{"stream_metrics": {"altitude": [450, 530]}}'
+
+        with (
+            patch("qfit.atlas.profile_item.build_native_profile_curve", side_effect=[None, "curve-clone"]) as build_curve,
+            patch("qfit.atlas.profile_item.QgsGeometry") as qgs_geometry,
+        ):
+            synthetic_geometry = MagicMock(name="synthetic_geometry")
+            qgs_geometry.fromWkt.return_value = synthetic_geometry
+
+            result = build_native_profile_curve_from_feature(geometry, feature=feature)
+
+        self.assertEqual(result, "curve-clone")
+        qgs_geometry.fromWkt.assert_called_once_with(
+            "LineString Z (6.62 46.52 450.0, 6.74 46.57 530.0)"
+        )
+        self.assertEqual(build_curve.call_args_list[0].args, (geometry,))
+        self.assertEqual(build_curve.call_args_list[1].args, (synthetic_geometry,))
+
+    def test_build_native_profile_curve_from_feature_uses_explicit_altitudes_for_2d_tracks(self):
+        geometry = MagicMock(name="geometry")
+        source_curve = MagicMock(name="source_curve")
+        source_curve.vertices.return_value = [
+            MagicMock(x=MagicMock(return_value=6.62), y=MagicMock(return_value=46.52)),
+            MagicMock(x=MagicMock(return_value=6.68), y=MagicMock(return_value=46.54)),
+            MagicMock(x=MagicMock(return_value=6.74), y=MagicMock(return_value=46.57)),
+        ]
+        geometry.constGet.return_value = source_curve
+
+        with (
+            patch("qfit.atlas.profile_item.build_native_profile_curve", side_effect=[None, "curve-clone"]) as build_curve,
+            patch("qfit.atlas.profile_item.QgsGeometry") as qgs_geometry,
+        ):
+            synthetic_geometry = MagicMock(name="synthetic_geometry")
+            qgs_geometry.fromWkt.return_value = synthetic_geometry
+
+            result = build_native_profile_curve_from_feature(
+                geometry,
+                altitudes=[450.0, 490.0, 530.0],
+            )
+
+        self.assertEqual(result, "curve-clone")
+        qgs_geometry.fromWkt.assert_called_once_with(
+            "LineString Z (6.62 46.52 450.0, 6.68 46.54 490.0, 6.74 46.57 530.0)"
+        )
+        self.assertEqual(build_curve.call_args_list[0].args, (geometry,))
+        self.assertEqual(build_curve.call_args_list[1].args, (synthetic_geometry,))
 
     def test_native_adapter_binds_curve_when_supported(self):
         item = MagicMock()
@@ -1561,15 +1680,18 @@ class TestProfileChartRendering(unittest.TestCase):
              patch("qfit.atlas.export_task.AtlasExportTask._export_cover_page", return_value=None), \
              patch("qfit.atlas.export_task.AtlasExportTask._export_toc_page", return_value=None), \
              patch("qfit.atlas.export_task._geometry_supports_native_profile", side_effect=lambda geometry: geometry == "track-geometry"), \
-             patch("qfit.atlas.export_task.build_native_profile_inputs", return_value=("curve", native_request)) as build_native_inputs, \
+             patch("qfit.atlas.export_task.build_native_profile_curve_from_feature", return_value="curve") as build_native_curve, \
              patch("os.replace"), \
              patch("os.makedirs"):
             _run_task(task)
 
-        build_native_inputs.assert_called_once_with("track-geometry")
+        build_native_curve.assert_called_once()
+        call_args = build_native_curve.call_args
+        self.assertEqual(call_args.args, ("track-geometry",))
+        self.assertIs(call_args.kwargs["feature"], track_feature)
         native_profile_item.setProfileCurve.assert_called_once_with("curve")
-        native_profile_item.setCrs.assert_called_once_with("EPSG:3857")
-        native_profile_item.setTolerance.assert_called_once_with(25.0)
+        native_profile_item.setCrs.assert_called_once()
+        native_profile_item.setTolerance.assert_not_called()
         native_profile_item.refresh.assert_called()
 
     def test_profile_chart_changes_per_activity_page(self):
@@ -1632,15 +1754,15 @@ class TestProfileChartRendering(unittest.TestCase):
              patch("qfit.atlas.export_task.AtlasExportTask._export_cover_page", return_value=None), \
              patch("qfit.atlas.export_task.AtlasExportTask._export_toc_page", return_value=None), \
              patch(
-                 "qfit.atlas.export_task.build_native_profile_inputs",
-                 side_effect=[("curve-1", "request-1"), ("curve-2", "request-2")],
-             ) as build_native_inputs, \
+                 "qfit.atlas.export_task.build_native_profile_curve_from_feature",
+                 side_effect=["curve-1", "curve-2"],
+             ) as build_native_curve, \
              patch("qfit.atlas.export_task.AtlasExportTask._merge_pdfs"), \
              patch("os.makedirs"):
             _run_task(task)
 
-        self.assertEqual(build_native_inputs.call_args_list[0].args[0], "geometry-1")
-        self.assertEqual(build_native_inputs.call_args_list[1].args[0], "geometry-2")
+        self.assertEqual(build_native_curve.call_args_list[0].args[0], "geometry-1")
+        self.assertEqual(build_native_curve.call_args_list[1].args[0], "geometry-2")
         self.assertEqual(
             [args.args[0] for args in native_profile_item.setProfileCurve.call_args_list[:2]],
             ["curve-1", "curve-2"],
@@ -1790,13 +1912,15 @@ class TestAtlasExportTaskSuccess(unittest.TestCase):
              patch("qfit.atlas.export_task.QgsLayoutExporter", exporter_cls_mock), \
              patch("qfit.atlas.export_task.AtlasExportTask._export_cover_page", return_value=None), \
              patch("qfit.atlas.export_task.AtlasExportTask._export_toc_page", return_value=None), \
-             patch("qfit.atlas.export_task.build_native_profile_inputs", return_value=("curve", "request")) as build_native_inputs, \
+             patch("qfit.atlas.export_task.build_native_profile_curve_from_feature", return_value="curve") as build_native_curve, \
              patch("qfit.atlas.export_task.AtlasExportTask._merge_pdfs"), \
              patch("os.replace"), \
              patch("os.makedirs"):
             self.assertTrue(_run_task(task))
 
-        build_native_inputs.assert_called_once_with("feature-geometry")
+        build_native_curve.assert_called_once()
+        self.assertEqual(build_native_curve.call_args.args, ("feature-geometry",))
+        self.assertIn("feature", build_native_curve.call_args.kwargs)
         native_profile_item.setProfileCurve.assert_called_once_with("curve")
 
     def test_run_returns_true_on_success(self):
