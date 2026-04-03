@@ -839,6 +839,61 @@ class TestBuildAtlasLayout(unittest.TestCase):
         result = atlas_export_task._item_tolerance(item)
         self.assertIsNone(result)
 
+    def test_profile_elevation_range_from_renderer_returns_none_when_no_layers(self):
+        adapter = MagicMock()
+        adapter.item.layers.return_value = []
+        with patch("qfit.atlas.export_task.QgsProfilePlotRenderer", MagicMock()):
+            result = atlas_export_task._profile_elevation_range_from_renderer(adapter, "curve")
+        self.assertIsNone(result)
+
+    def test_profile_elevation_range_from_renderer_returns_none_when_renderer_unavailable(self):
+        adapter = MagicMock()
+        adapter.item.layers.return_value = [MagicMock()]
+        with patch("qfit.atlas.export_task.QgsProfilePlotRenderer", None):
+            result = atlas_export_task._profile_elevation_range_from_renderer(adapter, "curve")
+        self.assertIsNone(result)
+
+    def test_profile_elevation_range_from_renderer_returns_valid_range(self):
+        adapter = MagicMock()
+        layer = MagicMock()
+        adapter.item.layers.return_value = [layer]
+        z_range = MagicMock()
+        z_range.lower.return_value = 784.8
+        z_range.upper.return_value = 809.4
+        renderer_inst = MagicMock()
+        renderer_inst.zRange.return_value = z_range
+        renderer_cls = MagicMock(return_value=renderer_inst)
+
+        with (
+            patch("qfit.atlas.export_task.QgsProfilePlotRenderer", renderer_cls),
+            patch("qfit.atlas.export_task.QgsProfileRequest"),
+            patch("qfit.atlas.export_task.QgsCoordinateReferenceSystem"),
+            patch("qfit.atlas.export_task._item_crs_authid", return_value="EPSG:3857"),
+            patch("qfit.atlas.export_task._item_tolerance", return_value=50.0),
+        ):
+            result = atlas_export_task._profile_elevation_range_from_renderer(adapter, MagicMock())
+
+        self.assertIsNotNone(result)
+        self.assertAlmostEqual(result[0], 784.8)
+        self.assertAlmostEqual(result[1], 809.4)
+
+    def test_profile_elevation_range_from_renderer_returns_none_on_exception(self):
+        adapter = MagicMock()
+        adapter.item.layers.return_value = [MagicMock()]
+        renderer_inst = MagicMock()
+        renderer_inst.startGeneration.side_effect = RuntimeError("broken")
+        renderer_cls = MagicMock(return_value=renderer_inst)
+
+        with (
+            patch("qfit.atlas.export_task.QgsProfilePlotRenderer", renderer_cls),
+            patch("qfit.atlas.export_task.QgsProfileRequest"),
+            patch("qfit.atlas.export_task._item_crs_authid", return_value=None),
+            patch("qfit.atlas.export_task._item_tolerance", return_value=None),
+        ):
+            result = atlas_export_task._profile_elevation_range_from_renderer(adapter, MagicMock())
+
+        self.assertIsNone(result)
+
     def test_apply_picture_profile_clears_when_page_points_empty(self):
         adapter = MagicMock(name="adapter")
         payload = atlas_export_task.PageProfilePayload(feature_geometry=None, page_points=[])
