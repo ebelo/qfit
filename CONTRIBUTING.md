@@ -4,7 +4,8 @@
 
 Before making non-trivial structural changes, also read:
 
-- `docs/architecture.md` — architectural boundaries, dependency direction, and placement rules
+- `docs/architecture.md` — qfit-specific architectural boundaries, dependency direction, and placement rules
+- `docs/qgis-plugin-architecture-principles.md` — general QGIS plugin principles plus qfit's pragmatic hexagonal / ports-and-adapters interpretation
 
 
 All PRs must pass the following before merging:

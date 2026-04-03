@@ -1,5 +1,9 @@
 # qfit architecture guide
 
+For the higher-level architectural principles behind this guide, also read:
+
+- `docs/qgis-plugin-architecture-principles.md`
+
 qfit is evolving toward a **modular monolith** with pragmatic **ports-and-adapters** boundaries.
 
 That sounds grander than it is.
