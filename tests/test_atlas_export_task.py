@@ -254,9 +254,9 @@ class TestBuildAtlasLayout(unittest.TestCase):
         line_layer.getFeatures.side_effect = lambda: iter([line_feature])
 
         with patch.object(
-            atlas_export_task,
-            "_geometry_supports_native_profile",
-            side_effect=lambda geometry: geometry == "line-geometry",
+            atlas_export_task.PageProfilePayloadResolver,
+            "_resolve_page_profile_source",
+            return_value=("line-geometry", line_feature, None),
         ):
             payload = atlas_export_task._build_page_profile_payload(
                 atlas_feature,
@@ -943,7 +943,8 @@ class TestBuildAtlasLayout(unittest.TestCase):
         _qgis_core.QgsLayoutItemElevationProfile.reset_mock()
         _qgis_core.QgsLayoutItemElevationProfile.return_value.reset_mock()
 
-        with patch("qfit.atlas.profile_item.QgsLayoutItemElevationProfile", _qgis_core.QgsLayoutItemElevationProfile):
+        with patch("qfit.atlas.profile_item.QgsLayoutItemElevationProfile", _qgis_core.QgsLayoutItemElevationProfile), \
+             patch("qfit.atlas.profile_item.QgsLayoutItemPicture", _qgis_core.QgsLayoutItemPicture):
             adapter = build_profile_item(
                 layout,
                 item_id="profile",
@@ -963,7 +964,8 @@ class TestBuildAtlasLayout(unittest.TestCase):
         _qgis_core.QgsLayoutItemElevationProfile.reset_mock()
         _qgis_core.QgsLayoutItemElevationProfile.return_value.reset_mock()
 
-        with patch("qfit.atlas.profile_item.QgsLayoutItemElevationProfile", _qgis_core.QgsLayoutItemElevationProfile):
+        with patch("qfit.atlas.profile_item.QgsLayoutItemElevationProfile", _qgis_core.QgsLayoutItemElevationProfile), \
+             patch("qfit.atlas.profile_item.QgsLayoutItemPicture", _qgis_core.QgsLayoutItemPicture):
             adapter = build_profile_item(
                 layout,
                 item_id="profile",
@@ -996,7 +998,8 @@ class TestBuildAtlasLayout(unittest.TestCase):
     def test_build_profile_item_falls_back_to_picture_when_native_unavailable(self):
         layout = MagicMock()
 
-        with patch("qfit.atlas.profile_item.build_native_profile_item", return_value=None):
+        with patch("qfit.atlas.profile_item.build_native_profile_item", return_value=None), \
+             patch("qfit.atlas.profile_item.QgsLayoutItemPicture", _qgis_core.QgsLayoutItemPicture):
             adapter = build_profile_item(
                 layout,
                 item_id="profile",
@@ -2357,7 +2360,7 @@ class TestProfileChartRendering(unittest.TestCase):
              patch("qfit.atlas.export_task.QgsLayoutExporter", exporter_cls_mock), \
              patch("qfit.atlas.export_task.AtlasExportTask._export_cover_page", return_value=None), \
              patch("qfit.atlas.export_task.AtlasExportTask._export_toc_page", return_value=None), \
-             patch("qfit.atlas.export_task._geometry_supports_native_profile", side_effect=lambda geometry: geometry == "track-geometry"), \
+             patch("qfit.atlas.profile_payload_resolver.PageProfilePayloadResolver._resolve_page_profile_source", return_value=("track-geometry", track_feature, "EPSG:3857")), \
              patch("qfit.atlas.export_task.build_native_profile_curve_from_feature", return_value="curve") as build_native_curve, \
              patch("os.replace"), \
              patch("os.makedirs"):
