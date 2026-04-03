@@ -698,6 +698,88 @@ class TestBuildAtlasLayout(unittest.TestCase):
         self.assertEqual(len(results), 1)
         self.assertIs(results[0][0], geom)
 
+    def test_scan_layer_for_profile_source_yields_line_like_when_no_native(self):
+        layer = MagicMock()
+        feat = MagicMock()
+        geom = MagicMock()
+        feat.geometry.return_value = geom
+        layer.getFeatures.return_value = [feat]
+        with (
+            patch("qfit.atlas.export_task._geometry_supports_native_profile", return_value=False),
+            patch("qfit.atlas.export_task._geometry_looks_line_like", return_value=True),
+            patch("qfit.atlas.export_task._layer_crs_authid", return_value=None),
+        ):
+            results = list(atlas_export_task._scan_layer_for_profile_source(layer))
+        self.assertEqual(len(results), 1)
+        self.assertIs(results[0][0], geom)
+
+    def test_scan_layer_for_profile_source_yields_nothing_when_get_features_raises(self):
+        layer = MagicMock()
+        layer.getFeatures.side_effect = RuntimeError("broken")
+        results = list(atlas_export_task._scan_layer_for_profile_source(layer))
+        self.assertEqual(results, [])
+
+    def test_resolve_renderer_x_range_returns_none_when_curve_has_no_length(self):
+        curve = MagicMock(spec=[])  # no length attribute
+        x_min, x_max = atlas_export_task._resolve_renderer_x_range(curve, None)
+        self.assertIsNone(x_min)
+        self.assertIsNone(x_max)
+
+    def test_item_crs_authid_returns_none_when_authid_raises(self):
+        item = MagicMock()
+        item.crs.return_value.authid.side_effect = RuntimeError("broken")
+        result = atlas_export_task._item_crs_authid(item)
+        self.assertIsNone(result)
+
+    def test_item_tolerance_returns_none_when_no_tolerance_method(self):
+        item = MagicMock(spec=[])  # no tolerance attr
+        result = atlas_export_task._item_tolerance(item)
+        self.assertIsNone(result)
+
+    def test_apply_picture_profile_clears_when_page_points_empty(self):
+        adapter = MagicMock(name="adapter")
+        payload = atlas_export_task.PageProfilePayload(feature_geometry=None, page_points=[])
+        atlas_export_task._apply_picture_profile(adapter, payload, None, None)
+        adapter.clear_profile.assert_called_once()
+
+    def test_apply_native_profile_refreshes_after_successful_bind(self):
+        adapter = MagicMock(name="adapter")
+        adapter.supports_native_profile = True
+        adapter.bind_native_profile.return_value = True
+        item = MagicMock()
+        adapter.item = item
+        payload = atlas_export_task.PageProfilePayload(
+            feature_geometry="geom",
+            page_points=[(0.0, 784.8), (1000.0, 809.4)],
+        )
+        with (
+            patch("qfit.atlas.export_task.build_native_profile_curve_from_feature", return_value="curve"),
+            patch("qfit.atlas.export_task._resolve_native_profile_plot_ranges", return_value=((0, 1000), (784, 810))),
+            patch("qfit.atlas.export_task.configure_native_profile_plot_range"),
+        ):
+            atlas_export_task._apply_native_profile(adapter, payload)
+        item.refresh.assert_called()
+
+    def test_apply_page_profile_payload_dispatches_to_picture_path(self):
+        adapter = MagicMock(name="adapter")
+        adapter.supports_native_profile = False
+        payload = atlas_export_task.PageProfilePayload(
+            feature_geometry=None,
+            page_points=[(0.0, 784.8), (1000.0, 809.4)],
+        )
+        with patch("qfit.atlas.export_task._apply_picture_profile") as mock_pic:
+            atlas_export_task._apply_page_profile_payload(adapter, payload)
+        mock_pic.assert_called_once()
+
+    def test_apply_page_profile_payload_dispatches_to_native_path(self):
+        adapter = MagicMock(name="adapter")
+        adapter.supports_native_profile = True
+        adapter.atlas_driven = False
+        payload = atlas_export_task.PageProfilePayload(feature_geometry="geom")
+        with patch("qfit.atlas.export_task._apply_native_profile") as mock_native:
+            atlas_export_task._apply_page_profile_payload(adapter, payload)
+        mock_native.assert_called_once()
+
     def test_build_profile_item_prefers_native_adapter_when_available(self):
         layout = MagicMock()
         _qgis_core.QgsLayoutItemElevationProfile.reset_mock()
