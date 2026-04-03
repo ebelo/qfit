@@ -353,23 +353,45 @@ def _apply_picture_profile(
     output_path: str | None,
     profile_temp_files: list[str] | None,
 ) -> None:
-    """Render and bind the SVG profile for picture-backed adapters."""
+    """Render and bind the SVG profile for picture-backed adapters.
+
+    Resolution order:
+    1. If ``page_points`` (from *atlas_profile_samples* or *stream_metrics*)
+       contains ≥2 entries, render via the qfit SVG renderer.
+    2. If the feature geometry is a 3D line, attempt a synchronous render
+       via ``_render_native_profile_image`` (``QgsProfilePlotRenderer``).
+    3. Otherwise clear the profile.
+    """
     page_points = profile_payload.page_points or []
-    if len(page_points) < 2:
-        profile_adapter.clear_profile()
-        return
+    if len(page_points) >= 2:
+        try:
+            svg_path = _render_page_profile_svg(page_points, output_path=output_path or "")
+        except Exception:  # noqa: BLE001
+            logger.debug("Profile chart render failed", exc_info=True)
+            svg_path = None
 
-    try:
-        svg_path = _render_page_profile_svg(page_points, output_path=output_path or "")
-    except Exception:  # noqa: BLE001
-        logger.debug("Profile chart render failed", exc_info=True)
-        svg_path = None
+        if svg_path:
+            profile_adapter.set_svg_profile(svg_path)
+            if profile_temp_files is not None:
+                profile_temp_files.append(svg_path)
+            return
 
-    if svg_path:
-        profile_adapter.set_svg_profile(svg_path)
-        if profile_temp_files is not None:
-            profile_temp_files.append(svg_path)
-        return
+    # Fallback: try native synchronous render when the geometry has Z data.
+    native_curve, _ = profile_payload.native_inputs()
+    if native_curve is not None:
+        output_dir = os.path.dirname(output_path) if output_path else None
+        native_img = _render_native_profile_image(
+            native_curve,
+            [],  # no layer list; z-range must come from page_points
+            crs_auth_id=profile_payload.crs_auth_id or _DEFAULT_PROFILE_CRS_AUTH_ID,
+            output_dir=output_dir,
+            page_points=page_points if page_points else None,
+        )
+        if native_img:
+            profile_adapter.set_svg_profile(native_img)
+            if profile_temp_files is not None:
+                profile_temp_files.append(native_img)
+            return
 
     profile_adapter.clear_profile()
 
