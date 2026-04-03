@@ -557,6 +557,147 @@ class TestBuildAtlasLayout(unittest.TestCase):
         adapter.set_svg_profile.assert_called_once_with("/tmp/profile.svg")
         adapter.clear_profile.assert_not_called()
 
+    def test_apply_picture_profile_clears_when_insufficient_points(self):
+        adapter = MagicMock(name="adapter")
+        payload = atlas_export_task.PageProfilePayload(feature_geometry=None, page_points=[(0.0, 1.0)])
+        atlas_export_task._apply_picture_profile(adapter, payload, None, None)
+        adapter.clear_profile.assert_called_once()
+        adapter.set_svg_profile.assert_not_called()
+
+    def test_apply_picture_profile_clears_when_svg_render_fails(self):
+        adapter = MagicMock(name="adapter")
+        payload = atlas_export_task.PageProfilePayload(
+            feature_geometry=None,
+            page_points=[(0.0, 1.0), (1.0, 2.0)],
+        )
+        with patch("qfit.atlas.export_task._render_page_profile_svg", return_value=None):
+            atlas_export_task._apply_picture_profile(adapter, payload, "/tmp/out.pdf", [])
+        adapter.clear_profile.assert_called_once()
+
+    def test_apply_native_profile_clears_when_curve_missing(self):
+        adapter = MagicMock(name="adapter")
+        adapter.supports_native_profile = True
+        adapter.atlas_driven = False
+        payload = atlas_export_task.PageProfilePayload(feature_geometry=None)
+        with patch("qfit.atlas.export_task.build_native_profile_curve_from_feature", return_value=None):
+            atlas_export_task._apply_native_profile(adapter, payload)
+        adapter.clear_profile.assert_called_once()
+
+    def test_apply_native_profile_clears_when_bind_returns_false(self):
+        adapter = MagicMock(name="adapter")
+        adapter.supports_native_profile = True
+        adapter.atlas_driven = False
+        adapter.bind_native_profile.return_value = False
+        payload = atlas_export_task.PageProfilePayload(feature_geometry="geom")
+        with patch("qfit.atlas.export_task.build_native_profile_curve_from_feature", return_value="curve"):
+            atlas_export_task._apply_native_profile(adapter, payload)
+        adapter.clear_profile.assert_called_once()
+
+    def test_resolve_renderer_z_range_uses_page_points_when_renderer_returns_zero(self):
+        renderer = MagicMock()
+        z_range = MagicMock()
+        z_range.lower.return_value = 0.0
+        z_range.upper.return_value = 0.0
+        renderer.zRange.return_value = z_range
+
+        page_points = [(0.0, 784.8), (100.0, 800.0), (200.0, 809.4)]
+        z_min, z_max = atlas_export_task._resolve_renderer_z_range(renderer, page_points)
+        self.assertAlmostEqual(z_min, 784.8)
+        self.assertAlmostEqual(z_max, 809.4)
+
+    def test_resolve_renderer_z_range_returns_none_none_when_upper_less_than_lower(self):
+        renderer = MagicMock()
+        z_range = MagicMock()
+        z_range.lower.return_value = 10.0
+        z_range.upper.return_value = 5.0  # invalid: upper < lower
+        renderer.zRange.return_value = z_range
+        z_min, z_max = atlas_export_task._resolve_renderer_z_range(renderer, None)
+        self.assertIsNone(z_min)
+        self.assertIsNone(z_max)
+
+    def test_resolve_renderer_x_range_uses_page_points(self):
+        curve = MagicMock()
+        page_points = [(0.0, 785.0), (4793.4, 809.0)]
+        x_min, x_max = atlas_export_task._resolve_renderer_x_range(curve, page_points)
+        self.assertEqual(x_min, 0.0)
+        self.assertAlmostEqual(x_max, 4793.4)
+
+    def test_resolve_renderer_x_range_falls_back_to_curve_length(self):
+        curve = MagicMock()
+        curve.length.return_value = 1234.5
+        x_min, x_max = atlas_export_task._resolve_renderer_x_range(curve, None)
+        self.assertEqual(x_min, 0.0)
+        self.assertAlmostEqual(x_max, 1234.5)
+
+    def test_resolve_renderer_x_range_returns_none_when_no_data(self):
+        curve = MagicMock()
+        curve.length.return_value = 0.0
+        x_min, x_max = atlas_export_task._resolve_renderer_x_range(curve, None)
+        self.assertIsNone(x_min)
+        self.assertIsNone(x_max)
+
+    def test_item_crs_authid_returns_authid(self):
+        item = MagicMock()
+        item.crs.return_value.authid.return_value = "EPSG:4326"
+        result = atlas_export_task._item_crs_authid(item)
+        self.assertEqual(result, "EPSG:4326")
+
+    def test_item_crs_authid_returns_none_on_exception(self):
+        item = MagicMock()
+        item.crs.side_effect = RuntimeError("broken")
+        result = atlas_export_task._item_crs_authid(item)
+        self.assertIsNone(result)
+
+    def test_item_tolerance_returns_finite_value(self):
+        item = MagicMock()
+        item.tolerance.return_value = 50.0
+        result = atlas_export_task._item_tolerance(item)
+        self.assertAlmostEqual(result, 50.0)
+
+    def test_item_tolerance_returns_none_on_exception(self):
+        item = MagicMock()
+        item.tolerance.side_effect = RuntimeError("broken")
+        result = atlas_export_task._item_tolerance(item)
+        self.assertIsNone(result)
+
+    def test_render_native_profile_image_returns_none_when_renderer_unavailable(self):
+        with patch("qfit.atlas.export_task.QgsProfilePlotRenderer", None):
+            result = atlas_export_task._render_native_profile_image("curve", [MagicMock()])
+        self.assertIsNone(result)
+
+    def test_render_native_profile_image_returns_none_when_no_layers(self):
+        result = atlas_export_task._render_native_profile_image("curve", [])
+        self.assertIsNone(result)
+
+    def test_save_renderer_image_returns_none_when_image_is_null(self):
+        renderer = MagicMock()
+        img = MagicMock()
+        img.isNull.return_value = True
+        renderer.renderToImage.return_value = img
+        result = atlas_export_task._save_renderer_image(renderer, 100, 50, 0, 100, 785, 810, None)
+        self.assertIsNone(result)
+
+    def test_scan_layer_for_profile_source_yields_nothing_when_get_features_unavailable(self):
+        layer = MagicMock(spec=[])  # no getFeatures
+        results = list(atlas_export_task._scan_layer_for_profile_source(layer))
+        self.assertEqual(results, [])
+
+    def test_scan_layer_for_profile_source_yields_native_capable_geometry(self):
+        layer = MagicMock()
+        feat = MagicMock()
+        geom = MagicMock()
+        feat.geometry.return_value = geom
+        layer.getFeatures.return_value = [feat]
+
+        with (
+            patch("qfit.atlas.export_task._geometry_supports_native_profile", return_value=True),
+            patch("qfit.atlas.export_task._layer_crs_authid", return_value="EPSG:4326"),
+        ):
+            results = list(atlas_export_task._scan_layer_for_profile_source(layer))
+
+        self.assertEqual(len(results), 1)
+        self.assertIs(results[0][0], geom)
+
     def test_build_profile_item_prefers_native_adapter_when_available(self):
         layout = MagicMock()
         _qgis_core.QgsLayoutItemElevationProfile.reset_mock()
