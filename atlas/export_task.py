@@ -652,30 +652,43 @@ def _resolve_native_profile_plot_ranges(profile_adapter, profile_payload, native
     return x_range, y_range
 
 
+def _scan_layer_for_profile_source(layer):
+    """Yield (geometry, feature, crs_authid) for each line-like feature in *layer*.
+
+    Yields the first 3D-Z capable geometry immediately; line-like-but-not-3D
+    geometries are accumulated and yielded at the end.
+    """
+    get_features = getattr(layer, "getFeatures", None)
+    if not callable(get_features):
+        return
+
+    try:
+        layer_features = get_features()
+    except Exception:  # noqa: BLE001
+        logger.debug("Could not inspect filtered layer features for native profile geometry", exc_info=True)
+        return
+
+    line_like: list[tuple] = []
+    for layer_feature in layer_features:
+        geometry_getter = getattr(layer_feature, "geometry", None)
+        geometry = geometry_getter() if callable(geometry_getter) else None
+        if _geometry_supports_native_profile(geometry):
+            yield geometry, layer_feature, _layer_crs_authid(layer)
+            return
+        if _geometry_looks_line_like(geometry):
+            line_like.append((geometry, layer_feature, _layer_crs_authid(layer)))
+
+    yield from line_like
+
+
 def _resolve_page_profile_source(feat, filterable_layers) -> tuple[object | None, object | None, str | None]:
     line_like_candidates: list[tuple[object, object, str | None]] = []
 
     for layer, _original_subset in filterable_layers:
-        get_features = getattr(layer, "getFeatures", None)
-        if not callable(get_features):
-            continue
-
-        try:
-            layer_features = get_features()
-        except Exception:  # noqa: BLE001
-            logger.debug("Could not inspect filtered layer features for native profile geometry", exc_info=True)
-            continue
-
-        for layer_feature in layer_features:
-            geometry_getter = getattr(layer_feature, "geometry", None)
-            geometry = geometry_getter() if callable(geometry_getter) else None
-            if _geometry_supports_native_profile(geometry):
-                return geometry, layer_feature, _layer_crs_authid(layer)
-
-            if not _geometry_looks_line_like(geometry):
-                continue
-
-            line_like_candidates.append((geometry, layer_feature, _layer_crs_authid(layer)))
+        for geom, layer_feature, crs_id in _scan_layer_for_profile_source(layer):
+            if _geometry_supports_native_profile(geom):
+                return geom, layer_feature, crs_id
+            line_like_candidates.append((geom, layer_feature, crs_id))
 
     geometry_getter = getattr(feat, "geometry", None)
     geometry = geometry_getter() if callable(geometry_getter) else None
@@ -868,7 +881,7 @@ def build_atlas_layout(
     # QGIS atlas auto-fit cannot distort or shift the precomputed page extents.
     map_item.setAtlasDriven(True)
     map_item.setAtlasScalingMode(QgsLayoutItemMap.Fixed)
-    map_item.setCrs(QgsCoordinateReferenceSystem("EPSG:3857"))
+    map_item.setCrs(QgsCoordinateReferenceSystem(_DEFAULT_PROFILE_CRS_AUTH_ID))
 
     # Disable tile border rendering on visible vector tile layers (debug overlay)
     try:
@@ -1360,7 +1373,7 @@ def build_cover_layout(
             cover_map.attemptResize(
                 QgsLayoutSize(cover_map_size, cover_map_size, QgsUnitTypes.LayoutMillimeters)
             )
-            cover_map.setCrs(QgsCoordinateReferenceSystem("EPSG:3857"))
+            cover_map.setCrs(QgsCoordinateReferenceSystem(_DEFAULT_PROFILE_CRS_AUTH_ID))
             cover_map.setExtent(map_extent)
             layout.addLayoutItem(cover_map)
 
