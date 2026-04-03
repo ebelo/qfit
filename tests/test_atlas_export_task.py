@@ -322,6 +322,42 @@ class TestBuildAtlasLayout(unittest.TestCase):
 
         self.assertEqual(payload.page_points, [(0.0, 450.0), (1000.0, 530.0)])
 
+    def test_build_page_profile_payload_ignores_filtered_layer_points_from_other_activity(self):
+        atlas_feature = MagicMock(name="atlas_feature")
+        atlas_feature.geometry.return_value = "atlas-z-line"
+        atlas_feature.attribute.side_effect = lambda name: {
+            "source_activity_id": "activity-42",
+            "details_json": None,
+        }.get(name)
+
+        wrong_feature = MagicMock(name="wrong_feature")
+        wrong_feature.geometry.return_value = "line-geometry"
+        wrong_feature.attribute.side_effect = lambda name: {
+            "source_activity_id": "activity-99",
+            "details_json": json.dumps(
+                {
+                    "stream_metrics": {
+                        "distance": [0, 1000],
+                        "altitude": [999, 1001],
+                    }
+                }
+            ),
+        }.get(name)
+        filtered_layer = MagicMock(name="filtered_layer")
+        filtered_layer.getFeatures.side_effect = lambda: iter([wrong_feature])
+
+        with patch.object(
+            atlas_export_task.PageProfilePayloadResolver,
+            "_resolve_page_profile_source",
+            return_value=("atlas-z-line", atlas_feature, None),
+        ):
+            payload = atlas_export_task._build_page_profile_payload(
+                atlas_feature,
+                [(filtered_layer, "")],
+            )
+
+        self.assertIsNone(payload.page_points)
+
     def test_atlas_profile_sample_lookup_reads_ordered_altitudes_from_gpkg(self):
         with tempfile.TemporaryDirectory() as tmp_dir:
             gpkg_path = os.path.join(tmp_dir, "profile-samples.gpkg")
