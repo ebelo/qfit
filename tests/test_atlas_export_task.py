@@ -2090,17 +2090,15 @@ class TestBuildAtlasLayoutSummaryLabels(unittest.TestCase):
 
     def _label_texts(self, layout):
         """Return the list of text strings set on label items added to *layout*."""
-        from qgis.core import QgsLayoutItemLabel
         texts = []
-        for call in QgsLayoutItemLabel.return_value.setText.call_args_list:
+        for call in _qgis_core.QgsLayoutItemLabel.return_value.setText.call_args_list:
             texts.append(call[0][0])
         return texts
 
     def _label_ids(self):
         """Return the list of IDs set on label items."""
-        from qgis.core import QgsLayoutItemLabel
         ids = []
-        for call in QgsLayoutItemLabel.return_value.setId.call_args_list:
+        for call in _qgis_core.QgsLayoutItemLabel.return_value.setId.call_args_list:
             ids.append(call[0][0])
         return ids
 
