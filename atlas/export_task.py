@@ -26,6 +26,8 @@ Page template (A4 portrait, 210 × 297 mm):
 from __future__ import annotations
 
 import logging
+import json
+import math
 import os
 import sqlite3
 import sys
@@ -41,6 +43,7 @@ from qgis.core import (
     QgsLayoutPoint,
     QgsLayoutSize,
     QgsPrintLayout,
+    QgsProfileRequest,
     QgsProject,
     QgsRectangle,
     QgsTask,
@@ -57,7 +60,13 @@ from .profile_item import (
     build_native_profile_curve_from_feature,
     build_profile_item,
     build_profile_item_adapter,
+    configure_native_profile_plot_range,
 )
+
+try:  # pragma: no cover - availability depends on QGIS build
+    from qgis.core import QgsProfilePlotRenderer
+except ImportError:  # pragma: no cover - exercised in stubbed/unit-test mode
+    QgsProfilePlotRenderer = None
 
 # ---------------------------------------------------------------------------
 # Page geometry (mm, A4 portrait with square map)
@@ -154,17 +163,159 @@ class PageProfilePayload:
     feature_geometry: object | None
     feature: object | None = None
     crs_auth_id: str | None = None
-    profile_altitudes: list[float] | None = None
+    page_points: list[tuple[float, float]] | None = None
 
     def native_inputs(self):
         return (
             build_native_profile_curve_from_feature(
                 self.feature_geometry,
                 feature=self.feature,
-                altitudes=self.profile_altitudes,
+                altitudes=[altitude for _distance, altitude in self.page_points or []],
             ),
             None,
         )
+
+
+def _render_page_profile_svg(page_points, *, output_path: str) -> str | None:
+    """Render the sampled SVG profile for a single atlas page."""
+    from .profile_renderer import render_profile_to_file  # noqa: PLC0415
+
+    return render_profile_to_file(
+        page_points,
+        width_mm=PROFILE_W,
+        height_mm=PROFILE_CHART_H,
+        directory=os.path.dirname(output_path) or None,
+    )
+
+
+def _render_native_profile_image(
+    native_curve,
+    layers: list,
+    *,
+    crs_auth_id: str | None = None,
+    tolerance: float | None = None,
+    width_px: int = 1000,
+    height_px: int = 220,
+    output_dir: str | None = None,
+    page_points: list[tuple[float, float]] | None = None,
+) -> str | None:
+    """Render a profile chart using QgsProfilePlotRenderer synchronously.
+
+    Returns the path to a temporary PNG file containing the chart, or ``None``
+    when QGIS profile rendering is unavailable or fails.
+    """
+    if QgsProfilePlotRenderer is None or native_curve is None or not layers:
+        return None
+
+    try:
+        request = QgsProfileRequest(native_curve)
+        resolved_crs = crs_auth_id or "EPSG:3857"
+        if resolved_crs:
+            request.setCrs(QgsCoordinateReferenceSystem(resolved_crs))
+        if tolerance is not None:
+            request.setTolerance(float(tolerance))
+
+        # Build a temporary 3D memory layer from the curve so that
+        # QgsProfilePlotRenderer reads Z from our synthetic altitude-enriched
+        # geometry rather than from the original (possibly 2D) layer.
+        try:
+            from qgis.core import (  # noqa: PLC0415
+                Qgis,
+                QgsFeature,
+                QgsGeometry,
+                QgsVectorLayer,
+            )
+            crs_str = QgsCoordinateReferenceSystem(resolved_crs).authid() if resolved_crs else "EPSG:3857"
+            mem_layer = QgsVectorLayer(
+                f"LineStringZ?crs={crs_str}",
+                "_qfit_profile_temp",
+                "memory",
+            )
+            feat_mem = QgsFeature(mem_layer.fields())
+            clone_fn = getattr(native_curve, "clone", None)
+            if callable(clone_fn):
+                feat_mem.setGeometry(QgsGeometry(clone_fn()))
+                mem_layer.dataProvider().addFeatures([feat_mem])
+
+            ep = mem_layer.elevationProperties()
+            if ep is not None and hasattr(Qgis, "VectorProfileType"):
+                ep.setType(Qgis.VectorProfileType.ContinuousSurface)
+
+            profile_layers = [mem_layer]
+        except Exception:  # noqa: BLE001
+            logger.debug("Could not build temporary 3D layer for profile rendering", exc_info=True)
+            profile_layers = list(layers)
+
+        renderer = QgsProfilePlotRenderer(profile_layers, request)
+        renderer.startGeneration()
+        renderer.waitForFinished()
+
+        z_range_obj = renderer.zRange()
+        z_lower = getattr(z_range_obj, "lower", lambda: None)()
+        z_upper = getattr(z_range_obj, "upper", lambda: None)()
+
+        z_min = _finite_float(z_lower)
+        z_max = _finite_float(z_upper)
+
+        # Fall back to sample-derived z-range when the renderer returns 0/0
+        # (e.g. when the vector layer uses 2D geometry from the GeoPackage).
+        if z_min is None or z_max is None or z_max <= z_min:
+            if page_points:
+                alt_range = _range_from_values(alt for _d, alt in page_points)
+                if alt_range is not None:
+                    z_min, z_max = alt_range
+
+        if z_min is None or z_max is None or z_max < z_min:
+            return None
+
+        # Use the sample-derived distance range for the x-axis when available.
+        if page_points:
+            dist_range = _range_from_values(d for d, _a in page_points)
+        else:
+            dist_range = None
+
+        if dist_range is not None:
+            x_min, x_max = dist_range
+        else:
+            length_getter = getattr(native_curve, "length", None)
+            curve_length = _finite_float(length_getter()) if callable(length_getter) else None
+            if curve_length is None or curve_length <= 0:
+                return None
+            x_min, x_max = 0.0, curve_length
+
+        img = renderer.renderToImage(
+            width_px,
+            height_px,
+            x_min,
+            x_max,
+            z_min,
+            z_max,
+        )
+        if img is None or getattr(img, "isNull", lambda: True)():
+            return None
+
+        import tempfile  # noqa: PLC0415
+
+        suffix = ".png"
+        with tempfile.NamedTemporaryFile(
+            suffix=suffix,
+            dir=output_dir,
+            delete=False,
+        ) as tmp:
+            tmp_path = tmp.name
+
+        save = getattr(img, "save", None)
+        if not callable(save) or not save(tmp_path):
+            try:
+                os.unlink(tmp_path)
+            except OSError:
+                pass
+            return None
+
+        return tmp_path
+    except Exception:  # noqa: BLE001
+        logger.debug("QgsProfilePlotRenderer render failed", exc_info=True)
+        return None
 
 
 def _geometry_supports_native_profile(feature_geometry) -> bool:
@@ -193,9 +344,33 @@ def _geometry_looks_line_like(feature_geometry) -> bool:
 def _apply_page_profile_payload(
     profile_adapter,
     profile_payload: PageProfilePayload,
+    *,
+    output_path: str | None = None,
+    profile_temp_files: list[str] | None = None,
+    visible_layers: list | None = None,
 ) -> None:
     """Apply per-page profile data to the active native layout item backend."""
     if not profile_adapter.supports_native_profile:
+        # Picture-backed adapter: render the profile using qfit's SVG renderer.
+        # (The QGIS native QgsProfilePlotRenderer cannot reliably produce
+        # results from 2D-track data in a headless atlas export context.)
+        page_points = profile_payload.page_points or []
+        if len(page_points) < 2:
+            profile_adapter.clear_profile()
+            return
+
+        try:
+            svg_path = _render_page_profile_svg(page_points, output_path=output_path or "")
+        except Exception:  # noqa: BLE001
+            logger.debug("Profile chart render failed", exc_info=True)
+            svg_path = None
+
+        if svg_path:
+            profile_adapter.set_svg_profile(svg_path)
+            if profile_temp_files is not None:
+                profile_temp_files.append(svg_path)
+            return
+
         profile_adapter.clear_profile()
         return
 
@@ -219,6 +394,22 @@ def _apply_page_profile_payload(
         profile_curve=native_curve,
         profile_request=None,
     ):
+        x_range, y_range = _resolve_native_profile_plot_ranges(
+            profile_adapter,
+            profile_payload,
+            native_curve,
+        )
+        configure_native_profile_plot_range(
+            profile_adapter.item,
+            x_min=x_range[0] if x_range else None,
+            x_max=x_range[1] if x_range else None,
+            y_min=y_range[0] if y_range else None,
+            y_max=y_range[1] if y_range else None,
+        )
+
+        refresh_item = getattr(profile_adapter.item, "refresh", None)
+        if callable(refresh_item):
+            refresh_item()
         return
 
     profile_adapter.clear_profile()
@@ -246,9 +437,9 @@ class _AtlasProfileSampleLookup:
         source = getattr(atlas_layer, "source", None)
         source_value = source() if callable(source) else source
         self._gpkg_path = str(source_value).split("|", 1)[0] if source_value else None
-        self._cache: dict[str, list[float] | None] = {}
+        self._cache: dict[str, list[tuple[float, float]] | None] = {}
 
-    def lookup(self, source_activity_id) -> list[float] | None:
+    def lookup(self, source_activity_id) -> list[tuple[float, float]] | None:
         if not self._gpkg_path or source_activity_id in (None, ""):
             return None
 
@@ -257,12 +448,12 @@ class _AtlasProfileSampleLookup:
             self._cache[cache_key] = self._query_altitudes(cache_key)
         return self._cache[cache_key]
 
-    def _query_altitudes(self, source_activity_id: str) -> list[float] | None:
+    def _query_altitudes(self, source_activity_id: str) -> list[tuple[float, float]] | None:
         try:
             with sqlite3.connect(f"file:{self._gpkg_path}?mode=ro", uri=True) as conn:
                 rows = conn.execute(
                     """
-                    SELECT altitude_m
+                    SELECT distance_m, altitude_m
                     FROM atlas_profile_samples
                     WHERE source_activity_id = ?
                     ORDER BY profile_point_index
@@ -273,17 +464,176 @@ class _AtlasProfileSampleLookup:
             logger.debug("Could not read atlas_profile_samples fallback altitudes", exc_info=True)
             return None
 
-        altitudes: list[float] = []
-        for (altitude_value,) in rows:
+        points: list[tuple[float, float]] = []
+        for distance_value, altitude_value in rows:
             try:
-                altitudes.append(float(altitude_value))
+                points.append((float(distance_value), float(altitude_value)))
             except (TypeError, ValueError):
                 return None
 
-        return altitudes or None
+        return points or None
+
+
+def _load_profile_points_from_feature(feature) -> list[tuple[float, float]] | None:
+    raw_value = _feature_attribute(feature, "details_json")
+    if isinstance(raw_value, str):
+        try:
+            raw_value = json.loads(raw_value)
+        except (TypeError, ValueError):
+            raw_value = None
+
+    if not isinstance(raw_value, dict):
+        return None
+
+    stream_metrics = raw_value.get("stream_metrics")
+    if not isinstance(stream_metrics, dict):
+        return None
+
+    distances = stream_metrics.get("distance")
+    altitudes = stream_metrics.get("altitude")
+    if not isinstance(distances, list) or not isinstance(altitudes, list):
+        return None
+    if len(distances) != len(altitudes) or len(distances) < 2:
+        return None
+
+    points: list[tuple[float, float]] = []
+    for distance_value, altitude_value in zip(distances, altitudes):
+        try:
+            points.append((float(distance_value), float(altitude_value)))
+        except (TypeError, ValueError):
+            return None
+
+    return points
+
+
+def _finite_float(value) -> float | None:
+    try:
+        result = float(value)
+    except (TypeError, ValueError):
+        return None
+
+    return result if math.isfinite(result) else None
+
+
+def _range_from_values(values) -> tuple[float, float] | None:
+    numeric_values = [value for value in (_finite_float(candidate) for candidate in values) if value is not None]
+    if not numeric_values:
+        return None
+
+    lower = min(numeric_values)
+    upper = max(numeric_values)
+    if upper < lower:
+        return None
+    return lower, upper
+
+
+def _native_curve_length(native_curve) -> float | None:
+    length_getter = getattr(native_curve, "length", None)
+    if not callable(length_getter):
+        return None
+
+    try:
+        return _finite_float(length_getter())
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def _profile_distance_range(page_points, native_curve) -> tuple[float, float] | None:
+    if page_points:
+        distance_range = _range_from_values(distance for distance, _altitude in page_points)
+        if distance_range is not None:
+            # atlas_profile_samples stores distance_m, while the native layout
+            # profile plot renders the x axis in kilometers.
+            return distance_range[0] / 1000.0, distance_range[1] / 1000.0
+
+    curve_length = _native_curve_length(native_curve)
+    if curve_length is None:
+        return None
+
+    return 0.0, curve_length
+
+
+def _profile_elevation_range_from_renderer(profile_adapter, native_curve, *, crs_auth_id: str | None = None):
+    if QgsProfilePlotRenderer is None or native_curve is None:
+        return None
+
+    item = getattr(profile_adapter, "item", None)
+    if item is None:
+        return None
+
+    layers_getter = getattr(item, "layers", None)
+    if not callable(layers_getter):
+        return None
+
+    try:
+        layers = list(layers_getter() or [])
+    except Exception:  # noqa: BLE001
+        return None
+
+    if not layers:
+        return None
+
+    request = QgsProfileRequest(native_curve)
+
+    request_crs_auth_id = crs_auth_id
+    if not request_crs_auth_id:
+        item_crs_getter = getattr(item, "crs", None)
+        if callable(item_crs_getter):
+            try:
+                item_crs = item_crs_getter()
+            except Exception:  # noqa: BLE001
+                item_crs = None
+            authid_getter = getattr(item_crs, "authid", None)
+            if callable(authid_getter):
+                try:
+                    request_crs_auth_id = authid_getter()
+                except Exception:  # noqa: BLE001
+                    request_crs_auth_id = None
+
+    if request_crs_auth_id:
+        request.setCrs(QgsCoordinateReferenceSystem(request_crs_auth_id))
+
+    tolerance_getter = getattr(item, "tolerance", None)
+    if callable(tolerance_getter):
+        try:
+            tolerance_value = _finite_float(tolerance_getter())
+        except Exception:  # noqa: BLE001
+            tolerance_value = None
+        if tolerance_value is not None:
+            request.setTolerance(tolerance_value)
+
+    try:
+        renderer = QgsProfilePlotRenderer(layers, request)
+        renderer.startGeneration()
+        renderer.waitForFinished()
+        z_range = renderer.zRange()
+    except Exception:  # noqa: BLE001
+        logger.debug("Could not derive native profile z-range from renderer", exc_info=True)
+        return None
+
+    lower = _finite_float(getattr(z_range, "lower", lambda: None)())
+    upper = _finite_float(getattr(z_range, "upper", lambda: None)())
+    if lower is None or upper is None or upper < lower:
+        return None
+    return lower, upper
+
+
+def _resolve_native_profile_plot_ranges(profile_adapter, profile_payload, native_curve):
+    x_range = _profile_distance_range(profile_payload.page_points, native_curve)
+    y_range = _range_from_values(altitude for _distance, altitude in profile_payload.page_points or [])
+    if y_range is None:
+        y_range = _profile_elevation_range_from_renderer(
+            profile_adapter,
+            native_curve,
+            crs_auth_id=profile_payload.crs_auth_id,
+        )
+
+    return x_range, y_range
 
 
 def _resolve_page_profile_source(feat, filterable_layers) -> tuple[object | None, object | None, str | None]:
+    line_like_candidates: list[tuple[object, object, str | None]] = []
+
     for layer, _original_subset in filterable_layers:
         get_features = getattr(layer, "getFeatures", None)
         if not callable(get_features):
@@ -298,13 +648,22 @@ def _resolve_page_profile_source(feat, filterable_layers) -> tuple[object | None
         for layer_feature in layer_features:
             geometry_getter = getattr(layer_feature, "geometry", None)
             geometry = geometry_getter() if callable(geometry_getter) else None
+            if _geometry_supports_native_profile(geometry):
+                return geometry, layer_feature, _layer_crs_authid(layer)
+
             if not _geometry_looks_line_like(geometry):
                 continue
 
-            return geometry, layer_feature, _layer_crs_authid(layer)
+            line_like_candidates.append((geometry, layer_feature, _layer_crs_authid(layer)))
 
     geometry_getter = getattr(feat, "geometry", None)
     geometry = geometry_getter() if callable(geometry_getter) else None
+    if _geometry_supports_native_profile(geometry):
+        return geometry, feat, None
+
+    if line_like_candidates:
+        return line_like_candidates[0]
+
     return geometry, feat, None
 
 
@@ -337,16 +696,20 @@ def _build_page_profile_payload(
     source_activity_id = _feature_attribute(source_feature, "source_activity_id")
     if source_activity_id in (None, ""):
         source_activity_id = _feature_attribute(feat, "source_activity_id")
-    profile_altitudes = (
+    page_points = (
         profile_altitude_lookup(source_activity_id)
         if callable(profile_altitude_lookup)
         else None
     )
+    if not page_points:
+        page_points = _load_profile_points_from_feature(source_feature)
+    if not page_points:
+        page_points = _load_profile_points_from_feature(feat)
     return PageProfilePayload(
         feature_geometry=geometry,
         feature=source_feature,
         crs_auth_id=crs_auth_id,
-        profile_altitudes=profile_altitudes,
+        page_points=page_points,
     )
 
 
@@ -1213,6 +1576,7 @@ class AtlasExportTask(QgsTask):
                 profile_adapter is not None and profile_adapter.requires_manual_page_updates
             )
             profile_sample_lookup = _AtlasProfileSampleLookup(self._atlas_layer)
+            profile_temp_files: list[str] = []
 
             # Collect layers with source_activity_id field for per-page filtering.
             # These are the track/start/point layers that should show only the
@@ -1274,7 +1638,13 @@ class AtlasExportTask(QgsTask):
                             filterable_layers,
                             profile_altitude_lookup=profile_sample_lookup.lookup,
                         )
-                        _apply_page_profile_payload(profile_adapter, profile_payload)
+                        _apply_page_profile_payload(
+                            profile_adapter,
+                            profile_payload,
+                            output_path=self._output_path,
+                            profile_temp_files=profile_temp_files,
+                            visible_layers=map_item.layers() if map_item is not None else None,
+                        )
 
                     # Set profile summary text directly from the feature so that
                     # no raw [% %] template syntax can leak (issue #108).
@@ -1331,6 +1701,11 @@ class AtlasExportTask(QgsTask):
                         layer.setSubsetString(original_subset)
                     except RuntimeError:
                         logger.debug("Failed to restore layer subset", exc_info=True)
+                for svg_path in profile_temp_files:
+                    try:
+                        os.remove(svg_path)
+                    except OSError:
+                        pass
                 atlas.endRender()
 
             if not page_paths:

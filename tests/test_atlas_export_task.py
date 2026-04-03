@@ -4,6 +4,7 @@ Uses the same stub-QgsTask pattern as test_fetch_task.py so that tests run
 without a live QGIS instance.
 """
 
+import json
 import os
 import sqlite3
 import sys
@@ -107,6 +108,7 @@ from qfit.atlas.profile_item import (  # noqa: E402
     build_native_profile_item,
     build_native_profile_request,
     configure_native_profile_plot_defaults,
+    configure_native_profile_plot_range,
     native_profile_item_available,
     native_profile_request_available,
 )
@@ -210,7 +212,7 @@ class TestBuildAtlasLayout(unittest.TestCase):
         build_native_curve.assert_called_once_with(
             "feature-geometry",
             feature=feat,
-            altitudes=None,
+            altitudes=[],
         )
 
     def test_build_page_profile_payload_handles_missing_geometry(self):
@@ -234,7 +236,7 @@ class TestBuildAtlasLayout(unittest.TestCase):
         build_native_curve.assert_called_once_with(
             None,
             feature=feat,
-            altitudes=None,
+            altitudes=[],
         )
 
     def test_build_page_profile_payload_prefers_filtered_activity_line_geometry(self):
@@ -263,12 +265,34 @@ class TestBuildAtlasLayout(unittest.TestCase):
 
         self.assertEqual(payload.feature_geometry, "line-geometry")
 
+    def test_build_page_profile_payload_prefers_atlas_native_curve_over_non_native_filtered_line(self):
+        atlas_feature = MagicMock(name="atlas_feature")
+        atlas_feature.geometry.return_value = "atlas-z-line"
+
+        filtered_feature = MagicMock(name="filtered_feature")
+        filtered_feature.geometry.return_value = "line-geometry"
+        filtered_layer = MagicMock(name="filtered_layer")
+        filtered_layer.getFeatures.side_effect = lambda: iter([filtered_feature])
+
+        with patch.object(
+            atlas_export_task,
+            "_geometry_supports_native_profile",
+            side_effect=lambda geometry: geometry == "atlas-z-line",
+        ):
+            payload = atlas_export_task._build_page_profile_payload(
+                atlas_feature,
+                [(filtered_layer, "")],
+            )
+
+        self.assertEqual(payload.feature_geometry, "atlas-z-line")
+        self.assertIs(payload.feature, atlas_feature)
+
     def test_build_page_profile_payload_uses_profile_sample_lookup_for_source_activity(self):
         feat = MagicMock(name="feature")
         feat.geometry.return_value = "feature-geometry"
         feat.attribute.side_effect = lambda name: "activity-42" if name == "source_activity_id" else None
 
-        lookup = MagicMock(return_value=[450.0, 530.0])
+        lookup = MagicMock(return_value=[(0.0, 450.0), (1000.0, 530.0)])
 
         payload = atlas_export_task._build_page_profile_payload(
             feat,
@@ -276,8 +300,27 @@ class TestBuildAtlasLayout(unittest.TestCase):
             profile_altitude_lookup=lookup,
         )
 
-        self.assertEqual(payload.profile_altitudes, [450.0, 530.0])
+        self.assertEqual(payload.page_points, [(0.0, 450.0), (1000.0, 530.0)])
         lookup.assert_called_once_with("activity-42")
+
+    def test_build_page_profile_payload_falls_back_to_details_json_profile_points(self):
+        feat = MagicMock(name="feature")
+        feat.geometry.return_value = "feature-geometry"
+        feat.attribute.side_effect = lambda name: {
+            "source_activity_id": "activity-42",
+            "details_json": json.dumps(
+                {
+                    "stream_metrics": {
+                        "distance": [0, 1000],
+                        "altitude": [450, 530],
+                    }
+                }
+            ),
+        }.get(name)
+
+        payload = atlas_export_task._build_page_profile_payload(feat, [])
+
+        self.assertEqual(payload.page_points, [(0.0, 450.0), (1000.0, 530.0)])
 
     def test_atlas_profile_sample_lookup_reads_ordered_altitudes_from_gpkg(self):
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -288,16 +331,17 @@ class TestBuildAtlasLayout(unittest.TestCase):
                     CREATE TABLE atlas_profile_samples (
                         source_activity_id TEXT,
                         profile_point_index INTEGER,
+                        distance_m REAL,
                         altitude_m REAL
                     )
                     """
                 )
                 conn.executemany(
-                    "INSERT INTO atlas_profile_samples VALUES (?, ?, ?)",
+                    "INSERT INTO atlas_profile_samples VALUES (?, ?, ?, ?)",
                     [
-                        ("activity-1", 2, 530.0),
-                        ("activity-1", 0, 450.0),
-                        ("activity-1", 1, 490.0),
+                        ("activity-1", 2, 2000.0, 530.0),
+                        ("activity-1", 0, 0.0, 450.0),
+                        ("activity-1", 1, 1000.0, 490.0),
                     ],
                 )
 
@@ -306,7 +350,10 @@ class TestBuildAtlasLayout(unittest.TestCase):
 
             lookup = atlas_export_task._AtlasProfileSampleLookup(atlas_layer)
 
-            self.assertEqual(lookup.lookup("activity-1"), [450.0, 490.0, 530.0])
+            self.assertEqual(
+                lookup.lookup("activity-1"),
+                [(0.0, 450.0), (1000.0, 490.0), (2000.0, 530.0)],
+            )
             self.assertIsNone(lookup.lookup("missing"))
 
     def test_atlas_profile_sample_lookup_returns_none_for_missing_path_and_bad_altitudes(self):
@@ -322,13 +369,14 @@ class TestBuildAtlasLayout(unittest.TestCase):
                     CREATE TABLE atlas_profile_samples (
                         source_activity_id TEXT,
                         profile_point_index INTEGER,
+                        distance_m REAL,
                         altitude_m TEXT
                     )
                     """
                 )
                 conn.execute(
-                    "INSERT INTO atlas_profile_samples VALUES (?, ?, ?)",
-                    ("activity-1", 0, "not-a-number"),
+                    "INSERT INTO atlas_profile_samples VALUES (?, ?, ?, ?)",
+                    ("activity-1", 0, 0.0, "not-a-number"),
                 )
 
             atlas_layer = MagicMock(name="atlas_layer")
@@ -390,6 +438,64 @@ class TestBuildAtlasLayout(unittest.TestCase):
             profile_request=None,
         )
 
+    def test_apply_page_profile_payload_sets_native_plot_ranges_from_page_points(self):
+        adapter = MagicMock(name="adapter")
+        adapter.supports_native_profile = True
+        adapter.atlas_driven = False
+        adapter.bind_native_profile.return_value = True
+        native_curve = MagicMock(name="native_curve")
+        native_curve.length.return_value = 999.0
+        payload = atlas_export_task.PageProfilePayload(
+            feature_geometry=None,
+            page_points=[(0.0, 1361.0), (250.0, 1406.0)],
+        )
+        payload.native_inputs = MagicMock(return_value=(native_curve, None))
+
+        with patch("qfit.atlas.export_task.configure_native_profile_plot_range") as configure_range:
+            atlas_export_task._apply_page_profile_payload(adapter, payload)
+
+        configure_range.assert_called_once_with(
+            adapter.item,
+            x_min=0.0,
+            x_max=0.25,
+            y_min=1361.0,
+            y_max=1406.0,
+        )
+        adapter.item.refresh.assert_called()
+
+    def test_apply_page_profile_payload_falls_back_to_renderer_derived_z_range(self):
+        adapter = MagicMock(name="adapter")
+        adapter.supports_native_profile = True
+        adapter.atlas_driven = False
+        adapter.bind_native_profile.return_value = True
+        adapter.item.layers.return_value = [MagicMock(name="profile_layer")]
+        adapter.item.tolerance.return_value = 200.0
+        native_curve = MagicMock(name="native_curve")
+        native_curve.length.return_value = 321.0
+        payload = atlas_export_task.PageProfilePayload(feature_geometry=None, crs_auth_id="EPSG:3857")
+        payload.native_inputs = MagicMock(return_value=(native_curve, None))
+
+        z_range = MagicMock(name="z_range")
+        z_range.lower.return_value = 1361.0
+        z_range.upper.return_value = 1406.0
+        renderer_instance = MagicMock(name="renderer_instance")
+        renderer_instance.zRange.return_value = z_range
+        atlas_export_task.QgsProfileRequest.reset_mock()
+
+        with patch("qfit.atlas.export_task.QgsProfilePlotRenderer", return_value=renderer_instance), \
+             patch("qfit.atlas.export_task.configure_native_profile_plot_range") as configure_range:
+            atlas_export_task._apply_page_profile_payload(adapter, payload)
+
+        configure_range.assert_called_once_with(
+            adapter.item,
+            x_min=0.0,
+            x_max=321.0,
+            y_min=1361.0,
+            y_max=1406.0,
+        )
+        renderer_instance.startGeneration.assert_called_once_with()
+        renderer_instance.waitForFinished.assert_called_once_with()
+
     def test_apply_page_profile_payload_skips_manual_updates_for_atlas_driven_native_item(self):
         adapter = MagicMock(name="adapter")
         adapter.supports_native_profile = True
@@ -432,14 +538,24 @@ class TestBuildAtlasLayout(unittest.TestCase):
         adapter.clear_profile.assert_called_once_with()
         adapter.bind_native_profile.assert_not_called()
 
-    def test_apply_page_profile_payload_clears_picture_adapter_without_svg_fallback(self):
+    def test_apply_page_profile_payload_renders_svg_for_picture_adapter(self):
         adapter = MagicMock(name="adapter")
         adapter.supports_native_profile = False
-        payload = MagicMock(name="payload")
-        atlas_export_task._apply_page_profile_payload(adapter, payload)
+        payload = atlas_export_task.PageProfilePayload(
+            feature_geometry=None,
+            page_points=[(0.0, 450.0), (1000.0, 530.0)],
+        )
 
-        payload.native_inputs.assert_not_called()
-        adapter.clear_profile.assert_called_once_with()
+        with patch("qfit.atlas.export_task._render_page_profile_svg", return_value="/tmp/profile.svg"):
+            atlas_export_task._apply_page_profile_payload(
+                adapter,
+                payload,
+                output_path="/tmp/out.pdf",
+                profile_temp_files=[],
+            )
+
+        adapter.set_svg_profile.assert_called_once_with("/tmp/profile.svg")
+        adapter.clear_profile.assert_not_called()
 
     def test_build_profile_item_prefers_native_adapter_when_available(self):
         layout = MagicMock()
@@ -461,7 +577,7 @@ class TestBuildAtlasLayout(unittest.TestCase):
         self.assertIs(adapter.item, _qgis_core.QgsLayoutItemElevationProfile.return_value)
         _qgis_core.QgsLayoutItemElevationProfile.return_value.setId.assert_called_once_with("profile")
 
-    def test_build_profile_item_does_not_create_svg_fallback_for_manual_native_updates(self):
+    def test_build_profile_item_uses_picture_fallback_for_manual_profile_updates(self):
         layout = MagicMock()
         _qgis_core.QgsLayoutItemElevationProfile.reset_mock()
         _qgis_core.QgsLayoutItemElevationProfile.return_value.reset_mock()
@@ -477,9 +593,9 @@ class TestBuildAtlasLayout(unittest.TestCase):
                 native_config=NativeProfileItemConfig(atlas_driven=False),
             )
 
-        self.assertEqual(adapter.kind, "native")
+        self.assertEqual(adapter.kind, "picture")
 
-    def test_build_profile_item_uses_native_item_when_manual_updates_are_required(self):
+    def test_build_profile_item_uses_native_item_when_atlas_driven_native_supported(self):
         layout = MagicMock()
         native_adapter = ProfileItemAdapter(item=MagicMock(), kind="native", atlas_driven=False)
 
@@ -496,19 +612,20 @@ class TestBuildAtlasLayout(unittest.TestCase):
 
         self.assertIs(adapter, native_adapter)
 
-    def test_build_profile_item_raises_when_native_unavailable(self):
+    def test_build_profile_item_falls_back_to_picture_when_native_unavailable(self):
         layout = MagicMock()
 
         with patch("qfit.atlas.profile_item.build_native_profile_item", return_value=None):
-            with self.assertRaisesRegex(RuntimeError, "QgsLayoutItemElevationProfile is required"):
-                build_profile_item(
-                    layout,
-                    item_id="profile",
-                    x=10.0,
-                    y=20.0,
-                    w=30.0,
-                    h=40.0,
-                )
+            adapter = build_profile_item(
+                layout,
+                item_id="profile",
+                x=10.0,
+                y=20.0,
+                w=30.0,
+                h=40.0,
+            )
+
+        self.assertEqual(adapter.kind, "picture")
 
     def test_build_profile_item_adapter_can_clear_and_set_svg(self):
         item = MagicMock()
@@ -769,6 +886,25 @@ class TestBuildAtlasLayout(unittest.TestCase):
         y_axis.setGridMajorSymbol.assert_called_once_with("custom-y-major")
         y_axis.setGridMinorSymbol.assert_called_once_with("custom-y-minor")
 
+    def test_configure_native_profile_plot_range_sets_supported_axes(self):
+        item = MagicMock(name="native_item")
+        plot = MagicMock(name="plot")
+        item.plot.return_value = plot
+
+        applied = configure_native_profile_plot_range(
+            item,
+            x_min=0.0,
+            x_max=250.0,
+            y_min=1361.0,
+            y_max=1406.0,
+        )
+
+        self.assertTrue(applied)
+        plot.setXMinimum.assert_called_once_with(0.0)
+        plot.setXMaximum.assert_called_once_with(250.0)
+        plot.setYMinimum.assert_called_once_with(1361.0)
+        plot.setYMaximum.assert_called_once_with(1406.0)
+
     def test_configure_native_profile_plot_defaults_tolerates_missing_plot_api(self):
         item = MagicMock(name="native_item")
         plot = MagicMock(name="plot")
@@ -849,6 +985,7 @@ class TestBuildAtlasLayout(unittest.TestCase):
 
     def test_build_native_profile_request_returns_configured_request(self):
         curve = MagicMock(name="curve")
+        _qgis_core.QgsProfileRequest.reset_mock()
 
         with patch("qfit.atlas.profile_item.QgsProfileRequest", _qgis_core.QgsProfileRequest):
             request = build_native_profile_request(

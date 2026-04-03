@@ -7,7 +7,7 @@ from dataclasses import dataclass
 import math
 from collections.abc import Mapping
 
-from qgis.core import QgsLayoutPoint, QgsLayoutSize, QgsUnitTypes
+from qgis.core import QgsLayoutItemPicture, QgsLayoutPoint, QgsLayoutSize, QgsUnitTypes
 
 from .profile_style import (
     DEFAULT_NATIVE_PROFILE_PLOT_STYLE,
@@ -54,6 +54,7 @@ class ProfileItemAdapter:
     item: object
     kind: str = "picture"
     atlas_driven: bool = False
+    profile_layers: list = None  # type: ignore[assignment]
 
     @property
     def supports_native_profile(self) -> bool:
@@ -295,6 +296,51 @@ def configure_native_profile_plot_defaults(
             _configure_plot_axis_style(y_axis, resolved_style.y_axis)
 
 
+def configure_native_profile_plot_range(
+    item,
+    *,
+    x_min: float | None = None,
+    x_max: float | None = None,
+    y_min: float | None = None,
+    y_max: float | None = None,
+) -> bool:
+    """Apply explicit plot axis ranges when the native plot API supports them."""
+    plot_getter = getattr(item, "plot", None)
+    if not callable(plot_getter):
+        return False
+
+    try:
+        plot = plot_getter()
+    except Exception:  # noqa: BLE001
+        return False
+
+    if plot is None:
+        return False
+
+    applied = False
+    for value, setter_name in (
+        (x_min, "setXMinimum"),
+        (x_max, "setXMaximum"),
+        (y_min, "setYMinimum"),
+        (y_max, "setYMaximum"),
+    ):
+        if value is None:
+            continue
+
+        setter = getattr(plot, setter_name, None)
+        if not callable(setter):
+            continue
+
+        try:
+            setter(float(value))
+        except Exception:  # noqa: BLE001
+            continue
+
+        applied = True
+
+    return applied
+
+
 def _matches_line_geometry_type(geometry_type) -> bool:
     if geometry_type is None:
         return False
@@ -352,22 +398,42 @@ def build_profile_item(
     h: float,
     native_config: NativeProfileItemConfig | None = None,
 ) -> ProfileItemAdapter:
-    """Create the native profile layout item and return an adapter for it."""
-    native_adapter = build_native_profile_item(
-        layout,
-        item_id=item_id,
-        x=x,
-        y=y,
-        w=w,
-        h=h,
-        config=native_config,
-    )
-    if native_adapter is not None:
-        return native_adapter
+    """Create the current profile layout item and return an adapter for it.
 
-    raise RuntimeError(
-        "QgsLayoutItemElevationProfile is required for atlas profile export on supported QGIS versions"
-    )
+    For atlas-driven native line coverage layers we keep using the QGIS native
+    elevation-profile item. For today's polygon-driven atlas export path, use
+    the picture-backed item so export can render qfit's sampled SVG fallback
+    deterministically.
+    """
+    cfg = native_config or NativeProfileItemConfig()
+    # Only use the native QgsLayoutItemElevationProfile item when atlas-driven
+    # mode is available (requires a line-geometry coverage layer). For polygon
+    # atlas pages the native item cannot follow atlas features automatically, so
+    # we use a picture item and render the profile synchronously per page.
+    if cfg.atlas_driven:
+        native_adapter = build_native_profile_item(
+            layout,
+            item_id=item_id,
+            x=x,
+            y=y,
+            w=w,
+            h=h,
+            config=cfg,
+        )
+        if native_adapter is not None:
+            return native_adapter
+
+    profile_item = QgsLayoutItemPicture(layout)
+    profile_item.setId(item_id)
+    profile_item.attemptMove(QgsLayoutPoint(x, y, QgsUnitTypes.LayoutMillimeters))
+    profile_item.attemptResize(QgsLayoutSize(w, h, QgsUnitTypes.LayoutMillimeters))
+    profile_item.setResizeMode(QgsLayoutItemPicture.Zoom)
+    layout.addLayoutItem(profile_item)
+    adapter = ProfileItemAdapter(item=profile_item, kind="picture")
+    # Store layers so the export loop can use them for synchronous profile rendering
+    if cfg.layers is not None:
+        adapter.profile_layers = list(cfg.layers)
+    return adapter
 
 
 def build_native_profile_item(
