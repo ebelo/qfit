@@ -162,6 +162,9 @@ class PageProfilePayloadResolver:
         *,
         source_activity_id=None,
     ) -> list[tuple[float, float]] | None:
+        if source_activity_id in (None, ""):
+            return None
+
         for layer, _original_subset in filterable_layers or []:
             get_features = getattr(layer, "getFeatures", None)
             if not callable(get_features):
@@ -172,10 +175,9 @@ class PageProfilePayloadResolver:
                 logger.debug("Could not inspect filtered layer features for profile points", exc_info=True)
                 continue
             for layer_feature in layer_features:
-                if source_activity_id not in (None, ""):
-                    layer_source_activity_id = feature_attribute(layer_feature, "source_activity_id")
-                    if layer_source_activity_id != source_activity_id:
-                        continue
+                layer_source_activity_id = feature_attribute(layer_feature, "source_activity_id")
+                if layer_source_activity_id != source_activity_id:
+                    continue
                 points = load_profile_points_from_feature(layer_feature)
                 if points:
                     return points
