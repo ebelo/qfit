@@ -9,6 +9,7 @@ from collections.abc import Mapping
 
 from qgis.core import QgsLayoutItemPicture, QgsLayoutPoint, QgsLayoutSize, QgsUnitTypes
 
+from .profile_backend_policy import DEFAULT_PROFILE_BACKEND_POLICY
 from .profile_style import (
     DEFAULT_NATIVE_PROFILE_PLOT_STYLE,
     NativeProfilePlotAxisStyle,
@@ -406,11 +407,12 @@ def build_profile_item(
     deterministically.
     """
     cfg = native_config or NativeProfileItemConfig()
+    backend_decision = DEFAULT_PROFILE_BACKEND_POLICY.decide(cfg)
     # Only use the native QgsLayoutItemElevationProfile item when atlas-driven
     # mode is available (requires a line-geometry coverage layer). For polygon
     # atlas pages the native item cannot follow atlas features automatically, so
     # we use a picture item and render the profile synchronously per page.
-    if cfg.atlas_driven:
+    if backend_decision.uses_native_layout_item:
         native_adapter = build_native_profile_item(
             layout,
             item_id=item_id,

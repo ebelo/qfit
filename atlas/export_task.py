@@ -60,6 +60,7 @@ from .profile_item import (
     build_profile_item_adapter,
     configure_native_profile_plot_range,
 )
+from .profile_backend_policy import DEFAULT_PROFILE_BACKEND_POLICY
 from .profile_payload_resolver import (
     AtlasProfileSampleLookup,
     PageProfilePayload as ResolverPageProfilePayload,
@@ -364,7 +365,7 @@ def _apply_picture_profile(
     3. Otherwise clear the profile.
     """
     page_points = profile_payload.page_points or []
-    if len(page_points) >= 2:
+    if DEFAULT_PROFILE_BACKEND_POLICY.should_render_svg(profile_adapter) and len(page_points) >= 2:
         try:
             svg_path = _render_page_profile_svg(page_points, output_path=output_path or "")
         except Exception:  # noqa: BLE001
@@ -379,7 +380,7 @@ def _apply_picture_profile(
 
     # Fallback: try native synchronous render when the geometry has Z data.
     native_curve, _ = profile_payload.native_inputs()
-    if native_curve is not None:
+    if DEFAULT_PROFILE_BACKEND_POLICY.should_try_native_image_fallback(profile_adapter, native_curve):
         output_dir = os.path.dirname(output_path) if output_path else None
         native_img = _render_native_profile_image(
             native_curve,
@@ -437,17 +438,18 @@ def _apply_page_profile_payload(
     profile_temp_files: list[str] | None = None,
 ) -> None:
     """Apply per-page profile data to the active native layout item backend."""
-    if not profile_adapter.supports_native_profile:
+    if DEFAULT_PROFILE_BACKEND_POLICY.should_render_svg(profile_adapter):
         # Picture-backed adapter: render via qfit's SVG renderer.
         # (QgsProfilePlotRenderer cannot reliably handle 2D tracks in headless
         # atlas export; the SVG path reads from atlas_profile_samples instead.)
         _apply_picture_profile(profile_adapter, profile_payload, output_path, profile_temp_files)
         return
 
-    if getattr(profile_adapter, "atlas_driven", False):
+    if DEFAULT_PROFILE_BACKEND_POLICY.should_configure_atlas_native_ranges(profile_adapter):
         return
 
-    _apply_native_profile(profile_adapter, profile_payload)
+    if DEFAULT_PROFILE_BACKEND_POLICY.requires_manual_native_binding(profile_adapter):
+        _apply_native_profile(profile_adapter, profile_payload)
 
 
 _feature_attribute = feature_attribute
