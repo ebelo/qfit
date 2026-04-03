@@ -254,9 +254,9 @@ class TestBuildAtlasLayout(unittest.TestCase):
         line_layer.getFeatures.side_effect = lambda: iter([line_feature])
 
         with patch.object(
-            atlas_export_task,
-            "_geometry_supports_native_profile",
-            side_effect=lambda geometry: geometry == "line-geometry",
+            atlas_export_task.PageProfilePayloadResolver,
+            "_resolve_page_profile_source",
+            return_value=("line-geometry", line_feature, None),
         ):
             payload = atlas_export_task._build_page_profile_payload(
                 atlas_feature,
@@ -321,6 +321,78 @@ class TestBuildAtlasLayout(unittest.TestCase):
         payload = atlas_export_task._build_page_profile_payload(feat, [])
 
         self.assertEqual(payload.page_points, [(0.0, 450.0), (1000.0, 530.0)])
+
+    def test_build_page_profile_payload_ignores_filtered_layer_points_from_other_activity(self):
+        atlas_feature = MagicMock(name="atlas_feature")
+        atlas_feature.geometry.return_value = "atlas-z-line"
+        atlas_feature.attribute.side_effect = lambda name: {
+            "source_activity_id": "activity-42",
+            "details_json": None,
+        }.get(name)
+
+        wrong_feature = MagicMock(name="wrong_feature")
+        wrong_feature.geometry.return_value = "line-geometry"
+        wrong_feature.attribute.side_effect = lambda name: {
+            "source_activity_id": "activity-99",
+            "details_json": json.dumps(
+                {
+                    "stream_metrics": {
+                        "distance": [0, 1000],
+                        "altitude": [999, 1001],
+                    }
+                }
+            ),
+        }.get(name)
+        filtered_layer = MagicMock(name="filtered_layer")
+        filtered_layer.getFeatures.side_effect = lambda: iter([wrong_feature])
+
+        with patch.object(
+            atlas_export_task.PageProfilePayloadResolver,
+            "_resolve_page_profile_source",
+            return_value=("atlas-z-line", atlas_feature, None),
+        ):
+            payload = atlas_export_task._build_page_profile_payload(
+                atlas_feature,
+                [(filtered_layer, "")],
+            )
+
+        self.assertIsNone(payload.page_points)
+
+    def test_build_page_profile_payload_skips_layer_point_fallback_when_source_activity_id_missing(self):
+        atlas_feature = MagicMock(name="atlas_feature")
+        atlas_feature.geometry.return_value = "atlas-z-line"
+        atlas_feature.attribute.side_effect = lambda name: {
+            "source_activity_id": None,
+            "details_json": None,
+        }.get(name)
+
+        filtered_feature = MagicMock(name="filtered_feature")
+        filtered_feature.geometry.return_value = "line-geometry"
+        filtered_feature.attribute.side_effect = lambda name: {
+            "source_activity_id": "activity-99",
+            "details_json": json.dumps(
+                {
+                    "stream_metrics": {
+                        "distance": [0, 1000],
+                        "altitude": [450, 530],
+                    }
+                }
+            ),
+        }.get(name)
+        filtered_layer = MagicMock(name="filtered_layer")
+        filtered_layer.getFeatures.side_effect = lambda: iter([filtered_feature])
+
+        with patch.object(
+            atlas_export_task.PageProfilePayloadResolver,
+            "_resolve_page_profile_source",
+            return_value=("atlas-z-line", atlas_feature, None),
+        ):
+            payload = atlas_export_task._build_page_profile_payload(
+                atlas_feature,
+                [(filtered_layer, "")],
+            )
+
+        self.assertIsNone(payload.page_points)
 
     def test_atlas_profile_sample_lookup_reads_ordered_altitudes_from_gpkg(self):
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -943,7 +1015,8 @@ class TestBuildAtlasLayout(unittest.TestCase):
         _qgis_core.QgsLayoutItemElevationProfile.reset_mock()
         _qgis_core.QgsLayoutItemElevationProfile.return_value.reset_mock()
 
-        with patch("qfit.atlas.profile_item.QgsLayoutItemElevationProfile", _qgis_core.QgsLayoutItemElevationProfile):
+        with patch("qfit.atlas.profile_item.QgsLayoutItemElevationProfile", _qgis_core.QgsLayoutItemElevationProfile), \
+             patch("qfit.atlas.profile_item.QgsLayoutItemPicture", _qgis_core.QgsLayoutItemPicture):
             adapter = build_profile_item(
                 layout,
                 item_id="profile",
@@ -963,7 +1036,8 @@ class TestBuildAtlasLayout(unittest.TestCase):
         _qgis_core.QgsLayoutItemElevationProfile.reset_mock()
         _qgis_core.QgsLayoutItemElevationProfile.return_value.reset_mock()
 
-        with patch("qfit.atlas.profile_item.QgsLayoutItemElevationProfile", _qgis_core.QgsLayoutItemElevationProfile):
+        with patch("qfit.atlas.profile_item.QgsLayoutItemElevationProfile", _qgis_core.QgsLayoutItemElevationProfile), \
+             patch("qfit.atlas.profile_item.QgsLayoutItemPicture", _qgis_core.QgsLayoutItemPicture):
             adapter = build_profile_item(
                 layout,
                 item_id="profile",
@@ -996,7 +1070,8 @@ class TestBuildAtlasLayout(unittest.TestCase):
     def test_build_profile_item_falls_back_to_picture_when_native_unavailable(self):
         layout = MagicMock()
 
-        with patch("qfit.atlas.profile_item.build_native_profile_item", return_value=None):
+        with patch("qfit.atlas.profile_item.build_native_profile_item", return_value=None), \
+             patch("qfit.atlas.profile_item.QgsLayoutItemPicture", _qgis_core.QgsLayoutItemPicture):
             adapter = build_profile_item(
                 layout,
                 item_id="profile",
@@ -2087,17 +2162,15 @@ class TestBuildAtlasLayoutSummaryLabels(unittest.TestCase):
 
     def _label_texts(self, layout):
         """Return the list of text strings set on label items added to *layout*."""
-        from qgis.core import QgsLayoutItemLabel
         texts = []
-        for call in QgsLayoutItemLabel.return_value.setText.call_args_list:
+        for call in _qgis_core.QgsLayoutItemLabel.return_value.setText.call_args_list:
             texts.append(call[0][0])
         return texts
 
     def _label_ids(self):
         """Return the list of IDs set on label items."""
-        from qgis.core import QgsLayoutItemLabel
         ids = []
-        for call in QgsLayoutItemLabel.return_value.setId.call_args_list:
+        for call in _qgis_core.QgsLayoutItemLabel.return_value.setId.call_args_list:
             ids.append(call[0][0])
         return ids
 
@@ -2357,7 +2430,7 @@ class TestProfileChartRendering(unittest.TestCase):
              patch("qfit.atlas.export_task.QgsLayoutExporter", exporter_cls_mock), \
              patch("qfit.atlas.export_task.AtlasExportTask._export_cover_page", return_value=None), \
              patch("qfit.atlas.export_task.AtlasExportTask._export_toc_page", return_value=None), \
-             patch("qfit.atlas.export_task._geometry_supports_native_profile", side_effect=lambda geometry: geometry == "track-geometry"), \
+             patch("qfit.atlas.profile_payload_resolver.PageProfilePayloadResolver._resolve_page_profile_source", return_value=("track-geometry", track_feature, "EPSG:3857")), \
              patch("qfit.atlas.export_task.build_native_profile_curve_from_feature", return_value="curve") as build_native_curve, \
              patch("os.replace"), \
              patch("os.makedirs"):
