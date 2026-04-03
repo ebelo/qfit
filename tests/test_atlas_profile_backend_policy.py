@@ -8,14 +8,18 @@ from qfit.atlas.profile_backend_policy import (
     ProfileBackendDecision,
     ProfileBackendPolicy,
 )
-from qfit.atlas.profile_item import NativeProfileItemConfig
+
+
+class _NativeConfigStub:
+    def __init__(self, *, atlas_driven=False):
+        self.atlas_driven = atlas_driven
 
 
 class TestProfileBackendPolicy(unittest.TestCase):
     def test_decide_uses_native_layout_for_atlas_driven_config(self):
         policy = ProfileBackendPolicy()
 
-        decision = policy.decide(NativeProfileItemConfig(atlas_driven=True))
+        decision = policy.decide(_NativeConfigStub(atlas_driven=True))
 
         self.assertEqual(
             decision,
@@ -27,7 +31,7 @@ class TestProfileBackendPolicy(unittest.TestCase):
     def test_decide_uses_picture_svg_for_manual_updates(self):
         policy = ProfileBackendPolicy()
 
-        decision = policy.decide(NativeProfileItemConfig(atlas_driven=False))
+        decision = policy.decide(_NativeConfigStub(atlas_driven=False))
 
         self.assertEqual(
             decision,
