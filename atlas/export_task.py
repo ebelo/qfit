@@ -68,6 +68,8 @@ try:  # pragma: no cover - availability depends on QGIS build
 except ImportError:  # pragma: no cover - exercised in stubbed/unit-test mode
     QgsProfilePlotRenderer = None
 
+_DEFAULT_PROFILE_CRS_AUTH_ID = "EPSG:3857"
+
 # ---------------------------------------------------------------------------
 # Page geometry (mm, A4 portrait with square map)
 # ---------------------------------------------------------------------------
@@ -188,6 +190,92 @@ def _render_page_profile_svg(page_points, *, output_path: str) -> str | None:
     )
 
 
+def _build_native_renderer_mem_layer(native_curve, crs_str: str):
+    """Build a temporary 3D memory layer from a native profile curve.
+
+    Returns the layer, or ``None`` when QGIS vector-layer imports are
+    unavailable.
+    """
+    try:
+        from qgis.core import (  # noqa: PLC0415
+            Qgis,
+            QgsFeature,
+            QgsGeometry,
+            QgsVectorLayer,
+        )
+        mem_layer = QgsVectorLayer(
+            f"LineStringZ?crs={crs_str}",
+            "_qfit_profile_temp",
+            "memory",
+        )
+        clone_fn = getattr(native_curve, "clone", None)
+        if callable(clone_fn):
+            feat_mem = QgsFeature(mem_layer.fields())
+            feat_mem.setGeometry(QgsGeometry(clone_fn()))
+            mem_layer.dataProvider().addFeatures([feat_mem])
+
+        ep = mem_layer.elevationProperties()
+        if ep is not None and hasattr(Qgis, "VectorProfileType"):
+            ep.setType(Qgis.VectorProfileType.ContinuousSurface)
+
+        return mem_layer
+    except Exception:  # noqa: BLE001
+        logger.debug("Could not build temporary 3D layer for profile rendering", exc_info=True)
+        return None
+
+
+def _resolve_renderer_z_range(renderer, page_points):
+    """Derive a valid (z_min, z_max) tuple from *renderer* or *page_points*."""
+    z_range_obj = renderer.zRange()
+    z_lower = getattr(z_range_obj, "lower", lambda: None)()
+    z_upper = getattr(z_range_obj, "upper", lambda: None)()
+    z_min = _finite_float(z_lower)
+    z_max = _finite_float(z_upper)
+
+    if (z_min is None or z_max is None or z_max <= z_min) and page_points:
+        alt_range = _range_from_values(alt for _d, alt in page_points)
+        if alt_range is not None:
+            z_min, z_max = alt_range
+
+    if z_min is None or z_max is None or z_max < z_min:
+        return None, None
+    return z_min, z_max
+
+
+def _resolve_renderer_x_range(native_curve, page_points):
+    """Derive a valid (x_min, x_max) distance tuple."""
+    if page_points:
+        dist_range = _range_from_values(d for d, _a in page_points)
+        if dist_range is not None:
+            return dist_range
+
+    length_getter = getattr(native_curve, "length", None)
+    curve_length = _finite_float(length_getter()) if callable(length_getter) else None
+    if curve_length is None or curve_length <= 0:
+        return None, None
+    return 0.0, curve_length
+
+
+def _save_renderer_image(renderer, width_px, height_px, x_min, x_max, z_min, z_max, output_dir):
+    """Render and persist a profile chart image. Returns the file path or ``None``."""
+    img = renderer.renderToImage(width_px, height_px, x_min, x_max, z_min, z_max)
+    if img is None or getattr(img, "isNull", lambda: True)():
+        return None
+
+    import tempfile  # noqa: PLC0415
+    with tempfile.NamedTemporaryFile(suffix=".png", dir=output_dir, delete=False) as tmp:
+        tmp_path = tmp.name
+
+    save = getattr(img, "save", None)
+    if not callable(save) or not save(tmp_path):
+        try:
+            os.unlink(tmp_path)
+        except OSError:
+            pass
+        return None
+    return tmp_path
+
+
 def _render_native_profile_image(
     native_curve,
     layers: list,
@@ -208,111 +296,29 @@ def _render_native_profile_image(
         return None
 
     try:
+        resolved_crs = crs_auth_id or _DEFAULT_PROFILE_CRS_AUTH_ID
         request = QgsProfileRequest(native_curve)
-        resolved_crs = crs_auth_id or "EPSG:3857"
-        if resolved_crs:
-            request.setCrs(QgsCoordinateReferenceSystem(resolved_crs))
+        request.setCrs(QgsCoordinateReferenceSystem(resolved_crs))
         if tolerance is not None:
             request.setTolerance(float(tolerance))
 
-        # Build a temporary 3D memory layer from the curve so that
-        # QgsProfilePlotRenderer reads Z from our synthetic altitude-enriched
-        # geometry rather than from the original (possibly 2D) layer.
-        try:
-            from qgis.core import (  # noqa: PLC0415
-                Qgis,
-                QgsFeature,
-                QgsGeometry,
-                QgsVectorLayer,
-            )
-            crs_str = QgsCoordinateReferenceSystem(resolved_crs).authid() if resolved_crs else "EPSG:3857"
-            mem_layer = QgsVectorLayer(
-                f"LineStringZ?crs={crs_str}",
-                "_qfit_profile_temp",
-                "memory",
-            )
-            feat_mem = QgsFeature(mem_layer.fields())
-            clone_fn = getattr(native_curve, "clone", None)
-            if callable(clone_fn):
-                feat_mem.setGeometry(QgsGeometry(clone_fn()))
-                mem_layer.dataProvider().addFeatures([feat_mem])
-
-            ep = mem_layer.elevationProperties()
-            if ep is not None and hasattr(Qgis, "VectorProfileType"):
-                ep.setType(Qgis.VectorProfileType.ContinuousSurface)
-
-            profile_layers = [mem_layer]
-        except Exception:  # noqa: BLE001
-            logger.debug("Could not build temporary 3D layer for profile rendering", exc_info=True)
-            profile_layers = list(layers)
+        crs_str = QgsCoordinateReferenceSystem(resolved_crs).authid()
+        mem_layer = _build_native_renderer_mem_layer(native_curve, crs_str)
+        profile_layers = [mem_layer] if mem_layer is not None else list(layers)
 
         renderer = QgsProfilePlotRenderer(profile_layers, request)
         renderer.startGeneration()
         renderer.waitForFinished()
 
-        z_range_obj = renderer.zRange()
-        z_lower = getattr(z_range_obj, "lower", lambda: None)()
-        z_upper = getattr(z_range_obj, "upper", lambda: None)()
-
-        z_min = _finite_float(z_lower)
-        z_max = _finite_float(z_upper)
-
-        # Fall back to sample-derived z-range when the renderer returns 0/0
-        # (e.g. when the vector layer uses 2D geometry from the GeoPackage).
-        if z_min is None or z_max is None or z_max <= z_min:
-            if page_points:
-                alt_range = _range_from_values(alt for _d, alt in page_points)
-                if alt_range is not None:
-                    z_min, z_max = alt_range
-
-        if z_min is None or z_max is None or z_max < z_min:
+        z_min, z_max = _resolve_renderer_z_range(renderer, page_points)
+        if z_min is None or z_max is None:
             return None
 
-        # Use the sample-derived distance range for the x-axis when available.
-        if page_points:
-            dist_range = _range_from_values(d for d, _a in page_points)
-        else:
-            dist_range = None
-
-        if dist_range is not None:
-            x_min, x_max = dist_range
-        else:
-            length_getter = getattr(native_curve, "length", None)
-            curve_length = _finite_float(length_getter()) if callable(length_getter) else None
-            if curve_length is None or curve_length <= 0:
-                return None
-            x_min, x_max = 0.0, curve_length
-
-        img = renderer.renderToImage(
-            width_px,
-            height_px,
-            x_min,
-            x_max,
-            z_min,
-            z_max,
-        )
-        if img is None or getattr(img, "isNull", lambda: True)():
+        x_min, x_max = _resolve_renderer_x_range(native_curve, page_points)
+        if x_min is None or x_max is None:
             return None
 
-        import tempfile  # noqa: PLC0415
-
-        suffix = ".png"
-        with tempfile.NamedTemporaryFile(
-            suffix=suffix,
-            dir=output_dir,
-            delete=False,
-        ) as tmp:
-            tmp_path = tmp.name
-
-        save = getattr(img, "save", None)
-        if not callable(save) or not save(tmp_path):
-            try:
-                os.unlink(tmp_path)
-            except OSError:
-                pass
-            return None
-
-        return tmp_path
+        return _save_renderer_image(renderer, width_px, height_px, x_min, x_max, z_min, z_max, output_dir)
     except Exception:  # noqa: BLE001
         logger.debug("QgsProfilePlotRenderer render failed", exc_info=True)
         return None
@@ -341,42 +347,35 @@ def _geometry_looks_line_like(feature_geometry) -> bool:
     return any(callable(getattr(curve, name, None)) for name in ("curveToLine", "numPoints", "pointN"))
 
 
-def _apply_page_profile_payload(
+def _apply_picture_profile(
     profile_adapter,
     profile_payload: PageProfilePayload,
-    *,
-    output_path: str | None = None,
-    profile_temp_files: list[str] | None = None,
-    visible_layers: list | None = None,
+    output_path: str | None,
+    profile_temp_files: list[str] | None,
 ) -> None:
-    """Apply per-page profile data to the active native layout item backend."""
-    if not profile_adapter.supports_native_profile:
-        # Picture-backed adapter: render the profile using qfit's SVG renderer.
-        # (The QGIS native QgsProfilePlotRenderer cannot reliably produce
-        # results from 2D-track data in a headless atlas export context.)
-        page_points = profile_payload.page_points or []
-        if len(page_points) < 2:
-            profile_adapter.clear_profile()
-            return
-
-        try:
-            svg_path = _render_page_profile_svg(page_points, output_path=output_path or "")
-        except Exception:  # noqa: BLE001
-            logger.debug("Profile chart render failed", exc_info=True)
-            svg_path = None
-
-        if svg_path:
-            profile_adapter.set_svg_profile(svg_path)
-            if profile_temp_files is not None:
-                profile_temp_files.append(svg_path)
-            return
-
+    """Render and bind the SVG profile for picture-backed adapters."""
+    page_points = profile_payload.page_points or []
+    if len(page_points) < 2:
         profile_adapter.clear_profile()
         return
 
-    if getattr(profile_adapter, "atlas_driven", False):
+    try:
+        svg_path = _render_page_profile_svg(page_points, output_path=output_path or "")
+    except Exception:  # noqa: BLE001
+        logger.debug("Profile chart render failed", exc_info=True)
+        svg_path = None
+
+    if svg_path:
+        profile_adapter.set_svg_profile(svg_path)
+        if profile_temp_files is not None:
+            profile_temp_files.append(svg_path)
         return
 
+    profile_adapter.clear_profile()
+
+
+def _apply_native_profile(profile_adapter, profile_payload: PageProfilePayload) -> None:
+    """Bind the native curve and configure axis ranges for native-backed adapters."""
     native_curve, _native_request = profile_payload.native_inputs()
     if native_curve is None:
         profile_adapter.clear_profile()
@@ -390,29 +389,42 @@ def _apply_page_profile_payload(
             except Exception:  # noqa: BLE001
                 logger.debug("Could not apply page profile CRS to native layout item", exc_info=True)
 
-    if profile_adapter.bind_native_profile(
-        profile_curve=native_curve,
-        profile_request=None,
-    ):
-        x_range, y_range = _resolve_native_profile_plot_ranges(
-            profile_adapter,
-            profile_payload,
-            native_curve,
-        )
-        configure_native_profile_plot_range(
-            profile_adapter.item,
-            x_min=x_range[0] if x_range else None,
-            x_max=x_range[1] if x_range else None,
-            y_min=y_range[0] if y_range else None,
-            y_max=y_range[1] if y_range else None,
-        )
-
-        refresh_item = getattr(profile_adapter.item, "refresh", None)
-        if callable(refresh_item):
-            refresh_item()
+    if not profile_adapter.bind_native_profile(profile_curve=native_curve, profile_request=None):
+        profile_adapter.clear_profile()
         return
 
-    profile_adapter.clear_profile()
+    x_range, y_range = _resolve_native_profile_plot_ranges(profile_adapter, profile_payload, native_curve)
+    configure_native_profile_plot_range(
+        profile_adapter.item,
+        x_min=x_range[0] if x_range else None,
+        x_max=x_range[1] if x_range else None,
+        y_min=y_range[0] if y_range else None,
+        y_max=y_range[1] if y_range else None,
+    )
+    refresh_item = getattr(profile_adapter.item, "refresh", None)
+    if callable(refresh_item):
+        refresh_item()
+
+
+def _apply_page_profile_payload(
+    profile_adapter,
+    profile_payload: PageProfilePayload,
+    *,
+    output_path: str | None = None,
+    profile_temp_files: list[str] | None = None,
+) -> None:
+    """Apply per-page profile data to the active native layout item backend."""
+    if not profile_adapter.supports_native_profile:
+        # Picture-backed adapter: render via qfit's SVG renderer.
+        # (QgsProfilePlotRenderer cannot reliably handle 2D tracks in headless
+        # atlas export; the SVG path reads from atlas_profile_samples instead.)
+        _apply_picture_profile(profile_adapter, profile_payload, output_path, profile_temp_files)
+        return
+
+    if getattr(profile_adapter, "atlas_driven", False):
+        return
+
+    _apply_native_profile(profile_adapter, profile_payload)
 
 
 def _feature_attribute(feature, field_name: str):
@@ -553,6 +565,35 @@ def _profile_distance_range(page_points, native_curve) -> tuple[float, float] | 
     return 0.0, curve_length
 
 
+def _item_crs_authid(item) -> str | None:
+    """Return the CRS auth-ID from a layout item, or ``None`` on failure."""
+    crs_getter = getattr(item, "crs", None)
+    if not callable(crs_getter):
+        return None
+    try:
+        item_crs = crs_getter()
+    except Exception:  # noqa: BLE001
+        return None
+    authid_getter = getattr(item_crs, "authid", None)
+    if not callable(authid_getter):
+        return None
+    try:
+        return authid_getter()
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def _item_tolerance(item) -> float | None:
+    """Return the tolerance from a layout item, or ``None`` on failure."""
+    tolerance_getter = getattr(item, "tolerance", None)
+    if not callable(tolerance_getter):
+        return None
+    try:
+        return _finite_float(tolerance_getter())
+    except Exception:  # noqa: BLE001
+        return None
+
+
 def _profile_elevation_range_from_renderer(profile_adapter, native_curve, *, crs_auth_id: str | None = None):
     if QgsProfilePlotRenderer is None or native_curve is None:
         return None
@@ -574,33 +615,13 @@ def _profile_elevation_range_from_renderer(profile_adapter, native_curve, *, crs
         return None
 
     request = QgsProfileRequest(native_curve)
+    resolved_crs = crs_auth_id or _item_crs_authid(item)
+    if resolved_crs:
+        request.setCrs(QgsCoordinateReferenceSystem(resolved_crs))
 
-    request_crs_auth_id = crs_auth_id
-    if not request_crs_auth_id:
-        item_crs_getter = getattr(item, "crs", None)
-        if callable(item_crs_getter):
-            try:
-                item_crs = item_crs_getter()
-            except Exception:  # noqa: BLE001
-                item_crs = None
-            authid_getter = getattr(item_crs, "authid", None)
-            if callable(authid_getter):
-                try:
-                    request_crs_auth_id = authid_getter()
-                except Exception:  # noqa: BLE001
-                    request_crs_auth_id = None
-
-    if request_crs_auth_id:
-        request.setCrs(QgsCoordinateReferenceSystem(request_crs_auth_id))
-
-    tolerance_getter = getattr(item, "tolerance", None)
-    if callable(tolerance_getter):
-        try:
-            tolerance_value = _finite_float(tolerance_getter())
-        except Exception:  # noqa: BLE001
-            tolerance_value = None
-        if tolerance_value is not None:
-            request.setTolerance(tolerance_value)
+    tolerance_value = _item_tolerance(item)
+    if tolerance_value is not None:
+        request.setTolerance(tolerance_value)
 
     try:
         renderer = QgsProfilePlotRenderer(layers, request)
@@ -1643,7 +1664,6 @@ class AtlasExportTask(QgsTask):
                             profile_payload,
                             output_path=self._output_path,
                             profile_temp_files=profile_temp_files,
-                            visible_layers=map_item.layers() if map_item is not None else None,
                         )
 
                     # Set profile summary text directly from the feature so that

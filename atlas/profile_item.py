@@ -54,7 +54,7 @@ class ProfileItemAdapter:
     item: object
     kind: str = "picture"
     atlas_driven: bool = False
-    profile_layers: list = None  # type: ignore[assignment]
+    profile_layers: list | None = None
 
     @property
     def supports_native_profile(self) -> bool:
