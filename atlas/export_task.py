@@ -60,6 +60,12 @@ from .profile_item import (
     build_profile_item_adapter,
     configure_native_profile_plot_range,
 )
+from .export_page_runner import (
+    AtlasPageExportRuntime,
+    AtlasPageExportRunner,
+    AtlasPerPageFieldIndexes,
+    AtlasPerPageLayoutItems,
+)
 from .profile_backend_policy import DEFAULT_PROFILE_BACKEND_POLICY
 from .profile_payload_resolver import (
     AtlasProfileSampleLookup,
@@ -1434,225 +1440,160 @@ class AtlasExportTask(QgsTask):
                 project=self._project,
                 profile_plot_style=self._profile_plot_style,
             )
-
-            atlas = layout.atlas()
             self._page_count = feature_count
 
             if self.isCanceled():
                 return False
 
-            # Locate the map item so we can set its extent per page.
-            # Use duck-typing (setExtent + layers) so tests can mock without
-            # needing a real QgsLayoutItemMap subclass.
-            map_item = None
-            for item in layout.items():
-                if callable(getattr(item, "setExtent", None)) and callable(getattr(item, "layers", None)):
-                    map_item = item
-                    break
-
-            # Identify stored extent field indices once.
-            fields = self._atlas_layer.fields()
-            cx_idx = fields.indexOf("center_x_3857")
-            cy_idx = fields.indexOf("center_y_3857")
-            ew_idx = fields.indexOf("extent_width_m")
-            eh_idx = fields.indexOf("extent_height_m")
-            has_stored_extents = all(i >= 0 for i in (cx_idx, cy_idx, ew_idx, eh_idx))
-
             exporter = QgsLayoutExporter(layout)
-            settings = QgsLayoutExporter.PdfExportSettings()
-            settings.dpi = 150
-            settings.rasterizeWholeImage = False
-            settings.forceVectorOutput = True
+            settings = self._build_pdf_export_settings()
+            self._ensure_output_directory()
 
-            # Ensure output directory exists
-            output_dir = os.path.dirname(self._output_path)
-            if output_dir and not os.path.exists(output_dir):
-                os.makedirs(output_dir, exist_ok=True)
-
-            # Locate per-page layout items so we can update them each iteration.
-            profile_pic = None
-            profile_summary_label = None
-            detail_block_label = None
-            for item in layout.items():
-                item_id = getattr(item, "id", lambda: None)()
-                if item_id == _PROFILE_PICTURE_ID:
-                    profile_pic = item
-                elif item_id == _PROFILE_SUMMARY_ID:
-                    profile_summary_label = item
-                elif item_id == _DETAIL_BLOCK_ID:
-                    detail_block_label = item
-
-            profile_adapter = build_profile_item_adapter(profile_pic) if profile_pic is not None else None
-            manual_profile_updates_enabled = bool(
-                profile_adapter is not None and profile_adapter.requires_manual_page_updates
+            page_runner = self._build_page_export_runner(
+                layout=layout,
+                exporter=exporter,
+                settings=settings,
             )
-            profile_sample_lookup = _AtlasProfileSampleLookup(self._atlas_layer)
-            profile_temp_files: list[str] = []
-
-            # Collect layers with source_activity_id field for per-page filtering.
-            # These are the track/start/point layers that should show only the
-            # current page's activity, not the full unfiltered dataset.
-            filterable_layers: list[tuple] = []
-            if map_item is not None:
-                for layer in map_item.layers():
-                    try:
-                        layer_fields = layer.fields()
-                        sid_idx = layer_fields.indexOf("source_activity_id")
-                        if sid_idx >= 0:
-                            filterable_layers.append((layer, layer.subsetString()))
-                    except (RuntimeError, AttributeError):
-                        logger.debug("Skipping non-filterable layer", exc_info=True)
-
-            # Field index for source_activity_id in the atlas layer.
-            sid_atlas_idx = fields.indexOf("source_activity_id")
-
-            # Field indices for per-page text labels (profile summary + detail).
-            profile_summary_idx = fields.indexOf("page_profile_summary")
-            detail_field_indices = [
-                (fields.indexOf(fn), human_label)
-                for fn, human_label in _DETAIL_ITEM_FIELDS
-                if fields.indexOf(fn) >= 0
-            ]
-
-            # Walk the atlas features in order, setting the map extent explicitly
-            # from the stored center/size fields so QGIS atlas auto-fit cannot
-            # distort or shift the precomputed page extents.
-            atlas.beginRender()
-            atlas.updateFeatures()
-            ok = atlas.first()
-            page_paths: list[str] = []
-            page_index = 0
-            try:
-                while ok:
-                    if self.isCanceled():
-                        return False
-
-                    feat = atlas.layout().reportContext().feature()
-
-                    # Filter each data layer to show only this page's activity.
-                    if filterable_layers and sid_atlas_idx >= 0:
-                        sid_value = feat.attribute(sid_atlas_idx)
-                        if sid_value is not None and sid_value != "":
-                            safe_sid = str(sid_value).replace("'", "''")
-                            page_filter = f"\"source_activity_id\" = '{safe_sid}'"
-                            for layer, _original_subset in filterable_layers:
-                                try:
-                                    layer.setSubsetString(page_filter)
-                                except RuntimeError:
-                                    logger.debug("Failed to set page filter on layer", exc_info=True)
-
-                    # Update per-page profile content for native backends that
-                    # cannot follow the atlas feature automatically.
-                    if manual_profile_updates_enabled and profile_adapter is not None:
-                        profile_payload = _build_page_profile_payload(
-                            feat,
-                            filterable_layers,
-                            profile_altitude_lookup=profile_sample_lookup.lookup,
-                        )
-                        _apply_page_profile_payload(
-                            profile_adapter,
-                            profile_payload,
-                            output_path=self._output_path,
-                            profile_temp_files=profile_temp_files,
-                        )
-
-                    # Set profile summary text directly from the feature so that
-                    # no raw [% %] template syntax can leak (issue #108).
-                    if profile_summary_label is not None and profile_summary_idx >= 0:
-                        val = feat.attribute(profile_summary_idx)
-                        profile_summary_label.setText(str(val) if val else "")
-
-                    if detail_block_label is not None and detail_field_indices:
-                        lines = []
-                        for idx, human_label in detail_field_indices:
-                            val = feat.attribute(idx)
-                            if val is not None and val != "":
-                                lines.append(f"{human_label}: {val}")
-                        detail_block_label.setText("\n".join(lines))
-
-                    # Apply the stored precomputed extent to the map item.
-                    if map_item is not None and has_stored_extents:
-                        cx = feat.attribute(cx_idx)
-                        cy = feat.attribute(cy_idx)
-                        ew = feat.attribute(ew_idx)
-                        eh = feat.attribute(eh_idx)
-                        if all(v is not None and v != "" for v in (cx, cy, ew, eh)):
-                            hw = float(ew) / 2.0
-                            hh = float(eh) / 2.0
-                            rect = QgsRectangle(
-                                float(cx) - hw,
-                                float(cy) - hh,
-                                float(cx) + hw,
-                                float(cy) + hh,
-                            )
-                            rect = _normalize_extent_to_aspect_ratio(
-                                rect,
-                                BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO,
-                            )
-                            map_item.setExtent(rect)
-                            map_item.refresh()
-
-                    # Export this single page as its own PDF then merge.
-                    page_path = f"{self._output_path}.page_{page_index}.pdf"
-                    page_result = exporter.exportToPdf(page_path, settings)
-                    if page_result != QgsLayoutExporter.Success:
-                        self._error = (
-                            f"PDF export failed on page {page_index + 1} "
-                            f"(QgsLayoutExporter error code {page_result})."
-                        )
-                        return False
-                    page_paths.append(page_path)
-                    page_index += 1
-                    ok = atlas.next()
-            finally:
-                # Restore original subset strings on all filtered layers.
-                for layer, original_subset in filterable_layers:
-                    try:
-                        layer.setSubsetString(original_subset)
-                    except RuntimeError:
-                        logger.debug("Failed to restore layer subset", exc_info=True)
-                for svg_path in profile_temp_files:
-                    try:
-                        os.remove(svg_path)
-                    except OSError:
-                        pass
-                atlas.endRender()
-
+            page_paths, page_error = page_runner.export_pages()
+            if page_error is not None:
+                self._error = page_error
+                return False
+            if self.isCanceled():
+                return False
             if not page_paths:
                 self._error = "No pages were exported."
                 return False
 
-            # Prepend a cover page (silently skipped if generation fails).
             cover_path = self._export_cover_page(
                 self._atlas_layer,
                 self._output_path,
                 project=self._project,
             )
-            # Insert a table-of-contents page (silently skipped if generation fails).
             toc_path = self._export_toc_page(
                 self._atlas_layer,
                 self._output_path,
                 project=self._project,
             )
-            front_pages = [p for p in (cover_path, toc_path) if p]
-            all_paths = front_pages + page_paths
-
-            # Merge all per-page PDFs into a single output PDF.
-            if len(all_paths) == 1:
-                os.replace(all_paths[0], self._output_path)
-            else:
-                self._merge_pdfs(all_paths, self._output_path)
-                for p in all_paths:
-                    try:
-                        os.remove(p)
-                    except OSError:
-                        pass
+            self._assemble_output_pdf(page_paths, cover_path=cover_path, toc_path=toc_path)
         except (RuntimeError, OSError) as exc:
             logger.exception("Atlas export failed")
             self._error = str(exc)
             return False
 
         return not self.isCanceled()
+
+    @staticmethod
+    def _build_pdf_export_settings():
+        settings = QgsLayoutExporter.PdfExportSettings()
+        settings.dpi = 150
+        settings.rasterizeWholeImage = False
+        settings.forceVectorOutput = True
+        return settings
+
+    def _ensure_output_directory(self) -> None:
+        output_dir = os.path.dirname(self._output_path)
+        if output_dir and not os.path.exists(output_dir):
+            os.makedirs(output_dir, exist_ok=True)
+
+    def _build_page_export_runner(self, *, layout, exporter, settings) -> AtlasPageExportRunner:
+        fields = self._atlas_layer.fields()
+        map_item = self._find_map_item(layout)
+        profile_adapter, profile_summary_label, detail_block_label = self._find_per_page_layout_items(layout)
+        filterable_layers = self._collect_filterable_layers(map_item)
+
+        runtime = AtlasPageExportRuntime(
+            atlas=layout.atlas(),
+            exporter=exporter,
+            settings=settings,
+            output_path=self._output_path,
+            field_indexes=AtlasPerPageFieldIndexes(
+                cx_idx=fields.indexOf("center_x_3857"),
+                cy_idx=fields.indexOf("center_y_3857"),
+                ew_idx=fields.indexOf("extent_width_m"),
+                eh_idx=fields.indexOf("extent_height_m"),
+                sid_atlas_idx=fields.indexOf("source_activity_id"),
+                profile_summary_idx=fields.indexOf("page_profile_summary"),
+                detail_field_indices=[
+                    (fields.indexOf(field_name), human_label)
+                    for field_name, human_label in _DETAIL_ITEM_FIELDS
+                    if fields.indexOf(field_name) >= 0
+                ],
+            ),
+            layout_items=AtlasPerPageLayoutItems(
+                map_item=map_item,
+                profile_adapter=profile_adapter,
+                profile_summary_label=profile_summary_label,
+                detail_block_label=detail_block_label,
+            ),
+            filterable_layers=filterable_layers,
+            profile_sample_lookup=_AtlasProfileSampleLookup(self._atlas_layer),
+            build_page_profile_payload=_build_page_profile_payload,
+            apply_page_profile_payload=_apply_page_profile_payload,
+            normalize_extent=_normalize_extent_to_aspect_ratio,
+            target_aspect_ratio=BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO,
+            is_canceled=self.isCanceled,
+        )
+        return AtlasPageExportRunner(runtime)
+
+    @staticmethod
+    def _find_map_item(layout):
+        for item in layout.items():
+            if callable(getattr(item, "setExtent", None)) and callable(getattr(item, "layers", None)):
+                return item
+        return None
+
+    @staticmethod
+    def _find_per_page_layout_items(layout):
+        profile_pic = None
+        profile_summary_label = None
+        detail_block_label = None
+        for item in layout.items():
+            item_id = getattr(item, "id", lambda: None)()
+            if item_id == _PROFILE_PICTURE_ID:
+                profile_pic = item
+            elif item_id == _PROFILE_SUMMARY_ID:
+                profile_summary_label = item
+            elif item_id == _DETAIL_BLOCK_ID:
+                detail_block_label = item
+
+        profile_adapter = build_profile_item_adapter(profile_pic) if profile_pic is not None else None
+        return profile_adapter, profile_summary_label, detail_block_label
+
+    @staticmethod
+    def _collect_filterable_layers(map_item) -> list[tuple]:
+        filterable_layers: list[tuple] = []
+        if map_item is None:
+            return filterable_layers
+
+        for layer in map_item.layers():
+            try:
+                layer_fields = layer.fields()
+                sid_idx = layer_fields.indexOf("source_activity_id")
+                if sid_idx >= 0:
+                    filterable_layers.append((layer, layer.subsetString()))
+            except (RuntimeError, AttributeError):
+                logger.debug("Skipping non-filterable layer", exc_info=True)
+        return filterable_layers
+
+    def _assemble_output_pdf(
+        self,
+        page_paths: list[str],
+        *,
+        cover_path: str | None = None,
+        toc_path: str | None = None,
+    ) -> None:
+        front_pages = [path for path in (cover_path, toc_path) if path]
+        all_paths = front_pages + page_paths
+        if len(all_paths) == 1:
+            os.replace(all_paths[0], self._output_path)
+            return
+
+        self._merge_pdfs(all_paths, self._output_path)
+        for path in all_paths:
+            try:
+                os.remove(path)
+            except OSError:
+                pass
 
     @staticmethod
     def _export_cover_page(
