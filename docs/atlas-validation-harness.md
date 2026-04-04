@@ -39,16 +39,22 @@ Older scripts in `validation_artifacts/` remain historical references, but only 
 
 ## Running a scenario
 
+Curated real-data scenarios require explicit input paths. That is intentional: the harness should not pretend machine-local datasets are portable defaults.
+
 Example:
 
 ```bash
-python3 validation/atlas_export_harness.py native-profile-final
+python3 validation/atlas_export_harness.py native-profile-final \
+  --source-gpkg /path/to/qfit_activities.gpkg \
+  --reference-artifacts-dir /path/to/qfit/validation_artifacts
 ```
 
-You can override the artifacts root if needed:
+You can override the artifacts root for generated outputs if needed:
 
 ```bash
 python3 validation/atlas_export_harness.py native-profile-final \
+  --source-gpkg /path/to/qfit_activities.gpkg \
+  --reference-artifacts-dir /path/to/qfit/validation_artifacts \
   --artifacts-root /tmp/qfit-validation
 ```
 
@@ -73,7 +79,8 @@ The harness exports this directory through `QFIT_VALIDATION_OUTPUT_DIR` so the u
 The curated scenarios are designed for headless/local validation and may depend on:
 
 - a machine with PyQGIS available
-- access to the local activity GeoPackage used for real-data atlas validation
+- an explicit real-data source GeoPackage passed with `--source-gpkg` (or `QFIT_VALIDATION_SOURCE_GPKG`)
+- an explicit reference-artifacts directory passed with `--reference-artifacts-dir` (or `QFIT_VALIDATION_REFERENCE_ARTIFACTS_DIR`) when the scenario depends on prebuilt reference inputs such as coverage GeoPackages
 - `QT_QPA_PLATFORM=offscreen` for headless export runs
 
 The harness sets `QT_QPA_PLATFORM=offscreen` automatically if it is not already defined.

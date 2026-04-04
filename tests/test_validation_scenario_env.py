@@ -33,16 +33,30 @@ class ValidationScenarioEnvTests(unittest.TestCase):
             self.assertEqual(resolved, target)
             self.assertTrue(target.exists())
 
-    def test_resolve_source_gpkg_uses_override(self):
-        with patch.dict(os.environ, {"QFIT_VALIDATION_SOURCE_GPKG": "/tmp/source.gpkg"}, clear=False):
-            self.assertEqual(scenario_env.resolve_source_gpkg(), Path("/tmp/source.gpkg"))
+    def test_resolve_source_gpkg_requires_override(self):
+        with patch.dict(os.environ, {}, clear=True):
+            with self.assertRaises(RuntimeError):
+                scenario_env.resolve_source_gpkg()
 
-    def test_resolve_reference_artifact_uses_repo_validation_artifacts_dir(self):
-        with patch("qfit.validation.scenario_env.resolve_repo_root", return_value=Path("/tmp/repo/qfit")):
-            self.assertEqual(
-                scenario_env.resolve_reference_artifact("proof.pdf"),
-                Path("/tmp/repo/qfit/validation_artifacts/proof.pdf"),
-            )
+    def test_resolve_source_gpkg_uses_existing_override(self):
+        with tempfile.NamedTemporaryFile(suffix=".gpkg") as tmpfile:
+            with patch.dict(os.environ, {"QFIT_VALIDATION_SOURCE_GPKG": tmpfile.name}, clear=False):
+                self.assertEqual(scenario_env.resolve_source_gpkg(), Path(tmpfile.name))
+
+    def test_resolve_reference_artifacts_dir_prefers_override(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with patch.dict(os.environ, {"QFIT_VALIDATION_REFERENCE_ARTIFACTS_DIR": tmpdir}, clear=False):
+                self.assertEqual(scenario_env.resolve_reference_artifacts_dir(), Path(tmpdir))
+
+    def test_resolve_reference_artifact_requires_existing_file(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with patch.dict(os.environ, {"QFIT_VALIDATION_REFERENCE_ARTIFACTS_DIR": tmpdir}, clear=False):
+                with self.assertRaises(RuntimeError):
+                    scenario_env.resolve_reference_artifact("proof.pdf")
+
+                proof = Path(tmpdir) / "proof.pdf"
+                proof.write_text("ok")
+                self.assertEqual(scenario_env.resolve_reference_artifact("proof.pdf"), proof)
 
 
 if __name__ == "__main__":

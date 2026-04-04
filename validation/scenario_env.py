@@ -4,7 +4,6 @@ import os
 import sys
 from pathlib import Path
 
-DEFAULT_SOURCE_GPKG = Path("/home/ebelo/qfit_activities.gpkg")
 DEFAULT_VALIDATION_ARTIFACTS_DIRNAME = "validation_artifacts"
 
 
@@ -36,9 +35,30 @@ def resolve_artifacts_dir() -> Path:
 
 
 def resolve_source_gpkg() -> Path:
-    return Path(os.environ.get("QFIT_VALIDATION_SOURCE_GPKG", str(DEFAULT_SOURCE_GPKG))).expanduser().resolve()
+    raw_value = os.environ.get("QFIT_VALIDATION_SOURCE_GPKG")
+    if not raw_value:
+        raise RuntimeError(
+            "QFIT_VALIDATION_SOURCE_GPKG is required for this validation scenario."
+        )
+    path = Path(raw_value).expanduser().resolve()
+    if not path.exists():
+        raise RuntimeError(f"Validation source GeoPackage not found: {path}")
+    return path
+
+
+def resolve_reference_artifacts_dir() -> Path:
+    raw_value = os.environ.get("QFIT_VALIDATION_REFERENCE_ARTIFACTS_DIR")
+    if raw_value:
+        path = Path(raw_value).expanduser().resolve()
+    else:
+        path = resolve_repo_root() / DEFAULT_VALIDATION_ARTIFACTS_DIRNAME
+    if not path.exists():
+        raise RuntimeError(f"Validation reference artifacts directory not found: {path}")
+    return path
 
 
 def resolve_reference_artifact(filename: str) -> Path:
-    repo_root = resolve_repo_root()
-    return repo_root / DEFAULT_VALIDATION_ARTIFACTS_DIRNAME / filename
+    path = resolve_reference_artifacts_dir() / filename
+    if not path.exists():
+        raise RuntimeError(f"Validation reference artifact not found: {path}")
+    return path
