@@ -84,13 +84,11 @@ def build_env(
     if reference_artifacts_dir is not None:
         env["QFIT_VALIDATION_REFERENCE_ARTIFACTS_DIR"] = str(reference_artifacts_dir)
 
-    repo_parent = str(REPO_ROOT.parent)
+    pythonpath_entries = [str(REPO_ROOT), str(REPO_ROOT.parent)]
     current_pythonpath = env.get("PYTHONPATH")
-    env["PYTHONPATH"] = (
-        f"{repo_parent}{os.pathsep}{current_pythonpath}"
-        if current_pythonpath
-        else repo_parent
-    )
+    if current_pythonpath:
+        pythonpath_entries.append(current_pythonpath)
+    env["PYTHONPATH"] = os.pathsep.join(pythonpath_entries)
     return env
 
 

@@ -47,7 +47,9 @@ class AtlasExportHarnessTests(unittest.TestCase):
         self.assertEqual(env["QFIT_VALIDATION_SOURCE_GPKG"], "/tmp/source.gpkg")
         self.assertEqual(env["QFIT_VALIDATION_REFERENCE_ARTIFACTS_DIR"], "/tmp/reference-artifacts")
         self.assertEqual(env["QT_QPA_PLATFORM"], "offscreen")
-        self.assertEqual(env["PYTHONPATH"].split(os.pathsep)[0], str(REPO_ROOT.parent))
+        pythonpath_entries = env["PYTHONPATH"].split(os.pathsep)
+        self.assertEqual(pythonpath_entries[0], str(REPO_ROOT))
+        self.assertEqual(pythonpath_entries[1], str(REPO_ROOT.parent))
 
     def test_list_scenarios_mentions_required_inputs(self):
         text = list_scenarios()
