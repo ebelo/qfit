@@ -1,5 +1,7 @@
 import os
+import sys
 import unittest
+from types import ModuleType
 from unittest.mock import patch, sentinel
 
 from tests import _path  # noqa: F401
@@ -175,6 +177,47 @@ class _FakeLayoutContainer:
         self.removed_widgets.append(widget)
 
 
+class _FakeWidget:
+    def __init__(self, parent=None):
+        self.parent_obj = parent
+        self.visible = None
+        self.title = None
+        self.checkable = None
+        self.object_name = None
+
+    def setParent(self, parent):
+        self.parent_obj = parent
+
+    def parent(self):
+        return self.parent_obj
+
+    def setVisible(self, value):
+        self.visible = value
+
+    def setObjectName(self, name):
+        self.object_name = name
+
+    def hide(self):
+        self.visible = False
+
+    def setTitle(self, title):
+        self.title = title
+
+    def setCheckable(self, value):
+        self.checkable = value
+
+
+class _FakeLabel(_FakeWidget):
+    def __init__(self):
+        super().__init__()
+        self.text = None
+
+    def setText(self, text):
+        self.text = text
+
+
+
+
 class _FakeGroupBox:
     def __init__(self):
         self.parent_obj = None
@@ -227,8 +270,65 @@ class WorkflowSectionCoordinatorTests(unittest.TestCase):
     def test_configure_starting_sections_moves_widgets_and_installs_collapsibles(self):
         import qfit.ui.workflow_section_coordinator as workflow_section_coordinator
 
+        class _FakeSignal:
+            def connect(self, _callback):
+                pass
+
+        class _FakeToolButton(_FakeWidget):
+            def __init__(self, _parent=None):
+                super().__init__()
+                self.toggled = _FakeSignal()
+                self.arrow_type = None
+                self.checked = None
+                self.object_name = None
+                self.text = None
+
+            def setObjectName(self, name):
+                self.object_name = name
+
+            def setText(self, text):
+                self.text = text
+
+            def setToolButtonStyle(self, _style):
+                pass
+
+            def setArrowType(self, arrow_type):
+                self.arrow_type = arrow_type
+
+            def setChecked(self, checked):
+                self.checked = checked
+
+            def setStyleSheet(self, _style):
+                pass
+
+        class _FakeVBoxLayout:
+            def __init__(self, _parent=None):
+                self.items = []
+                self._spacing = 0
+
+            def setContentsMargins(self, *_args):
+                pass
+
+            def setSpacing(self, spacing):
+                self._spacing = spacing
+
+            def addWidget(self, widget):
+                self.items.append(("widget", widget))
+
+            def addLayout(self, layout):
+                self.items.append(("layout", layout))
+
+            def addItem(self, item):
+                self.items.append(("item", item))
+
+        qtwidgets = ModuleType("qgis.PyQt.QtWidgets")
+        qtwidgets.QToolButton = _FakeToolButton
+        qtwidgets.QVBoxLayout = _FakeVBoxLayout
+        qtwidgets.QWidget = _FakeWidget
+
         coordinator = workflow_section_coordinator.WorkflowSectionCoordinator(self._make_section_dock())
-        coordinator.configure_starting_sections()
+        with patch.dict(sys.modules, {"qgis.PyQt.QtWidgets": qtwidgets}):
+            coordinator.configure_starting_sections()
         dock = coordinator.dock_widget
 
         self.assertEqual(dock.workflowLabel.text, "Workflow: Fetch & store → Visualize → Analyze → Publish")
@@ -258,7 +358,7 @@ class WorkflowSectionCoordinatorTests(unittest.TestCase):
         self.assertEqual(dock.activitiesSectionToggleButton.arrow, workflow_section_coordinator.Qt.DownArrow)
         self.assertTrue(dock.activitiesSectionContentWidget.visible)
 
-class WorkflowSectionCoordinatorTests(unittest.TestCase):
+class WorkflowSectionCoordinatorVisibilityTests(unittest.TestCase):
     def _make_dock(self):
         dock = sentinel.dock
         attrs = {
