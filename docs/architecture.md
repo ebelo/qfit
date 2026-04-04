@@ -190,8 +190,21 @@ Use this quick checklist in PR review:
 - Is a new abstraction earning its keep, or just adding ceremony?
 - Would a future contributor know where related code belongs?
 - Are tests focused on the highest-value non-UI logic?
+- If the PR is rendering/export-sensitive, does it include explicit rendering proof instead of relying on green CI alone?
 
-## 8. Contributor rules
+## 8. Rendering-proof rule for export-sensitive changes
+
+For atlas/export/chart/rendering work, reviewers should expect a short PR note that records:
+
+- what dataset or scenario was validated
+- which final artifact was checked (PDF, PNG, generated graphic, etc.)
+- whether the validation covered interactive behavior, export/headless behavior, or both
+- any runtime/packaging assumptions that mattered
+- what output was visually/functionally confirmed as correct
+
+The contributor-facing checklist for this lives in `CONTRIBUTING.md`. This section exists to make the same rule visible during architectural review: output-sensitive changes need artifact proof, not only passing tests and apparently-correct object construction.
+
+## 9. Contributor rules
 
 Short version:
 
