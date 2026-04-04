@@ -31,6 +31,30 @@ All PRs must pass the following before merging:
 ### Tests must pass
 - `python3 -m pytest tests/ -x -q` must be green before opening a PR.
 
+### Rendering-proof checklist (mandatory for export-sensitive PRs)
+For changes that affect rendered/exported output — especially atlas PDFs, cover pages, table-of-contents pages, profiles, charts, or packaging/runtime-dependent export behaviour — green CI alone is **not** enough.
+
+Include a short validation note in the PR covering the relevant items below:
+
+- **Real-data check:** validated against representative real data when the feature depends on realistic geometry/content, not only synthetic fixtures.
+- **Artifact proof:** verified the final exported artifact that users actually consume (for example PDF or PNG), not just intermediate object state or layout configuration.
+- **Interactive vs export path:** noted whether the change was checked only interactively, only in export/headless flow, or in both paths when that distinction matters.
+- **Packaging/runtime note:** if the feature depends on runtime-packaged pieces (for example `pypdf`, native profile support, SVG generation, or version-specific QGIS behavior), documented what environment/path was checked.
+- **Expected output statement:** recorded what “correct output” means for this change so reviewers know what was actually validated.
+
+Use a concise PR note such as:
+
+```markdown
+## Rendering proof
+- Data: real atlas export dataset / synthetic fixture / both
+- Artifact checked: exported PDF page(s), cover page, TOC page, profile graphic, etc.
+- Path checked: interactive / export / headless
+- Runtime note: packaged plugin dev install / local source checkout / specific QGIS version
+- Result: what was visually/functionally confirmed
+```
+
+If the change is **not** rendering-sensitive, say so briefly in the PR rather than leaving the question ambiguous.
+
 ## Architecture rules
 
 Keep these rules lightweight and practical:
