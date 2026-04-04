@@ -4,6 +4,7 @@ from typing import Any
 
 from ..atlas.export_controller import AtlasExportController
 from ..atlas.export_service import AtlasExportService
+from ..atlas.export_use_case import AtlasExportUseCase
 from ..background_map_controller import BackgroundMapController
 from ..fetch_result_service import FetchResultService
 from ..load_workflow import LoadWorkflowService
@@ -25,6 +26,7 @@ class DockWidgetDependencies:
     settings: SettingsService
     sync_controller: SyncController
     atlas_export_controller: AtlasExportController
+    atlas_export_use_case: AtlasExportUseCase
     layer_gateway: Any
     background_controller: BackgroundMapController
     load_workflow: LoadWorkflowService
@@ -42,15 +44,17 @@ def build_dockwidget_dependencies(iface) -> DockWidgetDependencies:
     atlas_export_controller = AtlasExportController()
     layer_gateway = _build_layer_gateway(iface)
     cache = _build_cache()
+    atlas_export_service = AtlasExportService(layer_gateway)
     return DockWidgetDependencies(
         settings=settings,
         sync_controller=sync_controller,
         atlas_export_controller=atlas_export_controller,
+        atlas_export_use_case=AtlasExportUseCase(atlas_export_controller, atlas_export_service),
         layer_gateway=layer_gateway,
         background_controller=BackgroundMapController(layer_gateway),
         load_workflow=LoadWorkflowService(layer_gateway),
         visual_apply=VisualApplyService(layer_gateway),
-        atlas_export_service=AtlasExportService(layer_gateway),
+        atlas_export_service=atlas_export_service,
         fetch_result_service=FetchResultService(sync_controller),
         cache=cache,
     )

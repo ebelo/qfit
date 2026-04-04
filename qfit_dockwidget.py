@@ -21,7 +21,6 @@ from .activities.domain.activity_query import (
     sort_activities,
     summarize_activities,
 )
-from .atlas.export_controller import AtlasExportValidationError
 from .activities.application.load_workflow import LoadWorkflowError
 from .atlas.export_service import (
     AtlasExportResult,
@@ -351,6 +350,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.settings = dependencies.settings
         self.sync_controller = dependencies.sync_controller
         self.atlas_export_controller = dependencies.atlas_export_controller
+        self.atlas_export_use_case = dependencies.atlas_export_use_case
         self.layer_gateway = dependencies.layer_gateway
         self.background_controller = dependencies.background_controller
         self.load_workflow = dependencies.load_workflow
@@ -1054,37 +1054,11 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._atlas_export_task = None
             return
 
-        try:
-            self.atlas_export_controller.validate_atlas_layer(self.atlas_layer)
-        except AtlasExportValidationError as exc:
-            self._show_error("Atlas export error", str(exc))
-            return
-
-        try:
-            output_path, changed = self.atlas_export_controller.normalize_pdf_path(
-                self.atlasPdfPathLineEdit.text().strip()
-            )
-        except AtlasExportValidationError as exc:
-            self._show_error("Missing output path", str(exc))
-            return
-        if changed:
-            self.atlasPdfPathLineEdit.setText(output_path)
-
-        prereq_error = self.atlas_export_service.check_pdf_export_prerequisites()
-        if prereq_error is not None:
-            self._set_atlas_pdf_status("Atlas PDF export unavailable.")
-            self._set_status("Atlas PDF export unavailable.")
-            self._show_error("Atlas PDF export unavailable", prereq_error)
-            return
-
-        self._save_settings()
-
-        pre_export_tile_mode = self.tileModeComboBox.currentText()
-        export_request = self.atlas_export_service.build_request(
+        export_command = self.atlas_export_use_case.build_command(
             atlas_layer=self.atlas_layer,
-            output_path=output_path,
+            output_path=self.atlasPdfPathLineEdit.text().strip(),
             on_finished=self._on_atlas_export_finished,
-            pre_export_tile_mode=pre_export_tile_mode,
+            pre_export_tile_mode=self.tileModeComboBox.currentText(),
             preset_name=self.backgroundPresetComboBox.currentText(),
             access_token=self._mapbox_access_token(),
             style_owner=self.mapboxStyleOwnerLineEdit.text().strip(),
@@ -1092,7 +1066,19 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             background_enabled=self.backgroundMapCheckBox.isChecked(),
             profile_plot_style=build_native_profile_plot_style_from_settings(self.settings),
         )
-        self.atlas_export_service.prepare_basemap_for_export(export_request)
+        prepared_export = self.atlas_export_use_case.prepare_export(export_command)
+        if prepared_export.path_changed:
+            self.atlasPdfPathLineEdit.setText(prepared_export.output_path)
+        if not prepared_export.is_ready:
+            if prepared_export.pdf_status is not None:
+                self._set_atlas_pdf_status(prepared_export.pdf_status)
+            if prepared_export.main_status is not None:
+                self._set_status(prepared_export.main_status)
+            self._show_error(prepared_export.error_title, prepared_export.error_message)
+            return
+
+        self._save_settings()
+        self._atlas_export_task = self.atlas_export_use_case.start_export(prepared_export)
 
         self._set_atlas_export_running(True)
         self._set_atlas_pdf_status(
@@ -1100,7 +1086,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         )
         self._set_status("Generating atlas PDF…")
 
-        self._atlas_export_task = self.atlas_export_service.build_task(export_request)
         QgsApplication.taskManager().addTask(self._atlas_export_task)
 
     def _set_atlas_export_running(self, running: bool) -> None:
@@ -1122,7 +1107,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._atlas_export_task = None
         self._set_atlas_export_running(False)
 
-        result = AtlasExportService.build_result(output_path, error, cancelled, page_count)
+        result = self.atlas_export_use_case.finish_export(output_path, error, cancelled, page_count)
         self._set_atlas_pdf_status(result.pdf_status)
         self._set_status(result.main_status)
         if result.error is not None and not result.cancelled:
