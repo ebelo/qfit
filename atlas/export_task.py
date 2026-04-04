@@ -60,6 +60,7 @@ from .profile_item import (
     build_profile_item_adapter,
     configure_native_profile_plot_range,
 )
+from .cover_summary import build_cover_summary_from_rows
 from .export_page_runner import (
     AtlasPageExportRuntime,
     AtlasPageExportRunner,
@@ -904,27 +905,13 @@ def _build_cover_summary_from_current_atlas_features(atlas_layer) -> dict:
     Also computes the combined EPSG:3857 bounding box and collects unique
     ``source_activity_id`` values for the cover heatmap overview map.
     """
-    from .publish_atlas import (  # noqa: PLC0415
-        build_date_range_label,
-        format_distance_label,
-        format_duration_label,
-        format_elevation_label,
-    )
-
     features = list(atlas_layer.getFeatures())
     if not features:
         return {}
 
-    fields = atlas_layer.fields()
+    field_names = [field.name() for field in atlas_layer.fields()]
 
-    def _idx(name: str) -> int:
-        return fields.indexOf(name)
-
-    def _safe_attr(feature, name: str):
-        idx = _idx(name)
-        if idx < 0:
-            return None
-        value = feature.attribute(idx)
+    def _normalize_value(value):
         if value is None:
             return None
         is_null = getattr(value, "isNull", None)
@@ -937,99 +924,14 @@ def _build_cover_summary_from_current_atlas_features(atlas_layer) -> dict:
             return None
         return value
 
-    def _safe_float(value):
-        try:
-            return float(value)
-        except (TypeError, ValueError):
-            return None
-
-    def _safe_int(value):
-        try:
-            return int(value)
-        except (TypeError, ValueError):
-            return None
-
-    activity_count = len(features)
-    page_dates = [str(v) for v in (_safe_attr(f, "page_date") for f in features) if v]
-    total_distance_m = sum(v for v in (_safe_float(_safe_attr(f, "distance_m")) for f in features) if v is not None)
-    total_moving_time_s = sum(v for v in (_safe_int(_safe_attr(f, "moving_time_s")) for f in features) if v is not None)
-    total_elevation_gain_m = sum(
-        v for v in (_safe_float(_safe_attr(f, "total_elevation_gain_m")) for f in features) if v is not None
-    )
-
-    # Extent field indices for cover heatmap map
-    cx_idx = _idx("center_x_3857")
-    cy_idx = _idx("center_y_3857")
-    ew_idx = _idx("extent_width_m")
-    eh_idx = _idx("extent_height_m")
-    has_extent_fields = all(i >= 0 for i in (cx_idx, cy_idx, ew_idx, eh_idx))
-    sid_idx = _idx("source_activity_id")
-
-    extent_xmin = float("inf")
-    extent_ymin = float("inf")
-    extent_xmax = float("-inf")
-    extent_ymax = float("-inf")
-
-    ordered_activity_types = ordered_canonical_activity_labels(
-        (
-            _safe_attr(feature, "activity_type"),
-            _safe_attr(feature, "sport_type"),
-        )
-        for feature in features
-    )
-    atlas_activity_ids: list[str] = []
-
+    rows = []
     for feature in features:
-        # Accumulate combined extent from stored per-page bounds
-        if has_extent_fields:
-            cx = _safe_float(feature.attribute(cx_idx))
-            cy = _safe_float(feature.attribute(cy_idx))
-            ew = _safe_float(feature.attribute(ew_idx))
-            eh = _safe_float(feature.attribute(eh_idx))
-            if all(v is not None for v in (cx, cy, ew, eh)):
-                hw, hh = ew / 2.0, eh / 2.0
-                extent_xmin = min(extent_xmin, cx - hw)
-                extent_ymin = min(extent_ymin, cy - hh)
-                extent_xmax = max(extent_xmax, cx + hw)
-                extent_ymax = max(extent_ymax, cy + hh)
+        row = {}
+        for index, field_name in enumerate(field_names):
+            row[field_name] = _normalize_value(feature.attribute(index))
+        rows.append(row)
 
-        # Collect unique activity IDs for subset filtering
-        if sid_idx >= 0:
-            sid = feature.attribute(sid_idx)
-            if sid is not None and sid != "":
-                sid_str = str(sid)
-                if sid_str not in atlas_activity_ids:
-                    atlas_activity_ids.append(sid_str)
-
-    valid_extent = extent_xmin < extent_xmax and extent_ymin < extent_ymax
-
-    activity_label = "activity" if activity_count == 1 else "activities"
-    date_range_label = build_date_range_label(min(page_dates), max(page_dates)) if page_dates else None
-    total_distance_label = format_distance_label(total_distance_m) if total_distance_m > 0 else None
-    total_duration_label = format_duration_label(total_moving_time_s) if total_moving_time_s > 0 else None
-    total_elevation_gain_label = format_elevation_label(total_elevation_gain_m) if total_elevation_gain_m > 0 else None
-    activity_types_label = ", ".join(ordered_activity_types) if ordered_activity_types else None
-
-    cover_parts = [f"{activity_count} {activity_label}"]
-    for part in [date_range_label, total_distance_label, total_duration_label, total_elevation_gain_label, activity_types_label]:
-        if part:
-            cover_parts.append(part)
-
-    return {
-        "document_cover_summary": " · ".join(cover_parts) if cover_parts else "",
-        "document_activity_count": str(activity_count),
-        "document_date_range_label": date_range_label or "",
-        "document_total_distance_label": total_distance_label or "",
-        "document_total_duration_label": total_duration_label or "",
-        "document_total_elevation_gain_label": total_elevation_gain_label or "",
-        "document_activity_types_label": activity_types_label or "",
-        # Cover heatmap map data
-        "_cover_extent_xmin": extent_xmin if valid_extent else None,
-        "_cover_extent_ymin": extent_ymin if valid_extent else None,
-        "_cover_extent_xmax": extent_xmax if valid_extent else None,
-        "_cover_extent_ymax": extent_ymax if valid_extent else None,
-        "_atlas_activity_ids": atlas_activity_ids,
-    }
+    return build_cover_summary_from_rows(rows)
 
 
 def _apply_cover_heatmap_renderer(layer) -> None:

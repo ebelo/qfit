@@ -3000,7 +3000,8 @@ class TestAtlasExportTaskPerPageFilter(unittest.TestCase):
             on_finished=lambda **kw: received.update(kw),
         )
 
-        with patch("qfit.atlas.export_task.QgsRectangle", _Rect), \
+        with patch("qfit.atlas.export_page_runner.QgsRectangle", _Rect), \
+             patch("qfit.atlas.export_task.QgsRectangle", _Rect), \
              patch("qfit.atlas.export_task.build_atlas_layout", return_value=layout_mock), \
              patch("qfit.atlas.export_task.QgsLayoutExporter", exporter_cls_mock), \
              patch("qfit.atlas.export_task.AtlasExportTask._export_cover_page", return_value=None), \
@@ -3292,6 +3293,7 @@ def _make_cover_atlas_layer(fields_dict=None, feature_count=1):
 
     fields = MagicMock()
     fields.indexOf = lambda name: all_field_names.index(name) if name in all_field_names else -1
+    fields.__iter__.return_value = iter([type("Field", (), {"name": (lambda self, _n=name: _n)})() for name in all_field_names])
     layer.fields.return_value = fields
 
     features = []
@@ -3307,83 +3309,54 @@ def _make_cover_atlas_layer(fields_dict=None, feature_count=1):
 
 class TestBuildCoverLayout(unittest.TestCase):
     def test_cover_summary_prefers_sport_type_for_activity_labels(self):
-        from qfit.atlas.export_task import _build_cover_summary_from_current_atlas_features
+        from qfit.atlas.cover_summary import build_cover_summary_from_rows
 
-        field_names = [
-            "page_date",
-            "activity_type",
-            "sport_type",
-            "distance_m",
-            "moving_time_s",
-            "total_elevation_gain_m",
-            "document_cover_summary",
-            "document_activity_count",
-            "document_date_range_label",
-            "document_total_distance_label",
-            "document_total_duration_label",
-            "document_total_elevation_gain_label",
-            "document_activity_types_label",
-        ]
-
-        rows = [
-            ["2026-03-01", "Ride", "GravelRide", 12000.0, 3600, 300.0, "stale all data", "99", "", "", "", "", "Ride"],
-            ["2026-03-02", "Ride", "Trail Run", 8000.0, 2400, 200.0, "stale all data", "99", "", "", "", "", "Ride"],
-        ]
-
-        layer = MagicMock()
-        layer.featureCount.return_value = 2
-        fields = MagicMock()
-        fields.indexOf = lambda name: field_names.index(name) if name in field_names else -1
-        layer.fields.return_value = fields
-        feats = []
-        for row in rows:
-            feat = MagicMock()
-            feat.attribute = lambda idx, _row=row: _row[idx] if 0 <= idx < len(_row) else None
-            feats.append(feat)
-        layer.getFeatures.side_effect = lambda: iter(feats)
-
-        summary = _build_cover_summary_from_current_atlas_features(layer)
+        summary = build_cover_summary_from_rows([
+            {
+                "page_date": "2026-03-01",
+                "activity_type": "Ride",
+                "sport_type": "GravelRide",
+                "distance_m": 12000.0,
+                "moving_time_s": 3600,
+                "total_elevation_gain_m": 300.0,
+                "document_cover_summary": "stale all data",
+            },
+            {
+                "page_date": "2026-03-02",
+                "activity_type": "Ride",
+                "sport_type": "Trail Run",
+                "distance_m": 8000.0,
+                "moving_time_s": 2400,
+                "total_elevation_gain_m": 200.0,
+                "document_cover_summary": "stale all data",
+            },
+        ])
 
         self.assertEqual(summary["document_activity_types_label"], "GravelRide, Trail Run")
         self.assertIn("GravelRide, Trail Run", summary["document_cover_summary"])
         self.assertNotIn("Ride, Ride", summary["document_cover_summary"])
 
     def test_cover_summary_is_recomputed_from_current_atlas_subset(self):
-        from qfit.atlas.export_task import _build_cover_summary_from_current_atlas_features
+        from qfit.atlas.cover_summary import build_cover_summary_from_rows
 
-        field_names = [
-            "page_date",
-            "activity_type",
-            "distance_m",
-            "moving_time_s",
-            "total_elevation_gain_m",
-            "document_cover_summary",
-            "document_activity_count",
-            "document_date_range_label",
-            "document_total_distance_label",
-            "document_total_duration_label",
-            "document_total_elevation_gain_label",
-            "document_activity_types_label",
-        ]
-
-        rows = [
-            ["2026-03-01", "NordicSkiing", 12000.0, 3600, 300.0, "stale all data", "99", "", "", "", "", "Run, Ride, NordicSkiing"],
-            ["2026-03-02", "NordicSkiing", 8000.0, 2400, 200.0, "stale all data", "99", "", "", "", "", "Run, Ride, NordicSkiing"],
-        ]
-
-        layer = MagicMock()
-        layer.featureCount.return_value = 2
-        fields = MagicMock()
-        fields.indexOf = lambda name: field_names.index(name) if name in field_names else -1
-        layer.fields.return_value = fields
-        feats = []
-        for row in rows:
-            feat = MagicMock()
-            feat.attribute = lambda idx, _row=row: _row[idx] if 0 <= idx < len(_row) else None
-            feats.append(feat)
-        layer.getFeatures.side_effect = lambda: iter(feats)
-
-        summary = _build_cover_summary_from_current_atlas_features(layer)
+        summary = build_cover_summary_from_rows([
+            {
+                "page_date": "2026-03-01",
+                "activity_type": "NordicSkiing",
+                "distance_m": 12000.0,
+                "moving_time_s": 3600,
+                "total_elevation_gain_m": 300.0,
+                "document_activity_types_label": "Run, Ride, NordicSkiing",
+            },
+            {
+                "page_date": "2026-03-02",
+                "activity_type": "NordicSkiing",
+                "distance_m": 8000.0,
+                "moving_time_s": 2400,
+                "total_elevation_gain_m": 200.0,
+                "document_activity_types_label": "Run, Ride, NordicSkiing",
+            },
+        ])
 
         self.assertEqual(summary["document_activity_count"], "2")
         self.assertEqual(summary["document_activity_types_label"], "NordicSkiing")
@@ -3941,6 +3914,7 @@ def _make_toc_atlas_layer(entries=None, feature_count=None):
 
     fields = MagicMock()
     fields.indexOf = lambda name: all_field_names.index(name) if name in all_field_names else -1
+    fields.__iter__.return_value = iter([type("Field", (), {"name": (lambda self, _n=name: _n)})() for name in all_field_names])
     layer.fields.return_value = fields
 
     feats = []
@@ -4135,6 +4109,7 @@ def _make_cover_atlas_layer_with_extents(feature_count=2):
 
     fields = MagicMock()
     fields.indexOf = lambda name: field_names.index(name) if name in field_names else -1
+    fields.__iter__.return_value = iter([type("Field", (), {"name": (lambda self, _n=name: _n)})() for name in field_names])
     layer.fields.return_value = fields
 
     feats = []
@@ -4151,8 +4126,34 @@ class TestCoverSummaryExtentAndActivityIds(unittest.TestCase):
     """Tests for extent bounds and activity IDs computed by the cover summary."""
 
     def test_summary_returns_valid_extent_bounds(self):
-        layer = _make_cover_atlas_layer_with_extents()
-        result = _build_cover_summary_from_current_atlas_features(layer)
+        from qfit.atlas.cover_summary import build_cover_summary_from_rows
+
+        result = build_cover_summary_from_rows([
+            {
+                "page_date": "2026-03-01",
+                "activity_type": "Run",
+                "distance_m": 10000.0,
+                "moving_time_s": 3600,
+                "total_elevation_gain_m": 200.0,
+                "center_x_3857": 1000000.0,
+                "center_y_3857": 6000000.0,
+                "extent_width_m": 5000.0,
+                "extent_height_m": 5000.0,
+                "source_activity_id": "act_1",
+            },
+            {
+                "page_date": "2026-03-02",
+                "activity_type": "Ride",
+                "distance_m": 20000.0,
+                "moving_time_s": 7200,
+                "total_elevation_gain_m": 400.0,
+                "center_x_3857": 1010000.0,
+                "center_y_3857": 6010000.0,
+                "extent_width_m": 6000.0,
+                "extent_height_m": 6000.0,
+                "source_activity_id": "act_2",
+            },
+        ])
         self.assertIsNotNone(result.get("_cover_extent_xmin"))
         self.assertIsNotNone(result.get("_cover_extent_ymin"))
         self.assertIsNotNone(result.get("_cover_extent_xmax"))
@@ -4161,15 +4162,21 @@ class TestCoverSummaryExtentAndActivityIds(unittest.TestCase):
         self.assertLess(result["_cover_extent_ymin"], result["_cover_extent_ymax"])
 
     def test_summary_collects_unique_activity_ids(self):
-        layer = _make_cover_atlas_layer_with_extents()
-        result = _build_cover_summary_from_current_atlas_features(layer)
+        from qfit.atlas.cover_summary import build_cover_summary_from_rows
+
+        result = build_cover_summary_from_rows([
+            {"source_activity_id": "act_1"},
+            {"source_activity_id": "act_2"},
+            {"source_activity_id": "act_1"},
+        ])
         ids = result.get("_atlas_activity_ids", [])
         self.assertEqual(ids, ["act_1", "act_2"])
 
     def test_summary_extent_none_when_fields_absent(self):
         """When extent fields are missing, bounds should be None."""
-        layer = _make_cover_atlas_layer(feature_count=1)
-        result = _build_cover_summary_from_current_atlas_features(layer)
+        from qfit.atlas.cover_summary import build_cover_summary_from_rows
+
+        result = build_cover_summary_from_rows([{"page_date": "2026-03-01", "activity_type": "Run"}])
         self.assertIsNone(result.get("_cover_extent_xmin"))
 
 
@@ -4178,21 +4185,20 @@ class TestApplyCoverHeatmapRenderer(unittest.TestCase):
 
     def test_sets_renderer_on_layer(self):
         layer = MagicMock()
-        # Add the symbols the function imports at runtime into the qgis.core stub.
         heatmap_renderer = MagicMock()
         heatmap_cls = MagicMock(return_value=heatmap_renderer)
         style_cls = MagicMock()
         style_cls.defaultStyle.return_value.colorRamp.return_value = MagicMock()
         ramp_cls = MagicMock()
-        _qgis_core.QgsHeatmapRenderer = heatmap_cls
-        _qgis_core.QgsStyle = style_cls
-        _qgis_core.QgsGradientColorRamp = ramp_cls
-        try:
+
+        qgis_core = ModuleType("qgis.core")
+        qgis_core.QgsHeatmapRenderer = heatmap_cls
+        qgis_core.QgsStyle = style_cls
+        qgis_core.QgsGradientColorRamp = ramp_cls
+
+        with patch.dict(sys.modules, {"qgis.core": qgis_core}):
             _apply_cover_heatmap_renderer(layer)
-        finally:
-            del _qgis_core.QgsHeatmapRenderer
-            del _qgis_core.QgsStyle
-            del _qgis_core.QgsGradientColorRamp
+
         layer.setRenderer.assert_called_once_with(heatmap_renderer)
         layer.setOpacity.assert_called_once_with(0.85)
 
