@@ -37,6 +37,20 @@ class LayerGatewayBoundaryTests(unittest.TestCase):
 
         self.assertIs(layer_manager_module.LayerManager, adapter_module.QgisLayerGateway)
 
+    def test_background_map_service_legacy_import_shares_same_class(self):
+        modules = self._qgis_gateway_modules()
+
+        with patch.dict(sys.modules, modules, clear=False):
+            self._reset_qgis_gateway_imports()
+            sys.modules.pop("qfit.background_map_service", None)
+            sys.modules.pop("qfit.visualization.infrastructure.background_map_service", None)
+            adapter_module = importlib.import_module(
+                "qfit.visualization.infrastructure.background_map_service"
+            )
+            legacy_module = importlib.import_module("qfit.background_map_service")
+
+        self.assertIs(legacy_module.BackgroundMapService, adapter_module.BackgroundMapService)
+
     def test_qgis_gateway_satisfies_protocol_and_delegates_to_services(self):
         modules = self._qgis_gateway_modules()
 
@@ -47,19 +61,19 @@ class LayerGatewayBoundaryTests(unittest.TestCase):
             )
 
             gateway = adapter_module.QgisLayerGateway(MagicMock(name="iface"))
+            gateway._move_background_layers_to_bottom = MagicMock(name="move_background_layers_to_bottom")
             result = gateway.load_output_layers("/tmp/out.gpkg")
 
         self.assertIsInstance(gateway, LayerGateway)
         canvas = gateway._canvas_service
         loader = gateway._project_layer_loader
-        background = gateway._background_service
         canvas.ensure_working_crs.assert_called_once_with(gateway.iface, preserve_extent=False)
         loader.load_output_layers.assert_called_once_with("/tmp/out.gpkg")
         canvas.zoom_to_layers.assert_called_once_with(
             gateway.iface,
             [result[0], result[1], result[2], result[3]],
         )
-        background.move_background_layers_to_bottom.assert_called_once_with()
+        gateway._move_background_layers_to_bottom.assert_called_once_with()
 
     def test_qgis_gateway_remove_layers_delegates_to_qgsproject(self):
         modules = self._qgis_gateway_modules()
@@ -82,7 +96,10 @@ class LayerGatewayBoundaryTests(unittest.TestCase):
     @staticmethod
     def _reset_qgis_gateway_imports():
         for name in [
+            "qfit.background_map_service",
             "qfit.layer_manager",
+            "qfit.visualization.infrastructure",
+            "qfit.visualization.infrastructure.background_map_service",
             "qfit.visualization.infrastructure.qgis_layer_gateway",
         ]:
             sys.modules.pop(name, None)
@@ -109,15 +126,30 @@ class LayerGatewayBoundaryTests(unittest.TestCase):
         )
 
         mapbox_config = ModuleType("qfit.mapbox_config")
+        mapbox_config.BACKGROUND_LAYER_PREFIX = "qfit background"
         mapbox_config.TILE_MODE_RASTER = "raster"
+        mapbox_config.TILE_MODE_VECTOR = "vector"
+        mapbox_config.build_background_layer_name = MagicMock(name="build_background_layer_name")
+        mapbox_config.build_vector_tile_layer_uri = MagicMock(name="build_vector_tile_layer_uri")
+        mapbox_config.build_xyz_layer_uri = MagicMock(name="build_xyz_layer_uri")
+        mapbox_config.extract_mapbox_vector_source_ids = MagicMock(name="extract_mapbox_vector_source_ids")
+        mapbox_config.fetch_mapbox_style_definition = MagicMock(name="fetch_mapbox_style_definition")
+        mapbox_config.resolve_background_style = MagicMock(name="resolve_background_style")
+        mapbox_config.simplify_mapbox_style_expressions = MagicMock(name="simplify_mapbox_style_expressions")
+        mapbox_config.snap_web_mercator_bounds_to_native_zoom = MagicMock(
+            name="snap_web_mercator_bounds_to_native_zoom"
+        )
 
         qgis_core = ModuleType("qgis.core")
         qgis_core.QgsProject = MagicMock(name="QgsProject")
+        qgis_core.QgsRasterLayer = MagicMock(name="QgsRasterLayer")
+        qgis_core.QgsRectangle = MagicMock(name="QgsRectangle")
+        qgis_core.QgsVectorTileLayer = MagicMock(name="QgsVectorTileLayer")
 
         return {
             "qgis.core": qgis_core,
-            "qfit.background_map_service": class_module(
-                "qfit.background_map_service",
+            "qfit.visualization.infrastructure.background_map_service": class_module(
+                "qfit.visualization.infrastructure.background_map_service",
                 "BackgroundMapService",
                 background_service,
             ),
