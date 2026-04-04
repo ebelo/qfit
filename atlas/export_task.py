@@ -61,6 +61,20 @@ from .profile_item import (
     configure_native_profile_plot_range,
 )
 from .cover_summary import build_cover_summary_from_rows
+
+_COVER_SUMMARY_ROW_FIELDS = (
+    "page_date",
+    "activity_type",
+    "sport_type",
+    "distance_m",
+    "moving_time_s",
+    "total_elevation_gain_m",
+    "center_x_3857",
+    "center_y_3857",
+    "extent_width_m",
+    "extent_height_m",
+    "source_activity_id",
+)
 from .export_page_runner import (
     AtlasPageExportRuntime,
     AtlasPageExportRunner,
@@ -909,7 +923,12 @@ def _build_cover_summary_from_current_atlas_features(atlas_layer) -> dict:
     if not features:
         return {}
 
-    field_names = [field.name() for field in atlas_layer.fields()]
+    fields = atlas_layer.fields()
+    field_indexes = {
+        field_name: fields.indexOf(field_name)
+        for field_name in _COVER_SUMMARY_ROW_FIELDS
+        if fields.indexOf(field_name) >= 0
+    }
 
     def _normalize_value(value):
         if value is None:
@@ -926,9 +945,10 @@ def _build_cover_summary_from_current_atlas_features(atlas_layer) -> dict:
 
     rows = []
     for feature in features:
-        row = {}
-        for index, field_name in enumerate(field_names):
-            row[field_name] = _normalize_value(feature.attribute(index))
+        row = {
+            field_name: _normalize_value(feature.attribute(index))
+            for field_name, index in field_indexes.items()
+        }
         rows.append(row)
 
     return build_cover_summary_from_rows(rows)

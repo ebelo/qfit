@@ -4180,6 +4180,48 @@ class TestCoverSummaryExtentAndActivityIds(unittest.TestCase):
         self.assertIsNone(result.get("_cover_extent_xmin"))
 
 
+    def test_current_atlas_feature_adapter_only_reads_required_summary_fields(self):
+        field_names = [
+            "page_date",
+            "activity_type",
+            "distance_m",
+            "moving_time_s",
+            "total_elevation_gain_m",
+            "source_activity_id",
+            "irrelevant_virtual_field",
+        ]
+        layer = MagicMock()
+        fields = MagicMock()
+        fields.indexOf = lambda name: field_names.index(name) if name in field_names else -1
+        layer.fields.return_value = fields
+
+        feature = MagicMock()
+        values = {
+            0: "2026-03-01",
+            1: "Run",
+            2: 10000.0,
+            3: 3600,
+            4: 200.0,
+            5: "act_1",
+            6: RuntimeError("should not be read"),
+        }
+
+        def _attribute(idx):
+            value = values[idx]
+            if isinstance(value, Exception):
+                raise value
+            return value
+
+        feature.attribute.side_effect = _attribute
+        layer.getFeatures.side_effect = lambda: iter([feature])
+
+        result = _build_cover_summary_from_current_atlas_features(layer)
+
+        self.assertEqual(result["document_activity_count"], "1")
+        self.assertEqual(feature.attribute.call_count, 6)
+        self.assertEqual({call.args[0] for call in feature.attribute.call_args_list}, {0, 1, 2, 3, 4, 5})
+
+
 class TestApplyCoverHeatmapRenderer(unittest.TestCase):
     """Tests for _apply_cover_heatmap_renderer."""
 
