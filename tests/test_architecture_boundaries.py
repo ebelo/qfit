@@ -148,8 +148,8 @@ class WorkflowBoundaryTests(unittest.TestCase):
         "atlas/export_controller.py",
         "atlas/export_service.py",
         "atlas/export_use_case.py",
-        "background_map_controller.py",
-        "visual_apply.py",
+        "visualization/application/background_map_controller.py",
+        "visualization/application/visual_apply.py",
     ]
 
     FORBIDDEN_UI_IMPORTS = (

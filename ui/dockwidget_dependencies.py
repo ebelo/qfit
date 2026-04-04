@@ -5,13 +5,12 @@ from typing import Any
 from ..atlas.export_controller import AtlasExportController
 from ..atlas.export_service import AtlasExportService
 from ..atlas.export_use_case import AtlasExportUseCase
-from ..background_map_controller import BackgroundMapController
 from ..fetch_result_service import FetchResultService
 from ..load_workflow import LoadWorkflowService
 from ..qfit_cache import QfitCache
 from ..settings_service import SettingsService
 from ..sync_controller import SyncController
-from ..visual_apply import VisualApplyService
+from ..visualization.application import BackgroundMapController, VisualApplyService
 
 
 @dataclass(frozen=True)
