@@ -47,25 +47,53 @@ class AtlasExportCoordinator:
         self.assemble_output_pdf = assemble_output_pdf
         self.logger = logger
 
+    def _stage_failure(
+        self,
+        stage: str,
+        exc: Exception,
+        *,
+        page_count: int = 0,
+        user_label: str | None = None,
+    ) -> AtlasExportExecutionResult:
+        self.logger.exception(f"Atlas export {stage} failed")
+        detail = str(exc).strip() or exc.__class__.__name__
+        return AtlasExportExecutionResult(
+            success=False,
+            page_count=page_count,
+            error=f"{user_label or stage.capitalize()} failed: {detail}",
+        )
+
     def execute(self) -> AtlasExportExecutionResult:
         try:
             feature_count = self.atlas_layer.featureCount() if self.atlas_layer else 0
-            if feature_count == 0:
-                return AtlasExportExecutionResult(
-                    success=False,
-                    error="No atlas pages found. Store and load activity layers first.",
-                )
+        except (RuntimeError, OSError) as exc:
+            return self._stage_failure(
+                "atlas layer inspection",
+                exc,
+                user_label="Atlas layer inspection",
+            )
 
+        if feature_count == 0:
+            return AtlasExportExecutionResult(
+                success=False,
+                error="No atlas pages found. Store and load activity layers first.",
+            )
+
+        try:
             layout = self.build_layout(
                 self.atlas_layer,
                 project=self.project,
                 profile_plot_style=self.profile_plot_style,
             )
-            page_count = feature_count
+        except (RuntimeError, OSError) as exc:
+            return self._stage_failure("layout preparation", exc, user_label="Layout preparation")
 
-            if self.is_canceled():
-                return AtlasExportExecutionResult(success=False, page_count=page_count)
+        page_count = feature_count
 
+        if self.is_canceled():
+            return AtlasExportExecutionResult(success=False, page_count=page_count)
+
+        try:
             exporter = self.layout_exporter_cls(layout)
             settings = self.build_pdf_export_settings()
             self.ensure_output_directory()
@@ -75,18 +103,26 @@ class AtlasExportCoordinator:
                 exporter=exporter,
                 settings=settings,
             )
-            page_paths, page_error = page_runner.export_pages()
-            if page_error is not None:
-                return AtlasExportExecutionResult(success=False, page_count=page_count, error=page_error)
-            if self.is_canceled():
-                return AtlasExportExecutionResult(success=False, page_count=page_count)
-            if not page_paths:
-                return AtlasExportExecutionResult(
-                    success=False,
-                    page_count=page_count,
-                    error="No pages were exported.",
-                )
+        except (RuntimeError, OSError) as exc:
+            return self._stage_failure("export setup", exc, page_count=page_count, user_label="Export setup")
 
+        try:
+            page_paths, page_error = page_runner.export_pages()
+        except (RuntimeError, OSError) as exc:
+            return self._stage_failure("page export", exc, page_count=page_count, user_label="Page export")
+
+        if page_error is not None:
+            return AtlasExportExecutionResult(success=False, page_count=page_count, error=page_error)
+        if self.is_canceled():
+            return AtlasExportExecutionResult(success=False, page_count=page_count)
+        if not page_paths:
+            return AtlasExportExecutionResult(
+                success=False,
+                page_count=page_count,
+                error="No pages were exported.",
+            )
+
+        try:
             cover_path = self.export_cover_page(
                 self.atlas_layer,
                 self.output_path,
@@ -98,7 +134,12 @@ class AtlasExportCoordinator:
                 project=self.project,
             )
             self.assemble_output_pdf(page_paths, cover_path=cover_path, toc_path=toc_path)
-            return AtlasExportExecutionResult(success=not self.is_canceled(), page_count=page_count)
         except (RuntimeError, OSError) as exc:
-            self.logger.exception("Atlas export failed")
-            return AtlasExportExecutionResult(success=False, error=str(exc))
+            return self._stage_failure(
+                "final PDF assembly",
+                exc,
+                page_count=page_count,
+                user_label="Final PDF assembly",
+            )
+
+        return AtlasExportExecutionResult(success=not self.is_canceled(), page_count=page_count)

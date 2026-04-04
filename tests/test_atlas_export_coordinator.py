@@ -72,6 +72,23 @@ class AtlasExportCoordinatorTests(unittest.TestCase):
         )
         parts["build_layout"].assert_not_called()
 
+    def test_execute_reports_atlas_layer_inspection_failure(self):
+        parts = self._make_coordinator()
+        parts["atlas_layer"].featureCount.side_effect = RuntimeError("wrapped layer deleted")
+
+        result = parts["coordinator"].execute()
+
+        self.assertEqual(
+            result,
+            AtlasExportExecutionResult(
+                success=False,
+                page_count=0,
+                error="Atlas layer inspection failed: wrapped layer deleted",
+            ),
+        )
+        parts["logger"].exception.assert_called_once_with("Atlas export atlas layer inspection failed")
+        parts["build_layout"].assert_not_called()
+
     def test_execute_runs_full_export_flow(self):
         parts = self._make_coordinator()
 
@@ -118,8 +135,63 @@ class AtlasExportCoordinatorTests(unittest.TestCase):
 
         result = parts["coordinator"].execute()
 
-        self.assertEqual(result, AtlasExportExecutionResult(success=False, page_count=0, error="layout failed"))
-        parts["logger"].exception.assert_called_once_with("Atlas export failed")
+        self.assertEqual(
+            result,
+            AtlasExportExecutionResult(
+                success=False,
+                page_count=0,
+                error="Layout preparation failed: layout failed",
+            ),
+        )
+        parts["logger"].exception.assert_called_once_with("Atlas export layout preparation failed")
+
+    def test_execute_reports_export_setup_stage(self):
+        parts = self._make_coordinator()
+        parts["ensure_output_directory"].side_effect = OSError("disk full")
+
+        result = parts["coordinator"].execute()
+
+        self.assertEqual(
+            result,
+            AtlasExportExecutionResult(
+                success=False,
+                page_count=2,
+                error="Export setup failed: disk full",
+            ),
+        )
+        parts["logger"].exception.assert_called_once_with("Atlas export export setup failed")
+
+    def test_execute_reports_page_export_stage(self):
+        parts = self._make_coordinator()
+        parts["page_runner"].export_pages.side_effect = RuntimeError("renderer exploded")
+
+        result = parts["coordinator"].execute()
+
+        self.assertEqual(
+            result,
+            AtlasExportExecutionResult(
+                success=False,
+                page_count=2,
+                error="Page export failed: renderer exploded",
+            ),
+        )
+        parts["logger"].exception.assert_called_once_with("Atlas export page export failed")
+
+    def test_execute_reports_final_pdf_assembly_stage(self):
+        parts = self._make_coordinator()
+        parts["assemble_output_pdf"].side_effect = OSError("permission denied")
+
+        result = parts["coordinator"].execute()
+
+        self.assertEqual(
+            result,
+            AtlasExportExecutionResult(
+                success=False,
+                page_count=2,
+                error="Final PDF assembly failed: permission denied",
+            ),
+        )
+        parts["logger"].exception.assert_called_once_with("Atlas export final PDF assembly failed")
 
 
 if __name__ == "__main__":

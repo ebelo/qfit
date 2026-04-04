@@ -3611,6 +3611,23 @@ class TestAtlasExportTaskNarrowedExceptions(unittest.TestCase):
             result = AtlasExportTask._export_cover_page(layer, "/tmp/atlas.pdf")
         self.assertIsNone(result)
 
+    def test_unexpected_run_failure_is_formatted_with_exception_type(self):
+        received = {}
+        layer = _make_atlas_layer(feature_count=1)
+        task = AtlasExportTask(
+            atlas_layer=layer,
+            output_path="/tmp/qfit_test_unexpected.pdf",
+            on_finished=lambda **kw: received.update(kw),
+        )
+
+        with patch.object(AtlasExportTask, "_run_export", side_effect=ValueError("bad state")):
+            _run_task(task)
+
+        self.assertEqual(
+            received.get("error"),
+            "Unexpected atlas export failure (ValueError): bad state",
+        )
+
 
 class TestExtentNormalization(unittest.TestCase):
     class _Rect:

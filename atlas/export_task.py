@@ -31,6 +31,13 @@ from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
+
+def _format_unexpected_export_error(exc: Exception) -> str:
+    detail = str(exc).strip()
+    if detail:
+        return f"Unexpected atlas export failure ({exc.__class__.__name__}): {detail}"
+    return f"Unexpected atlas export failure ({exc.__class__.__name__})"
+
 from qgis.core import (
     QgsCoordinateReferenceSystem,
     QgsLayoutExporter,
@@ -1099,7 +1106,7 @@ class AtlasExportTask(QgsTask):
             return self._run_export()
         except Exception as exc:  # noqa: BLE001 – QgsTask worker thread safety net
             logger.exception("Atlas export task failed")
-            self._error = str(exc)
+            self._error = _format_unexpected_export_error(exc)
             return False
 
     def _run_export(self) -> bool:
