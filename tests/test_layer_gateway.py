@@ -145,6 +145,9 @@ class LayerGatewayBoundaryTests(unittest.TestCase):
         qgis_core.QgsRasterLayer = MagicMock(name="QgsRasterLayer")
         qgis_core.QgsRectangle = MagicMock(name="QgsRectangle")
         qgis_core.QgsVectorTileLayer = MagicMock(name="QgsVectorTileLayer")
+        temporal_props = MagicMock(name="QgsVectorLayerTemporalProperties")
+        temporal_props.ModeFeatureDateTimeStartAndEndFromExpressions = 1
+        qgis_core.QgsVectorLayerTemporalProperties = temporal_props
 
         return {
             "qgis.core": qgis_core,

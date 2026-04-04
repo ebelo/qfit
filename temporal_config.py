@@ -1,87 +1,25 @@
-from dataclasses import dataclass
+"""Compatibility shim for visualization temporal configuration helpers.
 
-TEMPORAL_MODE_LABELS = [
-    "Disabled",
-    "Local activity time",
-    "UTC time",
+Prefer importing from ``qfit.visualization.application.temporal_config``.
+This module remains as a stable forwarding import during the package move.
+"""
+
+from .visualization.application.temporal_config import (
+    DEFAULT_TEMPORAL_MODE_LABEL,
+    TEMPORAL_MODE_LABELS,
+    TemporalLayerPlan,
+    build_temporal_plan,
+    describe_temporal_configuration,
+    is_temporal_mode_enabled,
+    temporal_mode_labels,
+)
+
+__all__ = [
+    "DEFAULT_TEMPORAL_MODE_LABEL",
+    "TEMPORAL_MODE_LABELS",
+    "TemporalLayerPlan",
+    "build_temporal_plan",
+    "describe_temporal_configuration",
+    "is_temporal_mode_enabled",
+    "temporal_mode_labels",
 ]
-DEFAULT_TEMPORAL_MODE_LABEL = "Local activity time"
-
-
-@dataclass(frozen=True)
-class TemporalLayerPlan:
-    layer_key: str
-    field_name: str
-    field_kind: str
-    label: str
-
-    @property
-    def expression(self):
-        return 'to_datetime("{field}")'.format(field=self.field_name)
-
-
-_LAYER_CANDIDATES = {
-    "activity_points": {
-        "Local activity time": ["point_timestamp_local", "point_timestamp_utc"],
-        "UTC time": ["point_timestamp_utc", "point_timestamp_local"],
-    },
-    "activity_tracks": {
-        "Local activity time": ["start_date_local", "start_date"],
-        "UTC time": ["start_date", "start_date_local"],
-    },
-    "activity_starts": {
-        "Local activity time": ["start_date_local", "start_date"],
-        "UTC time": ["start_date", "start_date_local"],
-    },
-}
-
-
-def temporal_mode_labels():
-    return list(TEMPORAL_MODE_LABELS)
-
-
-def is_temporal_mode_enabled(mode_label):
-    return (mode_label or "").strip() != "Disabled"
-
-
-def build_temporal_plan(layer_key, available_fields, mode_label):
-    mode_label = (mode_label or DEFAULT_TEMPORAL_MODE_LABEL).strip() or DEFAULT_TEMPORAL_MODE_LABEL
-    if not is_temporal_mode_enabled(mode_label):
-        return None
-
-    field_names = {name for name in (available_fields or []) if name}
-    candidates = _LAYER_CANDIDATES.get(layer_key, {}).get(mode_label, [])
-    for field_name in candidates:
-        if field_name in field_names:
-            return TemporalLayerPlan(
-                layer_key=layer_key,
-                field_name=field_name,
-                field_kind=_field_kind(field_name),
-                label=_plan_label(layer_key, field_name),
-            )
-    return None
-
-
-def describe_temporal_configuration(plans, mode_label):
-    active_plans = [plan for plan in (plans or []) if plan is not None]
-    if not is_temporal_mode_enabled(mode_label):
-        return "Temporal playback disabled"
-    if not active_plans:
-        return "Temporal playback requested, but no timestamp fields were available"
-    labels = ", ".join(plan.label for plan in active_plans)
-    return "Temporal playback wired for {labels}".format(labels=labels)
-
-
-def _field_kind(field_name):
-    return "local" if field_name.endswith("_local") else "utc"
-
-
-def _plan_label(layer_key, field_name):
-    field_kind = _field_kind(field_name).upper()
-    if layer_key == "activity_points":
-        return "activity points ({kind})".format(kind=field_kind)
-    if layer_key == "activity_tracks":
-        return "activity tracks ({kind})".format(kind=field_kind)
-    if layer_key == "activity_starts":
-        return "activity starts ({kind})".format(kind=field_kind)
-    return "{layer} ({kind})".format(layer=layer_key.replace("_", " "), kind=field_kind)

@@ -17,7 +17,7 @@ except ValueError:
     )
 
 try:
-    from qfit.temporal_service import TemporalService
+    from qfit.visualization.infrastructure.temporal_service import TemporalService
 
     QGIS_AVAILABLE = True
     QGIS_IMPORT_ERROR = None
@@ -36,14 +36,14 @@ def _load_service_with_mock_qgis():
     qgis_modules = ["qgis", "qgis.core"]
 
     saved_qgis = {name: sys.modules.get(name) for name in qgis_modules}
-    saved_module = sys.modules.get("qfit.temporal_service")
+    saved_module = sys.modules.get("qfit.visualization.infrastructure.temporal_service")
 
     for name in qgis_modules:
         sys.modules[name] = qstub
-    sys.modules.pop("qfit.temporal_service", None)
+    sys.modules.pop("qfit.visualization.infrastructure.temporal_service", None)
 
     try:
-        module = importlib.import_module("qfit.temporal_service")
+        module = importlib.import_module("qfit.visualization.infrastructure.temporal_service")
         return module.TemporalService, module
     except Exception:  # pragma: no cover
         return None, None
@@ -54,9 +54,9 @@ def _load_service_with_mock_qgis():
             else:
                 sys.modules[name] = original
         if saved_module is None:
-            sys.modules.pop("qfit.temporal_service", None)
+            sys.modules.pop("qfit.visualization.infrastructure.temporal_service", None)
         else:
-            sys.modules["qfit.temporal_service"] = saved_module
+            sys.modules["qfit.visualization.infrastructure.temporal_service"] = saved_module
 
 
 if not QGIS_AVAILABLE:
