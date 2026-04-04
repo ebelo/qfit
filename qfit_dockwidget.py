@@ -46,6 +46,7 @@ from .providers.domain.provider import ProviderError
 from .providers.infrastructure.strava_provider import StravaProvider
 from .temporal_config import DEFAULT_TEMPORAL_MODE_LABEL, temporal_mode_labels
 from .ui.dockwidget_dependencies import DockWidgetDependencies, build_dockwidget_dependencies
+from .ui.workflow_section_coordinator import WorkflowSectionCoordinator
 from .ui_settings_binding import UIFieldBinding, load_bindings, save_bindings
 
 FORM_CLASS, _ = uic.loadUiType(
@@ -80,9 +81,10 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._dependencies = dependencies or build_dockwidget_dependencies(iface)
         self._bind_dependencies(self._dependencies)
         self.setupUi(self)
+        self._workflow_section_coordinator = WorkflowSectionCoordinator(self)
         self.setFeatures(self.DEFAULT_DOCK_FEATURES)
         self.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
-        self._configure_starting_sections()
+        self._workflow_section_coordinator.configure_starting_sections()
         self._remove_stale_qfit_layers()
         self._apply_contextual_help()
         self._configure_background_preset_options()
@@ -92,107 +94,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._load_settings()
         self._wire_events()
         self._set_default_dates()
-        self._configure_workflow_sections()
+        self._workflow_section_coordinator.configure_workflow_sections()
         self._refresh_activity_preview()
         self._update_connection_status()
-
-    def _configure_starting_sections(self):
-        """Hide inline credential entry and start the dock at fetch/import.
-
-        Strava credentials now live in the separate Configuration dialog, so
-        the main Activities dock should begin with fetching rather than an
-        embedded OAuth/setup flow.
-        """
-        self.workflowLabel.setText("Workflow: Fetch & store → Visualize → Analyze → Publish")
-        self.credentialsGroupBox.hide()
-        self.activitiesGroupBox.setTitle("")
-        self.activitiesIntroLabel.setText(
-            "Fetch your activities from Strava using the credentials saved in qfit → Configuration. "
-            "Store or clear the local GeoPackage here too. Filters are applied later in the Visualize step — no re-fetch needed."
-        )
-        self._move_store_section_under_fetch()
-        self._move_load_layers_to_visualize()
-        self.outputGroupBox.setTitle("Store / database")
-        self.publishGroupBox.setCheckable(False)
-        self.publishSettingsWidget.setVisible(True)
-        self._install_collapsible_section(self.activitiesGroupBox, "activitiesGroupLayout", "1. Fetch and store activities", "activities")
-        self._install_collapsible_section(self.styleGroupBox, "styleGroupLayout", "2. Visualize", "style")
-        self._install_collapsible_section(self.analysisWorkflowGroupBox, "analysisWorkflowLayout", "3. Analyze", "analysis")
-        self._install_collapsible_section(self.publishGroupBox, "publishGroupLayout", "4. Publish / atlas", "publish")
-        self.mapboxAccessTokenLabel.hide()
-        self.mapboxAccessTokenLineEdit.hide()
-
-    def _install_collapsible_section(self, group_box, layout_attr: str, title: str, key: str):
-        layout = getattr(self, layout_attr, None)
-        toggle_attr = f"{key}SectionToggleButton"
-        content_attr = f"{key}SectionContentWidget"
-        if layout is None or hasattr(self, toggle_attr):
-            return
-
-        group_box.setTitle("")
-
-        content_widget = QWidget(group_box)
-        content_widget.setObjectName(f"{key}SectionContentWidget")
-        content_layout = QVBoxLayout(content_widget)
-        content_layout.setContentsMargins(0, 0, 0, 0)
-        content_layout.setSpacing(layout.spacing())
-
-        while layout.count():
-            item = layout.takeAt(0)
-            widget = item.widget()
-            child_layout = item.layout()
-            spacer = item.spacerItem()
-            if widget is not None:
-                content_layout.addWidget(widget)
-            elif child_layout is not None:
-                content_layout.addLayout(child_layout)
-            elif spacer is not None:
-                content_layout.addItem(spacer)
-
-        toggle = QToolButton(group_box)
-        toggle.setObjectName(f"{key}SectionToggleButton")
-        toggle.setText(title)
-        toggle.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
-        toggle.setArrowType(Qt.DownArrow)
-        toggle.setCheckable(True)
-        toggle.setChecked(True)
-        toggle.setStyleSheet("QToolButton { border: none; font-weight: bold; }")
-        toggle.toggled.connect(lambda expanded, key=key: self._set_section_expanded(key, expanded))
-
-        setattr(self, toggle_attr, toggle)
-        setattr(self, content_attr, content_widget)
-        layout.addWidget(toggle)
-        layout.addWidget(content_widget)
-
-    def _set_section_expanded(self, key: str, expanded: bool):
-        toggle = getattr(self, f"{key}SectionToggleButton", None)
-        content = getattr(self, f"{key}SectionContentWidget", None)
-        if toggle is not None:
-            toggle.setArrowType(Qt.DownArrow if expanded else Qt.RightArrow)
-        if content is not None:
-            content.setVisible(expanded)
-
-    def _move_store_section_under_fetch(self):
-        outer_layout = getattr(self, "verticalLayout", None)
-        activities_layout = getattr(self, "activitiesGroupLayout", None)
-        if outer_layout is None or activities_layout is None:
-            return
-        if self.outputGroupBox.parent() is self.activitiesGroupBox:
-            return
-        outer_layout.removeWidget(self.outputGroupBox)
-        self.outputGroupBox.setParent(self.activitiesGroupBox)
-        activities_layout.addWidget(self.outputGroupBox)
-
-    def _move_load_layers_to_visualize(self):
-        output_layout = getattr(self, "outputGroupLayout", None)
-        style_layout = getattr(self, "styleGroupLayout", None)
-        if output_layout is None or style_layout is None:
-            return
-        if self.loadLayersButton.parent() is self.styleGroupBox:
-            return
-        output_layout.removeWidget(self.loadLayersButton)
-        self.loadLayersButton.setParent(self.styleGroupBox)
-        style_layout.insertWidget(0, self.loadLayersButton)
 
     def _remove_stale_qfit_layers(self):
         """Remove qfit layers from the project whose source file no longer exists.
@@ -243,9 +147,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.applyFiltersButton.clicked.connect(self.on_apply_filters_clicked)
         self.loadBackgroundButton.clicked.connect(self.on_load_background_clicked)
         self.backgroundPresetComboBox.currentTextChanged.connect(self.on_background_preset_changed)
-        self.detailedStreamsCheckBox.toggled.connect(self._update_detailed_fetch_visibility)
-        self.writeActivityPointsCheckBox.toggled.connect(self._update_point_sampling_visibility)
-        self.advancedFetchGroupBox.toggled.connect(self._update_advanced_fetch_visibility)
+        self.detailedStreamsCheckBox.toggled.connect(self._workflow_section_coordinator.update_detailed_fetch_visibility)
+        self.writeActivityPointsCheckBox.toggled.connect(self._workflow_section_coordinator.update_point_sampling_visibility)
+        self.advancedFetchGroupBox.toggled.connect(self._workflow_section_coordinator.update_advanced_fetch_visibility)
         self.atlasPdfBrowseButton.clicked.connect(self.on_atlas_pdf_browse_clicked)
         self.generateAtlasPdfButton.clicked.connect(self.on_generate_atlas_pdf_clicked)
         self.clientIdLineEdit.textChanged.connect(self._update_connection_status)
@@ -290,61 +194,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.temporalModeComboBox.clear()
         for label in temporal_mode_labels():
             self.temporalModeComboBox.addItem(label)
-
-    def _configure_workflow_sections(self):
-        self._update_detailed_fetch_visibility(self.detailedStreamsCheckBox.isChecked())
-        self._update_point_sampling_visibility(self.writeActivityPointsCheckBox.isChecked())
-        self._update_advanced_fetch_visibility(self.advancedFetchGroupBox.isChecked())
-        self._update_mapbox_advanced_visibility(self.backgroundPresetComboBox.currentText())
-
-    def _update_detailed_fetch_visibility(self, enabled):
-        self.detailedRouteStrategyLabel.setVisible(enabled)
-        self.detailedRouteStrategyComboBox.setVisible(enabled)
-        strategy_helper = getattr(self, "detailedRouteStrategyComboBoxContextHelpLabel", None)
-        if strategy_helper is not None:
-            strategy_helper.setVisible(enabled)
-        strategy_wrapper = getattr(self, "detailedRouteStrategyComboBoxHelpField", None)
-        if strategy_wrapper is not None:
-            strategy_wrapper.setVisible(enabled)
-        self.maxDetailedActivitiesLabel.setVisible(enabled)
-        self.maxDetailedActivitiesSpinBox.setVisible(enabled)
-        helper = getattr(self, "maxDetailedActivitiesSpinBoxContextHelpLabel", None)
-        if helper is not None:
-            helper.setVisible(enabled)
-        wrapper = getattr(self, "maxDetailedActivitiesSpinBoxHelpField", None)
-        if wrapper is not None:
-            wrapper.setVisible(enabled)
-
-    def _update_point_sampling_visibility(self, enabled):
-        self.pointSamplingStrideLabel.setVisible(enabled)
-        self.pointSamplingStrideSpinBox.setVisible(enabled)
-        helper = getattr(self, "pointSamplingStrideSpinBoxContextHelpLabel", None)
-        if helper is not None:
-            helper.setVisible(enabled)
-        wrapper = getattr(self, "pointSamplingStrideSpinBoxHelpField", None)
-        if wrapper is not None:
-            wrapper.setVisible(enabled)
-
-    def _update_advanced_fetch_visibility(self, expanded):
-        widget = getattr(self, "advancedFetchSettingsWidget", None)
-        if widget is not None:
-            widget.setVisible(expanded)
-
-    def _update_mapbox_advanced_visibility(self, preset_name):
-        show_advanced = preset_requires_custom_style(preset_name)
-        self.mapboxStyleOwnerLabel.setVisible(show_advanced)
-        self.mapboxStyleOwnerLineEdit.setVisible(show_advanced)
-        self.mapboxStyleIdLabel.setVisible(show_advanced)
-        self.mapboxStyleIdLineEdit.setVisible(show_advanced)
-        owner_helper = getattr(self, "mapboxStyleOwnerLineEditContextHelpLabel", None)
-        if owner_helper is not None:
-            owner_helper.setVisible(show_advanced)
-        style_helper = getattr(self, "mapboxStyleIdLineEditContextHelpLabel", None)
-        if style_helper is not None:
-            style_helper.setVisible(show_advanced)
-        style_wrapper = getattr(self, "mapboxStyleIdLineEditHelpField", None)
-        if style_wrapper is not None:
-            style_wrapper.setVisible(show_advanced)
 
     def _bind_dependencies(self, dependencies: DockWidgetDependencies) -> None:
         self.settings = dependencies.settings
@@ -568,7 +417,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
     def on_background_preset_changed(self, preset_name):
         self._sync_background_style_fields(preset_name, force=True)
-        self._update_mapbox_advanced_visibility(preset_name)
+        self._workflow_section_coordinator.update_mapbox_advanced_visibility(preset_name)
 
     def on_load_background_clicked(self):
         self._save_settings()
