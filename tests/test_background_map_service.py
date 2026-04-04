@@ -33,7 +33,7 @@ except ValueError:
 # Real-QGIS import (used for skip-guarded tests)
 # ---------------------------------------------------------------------------
 try:
-    from qfit.background_map_service import BackgroundMapService
+    from qfit.visualization.infrastructure.background_map_service import BackgroundMapService
     from qfit.mapbox_config import BACKGROUND_LAYER_PREFIX, TILE_MODE_RASTER, TILE_MODE_VECTOR
 
     QGIS_AVAILABLE = True
@@ -78,14 +78,14 @@ def _load_service_with_mock_qgis():
     _QGIS_MODS = ["qgis", "qgis.core", "qgis.PyQt", "qgis.PyQt.QtCore"]
 
     saved_qgis = {m: sys.modules.get(m) for m in _QGIS_MODS}
-    saved_bms = sys.modules.get("qfit.background_map_service")
+    saved_bms = sys.modules.get("qfit.visualization.infrastructure.background_map_service")
 
     for mod_name in _QGIS_MODS:
         sys.modules[mod_name] = qstub
-    sys.modules.pop("qfit.background_map_service", None)
+    sys.modules.pop("qfit.visualization.infrastructure.background_map_service", None)
 
     try:
-        bms_mod = importlib.import_module("qfit.background_map_service")
+        bms_mod = importlib.import_module("qfit.visualization.infrastructure.background_map_service")
         return bms_mod.BackgroundMapService, bms_mod, qstub
     except Exception:  # pragma: no cover
         return None, None, None
@@ -96,9 +96,9 @@ def _load_service_with_mock_qgis():
             else:
                 sys.modules[mod_name] = original
         if saved_bms is None:
-            sys.modules.pop("qfit.background_map_service", None)
+            sys.modules.pop("qfit.visualization.infrastructure.background_map_service", None)
         else:
-            sys.modules["qfit.background_map_service"] = saved_bms
+            sys.modules["qfit.visualization.infrastructure.background_map_service"] = saved_bms
 
 
 # Use QGIS_AVAILABLE (successful import) rather than _REAL_QGIS_PRESENT
@@ -144,7 +144,7 @@ class EnsureBackgroundLayerDisabledTests(unittest.TestCase):
     def test_returns_none_when_disabled(self):
         service = BackgroundMapService()
         mock_project = _make_project_mock()
-        with patch("qfit.background_map_service.QgsProject") as qp:
+        with patch("qfit.visualization.infrastructure.background_map_service.QgsProject") as qp:
             qp.instance.return_value = mock_project
             result = service.ensure_background_layer(
                 enabled=False, preset_name="Outdoor", access_token="tok"
@@ -161,7 +161,7 @@ class EnsureBackgroundLayerDisabledTests(unittest.TestCase):
         other_layer.name.return_value = "qfit activities"
 
         mock_project = _make_project_mock({"bg-id": bg_layer, "act-id": other_layer})
-        with patch("qfit.background_map_service.QgsProject") as qp:
+        with patch("qfit.visualization.infrastructure.background_map_service.QgsProject") as qp:
             qp.instance.return_value = mock_project
             service.ensure_background_layer(
                 enabled=False, preset_name="Outdoor", access_token="tok"
@@ -181,7 +181,7 @@ class MoveBackgroundLayersToBottomTests(unittest.TestCase):
         mock_project = _make_project_mock()
         mock_project.layerTreeRoot.return_value = mock_root
 
-        with patch("qfit.background_map_service.QgsProject") as qp:
+        with patch("qfit.visualization.infrastructure.background_map_service.QgsProject") as qp:
             qp.instance.return_value = mock_project
             service.move_background_layers_to_bottom()
 
@@ -197,7 +197,7 @@ class MoveBackgroundLayersToBottomTests(unittest.TestCase):
         mock_project = _make_project_mock()
         mock_project.layerTreeRoot.return_value = mock_root
 
-        with patch("qfit.background_map_service.QgsProject") as qp:
+        with patch("qfit.visualization.infrastructure.background_map_service.QgsProject") as qp:
             qp.instance.return_value = mock_project
             service.move_background_layers_to_bottom()
 
@@ -210,7 +210,7 @@ class MoveBackgroundLayersToBottomTests(unittest.TestCase):
         mock_project = _make_project_mock()
         mock_project.layerTreeRoot.return_value = mock_root
 
-        with patch("qfit.background_map_service.QgsProject") as qp:
+        with patch("qfit.visualization.infrastructure.background_map_service.QgsProject") as qp:
             qp.instance.return_value = mock_project
             service.move_background_layers_to_bottom()
 
@@ -230,7 +230,7 @@ class SnapExtentToBackgroundTileZoomTests(unittest.TestCase):
 
     def test_returns_none_unchanged(self):
         service = BackgroundMapService()
-        with patch("qfit.background_map_service.QgsProject"):
+        with patch("qfit.visualization.infrastructure.background_map_service.QgsProject"):
             result = service.snap_extent_to_background_tile_zoom(None, MagicMock())
         self.assertIsNone(result)
 
@@ -238,7 +238,7 @@ class SnapExtentToBackgroundTileZoomTests(unittest.TestCase):
         service = BackgroundMapService()
         extent = MagicMock()
         extent.isEmpty.return_value = True
-        with patch("qfit.background_map_service.QgsProject"):
+        with patch("qfit.visualization.infrastructure.background_map_service.QgsProject"):
             result = service.snap_extent_to_background_tile_zoom(extent, MagicMock())
         self.assertIs(result, extent)
 
@@ -248,7 +248,7 @@ class SnapExtentToBackgroundTileZoomTests(unittest.TestCase):
         mock_project = _make_project_mock()
         mock_project.crs.return_value.authid.return_value = "EPSG:4326"
 
-        with patch("qfit.background_map_service.QgsProject") as qp:
+        with patch("qfit.visualization.infrastructure.background_map_service.QgsProject") as qp:
             qp.instance.return_value = mock_project
             result = service.snap_extent_to_background_tile_zoom(extent, MagicMock())
 
@@ -265,7 +265,7 @@ class SnapExtentToBackgroundTileZoomTests(unittest.TestCase):
         canvas.width.return_value = 1024
         canvas.height.return_value = 768
 
-        with patch("qfit.background_map_service.QgsProject") as qp:
+        with patch("qfit.visualization.infrastructure.background_map_service.QgsProject") as qp:
             qp.instance.return_value = mock_project
             result = service.snap_extent_to_background_tile_zoom(extent, canvas)
 
@@ -289,8 +289,8 @@ class SnapExtentToBackgroundTileZoomTests(unittest.TestCase):
         mock_project = _make_project_mock({"bg-id": raster_layer})
         mock_project.crs.return_value.authid.return_value = "EPSG:3857"
 
-        with patch("qfit.background_map_service.QgsProject") as qp, \
-             patch("qfit.background_map_service.QgsRectangle") as mock_rect:
+        with patch("qfit.visualization.infrastructure.background_map_service.QgsProject") as qp, \
+             patch("qfit.visualization.infrastructure.background_map_service.QgsRectangle") as mock_rect:
             qp.instance.return_value = mock_project
             mock_rect.return_value = MagicMock()
             service.snap_extent_to_background_tile_zoom(extent, canvas)
@@ -310,7 +310,7 @@ class RemoveBackgroundLayersTests(unittest.TestCase):
         other_layer.name.return_value = "qfit activities"
         other_layer.id.return_value = "act-1"
 
-        with patch("qfit.background_map_service.QgsProject") as qp:
+        with patch("qfit.visualization.infrastructure.background_map_service.QgsProject") as qp:
             qp.instance.return_value = _make_project_mock({"bg-1": bg_layer, "act-1": other_layer})
             service._remove_background_layers()
 
@@ -321,7 +321,7 @@ class RemoveBackgroundLayersTests(unittest.TestCase):
         layer = MagicMock()
         layer.name.return_value = "qfit activities"
 
-        with patch("qfit.background_map_service.QgsProject") as qp:
+        with patch("qfit.visualization.infrastructure.background_map_service.QgsProject") as qp:
             qp.instance.return_value = _make_project_mock({"act-1": layer})
             service._remove_background_layers()
 

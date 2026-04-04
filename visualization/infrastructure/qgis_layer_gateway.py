@@ -4,13 +4,13 @@ from qgis.core import QgsProject
 
 logger = logging.getLogger(__name__)
 
-from ...background_map_service import BackgroundMapService
 from ...layer_filter_service import LayerFilterService
 from ...layer_style_service import LayerStyleService
 from ...map_canvas_service import MapCanvasService
 from ...mapbox_config import TILE_MODE_RASTER
 from ...project_layer_loader import ProjectLayerLoader
 from ...temporal_service import TemporalService
+from .background_map_service import BackgroundMapService
 
 
 class QgisLayerGateway:

@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 from tests import _path  # noqa: F401
 
 try:
-    from qfit.layer_manager import LayerManager
+    from qfit.visualization.infrastructure import LayerManager
     _LAYER_MANAGER_IMPORT_ERROR = None
 except ImportError as exc:  # pragma: no cover - depends on QGIS bindings in CI
     LayerManager = None
