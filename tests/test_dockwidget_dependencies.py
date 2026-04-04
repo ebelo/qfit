@@ -114,3 +114,77 @@ class DockWidgetDependenciesTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class _VisibilityTarget:
+    def __init__(self):
+        self.visible = None
+
+    def setVisible(self, value):
+        self.visible = value
+
+
+class WorkflowSectionCoordinatorTests(unittest.TestCase):
+    def _make_dock(self):
+        dock = sentinel.dock
+        attrs = {
+            "detailedRouteStrategyLabel": _VisibilityTarget(),
+            "detailedRouteStrategyComboBox": _VisibilityTarget(),
+            "maxDetailedActivitiesLabel": _VisibilityTarget(),
+            "maxDetailedActivitiesSpinBox": _VisibilityTarget(),
+            "pointSamplingStrideLabel": _VisibilityTarget(),
+            "pointSamplingStrideSpinBox": _VisibilityTarget(),
+            "advancedFetchSettingsWidget": _VisibilityTarget(),
+            "mapboxStyleOwnerLabel": _VisibilityTarget(),
+            "mapboxStyleOwnerLineEdit": _VisibilityTarget(),
+            "mapboxStyleIdLabel": _VisibilityTarget(),
+            "mapboxStyleIdLineEdit": _VisibilityTarget(),
+            "detailedRouteStrategyComboBoxContextHelpLabel": _VisibilityTarget(),
+            "detailedRouteStrategyComboBoxHelpField": _VisibilityTarget(),
+            "maxDetailedActivitiesSpinBoxContextHelpLabel": _VisibilityTarget(),
+            "maxDetailedActivitiesSpinBoxHelpField": _VisibilityTarget(),
+            "pointSamplingStrideSpinBoxContextHelpLabel": _VisibilityTarget(),
+            "pointSamplingStrideSpinBoxHelpField": _VisibilityTarget(),
+            "mapboxStyleOwnerLineEditContextHelpLabel": _VisibilityTarget(),
+            "mapboxStyleIdLineEditContextHelpLabel": _VisibilityTarget(),
+            "mapboxStyleIdLineEditHelpField": _VisibilityTarget(),
+            "detailedStreamsCheckBox": sentinel.detailedStreamsCheckBox,
+            "writeActivityPointsCheckBox": sentinel.writeActivityPointsCheckBox,
+            "advancedFetchGroupBox": sentinel.advancedFetchGroupBox,
+            "backgroundPresetComboBox": sentinel.backgroundPresetComboBox,
+        }
+        dock = type("Dock", (), attrs)()
+        dock.detailedStreamsCheckBox = sentinel.detailedStreamsCheckBox
+        dock.writeActivityPointsCheckBox = sentinel.writeActivityPointsCheckBox
+        dock.advancedFetchGroupBox = sentinel.advancedFetchGroupBox
+        dock.backgroundPresetComboBox = sentinel.backgroundPresetComboBox
+        return dock
+
+    def test_workflow_section_coordinator_applies_visibility_rules(self):
+        import qfit.ui.workflow_section_coordinator as workflow_section_coordinator
+
+        with patch.object(
+            workflow_section_coordinator,
+            "preset_requires_custom_style",
+            side_effect=lambda name: name == "Custom",
+        ):
+            WorkflowSectionCoordinator = workflow_section_coordinator.WorkflowSectionCoordinator
+
+            detailed_streams = sentinel.detailedStreamsCheckBox
+            detailed_streams.isChecked = lambda: True
+            write_points = sentinel.writeActivityPointsCheckBox
+            write_points.isChecked = lambda: False
+            advanced_group = sentinel.advancedFetchGroupBox
+            advanced_group.isChecked = lambda: True
+            preset_combo = sentinel.backgroundPresetComboBox
+            preset_combo.currentText = lambda: "Custom"
+
+            dock = self._make_dock()
+            coordinator = WorkflowSectionCoordinator(dock)
+            coordinator.configure_workflow_sections()
+
+        self.assertTrue(dock.detailedRouteStrategyLabel.visible)
+        self.assertFalse(dock.pointSamplingStrideSpinBox.visible)
+        self.assertTrue(dock.advancedFetchSettingsWidget.visible)
+        self.assertTrue(dock.mapboxStyleOwnerLineEdit.visible)
+        self.assertTrue(dock.mapboxStyleIdLineEdit.visible)

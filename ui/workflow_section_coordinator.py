@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from qgis.PyQt.QtCore import Qt
-from qgis.PyQt.QtWidgets import QToolButton, QVBoxLayout, QWidget
 
 from ..mapbox_config import preset_requires_custom_style
 
@@ -61,6 +60,8 @@ class WorkflowSectionCoordinator:
             return
 
         group_box.setTitle("")
+
+        from qgis.PyQt.QtWidgets import QToolButton, QVBoxLayout, QWidget
 
         content_widget = QWidget(group_box)
         content_widget.setObjectName(f"{key}SectionContentWidget")
