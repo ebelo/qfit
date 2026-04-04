@@ -3,7 +3,29 @@ from urllib.error import HTTPError, URLError
 
 from tests import _path  # noqa: F401
 
-from qfit.config_connection_service import validate_mapbox_connection, validate_strava_connection
+from qfit.config_connection_service import (
+    build_mapbox_connection_test_request,
+    build_strava_connection_test_request,
+    validate_mapbox_connection,
+    validate_mapbox_connection_request,
+    validate_strava_connection,
+    validate_strava_connection_request,
+)
+
+
+class TestConnectionRequestBuilders(unittest.TestCase):
+    def test_build_strava_connection_test_request(self):
+        request = build_strava_connection_test_request(" id ", " secret ", " tok ")
+
+        self.assertEqual(request.client_id, " id ")
+        self.assertEqual(request.client_secret, " secret ")
+        self.assertEqual(request.refresh_token, " tok ")
+
+    def test_build_mapbox_connection_test_request(self):
+        request = build_mapbox_connection_test_request(" pk.test ")
+
+        self.assertEqual(request.access_token, " pk.test ")
+        self.assertEqual(request.default_preset_name, "Outdoor")
 
 
 class TestStravaConnectionValidation(unittest.TestCase):
@@ -34,6 +56,29 @@ class TestStravaConnectionValidation(unittest.TestCase):
                 return []
 
         result = validate_strava_connection("id", "secret", "tok", client_factory=FakeClient)
+        self.assertTrue(result.ok)
+        self.assertEqual(result.message, "Strava activity access OK")
+        self.assertEqual(captured["client"].fetch_calls, [(1, 1)])
+
+    def test_request_variant_reports_success_when_refresh_works(self):
+        captured = {}
+
+        class FakeClient:
+            def __init__(self, **kwargs):
+                self.kwargs = kwargs
+                captured["client"] = self
+                self.fetch_calls = []
+
+            def refresh_access_token(self):
+                return {"access_token": "ok"}
+
+            def fetch_activities(self, *, per_page, max_pages):
+                self.fetch_calls.append((per_page, max_pages))
+                return []
+
+        request = build_strava_connection_test_request("id", "secret", "tok")
+        result = validate_strava_connection_request(request, client_factory=FakeClient)
+
         self.assertTrue(result.ok)
         self.assertEqual(result.message, "Strava activity access OK")
         self.assertEqual(captured["client"].fetch_calls, [(1, 1)])
@@ -86,6 +131,19 @@ class TestMapboxConnectionValidation(unittest.TestCase):
             return {"name": "Mapbox Outdoors"}
 
         result = validate_mapbox_connection("pk.test", fetch_style_definition=fetch_style_definition)
+        self.assertTrue(result.ok)
+        self.assertEqual(result.message, "Mapbox connection OK (Mapbox Outdoors)")
+
+    def test_request_variant_reports_success(self):
+        def fetch_style_definition(token, owner, style_id):
+            self.assertEqual(token, "pk.test")
+            self.assertEqual(owner, "mapbox")
+            self.assertEqual(style_id, "outdoors-v12")
+            return {"name": "Mapbox Outdoors"}
+
+        request = build_mapbox_connection_test_request("pk.test")
+        result = validate_mapbox_connection_request(request, fetch_style_definition=fetch_style_definition)
+
         self.assertTrue(result.ok)
         self.assertEqual(result.message, "Mapbox connection OK (Mapbox Outdoors)")
 

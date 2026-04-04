@@ -21,7 +21,12 @@ from qgis.PyQt.QtWidgets import (
     QWidget,
 )
 
-from .config_connection_service import validate_mapbox_connection, validate_strava_connection
+from .config_connection_service import (
+    build_mapbox_connection_test_request,
+    build_strava_connection_test_request,
+    validate_mapbox_connection_request,
+    validate_strava_connection_request,
+)
 from .config_status import mapbox_status_text, strava_status_text
 from .settings_port import SettingsPort
 from .settings_service import SettingsService
@@ -185,15 +190,17 @@ class QfitConfigDialog(QDialog):
         self._mapbox_status_label.setText(mapbox_status_text(self._settings))
 
     def _test_strava(self) -> None:
-        result = validate_strava_connection(
+        request = build_strava_connection_test_request(
             self._client_id_edit.text(),
             self._client_secret_edit.text(),
             self._refresh_token_edit.text(),
         )
+        result = validate_strava_connection_request(request)
         self._strava_test_status_label.setText(result.message)
 
     def _test_mapbox(self) -> None:
-        result = validate_mapbox_connection(self._mapbox_token_edit.text())
+        request = build_mapbox_connection_test_request(self._mapbox_token_edit.text())
+        result = validate_mapbox_connection_request(request)
         self._mapbox_test_status_label.setText(result.message)
 
     # -- Visibility ----------------------------------------------------------
