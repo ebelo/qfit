@@ -77,12 +77,8 @@ _COVER_SUMMARY_ROW_FIELDS = (
 )
 from .export_document_finalizer import assemble_output_pdf, merge_pdfs
 from .export_front_matter import export_cover_page, export_toc_page
-from .export_page_runner import (
-    AtlasPageExportRuntime,
-    AtlasPageExportRunner,
-    AtlasPerPageFieldIndexes,
-    AtlasPerPageLayoutItems,
-)
+from .export_page_runtime_builder import AtlasPageRuntimeBuilder
+from .export_page_runner import AtlasPageExportRunner
 from .profile_backend_policy import DEFAULT_PROFILE_BACKEND_POLICY
 from .profile_payload_resolver import (
     AtlasProfileSampleLookup,
@@ -1420,84 +1416,20 @@ class AtlasExportTask(QgsTask):
             os.makedirs(output_dir, exist_ok=True)
 
     def _build_page_export_runner(self, *, layout, exporter, settings) -> AtlasPageExportRunner:
-        fields = self._atlas_layer.fields()
-        map_item = self._find_map_item(layout)
-        profile_adapter, profile_summary_label, detail_block_label = self._find_per_page_layout_items(layout)
-        filterable_layers = self._collect_filterable_layers(map_item)
-
-        runtime = AtlasPageExportRuntime(
-            atlas=layout.atlas(),
-            exporter=exporter,
-            settings=settings,
+        return AtlasPageRuntimeBuilder(
+            atlas_layer=self._atlas_layer,
             output_path=self._output_path,
-            field_indexes=AtlasPerPageFieldIndexes(
-                cx_idx=fields.indexOf("center_x_3857"),
-                cy_idx=fields.indexOf("center_y_3857"),
-                ew_idx=fields.indexOf("extent_width_m"),
-                eh_idx=fields.indexOf("extent_height_m"),
-                sid_atlas_idx=fields.indexOf("source_activity_id"),
-                profile_summary_idx=fields.indexOf("page_profile_summary"),
-                detail_field_indices=[
-                    (fields.indexOf(field_name), human_label)
-                    for field_name, human_label in _DETAIL_ITEM_FIELDS
-                    if fields.indexOf(field_name) >= 0
-                ],
-            ),
-            layout_items=AtlasPerPageLayoutItems(
-                map_item=map_item,
-                profile_adapter=profile_adapter,
-                profile_summary_label=profile_summary_label,
-                detail_block_label=detail_block_label,
-            ),
-            filterable_layers=filterable_layers,
+            detail_item_fields=_DETAIL_ITEM_FIELDS,
+            profile_picture_id=_PROFILE_PICTURE_ID,
+            profile_summary_id=_PROFILE_SUMMARY_ID,
+            detail_block_id=_DETAIL_BLOCK_ID,
             profile_sample_lookup=_AtlasProfileSampleLookup(self._atlas_layer),
             build_page_profile_payload=_build_page_profile_payload,
             apply_page_profile_payload=_apply_page_profile_payload,
             normalize_extent=_normalize_extent_to_aspect_ratio,
             target_aspect_ratio=BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO,
             is_canceled=self.isCanceled,
-        )
-        return AtlasPageExportRunner(runtime)
-
-    @staticmethod
-    def _find_map_item(layout):
-        for item in layout.items():
-            if callable(getattr(item, "setExtent", None)) and callable(getattr(item, "layers", None)):
-                return item
-        return None
-
-    @staticmethod
-    def _find_per_page_layout_items(layout):
-        profile_pic = None
-        profile_summary_label = None
-        detail_block_label = None
-        for item in layout.items():
-            item_id = getattr(item, "id", lambda: None)()
-            if item_id == _PROFILE_PICTURE_ID:
-                profile_pic = item
-            elif item_id == _PROFILE_SUMMARY_ID:
-                profile_summary_label = item
-            elif item_id == _DETAIL_BLOCK_ID:
-                detail_block_label = item
-
-        profile_adapter = build_profile_item_adapter(profile_pic) if profile_pic is not None else None
-        return profile_adapter, profile_summary_label, detail_block_label
-
-    @staticmethod
-    def _collect_filterable_layers(map_item) -> list[tuple]:
-        filterable_layers: list[tuple] = []
-        if map_item is None:
-            return filterable_layers
-
-        for layer in map_item.layers():
-            try:
-                layer_fields = layer.fields()
-                sid_idx = layer_fields.indexOf("source_activity_id")
-                if sid_idx >= 0:
-                    filterable_layers.append((layer, layer.subsetString()))
-            except (RuntimeError, AttributeError):
-                logger.debug("Skipping non-filterable layer", exc_info=True)
-        return filterable_layers
+        ).build_runner(layout=layout, exporter=exporter, settings=settings)
 
     def _assemble_output_pdf(
         self,
