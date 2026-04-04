@@ -13,7 +13,6 @@ logger = logging.getLogger(__name__)
 
 from ..mapbox_config import TILE_MODE_RASTER, TILE_MODE_VECTOR
 from ..visualization.application.layer_gateway import LayerGateway
-from .qgis_export_runtime import QgisAtlasExportRuntime
 
 
 @dataclass
@@ -69,7 +68,13 @@ class AtlasExportService:
 
     def __init__(self, layer_gateway: LayerGateway, runtime=None) -> None:
         self.layer_gateway = layer_gateway
-        self.runtime = runtime or QgisAtlasExportRuntime()
+        self.runtime = runtime or self._build_default_runtime()
+
+    @staticmethod
+    def _build_default_runtime():
+        from .qgis_export_runtime import QgisAtlasExportRuntime
+
+        return QgisAtlasExportRuntime()
 
     @staticmethod
     def build_request(
