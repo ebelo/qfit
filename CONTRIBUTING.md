@@ -60,6 +60,9 @@ If the change is **not** rendering-sensitive, say so briefly in the PR rather th
 Keep these rules lightweight and practical:
 
 - Prefer feature/workflow ownership over adding more unrelated top-level modules.
+- Do not add new top-level Python modules for feature-specific code; prefer the owning feature package (`activities/`, `atlas/`, `providers/`, `visualization/`, `ui/`, `validation/`).
+- Treat existing root-level modules as grandfathered transitional modules unless the code is truly shared across features.
+- If a new top-level shared module is genuinely needed, document the reason and update `tests/test_architecture_boundaries.py` in the same PR.
 - Keep `QfitDockWidget` and other UI classes focused on widget wiring, input mapping, and result rendering.
 - Put workflow orchestration into controllers/services/use cases instead of the dock widget where practical.
 - Keep provider-neutral activity logic free of direct UI imports and avoid unnecessary QGIS coupling.

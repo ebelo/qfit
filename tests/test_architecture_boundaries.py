@@ -107,5 +107,76 @@ class WorkflowBoundaryTests(unittest.TestCase):
         )
 
 
+class PackageOwnershipBoundaryTests(unittest.TestCase):
+    """Guardrails for where new code may live.
+
+    The root-level Python module layer is transitional. New feature-owned code
+    should land in packages such as ``activities/``, ``atlas/``, ``providers/``,
+    ``visualization/``, ``ui/``, or ``validation/`` rather than adding more
+    generic top-level modules.
+    """
+
+    ALLOWED_TOP_LEVEL_PYTHON_MODULES = {
+        "__init__.py",
+        "activity_classification.py",
+        "activity_query.py",
+        "activity_storage.py",
+        "background_map_controller.py",
+        "background_map_service.py",
+        "config_connection_service.py",
+        "config_status.py",
+        "contextual_help.py",
+        "credential_store.py",
+        "detailed_route_strategy.py",
+        "fetch_result_service.py",
+        "fetch_task.py",
+        "gpkg_atlas_page_builder.py",
+        "gpkg_atlas_table_builders.py",
+        "gpkg_io.py",
+        "gpkg_layer_builders.py",
+        "gpkg_point_layer_builder.py",
+        "gpkg_schema.py",
+        "gpkg_write_orchestration.py",
+        "gpkg_writer.py",
+        "layer_filter_service.py",
+        "layer_manager.py",
+        "layer_style_service.py",
+        "load_workflow.py",
+        "map_canvas_service.py",
+        "map_style.py",
+        "mapbox_config.py",
+        "models.py",
+        "polyline_utils.py",
+        "project_layer_loader.py",
+        "provider.py",
+        "qfit_cache.py",
+        "qfit_config_dialog.py",
+        "qfit_dockwidget.py",
+        "qfit_plugin.py",
+        "settings_port.py",
+        "settings_service.py",
+        "strava_client.py",
+        "strava_provider.py",
+        "sync_controller.py",
+        "sync_repository.py",
+        "temporal_config.py",
+        "temporal_service.py",
+        "time_utils.py",
+        "ui_settings_binding.py",
+        "visual_apply.py",
+    }
+
+    def test_new_root_level_python_modules_require_explicit_ownership_review(self):
+        root_modules = {path.name for path in REPO_ROOT.glob("*.py")}
+        unexpected = sorted(root_modules - self.ALLOWED_TOP_LEVEL_PYTHON_MODULES)
+        self.assertEqual(
+            [],
+            unexpected,
+            "New root-level Python modules should not be added without explicit architecture review. "
+            "Prefer feature-owned packages and update this allowlist only for justified exceptions: "
+            f"{unexpected}",
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
