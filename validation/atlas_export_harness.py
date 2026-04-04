@@ -67,6 +67,14 @@ def build_env(*, run_dir: Path) -> dict[str, str]:
     env.setdefault("QT_QPA_PLATFORM", "offscreen")
     env["QFIT_VALIDATION_OUTPUT_DIR"] = str(run_dir)
     env["QFIT_VALIDATION_REPO_ROOT"] = str(REPO_ROOT)
+
+    repo_parent = str(REPO_ROOT.parent)
+    current_pythonpath = env.get("PYTHONPATH")
+    env["PYTHONPATH"] = (
+        f"{repo_parent}{os.pathsep}{current_pythonpath}"
+        if current_pythonpath
+        else repo_parent
+    )
     return env
 
 

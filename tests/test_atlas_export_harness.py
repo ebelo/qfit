@@ -1,4 +1,5 @@
 import datetime as dt
+import os
 import unittest
 from pathlib import Path
 from unittest.mock import MagicMock, patch
@@ -37,6 +38,7 @@ class AtlasExportHarnessTests(unittest.TestCase):
         self.assertEqual(env["QFIT_VALIDATION_OUTPUT_DIR"], "/tmp/qfit-validation/run-1")
         self.assertEqual(env["QFIT_VALIDATION_REPO_ROOT"], str(REPO_ROOT))
         self.assertEqual(env["QT_QPA_PLATFORM"], "offscreen")
+        self.assertEqual(env["PYTHONPATH"].split(os.pathsep)[0], str(REPO_ROOT.parent))
 
     def test_list_scenarios_mentions_curated_entries(self):
         text = list_scenarios()
