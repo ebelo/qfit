@@ -190,6 +190,12 @@ When adding or refactoring code, ask these questions in order:
 5. Is correctness depending on native framework behavior that we cannot trust yet?
    - keep or add a qfit-controlled implementation/fallback
 
+Package ownership matters here too:
+
+- prefer feature-owned packages over adding more generic top-level modules
+- treat the remaining flat root-level Python modules as transitional / grandfathered unless a new shared module is explicitly justified
+- if a new top-level shared module is truly necessary, document why it is cross-feature and update the architecture guardrails in tests
+
 ## 12. What success looks like in qfit
 
 The architecture is moving in the right direction when:

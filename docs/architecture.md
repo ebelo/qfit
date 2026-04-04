@@ -170,6 +170,37 @@ When adding code, ask these questions in order:
 
 If a module starts mixing two or three of those answers, that is usually a sign it wants extraction.
 
+## 5.1 Package ownership rules for new code
+
+qfit now treats a small set of packages as the default owners for new work:
+
+- `activities/` — activity import, fetch/sync/load flows, provider-neutral activity rules
+- `atlas/` — atlas/publish/export workflows and atlas-specific helpers
+- `providers/` — provider-facing contracts and provider adapters
+- `visualization/` — visualization workflows and QGIS-facing visualization adapters
+- `ui/` — dock-widget section coordination, dependency assembly, and other UI-only helpers
+- `validation/` — validation harnesses and artifact-checking helpers
+
+The flat top-level Python module layer is now effectively **frozen** except for:
+
+- plugin entrypoints / bootstrap modules (`qfit_plugin.py`, `qfit_dockwidget.py`, dialogs, package `__init__.py`)
+- a limited set of grandfathered transitional modules already in the repo
+- truly shared helpers that are both feature-neutral and small enough that creating a new package would add ceremony without improving clarity
+
+Practical rule:
+
+> **Do not add a new top-level Python module for feature-specific code.**
+
+If new code belongs to one feature or workflow, put it under that feature package even when the legacy equivalent still exists at the top level.
+
+If you think a new top-level shared module is justified, the PR should do all of the following:
+
+1. explain why the code is truly cross-feature rather than feature-owned,
+2. document that choice in this architecture guide / `CONTRIBUTING.md`, and
+3. update the architecture-boundary allowlist in `tests/test_architecture_boundaries.py`.
+
+That friction is intentional: it prevents accidental growth of the generic root layer.
+
 ## 6. Current architectural priorities
 
 The active migration priorities are tracked in issues #169 through #178. In practical terms, current high-value directions are:
@@ -214,5 +245,6 @@ Short version:
 - isolate **external dependency details** when the seam improves clarity or testability
 - favor **small incremental refactors** over large rewrites
 - preserve behavior while moving boundaries
+- treat new root-level modules as exceptions that require explicit justification and a boundary-test update
 
 If a change makes the code easier to locate, easier to test, and less coupled to the dock widget or raw QGIS details, it is probably moving in the right direction.
