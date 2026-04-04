@@ -32,7 +32,7 @@ try:
 
     from qfit.gpkg_writer import GeoPackageWriter
     from qfit.layer_manager import LayerManager
-    from qfit.layer_style_service import LayerStyleService
+    from qfit.visualization.infrastructure.layer_style_service import LayerStyleService
 
     QGIS_AVAILABLE = True
     QGIS_IMPORT_ERROR = None
@@ -275,14 +275,14 @@ def _load_service_with_mock_qgis():
     _QGIS_MODS = ["qgis", "qgis.core", "qgis.PyQt", "qgis.PyQt.QtCore", "qgis.PyQt.QtGui"]
 
     saved_qgis = {m: sys.modules.get(m) for m in _QGIS_MODS}
-    saved_lss = sys.modules.get("qfit.layer_style_service")
+    saved_lss = sys.modules.get("qfit.visualization.infrastructure.layer_style_service")
 
     for mod_name in _QGIS_MODS:
         sys.modules[mod_name] = qstub
-    sys.modules.pop("qfit.layer_style_service", None)
+    sys.modules.pop("qfit.visualization.infrastructure.layer_style_service", None)
 
     try:
-        lss = importlib.import_module("qfit.layer_style_service")
+        lss = importlib.import_module("qfit.visualization.infrastructure.layer_style_service")
         return lss.LayerStyleService
     except Exception:  # pragma: no cover
         return None
@@ -293,9 +293,9 @@ def _load_service_with_mock_qgis():
             else:
                 sys.modules[mod_name] = original
         if saved_lss is None:
-            sys.modules.pop("qfit.layer_style_service", None)
+            sys.modules.pop("qfit.visualization.infrastructure.layer_style_service", None)
         else:
-            sys.modules["qfit.layer_style_service"] = saved_lss
+            sys.modules["qfit.visualization.infrastructure.layer_style_service"] = saved_lss
 
 
 # Build a mock-backed service class when a usable QGIS is absent.
@@ -427,6 +427,19 @@ class LayerStyleServiceUnitTests(unittest.TestCase):
             acts, None, None, None, "Simple lines", background_preset_name="Outdoor"
         )
         acts.setRenderer.assert_called_once()
+
+
+class VisualizationInfrastructureExportTests(unittest.TestCase):
+    def test_layer_style_service_alias_is_exported_from_visualization_infrastructure(self):
+        if QGIS_AVAILABLE:
+            from qfit.visualization.infrastructure import LayerStyleService as exported
+            from qfit.visualization.infrastructure.layer_style_service import LayerStyleService
+
+            self.assertIs(exported, LayerStyleService)
+            return
+
+        service_cls = _load_service_with_mock_qgis()
+        self.assertIsNotNone(service_cls)
 
 
 if __name__ == "__main__":
