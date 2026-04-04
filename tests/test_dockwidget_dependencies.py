@@ -124,6 +124,140 @@ class _VisibilityTarget:
         self.visible = value
 
 
+
+
+class _FakeItem:
+    def __init__(self, widget=None, layout=None, spacer=None):
+        self._widget = widget
+        self._layout = layout
+        self._spacer = spacer
+
+    def widget(self):
+        return self._widget
+
+    def layout(self):
+        return self._layout
+
+    def spacerItem(self):
+        return self._spacer
+
+
+class _FakeLayoutContainer:
+    def __init__(self, items=None, spacing=6):
+        self._items = list(items or [])
+        self._spacing = spacing
+        self.added_widgets = []
+        self.inserted_widgets = []
+        self.removed_widgets = []
+
+    def spacing(self):
+        return self._spacing
+
+    def count(self):
+        return len(self._items)
+
+    def takeAt(self, _index):
+        return self._items.pop(0)
+
+    def addWidget(self, widget):
+        self.added_widgets.append(widget)
+
+    def addLayout(self, layout):
+        self.added_widgets.append(layout)
+
+    def addItem(self, item):
+        self.added_widgets.append(item)
+
+    def insertWidget(self, index, widget):
+        self.inserted_widgets.append((index, widget))
+
+    def removeWidget(self, widget):
+        self.removed_widgets.append(widget)
+
+
+class _FakeGroupBox:
+    def __init__(self):
+        self.parent_obj = None
+        self.visible = None
+        self.title = None
+        self.checkable = None
+
+    def setParent(self, parent):
+        self.parent_obj = parent
+
+    def parent(self):
+        return self.parent_obj
+
+    def setVisible(self, value):
+        self.visible = value
+
+    def hide(self):
+        self.visible = False
+
+    def setTitle(self, title):
+        self.title = title
+
+    def setCheckable(self, value):
+        self.checkable = value
+
+
+class WorkflowSectionCoordinatorTests(unittest.TestCase):
+    def _make_section_dock(self):
+        dock = type("Dock", (), {})()
+        dock.activitiesGroupLayout = _FakeLayoutContainer([_FakeItem(widget=object())])
+        dock.styleGroupLayout = _FakeLayoutContainer([_FakeItem(widget=object())])
+        dock.analysisWorkflowLayout = _FakeLayoutContainer([_FakeItem(widget=object())])
+        dock.publishGroupLayout = _FakeLayoutContainer([_FakeItem(widget=object())])
+        dock.verticalLayout = _FakeLayoutContainer()
+        dock.outputGroupLayout = _FakeLayoutContainer()
+        dock.activitiesGroupBox = _FakeGroupBox()
+        dock.styleGroupBox = _FakeGroupBox()
+        dock.analysisWorkflowGroupBox = _FakeGroupBox()
+        dock.publishGroupBox = _FakeGroupBox()
+        dock.outputGroupBox = _FakeWidget()
+        dock.publishSettingsWidget = _FakeWidget()
+        dock.credentialsGroupBox = _FakeWidget()
+        dock.workflowLabel = _FakeLabel()
+        dock.activitiesIntroLabel = _FakeLabel()
+        dock.mapboxAccessTokenLabel = _FakeWidget()
+        dock.mapboxAccessTokenLineEdit = _FakeWidget()
+        dock.loadLayersButton = _FakeWidget()
+        return dock
+
+    def test_configure_starting_sections_moves_widgets_and_installs_collapsibles(self):
+        import qfit.ui.workflow_section_coordinator as workflow_section_coordinator
+
+        coordinator = workflow_section_coordinator.WorkflowSectionCoordinator(self._make_section_dock())
+        coordinator.configure_starting_sections()
+        dock = coordinator.dock_widget
+
+        self.assertEqual(dock.workflowLabel.text, "Workflow: Fetch & store → Visualize → Analyze → Publish")
+        self.assertFalse(dock.credentialsGroupBox.visible)
+        self.assertEqual(dock.outputGroupBox.parent(), dock.activitiesGroupBox)
+        self.assertEqual(dock.loadLayersButton.parent(), dock.styleGroupBox)
+        self.assertEqual(dock.outputGroupBox.visible, None)
+        self.assertTrue(hasattr(dock, "activitiesSectionToggleButton"))
+        self.assertTrue(hasattr(dock, "activitiesSectionContentWidget"))
+        self.assertTrue(hasattr(dock, "styleSectionToggleButton"))
+        self.assertFalse(dock.mapboxAccessTokenLabel.visible)
+        self.assertFalse(dock.mapboxAccessTokenLineEdit.visible)
+
+    def test_set_section_expanded_updates_toggle_arrow_and_content_visibility(self):
+        import qfit.ui.workflow_section_coordinator as workflow_section_coordinator
+
+        dock = type("Dock", (), {})()
+        dock.activitiesSectionToggleButton = type("Toggle", (), {"arrow": None, "setArrowType": lambda self, val: setattr(self, "arrow", val)})()
+        dock.activitiesSectionContentWidget = _FakeWidget()
+        coordinator = workflow_section_coordinator.WorkflowSectionCoordinator(dock)
+
+        coordinator.set_section_expanded("activities", False)
+        self.assertEqual(dock.activitiesSectionToggleButton.arrow, workflow_section_coordinator.Qt.RightArrow)
+        self.assertFalse(dock.activitiesSectionContentWidget.visible)
+
+        coordinator.set_section_expanded("activities", True)
+        self.assertEqual(dock.activitiesSectionToggleButton.arrow, workflow_section_coordinator.Qt.DownArrow)
+        self.assertTrue(dock.activitiesSectionContentWidget.visible)
+
 class WorkflowSectionCoordinatorTests(unittest.TestCase):
     def _make_dock(self):
         dock = sentinel.dock
