@@ -20,17 +20,11 @@ class QgisAtlasExportRuntimeTests(unittest.TestCase):
         self.runtime = QgisAtlasExportRuntime()
 
     def test_returns_none_when_pdf_writer_is_available(self):
-        stub_module, _mock_task = _make_atlas_task_stub()
-        stub_module._load_pdf_writer = MagicMock(return_value=object())
-
-        with patch.dict(sys.modules, {"qfit.atlas.export_task": stub_module}):
+        with patch("qfit.atlas.qgis_export_runtime.load_pdf_writer", return_value=object()):
             self.assertIsNone(self.runtime.check_pdf_export_prerequisites())
 
     def test_returns_user_facing_error_when_pdf_writer_is_missing(self):
-        stub_module, _mock_task = _make_atlas_task_stub()
-        stub_module._load_pdf_writer = MagicMock(side_effect=ImportError("missing pypdf"))
-
-        with patch.dict(sys.modules, {"qfit.atlas.export_task": stub_module}):
+        with patch("qfit.atlas.qgis_export_runtime.load_pdf_writer", side_effect=ImportError("missing pypdf")):
             error = self.runtime.check_pdf_export_prerequisites()
 
         self.assertIsNotNone(error)

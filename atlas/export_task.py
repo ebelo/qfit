@@ -28,7 +28,6 @@ from __future__ import annotations
 import logging
 import math
 import os
-import sys
 from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
@@ -76,10 +75,10 @@ _COVER_SUMMARY_ROW_FIELDS = (
     "source_activity_id",
 )
 from .export_coordinator import AtlasExportCoordinator
-from .export_document_finalizer import assemble_output_pdf, merge_pdfs
 from .export_front_matter import export_cover_page, export_toc_page
 from .export_page_runtime_builder import AtlasPageRuntimeBuilder
 from .export_page_runner import AtlasPageExportRunner
+from .infrastructure.pdf_assembly import AtlasPdfAssembler
 from .profile_backend_policy import DEFAULT_PROFILE_BACKEND_POLICY
 from .profile_payload_resolver import (
     AtlasProfileSampleLookup,
@@ -165,41 +164,6 @@ _DETAIL_ITEM_FIELDS = [
     ("page_elevation_gain_label", "Climbing"),
 ]
 
-
-def _load_pdf_writer():
-    """Return :class:`pypdf.PdfWriter`, preferring bundled plugin vendoring.
-
-    Resolution order:
-
-    1. top-level ``pypdf`` from the current Python environment
-    2. vendored ``qfit/vendor/pypdf`` packaged inside the plugin zip
-    3. legacy/manual ``qfit.pypdf`` fallback used during ad-hoc debugging
-    """
-    try:
-        import pypdf as _pypdf_module  # noqa: PLC0415
-
-        return _pypdf_module.PdfWriter
-    except ImportError:
-        pass
-
-    plugin_root = os.path.dirname(os.path.dirname(__file__))
-    vendor_dir = os.path.join(plugin_root, "vendor")
-    if os.path.isdir(vendor_dir) and vendor_dir not in sys.path:
-        sys.path.insert(0, vendor_dir)
-
-    try:
-        import pypdf as _pypdf_module  # noqa: PLC0415
-
-        return _pypdf_module.PdfWriter
-    except ImportError:
-        pass
-
-    try:
-        import qfit.pypdf as _vendored_pypdf_module  # noqa: PLC0415
-
-        return _vendored_pypdf_module.PdfWriter
-    except ImportError as exc:
-        raise ImportError("pypdf is unavailable for atlas PDF merging") from exc
 def _render_page_profile_svg(page_points, *, output_path: str) -> str | None:
     """Render the sampled SVG profile for a single atlas page."""
     from .profile_renderer import render_profile_to_file  # noqa: PLC0415
@@ -1399,6 +1363,11 @@ class AtlasExportTask(QgsTask):
             is_canceled=self.isCanceled,
         ).build_runner(layout=layout, exporter=exporter, settings=settings)
 
+    def _build_pdf_assembler(self) -> AtlasPdfAssembler:
+        return AtlasPdfAssembler(
+            warn=logger.warning,
+        )
+
     def _assemble_output_pdf(
         self,
         page_paths: list[str],
@@ -1406,12 +1375,11 @@ class AtlasExportTask(QgsTask):
         cover_path: str | None = None,
         toc_path: str | None = None,
     ) -> None:
-        assemble_output_pdf(
+        self._build_pdf_assembler().assemble(
             page_paths,
             self._output_path,
             cover_path=cover_path,
             toc_path=toc_path,
-            merge_pdfs_fn=self._merge_pdfs,
         )
 
     @staticmethod
@@ -1447,16 +1415,6 @@ class AtlasExportTask(QgsTask):
             build_toc_layout_fn=build_toc_layout,
             layout_exporter_cls=QgsLayoutExporter,
             logger=logger,
-        )
-
-    @staticmethod
-    def _merge_pdfs(page_paths: list[str], output_path: str) -> None:
-        """Merge per-page PDF files into a single multi-page PDF."""
-        merge_pdfs(
-            page_paths,
-            output_path,
-            load_pdf_writer=_load_pdf_writer,
-            warn=logger.warning,
         )
 
     def finished(self, result: bool) -> None:
