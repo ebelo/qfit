@@ -37,6 +37,20 @@ Over time, qfit should trend toward clearer feature areas such as:
 
 Not every area needs `application/`, `domain/`, and `infrastructure/` subpackages immediately. Prefer gradual, pragmatic extraction.
 
+### Current implemented package map
+
+The codebase now already reflects most of that shape:
+
+- `activities/domain/` — provider-neutral activity models, classification, and query logic
+- `activities/application/` — fetch/sync/load workflow services and request/result models
+- `providers/domain/` / `providers/infrastructure/` — provider contracts plus Strava-backed adapters
+- `visualization/application/` / `visualization/infrastructure/` — visualization/background workflows plus QGIS layer/runtime adapters
+- `atlas/` — atlas/export/publish workflows, profile handling, and atlas-owned infrastructure such as PDF assembly
+- `ui/` — dock-widget dependency assembly and workflow-section coordination
+- `validation/` — validation harnesses and scenario helpers for export-sensitive checks
+
+Some root-level modules still exist as **compatibility shims** so imports remain stable while the migration settles. Those files are transitional; new feature logic should not be added there.
+
 ## 2. Working layers
 
 Use these layers as a placement heuristic.
@@ -203,13 +217,13 @@ That friction is intentional: it prevents accidental growth of the generic root 
 
 ## 6. Current architectural priorities
 
-The active migration priorities are tracked in issues #169 through #178. In practical terms, current high-value directions are:
+The current architecture work is centered on making the implemented structure easier to understand and harder to regress. In practical terms, high-value directions are:
 
 - thin out `QfitDockWidget`
-- use clearer request/result objects for main workflows
-- isolate settings, storage, and layer operations behind pragmatic seams
-- consolidate activity-centric business logic into a clearer core
-- keep feature ownership clearer as modules move out of the flat top-level layout
+- use clearer request/result objects for user-facing workflows
+- keep ports/adapters boundaries small and explicit where they buy testability
+- preserve feature ownership by moving real implementations into owned packages and leaving only narrow compatibility shims at the root when needed
+- keep docs and architecture guardrails aligned with the code that now exists on `main`
 
 ## 7. Review checklist
 
