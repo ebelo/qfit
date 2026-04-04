@@ -337,12 +337,16 @@ class QgisSmokeTests(unittest.TestCase):
             dock.atlas_layer.featureCount.return_value = 3
             dock.atlasPdfPathLineEdit.setText("/tmp/qfit-atlas.pdf")
 
-            dock.atlas_export_controller.validate_atlas_layer = MagicMock()
-            dock.atlas_export_controller.normalize_pdf_path = MagicMock(
-                return_value=("/tmp/qfit-atlas.pdf", False)
-            )
-            dock.atlas_export_service.check_pdf_export_prerequisites = MagicMock(
-                return_value="Atlas PDF export requires the 'pypdf' runtime."
+            from qfit.atlas.export_use_case import PrepareAtlasPdfExportResult
+
+            dock.atlas_export_use_case.prepare_export = MagicMock(
+                return_value=PrepareAtlasPdfExportResult(
+                    output_path="/tmp/qfit-atlas.pdf",
+                    error_title="Atlas PDF export unavailable",
+                    error_message="Atlas PDF export requires the 'pypdf' runtime.",
+                    pdf_status="Atlas PDF export unavailable.",
+                    main_status="Atlas PDF export unavailable.",
+                )
             )
             dock._save_settings = MagicMock()
             dock._show_error = MagicMock()
@@ -369,14 +373,11 @@ class QgisSmokeTests(unittest.TestCase):
             dock.atlas_layer.featureCount.return_value = 3
             dock.atlasPdfPathLineEdit.setText("/tmp/qfit-atlas.pdf")
 
-            dock.atlas_export_controller.validate_atlas_layer = MagicMock()
-            dock.atlas_export_controller.normalize_pdf_path = MagicMock(
-                return_value=("/tmp/qfit-atlas.pdf", False)
-            )
-            dock.atlas_export_service.check_pdf_export_prerequisites = MagicMock(return_value=None)
-            dock.atlas_export_service.build_request = MagicMock(return_value="atlas-request")
-            dock.atlas_export_service.prepare_basemap_for_export = MagicMock()
-            dock.atlas_export_service.build_task = MagicMock(return_value=fake_task)
+            prepared_export = MagicMock(name="prepared_export")
+            prepared_export.is_ready = True
+            prepared_export.path_changed = False
+            dock.atlas_export_use_case.prepare_export = MagicMock(return_value=prepared_export)
+            dock.atlas_export_use_case.start_export = MagicMock(return_value=fake_task)
             dock._save_settings = MagicMock()
 
             with (
@@ -388,11 +389,9 @@ class QgisSmokeTests(unittest.TestCase):
                 dock.on_generate_atlas_pdf_clicked()
 
             build_style.assert_called_once_with(dock.settings)
-            self.assertEqual(
-                dock.atlas_export_service.build_request.call_args.kwargs["profile_plot_style"],
-                "style-override",
-            )
-            dock.atlas_export_service.build_task.assert_called_once_with("atlas-request")
+            export_command = dock.atlas_export_use_case.prepare_export.call_args.args[0]
+            self.assertEqual(export_command.profile_plot_style, "style-override")
+            dock.atlas_export_use_case.start_export.assert_called_once_with(prepared_export)
             task_manager.return_value.addTask.assert_called_once_with(fake_task)
         finally:
             dock.close()

@@ -29,6 +29,10 @@ class DockWidgetDependenciesTests(unittest.TestCase):
                 return_value=sentinel.atlas_export_controller,
             ),
             patch(
+                "qfit.ui.dockwidget_dependencies.AtlasExportUseCase",
+                return_value=sentinel.atlas_export_use_case,
+            ) as atlas_export_use_case,
+            patch(
                 "qfit.ui.dockwidget_dependencies._build_layer_gateway",
                 return_value=sentinel.layer_gateway,
             ),
@@ -59,6 +63,7 @@ class DockWidgetDependenciesTests(unittest.TestCase):
         self.assertIs(dependencies.settings, sentinel.settings)
         self.assertIs(dependencies.sync_controller, sentinel.sync_controller)
         self.assertIs(dependencies.atlas_export_controller, sentinel.atlas_export_controller)
+        self.assertIs(dependencies.atlas_export_use_case, sentinel.atlas_export_use_case)
         self.assertIs(dependencies.layer_gateway, sentinel.layer_gateway)
         self.assertIs(dependencies.background_controller, sentinel.background_controller)
         self.assertIs(dependencies.load_workflow, sentinel.load_workflow)
@@ -71,6 +76,10 @@ class DockWidgetDependenciesTests(unittest.TestCase):
         load_workflow.assert_called_once_with(sentinel.layer_gateway)
         visual_apply.assert_called_once_with(sentinel.layer_gateway)
         atlas_export_service.assert_called_once_with(sentinel.layer_gateway)
+        atlas_export_use_case.assert_called_once_with(
+            sentinel.atlas_export_controller,
+            sentinel.atlas_export_service,
+        )
         fetch_result_service.assert_called_once_with(sentinel.sync_controller)
 
     def test_build_cache_prefers_legacy_cache_path_when_current_path_is_missing(self):
