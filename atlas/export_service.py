@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 
 from ..mapbox_config import TILE_MODE_RASTER, TILE_MODE_VECTOR
 from ..visualization.application.layer_gateway import LayerGateway
+from .qgis_export_runtime import QgisAtlasExportRuntime
 
 
 @dataclass
@@ -66,8 +67,9 @@ class AtlasExportService:
     making both independently testable.
     """
 
-    def __init__(self, layer_gateway: LayerGateway) -> None:
+    def __init__(self, layer_gateway: LayerGateway, runtime=None) -> None:
         self.layer_gateway = layer_gateway
+        self.runtime = runtime or QgisAtlasExportRuntime()
 
     @staticmethod
     def build_request(
@@ -121,44 +123,15 @@ class AtlasExportService:
         except RuntimeError:
             logger.warning("Vector tile mode failed, falling back to raster", exc_info=True)
 
-    @staticmethod
-    def check_pdf_export_prerequisites() -> str | None:
-        """Return a user-facing error when atlas PDF export prerequisites are missing.
-
-        Export produces one PDF per page and requires a PDF merger to assemble
-        the final multi-page document. If ``pypdf`` is unavailable, fail fast so
-        the UI can show a clear message instead of generating a misleading
-        first-page-only PDF.
-        """
-        from .export_task import _load_pdf_writer  # lazy import: QGIS runtime only
-
-        try:
-            _load_pdf_writer()
-        except ImportError:
-            return (
-                "Atlas PDF export requires the 'pypdf' runtime, but it is not available in this qfit install. "
-                "Reinstall/update the plugin so bundled dependencies are included, then try again."
-            )
-        return None
+    def check_pdf_export_prerequisites(self) -> str | None:
+        """Return a user-facing error when atlas PDF export prerequisites are missing."""
+        return self.runtime.check_pdf_export_prerequisites()
 
     def build_task(self, request: GenerateAtlasPdfRequest | None = None, **legacy_kwargs):
         """Construct an :class:`AtlasExportTask` ready to submit to the QGIS task manager."""
         if request is None:
             request = self.build_request(**legacy_kwargs)
-        from .export_task import AtlasExportTask  # lazy import: QGIS runtime only
-        return AtlasExportTask(
-            atlas_layer=request.atlas_layer,
-            output_path=request.output_path,
-            on_finished=request.on_finished,
-            restore_tile_mode=request.pre_export_tile_mode,
-            layer_manager=self.layer_gateway,
-            preset_name=request.preset_name,
-            access_token=request.access_token,
-            style_owner=request.style_owner,
-            style_id=request.style_id,
-            background_enabled=request.background_enabled,
-            profile_plot_style=request.profile_plot_style,
-        )
+        return self.runtime.build_task(request, layer_gateway=self.layer_gateway)
 
     @staticmethod
     def build_result(
