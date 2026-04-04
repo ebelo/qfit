@@ -109,6 +109,15 @@ UI -> application/workflow -> domain + ports -> infrastructure adapters
 - **ports** = small application-facing contracts where a seam improves clarity or testability
 - **infrastructure adapters** = Strava integration, GeoPackage persistence, QGIS settings access, QGIS layer operations, Mapbox/QGIS-specific runtime behavior
 
+Concretely in the current repo, that mostly maps to:
+
+- `activities/application` + `activities/domain`
+- `providers/domain` + `providers/infrastructure`
+- `visualization/application` + `visualization/infrastructure`
+- `atlas/` for publish/export workflows and atlas-owned helpers/infrastructure
+- `ui/` for dock-widget wiring helpers
+- `validation/` for export-sensitive validation harnesses
+
 ## 7. Ports and adapters: when to use them
 
 Introduce a port/gateway when at least one of these is true:
@@ -195,6 +204,8 @@ Package ownership matters here too:
 - prefer feature-owned packages over adding more generic top-level modules
 - treat the remaining flat root-level Python modules as transitional / grandfathered unless a new shared module is explicitly justified
 - if a new top-level shared module is truly necessary, document why it is cross-feature and update the architecture guardrails in tests
+
+In other words: root-level compatibility shims may remain for import stability, but real feature logic should continue moving toward the owned package structure above.
 
 ## 12. What success looks like in qfit
 
