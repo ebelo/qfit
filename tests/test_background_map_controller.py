@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import MagicMock
 
 from tests import _path  # noqa: F401
-from qfit.background_map_controller import (
+from qfit.visualization.application.background_map_controller import (
     BackgroundMapController,
     LoadBackgroundRequest,
     LoadBackgroundResult,

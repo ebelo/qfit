@@ -40,7 +40,7 @@ from .mapbox_config import (
     background_preset_names,
     preset_requires_custom_style,
 )
-from .visual_apply import BackgroundConfig, LayerRefs
+from .visualization.application import BackgroundConfig, LayerRefs
 from .atlas.export_task import BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
 from .providers.domain.provider import ProviderError
 from .providers.infrastructure.strava_provider import StravaProvider

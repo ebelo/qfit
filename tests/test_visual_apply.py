@@ -3,7 +3,7 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock, call
 
 from tests import _path  # noqa: F401
-from qfit.visual_apply import (
+from qfit.visualization.application.visual_apply import (
     BackgroundConfig,
     LayerRefs,
     VisualApplyRequest,
