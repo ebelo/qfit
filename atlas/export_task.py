@@ -75,6 +75,7 @@ _COVER_SUMMARY_ROW_FIELDS = (
     "extent_height_m",
     "source_activity_id",
 )
+from .export_document_finalizer import assemble_output_pdf, merge_pdfs
 from .export_page_runner import (
     AtlasPageExportRuntime,
     AtlasPageExportRunner,
@@ -1504,18 +1505,13 @@ class AtlasExportTask(QgsTask):
         cover_path: str | None = None,
         toc_path: str | None = None,
     ) -> None:
-        front_pages = [path for path in (cover_path, toc_path) if path]
-        all_paths = front_pages + page_paths
-        if len(all_paths) == 1:
-            os.replace(all_paths[0], self._output_path)
-            return
-
-        self._merge_pdfs(all_paths, self._output_path)
-        for path in all_paths:
-            try:
-                os.remove(path)
-            except OSError:
-                pass
+        assemble_output_pdf(
+            page_paths,
+            self._output_path,
+            cover_path=cover_path,
+            toc_path=toc_path,
+            merge_pdfs_fn=self._merge_pdfs,
+        )
 
     @staticmethod
     def _export_cover_page(
@@ -1690,23 +1686,12 @@ class AtlasExportTask(QgsTask):
     @staticmethod
     def _merge_pdfs(page_paths: list[str], output_path: str) -> None:
         """Merge per-page PDF files into a single multi-page PDF."""
-        try:
-            pdf_writer_cls = _load_pdf_writer()
-        except ImportError:
-            pdf_writer_cls = None
-            logger.warning("pypdf unavailable during atlas export; falling back to first-page-only PDF")
-
-        if pdf_writer_cls is not None:
-            writer = pdf_writer_cls()
-            for path in page_paths:
-                writer.append(path)
-            with open(output_path, "wb") as fout:
-                writer.write(fout)
-            return
-
-        # Fallback: if pypdf is unavailable, rename first page (single-page fallback)
-        if page_paths:
-            os.replace(page_paths[0], output_path)
+        merge_pdfs(
+            page_paths,
+            output_path,
+            load_pdf_writer=_load_pdf_writer,
+            warn=logger.warning,
+        )
 
     def finished(self, result: bool) -> None:
         """Called on the main thread after run() returns."""
