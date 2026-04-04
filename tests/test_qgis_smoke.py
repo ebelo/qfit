@@ -42,6 +42,7 @@ try:
     from qfit.qfit_dockwidget import QfitDockWidget
     from qfit.settings_service import SettingsService
     from qfit.ui.dockwidget_dependencies import build_dockwidget_dependencies
+    from qfit.ui.workflow_section_coordinator import WorkflowSectionCoordinator
     from qfit.visual_apply import VisualApplyService
 
     QGIS_AVAILABLE = True
@@ -252,6 +253,38 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertTrue(dock.analysisSectionContentWidget.isHidden())
             dock.publishSectionToggleButton.click()
             self.assertTrue(dock.publishSectionContentWidget.isHidden())
+        finally:
+            dock.close()
+            dock.deleteLater()
+
+    def test_workflow_section_coordinator_updates_visibility_rules(self):
+        dock = QfitDockWidget(self.iface)
+        try:
+            coordinator = WorkflowSectionCoordinator(dock)
+
+            coordinator.update_detailed_fetch_visibility(False)
+            self.assertTrue(dock.detailedRouteStrategyLabel.isHidden())
+            self.assertTrue(dock.maxDetailedActivitiesSpinBox.isHidden())
+
+            coordinator.update_detailed_fetch_visibility(True)
+            self.assertFalse(dock.detailedRouteStrategyLabel.isHidden())
+            self.assertFalse(dock.maxDetailedActivitiesSpinBox.isHidden())
+
+            coordinator.update_point_sampling_visibility(False)
+            self.assertTrue(dock.pointSamplingStrideSpinBox.isHidden())
+            coordinator.update_point_sampling_visibility(True)
+            self.assertFalse(dock.pointSamplingStrideSpinBox.isHidden())
+
+            coordinator.update_advanced_fetch_visibility(False)
+            self.assertTrue(dock.advancedFetchSettingsWidget.isHidden())
+            coordinator.update_advanced_fetch_visibility(True)
+            self.assertFalse(dock.advancedFetchSettingsWidget.isHidden())
+
+            coordinator.update_mapbox_advanced_visibility("Outdoor")
+            self.assertTrue(dock.mapboxStyleOwnerLineEdit.isHidden())
+            coordinator.update_mapbox_advanced_visibility("Custom")
+            self.assertFalse(dock.mapboxStyleOwnerLineEdit.isHidden())
+            self.assertFalse(dock.mapboxStyleIdLineEdit.isHidden())
         finally:
             dock.close()
             dock.deleteLater()
