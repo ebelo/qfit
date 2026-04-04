@@ -75,6 +75,7 @@ _COVER_SUMMARY_ROW_FIELDS = (
     "extent_height_m",
     "source_activity_id",
 )
+from .export_coordinator import AtlasExportCoordinator
 from .export_document_finalizer import assemble_output_pdf, merge_pdfs
 from .export_front_matter import export_cover_page, export_toc_page
 from .export_page_runtime_builder import AtlasPageRuntimeBuilder
@@ -1349,58 +1350,25 @@ class AtlasExportTask(QgsTask):
 
     def _run_export(self) -> bool:
         """Internal export logic (called from run())."""
-        try:
-            feature_count = self._atlas_layer.featureCount() if self._atlas_layer else 0
-            if feature_count == 0:
-                self._error = "No atlas pages found. Store and load activity layers first."
-                return False
-
-            layout = build_atlas_layout(
-                self._atlas_layer,
-                project=self._project,
-                profile_plot_style=self._profile_plot_style,
-            )
-            self._page_count = feature_count
-
-            if self.isCanceled():
-                return False
-
-            exporter = QgsLayoutExporter(layout)
-            settings = self._build_pdf_export_settings()
-            self._ensure_output_directory()
-
-            page_runner = self._build_page_export_runner(
-                layout=layout,
-                exporter=exporter,
-                settings=settings,
-            )
-            page_paths, page_error = page_runner.export_pages()
-            if page_error is not None:
-                self._error = page_error
-                return False
-            if self.isCanceled():
-                return False
-            if not page_paths:
-                self._error = "No pages were exported."
-                return False
-
-            cover_path = self._export_cover_page(
-                self._atlas_layer,
-                self._output_path,
-                project=self._project,
-            )
-            toc_path = self._export_toc_page(
-                self._atlas_layer,
-                self._output_path,
-                project=self._project,
-            )
-            self._assemble_output_pdf(page_paths, cover_path=cover_path, toc_path=toc_path)
-        except (RuntimeError, OSError) as exc:
-            logger.exception("Atlas export failed")
-            self._error = str(exc)
-            return False
-
-        return not self.isCanceled()
+        result = AtlasExportCoordinator(
+            atlas_layer=self._atlas_layer,
+            output_path=self._output_path,
+            project=self._project,
+            profile_plot_style=self._profile_plot_style,
+            is_canceled=self.isCanceled,
+            build_layout=build_atlas_layout,
+            layout_exporter_cls=QgsLayoutExporter,
+            build_pdf_export_settings=self._build_pdf_export_settings,
+            ensure_output_directory=self._ensure_output_directory,
+            build_page_export_runner=self._build_page_export_runner,
+            export_cover_page=self._export_cover_page,
+            export_toc_page=self._export_toc_page,
+            assemble_output_pdf=self._assemble_output_pdf,
+            logger=logger,
+        ).execute()
+        self._page_count = result.page_count
+        self._error = result.error
+        return result.success
 
     @staticmethod
     def _build_pdf_export_settings():
