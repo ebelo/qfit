@@ -6,8 +6,10 @@ rather than from individual submodules.
 """
 
 from .export_controller import AtlasExportController, AtlasExportValidationError
+from .export_runtime import AtlasExportRuntime
 from .export_service import AtlasExportResult, AtlasExportService
 from .export_use_case import AtlasExportUseCase, GenerateAtlasPdfCommand, PrepareAtlasPdfExportResult
+from .qgis_export_runtime import QgisAtlasExportRuntime
 from .publish_atlas import build_atlas_page_plans, normalize_atlas_page_settings
 
 # export_task is NOT imported here: it has top-level QGIS runtime imports that
@@ -20,6 +22,8 @@ __all__ = [
     "AtlasExportValidationError",
     "AtlasExportResult",
     "AtlasExportService",
+    "AtlasExportRuntime",
+    "QgisAtlasExportRuntime",
     "AtlasExportUseCase",
     "GenerateAtlasPdfCommand",
     "PrepareAtlasPdfExportResult",

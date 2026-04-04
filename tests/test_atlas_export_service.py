@@ -1,12 +1,6 @@
-"""Tests for AtlasExportService and AtlasExportResult.
-
-atlas_export_service.build_task uses a lazy import of atlas.export_task (which
-requires QGIS bindings), so build_task tests patch qfit.atlas.export_task via
-patch.dict to avoid polluting sys.modules for the full test run.
-"""
-import sys
+"""Tests for AtlasExportService and AtlasExportResult."""
 import unittest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 from tests import _path  # noqa: F401
 
@@ -162,23 +156,15 @@ class PrepareBasemapTests(unittest.TestCase):
 
 
 class CheckPdfExportPrerequisitesTests(unittest.TestCase):
-    def test_returns_none_when_pdf_writer_is_available(self):
-        stub_module, _mock_task = _make_atlas_task_stub()
-        stub_module._load_pdf_writer = MagicMock(return_value=object())
+    def test_delegates_prerequisite_check_to_runtime(self):
+        runtime = MagicMock()
+        runtime.check_pdf_export_prerequisites.return_value = "missing pypdf"
+        service = AtlasExportService(MagicMock(), runtime=runtime)
 
-        with patch.dict(sys.modules, {"qfit.atlas.export_task": stub_module}):
-            self.assertIsNone(AtlasExportService.check_pdf_export_prerequisites())
+        error = service.check_pdf_export_prerequisites()
 
-    def test_returns_user_facing_error_when_pdf_writer_is_missing(self):
-        stub_module, _mock_task = _make_atlas_task_stub()
-        stub_module._load_pdf_writer = MagicMock(side_effect=ImportError("missing pypdf"))
-
-        with patch.dict(sys.modules, {"qfit.atlas.export_task": stub_module}):
-            error = AtlasExportService.check_pdf_export_prerequisites()
-
-        self.assertIsNotNone(error)
-        self.assertIn("pypdf", error)
-        self.assertIn("Reinstall/update the plugin", error)
+        self.assertEqual(error, "missing pypdf")
+        runtime.check_pdf_export_prerequisites.assert_called_once_with()
 
 
 # ---------------------------------------------------------------------------
@@ -186,90 +172,65 @@ class CheckPdfExportPrerequisitesTests(unittest.TestCase):
 # ---------------------------------------------------------------------------
 
 
-def _make_atlas_task_stub():
-    """Return a (stub_module, MockTask) pair for patching qfit.atlas.export_task."""
-    stub_module = MagicMock()
-    MockTask = MagicMock()
-    stub_module.AtlasExportTask = MockTask
-    return stub_module, MockTask
-
-
 class BuildTaskTests(unittest.TestCase):
     def setUp(self):
         self.layer_manager = MagicMock()
-        self.service = AtlasExportService(self.layer_manager)
+        self.runtime = MagicMock()
+        self.service = AtlasExportService(self.layer_manager, runtime=self.runtime)
 
-    def test_constructs_atlas_export_task_with_correct_params(self):
-        stub_module, MockTask = _make_atlas_task_stub()
-        on_finished = MagicMock()
-        atlas_layer = MagicMock()
-
-        with patch.dict(sys.modules, {"qfit.atlas.export_task": stub_module}):
-            self.service.build_task(
-                atlas_layer=atlas_layer,
-                output_path="/out.pdf",
-                on_finished=on_finished,
-                pre_export_tile_mode="Raster",
-                preset_name="Dark",
-                access_token="tok",
-                style_owner="mapbox",
-                style_id="dark-v11",
-                background_enabled=True,
-            )
-
-        MockTask.assert_called_once_with(
-            atlas_layer=atlas_layer,
+    def test_build_task_delegates_request_and_gateway_to_runtime(self):
+        request = GenerateAtlasPdfRequest(
+            atlas_layer=MagicMock(),
             output_path="/out.pdf",
-            on_finished=on_finished,
-            restore_tile_mode="Raster",
-            layer_manager=self.layer_manager,
+            on_finished=MagicMock(),
+            pre_export_tile_mode="Raster",
             preset_name="Dark",
             access_token="tok",
             style_owner="mapbox",
             style_id="dark-v11",
             background_enabled=True,
-            profile_plot_style=None,
         )
 
-    def test_passes_background_enabled_false(self):
-        stub_module, MockTask = _make_atlas_task_stub()
+        self.service.build_task(request)
 
-        with patch.dict(sys.modules, {"qfit.atlas.export_task": stub_module}):
-            self.service.build_task(
-                atlas_layer=MagicMock(),
-                output_path="/out.pdf",
-                on_finished=MagicMock(),
-                pre_export_tile_mode="Vector",
-                preset_name="Light",
-                access_token="",
-                style_owner="",
-                style_id="",
-                background_enabled=False,
-            )
+        self.runtime.build_task.assert_called_once_with(request, layer_gateway=self.layer_manager)
 
-        kwargs = MockTask.call_args.kwargs
-        self.assertFalse(kwargs["background_enabled"])
-        self.assertEqual(kwargs["restore_tile_mode"], "Vector")
+    def test_build_task_constructs_request_from_legacy_kwargs_before_delegating(self):
+        self.service.build_task(
+            atlas_layer=MagicMock(),
+            output_path="/out.pdf",
+            on_finished=MagicMock(),
+            pre_export_tile_mode="Vector",
+            preset_name="Light",
+            access_token="",
+            style_owner="",
+            style_id="",
+            background_enabled=False,
+        )
 
-    def test_passes_profile_plot_style_through_to_task(self):
-        stub_module, MockTask = _make_atlas_task_stub()
+        request = self.runtime.build_task.call_args.args[0]
+        self.assertIsInstance(request, GenerateAtlasPdfRequest)
+        self.assertFalse(request.background_enabled)
+        self.assertEqual(request.pre_export_tile_mode, "Vector")
+
+    def test_build_task_preserves_profile_plot_style_in_delegated_request(self):
         style = object()
 
-        with patch.dict(sys.modules, {"qfit.atlas.export_task": stub_module}):
-            self.service.build_task(
-                atlas_layer=MagicMock(),
-                output_path="/out.pdf",
-                on_finished=MagicMock(),
-                pre_export_tile_mode="Vector",
-                preset_name="Light",
-                access_token="",
-                style_owner="",
-                style_id="",
-                background_enabled=False,
-                profile_plot_style=style,
-            )
+        self.service.build_task(
+            atlas_layer=MagicMock(),
+            output_path="/out.pdf",
+            on_finished=MagicMock(),
+            pre_export_tile_mode="Vector",
+            preset_name="Light",
+            access_token="",
+            style_owner="",
+            style_id="",
+            background_enabled=False,
+            profile_plot_style=style,
+        )
 
-        self.assertIs(MockTask.call_args.kwargs["profile_plot_style"], style)
+        request = self.runtime.build_task.call_args.args[0]
+        self.assertIs(request.profile_plot_style, style)
 
 
 class AtlasExportRequestContractTests(unittest.TestCase):
