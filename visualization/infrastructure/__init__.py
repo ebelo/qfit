@@ -1,6 +1,6 @@
 """QGIS-backed adapters for visualization workflows."""
 
-__all__ = ["BackgroundMapService", "LayerManager", "QgisLayerGateway"]
+__all__ = ["BackgroundMapService", "LayerManager", "QgisLayerGateway", "TemporalService"]
 
 
 def __getattr__(name):
@@ -12,4 +12,8 @@ def __getattr__(name):
         from .qgis_layer_gateway import QgisLayerGateway
 
         return QgisLayerGateway
+    if name == "TemporalService":
+        from .temporal_service import TemporalService
+
+        return TemporalService
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

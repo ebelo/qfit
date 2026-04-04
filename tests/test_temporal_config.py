@@ -1,7 +1,7 @@
 import unittest
 
 from tests import _path  # noqa: F401
-from qfit.temporal_config import (
+from qfit.visualization.application.temporal_config import (
     DEFAULT_TEMPORAL_MODE_LABEL,
     build_temporal_plan,
     describe_temporal_configuration,

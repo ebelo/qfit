@@ -9,8 +9,8 @@ from ...layer_style_service import LayerStyleService
 from ...map_canvas_service import MapCanvasService
 from ...mapbox_config import TILE_MODE_RASTER
 from ...project_layer_loader import ProjectLayerLoader
-from ...temporal_service import TemporalService
 from .background_map_service import BackgroundMapService
+from .temporal_service import TemporalService
 
 
 class QgisLayerGateway:
