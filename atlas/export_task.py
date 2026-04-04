@@ -76,6 +76,7 @@ _COVER_SUMMARY_ROW_FIELDS = (
     "source_activity_id",
 )
 from .export_document_finalizer import assemble_output_pdf, merge_pdfs
+from .export_front_matter import export_cover_page, export_toc_page
 from .export_page_runner import (
     AtlasPageExportRuntime,
     AtlasPageExportRunner,
@@ -1519,139 +1520,18 @@ class AtlasExportTask(QgsTask):
         output_path: str,
         project=None,
     ) -> str | None:
-        """Export a single cover-page PDF and return its path, or None on failure.
-
-        The cover is built from document-level fields stored on every feature of
-        *atlas_layer*.  When the project contains visible point/start layers a
-        square heatmap overview map is rendered below the statistics block.
-
-        Failures are swallowed so they never abort the main export.
-        """
-        saved_state: list[dict] = []
-        try:
-            proj = project or QgsProject.instance()
-
-            # Pre-compute cover data (summary + extent + activity IDs) once.
-            cover_data = _build_cover_summary_from_current_atlas_features(atlas_layer)
-            if not cover_data:
-                return None
-
-            # Determine if we can add a cover heatmap overview map.
-            cover_map_layers = None
-            extent_bounds = (
-                cover_data.get("_cover_extent_xmin"),
-                cover_data.get("_cover_extent_ymin"),
-                cover_data.get("_cover_extent_xmax"),
-                cover_data.get("_cover_extent_ymax"),
-            )
-            has_extent = all(v is not None for v in extent_bounds)
-
-            if has_extent:
-                try:
-                    root = proj.layerTreeRoot()
-                    visible_layers = [
-                        node.layer()
-                        for node in root.findLayers()
-                        if node.isVisible()
-                        and node.layer() is not None
-                        and node.layer() is not atlas_layer
-                    ]
-                except (RuntimeError, AttributeError, TypeError):
-                    visible_layers = []
-
-                if visible_layers:
-                    points_layer = None
-                    starts_layer = None
-                    background_layers: list = []
-
-                    for layer in visible_layers:
-                        try:
-                            name = layer.name()
-                        except (RuntimeError, AttributeError):
-                            continue
-                        if name == "qfit activity points":
-                            points_layer = layer
-                        elif name == "qfit activity starts":
-                            starts_layer = layer
-                        elif name == "qfit activities":
-                            pass  # exclude track lines from cover heatmap
-                        else:
-                            background_layers.append(layer)
-
-                    heatmap_target = points_layer or starts_layer
-
-                    if heatmap_target is not None:
-                        # Save current renderer, opacity and subset for restoration.
-                        try:
-                            old_renderer = heatmap_target.renderer().clone()
-                        except (RuntimeError, AttributeError):
-                            old_renderer = None
-                        saved_state.append({
-                            "layer": heatmap_target,
-                            "renderer": old_renderer,
-                            "opacity": heatmap_target.opacity(),
-                            "subset": heatmap_target.subsetString(),
-                        })
-
-                        _apply_cover_heatmap_renderer(heatmap_target)
-
-                        # Filter to the activities present in the atlas subset.
-                        activity_ids = cover_data.get("_atlas_activity_ids", [])
-                        if activity_ids:
-                            safe_ids = ", ".join(
-                                "'" + str(sid).replace("'", "''") + "'"
-                                for sid in activity_ids
-                            )
-                            heatmap_target.setSubsetString(
-                                f'"source_activity_id" IN ({safe_ids})'
-                            )
-
-                        # Hide start markers when detail points drive the heatmap.
-                        if heatmap_target is points_layer and starts_layer is not None:
-                            saved_state.append({
-                                "layer": starts_layer,
-                                "renderer": None,
-                                "opacity": starts_layer.opacity(),
-                                "subset": starts_layer.subsetString(),
-                            })
-                            starts_layer.setOpacity(0.0)
-
-                        cover_map_layers = [heatmap_target] + background_layers
-
-            cover_layout = build_cover_layout(
-                atlas_layer,
-                project=project,
-                map_layers=cover_map_layers,
-                cover_data=cover_data,
-            )
-            if cover_layout is None:
-                return None
-
-            cover_path = f"{output_path}.cover.pdf"
-            exporter = QgsLayoutExporter(cover_layout)
-            settings = QgsLayoutExporter.PdfExportSettings()
-            settings.dpi = 150
-            settings.rasterizeWholeImage = False
-            settings.forceVectorOutput = True
-
-            result = exporter.exportToPdf(cover_path, settings)
-            if result != QgsLayoutExporter.Success:
-                return None
-            return cover_path
-        except (RuntimeError, OSError):
-            logger.exception("Cover page export failed")
-            return None
-        finally:
-            # Restore original renderer, opacity and subset on modified layers.
-            for state in saved_state:
-                try:
-                    layer = state["layer"]
-                    if state.get("renderer") is not None:
-                        layer.setRenderer(state["renderer"])
-                    layer.setOpacity(state["opacity"])
-                    layer.setSubsetString(state["subset"])
-                except (RuntimeError, AttributeError):
-                    pass
+        """Export a single cover-page PDF and return its path, or None on failure."""
+        return export_cover_page(
+            atlas_layer,
+            output_path,
+            project=project,
+            get_project_instance=QgsProject.instance,
+            build_cover_data=_build_cover_summary_from_current_atlas_features,
+            apply_cover_heatmap_renderer=_apply_cover_heatmap_renderer,
+            build_cover_layout_fn=build_cover_layout,
+            layout_exporter_cls=QgsLayoutExporter,
+            logger=logger,
+        )
 
     @staticmethod
     def _export_toc_page(
@@ -1659,29 +1539,15 @@ class AtlasExportTask(QgsTask):
         output_path: str,
         project=None,
     ) -> str | None:
-        """Export a single table-of-contents PDF and return its path, or None on failure.
-
-        Failures are swallowed so they never abort the main export.
-        """
-        try:
-            toc_layout = build_toc_layout(atlas_layer, project=project)
-            if toc_layout is None:
-                return None
-
-            toc_path = f"{output_path}.toc.pdf"
-            exporter = QgsLayoutExporter(toc_layout)
-            settings = QgsLayoutExporter.PdfExportSettings()
-            settings.dpi = 150
-            settings.rasterizeWholeImage = False
-            settings.forceVectorOutput = True
-
-            result = exporter.exportToPdf(toc_path, settings)
-            if result != QgsLayoutExporter.Success:
-                return None
-            return toc_path
-        except (RuntimeError, OSError):
-            logger.exception("TOC page export failed")
-            return None
+        """Export a single table-of-contents PDF and return its path, or None on failure."""
+        return export_toc_page(
+            atlas_layer,
+            output_path,
+            project=project,
+            build_toc_layout_fn=build_toc_layout,
+            layout_exporter_cls=QgsLayoutExporter,
+            logger=logger,
+        )
 
     @staticmethod
     def _merge_pdfs(page_paths: list[str], output_path: str) -> None:
