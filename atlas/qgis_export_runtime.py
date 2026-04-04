@@ -1,16 +1,15 @@
 from __future__ import annotations
 
 from .export_runtime import AtlasExportRuntime
+from .infrastructure.pdf_assembly import load_pdf_writer
 
 
 class QgisAtlasExportRuntime(AtlasExportRuntime):
     """QGIS-backed atlas export runtime adapter."""
 
     def check_pdf_export_prerequisites(self) -> str | None:
-        from .export_task import _load_pdf_writer  # lazy import: QGIS runtime only
-
         try:
-            _load_pdf_writer()
+            load_pdf_writer()
         except ImportError:
             return (
                 "Atlas PDF export requires the 'pypdf' runtime, but it is not available in this qfit install. "
