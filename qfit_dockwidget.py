@@ -47,7 +47,7 @@ from .providers.infrastructure.strava_provider import StravaProvider
 from .visualization.application import DEFAULT_TEMPORAL_MODE_LABEL, temporal_mode_labels
 from .ui.dockwidget_dependencies import DockWidgetDependencies, build_dockwidget_dependencies
 from .ui.workflow_section_coordinator import WorkflowSectionCoordinator
-from .ui_settings_binding import UIFieldBinding, load_bindings, save_bindings
+from .configuration.application.ui_settings_binding import UIFieldBinding, load_bindings, save_bindings
 
 FORM_CLASS, _ = uic.loadUiType(
     __import__("os").path.join(__import__("os").path.dirname(__file__), "qfit_dockwidget_base.ui")

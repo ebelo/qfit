@@ -8,7 +8,7 @@ from ..atlas.export_use_case import AtlasExportUseCase
 from ..fetch_result_service import FetchResultService
 from ..load_workflow import LoadWorkflowService
 from ..qfit_cache import QfitCache
-from ..settings_service import SettingsService
+from ..configuration.application.settings_service import SettingsService
 from ..sync_controller import SyncController
 from ..visualization.application import BackgroundMapController, VisualApplyService
 
