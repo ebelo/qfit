@@ -15,7 +15,7 @@ from qgis.core import (
     QgsVectorLayer,
 )
 
-from .gpkg_schema import (
+from .activities.infrastructure.geopackage.gpkg_schema import (
     POINT_FIELDS,
     make_qgs_fields,
 )

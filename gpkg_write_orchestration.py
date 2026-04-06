@@ -15,7 +15,7 @@ It depends on :mod:`gpkg_io` (disk writes), :mod:`gpkg_layer_builders`
 but contains no schema definitions or repository logic.
 """
 
-from .gpkg_io import write_layer_to_gpkg
+from .activities.infrastructure.geopackage.gpkg_io import write_layer_to_gpkg
 from .gpkg_atlas_page_builder import build_atlas_layer
 from .gpkg_layer_builders import (
     build_start_layer,
