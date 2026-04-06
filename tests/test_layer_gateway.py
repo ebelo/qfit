@@ -142,15 +142,41 @@ class LayerGatewayBoundaryTests(unittest.TestCase):
 
         qgis_core = ModuleType("qgis.core")
         qgis_core.QgsProject = MagicMock(name="QgsProject")
+        qgis_core.QgsCategorizedSymbolRenderer = MagicMock(name="QgsCategorizedSymbolRenderer")
+        qgis_core.QgsFillSymbol = MagicMock(name="QgsFillSymbol")
+        qgis_core.QgsGradientColorRamp = MagicMock(name="QgsGradientColorRamp")
+        qgis_core.QgsGradientStop = MagicMock(name="QgsGradientStop")
+        qgis_core.QgsHeatmapRenderer = MagicMock(name="QgsHeatmapRenderer")
+        qgis_core.QgsLineSymbol = MagicMock(name="QgsLineSymbol")
+        qgis_core.QgsMarkerSymbol = MagicMock(name="QgsMarkerSymbol")
         qgis_core.QgsRasterLayer = MagicMock(name="QgsRasterLayer")
         qgis_core.QgsRectangle = MagicMock(name="QgsRectangle")
+        qgis_core.QgsRendererCategory = MagicMock(name="QgsRendererCategory")
+        qgis_core.QgsSimpleLineSymbolLayer = MagicMock(name="QgsSimpleLineSymbolLayer")
+        qgis_core.QgsSingleSymbolRenderer = MagicMock(name="QgsSingleSymbolRenderer")
+        qgis_core.QgsUnitTypes = MagicMock(name="QgsUnitTypes")
         qgis_core.QgsVectorTileLayer = MagicMock(name="QgsVectorTileLayer")
         temporal_props = MagicMock(name="QgsVectorLayerTemporalProperties")
         temporal_props.ModeFeatureDateTimeStartAndEndFromExpressions = 1
         qgis_core.QgsVectorLayerTemporalProperties = temporal_props
 
+        qgis_mod = ModuleType("qgis")
+        qgis_mod.core = qgis_core
+        qgis_pyqt = ModuleType("qgis.PyQt")
+        qgis_qtcore = ModuleType("qgis.PyQt.QtCore")
+        qt = MagicMock(name="Qt")
+        qt.RoundCap = 1
+        qt.RoundJoin = 1
+        qgis_qtcore.Qt = qt
+        qgis_qtgui = ModuleType("qgis.PyQt.QtGui")
+        qgis_qtgui.QColor = MagicMock(name="QColor")
+
         return {
+            "qgis": qgis_mod,
             "qgis.core": qgis_core,
+            "qgis.PyQt": qgis_pyqt,
+            "qgis.PyQt.QtCore": qgis_qtcore,
+            "qgis.PyQt.QtGui": qgis_qtgui,
             "qfit.visualization.infrastructure.background_map_service": class_module(
                 "qfit.visualization.infrastructure.background_map_service",
                 "BackgroundMapService",

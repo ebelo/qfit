@@ -5,6 +5,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from types import ModuleType, SimpleNamespace
 from unittest.mock import MagicMock
 
 from tests import _path  # noqa: F401
@@ -32,7 +33,7 @@ try:
 
     from qfit.gpkg_writer import GeoPackageWriter
     from qfit.layer_manager import LayerManager
-    from qfit.layer_style_service import LayerStyleService
+    from qfit.visualization.infrastructure.layer_style_service import LayerStyleService
 
     QGIS_AVAILABLE = True
     QGIS_IMPORT_ERROR = None
@@ -275,14 +276,14 @@ def _load_service_with_mock_qgis():
     _QGIS_MODS = ["qgis", "qgis.core", "qgis.PyQt", "qgis.PyQt.QtCore", "qgis.PyQt.QtGui"]
 
     saved_qgis = {m: sys.modules.get(m) for m in _QGIS_MODS}
-    saved_lss = sys.modules.get("qfit.layer_style_service")
+    saved_lss = sys.modules.get("qfit.visualization.infrastructure.layer_style_service")
 
     for mod_name in _QGIS_MODS:
         sys.modules[mod_name] = qstub
-    sys.modules.pop("qfit.layer_style_service", None)
+    sys.modules.pop("qfit.visualization.infrastructure.layer_style_service", None)
 
     try:
-        lss = importlib.import_module("qfit.layer_style_service")
+        lss = importlib.import_module("qfit.visualization.infrastructure.layer_style_service")
         return lss.LayerStyleService
     except Exception:  # pragma: no cover
         return None
@@ -293,9 +294,9 @@ def _load_service_with_mock_qgis():
             else:
                 sys.modules[mod_name] = original
         if saved_lss is None:
-            sys.modules.pop("qfit.layer_style_service", None)
+            sys.modules.pop("qfit.visualization.infrastructure.layer_style_service", None)
         else:
-            sys.modules["qfit.layer_style_service"] = saved_lss
+            sys.modules["qfit.visualization.infrastructure.layer_style_service"] = saved_lss
 
 
 # Build a mock-backed service class when a usable QGIS is absent.
@@ -427,6 +428,105 @@ class LayerStyleServiceUnitTests(unittest.TestCase):
             acts, None, None, None, "Simple lines", background_preset_name="Outdoor"
         )
         acts.setRenderer.assert_called_once()
+
+    def test_private_helpers_cover_track_points_and_clustered_starts_branches(self):
+        activities = self._make_layer()
+        points = self._make_layer()
+        starts = self._make_layer()
+
+        self.service._apply_activities_layer_style(activities, "Track points", None)
+        self.service._apply_points_layer_style(points, "Track points", None)
+        self.service._apply_starts_layer_style(starts, points, "Clustered starts", None)
+
+        activities.setRenderer.assert_called_once()
+        points.setRenderer.assert_called_once()
+        starts.setRenderer.assert_called_once()
+
+    def test_private_helpers_fall_back_when_activity_style_field_is_missing(self):
+        unknown = MagicMock()
+        unknown.name.return_value = "unknown_col"
+        fields = MagicMock()
+        fields.__iter__ = MagicMock(side_effect=lambda: iter([unknown]))
+        fields.indexOf.return_value = 0
+
+        activities = self._make_layer()
+        activities.fields.return_value = fields
+        points = self._make_layer()
+        points.fields.return_value = fields
+
+        self.service._apply_categorized_line_style(activities, None)
+        self.service._apply_categorized_point_style(points, None)
+
+        activities.setRenderer.assert_called_once()
+        points.setRenderer.assert_called_once()
+
+    def test_build_line_symbol_handles_outline_layers(self):
+        line_style = SimpleNamespace(
+            outline_color="#123456",
+            outline_width=0.5,
+            line_width=1.2,
+        )
+
+        self.service._build_line_symbol("#abcdef", line_style)
+
+    def test_infer_background_preset_name_returns_none_for_malformed_name(self):
+        layer = MagicMock()
+        layer.name.return_value = "qfit background"
+
+        project_instance = MagicMock()
+        project_instance.mapLayers.return_value = {"bg": layer}
+        self.service._infer_background_preset_name.__func__.__globals__["QgsProject"].instance.return_value = project_instance
+
+        self.assertIsNone(self.service._infer_background_preset_name())
+
+
+class VisualizationInfrastructureExportTests(unittest.TestCase):
+    def test_layer_style_service_alias_is_exported_from_visualization_infrastructure(self):
+        if QGIS_AVAILABLE:
+            from qfit.visualization.infrastructure import LayerStyleService as exported
+            from qfit.visualization.infrastructure.layer_style_service import LayerStyleService
+
+            self.assertIs(exported, LayerStyleService)
+            return
+
+        service_cls = _load_service_with_mock_qgis()
+        self.assertIsNotNone(service_cls)
+
+    def test_visualization_infrastructure_lazy_exports_cover_supported_names(self):
+        package_name = "qfit.visualization.infrastructure"
+        module_specs = {
+            f"{package_name}.background_map_service": ("BackgroundMapService", type("BackgroundMapService", (), {})),
+            f"{package_name}.layer_filter_service": ("LayerFilterService", type("LayerFilterService", (), {})),
+            f"{package_name}.qgis_layer_gateway": ("QgisLayerGateway", type("QgisLayerGateway", (), {})),
+            f"{package_name}.layer_style_service": ("LayerStyleService", type("LayerStyleService", (), {})),
+            f"{package_name}.temporal_service": ("TemporalService", type("TemporalService", (), {})),
+        }
+        saved_modules = {name: sys.modules.get(name) for name in [package_name, *module_specs]}
+
+        try:
+            for name, (class_name, cls) in module_specs.items():
+                module = ModuleType(name)
+                setattr(module, class_name, cls)
+                sys.modules[name] = module
+
+            sys.modules.pop(package_name, None)
+            package = importlib.import_module(package_name)
+            package = importlib.reload(package)
+
+            self.assertIs(package.BackgroundMapService, module_specs[f"{package_name}.background_map_service"][1])
+            self.assertIs(package.LayerFilterService, module_specs[f"{package_name}.layer_filter_service"][1])
+            self.assertIs(package.LayerManager, module_specs[f"{package_name}.qgis_layer_gateway"][1])
+            self.assertIs(package.QgisLayerGateway, module_specs[f"{package_name}.qgis_layer_gateway"][1])
+            self.assertIs(package.LayerStyleService, module_specs[f"{package_name}.layer_style_service"][1])
+            self.assertIs(package.TemporalService, module_specs[f"{package_name}.temporal_service"][1])
+            with self.assertRaises(AttributeError):
+                _ = package.NotReal
+        finally:
+            for name, original in saved_modules.items():
+                if original is None:
+                    sys.modules.pop(name, None)
+                else:
+                    sys.modules[name] = original
 
 
 if __name__ == "__main__":

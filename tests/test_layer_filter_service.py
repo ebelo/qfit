@@ -8,7 +8,8 @@ from unittest.mock import MagicMock
 from tests import _path  # noqa: F401
 
 from qfit.activities.domain.activity_query import ActivityQuery, build_subset_string
-from qfit.layer_filter_service import LayerFilterService
+from qfit.layer_filter_service import LayerFilterService as LegacyLayerFilterService
+from qfit.visualization.infrastructure.layer_filter_service import LayerFilterService
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
@@ -35,6 +36,9 @@ SKIP_REAL = f"QGIS not available: {QGIS_IMPORT_ERROR}" if not QGIS_AVAILABLE els
 class LayerFilterServiceTests(unittest.TestCase):
     def setUp(self):
         self.service = LayerFilterService()
+
+    def test_root_shim_exports_visualization_layer_filter_service(self):
+        self.assertIs(LegacyLayerFilterService, LayerFilterService)
 
     def test_apply_filters_sets_subset_string_and_repaints(self):
         layer = MagicMock()

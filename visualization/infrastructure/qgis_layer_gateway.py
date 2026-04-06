@@ -4,13 +4,23 @@ from qgis.core import QgsProject
 
 logger = logging.getLogger(__name__)
 
-from ...layer_filter_service import LayerFilterService
-from ...layer_style_service import LayerStyleService
 from ...map_canvas_service import MapCanvasService
 from ...mapbox_config import TILE_MODE_RASTER
 from ...project_layer_loader import ProjectLayerLoader
 from .background_map_service import BackgroundMapService
 from .temporal_service import TemporalService
+
+
+def _build_layer_filter_service():
+    from .layer_filter_service import LayerFilterService
+
+    return LayerFilterService()
+
+
+def _build_layer_style_service():
+    from .layer_style_service import LayerStyleService
+
+    return LayerStyleService()
 
 
 class QgisLayerGateway:
@@ -20,9 +30,9 @@ class QgisLayerGateway:
 
     def __init__(self, iface):
         self.iface = iface
-        self._style_service = LayerStyleService()
+        self._style_service = _build_layer_style_service()
         self._background_service = BackgroundMapService()
-        self._filter_service = LayerFilterService()
+        self._filter_service = _build_layer_filter_service()
         self._project_layer_loader = ProjectLayerLoader()
         self._temporal_service = TemporalService()
         self._canvas_service = MapCanvasService(self._background_service)
