@@ -1,4 +1,6 @@
+import importlib.util
 import os
+import sys
 import unittest
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
@@ -6,17 +8,31 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 from tests import _path  # noqa: F401
 
 try:
+    _REAL_QGIS_PRESENT = importlib.util.find_spec("qgis") is not None
+except ValueError:
+    _REAL_QGIS_PRESENT = any(
+        os.path.isdir(os.path.join(p, "qgis")) for p in sys.path if p
+    )
+
+try:
     from qgis.core import QgsApplication
 except (ImportError, ModuleNotFoundError):  # pragma: no cover
     QgsApplication = None
 
 if QgsApplication is not None:
-    from qfit.gpkg_atlas_table_builders import (
+    from qfit.activities.infrastructure.geopackage.gpkg_atlas_table_builders import (
         build_cover_highlight_layer,
         build_document_summary_layer,
         build_page_detail_item_layer,
         build_profile_sample_layer,
         build_toc_layer,
+    )
+    from qfit.gpkg_atlas_table_builders import (
+        build_cover_highlight_layer as legacy_build_cover_highlight_layer,
+        build_document_summary_layer as legacy_build_document_summary_layer,
+        build_page_detail_item_layer as legacy_build_page_detail_item_layer,
+        build_profile_sample_layer as legacy_build_profile_sample_layer,
+        build_toc_layer as legacy_build_toc_layer,
     )
 else:  # pragma: no cover
     build_cover_highlight_layer = None
@@ -29,14 +45,77 @@ _QGIS_APP = None
 
 
 def _ensure_qgis_app():
+    global QgsApplication
+    global build_cover_highlight_layer
+    global build_document_summary_layer
+    global build_page_detail_item_layer
+    global build_profile_sample_layer
+    global build_toc_layer
     global _QGIS_APP
+    if QgsApplication is None and _REAL_QGIS_PRESENT:
+        for module_name in [
+            "qgis.core",
+            "qgis.gui",
+            "qgis.PyQt",
+            "qgis.PyQt.QtCore",
+            "qgis.PyQt.QtGui",
+            "qgis",
+        ]:
+            sys.modules.pop(module_name, None)
+        from qgis.core import QgsApplication as RealQgsApplication  # type: ignore
+
+        QgsApplication = RealQgsApplication
+    if build_document_summary_layer is None:
+        sys.modules.pop(
+            "qfit.activities.infrastructure.geopackage.gpkg_atlas_table_builders",
+            None,
+        )
+        from qfit.activities.infrastructure.geopackage.gpkg_atlas_table_builders import (
+            build_cover_highlight_layer as real_build_cover_highlight_layer,
+            build_document_summary_layer as real_build_document_summary_layer,
+            build_page_detail_item_layer as real_build_page_detail_item_layer,
+            build_profile_sample_layer as real_build_profile_sample_layer,
+            build_toc_layer as real_build_toc_layer,
+        )
+
+        build_cover_highlight_layer = real_build_cover_highlight_layer
+        build_document_summary_layer = real_build_document_summary_layer
+        build_page_detail_item_layer = real_build_page_detail_item_layer
+        build_profile_sample_layer = real_build_profile_sample_layer
+        build_toc_layer = real_build_toc_layer
     if _QGIS_APP is None:
         _QGIS_APP = QgsApplication([], False)
         _QGIS_APP.initQgis()
     return _QGIS_APP
 
 
-@unittest.skipIf(QgsApplication is None, "QGIS Python bindings are not available")
+@unittest.skipIf(not _REAL_QGIS_PRESENT, "QGIS Python bindings are not available")
+class AtlasTableBuilderShimTests(unittest.TestCase):
+    def test_legacy_gpkg_atlas_table_builders_shim_exports_same_functions(self):
+        global legacy_build_cover_highlight_layer
+        global legacy_build_document_summary_layer
+        global legacy_build_page_detail_item_layer
+        global legacy_build_profile_sample_layer
+        global legacy_build_toc_layer
+
+        _ensure_qgis_app()
+        if "legacy_build_cover_highlight_layer" not in globals():
+            from qfit.gpkg_atlas_table_builders import (
+                build_cover_highlight_layer as legacy_build_cover_highlight_layer,
+                build_document_summary_layer as legacy_build_document_summary_layer,
+                build_page_detail_item_layer as legacy_build_page_detail_item_layer,
+                build_profile_sample_layer as legacy_build_profile_sample_layer,
+                build_toc_layer as legacy_build_toc_layer,
+            )
+
+        self.assertIs(legacy_build_cover_highlight_layer, build_cover_highlight_layer)
+        self.assertIs(legacy_build_document_summary_layer, build_document_summary_layer)
+        self.assertIs(legacy_build_page_detail_item_layer, build_page_detail_item_layer)
+        self.assertIs(legacy_build_profile_sample_layer, build_profile_sample_layer)
+        self.assertIs(legacy_build_toc_layer, build_toc_layer)
+
+
+@unittest.skipIf(not _REAL_QGIS_PRESENT, "QGIS Python bindings are not available")
 class BuildDocumentSummaryLayerTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -61,7 +140,7 @@ class BuildDocumentSummaryLayerTests(unittest.TestCase):
         self.assertFalse(layer.isSpatial())
 
 
-@unittest.skipIf(QgsApplication is None, "QGIS Python bindings are not available")
+@unittest.skipIf(not _REAL_QGIS_PRESENT, "QGIS Python bindings are not available")
 class BuildCoverHighlightLayerTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -81,7 +160,7 @@ class BuildCoverHighlightLayerTests(unittest.TestCase):
         self.assertEqual(layer.featureCount(), 0)
 
 
-@unittest.skipIf(QgsApplication is None, "QGIS Python bindings are not available")
+@unittest.skipIf(not _REAL_QGIS_PRESENT, "QGIS Python bindings are not available")
 class BuildPageDetailItemLayerTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -101,7 +180,7 @@ class BuildPageDetailItemLayerTests(unittest.TestCase):
         self.assertEqual(layer.featureCount(), 0)
 
 
-@unittest.skipIf(QgsApplication is None, "QGIS Python bindings are not available")
+@unittest.skipIf(not _REAL_QGIS_PRESENT, "QGIS Python bindings are not available")
 class BuildProfileSampleLayerTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -121,7 +200,7 @@ class BuildProfileSampleLayerTests(unittest.TestCase):
         self.assertEqual(layer.featureCount(), 0)
 
 
-@unittest.skipIf(QgsApplication is None, "QGIS Python bindings are not available")
+@unittest.skipIf(not _REAL_QGIS_PRESENT, "QGIS Python bindings are not available")
 class BuildTocLayerTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

@@ -153,18 +153,39 @@ class GeoPackagePackageUnitTests(unittest.TestCase):
                 "qfit.activities.infrastructure.geopackage.gpkg_io",
                 write_layer_to_gpkg=write_layer_to_gpkg,
             ),
+            "qfit.activities.infrastructure.geopackage.gpkg_layer_builders": self._module(
+                "qfit.activities.infrastructure.geopackage.gpkg_layer_builders",
+                build_track_layer=build_track_layer,
+                build_start_layer=build_start_layer,
+            ),
             "qfit.gpkg_layer_builders": self._module(
                 "qfit.gpkg_layer_builders",
                 build_track_layer=build_track_layer,
                 build_start_layer=build_start_layer,
             ),
+            "qfit.activities.infrastructure.geopackage.gpkg_point_layer_builder": self._module(
+                "qfit.activities.infrastructure.geopackage.gpkg_point_layer_builder",
+                build_point_layer=build_point_layer,
+            ),
             "qfit.gpkg_point_layer_builder": self._module(
                 "qfit.gpkg_point_layer_builder",
                 build_point_layer=build_point_layer,
             ),
+            "qfit.activities.infrastructure.geopackage.gpkg_atlas_page_builder": self._module(
+                "qfit.activities.infrastructure.geopackage.gpkg_atlas_page_builder",
+                build_atlas_layer=build_atlas_layer,
+            ),
             "qfit.gpkg_atlas_page_builder": self._module(
                 "qfit.gpkg_atlas_page_builder",
                 build_atlas_layer=build_atlas_layer,
+            ),
+            "qfit.activities.infrastructure.geopackage.gpkg_atlas_table_builders": self._module(
+                "qfit.activities.infrastructure.geopackage.gpkg_atlas_table_builders",
+                build_cover_highlight_layer=build_cover_highlight_layer,
+                build_document_summary_layer=build_document_summary_layer,
+                build_page_detail_item_layer=build_page_detail_item_layer,
+                build_profile_sample_layer=build_profile_sample_layer,
+                build_toc_layer=build_toc_layer,
             ),
             "qfit.gpkg_atlas_table_builders": self._module(
                 "qfit.gpkg_atlas_table_builders",
