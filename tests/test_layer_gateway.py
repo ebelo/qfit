@@ -61,6 +61,14 @@ class LayerGatewayBoundaryTests(unittest.TestCase):
             )
 
             gateway = adapter_module.QgisLayerGateway(MagicMock(name="iface"))
+            gateway._canvas_service = MagicMock(name="canvas_service")
+            gateway._project_layer_loader = MagicMock(name="project_layer_loader")
+            gateway._project_layer_loader.load_output_layers.return_value = (
+                MagicMock(name="activities"),
+                MagicMock(name="starts"),
+                MagicMock(name="points"),
+                MagicMock(name="atlas"),
+            )
             gateway._move_background_layers_to_bottom = MagicMock(name="move_background_layers_to_bottom")
             result = gateway.load_output_layers("/tmp/out.gpkg")
 
@@ -98,8 +106,12 @@ class LayerGatewayBoundaryTests(unittest.TestCase):
         for name in [
             "qfit.background_map_service",
             "qfit.layer_manager",
+            "qfit.map_canvas_service",
+            "qfit.project_layer_loader",
             "qfit.visualization.infrastructure",
             "qfit.visualization.infrastructure.background_map_service",
+            "qfit.visualization.infrastructure.map_canvas_service",
+            "qfit.visualization.infrastructure.project_layer_loader",
             "qfit.visualization.infrastructure.qgis_layer_gateway",
         ]:
             sys.modules.pop(name, None)
@@ -142,6 +154,8 @@ class LayerGatewayBoundaryTests(unittest.TestCase):
 
         qgis_core = ModuleType("qgis.core")
         qgis_core.QgsProject = MagicMock(name="QgsProject")
+        qgis_core.QgsCoordinateReferenceSystem = MagicMock(name="QgsCoordinateReferenceSystem")
+        qgis_core.QgsCoordinateTransform = MagicMock(name="QgsCoordinateTransform")
         qgis_core.QgsCategorizedSymbolRenderer = MagicMock(name="QgsCategorizedSymbolRenderer")
         qgis_core.QgsFillSymbol = MagicMock(name="QgsFillSymbol")
         qgis_core.QgsGradientColorRamp = MagicMock(name="QgsGradientColorRamp")
@@ -158,6 +172,7 @@ class LayerGatewayBoundaryTests(unittest.TestCase):
         qgis_core.QgsVectorTileLayer = MagicMock(name="QgsVectorTileLayer")
         temporal_props = MagicMock(name="QgsVectorLayerTemporalProperties")
         temporal_props.ModeFeatureDateTimeStartAndEndFromExpressions = 1
+        qgis_core.QgsVectorLayer = MagicMock(name="QgsVectorLayer")
         qgis_core.QgsVectorLayerTemporalProperties = temporal_props
 
         qgis_mod = ModuleType("qgis")
@@ -192,14 +207,14 @@ class LayerGatewayBoundaryTests(unittest.TestCase):
                 "LayerStyleService",
                 style_service,
             ),
-            "qfit.map_canvas_service": class_module(
-                "qfit.map_canvas_service",
+            "qfit.visualization.infrastructure.map_canvas_service": class_module(
+                "qfit.visualization.infrastructure.map_canvas_service",
                 "MapCanvasService",
                 map_canvas_service,
             ),
             "qfit.mapbox_config": mapbox_config,
-            "qfit.project_layer_loader": class_module(
-                "qfit.project_layer_loader",
+            "qfit.visualization.infrastructure.project_layer_loader": class_module(
+                "qfit.visualization.infrastructure.project_layer_loader",
                 "ProjectLayerLoader",
                 project_layer_loader,
             ),
