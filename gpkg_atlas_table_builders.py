@@ -15,7 +15,7 @@ from qgis.core import (
     QgsVectorLayer,
 )
 
-from .gpkg_schema import (
+from .activities.infrastructure.geopackage.gpkg_schema import (
     COVER_HIGHLIGHT_FIELDS,
     DOCUMENT_SUMMARY_FIELDS,
     PAGE_DETAIL_ITEM_FIELDS,

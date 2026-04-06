@@ -98,7 +98,7 @@ def _make_qgis_stubs():
 
 
 def _make_schema_stub():
-    schema = ModuleType("qfit.gpkg_schema")
+    schema = ModuleType("qfit.activities.infrastructure.geopackage.gpkg_schema")
     schema.ATLAS_FIELDS = [("name", "String"), ("document_cover_summary", "String")]
     schema.START_FIELDS = [("source", "String")]
     schema.TRACK_FIELDS = [("source", "String")]
@@ -173,6 +173,7 @@ class BuildAtlasLayerPureTests(unittest.TestCase):
             "qgis": qgis_mod,
             "qgis.core": qgis_core,
             "qfit.gpkg_schema": schema_stub,
+            "qfit.activities.infrastructure.geopackage.gpkg_schema": schema_stub,
             "qfit.atlas.publish_atlas": publish_atlas_stub,
         }
 

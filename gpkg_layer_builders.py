@@ -19,7 +19,7 @@ from qgis.core import (
     QgsVectorLayer,
 )
 
-from .gpkg_schema import (
+from .activities.infrastructure.geopackage.gpkg_schema import (
     START_FIELDS,
     TRACK_FIELDS,
     make_qgs_fields,
@@ -161,5 +161,4 @@ def _fallback_geometry(record):
         QgsPointXY(start_lon, start_lat),
         QgsPointXY(end_lon, end_lat),
     ])
-
 
