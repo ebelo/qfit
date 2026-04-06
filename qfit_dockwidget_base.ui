@@ -700,27 +700,30 @@
            </property>
            <item>
             <widget class="QWidget" name="analysisTemporalModeRow" native="true">
-             <layout class="QGridLayout" name="analysisTemporalModeLayout">
-              <property name="horizontalSpacing">
-               <number>6</number>
-              </property>
-              <property name="verticalSpacing">
-               <number>6</number>
-              </property>
-              <property name="horizontalSpacing">
+             <layout class="QHBoxLayout" name="analysisTemporalModeLayout">
+              <property name="spacing">
                <number>12</number>
               </property>
-              <property name="verticalSpacing">
+              <property name="leftMargin">
                <number>0</number>
               </property>
-              <item row="0" column="0">
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <item>
                <widget class="QLabel" name="temporalModeLabel">
                 <property name="text">
                  <string>Temporal playback</string>
                 </property>
                </widget>
               </item>
-              <item row="0" column="1">
+              <item>
                <widget class="QComboBox" name="temporalModeComboBox">
                 <property name="sizeAdjustPolicy">
                  <enum>QComboBox::AdjustToMinimumContentsLengthWithIcon</enum>
@@ -730,10 +733,19 @@
                 </property>
                </widget>
               </item>
-              <columnstretch>
-               <number>0</number>
-               <number>1</number>
-              </columnstretch>
+              <item>
+               <spacer name="analysisTemporalModeSpacer">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
              </layout>
             </widget>
            </item>
