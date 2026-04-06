@@ -1,9 +1,18 @@
+import importlib.util
 import os
+import sys
 import unittest
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 from tests import _path  # noqa: F401
+
+try:
+    _REAL_QGIS_PRESENT = importlib.util.find_spec("qgis") is not None
+except ValueError:
+    _REAL_QGIS_PRESENT = any(
+        os.path.isdir(os.path.join(p, "qgis")) for p in sys.path if p
+    )
 
 try:
     from qgis.core import QgsApplication
@@ -13,7 +22,8 @@ except (ImportError, ModuleNotFoundError):  # pragma: no cover
 if QgsApplication is not None:
     from qfit.atlas.export_task import _build_cover_summary_from_current_atlas_features
     from qfit.atlas.publish_atlas import normalize_atlas_page_settings
-    from qfit.gpkg_atlas_page_builder import build_atlas_layer
+    from qfit.activities.infrastructure.geopackage.gpkg_atlas_page_builder import build_atlas_layer
+    from qfit.gpkg_atlas_page_builder import build_atlas_layer as legacy_build_atlas_layer
 else:  # pragma: no cover
     _build_cover_summary_from_current_atlas_features = None
     normalize_atlas_page_settings = None
@@ -24,7 +34,20 @@ _QGIS_APP = None
 
 
 def _ensure_qgis_app():
+    global QgsApplication
     global _QGIS_APP
+    if QgsApplication is None and _REAL_QGIS_PRESENT:
+        for module_name in [
+            "qgis.core",
+            "qgis.PyQt",
+            "qgis.PyQt.QtCore",
+            "qgis.PyQt.QtGui",
+            "qgis",
+        ]:
+            sys.modules.pop(module_name, None)
+        from qgis.core import QgsApplication as RealQgsApplication  # type: ignore
+
+        QgsApplication = RealQgsApplication
     if _QGIS_APP is None:
         _QGIS_APP = QgsApplication([], False)
         _QGIS_APP.initQgis()
@@ -32,10 +55,49 @@ def _ensure_qgis_app():
 
 
 @unittest.skipIf(QgsApplication is None, "QGIS Python bindings are not available")
+class AtlasPageLayerBuilderShimTests(unittest.TestCase):
+    def test_legacy_gpkg_atlas_page_builder_shim_exports_same_function(self):
+        global legacy_build_atlas_layer
+
+        _ensure_qgis_app()
+        if "legacy_build_atlas_layer" not in globals():
+            from qfit.gpkg_atlas_page_builder import (
+                build_atlas_layer as legacy_build_atlas_layer,
+            )
+
+        self.assertIs(legacy_build_atlas_layer, build_atlas_layer)
+
+
+@unittest.skipIf(not _REAL_QGIS_PRESENT, "QGIS Python bindings are not available")
 class BuildAtlasLayerTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        global build_atlas_layer, normalize_atlas_page_settings, _build_cover_summary_from_current_atlas_features
         _ensure_qgis_app()
+        if normalize_atlas_page_settings is None:
+            sys.modules.pop("qfit.atlas.publish_atlas", None)
+            from qfit.atlas.publish_atlas import (
+                normalize_atlas_page_settings as real_normalize_atlas_page_settings,
+            )
+
+            normalize_atlas_page_settings = real_normalize_atlas_page_settings
+        if build_atlas_layer is None:
+            sys.modules.pop(
+                "qfit.activities.infrastructure.geopackage.gpkg_atlas_page_builder",
+                None,
+            )
+            from qfit.activities.infrastructure.geopackage.gpkg_atlas_page_builder import (
+                build_atlas_layer as real_build_atlas_layer,
+            )
+
+            build_atlas_layer = real_build_atlas_layer
+        if _build_cover_summary_from_current_atlas_features is None:
+            sys.modules.pop("qfit.atlas.export_task", None)
+            from qfit.atlas.export_task import (
+                _build_cover_summary_from_current_atlas_features as real_build_cover_summary,
+            )
+
+            _build_cover_summary_from_current_atlas_features = real_build_cover_summary
         cls.settings = normalize_atlas_page_settings()
         cls.records = [
             {

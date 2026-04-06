@@ -14,7 +14,10 @@ except (ImportError, ModuleNotFoundError):  # pragma: no cover
 if QgsApplication is not None:
     from qfit.activities.infrastructure.geopackage.gpkg_io import write_layer_to_gpkg
     from qfit.gpkg_io import write_layer_to_gpkg as legacy_write_layer_to_gpkg
-    from qfit.gpkg_layer_builders import build_start_layer, build_track_layer
+    from qfit.activities.infrastructure.geopackage.gpkg_layer_builders import (
+        build_start_layer,
+        build_track_layer,
+    )
 else:  # pragma: no cover
     write_layer_to_gpkg = None
     build_start_layer = None

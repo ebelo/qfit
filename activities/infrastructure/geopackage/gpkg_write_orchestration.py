@@ -16,13 +16,13 @@ but contains no schema definitions or repository logic.
 """
 
 from .gpkg_io import write_layer_to_gpkg
-from ....gpkg_atlas_page_builder import build_atlas_layer
-from ....gpkg_layer_builders import (
+from .gpkg_atlas_page_builder import build_atlas_layer
+from .gpkg_layer_builders import (
     build_start_layer,
     build_track_layer,
 )
-from ....gpkg_point_layer_builder import build_point_layer
-from ....gpkg_atlas_table_builders import (
+from .gpkg_point_layer_builder import build_point_layer
+from .gpkg_atlas_table_builders import (
     build_cover_highlight_layer,
     build_document_summary_layer,
     build_page_detail_item_layer,

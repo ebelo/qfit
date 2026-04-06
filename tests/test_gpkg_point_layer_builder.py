@@ -1,4 +1,6 @@
+import importlib.util
 import os
+import sys
 import unittest
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
@@ -6,16 +8,24 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 from tests import _path  # noqa: F401
 
 try:
+    _REAL_QGIS_PRESENT = importlib.util.find_spec("qgis") is not None
+except ValueError:
+    _REAL_QGIS_PRESENT = any(
+        os.path.isdir(os.path.join(p, "qgis")) for p in sys.path if p
+    )
+
+try:
     from qgis.core import QgsApplication
 except (ImportError, ModuleNotFoundError):  # pragma: no cover
     QgsApplication = None
 
-if QgsApplication is not None:
-    from qfit.gpkg_point_layer_builder import (
+if QgsApplication is not None and _REAL_QGIS_PRESENT:
+    from qfit.activities.infrastructure.geopackage.gpkg_point_layer_builder import (
         _metric_value,
         _sample_points,
         build_point_layer,
     )
+    from qfit.gpkg_point_layer_builder import build_point_layer as legacy_build_point_layer
 else:  # pragma: no cover
     _metric_value = None
     _sample_points = None
@@ -25,14 +35,61 @@ _QGIS_APP = None
 
 
 def _ensure_qgis_app():
+    if not _REAL_QGIS_PRESENT:
+        raise unittest.SkipTest("QGIS Python bindings are not available")
+
+    global QgsApplication
+    global _metric_value
+    global _sample_points
+    global build_point_layer
     global _QGIS_APP
+    if QgsApplication is None and _REAL_QGIS_PRESENT:
+        for module_name in [
+            "qgis.core",
+            "qgis.gui",
+            "qgis.PyQt",
+            "qgis.PyQt.QtCore",
+            "qgis.PyQt.QtGui",
+            "qgis",
+        ]:
+            sys.modules.pop(module_name, None)
+        from qgis.core import QgsApplication as RealQgsApplication  # type: ignore
+
+        QgsApplication = RealQgsApplication
+    if build_point_layer is None:
+        sys.modules.pop(
+            "qfit.activities.infrastructure.geopackage.gpkg_point_layer_builder",
+            None,
+        )
+        from qfit.activities.infrastructure.geopackage.gpkg_point_layer_builder import (
+            _metric_value as real_metric_value,
+            _sample_points as real_sample_points,
+            build_point_layer as real_build_point_layer,
+        )
+
+        _metric_value = real_metric_value
+        _sample_points = real_sample_points
+        build_point_layer = real_build_point_layer
     if _QGIS_APP is None:
         _QGIS_APP = QgsApplication([], False)
         _QGIS_APP.initQgis()
     return _QGIS_APP
 
 
-@unittest.skipIf(QgsApplication is None, "QGIS Python bindings are not available")
+@unittest.skipIf(not _REAL_QGIS_PRESENT, "QGIS Python bindings are not available")
+class GpkgPointLayerBuilderShimTests(unittest.TestCase):
+    def test_legacy_gpkg_point_layer_builder_shim_exports_same_function(self):
+        global legacy_build_point_layer
+
+        _ensure_qgis_app()
+        if "legacy_build_point_layer" not in globals():
+            from qfit.gpkg_point_layer_builder import (
+                build_point_layer as legacy_build_point_layer,
+            )
+
+        self.assertIs(legacy_build_point_layer, build_point_layer)
+
+
 class SamplePointsTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
