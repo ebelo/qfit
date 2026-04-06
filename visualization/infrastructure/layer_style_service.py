@@ -38,13 +38,13 @@ def build_qfit_heatmap_renderer():
     renderer.setRenderQuality(2)
     heat_ramp = QgsGradientColorRamp(
         QColor("#00000000"),
-        QColor("#E74C3C"),
+        QColor(239, 108, 0, 215),
         False,
         [
-            QgsGradientStop(0.15, QColor("#00000000")),
-            QgsGradientStop(0.35, QColor(52, 152, 219, 90)),
-            QgsGradientStop(0.60, QColor(241, 196, 15, 160)),
-            QgsGradientStop(0.82, QColor(230, 126, 34, 220)),
+            QgsGradientStop(0.18, QColor("#00000000")),
+            QgsGradientStop(0.38, QColor(79, 195, 247, 70)),
+            QgsGradientStop(0.62, QColor(255, 183, 77, 135)),
+            QgsGradientStop(0.82, QColor(255, 138, 101, 185)),
         ],
     )
     renderer.setColorRamp(heat_ramp)

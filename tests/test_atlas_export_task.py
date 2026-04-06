@@ -4195,7 +4195,7 @@ class TestApplyCoverHeatmapRenderer(unittest.TestCase):
 
         heatmap_builder_module.build_qfit_heatmap_renderer.assert_called_once_with()
         layer.setRenderer.assert_called_once_with(heatmap_renderer)
-        layer.setOpacity.assert_called_once_with(0.7)
+        layer.setOpacity.assert_called_once_with(0.55)
 
 
 class TestBuildCoverLayoutWithMap(unittest.TestCase):

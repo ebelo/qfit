@@ -729,7 +729,7 @@ def _apply_cover_heatmap_renderer(layer) -> None:
         return
 
     layer.setRenderer(build_qfit_heatmap_renderer())
-    layer.setOpacity(0.7)
+    layer.setOpacity(0.55)
 
 
 def build_cover_layout(
