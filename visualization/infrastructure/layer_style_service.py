@@ -31,6 +31,26 @@ BY_ACTIVITY_TYPE_PRESET = "By activity type"
 OTHER_ACTIVITY_LABEL = "Other"
 
 
+def build_qfit_heatmap_renderer():
+    renderer = QgsHeatmapRenderer()
+    renderer.setRadius(12)
+    renderer.setRadiusUnit(QgsUnitTypes.RenderMillimeters)
+    renderer.setRenderQuality(2)
+    heat_ramp = QgsGradientColorRamp(
+        QColor("#00000000"),
+        QColor("#E74C3C"),
+        False,
+        [
+            QgsGradientStop(0.15, QColor("#00000000")),
+            QgsGradientStop(0.35, QColor(52, 152, 219, 90)),
+            QgsGradientStop(0.60, QColor(241, 196, 15, 160)),
+            QgsGradientStop(0.82, QColor(230, 126, 34, 220)),
+        ],
+    )
+    renderer.setColorRamp(heat_ramp)
+    return renderer
+
+
 class LayerStyleService:
     """Applies visual styles (renderers, opacity) to qfit output layers.
 
@@ -213,23 +233,7 @@ class LayerStyleService:
         layer.triggerRepaint()
 
     def _apply_heatmap_style(self, layer):
-        renderer = QgsHeatmapRenderer()
-        renderer.setRadius(12)
-        renderer.setRadiusUnit(QgsUnitTypes.RenderMillimeters)
-        renderer.setRenderQuality(2)
-        heat_ramp = QgsGradientColorRamp(
-            QColor("#00000000"),
-            QColor("#E74C3C"),
-            False,
-            [
-                QgsGradientStop(0.15, QColor("#00000000")),
-                QgsGradientStop(0.35, QColor(52, 152, 219, 90)),
-                QgsGradientStop(0.60, QColor(241, 196, 15, 160)),
-                QgsGradientStop(0.82, QColor(230, 126, 34, 220)),
-            ],
-        )
-        renderer.setColorRamp(heat_ramp)
-        layer.setRenderer(renderer)
+        layer.setRenderer(build_qfit_heatmap_renderer())
         layer.setOpacity(0.75)
         layer.triggerRepaint()
 
