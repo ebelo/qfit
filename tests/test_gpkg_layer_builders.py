@@ -19,7 +19,7 @@ try:
 except (ImportError, ModuleNotFoundError):  # pragma: no cover
     QgsApplication = None
 
-if QgsApplication is not None:
+if QgsApplication is not None and _REAL_QGIS_PRESENT:
     from qfit.activities.infrastructure.geopackage.gpkg_layer_builders import (
         _activity_geometry,
         _fallback_geometry,
