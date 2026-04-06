@@ -27,7 +27,7 @@ from .atlas.export_service import (
     AtlasExportService,
 )
 from .atlas.profile_style import build_native_profile_plot_style_from_settings
-from .contextual_help import ContextualHelpBinder, build_dock_help_entries
+from .ui.contextual_help import ContextualHelpBinder, build_dock_help_entries
 from .detailed_route_strategy import (
     DEFAULT_DETAILED_ROUTE_STRATEGY,
     detailed_route_strategy_labels,
