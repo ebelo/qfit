@@ -42,6 +42,9 @@ _QGIS_APP = None
 
 
 def _ensure_qgis_app():
+    if not _REAL_QGIS_PRESENT:
+        raise unittest.SkipTest("QGIS Python bindings are not available")
+
     global QgsApplication
     global _activity_geometry
     global _fallback_geometry
