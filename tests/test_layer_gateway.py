@@ -101,18 +101,115 @@ class LayerGatewayBoundaryTests(unittest.TestCase):
         modules["qgis.core"].QgsProject.instance.return_value.removeMapLayer.assert_any_call(layer_a)
         modules["qgis.core"].QgsProject.instance.return_value.removeMapLayer.assert_any_call(layer_b)
 
+    def test_qgis_gateway_lazy_services_delegate_cleanly(self):
+        modules = self._qgis_gateway_modules()
+
+        with patch.dict(sys.modules, modules, clear=False):
+            self._reset_qgis_gateway_imports()
+            adapter_module = importlib.import_module(
+                "qfit.visualization.infrastructure.qgis_layer_gateway"
+            )
+
+            background_service = MagicMock(name="background_service")
+            filter_service = MagicMock(name="filter_service")
+            style_service = MagicMock(name="style_service")
+            temporal_service = MagicMock(name="temporal_service")
+            with patch.object(adapter_module, "_build_background_service", return_value=background_service), patch.object(
+                adapter_module,
+                "_build_layer_filter_service",
+                return_value=filter_service,
+            ), patch.object(
+                adapter_module,
+                "_build_layer_style_service",
+                return_value=style_service,
+            ), patch.object(
+                adapter_module,
+                "_build_temporal_service",
+                return_value=temporal_service,
+            ):
+                gateway = adapter_module.QgisLayerGateway(MagicMock(name="iface"))
+                background_result = gateway.ensure_background_layer(True, "Outdoor", "tok")
+                gateway.apply_filters(
+                    MagicMock(name="layer"),
+                    activity_type="Ride",
+                    date_from="2026-01-01",
+                    date_to="2026-01-31",
+                    min_distance_km=10,
+                    max_distance_km=20,
+                    search_text="alps",
+                    detailed_only=True,
+                )
+                gateway.apply_style("activities", "starts", "points", "atlas", "Simple lines", "Outdoor")
+                temporal_result = gateway.apply_temporal_configuration(
+                    "activities", "starts", "points", "atlas", "By month"
+                )
+
+        self.assertIs(background_result, background_service.ensure_background_layer.return_value)
+        self.assertIs(temporal_result, temporal_service.apply_temporal_configuration.return_value)
+        background_service.ensure_background_layer.assert_called_once_with(
+            enabled=True,
+            preset_name="Outdoor",
+            access_token="tok",
+            style_owner="",
+            style_id="",
+            tile_mode="raster",
+        )
+        filter_service.apply_filters.assert_called_once()
+        style_service.apply_style.assert_called_once_with(
+            "activities", "starts", "points", "atlas", "Simple lines", "Outdoor"
+        )
+        temporal_service.apply_temporal_configuration.assert_called_once_with(
+            "activities", "starts", "points", "atlas", "By month"
+        )
+
+    def test_qgis_gateway_reuses_injected_service_overrides(self):
+        modules = self._qgis_gateway_modules()
+
+        with patch.dict(sys.modules, modules, clear=False):
+            self._reset_qgis_gateway_imports()
+            adapter_module = importlib.import_module(
+                "qfit.visualization.infrastructure.qgis_layer_gateway"
+            )
+
+            gateway = adapter_module.QgisLayerGateway(MagicMock(name="iface"))
+            gateway._background_service = MagicMock(name="background_service")
+            gateway._canvas_service = MagicMock(name="canvas_service")
+            gateway._project_layer_loader = MagicMock(name="project_layer_loader")
+            gateway._project_layer_loader.load_output_layers.return_value = (
+                MagicMock(name="activities"),
+                MagicMock(name="starts"),
+                MagicMock(name="points"),
+                MagicMock(name="atlas"),
+            )
+
+            gateway.load_output_layers("/tmp/override.gpkg")
+            gateway.ensure_background_layer(False, "Winter", "")
+
+        modules["qfit.visualization.infrastructure.background_map_service"].BackgroundMapService.assert_not_called()
+        modules["qfit.visualization.infrastructure.map_canvas_service"].MapCanvasService.assert_not_called()
+        modules["qfit.visualization.infrastructure.project_layer_loader"].ProjectLayerLoader.assert_not_called()
+        gateway._canvas_service.ensure_working_crs.assert_called_once_with(gateway.iface, preserve_extent=False)
+        gateway._project_layer_loader.load_output_layers.assert_called_once_with("/tmp/override.gpkg")
+        gateway._background_service.ensure_background_layer.assert_called_once()
+
     @staticmethod
     def _reset_qgis_gateway_imports():
         for name in [
             "qfit.background_map_service",
             "qfit.layer_manager",
+            "qfit.layer_filter_service",
+            "qfit.layer_style_service",
             "qfit.map_canvas_service",
             "qfit.project_layer_loader",
+            "qfit.temporal_service",
             "qfit.visualization.infrastructure",
             "qfit.visualization.infrastructure.background_map_service",
+            "qfit.visualization.infrastructure.layer_filter_service",
+            "qfit.visualization.infrastructure.layer_style_service",
             "qfit.visualization.infrastructure.map_canvas_service",
             "qfit.visualization.infrastructure.project_layer_loader",
             "qfit.visualization.infrastructure.qgis_layer_gateway",
+            "qfit.visualization.infrastructure.temporal_service",
         ]:
             sys.modules.pop(name, None)
 
@@ -202,8 +299,18 @@ class LayerGatewayBoundaryTests(unittest.TestCase):
                 "LayerFilterService",
                 filter_service,
             ),
+            "qfit.visualization.infrastructure.layer_filter_service": class_module(
+                "qfit.visualization.infrastructure.layer_filter_service",
+                "LayerFilterService",
+                filter_service,
+            ),
             "qfit.layer_style_service": class_module(
                 "qfit.layer_style_service",
+                "LayerStyleService",
+                style_service,
+            ),
+            "qfit.visualization.infrastructure.layer_style_service": class_module(
+                "qfit.visualization.infrastructure.layer_style_service",
                 "LayerStyleService",
                 style_service,
             ),
@@ -220,6 +327,11 @@ class LayerGatewayBoundaryTests(unittest.TestCase):
             ),
             "qfit.temporal_service": class_module(
                 "qfit.temporal_service",
+                "TemporalService",
+                temporal_service,
+            ),
+            "qfit.visualization.infrastructure.temporal_service": class_module(
+                "qfit.visualization.infrastructure.temporal_service",
                 "TemporalService",
                 temporal_service,
             ),
