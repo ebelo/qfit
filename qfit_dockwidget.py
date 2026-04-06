@@ -8,7 +8,17 @@ from qgis.core import QgsApplication, QgsProject
 from qgis.PyQt import uic
 from qgis.PyQt.QtCore import QDate, Qt, QUrl
 from qgis.PyQt.QtGui import QDesktopServices
-from qgis.PyQt.QtWidgets import QApplication, QFileDialog, QDockWidget, QMessageBox, QToolButton, QVBoxLayout, QWidget
+from qgis.PyQt.QtWidgets import (
+    QApplication,
+    QComboBox,
+    QFileDialog,
+    QDockWidget,
+    QGridLayout,
+    QMessageBox,
+    QToolButton,
+    QVBoxLayout,
+    QWidget,
+)
 
 from .activities.domain.activity_classification import ordered_canonical_activity_labels
 from .activities.domain.activity_query import (
@@ -191,9 +201,20 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self.previewSortComboBox.addItem(label)
 
     def _configure_temporal_mode_options(self):
+        outer_layout = self.temporalModeLabel.parentWidget().layout()
+        if hasattr(outer_layout, "setSpacing"):
+            outer_layout.setSpacing(6)
+        if isinstance(outer_layout, QGridLayout):
+            outer_layout.setSpacing(6)
+        self.temporalModeComboBox.setSizeAdjustPolicy(
+            QComboBox.AdjustToMinimumContentsLengthWithIcon
+        )
+        self.temporalModeComboBox.setMinimumContentsLength(10)
+        self.temporalHelpLabel.setMargin(2)
         self.temporalModeComboBox.clear()
         for label in temporal_mode_labels():
             self.temporalModeComboBox.addItem(label)
+        self.temporalModeComboBox.setMinimumContentsLength(10)
 
     def _bind_dependencies(self, dependencies: DockWidgetDependencies) -> None:
         self.settings = dependencies.settings
