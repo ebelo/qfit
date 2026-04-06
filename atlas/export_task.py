@@ -782,129 +782,102 @@ def build_cover_layout(
             QgsLayoutSize(PAGE_WIDTH_MM, PAGE_HEIGHT_MM, QgsUnitTypes.LayoutMillimeters)
         )
 
-    # Vertical positioning helpers
-    content_width = PAGE_WIDTH_MM - 2 * MARGIN_MM
-    center_x = MARGIN_MM
+    def _join_cover_parts(parts: list[str]) -> str:
+        return " · ".join(part for part in parts if part)
 
-    # Title — centred vertically at ~35% of page height
-    title_y = PAGE_HEIGHT_MM * 0.28
-    title_h = 14.0
+    def _points_to_mm(points: float) -> float:
+        return points * 0.352778
+
+    cover_left_margin_mm = 18.0
+    cover_right_margin_mm = 18.0
+    cover_top_margin_mm = 18.0
+    cover_bottom_margin_mm = 16.0
+    content_width = PAGE_WIDTH_MM - cover_left_margin_mm - cover_right_margin_mm
+    printable_height = PAGE_HEIGHT_MM - cover_top_margin_mm - cover_bottom_margin_mm
+    content_x = cover_left_margin_mm
+
+    activity_count_label = ""
+    if activity_count:
+        activity_noun = "activity" if str(activity_count) == "1" else "activities"
+        activity_count_label = f"{activity_count} {activity_noun}"
+
+    subtitle_line = _join_cover_parts([
+        activity_count_label,
+        date_range_label,
+        activity_types_label,
+    ])
+    summary_line = _join_cover_parts([
+        total_distance_label,
+        total_duration_label,
+        total_elevation_gain_label,
+    ])
+    if not subtitle_line and cover_summary:
+        subtitle_line = cover_summary
+
+    title_h = _points_to_mm(26.0)
+    detail_line_h = _points_to_mm(12.0)
+    title_to_subtitle_gap = 4.0
+    subtitle_to_summary_gap = 2.0
+    header_to_map_gap = 8.0
+    map_to_metrics_gap = 8.0
+
+    title_y = cover_top_margin_mm
     _add_label(
         layout,
         "qfit Activity Atlas",
-        x=center_x,
+        x=content_x,
         y=title_y,
         w=content_width,
         h=title_h,
-        font_size=18.0,
+        font_size=22.0,
         bold=True,
         align_right=False,
+        v_align_top=True,
     )
 
-    # Subtitle (cover summary) — just below title
-    if cover_summary:
+    current_y = title_y + title_h
+    if subtitle_line:
+        subtitle_y = current_y + title_to_subtitle_gap
         _add_label(
             layout,
-            cover_summary,
-            x=center_x,
-            y=title_y + title_h + 3.0,
+            subtitle_line,
+            x=content_x,
+            y=subtitle_y,
             w=content_width,
-            h=8.0,
-            font_size=8.5,
+            h=detail_line_h,
+            font_size=9.5,
             bold=False,
             color=QColor(60, 60, 60),
-        )
-
-    # Separator line (thin label with underline approximated via background color)
-    sep_y = title_y + title_h + 13.0
-    sep_label = QgsLayoutItemLabel(layout)
-    sep_label.setText("")
-    sep_label.attemptMove(QgsLayoutPoint(center_x, sep_y, QgsUnitTypes.LayoutMillimeters))
-    sep_label.attemptResize(QgsLayoutSize(content_width, 0.3, QgsUnitTypes.LayoutMillimeters))
-    sep_label.setBackgroundColor(QColor(180, 180, 180))
-    sep_label.setBackgroundEnabled(True)
-    layout.addLayoutItem(sep_label)
-
-    # Highlight-card grid — 2-column layout for cover stats
-    grid_y = sep_y + 7.0
-    grid_cols = 2
-    grid_gap_x = 6.0   # horizontal gap between columns
-    card_w = (content_width - grid_gap_x) / grid_cols
-    card_label_h = 4.0   # height for the label row
-    card_value_h = 6.0   # height for the default value row
-    card_value_h_long = 10.0  # extra room for long text values like activity types
-    card_h = card_label_h + card_value_h
-    card_h_long = card_label_h + card_value_h_long
-    card_gap_y = 3.0     # vertical gap between card rows
-    label_color = QColor(120, 120, 120)
-    value_color = QColor(20, 20, 20)
-
-    highlight_cards: list[tuple[str, str]] = []
-    if activity_count and activity_count != "0":
-        highlight_cards.append(("Activities", activity_count))
-    if date_range_label:
-        highlight_cards.append(("Date range", date_range_label))
-    if total_distance_label:
-        highlight_cards.append(("Distance", total_distance_label))
-    if total_duration_label:
-        highlight_cards.append(("Moving time", total_duration_label))
-    if total_elevation_gain_label:
-        highlight_cards.append(("Climbing", total_elevation_gain_label))
-    if activity_types_label:
-        highlight_cards.append(("Activity types", activity_types_label))
-
-    row_y = grid_y
-    row_max_h = 0.0
-    for i, (card_label, card_value) in enumerate(highlight_cards):
-        col = i % grid_cols
-        if col == 0 and i > 0:
-            row_y += row_max_h + card_gap_y
-            row_max_h = 0.0
-
-        is_long_text = card_label == "Activity types" or len(card_value) > 24
-        value_h = card_value_h_long if is_long_text else card_value_h
-        value_font = 8.5 if is_long_text else 10.0
-        value_bold = not is_long_text
-        card_total_h = card_label_h + value_h
-        row_max_h = max(row_max_h, card_total_h)
-
-        card_x = center_x + col * (card_w + grid_gap_x)
-        card_y = row_y
-        _add_label(
-            layout,
-            card_label.upper(),
-            x=card_x,
-            y=card_y,
-            w=card_w,
-            h=card_label_h,
-            font_size=6.5,
-            color=label_color,
             v_align_top=True,
         )
+        current_y = subtitle_y + detail_line_h
+
+    if summary_line:
+        summary_y = current_y + (subtitle_to_summary_gap if subtitle_line else title_to_subtitle_gap)
         _add_label(
             layout,
-            card_value,
-            x=card_x,
-            y=card_y + card_label_h,
-            w=card_w,
-            h=value_h,
-            font_size=value_font,
-            bold=value_bold,
-            color=value_color,
-            v_align_top=is_long_text,
+            summary_line,
+            x=content_x,
+            y=summary_y,
+            w=content_width,
+            h=detail_line_h,
+            font_size=9.5,
+            bold=False,
+            color=QColor(60, 60, 60),
+            v_align_top=True,
         )
+        current_y = summary_y + detail_line_h
 
-    # -- Cover heatmap overview map (square, centered below stats) ----------
-    grid_bottom_y = (row_y + row_max_h) if highlight_cards else sep_y + 2.0
+    hero_map_top = current_y + header_to_map_gap
     extent_bounds = (
         cover_data.get("_cover_extent_xmin"),
         cover_data.get("_cover_extent_ymin"),
         cover_data.get("_cover_extent_xmax"),
         cover_data.get("_cover_extent_ymax"),
     )
+    cover_map_bottom = hero_map_top
     if map_layers and all(v is not None for v in extent_bounds):
         xmin, ymin, xmax, ymax = (float(v) for v in extent_bounds)
-        # Add 10% margin around the combined extent
         span = max(xmax - xmin, ymax - ymin)
         margin_m = span * 0.10
         map_extent = QgsRectangle(
@@ -913,18 +886,21 @@ def build_cover_layout(
         )
         map_extent = _normalize_extent_to_aspect_ratio(map_extent, 1.0)
 
-        cover_map_gap = 8.0
-        cover_map_top = grid_bottom_y + cover_map_gap
-        available_h = PAGE_HEIGHT_MM - MARGIN_MM - cover_map_top - 4.0
-        cover_map_size = min(available_h, content_width * 0.60)
+        cover_map_size = min(content_width * 0.72, printable_height * 0.46)
+        available_h = PAGE_HEIGHT_MM - cover_bottom_margin_mm - hero_map_top
+        cover_map_size = min(cover_map_size, available_h)
 
         if cover_map_size >= 40.0:
-            cover_map_x = (PAGE_WIDTH_MM - cover_map_size) / 2.0
+            cover_map_x = content_x + (content_width - cover_map_size) / 2.0
             cover_map = QgsLayoutItemMap(layout)
             cover_map.setLayers(map_layers)
             cover_map.setKeepLayerSet(True)
+            try:
+                cover_map.setFrameEnabled(False)
+            except AttributeError:
+                logger.debug("Cover map frame disabling unavailable", exc_info=True)
             cover_map.attemptMove(
-                QgsLayoutPoint(cover_map_x, cover_map_top, QgsUnitTypes.LayoutMillimeters)
+                QgsLayoutPoint(cover_map_x, hero_map_top, QgsUnitTypes.LayoutMillimeters)
             )
             cover_map.attemptResize(
                 QgsLayoutSize(cover_map_size, cover_map_size, QgsUnitTypes.LayoutMillimeters)
@@ -932,6 +908,76 @@ def build_cover_layout(
             cover_map.setCrs(QgsCoordinateReferenceSystem(_DEFAULT_PROFILE_CRS_AUTH_ID))
             cover_map.setExtent(map_extent)
             layout.addLayoutItem(cover_map)
+            cover_map_bottom = hero_map_top + cover_map_size
+
+    metrics_top = cover_map_bottom + (map_to_metrics_gap if cover_map_bottom > hero_map_top else 0.0)
+    metrics_cols = 3
+    metrics_col_gap = 8.0
+    metrics_row_gap = 4.0
+    metric_w = (content_width - metrics_col_gap * (metrics_cols - 1)) / metrics_cols
+    metric_label_h = _points_to_mm(7.0) + 0.6
+    metric_label_to_value_gap = 1.5
+    metric_value_h = _points_to_mm(11.0) + 0.8
+    metric_row_h = metric_label_h + metric_label_to_value_gap + metric_value_h
+    label_color = QColor(120, 120, 120)
+    value_color = QColor(20, 20, 20)
+
+    highlight_cards = [
+        ("Activities", activity_count),
+        ("Distance", total_distance_label),
+        ("Moving time", total_duration_label),
+        ("Climbing", total_elevation_gain_label),
+        ("Date range", date_range_label),
+        ("Activity types", activity_types_label),
+    ]
+    highlight_cards = [
+        (card_label, card_value)
+        for card_label, card_value in highlight_cards
+        if card_value and not (card_label == "Activities" and card_value == "0")
+    ]
+
+    for i, (card_label, card_value) in enumerate(highlight_cards):
+        row = i // metrics_cols
+        col = i % metrics_cols
+        card_x = content_x + col * (metric_w + metrics_col_gap)
+        card_y = metrics_top + row * (metric_row_h + metrics_row_gap)
+        _add_label(
+            layout,
+            card_label.upper(),
+            x=card_x,
+            y=card_y,
+            w=metric_w,
+            h=metric_label_h,
+            font_size=7.0,
+            color=label_color,
+            v_align_top=True,
+        )
+        _add_label(
+            layout,
+            card_value,
+            x=card_x,
+            y=card_y + metric_label_h + metric_label_to_value_gap,
+            w=metric_w,
+            h=metric_value_h,
+            font_size=11.0,
+            bold=True,
+            color=value_color,
+            v_align_top=True,
+        )
+
+    footer_h = _points_to_mm(9.0)
+    footer_y = PAGE_HEIGHT_MM - cover_bottom_margin_mm - footer_h
+    _add_label(
+        layout,
+        "Generated with qfit",
+        x=content_x,
+        y=footer_y,
+        w=content_width,
+        h=footer_h,
+        font_size=7.0,
+        color=QColor(130, 130, 130),
+        v_align_top=True,
+    )
 
     return layout
 
