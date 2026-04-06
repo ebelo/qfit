@@ -69,6 +69,10 @@ class _FakeGeometry:
     def fromPointXY(point):
         return ("point", point.x, point.y)
 
+    @staticmethod
+    def fromPolylineXY(points):
+        return ("polyline", [(point.x, point.y) for point in points])
+
 
 def _fake_qgis_modules():
     qgis = ModuleType("qgis")
@@ -92,6 +96,8 @@ def _fake_schema_module():
     schema.PROFILE_SAMPLE_FIELDS = ["profile_point_index"]
     schema.TOC_FIELDS = ["page_number"]
     schema.POINT_FIELDS = ["point_index"]
+    schema.START_FIELDS = ["source_activity_id"]
+    schema.TRACK_FIELDS = ["source_activity_id"]
     schema.make_qgs_fields = lambda defs: list(defs)
     return schema
 
@@ -182,6 +188,18 @@ def _fake_layer_builders_module():
     return mod
 
 
+def _fake_polyline_utils_module():
+    mod = ModuleType("qfit.polyline_utils")
+    mod.decode_polyline = lambda polyline: [(46.0, 7.0), (46.1, 7.1)] if polyline else []
+    return mod
+
+
+def _fake_atlas_page_builder_module():
+    mod = ModuleType("qfit.activities.infrastructure.geopackage.gpkg_atlas_page_builder")
+    mod.build_atlas_layer = lambda records, settings=None: "atlas-layer"
+    return mod
+
+
 class GpkgBuilderModulesPureTests(unittest.TestCase):
     def _import_with_stubs(self):
         module_overrides = {
@@ -190,13 +208,18 @@ class GpkgBuilderModulesPureTests(unittest.TestCase):
             "qfit.gpkg_schema": _fake_schema_module(),
             "qfit.atlas.publish_atlas": _fake_publish_atlas_module(),
             "qfit.activities.infrastructure.geopackage.gpkg_layer_builders": _fake_layer_builders_module(),
+            "qfit.polyline_utils": _fake_polyline_utils_module(),
+            "qfit.activities.infrastructure.geopackage.gpkg_atlas_page_builder": _fake_atlas_page_builder_module(),
+            "qfit.gpkg_atlas_page_builder": _fake_atlas_page_builder_module(),
         }
         with patch.dict(sys.modules, module_overrides):
             for name in [
                 "qfit.activities.infrastructure.geopackage.gpkg_atlas_table_builders",
                 "qfit.activities.infrastructure.geopackage.gpkg_point_layer_builder",
+                "qfit.activities.infrastructure.geopackage.gpkg_layer_builders",
                 "qfit.gpkg_atlas_table_builders",
                 "qfit.gpkg_point_layer_builder",
+                "qfit.gpkg_layer_builders",
             ]:
                 sys.modules.pop(name, None)
             atlas_tables = importlib.import_module(
@@ -205,12 +228,23 @@ class GpkgBuilderModulesPureTests(unittest.TestCase):
             point_builder = importlib.import_module(
                 "qfit.activities.infrastructure.geopackage.gpkg_point_layer_builder"
             )
+            layer_builders = importlib.import_module(
+                "qfit.activities.infrastructure.geopackage.gpkg_layer_builders"
+            )
             legacy_atlas_tables = importlib.import_module("qfit.gpkg_atlas_table_builders")
             legacy_point_builder = importlib.import_module("qfit.gpkg_point_layer_builder")
-        return atlas_tables, point_builder, legacy_atlas_tables, legacy_point_builder
+            legacy_layer_builders = importlib.import_module("qfit.gpkg_layer_builders")
+        return (
+            atlas_tables,
+            point_builder,
+            layer_builders,
+            legacy_atlas_tables,
+            legacy_point_builder,
+            legacy_layer_builders,
+        )
 
     def test_moved_atlas_table_builders_work_without_real_qgis(self):
-        atlas_tables, _, legacy_atlas_tables, _ = self._import_with_stubs()
+        atlas_tables, _, _, legacy_atlas_tables, _, _ = self._import_with_stubs()
 
         summary_layer = atlas_tables.build_document_summary_layer(records=[{"id": 1}])
         highlight_layer = atlas_tables.build_cover_highlight_layer(records=[{"id": 1}])
@@ -229,7 +263,7 @@ class GpkgBuilderModulesPureTests(unittest.TestCase):
         )
 
     def test_moved_point_layer_builder_works_without_real_qgis(self):
-        _, point_builder, _, legacy_point_builder = self._import_with_stubs()
+        _, point_builder, _, _, legacy_point_builder, _ = self._import_with_stubs()
 
         layer = point_builder.build_point_layer(
             [
@@ -266,6 +300,58 @@ class GpkgBuilderModulesPureTests(unittest.TestCase):
         self.assertEqual(features[0]["source_activity_id"], "42")
         self.assertEqual(features[0].geometry, ("point", 7.0, 46.0))
         self.assertIs(legacy_point_builder.build_point_layer, point_builder.build_point_layer)
+
+    def test_moved_layer_builders_work_without_real_qgis(self):
+        _, _, layer_builders, _, _, legacy_layer_builders = self._import_with_stubs()
+
+        records = [
+            {
+                "source": "track",
+                "source_activity_id": "42",
+                "external_id": "ext-42",
+                "name": "Morning Ride",
+                "activity_type": "Ride",
+                "sport_type": "cycling",
+                "start_date": "2026-04-01T10:00:00Z",
+                "start_date_local": "2026-04-01T12:00:00",
+                "timezone": "Europe/Zurich",
+                "distance_m": 12.5,
+                "moving_time_s": 3600,
+                "elapsed_time_s": 3700,
+                "total_elevation_gain_m": 456.0,
+                "average_speed_mps": 7.5,
+                "max_speed_mps": 12.0,
+                "average_heartrate": 120,
+                "max_heartrate": 150,
+                "average_watts": 210,
+                "kilojoules": 600,
+                "calories": 700,
+                "suffer_score": 25,
+                "start_lat": 46.0,
+                "start_lon": 7.0,
+                "end_lat": 46.1,
+                "end_lon": 7.1,
+                "summary_polyline": "encoded",
+                "geometry_points": [(46.0, 7.0), (46.1, 7.1)],
+                "details_json": {"ok": True},
+                "summary_hash": "hash",
+                "first_seen_at": "now",
+                "last_synced_at": "now",
+            }
+        ]
+
+        track_layer = layer_builders.build_track_layer(records)
+        start_layer = layer_builders.build_start_layer(records)
+        geometry, source, count = layer_builders._activity_geometry(records[0])
+        fallback = layer_builders._fallback_geometry(records[0])
+
+        self.assertEqual(track_layer.featureCount(), 1)
+        self.assertEqual(start_layer.featureCount(), 1)
+        self.assertEqual(source, "stream")
+        self.assertEqual(count, 2)
+        self.assertIsNotNone(geometry)
+        self.assertIsNotNone(fallback)
+        self.assertIs(legacy_layer_builders.build_track_layer, layer_builders.build_track_layer)
 
 
 if __name__ == "__main__":
