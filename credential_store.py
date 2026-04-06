@@ -6,6 +6,7 @@ This module remains as a stable forwarding import during the package move.
 
 from .configuration.infrastructure.credential_store import (
     KEYRING_SERVICE,
+    SENSITIVE_KEYS,
     CredentialStore,
     InMemoryCredentialStore,
     KeyringCredentialStore,
@@ -15,6 +16,7 @@ from .configuration.infrastructure.credential_store import (
 
 __all__ = [
     "KEYRING_SERVICE",
+    "SENSITIVE_KEYS",
     "CredentialStore",
     "InMemoryCredentialStore",
     "KeyringCredentialStore",
