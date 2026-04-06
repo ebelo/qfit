@@ -11,9 +11,25 @@ from qfit.map_style import (
     resolve_activity_family,
     resolve_basemap_line_style,
 )
+from qfit.visualization.map_style import (
+    DEFAULT_SIMPLE_LINE_HEX as PACKAGE_DEFAULT_SIMPLE_LINE_HEX,
+    adapt_color_for_basemap as package_adapt_color_for_basemap,
+    pick_activity_style_field as package_pick_activity_style_field,
+    resolve_activity_color as package_resolve_activity_color,
+    resolve_activity_family as package_resolve_activity_family,
+    resolve_basemap_line_style as package_resolve_basemap_line_style,
+)
 
 
 class MapStyleTests(unittest.TestCase):
+    def test_root_shim_exports_visualization_map_style_helpers(self):
+        self.assertIs(DEFAULT_SIMPLE_LINE_HEX, PACKAGE_DEFAULT_SIMPLE_LINE_HEX)
+        self.assertIs(adapt_color_for_basemap, package_adapt_color_for_basemap)
+        self.assertIs(pick_activity_style_field, package_pick_activity_style_field)
+        self.assertIs(resolve_activity_color, package_resolve_activity_color)
+        self.assertIs(resolve_activity_family, package_resolve_activity_family)
+        self.assertIs(resolve_basemap_line_style, package_resolve_basemap_line_style)
+
     def test_activity_color_mapping_uses_semantic_reference_palette(self):
         self.assertEqual(resolve_activity_color("Run"), "#D62828")
         self.assertEqual(resolve_activity_color("TrailRun"), "#9D0208")
