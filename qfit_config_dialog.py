@@ -21,17 +21,17 @@ from qgis.PyQt.QtWidgets import (
     QWidget,
 )
 
-from .config_connection_service import (
+from .configuration.application.config_connection_service import (
     build_mapbox_connection_test_request,
     build_strava_connection_test_request,
     validate_mapbox_connection_request,
     validate_strava_connection_request,
 )
-from .config_status import mapbox_status_text, strava_status_text
-from .settings_port import SettingsPort
-from .settings_service import SettingsService
+from .configuration.application.config_status import mapbox_status_text, strava_status_text
+from .configuration.application.settings_port import SettingsPort
+from .configuration.application.settings_service import SettingsService
 from .providers.infrastructure.strava_client import StravaClient
-from .ui_settings_binding import UIFieldBinding, load_bindings, save_bindings
+from .configuration.application.ui_settings_binding import UIFieldBinding, load_bindings, save_bindings
 
 logger = logging.getLogger(__name__)
 
