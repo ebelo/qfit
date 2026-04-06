@@ -27,6 +27,9 @@ from ...map_style import (
 )
 from ...mapbox_config import BACKGROUND_LAYER_PREFIX
 
+BY_ACTIVITY_TYPE_PRESET = "By activity type"
+OTHER_ACTIVITY_LABEL = "Other"
+
 
 class LayerStyleService:
     """Applies visual styles (renderers, opacity) to qfit output layers.
@@ -39,45 +42,62 @@ class LayerStyleService:
         preset = preset or "Simple lines"
         basemap_preset_name = background_preset_name or self._infer_background_preset_name()
 
-        if activities_layer is not None:
-            if preset in ("By activity type",):
-                self._apply_categorized_line_style(activities_layer, basemap_preset_name)
-            elif preset == "Heatmap":
-                self._apply_simple_line_style(activities_layer, basemap_preset_name, subtle=True)
-                activities_layer.setOpacity(0.0)
-            elif preset == "Track points":
-                self._apply_simple_line_style(activities_layer, basemap_preset_name, subtle=True)
-            else:
-                self._apply_simple_line_style(activities_layer, basemap_preset_name)
-
-        if points_layer is not None:
-            if preset == "Heatmap":
-                self._apply_heatmap_style(points_layer)
-            elif preset == "Track points":
-                self._apply_track_point_style(points_layer, subtle=False)
-            elif preset == "By activity type":
-                self._apply_categorized_point_style(points_layer, basemap_preset_name)
-            else:
-                self._apply_track_point_style(points_layer, subtle=True)
-
-        if starts_layer is not None:
-            if preset == "Clustered starts":
-                self._apply_clusterish_style(starts_layer)
-            elif preset == "Start points":
-                self._apply_start_point_style(starts_layer, subtle=False)
-            elif preset == "Heatmap":
-                if points_layer is None:
-                    self._apply_heatmap_style(starts_layer)
-                else:
-                    self._apply_start_point_style(starts_layer, subtle=True)
-                    starts_layer.setOpacity(0.0)
-            elif preset == "By activity type":
-                self._apply_categorized_point_style(starts_layer, basemap_preset_name, size="3.0")
-            else:
-                self._apply_start_point_style(starts_layer, subtle=points_layer is not None)
+        self._apply_activities_layer_style(activities_layer, preset, basemap_preset_name)
+        self._apply_points_layer_style(points_layer, preset, basemap_preset_name)
+        self._apply_starts_layer_style(starts_layer, points_layer, preset, basemap_preset_name)
 
         if atlas_layer is not None:
             self._apply_atlas_page_style(atlas_layer)
+
+    def _apply_activities_layer_style(self, activities_layer, preset, basemap_preset_name):
+        if activities_layer is None:
+            return
+        if preset == BY_ACTIVITY_TYPE_PRESET:
+            self._apply_categorized_line_style(activities_layer, basemap_preset_name)
+            return
+        if preset == "Heatmap":
+            self._apply_simple_line_style(activities_layer, basemap_preset_name, subtle=True)
+            activities_layer.setOpacity(0.0)
+            return
+        if preset == "Track points":
+            self._apply_simple_line_style(activities_layer, basemap_preset_name, subtle=True)
+            return
+        self._apply_simple_line_style(activities_layer, basemap_preset_name)
+
+    def _apply_points_layer_style(self, points_layer, preset, basemap_preset_name):
+        if points_layer is None:
+            return
+        if preset == "Heatmap":
+            self._apply_heatmap_style(points_layer)
+            return
+        if preset == "Track points":
+            self._apply_track_point_style(points_layer, subtle=False)
+            return
+        if preset == BY_ACTIVITY_TYPE_PRESET:
+            self._apply_categorized_point_style(points_layer, basemap_preset_name)
+            return
+        self._apply_track_point_style(points_layer, subtle=True)
+
+    def _apply_starts_layer_style(self, starts_layer, points_layer, preset, basemap_preset_name):
+        if starts_layer is None:
+            return
+        if preset == "Clustered starts":
+            self._apply_clusterish_style(starts_layer)
+            return
+        if preset == "Start points":
+            self._apply_start_point_style(starts_layer, subtle=False)
+            return
+        if preset == "Heatmap":
+            if points_layer is None:
+                self._apply_heatmap_style(starts_layer)
+            else:
+                self._apply_start_point_style(starts_layer, subtle=True)
+                starts_layer.setOpacity(0.0)
+            return
+        if preset == BY_ACTIVITY_TYPE_PRESET:
+            self._apply_categorized_point_style(starts_layer, basemap_preset_name, size="3.0")
+            return
+        self._apply_start_point_style(starts_layer, subtle=points_layer is not None)
 
     def _infer_background_preset_name(self):
         for layer in QgsProject.instance().mapLayers().values():
@@ -111,7 +131,7 @@ class LayerStyleService:
             categories.append(QgsRendererCategory(value, symbol, value or "Unknown"))
 
         renderer = QgsCategorizedSymbolRenderer(field_name, categories)
-        renderer.setSourceSymbol(self._build_line_symbol(resolve_activity_color("Other", basemap_preset_name), line_style))
+        renderer.setSourceSymbol(self._build_line_symbol(resolve_activity_color(OTHER_ACTIVITY_LABEL, basemap_preset_name), line_style))
         layer.setRenderer(renderer)
         layer.setOpacity(line_style.opacity)
         layer.triggerRepaint()
@@ -127,22 +147,25 @@ class LayerStyleService:
         categories = []
         for value in values:
             color_hex = resolve_activity_color(value, basemap_preset_name)
-            symbol = QgsMarkerSymbol.createSimple({
+            symbol = self._build_categorized_point_symbol(color_hex, size)
+            categories.append(QgsRendererCategory(value, symbol, value or "Unknown"))
+
+        renderer = QgsCategorizedSymbolRenderer(field_name, categories)
+        fallback_hex = resolve_activity_color(OTHER_ACTIVITY_LABEL, basemap_preset_name)
+        renderer.setSourceSymbol(self._build_categorized_point_symbol(fallback_hex, size))
+        layer.setRenderer(renderer)
+        layer.setOpacity(0.75)
+        layer.triggerRepaint()
+
+    def _build_categorized_point_symbol(self, color_hex, size):
+        return QgsMarkerSymbol.createSimple(
+            {
                 "name": "circle",
                 "color": color_hex,
                 "size": size,
                 "outline_style": "no",
-            })
-            categories.append(QgsRendererCategory(value, symbol, value or "Unknown"))
-
-        renderer = QgsCategorizedSymbolRenderer(field_name, categories)
-        fallback_hex = resolve_activity_color("Other", basemap_preset_name)
-        renderer.setSourceSymbol(QgsMarkerSymbol.createSimple({
-            "name": "circle", "color": fallback_hex, "size": size, "outline_style": "no",
-        }))
-        layer.setRenderer(renderer)
-        layer.setOpacity(0.75)
-        layer.triggerRepaint()
+            }
+        )
 
     def _build_line_symbol(self, color_hex, line_style):
         symbol = QgsLineSymbol()
