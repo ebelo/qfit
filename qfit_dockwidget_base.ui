@@ -694,24 +694,71 @@
           <property name="title">
            <string>5. Analyze</string>
           </property>
-          <layout class="QFormLayout" name="analysisWorkflowLayout">
-           <item row="0" column="0">
-            <widget class="QLabel" name="temporalModeLabel">
-             <property name="text">
-              <string>Temporal playback</string>
-             </property>
+          <layout class="QVBoxLayout" name="analysisWorkflowLayout">
+           <property name="spacing">
+            <number>6</number>
+           </property>
+           <item>
+            <widget class="QWidget" name="analysisTemporalModeRow" native="true">
+             <layout class="QHBoxLayout" name="analysisTemporalModeLayout">
+              <property name="spacing">
+               <number>12</number>
+              </property>
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="QLabel" name="temporalModeLabel">
+                <property name="text">
+                 <string>Temporal playback</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="temporalModeComboBox">
+                <property name="sizeAdjustPolicy">
+                 <enum>QComboBox::AdjustToMinimumContentsLengthWithIcon</enum>
+                </property>
+                <property name="minimumContentsLength">
+                 <number>10</number>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="analysisTemporalModeSpacer">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
             </widget>
            </item>
-           <item row="0" column="1">
-            <widget class="QComboBox" name="temporalModeComboBox"/>
-           </item>
-           <item row="1" column="0" colspan="2">
+           <item>
             <widget class="QLabel" name="temporalHelpLabel">
              <property name="text">
               <string>When enabled, qfit wires loaded layers into QGIS temporal playback using local or UTC timestamps when available.</string>
              </property>
              <property name="wordWrap">
               <bool>true</bool>
+             </property>
+             <property name="margin">
+              <number>2</number>
              </property>
             </widget>
            </item>
