@@ -3205,6 +3205,26 @@ def _make_cover_atlas_layer(fields_dict=None, feature_count=1):
 
 
 class TestBuildCoverLayout(unittest.TestCase):
+    @staticmethod
+    def _capture_cover_labels(layer, *, cover_data=None):
+        labels = []
+        fresh_layout = MagicMock()
+        fresh_layout.pageCollection.return_value.pageCount.return_value = 1
+        fresh_layout.pageCollection.return_value.page.return_value = MagicMock()
+
+        def make_label(*_args, **_kwargs):
+            label = MagicMock()
+            labels.append(label)
+            return label
+
+        with patch("qfit.atlas.export_task.QgsPrintLayout", return_value=fresh_layout), \
+             patch("qfit.atlas.export_task.QgsLayoutItemLabel", side_effect=make_label), \
+             patch("qfit.atlas.export_task.QgsLayoutPoint", side_effect=lambda x, y, *_args: (x, y)), \
+             patch("qfit.atlas.export_task.QgsLayoutSize", side_effect=lambda w, h, *_args: (w, h)):
+            result = build_cover_layout(layer, cover_data=cover_data)
+
+        return result, fresh_layout, labels
+
     def test_cover_summary_prefers_sport_type_for_activity_labels(self):
         from qfit.atlas.cover_summary import build_cover_summary_from_rows
 
@@ -3281,25 +3301,27 @@ class TestBuildCoverLayout(unittest.TestCase):
         self.assertIsNotNone(layout)
         layout.initializeDefaults.assert_called_once()
 
-    def test_build_cover_layout_skips_subtitle_when_summary_empty(self):
-        """When cover summary is empty/missing, subtitle label should not be added."""
-        fields_dict = {
-            "document_cover_summary": "",
-            "document_activity_count": "2",
-            "document_date_range_label": "2025-01-01",
-            "document_total_distance_label": "100.0 km",
-            "document_total_duration_label": "5h",
+    def test_build_cover_layout_uses_fallback_cover_summary_when_detail_lines_missing(self):
+        """A legacy summary line is used only when the structured header fields are empty."""
+        layer = _make_cover_atlas_layer()
+        cover_data = {
+            "document_cover_summary": "legacy summary",
+            "document_activity_count": "",
+            "document_date_range_label": "",
+            "document_total_distance_label": "",
+            "document_total_duration_label": "",
             "document_total_elevation_gain_label": "",
-            "document_activity_types_label": "Run",
+            "document_activity_types_label": "",
         }
-        layer = _make_cover_atlas_layer(fields_dict=fields_dict)
-        # Should not raise and should still return a layout
-        result = build_cover_layout(layer)
+        result, _layout, labels = self._capture_cover_labels(layer, cover_data=cover_data)
         self.assertIsNotNone(result)
+        label_texts = [label.setText.call_args[0][0] for label in labels]
+        self.assertIn("legacy summary", label_texts)
 
     def test_build_cover_layout_skips_zero_activity_count_row(self):
-        """Activity count of '0' should not appear in the stats block."""
-        fields_dict = {
+        """Activity count of '0' should not appear in the metrics band."""
+        layer = _make_cover_atlas_layer()
+        cover_data = {
             "document_cover_summary": "",
             "document_activity_count": "0",
             "document_date_range_label": "",
@@ -3308,10 +3330,10 @@ class TestBuildCoverLayout(unittest.TestCase):
             "document_total_elevation_gain_label": "",
             "document_activity_types_label": "",
         }
-        layer = _make_cover_atlas_layer(fields_dict=fields_dict)
-        # Should not raise even with all-empty fields
-        result = build_cover_layout(layer)
+        result, _layout, labels = self._capture_cover_labels(layer, cover_data=cover_data)
         self.assertIsNotNone(result)
+        label_texts = [label.setText.call_args[0][0] for label in labels]
+        self.assertNotIn("ACTIVITIES", label_texts)
 
     def test_build_cover_layout_handles_missing_fields(self):
         """build_cover_layout tolerates a layer where document fields are absent."""
@@ -3348,62 +3370,74 @@ class TestBuildCoverLayout(unittest.TestCase):
         QgsPrintLayout.assert_called_with(project)
 
     def test_build_cover_layout_highlight_grid_item_count(self):
-        """Each stat produces two layout items: an uppercase label and a bold value."""
+        """The cover uses 3 header labels plus 6 metric label/value pairs."""
         layer = _make_cover_atlas_layer()
-        # Use a fresh layout mock to isolate item counts from other tests.
         fresh_layout = MagicMock()
         fresh_layout.pageCollection.return_value.pageCount.return_value = 1
         fresh_layout.pageCollection.return_value.page.return_value = MagicMock()
         with patch("qfit.atlas.export_task.QgsPrintLayout", return_value=fresh_layout):
             result = build_cover_layout(layer)
         self.assertIsNotNone(result)
-        # With all 6 stats present, we expect:
-        #   title (1) + subtitle (1) + separator (1) + 6×2 highlight items = 15
         add_calls = fresh_layout.addLayoutItem.call_args_list
-        self.assertEqual(len(add_calls), 15)
+        self.assertEqual(len(add_calls), 16)
 
     def test_build_cover_layout_highlight_labels_uppercased(self):
-        """Highlight card labels are rendered in uppercase."""
+        """Metrics labels are rendered in uppercase in the preferred reading order."""
         layer = _make_cover_atlas_layer()
-        fresh_label_cls = MagicMock()
-        fresh_layout = MagicMock()
-        fresh_layout.pageCollection.return_value.pageCount.return_value = 1
-        fresh_layout.pageCollection.return_value.page.return_value = MagicMock()
-        with patch("qfit.atlas.export_task.QgsPrintLayout", return_value=fresh_layout), \
-             patch("qfit.atlas.export_task.QgsLayoutItemLabel", fresh_label_cls):
-            build_cover_layout(layer)
-        label_texts = [
-            call[0][0]
-            for call in fresh_label_cls.return_value.setText.call_args_list
-        ]
+        result, _layout, labels = self._capture_cover_labels(layer)
+        self.assertIsNotNone(result)
+        label_texts = [label.setText.call_args[0][0] for label in labels]
         expected_upper_labels = [
-            "ACTIVITIES", "DATE RANGE", "DISTANCE",
-            "MOVING TIME", "CLIMBING", "ACTIVITY TYPES",
+            "ACTIVITIES",
+            "DISTANCE",
+            "MOVING TIME",
+            "CLIMBING",
+            "DATE RANGE",
+            "ACTIVITY TYPES",
         ]
         for expected in expected_upper_labels:
             self.assertIn(expected, label_texts)
 
-    def test_build_cover_layout_highlight_grid_two_columns(self):
-        """Highlight cards are positioned in a 2-column grid pattern."""
-        from qfit.atlas.export_task import MARGIN_MM  # noqa: PLC0415
+    def test_build_cover_layout_metrics_grid_uses_three_columns(self):
+        """The metrics band is laid out as a compact 3-column by 2-row grid."""
         layer = _make_cover_atlas_layer()
-        fresh_point_cls = MagicMock()
-        fresh_layout = MagicMock()
-        fresh_layout.pageCollection.return_value.pageCount.return_value = 1
-        fresh_layout.pageCollection.return_value.page.return_value = MagicMock()
-        with patch("qfit.atlas.export_task.QgsPrintLayout", return_value=fresh_layout), \
-             patch("qfit.atlas.export_task.QgsLayoutPoint", fresh_point_cls):
-            build_cover_layout(layer)
-        # Collect x-coordinates from all QgsLayoutPoint calls.
-        x_coords = sorted({call[0][0] for call in fresh_point_cls.call_args_list})
-        # There should be at least 2 distinct x positions for the grid columns
-        # (beyond the title/subtitle x position at MARGIN_MM)
-        grid_x_positions = [x for x in x_coords if x > MARGIN_MM]
-        self.assertGreaterEqual(len(grid_x_positions), 1,
-                                "Highlight cards should use at least two distinct x positions")
+        result, _layout, labels = self._capture_cover_labels(layer)
+        self.assertIsNotNone(result)
+
+        metric_positions = {}
+        for label in labels:
+            text = label.setText.call_args[0][0]
+            if text in {
+                "ACTIVITIES",
+                "DISTANCE",
+                "MOVING TIME",
+                "CLIMBING",
+                "DATE RANGE",
+                "ACTIVITY TYPES",
+            }:
+                metric_positions[text] = label.attemptMove.call_args[0][0]
+
+        top_row = [metric_positions[text] for text in ["ACTIVITIES", "DISTANCE", "MOVING TIME"]]
+        bottom_row = [metric_positions[text] for text in ["CLIMBING", "DATE RANGE", "ACTIVITY TYPES"]]
+
+        self.assertEqual(len({position[0] for position in top_row}), 3)
+        self.assertEqual([position[0] for position in top_row], [position[0] for position in bottom_row])
+        self.assertEqual(len({position[1] for position in top_row}), 1)
+        self.assertEqual(len({position[1] for position in bottom_row}), 1)
+        self.assertGreater(bottom_row[0][1], top_row[0][1])
+
+    def test_build_cover_layout_builds_structured_header_lines(self):
+        """The header is split into a subtitle line and a summary line."""
+        layer = _make_cover_atlas_layer()
+        result, _layout, labels = self._capture_cover_labels(layer)
+        self.assertIsNotNone(result)
+        label_texts = [label.setText.call_args[0][0] for label in labels]
+        self.assertEqual(label_texts[0], "qfit Activity Atlas")
+        self.assertEqual(label_texts[1], "1 activity · 2026-03-22 · Run")
+        self.assertEqual(label_texts[2], "250.0 km · 12h 30m · 5000 m")
 
     def test_build_cover_layout_fewer_stats_fewer_items(self):
-        """With only activity count + distance present, the grid stays compact."""
+        """With only activity count + distance present, the metrics band stays compact."""
         fields_dict = {
             "page_date": "",
             "activity_type": "",
@@ -3425,9 +3459,8 @@ class TestBuildCoverLayout(unittest.TestCase):
         with patch("qfit.atlas.export_task.QgsPrintLayout", return_value=fresh_layout):
             result = build_cover_layout(layer)
         self.assertIsNotNone(result)
-        # title (1) + subtitle (1) + separator (1) + 2 stats × 2 label/value items = 7
         add_calls = fresh_layout.addLayoutItem.call_args_list
-        self.assertEqual(len(add_calls), 7)
+        self.assertEqual(len(add_calls), 8)
 
     def test_build_cover_layout_minimal_subset_still_shows_activity_count(self):
         """A non-empty subset should still show an activity-count card even if other stats are empty."""
@@ -3452,7 +3485,6 @@ class TestBuildCoverLayout(unittest.TestCase):
         with patch("qfit.atlas.export_task.QgsPrintLayout", return_value=fresh_layout):
             result = build_cover_layout(layer)
         self.assertIsNotNone(result)
-        # title + subtitle + separator + one stat card (label+value) = 5
         add_calls = fresh_layout.addLayoutItem.call_args_list
         self.assertEqual(len(add_calls), 5)
 
