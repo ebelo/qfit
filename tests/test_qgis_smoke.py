@@ -188,7 +188,7 @@ class QgisSmokeTests(unittest.TestCase):
     def test_dock_widget_contextual_help_smoke(self):
         dock = QfitDockWidget(self.iface)
         try:
-            from qgis.PyQt.QtWidgets import QLabel, QWidget
+            from qgis.PyQt.QtWidgets import QComboBox, QLabel, QWidget
 
             self.assertEqual(dock.maxDetailedActivitiesLabel.text(), "Max new detailed routes this run")
             self.assertEqual(dock.pointSamplingStrideLabel.text(), "Keep every Nth point")
@@ -225,6 +225,11 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertEqual(dock.analysisWorkflowGroupBox.title(), "")
             self.assertEqual(dock.analysisSectionToggleButton.text(), "3. Analyze")
             self.assertFalse(dock.analysisSectionContentWidget.isHidden())
+            self.assertEqual(dock.analysisWorkflowLayout.spacing(), 6)
+            temporal_mode_layout = dock.temporalModeLabel.parentWidget().layout()
+            self.assertEqual(temporal_mode_layout.spacing(), 6)
+            self.assertGreaterEqual(dock.temporalModeComboBox.minimumContentsLength(), 10)
+            self.assertGreaterEqual(dock.temporalHelpLabel.margin(), 2)
             self.assertEqual(dock.publishGroupBox.title(), "")
             self.assertEqual(dock.publishSectionToggleButton.text(), "4. Publish / atlas")
             self.assertFalse(dock.publishSectionContentWidget.isHidden())
@@ -242,7 +247,7 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertIsNotNone(dock.findChild(QWidget, "maxDetailedActivitiesSpinBoxHelpField"))
             temporal_helper = dock.findChild(QLabel, "temporalModeComboBoxContextHelpLabel")
             self.assertIsNotNone(temporal_helper)
-            self.assertEqual(temporal_helper.parentWidget(), dock.analysisSectionContentWidget)
+            self.assertEqual(temporal_helper.parentWidget(), dock.temporalModeLabel.parentWidget())
             dock.activitiesSectionToggleButton.click()
             self.assertFalse(dock.activitiesSectionToggleButton.isChecked())
             self.assertEqual(dock.activitiesSectionToggleButton.arrowType(), Qt.RightArrow)

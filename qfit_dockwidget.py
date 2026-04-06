@@ -8,7 +8,17 @@ from qgis.core import QgsApplication, QgsProject
 from qgis.PyQt import uic
 from qgis.PyQt.QtCore import QDate, Qt, QUrl
 from qgis.PyQt.QtGui import QDesktopServices
-from qgis.PyQt.QtWidgets import QApplication, QFileDialog, QDockWidget, QMessageBox, QToolButton, QVBoxLayout, QWidget
+from qgis.PyQt.QtWidgets import (
+    QApplication,
+    QComboBox,
+    QFileDialog,
+    QDockWidget,
+    QGridLayout,
+    QMessageBox,
+    QToolButton,
+    QVBoxLayout,
+    QWidget,
+)
 
 from .activities.domain.activity_classification import ordered_canonical_activity_labels
 from .activities.domain.activity_query import (
@@ -27,7 +37,7 @@ from .atlas.export_service import (
     AtlasExportService,
 )
 from .atlas.profile_style import build_native_profile_plot_style_from_settings
-from .contextual_help import ContextualHelpBinder, build_dock_help_entries
+from .ui.contextual_help import ContextualHelpBinder, build_dock_help_entries
 from .detailed_route_strategy import (
     DEFAULT_DETAILED_ROUTE_STRATEGY,
     detailed_route_strategy_labels,
@@ -47,7 +57,7 @@ from .providers.infrastructure.strava_provider import StravaProvider
 from .visualization.application import DEFAULT_TEMPORAL_MODE_LABEL, temporal_mode_labels
 from .ui.dockwidget_dependencies import DockWidgetDependencies, build_dockwidget_dependencies
 from .ui.workflow_section_coordinator import WorkflowSectionCoordinator
-from .ui_settings_binding import UIFieldBinding, load_bindings, save_bindings
+from .configuration.application.ui_settings_binding import UIFieldBinding, load_bindings, save_bindings
 
 FORM_CLASS, _ = uic.loadUiType(
     __import__("os").path.join(__import__("os").path.dirname(__file__), "qfit_dockwidget_base.ui")
@@ -191,9 +201,20 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self.previewSortComboBox.addItem(label)
 
     def _configure_temporal_mode_options(self):
+        outer_layout = self.temporalModeLabel.parentWidget().layout()
+        if hasattr(outer_layout, "setSpacing"):
+            outer_layout.setSpacing(6)
+        if isinstance(outer_layout, QGridLayout):
+            outer_layout.setSpacing(6)
+        self.temporalModeComboBox.setSizeAdjustPolicy(
+            QComboBox.AdjustToMinimumContentsLengthWithIcon
+        )
+        self.temporalModeComboBox.setMinimumContentsLength(10)
+        self.temporalHelpLabel.setMargin(2)
         self.temporalModeComboBox.clear()
         for label in temporal_mode_labels():
             self.temporalModeComboBox.addItem(label)
+        self.temporalModeComboBox.setMinimumContentsLength(10)
 
     def _bind_dependencies(self, dependencies: DockWidgetDependencies) -> None:
         self.settings = dependencies.settings

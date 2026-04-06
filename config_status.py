@@ -1,27 +1,9 @@
-"""Pure-logic helpers for computing configuration status text.
+"""Compatibility shim for qfit configuration status helpers.
 
-These functions depend only on ``SettingsService`` and can be tested
-without a running Qt/QGIS environment.
+Prefer importing from ``qfit.configuration.application.config_status``.
+This module remains as a stable forwarding import during the package move.
 """
 
-from .settings_port import SettingsPort
+from .configuration.application.config_status import mapbox_status_text, strava_status_text
 
-
-def strava_status_text(settings: SettingsPort) -> str:
-    """Return a human-readable Strava connection status."""
-    client_id = settings.get("client_id", "")
-    client_secret = settings.get("client_secret", "")
-    refresh_token = settings.get("refresh_token", "")
-    if refresh_token:
-        return "Connected (refresh token saved)"
-    if client_id and client_secret:
-        return "App credentials set — authorization needed"
-    return "Not configured"
-
-
-def mapbox_status_text(settings: SettingsPort) -> str:
-    """Return a human-readable Mapbox connection status."""
-    token = settings.get("mapbox_access_token", "")
-    if not token:
-        return "Not configured"
-    return "Access token saved"
+__all__ = ["mapbox_status_text", "strava_status_text"]
