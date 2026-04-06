@@ -19,7 +19,7 @@ from qgis.core import (
     QgsUnitTypes,
 )
 
-from ...map_style import (
+from ..map_style import (
     DEFAULT_SIMPLE_LINE_HEX,
     pick_activity_style_field,
     resolve_activity_color,
