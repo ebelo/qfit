@@ -1,52 +1,9 @@
-from qgis.core import QgsProject, QgsVectorLayer
+"""Compatibility shim for the visualization project-layer loader.
 
+Prefer importing from ``qfit.visualization.infrastructure.project_layer_loader``.
+This module remains as a stable forwarding import during the package move.
+"""
 
-class ProjectLayerLoader:
-    """Loads and replaces qfit output layers in the current QGIS project."""
+from .visualization.infrastructure.project_layer_loader import ProjectLayerLoader
 
-    ACTIVITIES_CANDIDATES = [
-        ("activity_tracks", "qfit activities"),
-        ("activities", "qfit activities"),
-    ]
-    OPTIONAL_LAYERS = [
-        ("activity_starts", "qfit activity starts"),
-        ("activity_points", "qfit activity points"),
-        ("activity_atlas_pages", "qfit atlas pages"),
-    ]
-
-    def load_output_layers(self, gpkg_path):
-        activities_layer = self._load_first_available(gpkg_path, self.ACTIVITIES_CANDIDATES)
-        optional_layers = [
-            self._load_optional_layer(gpkg_path, layer_name, display_name)
-            for layer_name, display_name in self.OPTIONAL_LAYERS
-        ]
-        return (activities_layer, *optional_layers)
-
-    def _load_first_available(self, gpkg_path, candidates):
-        last_error = None
-        for layer_name, display_name in candidates:
-            try:
-                return self._load_layer(gpkg_path, layer_name, display_name)
-            except RuntimeError as exc:
-                last_error = exc
-        if last_error is not None:
-            raise last_error
-        return None
-
-    def _load_optional_layer(self, gpkg_path, layer_name, display_name):
-        try:
-            return self._load_layer(gpkg_path, layer_name, display_name)
-        except RuntimeError:
-            return None
-
-    def _load_layer(self, gpkg_path, layer_name, display_name):
-        uri = f"{gpkg_path}|layername={layer_name}"
-        layer = QgsVectorLayer(uri, display_name, "ogr")
-        if not layer.isValid():
-            raise RuntimeError(f"Could not load layer '{layer_name}' from {gpkg_path}")
-
-        project = QgsProject.instance()
-        for old_layer in project.mapLayersByName(display_name):
-            project.removeMapLayer(old_layer.id())
-        project.addMapLayer(layer)
-        return layer
+__all__ = ["ProjectLayerLoader"]

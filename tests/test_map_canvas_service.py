@@ -17,11 +17,16 @@ except ValueError:
     )
 
 try:
-    from qfit.map_canvas_service import MapCanvasService, WORKING_CRS
+    from qfit.map_canvas_service import MapCanvasService as LegacyMapCanvasService
+    from qfit.visualization.infrastructure.map_canvas_service import (
+        MapCanvasService,
+        WORKING_CRS,
+    )
 
     QGIS_AVAILABLE = True
     QGIS_IMPORT_ERROR = None
 except Exception as exc:  # pragma: no cover
+    LegacyMapCanvasService = None
     MapCanvasService = None
     QGIS_AVAILABLE = False
     QGIS_IMPORT_ERROR = exc
@@ -37,15 +42,15 @@ def _load_service_with_mock_qgis():
     qgis_modules = ["qgis", "qgis.core"]
 
     saved_qgis = {name: sys.modules.get(name) for name in qgis_modules}
-    saved_module = sys.modules.get("qfit.map_canvas_service")
+    saved_module = sys.modules.get("qfit.visualization.infrastructure.map_canvas_service")
 
     for name in qgis_modules:
         sys.modules[name] = qstub
 
-    sys.modules.pop("qfit.map_canvas_service", None)
+    sys.modules.pop("qfit.visualization.infrastructure.map_canvas_service", None)
 
     try:
-        module = importlib.import_module("qfit.map_canvas_service")
+        module = importlib.import_module("qfit.visualization.infrastructure.map_canvas_service")
         return module.MapCanvasService, module
     except Exception:  # pragma: no cover
         return None, None
@@ -56,9 +61,9 @@ def _load_service_with_mock_qgis():
             else:
                 sys.modules[name] = original
         if saved_module is None:
-            sys.modules.pop("qfit.map_canvas_service", None)
+            sys.modules.pop("qfit.visualization.infrastructure.map_canvas_service", None)
         else:
-            sys.modules["qfit.map_canvas_service"] = saved_module
+            sys.modules["qfit.visualization.infrastructure.map_canvas_service"] = saved_module
 
 
 if not QGIS_AVAILABLE:
@@ -115,13 +120,16 @@ def _make_layer(extent_vals=None, valid=True):
 class MapCanvasServiceRealTests(unittest.TestCase):
     """Tests that run when real QGIS bindings are available."""
 
+    def test_root_shim_exports_visualization_map_canvas_service(self):
+        self.assertIs(LegacyMapCanvasService, MapCanvasService)
+
     def setUp(self):
         self._bg = MagicMock()
         self.service = MapCanvasService(self._bg)
 
     # -- ensure_working_crs -------------------------------------------------
 
-    @patch("qfit.map_canvas_service.QgsProject")
+    @patch("qfit.visualization.infrastructure.map_canvas_service.QgsProject")
     def test_ensure_working_crs_sets_project_and_canvas_crs(self, mock_project_cls):
         project = MagicMock()
         project.crs.return_value = MagicMock(isValid=MagicMock(return_value=False))
@@ -135,8 +143,8 @@ class MapCanvasServiceRealTests(unittest.TestCase):
         project.setCrs.assert_called_once()
         canvas.setDestinationCrs.assert_called_once()
 
-    @patch("qfit.map_canvas_service.QgsCoordinateTransform")
-    @patch("qfit.map_canvas_service.QgsProject")
+    @patch("qfit.visualization.infrastructure.map_canvas_service.QgsCoordinateTransform")
+    @patch("qfit.visualization.infrastructure.map_canvas_service.QgsProject")
     def test_ensure_working_crs_preserves_extent_on_crs_change(
         self, mock_project_cls, mock_transform_cls
     ):
@@ -161,8 +169,8 @@ class MapCanvasServiceRealTests(unittest.TestCase):
         canvas.setDestinationCrs.assert_called_once()
         canvas.setExtent.assert_called_once_with(transformed_extent)
 
-    @patch("qfit.map_canvas_service.QgsCoordinateTransform")
-    @patch("qfit.map_canvas_service.QgsProject")
+    @patch("qfit.visualization.infrastructure.map_canvas_service.QgsCoordinateTransform")
+    @patch("qfit.visualization.infrastructure.map_canvas_service.QgsProject")
     def test_ensure_working_crs_can_skip_extent_preservation(
         self, mock_project_cls, mock_transform_cls
     ):
@@ -183,7 +191,7 @@ class MapCanvasServiceRealTests(unittest.TestCase):
         mock_transform_cls.assert_not_called()
         canvas.setExtent.assert_not_called()
 
-    @patch("qfit.map_canvas_service.QgsProject")
+    @patch("qfit.visualization.infrastructure.map_canvas_service.QgsProject")
     def test_ensure_working_crs_noop_when_iface_is_none(self, mock_project_cls):
         project = MagicMock()
         mock_project_cls.instance.return_value = project

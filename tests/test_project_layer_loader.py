@@ -17,11 +17,13 @@ except ValueError:
     )
 
 try:
-    from qfit.project_layer_loader import ProjectLayerLoader
+    from qfit.project_layer_loader import ProjectLayerLoader as LegacyProjectLayerLoader
+    from qfit.visualization.infrastructure.project_layer_loader import ProjectLayerLoader
 
     QGIS_AVAILABLE = True
     QGIS_IMPORT_ERROR = None
 except Exception as exc:  # pragma: no cover
+    LegacyProjectLayerLoader = None
     ProjectLayerLoader = None
     QGIS_AVAILABLE = False
     QGIS_IMPORT_ERROR = exc
@@ -38,14 +40,14 @@ def _load_service_with_mock_qgis():
     qgis_modules = ["qgis", "qgis.core"]
 
     saved_qgis = {name: sys.modules.get(name) for name in qgis_modules}
-    saved_module = sys.modules.get("qfit.project_layer_loader")
+    saved_module = sys.modules.get("qfit.visualization.infrastructure.project_layer_loader")
 
     for name in qgis_modules:
         sys.modules[name] = qstub
-    sys.modules.pop("qfit.project_layer_loader", None)
+    sys.modules.pop("qfit.visualization.infrastructure.project_layer_loader", None)
 
     try:
-        module = importlib.import_module("qfit.project_layer_loader")
+        module = importlib.import_module("qfit.visualization.infrastructure.project_layer_loader")
         return module.ProjectLayerLoader, module
     except Exception:  # pragma: no cover
         return None, None
@@ -56,9 +58,9 @@ def _load_service_with_mock_qgis():
             else:
                 sys.modules[name] = original
         if saved_module is None:
-            sys.modules.pop("qfit.project_layer_loader", None)
+            sys.modules.pop("qfit.visualization.infrastructure.project_layer_loader", None)
         else:
-            sys.modules["qfit.project_layer_loader"] = saved_module
+            sys.modules["qfit.visualization.infrastructure.project_layer_loader"] = saved_module
 
 
 if not QGIS_AVAILABLE:
@@ -74,6 +76,9 @@ SKIP_MOCK_LOAD = (
 
 @unittest.skipUnless(QGIS_AVAILABLE, SKIP_REAL)
 class ProjectLayerLoaderRealTests(unittest.TestCase):
+    def test_root_shim_exports_visualization_project_layer_loader(self):
+        self.assertIs(LegacyProjectLayerLoader, ProjectLayerLoader)
+
     def test_load_output_layers_uses_current_and_legacy_activity_names(self):
         loader = ProjectLayerLoader()
 
@@ -91,8 +96,8 @@ class ProjectLayerLoaderRealTests(unittest.TestCase):
         project = MagicMock()
         project.mapLayersByName.return_value = []
 
-        with patch("qfit.project_layer_loader.QgsVectorLayer", side_effect=[primary, legacy, starts, points, atlas]) as vector_layer, \
-             patch("qfit.project_layer_loader.QgsProject") as qgs_project:
+        with patch("qfit.visualization.infrastructure.project_layer_loader.QgsVectorLayer", side_effect=[primary, legacy, starts, points, atlas]) as vector_layer, \
+             patch("qfit.visualization.infrastructure.project_layer_loader.QgsProject") as qgs_project:
             qgs_project.instance.return_value = project
             layers = loader.load_output_layers("/tmp/out.gpkg")
 
@@ -119,8 +124,8 @@ class ProjectLayerLoaderRealTests(unittest.TestCase):
         project = MagicMock()
         project.mapLayersByName.return_value = [old_layer]
 
-        with patch("qfit.project_layer_loader.QgsVectorLayer", return_value=new_layer), \
-             patch("qfit.project_layer_loader.QgsProject") as qgs_project:
+        with patch("qfit.visualization.infrastructure.project_layer_loader.QgsVectorLayer", return_value=new_layer), \
+             patch("qfit.visualization.infrastructure.project_layer_loader.QgsProject") as qgs_project:
             qgs_project.instance.return_value = project
             loaded = loader._load_layer("/tmp/out.gpkg", "activity_tracks", "qfit activities")
 
