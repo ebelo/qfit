@@ -3,7 +3,16 @@ from types import SimpleNamespace
 
 from tests import _path  # noqa: F401
 
-from qfit.contextual_help import ContextualHelpBinder, HelpEntry, build_dock_help_entries
+from contextual_help import (
+    DOCK_HELP_ENTRIES as LEGACY_DOCK_HELP_ENTRIES,
+    ContextualHelpBinder as LegacyContextualHelpBinder,
+)
+from ui.contextual_help import (
+    DOCK_HELP_ENTRIES,
+    ContextualHelpBinder,
+    HelpEntry,
+    build_dock_help_entries,
+)
 
 
 class _FakeQt:
@@ -247,6 +256,10 @@ class _TestBinder(ContextualHelpBinder):
 
 
 class ContextualHelpTests(unittest.TestCase):
+    def test_root_shim_exports_ui_contextual_help(self):
+        self.assertIs(LegacyContextualHelpBinder, ContextualHelpBinder)
+        self.assertIs(LEGACY_DOCK_HELP_ENTRIES, DOCK_HELP_ENTRIES)
+
     def test_dock_help_entries_cover_high_value_confusing_controls(self):
         entries = {entry.anchor_name: entry for entry in build_dock_help_entries()}
 
