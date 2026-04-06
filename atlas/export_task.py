@@ -722,23 +722,14 @@ def _apply_cover_heatmap_renderer(layer) -> None:
     so the module can load without a full QGIS runtime (e.g. in tests).
     """
     try:
-        from qgis.core import (  # noqa: PLC0415
-            QgsHeatmapRenderer,
-            QgsStyle,
-            QgsGradientColorRamp,
+        from ..visualization.infrastructure.layer_style_service import (  # noqa: PLC0415
+            build_qfit_heatmap_renderer,
         )
     except ImportError:
         return
-    renderer = QgsHeatmapRenderer()
-    renderer.setRadius(8)
-    renderer.setRadiusUnit(QgsUnitTypes.RenderMillimeters)
-    renderer.setRenderQuality(1)
-    color_ramp = QgsStyle.defaultStyle().colorRamp("Turbo")
-    if color_ramp is None:
-        color_ramp = QgsGradientColorRamp(QColor("#00000000"), QColor("#e74c3c"))
-    renderer.setColorRamp(color_ramp)
-    layer.setRenderer(renderer)
-    layer.setOpacity(0.85)
+
+    layer.setRenderer(build_qfit_heatmap_renderer())
+    layer.setOpacity(0.7)
 
 
 def build_cover_layout(

@@ -4146,21 +4146,24 @@ class TestApplyCoverHeatmapRenderer(unittest.TestCase):
     def test_sets_renderer_on_layer(self):
         layer = MagicMock()
         heatmap_renderer = MagicMock()
-        heatmap_cls = MagicMock(return_value=heatmap_renderer)
-        style_cls = MagicMock()
-        style_cls.defaultStyle.return_value.colorRamp.return_value = MagicMock()
-        ramp_cls = MagicMock()
+        heatmap_builder_module = ModuleType(
+            "qfit.visualization.infrastructure.layer_style_service"
+        )
+        heatmap_builder_module.build_qfit_heatmap_renderer = MagicMock(
+            return_value=heatmap_renderer
+        )
 
-        qgis_core = ModuleType("qgis.core")
-        qgis_core.QgsHeatmapRenderer = heatmap_cls
-        qgis_core.QgsStyle = style_cls
-        qgis_core.QgsGradientColorRamp = ramp_cls
-
-        with patch.dict(sys.modules, {"qgis.core": qgis_core}):
+        with patch.dict(
+            sys.modules,
+            {
+                "qfit.visualization.infrastructure.layer_style_service": heatmap_builder_module,
+            },
+        ):
             _apply_cover_heatmap_renderer(layer)
 
+        heatmap_builder_module.build_qfit_heatmap_renderer.assert_called_once_with()
         layer.setRenderer.assert_called_once_with(heatmap_renderer)
-        layer.setOpacity.assert_called_once_with(0.85)
+        layer.setOpacity.assert_called_once_with(0.7)
 
 
 class TestBuildCoverLayoutWithMap(unittest.TestCase):
