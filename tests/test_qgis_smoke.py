@@ -804,6 +804,8 @@ class QgisSmokeTests(unittest.TestCase):
             renderer = points_layer.renderer()
             self.assertIsInstance(renderer, QgsHeatmapRenderer)
             self.assertEqual(renderer.radius(), 12)
+            self.assertLessEqual(renderer.colorRamp().color2().alpha(), 215)
+            self.assertGreater(renderer.colorRamp().color2().red(), renderer.colorRamp().color2().blue())
             self.assertEqual(renderer.radiusUnit(), QgsUnitTypes.RenderMillimeters)
             self.assertEqual(renderer.renderQuality(), 2)
             self.assertIsNotNone(renderer.colorRamp())
