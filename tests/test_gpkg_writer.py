@@ -19,7 +19,8 @@ if QgsApplication is not None:
         build_profile_sample_layer,
         build_toc_layer,
     )
-    from qfit.gpkg_writer import GeoPackageWriter
+    from qfit.activities.infrastructure.geopackage.gpkg_writer import GeoPackageWriter
+    from qfit.gpkg_writer import GeoPackageWriter as LegacyGeoPackageWriter
 else:  # pragma: no cover - exercised only on non-QGIS runners
     build_atlas_layer = None
     build_cover_highlight_layer = None
@@ -43,6 +44,9 @@ def _ensure_qgis_app():
 
 @unittest.skipIf(QgsApplication is None, "QGIS Python bindings are not available")
 class GeoPackageWriterAtlasTests(unittest.TestCase):
+    def test_legacy_gpkg_writer_shim_exports_same_writer(self):
+        self.assertIs(LegacyGeoPackageWriter, GeoPackageWriter)
+
     @classmethod
     def setUpClass(cls):
         _ensure_qgis_app()

@@ -16,7 +16,13 @@ class ActivityStoreAdapterTests(unittest.TestCase):
 
 class GeoPackageWriterStoragePortTests(unittest.TestCase):
     def test_writer_accepts_and_stores_activity_store_factory(self):
-        module_path = Path(__file__).resolve().parents[1] / "gpkg_writer.py"
+        module_path = (
+            Path(__file__).resolve().parents[1]
+            / "activities"
+            / "infrastructure"
+            / "geopackage"
+            / "gpkg_writer.py"
+        )
         tree = ast.parse(module_path.read_text(), filename=str(module_path))
 
         geo_writer = next(

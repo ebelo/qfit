@@ -15,21 +15,22 @@ from qfit.load_workflow import (
 )
 from qfit.sync_repository import SyncStats
 
-# Ensure a stub ``qfit.gpkg_writer`` is present in ``sys.modules`` so the lazy
-# import inside ``write_and_load`` does not trigger the real module (which
-# requires full QGIS bindings that may be unavailable or mocked out by other
-# test modules). Restore the original module afterwards so other tests do not
-# inherit the stub via import-order leakage.
-_original_gpkg_writer = sys.modules.get("qfit.gpkg_writer")
+# Ensure a stub ``qfit.activities.infrastructure.geopackage.gpkg_writer`` is
+# present in ``sys.modules`` so the lazy import inside ``write_and_load`` does
+# not trigger the real module (which requires full QGIS bindings that may be
+# unavailable or mocked out by other test modules). Restore the original module
+# afterwards so other tests do not inherit the stub via import-order leakage.
+_GPKG_WRITER_MODULE = "qfit.activities.infrastructure.geopackage.gpkg_writer"
+_original_gpkg_writer = sys.modules.get(_GPKG_WRITER_MODULE)
 _gpkg_writer_stub = MagicMock()
-sys.modules["qfit.gpkg_writer"] = _gpkg_writer_stub
+sys.modules[_GPKG_WRITER_MODULE] = _gpkg_writer_stub
 
 
 def tearDownModule():
     if _original_gpkg_writer is None:
-        sys.modules.pop("qfit.gpkg_writer", None)
+        sys.modules.pop(_GPKG_WRITER_MODULE, None)
     else:
-        sys.modules["qfit.gpkg_writer"] = _original_gpkg_writer
+        sys.modules[_GPKG_WRITER_MODULE] = _original_gpkg_writer
 
 
 class WriteAndLoadValidationTests(unittest.TestCase):
@@ -112,7 +113,7 @@ class WriteAndLoadSuccessTests(unittest.TestCase):
         self.layer_manager.load_output_layers.return_value = mock_layers
 
         activities = [SimpleNamespace(name="a1"), SimpleNamespace(name="a2"), SimpleNamespace(name="a3")]
-        with patch("qfit.gpkg_writer.GeoPackageWriter", mock_gpkg.GeoPackageWriter):
+        with patch(f"{_GPKG_WRITER_MODULE}.GeoPackageWriter", mock_gpkg.GeoPackageWriter):
             result = self.service.write_and_load(
                 activities=activities,
                 output_path="/tmp/out.gpkg",
@@ -150,7 +151,7 @@ class WriteAndLoadSuccessTests(unittest.TestCase):
         self.layer_manager.load_output_layers.return_value = (None, None, None, None)
 
         metadata = {"provider": "strava"}
-        with patch("qfit.gpkg_writer.GeoPackageWriter", mock_gpkg.GeoPackageWriter):
+        with patch(f"{_GPKG_WRITER_MODULE}.GeoPackageWriter", mock_gpkg.GeoPackageWriter):
             self.service.write_and_load(
                 activities=["a"],
                 output_path="/tmp/out.gpkg",
@@ -179,7 +180,7 @@ class WriteAndLoadSuccessTests(unittest.TestCase):
         mock_gpkg = self._make_writer_mock(write_result)
         self.layer_manager.load_output_layers.return_value = (None, None, None, None)
 
-        with patch("qfit.gpkg_writer.GeoPackageWriter", mock_gpkg.GeoPackageWriter):
+        with patch(f"{_GPKG_WRITER_MODULE}.GeoPackageWriter", mock_gpkg.GeoPackageWriter):
             self.service.write_and_load(
                 activities=["a"],
                 output_path="/tmp/test.gpkg",
@@ -223,7 +224,7 @@ class WriteDatabaseSuccessTests(unittest.TestCase):
         }
         mock_gpkg = self._make_writer_mock(write_result)
 
-        with patch("qfit.gpkg_writer.GeoPackageWriter", mock_gpkg.GeoPackageWriter):
+        with patch(f"{_GPKG_WRITER_MODULE}.GeoPackageWriter", mock_gpkg.GeoPackageWriter):
             result = self.service.write_database(
                 activities=["a", "b"],
                 output_path="/tmp/out.gpkg",
