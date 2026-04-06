@@ -128,9 +128,9 @@ class LoadWorkflowService:
         if not request.output_path:
             raise LoadWorkflowError("Choose a GeoPackage output path first.")
 
-        from ... import gpkg_writer
+        from ..infrastructure.geopackage.gpkg_writer import GeoPackageWriter
 
-        writer = gpkg_writer.GeoPackageWriter(
+        writer = GeoPackageWriter(
             output_path=request.output_path,
             write_activity_points=request.write_activity_points,
             point_stride=request.point_stride,
