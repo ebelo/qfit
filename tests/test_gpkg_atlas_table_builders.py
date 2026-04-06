@@ -19,7 +19,7 @@ try:
 except (ImportError, ModuleNotFoundError):  # pragma: no cover
     QgsApplication = None
 
-if QgsApplication is not None:
+if QgsApplication is not None and _REAL_QGIS_PRESENT:
     from qfit.activities.infrastructure.geopackage.gpkg_atlas_table_builders import (
         build_cover_highlight_layer,
         build_document_summary_layer,
@@ -45,6 +45,9 @@ _QGIS_APP = None
 
 
 def _ensure_qgis_app():
+    if not _REAL_QGIS_PRESENT:
+        raise unittest.SkipTest("QGIS Python bindings are not available")
+
     global QgsApplication
     global build_cover_highlight_layer
     global build_document_summary_layer
