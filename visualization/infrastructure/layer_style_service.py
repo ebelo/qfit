@@ -51,6 +51,26 @@ def build_qfit_heatmap_renderer():
     return renderer
 
 
+def build_qfit_visualize_heatmap_renderer():
+    renderer = QgsHeatmapRenderer()
+    renderer.setRadius(18)
+    renderer.setRadiusUnit(QgsUnitTypes.RenderMillimeters)
+    renderer.setRenderQuality(2)
+    heat_ramp = QgsGradientColorRamp(
+        QColor("#00000000"),
+        QColor(244, 81, 30, 255),
+        False,
+        [
+            QgsGradientStop(0.08, QColor("#00000000")),
+            QgsGradientStop(0.22, QColor(33, 150, 243, 110)),
+            QgsGradientStop(0.48, QColor(255, 179, 0, 220)),
+            QgsGradientStop(0.78, QColor(244, 81, 30, 255)),
+        ],
+    )
+    renderer.setColorRamp(heat_ramp)
+    return renderer
+
+
 class LayerStyleService:
     """Applies visual styles (renderers, opacity) to qfit output layers.
 
@@ -233,8 +253,8 @@ class LayerStyleService:
         layer.triggerRepaint()
 
     def _apply_heatmap_style(self, layer):
-        layer.setRenderer(build_qfit_heatmap_renderer())
-        layer.setOpacity(0.75)
+        layer.setRenderer(build_qfit_visualize_heatmap_renderer())
+        layer.setOpacity(1.0)
         layer.triggerRepaint()
 
     def _apply_clusterish_style(self, layer):

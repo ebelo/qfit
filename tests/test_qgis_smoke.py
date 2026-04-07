@@ -14,7 +14,15 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
 try:
-    from qgis.core import QgsApplication, QgsLayoutExporter, QgsProject, QgsRectangle, QgsVectorLayer
+    from qgis.core import (
+        QgsApplication,
+        QgsLayoutExporter,
+        QgsMapRendererSequentialJob,
+        QgsMapSettings,
+        QgsProject,
+        QgsRectangle,
+        QgsVectorLayer,
+    )
     from qgis.PyQt.QtCore import QDate, Qt
     from qgis.PyQt.QtGui import QImage
 
@@ -888,19 +896,37 @@ class QgisSmokeTests(unittest.TestCase):
             # Points layer carries the heatmap renderer
             renderer = points_layer.renderer()
             self.assertIsInstance(renderer, QgsHeatmapRenderer)
-            self.assertEqual(renderer.radius(), 12)
-            self.assertLessEqual(renderer.colorRamp().color2().alpha(), 215)
+            self.assertEqual(renderer.radius(), 18)
+            self.assertEqual(renderer.colorRamp().color2().alpha(), 255)
             self.assertGreater(renderer.colorRamp().color2().red(), renderer.colorRamp().color2().blue())
             self.assertEqual(renderer.radiusUnit(), QgsUnitTypes.RenderMillimeters)
             self.assertEqual(renderer.renderQuality(), 2)
             self.assertIsNotNone(renderer.colorRamp())
             self.assertEqual(renderer.colorRamp().color1().alpha(), 0)
             self.assertTrue(renderer.colorRamp().stops(), "Heatmap ramp should include intermediate transparent/soft stops")
-            self.assertEqual(round(points_layer.opacity(), 2), 0.75)
+            self.assertEqual(round(points_layer.opacity(), 2), 1.0)
 
             # Tracks and start points must be fully hidden so they don't flatten the visual
             self.assertEqual(round(activities_layer.opacity(), 2), 0.0)
             self.assertEqual(round(starts_layer.opacity(), 2), 0.0)
+
+    def test_heatmap_preset_renders_visible_output(self):
+        """Heatmap preset should produce visible rendered output, not just assign a renderer."""
+        with tempfile.TemporaryDirectory() as tmp:
+            output_path = self._write_sample_gpkg(tmp)
+            activities_layer, starts_layer, points_layer, atlas_layer = (
+                self.layer_manager.load_output_layers(output_path)
+            )
+
+            self.layer_manager.apply_style(
+                activities_layer, starts_layer, points_layer, atlas_layer, "Heatmap"
+            )
+
+            image = self._render_layers_to_image([points_layer], points_layer.extent())
+            non_white_pixels, strong_pixels = self._count_heatmap_pixels(image)
+
+            self.assertGreater(non_white_pixels, 20000)
+            self.assertGreater(strong_pixels, 10000)
 
     def test_heatmap_preset_falls_back_to_starts_layer(self):
         """When points_layer is None the heatmap should render on starts_layer."""
@@ -921,7 +947,7 @@ class QgisSmokeTests(unittest.TestCase):
             )
 
             self.assertIsInstance(starts_layer.renderer(), QgsHeatmapRenderer)
-            self.assertEqual(round(starts_layer.opacity(), 2), 0.75)
+            self.assertEqual(round(starts_layer.opacity(), 2), 1.0)
             self.assertEqual(round(activities_layer.opacity(), 2), 0.0)
 
     def test_offscreen_profile_chart_export_contains_rendered_curve(self):
@@ -1155,6 +1181,31 @@ class QgisSmokeTests(unittest.TestCase):
         ).write_activities(self._sample_activities(), sync_metadata={"provider": "strava"})
         return output_path
 
+
+    def _render_layers_to_image(self, layers, extent, width=800, height=800):
+        settings = QgsMapSettings()
+        settings.setLayers(layers)
+        settings.setOutputSize(QImage(width, height, QImage.Format_ARGB32).size())
+        settings.setBackgroundColor(Qt.white)
+        settings.setExtent(extent)
+
+        job = QgsMapRendererSequentialJob(settings)
+        job.start()
+        job.waitForFinished()
+        return job.renderedImage()
+
+    def _count_heatmap_pixels(self, image):
+        non_white_pixels = 0
+        strong_pixels = 0
+        for y in range(image.height()):
+            for x in range(image.width()):
+                color = image.pixelColor(x, y)
+                delta = (255 - color.red()) + (255 - color.green()) + (255 - color.blue())
+                if delta > 0:
+                    non_white_pixels += 1
+                if delta > 120:
+                    strong_pixels += 1
+        return non_white_pixels, strong_pixels
 
     def _layer_order(self):
         names = []
