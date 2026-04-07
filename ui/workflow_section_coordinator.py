@@ -114,6 +114,9 @@ class WorkflowSectionCoordinator:
 
     def update_detailed_fetch_visibility(self, enabled: bool) -> None:
         dock = self.dock_widget
+        backfill_button = getattr(dock, "backfillMissingDetailedRoutesButton", None)
+        if backfill_button is not None:
+            backfill_button.setVisible(enabled)
         dock.detailedRouteStrategyLabel.setVisible(enabled)
         dock.detailedRouteStrategyComboBox.setVisible(enabled)
         strategy_helper = getattr(dock, "detailedRouteStrategyComboBoxContextHelpLabel", None)

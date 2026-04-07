@@ -268,10 +268,12 @@ class QgisSmokeTests(unittest.TestCase):
             coordinator = WorkflowSectionCoordinator(dock)
 
             coordinator.update_detailed_fetch_visibility(False)
+            self.assertTrue(dock.backfillMissingDetailedRoutesButton.isHidden())
             self.assertTrue(dock.detailedRouteStrategyLabel.isHidden())
             self.assertTrue(dock.maxDetailedActivitiesSpinBox.isHidden())
 
             coordinator.update_detailed_fetch_visibility(True)
+            self.assertFalse(dock.backfillMissingDetailedRoutesButton.isHidden())
             self.assertFalse(dock.detailedRouteStrategyLabel.isHidden())
             self.assertFalse(dock.maxDetailedActivitiesSpinBox.isHidden())
 
@@ -461,12 +463,43 @@ class QgisSmokeTests(unittest.TestCase):
             dock.close()
             dock.deleteLater()
 
+    def test_backfill_missing_detailed_routes_clicked_uses_missing_strategy(self):
+        dock = QfitDockWidget(self.iface)
+        try:
+            fake_task = MagicMock(name="fetch_task")
+            dock._save_settings = MagicMock()
+            dock.sync_controller.build_fetch_task_request = MagicMock(return_value="fetch-request")
+            dock.sync_controller.build_fetch_task = MagicMock(return_value=fake_task)
+            dock.detailedStreamsCheckBox.setChecked(False)
+            dock.detailedRouteStrategyComboBox.setCurrentText("Recent fetch only")
+
+            with patch("qfit.qfit_dockwidget.QgsApplication.taskManager") as task_manager:
+                task_manager.return_value.addTask = MagicMock()
+                dock.on_backfill_missing_detailed_routes_clicked()
+
+            dock.sync_controller.build_fetch_task_request.assert_called_once()
+            self.assertTrue(dock.sync_controller.build_fetch_task_request.call_args.kwargs["use_detailed_streams"])
+            self.assertEqual(
+                dock.sync_controller.build_fetch_task_request.call_args.kwargs["detailed_route_strategy"],
+                "Missing routes only",
+            )
+            self.assertEqual(dock.detailedRouteStrategyComboBox.currentText(), "Missing routes only")
+            self.assertIn("Backfilling missing detailed routes", dock.statusLabel.text())
+            task_manager.return_value.addTask.assert_called_once_with(fake_task)
+        finally:
+            dock.close()
+            dock.deleteLater()
+
     def test_detailed_route_controls_use_missing_route_wording(self):
         dock = QfitDockWidget(self.iface)
         try:
             self.assertEqual(
                 dock.detailedStreamsCheckBox.text(),
                 "Fetch detailed routes when available",
+            )
+            self.assertEqual(
+                dock.backfillMissingDetailedRoutesButton.text(),
+                "Backfill missing detailed routes",
             )
             self.assertEqual(dock.detailedRouteStrategyLabel.text(), "Detailed route strategy")
             self.assertEqual(

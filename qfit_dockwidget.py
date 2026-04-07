@@ -43,6 +43,7 @@ from .atlas.profile_style import build_native_profile_plot_style_from_settings
 from .ui.contextual_help import ContextualHelpBinder, build_dock_help_entries
 from .detailed_route_strategy import (
     DEFAULT_DETAILED_ROUTE_STRATEGY,
+    DETAILED_ROUTE_STRATEGY_MISSING,
     detailed_route_strategy_labels,
 )
 from .mapbox_config import (
@@ -155,6 +156,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.exchangeCodeButton.clicked.connect(self.on_exchange_code_clicked)
         self.browseButton.clicked.connect(self.on_browse_clicked)
         self.refreshButton.clicked.connect(self.on_refresh_clicked)
+        self.backfillMissingDetailedRoutesButton.clicked.connect(self.on_backfill_missing_detailed_routes_clicked)
         self.loadButton.clicked.connect(self.on_load_clicked)
         self.loadLayersButton.clicked.connect(self.on_load_layers_clicked)
         self.clearDatabaseButton.clicked.connect(self.on_clear_database_clicked)
@@ -598,6 +600,23 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._fetch_task = None
             return
 
+        self._start_fetch(
+            detailed_route_strategy=self.detailedRouteStrategyComboBox.currentText(),
+            status_text="Fetching activities from Strava…",
+        )
+
+    def on_backfill_missing_detailed_routes_clicked(self):
+        if self._fetch_task is not None:
+            return
+
+        self.detailedStreamsCheckBox.setChecked(True)
+        self.detailedRouteStrategyComboBox.setCurrentText(DETAILED_ROUTE_STRATEGY_MISSING)
+        self._start_fetch(
+            detailed_route_strategy=DETAILED_ROUTE_STRATEGY_MISSING,
+            status_text="Backfilling missing detailed routes from Strava…",
+        )
+
+    def _start_fetch(self, detailed_route_strategy, status_text):
         self._save_settings()
         try:
             fetch_request = self.sync_controller.build_fetch_task_request(
@@ -609,7 +628,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 max_pages=self.maxPagesSpinBox.value(),
                 use_detailed_streams=self.detailedStreamsCheckBox.isChecked(),
                 max_detailed_activities=self.maxDetailedActivitiesSpinBox.value(),
-                detailed_route_strategy=self.detailedRouteStrategyComboBox.currentText(),
+                detailed_route_strategy=detailed_route_strategy,
                 on_finished=self._on_fetch_finished,
             )
             self._fetch_task = self.sync_controller.build_fetch_task(fetch_request)
@@ -619,12 +638,13 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             return
 
         self._set_fetch_running(True)
-        self._set_status("Fetching activities from Strava…")
+        self._set_status(status_text)
         QgsApplication.taskManager().addTask(self._fetch_task)
 
     def _set_fetch_running(self, running):
         """Toggle UI state while a background fetch is in progress."""
         self.refreshButton.setText("Cancel" if running else "Fetch activities")
+        self.backfillMissingDetailedRoutesButton.setEnabled(not running)
         self.exchangeCodeButton.setEnabled(not running)
         self.openAuthorizeButton.setEnabled(not running)
 
