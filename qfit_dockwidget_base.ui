@@ -175,9 +175,16 @@
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="refreshButton">
+           <widget class="QPushButton" name="refreshButton">
              <property name="text">
               <string>Fetch activities</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="backfillMissingDetailedRoutesButton">
+             <property name="text">
+              <string>Backfill missing detailed routes</string>
              </property>
             </widget>
            </item>
