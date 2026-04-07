@@ -499,7 +499,8 @@ class QgisSmokeTests(unittest.TestCase):
                 dock.sync_controller.build_fetch_task_request.call_args.kwargs["detailed_route_strategy"],
                 "Missing routes only",
             )
-            self.assertEqual(dock.detailedRouteStrategyComboBox.currentText(), "Missing routes only")
+            self.assertFalse(dock.detailedStreamsCheckBox.isChecked())
+            self.assertEqual(dock.detailedRouteStrategyComboBox.currentText(), "Recent fetch only")
             self.assertIn("Backfilling missing detailed routes", dock.statusLabel.text())
             task_manager.return_value.addTask.assert_called_once_with(fake_task)
         finally:

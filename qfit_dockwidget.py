@@ -609,15 +609,16 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         if self._fetch_task is not None:
             return
 
-        self.detailedStreamsCheckBox.setChecked(True)
-        self.detailedRouteStrategyComboBox.setCurrentText(DETAILED_ROUTE_STRATEGY_MISSING)
         self._start_fetch(
+            use_detailed_streams=True,
             detailed_route_strategy=DETAILED_ROUTE_STRATEGY_MISSING,
             status_text="Backfilling missing detailed routes from Strava…",
         )
 
-    def _start_fetch(self, detailed_route_strategy, status_text):
+    def _start_fetch(self, detailed_route_strategy, status_text, use_detailed_streams=None):
         self._save_settings()
+        if use_detailed_streams is None:
+            use_detailed_streams = self.detailedStreamsCheckBox.isChecked()
         try:
             fetch_request = self.sync_controller.build_fetch_task_request(
                 client_id=self.clientIdLineEdit.text().strip(),
@@ -626,7 +627,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 cache=self.cache,
                 per_page=self.perPageSpinBox.value(),
                 max_pages=self.maxPagesSpinBox.value(),
-                use_detailed_streams=self.detailedStreamsCheckBox.isChecked(),
+                use_detailed_streams=use_detailed_streams,
                 max_detailed_activities=self.maxDetailedActivitiesSpinBox.value(),
                 detailed_route_strategy=detailed_route_strategy,
                 on_finished=self._on_fetch_finished,
