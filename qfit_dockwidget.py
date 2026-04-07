@@ -251,7 +251,10 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.temporalModeComboBox.setMinimumContentsLength(10)
 
     def _configure_analysis_mode_options(self):
-        row = QWidget(self.analysisWorkflowGroupBox)
+        content_widget = getattr(self, "analysisSectionContentWidget", self.analysisWorkflowGroupBox)
+        content_layout = content_widget.layout() if content_widget is not None else None
+
+        row = QWidget(content_widget or self.analysisWorkflowGroupBox)
         row.setObjectName("analysisModeRow")
         layout = QHBoxLayout(row)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -272,7 +275,10 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         layout.addWidget(button)
         layout.addStretch(1)
 
-        self.analysisWorkflowLayout.insertWidget(0, row)
+        if content_layout is not None:
+            content_layout.insertWidget(0, row)
+        else:
+            self.analysisWorkflowLayout.insertWidget(0, row)
         self.analysisModeLabel = label
         self.analysisModeComboBox = combo
         self.runAnalysisButton = button
@@ -850,17 +856,16 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._set_status(result.status)
 
     def on_apply_filters_clicked(self):
-        has_layers = any(layer is not None for layer in [self.activities_layer, self.starts_layer, self.points_layer, self.atlas_layer])
-        if not has_layers:
-            return
-
-        self._save_settings()
-        status = self._apply_visual_configuration(apply_subset_filters=True)
-        if status:
-            self._set_status(status)
+        self._apply_current_visual_state()
 
     def on_run_analysis_clicked(self):
-        has_layers = any(layer is not None for layer in [self.activities_layer, self.starts_layer, self.points_layer, self.atlas_layer])
+        self._apply_current_visual_state()
+
+    def _apply_current_visual_state(self):
+        has_layers = any(
+            layer is not None
+            for layer in [self.activities_layer, self.starts_layer, self.points_layer, self.atlas_layer]
+        )
         if not has_layers:
             return
 
@@ -935,7 +940,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 logger.debug("Failed to remove analysis layer", exc_info=True)
             self.analysis_layer = None
 
-        for layer in list(project.mapLayers().values()):
+        for layer in tuple(project.mapLayers().values()):
             if layer.name() != FREQUENT_STARTING_POINTS_LAYER_NAME:
                 continue
             try:

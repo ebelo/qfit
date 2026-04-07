@@ -237,6 +237,7 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertEqual(dock.analysisModeLabel.text(), "Analysis")
             self.assertEqual(dock.analysisModeComboBox.currentText(), "None")
             self.assertEqual(dock.runAnalysisButton.text(), "Run analysis")
+            self.assertEqual(dock.analysisModeLabel.parentWidget().parentWidget(), dock.analysisSectionContentWidget)
             temporal_mode_layout = dock.temporalModeLabel.parentWidget().layout()
             self.assertEqual(temporal_mode_layout.spacing(), 6)
             self.assertGreaterEqual(dock.temporalModeComboBox.minimumContentsLength(), 10)
@@ -267,6 +268,7 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertTrue(dock.styleSectionContentWidget.isHidden())
             dock.analysisSectionToggleButton.click()
             self.assertTrue(dock.analysisSectionContentWidget.isHidden())
+            self.assertTrue(dock.analysisModeLabel.parentWidget().isHidden())
             dock.publishSectionToggleButton.click()
             self.assertTrue(dock.publishSectionContentWidget.isHidden())
         finally:

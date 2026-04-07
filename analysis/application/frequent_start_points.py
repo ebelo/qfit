@@ -93,24 +93,30 @@ def _cluster_samples(samples: list[StartPointSample], radius_m: float) -> list[l
     clusters: list[list[StartPointSample]] = []
 
     while unassigned:
-        seed = unassigned.pop(0)
-        cluster = [seed]
-        queue = [seed]
-        while queue:
-            current = queue.pop(0)
-            attached = []
-            for candidate in unassigned:
-                if _distance(current, candidate) <= radius_m:
-                    attached.append(candidate)
-            if not attached:
-                continue
-            for candidate in attached:
-                unassigned.remove(candidate)
-                cluster.append(candidate)
-                queue.append(candidate)
-        clusters.append(cluster)
+        clusters.append(_collect_cluster(unassigned, radius_m))
 
     return clusters
+
+
+def _collect_cluster(unassigned: list[StartPointSample], radius_m: float) -> list[StartPointSample]:
+    seed = unassigned.pop(0)
+    cluster = [seed]
+    queue = [seed]
+    while queue:
+        current = queue.pop(0)
+        attached = _pop_attached_samples(unassigned, current, radius_m)
+        cluster.extend(attached)
+        queue.extend(attached)
+    return cluster
+
+
+def _pop_attached_samples(
+    unassigned: list[StartPointSample], current: StartPointSample, radius_m: float
+) -> list[StartPointSample]:
+    attached = [candidate for candidate in unassigned if _distance(current, candidate) <= radius_m]
+    for candidate in attached:
+        unassigned.remove(candidate)
+    return attached
 
 
 def _cluster_center(cluster: list[StartPointSample]) -> tuple[float, float]:
