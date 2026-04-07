@@ -1,7 +1,7 @@
 import importlib
 import sys
 import unittest
-from types import ModuleType
+from types import ModuleType, SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 
@@ -66,6 +66,9 @@ class _FakeLabel(_FakeWidget):
     def text(self):
         return self._text
 
+    def setText(self, text):
+        self._text = text
+
 
 class _FakeComboBox(_FakeWidget):
     def __init__(self, parent=None, current_text=None):
@@ -89,10 +92,20 @@ class _FakeButton(_FakeWidget):
     def __init__(self, text, parent=None):
         super().__init__(parent)
         self._text = text
+        self._enabled = True
         self.clicked = _FakeSignal()
 
     def text(self):
         return self._text
+
+    def setText(self, text):
+        self._text = text
+
+    def setEnabled(self, enabled):
+        self._enabled = enabled
+
+    def isEnabled(self):
+        return self._enabled
 
 
 class _FakeHBoxLayout(_FakeLayout):
@@ -154,6 +167,41 @@ class _FakeLayer:
 
     def id(self):
         return self._id
+
+
+class _FakeLineEdit:
+    def __init__(self, text=""):
+        self._text = text
+
+    def text(self):
+        return self._text
+
+    def setText(self, text):
+        self._text = text
+
+
+class _FakeSpinBox:
+    def __init__(self, value):
+        self._value = value
+
+    def value(self):
+        return self._value
+
+
+class _FakeCheckBox:
+    def __init__(self, checked=False):
+        self._checked = checked
+
+    def isChecked(self):
+        return self._checked
+
+
+class _FakeSettings:
+    def __init__(self, values=None):
+        self._values = dict(values or {})
+
+    def get(self, key, default=None):
+        return self._values.get(key, default)
 
 
 class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
@@ -329,6 +377,61 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
         self.assertIsNone(dock.analysis_layer)
         self.assertEqual(project.removed, [current_layer, stale_layer])
+
+    def test_on_load_clicked_starts_background_store_task(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._store_task = None
+        dock._save_settings = MagicMock()
+        dock.activities = [{"id": 1}]
+        dock.outputPathLineEdit = _FakeLineEdit("/tmp/qfit.gpkg")
+        dock.writeActivityPointsCheckBox = _FakeCheckBox(True)
+        dock.pointSamplingStrideSpinBox = _FakeSpinBox(2)
+        dock.atlasMarginPercentSpinBox = _FakeSpinBox(10)
+        dock.atlasMinExtentSpinBox = _FakeSpinBox(0.01)
+        dock.atlasTargetAspectRatioSpinBox = _FakeSpinBox(1.5)
+        dock.last_fetch_context = {"provider": "strava"}
+        dock.settings = _FakeSettings({"last_sync_date": "2026-04-07"})
+        dock.loadButton = _FakeButton("Store activities")
+        dock._set_status = MagicMock()
+        dock.load_workflow = MagicMock()
+        dock.load_workflow.build_write_request.return_value = "store-request"
+        fake_task = object()
+        fake_task_manager = SimpleNamespace(addTask=MagicMock())
+
+        with patch.object(self.module, "build_store_task", return_value=fake_task) as build_store_task, patch.object(
+            self.module.QgsApplication,
+            "taskManager",
+            return_value=fake_task_manager,
+        ):
+            self.module.QfitDockWidget.on_load_clicked(dock)
+
+        dock._save_settings.assert_called_once_with()
+        dock.load_workflow.build_write_request.assert_called_once()
+        build_store_task.assert_called_once()
+        self.assertIs(dock._store_task, fake_task)
+        self.assertEqual(dock.loadButton.text(), "Store in progress...")
+        self.assertFalse(dock.loadButton.isEnabled())
+        fake_task_manager.addTask.assert_called_once_with(fake_task)
+
+    def test_handle_store_task_finished_restores_ui_and_status(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._store_task = object()
+        dock.loadButton = _FakeButton("Store in progress...")
+        dock.loadButton.setEnabled(False)
+        dock.outputPathLineEdit = _FakeLineEdit()
+        dock.settings = _FakeSettings({"last_sync_date": "2026-04-07"})
+        dock.countLabel = _FakeLabel("")
+        dock._set_status = MagicMock()
+        result = SimpleNamespace(output_path="/tmp/qfit.gpkg", total_stored=12, status="Stored 12 activities")
+
+        self.module.QfitDockWidget._handle_store_task_finished(dock, result, None, False)
+
+        self.assertIsNone(dock._store_task)
+        self.assertTrue(dock.loadButton.isEnabled())
+        self.assertEqual(dock.loadButton.text(), "Store activities")
+        self.assertEqual(dock.output_path, "/tmp/qfit.gpkg")
+        self.assertIn("12 activities stored in database", dock.countLabel.text())
+        dock._set_status.assert_called_once_with("Stored 12 activities")
 
 
 if __name__ == "__main__":

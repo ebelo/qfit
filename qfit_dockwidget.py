@@ -38,6 +38,7 @@ from .activities.domain.activity_query import (
     summarize_activities,
 )
 from .activities.application.load_workflow import LoadWorkflowError
+from .activities.application.store_task import build_store_task
 from .analysis.infrastructure.frequent_start_points_layer import (
     FREQUENT_STARTING_POINTS_LAYER_NAME,
     build_frequent_start_points_layer,
@@ -99,6 +100,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.analysis_layer = None
         self.last_fetch_context = {}
         self._fetch_task = None
+        self._store_task = None
         self._atlas_export_task = None
         self._dependencies = dependencies or build_dockwidget_dependencies(iface)
         self._bind_dependencies(self._dependencies)
@@ -738,6 +740,10 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._set_status(result.status_text)
 
     def on_load_clicked(self):
+        if self._store_task is not None:
+            self._set_status("Store already in progress...")
+            return
+
         self._save_settings()
         try:
             request = self.load_workflow.build_write_request(
@@ -751,7 +757,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 sync_metadata=self.last_fetch_context,
                 last_sync_date=self.settings.get("last_sync_date", None),
             )
-            result = self.load_workflow.write_database_request(request)
         except LoadWorkflowError as exc:
             self._show_error("Missing input", str(exc))
             return
@@ -760,6 +765,33 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             logger.exception(_msg)
             self._show_error(_msg, str(exc))
             self._set_status(_msg)
+            return
+
+        self._store_task = build_store_task(
+            self.load_workflow,
+            request,
+            on_finished=self._handle_store_task_finished,
+        )
+        self.loadButton.setEnabled(False)
+        self.loadButton.setText("Store in progress...")
+        self._set_status("Store started...")
+        QgsApplication.taskManager().addTask(self._store_task)
+
+    def _handle_store_task_finished(self, result, error_message, cancelled):
+        self._store_task = None
+        self.loadButton.setEnabled(True)
+        self.loadButton.setText("Store activities")
+
+        if cancelled:
+            self._set_status("Store cancelled")
+            return
+        if error_message:
+            _msg = "GeoPackage export failed"
+            self._show_error(_msg, error_message)
+            self._set_status(_msg)
+            return
+        if result is None:
+            self._set_status("GeoPackage export failed")
             return
 
         self.output_path = result.output_path

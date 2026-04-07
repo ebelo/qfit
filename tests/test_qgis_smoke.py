@@ -144,6 +144,9 @@ class _FakeQSettings:
     def value(self, key, default=None):
         return self._data.get(key, default)
 
+    def get(self, key, default=None):
+        return self._data.get(key, default)
+
     def setValue(self, key, value):
         self._data[key] = value
 
@@ -488,6 +491,58 @@ class QgisSmokeTests(unittest.TestCase):
             task_manager.return_value.addTask.assert_called_once_with(fake_task)
             self.assertIs(dock._fetch_task, fake_task)
             self.assertEqual(dock.refreshButton.text(), "Cancel")
+        finally:
+            dock.close()
+            dock.deleteLater()
+
+    def test_load_clicked_builds_background_store_task(self):
+        dock = QfitDockWidget(self.iface)
+        try:
+            fake_task = MagicMock(name="store_task")
+            dock._save_settings = MagicMock()
+            dock.activities = [{"id": 1}]
+            dock.load_workflow.build_write_request = MagicMock(return_value="store-request")
+
+            with (
+                patch("qfit.qfit_dockwidget.build_store_task", return_value=fake_task) as build_store_task,
+                patch("qfit.qfit_dockwidget.QgsApplication.taskManager") as task_manager,
+            ):
+                task_manager.return_value.addTask = MagicMock()
+                dock.on_load_clicked()
+
+            dock.load_workflow.build_write_request.assert_called_once()
+            build_store_task.assert_called_once()
+            self.assertEqual(build_store_task.call_args.args[:2], (dock.load_workflow, "store-request"))
+            self.assertIs(build_store_task.call_args.kwargs["on_finished"].__self__, dock)
+            task_manager.return_value.addTask.assert_called_once_with(fake_task)
+            self.assertIs(dock._store_task, fake_task)
+            self.assertEqual(dock.loadButton.text(), "Store in progress...")
+            self.assertFalse(dock.loadButton.isEnabled())
+        finally:
+            dock.close()
+            dock.deleteLater()
+
+    def test_store_task_finished_restores_ui_and_updates_status(self):
+        dock = QfitDockWidget(self.iface)
+        try:
+            dock._store_task = MagicMock(name="store_task")
+            dock.loadButton.setEnabled(False)
+            dock.loadButton.setText("Store in progress...")
+            dock.settings = _FakeQSettings({"last_sync_date": "2026-04-07"})
+            result = MagicMock(
+                output_path="/tmp/qfit.gpkg",
+                total_stored=12,
+                status="Stored 12 activities",
+            )
+
+            dock._handle_store_task_finished(result, None, False)
+
+            self.assertIsNone(dock._store_task)
+            self.assertTrue(dock.loadButton.isEnabled())
+            self.assertEqual(dock.loadButton.text(), "Store activities")
+            self.assertEqual(dock.output_path, "/tmp/qfit.gpkg")
+            self.assertIn("12 activities stored in database", dock.countLabel.text())
+            self.assertEqual(dock.statusLabel.text(), "Stored 12 activities")
         finally:
             dock.close()
             dock.deleteLater()
