@@ -2,8 +2,7 @@ from __future__ import annotations
 
 from collections import deque
 from dataclasses import dataclass
-from math import hypot
-from statistics import median
+from math import hypot, sqrt
 
 
 @dataclass(frozen=True)
@@ -67,24 +66,16 @@ def _adaptive_radius_m(samples: list[StartPointSample]) -> float:
     if len(samples) < 2:
         return 75.0
 
-    nearest_neighbor_distances = []
-    for index, sample in enumerate(samples):
-        nearest = min(
-            _distance(sample, other)
-            for other_index, other in enumerate(samples)
-            if other_index != index
-        )
-        nearest_neighbor_distances.append(nearest)
-
-    median_nearest = median(nearest_neighbor_distances)
     xs = [sample.x for sample in samples]
     ys = [sample.y for sample in samples]
     diagonal = hypot(max(xs) - min(xs), max(ys) - min(ys))
-    density_adjustment = min(1.35, 1.0 + (len(samples) / 250.0))
+    if diagonal <= 0:
+        return 75.0
 
-    base_radius = median_nearest * 1.6 if median_nearest > 0 else diagonal * 0.02
-    if base_radius <= 0:
-        base_radius = 75.0
+    sample_count = max(1, len(samples))
+    spacing_scale = diagonal / sqrt(sample_count)
+    density_adjustment = min(1.35, 1.0 + (sample_count / 250.0))
+    base_radius = spacing_scale * 0.18
 
     return max(40.0, min(250.0, base_radius * density_adjustment))
 
