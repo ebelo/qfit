@@ -14,6 +14,7 @@ class LayerFilterService:
         max_distance_km=None,
         search_text=None,
         detailed_only=False,
+        detailed_route_filter=None,
     ):
         if layer is None or not layer.isValid():
             return
@@ -26,6 +27,7 @@ class LayerFilterService:
             max_distance_km=max_distance_km,
             search_text=search_text,
             detailed_only=detailed_only,
+            detailed_route_filter=detailed_route_filter,
         )
         layer.setSubsetString(build_subset_string(query))
         layer.triggerRepaint()
