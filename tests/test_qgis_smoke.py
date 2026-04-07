@@ -14,9 +14,17 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
 try:
-    from qgis.core import QgsApplication, QgsLayoutExporter, QgsProject, QgsRectangle, QgsVectorLayer
-    from qgis.PyQt.QtCore import QDate, Qt
-    from qgis.PyQt.QtGui import QImage
+    from qgis.core import (
+        QgsApplication,
+        QgsLayoutExporter,
+        QgsMapRendererParallelJob,
+        QgsMapSettings,
+        QgsProject,
+        QgsRectangle,
+        QgsVectorLayer,
+    )
+    from qgis.PyQt.QtCore import QDate, Qt, QSize
+    from qgis.PyQt.QtGui import QColor, QImage
 
     from qfit.activities.domain.activity_query import ActivityQuery, build_subset_string
     from qfit.atlas.export_task import (
@@ -50,10 +58,14 @@ try:
 except Exception as exc:  # pragma: no cover - exercised only when QGIS is unavailable
     QgsApplication = None
     QgsLayoutExporter = None
+    QgsMapRendererParallelJob = None
+    QgsMapSettings = None
     QgsProject = None
     QgsRectangle = None
     QgsVectorLayer = None
     QDate = None
+    QSize = None
+    QColor = None
     QImage = None
     Qt = None
     ActivityQuery = None
@@ -924,6 +936,30 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertEqual(round(starts_layer.opacity(), 2), 0.75)
             self.assertEqual(round(activities_layer.opacity(), 2), 0.0)
 
+    def test_heatmap_preset_renders_visible_output(self):
+        """Heatmap preset must render visible pixels, not just assign a heatmap renderer."""
+        with tempfile.TemporaryDirectory() as tmp:
+            output_path = self._write_sample_gpkg(tmp)
+            activities_layer, starts_layer, points_layer, atlas_layer = (
+                self.layer_manager.load_output_layers(output_path)
+            )
+
+            self.layer_manager.apply_style(
+                activities_layer,
+                starts_layer,
+                points_layer,
+                atlas_layer,
+                "Heatmap",
+            )
+
+            image = self._render_layers_to_image([points_layer], points_layer.extent())
+            visible_pixels = self._count_non_background_pixels(image)
+            self.assertGreater(
+                visible_pixels,
+                1000,
+                f"Expected visible heatmap output, but only {visible_pixels} non-background pixels were rendered",
+            )
+
     def test_offscreen_profile_chart_export_contains_rendered_curve(self):
         """Bound profile exports should differ visibly from the same chart when cleared."""
         script = textwrap.dedent(
@@ -1155,6 +1191,30 @@ class QgisSmokeTests(unittest.TestCase):
         ).write_activities(self._sample_activities(), sync_metadata={"provider": "strava"})
         return output_path
 
+    def _render_layers_to_image(self, layers, extent, size=(800, 800)):
+        settings = QgsMapSettings()
+        settings.setBackgroundColor(QColor("white"))
+        settings.setLayers(layers)
+        settings.setDestinationCrs(layers[0].crs())
+        settings.setOutputSize(QSize(*size))
+
+        render_extent = QgsRectangle(extent)
+        render_extent.scale(1.2)
+        settings.setExtent(render_extent)
+
+        job = QgsMapRendererParallelJob(settings)
+        job.start()
+        job.waitForFinished()
+        return job.renderedImage()
+
+    def _count_non_background_pixels(self, image):
+        changed_pixels = 0
+        for y in range(image.height()):
+            for x in range(image.width()):
+                color = image.pixelColor(x, y)
+                if (color.red(), color.green(), color.blue(), color.alpha()) != (255, 255, 255, 255):
+                    changed_pixels += 1
+        return changed_pixels
 
     def _layer_order(self):
         names = []
