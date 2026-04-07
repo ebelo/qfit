@@ -138,6 +138,7 @@ class LayerGatewayBoundaryTests(unittest.TestCase):
                     max_distance_km=20,
                     search_text="alps",
                     detailed_only=True,
+                    detailed_route_filter="missing",
                 )
                 gateway.apply_style("activities", "starts", "points", "atlas", "Simple lines", "Outdoor")
                 temporal_result = gateway.apply_temporal_configuration(
@@ -154,7 +155,17 @@ class LayerGatewayBoundaryTests(unittest.TestCase):
             style_id="",
             tile_mode="raster",
         )
-        filter_service.apply_filters.assert_called_once()
+        filter_service.apply_filters.assert_called_once_with(
+            unittest.mock.ANY,
+            activity_type="Ride",
+            date_from="2026-01-01",
+            date_to="2026-01-31",
+            min_distance_km=10,
+            max_distance_km=20,
+            search_text="alps",
+            detailed_only=True,
+            detailed_route_filter="missing",
+        )
         style_service.apply_style.assert_called_once_with(
             "activities", "starts", "points", "atlas", "Simple lines", "Outdoor"
         )

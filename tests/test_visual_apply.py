@@ -21,6 +21,7 @@ def _make_query(**overrides):
         max_distance_km=0,
         search_text="",
         detailed_only=False,
+        detailed_route_filter="any",
         sort_label="Date (newest first)",
     )
     defaults.update(overrides)
@@ -89,7 +90,7 @@ class ApplyWithSubsetFiltersTests(unittest.TestCase):
         )
 
     def test_applies_filters_to_all_four_layers(self):
-        query = _make_query(activity_type="Run", search_text="trail")
+        query = _make_query(activity_type="Run", search_text="trail", detailed_route_filter="missing")
 
         self.service.apply(
             layers=self.layers,
@@ -105,6 +106,7 @@ class ApplyWithSubsetFiltersTests(unittest.TestCase):
         for c in self.layer_manager.apply_filters.call_args_list:
             self.assertEqual(c[0][1], "Run")
             self.assertEqual(c[0][6], "trail")
+            self.assertEqual(c[0][8], "missing")
 
     def test_applies_style_when_layers_present(self):
         self.service.apply(

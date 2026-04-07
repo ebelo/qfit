@@ -2,6 +2,8 @@ import unittest
 
 from tests import _path  # noqa: F401
 from qfit.activities.domain.activity_query import (
+    DETAILED_ROUTE_FILTER_MISSING,
+    DETAILED_ROUTE_FILTER_PRESENT,
     ActivityQuery,
     build_preview_lines,
     build_subset_string,
@@ -67,6 +69,16 @@ class ActivityQueryTests(unittest.TestCase):
 
         self.assertEqual([activity.source_activity_id for activity in results], ["1"])
 
+    def test_filter_activities_handles_missing_detailed_route_filter(self):
+        query = ActivityQuery(detailed_route_filter=DETAILED_ROUTE_FILTER_MISSING)
+        results = filter_activities(self.activities, query)
+        self.assertEqual([activity.source_activity_id for activity in results], ["2", "3"])
+
+    def test_filter_activities_handles_present_detailed_route_filter(self):
+        query = ActivityQuery(detailed_route_filter=DETAILED_ROUTE_FILTER_PRESENT)
+        results = filter_activities(self.activities, query)
+        self.assertEqual([activity.source_activity_id for activity in results], ["1"])
+
     def test_filter_activities_applies_date_window(self):
         query = ActivityQuery(date_from="2026-03-19", date_to="2026-03-20")
 
@@ -114,7 +126,12 @@ class ActivityQueryTests(unittest.TestCase):
         self.assertIn("lower(coalesce(\"name\", '')) LIKE '%o''brien%'", subset)
         self.assertIn("lower(coalesce(\"activity_type\", '')) LIKE '%o''brien%'", subset)
         self.assertIn("lower(coalesce(\"sport_type\", '')) LIKE '%o''brien%'", subset)
-        self.assertIn('"geometry_source" = \'stream\'', subset)
+        self.assertIn("LOWER(COALESCE(\"geometry_source\", '')) = 'stream'", subset)
+
+    def test_build_subset_string_handles_missing_detailed_route_filter(self):
+        query = ActivityQuery(detailed_route_filter=DETAILED_ROUTE_FILTER_MISSING)
+        subset = build_subset_string(query)
+        self.assertIn("LOWER(COALESCE(\"geometry_source\", '')) <> 'stream'", subset)
 
     def test_build_subset_string_search_spans_name_type_sport(self):
         query = ActivityQuery(search_text="ride")

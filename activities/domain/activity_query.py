@@ -30,6 +30,25 @@ SORT_OPTIONS = (
     "Moving time (longest first)",
     "Name (A–Z)",
 )
+DETAILED_ROUTE_FILTER_ANY = "any"
+DETAILED_ROUTE_FILTER_PRESENT = "present"
+DETAILED_ROUTE_FILTER_MISSING = "missing"
+
+
+def _normalize_detailed_route_filter(detailed_route_filter: str | None, *, detailed_only: bool = False) -> str:
+    if detailed_route_filter in {
+        DETAILED_ROUTE_FILTER_ANY,
+        DETAILED_ROUTE_FILTER_PRESENT,
+        DETAILED_ROUTE_FILTER_MISSING,
+    }:
+        return detailed_route_filter
+    if detailed_only:
+        return DETAILED_ROUTE_FILTER_PRESENT
+    return DETAILED_ROUTE_FILTER_ANY
+
+
+def _has_detailed_route(activity) -> bool:
+    return (getattr(activity, "geometry_source", None) or "").strip().lower() == "stream"
 
 
 class ActivityQuery:
@@ -42,6 +61,7 @@ class ActivityQuery:
         max_distance_km: float | int | None = None,
         search_text: str | None = None,
         detailed_only: bool = False,
+        detailed_route_filter: str | None = None,
         sort_label: str | None = DEFAULT_SORT_LABEL,
     ):
         self.activity_type = activity_type or "All"
@@ -51,6 +71,10 @@ class ActivityQuery:
         self.max_distance_km = _safe_float(max_distance_km)
         self.search_text = (search_text or "").strip()
         self.detailed_only = bool(detailed_only)
+        self.detailed_route_filter = _normalize_detailed_route_filter(
+            detailed_route_filter,
+            detailed_only=self.detailed_only,
+        )
         self.sort_label = sort_label or DEFAULT_SORT_LABEL
 
 
@@ -96,7 +120,9 @@ def filter_activities(activities: Iterable[object], query: ActivityQuery) -> lis
             if search_text not in haystack:
                 continue
 
-        if query.detailed_only and getattr(activity, "geometry_source", None) != "stream":
+        if query.detailed_route_filter == DETAILED_ROUTE_FILTER_PRESENT and not _has_detailed_route(activity):
+            continue
+        if query.detailed_route_filter == DETAILED_ROUTE_FILTER_MISSING and _has_detailed_route(activity):
             continue
 
         results.append(activity)
@@ -195,8 +221,10 @@ def build_subset_string(query: ActivityQuery) -> str:
         search_text = _escape_sql_literal(query.search_text.lower())
         search_clauses = [f"lower(coalesce(\"{field_name}\", '')) LIKE '%{search_text}%'" for field_name in ("name", *reversed(ACTIVITY_LABEL_FIELDS))]
         clauses.append(f"({' OR '.join(search_clauses)})")
-    if query.detailed_only:
-        clauses.append('"geometry_source" = \'stream\'')
+    if query.detailed_route_filter == DETAILED_ROUTE_FILTER_PRESENT:
+        clauses.append("LOWER(COALESCE(\"geometry_source\", '')) = 'stream'")
+    elif query.detailed_route_filter == DETAILED_ROUTE_FILTER_MISSING:
+        clauses.append("LOWER(COALESCE(\"geometry_source\", '')) <> 'stream'")
     return " AND ".join(clauses)
 
 

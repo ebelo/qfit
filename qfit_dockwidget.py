@@ -23,6 +23,9 @@ from qgis.PyQt.QtWidgets import (
 from .activities.domain.activity_classification import ordered_canonical_activity_labels
 from .activities.domain.activity_query import (
     DEFAULT_SORT_LABEL,
+    DETAILED_ROUTE_FILTER_ANY,
+    DETAILED_ROUTE_FILTER_MISSING,
+    DETAILED_ROUTE_FILTER_PRESENT,
     SORT_OPTIONS,
     ActivityQuery,
     build_preview_lines,
@@ -98,6 +101,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._remove_stale_qfit_layers()
         self._apply_contextual_help()
         self._configure_background_preset_options()
+        self._configure_detailed_route_filter_options()
         self._configure_detailed_route_strategy_options()
         self._configure_preview_sort_options()
         self._configure_temporal_mode_options()
@@ -173,7 +177,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self.dateToEdit.dateChanged,
             self.minDistanceSpinBox.valueChanged,
             self.maxDistanceSpinBox.valueChanged,
-            self.detailedOnlyCheckBox.toggled,
+            self.detailedRouteStatusComboBox.currentIndexChanged,
             self.previewSortComboBox.currentTextChanged,
         ]
         for signal in preview_inputs:
@@ -183,6 +187,23 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.backgroundPresetComboBox.clear()
         for preset_name in background_preset_names():
             self.backgroundPresetComboBox.addItem(preset_name)
+
+    def _configure_detailed_route_filter_options(self):
+        legacy_checkbox = getattr(self, "detailedOnlyCheckBox", None)
+        combo = getattr(self, "detailedRouteStatusComboBox", None)
+        if combo is None:
+            combo = QComboBox(legacy_checkbox.parentWidget())
+            combo.setObjectName("detailedRouteStatusComboBox")
+            layout = legacy_checkbox.parentWidget().layout()
+            if layout is not None and hasattr(layout, "replaceWidget"):
+                layout.replaceWidget(legacy_checkbox, combo)
+            legacy_checkbox.hide()
+            self.detailedRouteStatusComboBox = combo
+        combo.clear()
+        combo.addItem("Any routes", DETAILED_ROUTE_FILTER_ANY)
+        combo.addItem("Detailed routes only", DETAILED_ROUTE_FILTER_PRESENT)
+        combo.addItem("Missing detailed routes", DETAILED_ROUTE_FILTER_MISSING)
+        combo.setToolTip("Filter activities by detailed-route availability")
         self.tileModeComboBox.clear()
         for mode in TILE_MODES:
             self.tileModeComboBox.addItem(mode)
@@ -253,6 +274,16 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             spin_box.setValue(int(value))
         except (TypeError, ValueError):
             spin_box.setValue(int(default))
+
+    @staticmethod
+    def _set_combo_data_value(combo_box, value, default: str) -> None:
+        target = value if value not in (None, "") else default
+        index = combo_box.findData(target)
+        if index < 0:
+            index = combo_box.findData(default)
+        if index < 0:
+            index = 0
+        combo_box.setCurrentIndex(index)
 
     @staticmethod
     def _set_float_value(spin_box, value, default: float) -> None:
@@ -338,10 +369,14 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 lambda value: self._set_float_value(self.maxDistanceSpinBox, value, 0.0),
             ),
             UIFieldBinding(
-                "detailed_only",
-                False,
-                lambda: self.detailedOnlyCheckBox.isChecked(),
-                lambda value: self._set_bool_value(self.detailedOnlyCheckBox, value, False),
+                "detailed_route_filter",
+                DETAILED_ROUTE_FILTER_ANY,
+                lambda: self.detailedRouteStatusComboBox.currentData(),
+                lambda value: self._set_combo_data_value(
+                    self.detailedRouteStatusComboBox,
+                    value,
+                    DETAILED_ROUTE_FILTER_ANY,
+                ),
             ),
             UIFieldBinding(
                 "use_background_map",
@@ -803,7 +838,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             min_distance_km=self.minDistanceSpinBox.value(),
             max_distance_km=self.maxDistanceSpinBox.value(),
             search_text=self.activitySearchLineEdit.text().strip(),
-            detailed_only=self.detailedOnlyCheckBox.isChecked(),
+            detailed_route_filter=self.detailedRouteStatusComboBox.currentData(),
             sort_label=self.previewSortComboBox.currentText() or DEFAULT_SORT_LABEL,
         )
 
