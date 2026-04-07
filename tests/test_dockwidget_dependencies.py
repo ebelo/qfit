@@ -362,6 +362,7 @@ class WorkflowSectionCoordinatorVisibilityTests(unittest.TestCase):
     def _make_dock(self):
         dock = sentinel.dock
         attrs = {
+            "backfillMissingDetailedRoutesButton": _VisibilityTarget(),
             "detailedRouteStrategyLabel": _VisibilityTarget(),
             "detailedRouteStrategyComboBox": _VisibilityTarget(),
             "maxDetailedActivitiesLabel": _VisibilityTarget(),
@@ -417,6 +418,7 @@ class WorkflowSectionCoordinatorVisibilityTests(unittest.TestCase):
             coordinator = WorkflowSectionCoordinator(dock)
             coordinator.configure_workflow_sections()
 
+        self.assertTrue(dock.backfillMissingDetailedRoutesButton.visible)
         self.assertTrue(dock.detailedRouteStrategyLabel.visible)
         self.assertFalse(dock.pointSamplingStrideSpinBox.visible)
         self.assertTrue(dock.advancedFetchSettingsWidget.visible)
