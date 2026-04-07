@@ -463,6 +463,22 @@ class QgisSmokeTests(unittest.TestCase):
             dock.close()
             dock.deleteLater()
 
+    def test_refresh_clicked_cancels_existing_fetch_task(self):
+        dock = QfitDockWidget(self.iface)
+        try:
+            running_task = MagicMock(name="running_fetch_task")
+            dock._fetch_task = running_task
+
+            dock.on_refresh_clicked()
+
+            running_task.cancel.assert_called_once_with()
+            self.assertIsNone(dock._fetch_task)
+            self.assertEqual(dock.refreshButton.text(), "Fetch activities")
+            self.assertEqual(dock.statusLabel.text(), "Fetch cancelled.")
+        finally:
+            dock.close()
+            dock.deleteLater()
+
     def test_backfill_missing_detailed_routes_clicked_uses_missing_strategy(self):
         dock = QfitDockWidget(self.iface)
         try:
@@ -486,6 +502,41 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertEqual(dock.detailedRouteStrategyComboBox.currentText(), "Missing routes only")
             self.assertIn("Backfilling missing detailed routes", dock.statusLabel.text())
             task_manager.return_value.addTask.assert_called_once_with(fake_task)
+        finally:
+            dock.close()
+            dock.deleteLater()
+
+    def test_backfill_missing_detailed_routes_ignores_click_while_fetch_running(self):
+        dock = QfitDockWidget(self.iface)
+        try:
+            dock._fetch_task = MagicMock(name="running_fetch_task")
+            dock._save_settings = MagicMock()
+            dock.sync_controller.build_fetch_task_request = MagicMock()
+
+            dock.on_backfill_missing_detailed_routes_clicked()
+
+            dock._save_settings.assert_not_called()
+            dock.sync_controller.build_fetch_task_request.assert_not_called()
+        finally:
+            dock.close()
+            dock.deleteLater()
+
+    def test_refresh_clicked_reports_provider_error_without_starting_task(self):
+        from qfit.providers.domain.provider import ProviderError
+
+        dock = QfitDockWidget(self.iface)
+        try:
+            dock._save_settings = MagicMock()
+            dock._show_error = MagicMock()
+            dock.sync_controller.build_fetch_task_request = MagicMock(return_value="fetch-request")
+            dock.sync_controller.build_fetch_task = MagicMock(side_effect=ProviderError("missing token"))
+
+            dock.on_refresh_clicked()
+
+            dock._show_error.assert_called_once_with("Strava import failed", "missing token")
+            self.assertEqual(dock.statusLabel.text(), "Strava fetch failed")
+            self.assertIsNone(dock._fetch_task)
+            self.assertEqual(dock.refreshButton.text(), "Fetch activities")
         finally:
             dock.close()
             dock.deleteLater()
