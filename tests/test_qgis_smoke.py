@@ -16,6 +16,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 try:
     from qgis.core import (
         QgsApplication,
+        QgsFeature,
         QgsLayoutExporter,
         QgsMapRendererSequentialJob,
         QgsMapSettings,
@@ -27,6 +28,9 @@ try:
     from qgis.PyQt.QtGui import QImage
 
     from qfit.activities.domain.activity_query import ActivityQuery, build_subset_string
+    from qfit.analysis.infrastructure.frequent_start_points_layer import (
+        build_frequent_start_points_layer,
+    )
     from qfit.atlas.export_task import (
         BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO,
         PAGE_HEIGHT_MM,
@@ -57,6 +61,7 @@ try:
     QGIS_IMPORT_ERROR = None
 except Exception as exc:  # pragma: no cover - exercised only when QGIS is unavailable
     QgsApplication = None
+    QgsFeature = None
     QgsLayoutExporter = None
     QgsProject = None
     QgsRectangle = None
@@ -66,6 +71,7 @@ except Exception as exc:  # pragma: no cover - exercised only when QGIS is unava
     Qt = None
     ActivityQuery = None
     build_subset_string = None
+    build_frequent_start_points_layer = None
     GeoPackageWriter = None
     LayerManager = None
     TILE_MODE_RASTER = None
@@ -194,7 +200,14 @@ class QgisSmokeTests(unittest.TestCase):
             dock.deleteLater()
 
     def test_dock_widget_contextual_help_smoke(self):
-        dock = QfitDockWidget(self.iface)
+        dependencies = replace(
+            build_dockwidget_dependencies(self.iface),
+            settings=SettingsService(
+                qsettings=_FakeQSettings(),
+                credential_store=InMemoryCredentialStore(),
+            ),
+        )
+        dock = QfitDockWidget(self.iface, dependencies=dependencies)
         try:
             from qgis.PyQt.QtWidgets import QComboBox, QLabel, QWidget
 
@@ -268,7 +281,7 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertTrue(dock.styleSectionContentWidget.isHidden())
             dock.analysisSectionToggleButton.click()
             self.assertTrue(dock.analysisSectionContentWidget.isHidden())
-            self.assertTrue(dock.analysisModeLabel.parentWidget().isHidden())
+            self.assertFalse(dock.analysisModeLabel.parentWidget().isVisible())
             dock.publishSectionToggleButton.click()
             self.assertTrue(dock.publishSectionContentWidget.isHidden())
         finally:
@@ -957,6 +970,112 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertIsInstance(starts_layer.renderer(), QgsHeatmapRenderer)
             self.assertEqual(round(starts_layer.opacity(), 2), 1.0)
             self.assertEqual(round(activities_layer.opacity(), 2), 0.0)
+
+    def test_build_frequent_start_points_layer_rejects_invalid_layer(self):
+        layer, clusters = build_frequent_start_points_layer(None)
+
+        self.assertIsNone(layer)
+        self.assertEqual(clusters, [])
+
+    def test_build_frequent_start_points_layer_skips_empty_geometries(self):
+        starts_layer = QgsVectorLayer(
+            "Point?crs=EPSG:4326&field=source_activity_id:string",
+            "qfit activity starts",
+            "memory",
+        )
+        feature = QgsFeature(starts_layer.fields())
+        feature["source_activity_id"] = "empty"
+        starts_layer.dataProvider().addFeature(feature)
+        starts_layer.updateExtents()
+
+        layer, clusters = build_frequent_start_points_layer(starts_layer)
+
+        self.assertIsNotNone(layer)
+        self.assertEqual(layer.featureCount(), 0)
+        self.assertEqual(clusters, [])
+
+    def test_remove_stale_qfit_layers_keeps_memory_analysis_layer(self):
+        memory_layer = QgsVectorLayer(
+            "Point?crs=EPSG:4326",
+            "qfit frequent starting points",
+            "memory",
+        )
+        QgsProject.instance().addMapLayer(memory_layer)
+
+        dock = QfitDockWidget(self.iface)
+        try:
+            self.assertIsNotNone(QgsProject.instance().mapLayer(memory_layer.id()))
+        finally:
+            dock.close()
+            dock.deleteLater()
+            QgsProject.instance().removeMapLayer(memory_layer.id())
+
+    def test_apply_analysis_configuration_returns_empty_status_without_starts_layer(self):
+        dock = QfitDockWidget(self.iface)
+        try:
+            dock.analysisModeComboBox.setCurrentText("Most frequent starting points")
+            dock.starts_layer = None
+
+            status = dock._apply_analysis_configuration()
+
+            self.assertEqual(status, "")
+            self.assertIsNone(dock.analysis_layer)
+        finally:
+            dock.close()
+            dock.deleteLater()
+
+    def test_apply_analysis_configuration_reports_no_matches_for_empty_starts_layer(self):
+        dock = QfitDockWidget(self.iface)
+        try:
+            dock.analysisModeComboBox.setCurrentText("Most frequent starting points")
+            dock.starts_layer = QgsVectorLayer(
+                "Point?crs=EPSG:4326",
+                "qfit activity starts",
+                "memory",
+            )
+
+            status = dock._apply_analysis_configuration()
+
+            self.assertEqual(status, "No frequent starting points matched the current filters")
+            self.assertIsNone(dock.analysis_layer)
+        finally:
+            dock.close()
+            dock.deleteLater()
+
+    def test_run_analysis_clicked_updates_status_with_analysis_result(self):
+        dock = QfitDockWidget(self.iface)
+        try:
+            with tempfile.TemporaryDirectory() as tmp:
+                output_path = self._write_sample_gpkg(tmp)
+                (
+                    dock.activities_layer,
+                    dock.starts_layer,
+                    dock.points_layer,
+                    dock.atlas_layer,
+                ) = dock.layer_gateway.load_output_layers(output_path)
+
+                dock.analysisModeComboBox.setCurrentText("Most frequent starting points")
+                dock.visual_apply.build_request = MagicMock(return_value=object())
+                dock.visual_apply.apply_request = MagicMock(
+                    return_value=MagicMock(
+                        status="Applied current filters",
+                        background_error=None,
+                        background_layer=None,
+                    )
+                )
+                dock.visual_apply.should_update_background = MagicMock(return_value=False)
+                dock._set_status = MagicMock()
+
+                dock.on_run_analysis_clicked()
+
+                dock._set_status.assert_called_once()
+                status = dock._set_status.call_args.args[0]
+                self.assertIn("Applied current filters", status)
+                self.assertIn("Showing top 2 frequent starting-point clusters", status)
+                self.assertIsNotNone(dock.analysis_layer)
+        finally:
+            dock.close()
+            dock.deleteLater()
 
     def test_most_frequent_starting_points_analysis_creates_ranked_layer(self):
         dock = QfitDockWidget(self.iface)

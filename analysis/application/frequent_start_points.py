@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections import deque
 from dataclasses import dataclass
 from math import hypot
 from statistics import median
@@ -89,34 +90,42 @@ def _adaptive_radius_m(samples: list[StartPointSample]) -> float:
 
 
 def _cluster_samples(samples: list[StartPointSample], radius_m: float) -> list[list[StartPointSample]]:
-    unassigned = list(samples)
+    remaining = list(samples)
     clusters: list[list[StartPointSample]] = []
 
-    while unassigned:
-        clusters.append(_collect_cluster(unassigned, radius_m))
+    while remaining:
+        cluster, remaining = _collect_cluster(remaining, radius_m)
+        clusters.append(cluster)
 
     return clusters
 
 
-def _collect_cluster(unassigned: list[StartPointSample], radius_m: float) -> list[StartPointSample]:
-    seed = unassigned.pop(0)
+def _collect_cluster(
+    remaining: list[StartPointSample], radius_m: float
+) -> tuple[list[StartPointSample], list[StartPointSample]]:
+    seed = remaining[0]
     cluster = [seed]
-    queue = [seed]
+    queue: deque[StartPointSample] = deque([seed])
+    unassigned = remaining[1:]
     while queue:
-        current = queue.pop(0)
-        attached = _pop_attached_samples(unassigned, current, radius_m)
+        current = queue.popleft()
+        attached, unassigned = _partition_attached_samples(unassigned, current, radius_m)
         cluster.extend(attached)
         queue.extend(attached)
-    return cluster
+    return cluster, unassigned
 
 
-def _pop_attached_samples(
-    unassigned: list[StartPointSample], current: StartPointSample, radius_m: float
-) -> list[StartPointSample]:
-    attached = [candidate for candidate in unassigned if _distance(current, candidate) <= radius_m]
-    for candidate in attached:
-        unassigned.remove(candidate)
-    return attached
+def _partition_attached_samples(
+    candidates: list[StartPointSample], current: StartPointSample, radius_m: float
+) -> tuple[list[StartPointSample], list[StartPointSample]]:
+    attached: list[StartPointSample] = []
+    unattached: list[StartPointSample] = []
+    for candidate in candidates:
+        if _distance(current, candidate) <= radius_m:
+            attached.append(candidate)
+        else:
+            unattached.append(candidate)
+    return attached, unattached
 
 
 def _cluster_center(cluster: list[StartPointSample]) -> tuple[float, float]:

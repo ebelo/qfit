@@ -140,7 +140,13 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         for layer in project.mapLayers().values():
             if layer.name() not in _QFIT_LAYER_NAMES:
                 continue
-            source = layer.source()
+            source = (layer.source() or "").strip()
+            normalized_source = source.lower()
+            is_file_backed_qfit_layer = (
+                "|layername=" in normalized_source or normalized_source.endswith(".gpkg")
+            )
+            if not is_file_backed_qfit_layer:
+                continue
             # GeoPackage URI looks like "/path/to/file.gpkg|layername=..."
             gpkg_path = source.split("|")[0].strip()
             if gpkg_path and not os.path.exists(gpkg_path):
