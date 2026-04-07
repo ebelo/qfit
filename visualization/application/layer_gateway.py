@@ -31,6 +31,7 @@ class LayerGateway(Protocol):
         max_distance_km=None,
         search_text=None,
         detailed_only=False,
+        detailed_route_filter=None,
     ): ...
 
     def apply_style(

@@ -98,6 +98,7 @@ class LayerManagerFilterDelegationTests(unittest.TestCase):
             max_distance_km=15,
             search_text="tempo",
             detailed_only=True,
+            detailed_route_filter="missing",
         )
 
         manager._filter_service.apply_filters.assert_called_once_with(
@@ -109,6 +110,7 @@ class LayerManagerFilterDelegationTests(unittest.TestCase):
             max_distance_km=15,
             search_text="tempo",
             detailed_only=True,
+            detailed_route_filter="missing",
         )
 
 

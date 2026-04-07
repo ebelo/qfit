@@ -165,6 +165,7 @@ class VisualApplyService:
                 query.max_distance_km,
                 query.search_text,
                 query.detailed_only,
+                query.detailed_route_filter,
             )
 
     def _ensure_background(self, config):
