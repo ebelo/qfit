@@ -16,6 +16,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 try:
     from qgis.core import (
         QgsApplication,
+        QgsFeature,
         QgsLayoutExporter,
         QgsMapRendererSequentialJob,
         QgsMapSettings,
@@ -27,6 +28,9 @@ try:
     from qgis.PyQt.QtGui import QImage
 
     from qfit.activities.domain.activity_query import ActivityQuery, build_subset_string
+    from qfit.analysis.infrastructure.frequent_start_points_layer import (
+        build_frequent_start_points_layer,
+    )
     from qfit.atlas.export_task import (
         BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO,
         PAGE_HEIGHT_MM,
@@ -57,6 +61,7 @@ try:
     QGIS_IMPORT_ERROR = None
 except Exception as exc:  # pragma: no cover - exercised only when QGIS is unavailable
     QgsApplication = None
+    QgsFeature = None
     QgsLayoutExporter = None
     QgsProject = None
     QgsRectangle = None
@@ -66,6 +71,7 @@ except Exception as exc:  # pragma: no cover - exercised only when QGIS is unava
     Qt = None
     ActivityQuery = None
     build_subset_string = None
+    build_frequent_start_points_layer = None
     GeoPackageWriter = None
     LayerManager = None
     TILE_MODE_RASTER = None
@@ -194,7 +200,14 @@ class QgisSmokeTests(unittest.TestCase):
             dock.deleteLater()
 
     def test_dock_widget_contextual_help_smoke(self):
-        dock = QfitDockWidget(self.iface)
+        dependencies = replace(
+            build_dockwidget_dependencies(self.iface),
+            settings=SettingsService(
+                qsettings=_FakeQSettings(),
+                credential_store=InMemoryCredentialStore(),
+            ),
+        )
+        dock = QfitDockWidget(self.iface, dependencies=dependencies)
         try:
             from qgis.PyQt.QtWidgets import QComboBox, QLabel, QWidget
 
@@ -234,6 +247,10 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertEqual(dock.analysisSectionToggleButton.text(), "3. Analyze")
             self.assertFalse(dock.analysisSectionContentWidget.isHidden())
             self.assertEqual(dock.analysisWorkflowLayout.spacing(), 6)
+            self.assertEqual(dock.analysisModeLabel.text(), "Analysis")
+            self.assertEqual(dock.analysisModeComboBox.currentText(), "None")
+            self.assertEqual(dock.runAnalysisButton.text(), "Run analysis")
+            self.assertEqual(dock.analysisModeLabel.parentWidget().parentWidget(), dock.analysisSectionContentWidget)
             temporal_mode_layout = dock.temporalModeLabel.parentWidget().layout()
             self.assertEqual(temporal_mode_layout.spacing(), 6)
             self.assertGreaterEqual(dock.temporalModeComboBox.minimumContentsLength(), 10)
@@ -264,6 +281,7 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertTrue(dock.styleSectionContentWidget.isHidden())
             dock.analysisSectionToggleButton.click()
             self.assertTrue(dock.analysisSectionContentWidget.isHidden())
+            self.assertFalse(dock.analysisModeLabel.parentWidget().isVisible())
             dock.publishSectionToggleButton.click()
             self.assertTrue(dock.publishSectionContentWidget.isHidden())
         finally:
@@ -339,6 +357,7 @@ class QgisSmokeTests(unittest.TestCase):
             dock.previewSortComboBox.setCurrentText(preview_sort_text)
             dock.stylePresetComboBox.setCurrentText(style_preset_text)
             dock.temporalModeComboBox.setCurrentText(temporal_mode_text)
+            dock.analysisModeComboBox.setCurrentText("Most frequent starting points")
             dock.atlasTargetAspectRatioSpinBox.setValue(1.75)
             dock.atlasPdfPathLineEdit.setText("/tmp/roundtrip.pdf")
 
@@ -354,6 +373,7 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertEqual(settings.get("preview_sort"), preview_sort_text)
             self.assertEqual(settings.get("style_preset"), style_preset_text)
             self.assertEqual(settings.get("temporal_mode"), temporal_mode_text)
+            self.assertEqual(settings.get("analysis_mode"), "Most frequent starting points")
             self.assertAlmostEqual(float(settings.get("atlas_target_aspect_ratio")), 1.75, places=2)
             self.assertEqual(settings.get("atlas_pdf_path"), "/tmp/roundtrip.pdf")
         finally:
@@ -372,6 +392,7 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertEqual(dock_reloaded.previewSortComboBox.currentText(), preview_sort_text)
             self.assertEqual(dock_reloaded.stylePresetComboBox.currentText(), style_preset_text)
             self.assertEqual(dock_reloaded.temporalModeComboBox.currentText(), temporal_mode_text)
+            self.assertEqual(dock_reloaded.analysisModeComboBox.currentText(), "Most frequent starting points")
             self.assertAlmostEqual(dock_reloaded.atlasTargetAspectRatioSpinBox.value(), 1.75, places=2)
             self.assertEqual(dock_reloaded.atlasPdfPathLineEdit.text(), "/tmp/roundtrip.pdf")
         finally:
@@ -949,6 +970,239 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertIsInstance(starts_layer.renderer(), QgsHeatmapRenderer)
             self.assertEqual(round(starts_layer.opacity(), 2), 1.0)
             self.assertEqual(round(activities_layer.opacity(), 2), 0.0)
+
+    def test_build_frequent_start_points_layer_rejects_invalid_layer(self):
+        layer, clusters = build_frequent_start_points_layer(None)
+
+        self.assertIsNone(layer)
+        self.assertEqual(clusters, [])
+
+    def test_build_frequent_start_points_layer_skips_empty_geometries(self):
+        starts_layer = QgsVectorLayer(
+            "Point?crs=EPSG:4326&field=source_activity_id:string",
+            "qfit activity starts",
+            "memory",
+        )
+        feature = QgsFeature(starts_layer.fields())
+        feature["source_activity_id"] = "empty"
+        starts_layer.dataProvider().addFeature(feature)
+        starts_layer.updateExtents()
+
+        layer, clusters = build_frequent_start_points_layer(starts_layer)
+
+        self.assertIsNotNone(layer)
+        self.assertEqual(layer.featureCount(), 0)
+        self.assertEqual(clusters, [])
+
+    def test_remove_stale_qfit_layers_keeps_memory_analysis_layer(self):
+        memory_layer = QgsVectorLayer(
+            "Point?crs=EPSG:4326",
+            "qfit frequent starting points",
+            "memory",
+        )
+        QgsProject.instance().addMapLayer(memory_layer)
+
+        dock = QfitDockWidget(self.iface)
+        try:
+            self.assertIsNotNone(QgsProject.instance().mapLayer(memory_layer.id()))
+        finally:
+            dock.close()
+            dock.deleteLater()
+            QgsProject.instance().removeMapLayer(memory_layer.id())
+
+    def test_apply_analysis_configuration_returns_empty_status_without_starts_layer(self):
+        dock = QfitDockWidget(self.iface)
+        try:
+            dock.analysisModeComboBox.setCurrentText("Most frequent starting points")
+            dock.starts_layer = None
+
+            status = dock._apply_analysis_configuration()
+
+            self.assertEqual(status, "")
+            self.assertIsNone(dock.analysis_layer)
+        finally:
+            dock.close()
+            dock.deleteLater()
+
+    def test_apply_analysis_configuration_reports_no_matches_for_empty_starts_layer(self):
+        dock = QfitDockWidget(self.iface)
+        try:
+            dock.analysisModeComboBox.setCurrentText("Most frequent starting points")
+            dock.starts_layer = QgsVectorLayer(
+                "Point?crs=EPSG:4326",
+                "qfit activity starts",
+                "memory",
+            )
+
+            status = dock._apply_analysis_configuration()
+
+            self.assertEqual(status, "No frequent starting points matched the current filters")
+            self.assertIsNone(dock.analysis_layer)
+        finally:
+            dock.close()
+            dock.deleteLater()
+
+    def test_run_analysis_clicked_updates_status_with_analysis_result(self):
+        dock = QfitDockWidget(self.iface)
+        try:
+            with tempfile.TemporaryDirectory() as tmp:
+                output_path = self._write_sample_gpkg(tmp)
+                (
+                    dock.activities_layer,
+                    dock.starts_layer,
+                    dock.points_layer,
+                    dock.atlas_layer,
+                ) = dock.layer_gateway.load_output_layers(output_path)
+
+                dock.analysisModeComboBox.setCurrentText("Most frequent starting points")
+                dock.visual_apply.build_request = MagicMock(return_value=object())
+                dock.visual_apply.apply_request = MagicMock(
+                    return_value=MagicMock(
+                        status="Applied current filters",
+                        background_error=None,
+                        background_layer=None,
+                    )
+                )
+                dock.visual_apply.should_update_background = MagicMock(return_value=False)
+                dock._set_status = MagicMock()
+
+                dock.on_run_analysis_clicked()
+
+                dock._set_status.assert_called_once()
+                status = dock._set_status.call_args.args[0]
+                self.assertIn("Applied current filters", status)
+                self.assertIn("Showing top 2 frequent starting-point clusters", status)
+                self.assertIsNotNone(dock.analysis_layer)
+        finally:
+            dock.close()
+            dock.deleteLater()
+
+    def test_most_frequent_starting_points_analysis_creates_ranked_layer(self):
+        dock = QfitDockWidget(self.iface)
+        try:
+            activities = [
+                {
+                    "source": "strava",
+                    "source_activity_id": "start-a1",
+                    "external_id": "start-a1",
+                    "name": "Morning ride 1",
+                    "activity_type": "Ride",
+                    "sport_type": "Ride",
+                    "start_date": "2026-03-20T07:00:00+00:00",
+                    "start_date_local": "2026-03-20T08:00:00+01:00",
+                    "timezone": "Europe/Zurich",
+                    "distance_m": 12000,
+                    "moving_time_s": 2400,
+                    "elapsed_time_s": 2500,
+                    "total_elevation_gain_m": 180,
+                    "start_lat": 46.5200,
+                    "start_lon": 6.6200,
+                    "end_lat": 46.5300,
+                    "end_lon": 6.6400,
+                    "geometry_source": "stream",
+                    "geometry_points": [(46.5200, 6.6200), (46.5300, 6.6400)],
+                    "details_json": {},
+                },
+                {
+                    "source": "strava",
+                    "source_activity_id": "start-a2",
+                    "external_id": "start-a2",
+                    "name": "Morning ride 2",
+                    "activity_type": "Ride",
+                    "sport_type": "Ride",
+                    "start_date": "2026-03-21T07:00:00+00:00",
+                    "start_date_local": "2026-03-21T08:00:00+01:00",
+                    "timezone": "Europe/Zurich",
+                    "distance_m": 11800,
+                    "moving_time_s": 2380,
+                    "elapsed_time_s": 2450,
+                    "total_elevation_gain_m": 170,
+                    "start_lat": 46.5201,
+                    "start_lon": 6.6202,
+                    "end_lat": 46.5310,
+                    "end_lon": 6.6410,
+                    "geometry_source": "stream",
+                    "geometry_points": [(46.5201, 6.6202), (46.5310, 6.6410)],
+                    "details_json": {},
+                },
+                {
+                    "source": "strava",
+                    "source_activity_id": "start-a3",
+                    "external_id": "start-a3",
+                    "name": "Morning ride 3",
+                    "activity_type": "Ride",
+                    "sport_type": "Ride",
+                    "start_date": "2026-03-22T07:00:00+00:00",
+                    "start_date_local": "2026-03-22T08:00:00+01:00",
+                    "timezone": "Europe/Zurich",
+                    "distance_m": 12200,
+                    "moving_time_s": 2420,
+                    "elapsed_time_s": 2480,
+                    "total_elevation_gain_m": 175,
+                    "start_lat": 46.5202,
+                    "start_lon": 6.6201,
+                    "end_lat": 46.5320,
+                    "end_lon": 6.6420,
+                    "geometry_source": "stream",
+                    "geometry_points": [(46.5202, 6.6201), (46.5320, 6.6420)],
+                    "details_json": {},
+                },
+                {
+                    "source": "strava",
+                    "source_activity_id": "start-b1",
+                    "external_id": "start-b1",
+                    "name": "Evening run",
+                    "activity_type": "Run",
+                    "sport_type": "Run",
+                    "start_date": "2026-03-23T18:00:00+00:00",
+                    "start_date_local": "2026-03-23T19:00:00+01:00",
+                    "timezone": "Europe/Zurich",
+                    "distance_m": 8000,
+                    "moving_time_s": 2200,
+                    "elapsed_time_s": 2260,
+                    "total_elevation_gain_m": 60,
+                    "start_lat": 46.5400,
+                    "start_lon": 6.7000,
+                    "end_lat": 46.5500,
+                    "end_lon": 6.7100,
+                    "geometry_source": "stream",
+                    "geometry_points": [(46.5400, 6.7000), (46.5500, 6.7100)],
+                    "details_json": {},
+                },
+            ]
+
+            with tempfile.TemporaryDirectory() as tmp:
+                output_path = str(Path(tmp) / "qfit-analysis-test.gpkg")
+                GeoPackageWriter(
+                    output_path,
+                    write_activity_points=True,
+                    point_stride=1,
+                    atlas_margin_percent=10,
+                    atlas_min_extent_degrees=0.01,
+                    atlas_target_aspect_ratio=1.5,
+                ).write_activities(activities, sync_metadata={"provider": "strava"})
+
+                (
+                    dock.activities_layer,
+                    dock.starts_layer,
+                    dock.points_layer,
+                    dock.atlas_layer,
+                ) = dock.layer_gateway.load_output_layers(output_path)
+
+                dock.analysisModeComboBox.setCurrentText("Most frequent starting points")
+                status = dock._apply_analysis_configuration()
+
+                self.assertIn("frequent starting-point clusters", status)
+                self.assertIsNotNone(dock.analysis_layer)
+                self.assertEqual(dock.analysis_layer.name(), "qfit frequent starting points")
+                features = list(dock.analysis_layer.getFeatures())
+                counts = sorted((feature["activity_count"] for feature in features), reverse=True)
+                sizes = sorted((float(feature["marker_size"]) for feature in features), reverse=True)
+                self.assertEqual(counts, [3, 1])
+                self.assertGreater(sizes[0], sizes[-1])
+        finally:
+            dock.close()
+            dock.deleteLater()
 
     def test_offscreen_profile_chart_export_contains_rendered_curve(self):
         """Bound profile exports should differ visibly from the same chart when cleared."""

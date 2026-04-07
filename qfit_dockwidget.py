@@ -14,7 +14,10 @@ from qgis.PyQt.QtWidgets import (
     QFileDialog,
     QDockWidget,
     QGridLayout,
+    QHBoxLayout,
+    QLabel,
     QMessageBox,
+    QPushButton,
     QToolButton,
     QVBoxLayout,
     QWidget,
@@ -35,6 +38,10 @@ from .activities.domain.activity_query import (
     summarize_activities,
 )
 from .activities.application.load_workflow import LoadWorkflowError
+from .analysis.infrastructure.frequent_start_points_layer import (
+    FREQUENT_STARTING_POINTS_LAYER_NAME,
+    build_frequent_start_points_layer,
+)
 from .atlas.export_service import (
     AtlasExportResult,
     AtlasExportService,
@@ -89,6 +96,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.points_layer = None
         self.atlas_layer = None
         self.background_layer = None
+        self.analysis_layer = None
         self.last_fetch_context = {}
         self._fetch_task = None
         self._atlas_export_task = None
@@ -106,6 +114,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._configure_detailed_route_strategy_options()
         self._configure_preview_sort_options()
         self._configure_temporal_mode_options()
+        self._configure_analysis_mode_options()
         self._load_settings()
         self._wire_events()
         self._set_default_dates()
@@ -124,13 +133,20 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             "qfit activity starts",
             "qfit activity points",
             "qfit atlas pages",
+            FREQUENT_STARTING_POINTS_LAYER_NAME,
         }
         project = QgsProject.instance()
         to_remove = []
         for layer in project.mapLayers().values():
             if layer.name() not in _QFIT_LAYER_NAMES:
                 continue
-            source = layer.source()
+            source = (layer.source() or "").strip()
+            normalized_source = source.lower()
+            is_file_backed_qfit_layer = (
+                "|layername=" in normalized_source or normalized_source.endswith(".gpkg")
+            )
+            if not is_file_backed_qfit_layer:
+                continue
             # GeoPackage URI looks like "/path/to/file.gpkg|layername=..."
             gpkg_path = source.split("|")[0].strip()
             if gpkg_path and not os.path.exists(gpkg_path):
@@ -161,6 +177,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.loadLayersButton.clicked.connect(self.on_load_layers_clicked)
         self.clearDatabaseButton.clicked.connect(self.on_clear_database_clicked)
         self.applyFiltersButton.clicked.connect(self.on_apply_filters_clicked)
+        self.runAnalysisButton.clicked.connect(self.on_run_analysis_clicked)
         self.loadBackgroundButton.clicked.connect(self.on_load_background_clicked)
         self.backgroundPresetComboBox.currentTextChanged.connect(self.on_background_preset_changed)
         self.detailedStreamsCheckBox.toggled.connect(self._workflow_section_coordinator.update_detailed_fetch_visibility)
@@ -238,6 +255,39 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         for label in temporal_mode_labels():
             self.temporalModeComboBox.addItem(label)
         self.temporalModeComboBox.setMinimumContentsLength(10)
+
+    def _configure_analysis_mode_options(self):
+        content_widget = getattr(self, "analysisSectionContentWidget", self.analysisWorkflowGroupBox)
+        content_layout = content_widget.layout() if content_widget is not None else None
+
+        row = QWidget(content_widget or self.analysisWorkflowGroupBox)
+        row.setObjectName("analysisModeRow")
+        layout = QHBoxLayout(row)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(6)
+
+        label = QLabel("Analysis", row)
+        label.setObjectName("analysisModeLabel")
+        layout.addWidget(label)
+
+        combo = QComboBox(row)
+        combo.setObjectName("analysisModeComboBox")
+        combo.addItem("None")
+        combo.addItem("Most frequent starting points")
+        layout.addWidget(combo)
+
+        button = QPushButton("Run analysis", row)
+        button.setObjectName("runAnalysisButton")
+        layout.addWidget(button)
+        layout.addStretch(1)
+
+        if content_layout is not None:
+            content_layout.insertWidget(0, row)
+        else:
+            self.analysisWorkflowLayout.insertWidget(0, row)
+        self.analysisModeLabel = label
+        self.analysisModeComboBox = combo
+        self.runAnalysisButton = button
 
     def _bind_dependencies(self, dependencies: DockWidgetDependencies) -> None:
         self.settings = dependencies.settings
@@ -427,6 +477,12 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 DEFAULT_TEMPORAL_MODE_LABEL,
                 lambda: self.temporalModeComboBox.currentText(),
                 lambda value: self._set_combo_value(self.temporalModeComboBox, value, DEFAULT_TEMPORAL_MODE_LABEL),
+            ),
+            UIFieldBinding(
+                "analysis_mode",
+                "None",
+                lambda: self.analysisModeComboBox.currentText(),
+                lambda value: self._set_combo_value(self.analysisModeComboBox, value, "None"),
             ),
             UIFieldBinding(
                 "background_preset",
@@ -797,6 +853,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.starts_layer = None
         self.points_layer = None
         self.atlas_layer = None
+        self._clear_analysis_layer()
         self.activities = []
         self.output_path = None
         self.last_fetch_context = {}
@@ -805,7 +862,16 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._set_status(result.status)
 
     def on_apply_filters_clicked(self):
-        has_layers = any(layer is not None for layer in [self.activities_layer, self.starts_layer, self.points_layer, self.atlas_layer])
+        self._apply_current_visual_state()
+
+    def on_run_analysis_clicked(self):
+        self._apply_current_visual_state()
+
+    def _apply_current_visual_state(self):
+        has_layers = any(
+            layer is not None
+            for layer in [self.activities_layer, self.starts_layer, self.points_layer, self.atlas_layer]
+        )
         if not has_layers:
             return
 
@@ -849,7 +915,44 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 self._show_error("Background map failed", result.background_error)
             self.background_layer = result.background_layer
 
+        analysis_status = self._apply_analysis_configuration()
+        if analysis_status:
+            return f"{result.status}. {analysis_status}" if result.status else analysis_status
         return result.status
+
+    def _apply_analysis_configuration(self):
+        self._clear_analysis_layer()
+
+        if self.analysisModeComboBox.currentText() != "Most frequent starting points":
+            return ""
+        if self.starts_layer is None:
+            return ""
+
+        layer, clusters = build_frequent_start_points_layer(self.starts_layer)
+        if layer is None or not clusters:
+            return "No frequent starting points matched the current filters"
+
+        QgsProject.instance().addMapLayer(layer, False)
+        QgsProject.instance().layerTreeRoot().insertLayer(0, layer)
+        self.analysis_layer = layer
+        return "Showing top {count} frequent starting-point clusters".format(count=len(clusters))
+
+    def _clear_analysis_layer(self):
+        project = QgsProject.instance()
+        if self.analysis_layer is not None:
+            try:
+                project.removeMapLayer(self.analysis_layer)
+            except RuntimeError:
+                logger.debug("Failed to remove analysis layer", exc_info=True)
+            self.analysis_layer = None
+
+        for layer in tuple(project.mapLayers().values()):
+            if layer.name() != FREQUENT_STARTING_POINTS_LAYER_NAME:
+                continue
+            try:
+                project.removeMapLayer(layer)
+            except RuntimeError:
+                logger.debug("Failed to remove stale frequent-start analysis layer", exc_info=True)
 
     def _current_activity_query(self):
         return ActivityQuery(

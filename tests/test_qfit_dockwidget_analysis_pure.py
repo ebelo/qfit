@@ -1,0 +1,335 @@
+import importlib
+import sys
+import unittest
+from types import ModuleType
+from unittest.mock import MagicMock, patch
+
+
+class _AutoModule(ModuleType):
+    def __getattr__(self, name):  # pragma: no cover - helper for stub imports
+        value = MagicMock(name=name)
+        setattr(self, name, value)
+        return value
+
+
+class _FakeSignal:
+    def __init__(self):
+        self.connected = []
+
+    def connect(self, callback):
+        self.connected.append(callback)
+
+
+class _FakeLayout:
+    def __init__(self):
+        self.inserted = []
+        self.contents_margins = None
+        self.spacing = None
+
+    def insertWidget(self, index, widget):
+        self.inserted.append((index, widget))
+
+    def setContentsMargins(self, *margins):
+        self.contents_margins = margins
+
+    def setSpacing(self, spacing):
+        self.spacing = spacing
+
+
+class _FakeWidget:
+    def __init__(self, parent=None):
+        self._parent = parent
+        self._object_name = None
+        self._layout = None
+
+    def setObjectName(self, name):
+        self._object_name = name
+
+    def objectName(self):
+        return self._object_name
+
+    def parentWidget(self):
+        return self._parent
+
+    def setLayout(self, layout):
+        self._layout = layout
+
+    def layout(self):
+        return self._layout
+
+
+class _FakeLabel(_FakeWidget):
+    def __init__(self, text, parent=None):
+        super().__init__(parent)
+        self._text = text
+
+    def text(self):
+        return self._text
+
+
+class _FakeComboBox(_FakeWidget):
+    def __init__(self, parent=None, current_text=None):
+        super().__init__(parent)
+        self.items = []
+        self._current_text = current_text
+
+    def addItem(self, text):
+        self.items.append(text)
+        if self._current_text is None:
+            self._current_text = text
+
+    def currentText(self):
+        return self._current_text
+
+    def setCurrentText(self, text):
+        self._current_text = text
+
+
+class _FakeButton(_FakeWidget):
+    def __init__(self, text, parent=None):
+        super().__init__(parent)
+        self._text = text
+        self.clicked = _FakeSignal()
+
+    def text(self):
+        return self._text
+
+
+class _FakeHBoxLayout(_FakeLayout):
+    def __init__(self, widget):
+        super().__init__()
+        self.widget = widget
+        self.children = []
+        widget.setLayout(self)
+
+    def addWidget(self, widget):
+        self.children.append(widget)
+
+    def addStretch(self, stretch):
+        self.children.append(("stretch", stretch))
+
+
+class _FakeLayerTreeRoot:
+    def __init__(self):
+        self.inserted = []
+
+    def insertLayer(self, index, layer):
+        self.inserted.append((index, layer))
+
+
+class _FakeProject:
+    def __init__(self, layers=None):
+        self._layers = dict(layers or {})
+        self.removed = []
+        self.added = []
+        self.layer_tree_root = _FakeLayerTreeRoot()
+
+    def mapLayers(self):
+        return dict(self._layers)
+
+    def removeMapLayer(self, layer):
+        self.removed.append(layer)
+
+    def addMapLayer(self, layer, add_to_legend=True):
+        self.added.append((layer, add_to_legend))
+
+    def layerTreeRoot(self):
+        return self.layer_tree_root
+
+
+class _FakeLayer:
+    _next_id = 1
+
+    def __init__(self, name, source=""):
+        self._name = name
+        self._source = source
+        self._id = _FakeLayer._next_id
+        _FakeLayer._next_id += 1
+
+    def name(self):
+        return self._name
+
+    def source(self):
+        return self._source
+
+    def id(self):
+        return self._id
+
+
+class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.module = cls._import_module_with_stubs()
+
+    @staticmethod
+    def _import_module_with_stubs():
+        qgis_mod = ModuleType("qgis")
+        qgis_core = _AutoModule("qgis.core")
+        pyqt = ModuleType("qgis.PyQt")
+        uic = ModuleType("qgis.PyQt.uic")
+        uic.loadUiType = lambda _path: (type("FakeForm", (), {}), None)
+        qtcore = _AutoModule("qgis.PyQt.QtCore")
+        qtgui = _AutoModule("qgis.PyQt.QtGui")
+        qtwidgets = _AutoModule("qgis.PyQt.QtWidgets")
+
+        for name in [
+            "QApplication",
+            "QComboBox",
+            "QFileDialog",
+            "QDockWidget",
+            "QGridLayout",
+            "QHBoxLayout",
+            "QLabel",
+            "QMessageBox",
+            "QPushButton",
+            "QToolButton",
+            "QVBoxLayout",
+            "QWidget",
+        ]:
+            setattr(qtwidgets, name, type(name, (), {"__init__": lambda self, *a, **k: None}))
+        qtwidgets.QDockWidget.DockWidgetClosable = 1
+        qtwidgets.QDockWidget.DockWidgetMovable = 2
+        qtwidgets.QDockWidget.DockWidgetFloatable = 4
+
+        qgis_mod.core = qgis_core
+        qgis_mod.PyQt = pyqt
+
+        with patch.dict(
+            sys.modules,
+            {
+                "qgis": qgis_mod,
+                "qgis.core": qgis_core,
+                "qgis.PyQt": pyqt,
+                "qgis.PyQt.uic": uic,
+                "qgis.PyQt.QtCore": qtcore,
+                "qgis.PyQt.QtGui": qtgui,
+                "qgis.PyQt.QtWidgets": qtwidgets,
+            },
+            clear=False,
+        ):
+            sys.modules.pop("qfit.qfit_dockwidget", None)
+            return importlib.import_module("qfit.qfit_dockwidget")
+
+    def test_configure_analysis_mode_options_inserts_row_into_section_content(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        section_content = _FakeWidget()
+        content_layout = _FakeLayout()
+        section_content.setLayout(content_layout)
+        dock.analysisSectionContentWidget = section_content
+        dock.analysisWorkflowGroupBox = _FakeWidget()
+        dock.analysisWorkflowLayout = _FakeLayout()
+
+        with patch.multiple(
+            self.module,
+            QWidget=_FakeWidget,
+            QHBoxLayout=_FakeHBoxLayout,
+            QLabel=_FakeLabel,
+            QComboBox=_FakeComboBox,
+            QPushButton=_FakeButton,
+        ):
+            self.module.QfitDockWidget._configure_analysis_mode_options(dock)
+
+        self.assertEqual(len(content_layout.inserted), 1)
+        index, row = content_layout.inserted[0]
+        self.assertEqual(index, 0)
+        self.assertEqual(row.objectName(), "analysisModeRow")
+        self.assertEqual(dock.analysisModeLabel.text(), "Analysis")
+        self.assertEqual(dock.analysisModeComboBox.items, ["None", "Most frequent starting points"])
+        self.assertEqual(dock.runAnalysisButton.text(), "Run analysis")
+
+    def test_remove_stale_qfit_layers_ignores_memory_layers(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        missing_file_layer = _FakeLayer("qfit activities", "/tmp/missing.gpkg|layername=activities")
+        memory_analysis_layer = _FakeLayer(
+            self.module.FREQUENT_STARTING_POINTS_LAYER_NAME,
+            "Point?crs=EPSG:4326",
+        )
+        unrelated_layer = _FakeLayer("other", "/tmp/missing.gpkg|layername=other")
+        project = _FakeProject(
+            {
+                "a": missing_file_layer,
+                "b": memory_analysis_layer,
+                "c": unrelated_layer,
+            }
+        )
+
+        with patch.object(self.module.QgsProject, "instance", return_value=project), patch.object(
+            self.module.os.path,
+            "exists",
+            side_effect=lambda path: path == "/tmp/present.gpkg",
+        ):
+            self.module.QfitDockWidget._remove_stale_qfit_layers(dock)
+
+        self.assertEqual(project.removed, [missing_file_layer.id()])
+
+    def test_apply_analysis_configuration_returns_status_for_non_matching_mode(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.analysisModeComboBox = _FakeComboBox(current_text="None")
+        dock._clear_analysis_layer = MagicMock()
+
+        status = self.module.QfitDockWidget._apply_analysis_configuration(dock)
+
+        self.assertEqual(status, "")
+        dock._clear_analysis_layer.assert_called_once_with()
+
+    def test_apply_analysis_configuration_handles_missing_starts_layer(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.analysisModeComboBox = _FakeComboBox(current_text="Most frequent starting points")
+        dock.starts_layer = None
+        dock._clear_analysis_layer = MagicMock()
+
+        status = self.module.QfitDockWidget._apply_analysis_configuration(dock)
+
+        self.assertEqual(status, "")
+
+    def test_apply_analysis_configuration_handles_empty_analysis_result(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.analysisModeComboBox = _FakeComboBox(current_text="Most frequent starting points")
+        dock.starts_layer = object()
+        dock._clear_analysis_layer = MagicMock()
+
+        with patch.object(
+            self.module,
+            "build_frequent_start_points_layer",
+            return_value=(None, []),
+        ):
+            status = self.module.QfitDockWidget._apply_analysis_configuration(dock)
+
+        self.assertEqual(status, "No frequent starting points matched the current filters")
+
+    def test_apply_analysis_configuration_adds_new_analysis_layer(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.analysisModeComboBox = _FakeComboBox(current_text="Most frequent starting points")
+        dock.starts_layer = object()
+        dock._clear_analysis_layer = MagicMock()
+        project = _FakeProject()
+        analysis_layer = _FakeLayer(self.module.FREQUENT_STARTING_POINTS_LAYER_NAME)
+
+        with patch.object(self.module.QgsProject, "instance", return_value=project), patch.object(
+            self.module,
+            "build_frequent_start_points_layer",
+            return_value=(analysis_layer, [object(), object()]),
+        ):
+            status = self.module.QfitDockWidget._apply_analysis_configuration(dock)
+
+        self.assertEqual(status, "Showing top 2 frequent starting-point clusters")
+        self.assertIs(dock.analysis_layer, analysis_layer)
+        self.assertEqual(project.added, [(analysis_layer, False)])
+        self.assertEqual(project.layer_tree_root.inserted, [(0, analysis_layer)])
+
+    def test_clear_analysis_layer_removes_current_and_stale_project_layers(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        current_layer = _FakeLayer(self.module.FREQUENT_STARTING_POINTS_LAYER_NAME)
+        stale_layer = _FakeLayer(self.module.FREQUENT_STARTING_POINTS_LAYER_NAME)
+        project = _FakeProject({"one": stale_layer, "two": _FakeLayer("other")})
+        dock.analysis_layer = current_layer
+
+        with patch.object(self.module.QgsProject, "instance", return_value=project):
+            self.module.QfitDockWidget._clear_analysis_layer(dock)
+
+        self.assertIsNone(dock.analysis_layer)
+        self.assertEqual(project.removed, [current_layer, stale_layer])
+
+
+if __name__ == "__main__":
+    unittest.main()
