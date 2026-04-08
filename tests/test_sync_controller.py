@@ -20,6 +20,7 @@ class BuildStravaProviderTests(unittest.TestCase):
         request = ctrl.build_provider_request("id", "secret", "token", cache="cache")
 
         self.assertIsInstance(request, BuildStravaProviderRequest)
+        self.assertEqual(request.provider_name, "strava")
         self.assertEqual(request.client_id, "id")
         self.assertEqual(request.client_secret, "secret")
         self.assertEqual(request.refresh_token, "token")
@@ -36,6 +37,17 @@ class BuildStravaProviderTests(unittest.TestCase):
         provider = ctrl.build_strava_provider(request)
 
         self.assertIsInstance(provider, StravaProvider)
+
+    def test_build_strava_provider_delegates_to_provider_registry(self):
+        provider_registry = MagicMock()
+        provider_registry.build_provider.return_value = "provider"
+        ctrl = SyncController(provider_registry=provider_registry)
+        request = ctrl.build_provider_request("id", "secret", "token")
+
+        provider = ctrl.build_strava_provider(request)
+
+        provider_registry.build_provider.assert_called_once_with(request)
+        self.assertEqual(provider, "provider")
 
     def test_build_strava_provider_raises_without_credentials(self):
         ctrl = SyncController()
