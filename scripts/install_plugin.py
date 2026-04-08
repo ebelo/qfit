@@ -80,8 +80,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--mode",
         choices=("symlink", "copy"),
-        default="symlink",
-        help="Install mode (default: symlink)",
+        default="copy",
+        help="Install mode (default: copy)",
     )
     parser.add_argument(
         "--remove",
@@ -104,12 +104,26 @@ def main() -> int:
             print(f"Nothing to remove at {destination}")
         return 0
 
+    installed_mode = args.mode
     if args.mode == "copy":
-        install_copy(destination)
+        try:
+            install_copy(destination)
+        except RuntimeError as exc:
+            install_symlink(destination)
+            installed_mode = "symlink"
+            print(
+                "Warning: copy mode could not vendor runtime-only Python dependencies "
+                f"({exc}). Falling back to symlink mode."
+            )
     else:
         install_symlink(destination)
 
-    print(f"Installed {PLUGIN_NAME} to {destination} using mode={args.mode}")
+    print(f"Installed {PLUGIN_NAME} to {destination} using mode={installed_mode}")
+    if installed_mode == "symlink":
+        print(
+            "Warning: symlink mode does not vendor runtime-only Python dependencies like pypdf. "
+            "Use --mode copy or the packaged plugin zip when you need atlas PDF export."
+        )
     return 0
 
 

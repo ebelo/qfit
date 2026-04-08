@@ -29,7 +29,8 @@ class QgisAtlasExportRuntimeTests(unittest.TestCase):
 
         self.assertIsNotNone(error)
         self.assertIn("pypdf", error)
-        self.assertIn("Reinstall/update the plugin", error)
+        self.assertIn("install_plugin.py --mode copy", error)
+        self.assertIn("packaged plugin zip", error)
 
     def test_build_task_constructs_atlas_export_task_with_correct_params(self):
         stub_module, mock_task = _make_atlas_task_stub()

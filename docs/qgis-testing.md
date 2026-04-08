@@ -21,17 +21,19 @@ If PyQGIS is not available in the current Python environment, the smoke test ski
 
 ## 1. Install the plugin into your QGIS profile
 
-For development, the easiest option is a symlinked install:
+For development and manual testing, use a copied install so qfit vendors runtime-only Python dependencies like `pypdf`:
+
+```bash
+python3 scripts/install_plugin.py --profile default --mode copy
+```
+
+If you specifically want a live symlinked install while iterating on UI code, you can still use:
 
 ```bash
 python3 scripts/install_plugin.py --profile default --mode symlink
 ```
 
-If you prefer a copied install instead of a symlink:
-
-```bash
-python3 scripts/install_plugin.py --profile default --mode copy
-```
+Note that symlink mode does **not** vendor runtime-only dependencies, so atlas PDF export may be unavailable there.
 
 Default Linux plugin target:
 - `~/.local/share/QGIS/QGIS3/profiles/default/python/plugins/qfit`
