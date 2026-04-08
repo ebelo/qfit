@@ -1,6 +1,8 @@
+import unittest
 from types import SimpleNamespace
 from unittest.mock import MagicMock
 
+from tests import _path  # noqa: F401
 from qfit.activities.domain.activity_query import ActivityQuery
 from qfit.ui.application import (
     ApplyVisualizationAction,
@@ -10,7 +12,7 @@ from qfit.ui.application import (
 from qfit.visualization.application import BackgroundConfig, LayerRefs
 
 
-class TestDockActionDispatcher:
+class TestDockActionDispatcher(unittest.TestCase):
     def test_dispatch_apply_visualization_routes_through_visual_service(self):
         visual_apply = MagicMock()
         visual_apply.build_request.return_value = "request"
@@ -57,11 +59,15 @@ class TestDockActionDispatcher:
             "Most frequent starting points",
             starts_layer,
         )
-        assert result.status == (
-            "Applied current filters. Showing top 2 frequent starting-point clusters"
+        self.assertEqual(
+            result.status,
+            "Applied current filters. Showing top 2 frequent starting-point clusters",
         )
-        assert result.background_layer == "background-layer"
-        assert result.analysis_status == "Showing top 2 frequent starting-point clusters"
+        self.assertEqual(result.background_layer, "background-layer")
+        self.assertEqual(
+            result.analysis_status,
+            "Showing top 2 frequent starting-point clusters",
+        )
 
     def test_dispatch_run_analysis_skips_background_updates_for_subset_apply(self):
         visual_apply = MagicMock()
@@ -90,9 +96,9 @@ class TestDockActionDispatcher:
 
         result = dispatcher.dispatch(action)
 
-        assert result.status == "Applied current filters"
-        assert result.background_layer is None
-        assert result.background_error == ""
+        self.assertEqual(result.status, "Applied current filters")
+        self.assertIsNone(result.background_layer)
+        self.assertEqual(result.background_error, "")
 
     def test_dispatch_returns_structured_result_for_unsupported_action(self):
         dispatcher = DockActionDispatcher(
@@ -103,4 +109,8 @@ class TestDockActionDispatcher:
 
         result = dispatcher.dispatch(object())
 
-        assert result.unsupported_reason == "Unsupported dock action: object"
+        self.assertEqual(result.unsupported_reason, "Unsupported dock action: object")
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -4,6 +4,8 @@ import unittest
 from types import ModuleType, SimpleNamespace
 from unittest.mock import MagicMock, patch
 
+from tests import _path  # noqa: F401
+
 
 class _AutoModule(ModuleType):
     def __getattr__(self, name):  # pragma: no cover - helper for stub imports
@@ -311,6 +313,113 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
         dock._dispatch_dock_action.assert_called_once_with(
             self.module.RunAnalysisAction
+        )
+
+    def test_dispatch_dock_action_returns_early_without_layers(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._build_visual_workflow_action = MagicMock(
+            return_value=SimpleNamespace(layers=SimpleNamespace(has_any=lambda: False))
+        )
+        dock._dock_action_dispatcher = MagicMock()
+
+        self.module.QfitDockWidget._dispatch_dock_action(
+            dock,
+            self.module.ApplyVisualizationAction,
+        )
+
+        dock._dock_action_dispatcher.dispatch.assert_not_called()
+
+    def test_dispatch_dock_action_handles_structured_dispatch_result(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        action = SimpleNamespace(layers=SimpleNamespace(has_any=lambda: True))
+        dock._build_visual_workflow_action = MagicMock(return_value=action)
+        dock._dock_action_dispatcher = MagicMock()
+        dock._dock_action_dispatcher.dispatch.return_value = SimpleNamespace(
+            unsupported_reason="",
+            background_error="boom",
+            background_layer="background-layer",
+            status="Applied current filters",
+        )
+        dock._show_error = MagicMock()
+        dock._set_status = MagicMock()
+
+        self.module.QfitDockWidget._dispatch_dock_action(
+            dock,
+            self.module.RunAnalysisAction,
+        )
+
+        dock._dock_action_dispatcher.dispatch.assert_called_once_with(action)
+        dock._show_error.assert_called_once_with("Background map failed", "boom")
+        self.assertEqual(dock.background_layer, "background-layer")
+        dock._set_status.assert_called_once_with("Applied current filters")
+
+    def test_dispatch_dock_action_reports_unsupported_reason(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        action = SimpleNamespace(layers=SimpleNamespace(has_any=lambda: True))
+        dock._build_visual_workflow_action = MagicMock(return_value=action)
+        dock._dock_action_dispatcher = MagicMock()
+        dock._dock_action_dispatcher.dispatch.return_value = SimpleNamespace(
+            unsupported_reason="Unsupported dock action: object",
+            background_error="",
+            background_layer=None,
+            status="",
+        )
+        dock._set_status = MagicMock()
+
+        self.module.QfitDockWidget._dispatch_dock_action(
+            dock,
+            self.module.ApplyVisualizationAction,
+        )
+
+        dock._set_status.assert_called_once_with("Unsupported dock action: object")
+
+    def test_build_visual_workflow_action_uses_current_ui_state(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.activities_layer = "activities"
+        dock.starts_layer = "starts"
+        dock.points_layer = "points"
+        dock.atlas_layer = "atlas"
+        dock._filtered_activities = MagicMock(return_value=[1, 2, 3])
+        query = object()
+        dock._current_activity_query = MagicMock(return_value=query)
+        dock.stylePresetComboBox = _FakeComboBox(current_text="By activity type")
+        dock.temporalModeComboBox = _FakeComboBox(current_text="By month")
+        dock.backgroundMapCheckBox = _FakeCheckBox(True)
+        dock.backgroundPresetComboBox = _FakeComboBox(current_text="Outdoors")
+        dock._mapbox_access_token = MagicMock(return_value="token")
+        dock.mapboxStyleOwnerLineEdit = _FakeLineEdit("mapbox")
+        dock.mapboxStyleIdLineEdit = _FakeLineEdit("style-id")
+        dock.tileModeComboBox = _FakeComboBox(current_text="Raster")
+        dock.analysisModeComboBox = _FakeComboBox(current_text="Most frequent starting points")
+
+        action = self.module.QfitDockWidget._build_visual_workflow_action(
+            dock,
+            self.module.ApplyVisualizationAction,
+        )
+
+        self.assertIsInstance(action, self.module.ApplyVisualizationAction)
+        self.assertEqual(action.layers.activities, "activities")
+        self.assertEqual(action.layers.starts, "starts")
+        self.assertIs(action.query, query)
+        self.assertEqual(action.filtered_count, 3)
+        self.assertEqual(action.analysis_mode, "Most frequent starting points")
+        self.assertEqual(action.background_config.access_token, "token")
+        self.assertEqual(action.background_config.tile_mode, "Raster")
+
+    def test_run_selected_analysis_delegates_with_explicit_inputs(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._apply_analysis_configuration = MagicMock(return_value="status")
+
+        result = self.module.QfitDockWidget._run_selected_analysis(
+            dock,
+            "Most frequent starting points",
+            "starts-layer",
+        )
+
+        self.assertEqual(result, "status")
+        dock._apply_analysis_configuration.assert_called_once_with(
+            analysis_mode="Most frequent starting points",
+            starts_layer="starts-layer",
         )
 
     def test_apply_analysis_configuration_returns_status_for_non_matching_mode(self):
