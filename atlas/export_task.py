@@ -60,7 +60,7 @@ from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QColor, QFont
 
 from ..activity_classification import ordered_canonical_activity_labels
-from .cover_composer import AtlasCoverComposer
+from .layout_metrics import BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
 from .profile_item import (
     NativeProfileItemConfig,
     atlas_layer_supports_native_profile_atlas,
@@ -141,7 +141,6 @@ MAP_Y = MARGIN_MM + HEADER_HEIGHT_MM + HEADER_GAP_MM
 MAP_W = (PAGE_WIDTH_MM - 2 * MARGIN_MM) * 0.90          # 10% smaller than full usable width
 MAP_H = MAP_W                                            # square
 MAP_X = (PAGE_WIDTH_MM - MAP_W) / 2.0                    # centered horizontally
-BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO = MAP_W / MAP_H   # 1.0
 
 # Profile area: reserved below the map for route profile content
 PROFILE_X = MAP_X

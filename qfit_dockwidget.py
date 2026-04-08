@@ -68,7 +68,7 @@ from .mapbox_config import (
     preset_requires_custom_style,
 )
 from .visualization.application import BackgroundConfig, LayerRefs
-from .atlas.export_task import BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
+from .atlas.layout_metrics import BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
 from .providers.domain.provider import ProviderError
 from .providers.infrastructure.strava_provider import StravaProvider
 from .visualization.application import DEFAULT_TEMPORAL_MODE_LABEL, temporal_mode_labels

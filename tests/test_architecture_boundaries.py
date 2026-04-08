@@ -223,6 +223,26 @@ class ModuleScopeImportBoundaryTests(unittest.TestCase):
             "AtlasExportService should obtain the QGIS runtime adapter lazily, not via module-scope imports.",
         )
 
+    def test_atlas_cover_composer_keeps_export_task_import_lazy(self):
+        imports = _module_scope_import_targets("atlas/cover_composer.py")
+        self.assertNotIn(
+            ".export_task.build_cover_layout",
+            imports,
+            "AtlasCoverComposer should keep the heavy export_task cover-layout import lazy.",
+        )
+
+    def test_dock_widget_does_not_import_qgis_export_runtime_directly(self):
+        imports = _module_scope_import_targets("qfit_dockwidget.py")
+        self.assertNotIn(
+            ".atlas.qgis_export_runtime.QgisAtlasExportRuntime",
+            imports,
+            "QfitDockWidget should stay on the atlas use-case boundary instead of importing the QGIS export runtime directly.",
+        )
+        self.assertFalse(
+            any(target.startswith(".atlas.export_task") for target in imports),
+            "QfitDockWidget should not import from the QGIS-heavy atlas export task module at import time.",
+        )
+
     def test_ui_dependency_builder_keeps_qgis_layer_gateway_import_lazy(self):
         imports = _module_scope_import_targets("ui/dockwidget_dependencies.py")
         self.assertNotIn(
@@ -303,15 +323,12 @@ class PackageOwnershipBoundaryTests(unittest.TestCase):
         "models.py",
         "polyline_utils.py",
         "project_layer_loader.py",
-        "provider.py",
         "qfit_cache.py",
         "qfit_config_dialog.py",
         "qfit_dockwidget.py",
         "qfit_plugin.py",
         "settings_port.py",
         "settings_service.py",
-        "strava_client.py",
-        "strava_provider.py",
         "sync_controller.py",
         "sync_repository.py",
         "temporal_config.py",
