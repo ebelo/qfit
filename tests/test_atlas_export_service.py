@@ -5,6 +5,7 @@ from unittest.mock import MagicMock
 from tests import _path  # noqa: F401
 
 from qfit.atlas.export_service import (
+    AtlasExportPlan,
     AtlasExportResult,
     AtlasExportService,
     GenerateAtlasPdfRequest,
@@ -234,6 +235,21 @@ class BuildTaskTests(unittest.TestCase):
 
 
 class AtlasExportRequestContractTests(unittest.TestCase):
+    def test_build_plan_returns_dataclass(self):
+        plan = AtlasExportService.build_plan(
+            output_path="/tmp/atlas.pdf",
+            pre_export_tile_mode="Raster",
+            preset_name="Dark",
+            access_token="tok",
+            style_owner="mapbox",
+            style_id="dark-v11",
+            background_enabled=True,
+        )
+
+        self.assertIsInstance(plan, AtlasExportPlan)
+        self.assertEqual(plan.output_path, "/tmp/atlas.pdf")
+        self.assertTrue(plan.background_enabled)
+
     def test_build_request_returns_dataclass(self):
         request = AtlasExportService.build_request(
             atlas_layer=MagicMock(),
@@ -268,3 +284,24 @@ class AtlasExportRequestContractTests(unittest.TestCase):
         )
 
         self.assertIs(request.profile_plot_style, style)
+
+    def test_build_request_from_plan_returns_dataclass(self):
+        plan = AtlasExportService.build_plan(
+            output_path="/tmp/atlas.pdf",
+            pre_export_tile_mode="Raster",
+            preset_name="Dark",
+            access_token="tok",
+            style_owner="mapbox",
+            style_id="dark-v11",
+            background_enabled=True,
+        )
+
+        request = AtlasExportService.build_request_from_plan(
+            plan=plan,
+            atlas_layer=MagicMock(),
+            on_finished=MagicMock(),
+        )
+
+        self.assertIsInstance(request, GenerateAtlasPdfRequest)
+        self.assertEqual(request.output_path, "/tmp/atlas.pdf")
+        self.assertTrue(request.background_enabled)

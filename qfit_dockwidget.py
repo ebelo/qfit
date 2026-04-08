@@ -1122,7 +1122,10 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             return
 
         self._save_settings()
-        self._atlas_export_task = self.atlas_export_use_case.start_export(prepared_export)
+        self._atlas_export_task = self.atlas_export_use_case.start_export(
+            prepared_export,
+            export_command,
+        )
 
         self._set_atlas_export_running(True)
         self._set_atlas_pdf_status(
