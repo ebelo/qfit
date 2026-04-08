@@ -25,6 +25,22 @@ class BuildStravaProviderTests(unittest.TestCase):
         self.assertEqual(request.client_secret, "secret")
         self.assertEqual(request.refresh_token, "token")
 
+    def test_build_strava_provider_request_preserves_positional_argument_order(self):
+        request = BuildStravaProviderRequest(
+            "id",
+            "secret",
+            "token",
+            "cache-object",
+            False,
+        )
+
+        self.assertEqual(request.client_id, "id")
+        self.assertEqual(request.client_secret, "secret")
+        self.assertEqual(request.refresh_token, "token")
+        self.assertEqual(request.cache, "cache-object")
+        self.assertFalse(request.require_refresh_token)
+        self.assertEqual(request.provider_name, "strava")
+
     def test_build_strava_provider_returns_strava_provider(self):
         ctrl = SyncController()
         provider = ctrl.build_strava_provider("id", "secret", "token")

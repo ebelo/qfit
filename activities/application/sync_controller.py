@@ -3,17 +3,23 @@ from dataclasses import dataclass
 from datetime import date
 
 from ...detailed_route_strategy import DEFAULT_DETAILED_ROUTE_STRATEGY
-from ...providers.application.provider_registry import (
-    BuildProviderRequest,
-    build_default_provider_registry,
-)
+from ...providers.application.provider_registry import build_default_provider_registry
 from .fetch_task import FetchTask
 from ...providers.domain.provider import ProviderError
 
 logger = logging.getLogger(__name__)
 
 
-BuildStravaProviderRequest = BuildProviderRequest
+@dataclass
+class BuildStravaProviderRequest:
+    """Structured input for constructing a validated Strava provider."""
+
+    client_id: str = ""
+    client_secret: str = ""
+    refresh_token: str = ""
+    cache: object = None
+    require_refresh_token: bool = True
+    provider_name: str = "strava"
 
 
 @dataclass
@@ -71,7 +77,6 @@ class SyncController:
     ) -> BuildStravaProviderRequest:
         """Build a structured request for Strava-provider creation."""
         return BuildStravaProviderRequest(
-            provider_name="strava",
             client_id=client_id,
             client_secret=client_secret,
             refresh_token=refresh_token,
