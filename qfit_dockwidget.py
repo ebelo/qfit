@@ -48,6 +48,11 @@ from .atlas.export_service import (
     AtlasExportService,
 )
 from .atlas.profile_style import build_native_profile_plot_style_from_settings
+from .ui.application import (
+    ApplyVisualizationAction,
+    DockActionDispatcher,
+    RunAnalysisAction,
+)
 from .ui.contextual_help import ContextualHelpBinder, build_dock_help_entries
 from .detailed_route_strategy import (
     DEFAULT_DETAILED_ROUTE_STRATEGY,
@@ -113,6 +118,11 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             workflow_section_coordinator=self._workflow_section_coordinator,
         )
         self._startup_result = self._dock_startup_coordinator.run()
+        self._dock_action_dispatcher = DockActionDispatcher(
+            visual_apply=self.visual_apply,
+            save_settings=self._save_settings,
+            run_analysis=self._run_selected_analysis,
+        )
 
     def _remove_stale_qfit_layers(self):
         """Remove stale qfit project layers before startup signals begin firing."""
@@ -857,73 +867,74 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._set_status(result.status)
 
     def on_apply_filters_clicked(self):
-        self._apply_current_visual_state()
+        self._dispatch_dock_action(ApplyVisualizationAction)
 
     def on_run_analysis_clicked(self):
-        self._apply_current_visual_state()
+        self._dispatch_dock_action(RunAnalysisAction)
 
-    def _apply_current_visual_state(self):
-        has_layers = any(
-            layer is not None
-            for layer in [self.activities_layer, self.starts_layer, self.points_layer, self.atlas_layer]
-        )
-        if not has_layers:
+    def _dispatch_dock_action(self, action_type):
+        action = self._build_visual_workflow_action(action_type)
+        if not action.layers.has_any():
             return
 
-        self._save_settings()
-        status = self._apply_visual_configuration(apply_subset_filters=True)
-        if status:
-            self._set_status(status)
+        result = self._dock_action_dispatcher.dispatch(action)
+        if result.unsupported_reason:
+            self._set_status(result.unsupported_reason)
+            return
+        if result.background_error:
+            self._show_error("Background map failed", result.background_error)
+        if result.background_layer is not None:
+            self.background_layer = result.background_layer
+        if result.status:
+            self._set_status(result.status)
 
-    def _apply_visual_configuration(self, apply_subset_filters):
+    def _build_visual_workflow_action(self, action_type):
         filtered_activities = self._filtered_activities()
         query = self._current_activity_query()
 
-        layers = LayerRefs(
-            activities=self.activities_layer,
-            starts=self.starts_layer,
-            points=self.points_layer,
-            atlas=self.atlas_layer,
-        )
-        bg_config = BackgroundConfig(
-            enabled=self.backgroundMapCheckBox.isChecked(),
-            preset_name=self.backgroundPresetComboBox.currentText(),
-            access_token=self._mapbox_access_token(),
-            style_owner=self.mapboxStyleOwnerLineEdit.text().strip(),
-            style_id=self.mapboxStyleIdLineEdit.text().strip(),
-            tile_mode=self.tileModeComboBox.currentText(),
-        )
-
-        request = self.visual_apply.build_request(
-            layers=layers,
+        return action_type(
+            layers=LayerRefs(
+                activities=self.activities_layer,
+                starts=self.starts_layer,
+                points=self.points_layer,
+                atlas=self.atlas_layer,
+            ),
             query=query,
             style_preset=self.stylePresetComboBox.currentText(),
             temporal_mode=self.temporalModeComboBox.currentText(),
-            background_config=bg_config,
-            apply_subset_filters=apply_subset_filters,
+            background_config=BackgroundConfig(
+                enabled=self.backgroundMapCheckBox.isChecked(),
+                preset_name=self.backgroundPresetComboBox.currentText(),
+                access_token=self._mapbox_access_token(),
+                style_owner=self.mapboxStyleOwnerLineEdit.text().strip(),
+                style_id=self.mapboxStyleIdLineEdit.text().strip(),
+                tile_mode=self.tileModeComboBox.currentText(),
+            ),
+            apply_subset_filters=True,
             filtered_count=len(filtered_activities),
+            analysis_mode=self.analysisModeComboBox.currentText(),
+            starts_layer=self.starts_layer,
         )
-        result = self.visual_apply.apply_request(request)
 
-        if self.visual_apply.should_update_background(apply_subset_filters):
-            if result.background_error:
-                self._show_error("Background map failed", result.background_error)
-            self.background_layer = result.background_layer
+    def _run_selected_analysis(self, analysis_mode, starts_layer):
+        return self._apply_analysis_configuration(
+            analysis_mode=analysis_mode,
+            starts_layer=starts_layer,
+        )
 
-        analysis_status = self._apply_analysis_configuration()
-        if analysis_status:
-            return f"{result.status}. {analysis_status}" if result.status else analysis_status
-        return result.status
-
-    def _apply_analysis_configuration(self):
+    def _apply_analysis_configuration(self, analysis_mode=None, starts_layer=None):
         self._clear_analysis_layer()
 
-        if self.analysisModeComboBox.currentText() != "Most frequent starting points":
+        current_mode = analysis_mode or self.analysisModeComboBox.currentText()
+        current_starts_layer = (
+            starts_layer if starts_layer is not None else getattr(self, "starts_layer", None)
+        )
+        if current_mode != "Most frequent starting points":
             return ""
-        if self.starts_layer is None:
+        if current_starts_layer is None:
             return ""
 
-        layer, clusters = build_frequent_start_points_layer(self.starts_layer)
+        layer, clusters = build_frequent_start_points_layer(current_starts_layer)
         if layer is None or not clusters:
             return "No frequent starting points matched the current filters"
 

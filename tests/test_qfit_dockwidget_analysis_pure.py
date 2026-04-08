@@ -293,6 +293,26 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
         dock.project_hygiene_service.remove_stale_qfit_layers.assert_called_once_with()
 
+    def test_on_apply_filters_clicked_dispatches_apply_visualization_action(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._dispatch_dock_action = MagicMock()
+
+        self.module.QfitDockWidget.on_apply_filters_clicked(dock)
+
+        dock._dispatch_dock_action.assert_called_once_with(
+            self.module.ApplyVisualizationAction
+        )
+
+    def test_on_run_analysis_clicked_dispatches_run_analysis_action(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._dispatch_dock_action = MagicMock()
+
+        self.module.QfitDockWidget.on_run_analysis_clicked(dock)
+
+        dock._dispatch_dock_action.assert_called_once_with(
+            self.module.RunAnalysisAction
+        )
+
     def test_apply_analysis_configuration_returns_status_for_non_matching_mode(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock.analysisModeComboBox = _FakeComboBox(current_text="None")
