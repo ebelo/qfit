@@ -3,9 +3,9 @@ from dataclasses import dataclass
 from datetime import date
 
 from ...detailed_route_strategy import DEFAULT_DETAILED_ROUTE_STRATEGY
+from ...providers.application.provider_registry import build_default_provider_registry
 from .fetch_task import FetchTask
 from ...providers.domain.provider import ProviderError
-from ...providers.infrastructure.strava_provider import StravaProvider
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +19,7 @@ class BuildStravaProviderRequest:
     refresh_token: str = ""
     cache: object = None
     require_refresh_token: bool = True
+    provider_name: str = "strava"
 
 
 @dataclass
@@ -63,6 +64,9 @@ class ExchangeStravaCodeRequest:
 class SyncController:
     """Orchestrates provider fetch/sync logic independent of the UI."""
 
+    def __init__(self, provider_registry=None):
+        self.provider_registry = provider_registry or build_default_provider_registry()
+
     @staticmethod
     def build_provider_request(
         client_id,
@@ -87,7 +91,7 @@ class SyncController:
         refresh_token=None,
         **legacy_kwargs,
     ):
-        """Create and validate a :class:`StravaProvider`."""
+        """Create and validate the configured activity provider."""
         if isinstance(request, BuildStravaProviderRequest):
             pass
         elif request is None:
@@ -100,21 +104,7 @@ class SyncController:
                 **legacy_kwargs,
             )
 
-        provider = StravaProvider(
-            client_id=request.client_id,
-            client_secret=request.client_secret,
-            refresh_token=request.refresh_token,
-            cache=request.cache,
-        )
-        if not provider.has_client_credentials():
-            raise ProviderError(
-                "Open qfit → Configuration and enter your Strava client ID and client secret first."
-            )
-        if request.require_refresh_token and not provider.has_refresh_token():
-            raise ProviderError(
-                "Open qfit → Configuration and enter a Strava refresh token first."
-            )
-        return provider
+        return self.provider_registry.build_provider(request)
 
     @staticmethod
     def build_fetch_task_request(
