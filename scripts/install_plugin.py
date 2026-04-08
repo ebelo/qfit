@@ -104,13 +104,22 @@ def main() -> int:
             print(f"Nothing to remove at {destination}")
         return 0
 
+    installed_mode = args.mode
     if args.mode == "copy":
-        install_copy(destination)
+        try:
+            install_copy(destination)
+        except RuntimeError as exc:
+            install_symlink(destination)
+            installed_mode = "symlink"
+            print(
+                "Warning: copy mode could not vendor runtime-only Python dependencies "
+                f"({exc}). Falling back to symlink mode."
+            )
     else:
         install_symlink(destination)
 
-    print(f"Installed {PLUGIN_NAME} to {destination} using mode={args.mode}")
-    if args.mode == "symlink":
+    print(f"Installed {PLUGIN_NAME} to {destination} using mode={installed_mode}")
+    if installed_mode == "symlink":
         print(
             "Warning: symlink mode does not vendor runtime-only Python dependencies like pypdf. "
             "Use --mode copy or the packaged plugin zip when you need atlas PDF export."

@@ -43,6 +43,30 @@ class InstallPluginTests(unittest.TestCase):
             self.assertTrue((destination / "atlas" / "export_task.py").exists())
             vendor_runtime_dependencies.assert_called_once_with(destination)
 
+    def test_main_falls_back_to_symlink_when_copy_mode_cannot_vendor_dependencies(self):
+        plugins_dir = Path("/tmp/qgis-plugins")
+        destination = plugins_dir / install_plugin.PLUGIN_NAME
+        args = SimpleNamespace(profile="default", mode="copy", plugins_dir=None, remove=False)
+
+        with patch.object(install_plugin, "parse_args", return_value=args), patch.object(
+            install_plugin, "default_plugins_dir", return_value=plugins_dir
+        ), patch.object(install_plugin, "install_copy", side_effect=RuntimeError("missing pypdf dist")), patch.object(
+            install_plugin, "install_symlink"
+        ) as install_symlink, patch("builtins.print") as mock_print:
+            exit_code = install_plugin.main()
+
+        self.assertEqual(exit_code, 0)
+        install_symlink.assert_called_once_with(destination)
+        mock_print.assert_any_call(
+            "Warning: copy mode could not vendor runtime-only Python dependencies "
+            "(missing pypdf dist). Falling back to symlink mode."
+        )
+        mock_print.assert_any_call(f"Installed {install_plugin.PLUGIN_NAME} to {destination} using mode=symlink")
+        mock_print.assert_any_call(
+            "Warning: symlink mode does not vendor runtime-only Python dependencies like pypdf. "
+            "Use --mode copy or the packaged plugin zip when you need atlas PDF export."
+        )
+
     def test_main_warns_when_symlink_mode_skips_runtime_dependencies(self):
         plugins_dir = Path("/tmp/qgis-plugins")
         destination = plugins_dir / install_plugin.PLUGIN_NAME
