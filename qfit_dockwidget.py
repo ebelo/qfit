@@ -115,36 +115,8 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._startup_result = self._dock_startup_coordinator.run()
 
     def _remove_stale_qfit_layers(self):
-        """Remove qfit layers from the project whose source file no longer exists.
-
-        Stale layers from a previous session generate SQLite errors when QGIS
-        tries to query them.  We clean them up on startup before any signals fire.
-        """
-        _QFIT_LAYER_NAMES = {
-            "qfit activities",
-            "qfit activity starts",
-            "qfit activity points",
-            "qfit atlas pages",
-            FREQUENT_STARTING_POINTS_LAYER_NAME,
-        }
-        project = QgsProject.instance()
-        to_remove = []
-        for layer in project.mapLayers().values():
-            if layer.name() not in _QFIT_LAYER_NAMES:
-                continue
-            source = (layer.source() or "").strip()
-            normalized_source = source.lower()
-            is_file_backed_qfit_layer = (
-                "|layername=" in normalized_source or normalized_source.endswith(".gpkg")
-            )
-            if not is_file_backed_qfit_layer:
-                continue
-            # GeoPackage URI looks like "/path/to/file.gpkg|layername=..."
-            gpkg_path = source.split("|")[0].strip()
-            if gpkg_path and not os.path.exists(gpkg_path):
-                to_remove.append(layer.id())
-        for layer_id in to_remove:
-            project.removeMapLayer(layer_id)
+        """Remove stale qfit project layers before startup signals begin firing."""
+        self.project_hygiene_service.remove_stale_qfit_layers()
 
     def _apply_contextual_help(self):
         for name in [
@@ -288,6 +260,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.atlas_export_use_case = dependencies.atlas_export_use_case
         self.layer_gateway = dependencies.layer_gateway
         self.background_controller = dependencies.background_controller
+        self.project_hygiene_service = dependencies.project_hygiene_service
         self.load_workflow = dependencies.load_workflow
         self.visual_apply = dependencies.visual_apply
         self.atlas_export_service = dependencies.atlas_export_service

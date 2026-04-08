@@ -8,7 +8,11 @@ from tests import _path  # noqa: F401
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
-from qfit.ui.dockwidget_dependencies import build_dockwidget_dependencies, _build_cache
+from qfit.ui.dockwidget_dependencies import (
+    build_dockwidget_dependencies,
+    _build_cache,
+    _build_project_hygiene_service,
+)
 from qfit.ui.dock_startup_coordinator import DockStartupCoordinator, DockStartupResult
 
 
@@ -44,6 +48,10 @@ class DockWidgetDependenciesTests(unittest.TestCase):
                 return_value=sentinel.background_controller,
             ) as background_controller,
             patch(
+                "qfit.ui.dockwidget_dependencies._build_project_hygiene_service",
+                return_value=sentinel.project_hygiene_service,
+            ),
+            patch(
                 "qfit.ui.dockwidget_dependencies.LoadWorkflowService",
                 return_value=sentinel.load_workflow,
             ) as load_workflow,
@@ -69,6 +77,7 @@ class DockWidgetDependenciesTests(unittest.TestCase):
         self.assertIs(dependencies.atlas_export_use_case, sentinel.atlas_export_use_case)
         self.assertIs(dependencies.layer_gateway, sentinel.layer_gateway)
         self.assertIs(dependencies.background_controller, sentinel.background_controller)
+        self.assertIs(dependencies.project_hygiene_service, sentinel.project_hygiene_service)
         self.assertIs(dependencies.load_workflow, sentinel.load_workflow)
         self.assertIs(dependencies.visual_apply, sentinel.visual_apply)
         self.assertIs(dependencies.atlas_export_service, sentinel.atlas_export_service)
@@ -113,6 +122,20 @@ class DockWidgetDependenciesTests(unittest.TestCase):
 
         self.assertIs(cache, sentinel.cache)
         cache_class.assert_called_once_with("/home/tester/.qfit/qfit/cache")
+
+    def test_build_project_hygiene_service_instantiates_service(self):
+        fake_module = ModuleType("qfit.visualization.infrastructure.project_hygiene_service")
+        fake_service_class = MagicMock(return_value=sentinel.project_hygiene_service)
+        fake_module.ProjectHygieneService = fake_service_class
+
+        with patch.dict(
+            sys.modules,
+            {"qfit.visualization.infrastructure.project_hygiene_service": fake_module},
+        ):
+            service = _build_project_hygiene_service()
+
+        self.assertIs(service, sentinel.project_hygiene_service)
+        fake_service_class.assert_called_once_with()
 
 
 if __name__ == "__main__":

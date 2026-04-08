@@ -498,6 +498,7 @@ class VisualizationInfrastructureExportTests(unittest.TestCase):
             f"{package_name}.background_map_service": ("BackgroundMapService", type("BackgroundMapService", (), {})),
             f"{package_name}.layer_filter_service": ("LayerFilterService", type("LayerFilterService", (), {})),
             f"{package_name}.map_canvas_service": ("MapCanvasService", type("MapCanvasService", (), {})),
+            f"{package_name}.project_hygiene_service": ("ProjectHygieneService", type("ProjectHygieneService", (), {})),
             f"{package_name}.project_layer_loader": ("ProjectLayerLoader", type("ProjectLayerLoader", (), {})),
             f"{package_name}.qgis_layer_gateway": ("QgisLayerGateway", type("QgisLayerGateway", (), {})),
             f"{package_name}.layer_style_service": ("LayerStyleService", type("LayerStyleService", (), {})),
@@ -519,6 +520,7 @@ class VisualizationInfrastructureExportTests(unittest.TestCase):
             self.assertIs(package.LayerFilterService, module_specs[f"{package_name}.layer_filter_service"][1])
             self.assertIs(package.LayerManager, module_specs[f"{package_name}.qgis_layer_gateway"][1])
             self.assertIs(package.MapCanvasService, module_specs[f"{package_name}.map_canvas_service"][1])
+            self.assertIs(package.ProjectHygieneService, module_specs[f"{package_name}.project_hygiene_service"][1])
             self.assertIs(package.ProjectLayerLoader, module_specs[f"{package_name}.project_layer_loader"][1])
             self.assertIs(package.QgisLayerGateway, module_specs[f"{package_name}.qgis_layer_gateway"][1])
             self.assertIs(package.LayerStyleService, module_specs[f"{package_name}.layer_style_service"][1])
