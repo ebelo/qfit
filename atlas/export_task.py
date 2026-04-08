@@ -29,7 +29,11 @@ import logging
 import os
 from dataclasses import dataclass
 
+from .cover_composer import AtlasCoverComposer
+
 logger = logging.getLogger(__name__)
+
+_DEFAULT_COVER_COMPOSER = AtlasCoverComposer()
 
 
 def _format_unexpected_export_error(exc: Exception) -> str:
@@ -56,6 +60,7 @@ from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QColor, QFont
 
 from ..activity_classification import ordered_canonical_activity_labels
+from .cover_composer import AtlasCoverComposer
 from .profile_item import (
     NativeProfileItemConfig,
     atlas_layer_supports_native_profile_atlas,
@@ -1221,6 +1226,7 @@ class AtlasExportTask(QgsTask):
         atlas_layer,
         output_path: str,
         project=None,
+        cover_composer=_DEFAULT_COVER_COMPOSER,
     ) -> str | None:
         """Export a single cover-page PDF and return its path, or None on failure."""
         return export_cover_page(
@@ -1230,7 +1236,7 @@ class AtlasExportTask(QgsTask):
             get_project_instance=QgsProject.instance,
             build_cover_data=_build_cover_summary_from_current_atlas_features,
             apply_cover_heatmap_renderer=_apply_cover_heatmap_renderer,
-            build_cover_layout_fn=build_cover_layout,
+            build_cover_layout_fn=cover_composer.build_layout,
             layout_exporter_cls=QgsLayoutExporter,
             logger=logger,
         )
