@@ -119,7 +119,7 @@ class TestConfigDialogBindings(unittest.TestCase):
 
     def _make_dialog_bindings(self):
         """Build a minimal stand-in for the QfitConfigDialog binding table."""
-        from qfit.strava_client import StravaClient
+        from qfit.providers.infrastructure.strava_client import StravaClient
 
         client_id = TextWidget()
         client_secret = TextWidget()
@@ -147,7 +147,7 @@ class TestConfigDialogBindings(unittest.TestCase):
         s = _settings()
         load_bindings(bindings, s)
         save_bindings(bindings, s)
-        from qfit.strava_client import StravaClient
+        from qfit.providers.infrastructure.strava_client import StravaClient
         self.assertEqual(s.get("redirect_uri"), StravaClient.DEFAULT_REDIRECT_URI)
 
     def test_stored_values_survive_roundtrip(self):

@@ -4,25 +4,12 @@ import unittest
 from unittest.mock import MagicMock
 
 from tests import _path  # noqa: F401
-from qfit.provider import ActivityProvider, ProviderError
-from qfit.providers.domain.provider import ActivityProvider as PackagedActivityProvider
-from qfit.providers.domain.provider import ProviderError as PackagedProviderError
-from qfit.providers.infrastructure.strava_provider import StravaProvider as PackagedStravaProvider
-from qfit.strava_provider import StravaProvider
+from qfit.providers.domain import ActivityProvider, ProviderError
+from qfit.providers.infrastructure import StravaClient, StravaProvider
 
 
 class TestStravaProviderProtocol(unittest.TestCase):
     """StravaProvider must satisfy the ActivityProvider protocol."""
-
-    def test_top_level_shims_re_export_packaged_contracts(self):
-        import qfit.providers as providers
-
-        self.assertIs(ActivityProvider, PackagedActivityProvider)
-        self.assertIs(ProviderError, PackagedProviderError)
-        self.assertIs(StravaProvider, PackagedStravaProvider)
-        self.assertIs(providers.ActivityProvider, PackagedActivityProvider)
-        self.assertIs(providers.ProviderError, PackagedProviderError)
-        self.assertIs(providers.StravaProvider, PackagedStravaProvider)
 
     def test_strava_provider_satisfies_activity_provider(self):
         provider = StravaProvider(client_id="id", client_secret="secret", refresh_token="token")
@@ -33,7 +20,6 @@ class TestStravaProviderProtocol(unittest.TestCase):
         self.assertEqual(provider.source_name, "strava")
 
     def test_default_redirect_uri_matches_strava_client(self):
-        from qfit.strava_client import StravaClient
         self.assertEqual(StravaProvider.DEFAULT_REDIRECT_URI, StravaClient.DEFAULT_REDIRECT_URI)
 
 
@@ -61,7 +47,7 @@ class TestStravaProviderFetchActivities(unittest.TestCase):
         self.assertEqual(result, [])
 
     def test_fetch_activities_translates_strava_client_error(self):
-        from qfit.strava_client import StravaClientError
+        from qfit.providers.infrastructure.strava_client import StravaClientError
         provider = self._make_provider()
         provider._client.fetch_activities.side_effect = StravaClientError("API error")
         with self.assertRaises(ProviderError) as ctx:
@@ -69,7 +55,7 @@ class TestStravaProviderFetchActivities(unittest.TestCase):
         self.assertIn("API error", str(ctx.exception))
 
     def test_fetch_activities_error_preserves_cause(self):
-        from qfit.strava_client import StravaClientError
+        from qfit.providers.infrastructure.strava_client import StravaClientError
         provider = self._make_provider()
         original = StravaClientError("original")
         provider._client.fetch_activities.side_effect = original
@@ -137,7 +123,7 @@ class TestStravaProviderAuthMethods(unittest.TestCase):
         provider._client.build_authorize_url.assert_called_once_with(redirect_uri="http://localhost/cb")
 
     def test_build_authorize_url_translates_error(self):
-        from qfit.strava_client import StravaClientError
+        from qfit.providers.infrastructure.strava_client import StravaClientError
         provider = self._make_provider()
         provider._client.build_authorize_url.side_effect = StravaClientError("no client id")
         with self.assertRaises(ProviderError):
@@ -150,7 +136,7 @@ class TestStravaProviderAuthMethods(unittest.TestCase):
         self.assertEqual(payload["access_token"], "abc")
 
     def test_exchange_code_for_tokens_translates_error(self):
-        from qfit.strava_client import StravaClientError
+        from qfit.providers.infrastructure.strava_client import StravaClientError
         provider = self._make_provider()
         provider._client.exchange_code_for_tokens.side_effect = StravaClientError("bad code")
         with self.assertRaises(ProviderError):

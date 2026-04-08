@@ -2,8 +2,8 @@ import unittest
 from unittest.mock import patch
 
 from tests import _path  # noqa: F401
-from qfit.strava_client import StravaClient, StravaClientError
 from qfit.providers.infrastructure import strava_client as strava_client_module
+from qfit.providers.infrastructure.strava_client import StravaClient, StravaClientError
 
 requests = strava_client_module.requests
 
@@ -17,13 +17,6 @@ class StravaClientTests(unittest.TestCase):
         self.assertIn("response_type=code", url)
         self.assertIn("approval_prompt=force", url)
         self.assertIn("scope=read%2Cactivity%3Aread_all", url)
-
-    def test_top_level_module_re_exports_provider_package_types(self):
-        from qfit import strava_client as compat_module
-
-        self.assertIs(compat_module.StravaClient, StravaClient)
-        self.assertIs(compat_module.StravaClientError, StravaClientError)
-        self.assertIs(compat_module.requests, requests)
 
     def test_normalize_activity_maps_core_fields(self):
         client = StravaClient()

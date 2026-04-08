@@ -3,8 +3,8 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 from tests import _path  # noqa: F401
-from qfit.provider import ProviderError
-from qfit.strava_provider import StravaProvider
+from qfit.providers.domain import ProviderError
+from qfit.providers.infrastructure import StravaProvider
 from qfit.sync_controller import (
     BuildFetchTaskRequest,
     BuildStravaProviderRequest,
