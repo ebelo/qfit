@@ -1,10 +1,22 @@
 import os
 
-from qgis.core import QgsProject
+DEFAULT_FREQUENT_STARTING_POINTS_LAYER_NAME = "qfit frequent starting points"
 
-from ...analysis.infrastructure.frequent_start_points_layer import (
-    FREQUENT_STARTING_POINTS_LAYER_NAME,
-)
+
+def _frequent_starting_points_layer_name() -> str:
+    try:
+        from ...analysis.infrastructure.frequent_start_points_layer import (
+            FREQUENT_STARTING_POINTS_LAYER_NAME,
+        )
+    except Exception:
+        return DEFAULT_FREQUENT_STARTING_POINTS_LAYER_NAME
+    return FREQUENT_STARTING_POINTS_LAYER_NAME
+
+
+def _default_project():
+    from qgis.core import QgsProject
+
+    return QgsProject.instance()
 
 
 class ProjectHygieneService:
@@ -15,11 +27,11 @@ class ProjectHygieneService:
         "qfit activity starts",
         "qfit activity points",
         "qfit atlas pages",
-        FREQUENT_STARTING_POINTS_LAYER_NAME,
+        _frequent_starting_points_layer_name(),
     }
 
     def __init__(self, *, project=None, path_exists=None):
-        self._project = project or QgsProject.instance()
+        self._project = project or _default_project()
         self._path_exists = path_exists or os.path.exists
 
     def remove_stale_qfit_layers(self) -> None:
