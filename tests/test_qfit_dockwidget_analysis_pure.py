@@ -422,6 +422,35 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             starts_layer="starts-layer",
         )
 
+    def test_apply_visual_configuration_dispatches_apply_action(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        action = self.module.ApplyVisualizationAction(
+            layers=self.module.LayerRefs(activities="activities"),
+            query=object(),
+            style_preset="By activity type",
+            temporal_mode="By month",
+            background_config=self.module.BackgroundConfig(),
+            filtered_count=1,
+            analysis_mode="None",
+            apply_subset_filters=True,
+        )
+        dock._build_visual_workflow_action = MagicMock(return_value=action)
+        dock._dock_action_dispatcher = MagicMock()
+        dock._dock_action_dispatcher.dispatch.return_value = SimpleNamespace(
+            status="Applied styling",
+            background_error="",
+            background_layer="background-layer",
+        )
+        dock._show_error = MagicMock()
+
+        status = self.module.QfitDockWidget._apply_visual_configuration(dock, False)
+
+        dispatched_action = dock._dock_action_dispatcher.dispatch.call_args.args[0]
+        self.assertFalse(dispatched_action.apply_subset_filters)
+        self.assertEqual(status, "Applied styling")
+        self.assertEqual(dock.background_layer, "background-layer")
+        dock._show_error.assert_not_called()
+
     def test_apply_analysis_configuration_returns_status_for_non_matching_mode(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock.analysisModeComboBox = _FakeComboBox(current_text="None")

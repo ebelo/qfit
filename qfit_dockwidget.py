@@ -1,5 +1,6 @@
 import logging
 import os
+from dataclasses import replace
 from datetime import date
 
 logger = logging.getLogger(__name__)
@@ -921,6 +922,18 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             analysis_mode=analysis_mode,
             starts_layer=starts_layer,
         )
+
+    def _apply_visual_configuration(self, apply_subset_filters):
+        action = replace(
+            self._build_visual_workflow_action(ApplyVisualizationAction),
+            apply_subset_filters=apply_subset_filters,
+        )
+        result = self._dock_action_dispatcher.dispatch(action)
+        if result.background_error:
+            self._show_error("Background map failed", result.background_error)
+        if result.background_layer is not None:
+            self.background_layer = result.background_layer
+        return result.status
 
     def _apply_analysis_configuration(self, analysis_mode=None, starts_layer=None):
         self._clear_analysis_layer()
