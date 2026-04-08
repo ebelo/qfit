@@ -3,6 +3,8 @@ from unittest.mock import MagicMock
 
 from tests import _path  # noqa: F401
 
+from qfit.activities.application.activity_selection_state import ActivitySelectionState
+from qfit.activities.domain.activity_query import ActivityQuery
 from qfit.atlas.export_controller import AtlasExportValidationError
 from qfit.atlas.export_service import AtlasExportResult
 from qfit.atlas.export_use_case import (
@@ -19,11 +21,17 @@ class AtlasExportUseCaseTests(unittest.TestCase):
         self.use_case = AtlasExportUseCase(self.controller, self.service)
 
     def test_build_command_returns_dataclass(self):
-        command = self.use_case.build_command(output_path="/tmp/atlas.pdf", background_enabled=True)
+        selection_state = ActivitySelectionState(query=ActivityQuery(search_text="ride"), filtered_count=7)
+        command = self.use_case.build_command(
+            output_path="/tmp/atlas.pdf",
+            background_enabled=True,
+            selection_state=selection_state,
+        )
 
         self.assertIsInstance(command, GenerateAtlasPdfCommand)
         self.assertEqual(command.output_path, "/tmp/atlas.pdf")
         self.assertTrue(command.background_enabled)
+        self.assertIs(command.selection_state, selection_state)
 
     def test_prepare_export_returns_validation_error_when_layer_invalid(self):
         self.controller.validate_atlas_layer.side_effect = AtlasExportValidationError("missing layer")

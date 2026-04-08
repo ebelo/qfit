@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Callable
 
+from ..activities.application.activity_selection_state import ActivitySelectionState
 from .export_controller import AtlasExportValidationError
 from .export_service import (
     AtlasExportPlan,
@@ -17,6 +18,7 @@ class GenerateAtlasPdfCommand:
     """Application-layer command for starting atlas PDF export."""
 
     atlas_layer: object = None
+    selection_state: ActivitySelectionState = field(default_factory=ActivitySelectionState)
     output_path: str = ""
     on_finished: Callable | None = None
     pre_export_tile_mode: str = ""

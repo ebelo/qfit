@@ -1,21 +1,28 @@
 from dataclasses import dataclass
 from typing import Any, Callable
 
-from ...activities.domain.activity_query import ActivityQuery
+from ...activities.application.activity_selection_state import ActivitySelectionState
 from ...visualization.application import BackgroundConfig, LayerRefs, VisualApplyService
 
 
 @dataclass(frozen=True)
 class _BaseVisualWorkflowAction:
     layers: LayerRefs
-    query: ActivityQuery
+    selection_state: ActivitySelectionState
     style_preset: str
     temporal_mode: str
     background_config: BackgroundConfig
-    filtered_count: int
     analysis_mode: str
     starts_layer: object = None
     apply_subset_filters: bool = True
+
+    @property
+    def query(self):
+        return self.selection_state.query
+
+    @property
+    def filtered_count(self):
+        return self.selection_state.filtered_count
 
 
 @dataclass(frozen=True)
@@ -47,7 +54,7 @@ class DockActionDispatcher:
         *,
         visual_apply: VisualApplyService,
         save_settings: Callable[[], None],
-        run_analysis: Callable[[str, object], str],
+        run_analysis: Callable[[str, object, ActivitySelectionState], str],
     ) -> None:
         self.visual_apply = visual_apply
         self._save_settings = save_settings
@@ -68,12 +75,11 @@ class DockActionDispatcher:
         self._save_settings()
         request = self.visual_apply.build_request(
             layers=action.layers,
-            query=action.query,
+            selection_state=action.selection_state,
             style_preset=action.style_preset,
             temporal_mode=action.temporal_mode,
             background_config=action.background_config,
             apply_subset_filters=action.apply_subset_filters,
-            filtered_count=action.filtered_count,
         )
         visual_result = self.visual_apply.apply_request(request)
 
@@ -86,6 +92,7 @@ class DockActionDispatcher:
         analysis_status = self._run_analysis(
             action.analysis_mode,
             action.starts_layer,
+            action.selection_state,
         )
         return DockActionResult(
             status=self._combine_statuses(visual_result.status, analysis_status),

@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+
+from ...activities.application.activity_selection_state import ActivitySelectionState
 
 FREQUENT_STARTING_POINTS_MODE = "Most frequent starting points"
 
@@ -9,6 +11,7 @@ FREQUENT_STARTING_POINTS_MODE = "Most frequent starting points"
 class RunAnalysisRequest:
     analysis_mode: str = ""
     starts_layer: object = None
+    selection_state: ActivitySelectionState = field(default_factory=ActivitySelectionState)
 
 
 @dataclass(frozen=True)
@@ -21,10 +24,15 @@ class AnalysisController:
     """Coordinates dock-triggered analysis workflows behind a small seam."""
 
     @staticmethod
-    def build_request(analysis_mode: str, starts_layer: object) -> RunAnalysisRequest:
+    def build_request(
+        analysis_mode: str,
+        starts_layer: object,
+        selection_state: ActivitySelectionState | None = None,
+    ) -> RunAnalysisRequest:
         return RunAnalysisRequest(
             analysis_mode=analysis_mode or "",
             starts_layer=starts_layer,
+            selection_state=selection_state or ActivitySelectionState(),
         )
 
     def run(self, request: RunAnalysisRequest | None = None, **legacy_kwargs) -> RunAnalysisResult:

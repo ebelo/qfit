@@ -1,11 +1,13 @@
 """Activity workflow services and task helpers."""
 
+from .activity_selection_state import ActivitySelectionState
 from .fetch_result_service import FetchActivitiesRequest, FetchResult, FetchResultService
 from .fetch_task import FetchTask
 from .load_workflow import LoadDatabaseRequest, LoadDatasetRequest, LoadExistingRequest, LoadResult, LoadWorkflowError, LoadWorkflowService, StoreActivitiesRequest
 from .sync_controller import BuildStravaProviderRequest, SyncController
 
 __all__ = [
+    "ActivitySelectionState",
     "BuildStravaProviderRequest",
     "FetchActivitiesRequest",
     "FetchResult",
