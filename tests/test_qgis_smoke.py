@@ -482,7 +482,10 @@ class QgisSmokeTests(unittest.TestCase):
             build_style.assert_called_once_with(dock.settings)
             export_command = dock.atlas_export_use_case.prepare_export.call_args.args[0]
             self.assertEqual(export_command.profile_plot_style, "style-override")
-            dock.atlas_export_use_case.start_export.assert_called_once_with(prepared_export)
+            dock.atlas_export_use_case.start_export.assert_called_once_with(
+                prepared_export,
+                export_command,
+            )
             task_manager.return_value.addTask.assert_called_once_with(fake_task)
         finally:
             dock.close()

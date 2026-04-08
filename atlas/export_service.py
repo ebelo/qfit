@@ -16,6 +16,20 @@ from ..visualization.application.layer_gateway import LayerGateway
 
 
 @dataclass
+class AtlasExportPlan:
+    """Structured atlas export plan independent of QGIS runtime execution."""
+
+    output_path: str = ""
+    pre_export_tile_mode: str = ""
+    preset_name: str = ""
+    access_token: str = ""
+    style_owner: str = ""
+    style_id: str = ""
+    background_enabled: bool = False
+    profile_plot_style: object | None = None
+
+
+@dataclass
 class GenerateAtlasPdfRequest:
     """Structured input for the atlas PDF generation workflow."""
 
@@ -77,6 +91,28 @@ class AtlasExportService:
         return QgisAtlasExportRuntime()
 
     @staticmethod
+    def build_plan(
+        output_path: str,
+        pre_export_tile_mode: str,
+        preset_name: str,
+        access_token: str,
+        style_owner: str,
+        style_id: str,
+        background_enabled: bool,
+        profile_plot_style: object | None = None,
+    ) -> AtlasExportPlan:
+        return AtlasExportPlan(
+            output_path=output_path,
+            pre_export_tile_mode=pre_export_tile_mode,
+            preset_name=preset_name,
+            access_token=access_token,
+            style_owner=style_owner,
+            style_id=style_id,
+            background_enabled=background_enabled,
+            profile_plot_style=profile_plot_style,
+        )
+
+    @staticmethod
     def build_request(
         atlas_layer,
         output_path: str,
@@ -89,10 +125,8 @@ class AtlasExportService:
         background_enabled: bool,
         profile_plot_style: object | None = None,
     ) -> GenerateAtlasPdfRequest:
-        return GenerateAtlasPdfRequest(
-            atlas_layer=atlas_layer,
+        plan = AtlasExportService.build_plan(
             output_path=output_path,
-            on_finished=on_finished,
             pre_export_tile_mode=pre_export_tile_mode,
             preset_name=preset_name,
             access_token=access_token,
@@ -100,6 +134,31 @@ class AtlasExportService:
             style_id=style_id,
             background_enabled=background_enabled,
             profile_plot_style=profile_plot_style,
+        )
+        return AtlasExportService.build_request_from_plan(
+            plan=plan,
+            atlas_layer=atlas_layer,
+            on_finished=on_finished,
+        )
+
+    @staticmethod
+    def build_request_from_plan(
+        *,
+        plan: AtlasExportPlan,
+        atlas_layer,
+        on_finished: Callable | None,
+    ) -> GenerateAtlasPdfRequest:
+        return GenerateAtlasPdfRequest(
+            atlas_layer=atlas_layer,
+            output_path=plan.output_path,
+            on_finished=on_finished,
+            pre_export_tile_mode=plan.pre_export_tile_mode,
+            preset_name=plan.preset_name,
+            access_token=plan.access_token,
+            style_owner=plan.style_owner,
+            style_id=plan.style_id,
+            background_enabled=plan.background_enabled,
+            profile_plot_style=plan.profile_plot_style,
         )
 
     def prepare_basemap_for_export(

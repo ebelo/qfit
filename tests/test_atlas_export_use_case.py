@@ -60,13 +60,13 @@ class AtlasExportUseCaseTests(unittest.TestCase):
         self.assertEqual(result.error_message, "pypdf missing")
         self.assertEqual(result.pdf_status, "Atlas PDF export unavailable.")
         self.assertEqual(result.main_status, "Atlas PDF export unavailable.")
-        self.service.build_request.assert_not_called()
+        self.service.build_plan.assert_not_called()
 
-    def test_prepare_export_builds_request_on_success(self):
-        request = object()
+    def test_prepare_export_builds_plan_on_success(self):
+        plan = object()
         self.controller.normalize_pdf_path.return_value = ("/tmp/atlas.pdf", True)
         self.service.check_pdf_export_prerequisites.return_value = None
-        self.service.build_request.return_value = request
+        self.service.build_plan.return_value = plan
 
         command = GenerateAtlasPdfCommand(
             atlas_layer=object(),
@@ -83,13 +83,11 @@ class AtlasExportUseCaseTests(unittest.TestCase):
         result = self.use_case.prepare_export(command)
 
         self.assertTrue(result.is_ready)
-        self.assertIs(result.request, request)
+        self.assertIs(result.plan, plan)
         self.assertEqual(result.output_path, "/tmp/atlas.pdf")
         self.assertTrue(result.path_changed)
-        self.service.build_request.assert_called_once_with(
-            atlas_layer=command.atlas_layer,
+        self.service.build_plan.assert_called_once_with(
             output_path="/tmp/atlas.pdf",
-            on_finished=command.on_finished,
             pre_export_tile_mode="Raster",
             preset_name="Outdoor",
             access_token="tok",
@@ -100,20 +98,28 @@ class AtlasExportUseCaseTests(unittest.TestCase):
         )
 
     def test_start_export_prepares_basemap_and_builds_task(self):
+        plan = object()
         request = object()
         task = object()
+        self.service.build_request_from_plan.return_value = request
         self.service.build_task.return_value = task
-        prepared = PrepareAtlasPdfExportResult(request=request, output_path="/tmp/atlas.pdf")
+        prepared = PrepareAtlasPdfExportResult(plan=plan, output_path="/tmp/atlas.pdf")
+        command = GenerateAtlasPdfCommand(atlas_layer=object(), on_finished=MagicMock())
 
-        result = self.use_case.start_export(prepared)
+        result = self.use_case.start_export(prepared, command)
 
         self.assertIs(result, task)
+        self.service.build_request_from_plan.assert_called_once_with(
+            plan=plan,
+            atlas_layer=command.atlas_layer,
+            on_finished=command.on_finished,
+        )
         self.service.prepare_basemap_for_export.assert_called_once_with(request)
         self.service.build_task.assert_called_once_with(request)
 
-    def test_start_export_requires_prepared_request(self):
+    def test_start_export_requires_prepared_plan(self):
         with self.assertRaises(ValueError):
-            self.use_case.start_export(PrepareAtlasPdfExportResult())
+            self.use_case.start_export(PrepareAtlasPdfExportResult(), GenerateAtlasPdfCommand())
 
     def test_finish_export_delegates_to_service(self):
         final_result = AtlasExportResult(output_path="/tmp/atlas.pdf", page_count=2)

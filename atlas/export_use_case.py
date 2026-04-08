@@ -4,7 +4,12 @@ from dataclasses import dataclass
 from typing import Callable
 
 from .export_controller import AtlasExportValidationError
-from .export_service import AtlasExportResult, AtlasExportService, GenerateAtlasPdfRequest
+from .export_service import (
+    AtlasExportPlan,
+    AtlasExportResult,
+    AtlasExportService,
+    GenerateAtlasPdfRequest,
+)
 
 
 @dataclass(frozen=True)
@@ -27,7 +32,7 @@ class GenerateAtlasPdfCommand:
 class PrepareAtlasPdfExportResult:
     """Structured outcome of validating and preparing atlas export startup."""
 
-    request: GenerateAtlasPdfRequest | None = None
+    plan: AtlasExportPlan | None = None
     output_path: str = ""
     path_changed: bool = False
     error_title: str | None = None
@@ -37,7 +42,7 @@ class PrepareAtlasPdfExportResult:
 
     @property
     def is_ready(self) -> bool:
-        return self.request is not None and self.error_message is None
+        return self.plan is not None and self.error_message is None
 
 
 class AtlasExportUseCase:
@@ -84,10 +89,8 @@ class AtlasExportUseCase:
                 main_status="Atlas PDF export unavailable.",
             )
 
-        request = self.service.build_request(
-            atlas_layer=command.atlas_layer,
+        plan = self.service.build_plan(
             output_path=output_path,
-            on_finished=command.on_finished,
             pre_export_tile_mode=command.pre_export_tile_mode,
             preset_name=command.preset_name,
             access_token=command.access_token,
@@ -97,17 +100,22 @@ class AtlasExportUseCase:
             profile_plot_style=command.profile_plot_style,
         )
         return PrepareAtlasPdfExportResult(
-            request=request,
+            plan=plan,
             output_path=output_path,
             path_changed=changed,
         )
 
-    def start_export(self, prepared: PrepareAtlasPdfExportResult):
-        if not prepared.is_ready or prepared.request is None:
+    def start_export(self, prepared: PrepareAtlasPdfExportResult, command: GenerateAtlasPdfCommand):
+        if not prepared.is_ready or prepared.plan is None:
             raise ValueError("prepare_export() must succeed before start_export().")
 
-        self.service.prepare_basemap_for_export(prepared.request)
-        return self.service.build_task(prepared.request)
+        request = self.service.build_request_from_plan(
+            plan=prepared.plan,
+            atlas_layer=command.atlas_layer,
+            on_finished=command.on_finished,
+        )
+        self.service.prepare_basemap_for_export(request)
+        return self.service.build_task(request)
 
     def finish_export(
         self,
