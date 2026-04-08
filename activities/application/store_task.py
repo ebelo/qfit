@@ -33,7 +33,7 @@ class StoreActivitiesTask(QgsTask):
             return False
         try:
             self._result = self._workflow.write_database_request(self._request)
-            return True
+            return not self.isCanceled()
         except Exception as exc:  # pragma: no cover, exercised via finished()
             self._error_message = "".join(
                 traceback.format_exception_only(type(exc), exc)
@@ -41,7 +41,7 @@ class StoreActivitiesTask(QgsTask):
             return False
 
     def finished(self, ok: bool) -> None:  # pragma: no cover, Qt callback
-        cancelled = self.isCanceled() and not ok and self._result is None and self._error_message is None
+        cancelled = self.isCanceled() and not ok and self._error_message is None
         if self._on_finished is not None:
             self._on_finished(self._result, self._error_message, cancelled)
 

@@ -87,6 +87,23 @@ class TestStoreTaskPure(unittest.TestCase):
         self.assertIn("boom", finished.call_args.args[1])
         self.assertFalse(finished.call_args.args[2])
 
+    def test_run_reports_cancellation_even_if_workflow_finishes_after_cancel(self):
+        workflow = MagicMock()
+        finished = MagicMock()
+        task = self.module.build_store_task(workflow, "request", on_finished=finished)
+
+        def _write_database_request(_request):
+            task.cancel()
+            return SimpleNamespace(status="stored")
+
+        workflow.write_database_request.side_effect = _write_database_request
+
+        ok = task.run()
+        task.finished(ok)
+
+        self.assertFalse(ok)
+        finished.assert_called_once_with(task._result, None, True)
+
 
 if __name__ == "__main__":
     unittest.main()
