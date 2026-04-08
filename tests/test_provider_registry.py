@@ -1,13 +1,13 @@
 import unittest
 
 from tests import _path  # noqa: F401
-from qfit.provider import ProviderError
+from qfit.providers.domain import ProviderError
 from qfit.providers.application import (
     BuildProviderRequest,
     ProviderRegistry,
     build_default_provider_registry,
 )
-from qfit.strava_provider import StravaProvider
+from qfit.providers.infrastructure import StravaProvider
 
 
 class TestProviderRegistry(unittest.TestCase):
