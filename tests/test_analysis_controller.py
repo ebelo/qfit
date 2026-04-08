@@ -2,6 +2,8 @@ import unittest
 from unittest.mock import patch
 
 from tests import _path  # noqa: F401
+from qfit.activities.application.activity_selection_state import ActivitySelectionState
+from qfit.activities.domain.activity_query import ActivityQuery
 from qfit.analysis.application.analysis_controller import (
     AnalysisController,
     FREQUENT_STARTING_POINTS_MODE,
@@ -17,6 +19,13 @@ class TestAnalysisController(unittest.TestCase):
 
         self.assertEqual(request.analysis_mode, "None")
         self.assertEqual(request.starts_layer, "starts-layer")
+
+    def test_build_request_keeps_selection_state(self):
+        selection_state = ActivitySelectionState(query=ActivityQuery(search_text="gravel"), filtered_count=4)
+
+        request = self.controller.build_request("None", "starts-layer", selection_state)
+
+        self.assertIs(request.selection_state, selection_state)
 
     def test_run_request_returns_empty_result_for_non_matching_mode(self):
         request = self.controller.build_request("None", object())

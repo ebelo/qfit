@@ -3,6 +3,7 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock
 
 from tests import _path  # noqa: F401
+from qfit.activities.application.activity_selection_state import ActivitySelectionState
 from qfit.activities.domain.activity_query import ActivityQuery
 from qfit.ui.application import (
     ApplyVisualizationAction,
@@ -30,13 +31,13 @@ class TestDockActionDispatcher(unittest.TestCase):
             run_analysis=run_analysis,
         )
         starts_layer = object()
+        selection_state = ActivitySelectionState(query=ActivityQuery(), filtered_count=3)
         action = ApplyVisualizationAction(
             layers=LayerRefs(activities=object(), starts=starts_layer),
-            query=ActivityQuery(),
+            selection_state=selection_state,
             style_preset="By activity type",
             temporal_mode="By month",
             background_config=BackgroundConfig(enabled=True, preset_name="Outdoors"),
-            filtered_count=3,
             analysis_mode="Most frequent starting points",
             starts_layer=starts_layer,
             apply_subset_filters=False,
@@ -47,17 +48,17 @@ class TestDockActionDispatcher(unittest.TestCase):
         save_settings.assert_called_once_with()
         visual_apply.build_request.assert_called_once_with(
             layers=action.layers,
-            query=action.query,
+            selection_state=selection_state,
             style_preset="By activity type",
             temporal_mode="By month",
             background_config=action.background_config,
             apply_subset_filters=False,
-            filtered_count=3,
         )
         visual_apply.apply_request.assert_called_once_with("request")
         run_analysis.assert_called_once_with(
             "Most frequent starting points",
             starts_layer,
+            selection_state,
         )
         self.assertEqual(
             result.status,
@@ -85,11 +86,10 @@ class TestDockActionDispatcher(unittest.TestCase):
         )
         action = RunAnalysisAction(
             layers=LayerRefs(activities=object()),
-            query=ActivityQuery(),
+            selection_state=ActivitySelectionState(query=ActivityQuery(), filtered_count=1),
             style_preset="By activity type",
             temporal_mode="By month",
             background_config=BackgroundConfig(),
-            filtered_count=1,
             analysis_mode="None",
             apply_subset_filters=True,
         )

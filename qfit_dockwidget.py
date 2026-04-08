@@ -38,6 +38,7 @@ from .activities.domain.activity_query import (
     sort_activities,
     summarize_activities,
 )
+from .activities.application.activity_selection_state import ActivitySelectionState
 from .activities.application.load_workflow import LoadWorkflowError
 from .activities.application.store_task import build_store_task
 from .analysis.infrastructure.frequent_start_points_layer import (
@@ -890,8 +891,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._set_status(result.status)
 
     def _build_visual_workflow_action(self, action_type):
-        filtered_activities = self._filtered_activities()
-        query = self._current_activity_query()
+        selection_state = self._current_activity_selection_state()
 
         return action_type(
             layers=LayerRefs(
@@ -900,7 +900,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 points=self.points_layer,
                 atlas=self.atlas_layer,
             ),
-            query=query,
+            selection_state=selection_state,
             style_preset=self.stylePresetComboBox.currentText(),
             temporal_mode=self.temporalModeComboBox.currentText(),
             background_config=BackgroundConfig(
@@ -912,15 +912,15 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 tile_mode=self.tileModeComboBox.currentText(),
             ),
             apply_subset_filters=True,
-            filtered_count=len(filtered_activities),
             analysis_mode=self.analysisModeComboBox.currentText(),
             starts_layer=self.starts_layer,
         )
 
-    def _run_selected_analysis(self, analysis_mode, starts_layer):
+    def _run_selected_analysis(self, analysis_mode, starts_layer, selection_state=None):
         request = self.analysis_controller.build_request(
             analysis_mode=analysis_mode,
             starts_layer=starts_layer,
+            selection_state=selection_state,
         )
         result = self.analysis_controller.run_request(request)
         if result.layer is None:
@@ -950,7 +950,11 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         current_starts_layer = (
             starts_layer if starts_layer is not None else getattr(self, "starts_layer", None)
         )
-        return self._run_selected_analysis(current_mode, current_starts_layer)
+        return self._run_selected_analysis(
+            current_mode,
+            current_starts_layer,
+            self._current_activity_selection_state(),
+        )
 
     def _clear_analysis_layer(self):
         project = QgsProject.instance()
@@ -969,8 +973,8 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             except RuntimeError:
                 logger.debug("Failed to remove stale frequent-start analysis layer", exc_info=True)
 
-    def _current_activity_query(self):
-        return ActivityQuery(
+    def _current_activity_selection_state(self):
+        query = ActivityQuery(
             activity_type=self.activityTypeComboBox.currentText() or "All",
             date_from=self.dateFromEdit.date().toString("yyyy-MM-dd") if self.dateFromEdit.date().isValid() else None,
             date_to=self.dateToEdit.date().toString("yyyy-MM-dd") if self.dateToEdit.date().isValid() else None,
@@ -980,6 +984,10 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             detailed_route_filter=self.detailedRouteStatusComboBox.currentData(),
             sort_label=self.previewSortComboBox.currentText() or DEFAULT_SORT_LABEL,
         )
+        return ActivitySelectionState.from_activities(self.activities, query)
+
+    def _current_activity_query(self):
+        return self._current_activity_selection_state().query
 
     def _refresh_activity_preview(self):
         if not self.activities:
@@ -989,13 +997,13 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
         fetched_activities = sort_activities(self.activities, DEFAULT_SORT_LABEL)
         summary = summarize_activities(fetched_activities)
+        selection_state = self._current_activity_selection_state()
 
         query_summary = format_summary_text(summary)
-        filtered_count = len(self._filtered_activities())
-        if filtered_count != len(self.activities):
+        if selection_state.filtered_count != len(self.activities):
             query_summary = (
                 f"{query_summary}\n"
-                f"Visualize filters currently match {filtered_count} activities."
+                f"Visualize filters currently match {selection_state.filtered_count} activities."
             )
         self.querySummaryLabel.setText(query_summary)
 
@@ -1006,7 +1014,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         return fetched_activities
 
     def _filtered_activities(self):
-        return filter_activities(self.activities, self._current_activity_query())
+        return filter_activities(self.activities, self._current_activity_selection_state().query)
 
 
     def _redirect_uri(self):
@@ -1100,6 +1108,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
         export_command = self.atlas_export_use_case.build_command(
             atlas_layer=self.atlas_layer,
+            selection_state=self._current_activity_selection_state(),
             output_path=self.atlasPdfPathLineEdit.text().strip(),
             on_finished=self._on_atlas_export_finished,
             pre_export_tile_mode=self.tileModeComboBox.currentText(),

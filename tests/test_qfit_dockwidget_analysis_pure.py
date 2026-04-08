@@ -379,9 +379,8 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.starts_layer = "starts"
         dock.points_layer = "points"
         dock.atlas_layer = "atlas"
-        dock._filtered_activities = MagicMock(return_value=[1, 2, 3])
-        query = object()
-        dock._current_activity_query = MagicMock(return_value=query)
+        selection_state = self.module.ActivitySelectionState(query=object(), filtered_count=3)
+        dock._current_activity_selection_state = MagicMock(return_value=selection_state)
         dock.stylePresetComboBox = _FakeComboBox(current_text="By activity type")
         dock.temporalModeComboBox = _FakeComboBox(current_text="By month")
         dock.backgroundMapCheckBox = _FakeCheckBox(True)
@@ -400,7 +399,8 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertIsInstance(action, self.module.ApplyVisualizationAction)
         self.assertEqual(action.layers.activities, "activities")
         self.assertEqual(action.layers.starts, "starts")
-        self.assertIs(action.query, query)
+        self.assertIs(action.selection_state, selection_state)
+        self.assertIs(action.query, selection_state.query)
         self.assertEqual(action.filtered_count, 3)
         self.assertEqual(action.analysis_mode, "Most frequent starting points")
         self.assertEqual(action.background_config.access_token, "token")
@@ -414,17 +414,20 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             status="Showing top 2 frequent starting-point clusters",
             layer=None,
         )
+        selection_state = self.module.ActivitySelectionState(query=object(), filtered_count=2)
 
         result = self.module.QfitDockWidget._run_selected_analysis(
             dock,
             "Most frequent starting points",
             "starts-layer",
+            selection_state,
         )
 
         self.assertEqual(result, "Showing top 2 frequent starting-point clusters")
         dock.analysis_controller.build_request.assert_called_once_with(
             analysis_mode="Most frequent starting points",
             starts_layer="starts-layer",
+            selection_state=selection_state,
         )
         dock.analysis_controller.run_request.assert_called_once_with("analysis-request")
 
@@ -438,12 +441,14 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             layer=analysis_layer,
         )
         project = _FakeProject()
+        selection_state = self.module.ActivitySelectionState(query=object(), filtered_count=2)
 
         with patch.object(self.module.QgsProject, "instance", return_value=project):
             status = self.module.QfitDockWidget._run_selected_analysis(
                 dock,
                 "Most frequent starting points",
                 "starts-layer",
+                selection_state,
             )
 
         self.assertEqual(status, "Showing top 2 frequent starting-point clusters")
@@ -455,11 +460,10 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock = object.__new__(self.module.QfitDockWidget)
         action = self.module.ApplyVisualizationAction(
             layers=self.module.LayerRefs(activities="activities"),
-            query=object(),
+            selection_state=self.module.ActivitySelectionState(query=object(), filtered_count=1),
             style_preset="By activity type",
             temporal_mode="By month",
             background_config=self.module.BackgroundConfig(),
-            filtered_count=1,
             analysis_mode="None",
             apply_subset_filters=True,
         )
@@ -486,6 +490,8 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.starts_layer = "starts-layer"
         dock._clear_analysis_layer = MagicMock()
         dock._run_selected_analysis = MagicMock(return_value="status")
+        selection_state = self.module.ActivitySelectionState(query=object(), filtered_count=2)
+        dock._current_activity_selection_state = MagicMock(return_value=selection_state)
 
         status = self.module.QfitDockWidget._apply_analysis_configuration(dock)
 
@@ -494,6 +500,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._run_selected_analysis.assert_called_once_with(
             "Most frequent starting points",
             "starts-layer",
+            selection_state,
         )
 
     def test_apply_analysis_configuration_defaults_missing_starts_layer_to_none(self):
@@ -501,6 +508,8 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.analysisModeComboBox = _FakeComboBox(current_text="Most frequent starting points")
         dock._clear_analysis_layer = MagicMock()
         dock._run_selected_analysis = MagicMock(return_value="")
+        selection_state = self.module.ActivitySelectionState(query=object(), filtered_count=0)
+        dock._current_activity_selection_state = MagicMock(return_value=selection_state)
 
         status = self.module.QfitDockWidget._apply_analysis_configuration(dock)
 
@@ -508,6 +517,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._run_selected_analysis.assert_called_once_with(
             "Most frequent starting points",
             None,
+            selection_state,
         )
 
     def test_clear_analysis_layer_removes_current_and_stale_project_layers(self):

@@ -1,6 +1,8 @@
 import logging
 from dataclasses import dataclass, field
 
+from ...activities.application.activity_selection_state import ActivitySelectionState
+from ...activities.domain.activity_query import ActivityQuery
 from ...mapbox_config import MapboxConfigError
 from .layer_gateway import LayerGateway
 
@@ -40,12 +42,19 @@ class ApplyVisualizationRequest:
     """Structured input for the visualization/apply workflow."""
 
     layers: LayerRefs = field(default_factory=LayerRefs)
-    query: object = None
+    selection_state: ActivitySelectionState = field(default_factory=ActivitySelectionState)
     style_preset: str = ""
     temporal_mode: str = ""
     background_config: BackgroundConfig = field(default_factory=BackgroundConfig)
     apply_subset_filters: bool = False
-    filtered_count: int = 0
+
+    @property
+    def query(self):
+        return self.selection_state.query
+
+    @property
+    def filtered_count(self):
+        return self.selection_state.filtered_count
 
 
 # Backward-compatible alias while the request-object migration lands incrementally.
@@ -79,21 +88,26 @@ class VisualApplyService:
     @staticmethod
     def build_request(
         layers,
-        query,
         style_preset,
         temporal_mode,
         background_config,
         apply_subset_filters,
-        filtered_count,
+        selection_state=None,
+        query=None,
+        filtered_count=0,
     ) -> ApplyVisualizationRequest:
+        if selection_state is None:
+            selection_state = ActivitySelectionState(
+                query=query if query is not None else ActivityQuery(),
+                filtered_count=filtered_count,
+            )
         return ApplyVisualizationRequest(
             layers=layers,
-            query=query,
+            selection_state=selection_state,
             style_preset=style_preset,
             temporal_mode=temporal_mode,
             background_config=background_config,
             apply_subset_filters=apply_subset_filters,
-            filtered_count=filtered_count,
         )
 
     def apply(self, request: ApplyVisualizationRequest | None = None, **legacy_kwargs):
