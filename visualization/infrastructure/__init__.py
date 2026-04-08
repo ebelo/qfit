@@ -6,6 +6,7 @@ __all__ = [
     "LayerManager",
     "LayerStyleService",
     "MapCanvasService",
+    "ProjectHygieneService",
     "ProjectLayerLoader",
     "QgisLayerGateway",
     "TemporalService",
@@ -33,6 +34,10 @@ def __getattr__(name):
         from .map_canvas_service import MapCanvasService
 
         return MapCanvasService
+    if name == "ProjectHygieneService":
+        from .project_hygiene_service import ProjectHygieneService
+
+        return ProjectHygieneService
     if name == "ProjectLayerLoader":
         from .project_layer_loader import ProjectLayerLoader
 

@@ -44,6 +44,10 @@ class DockWidgetDependenciesTests(unittest.TestCase):
                 return_value=sentinel.background_controller,
             ) as background_controller,
             patch(
+                "qfit.ui.dockwidget_dependencies._build_project_hygiene_service",
+                return_value=sentinel.project_hygiene_service,
+            ),
+            patch(
                 "qfit.ui.dockwidget_dependencies.LoadWorkflowService",
                 return_value=sentinel.load_workflow,
             ) as load_workflow,
@@ -69,6 +73,7 @@ class DockWidgetDependenciesTests(unittest.TestCase):
         self.assertIs(dependencies.atlas_export_use_case, sentinel.atlas_export_use_case)
         self.assertIs(dependencies.layer_gateway, sentinel.layer_gateway)
         self.assertIs(dependencies.background_controller, sentinel.background_controller)
+        self.assertIs(dependencies.project_hygiene_service, sentinel.project_hygiene_service)
         self.assertIs(dependencies.load_workflow, sentinel.load_workflow)
         self.assertIs(dependencies.visual_apply, sentinel.visual_apply)
         self.assertIs(dependencies.atlas_export_service, sentinel.atlas_export_service)

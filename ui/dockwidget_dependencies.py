@@ -28,6 +28,7 @@ class DockWidgetDependencies:
     atlas_export_use_case: AtlasExportUseCase
     layer_gateway: Any
     background_controller: BackgroundMapController
+    project_hygiene_service: Any
     load_workflow: LoadWorkflowService
     visual_apply: VisualApplyService
     atlas_export_service: AtlasExportService
@@ -51,6 +52,7 @@ def build_dockwidget_dependencies(iface) -> DockWidgetDependencies:
         atlas_export_use_case=AtlasExportUseCase(atlas_export_controller, atlas_export_service),
         layer_gateway=layer_gateway,
         background_controller=BackgroundMapController(layer_gateway),
+        project_hygiene_service=_build_project_hygiene_service(),
         load_workflow=LoadWorkflowService(layer_gateway),
         visual_apply=VisualApplyService(layer_gateway),
         atlas_export_service=atlas_export_service,
@@ -63,6 +65,12 @@ def _build_layer_gateway(iface):
     from ..visualization.infrastructure.qgis_layer_gateway import QgisLayerGateway
 
     return QgisLayerGateway(iface)
+
+
+def _build_project_hygiene_service():
+    from ..visualization.infrastructure.project_hygiene_service import ProjectHygieneService
+
+    return ProjectHygieneService()
 
 
 

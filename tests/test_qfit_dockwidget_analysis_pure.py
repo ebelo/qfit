@@ -285,30 +285,13 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertEqual(dock.analysisModeComboBox.items, ["None", "Most frequent starting points"])
         self.assertEqual(dock.runAnalysisButton.text(), "Run analysis")
 
-    def test_remove_stale_qfit_layers_ignores_memory_layers(self):
+    def test_remove_stale_qfit_layers_delegates_to_project_hygiene_service(self):
         dock = object.__new__(self.module.QfitDockWidget)
-        missing_file_layer = _FakeLayer("qfit activities", "/tmp/missing.gpkg|layername=activities")
-        memory_analysis_layer = _FakeLayer(
-            self.module.FREQUENT_STARTING_POINTS_LAYER_NAME,
-            "Point?crs=EPSG:4326",
-        )
-        unrelated_layer = _FakeLayer("other", "/tmp/missing.gpkg|layername=other")
-        project = _FakeProject(
-            {
-                "a": missing_file_layer,
-                "b": memory_analysis_layer,
-                "c": unrelated_layer,
-            }
-        )
+        dock.project_hygiene_service = MagicMock()
 
-        with patch.object(self.module.QgsProject, "instance", return_value=project), patch.object(
-            self.module.os.path,
-            "exists",
-            side_effect=lambda path: path == "/tmp/present.gpkg",
-        ):
-            self.module.QfitDockWidget._remove_stale_qfit_layers(dock)
+        self.module.QfitDockWidget._remove_stale_qfit_layers(dock)
 
-        self.assertEqual(project.removed, [missing_file_layer.id()])
+        dock.project_hygiene_service.remove_stale_qfit_layers.assert_called_once_with()
 
     def test_apply_analysis_configuration_returns_status_for_non_matching_mode(self):
         dock = object.__new__(self.module.QfitDockWidget)

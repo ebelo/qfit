@@ -193,6 +193,7 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertIs(dock.atlas_export_controller, dependencies.atlas_export_controller)
             self.assertIs(dock.layer_gateway, dependencies.layer_gateway)
             self.assertIs(dock.background_controller, dependencies.background_controller)
+            self.assertIs(dock.project_hygiene_service, dependencies.project_hygiene_service)
             self.assertIs(dock.load_workflow, dependencies.load_workflow)
             self.assertIs(dock.visual_apply, dependencies.visual_apply)
             self.assertIs(dock.atlas_export_service, dependencies.atlas_export_service)
