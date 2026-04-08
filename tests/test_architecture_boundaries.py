@@ -238,10 +238,9 @@ class ModuleScopeImportBoundaryTests(unittest.TestCase):
             imports,
             "QfitDockWidget should stay on the atlas use-case boundary instead of importing the QGIS export runtime directly.",
         )
-        self.assertNotIn(
-            ".atlas.export_task.AtlasExportTask",
-            imports,
-            "QfitDockWidget should not depend directly on the QGIS-heavy atlas export task.",
+        self.assertFalse(
+            any(target.startswith(".atlas.export_task") for target in imports),
+            "QfitDockWidget should not import from the QGIS-heavy atlas export task module at import time.",
         )
 
     def test_ui_dependency_builder_keeps_qgis_layer_gateway_import_lazy(self):
