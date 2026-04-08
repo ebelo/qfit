@@ -225,10 +225,9 @@ class ModuleScopeImportBoundaryTests(unittest.TestCase):
 
     def test_atlas_cover_composer_keeps_export_task_import_lazy(self):
         imports = _module_scope_import_targets("atlas/cover_composer.py")
-        self.assertNotIn(
-            ".export_task.build_cover_layout",
-            imports,
-            "AtlasCoverComposer should keep the heavy export_task cover-layout import lazy.",
+        self.assertFalse(
+            any(target.startswith(".export_task") for target in imports),
+            "AtlasCoverComposer should keep the heavy export_task dependency lazy at module scope.",
         )
 
     def test_dock_widget_does_not_import_qgis_export_runtime_directly(self):
