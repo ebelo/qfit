@@ -406,9 +406,14 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertEqual(action.background_config.access_token, "token")
         self.assertEqual(action.background_config.tile_mode, "Raster")
 
-    def test_run_selected_analysis_delegates_with_explicit_inputs(self):
+    def test_run_selected_analysis_delegates_to_analysis_controller(self):
         dock = object.__new__(self.module.QfitDockWidget)
-        dock._apply_analysis_configuration = MagicMock(return_value="status")
+        dock.analysis_controller = MagicMock()
+        dock.analysis_controller.build_request.return_value = "analysis-request"
+        dock.analysis_controller.run_request.return_value = SimpleNamespace(
+            status="Showing top 2 frequent starting-point clusters",
+            layer=None,
+        )
 
         result = self.module.QfitDockWidget._run_selected_analysis(
             dock,
@@ -416,11 +421,35 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "starts-layer",
         )
 
-        self.assertEqual(result, "status")
-        dock._apply_analysis_configuration.assert_called_once_with(
+        self.assertEqual(result, "Showing top 2 frequent starting-point clusters")
+        dock.analysis_controller.build_request.assert_called_once_with(
             analysis_mode="Most frequent starting points",
             starts_layer="starts-layer",
         )
+        dock.analysis_controller.run_request.assert_called_once_with("analysis-request")
+
+    def test_run_selected_analysis_adds_returned_layer_to_project(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.analysis_controller = MagicMock()
+        dock.analysis_controller.build_request.return_value = "analysis-request"
+        analysis_layer = _FakeLayer(self.module.FREQUENT_STARTING_POINTS_LAYER_NAME)
+        dock.analysis_controller.run_request.return_value = SimpleNamespace(
+            status="Showing top 2 frequent starting-point clusters",
+            layer=analysis_layer,
+        )
+        project = _FakeProject()
+
+        with patch.object(self.module.QgsProject, "instance", return_value=project):
+            status = self.module.QfitDockWidget._run_selected_analysis(
+                dock,
+                "Most frequent starting points",
+                "starts-layer",
+            )
+
+        self.assertEqual(status, "Showing top 2 frequent starting-point clusters")
+        self.assertIs(dock.analysis_layer, analysis_layer)
+        self.assertEqual(project.added, [(analysis_layer, False)])
+        self.assertEqual(project.layer_tree_root.inserted, [(0, analysis_layer)])
 
     def test_apply_visual_configuration_dispatches_apply_action(self):
         dock = object.__new__(self.module.QfitDockWidget)
@@ -451,60 +480,35 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertEqual(dock.background_layer, "background-layer")
         dock._show_error.assert_not_called()
 
-    def test_apply_analysis_configuration_returns_status_for_non_matching_mode(self):
+    def test_apply_analysis_configuration_delegates_current_mode_and_layer(self):
         dock = object.__new__(self.module.QfitDockWidget)
-        dock.analysisModeComboBox = _FakeComboBox(current_text="None")
+        dock.analysisModeComboBox = _FakeComboBox(current_text="Most frequent starting points")
+        dock.starts_layer = "starts-layer"
         dock._clear_analysis_layer = MagicMock()
+        dock._run_selected_analysis = MagicMock(return_value="status")
 
         status = self.module.QfitDockWidget._apply_analysis_configuration(dock)
 
-        self.assertEqual(status, "")
+        self.assertEqual(status, "status")
         dock._clear_analysis_layer.assert_called_once_with()
+        dock._run_selected_analysis.assert_called_once_with(
+            "Most frequent starting points",
+            "starts-layer",
+        )
 
-    def test_apply_analysis_configuration_handles_missing_starts_layer(self):
+    def test_apply_analysis_configuration_defaults_missing_starts_layer_to_none(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock.analysisModeComboBox = _FakeComboBox(current_text="Most frequent starting points")
-        dock.starts_layer = None
         dock._clear_analysis_layer = MagicMock()
+        dock._run_selected_analysis = MagicMock(return_value="")
 
         status = self.module.QfitDockWidget._apply_analysis_configuration(dock)
 
         self.assertEqual(status, "")
-
-    def test_apply_analysis_configuration_handles_empty_analysis_result(self):
-        dock = object.__new__(self.module.QfitDockWidget)
-        dock.analysisModeComboBox = _FakeComboBox(current_text="Most frequent starting points")
-        dock.starts_layer = object()
-        dock._clear_analysis_layer = MagicMock()
-
-        with patch.object(
-            self.module,
-            "build_frequent_start_points_layer",
-            return_value=(None, []),
-        ):
-            status = self.module.QfitDockWidget._apply_analysis_configuration(dock)
-
-        self.assertEqual(status, "No frequent starting points matched the current filters")
-
-    def test_apply_analysis_configuration_adds_new_analysis_layer(self):
-        dock = object.__new__(self.module.QfitDockWidget)
-        dock.analysisModeComboBox = _FakeComboBox(current_text="Most frequent starting points")
-        dock.starts_layer = object()
-        dock._clear_analysis_layer = MagicMock()
-        project = _FakeProject()
-        analysis_layer = _FakeLayer(self.module.FREQUENT_STARTING_POINTS_LAYER_NAME)
-
-        with patch.object(self.module.QgsProject, "instance", return_value=project), patch.object(
-            self.module,
-            "build_frequent_start_points_layer",
-            return_value=(analysis_layer, [object(), object()]),
-        ):
-            status = self.module.QfitDockWidget._apply_analysis_configuration(dock)
-
-        self.assertEqual(status, "Showing top 2 frequent starting-point clusters")
-        self.assertIs(dock.analysis_layer, analysis_layer)
-        self.assertEqual(project.added, [(analysis_layer, False)])
-        self.assertEqual(project.layer_tree_root.inserted, [(0, analysis_layer)])
+        dock._run_selected_analysis.assert_called_once_with(
+            "Most frequent starting points",
+            None,
+        )
 
     def test_clear_analysis_layer_removes_current_and_stale_project_layers(self):
         dock = object.__new__(self.module.QfitDockWidget)

@@ -2,6 +2,7 @@ import os
 from dataclasses import dataclass
 from typing import Any
 
+from ..analysis.application.analysis_controller import AnalysisController
 from ..atlas.export_controller import AtlasExportController
 from ..atlas.export_service import AtlasExportService
 from ..atlas.export_use_case import AtlasExportUseCase
@@ -24,6 +25,7 @@ class DockWidgetDependencies:
 
     settings: SettingsService
     sync_controller: SyncController
+    analysis_controller: AnalysisController
     atlas_export_controller: AtlasExportController
     atlas_export_use_case: AtlasExportUseCase
     layer_gateway: Any
@@ -48,6 +50,7 @@ def build_dockwidget_dependencies(iface) -> DockWidgetDependencies:
     return DockWidgetDependencies(
         settings=settings,
         sync_controller=sync_controller,
+        analysis_controller=AnalysisController(),
         atlas_export_controller=atlas_export_controller,
         atlas_export_use_case=AtlasExportUseCase(atlas_export_controller, atlas_export_service),
         layer_gateway=layer_gateway,
