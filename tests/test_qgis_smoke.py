@@ -202,6 +202,24 @@ class QgisSmokeTests(unittest.TestCase):
             dock.close()
             dock.deleteLater()
 
+    def test_dock_widget_delegates_startup_to_coordinator(self):
+        dependencies = build_dockwidget_dependencies(self.iface)
+
+        with patch("qfit.qfit_dockwidget.DockStartupCoordinator") as startup_coordinator:
+            startup_coordinator.return_value.run.return_value = MagicMock()
+            dock = QfitDockWidget(self.iface, dependencies=dependencies)
+        try:
+            startup_coordinator.assert_called_once_with(
+                dock,
+                workflow_section_coordinator=dock._workflow_section_coordinator,
+            )
+            startup_coordinator.return_value.run.assert_called_once_with()
+            self.assertIs(dock._dock_startup_coordinator, startup_coordinator.return_value)
+            self.assertIs(dock._startup_result, startup_coordinator.return_value.run.return_value)
+        finally:
+            dock.close()
+            dock.deleteLater()
+
     def test_dock_widget_contextual_help_smoke(self):
         dependencies = replace(
             build_dockwidget_dependencies(self.iface),

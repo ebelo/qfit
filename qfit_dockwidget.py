@@ -68,6 +68,7 @@ from .providers.domain.provider import ProviderError
 from .providers.infrastructure.strava_provider import StravaProvider
 from .visualization.application import DEFAULT_TEMPORAL_MODE_LABEL, temporal_mode_labels
 from .ui.dockwidget_dependencies import DockWidgetDependencies, build_dockwidget_dependencies
+from .ui.dock_startup_coordinator import DockStartupCoordinator
 from .ui.workflow_section_coordinator import WorkflowSectionCoordinator
 from .configuration.application.ui_settings_binding import UIFieldBinding, load_bindings, save_bindings
 
@@ -84,6 +85,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         | QDockWidget.DockWidgetMovable
         | QDockWidget.DockWidgetFloatable
     )
+    STARTUP_ALLOWED_AREAS = Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea
 
     def __init__(self, iface, parent=None, dependencies: DockWidgetDependencies | None = None):
         if parent is None and iface is not None and hasattr(iface, "mainWindow"):
@@ -106,23 +108,11 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._bind_dependencies(self._dependencies)
         self.setupUi(self)
         self._workflow_section_coordinator = WorkflowSectionCoordinator(self)
-        self.setFeatures(self.DEFAULT_DOCK_FEATURES)
-        self.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
-        self._workflow_section_coordinator.configure_starting_sections()
-        self._remove_stale_qfit_layers()
-        self._apply_contextual_help()
-        self._configure_background_preset_options()
-        self._configure_detailed_route_filter_options()
-        self._configure_detailed_route_strategy_options()
-        self._configure_preview_sort_options()
-        self._configure_temporal_mode_options()
-        self._configure_analysis_mode_options()
-        self._load_settings()
-        self._wire_events()
-        self._set_default_dates()
-        self._workflow_section_coordinator.configure_workflow_sections()
-        self._refresh_activity_preview()
-        self._update_connection_status()
+        self._dock_startup_coordinator = DockStartupCoordinator(
+            self,
+            workflow_section_coordinator=self._workflow_section_coordinator,
+        )
+        self._startup_result = self._dock_startup_coordinator.run()
 
     def _remove_stale_qfit_layers(self):
         """Remove qfit layers from the project whose source file no longer exists.

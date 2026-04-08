@@ -2,13 +2,14 @@ import os
 import sys
 import unittest
 from types import ModuleType
-from unittest.mock import patch, sentinel
+from unittest.mock import MagicMock, call, patch, sentinel
 
 from tests import _path  # noqa: F401
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 from qfit.ui.dockwidget_dependencies import build_dockwidget_dependencies, _build_cache
+from qfit.ui.dock_startup_coordinator import DockStartupCoordinator, DockStartupResult
 
 
 class _FakeIface:
@@ -424,3 +425,70 @@ class WorkflowSectionCoordinatorVisibilityTests(unittest.TestCase):
         self.assertTrue(dock.advancedFetchSettingsWidget.visible)
         self.assertTrue(dock.mapboxStyleOwnerLineEdit.visible)
         self.assertTrue(dock.mapboxStyleIdLineEdit.visible)
+
+
+class DockStartupCoordinatorTests(unittest.TestCase):
+    def test_run_orchestrates_startup_in_constructor_order(self):
+        dock = MagicMock()
+        dock.DEFAULT_DOCK_FEATURES = sentinel.features
+        dock.STARTUP_ALLOWED_AREAS = sentinel.allowed_areas
+        workflow_section_coordinator = MagicMock()
+
+        coordinator = DockStartupCoordinator(
+            dock,
+            workflow_section_coordinator=workflow_section_coordinator,
+        )
+
+        result = coordinator.run()
+
+        self.assertEqual(
+            result,
+            DockStartupResult(
+                performed_steps=(
+                    "set_features",
+                    "set_allowed_areas",
+                    "configure_starting_sections",
+                    "remove_stale_qfit_layers",
+                    "apply_contextual_help",
+                    "configure_background_preset_options",
+                    "configure_detailed_route_filter_options",
+                    "configure_detailed_route_strategy_options",
+                    "configure_preview_sort_options",
+                    "configure_temporal_mode_options",
+                    "configure_analysis_mode_options",
+                    "load_settings",
+                    "wire_events",
+                    "set_default_dates",
+                    "configure_workflow_sections",
+                    "refresh_activity_preview",
+                    "update_connection_status",
+                ),
+            ),
+        )
+        self.assertEqual(
+            dock.mock_calls,
+            [
+                call.setFeatures(sentinel.features),
+                call.setAllowedAreas(sentinel.allowed_areas),
+                call._remove_stale_qfit_layers(),
+                call._apply_contextual_help(),
+                call._configure_background_preset_options(),
+                call._configure_detailed_route_filter_options(),
+                call._configure_detailed_route_strategy_options(),
+                call._configure_preview_sort_options(),
+                call._configure_temporal_mode_options(),
+                call._configure_analysis_mode_options(),
+                call._load_settings(),
+                call._wire_events(),
+                call._set_default_dates(),
+                call._refresh_activity_preview(),
+                call._update_connection_status(),
+            ],
+        )
+        self.assertEqual(
+            workflow_section_coordinator.mock_calls,
+            [
+                call.configure_starting_sections(),
+                call.configure_workflow_sections(),
+            ],
+        )
