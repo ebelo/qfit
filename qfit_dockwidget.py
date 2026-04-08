@@ -42,7 +42,6 @@ from .activities.application.load_workflow import LoadWorkflowError
 from .activities.application.store_task import build_store_task
 from .analysis.infrastructure.frequent_start_points_layer import (
     FREQUENT_STARTING_POINTS_LAYER_NAME,
-    build_frequent_start_points_layer,
 )
 from .atlas.export_service import (
     AtlasExportResult,
@@ -267,6 +266,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def _bind_dependencies(self, dependencies: DockWidgetDependencies) -> None:
         self.settings = dependencies.settings
         self.sync_controller = dependencies.sync_controller
+        self.analysis_controller = dependencies.analysis_controller
         self.atlas_export_controller = dependencies.atlas_export_controller
         self.atlas_export_use_case = dependencies.atlas_export_use_case
         self.layer_gateway = dependencies.layer_gateway
@@ -918,10 +918,18 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         )
 
     def _run_selected_analysis(self, analysis_mode, starts_layer):
-        return self._apply_analysis_configuration(
+        request = self.analysis_controller.build_request(
             analysis_mode=analysis_mode,
             starts_layer=starts_layer,
         )
+        result = self.analysis_controller.run_request(request)
+        if result.layer is None:
+            return result.status
+
+        QgsProject.instance().addMapLayer(result.layer, False)
+        QgsProject.instance().layerTreeRoot().insertLayer(0, result.layer)
+        self.analysis_layer = result.layer
+        return result.status
 
     def _apply_visual_configuration(self, apply_subset_filters):
         action = replace(
@@ -942,19 +950,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         current_starts_layer = (
             starts_layer if starts_layer is not None else getattr(self, "starts_layer", None)
         )
-        if current_mode != "Most frequent starting points":
-            return ""
-        if current_starts_layer is None:
-            return ""
-
-        layer, clusters = build_frequent_start_points_layer(current_starts_layer)
-        if layer is None or not clusters:
-            return "No frequent starting points matched the current filters"
-
-        QgsProject.instance().addMapLayer(layer, False)
-        QgsProject.instance().layerTreeRoot().insertLayer(0, layer)
-        self.analysis_layer = layer
-        return "Showing top {count} frequent starting-point clusters".format(count=len(clusters))
+        return self._run_selected_analysis(current_mode, current_starts_layer)
 
     def _clear_analysis_layer(self):
         project = QgsProject.instance()
