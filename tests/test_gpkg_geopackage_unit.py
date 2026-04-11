@@ -283,6 +283,7 @@ class GeoPackagePackageUnitTests(unittest.TestCase):
                 legacy.build_and_write_all_layers,
                 moved.build_and_write_all_layers,
             )
+            self.assertIs(legacy.ensure_attribute_indexes, moved.ensure_attribute_indexes)
 
             moved.bootstrap_empty_gpkg("/tmp/bootstrap.gpkg", {"margin_percent": 8})
             self.assertEqual(write_layer_to_gpkg.call_count, 9)
@@ -296,23 +297,57 @@ class GeoPackagePackageUnitTests(unittest.TestCase):
             )
 
             write_layer_to_gpkg.reset_mock()
-            layers = moved.build_and_write_all_layers(
-                [{"name": "Evening Run"}],
-                "/tmp/full.gpkg",
-                {"margin_percent": 10},
-                write_activity_points=True,
-                point_stride=3,
-            )
+            executed_sql = []
 
-            build_atlas_page_plans.assert_called_once_with(
-                [{"name": "Evening Run"}], settings={"margin_percent": 10}
-            )
-            self.assertEqual(write_layer_to_gpkg.call_count, 9)
-            self.assertEqual(
-                layers["activity_points"],
-                ("points", ({"name": "Evening Run"},), True, 3),
-            )
-            self.assertEqual(layers["atlas_toc_entries"], ("toc", ({"name": "Evening Run"},), {"margin_percent": 10}, [{"page": 1}]))
+            class _Cursor:
+                def execute(self, statement):
+                    executed_sql.append(statement)
+
+            class _Connection:
+                def cursor(self):
+                    return _Cursor()
+
+                def commit(self):
+                    executed_sql.append("COMMIT")
+
+                def __enter__(self):
+                    return self
+
+                def __exit__(self, exc_type, exc, tb):
+                    return False
+
+            with patch.object(moved.sqlite3, "connect", return_value=_Connection()) as sqlite_connect:
+                layers = moved.build_and_write_all_layers(
+                    [{"name": "Evening Run"}],
+                    "/tmp/full.gpkg",
+                    {"margin_percent": 10},
+                    write_activity_points=True,
+                    point_stride=3,
+                )
+
+                build_atlas_page_plans.assert_called_once_with(
+                    [{"name": "Evening Run"}], settings={"margin_percent": 10}
+                )
+                self.assertEqual(write_layer_to_gpkg.call_count, 9)
+                self.assertEqual(
+                    layers["activity_points"],
+                    ("points", ({"name": "Evening Run"},), True, 3),
+                )
+                self.assertEqual(layers["atlas_toc_entries"], ("toc", ({"name": "Evening Run"},), {"margin_percent": 10}, [{"page": 1}]))
+                self.assertEqual(sqlite_connect.call_args, call("/tmp/full.gpkg"))
+                self.assertIn(
+                    "CREATE INDEX IF NOT EXISTS idx_activity_tracks_source_activity_id ON activity_tracks(source, source_activity_id)",
+                    executed_sql,
+                )
+                self.assertIn(
+                    "CREATE INDEX IF NOT EXISTS idx_activity_points_point_timestamp_local ON activity_points(point_timestamp_local)",
+                    executed_sql,
+                )
+                self.assertIn(
+                    "CREATE INDEX IF NOT EXISTS idx_activity_atlas_pages_page_sort_key ON activity_atlas_pages(page_sort_key)",
+                    executed_sql,
+                )
+                self.assertEqual(executed_sql[-1], "COMMIT")
 
 
 if __name__ == "__main__":

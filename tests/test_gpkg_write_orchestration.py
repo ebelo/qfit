@@ -1,4 +1,5 @@
 import os
+import sqlite3
 import tempfile
 import unittest
 
@@ -149,6 +150,46 @@ class BuildAndWriteAllLayersTests(unittest.TestCase):
                     mem_layer.featureCount(),
                     f"{layer_name!r} disk count should match memory count",
                 )
+        finally:
+            if os.path.exists(path):
+                os.unlink(path)
+
+    def test_build_and_write_all_layers_creates_attribute_indexes_for_derived_layers(self):
+        path = self._temp_gpkg()
+        try:
+            bootstrap_empty_gpkg(path, self.settings)
+            build_and_write_all_layers(self.records, path, self.settings)
+
+            with sqlite3.connect(path) as connection:
+                expected_indexes = {
+                    "activity_tracks": {
+                        "idx_activity_tracks_source_activity_id",
+                        "idx_activity_tracks_activity_type",
+                        "idx_activity_tracks_start_date",
+                        "idx_activity_tracks_sport_type",
+                    },
+                    "activity_starts": {
+                        "idx_activity_starts_source_activity_id",
+                        "idx_activity_starts_activity_type",
+                        "idx_activity_starts_start_date",
+                    },
+                    "activity_points": {
+                        "idx_activity_points_source_activity_id",
+                        "idx_activity_points_activity_type",
+                        "idx_activity_points_start_date",
+                        "idx_activity_points_point_timestamp_local",
+                        "idx_activity_points_point_timestamp_utc",
+                    },
+                    "activity_atlas_pages": {
+                        "idx_activity_atlas_pages_page_number",
+                        "idx_activity_atlas_pages_page_sort_key",
+                        "idx_activity_atlas_pages_source_activity_id",
+                    },
+                }
+
+                for table_name, expected in expected_indexes.items():
+                    rows = connection.execute(f"PRAGMA index_list('{table_name}')").fetchall()
+                    self.assertTrue(expected.issubset({row[1] for row in rows}), table_name)
         finally:
             if os.path.exists(path):
                 os.unlink(path)
