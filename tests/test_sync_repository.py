@@ -279,6 +279,44 @@ class SyncUnchangedBehaviorTests(unittest.TestCase):
             self.assertEqual(stats["updated"], 0)
             self.assertEqual(stats["stored_total"], 1)
 
+    def test_full_sync_prunes_missing_activities_for_same_provider(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = SyncRepository(str(Path(tmpdir) / "qfit.sqlite"))
+            repo.ensure_schema()
+
+            repo.upsert_activities([
+                self._activity(source_activity_id="A", distance_m=100.0),
+                self._activity(source_activity_id="B", distance_m=200.0),
+            ])
+
+            result = repo.upsert_activities(
+                [self._activity(source_activity_id="A", distance_m=100.0)],
+                sync_metadata={"provider": "strava", "is_full_sync": True},
+            )
+
+            self.assertEqual(result.total_count, 1)
+            stored_ids = [activity.source_activity_id for activity in repo.load_all_activities()]
+            self.assertEqual(stored_ids, ["A"])
+
+    def test_incremental_sync_keeps_missing_activities(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = SyncRepository(str(Path(tmpdir) / "qfit.sqlite"))
+            repo.ensure_schema()
+
+            repo.upsert_activities([
+                self._activity(source_activity_id="A", distance_m=100.0),
+                self._activity(source_activity_id="B", distance_m=200.0),
+            ])
+
+            result = repo.upsert_activities(
+                [self._activity(source_activity_id="A", distance_m=100.0)],
+                sync_metadata={"provider": "strava", "is_full_sync": False},
+            )
+
+            self.assertEqual(result.total_count, 2)
+            stored_ids = sorted(activity.source_activity_id for activity in repo.load_all_activities())
+            self.assertEqual(stored_ids, ["A", "B"])
+
 
 if __name__ == "__main__":
     unittest.main()
