@@ -1,5 +1,6 @@
 """Sanity checks for GitHub Actions workflow files."""
 
+import configparser
 import importlib.util
 import pathlib
 import tempfile
@@ -10,6 +11,7 @@ from importlib import metadata
 from unittest.mock import patch
 
 WORKFLOWS_DIR = pathlib.Path(__file__).resolve().parents[1] / ".github" / "workflows"
+METADATA_PATH = WORKFLOWS_DIR.parents[1] / "metadata.txt"
 
 
 def _read_workflow(name: str) -> str:
@@ -70,6 +72,14 @@ class ReleaseWorkflowTests(unittest.TestCase):
         self.assertIn("unittest discover", self.text)
 
 
+class MetadataTests(unittest.TestCase):
+    def test_metadata_omits_plugin_category(self):
+        parser = configparser.ConfigParser()
+        parser.read(METADATA_PATH)
+
+        self.assertFalse(parser.has_option("general", "category"))
+
+
 class PackageScriptTests(unittest.TestCase):
     @staticmethod
     def _load_module():
@@ -107,6 +117,24 @@ class PackageScriptTests(unittest.TestCase):
 
         self.assertIn("qfit/vendor/pypdf/__init__.py", names)
         self.assertIn("qfit/vendor/licenses/pypdf_LICENSE.txt", names)
+
+    def test_build_zip_excludes_dev_only_artifacts(self):
+        mod = self._load_module()
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            original_dist_dir = mod.DIST_DIR
+            mod.DIST_DIR = pathlib.Path(tmpdir)
+            try:
+                archive_path = mod.build_zip()
+            finally:
+                mod.DIST_DIR = original_dist_dir
+
+            with zipfile.ZipFile(archive_path) as archive:
+                names = set(archive.namelist())
+
+        self.assertNotIn("qfit/.coverage", names)
+        self.assertNotIn("qfit/.github/workflows/build.yml", names)
+        self.assertNotIn("qfit/sonar-project.properties", names)
 
     def test_resolve_package_dir_raises_when_dependency_missing(self):
         mod = self._load_module()
