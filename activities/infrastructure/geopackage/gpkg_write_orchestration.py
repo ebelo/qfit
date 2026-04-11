@@ -74,7 +74,7 @@ def ensure_attribute_indexes(output_path):
 def _import_qgis_spatial_index_api():
     try:
         from qgis.core import QgsFeatureSource, QgsVectorDataProvider, QgsVectorLayer
-    except (ImportError, ModuleNotFoundError) as exc:  # pragma: no cover
+    except ImportError as exc:  # pragma: no cover
         raise RuntimeError("QGIS Python bindings are required to create GeoPackage spatial indexes") from exc
 
     return QgsFeatureSource, QgsVectorDataProvider, QgsVectorLayer
