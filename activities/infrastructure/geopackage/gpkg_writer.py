@@ -15,7 +15,7 @@ class GeoPackageWriter:
     def __init__(
         self,
         output_path=None,
-        write_activity_points=False,
+        write_activity_points=True,
         point_stride=5,
         atlas_margin_percent=None,
         atlas_min_extent_degrees=None,

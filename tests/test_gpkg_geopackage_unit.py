@@ -100,6 +100,71 @@ class GeoPackagePackageUnitTests(unittest.TestCase):
             self.assertEqual(result["path"], "/tmp/qfit-unit.gpkg")
             self.assertEqual(result["sync"], {"added": 1})
 
+    def test_gpkg_writer_defaults_to_writing_activity_points(self):
+        normalize_settings = MagicMock(return_value={"margin_percent": 12})
+        bootstrap_empty_gpkg = MagicMock()
+        build_and_write_all_layers = MagicMock()
+
+        module_overrides = {
+            "qfit.activities.infrastructure.geopackage.gpkg_schema": self._module(
+                "qfit.activities.infrastructure.geopackage.gpkg_schema",
+                GPKG_LAYER_SCHEMA={"activity_tracks": [("name", "String")]},
+            ),
+            "qfit.activities.infrastructure.geopackage.gpkg_write_orchestration": self._module(
+                "qfit.activities.infrastructure.geopackage.gpkg_write_orchestration",
+                bootstrap_empty_gpkg=bootstrap_empty_gpkg,
+                build_and_write_all_layers=build_and_write_all_layers,
+            ),
+            "qfit.atlas.publish_atlas": self._module(
+                "qfit.atlas.publish_atlas",
+                normalize_atlas_page_settings=normalize_settings,
+            ),
+        }
+
+        with patch.dict(sys.modules, module_overrides):
+            sys.modules.pop("qfit.activities.infrastructure.geopackage.gpkg_writer", None)
+
+            moved = importlib.import_module(
+                "qfit.activities.infrastructure.geopackage.gpkg_writer"
+            )
+
+            activity_store = MagicMock()
+            activity_store.upsert_activities.return_value = {"added": 1}
+            activity_store.load_all_activity_records.return_value = [{"name": "Morning Ride"}]
+            layer = MagicMock()
+            layer.featureCount.return_value = 1
+            build_and_write_all_layers.return_value = {
+                "activity_tracks": layer,
+                "activity_starts": layer,
+                "activity_points": layer,
+                "activity_atlas_pages": layer,
+                "atlas_document_summary": layer,
+                "atlas_cover_highlight_count": layer,
+                "atlas_page_detail_items": layer,
+                "atlas_profile_samples": layer,
+                "atlas_toc_entries": layer,
+                "atlas_cover_highlights": layer,
+            }
+
+            writer = moved.GeoPackageWriter(
+                output_path="/tmp/qfit-unit.gpkg",
+                activity_store_factory=lambda _path: activity_store,
+            )
+
+            with patch("os.path.exists", return_value=False), patch("os.path.getsize", return_value=0):
+                writer.write_activities(
+                    [{"name": "Morning Ride"}],
+                    sync_metadata={"provider": "strava"},
+                )
+
+            build_and_write_all_layers.assert_called_once_with(
+                [{"name": "Morning Ride"}],
+                "/tmp/qfit-unit.gpkg",
+                {"margin_percent": 12},
+                write_activity_points=True,
+                point_stride=5,
+            )
+
     def test_moved_gpkg_write_orchestration_and_root_shim_share_same_functions(self):
         write_layer_to_gpkg = MagicMock()
         build_track_layer = MagicMock(side_effect=lambda records: ("tracks", tuple(records)))
