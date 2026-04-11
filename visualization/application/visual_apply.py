@@ -216,7 +216,7 @@ class VisualApplyService:
             return False
         try:
             return layer.featureCount() > 0
-        except TypeError:
+        except (AttributeError, TypeError):
             return False
 
     @staticmethod

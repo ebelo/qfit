@@ -6,6 +6,7 @@ from tests import _path  # noqa: F401
 from qfit.visualization.application.render_plan import (
     RENDERER_HEATMAP,
     SOURCE_ROLE_POINTS,
+    SOURCE_ROLE_STARTS,
 )
 from qfit.visualization.application.visual_apply import (
     BackgroundConfig,
@@ -146,6 +147,25 @@ class ApplyWithSubsetFiltersTests(unittest.TestCase):
         self.assertEqual(render_plan.selected_source_role, SOURCE_ROLE_POINTS)
         self.assertEqual(render_plan.points.renderer_family, RENDERER_HEATMAP)
         self.assertEqual(render_plan.background_preset_name, "Satellite")
+
+    def test_render_plan_tolerates_layers_without_feature_count(self):
+        self.layers.starts = SimpleNamespace(name="starts")
+        self.layers.points = SimpleNamespace(name="points")
+
+        self.service.apply(
+            layers=self.layers,
+            query=_make_query(),
+            style_preset="Heatmap",
+            temporal_mode="Off",
+            background_config=_make_bg_config(),
+            apply_subset_filters=True,
+            filtered_count=3,
+        )
+
+        kwargs = self.layer_manager.apply_style.call_args[1]
+        render_plan = kwargs["render_plan"]
+        self.assertEqual(render_plan.selected_source_role, SOURCE_ROLE_STARTS)
+        self.assertEqual(render_plan.starts.renderer_family, RENDERER_HEATMAP)
 
     def test_status_includes_filtered_count(self):
         result = self.service.apply(
