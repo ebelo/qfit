@@ -1,4 +1,4 @@
-from qgis.core import QgsProject, QgsVectorLayer
+from qgis.core import QgsCoordinateReferenceSystem, QgsProject, QgsVectorLayer
 
 
 class ProjectLayerLoader:
@@ -44,6 +44,10 @@ class ProjectLayerLoader:
         layer = QgsVectorLayer(uri, display_name, "ogr")
         if not layer.isValid():
             raise RuntimeError(f"Could not load layer '{layer_name}' from {gpkg_path}")
+
+        layer_crs = layer.crs()
+        if layer_crs is None or not layer_crs.isValid():
+            layer.setCrs(QgsCoordinateReferenceSystem("EPSG:4326"))
 
         project = QgsProject.instance()
         for old_layer in project.mapLayersByName(display_name):

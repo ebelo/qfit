@@ -1170,10 +1170,10 @@ class QgisSmokeTests(unittest.TestCase):
                 "Heatmap",
             )
 
-            # Points layer carries the heatmap renderer
-            renderer = points_layer.renderer()
+            # Starts layer carries the heatmap renderer
+            renderer = starts_layer.renderer()
             self.assertIsInstance(renderer, QgsHeatmapRenderer)
-            self.assertEqual(renderer.radius(), 1000)
+            self.assertEqual(renderer.radius(), 3000)
             self.assertEqual(renderer.colorRamp().color2().alpha(), 255)
             self.assertGreater(renderer.colorRamp().color2().red(), renderer.colorRamp().color2().blue())
             self.assertEqual(renderer.radiusUnit(), QgsUnitTypes.RenderMapUnits)
@@ -1181,11 +1181,11 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertIsNotNone(renderer.colorRamp())
             self.assertEqual(renderer.colorRamp().color1().alpha(), 0)
             self.assertTrue(renderer.colorRamp().stops(), "Heatmap ramp should include intermediate transparent/soft stops")
-            self.assertEqual(round(points_layer.opacity(), 2), 1.0)
+            self.assertEqual(round(starts_layer.opacity(), 2), 1.0)
 
-            # Tracks and start points must be fully hidden so they don't flatten the visual
+            # Tracks and route points must be fully hidden so they don't flatten the visual
             self.assertEqual(round(activities_layer.opacity(), 2), 0.0)
-            self.assertEqual(round(starts_layer.opacity(), 2), 0.0)
+            self.assertEqual(round(points_layer.opacity(), 2), 0.0)
 
     def test_heatmap_preset_renders_visible_output(self):
         """Heatmap preset should produce visible rendered output, not just assign a renderer."""
@@ -1199,11 +1199,11 @@ class QgisSmokeTests(unittest.TestCase):
                 activities_layer, starts_layer, points_layer, atlas_layer, "Heatmap"
             )
 
-            image = self._render_layers_to_image([points_layer], points_layer.extent())
+            image = self._render_layers_to_image([starts_layer], starts_layer.extent())
             non_white_pixels, strong_pixels = self._count_heatmap_pixels(image)
 
-            self.assertGreater(non_white_pixels, 20000)
-            self.assertGreater(strong_pixels, 10000)
+            self.assertGreater(non_white_pixels, 1000)
+            self.assertGreater(strong_pixels, 100)
 
     def test_heatmap_preset_falls_back_to_starts_layer(self):
         """When points_layer is None the heatmap should render on starts_layer."""

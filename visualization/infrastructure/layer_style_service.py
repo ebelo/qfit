@@ -1,4 +1,5 @@
 import logging
+from math import floor
 
 logger = logging.getLogger(__name__)
 
@@ -6,6 +7,8 @@ from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QColor
 from qgis.core import (
     QgsCategorizedSymbolRenderer,
+    QgsCoordinateReferenceSystem,
+    QgsCoordinateTransform,
     QgsFillSymbol,
     QgsGradientColorRamp,
     QgsGradientStop,
@@ -29,12 +32,64 @@ from ...mapbox_config import BACKGROUND_LAYER_PREFIX
 
 BY_ACTIVITY_TYPE_PRESET = "By activity type"
 OTHER_ACTIVITY_LABEL = "Other"
+HEATMAP_ANALYSIS_RADIUS_M = 750
+HEATMAP_VISUALIZE_RADIUS_M = 3000
+HEATMAP_WORKING_CRS = QgsCoordinateReferenceSystem("EPSG:3857")
 
 
-def build_qfit_heatmap_renderer():
+def _estimate_heatmap_maximum(layer, radius_map_units):
+    if layer is None:
+        return None
+
+    feature_count = layer.featureCount()
+    if feature_count <= 0:
+        return None
+
+    try:
+        source_crs = layer.crs()
+        if source_crs is None or not source_crs.isValid():
+            source_crs = QgsCoordinateReferenceSystem("EPSG:4326")
+
+        transform = None
+        if source_crs != HEATMAP_WORKING_CRS:
+            transform = QgsCoordinateTransform(
+                source_crs,
+                HEATMAP_WORKING_CRS,
+                QgsProject.instance().transformContext(),
+            )
+
+        cell_size = max(radius_map_units / 2.0, 1.0)
+        counts = {}
+        for feature in layer.getFeatures():
+            geometry = feature.geometry()
+            if geometry is None or geometry.isEmpty():
+                continue
+            point = geometry.asPoint()
+            if transform is not None:
+                point = transform.transform(point)
+            key = (floor(point.x() / cell_size), floor(point.y() / cell_size))
+            counts[key] = counts.get(key, 0) + 1
+
+        if not counts:
+            return float(feature_count)
+
+        maximum = 1
+        for x, y in counts:
+            local_total = 0
+            for dx in (-1, 0, 1):
+                for dy in (-1, 0, 1):
+                    local_total += counts.get((x + dx, y + dy), 0)
+            maximum = max(maximum, local_total)
+        return float(maximum)
+    except Exception:
+        logger.debug("Failed to estimate heatmap maximum, falling back to feature count", exc_info=True)
+        return float(feature_count)
+
+
+def build_qfit_heatmap_renderer(*, maximum_value=None):
     renderer = QgsHeatmapRenderer()
-    renderer.setRadius(12)
-    renderer.setRadiusUnit(QgsUnitTypes.RenderMillimeters)
+    renderer.setRadius(HEATMAP_ANALYSIS_RADIUS_M)
+    renderer.setRadiusUnit(QgsUnitTypes.RenderMapUnits)
     renderer.setRenderQuality(2)
     heat_ramp = QgsGradientColorRamp(
         QColor("#00000000"),
@@ -48,13 +103,15 @@ def build_qfit_heatmap_renderer():
         ],
     )
     renderer.setColorRamp(heat_ramp)
+    if maximum_value is not None and maximum_value > 0:
+        renderer.setMaximumValue(float(maximum_value))
     return renderer
 
 
-def build_qfit_visualize_heatmap_renderer():
+def build_qfit_visualize_heatmap_renderer(*, maximum_value=None):
     renderer = QgsHeatmapRenderer()
-    renderer.setRadius(18)
-    renderer.setRadiusUnit(QgsUnitTypes.RenderMillimeters)
+    renderer.setRadius(HEATMAP_VISUALIZE_RADIUS_M)
+    renderer.setRadiusUnit(QgsUnitTypes.RenderMapUnits)
     renderer.setRenderQuality(2)
     heat_ramp = QgsGradientColorRamp(
         QColor("#00000000"),
@@ -68,6 +125,8 @@ def build_qfit_visualize_heatmap_renderer():
         ],
     )
     renderer.setColorRamp(heat_ramp)
+    if maximum_value is not None and maximum_value > 0:
+        renderer.setMaximumValue(float(maximum_value))
     return renderer
 
 
@@ -139,9 +198,6 @@ class LayerStyleService:
         if points_layer is None:
             return
         if preset == "Heatmap":
-            if has_point_features:
-                self._apply_heatmap_style(points_layer)
-                return
             self._apply_track_point_style(points_layer, subtle=True)
             points_layer.setOpacity(0.0)
             return
@@ -171,11 +227,7 @@ class LayerStyleService:
             self._apply_start_point_style(starts_layer, subtle=False)
             return
         if preset == "Heatmap":
-            if not has_point_features:
-                self._apply_heatmap_style(starts_layer)
-            else:
-                self._apply_start_point_style(starts_layer, subtle=True)
-                starts_layer.setOpacity(0.0)
+            self._apply_heatmap_style(starts_layer)
             return
         if preset == BY_ACTIVITY_TYPE_PRESET:
             self._apply_categorized_point_style(starts_layer, basemap_preset_name, size="3.0")
@@ -296,7 +348,11 @@ class LayerStyleService:
         layer.triggerRepaint()
 
     def _apply_heatmap_style(self, layer):
-        layer.setRenderer(build_qfit_visualize_heatmap_renderer())
+        layer.setRenderer(
+            build_qfit_visualize_heatmap_renderer(
+                maximum_value=_estimate_heatmap_maximum(layer, HEATMAP_VISUALIZE_RADIUS_M)
+            )
+        )
         layer.setOpacity(1.0)
         layer.triggerRepaint()
 

@@ -213,9 +213,9 @@ class LayerStyleServiceTests(unittest.TestCase):
             self.style_service.apply_style(
                 activities_layer, starts_layer, points_layer, atlas_layer, "Heatmap"
             )
-            self.assertIsInstance(points_layer.renderer(), QgsHeatmapRenderer)
+            self.assertIsInstance(starts_layer.renderer(), QgsHeatmapRenderer)
             self.assertEqual(round(activities_layer.opacity(), 2), 0.0)
-            self.assertEqual(round(starts_layer.opacity(), 2), 0.0)
+            self.assertEqual(round(points_layer.opacity(), 2), 0.0)
 
     def test_heatmap_falls_back_to_starts_when_no_points_layer(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -366,13 +366,13 @@ class LayerStyleServiceUnitTests(unittest.TestCase):
         self.service.apply_style(acts, None, None, None, "By activity type")
         acts.setRenderer.assert_called_once()
 
-    def test_heatmap_hides_tracks_and_starts(self):
+    def test_heatmap_hides_tracks_and_points(self):
         acts = self._make_layer()
         starts = self._make_layer()
         points = self._make_layer()
         self.service.apply_style(acts, starts, points, None, "Heatmap")
         acts.setOpacity.assert_called_with(0.0)
-        starts.setOpacity.assert_called_with(0.0)
+        points.setOpacity.assert_called_with(0.0)
 
     def test_heatmap_uses_starts_when_no_points_layer(self):
         acts = self._make_layer()
