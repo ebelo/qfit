@@ -317,6 +317,43 @@ class SyncUnchangedBehaviorTests(unittest.TestCase):
             stored_ids = sorted(activity.source_activity_id for activity in repo.load_all_activities())
             self.assertEqual(stored_ids, ["A", "B"])
 
+    def test_full_sync_prune_uses_temp_table_for_large_id_sets(self):
+        repo = SyncRepository(":memory:")
+
+        class RecordingCursor:
+            def __init__(self):
+                self.execute_calls = []
+                self.executemany_calls = []
+
+            def execute(self, sql, params=()):
+                self.execute_calls.append((sql, tuple(params) if isinstance(params, list) else params))
+                return self
+
+            def executemany(self, sql, seq_of_params):
+                self.executemany_calls.append((sql, list(seq_of_params)))
+                return self
+
+        cursor = RecordingCursor()
+        activities = [
+            self._activity(source_activity_id=str(index), distance_m=float(index))
+            for index in range(1100)
+        ]
+
+        repo._prune_missing_activities(
+            cursor,
+            activities,
+            sync_metadata={"provider": "strava", "is_full_sync": True},
+        )
+
+        self.assertEqual(cursor.execute_calls[0][0], "CREATE TEMP TABLE IF NOT EXISTS incoming_sync_ids (source_activity_id TEXT PRIMARY KEY)")
+        self.assertEqual(cursor.execute_calls[1][0], "DELETE FROM incoming_sync_ids")
+        insert_sql, insert_rows = cursor.executemany_calls[0]
+        self.assertEqual(insert_sql, "INSERT INTO incoming_sync_ids (source_activity_id) VALUES (?)")
+        self.assertEqual(len(insert_rows), 1100)
+        delete_sql, delete_params = cursor.execute_calls[2]
+        self.assertIn("NOT EXISTS", delete_sql)
+        self.assertEqual(delete_params, ("strava",))
+
 
 if __name__ == "__main__":
     unittest.main()

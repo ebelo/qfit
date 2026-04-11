@@ -19,6 +19,7 @@ from .gpkg_schema import (
     POINT_FIELDS,
     make_qgs_fields,
 )
+from ....polyline_utils import decode_polyline
 from ....time_utils import add_seconds_iso
 
 
@@ -37,13 +38,13 @@ def build_point_layer(records, write_activity_points=False, point_stride=1):
 
     stride = max(1, int(point_stride or 1))
     for index, record in enumerate(records, start=1):
-        geometry_points = record.get("geometry_points") or []
-        if len(geometry_points) < 1:
+        source_points, geometry_source = _activity_point_sequence(record)
+        if len(source_points) < 1:
             continue
 
-        stream_metrics = ((record.get("details_json") or {}).get("stream_metrics") or {})
-        sampled_points = _sample_points(geometry_points, stride)
-        total_points = max(1, len(geometry_points) - 1)
+        stream_metrics = _stream_metrics(record, geometry_source)
+        sampled_points = _sample_points(source_points, stride)
+        total_points = max(1, len(source_points) - 1)
         for point_index, lat, lon in sampled_points:
             stream_time_s = _metric_value(stream_metrics, "time", point_index, as_int=True)
             feature = QgsFeature(layer.fields())
@@ -69,7 +70,7 @@ def build_point_layer(records, write_activity_points=False, point_stride=1):
             feature["activity_type"] = record.get("activity_type")
             feature["start_date"] = record.get("start_date")
             feature["distance_m"] = record.get("distance_m")
-            feature["geometry_source"] = record.get("geometry_source") or "stream"
+            feature["geometry_source"] = geometry_source
             feature["last_synced_at"] = record.get("last_synced_at")
             features.append(feature)
 
@@ -88,6 +89,50 @@ def _sample_points(points, stride):
     if sampled_indexes[-1] != len(points) - 1:
         sampled_indexes.append(len(points) - 1)
     return [(index, points[index][0], points[index][1]) for index in sampled_indexes]
+
+
+def _activity_point_sequence(record):
+    geometry_points = _normalized_points(record.get("geometry_points") or [])
+    if geometry_points:
+        return geometry_points, "stream"
+
+    polyline_points = _normalized_points(decode_polyline(record.get("summary_polyline")))
+    if polyline_points:
+        return polyline_points, "summary_polyline"
+
+    fallback_points = _normalized_points(_fallback_points(record))
+    if fallback_points:
+        return fallback_points, "start_end"
+
+    return [], None
+
+
+def _fallback_points(record):
+    start_lat = record.get("start_lat")
+    start_lon = record.get("start_lon")
+    end_lat = record.get("end_lat")
+    end_lon = record.get("end_lon")
+    if None in (start_lat, start_lon, end_lat, end_lon):
+        return []
+    return [(start_lat, start_lon), (end_lat, end_lon)]
+
+
+def _normalized_points(points):
+    normalized = []
+    for point in points or []:
+        if not isinstance(point, (list, tuple)) or len(point) < 2:
+            continue
+        try:
+            normalized.append((float(point[0]), float(point[1])))
+        except (TypeError, ValueError):
+            continue
+    return normalized
+
+
+def _stream_metrics(record, geometry_source):
+    if geometry_source != "stream":
+        return {}
+    return ((record.get("details_json") or {}).get("stream_metrics") or {})
 
 
 def _metric_value(stream_metrics, key, index, as_int=False):

@@ -286,7 +286,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertEqual(dock.analysisModeLabel.text(), "Analysis")
         self.assertEqual(
             dock.analysisModeComboBox.items,
-            ["None", "Most frequent starting points", "Heatmap"],
+            ["None", "Most frequent starting points"],
         )
         self.assertEqual(dock.runAnalysisButton.text(), "Run analysis")
 

@@ -217,12 +217,25 @@ class SyncRepository:
         }
 
         if incoming_ids:
-            placeholders = ", ".join("?" for _ in incoming_ids)
             cursor.execute(
-                "DELETE FROM activity_registry WHERE source = ? AND source_activity_id NOT IN ({placeholders})".format(
-                    placeholders=placeholders,
-                ),
-                [provider, *sorted(incoming_ids)],
+                "CREATE TEMP TABLE IF NOT EXISTS incoming_sync_ids (source_activity_id TEXT PRIMARY KEY)"
+            )
+            cursor.execute("DELETE FROM incoming_sync_ids")
+            cursor.executemany(
+                "INSERT INTO incoming_sync_ids (source_activity_id) VALUES (?)",
+                [(activity_id,) for activity_id in sorted(incoming_ids)],
+            )
+            cursor.execute(
+                """
+                DELETE FROM activity_registry
+                WHERE source = ?
+                  AND NOT EXISTS (
+                      SELECT 1
+                      FROM incoming_sync_ids
+                      WHERE incoming_sync_ids.source_activity_id = activity_registry.source_activity_id
+                  )
+                """,
+                [provider],
             )
             return
 

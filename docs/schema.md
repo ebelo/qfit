@@ -348,7 +348,7 @@ Primary purpose:
 
 ## Geometry priority
 
-When rebuilding visible layers, qfit currently prefers geometry in this order:
+When rebuilding visible layers and derived `activity_points`, qfit currently prefers geometry in this order:
 1. detailed stream points from `geometry_points_json`
 2. decoded `summary_polyline`
 3. fallback start/end line from start and end coordinates
@@ -359,7 +359,7 @@ When rebuilding visible layers, qfit currently prefers geometry in this order:
 2. optionally enrich activities with detailed stream geometry and extra stream metrics
 3. upsert activities into `activity_registry`
 4. update `sync_state`
-5. rebuild `activity_tracks`, `activity_starts`, `activity_atlas_pages`, `atlas_document_summary`, `atlas_cover_highlights`, `atlas_page_detail_items`, `atlas_toc_entries`, and optionally `activity_points`
+5. rebuild `activity_tracks`, `activity_starts`, `activity_points`, `activity_atlas_pages`, `atlas_document_summary`, `atlas_cover_highlights`, `atlas_page_detail_items`, and `atlas_toc_entries` as part of the normal write pipeline
 6. load those layers into QGIS
 
 ## Next phase
