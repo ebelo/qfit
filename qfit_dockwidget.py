@@ -122,7 +122,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._dock_action_dispatcher = DockActionDispatcher(
             visual_apply=self.visual_apply,
             save_settings=self._save_settings,
-            run_analysis=self._run_selected_analysis,
+            run_analysis=self._apply_analysis_configuration,
         )
 
     def _remove_stale_qfit_layers(self):
@@ -947,7 +947,12 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self.background_layer = result.background_layer
         return result.status
 
-    def _apply_analysis_configuration(self, analysis_mode=None, starts_layer=None):
+    def _apply_analysis_configuration(
+        self,
+        analysis_mode=None,
+        starts_layer=None,
+        selection_state=None,
+    ):
         self._clear_analysis_layer()
 
         current_mode = analysis_mode or self.analysisModeComboBox.currentText()
@@ -957,14 +962,14 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         return self._run_selected_analysis(
             current_mode,
             current_starts_layer,
-            self._current_activity_selection_state(),
+            selection_state or self._current_activity_selection_state(),
         )
 
     def _clear_analysis_layer(self):
         project = QgsProject.instance()
         if self.analysis_layer is not None:
             try:
-                project.removeMapLayer(self.analysis_layer)
+                project.removeMapLayer(self.analysis_layer.id())
             except RuntimeError:
                 logger.debug("Failed to remove analysis layer", exc_info=True)
             self.analysis_layer = None
@@ -973,7 +978,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             if layer.name() != FREQUENT_STARTING_POINTS_LAYER_NAME:
                 continue
             try:
-                project.removeMapLayer(layer)
+                project.removeMapLayer(layer.id())
             except RuntimeError:
                 logger.debug("Failed to remove stale frequent-start analysis layer", exc_info=True)
 

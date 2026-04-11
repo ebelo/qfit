@@ -531,7 +531,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             self.module.QfitDockWidget._clear_analysis_layer(dock)
 
         self.assertIsNone(dock.analysis_layer)
-        self.assertEqual(project.removed, [current_layer, stale_layer])
+        self.assertEqual(project.removed, [current_layer.id(), stale_layer.id()])
 
     def test_on_load_clicked_starts_background_store_task(self):
         dock = object.__new__(self.module.QfitDockWidget)

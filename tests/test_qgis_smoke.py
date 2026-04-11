@@ -1220,6 +1220,33 @@ class QgisSmokeTests(unittest.TestCase):
             dock.close()
             dock.deleteLater()
 
+    def test_load_layers_replaces_existing_frequent_starting_points_analysis_layer(self):
+        dock = QfitDockWidget(self.iface)
+        try:
+            with tempfile.TemporaryDirectory() as tmp:
+                output_path = self._write_sample_gpkg(tmp)
+                dock.outputPathLineEdit.setText(output_path)
+                dock.analysisModeComboBox.setCurrentText("Most frequent starting points")
+
+                dock.on_load_layers_clicked()
+                first_analysis_layer = dock.analysis_layer
+                self.assertIsNotNone(first_analysis_layer)
+                first_analysis_layer_id = first_analysis_layer.id()
+
+                dock.on_load_layers_clicked()
+
+                analysis_layers = [
+                    layer
+                    for layer in QgsProject.instance().mapLayers().values()
+                    if layer.name() == "qfit frequent starting points"
+                ]
+                self.assertEqual(len(analysis_layers), 1)
+                self.assertIsNotNone(dock.analysis_layer)
+                self.assertNotEqual(dock.analysis_layer.id(), first_analysis_layer_id)
+        finally:
+            dock.close()
+            dock.deleteLater()
+
     def test_most_frequent_starting_points_analysis_creates_ranked_layer(self):
         dock = QfitDockWidget(self.iface)
         try:
