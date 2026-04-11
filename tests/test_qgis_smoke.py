@@ -1137,6 +1137,37 @@ class QgisSmokeTests(unittest.TestCase):
 
             self.assertIsInstance(starts_layer.renderer(), QgsHeatmapRenderer)
             self.assertEqual(round(starts_layer.opacity(), 2), 1.0)
+
+    def test_heatmap_preset_falls_back_to_starts_layer_when_points_layer_is_empty(self):
+        """An empty points layer should not blank the map in Heatmap preset."""
+        from qgis.core import QgsHeatmapRenderer
+
+        with tempfile.TemporaryDirectory() as tmp:
+            output_path = self._write_sample_gpkg_without_points(tmp)
+            activities_layer, starts_layer, points_layer, atlas_layer = (
+                self.layer_manager.load_output_layers(output_path)
+            )
+
+            self.assertIsNotNone(points_layer)
+            self.assertEqual(points_layer.featureCount(), 0)
+
+            self.layer_manager.apply_style(
+                activities_layer,
+                starts_layer,
+                points_layer,
+                atlas_layer,
+                "Heatmap",
+            )
+
+            self.assertIsInstance(starts_layer.renderer(), QgsHeatmapRenderer)
+            self.assertEqual(round(starts_layer.opacity(), 2), 1.0)
+            self.assertEqual(round(points_layer.opacity(), 2), 0.0)
+
+            image = self._render_layers_to_image([starts_layer], starts_layer.extent())
+            non_white_pixels, strong_pixels = self._count_heatmap_pixels(image)
+
+            self.assertGreater(non_white_pixels, 1000)
+            self.assertGreater(strong_pixels, 100)
             self.assertEqual(round(activities_layer.opacity(), 2), 0.0)
 
     def test_build_frequent_start_points_layer_rejects_invalid_layer(self):
@@ -1681,17 +1712,39 @@ class QgisSmokeTests(unittest.TestCase):
         )
 
     def _write_sample_gpkg(self, temp_dir):
-        output_path = str(Path(temp_dir) / "qfit-heatmap-test.gpkg")
-        GeoPackageWriter(
-            output_path,
+        return self._write_sample_gpkg_with_options(
+            temp_dir,
+            filename="qfit-heatmap-test.gpkg",
             write_activity_points=True,
             point_stride=2,
+        )
+
+    def _write_sample_gpkg_without_points(self, temp_dir):
+        return self._write_sample_gpkg_with_options(
+            temp_dir,
+            filename="qfit-heatmap-no-points.gpkg",
+            write_activity_points=False,
+            point_stride=2,
+        )
+
+    def _write_sample_gpkg_with_options(
+        self,
+        temp_dir,
+        *,
+        filename,
+        write_activity_points,
+        point_stride,
+    ):
+        output_path = str(Path(temp_dir) / filename)
+        GeoPackageWriter(
+            output_path,
+            write_activity_points=write_activity_points,
+            point_stride=point_stride,
             atlas_margin_percent=10,
             atlas_min_extent_degrees=0.01,
             atlas_target_aspect_ratio=1.5,
         ).write_activities(self._sample_activities(), sync_metadata={"provider": "strava"})
         return output_path
-
 
     def _render_layers_to_image(self, layers, extent, width=800, height=800):
         settings = QgsMapSettings()

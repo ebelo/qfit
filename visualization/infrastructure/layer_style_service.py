@@ -81,15 +81,39 @@ class LayerStyleService:
     def apply_style(self, activities_layer, starts_layer, points_layer, atlas_layer, preset, background_preset_name=None):
         preset = preset or "Simple lines"
         basemap_preset_name = background_preset_name or self._infer_background_preset_name()
+        has_point_features = self._has_features(points_layer)
 
-        self._apply_activities_layer_style(activities_layer, preset, basemap_preset_name)
-        self._apply_points_layer_style(points_layer, preset, basemap_preset_name)
-        self._apply_starts_layer_style(starts_layer, points_layer, preset, basemap_preset_name)
+        self._apply_activities_layer_style(
+            activities_layer,
+            preset,
+            basemap_preset_name,
+            has_point_features=has_point_features,
+        )
+        self._apply_points_layer_style(
+            points_layer,
+            preset,
+            basemap_preset_name,
+            has_point_features=has_point_features,
+        )
+        self._apply_starts_layer_style(
+            starts_layer,
+            points_layer,
+            preset,
+            basemap_preset_name,
+            has_point_features=has_point_features,
+        )
 
         if atlas_layer is not None:
             self._apply_atlas_page_style(atlas_layer)
 
-    def _apply_activities_layer_style(self, activities_layer, preset, basemap_preset_name):
+    def _apply_activities_layer_style(
+        self,
+        activities_layer,
+        preset,
+        basemap_preset_name,
+        *,
+        has_point_features=False,
+    ):
         if activities_layer is None:
             return
         if preset == BY_ACTIVITY_TYPE_PRESET:
@@ -104,11 +128,22 @@ class LayerStyleService:
             return
         self._apply_simple_line_style(activities_layer, basemap_preset_name)
 
-    def _apply_points_layer_style(self, points_layer, preset, basemap_preset_name):
+    def _apply_points_layer_style(
+        self,
+        points_layer,
+        preset,
+        basemap_preset_name,
+        *,
+        has_point_features=False,
+    ):
         if points_layer is None:
             return
         if preset == "Heatmap":
-            self._apply_heatmap_style(points_layer)
+            if has_point_features:
+                self._apply_heatmap_style(points_layer)
+                return
+            self._apply_track_point_style(points_layer, subtle=True)
+            points_layer.setOpacity(0.0)
             return
         if preset == "Track points":
             self._apply_track_point_style(points_layer, subtle=False)
@@ -118,7 +153,15 @@ class LayerStyleService:
             return
         self._apply_track_point_style(points_layer, subtle=True)
 
-    def _apply_starts_layer_style(self, starts_layer, points_layer, preset, basemap_preset_name):
+    def _apply_starts_layer_style(
+        self,
+        starts_layer,
+        points_layer,
+        preset,
+        basemap_preset_name,
+        *,
+        has_point_features=False,
+    ):
         if starts_layer is None:
             return
         if preset == "Clustered starts":
@@ -128,7 +171,7 @@ class LayerStyleService:
             self._apply_start_point_style(starts_layer, subtle=False)
             return
         if preset == "Heatmap":
-            if points_layer is None:
+            if not has_point_features:
                 self._apply_heatmap_style(starts_layer)
             else:
                 self._apply_start_point_style(starts_layer, subtle=True)
@@ -256,6 +299,9 @@ class LayerStyleService:
         layer.setRenderer(build_qfit_visualize_heatmap_renderer())
         layer.setOpacity(1.0)
         layer.triggerRepaint()
+
+    def _has_features(self, layer):
+        return layer is not None and layer.featureCount() > 0
 
     def _apply_clusterish_style(self, layer):
         symbol = QgsMarkerSymbol.createSimple(
