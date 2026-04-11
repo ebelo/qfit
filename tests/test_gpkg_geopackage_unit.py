@@ -450,6 +450,65 @@ class GeoPackagePackageUnitTests(unittest.TestCase):
             self.assertEqual(providers["activity_points"].create_calls, 1)
             self.assertEqual(providers["activity_atlas_pages"].create_calls, 0)
 
+            class _InvalidLayer:
+                def isValid(self):
+                    return False
+
+            with patch.object(
+                moved,
+                "_import_qgis_spatial_index_api",
+                return_value=(_FeatureSource, _VectorDataProvider, lambda uri, layer_name, provider_key: _InvalidLayer()),
+            ):
+                with self.assertRaisesRegex(RuntimeError, "Failed to load GeoPackage layer 'activity_tracks'"):
+                    moved.ensure_spatial_indexes("/tmp/full.gpkg")
+
+            class _NoCapabilityProvider:
+                def capabilities(self):
+                    return 0
+
+                def hasSpatialIndex(self):
+                    return missing
+
+            class _NoCapabilityLayer:
+                def isValid(self):
+                    return True
+
+                def dataProvider(self):
+                    return _NoCapabilityProvider()
+
+            with patch.object(
+                moved,
+                "_import_qgis_spatial_index_api",
+                return_value=(_FeatureSource, _VectorDataProvider, lambda uri, layer_name, provider_key: _NoCapabilityLayer()),
+            ):
+                with self.assertRaisesRegex(RuntimeError, "does not support spatial index creation"):
+                    moved.ensure_spatial_indexes("/tmp/full.gpkg")
+
+            class _CreateFailureProvider:
+                def capabilities(self):
+                    return _VectorDataProvider.CreateSpatialIndex
+
+                def hasSpatialIndex(self):
+                    return missing
+
+                def createSpatialIndex(self):
+                    return False
+
+            class _CreateFailureLayer:
+                def isValid(self):
+                    return True
+
+                def dataProvider(self):
+                    return _CreateFailureProvider()
+
+            with patch.object(
+                moved,
+                "_import_qgis_spatial_index_api",
+                return_value=(_FeatureSource, _VectorDataProvider, lambda uri, layer_name, provider_key: _CreateFailureLayer()),
+            ):
+                with self.assertRaisesRegex(RuntimeError, "Failed to create spatial index for layer 'activity_tracks'"):
+                    moved.ensure_spatial_indexes("/tmp/full.gpkg")
+
 
 if __name__ == "__main__":
     unittest.main()
