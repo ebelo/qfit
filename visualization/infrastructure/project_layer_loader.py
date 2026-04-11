@@ -1,8 +1,13 @@
-from qgis.core import QgsProject, QgsVectorLayer
+from qgis.core import QgsCoordinateReferenceSystem, QgsProject, QgsVectorLayer
 
 
 class ProjectLayerLoader:
     """Loads and replaces qfit output layers in the current QGIS project."""
+
+    DEFAULT_LAYER_CRS = "EPSG:4326"
+    LAYER_FALLBACK_CRS = {
+        "activity_atlas_pages": "EPSG:3857",
+    }
 
     ACTIVITIES_CANDIDATES = [
         ("activity_tracks", "qfit activities"),
@@ -44,6 +49,11 @@ class ProjectLayerLoader:
         layer = QgsVectorLayer(uri, display_name, "ogr")
         if not layer.isValid():
             raise RuntimeError(f"Could not load layer '{layer_name}' from {gpkg_path}")
+
+        layer_crs = layer.crs()
+        if layer_crs is None or not layer_crs.isValid():
+            fallback_authid = self.LAYER_FALLBACK_CRS.get(layer_name, self.DEFAULT_LAYER_CRS)
+            layer.setCrs(QgsCoordinateReferenceSystem(fallback_authid))
 
         project = QgsProject.instance()
         for old_layer in project.mapLayersByName(display_name):

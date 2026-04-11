@@ -6,12 +6,15 @@ from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QColor
 from qgis.core import (
     QgsCategorizedSymbolRenderer,
+    QgsCoordinateReferenceSystem,
+    QgsCoordinateTransform,
     QgsFillSymbol,
     QgsGradientColorRamp,
     QgsGradientStop,
     QgsHeatmapRenderer,
     QgsLineSymbol,
     QgsMarkerSymbol,
+    QgsPointXY,
     QgsProject,
     QgsRendererCategory,
     QgsSimpleLineSymbolLayer,
@@ -19,22 +22,84 @@ from qgis.core import (
     QgsUnitTypes,
 )
 
+from ...analysis.application.frequent_start_points import (
+    StartPointSample,
+    analyze_frequent_start_points,
+)
+from ...mapbox_config import BACKGROUND_LAYER_PREFIX
 from ..map_style import (
     DEFAULT_SIMPLE_LINE_HEX,
     pick_activity_style_field,
     resolve_activity_color,
     resolve_basemap_line_style,
 )
-from ...mapbox_config import BACKGROUND_LAYER_PREFIX
 
 BY_ACTIVITY_TYPE_PRESET = "By activity type"
 OTHER_ACTIVITY_LABEL = "Other"
+HEATMAP_ANALYSIS_RADIUS_M = 750
+HEATMAP_VISUALIZE_RADIUS_M = 250
+HEATMAP_WORKING_CRS = QgsCoordinateReferenceSystem("EPSG:3857")
 
 
-def build_qfit_heatmap_renderer():
+def _build_metric_start_samples(layer):
+    if layer is None:
+        return []
+
+    source_crs = layer.crs()
+    if source_crs is None or not source_crs.isValid():
+        source_crs = QgsCoordinateReferenceSystem("EPSG:4326")
+
+    transform = None
+    if source_crs != HEATMAP_WORKING_CRS:
+        transform = QgsCoordinateTransform(
+            source_crs,
+            HEATMAP_WORKING_CRS,
+            QgsProject.instance().transformContext(),
+        )
+
+    samples = []
+    for feature in layer.getFeatures():
+        geometry = feature.geometry()
+        if geometry is None or geometry.isEmpty():
+            continue
+        point = geometry.asPoint()
+        metric_point = QgsPointXY(point.x(), point.y())
+        if transform is not None:
+            metric_point = transform.transform(metric_point)
+        samples.append(
+            StartPointSample(
+                x=metric_point.x(),
+                y=metric_point.y(),
+                source_activity_id=str(feature["source_activity_id"])
+                if "source_activity_id" in feature.fields().names()
+                else None,
+            )
+        )
+    return samples
+
+
+def _heatmap_settings_from_frequent_starts(layer):
+    feature_count = 0 if layer is None else layer.featureCount()
+    if feature_count <= 0:
+        return HEATMAP_VISUALIZE_RADIUS_M, None
+
+    try:
+        samples = _build_metric_start_samples(layer)
+        if not samples:
+            return HEATMAP_VISUALIZE_RADIUS_M, float(feature_count)
+
+        clusters, radius_m = analyze_frequent_start_points(samples, max_clusters=len(samples))
+        maximum = max((cluster.activity_count for cluster in clusters), default=feature_count)
+        return max(40.0, float(radius_m or HEATMAP_VISUALIZE_RADIUS_M)), float(maximum)
+    except Exception:
+        logger.debug("Failed to derive heatmap settings from frequent-start analysis", exc_info=True)
+        return HEATMAP_VISUALIZE_RADIUS_M, float(feature_count)
+
+
+def build_qfit_heatmap_renderer(*, maximum_value=None):
     renderer = QgsHeatmapRenderer()
-    renderer.setRadius(12)
-    renderer.setRadiusUnit(QgsUnitTypes.RenderMillimeters)
+    renderer.setRadius(HEATMAP_ANALYSIS_RADIUS_M)
+    renderer.setRadiusUnit(QgsUnitTypes.RenderMapUnits)
     renderer.setRenderQuality(2)
     heat_ramp = QgsGradientColorRamp(
         QColor("#00000000"),
@@ -48,13 +113,15 @@ def build_qfit_heatmap_renderer():
         ],
     )
     renderer.setColorRamp(heat_ramp)
+    if maximum_value is not None and maximum_value > 0:
+        renderer.setMaximumValue(float(maximum_value))
     return renderer
 
 
-def build_qfit_visualize_heatmap_renderer():
+def build_qfit_visualize_heatmap_renderer(*, radius_map_units=HEATMAP_VISUALIZE_RADIUS_M, maximum_value=None):
     renderer = QgsHeatmapRenderer()
-    renderer.setRadius(18)
-    renderer.setRadiusUnit(QgsUnitTypes.RenderMillimeters)
+    renderer.setRadius(radius_map_units)
+    renderer.setRadiusUnit(QgsUnitTypes.RenderMapUnits)
     renderer.setRenderQuality(2)
     heat_ramp = QgsGradientColorRamp(
         QColor("#00000000"),
@@ -68,6 +135,8 @@ def build_qfit_visualize_heatmap_renderer():
         ],
     )
     renderer.setColorRamp(heat_ramp)
+    if maximum_value is not None and maximum_value > 0:
+        renderer.setMaximumValue(float(maximum_value))
     return renderer
 
 
@@ -82,6 +151,7 @@ class LayerStyleService:
         preset = preset or "Simple lines"
         basemap_preset_name = background_preset_name or self._infer_background_preset_name()
         has_point_features = self._has_features(points_layer)
+        has_start_features = self._has_features(starts_layer)
 
         self._apply_activities_layer_style(
             activities_layer,
@@ -94,6 +164,7 @@ class LayerStyleService:
             preset,
             basemap_preset_name,
             has_point_features=has_point_features,
+            has_start_features=has_start_features,
         )
         self._apply_starts_layer_style(
             starts_layer,
@@ -101,6 +172,7 @@ class LayerStyleService:
             preset,
             basemap_preset_name,
             has_point_features=has_point_features,
+            has_start_features=has_start_features,
         )
 
         if atlas_layer is not None:
@@ -135,11 +207,12 @@ class LayerStyleService:
         basemap_preset_name,
         *,
         has_point_features=False,
+        has_start_features=False,
     ):
         if points_layer is None:
             return
         if preset == "Heatmap":
-            if has_point_features:
+            if has_point_features and not has_start_features:
                 self._apply_heatmap_style(points_layer)
                 return
             self._apply_track_point_style(points_layer, subtle=True)
@@ -161,6 +234,7 @@ class LayerStyleService:
         basemap_preset_name,
         *,
         has_point_features=False,
+        has_start_features=False,
     ):
         if starts_layer is None:
             return
@@ -171,11 +245,11 @@ class LayerStyleService:
             self._apply_start_point_style(starts_layer, subtle=False)
             return
         if preset == "Heatmap":
-            if not has_point_features:
-                self._apply_heatmap_style(starts_layer)
-            else:
+            if not has_start_features and has_point_features:
                 self._apply_start_point_style(starts_layer, subtle=True)
                 starts_layer.setOpacity(0.0)
+                return
+            self._apply_heatmap_style(starts_layer)
             return
         if preset == BY_ACTIVITY_TYPE_PRESET:
             self._apply_categorized_point_style(starts_layer, basemap_preset_name, size="3.0")
@@ -296,7 +370,13 @@ class LayerStyleService:
         layer.triggerRepaint()
 
     def _apply_heatmap_style(self, layer):
-        layer.setRenderer(build_qfit_visualize_heatmap_renderer())
+        radius_map_units, maximum_value = _heatmap_settings_from_frequent_starts(layer)
+        layer.setRenderer(
+            build_qfit_visualize_heatmap_renderer(
+                radius_map_units=radius_map_units,
+                maximum_value=maximum_value,
+            )
+        )
         layer.setOpacity(1.0)
         layer.triggerRepaint()
 
