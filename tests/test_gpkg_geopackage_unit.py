@@ -319,15 +319,22 @@ class GeoPackagePackageUnitTests(unittest.TestCase):
 
             spatial_index_calls = []
 
+            class _FeatureSource:
+                SpatialIndexNotPresent = 1
+                SpatialIndexPresent = 2
+
+            class _VectorDataProvider:
+                CreateSpatialIndex = 1
+
             class _Provider:
                 def __init__(self, layer_name):
                     self.layer_name = layer_name
 
                 def capabilities(self):
-                    return moved.QgsVectorDataProvider.CreateSpatialIndex
+                    return _VectorDataProvider.CreateSpatialIndex
 
                 def hasSpatialIndex(self):
-                    return moved.QgsFeatureSource.SpatialIndexPresent
+                    return _FeatureSource.SpatialIndexPresent
 
                 def createSpatialIndex(self):
                     spatial_index_calls.append(self.layer_name)
@@ -346,7 +353,11 @@ class GeoPackagePackageUnitTests(unittest.TestCase):
                     return _Provider(self.layer_name)
 
             with patch.object(moved.sqlite3, "connect", return_value=_Connection()) as sqlite_connect, \
-                    patch.object(moved, "QgsVectorLayer", side_effect=lambda uri, layer_name, provider_key: _Layer(uri, layer_name, provider_key)):
+                    patch.object(
+                        moved,
+                        "_import_qgis_spatial_index_api",
+                        return_value=(_FeatureSource, _VectorDataProvider, lambda uri, layer_name, provider_key: _Layer(uri, layer_name, provider_key)),
+                    ):
                 layers = moved.build_and_write_all_layers(
                     [{"name": "Evening Run"}],
                     "/tmp/full.gpkg",
@@ -380,8 +391,8 @@ class GeoPackagePackageUnitTests(unittest.TestCase):
                 self.assertEqual(executed_sql[-1], "COMMIT")
                 self.assertEqual(spatial_index_calls, [])
 
-            present = moved.QgsFeatureSource.SpatialIndexPresent
-            missing = moved.QgsFeatureSource.SpatialIndexNotPresent
+            present = _FeatureSource.SpatialIndexPresent
+            missing = _FeatureSource.SpatialIndexNotPresent
             loaded_layers = []
 
             class _SpatialProvider:
@@ -390,7 +401,7 @@ class GeoPackagePackageUnitTests(unittest.TestCase):
                     self.create_calls = 0
 
                 def capabilities(self):
-                    return moved.QgsVectorDataProvider.CreateSpatialIndex
+                    return _VectorDataProvider.CreateSpatialIndex
 
                 def hasSpatialIndex(self):
                     return self.state
@@ -418,7 +429,11 @@ class GeoPackagePackageUnitTests(unittest.TestCase):
                 def dataProvider(self):
                     return providers[self.layer_name]
 
-            with patch.object(moved, "QgsVectorLayer", side_effect=lambda uri, layer_name, provider_key: _SpatialLayer(uri, layer_name, provider_key)):
+            with patch.object(
+                moved,
+                "_import_qgis_spatial_index_api",
+                return_value=(_FeatureSource, _VectorDataProvider, lambda uri, layer_name, provider_key: _SpatialLayer(uri, layer_name, provider_key)),
+            ):
                 moved.ensure_spatial_indexes("/tmp/full.gpkg")
 
             self.assertEqual(
