@@ -200,6 +200,39 @@ class WriteAndLoadSuccessTests(unittest.TestCase):
             atlas_target_aspect_ratio=2.0,
         )
 
+    def test_write_and_load_ignores_legacy_request_to_disable_activity_points(self):
+        write_result = {
+            "path": "/tmp/out.gpkg",
+            "fetched_count": 1,
+            "track_count": 0,
+            "start_count": 0,
+            "point_count": 0,
+            "atlas_count": 0,
+            "sync": SyncStats(total_count=1, inserted=1, updated=0, unchanged=0),
+        }
+        mock_gpkg = self._make_writer_mock(write_result)
+        self.layer_manager.load_output_layers.return_value = (None, None, None, None)
+
+        with patch(f"{_GPKG_WRITER_MODULE}.GeoPackageWriter", mock_gpkg.GeoPackageWriter):
+            self.service.write_and_load(
+                activities=["a"],
+                output_path="/tmp/test.gpkg",
+                write_activity_points=False,
+                point_stride=10,
+                atlas_margin_percent=5.0,
+                atlas_min_extent_degrees=0.02,
+                atlas_target_aspect_ratio=2.0,
+            )
+
+        mock_gpkg.GeoPackageWriter.assert_called_once_with(
+            output_path="/tmp/test.gpkg",
+            write_activity_points=True,
+            point_stride=10,
+            atlas_margin_percent=5.0,
+            atlas_min_extent_degrees=0.02,
+            atlas_target_aspect_ratio=2.0,
+        )
+
 
 class WriteDatabaseSuccessTests(unittest.TestCase):
     def setUp(self):

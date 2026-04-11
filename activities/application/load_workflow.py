@@ -132,7 +132,7 @@ class LoadWorkflowService:
 
         writer = GeoPackageWriter(
             output_path=request.output_path,
-            write_activity_points=request.write_activity_points,
+            write_activity_points=True,
             point_stride=request.point_stride,
             atlas_margin_percent=request.atlas_margin_percent,
             atlas_min_extent_degrees=request.atlas_min_extent_degrees,
