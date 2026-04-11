@@ -154,12 +154,16 @@ class SyncRepository:
                 )
                 """
             )
-            cursor.execute(
-                "CREATE INDEX IF NOT EXISTS idx_activity_registry_start_date ON activity_registry(start_date)"
-            )
-            cursor.execute(
-                "CREATE INDEX IF NOT EXISTS idx_activity_registry_type ON activity_registry(activity_type)"
-            )
+            for statement in (
+                "CREATE INDEX IF NOT EXISTS idx_activity_registry_start_date ON activity_registry(start_date)",
+                "CREATE INDEX IF NOT EXISTS idx_activity_registry_type ON activity_registry(activity_type)",
+                "CREATE INDEX IF NOT EXISTS idx_activity_registry_source_start_date ON activity_registry(source, start_date)",
+                "CREATE INDEX IF NOT EXISTS idx_activity_registry_start_date_local ON activity_registry(start_date_local)",
+                "CREATE INDEX IF NOT EXISTS idx_activity_registry_sport_type ON activity_registry(sport_type)",
+                "CREATE INDEX IF NOT EXISTS idx_activity_registry_distance_m ON activity_registry(distance_m)",
+                "CREATE INDEX IF NOT EXISTS idx_activity_registry_last_synced_at ON activity_registry(last_synced_at)",
+            ):
+                cursor.execute(statement)
             connection.commit()
 
     def upsert_activities(self, activities, sync_metadata=None):

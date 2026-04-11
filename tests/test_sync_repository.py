@@ -88,6 +88,26 @@ class SyncRepositoryTests(unittest.TestCase):
             self.assertEqual(len(rows), 1)
             self.assertEqual(rows[0][0], "strava")
 
+    def test_ensure_schema_creates_activity_registry_indexes_idempotently(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = SyncRepository(str(Path(tmpdir) / "qfit.sqlite"))
+
+            repo.ensure_schema()
+            repo.ensure_schema()
+
+            index_rows = repo._connect().execute("PRAGMA index_list('activity_registry')").fetchall()
+            index_names = {row[1] for row in index_rows}
+
+            self.assertTrue({
+                "idx_activity_registry_start_date",
+                "idx_activity_registry_type",
+                "idx_activity_registry_source_start_date",
+                "idx_activity_registry_start_date_local",
+                "idx_activity_registry_sport_type",
+                "idx_activity_registry_distance_m",
+                "idx_activity_registry_last_synced_at",
+            }.issubset(index_names))
+
 
 class SyncUnchangedBehaviorTests(unittest.TestCase):
     """Verify that re-syncing identical activities does not rewrite rows."""
