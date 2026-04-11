@@ -166,6 +166,21 @@ class PointSequenceHelperTests(unittest.TestCase):
         self.assertEqual(_stream_metrics(record, "stream"), {"time": [0, 1]})
         self.assertEqual(_stream_metrics(record, "summary_polyline"), {})
 
+    def test_activity_point_sequence_returns_empty_when_no_geometry_is_available(self):
+        points, geometry_source = _activity_point_sequence(
+            {
+                "geometry_points": [],
+                "summary_polyline": None,
+                "start_lat": None,
+                "start_lon": None,
+                "end_lat": None,
+                "end_lon": None,
+            }
+        )
+
+        self.assertEqual(points, [])
+        self.assertIsNone(geometry_source)
+
 
 @unittest.skipIf(QgsApplication is None, "QGIS Python bindings are not available")
 class MetricValueTests(unittest.TestCase):
@@ -304,6 +319,25 @@ class BuildPointLayerTests(unittest.TestCase):
         features = list(layer.getFeatures())
         self.assertEqual(features[0]["geometry_source"], "start_end")
         self.assertEqual(features[-1]["point_index"], 1)
+
+    def test_skips_records_without_any_usable_geometry(self):
+        records = [
+            {
+                "source": "strava",
+                "source_activity_id": "1",
+                "geometry_points": [("bad", 6.6)],
+                "summary_polyline": None,
+                "start_lat": None,
+                "start_lon": None,
+                "end_lat": None,
+                "end_lon": None,
+            }
+        ]
+
+        layer = build_point_layer(records, write_activity_points=True, point_stride=1)
+
+        self.assertTrue(layer.isValid())
+        self.assertEqual(layer.featureCount(), 0)
 
 
 if __name__ == "__main__":
