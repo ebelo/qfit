@@ -15,6 +15,8 @@ It depends on :mod:`gpkg_io` (disk writes), :mod:`gpkg_layer_builders`
 but contains no schema definitions or repository logic.
 """
 
+import sqlite3
+
 from .gpkg_io import write_layer_to_gpkg
 from .gpkg_atlas_page_builder import build_atlas_layer
 from .gpkg_layer_builders import (
@@ -30,6 +32,43 @@ from .gpkg_atlas_table_builders import (
     build_toc_layer,
 )
 from ....atlas.publish_atlas import build_atlas_page_plans
+
+
+DERIVED_LAYER_ATTRIBUTE_INDEXES = {
+    "activity_tracks": (
+        "CREATE INDEX IF NOT EXISTS idx_activity_tracks_source_activity_id ON activity_tracks(source, source_activity_id)",
+        "CREATE INDEX IF NOT EXISTS idx_activity_tracks_activity_type ON activity_tracks(activity_type)",
+        "CREATE INDEX IF NOT EXISTS idx_activity_tracks_start_date ON activity_tracks(start_date)",
+        "CREATE INDEX IF NOT EXISTS idx_activity_tracks_sport_type ON activity_tracks(sport_type)",
+    ),
+    "activity_starts": (
+        "CREATE INDEX IF NOT EXISTS idx_activity_starts_source_activity_id ON activity_starts(source, source_activity_id)",
+        "CREATE INDEX IF NOT EXISTS idx_activity_starts_activity_type ON activity_starts(activity_type)",
+        "CREATE INDEX IF NOT EXISTS idx_activity_starts_start_date ON activity_starts(start_date)",
+    ),
+    "activity_points": (
+        "CREATE INDEX IF NOT EXISTS idx_activity_points_source_activity_id ON activity_points(source, source_activity_id)",
+        "CREATE INDEX IF NOT EXISTS idx_activity_points_activity_type ON activity_points(activity_type)",
+        "CREATE INDEX IF NOT EXISTS idx_activity_points_start_date ON activity_points(start_date)",
+        "CREATE INDEX IF NOT EXISTS idx_activity_points_point_timestamp_local ON activity_points(point_timestamp_local)",
+        "CREATE INDEX IF NOT EXISTS idx_activity_points_point_timestamp_utc ON activity_points(point_timestamp_utc)",
+    ),
+    "activity_atlas_pages": (
+        "CREATE INDEX IF NOT EXISTS idx_activity_atlas_pages_page_number ON activity_atlas_pages(page_number)",
+        "CREATE INDEX IF NOT EXISTS idx_activity_atlas_pages_page_sort_key ON activity_atlas_pages(page_sort_key)",
+        "CREATE INDEX IF NOT EXISTS idx_activity_atlas_pages_source_activity_id ON activity_atlas_pages(source, source_activity_id)",
+    ),
+}
+
+
+def ensure_attribute_indexes(output_path):
+    """Create derived-layer attribute indexes inside *output_path* if missing."""
+    with sqlite3.connect(output_path) as connection:
+        cursor = connection.cursor()
+        for statements in DERIVED_LAYER_ATTRIBUTE_INDEXES.values():
+            for statement in statements:
+                cursor.execute(statement)
+        connection.commit()
 
 
 def bootstrap_empty_gpkg(output_path, atlas_page_settings):
@@ -78,5 +117,7 @@ def build_and_write_all_layers(
 
     for layer_name, layer in layers.items():
         write_layer_to_gpkg(layer, output_path, layer_name, overwrite_file=False)
+
+    ensure_attribute_indexes(output_path)
 
     return layers
