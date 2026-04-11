@@ -33,8 +33,52 @@ from ...mapbox_config import BACKGROUND_LAYER_PREFIX
 BY_ACTIVITY_TYPE_PRESET = "By activity type"
 OTHER_ACTIVITY_LABEL = "Other"
 HEATMAP_ANALYSIS_RADIUS_M = 750
-HEATMAP_VISUALIZE_RADIUS_M = 3000
+HEATMAP_VISUALIZE_RADIUS_M = 2000
 HEATMAP_WORKING_CRS = QgsCoordinateReferenceSystem("EPSG:3857")
+
+
+def _resolve_heatmap_transform(layer):
+    source_crs = layer.crs()
+    if source_crs is None or not source_crs.isValid():
+        source_crs = QgsCoordinateReferenceSystem("EPSG:4326")
+    if source_crs == HEATMAP_WORKING_CRS:
+        return None
+    return QgsCoordinateTransform(
+        source_crs,
+        HEATMAP_WORKING_CRS,
+        QgsProject.instance().transformContext(),
+    )
+
+
+def _collect_heatmap_points(layer, cell_size):
+    transform = _resolve_heatmap_transform(layer)
+    points = []
+    buckets = {}
+    for feature in layer.getFeatures():
+        geometry = feature.geometry()
+        if geometry is None or geometry.isEmpty():
+            continue
+        point = geometry.asPoint()
+        if transform is not None:
+            point = transform.transform(point)
+        point_xy = (point.x(), point.y())
+        points.append(point_xy)
+        key = (floor(point_xy[0] / cell_size), floor(point_xy[1] / cell_size))
+        buckets.setdefault(key, []).append(point_xy)
+    return points, buckets
+
+
+def _count_nearby_points(origin, buckets, cell_size, radius_squared):
+    x, y = origin
+    bucket_x = floor(x / cell_size)
+    bucket_y = floor(y / cell_size)
+    local_total = 0
+    for dx in (-1, 0, 1):
+        for dy in (-1, 0, 1):
+            for candidate_x, candidate_y in buckets.get((bucket_x + dx, bucket_y + dy), []):
+                if ((candidate_x - x) * (candidate_x - x)) + ((candidate_y - y) * (candidate_y - y)) <= radius_squared:
+                    local_total += 1
+    return local_total
 
 
 def _estimate_heatmap_maximum(layer, radius_map_units):
@@ -46,40 +90,16 @@ def _estimate_heatmap_maximum(layer, radius_map_units):
         return None
 
     try:
-        source_crs = layer.crs()
-        if source_crs is None or not source_crs.isValid():
-            source_crs = QgsCoordinateReferenceSystem("EPSG:4326")
-
-        transform = None
-        if source_crs != HEATMAP_WORKING_CRS:
-            transform = QgsCoordinateTransform(
-                source_crs,
-                HEATMAP_WORKING_CRS,
-                QgsProject.instance().transformContext(),
-            )
-
-        cell_size = max(radius_map_units / 2.0, 1.0)
-        counts = {}
-        for feature in layer.getFeatures():
-            geometry = feature.geometry()
-            if geometry is None or geometry.isEmpty():
-                continue
-            point = geometry.asPoint()
-            if transform is not None:
-                point = transform.transform(point)
-            key = (floor(point.x() / cell_size), floor(point.y() / cell_size))
-            counts[key] = counts.get(key, 0) + 1
-
-        if not counts:
+        cell_size = max(radius_map_units, 1.0)
+        points, buckets = _collect_heatmap_points(layer, cell_size)
+        if not points:
             return float(feature_count)
 
-        maximum = 1
-        for x, y in counts:
-            local_total = 0
-            for dx in (-1, 0, 1):
-                for dy in (-1, 0, 1):
-                    local_total += counts.get((x + dx, y + dy), 0)
-            maximum = max(maximum, local_total)
+        radius_squared = radius_map_units * radius_map_units
+        maximum = max(
+            _count_nearby_points(point, buckets, cell_size, radius_squared)
+            for point in points
+        )
         return float(maximum)
     except Exception:
         logger.debug("Failed to estimate heatmap maximum, falling back to feature count", exc_info=True)
@@ -140,26 +160,22 @@ class LayerStyleService:
     def apply_style(self, activities_layer, starts_layer, points_layer, atlas_layer, preset, background_preset_name=None):
         preset = preset or "Simple lines"
         basemap_preset_name = background_preset_name or self._infer_background_preset_name()
-        has_point_features = self._has_features(points_layer)
 
         self._apply_activities_layer_style(
             activities_layer,
             preset,
             basemap_preset_name,
-            has_point_features=has_point_features,
         )
         self._apply_points_layer_style(
             points_layer,
             preset,
             basemap_preset_name,
-            has_point_features=has_point_features,
         )
         self._apply_starts_layer_style(
             starts_layer,
             points_layer,
             preset,
             basemap_preset_name,
-            has_point_features=has_point_features,
         )
 
         if atlas_layer is not None:
@@ -170,8 +186,6 @@ class LayerStyleService:
         activities_layer,
         preset,
         basemap_preset_name,
-        *,
-        has_point_features=False,
     ):
         if activities_layer is None:
             return
@@ -192,8 +206,6 @@ class LayerStyleService:
         points_layer,
         preset,
         basemap_preset_name,
-        *,
-        has_point_features=False,
     ):
         if points_layer is None:
             return
@@ -215,8 +227,6 @@ class LayerStyleService:
         points_layer,
         preset,
         basemap_preset_name,
-        *,
-        has_point_features=False,
     ):
         if starts_layer is None:
             return
@@ -355,9 +365,6 @@ class LayerStyleService:
         )
         layer.setOpacity(1.0)
         layer.triggerRepaint()
-
-    def _has_features(self, layer):
-        return layer is not None and layer.featureCount() > 0
 
     def _apply_clusterish_style(self, layer):
         symbol = QgsMarkerSymbol.createSimple(

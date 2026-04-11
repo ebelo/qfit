@@ -1173,7 +1173,7 @@ class QgisSmokeTests(unittest.TestCase):
             # Starts layer carries the heatmap renderer
             renderer = starts_layer.renderer()
             self.assertIsInstance(renderer, QgsHeatmapRenderer)
-            self.assertEqual(renderer.radius(), 3000)
+            self.assertEqual(renderer.radius(), 2000)
             self.assertEqual(renderer.colorRamp().color2().alpha(), 255)
             self.assertGreater(renderer.colorRamp().color2().red(), renderer.colorRamp().color2().blue())
             self.assertEqual(renderer.radiusUnit(), QgsUnitTypes.RenderMapUnits)
