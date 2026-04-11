@@ -4,10 +4,14 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
+import json
 import os
 import pathlib
 import shutil
+import subprocess
 import sys
+from datetime import datetime, timezone
 
 from package_plugin import _vendor_runtime_dependencies
 
@@ -16,6 +20,7 @@ PLUGIN_NAME = "qfit"
 EXCLUDED_DIRS = {".git", "dist", "__pycache__"}
 EXCLUDED_FILES = {".gitignore"}
 EXCLUDED_SUFFIXES = {".pyc", ".pyo"}
+DEPLOYMENT_MANIFEST = ".qfit-deploy-manifest.json"
 
 
 def default_plugins_dir(profile: str) -> pathlib.Path:
@@ -38,20 +43,103 @@ def should_copy(path: pathlib.Path) -> bool:
     return path.is_file()
 
 
-def install_copy(destination: pathlib.Path) -> None:
-    if destination.exists() or destination.is_symlink():
-        remove_destination(destination)
-    destination.mkdir(parents=True, exist_ok=True)
-
+def _iter_source_files():
     for path in sorted(ROOT.rglob("*")):
-        if not should_copy(path):
-            continue
-        relative = path.relative_to(ROOT)
-        target = destination / relative
-        target.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(path, target)
+        if should_copy(path):
+            yield path
 
-    _vendor_runtime_dependencies(destination)
+
+def _sha256(path: pathlib.Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _source_manifest() -> dict[str, str]:
+    return {str(path.relative_to(ROOT)): _sha256(path) for path in _iter_source_files()}
+
+
+def _git_revision() -> str | None:
+    try:
+        completed = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=ROOT,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    except (OSError, subprocess.CalledProcessError):
+        return None
+    return completed.stdout.strip() or None
+
+
+def _write_deployment_manifest(destination: pathlib.Path, source_manifest: dict[str, str]) -> None:
+    payload = {
+        "plugin": PLUGIN_NAME,
+        "source_root": str(ROOT),
+        "git_revision": _git_revision(),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "copied_files": len(source_manifest),
+        "files": source_manifest,
+    }
+    (destination / DEPLOYMENT_MANIFEST).write_text(
+        json.dumps(payload, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
+
+def verify_install_copy(destination: pathlib.Path, source_manifest: dict[str, str] | None = None) -> None:
+    source_manifest = source_manifest or _source_manifest()
+    mismatches: list[str] = []
+
+    for relative, expected_hash in source_manifest.items():
+        deployed_path = destination / relative
+        if not deployed_path.exists():
+            mismatches.append(f"missing:{relative}")
+            continue
+        if _sha256(deployed_path) != expected_hash:
+            mismatches.append(f"different:{relative}")
+
+    if not (destination / DEPLOYMENT_MANIFEST).exists():
+        mismatches.append(f"missing:{DEPLOYMENT_MANIFEST}")
+
+    if mismatches:
+        preview = ", ".join(mismatches[:10])
+        raise RuntimeError(f"deployment verification failed ({preview})")
+
+
+def _staging_destination(destination: pathlib.Path) -> pathlib.Path:
+    return destination.parent / f".{PLUGIN_NAME}.staging"
+
+
+def install_copy(destination: pathlib.Path) -> None:
+    source_manifest = _source_manifest()
+    staging = _staging_destination(destination)
+    if staging.exists() or staging.is_symlink():
+        remove_destination(staging)
+    staging.mkdir(parents=True, exist_ok=True)
+
+    try:
+        for path in _iter_source_files():
+            relative = path.relative_to(ROOT)
+            target = staging / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(path, target)
+
+        _vendor_runtime_dependencies(staging)
+        _write_deployment_manifest(staging, source_manifest)
+        verify_install_copy(staging, source_manifest)
+
+        if destination.exists() or destination.is_symlink():
+            remove_destination(destination)
+        staging.rename(destination)
+        verify_install_copy(destination, source_manifest)
+    except Exception:
+        if staging.exists() or staging.is_symlink():
+            remove_destination(staging)
+        raise
 
 
 def install_symlink(destination: pathlib.Path) -> None:

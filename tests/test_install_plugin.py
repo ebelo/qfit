@@ -1,4 +1,5 @@
 import importlib.util
+import json
 import sys
 import tempfile
 import unittest
@@ -41,7 +42,28 @@ class InstallPluginTests(unittest.TestCase):
 
             self.assertTrue((destination / "metadata.txt").exists())
             self.assertTrue((destination / "atlas" / "export_task.py").exists())
-            vendor_runtime_dependencies.assert_called_once_with(destination)
+            manifest_path = destination / install_plugin.DEPLOYMENT_MANIFEST
+            self.assertTrue(manifest_path.exists())
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            self.assertEqual(manifest["plugin"], install_plugin.PLUGIN_NAME)
+            self.assertEqual(manifest["copied_files"], 2)
+            self.assertIn("metadata.txt", manifest["files"])
+            vendor_runtime_dependencies.assert_called_once()
+            self.assertEqual(vendor_runtime_dependencies.call_args.args[0].name, ".qfit.staging")
+
+    def test_verify_install_copy_detects_mismatch(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir) / "src"
+            destination = Path(temp_dir) / "dest"
+            root.mkdir()
+            destination.mkdir()
+            (root / "metadata.txt").write_text("name=qfit\n", encoding="utf-8")
+            (destination / "metadata.txt").write_text("name=wrong\n", encoding="utf-8")
+            (destination / install_plugin.DEPLOYMENT_MANIFEST).write_text("{}\n", encoding="utf-8")
+
+            with patch.object(install_plugin, "ROOT", root):
+                with self.assertRaisesRegex(RuntimeError, "deployment verification failed"):
+                    install_plugin.verify_install_copy(destination)
 
     def test_main_falls_back_to_symlink_when_copy_mode_cannot_vendor_dependencies(self):
         plugins_dir = Path("/tmp/qgis-plugins")
