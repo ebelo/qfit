@@ -1066,6 +1066,38 @@ class QgisSmokeTests(unittest.TestCase):
             self.layer_manager.ensure_background_layer(False, "Outdoor", "test-token")
             self.assertNotIn(background_name, self._layer_order())
 
+    def test_full_sync_rewrite_removes_stale_activity_points(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_path = str(Path(temp_dir) / "qfit-prune-points.gpkg")
+            writer = GeoPackageWriter(
+                output_path,
+                write_activity_points=True,
+                point_stride=1,
+                atlas_margin_percent=10,
+                atlas_min_extent_degrees=0.01,
+                atlas_target_aspect_ratio=1.5,
+            )
+
+            writer.write_activities(
+                self._sample_activities(),
+                sync_metadata={"provider": "strava", "is_full_sync": True},
+            )
+            _activities_layer, _starts_layer, points_layer, _atlas_layer = self.layer_manager.load_output_layers(output_path)
+            initial_ids = sorted({feature["source_activity_id"] for feature in points_layer.getFeatures()})
+            initial_point_count = points_layer.featureCount()
+
+            writer.write_activities(
+                self._sample_activities()[:1],
+                sync_metadata={"provider": "strava", "is_full_sync": True},
+            )
+            activities_layer, _starts_layer, points_layer, _atlas_layer = self.layer_manager.load_output_layers(output_path)
+
+            self.assertEqual(initial_ids, ["1001", "1002"])
+            self.assertEqual(activities_layer.featureCount(), 1)
+            self.assertLess(points_layer.featureCount(), initial_point_count)
+            remaining_ids = sorted({feature["source_activity_id"] for feature in points_layer.getFeatures()})
+            self.assertEqual(remaining_ids, ["1001"])
+
     def test_heatmap_preset_renderer_and_layer_visibility(self):
         """Heatmap preset must produce a density-based renderer and suppress other layers."""
         from qgis.core import QgsHeatmapRenderer, QgsUnitTypes

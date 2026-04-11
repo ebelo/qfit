@@ -80,6 +80,11 @@ class FetchTask(QgsTask):
         Returns ``True`` on success, ``False`` on error or cancellation.
         """
         try:
+            self._provider.last_fetch_context = {
+                "max_pages": self._max_pages,
+                "before": self._before,
+                "after": self._after,
+            }
             self._activities = self._provider.fetch_activities(
                 per_page=self._per_page,
                 max_pages=self._max_pages,

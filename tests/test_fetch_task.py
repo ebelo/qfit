@@ -132,6 +132,13 @@ class TestFetchTaskSuccess(unittest.TestCase):
             detailed_route_strategy="Missing routes only",
         )
 
+    def test_records_fetch_context_on_provider(self):
+        _run_task(self.task)
+        self.assertEqual(
+            self.mock_provider.last_fetch_context,
+            {"max_pages": 0, "before": None, "after": None},
+        )
+
 
 class TestFetchTaskError(unittest.TestCase):
     def setUp(self):

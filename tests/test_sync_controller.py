@@ -295,6 +295,8 @@ class BuildSyncMetadataTests(unittest.TestCase):
             source_name="strava",
             last_stream_enrichment_stats={"cached": 1},
             last_rate_limit={"short_remaining": 10},
+            last_fetch_notice=None,
+            last_fetch_context={"max_pages": 0, "before": None, "after": None},
         )
         meta = ctrl.build_sync_metadata([activity], provider)
         self.assertEqual(meta["provider"], "strava")
@@ -313,6 +315,8 @@ class BuildSyncMetadataTests(unittest.TestCase):
             source_name="strava",
             last_stream_enrichment_stats=None,
             last_rate_limit=None,
+            last_fetch_notice=None,
+            last_fetch_context={"max_pages": 0, "before": None, "after": None},
         )
         meta = ctrl.build_sync_metadata(activities, provider)
         self.assertEqual(meta["detailed_count"], 1)
@@ -324,9 +328,39 @@ class BuildSyncMetadataTests(unittest.TestCase):
             source_name="gpx",
             last_stream_enrichment_stats=None,
             last_rate_limit=None,
+            last_fetch_notice=None,
+            last_fetch_context={"max_pages": 0, "before": None, "after": None},
         )
         meta = ctrl.build_sync_metadata([], provider)
         self.assertEqual(meta["provider"], "gpx")
+
+    def test_metadata_marks_bounded_fetch_as_not_full_sync(self):
+        ctrl = SyncController()
+        provider = SimpleNamespace(
+            source_name="strava",
+            last_stream_enrichment_stats=None,
+            last_rate_limit=None,
+            last_fetch_notice=None,
+            last_fetch_context={"max_pages": 1, "before": None, "after": None},
+        )
+
+        meta = ctrl.build_sync_metadata([], provider)
+
+        self.assertFalse(meta["is_full_sync"])
+
+    def test_metadata_marks_rate_limited_fetch_as_not_full_sync(self):
+        ctrl = SyncController()
+        provider = SimpleNamespace(
+            source_name="strava",
+            last_stream_enrichment_stats=None,
+            last_rate_limit={"short_remaining": 2},
+            last_fetch_notice="Stopped early to avoid hitting the Strava rate limit.",
+            last_fetch_context={"max_pages": 0, "before": None, "after": None},
+        )
+
+        meta = ctrl.build_sync_metadata([], provider)
+
+        self.assertFalse(meta["is_full_sync"])
 
 
 class FetchStatusTextTests(unittest.TestCase):

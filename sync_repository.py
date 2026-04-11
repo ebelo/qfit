@@ -192,6 +192,7 @@ class SyncRepository:
                 else:
                     updated += 1
 
+            self._prune_missing_activities(cursor, activities, sync_metadata)
             total_count = cursor.execute("SELECT COUNT(*) FROM activity_registry").fetchone()[0]
             self._update_sync_state(cursor, activities, sync_metadata, now, inserted, updated, unchanged, total_count)
             connection.commit()
@@ -201,6 +202,33 @@ class SyncRepository:
             updated=updated,
             unchanged=unchanged,
             total_count=total_count,
+        )
+
+    def _prune_missing_activities(self, cursor, activities, sync_metadata):
+        if not sync_metadata.get("is_full_sync"):
+            return
+
+        provider = sync_metadata.get("provider") or (activities[0].source if activities else "strava")
+        incoming_ids = {
+            str(activity.source_activity_id if hasattr(activity, "source_activity_id") else activity.get("source_activity_id"))
+            for activity in activities
+            if (activity.source if hasattr(activity, "source") else activity.get("source")) == provider
+            and (activity.source_activity_id if hasattr(activity, "source_activity_id") else activity.get("source_activity_id")) is not None
+        }
+
+        if incoming_ids:
+            placeholders = ", ".join("?" for _ in incoming_ids)
+            cursor.execute(
+                "DELETE FROM activity_registry WHERE source = ? AND source_activity_id NOT IN ({placeholders})".format(
+                    placeholders=placeholders,
+                ),
+                [provider, *sorted(incoming_ids)],
+            )
+            return
+
+        cursor.execute(
+            "DELETE FROM activity_registry WHERE source = ?",
+            (provider,),
         )
 
     def load_all_activity_records(self):
