@@ -268,7 +268,6 @@ class ContextualHelpTests(unittest.TestCase):
             "maxDetailedActivitiesSpinBox",
             "writeActivityPointsCheckBox",
             "pointSamplingStrideSpinBox",
-            "temporalModeComboBox",
             "backgroundPresetComboBox",
             "atlasTargetAspectRatioSpinBox",
             "refreshButton",
@@ -284,7 +283,6 @@ class ContextualHelpTests(unittest.TestCase):
         self.assertTrue(entries["maxDetailedActivitiesSpinBox"].help_button)
         self.assertIn("downloads up to 25 new detailed routes", entries["maxDetailedActivitiesSpinBox"].helper_text)
         self.assertEqual(entries["pointSamplingStrideSpinBox"].label_text, "Keep every Nth point")
-        self.assertEqual(entries["temporalModeComboBox"].label_text, "Temporal timestamps")
         self.assertEqual(entries["backgroundPresetComboBox"].label_text, "Basemap preset")
         self.assertEqual(entries["atlasTargetAspectRatioSpinBox"].label_text, "Target page aspect ratio")
         self.assertEqual(entries["refreshButton"].target_text, "Fetch activities")

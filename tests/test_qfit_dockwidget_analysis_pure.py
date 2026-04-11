@@ -406,6 +406,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertIs(action.query, selection_state.query)
         self.assertEqual(action.filtered_count, 3)
         self.assertEqual(action.analysis_mode, "Most frequent starting points")
+        self.assertEqual(action.temporal_mode, self.module.DEFAULT_TEMPORAL_MODE_LABEL)
         self.assertEqual(action.background_config.access_token, "token")
         self.assertEqual(action.background_config.tile_mode, "Raster")
 

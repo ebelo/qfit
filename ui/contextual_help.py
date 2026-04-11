@@ -171,20 +171,6 @@ DOCK_HELP_ENTRIES: tuple[HelpEntry, ...] = (
         ),
     ),
     HelpEntry(
-        anchor_name="temporalModeComboBox",
-        label_name="temporalModeLabel",
-        label_text="Temporal timestamps",
-        tooltip=(
-            "Controls which timestamps qfit wires into QGIS temporal playback. Use local activity time for human-facing "
-            "day/time playback, or UTC when you need timezone-neutral timestamps."
-        ),
-        helper_text=(
-            "This only affects loaded QGIS layers, not the stored source data. Pick local time for most map playback; "
-            "pick UTC when you want a consistent cross-timezone reference."
-        ),
-        help_button=True,
-    ),
-    HelpEntry(
         anchor_name="refreshButton",
         target_text="Fetch activities",
         tooltip=(

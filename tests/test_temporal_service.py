@@ -110,7 +110,7 @@ class TemporalServiceRealTests(unittest.TestCase):
         atlas_props.setIsActive.assert_called_with(False)
         self.assertIn("Temporal playback wired", result)
 
-    def test_disabled_mode_deactivates_all_layers(self):
+    def test_legacy_disabled_mode_resolves_to_local_time(self):
         tracks, tracks_props = _make_layer(["start_date_local"])
         points, points_props = _make_layer(["point_timestamp_local"])
 
@@ -118,9 +118,9 @@ class TemporalServiceRealTests(unittest.TestCase):
             tracks, None, points, None, "Disabled"
         )
 
-        tracks_props.setIsActive.assert_called_with(False)
-        points_props.setIsActive.assert_called_with(False)
-        self.assertIn("disabled", result.lower())
+        tracks_props.setIsActive.assert_called_with(True)
+        points_props.setIsActive.assert_called_with(True)
+        self.assertIn("Temporal playback wired", result)
 
     def test_skips_none_layers(self):
         tracks, tracks_props = _make_layer(["start_date_local"])
@@ -132,14 +132,14 @@ class TemporalServiceRealTests(unittest.TestCase):
         tracks_props.setIsActive.assert_called_with(True)
         self.assertIn("Temporal playback wired", result)
 
-    def test_utc_mode_prefers_utc_fields(self):
+    def test_legacy_utc_mode_still_prefers_local_display_when_available(self):
         tracks, tracks_props = _make_layer(["start_date_local", "start_date"])
 
         self.service.apply_temporal_configuration(
             tracks, None, None, None, "UTC time"
         )
 
-        tracks_props.setStartExpression.assert_called_with('to_datetime("start_date")')
+        tracks_props.setStartExpression.assert_called_with('to_datetime("start_date_local")')
 
     def test_no_temporal_properties_returns_gracefully(self):
         layer = MagicMock()
@@ -181,15 +181,15 @@ class TemporalServiceMockTests(unittest.TestCase):
         points_props.setIsActive.assert_called_with(True)
         self.assertIn("Temporal playback wired", result)
 
-    def test_disabled_mode_deactivates_layers(self):
+    def test_legacy_disabled_mode_still_applies_local_temporal_plan(self):
         tracks, tracks_props = _make_layer(["start_date_local"])
 
         result = self.service.apply_temporal_configuration(
             tracks, None, None, None, "Disabled"
         )
 
-        tracks_props.setIsActive.assert_called_with(False)
-        self.assertIn("disabled", result.lower())
+        tracks_props.setIsActive.assert_called_with(True)
+        self.assertIn("Temporal playback wired", result)
 
     def test_skips_none_layers_and_handles_no_candidates(self):
         atlas, atlas_props = _make_layer(["unrelated_field"])

@@ -6,6 +6,7 @@ from qfit.visualization.application.temporal_config import (
     build_temporal_plan,
     describe_temporal_configuration,
     is_temporal_mode_enabled,
+    normalize_temporal_mode,
     temporal_mode_labels,
 )
 
@@ -14,9 +15,9 @@ class TemporalConfigTests(unittest.TestCase):
     def test_temporal_mode_helpers(self):
         labels = temporal_mode_labels()
 
-        self.assertEqual(labels[0], "Disabled")
-        self.assertIn(DEFAULT_TEMPORAL_MODE_LABEL, labels)
-        self.assertFalse(is_temporal_mode_enabled("Disabled"))
+        self.assertEqual(labels, [DEFAULT_TEMPORAL_MODE_LABEL])
+        self.assertEqual(normalize_temporal_mode("UTC time"), DEFAULT_TEMPORAL_MODE_LABEL)
+        self.assertEqual(normalize_temporal_mode("Disabled"), DEFAULT_TEMPORAL_MODE_LABEL)
         self.assertTrue(is_temporal_mode_enabled(DEFAULT_TEMPORAL_MODE_LABEL))
 
     def test_build_temporal_plan_prefers_local_point_time_when_available(self):
@@ -42,9 +43,13 @@ class TemporalConfigTests(unittest.TestCase):
         self.assertEqual(plan.field_name, "start_date")
         self.assertEqual(plan.field_kind, "utc")
 
-    def test_build_temporal_plan_returns_none_when_disabled_or_missing(self):
-        self.assertIsNone(build_temporal_plan("activity_points", ["point_timestamp_utc"], "Disabled"))
-        self.assertIsNone(build_temporal_plan("activity_points", ["distance_m"], "UTC time"))
+    def test_build_temporal_plan_ignores_legacy_modes_and_still_uses_local_defaults(self):
+        plan = build_temporal_plan("activity_points", ["point_timestamp_utc"], "UTC time")
+
+        self.assertIsNotNone(plan)
+        self.assertEqual(plan.field_name, "point_timestamp_utc")
+        self.assertEqual(plan.field_kind, "utc")
+        self.assertIsNone(build_temporal_plan("activity_points", ["distance_m"], "Disabled"))
 
     def test_describe_temporal_configuration_is_human_readable(self):
         point_plan = build_temporal_plan("activity_points", ["point_timestamp_utc"], "UTC time")
@@ -54,7 +59,7 @@ class TemporalConfigTests(unittest.TestCase):
         self.assertIn("activity points (UTC)", message)
         self.assertEqual(
             describe_temporal_configuration([], "Disabled"),
-            "Temporal playback disabled",
+            "Temporal playback uses local activity time, but no timestamp fields were available",
         )
 
 

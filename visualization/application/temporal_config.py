@@ -1,11 +1,7 @@
 from dataclasses import dataclass
 
-TEMPORAL_MODE_LABELS = [
-    "Disabled",
-    "Local activity time",
-    "UTC time",
-]
 DEFAULT_TEMPORAL_MODE_LABEL = "Local activity time"
+TEMPORAL_MODE_LABELS = [DEFAULT_TEMPORAL_MODE_LABEL]
 
 
 @dataclass(frozen=True)
@@ -40,14 +36,16 @@ def temporal_mode_labels():
     return list(TEMPORAL_MODE_LABELS)
 
 
+def normalize_temporal_mode(mode_label):
+    return DEFAULT_TEMPORAL_MODE_LABEL
+
+
 def is_temporal_mode_enabled(mode_label):
-    return (mode_label or "").strip() != "Disabled"
+    return True
 
 
 def build_temporal_plan(layer_key, available_fields, mode_label):
-    mode_label = (mode_label or DEFAULT_TEMPORAL_MODE_LABEL).strip() or DEFAULT_TEMPORAL_MODE_LABEL
-    if not is_temporal_mode_enabled(mode_label):
-        return None
+    mode_label = normalize_temporal_mode(mode_label)
 
     field_names = {name for name in (available_fields or []) if name}
     candidates = _LAYER_CANDIDATES.get(layer_key, {}).get(mode_label, [])
@@ -64,10 +62,8 @@ def build_temporal_plan(layer_key, available_fields, mode_label):
 
 def describe_temporal_configuration(plans, mode_label):
     active_plans = [plan for plan in (plans or []) if plan is not None]
-    if not is_temporal_mode_enabled(mode_label):
-        return "Temporal playback disabled"
     if not active_plans:
-        return "Temporal playback requested, but no timestamp fields were available"
+        return "Temporal playback uses local activity time, but no timestamp fields were available"
     labels = ", ".join(plan.label for plan in active_plans)
     return "Temporal playback wired for {labels}".format(labels=labels)
 
