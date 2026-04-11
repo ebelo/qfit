@@ -122,7 +122,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._dock_action_dispatcher = DockActionDispatcher(
             visual_apply=self.visual_apply,
             save_settings=self._save_settings,
-            run_analysis=self._run_selected_analysis,
+            run_analysis=self._apply_analysis_configuration,
         )
 
     def _remove_stale_qfit_layers(self):
@@ -650,18 +650,26 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
     def _start_fetch(self, detailed_route_strategy, status_text, use_detailed_streams=None):
         self._save_settings()
+        advanced_fetch_enabled = self.advancedFetchGroupBox.isChecked()
         if use_detailed_streams is None:
-            use_detailed_streams = self.detailedStreamsCheckBox.isChecked()
+            use_detailed_streams = self.detailedStreamsCheckBox.isChecked() if advanced_fetch_enabled else False
+        per_page = self.perPageSpinBox.value() if advanced_fetch_enabled else 200
+        max_pages = self.maxPagesSpinBox.value() if advanced_fetch_enabled else 0
+        max_detailed_activities = (
+            self.maxDetailedActivitiesSpinBox.value()
+            if advanced_fetch_enabled or use_detailed_streams
+            else 25
+        )
         try:
             fetch_request = self.sync_controller.build_fetch_task_request(
                 client_id=self.clientIdLineEdit.text().strip(),
                 client_secret=self.clientSecretLineEdit.text().strip(),
                 refresh_token=self.refreshTokenLineEdit.text().strip(),
                 cache=self.cache,
-                per_page=self.perPageSpinBox.value(),
-                max_pages=self.maxPagesSpinBox.value(),
+                per_page=per_page,
+                max_pages=max_pages,
                 use_detailed_streams=use_detailed_streams,
-                max_detailed_activities=self.maxDetailedActivitiesSpinBox.value(),
+                max_detailed_activities=max_detailed_activities,
                 detailed_route_strategy=detailed_route_strategy,
                 on_finished=self._on_fetch_finished,
             )
@@ -943,7 +951,12 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self.background_layer = result.background_layer
         return result.status
 
-    def _apply_analysis_configuration(self, analysis_mode=None, starts_layer=None):
+    def _apply_analysis_configuration(
+        self,
+        analysis_mode=None,
+        starts_layer=None,
+        selection_state=None,
+    ):
         self._clear_analysis_layer()
 
         current_mode = analysis_mode or self.analysisModeComboBox.currentText()
@@ -953,14 +966,14 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         return self._run_selected_analysis(
             current_mode,
             current_starts_layer,
-            self._current_activity_selection_state(),
+            selection_state or self._current_activity_selection_state(),
         )
 
     def _clear_analysis_layer(self):
         project = QgsProject.instance()
         if self.analysis_layer is not None:
             try:
-                project.removeMapLayer(self.analysis_layer)
+                project.removeMapLayer(self.analysis_layer.id())
             except RuntimeError:
                 logger.debug("Failed to remove analysis layer", exc_info=True)
             self.analysis_layer = None
@@ -969,7 +982,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             if layer.name() != FREQUENT_STARTING_POINTS_LAYER_NAME:
                 continue
             try:
-                project.removeMapLayer(layer)
+                project.removeMapLayer(layer.id())
             except RuntimeError:
                 logger.debug("Failed to remove stale frequent-start analysis layer", exc_info=True)
 
