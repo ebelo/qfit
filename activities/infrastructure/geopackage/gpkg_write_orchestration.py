@@ -17,11 +17,21 @@ but contains no schema definitions or repository logic.
 
 import sqlite3
 
-from qgis.core import (
-    QgsFeatureSource,
-    QgsVectorDataProvider,
-    QgsVectorLayer,
-)
+try:
+    from qgis.core import (
+        QgsFeatureSource,
+        QgsVectorDataProvider,
+        QgsVectorLayer,
+    )
+except (ImportError, ModuleNotFoundError):  # pragma: no cover
+    class QgsFeatureSource:  # type: ignore[no-redef]
+        SpatialIndexNotPresent = 1
+        SpatialIndexPresent = 2
+
+    class QgsVectorDataProvider:  # type: ignore[no-redef]
+        CreateSpatialIndex = 1
+
+    QgsVectorLayer = None
 
 from .gpkg_io import write_layer_to_gpkg
 from .gpkg_atlas_page_builder import build_atlas_layer
@@ -79,6 +89,9 @@ def ensure_attribute_indexes(output_path):
 
 def ensure_spatial_indexes(output_path):
     """Create derived-layer spatial indexes inside *output_path* if missing."""
+    if QgsVectorLayer is None:
+        raise RuntimeError("QGIS Python bindings are required to create GeoPackage spatial indexes")
+
     for layer_name in DERIVED_LAYER_ATTRIBUTE_INDEXES:
         layer = QgsVectorLayer(f"{output_path}|layername={layer_name}", layer_name, "ogr")
         if not layer.isValid():
