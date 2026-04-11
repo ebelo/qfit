@@ -41,6 +41,9 @@ from .activities.domain.activity_query import (
 from .activities.application.activity_selection_state import ActivitySelectionState
 from .activities.application.load_workflow import LoadWorkflowError
 from .activities.application.store_task import build_store_task
+from .analysis.infrastructure.activity_heatmap_layer import (
+    ACTIVITY_HEATMAP_LAYER_NAME,
+)
 from .analysis.infrastructure.frequent_start_points_layer import (
     FREQUENT_STARTING_POINTS_LAYER_NAME,
 )
@@ -928,9 +931,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def _run_selected_analysis(self, analysis_mode, starts_layer, selection_state=None):
         request = self.analysis_controller.build_request(
             analysis_mode=analysis_mode,
-            activities_layer=self.activities_layer,
+            activities_layer=getattr(self, "activities_layer", None),
             starts_layer=starts_layer,
-            points_layer=self.points_layer,
+            points_layer=getattr(self, "points_layer", None),
             selection_state=selection_state,
         )
         result = self.analysis_controller.run_request(request)
@@ -983,7 +986,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
         analysis_layer_names = {
             FREQUENT_STARTING_POINTS_LAYER_NAME,
-            "qfit activity heatmap",
+            ACTIVITY_HEATMAP_LAYER_NAME,
         }
         for layer in tuple(project.mapLayers().values()):
             if layer.name() not in analysis_layer_names:
