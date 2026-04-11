@@ -332,7 +332,7 @@ class LayerStyleServiceUnitTests(unittest.TestCase):
     # Helpers
     # ------------------------------------------------------------------
 
-    def _make_layer(self, activity_types=None):
+    def _make_layer(self, activity_types=None, feature_count=2):
         """Return a mock QGIS vector layer for style tests."""
         field = MagicMock()
         field.name.return_value = "activity_type"
@@ -346,6 +346,7 @@ class LayerStyleServiceUnitTests(unittest.TestCase):
         layer.uniqueValues.return_value = (
             activity_types if activity_types is not None else ["Ride", "Run"]
         )
+        layer.featureCount.return_value = feature_count
         return layer
 
     # ------------------------------------------------------------------
@@ -379,6 +380,16 @@ class LayerStyleServiceUnitTests(unittest.TestCase):
         self.service.apply_style(acts, starts, None, None, "Heatmap")
         acts.setOpacity.assert_called_with(0.0)
         starts.setRenderer.assert_called_once()
+
+    def test_heatmap_uses_starts_when_points_layer_is_empty(self):
+        acts = self._make_layer()
+        starts = self._make_layer()
+        points = self._make_layer(feature_count=0)
+        self.service.apply_style(acts, starts, points, None, "Heatmap")
+        acts.setOpacity.assert_called_with(0.0)
+        starts.setRenderer.assert_called_once()
+        starts.setOpacity.assert_called_with(1.0)
+        points.setOpacity.assert_called_with(0.0)
 
     def test_track_points_sets_renderer_on_tracks_and_points(self):
         acts = self._make_layer()
