@@ -650,18 +650,22 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
     def _start_fetch(self, detailed_route_strategy, status_text, use_detailed_streams=None):
         self._save_settings()
+        advanced_fetch_enabled = self.advancedFetchGroupBox.isChecked()
         if use_detailed_streams is None:
-            use_detailed_streams = self.detailedStreamsCheckBox.isChecked()
+            use_detailed_streams = self.detailedStreamsCheckBox.isChecked() if advanced_fetch_enabled else False
+        per_page = self.perPageSpinBox.value() if advanced_fetch_enabled else 200
+        max_pages = self.maxPagesSpinBox.value() if advanced_fetch_enabled else 0
+        max_detailed_activities = self.maxDetailedActivitiesSpinBox.value() if advanced_fetch_enabled else 25
         try:
             fetch_request = self.sync_controller.build_fetch_task_request(
                 client_id=self.clientIdLineEdit.text().strip(),
                 client_secret=self.clientSecretLineEdit.text().strip(),
                 refresh_token=self.refreshTokenLineEdit.text().strip(),
                 cache=self.cache,
-                per_page=self.perPageSpinBox.value(),
-                max_pages=self.maxPagesSpinBox.value(),
+                per_page=per_page,
+                max_pages=max_pages,
                 use_detailed_streams=use_detailed_streams,
-                max_detailed_activities=self.maxDetailedActivitiesSpinBox.value(),
+                max_detailed_activities=max_detailed_activities,
                 detailed_route_strategy=detailed_route_strategy,
                 on_finished=self._on_fetch_finished,
             )

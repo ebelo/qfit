@@ -510,10 +510,75 @@ class QgisSmokeTests(unittest.TestCase):
                 dock.sync_controller.build_fetch_task_request.call_args.kwargs["detailed_route_strategy"],
                 "Recent fetch only",
             )
+            self.assertEqual(dock.sync_controller.build_fetch_task_request.call_args.kwargs["per_page"], 200)
+            self.assertEqual(dock.sync_controller.build_fetch_task_request.call_args.kwargs["max_pages"], 0)
+            self.assertFalse(dock.sync_controller.build_fetch_task_request.call_args.kwargs["use_detailed_streams"])
             dock.sync_controller.build_fetch_task.assert_called_once_with("fetch-request")
             task_manager.return_value.addTask.assert_called_once_with(fake_task)
             self.assertIs(dock._fetch_task, fake_task)
             self.assertEqual(dock.refreshButton.text(), "Cancel")
+        finally:
+            dock.close()
+            dock.deleteLater()
+
+    def test_refresh_clicked_ignores_hidden_advanced_fetch_settings(self):
+        dock = QfitDockWidget(self.iface)
+        try:
+            fake_task = MagicMock(name="fetch_task")
+            dock._save_settings = MagicMock()
+            dock.sync_controller.build_fetch_task_request = MagicMock(return_value="fetch-request")
+            dock.sync_controller.build_fetch_task = MagicMock(return_value=fake_task)
+            dock.advancedFetchGroupBox.setChecked(False)
+            dock.perPageSpinBox.setValue(50)
+            dock.maxPagesSpinBox.setValue(1)
+            dock.maxDetailedActivitiesSpinBox.setValue(3)
+            dock.detailedStreamsCheckBox.setChecked(True)
+
+            with patch("qfit.qfit_dockwidget.QgsApplication.taskManager") as task_manager:
+                task_manager.return_value.addTask = MagicMock()
+                dock.on_refresh_clicked()
+
+            dock.sync_controller.build_fetch_task_request.assert_called_once()
+            self.assertEqual(dock.sync_controller.build_fetch_task_request.call_args.kwargs["per_page"], 200)
+            self.assertEqual(dock.sync_controller.build_fetch_task_request.call_args.kwargs["max_pages"], 0)
+            self.assertEqual(
+                dock.sync_controller.build_fetch_task_request.call_args.kwargs["max_detailed_activities"],
+                25,
+            )
+            self.assertFalse(dock.sync_controller.build_fetch_task_request.call_args.kwargs["use_detailed_streams"])
+            dock.sync_controller.build_fetch_task.assert_called_once_with("fetch-request")
+            task_manager.return_value.addTask.assert_called_once_with(fake_task)
+        finally:
+            dock.close()
+            dock.deleteLater()
+
+    def test_refresh_clicked_uses_advanced_fetch_settings_when_enabled(self):
+        dock = QfitDockWidget(self.iface)
+        try:
+            fake_task = MagicMock(name="fetch_task")
+            dock._save_settings = MagicMock()
+            dock.sync_controller.build_fetch_task_request = MagicMock(return_value="fetch-request")
+            dock.sync_controller.build_fetch_task = MagicMock(return_value=fake_task)
+            dock.advancedFetchGroupBox.setChecked(True)
+            dock.perPageSpinBox.setValue(50)
+            dock.maxPagesSpinBox.setValue(1)
+            dock.maxDetailedActivitiesSpinBox.setValue(3)
+            dock.detailedStreamsCheckBox.setChecked(True)
+
+            with patch("qfit.qfit_dockwidget.QgsApplication.taskManager") as task_manager:
+                task_manager.return_value.addTask = MagicMock()
+                dock.on_refresh_clicked()
+
+            dock.sync_controller.build_fetch_task_request.assert_called_once()
+            self.assertEqual(dock.sync_controller.build_fetch_task_request.call_args.kwargs["per_page"], 50)
+            self.assertEqual(dock.sync_controller.build_fetch_task_request.call_args.kwargs["max_pages"], 1)
+            self.assertEqual(
+                dock.sync_controller.build_fetch_task_request.call_args.kwargs["max_detailed_activities"],
+                3,
+            )
+            self.assertTrue(dock.sync_controller.build_fetch_task_request.call_args.kwargs["use_detailed_streams"])
+            dock.sync_controller.build_fetch_task.assert_called_once_with("fetch-request")
+            task_manager.return_value.addTask.assert_called_once_with(fake_task)
         finally:
             dock.close()
             dock.deleteLater()
