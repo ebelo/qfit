@@ -17,6 +17,12 @@ but contains no schema definitions or repository logic.
 
 import sqlite3
 
+from qgis.core import (
+    QgsFeatureSource,
+    QgsVectorDataProvider,
+    QgsVectorLayer,
+)
+
 from .gpkg_io import write_layer_to_gpkg
 from .gpkg_atlas_page_builder import build_atlas_layer
 from .gpkg_layer_builders import (
@@ -71,6 +77,24 @@ def ensure_attribute_indexes(output_path):
         connection.commit()
 
 
+def ensure_spatial_indexes(output_path):
+    """Create derived-layer spatial indexes inside *output_path* if missing."""
+    for layer_name in DERIVED_LAYER_ATTRIBUTE_INDEXES:
+        layer = QgsVectorLayer(f"{output_path}|layername={layer_name}", layer_name, "ogr")
+        if not layer.isValid():
+            raise RuntimeError(f"Failed to load GeoPackage layer {layer_name!r} from {output_path}")
+
+        provider = layer.dataProvider()
+        if not provider.capabilities() & QgsVectorDataProvider.CreateSpatialIndex:
+            raise RuntimeError(f"Layer {layer_name!r} does not support spatial index creation")
+
+        if provider.hasSpatialIndex() == QgsFeatureSource.SpatialIndexPresent:
+            continue
+
+        if not provider.createSpatialIndex():
+            raise RuntimeError(f"Failed to create spatial index for layer {layer_name!r}")
+
+
 def bootstrap_empty_gpkg(output_path, atlas_page_settings):
     """Create a new GeoPackage with empty layers in the canonical order.
 
@@ -119,5 +143,6 @@ def build_and_write_all_layers(
         write_layer_to_gpkg(layer, output_path, layer_name, overwrite_file=False)
 
     ensure_attribute_indexes(output_path)
+    ensure_spatial_indexes(output_path)
 
     return layers
