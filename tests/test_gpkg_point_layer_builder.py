@@ -227,6 +227,42 @@ class BuildPointLayerTests(unittest.TestCase):
         strided_indexes = sorted(f["point_index"] for f in layer_strided.getFeatures())
         self.assertEqual(strided_indexes[-1], 9)
 
+    def test_builds_features_from_summary_polyline_when_stream_points_are_missing(self):
+        records = [
+            {
+                "source": "strava",
+                "source_activity_id": "1",
+                "summary_polyline": "_p~iF~ps|U_ulLnnqC_mqNvxq`@",
+            }
+        ]
+
+        layer = build_point_layer(records, write_activity_points=True, point_stride=1)
+
+        self.assertTrue(layer.isValid())
+        self.assertGreaterEqual(layer.featureCount(), 3)
+        features = list(layer.getFeatures())
+        self.assertEqual(features[0]["geometry_source"], "summary_polyline")
+
+    def test_builds_features_from_start_end_when_no_other_geometry_is_available(self):
+        records = [
+            {
+                "source": "strava",
+                "source_activity_id": "1",
+                "start_lat": 46.5,
+                "start_lon": 6.6,
+                "end_lat": 46.6,
+                "end_lon": 6.7,
+            }
+        ]
+
+        layer = build_point_layer(records, write_activity_points=True, point_stride=1)
+
+        self.assertTrue(layer.isValid())
+        self.assertEqual(layer.featureCount(), 2)
+        features = list(layer.getFeatures())
+        self.assertEqual(features[0]["geometry_source"], "start_end")
+        self.assertEqual(features[-1]["point_index"], 1)
+
 
 if __name__ == "__main__":
     unittest.main()

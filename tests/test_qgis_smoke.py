@@ -1098,6 +1098,42 @@ class QgisSmokeTests(unittest.TestCase):
             remaining_ids = sorted({feature["source_activity_id"] for feature in points_layer.getFeatures()})
             self.assertEqual(remaining_ids, ["1001"])
 
+    def test_rewrite_refreshes_activity_points_when_geometry_falls_back(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_path = str(Path(temp_dir) / "qfit-fallback-points.gpkg")
+            writer = GeoPackageWriter(
+                output_path,
+                write_activity_points=True,
+                point_stride=1,
+                atlas_margin_percent=10,
+                atlas_min_extent_degrees=0.01,
+                atlas_target_aspect_ratio=1.5,
+            )
+
+            writer.write_activities(
+                [self._summary_polyline_only_activity()],
+                sync_metadata={"provider": "strava"},
+            )
+            _activities_layer, _starts_layer, points_layer, _atlas_layer = self.layer_manager.load_output_layers(output_path)
+            initial_points = list(points_layer.getFeatures())
+
+            writer.write_activities(
+                [self._start_end_only_activity()],
+                sync_metadata={"provider": "strava"},
+            )
+            _activities_layer, _starts_layer, points_layer, _atlas_layer = self.layer_manager.load_output_layers(output_path)
+            refreshed_points = list(points_layer.getFeatures())
+
+            self.assertGreaterEqual(len(initial_points), 3)
+            self.assertEqual({feature["geometry_source"] for feature in initial_points}, {"summary_polyline"})
+            self.assertEqual(points_layer.featureCount(), 2)
+            self.assertEqual({feature["source_activity_id"] for feature in refreshed_points}, {"fallback-1001"})
+            self.assertEqual({feature["geometry_source"] for feature in refreshed_points}, {"start_end"})
+
+            refreshed_coords = [feature.geometry().asPoint() for feature in refreshed_points]
+            self.assertEqual((round(refreshed_coords[0].x(), 4), round(refreshed_coords[0].y(), 4)), (6.6000, 46.5100))
+            self.assertEqual((round(refreshed_coords[-1].x(), 4), round(refreshed_coords[-1].y(), 4)), (6.6300, 46.5250))
+
     def test_heatmap_preset_renderer_and_layer_visibility(self):
         """Heatmap preset must produce a density-based renderer and suppress other layers."""
         from qgis.core import QgsHeatmapRenderer, QgsUnitTypes
@@ -1780,6 +1816,56 @@ class QgisSmokeTests(unittest.TestCase):
             atlas_target_aspect_ratio=1.5,
         ).write_activities(self._sample_activities(), sync_metadata={"provider": "strava"})
         return output_path
+
+    def _summary_polyline_only_activity(self):
+        return {
+            "source": "strava",
+            "source_activity_id": "fallback-1001",
+            "external_id": "strava-fallback-1001",
+            "name": "Fallback Polyline Ride",
+            "activity_type": "Ride",
+            "sport_type": "Ride",
+            "start_date": "2026-03-22T08:00:00+00:00",
+            "start_date_local": "2026-03-22T09:00:00+01:00",
+            "timezone": "Europe/Zurich",
+            "distance_m": 12000,
+            "moving_time_s": 3600,
+            "elapsed_time_s": 3660,
+            "total_elevation_gain_m": 250,
+            "start_lat": 38.5,
+            "start_lon": -120.2,
+            "end_lat": 43.252,
+            "end_lon": -126.453,
+            "summary_polyline": "_p~iF~ps|U_ulLnnqC_mqNvxq`@",
+            "geometry_source": "summary_polyline",
+            "geometry_points": [],
+            "details_json": {},
+        }
+
+    def _start_end_only_activity(self):
+        return {
+            "source": "strava",
+            "source_activity_id": "fallback-1001",
+            "external_id": "strava-fallback-1001",
+            "name": "Fallback Start End Ride",
+            "activity_type": "Ride",
+            "sport_type": "Ride",
+            "start_date": "2026-03-22T08:00:00+00:00",
+            "start_date_local": "2026-03-22T09:00:00+01:00",
+            "timezone": "Europe/Zurich",
+            "distance_m": 5000,
+            "moving_time_s": 1500,
+            "elapsed_time_s": 1560,
+            "total_elevation_gain_m": 40,
+            "start_lat": 46.5100,
+            "start_lon": 6.6000,
+            "end_lat": 46.5250,
+            "end_lon": 6.6300,
+            "summary_polyline": None,
+            "geometry_source": "start_end",
+            "geometry_points": [],
+            "details_json": {},
+        }
 
     def _render_layers_to_image(self, layers, extent, width=800, height=800):
         settings = QgsMapSettings()
