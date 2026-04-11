@@ -301,6 +301,72 @@ class GpkgBuilderModulesPureTests(unittest.TestCase):
         self.assertEqual(features[0].geometry, ("point", 7.0, 46.0))
         self.assertIs(legacy_point_builder.build_point_layer, point_builder.build_point_layer)
 
+    def test_moved_point_layer_builder_falls_back_to_summary_polyline_without_real_qgis(self):
+        _, point_builder, _, _, _, _ = self._import_with_stubs()
+
+        layer = point_builder.build_point_layer(
+            [
+                {
+                    "source": "track",
+                    "source_activity_id": "polyline-42",
+                    "summary_polyline": "encoded",
+                    "geometry_points": [],
+                    "details_json": {"stream_metrics": {"time": [0, 1]}},
+                }
+            ],
+            write_activity_points=True,
+        )
+
+        features = list(layer.getFeatures())
+        self.assertEqual(len(features), 2)
+        self.assertEqual(features[0]["geometry_source"], "summary_polyline")
+        self.assertIsNone(features[0]["stream_time_s"])
+
+    def test_moved_point_layer_builder_falls_back_to_start_end_without_real_qgis(self):
+        _, point_builder, _, _, _, _ = self._import_with_stubs()
+
+        layer = point_builder.build_point_layer(
+            [
+                {
+                    "source": "track",
+                    "source_activity_id": "fallback-42",
+                    "start_lat": 46.0,
+                    "start_lon": 7.0,
+                    "end_lat": 46.1,
+                    "end_lon": 7.1,
+                    "geometry_points": [],
+                    "summary_polyline": None,
+                }
+            ],
+            write_activity_points=True,
+        )
+
+        features = list(layer.getFeatures())
+        self.assertEqual(len(features), 2)
+        self.assertEqual(features[0]["geometry_source"], "start_end")
+        self.assertEqual(features[-1]["point_index"], 1)
+
+    def test_moved_point_layer_builder_skips_records_without_geometry_without_real_qgis(self):
+        _, point_builder, _, _, _, _ = self._import_with_stubs()
+
+        layer = point_builder.build_point_layer(
+            [
+                {
+                    "source": "track",
+                    "source_activity_id": "empty-42",
+                    "geometry_points": [("bad", 7.0)],
+                    "summary_polyline": None,
+                    "start_lat": None,
+                    "start_lon": None,
+                    "end_lat": None,
+                    "end_lon": None,
+                }
+            ],
+            write_activity_points=True,
+        )
+
+        self.assertEqual(layer.featureCount(), 0)
+
     def test_moved_layer_builders_work_without_real_qgis(self):
         _, _, layer_builders, _, _, legacy_layer_builders = self._import_with_stubs()
 
