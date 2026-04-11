@@ -28,6 +28,65 @@ This document describes the current qfit GeoPackage layout and the intended next
 - `atlas_page_detail_items` — non-spatial ordered one-row-per-detail helper table carrying layout-ready per-page label/value pairs for activity detail blocks
 - `atlas_toc_entries` — non-spatial one-row-per-page helper table carrying page-number labels plus TOC-ready text/summary fields for contents layouts that should not depend on atlas polygon geometry
 
+## Stable join and key rules
+
+- The canonical persistent activity key is always (`source`, `source_activity_id`).
+- `activity_fk` is a derived-layer-local convenience field only. It is rebuilt on every write and must not be treated as a persistent join key.
+- Atlas helper tables should join back to `activity_atlas_pages` through stable exported fields such as `page_number`, `page_sort_key`, or the canonical activity key, not through `activity_fk`.
+
+## Indexing contract
+
+qfit treats indexing as part of the GeoPackage schema contract, not an implementation detail.
+
+### Canonical table indexes
+
+- `activity_registry`
+  - `idx_activity_registry_start_date`
+  - `idx_activity_registry_type`
+  - `idx_activity_registry_source_start_date`
+  - `idx_activity_registry_start_date_local`
+  - `idx_activity_registry_sport_type`
+  - `idx_activity_registry_distance_m`
+  - `idx_activity_registry_last_synced_at`
+
+### Derived-layer attribute indexes
+
+- `activity_tracks`
+  - `idx_activity_tracks_source_activity_id`
+  - `idx_activity_tracks_activity_type`
+  - `idx_activity_tracks_start_date`
+  - `idx_activity_tracks_sport_type`
+- `activity_starts`
+  - `idx_activity_starts_source_activity_id`
+  - `idx_activity_starts_activity_type`
+  - `idx_activity_starts_start_date`
+- `activity_points`
+  - `idx_activity_points_source_activity_id`
+  - `idx_activity_points_activity_type`
+  - `idx_activity_points_start_date`
+  - `idx_activity_points_point_timestamp_local`
+  - `idx_activity_points_point_timestamp_utc`
+- `activity_atlas_pages`
+  - `idx_activity_atlas_pages_page_number`
+  - `idx_activity_atlas_pages_page_sort_key`
+  - `idx_activity_atlas_pages_source_activity_id`
+
+### Spatial index rule
+
+- Every geometry layer must carry a GeoPackage spatial index.
+- This currently applies to:
+  - `activity_tracks`
+  - `activity_starts`
+  - `activity_points`
+  - `activity_atlas_pages`
+- qfit explicitly recreates missing spatial indexes after rebuilds instead of relying on driver-specific implicit behavior.
+
+### Contract verification
+
+- `tests/test_sync_repository.py` verifies the canonical `activity_registry` index set.
+- `tests/test_gpkg_write_orchestration.py` verifies derived-layer attribute indexes and spatial-index recreation on disk.
+- `tests/test_gpkg_geopackage_unit.py` verifies the write orchestration and spatial-index failure paths at the pure module seam.
+
 ## Table: `activity_registry`
 
 Geometry type:
@@ -132,7 +191,7 @@ Primary purpose:
 
 | Field | Type | Notes |
 |---|---|---|
-| `activity_fk` | INTEGER | local sequential reference in the derived layer |
+| `activity_fk` | INTEGER | local sequential reference in the derived layer, rebuilt on write and not a persistent join key |
 | `source` | TEXT | provider name |
 | `source_activity_id` | TEXT | provider activity id |
 | `name` | TEXT | activity title |
@@ -155,7 +214,7 @@ Primary purpose:
 
 | Field | Type | Notes |
 |---|---|---|
-| `activity_fk` | INTEGER | local sequential reference in the derived layer |
+| `activity_fk` | INTEGER | local sequential reference in the derived layer, rebuilt on write and not a persistent join key |
 | `source` | TEXT | provider name |
 | `source_activity_id` | TEXT | provider activity id |
 | `point_index` | INTEGER | original sampled point index |
@@ -201,7 +260,7 @@ Primary purpose:
 
 | Field | Type | Notes |
 |---|---|---|
-| `activity_fk` | INTEGER | local sequential reference in the derived layer |
+| `activity_fk` | INTEGER | local sequential reference in the derived layer, rebuilt on write and not a persistent join key |
 | `source` | TEXT | provider name |
 | `source_activity_id` | TEXT | provider activity id |
 | `name` | TEXT | activity title |
