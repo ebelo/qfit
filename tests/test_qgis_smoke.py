@@ -679,6 +679,31 @@ class QgisSmokeTests(unittest.TestCase):
             dock.close()
             dock.deleteLater()
 
+    def test_backfill_missing_detailed_routes_preserves_cap_when_advanced_fetch_is_hidden(self):
+        dock = QfitDockWidget(self.iface)
+        try:
+            fake_task = MagicMock(name="fetch_task")
+            dock._save_settings = MagicMock()
+            dock.sync_controller.build_fetch_task_request = MagicMock(return_value="fetch-request")
+            dock.sync_controller.build_fetch_task = MagicMock(return_value=fake_task)
+            dock.advancedFetchGroupBox.setChecked(False)
+            dock.maxDetailedActivitiesSpinBox.setValue(7)
+
+            with patch("qfit.qfit_dockwidget.QgsApplication.taskManager") as task_manager:
+                task_manager.return_value.addTask = MagicMock()
+                dock.on_backfill_missing_detailed_routes_clicked()
+
+            dock.sync_controller.build_fetch_task_request.assert_called_once()
+            self.assertTrue(dock.sync_controller.build_fetch_task_request.call_args.kwargs["use_detailed_streams"])
+            self.assertEqual(
+                dock.sync_controller.build_fetch_task_request.call_args.kwargs["max_detailed_activities"],
+                7,
+            )
+            task_manager.return_value.addTask.assert_called_once_with(fake_task)
+        finally:
+            dock.close()
+            dock.deleteLater()
+
     def test_backfill_missing_detailed_routes_ignores_click_while_fetch_running(self):
         dock = QfitDockWidget(self.iface)
         try:

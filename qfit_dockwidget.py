@@ -655,7 +655,11 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             use_detailed_streams = self.detailedStreamsCheckBox.isChecked() if advanced_fetch_enabled else False
         per_page = self.perPageSpinBox.value() if advanced_fetch_enabled else 200
         max_pages = self.maxPagesSpinBox.value() if advanced_fetch_enabled else 0
-        max_detailed_activities = self.maxDetailedActivitiesSpinBox.value() if advanced_fetch_enabled else 25
+        max_detailed_activities = (
+            self.maxDetailedActivitiesSpinBox.value()
+            if advanced_fetch_enabled or use_detailed_streams
+            else 25
+        )
         try:
             fetch_request = self.sync_controller.build_fetch_task_request(
                 client_id=self.clientIdLineEdit.text().strip(),
