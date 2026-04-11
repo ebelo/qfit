@@ -77,7 +77,7 @@ Inside the dock:
 7. in **Store data**, choose an output `.gpkg` and optionally enable sampled `activity_points`
 8. click **Store and load layers**
 9. in **Visualize**, optionally configure a basemap and click **Load basemap**
-10. in **Analyze**, optionally switch **Temporal timestamps** to `Local activity time` or `UTC time`
+10. in **Visualize**, optionally enable a basemap, then keep the default local-time temporal playback behavior
 11. click **Apply current filters to loaded layers** if you want the loaded layers and tables to follow the current dock query
 12. expand **Publish / atlas** only when you want to tune atlas framing controls
 13. hover the contextual-help tooltips / `?` buttons if you want reminders about detailed-track limits, point sampling, basemap setup, publish framing, or store/load vs filter behavior
@@ -119,4 +119,4 @@ Once qfit is loaded successfully, good manual checks are:
 - confirm `activity_points` attributes contain time / distance / HR / power where available
 - test filtering, preview sorting, style presets, and temporal playback wiring
 - when the `By activity type` preset is active, verify that runs/rides/winter activities keep their semantic colors and that line casing/opacity adapts sensibly when you switch between Outdoor, Light, and Satellite basemaps
-- open the QGIS Temporal Controller and confirm the loaded layers respond to the chosen local/UTC playback mode
+- open the QGIS Temporal Controller and confirm the loaded layers respond to local-time playback

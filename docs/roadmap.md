@@ -103,7 +103,7 @@ Goal: map styling, data filtering, and activity querying.
   - preview sorting
   - fetched-activity preview/summary panel
 - QGIS temporal playback wiring:
-  - disabled / local activity time / UTC time
+  - local activity time by default
   - temporal layer configuration for points, tracks, and starts
 
 ### Planned

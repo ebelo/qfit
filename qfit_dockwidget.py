@@ -232,7 +232,14 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.temporalModeComboBox.clear()
         for label in temporal_mode_labels():
             self.temporalModeComboBox.addItem(label)
+        self.temporalModeComboBox.setCurrentText(DEFAULT_TEMPORAL_MODE_LABEL)
         self.temporalModeComboBox.setMinimumContentsLength(10)
+        self.temporalModeComboBox.hide()
+        self.temporalModeLabel.hide()
+        self.temporalHelpLabel.hide()
+        temporal_row = getattr(self, "analysisTemporalModeRow", None)
+        if temporal_row is not None:
+            temporal_row.hide()
 
     def _configure_analysis_mode_options(self):
         content_widget = getattr(self, "analysisSectionContentWidget", self.analysisWorkflowGroupBox)
@@ -451,12 +458,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 self._default_atlas_pdf_path(),
                 lambda: self.atlasPdfPathLineEdit.text().strip(),
                 self.atlasPdfPathLineEdit.setText,
-            ),
-            UIFieldBinding(
-                "temporal_mode",
-                DEFAULT_TEMPORAL_MODE_LABEL,
-                lambda: self.temporalModeComboBox.currentText(),
-                lambda value: self._set_combo_value(self.temporalModeComboBox, value, DEFAULT_TEMPORAL_MODE_LABEL),
             ),
             UIFieldBinding(
                 "analysis_mode",
@@ -913,7 +914,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             ),
             selection_state=selection_state,
             style_preset=self.stylePresetComboBox.currentText(),
-            temporal_mode=self.temporalModeComboBox.currentText(),
+            temporal_mode=DEFAULT_TEMPORAL_MODE_LABEL,
             background_config=BackgroundConfig(
                 enabled=self.backgroundMapCheckBox.isChecked(),
                 preset_name=self.backgroundPresetComboBox.currentText(),

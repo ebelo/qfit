@@ -16,6 +16,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 try:
     from qgis.core import (
         QgsApplication,
+        QgsCoordinateTransform,
         QgsFeature,
         QgsLayoutExporter,
         QgsMapRendererSequentialJob,
@@ -51,11 +52,12 @@ try:
     from qfit.layer_manager import LayerManager
     from qfit.mapbox_config import TILE_MODE_RASTER
     from qfit.activities.domain.models import Activity
-    from qfit.qfit_dockwidget import QfitDockWidget
+    from qfit.qfit_dockwidget import ApplyVisualizationAction, QfitDockWidget
     from qfit.settings_service import SettingsService
     from qfit.ui.dockwidget_dependencies import build_dockwidget_dependencies
     from qfit.ui.workflow_section_coordinator import WorkflowSectionCoordinator
     from qfit.visual_apply import VisualApplyService
+    from qfit.visualization.application.temporal_config import DEFAULT_TEMPORAL_MODE_LABEL
 
     QGIS_AVAILABLE = True
     QGIS_IMPORT_ERROR = None
@@ -235,7 +237,6 @@ class QgisSmokeTests(unittest.TestCase):
 
             self.assertEqual(dock.maxDetailedActivitiesLabel.text(), "Max new detailed routes this run")
             self.assertEqual(dock.pointSamplingStrideLabel.text(), "Keep every Nth point")
-            self.assertEqual(dock.temporalModeLabel.text(), "Temporal timestamps")
             self.assertEqual(dock.workflowLabel.text(), "Workflow: Fetch & store → Visualize → Analyze → Publish")
             self.assertFalse(dock.credentialsGroupBox.isVisible())
             self.assertTrue(bool(dock.features() & dock.DockWidgetMovable))
@@ -280,6 +281,9 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertEqual(temporal_mode_layout.spacing(), 6)
             self.assertGreaterEqual(dock.temporalModeComboBox.minimumContentsLength(), 10)
             self.assertGreaterEqual(dock.temporalHelpLabel.margin(), 2)
+            self.assertTrue(dock.temporalModeLabel.isHidden())
+            self.assertTrue(dock.temporalModeComboBox.isHidden())
+            self.assertTrue(dock.temporalHelpLabel.isHidden())
             self.assertEqual(dock.publishGroupBox.title(), "")
             self.assertEqual(dock.publishSectionToggleButton.text(), "4. Publish / atlas")
             self.assertFalse(dock.publishSectionContentWidget.isHidden())
@@ -296,8 +300,7 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertIsNotNone(dock.findChild(QLabel, "maxDetailedActivitiesSpinBoxContextHelpLabel"))
             self.assertIsNotNone(dock.findChild(QWidget, "maxDetailedActivitiesSpinBoxHelpField"))
             temporal_helper = dock.findChild(QLabel, "temporalModeComboBoxContextHelpLabel")
-            self.assertIsNotNone(temporal_helper)
-            self.assertEqual(temporal_helper.parentWidget(), dock.temporalModeLabel.parentWidget())
+            self.assertIsNone(temporal_helper)
             dock.activitiesSectionToggleButton.click()
             self.assertFalse(dock.activitiesSectionToggleButton.isChecked())
             self.assertEqual(dock.activitiesSectionToggleButton.arrowType(), Qt.RightArrow)
@@ -365,9 +368,6 @@ class QgisSmokeTests(unittest.TestCase):
             style_preset_text = dock.stylePresetComboBox.itemText(
                 1 if dock.stylePresetComboBox.count() > 1 else 0
             )
-            temporal_mode_text = dock.temporalModeComboBox.itemText(
-                1 if dock.temporalModeComboBox.count() > 1 else 0
-            )
             background_preset_text = dock.backgroundPresetComboBox.itemText(
                 1 if dock.backgroundPresetComboBox.count() > 1 else 0
             )
@@ -381,7 +381,6 @@ class QgisSmokeTests(unittest.TestCase):
             dock.backgroundPresetComboBox.setCurrentText(background_preset_text)
             dock.previewSortComboBox.setCurrentText(preview_sort_text)
             dock.stylePresetComboBox.setCurrentText(style_preset_text)
-            dock.temporalModeComboBox.setCurrentText(temporal_mode_text)
             dock.analysisModeComboBox.setCurrentText("Most frequent starting points")
             dock.atlasTargetAspectRatioSpinBox.setValue(1.75)
             dock.atlasPdfPathLineEdit.setText("/tmp/roundtrip.pdf")
@@ -397,7 +396,7 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertEqual(settings.get("background_preset"), background_preset_text)
             self.assertEqual(settings.get("preview_sort"), preview_sort_text)
             self.assertEqual(settings.get("style_preset"), style_preset_text)
-            self.assertEqual(settings.get("temporal_mode"), temporal_mode_text)
+            self.assertIsNone(settings.get("temporal_mode"))
             self.assertEqual(settings.get("analysis_mode"), "Most frequent starting points")
             self.assertAlmostEqual(float(settings.get("atlas_target_aspect_ratio")), 1.75, places=2)
             self.assertEqual(settings.get("atlas_pdf_path"), "/tmp/roundtrip.pdf")
@@ -416,13 +415,32 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertEqual(dock_reloaded.backgroundPresetComboBox.currentText(), background_preset_text)
             self.assertEqual(dock_reloaded.previewSortComboBox.currentText(), preview_sort_text)
             self.assertEqual(dock_reloaded.stylePresetComboBox.currentText(), style_preset_text)
-            self.assertEqual(dock_reloaded.temporalModeComboBox.currentText(), temporal_mode_text)
+            self.assertEqual(dock_reloaded.temporalModeComboBox.currentText(), DEFAULT_TEMPORAL_MODE_LABEL)
             self.assertEqual(dock_reloaded.analysisModeComboBox.currentText(), "Most frequent starting points")
             self.assertAlmostEqual(dock_reloaded.atlasTargetAspectRatioSpinBox.value(), 1.75, places=2)
             self.assertEqual(dock_reloaded.atlasPdfPathLineEdit.text(), "/tmp/roundtrip.pdf")
         finally:
             dock_reloaded.close()
             dock_reloaded.deleteLater()
+
+    def test_dock_widget_ignores_legacy_temporal_mode_settings_and_uses_local_time(self):
+        settings = SettingsService(
+            qsettings=_FakeQSettings({"qfit/temporal_mode": "UTC time"}),
+            credential_store=InMemoryCredentialStore(),
+        )
+        dependencies = replace(
+            build_dockwidget_dependencies(self.iface),
+            settings=settings,
+        )
+
+        dock = QfitDockWidget(self.iface, dependencies=dependencies)
+        try:
+            self.assertEqual(dock.temporalModeComboBox.currentText(), DEFAULT_TEMPORAL_MODE_LABEL)
+            action = dock._build_visual_workflow_action(ApplyVisualizationAction)
+            self.assertEqual(action.temporal_mode, DEFAULT_TEMPORAL_MODE_LABEL)
+        finally:
+            dock.close()
+            dock.deleteLater()
 
     def test_generate_atlas_pdf_shows_clear_error_when_pypdf_is_missing(self):
         dock = QfitDockWidget(self.iface)
@@ -1155,10 +1173,10 @@ class QgisSmokeTests(unittest.TestCase):
             # Points layer carries the heatmap renderer
             renderer = points_layer.renderer()
             self.assertIsInstance(renderer, QgsHeatmapRenderer)
-            self.assertEqual(renderer.radius(), 18)
+            self.assertEqual(renderer.radius(), 1000)
             self.assertEqual(renderer.colorRamp().color2().alpha(), 255)
             self.assertGreater(renderer.colorRamp().color2().red(), renderer.colorRamp().color2().blue())
-            self.assertEqual(renderer.radiusUnit(), QgsUnitTypes.RenderMillimeters)
+            self.assertEqual(renderer.radiusUnit(), QgsUnitTypes.RenderMapUnits)
             self.assertEqual(renderer.renderQuality(), 2)
             self.assertIsNotNone(renderer.colorRamp())
             self.assertEqual(renderer.colorRamp().color1().alpha(), 0)
@@ -1872,6 +1890,15 @@ class QgisSmokeTests(unittest.TestCase):
         settings.setLayers(layers)
         settings.setOutputSize(QImage(width, height, QImage.Format_ARGB32).size())
         settings.setBackgroundColor(Qt.white)
+
+        destination_crs = QgsProject.instance().crs()
+        if destination_crs.isValid():
+            settings.setDestinationCrs(destination_crs)
+            source_layer = next((layer for layer in layers if layer is not None and layer.isValid()), None)
+            source_crs = source_layer.crs() if source_layer is not None else None
+            if source_crs is not None and source_crs.isValid() and source_crs != destination_crs:
+                transform = QgsCoordinateTransform(source_crs, destination_crs, QgsProject.instance())
+                extent = transform.transformBoundingBox(extent)
         settings.setExtent(extent)
 
         job = QgsMapRendererSequentialJob(settings)
