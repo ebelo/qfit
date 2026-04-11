@@ -71,6 +71,35 @@ def ensure_attribute_indexes(output_path):
         connection.commit()
 
 
+def _import_qgis_spatial_index_api():
+    try:
+        from qgis.core import QgsFeatureSource, QgsVectorDataProvider, QgsVectorLayer
+    except ImportError as exc:  # pragma: no cover
+        raise RuntimeError("QGIS Python bindings are required to create GeoPackage spatial indexes") from exc
+
+    return QgsFeatureSource, QgsVectorDataProvider, QgsVectorLayer
+
+
+def ensure_spatial_indexes(output_path):
+    """Create derived-layer spatial indexes inside *output_path* if missing."""
+    qgs_feature_source, qgs_vector_data_provider, qgs_vector_layer = _import_qgis_spatial_index_api()
+
+    for layer_name in DERIVED_LAYER_ATTRIBUTE_INDEXES:
+        layer = qgs_vector_layer(f"{output_path}|layername={layer_name}", layer_name, "ogr")
+        if not layer.isValid():
+            raise RuntimeError(f"Failed to load GeoPackage layer {layer_name!r} from {output_path}")
+
+        provider = layer.dataProvider()
+        if not provider.capabilities() & qgs_vector_data_provider.CreateSpatialIndex:
+            raise RuntimeError(f"Layer {layer_name!r} does not support spatial index creation")
+
+        if provider.hasSpatialIndex() == qgs_feature_source.SpatialIndexPresent:
+            continue
+
+        if not provider.createSpatialIndex():
+            raise RuntimeError(f"Failed to create spatial index for layer {layer_name!r}")
+
+
 def bootstrap_empty_gpkg(output_path, atlas_page_settings):
     """Create a new GeoPackage with empty layers in the canonical order.
 
@@ -119,5 +148,6 @@ def build_and_write_all_layers(
         write_layer_to_gpkg(layer, output_path, layer_name, overwrite_file=False)
 
     ensure_attribute_indexes(output_path)
+    ensure_spatial_indexes(output_path)
 
     return layers

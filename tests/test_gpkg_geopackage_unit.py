@@ -284,6 +284,7 @@ class GeoPackagePackageUnitTests(unittest.TestCase):
                 moved.build_and_write_all_layers,
             )
             self.assertIs(legacy.ensure_attribute_indexes, moved.ensure_attribute_indexes)
+            self.assertIs(legacy.ensure_spatial_indexes, moved.ensure_spatial_indexes)
 
             moved.bootstrap_empty_gpkg("/tmp/bootstrap.gpkg", {"margin_percent": 8})
             self.assertEqual(write_layer_to_gpkg.call_count, 9)
@@ -316,7 +317,47 @@ class GeoPackagePackageUnitTests(unittest.TestCase):
                 def __exit__(self, exc_type, exc, tb):
                     return False
 
-            with patch.object(moved.sqlite3, "connect", return_value=_Connection()) as sqlite_connect:
+            spatial_index_calls = []
+
+            class _FeatureSource:
+                SpatialIndexNotPresent = 1
+                SpatialIndexPresent = 2
+
+            class _VectorDataProvider:
+                CreateSpatialIndex = 1
+
+            class _Provider:
+                def __init__(self, layer_name):
+                    self.layer_name = layer_name
+
+                def capabilities(self):
+                    return _VectorDataProvider.CreateSpatialIndex
+
+                def hasSpatialIndex(self):
+                    return _FeatureSource.SpatialIndexPresent
+
+                def createSpatialIndex(self):
+                    spatial_index_calls.append(self.layer_name)
+                    return True
+
+            class _Layer:
+                def __init__(self, uri, layer_name, provider_key):
+                    self.uri = uri
+                    self.layer_name = layer_name
+                    self.provider_key = provider_key
+
+                def isValid(self):
+                    return True
+
+                def dataProvider(self):
+                    return _Provider(self.layer_name)
+
+            with patch.object(moved.sqlite3, "connect", return_value=_Connection()) as sqlite_connect, \
+                    patch.object(
+                        moved,
+                        "_import_qgis_spatial_index_api",
+                        return_value=(_FeatureSource, _VectorDataProvider, lambda uri, layer_name, provider_key: _Layer(uri, layer_name, provider_key)),
+                    ):
                 layers = moved.build_and_write_all_layers(
                     [{"name": "Evening Run"}],
                     "/tmp/full.gpkg",
@@ -348,6 +389,125 @@ class GeoPackagePackageUnitTests(unittest.TestCase):
                     executed_sql,
                 )
                 self.assertEqual(executed_sql[-1], "COMMIT")
+                self.assertEqual(spatial_index_calls, [])
+
+            present = _FeatureSource.SpatialIndexPresent
+            missing = _FeatureSource.SpatialIndexNotPresent
+            loaded_layers = []
+
+            class _SpatialProvider:
+                def __init__(self, state):
+                    self.state = state
+                    self.create_calls = 0
+
+                def capabilities(self):
+                    return _VectorDataProvider.CreateSpatialIndex
+
+                def hasSpatialIndex(self):
+                    return self.state
+
+                def createSpatialIndex(self):
+                    self.create_calls += 1
+                    self.state = present
+                    return True
+
+            providers = {
+                "activity_tracks": _SpatialProvider(missing),
+                "activity_starts": _SpatialProvider(present),
+                "activity_points": _SpatialProvider(missing),
+                "activity_atlas_pages": _SpatialProvider(present),
+            }
+
+            class _SpatialLayer:
+                def __init__(self, uri, layer_name, provider_key):
+                    loaded_layers.append((uri, layer_name, provider_key))
+                    self.layer_name = layer_name
+
+                def isValid(self):
+                    return True
+
+                def dataProvider(self):
+                    return providers[self.layer_name]
+
+            with patch.object(
+                moved,
+                "_import_qgis_spatial_index_api",
+                return_value=(_FeatureSource, _VectorDataProvider, lambda uri, layer_name, provider_key: _SpatialLayer(uri, layer_name, provider_key)),
+            ):
+                moved.ensure_spatial_indexes("/tmp/full.gpkg")
+
+            self.assertEqual(
+                loaded_layers,
+                [
+                    ("/tmp/full.gpkg|layername=activity_tracks", "activity_tracks", "ogr"),
+                    ("/tmp/full.gpkg|layername=activity_starts", "activity_starts", "ogr"),
+                    ("/tmp/full.gpkg|layername=activity_points", "activity_points", "ogr"),
+                    ("/tmp/full.gpkg|layername=activity_atlas_pages", "activity_atlas_pages", "ogr"),
+                ],
+            )
+            self.assertEqual(providers["activity_tracks"].create_calls, 1)
+            self.assertEqual(providers["activity_starts"].create_calls, 0)
+            self.assertEqual(providers["activity_points"].create_calls, 1)
+            self.assertEqual(providers["activity_atlas_pages"].create_calls, 0)
+
+            class _InvalidLayer:
+                def isValid(self):
+                    return False
+
+            with patch.object(
+                moved,
+                "_import_qgis_spatial_index_api",
+                return_value=(_FeatureSource, _VectorDataProvider, lambda uri, layer_name, provider_key: _InvalidLayer()),
+            ):
+                with self.assertRaisesRegex(RuntimeError, "Failed to load GeoPackage layer 'activity_tracks'"):
+                    moved.ensure_spatial_indexes("/tmp/full.gpkg")
+
+            class _NoCapabilityProvider:
+                def capabilities(self):
+                    return 0
+
+                def hasSpatialIndex(self):
+                    return missing
+
+            class _NoCapabilityLayer:
+                def isValid(self):
+                    return True
+
+                def dataProvider(self):
+                    return _NoCapabilityProvider()
+
+            with patch.object(
+                moved,
+                "_import_qgis_spatial_index_api",
+                return_value=(_FeatureSource, _VectorDataProvider, lambda uri, layer_name, provider_key: _NoCapabilityLayer()),
+            ):
+                with self.assertRaisesRegex(RuntimeError, "does not support spatial index creation"):
+                    moved.ensure_spatial_indexes("/tmp/full.gpkg")
+
+            class _CreateFailureProvider:
+                def capabilities(self):
+                    return _VectorDataProvider.CreateSpatialIndex
+
+                def hasSpatialIndex(self):
+                    return missing
+
+                def createSpatialIndex(self):
+                    return False
+
+            class _CreateFailureLayer:
+                def isValid(self):
+                    return True
+
+                def dataProvider(self):
+                    return _CreateFailureProvider()
+
+            with patch.object(
+                moved,
+                "_import_qgis_spatial_index_api",
+                return_value=(_FeatureSource, _VectorDataProvider, lambda uri, layer_name, provider_key: _CreateFailureLayer()),
+            ):
+                with self.assertRaisesRegex(RuntimeError, "Failed to create spatial index for layer 'activity_tracks'"):
+                    moved.ensure_spatial_indexes("/tmp/full.gpkg")
 
 
 if __name__ == "__main__":

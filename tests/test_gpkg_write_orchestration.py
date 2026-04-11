@@ -17,15 +17,18 @@ if QgsApplication is not None:
     from qfit.activities.infrastructure.geopackage.gpkg_write_orchestration import (
         bootstrap_empty_gpkg,
         build_and_write_all_layers,
+        ensure_spatial_indexes,
     )
     from qfit.gpkg_write_orchestration import (
         bootstrap_empty_gpkg as legacy_bootstrap_empty_gpkg,
         build_and_write_all_layers as legacy_build_and_write_all_layers,
+        ensure_spatial_indexes as legacy_ensure_spatial_indexes,
     )
     from qfit.atlas.publish_atlas import normalize_atlas_page_settings
 else:  # pragma: no cover
     bootstrap_empty_gpkg = None
     build_and_write_all_layers = None
+    ensure_spatial_indexes = None
     normalize_atlas_page_settings = None
 
 
@@ -58,6 +61,7 @@ class BootstrapEmptyGpkgTests(unittest.TestCase):
     def test_legacy_gpkg_write_orchestration_shim_exports_same_functions(self):
         self.assertIs(legacy_bootstrap_empty_gpkg, bootstrap_empty_gpkg)
         self.assertIs(legacy_build_and_write_all_layers, build_and_write_all_layers)
+        self.assertIs(legacy_ensure_spatial_indexes, ensure_spatial_indexes)
 
     @classmethod
     def setUpClass(cls):
@@ -190,6 +194,70 @@ class BuildAndWriteAllLayersTests(unittest.TestCase):
                 for table_name, expected in expected_indexes.items():
                     rows = connection.execute(f"PRAGMA index_list('{table_name}')").fetchall()
                     self.assertTrue(expected.issubset({row[1] for row in rows}), table_name)
+        finally:
+            if os.path.exists(path):
+                os.unlink(path)
+
+    def test_ensure_spatial_indexes_recreates_missing_rtree_metadata(self):
+        path = self._temp_gpkg()
+        try:
+            bootstrap_empty_gpkg(path, self.settings)
+            build_and_write_all_layers(self.records, path, self.settings)
+
+            with sqlite3.connect(path) as connection:
+                connection.execute(
+                    "DELETE FROM gpkg_extensions WHERE table_name='activity_points' AND extension_name='gpkg_rtree_index'"
+                )
+                for table_name in (
+                    "rtree_activity_points_geom",
+                    "rtree_activity_points_geom_rowid",
+                    "rtree_activity_points_geom_node",
+                    "rtree_activity_points_geom_parent",
+                ):
+                    connection.execute(f"DROP TABLE IF EXISTS {table_name}")
+                for trigger_name in (
+                    "rtree_activity_points_geom_insert",
+                    "rtree_activity_points_geom_update1",
+                    "rtree_activity_points_geom_update2",
+                    "rtree_activity_points_geom_update3",
+                    "rtree_activity_points_geom_update4",
+                    "rtree_activity_points_geom_delete",
+                ):
+                    connection.execute(f"DROP TRIGGER IF EXISTS {trigger_name}")
+                connection.commit()
+
+            layer = QgsVectorLayer(f"{path}|layername=activity_points", "activity_points", "ogr")
+            self.assertTrue(layer.isValid())
+            self.assertEqual(layer.dataProvider().hasSpatialIndex(), layer.dataProvider().SpatialIndexNotPresent)
+
+            ensure_spatial_indexes(path)
+            ensure_spatial_indexes(path)
+
+            reloaded_layer = QgsVectorLayer(f"{path}|layername=activity_points", "activity_points", "ogr")
+            self.assertTrue(reloaded_layer.isValid())
+            self.assertEqual(reloaded_layer.dataProvider().hasSpatialIndex(), reloaded_layer.dataProvider().SpatialIndexPresent)
+
+            with sqlite3.connect(path) as connection:
+                extension_rows = connection.execute(
+                    "SELECT table_name, column_name, extension_name FROM gpkg_extensions WHERE table_name='activity_points'"
+                ).fetchall()
+                self.assertIn(("activity_points", "geom", "gpkg_rtree_index"), extension_rows)
+
+                rtree_tables = {
+                    row[0]
+                    for row in connection.execute(
+                        "SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'rtree_activity_points_geom%'"
+                    ).fetchall()
+                }
+                self.assertEqual(
+                    rtree_tables,
+                    {
+                        "rtree_activity_points_geom",
+                        "rtree_activity_points_geom_rowid",
+                        "rtree_activity_points_geom_node",
+                        "rtree_activity_points_geom_parent",
+                    },
+                )
         finally:
             if os.path.exists(path):
                 os.unlink(path)
