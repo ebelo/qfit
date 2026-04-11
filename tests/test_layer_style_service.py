@@ -213,7 +213,9 @@ class LayerStyleServiceTests(unittest.TestCase):
             self.style_service.apply_style(
                 activities_layer, starts_layer, points_layer, atlas_layer, "Heatmap"
             )
-            self.assertIsInstance(starts_layer.renderer(), QgsHeatmapRenderer)
+            renderer = starts_layer.renderer()
+            self.assertIsInstance(renderer, QgsHeatmapRenderer)
+            self.assertEqual(renderer.maximumValue(), float(min(25, starts_layer.featureCount())))
             self.assertAlmostEqual(activities_layer.opacity(), 0.0, places=2)
             self.assertAlmostEqual(points_layer.opacity(), 0.0, places=2)
 
@@ -512,7 +514,7 @@ class LayerStyleServiceUnitTests(unittest.TestCase):
         ):
             module_globals["build_qfit_visualize_heatmap_renderer"](
                 radius_map_units=123.0,
-                maximum_value=4,
+                maximum_value=25,
             )
             module_globals["build_qfit_heatmap_renderer"](maximum_value=6)
 
@@ -520,7 +522,7 @@ class LayerStyleServiceUnitTests(unittest.TestCase):
         visualize_renderer.setRadiusUnit.assert_called_once_with(
             module_globals["QgsUnitTypes"].RenderMapUnits
         )
-        visualize_renderer.setMaximumValue.assert_called_once_with(4.0)
+        visualize_renderer.setMaximumValue.assert_called_once_with(25.0)
         analysis_renderer.setRadius.assert_called_once_with(
             module_globals["HEATMAP_ANALYSIS_RADIUS_M"]
         )
@@ -529,124 +531,31 @@ class LayerStyleServiceUnitTests(unittest.TestCase):
         )
         analysis_renderer.setMaximumValue.assert_called_once_with(6.0)
 
-    def test_build_metric_start_samples_defaults_invalid_crs_and_skips_empty_geometry(self):
+    def test_fixed_visualize_heatmap_maximum_caps_at_25(self):
         module_globals = self.service._apply_heatmap_style.__func__.__globals__
-        build_samples = module_globals["_build_metric_start_samples"]
+        fixed_maximum = module_globals["_fixed_visualize_heatmap_maximum"]
 
-        class _Point:
-            def __init__(self, x, y):
-                self._x = x
-                self._y = y
+        sparse_layer = MagicMock()
+        sparse_layer.featureCount.return_value = 3
 
-            def x(self):
-                return self._x
+        dense_layer = MagicMock()
+        dense_layer.featureCount.return_value = 100
 
-            def y(self):
-                return self._y
+        self.assertEqual(fixed_maximum(sparse_layer), 3.0)
+        self.assertEqual(fixed_maximum(dense_layer), 25.0)
+        self.assertIsNone(fixed_maximum(None))
 
-        valid_geometry = MagicMock()
-        valid_geometry.isEmpty.return_value = False
-        valid_geometry.asPoint.return_value = _Point(1.0, 2.0)
-
-        empty_geometry = MagicMock()
-        empty_geometry.isEmpty.return_value = True
-
-        valid_feature = MagicMock()
-        valid_feature.geometry.return_value = valid_geometry
-        valid_feature.fields.return_value.names.return_value = ["source_activity_id"]
-        valid_feature.__getitem__.return_value = "42"
-
-        empty_feature = MagicMock()
-        empty_feature.geometry.return_value = empty_geometry
-
-        invalid_crs = MagicMock()
-        invalid_crs.isValid.return_value = False
-
-        layer = MagicMock()
-        layer.crs.return_value = invalid_crs
-        layer.getFeatures.return_value = [valid_feature, empty_feature]
-
-        project = MagicMock()
-        project.transformContext.return_value = "ctx"
-        transform = MagicMock()
-        transform.transform.side_effect = lambda point: _Point(point.x() + 10.0, point.y() + 20.0)
-
-        with patch.dict(
-            module_globals,
-            {
-                "QgsCoordinateReferenceSystem": MagicMock(side_effect=lambda authid: f"crs:{authid}"),
-                "QgsCoordinateTransform": MagicMock(return_value=transform),
-                "QgsPointXY": MagicMock(side_effect=lambda x, y: _Point(x, y)),
-                "QgsProject": MagicMock(instance=MagicMock(return_value=project)),
-                "HEATMAP_WORKING_CRS": "crs:EPSG:3857",
-            },
-            clear=False,
-        ):
-            samples = build_samples(layer)
-
-        self.assertEqual(len(samples), 1)
-        self.assertEqual(samples[0].x, 11.0)
-        self.assertEqual(samples[0].y, 22.0)
-        self.assertEqual(samples[0].source_activity_id, "42")
-
-    def test_heatmap_settings_return_feature_count_when_no_samples_exist(self):
+    def test_fixed_visualize_heatmap_maximum_uses_default_when_feature_count_unknown(self):
         module_globals = self.service._apply_heatmap_style.__func__.__globals__
-        heatmap_settings = module_globals["_heatmap_settings_from_frequent_starts"]
+        fixed_maximum = module_globals["_fixed_visualize_heatmap_maximum"]
 
-        layer = MagicMock()
-        layer.featureCount.return_value = 3
+        unknown_layer = MagicMock()
+        unknown_layer.featureCount.return_value = -1
 
-        with patch.dict(
-            module_globals,
-            {
-                "_build_metric_start_samples": MagicMock(return_value=[]),
-            },
-            clear=False,
-        ):
-            radius_map_units, maximum_value = heatmap_settings(layer)
-
-        self.assertEqual(radius_map_units, module_globals["HEATMAP_VISUALIZE_RADIUS_M"])
-        self.assertEqual(maximum_value, 3.0)
-
-    def test_heatmap_settings_use_cluster_radius_and_maximum(self):
-        module_globals = self.service._apply_heatmap_style.__func__.__globals__
-        heatmap_settings = module_globals["_heatmap_settings_from_frequent_starts"]
-
-        layer = MagicMock()
-        layer.featureCount.return_value = 2
-        clusters = [SimpleNamespace(activity_count=3), SimpleNamespace(activity_count=7)]
-
-        with patch.dict(
-            module_globals,
-            {
-                "_build_metric_start_samples": MagicMock(return_value=[object(), object()]),
-                "analyze_frequent_start_points": MagicMock(return_value=(clusters, 120.0)),
-            },
-            clear=False,
-        ):
-            radius_map_units, maximum_value = heatmap_settings(layer)
-
-        self.assertEqual(radius_map_units, 120.0)
-        self.assertEqual(maximum_value, 7.0)
-
-    def test_heatmap_settings_fall_back_to_feature_count_when_analysis_raises(self):
-        module_globals = self.service._apply_heatmap_style.__func__.__globals__
-        heatmap_settings = module_globals["_heatmap_settings_from_frequent_starts"]
-
-        layer = MagicMock()
-        layer.featureCount.return_value = 5
-
-        with patch.dict(
-            module_globals,
-            {
-                "_build_metric_start_samples": MagicMock(side_effect=RuntimeError("boom")),
-            },
-            clear=False,
-        ):
-            radius_map_units, maximum_value = heatmap_settings(layer)
-
-        self.assertEqual(radius_map_units, module_globals["HEATMAP_VISUALIZE_RADIUS_M"])
-        self.assertEqual(maximum_value, 5.0)
+        self.assertEqual(
+            fixed_maximum(unknown_layer),
+            float(module_globals["HEATMAP_VISUALIZE_MAXIMUM"]),
+        )
 
     def test_infer_background_preset_name_returns_none_for_malformed_name(self):
         layer = MagicMock()

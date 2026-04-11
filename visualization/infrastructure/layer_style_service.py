@@ -6,15 +6,12 @@ from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QColor
 from qgis.core import (
     QgsCategorizedSymbolRenderer,
-    QgsCoordinateReferenceSystem,
-    QgsCoordinateTransform,
     QgsFillSymbol,
     QgsGradientColorRamp,
     QgsGradientStop,
     QgsHeatmapRenderer,
     QgsLineSymbol,
     QgsMarkerSymbol,
-    QgsPointXY,
     QgsProject,
     QgsRendererCategory,
     QgsSimpleLineSymbolLayer,
@@ -22,10 +19,6 @@ from qgis.core import (
     QgsUnitTypes,
 )
 
-from ...analysis.application.frequent_start_points import (
-    StartPointSample,
-    analyze_frequent_start_points,
-)
 from ...mapbox_config import BACKGROUND_LAYER_PREFIX
 from ..map_style import (
     DEFAULT_SIMPLE_LINE_HEX,
@@ -38,62 +31,19 @@ BY_ACTIVITY_TYPE_PRESET = "By activity type"
 OTHER_ACTIVITY_LABEL = "Other"
 HEATMAP_ANALYSIS_RADIUS_M = 750
 HEATMAP_VISUALIZE_RADIUS_M = 250
-HEATMAP_WORKING_CRS = QgsCoordinateReferenceSystem("EPSG:3857")
+HEATMAP_VISUALIZE_MAXIMUM = 25
 
 
-def _build_metric_start_samples(layer):
+def _fixed_visualize_heatmap_maximum(layer):
     if layer is None:
-        return []
+        return None
 
-    source_crs = layer.crs()
-    if source_crs is None or not source_crs.isValid():
-        source_crs = QgsCoordinateReferenceSystem("EPSG:4326")
-
-    transform = None
-    if source_crs != HEATMAP_WORKING_CRS:
-        transform = QgsCoordinateTransform(
-            source_crs,
-            HEATMAP_WORKING_CRS,
-            QgsProject.instance().transformContext(),
-        )
-
-    samples = []
-    for feature in layer.getFeatures():
-        geometry = feature.geometry()
-        if geometry is None or geometry.isEmpty():
-            continue
-        point = geometry.asPoint()
-        metric_point = QgsPointXY(point.x(), point.y())
-        if transform is not None:
-            metric_point = transform.transform(metric_point)
-        samples.append(
-            StartPointSample(
-                x=metric_point.x(),
-                y=metric_point.y(),
-                source_activity_id=str(feature["source_activity_id"])
-                if "source_activity_id" in feature.fields().names()
-                else None,
-            )
-        )
-    return samples
-
-
-def _heatmap_settings_from_frequent_starts(layer):
-    feature_count = 0 if layer is None else layer.featureCount()
-    if feature_count <= 0:
-        return HEATMAP_VISUALIZE_RADIUS_M, None
-
-    try:
-        samples = _build_metric_start_samples(layer)
-        if not samples:
-            return HEATMAP_VISUALIZE_RADIUS_M, float(feature_count)
-
-        clusters, radius_m = analyze_frequent_start_points(samples, max_clusters=len(samples))
-        maximum = max((cluster.activity_count for cluster in clusters), default=feature_count)
-        return max(40.0, float(radius_m or HEATMAP_VISUALIZE_RADIUS_M)), float(maximum)
-    except Exception:
-        logger.debug("Failed to derive heatmap settings from frequent-start analysis", exc_info=True)
-        return HEATMAP_VISUALIZE_RADIUS_M, float(feature_count)
+    feature_count = layer.featureCount()
+    if feature_count is None or feature_count < 0:
+        return float(HEATMAP_VISUALIZE_MAXIMUM)
+    if feature_count == 0:
+        return None
+    return float(min(HEATMAP_VISUALIZE_MAXIMUM, feature_count))
 
 
 def build_qfit_heatmap_renderer(*, maximum_value=None):
@@ -118,7 +68,11 @@ def build_qfit_heatmap_renderer(*, maximum_value=None):
     return renderer
 
 
-def build_qfit_visualize_heatmap_renderer(*, radius_map_units=HEATMAP_VISUALIZE_RADIUS_M, maximum_value=None):
+def build_qfit_visualize_heatmap_renderer(
+    *,
+    radius_map_units=HEATMAP_VISUALIZE_RADIUS_M,
+    maximum_value=HEATMAP_VISUALIZE_MAXIMUM,
+):
     renderer = QgsHeatmapRenderer()
     renderer.setRadius(radius_map_units)
     renderer.setRadiusUnit(QgsUnitTypes.RenderMapUnits)
@@ -370,11 +324,10 @@ class LayerStyleService:
         layer.triggerRepaint()
 
     def _apply_heatmap_style(self, layer):
-        radius_map_units, maximum_value = _heatmap_settings_from_frequent_starts(layer)
         layer.setRenderer(
             build_qfit_visualize_heatmap_renderer(
-                radius_map_units=radius_map_units,
-                maximum_value=maximum_value,
+                radius_map_units=HEATMAP_VISUALIZE_RADIUS_M,
+                maximum_value=_fixed_visualize_heatmap_maximum(layer),
             )
         )
         layer.setOpacity(1.0)
