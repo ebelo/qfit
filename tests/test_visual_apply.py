@@ -3,6 +3,10 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock, call
 
 from tests import _path  # noqa: F401
+from qfit.visualization.application.render_plan import (
+    RENDERER_HEATMAP,
+    SOURCE_ROLE_POINTS,
+)
 from qfit.visualization.application.visual_apply import (
     BackgroundConfig,
     LayerRefs,
@@ -122,6 +126,26 @@ class ApplyWithSubsetFiltersTests(unittest.TestCase):
         self.layer_manager.apply_style.assert_called_once()
         args = self.layer_manager.apply_style.call_args
         self.assertEqual(args[0][4], "Speed gradient")
+
+    def test_builds_and_passes_render_plan(self):
+        self.layers.starts.featureCount.return_value = 0
+        self.layers.points.featureCount.return_value = 4
+
+        self.service.apply(
+            layers=self.layers,
+            query=_make_query(),
+            style_preset="Heatmap",
+            temporal_mode="Off",
+            background_config=_make_bg_config(enabled=True, preset_name="Satellite"),
+            apply_subset_filters=True,
+            filtered_count=3,
+        )
+
+        kwargs = self.layer_manager.apply_style.call_args[1]
+        render_plan = kwargs["render_plan"]
+        self.assertEqual(render_plan.selected_source_role, SOURCE_ROLE_POINTS)
+        self.assertEqual(render_plan.points.renderer_family, RENDERER_HEATMAP)
+        self.assertEqual(render_plan.background_preset_name, "Satellite")
 
     def test_status_includes_filtered_count(self):
         result = self.service.apply(

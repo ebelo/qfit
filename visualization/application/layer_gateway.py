@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Protocol, runtime_checkable
 
+from .render_plan import RenderPlan
+
 
 @runtime_checkable
 class LayerGateway(Protocol):
@@ -40,8 +42,9 @@ class LayerGateway(Protocol):
         starts_layer,
         points_layer,
         atlas_layer,
-        preset,
+        preset=None,
         background_preset_name=None,
+        render_plan: RenderPlan | None = None,
     ): ...
 
     def apply_temporal_configuration(

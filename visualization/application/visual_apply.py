@@ -5,6 +5,7 @@ from ...activities.application.activity_selection_state import ActivitySelection
 from ...activities.domain.activity_query import ActivityQuery
 from ...mapbox_config import MapboxConfigError
 from .layer_gateway import LayerGateway
+from .render_plan import build_render_plan
 
 logger = logging.getLogger(__name__)
 
@@ -122,17 +123,25 @@ class VisualApplyService:
             self._apply_filters_to_all_layers(request.layers, request.query)
 
         if has_layers:
+            render_plan = build_render_plan(
+                request.style_preset,
+                has_start_features=self._has_features(request.layers.starts),
+                has_point_features=self._has_features(request.layers.points),
+                has_points_layer=request.layers.points is not None,
+                background_preset_name=(
+                    request.background_config.preset_name
+                    if request.background_config.enabled
+                    else None
+                ),
+            )
             self.layer_gateway.apply_style(
                 request.layers.activities,
                 request.layers.starts,
                 request.layers.points,
                 request.layers.atlas,
                 request.style_preset,
-                background_preset_name=(
-                    request.background_config.preset_name
-                    if request.background_config.enabled
-                    else None
-                ),
+                background_preset_name=render_plan.background_preset_name,
+                render_plan=render_plan,
             )
             temporal_note = self.layer_gateway.apply_temporal_configuration(
                 request.layers.activities,
@@ -200,6 +209,15 @@ class VisualApplyService:
             return layer, None
         except (MapboxConfigError, RuntimeError) as exc:
             return None, str(exc)
+
+    @staticmethod
+    def _has_features(layer):
+        if layer is None:
+            return False
+        try:
+            return layer.featureCount() > 0
+        except TypeError:
+            return False
 
     @staticmethod
     def _background_failure_status(has_layers, temporal_note, error):

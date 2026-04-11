@@ -20,6 +20,20 @@ from qgis.core import (
 )
 
 from ...mapbox_config import BACKGROUND_LAYER_PREFIX
+from ..application.render_plan import (
+    BY_ACTIVITY_TYPE_PRESET,
+    DEFAULT_RENDER_PRESET,
+    RENDERER_ATLAS_PAGE,
+    RENDERER_CATEGORIZED_LINES,
+    RENDERER_CATEGORIZED_POINTS,
+    RENDERER_CLUSTERISH,
+    RENDERER_HEATMAP,
+    RENDERER_SIMPLE_LINES,
+    RENDERER_START_POINTS,
+    RENDERER_TRACK_POINTS,
+    RenderPlan,
+    build_render_plan,
+)
 from ..map_style import (
     DEFAULT_SIMPLE_LINE_HEX,
     pick_activity_style_field,
@@ -27,7 +41,6 @@ from ..map_style import (
     resolve_basemap_line_style,
 )
 
-BY_ACTIVITY_TYPE_PRESET = "By activity type"
 OTHER_ACTIVITY_LABEL = "Other"
 HEATMAP_ANALYSIS_RADIUS_M = 750
 HEATMAP_VISUALIZE_RADIUS_M = 250
@@ -101,114 +114,81 @@ class LayerStyleService:
     evolved independently of layer-loading and canvas management.
     """
 
-    def apply_style(self, activities_layer, starts_layer, points_layer, atlas_layer, preset, background_preset_name=None):
-        preset = preset or "Simple lines"
-        basemap_preset_name = background_preset_name or self._infer_background_preset_name()
-        has_point_features = self._has_features(points_layer)
-        has_start_features = self._has_features(starts_layer)
-
-        self._apply_activities_layer_style(
-            activities_layer,
-            preset,
-            basemap_preset_name,
-            has_point_features=has_point_features,
-        )
-        self._apply_points_layer_style(
-            points_layer,
-            preset,
-            basemap_preset_name,
-            has_point_features=has_point_features,
-            has_start_features=has_start_features,
-        )
-        self._apply_starts_layer_style(
-            starts_layer,
-            points_layer,
-            preset,
-            basemap_preset_name,
-            has_point_features=has_point_features,
-            has_start_features=has_start_features,
-        )
-
-        if atlas_layer is not None:
-            self._apply_atlas_page_style(atlas_layer)
-
-    def _apply_activities_layer_style(
+    def apply_style(
         self,
         activities_layer,
-        preset,
-        basemap_preset_name,
-        *,
-        has_point_features=False,
-    ):
-        if activities_layer is None:
-            return
-        if preset == BY_ACTIVITY_TYPE_PRESET:
-            self._apply_categorized_line_style(activities_layer, basemap_preset_name)
-            return
-        if preset == "Heatmap":
-            self._apply_simple_line_style(activities_layer, basemap_preset_name, subtle=True)
-            activities_layer.setOpacity(0.0)
-            return
-        if preset == "Track points":
-            self._apply_simple_line_style(activities_layer, basemap_preset_name, subtle=True)
-            return
-        self._apply_simple_line_style(activities_layer, basemap_preset_name)
-
-    def _apply_points_layer_style(
-        self,
-        points_layer,
-        preset,
-        basemap_preset_name,
-        *,
-        has_point_features=False,
-        has_start_features=False,
-    ):
-        if points_layer is None:
-            return
-        if preset == "Heatmap":
-            if has_point_features and not has_start_features:
-                self._apply_heatmap_style(points_layer)
-                return
-            self._apply_track_point_style(points_layer, subtle=True)
-            points_layer.setOpacity(0.0)
-            return
-        if preset == "Track points":
-            self._apply_track_point_style(points_layer, subtle=False)
-            return
-        if preset == BY_ACTIVITY_TYPE_PRESET:
-            self._apply_categorized_point_style(points_layer, basemap_preset_name)
-            return
-        self._apply_track_point_style(points_layer, subtle=True)
-
-    def _apply_starts_layer_style(
-        self,
         starts_layer,
         points_layer,
-        preset,
+        atlas_layer,
+        preset=None,
+        background_preset_name=None,
+        *,
+        render_plan: RenderPlan | None = None,
+    ):
+        basemap_preset_name = background_preset_name or self._infer_background_preset_name()
+        render_plan = render_plan or build_render_plan(
+            preset or DEFAULT_RENDER_PRESET,
+            has_start_features=self._has_features(starts_layer),
+            has_point_features=self._has_features(points_layer),
+            has_points_layer=points_layer is not None,
+            background_preset_name=basemap_preset_name,
+        )
+
+        self._apply_layer_render_plan(activities_layer, render_plan.activities, basemap_preset_name)
+        self._apply_layer_render_plan(starts_layer, render_plan.starts, basemap_preset_name)
+        self._apply_layer_render_plan(points_layer, render_plan.points, basemap_preset_name)
+
+        if atlas_layer is not None:
+            self._apply_layer_render_plan(atlas_layer, render_plan.atlas, basemap_preset_name)
+
+    def _apply_layer_render_plan(self, layer, layer_plan, basemap_preset_name):
+        if layer is None or layer_plan is None:
+            return
+        self._apply_renderer_family(
+            layer,
+            layer_plan.renderer_family,
+            basemap_preset_name,
+            subtle=layer_plan.subtle,
+            size=layer_plan.size,
+        )
+        if not layer_plan.visible:
+            layer.setOpacity(0.0)
+            layer.triggerRepaint()
+
+    def _apply_renderer_family(
+        self,
+        layer,
+        renderer_family,
         basemap_preset_name,
         *,
-        has_point_features=False,
-        has_start_features=False,
+        subtle=False,
+        size=None,
     ):
-        if starts_layer is None:
+        if renderer_family == RENDERER_SIMPLE_LINES:
+            self._apply_simple_line_style(layer, basemap_preset_name, subtle=subtle)
             return
-        if preset == "Clustered starts":
-            self._apply_clusterish_style(starts_layer)
+        if renderer_family == RENDERER_CATEGORIZED_LINES:
+            self._apply_categorized_line_style(layer, basemap_preset_name)
             return
-        if preset == "Start points":
-            self._apply_start_point_style(starts_layer, subtle=False)
+        if renderer_family == RENDERER_TRACK_POINTS:
+            self._apply_track_point_style(layer, subtle=subtle)
             return
-        if preset == "Heatmap":
-            if not has_start_features and has_point_features:
-                self._apply_start_point_style(starts_layer, subtle=True)
-                starts_layer.setOpacity(0.0)
-                return
-            self._apply_heatmap_style(starts_layer)
+        if renderer_family == RENDERER_START_POINTS:
+            self._apply_start_point_style(layer, subtle=subtle)
             return
-        if preset == BY_ACTIVITY_TYPE_PRESET:
-            self._apply_categorized_point_style(starts_layer, basemap_preset_name, size="3.0")
+        if renderer_family == RENDERER_CATEGORIZED_POINTS:
+            self._apply_categorized_point_style(layer, basemap_preset_name, size=size or "1.8")
             return
-        self._apply_start_point_style(starts_layer, subtle=points_layer is not None)
+        if renderer_family == RENDERER_HEATMAP:
+            self._apply_heatmap_style(layer)
+            return
+        if renderer_family == RENDERER_CLUSTERISH:
+            self._apply_clusterish_style(layer)
+            return
+        if renderer_family == RENDERER_ATLAS_PAGE:
+            self._apply_atlas_page_style(layer)
+            return
+        raise ValueError("Unsupported renderer family: {family}".format(family=renderer_family))
 
     def _infer_background_preset_name(self):
         for layer in QgsProject.instance().mapLayers().values():
