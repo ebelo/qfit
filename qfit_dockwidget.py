@@ -379,9 +379,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             ),
             UIFieldBinding(
                 "write_activity_points",
-                False,
+                True,
                 lambda: self.writeActivityPointsCheckBox.isChecked(),
-                lambda value: self._set_bool_value(self.writeActivityPointsCheckBox, value, False),
+                lambda value: self._set_bool_value(self.writeActivityPointsCheckBox, value, True),
             ),
             UIFieldBinding(
                 "point_sampling_stride",

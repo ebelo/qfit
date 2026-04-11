@@ -252,6 +252,8 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertEqual(dock.loadLayersButton.text(), "Load activity layers")
             self.assertEqual(dock.clearDatabaseButton.text(), "Clear database")
             self.assertEqual(dock.applyFiltersButton.text(), "Apply current filters to loaded layers")
+            self.assertTrue(dock.writeActivityPointsCheckBox.isChecked())
+            self.assertFalse(dock.pointSamplingStrideSpinBox.isHidden())
             self.assertFalse(dock.backgroundHelpLabel.isVisible())
             self.assertFalse(dock.analysisHelpLabel.isVisible())
             self.assertFalse(dock.publishHelpLabel.isVisible())

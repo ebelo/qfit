@@ -54,7 +54,7 @@ def bootstrap_empty_gpkg(output_path, atlas_page_settings):
 
 def build_and_write_all_layers(
     records, output_path, atlas_page_settings,
-    write_activity_points=False, point_stride=1,
+    write_activity_points=True, point_stride=5,
 ):
     """Build all visualization layers from *records* and write them to *output_path*.
 

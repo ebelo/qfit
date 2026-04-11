@@ -377,6 +377,12 @@ class LoadResultTests(unittest.TestCase):
 
 
 class LoadRequestContractTests(unittest.TestCase):
+    def test_store_activities_request_defaults_keep_points_enabled(self):
+        request = LoadDatabaseRequest()
+
+        self.assertTrue(request.write_activity_points)
+        self.assertEqual(request.point_stride, 5)
+
     def test_build_write_request_returns_dataclass(self):
         request = LoadWorkflowService.build_write_request(
             activities=["a"],
@@ -394,6 +400,15 @@ class LoadRequestContractTests(unittest.TestCase):
         self.assertEqual(request.output_path, "/tmp/test.gpkg")
         self.assertTrue(request.write_activity_points)
         self.assertEqual(request.sync_metadata["provider"], "strava")
+
+    def test_build_write_request_defaults_to_activity_points(self):
+        request = LoadWorkflowService.build_write_request(
+            activities=["a"],
+            output_path="/tmp/test.gpkg",
+        )
+
+        self.assertTrue(request.write_activity_points)
+        self.assertEqual(request.point_stride, 5)
 
     def test_build_load_existing_request_returns_dataclass(self):
         request = LoadWorkflowService.build_load_existing_request("/tmp/existing.gpkg")

@@ -15,8 +15,8 @@ class StoreActivitiesRequest:
 
     activities: list = field(default_factory=list)
     output_path: str = ""
-    write_activity_points: bool = False
-    point_stride: int = 0
+    write_activity_points: bool = True
+    point_stride: int = 5
     atlas_margin_percent: float = 0.0
     atlas_min_extent_degrees: float = 0.0
     atlas_target_aspect_ratio: float = 0.0
@@ -86,11 +86,11 @@ class LoadWorkflowService:
     def build_write_request(
         activities,
         output_path,
-        write_activity_points,
-        point_stride,
-        atlas_margin_percent,
-        atlas_min_extent_degrees,
-        atlas_target_aspect_ratio,
+        write_activity_points=True,
+        point_stride=5,
+        atlas_margin_percent=0.0,
+        atlas_min_extent_degrees=0.0,
+        atlas_target_aspect_ratio=0.0,
         sync_metadata=None,
         last_sync_date=None,
     ) -> StoreActivitiesRequest:
