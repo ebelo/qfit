@@ -249,6 +249,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         combo.setObjectName("analysisModeComboBox")
         combo.addItem("None")
         combo.addItem("Most frequent starting points")
+        combo.addItem("Heatmap")
         layout.addWidget(combo)
 
         button = QPushButton("Run analysis", row)
@@ -927,7 +928,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def _run_selected_analysis(self, analysis_mode, starts_layer, selection_state=None):
         request = self.analysis_controller.build_request(
             analysis_mode=analysis_mode,
+            activities_layer=self.activities_layer,
             starts_layer=starts_layer,
+            points_layer=self.points_layer,
             selection_state=selection_state,
         )
         result = self.analysis_controller.run_request(request)
@@ -978,13 +981,17 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 logger.debug("Failed to remove analysis layer", exc_info=True)
             self.analysis_layer = None
 
+        analysis_layer_names = {
+            FREQUENT_STARTING_POINTS_LAYER_NAME,
+            "qfit activity heatmap",
+        }
         for layer in tuple(project.mapLayers().values()):
-            if layer.name() != FREQUENT_STARTING_POINTS_LAYER_NAME:
+            if layer.name() not in analysis_layer_names:
                 continue
             try:
                 project.removeMapLayer(layer.id())
             except RuntimeError:
-                logger.debug("Failed to remove stale frequent-start analysis layer", exc_info=True)
+                logger.debug("Failed to remove stale analysis layer", exc_info=True)
 
     def _current_activity_selection_state(self):
         query = ActivityQuery(

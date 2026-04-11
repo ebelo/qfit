@@ -1399,6 +1399,68 @@ class QgisSmokeTests(unittest.TestCase):
             dock.close()
             dock.deleteLater()
 
+    def test_heatmap_analysis_creates_renderable_density_layer(self):
+        dock = QfitDockWidget(self.iface)
+        try:
+            with tempfile.TemporaryDirectory() as tmp:
+                output_path = self._write_sample_gpkg(tmp)
+                (
+                    dock.activities_layer,
+                    dock.starts_layer,
+                    dock.points_layer,
+                    dock.atlas_layer,
+                ) = dock.layer_gateway.load_output_layers(output_path)
+
+                dock.analysisModeComboBox.setCurrentText("Heatmap")
+                status = dock._apply_analysis_configuration()
+
+                self.assertIn("activity heatmap", status)
+                self.assertIsNotNone(dock.analysis_layer)
+                self.assertEqual(dock.analysis_layer.name(), "qfit activity heatmap")
+                image = self._render_layers_to_image(
+                    [dock.analysis_layer],
+                    dock.activities_layer.extent(),
+                )
+                artifact_path = Path(tmp) / "heatmap-analysis.png"
+                self.assertTrue(image.save(str(artifact_path)))
+                non_white_pixels, strong_pixels = self._count_heatmap_pixels(image)
+                self.assertGreater(non_white_pixels, 20000)
+                self.assertGreater(strong_pixels, 10000)
+        finally:
+            dock.close()
+            dock.deleteLater()
+
+    def test_heatmap_analysis_falls_back_to_activity_lines_without_points_layer(self):
+        dock = QfitDockWidget(self.iface)
+        try:
+            with tempfile.TemporaryDirectory() as tmp:
+                output_path = self._write_sample_gpkg(tmp)
+                (
+                    dock.activities_layer,
+                    dock.starts_layer,
+                    _points_layer,
+                    dock.atlas_layer,
+                ) = dock.layer_gateway.load_output_layers(output_path)
+                dock.points_layer = None
+
+                dock.analysisModeComboBox.setCurrentText("Heatmap")
+                status = dock._apply_analysis_configuration()
+
+                self.assertIn("activity heatmap", status)
+                self.assertIsNotNone(dock.analysis_layer)
+                image = self._render_layers_to_image(
+                    [dock.analysis_layer],
+                    dock.activities_layer.extent(),
+                )
+                artifact_path = Path(tmp) / "heatmap-analysis-lines-fallback.png"
+                self.assertTrue(image.save(str(artifact_path)))
+                non_white_pixels, strong_pixels = self._count_heatmap_pixels(image)
+                self.assertGreater(non_white_pixels, 5000)
+                self.assertGreater(strong_pixels, 1000)
+        finally:
+            dock.close()
+            dock.deleteLater()
+
     def test_offscreen_profile_chart_export_contains_rendered_curve(self):
         """Bound profile exports should differ visibly from the same chart when cleared."""
         script = textwrap.dedent(

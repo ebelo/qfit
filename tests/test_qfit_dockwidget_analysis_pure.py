@@ -284,7 +284,10 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertEqual(index, 0)
         self.assertEqual(row.objectName(), "analysisModeRow")
         self.assertEqual(dock.analysisModeLabel.text(), "Analysis")
-        self.assertEqual(dock.analysisModeComboBox.items, ["None", "Most frequent starting points"])
+        self.assertEqual(
+            dock.analysisModeComboBox.items,
+            ["None", "Most frequent starting points", "Heatmap"],
+        )
         self.assertEqual(dock.runAnalysisButton.text(), "Run analysis")
 
     def test_remove_stale_qfit_layers_delegates_to_project_hygiene_service(self):
@@ -414,6 +417,8 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             status="Showing top 2 frequent starting-point clusters",
             layer=None,
         )
+        dock.activities_layer = "activities-layer"
+        dock.points_layer = "points-layer"
         selection_state = self.module.ActivitySelectionState(query=object(), filtered_count=2)
 
         result = self.module.QfitDockWidget._run_selected_analysis(
@@ -426,7 +431,9 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertEqual(result, "Showing top 2 frequent starting-point clusters")
         dock.analysis_controller.build_request.assert_called_once_with(
             analysis_mode="Most frequent starting points",
+            activities_layer="activities-layer",
             starts_layer="starts-layer",
+            points_layer="points-layer",
             selection_state=selection_state,
         )
         dock.analysis_controller.run_request.assert_called_once_with("analysis-request")
@@ -440,6 +447,8 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             status="Showing top 2 frequent starting-point clusters",
             layer=analysis_layer,
         )
+        dock.activities_layer = "activities-layer"
+        dock.points_layer = "points-layer"
         project = _FakeProject()
         selection_state = self.module.ActivitySelectionState(query=object(), filtered_count=2)
 
@@ -524,14 +533,20 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock = object.__new__(self.module.QfitDockWidget)
         current_layer = _FakeLayer(self.module.FREQUENT_STARTING_POINTS_LAYER_NAME)
         stale_layer = _FakeLayer(self.module.FREQUENT_STARTING_POINTS_LAYER_NAME)
-        project = _FakeProject({"one": stale_layer, "two": _FakeLayer("other")})
+        stale_heatmap_layer = _FakeLayer("qfit activity heatmap")
+        project = _FakeProject(
+            {"one": stale_layer, "two": _FakeLayer("other"), "three": stale_heatmap_layer}
+        )
         dock.analysis_layer = current_layer
 
         with patch.object(self.module.QgsProject, "instance", return_value=project):
             self.module.QfitDockWidget._clear_analysis_layer(dock)
 
         self.assertIsNone(dock.analysis_layer)
-        self.assertEqual(project.removed, [current_layer.id(), stale_layer.id()])
+        self.assertEqual(
+            project.removed,
+            [current_layer.id(), stale_layer.id(), stale_heatmap_layer.id()],
+        )
 
     def test_on_load_clicked_starts_background_store_task(self):
         dock = object.__new__(self.module.QfitDockWidget)
