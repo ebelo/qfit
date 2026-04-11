@@ -1,5 +1,4 @@
 import logging
-from math import floor
 
 logger = logging.getLogger(__name__)
 
@@ -15,6 +14,7 @@ from qgis.core import (
     QgsHeatmapRenderer,
     QgsLineSymbol,
     QgsMarkerSymbol,
+    QgsPointXY,
     QgsProject,
     QgsRendererCategory,
     QgsSimpleLineSymbolLayer,
@@ -22,88 +22,78 @@ from qgis.core import (
     QgsUnitTypes,
 )
 
+from ...analysis.application.frequent_start_points import (
+    StartPointSample,
+    analyze_frequent_start_points,
+)
+from ...mapbox_config import BACKGROUND_LAYER_PREFIX
 from ..map_style import (
     DEFAULT_SIMPLE_LINE_HEX,
     pick_activity_style_field,
     resolve_activity_color,
     resolve_basemap_line_style,
 )
-from ...mapbox_config import BACKGROUND_LAYER_PREFIX
 
 BY_ACTIVITY_TYPE_PRESET = "By activity type"
 OTHER_ACTIVITY_LABEL = "Other"
 HEATMAP_ANALYSIS_RADIUS_M = 750
-HEATMAP_VISUALIZE_RADIUS_M = 2000
+HEATMAP_VISUALIZE_RADIUS_M = 250
 HEATMAP_WORKING_CRS = QgsCoordinateReferenceSystem("EPSG:3857")
 
 
-def _resolve_heatmap_transform(layer):
+def _build_metric_start_samples(layer):
+    if layer is None:
+        return []
+
     source_crs = layer.crs()
     if source_crs is None or not source_crs.isValid():
         source_crs = QgsCoordinateReferenceSystem("EPSG:4326")
-    if source_crs == HEATMAP_WORKING_CRS:
-        return None
-    return QgsCoordinateTransform(
-        source_crs,
-        HEATMAP_WORKING_CRS,
-        QgsProject.instance().transformContext(),
-    )
 
+    transform = None
+    if source_crs != HEATMAP_WORKING_CRS:
+        transform = QgsCoordinateTransform(
+            source_crs,
+            HEATMAP_WORKING_CRS,
+            QgsProject.instance().transformContext(),
+        )
 
-def _collect_heatmap_points(layer, cell_size):
-    transform = _resolve_heatmap_transform(layer)
-    points = []
-    buckets = {}
+    samples = []
     for feature in layer.getFeatures():
         geometry = feature.geometry()
         if geometry is None or geometry.isEmpty():
             continue
         point = geometry.asPoint()
+        metric_point = QgsPointXY(point.x(), point.y())
         if transform is not None:
-            point = transform.transform(point)
-        point_xy = (point.x(), point.y())
-        points.append(point_xy)
-        key = (floor(point_xy[0] / cell_size), floor(point_xy[1] / cell_size))
-        buckets.setdefault(key, []).append(point_xy)
-    return points, buckets
+            metric_point = transform.transform(metric_point)
+        samples.append(
+            StartPointSample(
+                x=metric_point.x(),
+                y=metric_point.y(),
+                source_activity_id=str(feature["source_activity_id"])
+                if "source_activity_id" in feature.fields().names()
+                else None,
+            )
+        )
+    return samples
 
 
-def _count_nearby_points(origin, buckets, cell_size, radius_squared):
-    x, y = origin
-    bucket_x = floor(x / cell_size)
-    bucket_y = floor(y / cell_size)
-    local_total = 0
-    for dx in (-1, 0, 1):
-        for dy in (-1, 0, 1):
-            for candidate_x, candidate_y in buckets.get((bucket_x + dx, bucket_y + dy), []):
-                if ((candidate_x - x) * (candidate_x - x)) + ((candidate_y - y) * (candidate_y - y)) <= radius_squared:
-                    local_total += 1
-    return local_total
-
-
-def _estimate_heatmap_maximum(layer, radius_map_units):
-    if layer is None:
-        return None
-
-    feature_count = layer.featureCount()
+def _heatmap_settings_from_frequent_starts(layer):
+    feature_count = 0 if layer is None else layer.featureCount()
     if feature_count <= 0:
-        return None
+        return HEATMAP_VISUALIZE_RADIUS_M, None
 
     try:
-        cell_size = max(radius_map_units, 1.0)
-        points, buckets = _collect_heatmap_points(layer, cell_size)
-        if not points:
-            return float(feature_count)
+        samples = _build_metric_start_samples(layer)
+        if not samples:
+            return HEATMAP_VISUALIZE_RADIUS_M, float(feature_count)
 
-        radius_squared = radius_map_units * radius_map_units
-        maximum = max(
-            _count_nearby_points(point, buckets, cell_size, radius_squared)
-            for point in points
-        )
-        return float(maximum)
+        clusters, radius_m = analyze_frequent_start_points(samples, max_clusters=len(samples))
+        maximum = max((cluster.activity_count for cluster in clusters), default=feature_count)
+        return max(40.0, float(radius_m or HEATMAP_VISUALIZE_RADIUS_M)), float(maximum)
     except Exception:
-        logger.debug("Failed to estimate heatmap maximum, falling back to feature count", exc_info=True)
-        return float(feature_count)
+        logger.debug("Failed to derive heatmap settings from frequent-start analysis", exc_info=True)
+        return HEATMAP_VISUALIZE_RADIUS_M, float(feature_count)
 
 
 def build_qfit_heatmap_renderer(*, maximum_value=None):
@@ -128,9 +118,9 @@ def build_qfit_heatmap_renderer(*, maximum_value=None):
     return renderer
 
 
-def build_qfit_visualize_heatmap_renderer(*, maximum_value=None):
+def build_qfit_visualize_heatmap_renderer(*, radius_map_units=HEATMAP_VISUALIZE_RADIUS_M, maximum_value=None):
     renderer = QgsHeatmapRenderer()
-    renderer.setRadius(HEATMAP_VISUALIZE_RADIUS_M)
+    renderer.setRadius(radius_map_units)
     renderer.setRadiusUnit(QgsUnitTypes.RenderMapUnits)
     renderer.setRenderQuality(2)
     heat_ramp = QgsGradientColorRamp(
@@ -160,22 +150,29 @@ class LayerStyleService:
     def apply_style(self, activities_layer, starts_layer, points_layer, atlas_layer, preset, background_preset_name=None):
         preset = preset or "Simple lines"
         basemap_preset_name = background_preset_name or self._infer_background_preset_name()
+        has_point_features = self._has_features(points_layer)
+        has_start_features = self._has_features(starts_layer)
 
         self._apply_activities_layer_style(
             activities_layer,
             preset,
             basemap_preset_name,
+            has_point_features=has_point_features,
         )
         self._apply_points_layer_style(
             points_layer,
             preset,
             basemap_preset_name,
+            has_point_features=has_point_features,
+            has_start_features=has_start_features,
         )
         self._apply_starts_layer_style(
             starts_layer,
             points_layer,
             preset,
             basemap_preset_name,
+            has_point_features=has_point_features,
+            has_start_features=has_start_features,
         )
 
         if atlas_layer is not None:
@@ -186,6 +183,8 @@ class LayerStyleService:
         activities_layer,
         preset,
         basemap_preset_name,
+        *,
+        has_point_features=False,
     ):
         if activities_layer is None:
             return
@@ -206,10 +205,16 @@ class LayerStyleService:
         points_layer,
         preset,
         basemap_preset_name,
+        *,
+        has_point_features=False,
+        has_start_features=False,
     ):
         if points_layer is None:
             return
         if preset == "Heatmap":
+            if has_point_features and not has_start_features:
+                self._apply_heatmap_style(points_layer)
+                return
             self._apply_track_point_style(points_layer, subtle=True)
             points_layer.setOpacity(0.0)
             return
@@ -227,6 +232,9 @@ class LayerStyleService:
         points_layer,
         preset,
         basemap_preset_name,
+        *,
+        has_point_features=False,
+        has_start_features=False,
     ):
         if starts_layer is None:
             return
@@ -237,6 +245,10 @@ class LayerStyleService:
             self._apply_start_point_style(starts_layer, subtle=False)
             return
         if preset == "Heatmap":
+            if not has_start_features and has_point_features:
+                self._apply_start_point_style(starts_layer, subtle=True)
+                starts_layer.setOpacity(0.0)
+                return
             self._apply_heatmap_style(starts_layer)
             return
         if preset == BY_ACTIVITY_TYPE_PRESET:
@@ -358,13 +370,18 @@ class LayerStyleService:
         layer.triggerRepaint()
 
     def _apply_heatmap_style(self, layer):
+        radius_map_units, maximum_value = _heatmap_settings_from_frequent_starts(layer)
         layer.setRenderer(
             build_qfit_visualize_heatmap_renderer(
-                maximum_value=_estimate_heatmap_maximum(layer, HEATMAP_VISUALIZE_RADIUS_M)
+                radius_map_units=radius_map_units,
+                maximum_value=maximum_value,
             )
         )
         layer.setOpacity(1.0)
         layer.triggerRepaint()
+
+    def _has_features(self, layer):
+        return layer is not None and layer.featureCount() > 0
 
     def _apply_clusterish_style(self, layer):
         symbol = QgsMarkerSymbol.createSimple(

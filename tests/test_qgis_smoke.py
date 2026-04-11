@@ -1173,7 +1173,8 @@ class QgisSmokeTests(unittest.TestCase):
             # Starts layer carries the heatmap renderer
             renderer = starts_layer.renderer()
             self.assertIsInstance(renderer, QgsHeatmapRenderer)
-            self.assertEqual(renderer.radius(), 2000)
+            self.assertGreater(renderer.radius(), 0)
+            self.assertLessEqual(renderer.radius(), 250)
             self.assertEqual(renderer.colorRamp().color2().alpha(), 255)
             self.assertGreater(renderer.colorRamp().color2().red(), renderer.colorRamp().color2().blue())
             self.assertEqual(renderer.radiusUnit(), QgsUnitTypes.RenderMapUnits)
@@ -1258,6 +1259,40 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertGreater(non_white_pixels, 1000)
             self.assertGreater(strong_pixels, 100)
             self.assertEqual(round(activities_layer.opacity(), 2), 0.0)
+
+    def test_heatmap_preset_falls_back_to_points_when_starts_layer_is_empty(self):
+        """Heatmap preset should stay visible when start-point derivation produced no features."""
+        from qgis.core import QgsHeatmapRenderer
+
+        with tempfile.TemporaryDirectory() as tmp:
+            output_path = self._write_sample_gpkg_without_starts(tmp)
+            activities_layer, starts_layer, points_layer, atlas_layer = (
+                self.layer_manager.load_output_layers(output_path)
+            )
+
+            self.assertIsNotNone(starts_layer)
+            self.assertEqual(starts_layer.featureCount(), 0)
+            self.assertIsNotNone(points_layer)
+            self.assertGreater(points_layer.featureCount(), 0)
+
+            self.layer_manager.apply_style(
+                activities_layer,
+                starts_layer,
+                points_layer,
+                atlas_layer,
+                "Heatmap",
+            )
+
+            self.assertIsInstance(points_layer.renderer(), QgsHeatmapRenderer)
+            self.assertEqual(round(points_layer.opacity(), 2), 1.0)
+            self.assertEqual(round(starts_layer.opacity(), 2), 0.0)
+            self.assertEqual(round(activities_layer.opacity(), 2), 0.0)
+
+            image = self._render_layers_to_image([points_layer], points_layer.extent())
+            non_white_pixels, strong_pixels = self._count_heatmap_pixels(image)
+
+            self.assertGreater(non_white_pixels, 1000)
+            self.assertGreater(strong_pixels, 100)
 
     def test_build_frequent_start_points_layer_rejects_invalid_layer(self):
         layer, clusters = build_frequent_start_points_layer(None)
@@ -1816,6 +1851,22 @@ class QgisSmokeTests(unittest.TestCase):
             point_stride=2,
         )
 
+    def _write_sample_gpkg_without_starts(self, temp_dir):
+        output_path = str(Path(temp_dir) / "qfit-heatmap-no-starts.gpkg")
+        writer = GeoPackageWriter(
+            output_path,
+            write_activity_points=True,
+            point_stride=2,
+            atlas_margin_percent=10,
+            atlas_min_extent_degrees=0.01,
+            atlas_target_aspect_ratio=1.5,
+        )
+        writer.write_activities(
+            self._sample_activities_without_start_coordinates(),
+            sync_metadata={"provider": "strava"},
+        )
+        return output_path
+
     def _write_sample_gpkg_with_options(
         self,
         temp_dir,
@@ -1859,6 +1910,15 @@ class QgisSmokeTests(unittest.TestCase):
             "geometry_points": [],
             "details_json": {},
         }
+
+    def _sample_activities_without_start_coordinates(self):
+        activities = []
+        for activity in self._sample_activities():
+            updated = dict(activity)
+            updated["start_lat"] = None
+            updated["start_lon"] = None
+            activities.append(updated)
+        return activities
 
     def _start_end_only_activity(self):
         return {

@@ -391,6 +391,24 @@ class LayerStyleServiceUnitTests(unittest.TestCase):
         starts.setOpacity.assert_called_with(1.0)
         points.setOpacity.assert_called_with(0.0)
 
+    def test_heatmap_falls_back_to_points_when_starts_layer_is_missing(self):
+        acts = self._make_layer()
+        points = self._make_layer()
+        self.service.apply_style(acts, None, points, None, "Heatmap")
+        acts.setOpacity.assert_called_with(0.0)
+        points.setRenderer.assert_called_once()
+        points.setOpacity.assert_called_with(1.0)
+
+    def test_heatmap_falls_back_to_points_when_starts_layer_is_empty(self):
+        acts = self._make_layer()
+        starts = self._make_layer(feature_count=0)
+        points = self._make_layer()
+        self.service.apply_style(acts, starts, points, None, "Heatmap")
+        acts.setOpacity.assert_called_with(0.0)
+        points.setRenderer.assert_called_once()
+        points.setOpacity.assert_called_with(1.0)
+        starts.setOpacity.assert_called_with(0.0)
+
     def test_track_points_sets_renderer_on_tracks_and_points(self):
         acts = self._make_layer()
         starts = self._make_layer()

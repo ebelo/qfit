@@ -133,6 +133,48 @@ class ProjectLayerLoaderRealTests(unittest.TestCase):
         project.removeMapLayer.assert_called_once_with("old-id")
         project.addMapLayer.assert_called_once_with(new_layer)
 
+    def test_load_layer_defaults_geometry_layers_to_wgs84_when_crs_is_missing(self):
+        loader = ProjectLayerLoader()
+
+        invalid_crs = MagicMock()
+        invalid_crs.isValid.return_value = False
+
+        new_layer = MagicMock()
+        new_layer.isValid.return_value = True
+        new_layer.crs.return_value = invalid_crs
+
+        project = MagicMock()
+        project.mapLayersByName.return_value = []
+
+        with patch("qfit.visualization.infrastructure.project_layer_loader.QgsVectorLayer", return_value=new_layer), \
+             patch("qfit.visualization.infrastructure.project_layer_loader.QgsCoordinateReferenceSystem", side_effect=lambda authid: authid), \
+             patch("qfit.visualization.infrastructure.project_layer_loader.QgsProject") as qgs_project:
+            qgs_project.instance.return_value = project
+            loader._load_layer("/tmp/out.gpkg", "activity_tracks", "qfit activities")
+
+        new_layer.setCrs.assert_called_once_with("EPSG:4326")
+
+    def test_load_layer_preserves_metric_crs_for_atlas_pages_when_crs_is_missing(self):
+        loader = ProjectLayerLoader()
+
+        invalid_crs = MagicMock()
+        invalid_crs.isValid.return_value = False
+
+        new_layer = MagicMock()
+        new_layer.isValid.return_value = True
+        new_layer.crs.return_value = invalid_crs
+
+        project = MagicMock()
+        project.mapLayersByName.return_value = []
+
+        with patch("qfit.visualization.infrastructure.project_layer_loader.QgsVectorLayer", return_value=new_layer), \
+             patch("qfit.visualization.infrastructure.project_layer_loader.QgsCoordinateReferenceSystem", side_effect=lambda authid: authid), \
+             patch("qfit.visualization.infrastructure.project_layer_loader.QgsProject") as qgs_project:
+            qgs_project.instance.return_value = project
+            loader._load_layer("/tmp/out.gpkg", "activity_atlas_pages", "qfit atlas pages")
+
+        new_layer.setCrs.assert_called_once_with("EPSG:3857")
+
 
 @unittest.skipIf(QGIS_AVAILABLE, SKIP_MOCK)
 @unittest.skipIf(_def_loader_cls is None, SKIP_MOCK_LOAD)
