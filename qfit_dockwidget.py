@@ -252,7 +252,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         combo.setObjectName("analysisModeComboBox")
         combo.addItem("None")
         combo.addItem("Most frequent starting points")
-        combo.addItem("Heatmap")
         layout.addWidget(combo)
 
         button = QPushButton("Run analysis", row)
