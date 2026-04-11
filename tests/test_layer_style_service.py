@@ -214,8 +214,8 @@ class LayerStyleServiceTests(unittest.TestCase):
                 activities_layer, starts_layer, points_layer, atlas_layer, "Heatmap"
             )
             self.assertIsInstance(starts_layer.renderer(), QgsHeatmapRenderer)
-            self.assertGreater(activities_layer.opacity(), 0.0)
-            self.assertEqual(round(points_layer.opacity(), 2), 0.0)
+            self.assertAlmostEqual(activities_layer.opacity(), 0.0, places=2)
+            self.assertAlmostEqual(points_layer.opacity(), 0.0, places=2)
 
     def test_heatmap_falls_back_to_starts_when_no_points_layer(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -224,7 +224,7 @@ class LayerStyleServiceTests(unittest.TestCase):
                 activities_layer, starts_layer, None, atlas_layer, "Heatmap"
             )
             self.assertIsInstance(starts_layer.renderer(), QgsHeatmapRenderer)
-            self.assertGreater(activities_layer.opacity(), 0.0)
+            self.assertAlmostEqual(activities_layer.opacity(), 0.0, places=2)
 
     def test_start_points_preset_makes_starts_prominent(self):
         with tempfile.TemporaryDirectory() as tmp:

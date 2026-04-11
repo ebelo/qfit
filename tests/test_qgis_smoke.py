@@ -1184,8 +1184,8 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertTrue(renderer.colorRamp().stops(), "Heatmap ramp should include intermediate transparent/soft stops")
             self.assertAlmostEqual(starts_layer.opacity(), 1.0, places=2)
 
-            # Tracks stay faintly visible underneath, route points stay hidden
-            self.assertGreater(activities_layer.opacity(), 0.0)
+            # Tracks and route points stay hidden so the heatmap remains readable
+            self.assertAlmostEqual(activities_layer.opacity(), 0.0, places=2)
             self.assertAlmostEqual(points_layer.opacity(), 0.0, places=2)
 
     def test_heatmap_preset_renders_visible_output(self):
@@ -1226,7 +1226,7 @@ class QgisSmokeTests(unittest.TestCase):
 
             self.assertIsInstance(starts_layer.renderer(), QgsHeatmapRenderer)
             self.assertAlmostEqual(starts_layer.opacity(), 1.0, places=2)
-            self.assertGreater(activities_layer.opacity(), 0.0)
+            self.assertAlmostEqual(activities_layer.opacity(), 0.0, places=2)
 
     def test_heatmap_preset_falls_back_to_starts_layer_when_points_layer_is_empty(self):
         """An empty points layer should not blank the map in Heatmap preset."""
@@ -1258,7 +1258,7 @@ class QgisSmokeTests(unittest.TestCase):
 
             self.assertGreater(non_white_pixels, 1000)
             self.assertGreater(strong_pixels, 100)
-            self.assertGreater(activities_layer.opacity(), 0.0)
+            self.assertAlmostEqual(activities_layer.opacity(), 0.0, places=2)
 
     def test_heatmap_preset_falls_back_to_points_when_starts_layer_is_empty(self):
         """Heatmap preset should stay visible when start-point derivation produced no features."""
@@ -1286,7 +1286,7 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertIsInstance(points_layer.renderer(), QgsHeatmapRenderer)
             self.assertAlmostEqual(points_layer.opacity(), 1.0, places=2)
             self.assertAlmostEqual(starts_layer.opacity(), 0.0, places=2)
-            self.assertGreater(activities_layer.opacity(), 0.0)
+            self.assertAlmostEqual(activities_layer.opacity(), 0.0, places=2)
 
             image = self._render_layers_to_image([points_layer], points_layer.extent())
             non_white_pixels, strong_pixels = self._count_heatmap_pixels(image)
