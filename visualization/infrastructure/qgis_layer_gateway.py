@@ -133,9 +133,24 @@ class QgisLayerGateway:
             detailed_route_filter=detailed_route_filter,
         )
 
-    def apply_style(self, activities_layer, starts_layer, points_layer, atlas_layer, preset, background_preset_name=None):
+    def apply_style(
+        self,
+        activities_layer,
+        starts_layer,
+        points_layer,
+        atlas_layer,
+        preset=None,
+        background_preset_name=None,
+        render_plan=None,
+    ):
         self._get_style_service().apply_style(
-            activities_layer, starts_layer, points_layer, atlas_layer, preset, background_preset_name
+            activities_layer,
+            starts_layer,
+            points_layer,
+            atlas_layer,
+            preset,
+            background_preset_name,
+            render_plan=render_plan,
         )
 
     def apply_temporal_configuration(self, activities_layer, starts_layer, points_layer, atlas_layer, mode_label):

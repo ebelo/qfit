@@ -9,6 +9,13 @@ from types import ModuleType, SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 from tests import _path  # noqa: F401
+from qfit.visualization.application.render_plan import (
+    LayerRenderPlan,
+    RenderPlan,
+    RENDERER_SIMPLE_LINES,
+    RENDERER_START_POINTS,
+    RENDERER_TRACK_POINTS,
+)
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
@@ -460,18 +467,38 @@ class LayerStyleServiceUnitTests(unittest.TestCase):
         )
         acts.setRenderer.assert_called_once()
 
-    def test_private_helpers_cover_track_points_and_clustered_starts_branches(self):
-        activities = self._make_layer()
-        points = self._make_layer()
-        starts = self._make_layer()
+    def test_apply_layer_render_plan_hides_layer_when_plan_marks_it_invisible(self):
+        layer = self._make_layer()
+        layer_plan = LayerRenderPlan(RENDERER_TRACK_POINTS, subtle=True, visible=False)
 
-        self.service._apply_activities_layer_style(activities, "Track points", None)
-        self.service._apply_points_layer_style(points, "Track points", None)
-        self.service._apply_starts_layer_style(starts, points, "Clustered starts", None)
+        self.service._apply_layer_render_plan(layer, layer_plan, None)
+
+        layer.setRenderer.assert_called_once()
+        layer.setOpacity.assert_called_with(0.0)
+
+    def test_apply_style_accepts_explicit_render_plan(self):
+        activities = self._make_layer()
+        starts = self._make_layer()
+        points = self._make_layer()
+        render_plan = RenderPlan(
+            preset_name="custom",
+            activities=LayerRenderPlan(RENDERER_SIMPLE_LINES, subtle=True, visible=False),
+            starts=LayerRenderPlan(RENDERER_START_POINTS),
+            points=LayerRenderPlan(RENDERER_TRACK_POINTS, subtle=True),
+        )
+
+        self.service.apply_style(
+            activities,
+            starts,
+            points,
+            None,
+            render_plan=render_plan,
+        )
 
         activities.setRenderer.assert_called_once()
-        points.setRenderer.assert_called_once()
+        activities.setOpacity.assert_called_with(0.0)
         starts.setRenderer.assert_called_once()
+        points.setRenderer.assert_called_once()
 
     def test_private_helpers_fall_back_when_activity_style_field_is_missing(self):
         unknown = MagicMock()

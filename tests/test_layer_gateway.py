@@ -167,7 +167,13 @@ class LayerGatewayBoundaryTests(unittest.TestCase):
             detailed_route_filter="missing",
         )
         style_service.apply_style.assert_called_once_with(
-            "activities", "starts", "points", "atlas", "Simple lines", "Outdoor"
+            "activities",
+            "starts",
+            "points",
+            "atlas",
+            "Simple lines",
+            "Outdoor",
+            render_plan=None,
         )
         temporal_service.apply_temporal_configuration.assert_called_once_with(
             "activities", "starts", "points", "atlas", "By month"
