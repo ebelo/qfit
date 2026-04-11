@@ -21,14 +21,20 @@ except (ImportError, ModuleNotFoundError):  # pragma: no cover
 
 if QgsApplication is not None and _REAL_QGIS_PRESENT:
     from qfit.activities.infrastructure.geopackage.gpkg_point_layer_builder import (
+        _activity_point_sequence,
         _metric_value,
+        _normalized_points,
         _sample_points,
+        _stream_metrics,
         build_point_layer,
     )
     from qfit.gpkg_point_layer_builder import build_point_layer as legacy_build_point_layer
 else:  # pragma: no cover
+    _activity_point_sequence = None
     _metric_value = None
+    _normalized_points = None
     _sample_points = None
+    _stream_metrics = None
     build_point_layer = None
 
 _QGIS_APP = None
@@ -39,8 +45,11 @@ def _ensure_qgis_app():
         raise unittest.SkipTest("QGIS Python bindings are not available")
 
     global QgsApplication
+    global _activity_point_sequence
     global _metric_value
+    global _normalized_points
     global _sample_points
+    global _stream_metrics
     global build_point_layer
     global _QGIS_APP
     if QgsApplication is None and _REAL_QGIS_PRESENT:
@@ -62,13 +71,19 @@ def _ensure_qgis_app():
             None,
         )
         from qfit.activities.infrastructure.geopackage.gpkg_point_layer_builder import (
+            _activity_point_sequence as real_activity_point_sequence,
             _metric_value as real_metric_value,
+            _normalized_points as real_normalized_points,
             _sample_points as real_sample_points,
+            _stream_metrics as real_stream_metrics,
             build_point_layer as real_build_point_layer,
         )
 
+        _activity_point_sequence = real_activity_point_sequence
         _metric_value = real_metric_value
+        _normalized_points = real_normalized_points
         _sample_points = real_sample_points
+        _stream_metrics = real_stream_metrics
         build_point_layer = real_build_point_layer
     if _QGIS_APP is None:
         _QGIS_APP = QgsApplication([], False)
@@ -123,6 +138,33 @@ class SamplePointsTests(unittest.TestCase):
         points = [(5.0, 6.0)]
         result = _sample_points(points, 1)
         self.assertEqual(result, [(0, 5.0, 6.0)])
+
+
+class PointSequenceHelperTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        _ensure_qgis_app()
+
+    def test_normalized_points_skips_invalid_values(self):
+        points = _normalized_points([(46.5, 6.6), ("bad", 6.7), (1,), None])
+        self.assertEqual(points, [(46.5, 6.6)])
+
+    def test_activity_point_sequence_prefers_stream_points(self):
+        points, geometry_source = _activity_point_sequence(
+            {
+                "geometry_points": [(46.5, 6.6), (46.6, 6.7)],
+                "summary_polyline": "_p~iF~ps|U_ulLnnqC_mqNvxq`@",
+            }
+        )
+
+        self.assertEqual(geometry_source, "stream")
+        self.assertEqual(points, [(46.5, 6.6), (46.6, 6.7)])
+
+    def test_stream_metrics_only_returned_for_stream_geometry(self):
+        record = {"details_json": {"stream_metrics": {"time": [0, 1]}}}
+
+        self.assertEqual(_stream_metrics(record, "stream"), {"time": [0, 1]})
+        self.assertEqual(_stream_metrics(record, "summary_polyline"), {})
 
 
 @unittest.skipIf(QgsApplication is None, "QGIS Python bindings are not available")
