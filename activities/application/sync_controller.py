@@ -244,6 +244,10 @@ class SyncController:
         """Return a sync-context dict from a completed fetch."""
         detailed_count = sum(1 for a in activities if a.geometry_source == "stream")
         today_str = date.today().isoformat()
+        fetch_context = getattr(provider, "last_fetch_context", {}) or {}
+        is_unbounded_fetch = int(fetch_context.get("max_pages") or 0) == 0
+        uses_default_bounds = fetch_context.get("before") is None and fetch_context.get("after") is None
+        is_full_sync = is_unbounded_fetch and uses_default_bounds and not getattr(provider, "last_fetch_notice", None)
         return {
             "provider": provider.source_name,
             "before_epoch": None,
@@ -252,7 +256,7 @@ class SyncController:
             "detailed_count": detailed_count,
             "stream_stats": provider.last_stream_enrichment_stats,
             "rate_limit": provider.last_rate_limit,
-            "is_full_sync": True,
+            "is_full_sync": is_full_sync,
             "today_str": today_str,
         }
 
