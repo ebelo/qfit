@@ -669,6 +669,27 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "Strava connection: ready to fetch activities"
         )
 
+    def test_update_loaded_activities_summary_delegates_to_layer_summary_helper(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.settings = _FakeSettings({"last_sync_date": "2026-04-12"})
+        dock.countLabel = _FakeLabel("")
+
+        with patch.object(
+            self.module,
+            "build_loaded_activities_summary",
+            return_value="12 activities loaded (last sync: 2026-04-12)",
+        ) as build_summary:
+            self.module.QfitDockWidget._update_loaded_activities_summary(dock, 12)
+
+        build_summary.assert_called_once_with(
+            total_activities=12,
+            last_sync_date="2026-04-12",
+        )
+        self.assertEqual(
+            dock.countLabel.text(),
+            "12 activities loaded (last sync: 2026-04-12)",
+        )
+
     def test_apply_analysis_configuration_delegates_current_mode_and_layer(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock.analysisModeComboBox = _FakeComboBox(current_text="Most frequent starting points")
