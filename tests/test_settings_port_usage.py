@@ -2,7 +2,7 @@ import unittest
 
 from tests import _path  # noqa: F401
 
-from qfit.config_status import mapbox_status_text, strava_status_text
+from qfit.configuration.application.config_status import mapbox_status_text, strava_status_text
 from qfit.ui_settings_binding import UIFieldBinding, load_bindings, save_bindings
 
 
