@@ -879,7 +879,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "Set a GeoPackage output path first.",
         )
 
-    def test_on_clear_database_clicked_reports_delete_failure_status_via_helper(self):
+    def test_on_clear_database_clicked_reports_delete_failure_status_via_helpers(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock.outputPathLineEdit = _FakeLineEdit("/tmp/qfit.gpkg")
         dock.activities_layer = object()
@@ -896,11 +896,16 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
         with patch.object(self.module.QMessageBox, "question", return_value=1, create=True), patch.object(
             self.module,
+            "build_clear_database_delete_failure_error_title",
+            return_value="Could not delete database",
+        ) as build_title, patch.object(
+            self.module,
             "build_clear_database_delete_failure_status",
             return_value="Failed to delete the GeoPackage file",
         ) as build_status:
             self.module.QfitDockWidget.on_clear_database_clicked(dock)
 
+        build_title.assert_called_once_with()
         dock._show_error.assert_called_once_with("Could not delete database", "permission denied")
         build_status.assert_called_once_with()
         dock._set_status.assert_called_once_with("Failed to delete the GeoPackage file")
