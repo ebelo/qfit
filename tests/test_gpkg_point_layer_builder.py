@@ -28,7 +28,6 @@ if QgsApplication is not None and _REAL_QGIS_PRESENT:
         _stream_metrics,
         build_point_layer,
     )
-    from qfit.gpkg_point_layer_builder import build_point_layer as legacy_build_point_layer
 else:  # pragma: no cover
     _activity_point_sequence = None
     _metric_value = None
@@ -89,20 +88,6 @@ def _ensure_qgis_app():
         _QGIS_APP = QgsApplication([], False)
         _QGIS_APP.initQgis()
     return _QGIS_APP
-
-
-@unittest.skipIf(not _REAL_QGIS_PRESENT, "QGIS Python bindings are not available")
-class GpkgPointLayerBuilderShimTests(unittest.TestCase):
-    def test_legacy_gpkg_point_layer_builder_shim_exports_same_function(self):
-        global legacy_build_point_layer
-
-        _ensure_qgis_app()
-        if "legacy_build_point_layer" not in globals():
-            from qfit.gpkg_point_layer_builder import (
-                build_point_layer as legacy_build_point_layer,
-            )
-
-        self.assertIs(legacy_build_point_layer, build_point_layer)
 
 
 class SamplePointsTests(unittest.TestCase):

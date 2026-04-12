@@ -232,10 +232,6 @@ class GeoPackagePackageUnitTests(unittest.TestCase):
                 "qfit.activities.infrastructure.geopackage.gpkg_point_layer_builder",
                 build_point_layer=build_point_layer,
             ),
-            "qfit.gpkg_point_layer_builder": self._module(
-                "qfit.gpkg_point_layer_builder",
-                build_point_layer=build_point_layer,
-            ),
             "qfit.activities.infrastructure.geopackage.gpkg_atlas_page_builder": self._module(
                 "qfit.activities.infrastructure.geopackage.gpkg_atlas_page_builder",
                 build_atlas_layer=build_atlas_layer,
