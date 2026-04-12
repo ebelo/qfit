@@ -218,7 +218,6 @@ class LayerGatewayBoundaryTests(unittest.TestCase):
             "qfit.layer_style_service",
             "qfit.map_canvas_service",
             "qfit.project_layer_loader",
-            "qfit.temporal_service",
             "qfit.visualization.infrastructure",
             "qfit.visualization.infrastructure.background_map_service",
             "qfit.visualization.infrastructure.layer_filter_service",
@@ -341,11 +340,6 @@ class LayerGatewayBoundaryTests(unittest.TestCase):
                 "qfit.visualization.infrastructure.project_layer_loader",
                 "ProjectLayerLoader",
                 project_layer_loader,
-            ),
-            "qfit.temporal_service": class_module(
-                "qfit.temporal_service",
-                "TemporalService",
-                temporal_service,
             ),
             "qfit.visualization.infrastructure.temporal_service": class_module(
                 "qfit.visualization.infrastructure.temporal_service",
