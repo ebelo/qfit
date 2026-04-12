@@ -27,10 +27,6 @@ if QgsApplication is not None and _REAL_QGIS_PRESENT:
         build_start_layer,
         build_track_layer,
     )
-    from qfit.gpkg_layer_builders import (
-        build_start_layer as legacy_build_start_layer,
-        build_track_layer as legacy_build_track_layer,
-    )
 else:  # pragma: no cover
     _activity_geometry = None
     _fallback_geometry = None
@@ -87,23 +83,6 @@ def _ensure_qgis_app():
         _QGIS_APP = QgsApplication([], False)
         _QGIS_APP.initQgis()
     return _QGIS_APP
-
-
-@unittest.skipIf(not _REAL_QGIS_PRESENT, "QGIS Python bindings are not available")
-class GpkgLayerBuilderShimTests(unittest.TestCase):
-    def test_legacy_gpkg_layer_builder_shim_exports_same_functions(self):
-        global legacy_build_start_layer
-        global legacy_build_track_layer
-
-        _ensure_qgis_app()
-        if "legacy_build_start_layer" not in globals():
-            from qfit.gpkg_layer_builders import (
-                build_start_layer as legacy_build_start_layer,
-                build_track_layer as legacy_build_track_layer,
-            )
-
-        self.assertIs(legacy_build_start_layer, build_start_layer)
-        self.assertIs(legacy_build_track_layer, build_track_layer)
 
 
 class ActivityGeometryTests(unittest.TestCase):

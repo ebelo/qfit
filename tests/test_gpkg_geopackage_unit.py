@@ -223,11 +223,6 @@ class GeoPackagePackageUnitTests(unittest.TestCase):
                 build_track_layer=build_track_layer,
                 build_start_layer=build_start_layer,
             ),
-            "qfit.gpkg_layer_builders": self._module(
-                "qfit.gpkg_layer_builders",
-                build_track_layer=build_track_layer,
-                build_start_layer=build_start_layer,
-            ),
             "qfit.activities.infrastructure.geopackage.gpkg_point_layer_builder": self._module(
                 "qfit.activities.infrastructure.geopackage.gpkg_point_layer_builder",
                 build_point_layer=build_point_layer,
