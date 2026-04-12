@@ -186,7 +186,7 @@ class WorkflowBoundaryTests(unittest.TestCase):
 class PortBoundaryTests(unittest.TestCase):
     PORT_MODULES = [
         "atlas/export_runtime.py",
-        "settings_port.py",
+        "configuration/application/settings_port.py",
         "visualization/application/layer_gateway.py",
     ]
 
@@ -312,7 +312,6 @@ class PackageOwnershipBoundaryTests(unittest.TestCase):
         "qfit_config_dialog.py",
         "qfit_dockwidget.py",
         "qfit_plugin.py",
-        "settings_port.py",
         "sync_repository.py",
         "time_utils.py",
         "ui_settings_binding.py",
