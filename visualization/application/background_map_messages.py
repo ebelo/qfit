@@ -23,3 +23,7 @@ def build_styled_background_map_failure_status() -> str:
 
 def build_styled_background_map_loaded_status() -> str:
     return "Applied styling and loaded the background map below the qfit activity layers"
+
+
+def build_styled_visual_apply_status() -> str:
+    return "Applied styling to the loaded qfit layers"

@@ -477,6 +477,26 @@ class NoLayersTests(unittest.TestCase):
 
         self.assertIn("cleared", result.status.lower())
 
+    def test_styled_only_status_uses_helper(self):
+        layers = LayerRefs(activities=MagicMock())
+
+        with patch(
+            "qfit.visualization.application.visual_apply.build_styled_visual_apply_status",
+            return_value="Applied styling to the loaded qfit layers",
+        ) as build_status:
+            result = self.service.apply(
+                layers=layers,
+                query=_make_query(),
+                style_preset="By activity type",
+                temporal_mode="Off",
+                background_config=_make_bg_config(enabled=False),
+                apply_subset_filters=False,
+                filtered_count=0,
+            )
+
+        self.assertIn("applied styling", result.status.lower())
+        build_status.assert_called_once_with()
+
 
 class TemporalNoteTests(unittest.TestCase):
     def setUp(self):

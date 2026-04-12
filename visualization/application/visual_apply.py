@@ -10,6 +10,7 @@ from .background_map_messages import (
     build_background_map_loaded_status,
     build_styled_background_map_failure_status,
     build_styled_background_map_loaded_status,
+    build_styled_visual_apply_status,
 )
 from .layer_gateway import LayerGateway
 from .render_plan import build_render_plan
@@ -254,7 +255,7 @@ class VisualApplyService:
         elif has_layers and wants_background and background_layer is not None:
             status = build_styled_background_map_loaded_status()
         elif has_layers:
-            status = "Applied styling to the loaded qfit layers"
+            status = build_styled_visual_apply_status()
         elif wants_background and background_layer is not None:
             status = build_background_map_loaded_status()
         else:
