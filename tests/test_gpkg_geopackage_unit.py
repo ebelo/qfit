@@ -244,14 +244,6 @@ class GeoPackagePackageUnitTests(unittest.TestCase):
                 build_profile_sample_layer=build_profile_sample_layer,
                 build_toc_layer=build_toc_layer,
             ),
-            "qfit.gpkg_atlas_table_builders": self._module(
-                "qfit.gpkg_atlas_table_builders",
-                build_cover_highlight_layer=build_cover_highlight_layer,
-                build_document_summary_layer=build_document_summary_layer,
-                build_page_detail_item_layer=build_page_detail_item_layer,
-                build_profile_sample_layer=build_profile_sample_layer,
-                build_toc_layer=build_toc_layer,
-            ),
             "qfit.atlas.publish_atlas": self._module(
                 "qfit.atlas.publish_atlas",
                 build_atlas_page_plans=build_atlas_page_plans,
