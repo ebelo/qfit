@@ -27,13 +27,6 @@ if QgsApplication is not None and _REAL_QGIS_PRESENT:
         build_profile_sample_layer,
         build_toc_layer,
     )
-    from qfit.gpkg_atlas_table_builders import (
-        build_cover_highlight_layer as legacy_build_cover_highlight_layer,
-        build_document_summary_layer as legacy_build_document_summary_layer,
-        build_page_detail_item_layer as legacy_build_page_detail_item_layer,
-        build_profile_sample_layer as legacy_build_profile_sample_layer,
-        build_toc_layer as legacy_build_toc_layer,
-    )
 else:  # pragma: no cover
     build_cover_highlight_layer = None
     build_document_summary_layer = None
@@ -90,32 +83,6 @@ def _ensure_qgis_app():
         _QGIS_APP = QgsApplication([], False)
         _QGIS_APP.initQgis()
     return _QGIS_APP
-
-
-@unittest.skipIf(not _REAL_QGIS_PRESENT, "QGIS Python bindings are not available")
-class AtlasTableBuilderShimTests(unittest.TestCase):
-    def test_legacy_gpkg_atlas_table_builders_shim_exports_same_functions(self):
-        global legacy_build_cover_highlight_layer
-        global legacy_build_document_summary_layer
-        global legacy_build_page_detail_item_layer
-        global legacy_build_profile_sample_layer
-        global legacy_build_toc_layer
-
-        _ensure_qgis_app()
-        if "legacy_build_cover_highlight_layer" not in globals():
-            from qfit.gpkg_atlas_table_builders import (
-                build_cover_highlight_layer as legacy_build_cover_highlight_layer,
-                build_document_summary_layer as legacy_build_document_summary_layer,
-                build_page_detail_item_layer as legacy_build_page_detail_item_layer,
-                build_profile_sample_layer as legacy_build_profile_sample_layer,
-                build_toc_layer as legacy_build_toc_layer,
-            )
-
-        self.assertIs(legacy_build_cover_highlight_layer, build_cover_highlight_layer)
-        self.assertIs(legacy_build_document_summary_layer, build_document_summary_layer)
-        self.assertIs(legacy_build_page_detail_item_layer, build_page_detail_item_layer)
-        self.assertIs(legacy_build_profile_sample_layer, build_profile_sample_layer)
-        self.assertIs(legacy_build_toc_layer, build_toc_layer)
 
 
 @unittest.skipIf(not _REAL_QGIS_PRESENT, "QGIS Python bindings are not available")
