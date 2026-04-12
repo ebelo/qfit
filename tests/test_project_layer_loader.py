@@ -131,7 +131,7 @@ class ProjectLayerLoaderRealTests(unittest.TestCase):
 
         self.assertIs(loaded, new_layer)
         project.removeMapLayer.assert_called_once_with("old-id")
-        project.addMapLayer.assert_called_once_with(new_layer)
+        project.addMapLayer.assert_called_once_with(new_layer, True)
 
     def test_load_layer_defaults_geometry_layers_to_wgs84_when_crs_is_missing(self):
         loader = ProjectLayerLoader()
@@ -174,6 +174,7 @@ class ProjectLayerLoaderRealTests(unittest.TestCase):
             loader._load_layer("/tmp/out.gpkg", "activity_atlas_pages", "qfit atlas pages")
 
         new_layer.setCrs.assert_called_once_with("EPSG:3857")
+        project.addMapLayer.assert_called_once_with(new_layer, False)
 
 
 @unittest.skipIf(QGIS_AVAILABLE, SKIP_MOCK)
@@ -260,3 +261,4 @@ class ProjectLayerLoaderMockTests(unittest.TestCase):
             self.loader._load_layer("/tmp/out.gpkg", "activity_atlas_pages", "qfit atlas pages")
 
         new_layer.setCrs.assert_called_once_with("EPSG:3857")
+        project.addMapLayer.assert_called_once_with(new_layer, False)

@@ -8,6 +8,7 @@ class ProjectLayerLoader:
     LAYER_FALLBACK_CRS = {
         "activity_atlas_pages": "EPSG:3857",
     }
+    HIDDEN_LAYER_NAMES = {"activity_atlas_pages"}
 
     ACTIVITIES_CANDIDATES = [
         ("activity_tracks", "qfit activities"),
@@ -58,5 +59,5 @@ class ProjectLayerLoader:
         project = QgsProject.instance()
         for old_layer in project.mapLayersByName(display_name):
             project.removeMapLayer(old_layer.id())
-        project.addMapLayer(layer)
+        project.addMapLayer(layer, layer_name not in self.HIDDEN_LAYER_NAMES)
         return layer
