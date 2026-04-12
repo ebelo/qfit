@@ -217,7 +217,6 @@ class GpkgBuilderModulesPureTests(unittest.TestCase):
                 "qfit.activities.infrastructure.geopackage.gpkg_point_layer_builder",
                 "qfit.activities.infrastructure.geopackage.gpkg_layer_builders",
                 "qfit.gpkg_atlas_table_builders",
-                "qfit.gpkg_point_layer_builder",
                 "qfit.gpkg_layer_builders",
             ]:
                 sys.modules.pop(name, None)
@@ -231,19 +230,17 @@ class GpkgBuilderModulesPureTests(unittest.TestCase):
                 "qfit.activities.infrastructure.geopackage.gpkg_layer_builders"
             )
             legacy_atlas_tables = importlib.import_module("qfit.gpkg_atlas_table_builders")
-            legacy_point_builder = importlib.import_module("qfit.gpkg_point_layer_builder")
             legacy_layer_builders = importlib.import_module("qfit.gpkg_layer_builders")
         return (
             atlas_tables,
             point_builder,
             layer_builders,
             legacy_atlas_tables,
-            legacy_point_builder,
             legacy_layer_builders,
         )
 
     def test_moved_atlas_table_builders_work_without_real_qgis(self):
-        atlas_tables, _, _, legacy_atlas_tables, _, _ = self._import_with_stubs()
+        atlas_tables, _, _, legacy_atlas_tables, _ = self._import_with_stubs()
 
         summary_layer = atlas_tables.build_document_summary_layer(records=[{"id": 1}])
         highlight_layer = atlas_tables.build_cover_highlight_layer(records=[{"id": 1}])
@@ -262,7 +259,7 @@ class GpkgBuilderModulesPureTests(unittest.TestCase):
         )
 
     def test_moved_point_layer_builder_works_without_real_qgis(self):
-        _, point_builder, _, _, legacy_point_builder, _ = self._import_with_stubs()
+        _, point_builder, _, _, _ = self._import_with_stubs()
 
         layer = point_builder.build_point_layer(
             [
@@ -298,10 +295,9 @@ class GpkgBuilderModulesPureTests(unittest.TestCase):
         self.assertEqual(len(features), 1)
         self.assertEqual(features[0]["source_activity_id"], "42")
         self.assertEqual(features[0].geometry, ("point", 7.0, 46.0))
-        self.assertIs(legacy_point_builder.build_point_layer, point_builder.build_point_layer)
 
     def test_moved_point_layer_builder_falls_back_to_summary_polyline_without_real_qgis(self):
-        _, point_builder, _, _, _, _ = self._import_with_stubs()
+        _, point_builder, _, _, _ = self._import_with_stubs()
 
         layer = point_builder.build_point_layer(
             [
@@ -322,7 +318,7 @@ class GpkgBuilderModulesPureTests(unittest.TestCase):
         self.assertIsNone(features[0]["stream_time_s"])
 
     def test_moved_point_layer_builder_falls_back_to_start_end_without_real_qgis(self):
-        _, point_builder, _, _, _, _ = self._import_with_stubs()
+        _, point_builder, _, _, _ = self._import_with_stubs()
 
         layer = point_builder.build_point_layer(
             [
@@ -346,7 +342,7 @@ class GpkgBuilderModulesPureTests(unittest.TestCase):
         self.assertEqual(features[-1]["point_index"], 1)
 
     def test_moved_point_layer_builder_skips_records_without_geometry_without_real_qgis(self):
-        _, point_builder, _, _, _, _ = self._import_with_stubs()
+        _, point_builder, _, _, _ = self._import_with_stubs()
 
         layer = point_builder.build_point_layer(
             [
@@ -367,7 +363,7 @@ class GpkgBuilderModulesPureTests(unittest.TestCase):
         self.assertEqual(layer.featureCount(), 0)
 
     def test_moved_layer_builders_work_without_real_qgis(self):
-        _, _, layer_builders, _, _, legacy_layer_builders = self._import_with_stubs()
+        _, _, layer_builders, _, legacy_layer_builders = self._import_with_stubs()
 
         records = [
             {
