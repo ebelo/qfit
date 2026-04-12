@@ -861,6 +861,24 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._update_stored_activities_summary.assert_called_once_with(12)
         dock._set_status.assert_called_once_with("Stored 12 activities")
 
+    def test_on_clear_database_clicked_reports_missing_output_path_via_helper(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.outputPathLineEdit = _FakeLineEdit("")
+        dock._show_error = MagicMock()
+
+        with patch.object(
+            self.module,
+            "build_missing_output_path_error",
+            return_value=("No database path", "Set a GeoPackage output path first."),
+        ) as build_error:
+            self.module.QfitDockWidget.on_clear_database_clicked(dock)
+
+        build_error.assert_called_once_with()
+        dock._show_error.assert_called_once_with(
+            "No database path",
+            "Set a GeoPackage output path first.",
+        )
+
     def test_on_clear_database_clicked_delegates_reset_summary_update(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock.outputPathLineEdit = _FakeLineEdit("/tmp/qfit.gpkg")

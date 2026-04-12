@@ -41,6 +41,7 @@ from .activities.application import (
     build_activity_type_options_from_activities,
     build_activity_type_options_from_records,
 )
+from .activities.application.clear_database_messages import build_missing_output_path_error
 from .activities.application.layer_summary import (
     build_cleared_activities_summary,
     build_last_sync_summary,
@@ -682,7 +683,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         """Delete the GeoPackage, clear loaded layers, and reset status."""
         output_path = self.outputPathLineEdit.text().strip()
         if not output_path:
-            self._show_error("No database path", "Set a GeoPackage output path first.")
+            self._show_error(*build_missing_output_path_error())
             return
 
         reply = QMessageBox.question(
