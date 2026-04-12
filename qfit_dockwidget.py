@@ -59,13 +59,10 @@ from .ui.application import (
 )
 from .ui.contextual_help import ContextualHelpBinder, build_dock_help_entries
 from .detailed_route_strategy import (
-    DEFAULT_DETAILED_ROUTE_STRATEGY,
     DETAILED_ROUTE_STRATEGY_MISSING,
     detailed_route_strategy_labels,
 )
 from .mapbox_config import (
-    DEFAULT_BACKGROUND_PRESET,
-    TILE_MODE_RASTER,
     TILE_MODES,
     MapboxConfigError,
     background_preset_names,
@@ -79,7 +76,8 @@ from .visualization.application import DEFAULT_TEMPORAL_MODE_LABEL, temporal_mod
 from .ui.dockwidget_dependencies import DockWidgetDependencies, build_dockwidget_dependencies
 from .ui.dock_startup_coordinator import DockStartupCoordinator
 from .ui.workflow_section_coordinator import WorkflowSectionCoordinator
-from .configuration.application.ui_settings_binding import UIFieldBinding, load_bindings, save_bindings
+from .configuration.application.dock_settings_bindings import build_dock_settings_bindings
+from .configuration.application.ui_settings_binding import load_bindings, save_bindings
 
 FORM_CLASS, _ = uic.loadUiType(
     __import__("os").path.join(__import__("os").path.dirname(__file__), "qfit_dockwidget_base.ui")
@@ -346,153 +344,8 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def _default_atlas_pdf_path(self) -> str:
         return os.path.join(os.path.expanduser("~"), "qfit_atlas.pdf")
 
-    def _settings_bindings(self) -> list[UIFieldBinding]:
-        default_style_preset = "By activity type"
-        return [
-            UIFieldBinding("client_id", "", lambda: self.clientIdLineEdit.text().strip(), self.clientIdLineEdit.setText),
-            UIFieldBinding("client_secret", "", lambda: self.clientSecretLineEdit.text().strip(), self.clientSecretLineEdit.setText),
-            UIFieldBinding(
-                "redirect_uri",
-                StravaProvider.DEFAULT_REDIRECT_URI,
-                lambda: self.redirectUriLineEdit.text().strip(),
-                self.redirectUriLineEdit.setText,
-            ),
-            UIFieldBinding("refresh_token", "", lambda: self.refreshTokenLineEdit.text().strip(), self.refreshTokenLineEdit.setText),
-            UIFieldBinding("output_path", self._default_output_path(), lambda: self.outputPathLineEdit.text().strip(), self.outputPathLineEdit.setText),
-            UIFieldBinding("per_page", 200, lambda: self.perPageSpinBox.value(), lambda value: self._set_int_value(self.perPageSpinBox, value, 200)),
-            UIFieldBinding("max_pages", 0, lambda: self.maxPagesSpinBox.value(), lambda value: self._set_int_value(self.maxPagesSpinBox, value, 0)),
-            UIFieldBinding(
-                "use_detailed_streams",
-                False,
-                lambda: self.detailedStreamsCheckBox.isChecked(),
-                lambda value: self._set_bool_value(self.detailedStreamsCheckBox, value, False),
-            ),
-            UIFieldBinding(
-                "max_detailed_activities",
-                25,
-                lambda: self.maxDetailedActivitiesSpinBox.value(),
-                lambda value: self._set_int_value(self.maxDetailedActivitiesSpinBox, value, 25),
-            ),
-            UIFieldBinding(
-                "detailed_route_strategy",
-                DEFAULT_DETAILED_ROUTE_STRATEGY,
-                lambda: self.detailedRouteStrategyComboBox.currentText(),
-                lambda value: self._set_combo_value(
-                    self.detailedRouteStrategyComboBox,
-                    value,
-                    DEFAULT_DETAILED_ROUTE_STRATEGY,
-                ),
-            ),
-            UIFieldBinding(
-                "write_activity_points",
-                True,
-                lambda: self.writeActivityPointsCheckBox.isChecked(),
-                lambda value: self._set_bool_value(self.writeActivityPointsCheckBox, value, True),
-            ),
-            UIFieldBinding(
-                "point_sampling_stride",
-                5,
-                lambda: self.pointSamplingStrideSpinBox.value(),
-                lambda value: self._set_int_value(self.pointSamplingStrideSpinBox, value, 5),
-            ),
-            UIFieldBinding(
-                "activity_search_text",
-                "",
-                lambda: self.activitySearchLineEdit.text().strip(),
-                self.activitySearchLineEdit.setText,
-            ),
-            UIFieldBinding(
-                "max_distance_km",
-                0.0,
-                lambda: self.maxDistanceSpinBox.value(),
-                lambda value: self._set_float_value(self.maxDistanceSpinBox, value, 0.0),
-            ),
-            UIFieldBinding(
-                "detailed_route_filter",
-                DETAILED_ROUTE_FILTER_ANY,
-                lambda: self.detailedRouteStatusComboBox.currentData(),
-                lambda value: self._set_combo_data_value(
-                    self.detailedRouteStatusComboBox,
-                    value,
-                    DETAILED_ROUTE_FILTER_ANY,
-                ),
-            ),
-            UIFieldBinding(
-                "use_background_map",
-                False,
-                lambda: self.backgroundMapCheckBox.isChecked(),
-                lambda value: self._set_bool_value(self.backgroundMapCheckBox, value, False),
-            ),
-            UIFieldBinding(
-                "mapbox_style_owner",
-                "mapbox",
-                lambda: self.mapboxStyleOwnerLineEdit.text().strip(),
-                self.mapboxStyleOwnerLineEdit.setText,
-            ),
-            UIFieldBinding(
-                "mapbox_style_id",
-                "",
-                lambda: self.mapboxStyleIdLineEdit.text().strip(),
-                self.mapboxStyleIdLineEdit.setText,
-            ),
-            UIFieldBinding(
-                "atlas_margin_percent",
-                8.0,
-                lambda: self.atlasMarginPercentSpinBox.value(),
-                lambda value: self._set_float_value(self.atlasMarginPercentSpinBox, value, 8.0),
-            ),
-            UIFieldBinding(
-                "atlas_min_extent_degrees",
-                0.01,
-                lambda: self.atlasMinExtentSpinBox.value(),
-                lambda value: self._set_float_value(self.atlasMinExtentSpinBox, value, 0.01),
-            ),
-            UIFieldBinding(
-                "atlas_target_aspect_ratio",
-                BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO,
-                lambda: self.atlasTargetAspectRatioSpinBox.value(),
-                self._set_atlas_target_aspect_ratio_value,
-            ),
-            UIFieldBinding(
-                "atlas_pdf_path",
-                self._default_atlas_pdf_path(),
-                lambda: self.atlasPdfPathLineEdit.text().strip(),
-                self.atlasPdfPathLineEdit.setText,
-            ),
-            UIFieldBinding(
-                "analysis_mode",
-                "None",
-                lambda: self.analysisModeComboBox.currentText(),
-                lambda value: self._set_combo_value(self.analysisModeComboBox, value, "None"),
-            ),
-            UIFieldBinding(
-                "background_preset",
-                DEFAULT_BACKGROUND_PRESET,
-                lambda: self.backgroundPresetComboBox.currentText(),
-                lambda value: self._set_combo_value(self.backgroundPresetComboBox, value, DEFAULT_BACKGROUND_PRESET),
-            ),
-            UIFieldBinding(
-                "tile_mode",
-                TILE_MODE_RASTER,
-                lambda: self.tileModeComboBox.currentText(),
-                lambda value: self._set_combo_value(self.tileModeComboBox, value, TILE_MODE_RASTER),
-            ),
-            UIFieldBinding(
-                "preview_sort",
-                DEFAULT_SORT_LABEL,
-                lambda: self.previewSortComboBox.currentText(),
-                lambda value: self._set_combo_value(self.previewSortComboBox, value, DEFAULT_SORT_LABEL),
-            ),
-            UIFieldBinding(
-                "style_preset",
-                default_style_preset,
-                lambda: self.stylePresetComboBox.currentText(),
-                lambda value: self._set_combo_value(self.stylePresetComboBox, value, default_style_preset),
-            ),
-        ]
-
     def _load_settings(self):
-        load_bindings(self._settings_bindings(), self.settings)
+        load_bindings(build_dock_settings_bindings(self), self.settings)
         self.authCodeLineEdit.setText("")
         self._sync_background_style_fields(self.backgroundPresetComboBox.currentText(), force=False)
 
@@ -501,7 +354,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self.countLabel.setText(f"Last sync: {last_sync}")
 
     def _save_settings(self):
-        save_bindings(self._settings_bindings(), self.settings)
+        save_bindings(build_dock_settings_bindings(self), self.settings)
 
 
     def _set_default_dates(self):
