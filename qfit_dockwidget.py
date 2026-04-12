@@ -41,7 +41,10 @@ from .activities.application import (
     build_activity_type_options_from_activities,
     build_activity_type_options_from_records,
 )
-from .activities.application.clear_database_messages import build_missing_output_path_error
+from .activities.application.clear_database_messages import (
+    build_clear_database_delete_failure_status,
+    build_missing_output_path_error,
+)
 from .activities.application.layer_summary import (
     build_cleared_activities_summary,
     build_last_sync_summary,
@@ -716,7 +719,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             return
         except (RuntimeError, OSError) as exc:
             self._show_error("Could not delete database", str(exc))
-            self._set_status("Failed to delete the GeoPackage file")
+            self._set_status(build_clear_database_delete_failure_status())
             return
 
         self.activities_layer = None
