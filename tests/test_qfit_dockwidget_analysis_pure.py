@@ -690,6 +690,27 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "12 activities loaded (last sync: 2026-04-12)",
         )
 
+    def test_update_stored_activities_summary_delegates_to_layer_summary_helper(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.settings = _FakeSettings({"last_sync_date": "2026-04-12"})
+        dock.countLabel = _FakeLabel("")
+
+        with patch.object(
+            self.module,
+            "build_stored_activities_summary",
+            return_value="12 activities stored in database (last sync: 2026-04-12)",
+        ) as build_summary:
+            self.module.QfitDockWidget._update_stored_activities_summary(dock, 12)
+
+        build_summary.assert_called_once_with(
+            total_activities=12,
+            last_sync_date="2026-04-12",
+        )
+        self.assertEqual(
+            dock.countLabel.text(),
+            "12 activities stored in database (last sync: 2026-04-12)",
+        )
+
     def test_apply_analysis_configuration_delegates_current_mode_and_layer(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock.analysisModeComboBox = _FakeComboBox(current_text="Most frequent starting points")
@@ -788,6 +809,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.outputPathLineEdit = _FakeLineEdit()
         dock.settings = _FakeSettings({"last_sync_date": "2026-04-07"})
         dock.countLabel = _FakeLabel("")
+        dock._update_stored_activities_summary = MagicMock()
         dock._set_status = MagicMock()
         result = SimpleNamespace(output_path="/tmp/qfit.gpkg", total_stored=12, status="Stored 12 activities")
 
@@ -797,7 +819,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertTrue(dock.loadButton.isEnabled())
         self.assertEqual(dock.loadButton.text(), "Store activities")
         self.assertEqual(dock.output_path, "/tmp/qfit.gpkg")
-        self.assertIn("12 activities stored in database", dock.countLabel.text())
+        dock._update_stored_activities_summary.assert_called_once_with(12)
         dock._set_status.assert_called_once_with("Stored 12 activities")
 
 
