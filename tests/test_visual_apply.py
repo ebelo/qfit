@@ -1,6 +1,6 @@
 import unittest
 from types import SimpleNamespace
-from unittest.mock import MagicMock, call
+from unittest.mock import MagicMock, call, patch
 
 from tests import _path  # noqa: F401
 from qfit.visualization.application.render_plan import (
@@ -235,6 +235,26 @@ class ApplyWithoutSubsetFiltersTests(unittest.TestCase):
         )
 
         self.layer_manager.apply_filters.assert_not_called()
+
+    def test_returns_cleared_status_via_helper_when_background_is_not_loaded(self):
+        self.layer_manager.ensure_background_layer.return_value = None
+
+        with patch(
+            "qfit.visualization.application.visual_apply.build_background_map_cleared_status",
+            return_value="Background map cleared",
+        ) as build_status:
+            result = self.service.apply(
+                layers=LayerRefs(),
+                query=_make_query(),
+                style_preset="By activity type",
+                temporal_mode="Off",
+                background_config=_make_bg_config(enabled=False),
+                apply_subset_filters=False,
+                filtered_count=0,
+            )
+
+        self.assertEqual(result.status, "Background map cleared")
+        build_status.assert_called_once_with()
 
     def test_applies_style_and_temporal(self):
         self.service.apply(
