@@ -4,7 +4,11 @@ from unittest.mock import MagicMock
 
 from tests import _path  # noqa: F401
 
-from qfit.fetch_result_service import FetchActivitiesRequest, FetchResult, FetchResultService
+from qfit.activities.application.fetch_result_service import (
+    FetchActivitiesRequest,
+    FetchResult,
+    FetchResultService,
+)
 
 
 # ---------------------------------------------------------------------------

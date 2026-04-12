@@ -299,7 +299,6 @@ class PackageOwnershipBoundaryTests(unittest.TestCase):
         "config_status.py",
         "credential_store.py",
         "detailed_route_strategy.py",
-        "fetch_result_service.py",
         "fetch_task.py",
         "gpkg_atlas_page_builder.py",
         "gpkg_atlas_table_builders.py",
