@@ -1,6 +1,12 @@
 from __future__ import annotations
 
 
+def build_last_sync_summary(*, last_sync_date: str | None) -> str | None:
+    if not last_sync_date:
+        return None
+    return f"Last sync: {last_sync_date}"
+
+
 def build_loaded_activities_summary(*, total_activities: int, last_sync_date: str) -> str:
     return "{total} activities loaded (last sync: {sync_date})".format(
         total=total_activities,

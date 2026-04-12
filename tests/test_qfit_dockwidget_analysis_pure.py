@@ -669,6 +669,31 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "Strava connection: ready to fetch activities"
         )
 
+    def test_update_last_sync_summary_delegates_to_layer_summary_helper(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.settings = _FakeSettings({"last_sync_date": "2026-04-12"})
+        dock.countLabel = _FakeLabel("")
+
+        with patch.object(
+            self.module,
+            "build_last_sync_summary",
+            return_value="Last sync: 2026-04-12",
+        ) as build_summary:
+            self.module.QfitDockWidget._update_last_sync_summary(dock)
+
+        build_summary.assert_called_once_with(last_sync_date="2026-04-12")
+        self.assertEqual(dock.countLabel.text(), "Last sync: 2026-04-12")
+
+    def test_update_last_sync_summary_skips_empty_summary(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.settings = _FakeSettings({})
+        dock.countLabel = _FakeLabel("unchanged")
+
+        with patch.object(self.module, "build_last_sync_summary", return_value=None):
+            self.module.QfitDockWidget._update_last_sync_summary(dock)
+
+        self.assertEqual(dock.countLabel.text(), "unchanged")
+
     def test_update_loaded_activities_summary_delegates_to_layer_summary_helper(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock.settings = _FakeSettings({"last_sync_date": "2026-04-12"})
