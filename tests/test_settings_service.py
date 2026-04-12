@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import MagicMock
 
 from tests import _path  # noqa: F401
-from qfit.credential_store import InMemoryCredentialStore, NullCredentialStore
+from qfit.configuration.infrastructure.credential_store import InMemoryCredentialStore, NullCredentialStore
 from qfit.settings_port import SettingsPort
 from qfit.settings_service import QgisSettingsAdapter, SettingsService
 

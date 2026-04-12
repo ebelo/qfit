@@ -295,7 +295,6 @@ class PackageOwnershipBoundaryTests(unittest.TestCase):
         "activity_classification.py",
         "activity_query.py",
         "activity_storage.py",
-        "credential_store.py",
         "detailed_route_strategy.py",
         "fetch_task.py",
         "gpkg_atlas_page_builder.py",

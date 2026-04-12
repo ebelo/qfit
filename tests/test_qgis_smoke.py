@@ -47,7 +47,7 @@ try:
         build_atlas_layout,
     )
     from qfit.atlas.profile_item import build_profile_item_adapter
-    from qfit.credential_store import InMemoryCredentialStore
+    from qfit.configuration.infrastructure.credential_store import InMemoryCredentialStore
     from qfit.gpkg_writer import GeoPackageWriter
     from qfit.layer_manager import LayerManager
     from qfit.mapbox_config import TILE_MODE_RASTER
