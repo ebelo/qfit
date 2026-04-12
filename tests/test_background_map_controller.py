@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 from tests import _path  # noqa: F401
 from qfit.visualization.application.background_map_controller import (
@@ -61,17 +61,24 @@ class LoadBackgroundTests(unittest.TestCase):
         sentinel = object()
         lm.ensure_background_layer.return_value = sentinel
         ctrl = BackgroundMapController(lm)
-        result = ctrl.load_background(
-            enabled=True,
-            preset_name="Mapbox Dark",
-            access_token="tok",
-            style_owner="mapbox",
-            style_id="dark-v11",
-            tile_mode="raster",
-        )
+
+        with patch(
+            "qfit.visualization.application.background_map_controller.build_background_map_loaded_status",
+            return_value="Background map loaded below the qfit activity layers",
+        ) as build_status:
+            result = ctrl.load_background(
+                enabled=True,
+                preset_name="Mapbox Dark",
+                access_token="tok",
+                style_owner="mapbox",
+                style_id="dark-v11",
+                tile_mode="raster",
+            )
+
         self.assertIsInstance(result, LoadBackgroundResult)
         self.assertIs(result.layer, sentinel)
         self.assertEqual(result.status, "Background map loaded below the qfit activity layers")
+        build_status.assert_called_once_with()
         lm.ensure_background_layer.assert_called_once_with(
             enabled=True,
             preset_name="Mapbox Dark",

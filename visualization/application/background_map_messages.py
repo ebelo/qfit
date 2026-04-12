@@ -7,3 +7,7 @@ def build_background_map_failure_status() -> str:
 
 def build_background_map_failure_title() -> str:
     return "Background map failed"
+
+
+def build_background_map_loaded_status() -> str:
+    return "Background map loaded below the qfit activity layers"
