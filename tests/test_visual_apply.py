@@ -15,6 +15,9 @@ from qfit.visualization.application.visual_apply import (
     VisualApplyResult,
     VisualApplyService,
 )
+from qfit.visualization.application.visual_apply_messages import (
+    append_visual_apply_temporal_note,
+)
 
 
 def _make_query(**overrides):
@@ -525,32 +528,42 @@ class TemporalNoteTests(unittest.TestCase):
         self.layers = LayerRefs(activities=MagicMock())
 
     def test_temporal_note_appended_to_status(self):
-        result = self.service.apply(
-            layers=self.layers,
-            query=_make_query(),
-            style_preset="By activity type",
-            temporal_mode="Monthly",
-            background_config=_make_bg_config(),
-            apply_subset_filters=False,
-            filtered_count=0,
-        )
+        with patch(
+            "qfit.visualization.application.visual_apply.append_visual_apply_temporal_note",
+            wraps=append_visual_apply_temporal_note,
+        ) as append_note:
+            result = self.service.apply(
+                layers=self.layers,
+                query=_make_query(),
+                style_preset="By activity type",
+                temporal_mode="Monthly",
+                background_config=_make_bg_config(),
+                apply_subset_filters=False,
+                filtered_count=0,
+            )
 
         self.assertIn("Temporal mode: Monthly", result.status)
+        append_note.assert_called()
 
     def test_temporal_note_appended_to_failure_status(self):
         self.layer_manager.ensure_background_layer.side_effect = RuntimeError("fail")
-        result = self.service.apply(
-            layers=self.layers,
-            query=_make_query(),
-            style_preset="By activity type",
-            temporal_mode="Monthly",
-            background_config=_make_bg_config(enabled=True),
-            apply_subset_filters=False,
-            filtered_count=0,
-        )
+        with patch(
+            "qfit.visualization.application.visual_apply.append_visual_apply_temporal_note",
+            wraps=append_visual_apply_temporal_note,
+        ) as append_note:
+            result = self.service.apply(
+                layers=self.layers,
+                query=_make_query(),
+                style_preset="By activity type",
+                temporal_mode="Monthly",
+                background_config=_make_bg_config(enabled=True),
+                apply_subset_filters=False,
+                filtered_count=0,
+            )
 
         self.assertIn("Temporal mode: Monthly", result.status)
         self.assertIn("could not be updated", result.status.lower())
+        append_note.assert_called()
 
 
 class BackgroundPresetPassthroughTests(unittest.TestCase):
