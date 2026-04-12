@@ -295,7 +295,6 @@ class PackageOwnershipBoundaryTests(unittest.TestCase):
         "activity_classification.py",
         "activity_query.py",
         "activity_storage.py",
-        "config_connection_service.py",
         "config_status.py",
         "credential_store.py",
         "detailed_route_strategy.py",

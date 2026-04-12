@@ -3,7 +3,7 @@ from urllib.error import HTTPError, URLError
 
 from tests import _path  # noqa: F401
 
-from qfit.config_connection_service import (
+from qfit.configuration.application.config_connection_service import (
     build_mapbox_connection_test_request,
     build_strava_connection_test_request,
     validate_mapbox_connection,
