@@ -879,6 +879,42 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "Set a GeoPackage output path first.",
         )
 
+    def test_on_clear_database_clicked_uses_confirmation_title_helper(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.outputPathLineEdit = _FakeLineEdit("/tmp/qfit.gpkg")
+        dock.activities_layer = object()
+        dock.starts_layer = object()
+        dock.points_layer = object()
+        dock.atlas_layer = object()
+        dock.load_workflow = MagicMock()
+        dock.load_workflow.build_clear_database_request.return_value = "clear-request"
+        dock.load_workflow.clear_database_request.return_value = SimpleNamespace(status="Database cleared")
+        dock._clear_analysis_layer = MagicMock()
+        dock._update_cleared_activities_summary = MagicMock()
+        dock._set_status = MagicMock()
+        dock._show_error = MagicMock()
+        dock.activities = []
+        dock.output_path = "/tmp/qfit.gpkg"
+        dock.last_fetch_context = {}
+        self.module.QMessageBox.Yes = 1
+        self.module.QMessageBox.No = 0
+
+        with patch.object(
+            self.module,
+            "build_clear_database_confirmation_title",
+            return_value="Clear database",
+        ) as build_title, patch.object(
+            self.module.QMessageBox,
+            "question",
+            return_value=1,
+            create=True,
+        ) as question:
+            self.module.QfitDockWidget.on_clear_database_clicked(dock)
+
+        build_title.assert_called_once_with()
+        question.assert_called_once()
+        self.assertEqual(question.call_args.args[1], "Clear database")
+
     def test_on_clear_database_clicked_reports_load_workflow_error_title_via_helper(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock.outputPathLineEdit = _FakeLineEdit("/tmp/qfit.gpkg")
