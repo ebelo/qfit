@@ -14,6 +14,7 @@ from .background_map_messages import (
 )
 from .layer_gateway import LayerGateway
 from .render_plan import build_render_plan
+from .visual_apply_messages import build_filtered_visual_apply_status
 
 logger = logging.getLogger(__name__)
 
@@ -249,9 +250,7 @@ class VisualApplyService:
         temporal_note,
     ):
         if apply_subset_filters and has_layers:
-            status = "Applied filters and styling ({count} matching activities)".format(
-                count=filtered_count
-            )
+            status = build_filtered_visual_apply_status(filtered_count)
         elif has_layers and wants_background and background_layer is not None:
             status = build_styled_background_map_loaded_status()
         elif has_layers:
