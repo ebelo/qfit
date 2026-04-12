@@ -625,11 +625,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             count=lambda: 2,
             at=lambda i: SimpleNamespace(name=lambda: ["sport_type", "activity_type"][i]),
         )
-        dock.activities_layer = SimpleNamespace(
-            isValid=lambda: True,
-            fields=lambda: fields,
-            getFeatures=lambda: [SimpleNamespace(__getitem__=lambda self, key: {"sport_type": "TrailRun", "activity_type": "Run"}[key])],
-        )
         result = self.module.ActivityTypeOptionsResult(options=["All", "TrailRun"], selected_value="TrailRun")
 
         class _Feature:
@@ -650,6 +645,29 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertEqual(list(args[1]), ["sport_type", "activity_type"])
         self.assertEqual(kwargs["current_value"], "Ride")
         dock._apply_activity_type_options.assert_called_once_with(result)
+
+    def test_update_connection_status_delegates_to_connection_status_helper(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.clientIdLineEdit = _FakeLineEdit("client-id")
+        dock.clientSecretLineEdit = _FakeLineEdit("client-secret")
+        dock.refreshTokenLineEdit = _FakeLineEdit("refresh-token")
+        dock.connectionStatusLabel = SimpleNamespace(setText=MagicMock())
+
+        with patch.object(
+            self.module,
+            "build_strava_connection_status",
+            return_value="Strava connection: ready to fetch activities",
+        ) as build_status:
+            self.module.QfitDockWidget._update_connection_status(dock)
+
+        build_status.assert_called_once_with(
+            client_id="client-id",
+            client_secret="client-secret",
+            refresh_token="refresh-token",
+        )
+        dock.connectionStatusLabel.setText.assert_called_once_with(
+            "Strava connection: ready to fetch activities"
+        )
 
     def test_apply_analysis_configuration_delegates_current_mode_and_layer(self):
         dock = object.__new__(self.module.QfitDockWidget)

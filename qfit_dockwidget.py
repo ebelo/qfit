@@ -78,6 +78,7 @@ from .visualization.application import DEFAULT_TEMPORAL_MODE_LABEL, temporal_mod
 from .ui.dockwidget_dependencies import DockWidgetDependencies, build_dockwidget_dependencies
 from .ui.dock_startup_coordinator import DockStartupCoordinator
 from .ui.workflow_section_coordinator import WorkflowSectionCoordinator
+from .configuration.application.connection_status import build_strava_connection_status
 from .configuration.application.dock_settings_bindings import build_dock_settings_bindings
 from .configuration.application.ui_settings_binding import load_bindings, save_bindings
 
@@ -929,15 +930,13 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
 
     def _update_connection_status(self):
-        has_client = bool(self.clientIdLineEdit.text().strip() and self.clientSecretLineEdit.text().strip())
-        has_refresh = bool(self.refreshTokenLineEdit.text().strip())
-        if has_client and has_refresh:
-            message = "Strava connection: ready to fetch activities"
-        elif has_client:
-            message = "Strava connection: app credentials saved; add a refresh token in Configuration to fetch activities"
-        else:
-            message = "Strava connection: open qfit → Configuration to add your Strava credentials"
-        self.connectionStatusLabel.setText(message)
+        self.connectionStatusLabel.setText(
+            build_strava_connection_status(
+                client_id=self.clientIdLineEdit.text(),
+                client_secret=self.clientSecretLineEdit.text(),
+                refresh_token=self.refreshTokenLineEdit.text(),
+            )
+        )
 
     def on_atlas_pdf_browse_clicked(self):
         path, _selected = QFileDialog.getSaveFileName(
