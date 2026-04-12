@@ -92,13 +92,20 @@ class LoadBackgroundTests(unittest.TestCase):
         lm = MagicMock()
         lm.ensure_background_layer.return_value = None
         ctrl = BackgroundMapController(lm)
-        result = ctrl.load_background(
-            enabled=False,
-            preset_name="Mapbox Dark",
-            access_token="",
-            style_owner="",
-            style_id="",
-            tile_mode="raster",
-        )
+
+        with patch(
+            "qfit.visualization.application.background_map_controller.build_background_map_cleared_status",
+            return_value="Background map cleared",
+        ) as build_status:
+            result = ctrl.load_background(
+                enabled=False,
+                preset_name="Mapbox Dark",
+                access_token="",
+                style_owner="",
+                style_id="",
+                tile_mode="raster",
+            )
+
         self.assertIsNone(result.layer)
         self.assertEqual(result.status, "Background map cleared")
+        build_status.assert_called_once_with()
