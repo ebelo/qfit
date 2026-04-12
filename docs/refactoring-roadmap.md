@@ -246,10 +246,10 @@ Guardrails still worth expanding:
 
 Principles:
 
-- root compatibility shims are temporary migration scaffolding only
-- remove a shim once in-repo callers are migrated and the owning package path is stable
+- if a root shim exists only to cushion an internal package move, keep it only until all in-repo callers are migrated
+- once migrated, delete it
+- no need to preserve old import paths across releases just for historical continuity
 - avoid cleanup-only churn mixed into behavior changes, but do not preserve shims indefinitely
-- because qfit is developed and used only by us, and releases are atomic, old root import paths do not need to be preserved as a compatibility contract
 
 Target end state:
 
