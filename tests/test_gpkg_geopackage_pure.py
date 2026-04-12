@@ -107,10 +107,7 @@ class GpkgGeopackagePureTests(unittest.TestCase):
             self.assertIs(legacy_module.make_qgs_fields, schema_module.make_qgs_fields)
 
     def test_gpkg_io_module_handles_success_and_error_paths(self):
-        module_names = [
-            "qfit.activities.infrastructure.geopackage.gpkg_io",
-            "qfit.gpkg_io",
-        ]
+        module_names = ["qfit.activities.infrastructure.geopackage.gpkg_io"]
         qgis_stubs = self._install_qgis_stubs()
         qgis_core = qgis_stubs["qgis.core"]
         project_instance = SimpleNamespace(transformContext=lambda: "project-context")
@@ -125,8 +122,6 @@ class GpkgGeopackagePureTests(unittest.TestCase):
                 sys.modules.pop(name, None)
 
             module = importlib.import_module("qfit.activities.infrastructure.geopackage.gpkg_io")
-            legacy_module = importlib.import_module("qfit.gpkg_io")
-
             _StubVectorFileWriter.write_result = (_StubVectorFileWriter.NoError, "", "")
             module.write_layer_to_gpkg("layer", "/tmp/out.gpkg", "activity_tracks", True)
             self.assertEqual(
@@ -134,7 +129,6 @@ class GpkgGeopackagePureTests(unittest.TestCase):
                 _StubVectorFileWriter.CreateOrOverwriteFile,
             )
             self.assertEqual(_StubVectorFileWriter.last_call["transform_context"], "project-context")
-            self.assertIs(legacy_module.write_layer_to_gpkg, module.write_layer_to_gpkg)
 
             module.QgsProject = type(
                 "QgsProject",
