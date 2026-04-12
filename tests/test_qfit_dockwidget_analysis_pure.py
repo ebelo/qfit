@@ -879,6 +879,32 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "Set a GeoPackage output path first.",
         )
 
+    def test_on_clear_database_clicked_reports_delete_failure_status_via_helper(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.outputPathLineEdit = _FakeLineEdit("/tmp/qfit.gpkg")
+        dock.activities_layer = object()
+        dock.starts_layer = object()
+        dock.points_layer = object()
+        dock.atlas_layer = object()
+        dock._show_error = MagicMock()
+        dock._set_status = MagicMock()
+        dock.load_workflow = MagicMock()
+        dock.load_workflow.build_clear_database_request.return_value = "clear-request"
+        dock.load_workflow.clear_database_request.side_effect = OSError("permission denied")
+        self.module.QMessageBox.Yes = 1
+        self.module.QMessageBox.No = 0
+
+        with patch.object(self.module.QMessageBox, "question", return_value=1, create=True), patch.object(
+            self.module,
+            "build_clear_database_delete_failure_status",
+            return_value="Failed to delete the GeoPackage file",
+        ) as build_status:
+            self.module.QfitDockWidget.on_clear_database_clicked(dock)
+
+        dock._show_error.assert_called_once_with("Could not delete database", "permission denied")
+        build_status.assert_called_once_with()
+        dock._set_status.assert_called_once_with("Failed to delete the GeoPackage file")
+
     def test_on_clear_database_clicked_delegates_reset_summary_update(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock.outputPathLineEdit = _FakeLineEdit("/tmp/qfit.gpkg")
