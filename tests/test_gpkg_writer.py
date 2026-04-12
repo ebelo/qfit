@@ -11,7 +11,7 @@ except (ImportError, ModuleNotFoundError):  # pragma: no cover - exercised only 
     QgsApplication = None
 
 if QgsApplication is not None:
-    from qfit.gpkg_atlas_page_builder import build_atlas_layer
+    from qfit.activities.infrastructure.geopackage.gpkg_atlas_page_builder import build_atlas_layer
     from qfit.gpkg_atlas_table_builders import (
         build_cover_highlight_layer,
         build_document_summary_layer,

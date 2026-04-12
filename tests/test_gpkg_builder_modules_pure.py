@@ -209,7 +209,6 @@ class GpkgBuilderModulesPureTests(unittest.TestCase):
             "qfit.activities.infrastructure.geopackage.gpkg_layer_builders": _fake_layer_builders_module(),
             "qfit.polyline_utils": _fake_polyline_utils_module(),
             "qfit.activities.infrastructure.geopackage.gpkg_atlas_page_builder": _fake_atlas_page_builder_module(),
-            "qfit.gpkg_atlas_page_builder": _fake_atlas_page_builder_module(),
         }
         with patch.dict(sys.modules, module_overrides):
             for name in [

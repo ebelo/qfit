@@ -23,7 +23,6 @@ if QgsApplication is not None:
     from qfit.atlas.export_task import _build_cover_summary_from_current_atlas_features
     from qfit.atlas.publish_atlas import normalize_atlas_page_settings
     from qfit.activities.infrastructure.geopackage.gpkg_atlas_page_builder import build_atlas_layer
-    from qfit.gpkg_atlas_page_builder import build_atlas_layer as legacy_build_atlas_layer
 else:  # pragma: no cover
     _build_cover_summary_from_current_atlas_features = None
     normalize_atlas_page_settings = None
@@ -52,20 +51,6 @@ def _ensure_qgis_app():
         _QGIS_APP = QgsApplication([], False)
         _QGIS_APP.initQgis()
     return _QGIS_APP
-
-
-@unittest.skipIf(QgsApplication is None, "QGIS Python bindings are not available")
-class AtlasPageLayerBuilderShimTests(unittest.TestCase):
-    def test_legacy_gpkg_atlas_page_builder_shim_exports_same_function(self):
-        global legacy_build_atlas_layer
-
-        _ensure_qgis_app()
-        if "legacy_build_atlas_layer" not in globals():
-            from qfit.gpkg_atlas_page_builder import (
-                build_atlas_layer as legacy_build_atlas_layer,
-            )
-
-        self.assertIs(legacy_build_atlas_layer, build_atlas_layer)
 
 
 @unittest.skipIf(not _REAL_QGIS_PRESENT, "QGIS Python bindings are not available")
