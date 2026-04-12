@@ -4,7 +4,7 @@ import unittest
 
 from tests import _path  # noqa: F401
 
-from qfit.credential_store import (
+from qfit.configuration.infrastructure.credential_store import (
     SENSITIVE_KEYS,
     InMemoryCredentialStore,
     KeyringCredentialStore,
