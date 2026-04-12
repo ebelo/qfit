@@ -879,7 +879,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "Set a GeoPackage output path first.",
         )
 
-    def test_on_clear_database_clicked_uses_confirmation_title_helper(self):
+    def test_on_clear_database_clicked_uses_confirmation_helpers(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock.outputPathLineEdit = _FakeLineEdit("/tmp/qfit.gpkg")
         dock.activities_layer = object()
@@ -904,6 +904,10 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "build_clear_database_confirmation_title",
             return_value="Clear database",
         ) as build_title, patch.object(
+            self.module,
+            "build_clear_database_confirmation_body",
+            return_value="Body text",
+        ) as build_body, patch.object(
             self.module.QMessageBox,
             "question",
             return_value=1,
@@ -912,8 +916,10 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             self.module.QfitDockWidget.on_clear_database_clicked(dock)
 
         build_title.assert_called_once_with()
+        build_body.assert_called_once_with("/tmp/qfit.gpkg")
         question.assert_called_once()
         self.assertEqual(question.call_args.args[1], "Clear database")
+        self.assertEqual(question.call_args.args[2], "Body text")
 
     def test_on_clear_database_clicked_reports_load_workflow_error_title_via_helper(self):
         dock = object.__new__(self.module.QfitDockWidget)
