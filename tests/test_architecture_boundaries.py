@@ -296,7 +296,6 @@ class PackageOwnershipBoundaryTests(unittest.TestCase):
         "activity_query.py",
         "activity_storage.py",
         "detailed_route_strategy.py",
-        "gpkg_writer.py",
         "layer_manager.py",
         "mapbox_config.py",
         "models.py",

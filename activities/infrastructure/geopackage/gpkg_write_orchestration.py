@@ -2,7 +2,7 @@
 GeoPackage bootstrap and layer-write sequencing for qfit.
 
 This module owns the two write-orchestration steps that were previously
-inlined in :class:`~qfit.gpkg_writer.GeoPackageWriter`:
+inlined in :class:`~qfit.activities.infrastructure.geopackage.gpkg_writer.GeoPackageWriter`:
 
 - :func:`bootstrap_empty_gpkg` — create a fresh GeoPackage with empty layers
   in the canonical order.
