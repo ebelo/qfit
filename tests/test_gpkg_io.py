@@ -13,7 +13,6 @@ except (ImportError, ModuleNotFoundError):  # pragma: no cover
 
 if QgsApplication is not None:
     from qfit.activities.infrastructure.geopackage.gpkg_io import write_layer_to_gpkg
-    from qfit.gpkg_io import write_layer_to_gpkg as legacy_write_layer_to_gpkg
     from qfit.activities.infrastructure.geopackage.gpkg_layer_builders import (
         build_start_layer,
         build_track_layer,
@@ -37,9 +36,6 @@ def _ensure_qgis_app():
 
 @unittest.skipIf(QgsApplication is None, "QGIS Python bindings are not available")
 class WriteLayerToGpkgTests(unittest.TestCase):
-    def test_legacy_gpkg_io_shim_exports_same_writer(self):
-        self.assertIs(legacy_write_layer_to_gpkg, write_layer_to_gpkg)
-
     @classmethod
     def setUpClass(cls):
         _ensure_qgis_app()

@@ -298,7 +298,6 @@ class PackageOwnershipBoundaryTests(unittest.TestCase):
         "detailed_route_strategy.py",
         "gpkg_atlas_page_builder.py",
         "gpkg_atlas_table_builders.py",
-        "gpkg_io.py",
         "gpkg_layer_builders.py",
         "gpkg_point_layer_builder.py",
         "gpkg_schema.py",
