@@ -41,7 +41,10 @@ from .activities.application import (
     build_activity_type_options_from_activities,
     build_activity_type_options_from_records,
 )
-from .activities.application.layer_summary import build_loaded_activities_summary
+from .activities.application.layer_summary import (
+    build_loaded_activities_summary,
+    build_stored_activities_summary,
+)
 from .activities.application.load_workflow import LoadWorkflowError
 from .activities.application.store_task import build_store_task
 from .analysis.infrastructure.activity_heatmap_layer import (
@@ -639,12 +642,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             return
 
         self.output_path = result.output_path
-        last_sync = self.settings.get("last_sync_date", date.today().isoformat())
-        self.countLabel.setText(
-            "{total} activities stored in database (last sync: {sync_date})".format(
-                total=result.total_stored, sync_date=last_sync,
-            )
-        )
+        self._update_stored_activities_summary(result.total_stored)
         self._set_status(result.status)
 
     def on_load_layers_clicked(self):
@@ -878,6 +876,14 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             build_loaded_activities_summary(
                 total_activities=total_activities,
                 last_sync_date=self.settings.get("last_sync_date", "unknown"),
+            )
+        )
+
+    def _update_stored_activities_summary(self, total_activities):
+        self.countLabel.setText(
+            build_stored_activities_summary(
+                total_activities=total_activities,
+                last_sync_date=self.settings.get("last_sync_date", date.today().isoformat()),
             )
         )
 
