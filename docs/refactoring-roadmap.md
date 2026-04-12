@@ -11,6 +11,12 @@ It complements, rather than replaces:
 The goal is not architecture purity.
 The goal is to keep qfit easier to test, safer to evolve, and less dependent on `QfitDockWidget` as a catch-all workflow host.
 
+Assumption for this roadmap:
+
+- qfit is developed and used only by us
+- releases are treated as atomic
+- compatibility shims are migration scaffolding, not long-term public API commitments
+
 ## Status legend
 
 - **Done enough**: the direction is established and multiple meaningful slices have landed
@@ -80,7 +86,7 @@ Keep new feature logic inside feature-owned packages:
 - `configuration/`
 - `ui/`
 
-and avoid adding feature logic to flat root modules except entrypoint or compatibility shims.
+and avoid adding feature logic to flat root modules except true entrypoints during the transition.
 
 Recent progress:
 
@@ -234,19 +240,27 @@ Guardrails still worth expanding:
 
 ---
 
-## 9. Remove compatibility shims slowly
+## 9. Remove compatibility shims completely
 
-**Status:** Active rule, being followed reasonably well
+**Status:** Active rule, now explicit
 
 Principles:
 
-- remove shims only after imports are fully migrated
-- avoid cleanup-only churn mixed into behavior changes
-- prefer small, coherent removals after transition points are proven stable
+- root compatibility shims are temporary migration scaffolding only
+- remove a shim once in-repo callers are migrated and the owning package path is stable
+- avoid cleanup-only churn mixed into behavior changes, but do not preserve shims indefinitely
+- because qfit is developed and used only by us, and releases are atomic, old root import paths do not need to be preserved as a compatibility contract
+
+Target end state:
+
+- no root-level compatibility shims remain
+- root-level modules are limited to true entrypoints or intentionally top-level modules
+- feature-owned code lives under feature packages instead of forwarding through flat root modules
 
 Recent precedent:
 
 - provider root shims were retired only after migration work had already landed
+- the same end-state should apply to the remaining root forwarders such as workflow, settings, visualization, and geopackage migration shims
 
 ---
 
@@ -291,6 +305,7 @@ Near-term priority:
 1. finish `#420` / PR `#421`
 2. continue from message extraction into slightly higher-leverage `VisualApplyService` seams, preferring policy selection helpers or request/result shaping over more one-string-at-a-time changes
 3. keep using small PR-sized slices, but avoid getting trapped in string-only refactors if a clearer controller/request/result seam becomes the better next move
+4. when a root shim has no remaining in-repo callers, prefer deleting it rather than preserving it for compatibility nostalgia
 
 ## Review checklist for future slices
 
