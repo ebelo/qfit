@@ -6,7 +6,7 @@ from ..analysis.application.analysis_controller import AnalysisController
 from ..atlas.export_controller import AtlasExportController
 from ..atlas.export_service import AtlasExportService
 from ..atlas.export_use_case import AtlasExportUseCase
-from ..fetch_result_service import FetchResultService
+from ..activities.application.fetch_result_service import FetchResultService
 from ..load_workflow import LoadWorkflowService
 from ..qfit_cache import QfitCache
 from ..configuration.application.settings_service import SettingsService
