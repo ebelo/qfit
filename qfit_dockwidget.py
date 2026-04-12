@@ -42,6 +42,7 @@ from .activities.application import (
     build_activity_type_options_from_records,
 )
 from .activities.application.clear_database_messages import (
+    build_clear_database_confirmation_body,
     build_clear_database_confirmation_title,
     build_clear_database_delete_failure_error_title,
     build_clear_database_delete_failure_status,
@@ -695,11 +696,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         reply = QMessageBox.question(
             self,
             build_clear_database_confirmation_title(),
-            (
-                "This will delete the GeoPackage file and remove all qfit layers from QGIS:\n\n"
-                f"  {output_path}\n\n"
-                "The file cannot be recovered. Continue?"
-            ),
+            build_clear_database_confirmation_body(output_path),
             QMessageBox.Yes | QMessageBox.No,
             QMessageBox.No,
         )

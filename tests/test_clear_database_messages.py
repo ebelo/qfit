@@ -3,6 +3,7 @@ import unittest
 from tests import _path  # noqa: F401
 
 from qfit.activities.application.clear_database_messages import (
+    build_clear_database_confirmation_body,
     build_clear_database_confirmation_title,
     build_clear_database_delete_failure_error_title,
     build_clear_database_delete_failure_status,
@@ -16,6 +17,14 @@ class ClearDatabaseMessagesTests(unittest.TestCase):
         self.assertEqual(
             build_clear_database_confirmation_title(),
             "Clear database",
+        )
+
+    def test_build_clear_database_confirmation_body(self):
+        self.assertEqual(
+            build_clear_database_confirmation_body("/tmp/qfit.gpkg"),
+            "This will delete the GeoPackage file and remove all qfit layers from QGIS:\n\n"
+            "  /tmp/qfit.gpkg\n\n"
+            "The file cannot be recovered. Continue?",
         )
 
     def test_build_clear_database_delete_failure_error_title(self):
