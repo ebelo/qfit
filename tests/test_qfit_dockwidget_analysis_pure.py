@@ -441,10 +441,15 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             self.module,
             "build_background_map_failure_title",
             return_value="Background map failed",
-        ) as build_title:
+        ) as build_title, patch.object(
+            self.module,
+            "build_background_map_failure_status",
+            return_value="Background map could not be updated",
+        ) as build_status:
             self.module.QfitDockWidget.on_load_background_clicked(dock)
 
         build_title.assert_called_once_with()
+        build_status.assert_called_once_with()
         dock._show_error.assert_called_once_with("Background map failed", "boom")
         dock._set_status.assert_called_once_with("Background map could not be updated")
 

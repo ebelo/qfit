@@ -87,6 +87,7 @@ from .mapbox_config import (
 from .visualization.application import (
     BackgroundConfig,
     LayerRefs,
+    build_background_map_failure_status,
     build_background_map_failure_title,
 )
 from .atlas.layout_metrics import BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
@@ -401,7 +402,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self.background_layer = result.layer
         except (MapboxConfigError, RuntimeError) as exc:
             self._show_error(build_background_map_failure_title(), str(exc))
-            self._set_status("Background map could not be updated")
+            self._set_status(build_background_map_failure_status())
             return
 
         self._set_status(result.status)
