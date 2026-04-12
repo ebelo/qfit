@@ -314,7 +314,6 @@ class PackageOwnershipBoundaryTests(unittest.TestCase):
         "qfit_plugin.py",
         "sync_repository.py",
         "time_utils.py",
-        "visual_apply.py",
     }
 
     def test_new_root_level_python_modules_require_explicit_ownership_review(self):

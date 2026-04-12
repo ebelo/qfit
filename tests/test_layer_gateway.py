@@ -18,7 +18,7 @@ class LayerGatewayBoundaryTests(unittest.TestCase):
         self.assertIs(service.layer_gateway, gateway)
 
     def test_visual_apply_service_accepts_gateway_protocol_instance(self):
-        from qfit.visual_apply import VisualApplyService
+        from qfit.visualization.application.visual_apply import VisualApplyService
 
         gateway = MagicMock(spec=LayerGateway)
         service = VisualApplyService(gateway)

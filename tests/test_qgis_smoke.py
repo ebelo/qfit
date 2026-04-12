@@ -56,7 +56,7 @@ try:
     from qfit.configuration.application.settings_service import SettingsService
     from qfit.ui.dockwidget_dependencies import build_dockwidget_dependencies
     from qfit.ui.workflow_section_coordinator import WorkflowSectionCoordinator
-    from qfit.visual_apply import VisualApplyService
+    from qfit.visualization.application.visual_apply import VisualApplyService
     from qfit.visualization.application.temporal_config import DEFAULT_TEMPORAL_MODE_LABEL
 
     QGIS_AVAILABLE = True
