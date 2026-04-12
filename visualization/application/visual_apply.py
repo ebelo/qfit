@@ -7,6 +7,7 @@ from ...mapbox_config import MapboxConfigError
 from .background_map_messages import (
     build_background_map_cleared_status,
     build_background_map_loaded_status,
+    build_styled_background_map_failure_status,
     build_styled_background_map_loaded_status,
 )
 from .layer_gateway import LayerGateway
@@ -229,7 +230,7 @@ class VisualApplyService:
         if not has_layers:
             status = "Background map could not be updated"
         else:
-            status = "Loaded layers with styling, but the background map could not be updated"
+            status = build_styled_background_map_failure_status()
         if temporal_note:
             status = "{status}. {temporal_note}.".format(
                 status=status, temporal_note=temporal_note

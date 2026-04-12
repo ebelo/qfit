@@ -10,6 +10,7 @@ from .background_map_messages import (
     build_background_map_failure_status,
     build_background_map_failure_title,
     build_background_map_loaded_status,
+    build_styled_background_map_failure_status,
     build_styled_background_map_loaded_status,
 )
 from .layer_gateway import LayerGateway
@@ -61,6 +62,7 @@ __all__ = [
     "build_background_map_failure_status",
     "build_background_map_failure_title",
     "build_background_map_loaded_status",
+    "build_styled_background_map_failure_status",
     "build_styled_background_map_loaded_status",
     "BY_ACTIVITY_TYPE_PRESET",
     "CLUSTERED_STARTS_PRESET",
