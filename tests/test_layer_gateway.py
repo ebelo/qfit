@@ -10,7 +10,7 @@ from qfit.visualization.application.layer_gateway import LayerGateway
 
 class LayerGatewayBoundaryTests(unittest.TestCase):
     def test_load_workflow_service_accepts_gateway_protocol_instance(self):
-        from qfit.load_workflow import LoadWorkflowService
+        from qfit.activities.application.load_workflow import LoadWorkflowService
 
         gateway = MagicMock(spec=LayerGateway)
         service = LoadWorkflowService(gateway)
