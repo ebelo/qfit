@@ -199,7 +199,6 @@ class LayerGatewayBoundaryTests(unittest.TestCase):
     def _reset_qgis_gateway_imports():
         for name in [
             "qfit.layer_manager",
-            "qfit.map_canvas_service",
             "qfit.project_layer_loader",
             "qfit.visualization.infrastructure",
             "qfit.visualization.infrastructure.background_map_service",

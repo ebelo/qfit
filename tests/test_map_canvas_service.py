@@ -17,7 +17,6 @@ except ValueError:
     )
 
 try:
-    from qfit.map_canvas_service import MapCanvasService as LegacyMapCanvasService
     from qfit.visualization.infrastructure.map_canvas_service import (
         MapCanvasService,
         WORKING_CRS,
@@ -26,7 +25,6 @@ try:
     QGIS_AVAILABLE = True
     QGIS_IMPORT_ERROR = None
 except Exception as exc:  # pragma: no cover
-    LegacyMapCanvasService = None
     MapCanvasService = None
     QGIS_AVAILABLE = False
     QGIS_IMPORT_ERROR = exc
@@ -119,9 +117,6 @@ def _make_layer(extent_vals=None, valid=True):
 @unittest.skipUnless(QGIS_AVAILABLE, SKIP_REAL)
 class MapCanvasServiceRealTests(unittest.TestCase):
     """Tests that run when real QGIS bindings are available."""
-
-    def test_root_shim_exports_visualization_map_canvas_service(self):
-        self.assertIs(LegacyMapCanvasService, MapCanvasService)
 
     def setUp(self):
         self._bg = MagicMock()
