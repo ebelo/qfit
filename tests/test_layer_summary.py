@@ -3,10 +3,16 @@ import unittest
 from tests import _path  # noqa: F401
 
 from qfit.activities.application.layer_summary import (
+    build_cleared_activities_summary,
     build_last_sync_summary,
     build_loaded_activities_summary,
     build_stored_activities_summary,
 )
+
+
+class ClearedActivitiesSummaryTests(unittest.TestCase):
+    def test_builds_cleared_activities_summary_text(self):
+        self.assertEqual(build_cleared_activities_summary(), "Activities fetched: 0")
 
 
 class LastSyncSummaryTests(unittest.TestCase):

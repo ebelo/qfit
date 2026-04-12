@@ -1,6 +1,10 @@
 from __future__ import annotations
 
 
+def build_cleared_activities_summary() -> str:
+    return "Activities fetched: 0"
+
+
 def build_last_sync_summary(*, last_sync_date: str | None) -> str | None:
     if not last_sync_date:
         return None

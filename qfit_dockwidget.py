@@ -42,6 +42,7 @@ from .activities.application import (
     build_activity_type_options_from_records,
 )
 from .activities.application.layer_summary import (
+    build_cleared_activities_summary,
     build_last_sync_summary,
     build_loaded_activities_summary,
     build_stored_activities_summary,
@@ -726,7 +727,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.output_path = None
         self.last_fetch_context = {}
 
-        self.countLabel.setText("Activities fetched: 0")
+        self._update_cleared_activities_summary()
         self._set_status(result.status)
 
     def on_apply_filters_clicked(self):
@@ -869,6 +870,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.querySummaryLabel.setText(preview.query_summary_text)
         self.activityPreviewPlainTextEdit.setPlainText(preview.preview_text)
         return preview.fetched_activities
+
+    def _update_cleared_activities_summary(self):
+        self.countLabel.setText(build_cleared_activities_summary())
 
     def _update_last_sync_summary(self):
         summary = build_last_sync_summary(
