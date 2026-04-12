@@ -42,6 +42,7 @@ from .activities.application import (
     build_activity_type_options_from_records,
 )
 from .activities.application.layer_summary import (
+    build_last_sync_summary,
     build_loaded_activities_summary,
     build_stored_activities_summary,
 )
@@ -356,9 +357,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.authCodeLineEdit.setText("")
         self._sync_background_style_fields(self.backgroundPresetComboBox.currentText(), force=False)
 
-        last_sync = self.settings.get("last_sync_date", None)
-        if last_sync:
-            self.countLabel.setText(f"Last sync: {last_sync}")
+        self._update_last_sync_summary()
 
     def _save_settings(self):
         save_bindings(build_dock_settings_bindings(self), self.settings)
@@ -870,6 +869,13 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.querySummaryLabel.setText(preview.query_summary_text)
         self.activityPreviewPlainTextEdit.setPlainText(preview.preview_text)
         return preview.fetched_activities
+
+    def _update_last_sync_summary(self):
+        summary = build_last_sync_summary(
+            last_sync_date=self.settings.get("last_sync_date", None),
+        )
+        if summary:
+            self.countLabel.setText(summary)
 
     def _update_loaded_activities_summary(self, total_activities):
         self.countLabel.setText(

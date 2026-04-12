@@ -3,9 +3,22 @@ import unittest
 from tests import _path  # noqa: F401
 
 from qfit.activities.application.layer_summary import (
+    build_last_sync_summary,
     build_loaded_activities_summary,
     build_stored_activities_summary,
 )
+
+
+class LastSyncSummaryTests(unittest.TestCase):
+    def test_builds_last_sync_summary_text(self):
+        self.assertEqual(
+            build_last_sync_summary(last_sync_date="2026-04-12"),
+            "Last sync: 2026-04-12",
+        )
+
+    def test_returns_none_when_last_sync_missing(self):
+        self.assertIsNone(build_last_sync_summary(last_sync_date=None))
+        self.assertIsNone(build_last_sync_summary(last_sync_date=""))
 
 
 class LoadedActivitiesSummaryTests(unittest.TestCase):
