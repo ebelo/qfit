@@ -313,7 +313,6 @@ class PackageOwnershipBoundaryTests(unittest.TestCase):
         "qfit_dockwidget.py",
         "qfit_plugin.py",
         "settings_port.py",
-        "settings_service.py",
         "sync_repository.py",
         "time_utils.py",
         "ui_settings_binding.py",

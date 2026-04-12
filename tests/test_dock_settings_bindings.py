@@ -3,7 +3,7 @@ import unittest
 from tests import _path  # noqa: F401
 
 from qfit.configuration.infrastructure.credential_store import InMemoryCredentialStore
-from qfit.settings_service import SettingsService
+from qfit.configuration.application.settings_service import SettingsService
 from qfit.activities.domain.activity_query import DEFAULT_SORT_LABEL, DETAILED_ROUTE_FILTER_ANY
 from qfit.atlas.layout_metrics import BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
 from qfit.configuration.application.dock_settings_bindings import build_dock_settings_bindings

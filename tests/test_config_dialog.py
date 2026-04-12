@@ -3,7 +3,7 @@ import unittest
 from tests import _path  # noqa: F401
 
 from qfit.configuration.application.config_status import mapbox_status_text, strava_status_text
-from qfit.settings_service import SettingsService
+from qfit.configuration.application.settings_service import SettingsService
 
 
 class FakeQSettings:
