@@ -181,6 +181,24 @@ class ApplyWithSubsetFiltersTests(unittest.TestCase):
         self.assertIn("42", result.status)
         self.assertIn("filters", result.status.lower())
 
+    def test_filtered_status_uses_helper(self):
+        with patch(
+            "qfit.visualization.application.visual_apply.build_filtered_visual_apply_status",
+            return_value="Applied filters and styling (42 matching activities)",
+        ) as build_status:
+            result = self.service.apply(
+                layers=self.layers,
+                query=_make_query(),
+                style_preset="By activity type",
+                temporal_mode="Off",
+                background_config=_make_bg_config(),
+                apply_subset_filters=True,
+                filtered_count=42,
+            )
+
+        self.assertIn("42", result.status)
+        build_status.assert_called_once_with(42)
+
     def test_does_not_update_background_on_filter_apply(self):
         self.service.apply(
             layers=self.layers,
