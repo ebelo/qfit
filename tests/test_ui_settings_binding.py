@@ -3,7 +3,7 @@ import unittest
 from tests import _path  # noqa: F401
 
 from qfit.configuration.infrastructure.credential_store import InMemoryCredentialStore
-from qfit.settings_service import SettingsService
+from qfit.configuration.application.settings_service import SettingsService
 from qfit.ui_settings_binding import UIFieldBinding, load_bindings, save_bindings
 
 

@@ -53,7 +53,7 @@ try:
     from qfit.mapbox_config import TILE_MODE_RASTER
     from qfit.activities.domain.models import Activity
     from qfit.qfit_dockwidget import ApplyVisualizationAction, QfitDockWidget
-    from qfit.settings_service import SettingsService
+    from qfit.configuration.application.settings_service import SettingsService
     from qfit.ui.dockwidget_dependencies import build_dockwidget_dependencies
     from qfit.ui.workflow_section_coordinator import WorkflowSectionCoordinator
     from qfit.visual_apply import VisualApplyService
