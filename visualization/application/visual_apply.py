@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from ...activities.application.activity_selection_state import ActivitySelectionState
 from ...activities.domain.activity_query import ActivityQuery
 from ...mapbox_config import MapboxConfigError
+from .background_map_messages import build_background_map_cleared_status
 from .layer_gateway import LayerGateway
 from .render_plan import build_render_plan
 
@@ -251,7 +252,7 @@ class VisualApplyService:
         elif wants_background and background_layer is not None:
             status = "Background map loaded below the qfit activity layers"
         else:
-            status = "Background map cleared"
+            status = build_background_map_cleared_status()
 
         if temporal_note:
             status = "{status}. {temporal_note}.".format(
