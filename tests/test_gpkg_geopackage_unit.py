@@ -40,14 +40,10 @@ class GeoPackagePackageUnitTests(unittest.TestCase):
 
         with patch.dict(sys.modules, module_overrides):
             sys.modules.pop("qfit.activities.infrastructure.geopackage.gpkg_writer", None)
-            sys.modules.pop("qfit.gpkg_writer", None)
 
             moved = importlib.import_module(
                 "qfit.activities.infrastructure.geopackage.gpkg_writer"
             )
-            legacy = importlib.import_module("qfit.gpkg_writer")
-
-            self.assertIs(legacy.GeoPackageWriter, moved.GeoPackageWriter)
 
             activity_store = MagicMock()
             activity_store.upsert_activities.return_value = {"added": 1}

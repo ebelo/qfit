@@ -48,7 +48,7 @@ try:
     )
     from qfit.atlas.profile_item import build_profile_item_adapter
     from qfit.configuration.infrastructure.credential_store import InMemoryCredentialStore
-    from qfit.gpkg_writer import GeoPackageWriter
+    from qfit.activities.infrastructure.geopackage.gpkg_writer import GeoPackageWriter
     from qfit.layer_manager import LayerManager
     from qfit.mapbox_config import TILE_MODE_RASTER
     from qfit.activities.domain.models import Activity
@@ -1648,7 +1648,7 @@ class QgisSmokeTests(unittest.TestCase):
                 build_atlas_layout,
             )
             from qfit.atlas.profile_item import build_profile_item_adapter
-            from qfit.gpkg_writer import GeoPackageWriter
+            from qfit.activities.infrastructure.geopackage.gpkg_writer import GeoPackageWriter
             from qfit.layer_manager import LayerManager
 
             class _FakeCanvas:

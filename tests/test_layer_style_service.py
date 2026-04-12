@@ -38,7 +38,7 @@ try:
         QgsSingleSymbolRenderer,
     )
 
-    from qfit.gpkg_writer import GeoPackageWriter
+    from qfit.activities.infrastructure.geopackage.gpkg_writer import GeoPackageWriter
     from qfit.layer_manager import LayerManager
     from qfit.visualization.infrastructure.layer_style_service import LayerStyleService
 
