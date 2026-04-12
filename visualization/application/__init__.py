@@ -6,6 +6,7 @@ from .background_map_controller import (
     LoadBackgroundResult,
 )
 from .background_map_messages import (
+    build_background_map_cleared_status,
     build_background_map_failure_status,
     build_background_map_failure_title,
     build_background_map_loaded_status,
@@ -55,6 +56,7 @@ __all__ = [
     "ApplyVisualizationRequest",
     "BackgroundConfig",
     "BackgroundMapController",
+    "build_background_map_cleared_status",
     "build_background_map_failure_status",
     "build_background_map_failure_title",
     "build_background_map_loaded_status",
