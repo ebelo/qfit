@@ -669,6 +669,20 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "Strava connection: ready to fetch activities"
         )
 
+    def test_update_cleared_activities_summary_delegates_to_layer_summary_helper(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.countLabel = _FakeLabel("")
+
+        with patch.object(
+            self.module,
+            "build_cleared_activities_summary",
+            return_value="Activities fetched: 0",
+        ) as build_summary:
+            self.module.QfitDockWidget._update_cleared_activities_summary(dock)
+
+        build_summary.assert_called_once_with()
+        self.assertEqual(dock.countLabel.text(), "Activities fetched: 0")
+
     def test_update_last_sync_summary_delegates_to_layer_summary_helper(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock.settings = _FakeSettings({"last_sync_date": "2026-04-12"})
@@ -846,6 +860,38 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertEqual(dock.output_path, "/tmp/qfit.gpkg")
         dock._update_stored_activities_summary.assert_called_once_with(12)
         dock._set_status.assert_called_once_with("Stored 12 activities")
+
+    def test_on_clear_database_clicked_delegates_reset_summary_update(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.outputPathLineEdit = _FakeLineEdit("/tmp/qfit.gpkg")
+        dock.activities_layer = object()
+        dock.starts_layer = object()
+        dock.points_layer = object()
+        dock.atlas_layer = object()
+        dock._clear_analysis_layer = MagicMock()
+        dock.activities = [1]
+        dock.output_path = "/tmp/qfit.gpkg"
+        dock.last_fetch_context = {"provider": "strava"}
+        dock._update_cleared_activities_summary = MagicMock()
+        dock._set_status = MagicMock()
+        dock._show_error = MagicMock()
+        dock.load_workflow = MagicMock()
+        dock.load_workflow.build_clear_database_request.return_value = "clear-request"
+        dock.load_workflow.clear_database_request.return_value = SimpleNamespace(status="Database cleared")
+        self.module.QMessageBox.Yes = 1
+        self.module.QMessageBox.No = 0
+
+        with patch.object(self.module.QMessageBox, "question", return_value=1, create=True):
+            self.module.QfitDockWidget.on_clear_database_clicked(dock)
+
+        dock.load_workflow.build_clear_database_request.assert_called_once()
+        dock.load_workflow.clear_database_request.assert_called_once_with("clear-request")
+        dock._clear_analysis_layer.assert_called_once_with()
+        dock._update_cleared_activities_summary.assert_called_once_with()
+        dock._set_status.assert_called_once_with("Database cleared")
+        self.assertEqual(dock.activities, [])
+        self.assertIsNone(dock.activities_layer)
+        self.assertIsNone(dock.output_path)
 
 
 if __name__ == "__main__":
