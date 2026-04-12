@@ -328,7 +328,6 @@ class PackageOwnershipBoundaryTests(unittest.TestCase):
         "settings_service.py",
         "sync_controller.py",
         "sync_repository.py",
-        "temporal_service.py",
         "time_utils.py",
         "ui_settings_binding.py",
         "visual_apply.py",
