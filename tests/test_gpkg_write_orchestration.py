@@ -19,11 +19,6 @@ if QgsApplication is not None:
         build_and_write_all_layers,
         ensure_spatial_indexes,
     )
-    from qfit.gpkg_write_orchestration import (
-        bootstrap_empty_gpkg as legacy_bootstrap_empty_gpkg,
-        build_and_write_all_layers as legacy_build_and_write_all_layers,
-        ensure_spatial_indexes as legacy_ensure_spatial_indexes,
-    )
     from qfit.atlas.publish_atlas import normalize_atlas_page_settings
 else:  # pragma: no cover
     bootstrap_empty_gpkg = None
@@ -58,11 +53,6 @@ _EXPECTED_LAYERS = [
 
 @unittest.skipIf(QgsApplication is None, "QGIS Python bindings are not available")
 class BootstrapEmptyGpkgTests(unittest.TestCase):
-    def test_legacy_gpkg_write_orchestration_shim_exports_same_functions(self):
-        self.assertIs(legacy_bootstrap_empty_gpkg, bootstrap_empty_gpkg)
-        self.assertIs(legacy_build_and_write_all_layers, build_and_write_all_layers)
-        self.assertIs(legacy_ensure_spatial_indexes, ensure_spatial_indexes)
-
     @classmethod
     def setUpClass(cls):
         _ensure_qgis_app()
