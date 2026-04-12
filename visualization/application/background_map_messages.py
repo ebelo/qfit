@@ -15,3 +15,7 @@ def build_background_map_failure_title() -> str:
 
 def build_background_map_loaded_status() -> str:
     return "Background map loaded below the qfit activity layers"
+
+
+def build_styled_background_map_loaded_status() -> str:
+    return "Applied styling and loaded the background map below the qfit activity layers"

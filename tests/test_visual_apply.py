@@ -327,6 +327,29 @@ class ApplyWithoutSubsetFiltersTests(unittest.TestCase):
         self.assertIn("styling", result.status.lower())
         self.assertIn("background", result.status.lower())
 
+    def test_returns_styled_background_loaded_status_via_helper(self):
+        bg = _make_bg_config(enabled=True)
+
+        with patch(
+            "qfit.visualization.application.visual_apply.build_styled_background_map_loaded_status",
+            return_value="Applied styling and loaded the background map below the qfit activity layers",
+        ) as build_status:
+            result = self.service.apply(
+                layers=self.layers,
+                query=_make_query(),
+                style_preset="By activity type",
+                temporal_mode="Off",
+                background_config=bg,
+                apply_subset_filters=False,
+                filtered_count=0,
+            )
+
+        self.assertEqual(
+            result.status,
+            "Applied styling and loaded the background map below the qfit activity layers",
+        )
+        build_status.assert_called_once_with()
+
     def test_status_without_background(self):
         result = self.service.apply(
             layers=self.layers,
