@@ -1,6 +1,10 @@
 from __future__ import annotations
 
 
+def build_clear_database_delete_failure_error_title() -> str:
+    return "Could not delete database"
+
+
 def build_clear_database_delete_failure_status() -> str:
     return "Failed to delete the GeoPackage file"
 

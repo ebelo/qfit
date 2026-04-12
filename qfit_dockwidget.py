@@ -42,6 +42,7 @@ from .activities.application import (
     build_activity_type_options_from_records,
 )
 from .activities.application.clear_database_messages import (
+    build_clear_database_delete_failure_error_title,
     build_clear_database_delete_failure_status,
     build_missing_output_path_error,
 )
@@ -718,7 +719,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._show_error("No database path", str(exc))
             return
         except (RuntimeError, OSError) as exc:
-            self._show_error("Could not delete database", str(exc))
+            self._show_error(build_clear_database_delete_failure_error_title(), str(exc))
             self._set_status(build_clear_database_delete_failure_status())
             return
 
