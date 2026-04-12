@@ -7,6 +7,7 @@ from ...mapbox_config import MapboxConfigError
 from .background_map_messages import (
     build_background_map_cleared_status,
     build_background_map_loaded_status,
+    build_styled_background_map_loaded_status,
 )
 from .layer_gateway import LayerGateway
 from .render_plan import build_render_plan
@@ -249,7 +250,7 @@ class VisualApplyService:
                 count=filtered_count
             )
         elif has_layers and wants_background and background_layer is not None:
-            status = "Applied styling and loaded the background map below the qfit activity layers"
+            status = build_styled_background_map_loaded_status()
         elif has_layers:
             status = "Applied styling to the loaded qfit layers"
         elif wants_background and background_layer is not None:
