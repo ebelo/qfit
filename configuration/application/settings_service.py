@@ -15,7 +15,7 @@ LEGACY_SETTINGS_PREFIX = "QFIT"
 
 
 class QgisSettingsAdapter(SettingsPort):
-    """QGIS-backed implementation of the :class:`~qfit.settings_port.SettingsPort`.
+    """QGIS-backed implementation of the :class:`~qfit.configuration.application.settings_port.SettingsPort`.
 
     Sensitive keys (see :data:`~qfit.configuration.infrastructure.credential_store.SENSITIVE_KEYS`) are
     routed through a :class:`~qfit.configuration.infrastructure.credential_store.CredentialStore` so they
