@@ -314,7 +314,6 @@ class PackageOwnershipBoundaryTests(unittest.TestCase):
         "mapbox_config.py",
         "models.py",
         "polyline_utils.py",
-        "project_layer_loader.py",
         "qfit_cache.py",
         "qfit_config_dialog.py",
         "qfit_dockwidget.py",
