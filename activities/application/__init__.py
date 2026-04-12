@@ -6,7 +6,11 @@ import lightweight application models without pulling in QGIS task modules.
 
 from importlib import import_module
 
+_ACTIVITY_PREVIEW_MODULE = ".activity_preview"
+
 __all__ = [
+    "ActivityPreviewRequest",
+    "ActivityPreviewResult",
     "ActivitySelectionState",
     "BuildStravaProviderRequest",
     "FetchActivitiesRequest",
@@ -21,9 +25,14 @@ __all__ = [
     "LoadWorkflowService",
     "StoreActivitiesRequest",
     "SyncController",
+    "build_activity_preview",
+    "build_activity_query",
+    "build_activity_selection_state",
 ]
 
 _EXPORTS = {
+    "ActivityPreviewRequest": (_ACTIVITY_PREVIEW_MODULE, "ActivityPreviewRequest"),
+    "ActivityPreviewResult": (_ACTIVITY_PREVIEW_MODULE, "ActivityPreviewResult"),
     "ActivitySelectionState": (".activity_selection_state", "ActivitySelectionState"),
     "BuildStravaProviderRequest": (".sync_controller", "BuildStravaProviderRequest"),
     "FetchActivitiesRequest": (".fetch_result_service", "FetchActivitiesRequest"),
@@ -38,6 +47,9 @@ _EXPORTS = {
     "LoadWorkflowService": (".load_workflow", "LoadWorkflowService"),
     "StoreActivitiesRequest": (".load_workflow", "StoreActivitiesRequest"),
     "SyncController": (".sync_controller", "SyncController"),
+    "build_activity_preview": (_ACTIVITY_PREVIEW_MODULE, "build_activity_preview"),
+    "build_activity_query": (_ACTIVITY_PREVIEW_MODULE, "build_activity_query"),
+    "build_activity_selection_state": (_ACTIVITY_PREVIEW_MODULE, "build_activity_selection_state"),
 }
 
 

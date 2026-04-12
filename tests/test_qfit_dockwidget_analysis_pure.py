@@ -206,6 +206,25 @@ class _FakeSettings:
         return self._values.get(key, default)
 
 
+class _FakeQDate:
+    def __init__(self, value=None):
+        self._value = value
+
+    def isValid(self):
+        return self._value is not None
+
+    def toString(self, _format):
+        return self._value
+
+
+class _FakeDateEdit:
+    def __init__(self, value=None):
+        self._date = _FakeQDate(value)
+
+    def date(self):
+        return self._date
+
+
 class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -493,6 +512,60 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertEqual(status, "Applied styling")
         self.assertEqual(dock.background_layer, "background-layer")
         dock._show_error.assert_not_called()
+
+    def test_current_activity_preview_request_reads_current_ui_filters(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.activities = ["a1", "a2"]
+        dock.activityTypeComboBox = _FakeComboBox(current_text="Run")
+        dock.dateFromEdit = _FakeDateEdit("2026-04-01")
+        dock.dateToEdit = _FakeDateEdit("2026-04-30")
+        dock.minDistanceSpinBox = _FakeSpinBox(5)
+        dock.maxDistanceSpinBox = _FakeSpinBox(42)
+        dock.activitySearchLineEdit = _FakeLineEdit(" lunch ")
+        dock.detailedRouteStatusComboBox = SimpleNamespace(currentData=lambda: "missing")
+        dock.previewSortComboBox = _FakeComboBox(current_text="Name (A–Z)")
+
+        request = self.module.QfitDockWidget._current_activity_preview_request(dock)
+
+        self.assertEqual(request.activities, ["a1", "a2"])
+        self.assertEqual(request.activity_type, "Run")
+        self.assertEqual(request.date_from, "2026-04-01")
+        self.assertEqual(request.date_to, "2026-04-30")
+        self.assertEqual(request.min_distance_km, 5)
+        self.assertEqual(request.max_distance_km, 42)
+        self.assertEqual(request.search_text, "lunch")
+        self.assertEqual(request.detailed_route_filter, "missing")
+        self.assertEqual(request.sort_label, "Name (A–Z)")
+
+    def test_current_activity_selection_state_delegates_to_activity_preview_workflow(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._current_activity_preview_request = MagicMock(return_value="preview-request")
+        selection_state = self.module.ActivitySelectionState(query=object(), filtered_count=2)
+
+        with patch.object(self.module, "build_activity_selection_state", return_value=selection_state) as build_state:
+            result = self.module.QfitDockWidget._current_activity_selection_state(dock)
+
+        self.assertIs(result, selection_state)
+        build_state.assert_called_once_with("preview-request")
+
+    def test_refresh_activity_preview_delegates_and_updates_widgets(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._current_activity_preview_request = MagicMock(return_value="preview-request")
+        dock.querySummaryLabel = SimpleNamespace(setText=MagicMock())
+        dock.activityPreviewPlainTextEdit = SimpleNamespace(setPlainText=MagicMock())
+        preview_result = SimpleNamespace(
+            query_summary_text="2 activities",
+            preview_text="first\nsecond",
+            fetched_activities=["first", "second"],
+        )
+
+        with patch.object(self.module, "build_activity_preview", return_value=preview_result) as build_preview:
+            result = self.module.QfitDockWidget._refresh_activity_preview(dock)
+
+        self.assertEqual(result, ["first", "second"])
+        build_preview.assert_called_once_with("preview-request")
+        dock.querySummaryLabel.setText.assert_called_once_with("2 activities")
+        dock.activityPreviewPlainTextEdit.setPlainText.assert_called_once_with("first\nsecond")
 
     def test_apply_analysis_configuration_delegates_current_mode_and_layer(self):
         dock = object.__new__(self.module.QfitDockWidget)

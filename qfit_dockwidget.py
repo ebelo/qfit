@@ -31,14 +31,14 @@ from .activities.domain.activity_query import (
     DETAILED_ROUTE_FILTER_MISSING,
     DETAILED_ROUTE_FILTER_PRESENT,
     SORT_OPTIONS,
-    ActivityQuery,
-    build_preview_lines,
     filter_activities,
-    format_summary_text,
-    sort_activities,
-    summarize_activities,
 )
-from .activities.application.activity_selection_state import ActivitySelectionState
+from .activities.application import (
+    ActivityPreviewRequest,
+    ActivitySelectionState,
+    build_activity_preview,
+    build_activity_selection_state,
+)
 from .activities.application.load_workflow import LoadWorkflowError
 from .activities.application.store_task import build_store_task
 from .analysis.infrastructure.activity_heatmap_layer import (
@@ -849,8 +849,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             except RuntimeError:
                 logger.debug("Failed to remove stale analysis layer", exc_info=True)
 
-    def _current_activity_selection_state(self):
-        query = ActivityQuery(
+    def _current_activity_preview_request(self):
+        return ActivityPreviewRequest(
+            activities=self.activities,
             activity_type=self.activityTypeComboBox.currentText() or "All",
             date_from=self.dateFromEdit.date().toString("yyyy-MM-dd") if self.dateFromEdit.date().isValid() else None,
             date_to=self.dateToEdit.date().toString("yyyy-MM-dd") if self.dateToEdit.date().isValid() else None,
@@ -860,34 +861,18 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             detailed_route_filter=self.detailedRouteStatusComboBox.currentData(),
             sort_label=self.previewSortComboBox.currentText() or DEFAULT_SORT_LABEL,
         )
-        return ActivitySelectionState.from_activities(self.activities, query)
+
+    def _current_activity_selection_state(self):
+        return build_activity_selection_state(self._current_activity_preview_request())
 
     def _current_activity_query(self):
         return self._current_activity_selection_state().query
 
     def _refresh_activity_preview(self):
-        if not self.activities:
-            self.querySummaryLabel.setText("Fetch activities to preview your latest synced activities.")
-            self.activityPreviewPlainTextEdit.setPlainText("")
-            return []
-
-        fetched_activities = sort_activities(self.activities, DEFAULT_SORT_LABEL)
-        summary = summarize_activities(fetched_activities)
-        selection_state = self._current_activity_selection_state()
-
-        query_summary = format_summary_text(summary)
-        if selection_state.filtered_count != len(self.activities):
-            query_summary = (
-                f"{query_summary}\n"
-                f"Visualize filters currently match {selection_state.filtered_count} activities."
-            )
-        self.querySummaryLabel.setText(query_summary)
-
-        preview_lines = build_preview_lines(fetched_activities, limit=10)
-        if len(fetched_activities) > len(preview_lines):
-            preview_lines.append("… and {count} more".format(count=len(fetched_activities) - len(preview_lines)))
-        self.activityPreviewPlainTextEdit.setPlainText("\n".join(preview_lines))
-        return fetched_activities
+        preview = build_activity_preview(self._current_activity_preview_request())
+        self.querySummaryLabel.setText(preview.query_summary_text)
+        self.activityPreviewPlainTextEdit.setPlainText(preview.preview_text)
+        return preview.fetched_activities
 
     def _filtered_activities(self):
         return filter_activities(self.activities, self._current_activity_selection_state().query)
