@@ -256,6 +256,24 @@ class ApplyWithoutSubsetFiltersTests(unittest.TestCase):
         self.assertEqual(result.status, "Background map cleared")
         build_status.assert_called_once_with()
 
+    def test_returns_loaded_background_status_via_helper_when_only_background_is_loaded(self):
+        with patch(
+            "qfit.visualization.application.visual_apply.build_background_map_loaded_status",
+            return_value="Background map loaded below the qfit activity layers",
+        ) as build_status:
+            result = self.service.apply(
+                layers=LayerRefs(),
+                query=_make_query(),
+                style_preset="By activity type",
+                temporal_mode="Off",
+                background_config=_make_bg_config(enabled=True),
+                apply_subset_filters=False,
+                filtered_count=0,
+            )
+
+        self.assertEqual(result.status, "Background map loaded below the qfit activity layers")
+        build_status.assert_called_once_with()
+
     def test_applies_style_and_temporal(self):
         self.service.apply(
             layers=self.layers,
