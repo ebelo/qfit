@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, patch
 from tests import _path  # noqa: F401
 from qfit.providers.domain import ProviderError
 from qfit.providers.infrastructure import StravaProvider
-from qfit.sync_controller import (
+from qfit.activities.application.sync_controller import (
     BuildFetchTaskRequest,
     BuildStravaProviderRequest,
     ExchangeStravaCodeRequest,
