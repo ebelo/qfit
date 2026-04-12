@@ -12,6 +12,7 @@ from .background_map_messages import (
     build_background_map_loaded_status,
     build_styled_background_map_failure_status,
     build_styled_background_map_loaded_status,
+    build_styled_visual_apply_status,
 )
 from .layer_gateway import LayerGateway
 from .render_plan import (
@@ -64,6 +65,7 @@ __all__ = [
     "build_background_map_loaded_status",
     "build_styled_background_map_failure_status",
     "build_styled_background_map_loaded_status",
+    "build_styled_visual_apply_status",
     "BY_ACTIVITY_TYPE_PRESET",
     "CLUSTERED_STARTS_PRESET",
     "DEFAULT_RENDER_PRESET",
