@@ -389,17 +389,23 @@ class BackgroundFailureTests(unittest.TestCase):
 
     def test_error_status_with_layers(self):
         layers = LayerRefs(activities=MagicMock())
-        result = self.service.apply(
-            layers=layers,
-            query=_make_query(),
-            style_preset="By activity type",
-            temporal_mode="Off",
-            background_config=_make_bg_config(enabled=True),
-            apply_subset_filters=False,
-            filtered_count=0,
-        )
+
+        with patch(
+            "qfit.visualization.application.visual_apply.build_styled_background_map_failure_status",
+            return_value="Loaded layers with styling, but the background map could not be updated",
+        ) as build_status:
+            result = self.service.apply(
+                layers=layers,
+                query=_make_query(),
+                style_preset="By activity type",
+                temporal_mode="Off",
+                background_config=_make_bg_config(enabled=True),
+                apply_subset_filters=False,
+                filtered_count=0,
+            )
 
         self.assertIn("loaded layers", result.status.lower())
+        build_status.assert_called_once_with()
 
     def test_error_status_without_layers(self):
         layers = LayerRefs()
