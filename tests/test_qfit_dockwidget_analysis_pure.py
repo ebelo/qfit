@@ -386,12 +386,18 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._show_error = MagicMock()
         dock._set_status = MagicMock()
 
-        self.module.QfitDockWidget._dispatch_dock_action(
-            dock,
-            self.module.RunAnalysisAction,
-        )
+        with patch.object(
+            self.module,
+            "build_background_map_failure_title",
+            return_value="Background map failed",
+        ) as build_title:
+            self.module.QfitDockWidget._dispatch_dock_action(
+                dock,
+                self.module.RunAnalysisAction,
+            )
 
         dock._dock_action_dispatcher.dispatch.assert_called_once_with(action)
+        build_title.assert_called_once_with()
         dock._show_error.assert_called_once_with("Background map failed", "boom")
         self.assertEqual(dock.background_layer, "background-layer")
         dock._set_status.assert_called_once_with("Applied current filters")
@@ -415,6 +421,32 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         )
 
         dock._set_status.assert_called_once_with("Unsupported dock action: object")
+
+    def test_on_load_background_clicked_uses_failure_title_helper(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._save_settings = MagicMock()
+        dock.background_controller = MagicMock()
+        dock.background_controller.build_load_request.return_value = "background-request"
+        dock.background_controller.load_background_request.side_effect = RuntimeError("boom")
+        dock.backgroundMapCheckBox = _FakeCheckBox(True)
+        dock.backgroundPresetComboBox = _FakeComboBox(current_text="Outdoors")
+        dock._mapbox_access_token = MagicMock(return_value="token")
+        dock.mapboxStyleOwnerLineEdit = _FakeLineEdit("mapbox")
+        dock.mapboxStyleIdLineEdit = _FakeLineEdit("outdoors-v12")
+        dock.tileModeComboBox = _FakeComboBox(current_text="raster")
+        dock._show_error = MagicMock()
+        dock._set_status = MagicMock()
+
+        with patch.object(
+            self.module,
+            "build_background_map_failure_title",
+            return_value="Background map failed",
+        ) as build_title:
+            self.module.QfitDockWidget.on_load_background_clicked(dock)
+
+        build_title.assert_called_once_with()
+        dock._show_error.assert_called_once_with("Background map failed", "boom")
+        dock._set_status.assert_called_once_with("Background map could not be updated")
 
     def test_build_visual_workflow_action_uses_current_ui_state(self):
         dock = object.__new__(self.module.QfitDockWidget)
