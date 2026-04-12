@@ -208,24 +208,6 @@ class ApplyWithSubsetFiltersTests(unittest.TestCase):
             background_loaded=False,
         )
 
-    def test_filtered_status_uses_helper(self):
-        with patch(
-            "qfit.visualization.application.visual_apply.build_filtered_visual_apply_status",
-            return_value="Applied filters and styling (42 matching activities)",
-        ) as build_status:
-            result = self.service.apply(
-                layers=self.layers,
-                query=_make_query(),
-                style_preset="By activity type",
-                temporal_mode="Off",
-                background_config=_make_bg_config(),
-                apply_subset_filters=True,
-                filtered_count=42,
-            )
-
-        self.assertIn("42", result.status)
-        build_status.assert_called_once_with(42)
-
     def test_does_not_update_background_on_filter_apply(self):
         self.service.apply(
             layers=self.layers,
@@ -285,7 +267,7 @@ class ApplyWithoutSubsetFiltersTests(unittest.TestCase):
         self.layer_manager.ensure_background_layer.return_value = None
 
         with patch(
-            "qfit.visualization.application.visual_apply.build_background_map_cleared_status",
+            "qfit.visualization.application.visual_apply.build_visual_apply_status",
             return_value="Background map cleared",
         ) as build_status:
             result = self.service.apply(
@@ -299,11 +281,17 @@ class ApplyWithoutSubsetFiltersTests(unittest.TestCase):
             )
 
         self.assertEqual(result.status, "Background map cleared")
-        build_status.assert_called_once_with()
+        build_status.assert_called_once_with(
+            has_layers=False,
+            apply_subset_filters=False,
+            filtered_count=0,
+            wants_background=False,
+            background_loaded=False,
+        )
 
     def test_returns_loaded_background_status_via_helper_when_only_background_is_loaded(self):
         with patch(
-            "qfit.visualization.application.visual_apply.build_background_map_loaded_status",
+            "qfit.visualization.application.visual_apply.build_visual_apply_status",
             return_value="Background map loaded below the qfit activity layers",
         ) as build_status:
             result = self.service.apply(
@@ -317,7 +305,13 @@ class ApplyWithoutSubsetFiltersTests(unittest.TestCase):
             )
 
         self.assertEqual(result.status, "Background map loaded below the qfit activity layers")
-        build_status.assert_called_once_with()
+        build_status.assert_called_once_with(
+            has_layers=False,
+            apply_subset_filters=False,
+            filtered_count=0,
+            wants_background=True,
+            background_loaded=True,
+        )
 
     def test_applies_style_and_temporal(self):
         self.service.apply(
@@ -376,7 +370,7 @@ class ApplyWithoutSubsetFiltersTests(unittest.TestCase):
         bg = _make_bg_config(enabled=True)
 
         with patch(
-            "qfit.visualization.application.visual_apply.build_styled_background_map_loaded_status",
+            "qfit.visualization.application.visual_apply.build_visual_apply_status",
             return_value="Applied styling and loaded the background map below the qfit activity layers",
         ) as build_status:
             result = self.service.apply(
@@ -393,7 +387,13 @@ class ApplyWithoutSubsetFiltersTests(unittest.TestCase):
             result.status,
             "Applied styling and loaded the background map below the qfit activity layers",
         )
-        build_status.assert_called_once_with()
+        build_status.assert_called_once_with(
+            has_layers=True,
+            apply_subset_filters=False,
+            filtered_count=0,
+            wants_background=True,
+            background_loaded=True,
+        )
 
     def test_status_without_background(self):
         result = self.service.apply(
@@ -526,7 +526,7 @@ class NoLayersTests(unittest.TestCase):
         layers = LayerRefs(activities=MagicMock())
 
         with patch(
-            "qfit.visualization.application.visual_apply.build_styled_visual_apply_status",
+            "qfit.visualization.application.visual_apply.build_visual_apply_status",
             return_value="Applied styling to the loaded qfit layers",
         ) as build_status:
             result = self.service.apply(
@@ -540,7 +540,13 @@ class NoLayersTests(unittest.TestCase):
             )
 
         self.assertIn("applied styling", result.status.lower())
-        build_status.assert_called_once_with()
+        build_status.assert_called_once_with(
+            has_layers=True,
+            apply_subset_filters=False,
+            filtered_count=0,
+            wants_background=False,
+            background_loaded=False,
+        )
 
 
 class TemporalNoteTests(unittest.TestCase):
