@@ -84,7 +84,11 @@ from .mapbox_config import (
     background_preset_names,
     preset_requires_custom_style,
 )
-from .visualization.application import BackgroundConfig, LayerRefs
+from .visualization.application import (
+    BackgroundConfig,
+    LayerRefs,
+    build_background_map_failure_title,
+)
 from .atlas.layout_metrics import BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
 from .providers.domain.provider import ProviderError
 from .providers.infrastructure.strava_provider import StravaProvider
@@ -396,7 +400,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             result = self.background_controller.load_background_request(request)
             self.background_layer = result.layer
         except (MapboxConfigError, RuntimeError) as exc:
-            self._show_error("Background map failed", str(exc))
+            self._show_error(build_background_map_failure_title(), str(exc))
             self._set_status("Background map could not be updated")
             return
 
@@ -750,7 +754,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._set_status(result.unsupported_reason)
             return
         if result.background_error:
-            self._show_error("Background map failed", result.background_error)
+            self._show_error(build_background_map_failure_title(), result.background_error)
         if result.background_layer is not None:
             self.background_layer = result.background_layer
         if result.status:
@@ -806,7 +810,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         )
         result = self._dock_action_dispatcher.dispatch(action)
         if result.background_error:
-            self._show_error("Background map failed", result.background_error)
+            self._show_error(build_background_map_failure_title(), result.background_error)
         if result.background_layer is not None:
             self.background_layer = result.background_layer
         return result.status
