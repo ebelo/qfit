@@ -309,7 +309,6 @@ class PackageOwnershipBoundaryTests(unittest.TestCase):
         "gpkg_schema.py",
         "gpkg_write_orchestration.py",
         "gpkg_writer.py",
-        "layer_filter_service.py",
         "layer_manager.py",
         "load_workflow.py",
         "map_canvas_service.py",
