@@ -471,21 +471,35 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.tileModeComboBox = _FakeComboBox(current_text="Raster")
         dock.analysisModeComboBox = _FakeComboBox(current_text="Most frequent starting points")
 
-        action = self.module.QfitDockWidget._build_visual_workflow_action(
-            dock,
-            self.module.ApplyVisualizationAction,
-        )
+        with patch.object(
+            self.module,
+            "build_visual_workflow_action",
+            return_value="action",
+        ) as build_action:
+            action = self.module.QfitDockWidget._build_visual_workflow_action(
+                dock,
+                self.module.ApplyVisualizationAction,
+            )
 
-        self.assertIsInstance(action, self.module.ApplyVisualizationAction)
-        self.assertEqual(action.layers.activities, "activities")
-        self.assertEqual(action.layers.starts, "starts")
-        self.assertIs(action.selection_state, selection_state)
-        self.assertIs(action.query, selection_state.query)
-        self.assertEqual(action.filtered_count, 3)
-        self.assertEqual(action.analysis_mode, "Most frequent starting points")
-        self.assertEqual(action.temporal_mode, self.module.DEFAULT_TEMPORAL_MODE_LABEL)
-        self.assertEqual(action.background_config.access_token, "token")
-        self.assertEqual(action.background_config.tile_mode, "Raster")
+        self.assertEqual(action, "action")
+        build_action.assert_called_once_with(
+            self.module.ApplyVisualizationAction,
+            activities_layer="activities",
+            starts_layer="starts",
+            points_layer="points",
+            atlas_layer="atlas",
+            selection_state=selection_state,
+            style_preset="By activity type",
+            temporal_mode=self.module.DEFAULT_TEMPORAL_MODE_LABEL,
+            background_enabled=True,
+            background_preset_name="Outdoors",
+            access_token="token",
+            style_owner="mapbox",
+            style_id="style-id",
+            tile_mode="Raster",
+            analysis_mode="Most frequent starting points",
+            apply_subset_filters=True,
+        )
 
     def test_run_selected_analysis_delegates_to_analysis_controller(self):
         dock = object.__new__(self.module.QfitDockWidget)
