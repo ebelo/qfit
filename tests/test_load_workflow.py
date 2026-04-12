@@ -4,7 +4,7 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 from tests import _path  # noqa: F401
-from qfit.load_workflow import (
+from qfit.activities.application.load_workflow import (
     ClearDatabaseRequest,
     ClearDatabaseResult,
     LoadDatabaseRequest,
