@@ -177,11 +177,12 @@ class BuildAtlasLayerPureTests(unittest.TestCase):
         }
 
         with patch.dict(sys.modules, module_overrides):
-            sys.modules.pop("qfit.gpkg_atlas_page_builder", None)
             sys.modules.pop("qfit.gpkg_layer_builders", None)
             sys.modules.pop("qfit.activities.infrastructure.geopackage.gpkg_atlas_page_builder", None)
             sys.modules.pop("qfit.activities.infrastructure.geopackage.gpkg_layer_builders", None)
-            atlas_page_builder = importlib.import_module("qfit.gpkg_atlas_page_builder")
+            atlas_page_builder = importlib.import_module(
+                "qfit.activities.infrastructure.geopackage.gpkg_atlas_page_builder"
+            )
             layer_builders = importlib.import_module("qfit.gpkg_layer_builders")
 
         return atlas_page_builder, layer_builders, publish_atlas_stub

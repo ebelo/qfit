@@ -236,10 +236,6 @@ class GeoPackagePackageUnitTests(unittest.TestCase):
                 "qfit.activities.infrastructure.geopackage.gpkg_atlas_page_builder",
                 build_atlas_layer=build_atlas_layer,
             ),
-            "qfit.gpkg_atlas_page_builder": self._module(
-                "qfit.gpkg_atlas_page_builder",
-                build_atlas_layer=build_atlas_layer,
-            ),
             "qfit.activities.infrastructure.geopackage.gpkg_atlas_table_builders": self._module(
                 "qfit.activities.infrastructure.geopackage.gpkg_atlas_table_builders",
                 build_cover_highlight_layer=build_cover_highlight_layer,
