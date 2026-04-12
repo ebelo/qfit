@@ -250,20 +250,10 @@ class GeoPackagePackageUnitTests(unittest.TestCase):
                 "qfit.activities.infrastructure.geopackage.gpkg_write_orchestration",
                 None,
             )
-            sys.modules.pop("qfit.gpkg_write_orchestration", None)
 
             moved = importlib.import_module(
                 "qfit.activities.infrastructure.geopackage.gpkg_write_orchestration"
             )
-            legacy = importlib.import_module("qfit.gpkg_write_orchestration")
-
-            self.assertIs(legacy.bootstrap_empty_gpkg, moved.bootstrap_empty_gpkg)
-            self.assertIs(
-                legacy.build_and_write_all_layers,
-                moved.build_and_write_all_layers,
-            )
-            self.assertIs(legacy.ensure_attribute_indexes, moved.ensure_attribute_indexes)
-            self.assertIs(legacy.ensure_spatial_indexes, moved.ensure_spatial_indexes)
 
             moved.bootstrap_empty_gpkg("/tmp/bootstrap.gpkg", {"margin_percent": 8})
             self.assertEqual(write_layer_to_gpkg.call_count, 9)
