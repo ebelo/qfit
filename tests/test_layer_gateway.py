@@ -37,20 +37,6 @@ class LayerGatewayBoundaryTests(unittest.TestCase):
 
         self.assertIs(layer_manager_module.LayerManager, adapter_module.QgisLayerGateway)
 
-    def test_background_map_service_legacy_import_shares_same_class(self):
-        modules = self._qgis_gateway_modules()
-
-        with patch.dict(sys.modules, modules, clear=False):
-            self._reset_qgis_gateway_imports()
-            sys.modules.pop("qfit.background_map_service", None)
-            sys.modules.pop("qfit.visualization.infrastructure.background_map_service", None)
-            adapter_module = importlib.import_module(
-                "qfit.visualization.infrastructure.background_map_service"
-            )
-            legacy_module = importlib.import_module("qfit.background_map_service")
-
-        self.assertIs(legacy_module.BackgroundMapService, adapter_module.BackgroundMapService)
-
     def test_qgis_gateway_satisfies_protocol_and_delegates_to_services(self):
         modules = self._qgis_gateway_modules()
 
@@ -212,7 +198,6 @@ class LayerGatewayBoundaryTests(unittest.TestCase):
     @staticmethod
     def _reset_qgis_gateway_imports():
         for name in [
-            "qfit.background_map_service",
             "qfit.layer_manager",
             "qfit.layer_filter_service",
             "qfit.map_canvas_service",
