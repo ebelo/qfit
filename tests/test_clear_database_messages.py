@@ -3,6 +3,7 @@ import unittest
 from tests import _path  # noqa: F401
 
 from qfit.activities.application.clear_database_messages import (
+    build_clear_database_confirmation_title,
     build_clear_database_delete_failure_error_title,
     build_clear_database_delete_failure_status,
     build_clear_database_load_workflow_error_title,
@@ -11,6 +12,12 @@ from qfit.activities.application.clear_database_messages import (
 
 
 class ClearDatabaseMessagesTests(unittest.TestCase):
+    def test_build_clear_database_confirmation_title(self):
+        self.assertEqual(
+            build_clear_database_confirmation_title(),
+            "Clear database",
+        )
+
     def test_build_clear_database_delete_failure_error_title(self):
         self.assertEqual(
             build_clear_database_delete_failure_error_title(),
