@@ -205,7 +205,6 @@ class GpkgBuilderModulesPureTests(unittest.TestCase):
         module_overrides = {
             **_fake_qgis_modules(),
             "qfit.activities.infrastructure.geopackage.gpkg_schema": _fake_schema_module(),
-            "qfit.gpkg_schema": _fake_schema_module(),
             "qfit.atlas.publish_atlas": _fake_publish_atlas_module(),
             "qfit.activities.infrastructure.geopackage.gpkg_layer_builders": _fake_layer_builders_module(),
             "qfit.polyline_utils": _fake_polyline_utils_module(),
