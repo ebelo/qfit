@@ -409,18 +409,24 @@ class BackgroundFailureTests(unittest.TestCase):
 
     def test_error_status_without_layers(self):
         layers = LayerRefs()
-        result = self.service.apply(
-            layers=layers,
-            query=_make_query(),
-            style_preset="By activity type",
-            temporal_mode="Off",
-            background_config=_make_bg_config(enabled=True),
-            apply_subset_filters=False,
-            filtered_count=0,
-        )
+
+        with patch(
+            "qfit.visualization.application.visual_apply.build_background_map_failure_status",
+            return_value="Background map could not be updated",
+        ) as build_status:
+            result = self.service.apply(
+                layers=layers,
+                query=_make_query(),
+                style_preset="By activity type",
+                temporal_mode="Off",
+                background_config=_make_bg_config(enabled=True),
+                apply_subset_filters=False,
+                filtered_count=0,
+            )
 
         self.assertNotIn("loaded layers", result.status.lower())
         self.assertIn("could not be updated", result.status.lower())
+        build_status.assert_called_once_with()
 
     def test_unexpected_background_exception_propagates(self):
         self.layer_manager.ensure_background_layer.side_effect = TypeError("boom")

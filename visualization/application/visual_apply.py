@@ -6,6 +6,7 @@ from ...activities.domain.activity_query import ActivityQuery
 from ...mapbox_config import MapboxConfigError
 from .background_map_messages import (
     build_background_map_cleared_status,
+    build_background_map_failure_status,
     build_background_map_loaded_status,
     build_styled_background_map_failure_status,
     build_styled_background_map_loaded_status,
@@ -228,7 +229,7 @@ class VisualApplyService:
     @staticmethod
     def _background_failure_status(has_layers, temporal_note, error):
         if not has_layers:
-            status = "Background map could not be updated"
+            status = build_background_map_failure_status()
         else:
             status = build_styled_background_map_failure_status()
         if temporal_note:
