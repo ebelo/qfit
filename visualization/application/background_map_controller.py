@@ -2,6 +2,7 @@ import logging
 from dataclasses import dataclass
 
 from ...mapbox_config import preset_defaults, preset_requires_custom_style
+from .background_map_messages import build_background_map_loaded_status
 from .layer_gateway import LayerGateway
 
 logger = logging.getLogger(__name__)
@@ -80,7 +81,7 @@ class BackgroundMapController:
             tile_mode=request.tile_mode,
         )
         status = (
-            "Background map loaded below the qfit activity layers"
+            build_background_map_loaded_status()
             if request.enabled and layer is not None
             else "Background map cleared"
         )
