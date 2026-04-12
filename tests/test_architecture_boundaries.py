@@ -300,7 +300,6 @@ class PackageOwnershipBoundaryTests(unittest.TestCase):
         "gpkg_atlas_table_builders.py",
         "gpkg_layer_builders.py",
         "gpkg_point_layer_builder.py",
-        "gpkg_schema.py",
         "gpkg_write_orchestration.py",
         "gpkg_writer.py",
         "layer_manager.py",

@@ -85,11 +85,8 @@ class GpkgGeopackagePureTests(unittest.TestCase):
             "qgis.PyQt.QtCore": qtcore,
         }
 
-    def test_schema_module_and_legacy_shim_share_exports(self):
-        module_names = [
-            "qfit.activities.infrastructure.geopackage.gpkg_schema",
-            "qfit.gpkg_schema",
-        ]
+    def test_schema_module_exposes_expected_exports(self):
+        module_names = ["qfit.activities.infrastructure.geopackage.gpkg_schema"]
         with patch.dict(sys.modules, self._install_qgis_stubs()):
             for name in module_names:
                 sys.modules.pop(name, None)
@@ -97,14 +94,15 @@ class GpkgGeopackagePureTests(unittest.TestCase):
             schema_module = importlib.import_module(
                 "qfit.activities.infrastructure.geopackage.gpkg_schema"
             )
-            legacy_module = importlib.import_module("qfit.gpkg_schema")
-
             fields = schema_module.make_qgs_fields(schema_module.TRACK_FIELDS[:2])
 
             self.assertEqual([field.name() for field in fields], ["source", "source_activity_id"])
-            self.assertEqual(legacy_module.TRACK_FIELDS, schema_module.TRACK_FIELDS)
-            self.assertEqual(legacy_module.GPKG_LAYER_SCHEMA, schema_module.GPKG_LAYER_SCHEMA)
-            self.assertIs(legacy_module.make_qgs_fields, schema_module.make_qgs_fields)
+            self.assertEqual(
+                schema_module.TRACK_FIELDS[:2],
+                [("source", "String"), ("source_activity_id", "String")],
+            )
+            self.assertIn("activity_tracks", schema_module.GPKG_LAYER_SCHEMA)
+            self.assertTrue(callable(schema_module.make_qgs_fields))
 
     def test_gpkg_io_module_handles_success_and_error_paths(self):
         module_names = ["qfit.activities.infrastructure.geopackage.gpkg_io"]

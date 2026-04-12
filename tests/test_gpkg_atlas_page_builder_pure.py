@@ -172,7 +172,6 @@ class BuildAtlasLayerPureTests(unittest.TestCase):
         module_overrides = {
             "qgis": qgis_mod,
             "qgis.core": qgis_core,
-            "qfit.gpkg_schema": schema_stub,
             "qfit.activities.infrastructure.geopackage.gpkg_schema": schema_stub,
             "qfit.atlas.publish_atlas": publish_atlas_stub,
         }
