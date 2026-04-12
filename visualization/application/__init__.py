@@ -49,6 +49,7 @@ from .temporal_config import (
 from .visual_apply_messages import (
     append_visual_apply_temporal_note,
     build_filtered_visual_apply_status,
+    build_visual_apply_status,
 )
 from .visual_apply import (
     ApplyVisualizationRequest,
@@ -69,6 +70,7 @@ __all__ = [
     "build_background_map_loaded_status",
     "append_visual_apply_temporal_note",
     "build_filtered_visual_apply_status",
+    "build_visual_apply_status",
     "build_styled_background_map_failure_status",
     "build_styled_background_map_loaded_status",
     "build_styled_visual_apply_status",

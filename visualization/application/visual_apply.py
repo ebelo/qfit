@@ -5,18 +5,15 @@ from ...activities.application.activity_selection_state import ActivitySelection
 from ...activities.domain.activity_query import ActivityQuery
 from ...mapbox_config import MapboxConfigError
 from .background_map_messages import (
-    build_background_map_cleared_status,
     build_background_map_failure_status,
-    build_background_map_loaded_status,
     build_styled_background_map_failure_status,
-    build_styled_background_map_loaded_status,
-    build_styled_visual_apply_status,
 )
 from .layer_gateway import LayerGateway
 from .render_plan import build_render_plan
 from .visual_apply_messages import (
     append_visual_apply_temporal_note,
     build_filtered_visual_apply_status,
+    build_visual_apply_status,
 )
 
 logger = logging.getLogger(__name__)
@@ -248,15 +245,12 @@ class VisualApplyService:
         background_layer,
         temporal_note,
     ):
-        if apply_subset_filters and has_layers:
-            status = build_filtered_visual_apply_status(filtered_count)
-        elif has_layers and wants_background and background_layer is not None:
-            status = build_styled_background_map_loaded_status()
-        elif has_layers:
-            status = build_styled_visual_apply_status()
-        elif wants_background and background_layer is not None:
-            status = build_background_map_loaded_status()
-        else:
-            status = build_background_map_cleared_status()
+        status = build_visual_apply_status(
+            has_layers=has_layers,
+            apply_subset_filters=apply_subset_filters,
+            filtered_count=filtered_count,
+            wants_background=wants_background,
+            background_loaded=background_layer is not None,
+        )
 
         return append_visual_apply_temporal_note(status, temporal_note)
