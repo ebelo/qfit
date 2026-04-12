@@ -5,7 +5,10 @@ from .background_map_controller import (
     LoadBackgroundRequest,
     LoadBackgroundResult,
 )
-from .background_map_messages import build_background_map_failure_title
+from .background_map_messages import (
+    build_background_map_failure_status,
+    build_background_map_failure_title,
+)
 from .layer_gateway import LayerGateway
 from .render_plan import (
     BY_ACTIVITY_TYPE_PRESET,
@@ -51,6 +54,7 @@ __all__ = [
     "ApplyVisualizationRequest",
     "BackgroundConfig",
     "BackgroundMapController",
+    "build_background_map_failure_status",
     "build_background_map_failure_title",
     "BY_ACTIVITY_TYPE_PRESET",
     "CLUSTERED_STARTS_PRESET",
