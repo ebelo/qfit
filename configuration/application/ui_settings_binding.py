@@ -7,7 +7,7 @@ widget → key pairs independently.
 
 Usage example::
 
-    from qfit.ui_settings_binding import UIFieldBinding, load_bindings, save_bindings
+    from qfit.configuration.application.ui_settings_binding import UIFieldBinding, load_bindings, save_bindings
 
     bindings = [
         UIFieldBinding(

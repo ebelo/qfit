@@ -314,7 +314,6 @@ class PackageOwnershipBoundaryTests(unittest.TestCase):
         "qfit_plugin.py",
         "sync_repository.py",
         "time_utils.py",
-        "ui_settings_binding.py",
         "visual_apply.py",
     }
 
