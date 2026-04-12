@@ -24,7 +24,6 @@ from qgis.PyQt.QtWidgets import (
     QWidget,
 )
 
-from .activities.domain.activity_classification import ordered_canonical_activity_labels
 from .activities.domain.activity_query import (
     DEFAULT_SORT_LABEL,
     DETAILED_ROUTE_FILTER_ANY,
@@ -36,8 +35,11 @@ from .activities.domain.activity_query import (
 from .activities.application import (
     ActivityPreviewRequest,
     ActivitySelectionState,
+    ActivityTypeOptionsResult,
     build_activity_preview,
     build_activity_selection_state,
+    build_activity_type_options_from_activities,
+    build_activity_type_options_from_records,
 )
 from .activities.application.load_workflow import LoadWorkflowError
 from .activities.application.store_task import build_store_task
@@ -887,20 +889,20 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def _qdate_to_date(self, value):
         return date(value.year(), value.month(), value.day())
 
+    def _apply_activity_type_options(self, result: ActivityTypeOptionsResult) -> None:
+        self.activityTypeComboBox.clear()
+        for value in result.options:
+            self.activityTypeComboBox.addItem(value)
+        index = self.activityTypeComboBox.findText(result.selected_value)
+        self.activityTypeComboBox.setCurrentIndex(max(index, 0))
+
     def _populate_activity_types(self):
-        current_value = self.activityTypeComboBox.currentText() or "All"
-        values = sorted(
-            ordered_canonical_activity_labels(
-                (getattr(activity, "activity_type", None), getattr(activity, "sport_type", None))
-                for activity in self.activities
+        self._apply_activity_type_options(
+            build_activity_type_options_from_activities(
+                self.activities,
+                current_value=self.activityTypeComboBox.currentText() or "All",
             )
         )
-        self.activityTypeComboBox.clear()
-        self.activityTypeComboBox.addItem("All")
-        for value in values:
-            self.activityTypeComboBox.addItem(value)
-        index = self.activityTypeComboBox.findText(current_value)
-        self.activityTypeComboBox.setCurrentIndex(max(index, 0))
 
     def _populate_activity_types_from_layer(self):
         """Populate the activity type filter from the loaded activities layer.
@@ -913,26 +915,17 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         current_value = self.activityTypeComboBox.currentText() or "All"
         try:
             field_names = [self.activities_layer.fields().at(i).name() for i in range(self.activities_layer.fields().count())]
-            if not any(name in field_names for name in ("activity_type", "sport_type")):
-                return
-            values = sorted(
-                ordered_canonical_activity_labels(
-                    (
-                        feature["activity_type"] if "activity_type" in field_names else None,
-                        feature["sport_type"] if "sport_type" in field_names else None,
-                    )
-                    for feature in self.activities_layer.getFeatures()
-                )
+            result = build_activity_type_options_from_records(
+                self.activities_layer.getFeatures(),
+                field_names,
+                current_value=current_value,
             )
         except (RuntimeError, KeyError):
             logger.debug("Failed to populate activity types from layer", exc_info=True)
             return
-        self.activityTypeComboBox.clear()
-        self.activityTypeComboBox.addItem("All")
-        for value in values:
-            self.activityTypeComboBox.addItem(value)
-        index = self.activityTypeComboBox.findText(current_value)
-        self.activityTypeComboBox.setCurrentIndex(max(index, 0))
+        if result is None:
+            return
+        self._apply_activity_type_options(result)
 
 
     def _update_connection_status(self):

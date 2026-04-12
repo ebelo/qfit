@@ -77,17 +77,38 @@ class _FakeComboBox(_FakeWidget):
         super().__init__(parent)
         self.items = []
         self._current_text = current_text
+        self._current_index = 0
 
     def addItem(self, text):
         self.items.append(text)
         if self._current_text is None:
             self._current_text = text
+            self._current_index = len(self.items) - 1
+
+    def clear(self):
+        self.items = []
+        self._current_text = None
+        self._current_index = 0
+
+    def findText(self, text):
+        try:
+            return self.items.index(text)
+        except ValueError:
+            return -1
 
     def currentText(self):
         return self._current_text
 
     def setCurrentText(self, text):
         self._current_text = text
+        index = self.findText(text)
+        if index >= 0:
+            self._current_index = index
+
+    def setCurrentIndex(self, index):
+        self._current_index = index
+        if 0 <= index < len(self.items):
+            self._current_text = self.items[index]
 
 
 class _FakeButton(_FakeWidget):
@@ -513,6 +534,35 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertEqual(dock.background_layer, "background-layer")
         dock._show_error.assert_not_called()
 
+    def test_apply_activity_type_options_updates_combo_items_and_selection(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.activityTypeComboBox = _FakeComboBox(current_text="Swim")
+        dock.activityTypeComboBox.items = ["Swim"]
+
+        self.module.QfitDockWidget._apply_activity_type_options(
+            dock,
+            self.module.ActivityTypeOptionsResult(
+                options=["All", "Ride", "Trail Run"],
+                selected_value="Trail Run",
+            ),
+        )
+
+        self.assertEqual(dock.activityTypeComboBox.items, ["All", "Ride", "Trail Run"])
+        self.assertEqual(dock.activityTypeComboBox.currentText(), "Trail Run")
+
+    def test_populate_activity_types_delegates_to_activity_type_options_helper(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.activities = ["a1", "a2"]
+        dock.activityTypeComboBox = _FakeComboBox(current_text="Run")
+        dock._apply_activity_type_options = MagicMock()
+        result = self.module.ActivityTypeOptionsResult(options=["All", "Run"], selected_value="Run")
+
+        with patch.object(self.module, "build_activity_type_options_from_activities", return_value=result) as build_options:
+            self.module.QfitDockWidget._populate_activity_types(dock)
+
+        build_options.assert_called_once_with(["a1", "a2"], current_value="Run")
+        dock._apply_activity_type_options.assert_called_once_with(result)
+
     def test_current_activity_preview_request_reads_current_ui_filters(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock.activities = ["a1", "a2"]
@@ -566,6 +616,40 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         build_preview.assert_called_once_with("preview-request")
         dock.querySummaryLabel.setText.assert_called_once_with("2 activities")
         dock.activityPreviewPlainTextEdit.setPlainText.assert_called_once_with("first\nsecond")
+
+    def test_populate_activity_types_from_layer_delegates_and_applies_result(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.activityTypeComboBox = _FakeComboBox(current_text="Ride")
+        dock._apply_activity_type_options = MagicMock()
+        fields = SimpleNamespace(
+            count=lambda: 2,
+            at=lambda i: SimpleNamespace(name=lambda: ["sport_type", "activity_type"][i]),
+        )
+        dock.activities_layer = SimpleNamespace(
+            isValid=lambda: True,
+            fields=lambda: fields,
+            getFeatures=lambda: [SimpleNamespace(__getitem__=lambda self, key: {"sport_type": "TrailRun", "activity_type": "Run"}[key])],
+        )
+        result = self.module.ActivityTypeOptionsResult(options=["All", "TrailRun"], selected_value="TrailRun")
+
+        class _Feature:
+            def __getitem__(self, key):
+                return {"sport_type": "TrailRun", "activity_type": "Run"}[key]
+
+        dock.activities_layer = SimpleNamespace(
+            isValid=lambda: True,
+            fields=lambda: fields,
+            getFeatures=lambda: [_Feature()],
+        )
+
+        with patch.object(self.module, "build_activity_type_options_from_records", return_value=result) as build_options:
+            self.module.QfitDockWidget._populate_activity_types_from_layer(dock)
+
+        build_options.assert_called_once()
+        args, kwargs = build_options.call_args
+        self.assertEqual(list(args[1]), ["sport_type", "activity_type"])
+        self.assertEqual(kwargs["current_value"], "Ride")
+        dock._apply_activity_type_options.assert_called_once_with(result)
 
     def test_apply_analysis_configuration_delegates_current_mode_and_layer(self):
         dock = object.__new__(self.module.QfitDockWidget)
