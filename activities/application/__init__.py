@@ -12,6 +12,7 @@ __all__ = [
     "ActivityPreviewRequest",
     "ActivityPreviewResult",
     "ActivitySelectionState",
+    "ActivityTypeOptionsResult",
     "BuildStravaProviderRequest",
     "FetchActivitiesRequest",
     "FetchResult",
@@ -28,12 +29,18 @@ __all__ = [
     "build_activity_preview",
     "build_activity_query",
     "build_activity_selection_state",
+    "build_activity_type_options",
+    "build_activity_type_options_from_activities",
+    "build_activity_type_options_from_records",
 ]
+
+_ACTIVITY_TYPE_OPTIONS_MODULE = ".activity_type_options"
 
 _EXPORTS = {
     "ActivityPreviewRequest": (_ACTIVITY_PREVIEW_MODULE, "ActivityPreviewRequest"),
     "ActivityPreviewResult": (_ACTIVITY_PREVIEW_MODULE, "ActivityPreviewResult"),
     "ActivitySelectionState": (".activity_selection_state", "ActivitySelectionState"),
+    "ActivityTypeOptionsResult": (_ACTIVITY_TYPE_OPTIONS_MODULE, "ActivityTypeOptionsResult"),
     "BuildStravaProviderRequest": (".sync_controller", "BuildStravaProviderRequest"),
     "FetchActivitiesRequest": (".fetch_result_service", "FetchActivitiesRequest"),
     "FetchResult": (".fetch_result_service", "FetchResult"),
@@ -50,6 +57,9 @@ _EXPORTS = {
     "build_activity_preview": (_ACTIVITY_PREVIEW_MODULE, "build_activity_preview"),
     "build_activity_query": (_ACTIVITY_PREVIEW_MODULE, "build_activity_query"),
     "build_activity_selection_state": (_ACTIVITY_PREVIEW_MODULE, "build_activity_selection_state"),
+    "build_activity_type_options": (_ACTIVITY_TYPE_OPTIONS_MODULE, "build_activity_type_options"),
+    "build_activity_type_options_from_activities": (_ACTIVITY_TYPE_OPTIONS_MODULE, "build_activity_type_options_from_activities"),
+    "build_activity_type_options_from_records": (_ACTIVITY_TYPE_OPTIONS_MODULE, "build_activity_type_options_from_records"),
 }
 
 
