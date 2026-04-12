@@ -879,6 +879,30 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "Set a GeoPackage output path first.",
         )
 
+    def test_on_clear_database_clicked_reports_load_workflow_error_title_via_helper(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.outputPathLineEdit = _FakeLineEdit("/tmp/qfit.gpkg")
+        dock.activities_layer = object()
+        dock.starts_layer = object()
+        dock.points_layer = object()
+        dock.atlas_layer = object()
+        dock._show_error = MagicMock()
+        dock.load_workflow = MagicMock()
+        dock.load_workflow.build_clear_database_request.return_value = "clear-request"
+        dock.load_workflow.clear_database_request.side_effect = self.module.LoadWorkflowError("missing file")
+        self.module.QMessageBox.Yes = 1
+        self.module.QMessageBox.No = 0
+
+        with patch.object(self.module.QMessageBox, "question", return_value=1, create=True), patch.object(
+            self.module,
+            "build_clear_database_load_workflow_error_title",
+            return_value="No database path",
+        ) as build_title:
+            self.module.QfitDockWidget.on_clear_database_clicked(dock)
+
+        build_title.assert_called_once_with()
+        dock._show_error.assert_called_once_with("No database path", "missing file")
+
     def test_on_clear_database_clicked_reports_delete_failure_status_via_helpers(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock.outputPathLineEdit = _FakeLineEdit("/tmp/qfit.gpkg")

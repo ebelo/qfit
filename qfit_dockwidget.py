@@ -44,6 +44,7 @@ from .activities.application import (
 from .activities.application.clear_database_messages import (
     build_clear_database_delete_failure_error_title,
     build_clear_database_delete_failure_status,
+    build_clear_database_load_workflow_error_title,
     build_missing_output_path_error,
 )
 from .activities.application.layer_summary import (
@@ -716,7 +717,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             )
             result = self.load_workflow.clear_database_request(request)
         except LoadWorkflowError as exc:
-            self._show_error("No database path", str(exc))
+            self._show_error(build_clear_database_load_workflow_error_title(), str(exc))
             return
         except (RuntimeError, OSError) as exc:
             self._show_error(build_clear_database_delete_failure_error_title(), str(exc))
