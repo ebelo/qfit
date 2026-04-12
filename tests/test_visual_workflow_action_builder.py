@@ -6,8 +6,10 @@ from qfit.activities.domain.activity_query import ActivityQuery
 from qfit.ui.application import (
     ApplyVisualizationAction,
     RunAnalysisAction,
+    VisualWorkflowActionInputs,
     build_visual_workflow_action,
 )
+from qfit.visualization.application import BackgroundConfig, LayerRefs
 
 
 class TestVisualWorkflowActionBuilder(unittest.TestCase):
@@ -16,20 +18,26 @@ class TestVisualWorkflowActionBuilder(unittest.TestCase):
 
         action = build_visual_workflow_action(
             ApplyVisualizationAction,
-            activities_layer="activities",
-            starts_layer="starts",
-            points_layer="points",
-            atlas_layer="atlas",
-            selection_state=selection_state,
-            style_preset="By activity type",
-            temporal_mode="Off",
-            background_enabled=True,
-            background_preset_name="Outdoors",
-            access_token="token",
-            style_owner="mapbox",
-            style_id="style-id",
-            tile_mode="Raster",
-            analysis_mode="Most frequent starting points",
+            VisualWorkflowActionInputs(
+                layers=LayerRefs(
+                    activities="activities",
+                    starts="starts",
+                    points="points",
+                    atlas="atlas",
+                ),
+                selection_state=selection_state,
+                style_preset="By activity type",
+                temporal_mode="Off",
+                background_config=BackgroundConfig(
+                    enabled=True,
+                    preset_name="Outdoors",
+                    access_token="token",
+                    style_owner="mapbox",
+                    style_id="style-id",
+                    tile_mode="Raster",
+                ),
+                analysis_mode="Most frequent starting points",
+            ),
         )
 
         self.assertIsInstance(action, ApplyVisualizationAction)
@@ -50,21 +58,15 @@ class TestVisualWorkflowActionBuilder(unittest.TestCase):
 
         action = build_visual_workflow_action(
             RunAnalysisAction,
-            activities_layer=None,
-            starts_layer="starts",
-            points_layer=None,
-            atlas_layer=None,
-            selection_state=selection_state,
-            style_preset="Heatmap",
-            temporal_mode="By month",
-            background_enabled=False,
-            background_preset_name="",
-            access_token="",
-            style_owner="",
-            style_id="",
-            tile_mode="Raster",
-            analysis_mode="Heatmap",
-            apply_subset_filters=False,
+            VisualWorkflowActionInputs(
+                layers=LayerRefs(starts="starts"),
+                selection_state=selection_state,
+                style_preset="Heatmap",
+                temporal_mode="By month",
+                background_config=BackgroundConfig(tile_mode="Raster"),
+                analysis_mode="Heatmap",
+                apply_subset_filters=False,
+            ),
         )
 
         self.assertIsInstance(action, RunAnalysisAction)
@@ -76,23 +78,17 @@ class TestVisualWorkflowActionBuilder(unittest.TestCase):
         with self.assertRaises(TypeError):
             build_visual_workflow_action(
                 object,
-                activities_layer=None,
-                starts_layer=None,
-                points_layer=None,
-                atlas_layer=None,
-                selection_state=ActivitySelectionState(
-                    query=ActivityQuery(),
-                    filtered_count=0,
+                VisualWorkflowActionInputs(
+                    layers=LayerRefs(),
+                    selection_state=ActivitySelectionState(
+                        query=ActivityQuery(),
+                        filtered_count=0,
+                    ),
+                    style_preset="By activity type",
+                    temporal_mode="Off",
+                    background_config=BackgroundConfig(tile_mode="Raster"),
+                    analysis_mode="None",
                 ),
-                style_preset="By activity type",
-                temporal_mode="Off",
-                background_enabled=False,
-                background_preset_name="",
-                access_token="",
-                style_owner="",
-                style_id="",
-                tile_mode="Raster",
-                analysis_mode="None",
             )
 
 

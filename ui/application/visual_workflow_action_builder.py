@@ -1,25 +1,23 @@
+from dataclasses import dataclass
+
 from .dock_action_dispatcher import ApplyVisualizationAction, RunAnalysisAction
 from ...visualization.application import BackgroundConfig, LayerRefs
 
 
+@dataclass(frozen=True)
+class VisualWorkflowActionInputs:
+    layers: LayerRefs
+    selection_state: object
+    style_preset: str
+    temporal_mode: str
+    background_config: BackgroundConfig
+    analysis_mode: str
+    apply_subset_filters: bool = True
+
+
 def build_visual_workflow_action(
     action_type,
-    *,
-    activities_layer,
-    starts_layer,
-    points_layer,
-    atlas_layer,
-    selection_state,
-    style_preset,
-    temporal_mode,
-    background_enabled,
-    background_preset_name,
-    access_token,
-    style_owner,
-    style_id,
-    tile_mode,
-    analysis_mode,
-    apply_subset_filters=True,
+    inputs: VisualWorkflowActionInputs,
 ):
     """Build a normalized visual workflow action from dock-edge inputs."""
 
@@ -27,24 +25,12 @@ def build_visual_workflow_action(
         raise TypeError(f"Unsupported visual workflow action type: {action_type!r}")
 
     return action_type(
-        layers=LayerRefs(
-            activities=activities_layer,
-            starts=starts_layer,
-            points=points_layer,
-            atlas=atlas_layer,
-        ),
-        selection_state=selection_state,
-        style_preset=style_preset,
-        temporal_mode=temporal_mode,
-        background_config=BackgroundConfig(
-            enabled=background_enabled,
-            preset_name=background_preset_name,
-            access_token=access_token,
-            style_owner=style_owner,
-            style_id=style_id,
-            tile_mode=tile_mode,
-        ),
-        analysis_mode=analysis_mode,
-        starts_layer=starts_layer,
-        apply_subset_filters=apply_subset_filters,
+        layers=inputs.layers,
+        selection_state=inputs.selection_state,
+        style_preset=inputs.style_preset,
+        temporal_mode=inputs.temporal_mode,
+        background_config=inputs.background_config,
+        analysis_mode=inputs.analysis_mode,
+        starts_layer=inputs.layers.starts,
+        apply_subset_filters=inputs.apply_subset_filters,
     )

@@ -72,6 +72,7 @@ from .ui.application import (
     ApplyVisualizationAction,
     DockActionDispatcher,
     RunAnalysisAction,
+    VisualWorkflowActionInputs,
     build_visual_workflow_action,
 )
 from .ui.contextual_help import ContextualHelpBinder, build_dock_help_entries
@@ -765,21 +766,27 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def _build_visual_workflow_action(self, action_type):
         return build_visual_workflow_action(
             action_type,
-            activities_layer=self.activities_layer,
-            starts_layer=self.starts_layer,
-            points_layer=self.points_layer,
-            atlas_layer=self.atlas_layer,
-            selection_state=self._current_activity_selection_state(),
-            style_preset=self.stylePresetComboBox.currentText(),
-            temporal_mode=DEFAULT_TEMPORAL_MODE_LABEL,
-            background_enabled=self.backgroundMapCheckBox.isChecked(),
-            background_preset_name=self.backgroundPresetComboBox.currentText(),
-            access_token=self._mapbox_access_token(),
-            style_owner=self.mapboxStyleOwnerLineEdit.text().strip(),
-            style_id=self.mapboxStyleIdLineEdit.text().strip(),
-            tile_mode=self.tileModeComboBox.currentText(),
-            analysis_mode=self.analysisModeComboBox.currentText(),
-            apply_subset_filters=True,
+            VisualWorkflowActionInputs(
+                layers=LayerRefs(
+                    activities=self.activities_layer,
+                    starts=self.starts_layer,
+                    points=self.points_layer,
+                    atlas=self.atlas_layer,
+                ),
+                selection_state=self._current_activity_selection_state(),
+                style_preset=self.stylePresetComboBox.currentText(),
+                temporal_mode=DEFAULT_TEMPORAL_MODE_LABEL,
+                background_config=BackgroundConfig(
+                    enabled=self.backgroundMapCheckBox.isChecked(),
+                    preset_name=self.backgroundPresetComboBox.currentText(),
+                    access_token=self._mapbox_access_token(),
+                    style_owner=self.mapboxStyleOwnerLineEdit.text().strip(),
+                    style_id=self.mapboxStyleIdLineEdit.text().strip(),
+                    tile_mode=self.tileModeComboBox.currentText(),
+                ),
+                analysis_mode=self.analysisModeComboBox.currentText(),
+                apply_subset_filters=True,
+            ),
         )
 
     def _run_selected_analysis(self, analysis_mode, starts_layer, selection_state=None):

@@ -484,21 +484,27 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertEqual(action, "action")
         build_action.assert_called_once_with(
             self.module.ApplyVisualizationAction,
-            activities_layer="activities",
-            starts_layer="starts",
-            points_layer="points",
-            atlas_layer="atlas",
-            selection_state=selection_state,
-            style_preset="By activity type",
-            temporal_mode=self.module.DEFAULT_TEMPORAL_MODE_LABEL,
-            background_enabled=True,
-            background_preset_name="Outdoors",
-            access_token="token",
-            style_owner="mapbox",
-            style_id="style-id",
-            tile_mode="Raster",
-            analysis_mode="Most frequent starting points",
-            apply_subset_filters=True,
+            self.module.VisualWorkflowActionInputs(
+                layers=self.module.LayerRefs(
+                    activities="activities",
+                    starts="starts",
+                    points="points",
+                    atlas="atlas",
+                ),
+                selection_state=selection_state,
+                style_preset="By activity type",
+                temporal_mode=self.module.DEFAULT_TEMPORAL_MODE_LABEL,
+                background_config=self.module.BackgroundConfig(
+                    enabled=True,
+                    preset_name="Outdoors",
+                    access_token="token",
+                    style_owner="mapbox",
+                    style_id="style-id",
+                    tile_mode="Raster",
+                ),
+                analysis_mode="Most frequent starting points",
+                apply_subset_filters=True,
+            ),
         )
 
     def test_run_selected_analysis_delegates_to_analysis_controller(self):
