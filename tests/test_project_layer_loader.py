@@ -17,13 +17,11 @@ except ValueError:
     )
 
 try:
-    from qfit.project_layer_loader import ProjectLayerLoader as LegacyProjectLayerLoader
     from qfit.visualization.infrastructure.project_layer_loader import ProjectLayerLoader
 
     QGIS_AVAILABLE = True
     QGIS_IMPORT_ERROR = None
 except Exception as exc:  # pragma: no cover
-    LegacyProjectLayerLoader = None
     ProjectLayerLoader = None
     QGIS_AVAILABLE = False
     QGIS_IMPORT_ERROR = exc
@@ -76,9 +74,6 @@ SKIP_MOCK_LOAD = (
 
 @unittest.skipUnless(QGIS_AVAILABLE, SKIP_REAL)
 class ProjectLayerLoaderRealTests(unittest.TestCase):
-    def test_root_shim_exports_visualization_project_layer_loader(self):
-        self.assertIs(LegacyProjectLayerLoader, ProjectLayerLoader)
-
     def test_load_output_layers_uses_current_and_legacy_activity_names(self):
         loader = ProjectLayerLoader()
 
