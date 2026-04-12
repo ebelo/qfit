@@ -14,7 +14,10 @@ from .background_map_messages import (
 )
 from .layer_gateway import LayerGateway
 from .render_plan import build_render_plan
-from .visual_apply_messages import build_filtered_visual_apply_status
+from .visual_apply_messages import (
+    append_visual_apply_temporal_note,
+    build_filtered_visual_apply_status,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -234,11 +237,7 @@ class VisualApplyService:
             status = build_background_map_failure_status()
         else:
             status = build_styled_background_map_failure_status()
-        if temporal_note:
-            status = "{status}. {temporal_note}.".format(
-                status=status, temporal_note=temporal_note
-            )
-        return status
+        return append_visual_apply_temporal_note(status, temporal_note)
 
     @staticmethod
     def _build_status(
@@ -260,8 +259,4 @@ class VisualApplyService:
         else:
             status = build_background_map_cleared_status()
 
-        if temporal_note:
-            status = "{status}. {temporal_note}.".format(
-                status=status, temporal_note=temporal_note
-            )
-        return status
+        return append_visual_apply_temporal_note(status, temporal_note)
