@@ -22,7 +22,7 @@ class TestFrequentStartPointsAnalysis(unittest.TestCase):
         clusters = [object(), object()]
 
         with patch(
-            "qfit.analysis.infrastructure.frequent_start_points_layer.build_frequent_start_points_layer",
+            "qfit.analysis.application.frequent_start_points_analysis._build_frequent_start_points_layer",
             return_value=("layer", clusters),
         ) as build_layer, patch(
             "qfit.analysis.application.frequent_start_points_analysis.build_frequent_start_points_result",
