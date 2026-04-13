@@ -2,7 +2,7 @@ import os
 from dataclasses import dataclass
 from typing import Any
 
-from ..analysis.application.analysis_controller_provider import build_analysis_workflow
+from ..analysis.application.analysis_workflow_provider import build_analysis_workflow
 from ..analysis.application.analysis_workflow_port import AnalysisWorkflowPort
 from ..atlas.export_controller import AtlasExportController
 from ..atlas.export_service import AtlasExportService
