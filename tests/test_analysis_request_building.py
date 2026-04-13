@@ -4,7 +4,7 @@ from unittest.mock import patch
 from tests import _path  # noqa: F401
 from qfit.activities.application.activity_selection_state import ActivitySelectionState
 from qfit.activities.domain.activity_query import ActivityQuery
-from qfit.analysis.application.analysis_request_building import build_analysis_workflow
+from qfit.analysis.application.analysis_workflow_building import build_analysis_workflow
 
 
 class TestAnalysisRequestBuilding(unittest.TestCase):
