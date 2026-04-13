@@ -579,7 +579,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             selection_state=self.module.ActivitySelectionState(query=object(), filtered_count=1),
             style_preset="By activity type",
             temporal_mode="By month",
-            background_config=self.module.BackgroundConfig(),
+            background_config=SimpleNamespace(),
             analysis_mode="None",
             apply_subset_filters=True,
         )
