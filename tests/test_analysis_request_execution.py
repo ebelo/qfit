@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import Mock, patch
 
 from tests import _path  # noqa: F401
-from qfit.analysis.application.analysis_request_execution import run_analysis_workflow
+from qfit.analysis.application.analysis_workflow_execution import run_analysis_workflow
 
 
 class TestAnalysisRequestExecution(unittest.TestCase):
@@ -11,7 +11,7 @@ class TestAnalysisRequestExecution(unittest.TestCase):
         request = object()
 
         with patch(
-            "qfit.analysis.application.analysis_request_execution.dispatch_analysis_request",
+            "qfit.analysis.application.analysis_workflow_execution.dispatch_analysis_request",
             return_value="result",
         ) as dispatch_request:
             result = run_analysis_workflow(
@@ -28,7 +28,7 @@ class TestAnalysisRequestExecution(unittest.TestCase):
         build_request = Mock(return_value=request)
 
         with patch(
-            "qfit.analysis.application.analysis_request_execution.dispatch_analysis_request",
+            "qfit.analysis.application.analysis_workflow_execution.dispatch_analysis_request",
             return_value="result",
         ) as dispatch_request:
             result = run_analysis_workflow(

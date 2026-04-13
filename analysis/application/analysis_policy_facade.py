@@ -1,6 +1,6 @@
 from ...activities.application.activity_selection_state import ActivitySelectionState
 from .analysis_request_building import build_analysis_workflow
-from .analysis_request_execution import run_analysis_workflow
+from .analysis_workflow_execution import run_analysis_workflow
 
 
 def build_analysis_workflow_request(
