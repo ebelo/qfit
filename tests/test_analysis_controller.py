@@ -8,6 +8,7 @@ from qfit.analysis.application.analysis_controller import (
     AnalysisController,
     FREQUENT_STARTING_POINTS_MODE,
     HEATMAP_MODE,
+    _run_frequent_start_points_analysis,
 )
 
 
@@ -80,13 +81,13 @@ class TestAnalysisController(unittest.TestCase):
         )
 
         with patch(
-            "qfit.analysis.application.analysis_controller.build_empty_analysis_result",
+            "qfit.analysis.application.analysis_controller._run_frequent_start_points_analysis",
             return_value="result",
-        ) as build_result:
+        ) as run_analysis:
             result = self.controller.run_request(request)
 
         self.assertEqual(result, "result")
-        build_result.assert_called_once_with()
+        run_analysis.assert_called_once_with(None)
 
     def test_run_request_reports_no_matches(self):
         request = self.controller.build_request(
@@ -95,36 +96,39 @@ class TestAnalysisController(unittest.TestCase):
         )
 
         with patch(
-            "qfit.analysis.application.analysis_controller._build_frequent_start_points_layer",
-            return_value=(None, []),
-        ), patch(
-            "qfit.analysis.application.analysis_controller.build_frequent_start_points_result",
+            "qfit.analysis.application.analysis_controller._run_frequent_start_points_analysis",
             return_value="result",
-        ) as build_result:
+        ) as run_analysis:
             result = self.controller.run_request(request)
 
         self.assertEqual(result, "result")
-        build_result.assert_called_once_with(None, [])
+        run_analysis.assert_called_once_with(request.starts_layer)
 
     def test_run_request_returns_layer_for_matching_mode(self):
         request = self.controller.build_request(
             FREQUENT_STARTING_POINTS_MODE,
             object(),
         )
-        layer = object()
         built_result = object()
 
         with patch(
-            "qfit.analysis.application.analysis_controller._build_frequent_start_points_layer",
-            return_value=(layer, [object(), object()]),
-        ), patch(
-            "qfit.analysis.application.analysis_controller.build_frequent_start_points_result",
+            "qfit.analysis.application.analysis_controller._run_frequent_start_points_analysis",
             return_value=built_result,
-        ) as build_result:
+        ) as run_analysis:
             result = self.controller.run_request(request)
 
         self.assertIs(result, built_result)
-        build_result.assert_called_once()
+        run_analysis.assert_called_once_with(request.starts_layer)
+
+    def test_run_frequent_start_points_analysis_delegates_to_application_helper(self):
+        with patch(
+            "qfit.analysis.application.frequent_start_points_analysis.run_frequent_start_points_analysis",
+            return_value="result",
+        ) as run_analysis:
+            result = _run_frequent_start_points_analysis("starts-layer")
+
+        self.assertEqual(result, "result")
+        run_analysis.assert_called_once_with("starts-layer")
 
     def test_run_request_returns_empty_result_without_heatmap_layers(self):
         request = self.controller.build_request(
