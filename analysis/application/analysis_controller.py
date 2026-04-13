@@ -4,9 +4,9 @@ from ...activities.application.activity_selection_state import ActivitySelection
 from .analysis_execution_dispatch import (
     FREQUENT_STARTING_POINTS_MODE,
     HEATMAP_MODE,
-    dispatch_analysis_request,
 )
 from .analysis_models import RunAnalysisRequest, RunAnalysisResult
+from .analysis_request_execution import execute_analysis_request
 
 
 class AnalysisController:
@@ -36,10 +36,11 @@ class AnalysisController:
         )
 
     def run(self, request: RunAnalysisRequest | None = None, **legacy_kwargs) -> RunAnalysisResult:
-        if request is None:
-            request = self.build_request(**legacy_kwargs)
-
-        return dispatch_analysis_request(request)
+        return execute_analysis_request(
+            build_request=self.build_request,
+            request=request,
+            legacy_kwargs=legacy_kwargs,
+        )
 
     def run_request(self, request: RunAnalysisRequest) -> RunAnalysisResult:
         return self.run(request=request)
