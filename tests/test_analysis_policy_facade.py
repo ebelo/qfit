@@ -4,7 +4,7 @@ from unittest.mock import patch
 from tests import _path  # noqa: F401
 from qfit.activities.application.activity_selection_state import ActivitySelectionState
 from qfit.activities.domain.activity_query import ActivityQuery
-from qfit.analysis.application.analysis_policy_facade import (
+from qfit.analysis.application.analysis_workflow_facade import (
     build_analysis_workflow_request,
     run_analysis_workflow_request,
 )
@@ -15,7 +15,7 @@ class TestAnalysisPolicyFacade(unittest.TestCase):
         selection_state = ActivitySelectionState(query=ActivityQuery(search_text="gravel"), filtered_count=4)
 
         with patch(
-            "qfit.analysis.application.analysis_policy_facade.build_analysis_workflow",
+            "qfit.analysis.application.analysis_workflow_facade.build_analysis_workflow",
             return_value="request",
         ) as build_request:
             request = build_analysis_workflow_request(
@@ -39,7 +39,7 @@ class TestAnalysisPolicyFacade(unittest.TestCase):
         request = object()
 
         with patch(
-            "qfit.analysis.application.analysis_policy_facade.run_analysis_workflow",
+            "qfit.analysis.application.analysis_workflow_facade.run_analysis_workflow",
             return_value="result",
         ) as execute_request:
             result = run_analysis_workflow_request(

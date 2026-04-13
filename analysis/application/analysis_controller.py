@@ -5,7 +5,7 @@ from .analysis_execution_dispatch import (
     HEATMAP_MODE,
 )
 from .analysis_models import RunAnalysisRequest, RunAnalysisResult
-from .analysis_policy_facade import (
+from .analysis_workflow_facade import (
     build_analysis_workflow_request,
     run_analysis_workflow_request,
 )
