@@ -779,7 +779,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                     atlas_layer=self.atlas_layer,
                 ),
                 selection_state=build_visual_workflow_selection_state_handoff(
-                    self._current_activity_selection_state()
+                    build_activity_preview_selection_state(
+                        self._current_activity_preview_request()
+                    )
                 ),
                 settings=build_visual_workflow_settings_snapshot(
                     style_preset=self.stylePresetComboBox.currentText(),
@@ -838,7 +840,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         inputs = build_apply_analysis_configuration_inputs(
             current_mode=self.analysisModeComboBox.currentText(),
             current_starts_layer=getattr(self, "starts_layer", None),
-            current_selection_state=self._current_activity_selection_state(),
+            current_selection_state=build_activity_preview_selection_state(
+                self._current_activity_preview_request()
+            ),
             analysis_mode=analysis_mode,
             starts_layer=starts_layer,
             selection_state=selection_state,
@@ -882,9 +886,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             detailed_route_filter=self.detailedRouteStatusComboBox.currentData(),
             sort_label=self.previewSortComboBox.currentText() or DEFAULT_SORT_LABEL,
         )
-
-    def _current_activity_selection_state(self):
-        return build_activity_preview_selection_state(self._current_activity_preview_request())
 
     def _refresh_activity_preview(self):
         preview = self.activity_preview_service.build_result_request(
@@ -1000,7 +1001,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
         export_command = self.atlas_export_use_case.build_command(
             atlas_layer=self.atlas_layer,
-            selection_state=self._current_activity_selection_state(),
+            selection_state=build_activity_preview_selection_state(
+                self._current_activity_preview_request()
+            ),
             output_path=self.atlasPdfPathLineEdit.text().strip(),
             on_finished=self._on_atlas_export_finished,
             pre_export_tile_mode=self.tileModeComboBox.currentText(),
