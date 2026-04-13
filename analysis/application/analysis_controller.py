@@ -2,10 +2,7 @@ from __future__ import annotations
 
 from ...activities.application.activity_selection_state import ActivitySelectionState
 from .analysis_models import RunAnalysisRequest, RunAnalysisResult
-from .analysis_result_builder import (
-    build_activity_heatmap_result,
-    build_empty_analysis_result,
-)
+from .analysis_result_builder import build_empty_analysis_result
 
 FREQUENT_STARTING_POINTS_MODE = "Most frequent starting points"
 HEATMAP_MODE = "Heatmap"
@@ -45,14 +42,10 @@ class AnalysisController:
             return _run_frequent_start_points_analysis(request.starts_layer)
 
         if request.analysis_mode == HEATMAP_MODE:
-            if request.activities_layer is None and request.points_layer is None:
-                return build_empty_analysis_result()
-
-            layer, sample_count = _build_activity_heatmap_layer(
-                request.activities_layer,
-                request.points_layer,
+            return _run_activity_heatmap_analysis(
+                activities_layer=request.activities_layer,
+                points_layer=request.points_layer,
             )
-            return build_activity_heatmap_result(layer, sample_count)
 
         return build_empty_analysis_result()
 
@@ -66,10 +59,10 @@ def _run_frequent_start_points_analysis(starts_layer):
     return run_frequent_start_points_analysis(starts_layer)
 
 
-def _build_activity_heatmap_layer(activities_layer, points_layer):
-    from ..infrastructure.activity_heatmap_layer import build_activity_heatmap_layer
+def _run_activity_heatmap_analysis(activities_layer=None, points_layer=None):
+    from .activity_heatmap_analysis import run_activity_heatmap_analysis
 
-    return build_activity_heatmap_layer(
+    return run_activity_heatmap_analysis(
         activities_layer=activities_layer,
         points_layer=points_layer,
     )
