@@ -4,11 +4,11 @@ from unittest.mock import patch
 from tests import _path  # noqa: F401
 from qfit.activities.application.activity_selection_state import ActivitySelectionState
 from qfit.activities.domain.activity_query import ActivityQuery
-from qfit.analysis.application.analysis_request_building import build_analysis_request
+from qfit.analysis.application.analysis_request_building import build_analysis_workflow
 
 
 class TestAnalysisRequestBuilding(unittest.TestCase):
-    def test_build_analysis_request_delegates_to_request_builder_helpers(self):
+    def test_build_analysis_workflow_delegates_to_request_builder_helpers(self):
         selection_state = ActivitySelectionState(query=ActivityQuery(search_text="gravel"), filtered_count=4)
 
         with patch(
@@ -18,7 +18,7 @@ class TestAnalysisRequestBuilding(unittest.TestCase):
             "qfit.analysis.application.analysis_request_builder.build_run_analysis_request",
             return_value="request",
         ) as build_request:
-            request = build_analysis_request(
+            request = build_analysis_workflow(
                 analysis_mode="Heatmap",
                 starts_layer="starts-layer",
                 selection_state=selection_state,

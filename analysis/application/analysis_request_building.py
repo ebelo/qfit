@@ -1,7 +1,7 @@
 from ...activities.application.activity_selection_state import ActivitySelectionState
 
 
-def build_analysis_request(
+def build_analysis_workflow(
     *,
     analysis_mode: str,
     starts_layer,

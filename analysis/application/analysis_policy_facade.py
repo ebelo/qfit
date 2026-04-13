@@ -1,5 +1,5 @@
 from ...activities.application.activity_selection_state import ActivitySelectionState
-from .analysis_request_building import build_analysis_request
+from .analysis_request_building import build_analysis_workflow
 from .analysis_request_execution import execute_analysis_request
 
 
@@ -11,7 +11,7 @@ def build_analysis_workflow_request(
     activities_layer: object = None,
     points_layer: object = None,
 ):
-    return build_analysis_request(
+    return build_analysis_workflow(
         analysis_mode=analysis_mode,
         starts_layer=starts_layer,
         selection_state=selection_state,
