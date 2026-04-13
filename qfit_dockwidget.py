@@ -60,6 +60,10 @@ from .activities.application.store_task import build_store_task
 from .analysis.infrastructure.activity_heatmap_layer import (
     ACTIVITY_HEATMAP_LAYER_NAME,
 )
+from .analysis.application.analysis_request_builder import (
+    RunAnalysisRequestInputs,
+    build_run_analysis_request,
+)
 from .analysis.infrastructure.frequent_start_points_layer import (
     FREQUENT_STARTING_POINTS_LAYER_NAME,
 )
@@ -790,12 +794,14 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         )
 
     def _run_selected_analysis(self, analysis_mode, starts_layer, selection_state=None):
-        request = self.analysis_controller.build_request(
-            analysis_mode=analysis_mode,
-            activities_layer=getattr(self, "activities_layer", None),
-            starts_layer=starts_layer,
-            points_layer=getattr(self, "points_layer", None),
-            selection_state=selection_state,
+        request = build_run_analysis_request(
+            RunAnalysisRequestInputs(
+                analysis_mode=analysis_mode,
+                activities_layer=getattr(self, "activities_layer", None),
+                starts_layer=starts_layer,
+                points_layer=getattr(self, "points_layer", None),
+                selection_state=selection_state,
+            )
         )
         result = self.analysis_controller.run_request(request)
         if result.layer is None:
