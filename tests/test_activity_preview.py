@@ -7,6 +7,7 @@ from qfit.activities.application.activity_preview import (
     ActivityPreviewRequest,
     build_activity_preview,
     build_activity_preview_request,
+    build_activity_preview_selection_state,
     build_activity_query,
     build_activity_selection_state,
 )
@@ -98,6 +99,14 @@ class ActivityPreviewTests(unittest.TestCase):
         self.assertEqual(selection_state.filtered_count, 1)
         self.assertEqual(selection_state.query.activity_type, "Run")
         self.assertEqual(selection_state.query.detailed_route_filter, DETAILED_ROUTE_FILTER_MISSING)
+
+    def test_build_activity_preview_selection_state_delegates_to_selection_state_builder(self):
+        request = ActivityPreviewRequest(activities=self.activities, activity_type="Run")
+
+        selection_state = build_activity_preview_selection_state(request)
+
+        self.assertEqual(selection_state.filtered_count, 1)
+        self.assertEqual(selection_state.query.activity_type, "Run")
 
     def test_build_activity_preview_returns_empty_state_when_no_activities(self):
         result = build_activity_preview(ActivityPreviewRequest(activities=[]))

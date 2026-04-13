@@ -86,8 +86,14 @@ def build_activity_selection_state(request: ActivityPreviewRequest) -> ActivityS
     )
 
 
+def build_activity_preview_selection_state(
+    request: ActivityPreviewRequest,
+) -> ActivitySelectionState:
+    return build_activity_selection_state(request)
+
+
 def build_activity_preview(request: ActivityPreviewRequest) -> ActivityPreviewResult:
-    selection_state = build_activity_selection_state(request)
+    selection_state = build_activity_preview_selection_state(request)
 
     if not request.activities:
         return ActivityPreviewResult(
