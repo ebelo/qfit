@@ -30,7 +30,7 @@ class TestAnalysisController(unittest.TestCase):
 
     def test_build_request_delegates_to_request_builder_helper(self):
         with patch(
-            "qfit.analysis.application.analysis_controller.build_analysis_controller_request",
+            "qfit.analysis.application.analysis_controller.build_analysis_workflow_request",
             return_value="request",
         ) as build_request:
             request = self.controller.build_request(
@@ -61,7 +61,7 @@ class TestAnalysisController(unittest.TestCase):
         request = self.controller.build_request("None", object())
 
         with patch(
-            "qfit.analysis.application.analysis_controller.run_analysis_controller_request",
+            "qfit.analysis.application.analysis_controller.run_analysis_workflow_request",
             return_value="result",
         ) as execute_request:
             result = self.controller.run_request(request)
@@ -79,7 +79,7 @@ class TestAnalysisController(unittest.TestCase):
         )
 
         with patch(
-            "qfit.analysis.application.analysis_controller.run_analysis_controller_request",
+            "qfit.analysis.application.analysis_controller.run_analysis_workflow_request",
             return_value="result",
         ) as execute_request:
             result = self.controller.run_request(request)
@@ -97,7 +97,7 @@ class TestAnalysisController(unittest.TestCase):
         )
 
         with patch(
-            "qfit.analysis.application.analysis_controller.run_analysis_controller_request",
+            "qfit.analysis.application.analysis_controller.run_analysis_workflow_request",
             return_value="result",
         ) as execute_request:
             result = self.controller.run_request(request)
@@ -116,7 +116,7 @@ class TestAnalysisController(unittest.TestCase):
         built_result = object()
 
         with patch(
-            "qfit.analysis.application.analysis_controller.run_analysis_controller_request",
+            "qfit.analysis.application.analysis_controller.run_analysis_workflow_request",
             return_value=built_result,
         ) as execute_request:
             result = self.controller.run_request(request)
@@ -136,7 +136,7 @@ class TestAnalysisController(unittest.TestCase):
         )
 
         with patch(
-            "qfit.analysis.application.analysis_controller.run_analysis_controller_request",
+            "qfit.analysis.application.analysis_controller.run_analysis_workflow_request",
             return_value="result",
         ) as execute_request:
             result = self.controller.run(request)
@@ -149,7 +149,7 @@ class TestAnalysisController(unittest.TestCase):
 
     def test_run_builds_request_via_execution_use_case_when_request_missing(self):
         with patch(
-            "qfit.analysis.application.analysis_controller.run_analysis_controller_request",
+            "qfit.analysis.application.analysis_controller.run_analysis_workflow_request",
             return_value="result",
         ) as execute_request:
             result = self.controller.run(
@@ -179,7 +179,7 @@ class TestAnalysisController(unittest.TestCase):
         )
 
         with patch(
-            "qfit.analysis.application.analysis_controller.run_analysis_controller_request",
+            "qfit.analysis.application.analysis_controller.run_analysis_workflow_request",
             return_value="result",
         ) as execute_request:
             result = self.controller.run_request(request)
@@ -199,7 +199,7 @@ class TestAnalysisController(unittest.TestCase):
         )
 
         with patch(
-            "qfit.analysis.application.analysis_controller.run_analysis_controller_request",
+            "qfit.analysis.application.analysis_controller.run_analysis_workflow_request",
             return_value="result",
         ) as execute_request:
             result = self.controller.run_request(request)
@@ -220,7 +220,7 @@ class TestAnalysisController(unittest.TestCase):
         built_result = object()
 
         with patch(
-            "qfit.analysis.application.analysis_controller.run_analysis_controller_request",
+            "qfit.analysis.application.analysis_controller.run_analysis_workflow_request",
             return_value=built_result,
         ) as execute_request:
             result = self.controller.run_request(request)
