@@ -46,6 +46,19 @@ def build_apply_analysis_configuration_inputs(
     )
 
 
+def build_run_analysis_current_inputs(
+    *,
+    activities_layer=None,
+    points_layer=None,
+) -> RunAnalysisCurrentInputs:
+    """Build normalized current layer inputs for analysis request shaping."""
+
+    return RunAnalysisCurrentInputs(
+        activities_layer=activities_layer,
+        points_layer=points_layer,
+    )
+
+
 def build_run_analysis_request_inputs(
     *,
     current: RunAnalysisCurrentInputs | None = None,

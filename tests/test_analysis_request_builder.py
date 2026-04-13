@@ -8,6 +8,7 @@ from qfit.analysis.application.analysis_request_builder import (
     RunAnalysisCurrentInputs,
     RunAnalysisRequestInputs,
     build_apply_analysis_configuration_inputs,
+    build_run_analysis_current_inputs,
     build_run_analysis_request,
     build_run_analysis_request_inputs,
 )
@@ -51,6 +52,16 @@ class TestAnalysisRequestBuilder(unittest.TestCase):
         self.assertEqual(inputs.analysis_mode, "")
         self.assertIsNone(inputs.starts_layer)
         self.assertEqual(inputs.selection_state.filtered_count, 0)
+
+    def test_build_run_analysis_current_inputs_keeps_inputs(self):
+        current = build_run_analysis_current_inputs(
+            activities_layer="activities-layer",
+            points_layer="points-layer",
+        )
+
+        self.assertIsInstance(current, RunAnalysisCurrentInputs)
+        self.assertEqual(current.activities_layer, "activities-layer")
+        self.assertEqual(current.points_layer, "points-layer")
 
     def test_build_run_analysis_request_inputs_keeps_inputs(self):
         selection_state = ActivitySelectionState(query=ActivityQuery(search_text="gravel"), filtered_count=4)
