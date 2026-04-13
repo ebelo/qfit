@@ -8,6 +8,7 @@ from qfit.analysis.application.analysis_controller import (
     AnalysisController,
     FREQUENT_STARTING_POINTS_MODE,
     HEATMAP_MODE,
+    _run_activity_heatmap_analysis,
     _run_frequent_start_points_analysis,
 )
 
@@ -139,13 +140,16 @@ class TestAnalysisController(unittest.TestCase):
         )
 
         with patch(
-            "qfit.analysis.application.analysis_controller.build_empty_analysis_result",
+            "qfit.analysis.application.analysis_controller._run_activity_heatmap_analysis",
             return_value="result",
-        ) as build_result:
+        ) as run_analysis:
             result = self.controller.run_request(request)
 
         self.assertEqual(result, "result")
-        build_result.assert_called_once_with()
+        run_analysis.assert_called_once_with(
+            activities_layer=None,
+            points_layer=None,
+        )
 
     def test_run_request_reports_no_heatmap_matches(self):
         request = self.controller.build_request(
@@ -156,16 +160,16 @@ class TestAnalysisController(unittest.TestCase):
         )
 
         with patch(
-            "qfit.analysis.application.analysis_controller._build_activity_heatmap_layer",
-            return_value=(None, 0),
-        ), patch(
-            "qfit.analysis.application.analysis_controller.build_activity_heatmap_result",
+            "qfit.analysis.application.analysis_controller._run_activity_heatmap_analysis",
             return_value="result",
-        ) as build_result:
+        ) as run_analysis:
             result = self.controller.run_request(request)
 
         self.assertEqual(result, "result")
-        build_result.assert_called_once_with(None, 0)
+        run_analysis.assert_called_once_with(
+            activities_layer=request.activities_layer,
+            points_layer=request.points_layer,
+        )
 
     def test_run_request_returns_heatmap_layer(self):
         request = self.controller.build_request(
@@ -174,20 +178,35 @@ class TestAnalysisController(unittest.TestCase):
             activities_layer=object(),
             points_layer=object(),
         )
-        layer = object()
         built_result = object()
 
         with patch(
-            "qfit.analysis.application.analysis_controller._build_activity_heatmap_layer",
-            return_value=(layer, 42),
-        ), patch(
-            "qfit.analysis.application.analysis_controller.build_activity_heatmap_result",
+            "qfit.analysis.application.analysis_controller._run_activity_heatmap_analysis",
             return_value=built_result,
-        ) as build_result:
+        ) as run_analysis:
             result = self.controller.run_request(request)
 
         self.assertIs(result, built_result)
-        build_result.assert_called_once_with(layer, 42)
+        run_analysis.assert_called_once_with(
+            activities_layer=request.activities_layer,
+            points_layer=request.points_layer,
+        )
+
+    def test_run_activity_heatmap_analysis_delegates_to_application_helper(self):
+        with patch(
+            "qfit.analysis.application.activity_heatmap_analysis.run_activity_heatmap_analysis",
+            return_value="result",
+        ) as run_analysis:
+            result = _run_activity_heatmap_analysis(
+                activities_layer="activities-layer",
+                points_layer="points-layer",
+            )
+
+        self.assertEqual(result, "result")
+        run_analysis.assert_called_once_with(
+            activities_layer="activities-layer",
+            points_layer="points-layer",
+        )
 
 
 if __name__ == "__main__":
