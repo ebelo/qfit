@@ -79,10 +79,14 @@ def build_activity_query(request: ActivityPreviewRequest) -> ActivityQuery:
     )
 
 
+def build_activity_preview_query(request: ActivityPreviewRequest) -> ActivityQuery:
+    return build_activity_query(request)
+
+
 def build_activity_selection_state(request: ActivityPreviewRequest) -> ActivitySelectionState:
     return ActivitySelectionState.from_activities(
         request.activities,
-        build_activity_query(request),
+        build_activity_preview_query(request),
     )
 
 

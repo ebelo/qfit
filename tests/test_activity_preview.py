@@ -6,6 +6,7 @@ from tests import _path  # noqa: F401
 from qfit.activities.application.activity_preview import (
     ActivityPreviewRequest,
     build_activity_preview,
+    build_activity_preview_query,
     build_activity_preview_request,
     build_activity_preview_selection_state,
     build_activity_query,
@@ -60,6 +61,18 @@ class ActivityPreviewTests(unittest.TestCase):
         self.assertEqual(query.search_text, "lunch")
         self.assertEqual(query.detailed_route_filter, DETAILED_ROUTE_FILTER_MISSING)
         self.assertEqual(query.sort_label, "Name (A–Z)")
+
+    def test_build_activity_preview_query_delegates_to_activity_query_builder(self):
+        request = ActivityPreviewRequest(
+            activities=self.activities,
+            activity_type="Run",
+            detailed_route_filter=DETAILED_ROUTE_FILTER_MISSING,
+        )
+
+        query = build_activity_preview_query(request)
+
+        self.assertEqual(query.activity_type, "Run")
+        self.assertEqual(query.detailed_route_filter, DETAILED_ROUTE_FILTER_MISSING)
 
     def test_build_activity_preview_request_preserves_inputs(self):
         request = build_activity_preview_request(

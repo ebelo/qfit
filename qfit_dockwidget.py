@@ -35,6 +35,7 @@ from .activities.domain.activity_query import (
 from .activities.application import (
     ActivitySelectionState,
     ActivityTypeOptionsResult,
+    build_activity_preview_query,
     build_activity_preview_request,
     build_activity_preview_selection_state,
     build_activity_type_options_from_activities,
@@ -888,7 +889,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         return build_activity_preview_selection_state(self._current_activity_preview_request())
 
     def _current_activity_query(self):
-        return self._current_activity_selection_state().query
+        return build_activity_preview_query(self._current_activity_preview_request())
 
     def _refresh_activity_preview(self):
         preview = self.activity_preview_service.build_result_request(
