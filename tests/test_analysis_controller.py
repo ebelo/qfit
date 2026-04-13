@@ -8,8 +8,6 @@ from qfit.analysis.application.analysis_controller import (
     AnalysisController,
     FREQUENT_STARTING_POINTS_MODE,
     HEATMAP_MODE,
-    _run_activity_heatmap_analysis,
-    _run_frequent_start_points_analysis,
 )
 
 
@@ -67,13 +65,13 @@ class TestAnalysisController(unittest.TestCase):
         request = self.controller.build_request("None", object())
 
         with patch(
-            "qfit.analysis.application.analysis_controller.build_empty_analysis_result",
+            "qfit.analysis.application.analysis_controller.dispatch_analysis_request",
             return_value="result",
-        ) as build_result:
+        ) as dispatch_request:
             result = self.controller.run_request(request)
 
         self.assertEqual(result, "result")
-        build_result.assert_called_once_with()
+        dispatch_request.assert_called_once_with(request)
 
     def test_run_request_returns_empty_result_without_starts_layer(self):
         request = self.controller.build_request(
@@ -82,13 +80,13 @@ class TestAnalysisController(unittest.TestCase):
         )
 
         with patch(
-            "qfit.analysis.application.analysis_controller._run_frequent_start_points_analysis",
+            "qfit.analysis.application.analysis_controller.dispatch_analysis_request",
             return_value="result",
-        ) as run_analysis:
+        ) as dispatch_request:
             result = self.controller.run_request(request)
 
         self.assertEqual(result, "result")
-        run_analysis.assert_called_once_with(None)
+        dispatch_request.assert_called_once_with(request)
 
     def test_run_request_reports_no_matches(self):
         request = self.controller.build_request(
@@ -97,13 +95,13 @@ class TestAnalysisController(unittest.TestCase):
         )
 
         with patch(
-            "qfit.analysis.application.analysis_controller._run_frequent_start_points_analysis",
+            "qfit.analysis.application.analysis_controller.dispatch_analysis_request",
             return_value="result",
-        ) as run_analysis:
+        ) as dispatch_request:
             result = self.controller.run_request(request)
 
         self.assertEqual(result, "result")
-        run_analysis.assert_called_once_with(request.starts_layer)
+        dispatch_request.assert_called_once_with(request)
 
     def test_run_request_returns_layer_for_matching_mode(self):
         request = self.controller.build_request(
@@ -113,23 +111,30 @@ class TestAnalysisController(unittest.TestCase):
         built_result = object()
 
         with patch(
-            "qfit.analysis.application.analysis_controller._run_frequent_start_points_analysis",
+            "qfit.analysis.application.analysis_controller.dispatch_analysis_request",
             return_value=built_result,
-        ) as run_analysis:
+        ) as dispatch_request:
             result = self.controller.run_request(request)
 
         self.assertIs(result, built_result)
-        run_analysis.assert_called_once_with(request.starts_layer)
+        dispatch_request.assert_called_once_with(request)
 
-    def test_run_frequent_start_points_analysis_delegates_to_application_helper(self):
+    def test_run_delegates_to_dispatch_helper(self):
+        request = self.controller.build_request(
+            FREQUENT_STARTING_POINTS_MODE,
+            "starts-layer",
+            activities_layer="activities-layer",
+            points_layer="points-layer",
+        )
+
         with patch(
-            "qfit.analysis.application.frequent_start_points_analysis.run_frequent_start_points_analysis",
+            "qfit.analysis.application.analysis_controller.dispatch_analysis_request",
             return_value="result",
-        ) as run_analysis:
-            result = _run_frequent_start_points_analysis("starts-layer")
+        ) as dispatch_request:
+            result = self.controller.run(request)
 
         self.assertEqual(result, "result")
-        run_analysis.assert_called_once_with("starts-layer")
+        dispatch_request.assert_called_once_with(request)
 
     def test_run_request_returns_empty_result_without_heatmap_layers(self):
         request = self.controller.build_request(
@@ -140,16 +145,13 @@ class TestAnalysisController(unittest.TestCase):
         )
 
         with patch(
-            "qfit.analysis.application.analysis_controller._run_activity_heatmap_analysis",
+            "qfit.analysis.application.analysis_controller.dispatch_analysis_request",
             return_value="result",
-        ) as run_analysis:
+        ) as dispatch_request:
             result = self.controller.run_request(request)
 
         self.assertEqual(result, "result")
-        run_analysis.assert_called_once_with(
-            activities_layer=None,
-            points_layer=None,
-        )
+        dispatch_request.assert_called_once_with(request)
 
     def test_run_request_reports_no_heatmap_matches(self):
         request = self.controller.build_request(
@@ -160,16 +162,13 @@ class TestAnalysisController(unittest.TestCase):
         )
 
         with patch(
-            "qfit.analysis.application.analysis_controller._run_activity_heatmap_analysis",
+            "qfit.analysis.application.analysis_controller.dispatch_analysis_request",
             return_value="result",
-        ) as run_analysis:
+        ) as dispatch_request:
             result = self.controller.run_request(request)
 
         self.assertEqual(result, "result")
-        run_analysis.assert_called_once_with(
-            activities_layer=request.activities_layer,
-            points_layer=request.points_layer,
-        )
+        dispatch_request.assert_called_once_with(request)
 
     def test_run_request_returns_heatmap_layer(self):
         request = self.controller.build_request(
@@ -181,32 +180,13 @@ class TestAnalysisController(unittest.TestCase):
         built_result = object()
 
         with patch(
-            "qfit.analysis.application.analysis_controller._run_activity_heatmap_analysis",
+            "qfit.analysis.application.analysis_controller.dispatch_analysis_request",
             return_value=built_result,
-        ) as run_analysis:
+        ) as dispatch_request:
             result = self.controller.run_request(request)
 
         self.assertIs(result, built_result)
-        run_analysis.assert_called_once_with(
-            activities_layer=request.activities_layer,
-            points_layer=request.points_layer,
-        )
-
-    def test_run_activity_heatmap_analysis_delegates_to_application_helper(self):
-        with patch(
-            "qfit.analysis.application.activity_heatmap_analysis.run_activity_heatmap_analysis",
-            return_value="result",
-        ) as run_analysis:
-            result = _run_activity_heatmap_analysis(
-                activities_layer="activities-layer",
-                points_layer="points-layer",
-            )
-
-        self.assertEqual(result, "result")
-        run_analysis.assert_called_once_with(
-            activities_layer="activities-layer",
-            points_layer="points-layer",
-        )
+        dispatch_request.assert_called_once_with(request)
 
 
 if __name__ == "__main__":
