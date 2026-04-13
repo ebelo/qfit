@@ -89,14 +89,14 @@ class TestAnalysisController(unittest.TestCase):
         with patch(
             "qfit.analysis.application.analysis_controller._build_frequent_start_points_layer",
             return_value=(None, []),
-        ):
+        ), patch(
+            "qfit.analysis.application.analysis_controller.build_frequent_start_points_result",
+            return_value="result",
+        ) as build_result:
             result = self.controller.run_request(request)
 
-        self.assertEqual(
-            result.status,
-            "No frequent starting points matched the current filters",
-        )
-        self.assertIsNone(result.layer)
+        self.assertEqual(result, "result")
+        build_result.assert_called_once_with(None, [])
 
     def test_run_request_returns_layer_for_matching_mode(self):
         request = self.controller.build_request(
@@ -104,18 +104,19 @@ class TestAnalysisController(unittest.TestCase):
             object(),
         )
         layer = object()
+        built_result = object()
 
         with patch(
             "qfit.analysis.application.analysis_controller._build_frequent_start_points_layer",
             return_value=(layer, [object(), object()]),
-        ):
+        ), patch(
+            "qfit.analysis.application.analysis_controller.build_frequent_start_points_result",
+            return_value=built_result,
+        ) as build_result:
             result = self.controller.run_request(request)
 
-        self.assertEqual(
-            result.status,
-            "Showing top 2 frequent starting-point clusters",
-        )
-        self.assertIs(result.layer, layer)
+        self.assertIs(result, built_result)
+        build_result.assert_called_once()
 
     def test_run_request_returns_empty_result_without_heatmap_layers(self):
         request = self.controller.build_request(
