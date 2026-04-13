@@ -62,6 +62,7 @@ from .analysis.infrastructure.activity_heatmap_layer import (
 )
 from .analysis.application.analysis_request_builder import (
     RunAnalysisRequestInputs,
+    build_apply_analysis_configuration_inputs,
     build_run_analysis_request,
 )
 from .analysis.infrastructure.frequent_start_points_layer import (
@@ -839,14 +840,18 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     ):
         self._clear_analysis_layer()
 
-        current_mode = analysis_mode or self.analysisModeComboBox.currentText()
-        current_starts_layer = (
-            starts_layer if starts_layer is not None else getattr(self, "starts_layer", None)
+        inputs = build_apply_analysis_configuration_inputs(
+            current_mode=self.analysisModeComboBox.currentText(),
+            current_starts_layer=getattr(self, "starts_layer", None),
+            current_selection_state=self._current_activity_selection_state(),
+            analysis_mode=analysis_mode,
+            starts_layer=starts_layer,
+            selection_state=selection_state,
         )
         return self._run_selected_analysis(
-            current_mode,
-            current_starts_layer,
-            selection_state or self._current_activity_selection_state(),
+            inputs.analysis_mode,
+            inputs.starts_layer,
+            inputs.selection_state,
         )
 
     def _clear_analysis_layer(self):
