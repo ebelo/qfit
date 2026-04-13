@@ -1,6 +1,6 @@
 from ...activities.application.activity_selection_state import ActivitySelectionState
 from .analysis_request_building import build_analysis_workflow
-from .analysis_request_execution import execute_analysis_request
+from .analysis_request_execution import run_analysis_workflow
 
 
 def build_analysis_workflow_request(
@@ -21,7 +21,7 @@ def build_analysis_workflow_request(
 
 
 def run_analysis_workflow_request(*, request=None, legacy_kwargs=None):
-    return execute_analysis_request(
+    return run_analysis_workflow(
         build_request=build_analysis_workflow_request,
         request=request,
         legacy_kwargs=legacy_kwargs,

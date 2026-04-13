@@ -39,7 +39,7 @@ class TestAnalysisPolicyFacade(unittest.TestCase):
         request = object()
 
         with patch(
-            "qfit.analysis.application.analysis_policy_facade.execute_analysis_request",
+            "qfit.analysis.application.analysis_policy_facade.run_analysis_workflow",
             return_value="result",
         ) as execute_request:
             result = run_analysis_workflow_request(
