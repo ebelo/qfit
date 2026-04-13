@@ -3,7 +3,7 @@ from .analysis_request_building import build_analysis_request
 from .analysis_request_execution import execute_analysis_request
 
 
-def build_analysis_controller_request(
+def build_analysis_workflow_request(
     *,
     analysis_mode: str,
     starts_layer,
@@ -20,9 +20,9 @@ def build_analysis_controller_request(
     )
 
 
-def run_analysis_controller_request(*, request=None, legacy_kwargs=None):
+def run_analysis_workflow_request(*, request=None, legacy_kwargs=None):
     return execute_analysis_request(
-        build_request=build_analysis_controller_request,
+        build_request=build_analysis_workflow_request,
         request=request,
         legacy_kwargs=legacy_kwargs,
     )

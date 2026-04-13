@@ -6,8 +6,8 @@ from .analysis_execution_dispatch import (
 )
 from .analysis_models import RunAnalysisRequest, RunAnalysisResult
 from .analysis_policy_facade import (
-    build_analysis_controller_request,
-    run_analysis_controller_request,
+    build_analysis_workflow_request,
+    run_analysis_workflow_request,
 )
 
 
@@ -22,7 +22,7 @@ class AnalysisController:
         activities_layer: object = None,
         points_layer: object = None,
     ) -> RunAnalysisRequest:
-        return build_analysis_controller_request(
+        return build_analysis_workflow_request(
             analysis_mode=analysis_mode,
             starts_layer=starts_layer,
             selection_state=selection_state,
@@ -31,7 +31,7 @@ class AnalysisController:
         )
 
     def run(self, request: RunAnalysisRequest | None = None, **legacy_kwargs) -> RunAnalysisResult:
-        return run_analysis_controller_request(
+        return run_analysis_workflow_request(
             request=request,
             legacy_kwargs=legacy_kwargs,
         )
