@@ -8,14 +8,28 @@ from qfit.ui.application import (
     RunAnalysisAction,
     VisualWorkflowBackgroundInputs,
     VisualWorkflowActionInputs,
+    VisualWorkflowSettingsSnapshot,
     build_visual_layer_refs,
     build_visual_workflow_action,
     build_visual_workflow_action_inputs,
+    build_visual_workflow_settings_snapshot,
 )
 from qfit.visualization.application import BackgroundConfig, LayerRefs
 
 
 class TestVisualWorkflowActionBuilder(unittest.TestCase):
+    def test_build_visual_workflow_settings_snapshot_keeps_values(self):
+        settings = build_visual_workflow_settings_snapshot(
+            style_preset="By activity type",
+            temporal_mode="Off",
+            analysis_mode="Most frequent starting points",
+        )
+
+        self.assertIsInstance(settings, VisualWorkflowSettingsSnapshot)
+        self.assertEqual(settings.style_preset, "By activity type")
+        self.assertEqual(settings.temporal_mode, "Off")
+        self.assertEqual(settings.analysis_mode, "Most frequent starting points")
+
     def test_build_visual_layer_refs_snapshots_all_layers(self):
         layers = build_visual_layer_refs(
             activities_layer="activities",
@@ -41,8 +55,11 @@ class TestVisualWorkflowActionBuilder(unittest.TestCase):
                 atlas="atlas",
             ),
             selection_state=selection_state,
-            style_preset="By activity type",
-            temporal_mode="Off",
+            settings=VisualWorkflowSettingsSnapshot(
+                style_preset="By activity type",
+                temporal_mode="Off",
+                analysis_mode="Most frequent starting points",
+            ),
             background=VisualWorkflowBackgroundInputs(
                 enabled=True,
                 preset_name="Outdoors",
@@ -51,7 +68,6 @@ class TestVisualWorkflowActionBuilder(unittest.TestCase):
                 style_id="style-id",
                 tile_mode="Raster",
             ),
-            analysis_mode="Most frequent starting points",
         )
 
         self.assertIsInstance(inputs, VisualWorkflowActionInputs)
@@ -60,6 +76,7 @@ class TestVisualWorkflowActionBuilder(unittest.TestCase):
         self.assertTrue(inputs.background_config.enabled)
         self.assertEqual(inputs.background_config.preset_name, "Outdoors")
         self.assertEqual(inputs.background_config.access_token, "token")
+        self.assertEqual(inputs.analysis_mode, "Most frequent starting points")
 
     def test_builds_apply_visualization_action(self):
         selection_state = ActivitySelectionState(query=ActivityQuery(), filtered_count=3)

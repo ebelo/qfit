@@ -477,6 +477,10 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             return_value="layers",
         ) as build_layers, patch.object(
             self.module,
+            "build_visual_workflow_settings_snapshot",
+            return_value="settings",
+        ) as build_settings, patch.object(
+            self.module,
             "build_visual_workflow_action_inputs",
             return_value="inputs",
         ) as build_inputs, patch.object(
@@ -499,8 +503,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         build_inputs.assert_called_once_with(
             layers="layers",
             selection_state=selection_state,
-            style_preset="By activity type",
-            temporal_mode=self.module.DEFAULT_TEMPORAL_MODE_LABEL,
+            settings="settings",
             background=self.module.VisualWorkflowBackgroundInputs(
                 enabled=True,
                 preset_name="Outdoors",
@@ -509,8 +512,12 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
                 style_id="style-id",
                 tile_mode="Raster",
             ),
-            analysis_mode="Most frequent starting points",
             apply_subset_filters=True,
+        )
+        build_settings.assert_called_once_with(
+            style_preset="By activity type",
+            temporal_mode=self.module.DEFAULT_TEMPORAL_MODE_LABEL,
+            analysis_mode="Most frequent starting points",
         )
         build_action.assert_called_once_with(self.module.ApplyVisualizationAction, "inputs")
 
