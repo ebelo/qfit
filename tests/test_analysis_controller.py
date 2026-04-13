@@ -64,10 +64,14 @@ class TestAnalysisController(unittest.TestCase):
     def test_run_request_returns_empty_result_for_non_matching_mode(self):
         request = self.controller.build_request("None", object())
 
-        result = self.controller.run_request(request)
+        with patch(
+            "qfit.analysis.application.analysis_controller.build_empty_analysis_result",
+            return_value="result",
+        ) as build_result:
+            result = self.controller.run_request(request)
 
-        self.assertEqual(result.status, "")
-        self.assertIsNone(result.layer)
+        self.assertEqual(result, "result")
+        build_result.assert_called_once_with()
 
     def test_run_request_returns_empty_result_without_starts_layer(self):
         request = self.controller.build_request(
@@ -75,10 +79,14 @@ class TestAnalysisController(unittest.TestCase):
             None,
         )
 
-        result = self.controller.run_request(request)
+        with patch(
+            "qfit.analysis.application.analysis_controller.build_empty_analysis_result",
+            return_value="result",
+        ) as build_result:
+            result = self.controller.run_request(request)
 
-        self.assertEqual(result.status, "")
-        self.assertIsNone(result.layer)
+        self.assertEqual(result, "result")
+        build_result.assert_called_once_with()
 
     def test_run_request_reports_no_matches(self):
         request = self.controller.build_request(
@@ -126,10 +134,14 @@ class TestAnalysisController(unittest.TestCase):
             points_layer=None,
         )
 
-        result = self.controller.run_request(request)
+        with patch(
+            "qfit.analysis.application.analysis_controller.build_empty_analysis_result",
+            return_value="result",
+        ) as build_result:
+            result = self.controller.run_request(request)
 
-        self.assertEqual(result.status, "")
-        self.assertIsNone(result.layer)
+        self.assertEqual(result, "result")
+        build_result.assert_called_once_with()
 
     def test_run_request_reports_no_heatmap_matches(self):
         request = self.controller.build_request(

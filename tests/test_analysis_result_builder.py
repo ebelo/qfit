@@ -3,11 +3,18 @@ import unittest
 from tests import _path  # noqa: F401
 from qfit.analysis.application.analysis_result_builder import (
     build_activity_heatmap_result,
+    build_empty_analysis_result,
     build_frequent_start_points_result,
 )
 
 
 class TestAnalysisResultBuilder(unittest.TestCase):
+    def test_build_empty_analysis_result(self):
+        result = build_empty_analysis_result()
+
+        self.assertEqual(result.status, "")
+        self.assertIsNone(result.layer)
+
     def test_build_frequent_start_points_result_reports_empty(self):
         result = build_frequent_start_points_result(None, [])
 
