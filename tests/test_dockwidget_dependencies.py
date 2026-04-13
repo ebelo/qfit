@@ -32,7 +32,7 @@ class DockWidgetDependenciesTests(unittest.TestCase):
             patch("qfit.ui.dockwidget_dependencies.SettingsService", return_value=sentinel.settings),
             patch("qfit.ui.dockwidget_dependencies.SyncController", return_value=sentinel.sync_controller),
             patch(
-                "qfit.ui.dockwidget_dependencies.build_analysis_controller",
+                "qfit.ui.dockwidget_dependencies.build_analysis_workflow",
                 return_value=sentinel.analysis_workflow,
             ),
             patch(
