@@ -80,6 +80,7 @@ from .ui.application import (
     build_visual_layer_refs,
     build_visual_workflow_action,
     build_visual_workflow_action_inputs,
+    build_visual_workflow_settings_snapshot,
 )
 from .ui.contextual_help import ContextualHelpBinder, build_dock_help_entries
 from .detailed_route_strategy import (
@@ -779,8 +780,11 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                     atlas_layer=self.atlas_layer,
                 ),
                 selection_state=self._current_activity_selection_state(),
-                style_preset=self.stylePresetComboBox.currentText(),
-                temporal_mode=DEFAULT_TEMPORAL_MODE_LABEL,
+                settings=build_visual_workflow_settings_snapshot(
+                    style_preset=self.stylePresetComboBox.currentText(),
+                    temporal_mode=DEFAULT_TEMPORAL_MODE_LABEL,
+                    analysis_mode=self.analysisModeComboBox.currentText(),
+                ),
                 background=VisualWorkflowBackgroundInputs(
                     enabled=self.backgroundMapCheckBox.isChecked(),
                     preset_name=self.backgroundPresetComboBox.currentText(),
@@ -789,7 +793,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                     style_id=self.mapboxStyleIdLineEdit.text().strip(),
                     tile_mode=self.tileModeComboBox.currentText(),
                 ),
-                analysis_mode=self.analysisModeComboBox.currentText(),
                 apply_subset_filters=True,
             ),
         )

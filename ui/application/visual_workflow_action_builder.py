@@ -25,6 +25,13 @@ class VisualWorkflowBackgroundInputs:
     tile_mode: str = ""
 
 
+@dataclass(frozen=True)
+class VisualWorkflowSettingsSnapshot:
+    style_preset: str = ""
+    temporal_mode: str = ""
+    analysis_mode: str = ""
+
+
 def build_visual_layer_refs(
     *,
     activities_layer=None,
@@ -42,14 +49,27 @@ def build_visual_layer_refs(
     )
 
 
+def build_visual_workflow_settings_snapshot(
+    *,
+    style_preset: str,
+    temporal_mode: str,
+    analysis_mode: str,
+) -> VisualWorkflowSettingsSnapshot:
+    """Build a normalized snapshot of the current visual workflow settings."""
+
+    return VisualWorkflowSettingsSnapshot(
+        style_preset=style_preset,
+        temporal_mode=temporal_mode,
+        analysis_mode=analysis_mode,
+    )
+
+
 def build_visual_workflow_action_inputs(
     *,
     layers: LayerRefs,
     selection_state,
-    style_preset: str,
-    temporal_mode: str,
+    settings: VisualWorkflowSettingsSnapshot,
     background: VisualWorkflowBackgroundInputs,
-    analysis_mode: str,
     apply_subset_filters: bool = True,
 ) -> VisualWorkflowActionInputs:
     """Build normalized visual workflow inputs from dock-edge values."""
@@ -57,8 +77,8 @@ def build_visual_workflow_action_inputs(
     return VisualWorkflowActionInputs(
         layers=layers,
         selection_state=selection_state,
-        style_preset=style_preset,
-        temporal_mode=temporal_mode,
+        style_preset=settings.style_preset,
+        temporal_mode=settings.temporal_mode,
         background_config=BackgroundConfig(
             enabled=background.enabled,
             preset_name=background.preset_name,
@@ -67,7 +87,7 @@ def build_visual_workflow_action_inputs(
             style_id=background.style_id,
             tile_mode=background.tile_mode,
         ),
-        analysis_mode=analysis_mode,
+        analysis_mode=settings.analysis_mode,
         apply_subset_filters=apply_subset_filters,
     )
 
