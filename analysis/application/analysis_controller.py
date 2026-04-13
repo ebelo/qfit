@@ -4,6 +4,7 @@ from ...activities.application.activity_selection_state import ActivitySelection
 from .analysis_models import RunAnalysisRequest, RunAnalysisResult
 from .analysis_result_builder import (
     build_activity_heatmap_result,
+    build_empty_analysis_result,
     build_frequent_start_points_result,
 )
 
@@ -43,14 +44,14 @@ class AnalysisController:
 
         if request.analysis_mode == FREQUENT_STARTING_POINTS_MODE:
             if request.starts_layer is None:
-                return RunAnalysisResult()
+                return build_empty_analysis_result()
 
             layer, clusters = _build_frequent_start_points_layer(request.starts_layer)
             return build_frequent_start_points_result(layer, clusters)
 
         if request.analysis_mode == HEATMAP_MODE:
             if request.activities_layer is None and request.points_layer is None:
-                return RunAnalysisResult()
+                return build_empty_analysis_result()
 
             layer, sample_count = _build_activity_heatmap_layer(
                 request.activities_layer,
@@ -58,7 +59,7 @@ class AnalysisController:
             )
             return build_activity_heatmap_result(layer, sample_count)
 
-        return RunAnalysisResult()
+        return build_empty_analysis_result()
 
     def run_request(self, request: RunAnalysisRequest) -> RunAnalysisResult:
         return self.run(request=request)

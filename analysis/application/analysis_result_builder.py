@@ -7,6 +7,10 @@ from .analysis_status_messages import (
 )
 
 
+def build_empty_analysis_result() -> RunAnalysisResult:
+    return RunAnalysisResult()
+
+
 def build_frequent_start_points_result(layer, clusters) -> RunAnalysisResult:
     if layer is None or not clusters:
         return RunAnalysisResult(status=build_frequent_start_points_empty_status())
