@@ -91,6 +91,15 @@ def build_filtered_activity_preview_activities(
     return filter_activities(activities, query)
 
 
+def build_activity_preview_filtered_activities(
+    request: ActivityPreviewRequest,
+) -> list[object]:
+    return build_filtered_activity_preview_activities(
+        request.activities,
+        build_activity_preview_query(request),
+    )
+
+
 def build_activity_selection_state(request: ActivityPreviewRequest) -> ActivitySelectionState:
     return ActivitySelectionState.from_activities(
         request.activities,
