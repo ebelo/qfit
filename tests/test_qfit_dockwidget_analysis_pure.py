@@ -534,6 +534,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
     def test_run_selected_analysis_delegates_to_analysis_controller(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock.analysis_controller = MagicMock()
+        dock.analysis_controller.build_request.return_value = "analysis-request"
         dock.analysis_controller.run_request.return_value = SimpleNamespace(
             status="Showing top 2 frequent starting-point clusters",
             layer=None,
@@ -542,43 +543,27 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.points_layer = "points-layer"
         selection_state = self.module.ActivitySelectionState(query=object(), filtered_count=2)
 
-        with patch.object(
-            self.module,
-            "build_run_analysis_current_inputs",
-            return_value="current-inputs",
-        ) as build_current_inputs, patch.object(
-            self.module,
-            "build_run_analysis_request_inputs",
-            return_value="request-inputs",
-        ) as build_request_inputs, patch.object(
-            self.module,
-            "build_run_analysis_request",
-            return_value="analysis-request",
-        ) as build_request:
-            result = self.module.QfitDockWidget._run_selected_analysis(
-                dock,
-                "Most frequent starting points",
-                "starts-layer",
-                selection_state,
-            )
+        result = self.module.QfitDockWidget._run_selected_analysis(
+            dock,
+            "Most frequent starting points",
+            "starts-layer",
+            selection_state,
+        )
 
         self.assertEqual(result, "Showing top 2 frequent starting-point clusters")
-        build_current_inputs.assert_called_once_with(
-            activities_layer="activities-layer",
-            points_layer="points-layer",
-        )
-        build_request_inputs.assert_called_once_with(
-            current="current-inputs",
+        dock.analysis_controller.build_request.assert_called_once_with(
             analysis_mode="Most frequent starting points",
             starts_layer="starts-layer",
             selection_state=selection_state,
+            activities_layer="activities-layer",
+            points_layer="points-layer",
         )
-        build_request.assert_called_once_with("request-inputs")
         dock.analysis_controller.run_request.assert_called_once_with("analysis-request")
 
     def test_run_selected_analysis_adds_returned_layer_to_project(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock.analysis_controller = MagicMock()
+        dock.analysis_controller.build_request.return_value = "analysis-request"
         analysis_layer = _FakeLayer(self.module.FREQUENT_STARTING_POINTS_LAYER_NAME)
         dock.analysis_controller.run_request.return_value = SimpleNamespace(
             status="Showing top 2 frequent starting-point clusters",
@@ -589,19 +574,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         project = _FakeProject()
         selection_state = self.module.ActivitySelectionState(query=object(), filtered_count=2)
 
-        with patch.object(
-            self.module,
-            "build_run_analysis_current_inputs",
-            return_value="current-inputs",
-        ), patch.object(
-            self.module,
-            "build_run_analysis_request_inputs",
-            return_value="request-inputs",
-        ), patch.object(
-            self.module, "build_run_analysis_request", return_value="analysis-request"
-        ), patch.object(
-            self.module.QgsProject, "instance", return_value=project
-        ):
+        with patch.object(self.module.QgsProject, "instance", return_value=project):
             status = self.module.QfitDockWidget._run_selected_analysis(
                 dock,
                 "Most frequent starting points",
