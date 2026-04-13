@@ -80,6 +80,7 @@ from .ui.application import (
     build_visual_layer_refs,
     build_visual_workflow_action,
     build_visual_workflow_action_inputs,
+    build_visual_workflow_selection_state_handoff,
     build_visual_workflow_settings_snapshot,
 )
 from .ui.contextual_help import ContextualHelpBinder, build_dock_help_entries
@@ -779,7 +780,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                     points_layer=self.points_layer,
                     atlas_layer=self.atlas_layer,
                 ),
-                selection_state=self._current_activity_selection_state(),
+                selection_state=build_visual_workflow_selection_state_handoff(
+                    self._current_activity_selection_state()
+                ),
                 settings=build_visual_workflow_settings_snapshot(
                     style_preset=self.stylePresetComboBox.currentText(),
                     temporal_mode=DEFAULT_TEMPORAL_MODE_LABEL,

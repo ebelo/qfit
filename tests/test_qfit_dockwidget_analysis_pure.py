@@ -477,6 +477,10 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             return_value="layers",
         ) as build_layers, patch.object(
             self.module,
+            "build_visual_workflow_selection_state_handoff",
+            return_value="selection",
+        ) as build_selection, patch.object(
+            self.module,
             "build_visual_workflow_settings_snapshot",
             return_value="settings",
         ) as build_settings, patch.object(
@@ -500,9 +504,10 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             points_layer="points",
             atlas_layer="atlas",
         )
+        build_selection.assert_called_once_with(selection_state)
         build_inputs.assert_called_once_with(
             layers="layers",
-            selection_state=selection_state,
+            selection_state="selection",
             settings="settings",
             background=self.module.VisualWorkflowBackgroundInputs(
                 enabled=True,

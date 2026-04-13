@@ -12,12 +12,26 @@ from qfit.ui.application import (
     build_visual_layer_refs,
     build_visual_workflow_action,
     build_visual_workflow_action_inputs,
+    build_visual_workflow_selection_state_handoff,
     build_visual_workflow_settings_snapshot,
 )
 from qfit.visualization.application import BackgroundConfig, LayerRefs
 
 
 class TestVisualWorkflowActionBuilder(unittest.TestCase):
+    def test_build_visual_workflow_selection_state_handoff_keeps_selection_state(self):
+        selection_state = ActivitySelectionState(query=ActivityQuery(), filtered_count=3)
+
+        handoff = build_visual_workflow_selection_state_handoff(selection_state)
+
+        self.assertIs(handoff, selection_state)
+
+    def test_build_visual_workflow_selection_state_handoff_defaults_empty_state(self):
+        handoff = build_visual_workflow_selection_state_handoff()
+
+        self.assertIsInstance(handoff, ActivitySelectionState)
+        self.assertEqual(handoff.filtered_count, 0)
+
     def test_build_visual_workflow_settings_snapshot_keeps_values(self):
         settings = build_visual_workflow_settings_snapshot(
             style_preset="By activity type",

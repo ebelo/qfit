@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from .dock_action_dispatcher import ApplyVisualizationAction, RunAnalysisAction
+from ...activities.application.activity_selection_state import ActivitySelectionState
 from ...visualization.application import BackgroundConfig, LayerRefs
 
 
@@ -64,6 +65,14 @@ def build_visual_workflow_settings_snapshot(
     )
 
 
+def build_visual_workflow_selection_state_handoff(
+    selection_state=None,
+) -> ActivitySelectionState:
+    """Normalize the current visual workflow selection-state handoff."""
+
+    return selection_state or ActivitySelectionState()
+
+
 def build_visual_workflow_action_inputs(
     *,
     layers: LayerRefs,
@@ -76,7 +85,7 @@ def build_visual_workflow_action_inputs(
 
     return VisualWorkflowActionInputs(
         layers=layers,
-        selection_state=selection_state,
+        selection_state=build_visual_workflow_selection_state_handoff(selection_state),
         style_preset=settings.style_preset,
         temporal_mode=settings.temporal_mode,
         background_config=BackgroundConfig(
