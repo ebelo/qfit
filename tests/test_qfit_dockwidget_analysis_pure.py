@@ -707,6 +707,23 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertIs(result, query)
         build_query.assert_called_once_with("preview-request")
 
+    def test_filtered_activities_delegates_to_filtered_preview_helper(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.activities = ["a1", "a2"]
+        dock._current_activity_selection_state = MagicMock(
+            return_value=SimpleNamespace(query="preview-query")
+        )
+
+        with patch.object(
+            self.module,
+            "build_filtered_activity_preview_activities",
+            return_value=["a2"],
+        ) as build_filtered:
+            result = self.module.QfitDockWidget._filtered_activities(dock)
+
+        self.assertEqual(result, ["a2"])
+        build_filtered.assert_called_once_with(["a1", "a2"], "preview-query")
+
     def test_refresh_activity_preview_delegates_and_updates_widgets(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._current_activity_preview_request = MagicMock(return_value="preview-request")

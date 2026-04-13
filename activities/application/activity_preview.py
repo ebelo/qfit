@@ -7,6 +7,7 @@ from ..domain.activity_query import (
     DEFAULT_SORT_LABEL,
     ActivityQuery,
     build_preview_lines,
+    filter_activities,
     format_summary_text,
     sort_activities,
     summarize_activities,
@@ -81,6 +82,13 @@ def build_activity_query(request: ActivityPreviewRequest) -> ActivityQuery:
 
 def build_activity_preview_query(request: ActivityPreviewRequest) -> ActivityQuery:
     return build_activity_query(request)
+
+
+def build_filtered_activity_preview_activities(
+    activities: Sequence[object],
+    query: ActivityQuery,
+) -> list[object]:
+    return filter_activities(activities, query)
 
 
 def build_activity_selection_state(request: ActivityPreviewRequest) -> ActivitySelectionState:
