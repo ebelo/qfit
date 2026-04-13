@@ -1,8 +1,11 @@
+import sys
+import types
 import unittest
 from unittest.mock import patch
 
 from tests import _path  # noqa: F401
 from qfit.analysis.application.frequent_start_points_analysis import (
+    _build_frequent_start_points_layer,
     run_frequent_start_points_analysis,
 )
 
@@ -33,6 +36,16 @@ class TestFrequentStartPointsAnalysis(unittest.TestCase):
         self.assertEqual(result, "result")
         build_layer.assert_called_once_with("starts-layer")
         build_result.assert_called_once_with("layer", clusters)
+
+    def test_build_frequent_start_points_layer_delegates_to_infrastructure_builder(self):
+        fake_module = types.ModuleType("qfit.analysis.infrastructure.frequent_start_points_layer")
+        fake_module.build_frequent_start_points_layer = lambda layer: ("built-layer", [layer])
+
+        with patch.dict(sys.modules, {fake_module.__name__: fake_module}):
+            layer, clusters = _build_frequent_start_points_layer("starts-layer")
+
+        self.assertEqual(layer, "built-layer")
+        self.assertEqual(clusters, ["starts-layer"])
 
 
 if __name__ == "__main__":

@@ -8,6 +8,7 @@ from qfit.analysis.application.analysis_controller import (
     AnalysisController,
     FREQUENT_STARTING_POINTS_MODE,
     HEATMAP_MODE,
+    _run_frequent_start_points_analysis,
 )
 
 
@@ -118,6 +119,16 @@ class TestAnalysisController(unittest.TestCase):
 
         self.assertIs(result, built_result)
         run_analysis.assert_called_once_with(request.starts_layer)
+
+    def test_run_frequent_start_points_analysis_delegates_to_application_helper(self):
+        with patch(
+            "qfit.analysis.application.frequent_start_points_analysis.run_frequent_start_points_analysis",
+            return_value="result",
+        ) as run_analysis:
+            result = _run_frequent_start_points_analysis("starts-layer")
+
+        self.assertEqual(result, "result")
+        run_analysis.assert_called_once_with("starts-layer")
 
     def test_run_request_returns_empty_result_without_heatmap_layers(self):
         request = self.controller.build_request(
