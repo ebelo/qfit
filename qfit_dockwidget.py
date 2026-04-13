@@ -34,8 +34,6 @@ from .activities.domain.activity_query import (
 from .activities.application import (
     ActivitySelectionState,
     ActivityTypeOptionsResult,
-    build_activity_preview_filtered_activities,
-    build_activity_preview_query,
     build_activity_preview_request,
     build_activity_preview_selection_state,
     build_activity_type_options_from_activities,
@@ -888,9 +886,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def _current_activity_selection_state(self):
         return build_activity_preview_selection_state(self._current_activity_preview_request())
 
-    def _current_activity_query(self):
-        return build_activity_preview_query(self._current_activity_preview_request())
-
     def _refresh_activity_preview(self):
         preview = self.activity_preview_service.build_result_request(
             self._current_activity_preview_request()
@@ -924,12 +919,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 last_sync_date=self.settings.get("last_sync_date", date.today().isoformat()),
             )
         )
-
-    def _filtered_activities(self):
-        return build_activity_preview_filtered_activities(
-            self._current_activity_preview_request()
-        )
-
 
     def _redirect_uri(self):
         return self.redirectUriLineEdit.text().strip() or StravaProvider.DEFAULT_REDIRECT_URI
