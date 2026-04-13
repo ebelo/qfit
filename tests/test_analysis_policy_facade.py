@@ -15,7 +15,7 @@ class TestAnalysisPolicyFacade(unittest.TestCase):
         selection_state = ActivitySelectionState(query=ActivityQuery(search_text="gravel"), filtered_count=4)
 
         with patch(
-            "qfit.analysis.application.analysis_policy_facade.build_analysis_request",
+            "qfit.analysis.application.analysis_policy_facade.build_analysis_workflow",
             return_value="request",
         ) as build_request:
             request = build_analysis_workflow_request(
