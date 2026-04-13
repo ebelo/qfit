@@ -36,7 +36,6 @@ from .activities.application import (
     ActivityPreviewRequest,
     ActivitySelectionState,
     ActivityTypeOptionsResult,
-    build_activity_preview,
     build_activity_selection_state,
     build_activity_type_options_from_activities,
     build_activity_type_options_from_records,
@@ -315,6 +314,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.visual_apply = dependencies.visual_apply
         self.atlas_export_service = dependencies.atlas_export_service
         self.fetch_result_service = dependencies.fetch_result_service
+        self.activity_preview_service = dependencies.activity_preview_service
         self.cache = dependencies.cache
 
     @staticmethod
@@ -891,7 +891,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         return self._current_activity_selection_state().query
 
     def _refresh_activity_preview(self):
-        preview = build_activity_preview(self._current_activity_preview_request())
+        preview = self.activity_preview_service.build_result_request(
+            self._current_activity_preview_request()
+        )
         self.querySummaryLabel.setText(preview.query_summary_text)
         self.activityPreviewPlainTextEdit.setPlainText(preview.preview_text)
         return preview.fetched_activities

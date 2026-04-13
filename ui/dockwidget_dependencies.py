@@ -8,6 +8,7 @@ from ..atlas.export_controller import AtlasExportController
 from ..atlas.export_service import AtlasExportService
 from ..atlas.export_use_case import AtlasExportUseCase
 from ..activities.application.fetch_result_service import FetchResultService
+from ..activities.application.activity_preview_service import ActivityPreviewService
 from ..activities.application.load_workflow import LoadWorkflowService
 from ..qfit_cache import QfitCache
 from ..configuration.application.settings_service import SettingsService
@@ -36,6 +37,7 @@ class DockWidgetDependencies:
     visual_apply: VisualApplyService
     atlas_export_service: AtlasExportService
     fetch_result_service: FetchResultService
+    activity_preview_service: ActivityPreviewService
     cache: QfitCache
 
 
@@ -61,6 +63,7 @@ def build_dockwidget_dependencies(iface) -> DockWidgetDependencies:
         visual_apply=VisualApplyService(layer_gateway),
         atlas_export_service=atlas_export_service,
         fetch_result_service=FetchResultService(sync_controller),
+        activity_preview_service=ActivityPreviewService(),
         cache=cache,
     )
 

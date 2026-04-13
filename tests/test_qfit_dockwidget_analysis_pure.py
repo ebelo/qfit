@@ -682,6 +682,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
     def test_refresh_activity_preview_delegates_and_updates_widgets(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._current_activity_preview_request = MagicMock(return_value="preview-request")
+        dock.activity_preview_service = SimpleNamespace(build_result_request=MagicMock())
         dock.querySummaryLabel = SimpleNamespace(setText=MagicMock())
         dock.activityPreviewPlainTextEdit = SimpleNamespace(setPlainText=MagicMock())
         preview_result = SimpleNamespace(
@@ -689,12 +690,12 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             preview_text="first\nsecond",
             fetched_activities=["first", "second"],
         )
+        dock.activity_preview_service.build_result_request.return_value = preview_result
 
-        with patch.object(self.module, "build_activity_preview", return_value=preview_result) as build_preview:
-            result = self.module.QfitDockWidget._refresh_activity_preview(dock)
+        result = self.module.QfitDockWidget._refresh_activity_preview(dock)
 
         self.assertEqual(result, ["first", "second"])
-        build_preview.assert_called_once_with("preview-request")
+        dock.activity_preview_service.build_result_request.assert_called_once_with("preview-request")
         dock.querySummaryLabel.setText.assert_called_once_with("2 activities")
         dock.activityPreviewPlainTextEdit.setPlainText.assert_called_once_with("first\nsecond")
 
