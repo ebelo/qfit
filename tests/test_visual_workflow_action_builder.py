@@ -8,6 +8,7 @@ from qfit.ui.application import (
     RunAnalysisAction,
     VisualWorkflowBackgroundInputs,
     VisualWorkflowActionInputs,
+    build_visual_layer_refs,
     build_visual_workflow_action,
     build_visual_workflow_action_inputs,
 )
@@ -15,6 +16,20 @@ from qfit.visualization.application import BackgroundConfig, LayerRefs
 
 
 class TestVisualWorkflowActionBuilder(unittest.TestCase):
+    def test_build_visual_layer_refs_snapshots_all_layers(self):
+        layers = build_visual_layer_refs(
+            activities_layer="activities",
+            starts_layer="starts",
+            points_layer="points",
+            atlas_layer="atlas",
+        )
+
+        self.assertIsInstance(layers, LayerRefs)
+        self.assertEqual(layers.activities, "activities")
+        self.assertEqual(layers.starts, "starts")
+        self.assertEqual(layers.points, "points")
+        self.assertEqual(layers.atlas, "atlas")
+
     def test_build_visual_workflow_action_inputs_builds_background_config(self):
         selection_state = ActivitySelectionState(query=ActivityQuery(), filtered_count=3)
 

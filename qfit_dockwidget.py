@@ -77,6 +77,7 @@ from .ui.application import (
     DockActionDispatcher,
     RunAnalysisAction,
     VisualWorkflowBackgroundInputs,
+    build_visual_layer_refs,
     build_visual_workflow_action,
     build_visual_workflow_action_inputs,
 )
@@ -771,11 +772,11 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         return build_visual_workflow_action(
             action_type,
             build_visual_workflow_action_inputs(
-                layers=LayerRefs(
-                    activities=self.activities_layer,
-                    starts=self.starts_layer,
-                    points=self.points_layer,
-                    atlas=self.atlas_layer,
+                layers=build_visual_layer_refs(
+                    activities_layer=self.activities_layer,
+                    starts_layer=self.starts_layer,
+                    points_layer=self.points_layer,
+                    atlas_layer=self.atlas_layer,
                 ),
                 selection_state=self._current_activity_selection_state(),
                 style_preset=self.stylePresetComboBox.currentText(),
