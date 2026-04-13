@@ -142,14 +142,14 @@ class TestAnalysisController(unittest.TestCase):
         with patch(
             "qfit.analysis.application.analysis_controller._build_activity_heatmap_layer",
             return_value=(None, 0),
-        ):
+        ), patch(
+            "qfit.analysis.application.analysis_controller.build_activity_heatmap_result",
+            return_value="result",
+        ) as build_result:
             result = self.controller.run_request(request)
 
-        self.assertEqual(
-            result.status,
-            "No activity heatmap data matched the current filters",
-        )
-        self.assertIsNone(result.layer)
+        self.assertEqual(result, "result")
+        build_result.assert_called_once_with(None, 0)
 
     def test_run_request_returns_heatmap_layer(self):
         request = self.controller.build_request(
@@ -159,18 +159,19 @@ class TestAnalysisController(unittest.TestCase):
             points_layer=object(),
         )
         layer = object()
+        built_result = object()
 
         with patch(
             "qfit.analysis.application.analysis_controller._build_activity_heatmap_layer",
             return_value=(layer, 42),
-        ):
+        ), patch(
+            "qfit.analysis.application.analysis_controller.build_activity_heatmap_result",
+            return_value=built_result,
+        ) as build_result:
             result = self.controller.run_request(request)
 
-        self.assertEqual(
-            result.status,
-            "Showing activity heatmap from 42 sampled route points",
-        )
-        self.assertIs(result.layer, layer)
+        self.assertIs(result, built_result)
+        build_result.assert_called_once_with(layer, 42)
 
 
 if __name__ == "__main__":

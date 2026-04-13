@@ -2,10 +2,9 @@ from __future__ import annotations
 
 from ...activities.application.activity_selection_state import ActivitySelectionState
 from .analysis_models import RunAnalysisRequest, RunAnalysisResult
-from .analysis_result_builder import build_frequent_start_points_result
-from .analysis_status_messages import (
-    build_activity_heatmap_empty_status,
-    build_activity_heatmap_success_status,
+from .analysis_result_builder import (
+    build_activity_heatmap_result,
+    build_frequent_start_points_result,
 )
 
 FREQUENT_STARTING_POINTS_MODE = "Most frequent starting points"
@@ -57,15 +56,7 @@ class AnalysisController:
                 request.activities_layer,
                 request.points_layer,
             )
-            if layer is None or sample_count <= 0:
-                return RunAnalysisResult(
-                    status=build_activity_heatmap_empty_status()
-                )
-
-            return RunAnalysisResult(
-                status=build_activity_heatmap_success_status(sample_count),
-                layer=layer,
-            )
+            return build_activity_heatmap_result(layer, sample_count)
 
         return RunAnalysisResult()
 
