@@ -2,8 +2,8 @@ import os
 from dataclasses import dataclass
 from typing import Any
 
-from ..analysis.application.analysis_controller import AnalysisController
 from ..analysis.application.analysis_controller_provider import build_analysis_controller
+from ..analysis.application.analysis_workflow_port import AnalysisWorkflowPort
 from ..atlas.export_controller import AtlasExportController
 from ..atlas.export_service import AtlasExportService
 from ..atlas.export_use_case import AtlasExportUseCase
@@ -26,7 +26,7 @@ class DockWidgetDependencies:
 
     settings: SettingsService
     sync_controller: SyncController
-    analysis_controller: AnalysisController
+    analysis_controller: AnalysisWorkflowPort
     atlas_export_controller: AtlasExportController
     atlas_export_use_case: AtlasExportUseCase
     layer_gateway: Any
