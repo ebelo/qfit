@@ -34,12 +34,19 @@ class AnalysisController:
         activities_layer: object = None,
         points_layer: object = None,
     ) -> RunAnalysisRequest:
-        return RunAnalysisRequest(
-            analysis_mode=analysis_mode or "",
-            activities_layer=activities_layer,
-            starts_layer=starts_layer,
-            points_layer=points_layer,
-            selection_state=selection_state or ActivitySelectionState(),
+        from .analysis_request_builder import (
+            RunAnalysisRequestInputs,
+            build_run_analysis_request,
+        )
+
+        return build_run_analysis_request(
+            RunAnalysisRequestInputs(
+                analysis_mode=analysis_mode,
+                activities_layer=activities_layer,
+                starts_layer=starts_layer,
+                points_layer=points_layer,
+                selection_state=selection_state or ActivitySelectionState(),
+            )
         )
 
     def run(self, request: RunAnalysisRequest | None = None, **legacy_kwargs) -> RunAnalysisResult:
