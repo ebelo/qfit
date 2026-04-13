@@ -682,7 +682,11 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._current_activity_preview_request = MagicMock(return_value="preview-request")
         selection_state = self.module.ActivitySelectionState(query=object(), filtered_count=2)
 
-        with patch.object(self.module, "build_activity_selection_state", return_value=selection_state) as build_state:
+        with patch.object(
+            self.module,
+            "build_activity_preview_selection_state",
+            return_value=selection_state,
+        ) as build_state:
             result = self.module.QfitDockWidget._current_activity_selection_state(dock)
 
         self.assertIs(result, selection_state)
