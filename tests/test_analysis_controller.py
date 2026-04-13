@@ -65,13 +65,17 @@ class TestAnalysisController(unittest.TestCase):
         request = self.controller.build_request("None", object())
 
         with patch(
-            "qfit.analysis.application.analysis_controller.dispatch_analysis_request",
+            "qfit.analysis.application.analysis_controller.execute_analysis_request",
             return_value="result",
-        ) as dispatch_request:
+        ) as execute_request:
             result = self.controller.run_request(request)
 
         self.assertEqual(result, "result")
-        dispatch_request.assert_called_once_with(request)
+        execute_request.assert_called_once_with(
+            build_request=self.controller.build_request,
+            request=request,
+            legacy_kwargs={},
+        )
 
     def test_run_request_returns_empty_result_without_starts_layer(self):
         request = self.controller.build_request(
@@ -80,13 +84,17 @@ class TestAnalysisController(unittest.TestCase):
         )
 
         with patch(
-            "qfit.analysis.application.analysis_controller.dispatch_analysis_request",
+            "qfit.analysis.application.analysis_controller.execute_analysis_request",
             return_value="result",
-        ) as dispatch_request:
+        ) as execute_request:
             result = self.controller.run_request(request)
 
         self.assertEqual(result, "result")
-        dispatch_request.assert_called_once_with(request)
+        execute_request.assert_called_once_with(
+            build_request=self.controller.build_request,
+            request=request,
+            legacy_kwargs={},
+        )
 
     def test_run_request_reports_no_matches(self):
         request = self.controller.build_request(
@@ -95,13 +103,17 @@ class TestAnalysisController(unittest.TestCase):
         )
 
         with patch(
-            "qfit.analysis.application.analysis_controller.dispatch_analysis_request",
+            "qfit.analysis.application.analysis_controller.execute_analysis_request",
             return_value="result",
-        ) as dispatch_request:
+        ) as execute_request:
             result = self.controller.run_request(request)
 
         self.assertEqual(result, "result")
-        dispatch_request.assert_called_once_with(request)
+        execute_request.assert_called_once_with(
+            build_request=self.controller.build_request,
+            request=request,
+            legacy_kwargs={},
+        )
 
     def test_run_request_returns_layer_for_matching_mode(self):
         request = self.controller.build_request(
@@ -111,13 +123,17 @@ class TestAnalysisController(unittest.TestCase):
         built_result = object()
 
         with patch(
-            "qfit.analysis.application.analysis_controller.dispatch_analysis_request",
+            "qfit.analysis.application.analysis_controller.execute_analysis_request",
             return_value=built_result,
-        ) as dispatch_request:
+        ) as execute_request:
             result = self.controller.run_request(request)
 
         self.assertIs(result, built_result)
-        dispatch_request.assert_called_once_with(request)
+        execute_request.assert_called_once_with(
+            build_request=self.controller.build_request,
+            request=request,
+            legacy_kwargs={},
+        )
 
     def test_run_delegates_to_dispatch_helper(self):
         request = self.controller.build_request(
@@ -128,13 +144,41 @@ class TestAnalysisController(unittest.TestCase):
         )
 
         with patch(
-            "qfit.analysis.application.analysis_controller.dispatch_analysis_request",
+            "qfit.analysis.application.analysis_controller.execute_analysis_request",
             return_value="result",
-        ) as dispatch_request:
+        ) as execute_request:
             result = self.controller.run(request)
 
         self.assertEqual(result, "result")
-        dispatch_request.assert_called_once_with(request)
+        execute_request.assert_called_once_with(
+            build_request=self.controller.build_request,
+            request=request,
+            legacy_kwargs={},
+        )
+
+    def test_run_builds_request_via_execution_use_case_when_request_missing(self):
+        with patch(
+            "qfit.analysis.application.analysis_controller.execute_analysis_request",
+            return_value="result",
+        ) as execute_request:
+            result = self.controller.run(
+                analysis_mode="Heatmap",
+                starts_layer="starts-layer",
+                activities_layer="activities-layer",
+                points_layer="points-layer",
+            )
+
+        self.assertEqual(result, "result")
+        execute_request.assert_called_once_with(
+            build_request=self.controller.build_request,
+            request=None,
+            legacy_kwargs={
+                "analysis_mode": "Heatmap",
+                "starts_layer": "starts-layer",
+                "activities_layer": "activities-layer",
+                "points_layer": "points-layer",
+            },
+        )
 
     def test_run_request_returns_empty_result_without_heatmap_layers(self):
         request = self.controller.build_request(
@@ -145,13 +189,17 @@ class TestAnalysisController(unittest.TestCase):
         )
 
         with patch(
-            "qfit.analysis.application.analysis_controller.dispatch_analysis_request",
+            "qfit.analysis.application.analysis_controller.execute_analysis_request",
             return_value="result",
-        ) as dispatch_request:
+        ) as execute_request:
             result = self.controller.run_request(request)
 
         self.assertEqual(result, "result")
-        dispatch_request.assert_called_once_with(request)
+        execute_request.assert_called_once_with(
+            build_request=self.controller.build_request,
+            request=request,
+            legacy_kwargs={},
+        )
 
     def test_run_request_reports_no_heatmap_matches(self):
         request = self.controller.build_request(
@@ -162,13 +210,17 @@ class TestAnalysisController(unittest.TestCase):
         )
 
         with patch(
-            "qfit.analysis.application.analysis_controller.dispatch_analysis_request",
+            "qfit.analysis.application.analysis_controller.execute_analysis_request",
             return_value="result",
-        ) as dispatch_request:
+        ) as execute_request:
             result = self.controller.run_request(request)
 
         self.assertEqual(result, "result")
-        dispatch_request.assert_called_once_with(request)
+        execute_request.assert_called_once_with(
+            build_request=self.controller.build_request,
+            request=request,
+            legacy_kwargs={},
+        )
 
     def test_run_request_returns_heatmap_layer(self):
         request = self.controller.build_request(
@@ -180,13 +232,17 @@ class TestAnalysisController(unittest.TestCase):
         built_result = object()
 
         with patch(
-            "qfit.analysis.application.analysis_controller.dispatch_analysis_request",
+            "qfit.analysis.application.analysis_controller.execute_analysis_request",
             return_value=built_result,
-        ) as dispatch_request:
+        ) as execute_request:
             result = self.controller.run_request(request)
 
         self.assertIs(result, built_result)
-        dispatch_request.assert_called_once_with(request)
+        execute_request.assert_called_once_with(
+            build_request=self.controller.build_request,
+            request=request,
+            legacy_kwargs={},
+        )
 
 
 if __name__ == "__main__":
