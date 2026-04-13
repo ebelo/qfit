@@ -305,7 +305,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def _bind_dependencies(self, dependencies: DockWidgetDependencies) -> None:
         self.settings = dependencies.settings
         self.sync_controller = dependencies.sync_controller
-        self.analysis_controller = dependencies.analysis_controller
+        self.analysis_workflow = dependencies.analysis_workflow
         self.atlas_export_controller = dependencies.atlas_export_controller
         self.atlas_export_use_case = dependencies.atlas_export_use_case
         self.layer_gateway = dependencies.layer_gateway
@@ -800,14 +800,14 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         )
 
     def _run_selected_analysis(self, analysis_mode, starts_layer, selection_state=None):
-        request = self.analysis_controller.build_request(
+        request = self.analysis_workflow.build_request(
             analysis_mode=analysis_mode,
             starts_layer=starts_layer,
             selection_state=selection_state,
             activities_layer=getattr(self, "activities_layer", None),
             points_layer=getattr(self, "points_layer", None),
         )
-        result = self.analysis_controller.run_request(request)
+        result = self.analysis_workflow.run_request(request)
         if result.layer is None:
             return result.status
 

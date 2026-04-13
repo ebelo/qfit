@@ -33,7 +33,7 @@ class DockWidgetDependenciesTests(unittest.TestCase):
             patch("qfit.ui.dockwidget_dependencies.SyncController", return_value=sentinel.sync_controller),
             patch(
                 "qfit.ui.dockwidget_dependencies.build_analysis_controller",
-                return_value=sentinel.analysis_controller,
+                return_value=sentinel.analysis_workflow,
             ),
             patch(
                 "qfit.ui.dockwidget_dependencies.AtlasExportController",
@@ -77,7 +77,7 @@ class DockWidgetDependenciesTests(unittest.TestCase):
 
         self.assertIs(dependencies.settings, sentinel.settings)
         self.assertIs(dependencies.sync_controller, sentinel.sync_controller)
-        self.assertIs(dependencies.analysis_controller, sentinel.analysis_controller)
+        self.assertIs(dependencies.analysis_workflow, sentinel.analysis_workflow)
         self.assertIs(dependencies.atlas_export_controller, sentinel.atlas_export_controller)
         self.assertIs(dependencies.atlas_export_use_case, sentinel.atlas_export_use_case)
         self.assertIs(dependencies.layer_gateway, sentinel.layer_gateway)

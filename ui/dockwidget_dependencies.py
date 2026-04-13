@@ -26,7 +26,7 @@ class DockWidgetDependencies:
 
     settings: SettingsService
     sync_controller: SyncController
-    analysis_controller: AnalysisWorkflowPort
+    analysis_workflow: AnalysisWorkflowPort
     atlas_export_controller: AtlasExportController
     atlas_export_use_case: AtlasExportUseCase
     layer_gateway: Any
@@ -51,7 +51,7 @@ def build_dockwidget_dependencies(iface) -> DockWidgetDependencies:
     return DockWidgetDependencies(
         settings=settings,
         sync_controller=sync_controller,
-        analysis_controller=build_analysis_controller(),
+        analysis_workflow=build_analysis_controller(),
         atlas_export_controller=atlas_export_controller,
         atlas_export_use_case=AtlasExportUseCase(atlas_export_controller, atlas_export_service),
         layer_gateway=layer_gateway,

@@ -531,11 +531,11 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         )
         build_action.assert_called_once_with(self.module.ApplyVisualizationAction, "inputs")
 
-    def test_run_selected_analysis_delegates_to_analysis_controller(self):
+    def test_run_selected_analysis_delegates_to_analysis_workflow(self):
         dock = object.__new__(self.module.QfitDockWidget)
-        dock.analysis_controller = MagicMock()
-        dock.analysis_controller.build_request.return_value = "analysis-request"
-        dock.analysis_controller.run_request.return_value = SimpleNamespace(
+        dock.analysis_workflow = MagicMock()
+        dock.analysis_workflow.build_request.return_value = "analysis-request"
+        dock.analysis_workflow.run_request.return_value = SimpleNamespace(
             status="Showing top 2 frequent starting-point clusters",
             layer=None,
         )
@@ -551,21 +551,21 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         )
 
         self.assertEqual(result, "Showing top 2 frequent starting-point clusters")
-        dock.analysis_controller.build_request.assert_called_once_with(
+        dock.analysis_workflow.build_request.assert_called_once_with(
             analysis_mode="Most frequent starting points",
             starts_layer="starts-layer",
             selection_state=selection_state,
             activities_layer="activities-layer",
             points_layer="points-layer",
         )
-        dock.analysis_controller.run_request.assert_called_once_with("analysis-request")
+        dock.analysis_workflow.run_request.assert_called_once_with("analysis-request")
 
     def test_run_selected_analysis_adds_returned_layer_to_project(self):
         dock = object.__new__(self.module.QfitDockWidget)
-        dock.analysis_controller = MagicMock()
-        dock.analysis_controller.build_request.return_value = "analysis-request"
+        dock.analysis_workflow = MagicMock()
+        dock.analysis_workflow.build_request.return_value = "analysis-request"
         analysis_layer = _FakeLayer(self.module.FREQUENT_STARTING_POINTS_LAYER_NAME)
-        dock.analysis_controller.run_request.return_value = SimpleNamespace(
+        dock.analysis_workflow.run_request.return_value = SimpleNamespace(
             status="Showing top 2 frequent starting-point clusters",
             layer=analysis_layer,
         )
