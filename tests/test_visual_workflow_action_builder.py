@@ -12,6 +12,7 @@ from qfit.ui.application import (
     build_visual_layer_refs,
     build_visual_workflow_action,
     build_visual_workflow_action_inputs,
+    build_visual_workflow_background_inputs,
     build_visual_workflow_selection_state_handoff,
     build_visual_workflow_settings_snapshot,
 )
@@ -43,6 +44,24 @@ class TestVisualWorkflowActionBuilder(unittest.TestCase):
         self.assertEqual(settings.style_preset, "By activity type")
         self.assertEqual(settings.temporal_mode, "Off")
         self.assertEqual(settings.analysis_mode, "Most frequent starting points")
+
+    def test_build_visual_workflow_background_inputs_keeps_values(self):
+        background = build_visual_workflow_background_inputs(
+            enabled=True,
+            preset_name="Outdoors",
+            access_token="token",
+            style_owner="mapbox",
+            style_id="style-id",
+            tile_mode="Raster",
+        )
+
+        self.assertIsInstance(background, VisualWorkflowBackgroundInputs)
+        self.assertTrue(background.enabled)
+        self.assertEqual(background.preset_name, "Outdoors")
+        self.assertEqual(background.access_token, "token")
+        self.assertEqual(background.style_owner, "mapbox")
+        self.assertEqual(background.style_id, "style-id")
+        self.assertEqual(background.tile_mode, "Raster")
 
     def test_build_visual_layer_refs_snapshots_all_layers(self):
         layers = build_visual_layer_refs(

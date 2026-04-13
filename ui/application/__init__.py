@@ -8,6 +8,7 @@ from .dock_action_dispatcher import (
 )
 from .visual_workflow_action_builder import build_visual_workflow_action
 from .visual_workflow_action_builder import build_visual_workflow_action_inputs
+from .visual_workflow_action_builder import build_visual_workflow_background_inputs
 from .visual_workflow_action_builder import build_visual_workflow_selection_state_handoff
 from .visual_workflow_action_builder import build_visual_layer_refs
 from .visual_workflow_action_builder import VisualWorkflowActionInputs
@@ -26,6 +27,7 @@ __all__ = [
     "build_visual_layer_refs",
     "build_visual_workflow_action",
     "build_visual_workflow_action_inputs",
+    "build_visual_workflow_background_inputs",
     "build_visual_workflow_selection_state_handoff",
     "build_visual_workflow_settings_snapshot",
 ]

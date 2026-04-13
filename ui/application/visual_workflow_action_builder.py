@@ -65,6 +65,27 @@ def build_visual_workflow_settings_snapshot(
     )
 
 
+def build_visual_workflow_background_inputs(
+    *,
+    enabled: bool,
+    preset_name: str,
+    access_token: str,
+    style_owner: str,
+    style_id: str,
+    tile_mode: str,
+) -> VisualWorkflowBackgroundInputs:
+    """Build a normalized snapshot of the current visual workflow background inputs."""
+
+    return VisualWorkflowBackgroundInputs(
+        enabled=enabled,
+        preset_name=preset_name,
+        access_token=access_token,
+        style_owner=style_owner,
+        style_id=style_id,
+        tile_mode=tile_mode,
+    )
+
+
 def build_visual_workflow_selection_state_handoff(
     selection_state=None,
 ) -> ActivitySelectionState:
