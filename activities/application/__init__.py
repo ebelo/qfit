@@ -11,6 +11,7 @@ _ACTIVITY_PREVIEW_MODULE = ".activity_preview"
 __all__ = [
     "ActivityPreviewRequest",
     "ActivityPreviewResult",
+    "ActivityPreviewService",
     "ActivitySelectionState",
     "ActivityTypeOptionsResult",
     "BuildStravaProviderRequest",
@@ -39,6 +40,7 @@ _ACTIVITY_TYPE_OPTIONS_MODULE = ".activity_type_options"
 _EXPORTS = {
     "ActivityPreviewRequest": (_ACTIVITY_PREVIEW_MODULE, "ActivityPreviewRequest"),
     "ActivityPreviewResult": (_ACTIVITY_PREVIEW_MODULE, "ActivityPreviewResult"),
+    "ActivityPreviewService": (".activity_preview_service", "ActivityPreviewService"),
     "ActivitySelectionState": (".activity_selection_state", "ActivitySelectionState"),
     "ActivityTypeOptionsResult": (_ACTIVITY_TYPE_OPTIONS_MODULE, "ActivityTypeOptionsResult"),
     "BuildStravaProviderRequest": (".sync_controller", "BuildStravaProviderRequest"),

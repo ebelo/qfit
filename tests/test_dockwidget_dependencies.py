@@ -71,6 +71,10 @@ class DockWidgetDependenciesTests(unittest.TestCase):
                 "qfit.ui.dockwidget_dependencies.FetchResultService",
                 return_value=sentinel.fetch_result_service,
             ) as fetch_result_service,
+            patch(
+                "qfit.ui.dockwidget_dependencies.ActivityPreviewService",
+                return_value=sentinel.activity_preview_service,
+            ) as activity_preview_service,
             patch("qfit.ui.dockwidget_dependencies._build_cache", return_value=sentinel.cache),
         ):
             dependencies = build_dockwidget_dependencies(iface)
@@ -87,6 +91,7 @@ class DockWidgetDependenciesTests(unittest.TestCase):
         self.assertIs(dependencies.visual_apply, sentinel.visual_apply)
         self.assertIs(dependencies.atlas_export_service, sentinel.atlas_export_service)
         self.assertIs(dependencies.fetch_result_service, sentinel.fetch_result_service)
+        self.assertIs(dependencies.activity_preview_service, sentinel.activity_preview_service)
         self.assertIs(dependencies.cache, sentinel.cache)
 
         background_controller.assert_called_once_with(sentinel.layer_gateway)
@@ -98,6 +103,7 @@ class DockWidgetDependenciesTests(unittest.TestCase):
             sentinel.atlas_export_service,
         )
         fetch_result_service.assert_called_once_with(sentinel.sync_controller)
+        activity_preview_service.assert_called_once_with()
 
     def test_build_cache_prefers_legacy_cache_path_when_current_path_is_missing(self):
         with (
