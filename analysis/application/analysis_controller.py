@@ -3,6 +3,12 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from ...activities.application.activity_selection_state import ActivitySelectionState
+from .analysis_status_messages import (
+    build_activity_heatmap_empty_status,
+    build_activity_heatmap_success_status,
+    build_frequent_start_points_empty_status,
+    build_frequent_start_points_success_status,
+)
 
 FREQUENT_STARTING_POINTS_MODE = "Most frequent starting points"
 HEATMAP_MODE = "Heatmap"
@@ -60,13 +66,11 @@ class AnalysisController:
             layer, clusters = _build_frequent_start_points_layer(request.starts_layer)
             if layer is None or not clusters:
                 return RunAnalysisResult(
-                    status="No frequent starting points matched the current filters"
+                    status=build_frequent_start_points_empty_status()
                 )
 
             return RunAnalysisResult(
-                status="Showing top {count} frequent starting-point clusters".format(
-                    count=len(clusters)
-                ),
+                status=build_frequent_start_points_success_status(len(clusters)),
                 layer=layer,
             )
 
@@ -80,13 +84,11 @@ class AnalysisController:
             )
             if layer is None or sample_count <= 0:
                 return RunAnalysisResult(
-                    status="No activity heatmap data matched the current filters"
+                    status=build_activity_heatmap_empty_status()
                 )
 
             return RunAnalysisResult(
-                status="Showing activity heatmap from {count} sampled route points".format(
-                    count=sample_count
-                ),
+                status=build_activity_heatmap_success_status(sample_count),
                 layer=layer,
             )
 
