@@ -473,6 +473,10 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
         with patch.object(
             self.module,
+            "build_visual_layer_refs",
+            return_value="layers",
+        ) as build_layers, patch.object(
+            self.module,
             "build_visual_workflow_action_inputs",
             return_value="inputs",
         ) as build_inputs, patch.object(
@@ -486,13 +490,14 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             )
 
         self.assertEqual(action, "action")
+        build_layers.assert_called_once_with(
+            activities_layer="activities",
+            starts_layer="starts",
+            points_layer="points",
+            atlas_layer="atlas",
+        )
         build_inputs.assert_called_once_with(
-            layers=self.module.LayerRefs(
-                activities="activities",
-                starts="starts",
-                points="points",
-                atlas="atlas",
-            ),
+            layers="layers",
             selection_state=selection_state,
             style_preset="By activity type",
             temporal_mode=self.module.DEFAULT_TEMPORAL_MODE_LABEL,

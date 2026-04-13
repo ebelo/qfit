@@ -25,6 +25,23 @@ class VisualWorkflowBackgroundInputs:
     tile_mode: str = ""
 
 
+def build_visual_layer_refs(
+    *,
+    activities_layer=None,
+    starts_layer=None,
+    points_layer=None,
+    atlas_layer=None,
+) -> LayerRefs:
+    """Build a normalized snapshot of the current visual workflow layers."""
+
+    return LayerRefs(
+        activities=activities_layer,
+        starts=starts_layer,
+        points=points_layer,
+        atlas=atlas_layer,
+    )
+
+
 def build_visual_workflow_action_inputs(
     *,
     layers: LayerRefs,
