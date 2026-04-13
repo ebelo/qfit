@@ -544,6 +544,10 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
         with patch.object(
             self.module,
+            "build_run_analysis_request_inputs",
+            return_value="request-inputs",
+        ) as build_request_inputs, patch.object(
+            self.module,
             "build_run_analysis_request",
             return_value="analysis-request",
         ) as build_request:
@@ -555,15 +559,16 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             )
 
         self.assertEqual(result, "Showing top 2 frequent starting-point clusters")
-        build_request.assert_called_once_with(
-            self.module.RunAnalysisRequestInputs(
-                analysis_mode="Most frequent starting points",
+        build_request_inputs.assert_called_once_with(
+            current=self.module.RunAnalysisCurrentInputs(
                 activities_layer="activities-layer",
-                starts_layer="starts-layer",
                 points_layer="points-layer",
-                selection_state=selection_state,
-            )
+            ),
+            analysis_mode="Most frequent starting points",
+            starts_layer="starts-layer",
+            selection_state=selection_state,
         )
+        build_request.assert_called_once_with("request-inputs")
         dock.analysis_controller.run_request.assert_called_once_with("analysis-request")
 
     def test_run_selected_analysis_adds_returned_layer_to_project(self):
@@ -579,7 +584,13 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         project = _FakeProject()
         selection_state = self.module.ActivitySelectionState(query=object(), filtered_count=2)
 
-        with patch.object(self.module, "build_run_analysis_request", return_value="analysis-request"), patch.object(
+        with patch.object(
+            self.module,
+            "build_run_analysis_request_inputs",
+            return_value="request-inputs",
+        ), patch.object(
+            self.module, "build_run_analysis_request", return_value="analysis-request"
+        ), patch.object(
             self.module.QgsProject, "instance", return_value=project
         ):
             status = self.module.QfitDockWidget._run_selected_analysis(
