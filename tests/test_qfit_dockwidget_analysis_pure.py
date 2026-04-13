@@ -544,6 +544,10 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
         with patch.object(
             self.module,
+            "build_run_analysis_current_inputs",
+            return_value="current-inputs",
+        ) as build_current_inputs, patch.object(
+            self.module,
             "build_run_analysis_request_inputs",
             return_value="request-inputs",
         ) as build_request_inputs, patch.object(
@@ -559,11 +563,12 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             )
 
         self.assertEqual(result, "Showing top 2 frequent starting-point clusters")
+        build_current_inputs.assert_called_once_with(
+            activities_layer="activities-layer",
+            points_layer="points-layer",
+        )
         build_request_inputs.assert_called_once_with(
-            current=self.module.RunAnalysisCurrentInputs(
-                activities_layer="activities-layer",
-                points_layer="points-layer",
-            ),
+            current="current-inputs",
             analysis_mode="Most frequent starting points",
             starts_layer="starts-layer",
             selection_state=selection_state,
@@ -585,6 +590,10 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         selection_state = self.module.ActivitySelectionState(query=object(), filtered_count=2)
 
         with patch.object(
+            self.module,
+            "build_run_analysis_current_inputs",
+            return_value="current-inputs",
+        ), patch.object(
             self.module,
             "build_run_analysis_request_inputs",
             return_value="request-inputs",

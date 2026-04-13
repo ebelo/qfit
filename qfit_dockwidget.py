@@ -61,8 +61,8 @@ from .analysis.infrastructure.activity_heatmap_layer import (
     ACTIVITY_HEATMAP_LAYER_NAME,
 )
 from .analysis.application.analysis_request_builder import (
-    RunAnalysisCurrentInputs,
     build_apply_analysis_configuration_inputs,
+    build_run_analysis_current_inputs,
     build_run_analysis_request,
     build_run_analysis_request_inputs,
 )
@@ -805,7 +805,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def _run_selected_analysis(self, analysis_mode, starts_layer, selection_state=None):
         request = build_run_analysis_request(
             build_run_analysis_request_inputs(
-                current=RunAnalysisCurrentInputs(
+                current=build_run_analysis_current_inputs(
                     activities_layer=getattr(self, "activities_layer", None),
                     points_layer=getattr(self, "points_layer", None),
                 ),
