@@ -485,6 +485,10 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             return_value="settings",
         ) as build_settings, patch.object(
             self.module,
+            "build_visual_workflow_background_inputs",
+            return_value="background",
+        ) as build_background, patch.object(
+            self.module,
             "build_visual_workflow_action_inputs",
             return_value="inputs",
         ) as build_inputs, patch.object(
@@ -509,20 +513,21 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             layers="layers",
             selection_state="selection",
             settings="settings",
-            background=self.module.VisualWorkflowBackgroundInputs(
-                enabled=True,
-                preset_name="Outdoors",
-                access_token="token",
-                style_owner="mapbox",
-                style_id="style-id",
-                tile_mode="Raster",
-            ),
+            background="background",
             apply_subset_filters=True,
         )
         build_settings.assert_called_once_with(
             style_preset="By activity type",
             temporal_mode=self.module.DEFAULT_TEMPORAL_MODE_LABEL,
             analysis_mode="Most frequent starting points",
+        )
+        build_background.assert_called_once_with(
+            enabled=True,
+            preset_name="Outdoors",
+            access_token="token",
+            style_owner="mapbox",
+            style_id="style-id",
+            tile_mode="Raster",
         )
         build_action.assert_called_once_with(self.module.ApplyVisualizationAction, "inputs")
 

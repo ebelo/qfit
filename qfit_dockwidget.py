@@ -76,10 +76,10 @@ from .ui.application import (
     ApplyVisualizationAction,
     DockActionDispatcher,
     RunAnalysisAction,
-    VisualWorkflowBackgroundInputs,
     build_visual_layer_refs,
     build_visual_workflow_action,
     build_visual_workflow_action_inputs,
+    build_visual_workflow_background_inputs,
     build_visual_workflow_selection_state_handoff,
     build_visual_workflow_settings_snapshot,
 )
@@ -788,7 +788,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                     temporal_mode=DEFAULT_TEMPORAL_MODE_LABEL,
                     analysis_mode=self.analysisModeComboBox.currentText(),
                 ),
-                background=VisualWorkflowBackgroundInputs(
+                background=build_visual_workflow_background_inputs(
                     enabled=self.backgroundMapCheckBox.isChecked(),
                     preset_name=self.backgroundPresetComboBox.currentText(),
                     access_token=self._mapbox_access_token(),
