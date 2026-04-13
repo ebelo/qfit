@@ -473,6 +473,10 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
         with patch.object(
             self.module,
+            "build_visual_workflow_action_inputs",
+            return_value="inputs",
+        ) as build_inputs, patch.object(
+            self.module,
             "build_visual_workflow_action",
             return_value="action",
         ) as build_action:
@@ -482,30 +486,28 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             )
 
         self.assertEqual(action, "action")
-        build_action.assert_called_once_with(
-            self.module.ApplyVisualizationAction,
-            self.module.VisualWorkflowActionInputs(
-                layers=self.module.LayerRefs(
-                    activities="activities",
-                    starts="starts",
-                    points="points",
-                    atlas="atlas",
-                ),
-                selection_state=selection_state,
-                style_preset="By activity type",
-                temporal_mode=self.module.DEFAULT_TEMPORAL_MODE_LABEL,
-                background_config=self.module.BackgroundConfig(
-                    enabled=True,
-                    preset_name="Outdoors",
-                    access_token="token",
-                    style_owner="mapbox",
-                    style_id="style-id",
-                    tile_mode="Raster",
-                ),
-                analysis_mode="Most frequent starting points",
-                apply_subset_filters=True,
+        build_inputs.assert_called_once_with(
+            layers=self.module.LayerRefs(
+                activities="activities",
+                starts="starts",
+                points="points",
+                atlas="atlas",
             ),
+            selection_state=selection_state,
+            style_preset="By activity type",
+            temporal_mode=self.module.DEFAULT_TEMPORAL_MODE_LABEL,
+            background=self.module.VisualWorkflowBackgroundInputs(
+                enabled=True,
+                preset_name="Outdoors",
+                access_token="token",
+                style_owner="mapbox",
+                style_id="style-id",
+                tile_mode="Raster",
+            ),
+            analysis_mode="Most frequent starting points",
+            apply_subset_filters=True,
         )
+        build_action.assert_called_once_with(self.module.ApplyVisualizationAction, "inputs")
 
     def test_run_selected_analysis_delegates_to_analysis_controller(self):
         dock = object.__new__(self.module.QfitDockWidget)

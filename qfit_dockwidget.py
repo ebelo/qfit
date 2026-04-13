@@ -76,8 +76,9 @@ from .ui.application import (
     ApplyVisualizationAction,
     DockActionDispatcher,
     RunAnalysisAction,
-    VisualWorkflowActionInputs,
+    VisualWorkflowBackgroundInputs,
     build_visual_workflow_action,
+    build_visual_workflow_action_inputs,
 )
 from .ui.contextual_help import ContextualHelpBinder, build_dock_help_entries
 from .detailed_route_strategy import (
@@ -91,7 +92,6 @@ from .mapbox_config import (
     preset_requires_custom_style,
 )
 from .visualization.application import (
-    BackgroundConfig,
     LayerRefs,
     build_background_map_failure_status,
     build_background_map_failure_title,
@@ -770,7 +770,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def _build_visual_workflow_action(self, action_type):
         return build_visual_workflow_action(
             action_type,
-            VisualWorkflowActionInputs(
+            build_visual_workflow_action_inputs(
                 layers=LayerRefs(
                     activities=self.activities_layer,
                     starts=self.starts_layer,
@@ -780,7 +780,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 selection_state=self._current_activity_selection_state(),
                 style_preset=self.stylePresetComboBox.currentText(),
                 temporal_mode=DEFAULT_TEMPORAL_MODE_LABEL,
-                background_config=BackgroundConfig(
+                background=VisualWorkflowBackgroundInputs(
                     enabled=self.backgroundMapCheckBox.isChecked(),
                     preset_name=self.backgroundPresetComboBox.currentText(),
                     access_token=self._mapbox_access_token(),
