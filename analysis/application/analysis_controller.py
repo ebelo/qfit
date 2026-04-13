@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-
 from ...activities.application.activity_selection_state import ActivitySelectionState
+from .analysis_models import RunAnalysisRequest, RunAnalysisResult
 from .analysis_status_messages import (
     build_activity_heatmap_empty_status,
     build_activity_heatmap_success_status,
@@ -12,21 +11,6 @@ from .analysis_status_messages import (
 
 FREQUENT_STARTING_POINTS_MODE = "Most frequent starting points"
 HEATMAP_MODE = "Heatmap"
-
-
-@dataclass(frozen=True)
-class RunAnalysisRequest:
-    analysis_mode: str = ""
-    activities_layer: object = None
-    starts_layer: object = None
-    points_layer: object = None
-    selection_state: ActivitySelectionState = field(default_factory=ActivitySelectionState)
-
-
-@dataclass(frozen=True)
-class RunAnalysisResult:
-    status: str = ""
-    layer: object = None
 
 
 class AnalysisController:

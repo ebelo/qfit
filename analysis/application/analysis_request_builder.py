@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from ...activities.application.activity_selection_state import ActivitySelectionState
-from .analysis_controller import RunAnalysisRequest
+from .analysis_models import RunAnalysisRequest
 
 
 @dataclass(frozen=True)
