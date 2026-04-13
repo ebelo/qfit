@@ -35,17 +35,17 @@ class AnalysisController:
         points_layer: object = None,
     ) -> RunAnalysisRequest:
         from .analysis_request_builder import (
-            RunAnalysisRequestInputs,
+            build_analysis_controller_request_inputs,
             build_run_analysis_request,
         )
 
         return build_run_analysis_request(
-            RunAnalysisRequestInputs(
+            build_analysis_controller_request_inputs(
                 analysis_mode=analysis_mode,
-                activities_layer=activities_layer,
                 starts_layer=starts_layer,
+                selection_state=selection_state,
+                activities_layer=activities_layer,
                 points_layer=points_layer,
-                selection_state=selection_state or ActivitySelectionState(),
             )
         )
 

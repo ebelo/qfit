@@ -7,6 +7,7 @@ from qfit.analysis.application.analysis_request_builder import (
     ApplyAnalysisConfigurationInputs,
     RunAnalysisCurrentInputs,
     RunAnalysisRequestInputs,
+    build_analysis_controller_request_inputs,
     build_apply_analysis_configuration_inputs,
     build_run_analysis_current_inputs,
     build_run_analysis_request,
@@ -91,6 +92,24 @@ class TestAnalysisRequestBuilder(unittest.TestCase):
         self.assertIsNone(inputs.starts_layer)
         self.assertIsNone(inputs.points_layer)
         self.assertEqual(inputs.selection_state.filtered_count, 0)
+
+    def test_build_analysis_controller_request_inputs_keeps_inputs(self):
+        selection_state = ActivitySelectionState(query=ActivityQuery(search_text="gravel"), filtered_count=4)
+
+        inputs = build_analysis_controller_request_inputs(
+            analysis_mode="Heatmap",
+            starts_layer="starts-layer",
+            selection_state=selection_state,
+            activities_layer="activities-layer",
+            points_layer="points-layer",
+        )
+
+        self.assertIsInstance(inputs, RunAnalysisRequestInputs)
+        self.assertEqual(inputs.analysis_mode, "Heatmap")
+        self.assertEqual(inputs.activities_layer, "activities-layer")
+        self.assertEqual(inputs.starts_layer, "starts-layer")
+        self.assertEqual(inputs.points_layer, "points-layer")
+        self.assertIs(inputs.selection_state, selection_state)
 
     def test_build_run_analysis_request_keeps_inputs(self):
         selection_state = ActivitySelectionState(query=ActivityQuery(search_text="gravel"), filtered_count=4)
