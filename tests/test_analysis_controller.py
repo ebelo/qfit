@@ -30,12 +30,9 @@ class TestAnalysisController(unittest.TestCase):
 
     def test_build_request_delegates_to_request_builder_helper(self):
         with patch(
-            "qfit.analysis.application.analysis_request_builder.build_run_analysis_request",
+            "qfit.analysis.application.analysis_controller.build_analysis_request",
             return_value="request",
-        ) as build_request, patch(
-            "qfit.analysis.application.analysis_request_builder.build_analysis_controller_request_inputs",
-            return_value="request-inputs",
-        ) as build_inputs:
+        ) as build_request:
             request = self.controller.build_request(
                 "Heatmap",
                 "starts-layer",
@@ -45,14 +42,13 @@ class TestAnalysisController(unittest.TestCase):
             )
 
         self.assertEqual(request, "request")
-        build_inputs.assert_called_once_with(
+        build_request.assert_called_once_with(
             analysis_mode="Heatmap",
             starts_layer="starts-layer",
             selection_state="selection-state",
             activities_layer="activities-layer",
             points_layer="points-layer",
         )
-        build_request.assert_called_once_with("request-inputs")
 
     def test_build_request_keeps_selection_state(self):
         selection_state = ActivitySelectionState(query=ActivityQuery(search_text="gravel"), filtered_count=4)
