@@ -3,7 +3,7 @@ import unittest
 from tests import _path  # noqa: F401
 
 from qfit.analysis.application.analysis_controller import AnalysisController
-from qfit.analysis.application.analysis_controller_provider import build_analysis_controller
+from qfit.analysis.application.analysis_controller_provider import build_analysis_workflow
 from qfit.analysis.application.analysis_workflow_port import AnalysisWorkflowPort
 
 
@@ -12,7 +12,7 @@ class TestAnalysisWorkflowPort(unittest.TestCase):
         self.assertIsInstance(AnalysisController(), AnalysisWorkflowPort)
 
     def test_provider_returns_workflow_port(self):
-        self.assertIsInstance(build_analysis_controller(), AnalysisWorkflowPort)
+        self.assertIsInstance(build_analysis_workflow(), AnalysisWorkflowPort)
 
 
 if __name__ == "__main__":

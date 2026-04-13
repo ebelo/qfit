@@ -2,7 +2,7 @@ import os
 from dataclasses import dataclass
 from typing import Any
 
-from ..analysis.application.analysis_controller_provider import build_analysis_controller
+from ..analysis.application.analysis_controller_provider import build_analysis_workflow
 from ..analysis.application.analysis_workflow_port import AnalysisWorkflowPort
 from ..atlas.export_controller import AtlasExportController
 from ..atlas.export_service import AtlasExportService
@@ -51,7 +51,7 @@ def build_dockwidget_dependencies(iface) -> DockWidgetDependencies:
     return DockWidgetDependencies(
         settings=settings,
         sync_controller=sync_controller,
-        analysis_workflow=build_analysis_controller(),
+        analysis_workflow=build_analysis_workflow(),
         atlas_export_controller=atlas_export_controller,
         atlas_export_use_case=AtlasExportUseCase(atlas_export_controller, atlas_export_service),
         layer_gateway=layer_gateway,
