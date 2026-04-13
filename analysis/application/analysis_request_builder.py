@@ -78,7 +78,7 @@ def build_run_analysis_request_inputs(
     )
 
 
-def build_analysis_controller_request_inputs(
+def build_analysis_workflow_request_inputs(
     *,
     analysis_mode: str,
     starts_layer,
@@ -86,7 +86,7 @@ def build_analysis_controller_request_inputs(
     activities_layer: object = None,
     points_layer: object = None,
 ) -> RunAnalysisRequestInputs:
-    """Build normalized request inputs for AnalysisController.build_request()."""
+    """Build normalized request inputs for the analysis workflow seam."""
 
     return build_run_analysis_request_inputs(
         current=build_run_analysis_current_inputs(

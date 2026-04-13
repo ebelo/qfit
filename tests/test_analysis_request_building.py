@@ -12,7 +12,7 @@ class TestAnalysisRequestBuilding(unittest.TestCase):
         selection_state = ActivitySelectionState(query=ActivityQuery(search_text="gravel"), filtered_count=4)
 
         with patch(
-            "qfit.analysis.application.analysis_request_builder.build_analysis_controller_request_inputs",
+            "qfit.analysis.application.analysis_request_builder.build_analysis_workflow_request_inputs",
             return_value="request-inputs",
         ) as build_inputs, patch(
             "qfit.analysis.application.analysis_request_builder.build_run_analysis_request",
