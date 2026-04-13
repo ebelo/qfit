@@ -846,11 +846,29 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._run_selected_analysis = MagicMock(return_value="status")
         selection_state = self.module.ActivitySelectionState(query=object(), filtered_count=2)
         dock._current_activity_selection_state = MagicMock(return_value=selection_state)
+        inputs = SimpleNamespace(
+            analysis_mode="Most frequent starting points",
+            starts_layer="starts-layer",
+            selection_state=selection_state,
+        )
 
-        status = self.module.QfitDockWidget._apply_analysis_configuration(dock)
+        with patch.object(
+            self.module,
+            "build_apply_analysis_configuration_inputs",
+            return_value=inputs,
+        ) as build_inputs:
+            status = self.module.QfitDockWidget._apply_analysis_configuration(dock)
 
         self.assertEqual(status, "status")
         dock._clear_analysis_layer.assert_called_once_with()
+        build_inputs.assert_called_once_with(
+            current_mode="Most frequent starting points",
+            current_starts_layer="starts-layer",
+            current_selection_state=selection_state,
+            analysis_mode=None,
+            starts_layer=None,
+            selection_state=None,
+        )
         dock._run_selected_analysis.assert_called_once_with(
             "Most frequent starting points",
             "starts-layer",
@@ -864,8 +882,18 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._run_selected_analysis = MagicMock(return_value="")
         selection_state = self.module.ActivitySelectionState(query=object(), filtered_count=0)
         dock._current_activity_selection_state = MagicMock(return_value=selection_state)
+        inputs = SimpleNamespace(
+            analysis_mode="Most frequent starting points",
+            starts_layer=None,
+            selection_state=selection_state,
+        )
 
-        status = self.module.QfitDockWidget._apply_analysis_configuration(dock)
+        with patch.object(
+            self.module,
+            "build_apply_analysis_configuration_inputs",
+            return_value=inputs,
+        ):
+            status = self.module.QfitDockWidget._apply_analysis_configuration(dock)
 
         self.assertEqual(status, "")
         dock._run_selected_analysis.assert_called_once_with(

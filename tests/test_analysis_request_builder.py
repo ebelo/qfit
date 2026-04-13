@@ -4,12 +4,52 @@ from tests import _path  # noqa: F401
 from qfit.activities.application.activity_selection_state import ActivitySelectionState
 from qfit.activities.domain.activity_query import ActivityQuery
 from qfit.analysis.application.analysis_request_builder import (
+    ApplyAnalysisConfigurationInputs,
     RunAnalysisRequestInputs,
+    build_apply_analysis_configuration_inputs,
     build_run_analysis_request,
 )
 
 
 class TestAnalysisRequestBuilder(unittest.TestCase):
+    def test_build_apply_analysis_configuration_inputs_keeps_overrides(self):
+        current_selection_state = ActivitySelectionState(query=ActivityQuery(search_text="current"), filtered_count=1)
+        selection_state = ActivitySelectionState(query=ActivityQuery(search_text="override"), filtered_count=4)
+
+        inputs = build_apply_analysis_configuration_inputs(
+            current_mode="Most frequent starting points",
+            current_starts_layer="current-starts-layer",
+            current_selection_state=current_selection_state,
+            analysis_mode="Heatmap",
+            starts_layer="starts-layer",
+            selection_state=selection_state,
+        )
+
+        self.assertIsInstance(inputs, ApplyAnalysisConfigurationInputs)
+        self.assertEqual(inputs.analysis_mode, "Heatmap")
+        self.assertEqual(inputs.starts_layer, "starts-layer")
+        self.assertIs(inputs.selection_state, selection_state)
+
+    def test_build_apply_analysis_configuration_inputs_defaults_to_current_values(self):
+        current_selection_state = ActivitySelectionState(query=ActivityQuery(search_text="current"), filtered_count=2)
+
+        inputs = build_apply_analysis_configuration_inputs(
+            current_mode="Most frequent starting points",
+            current_starts_layer="current-starts-layer",
+            current_selection_state=current_selection_state,
+        )
+
+        self.assertEqual(inputs.analysis_mode, "Most frequent starting points")
+        self.assertEqual(inputs.starts_layer, "current-starts-layer")
+        self.assertIs(inputs.selection_state, current_selection_state)
+
+    def test_build_apply_analysis_configuration_inputs_defaults_empty_state(self):
+        inputs = build_apply_analysis_configuration_inputs()
+
+        self.assertEqual(inputs.analysis_mode, "")
+        self.assertIsNone(inputs.starts_layer)
+        self.assertEqual(inputs.selection_state.filtered_count, 0)
+
     def test_build_run_analysis_request_keeps_inputs(self):
         selection_state = ActivitySelectionState(query=ActivityQuery(search_text="gravel"), filtered_count=4)
 
