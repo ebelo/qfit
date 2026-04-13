@@ -2,6 +2,7 @@ import unittest
 
 from tests import _path  # noqa: F401
 from qfit.analysis.application.analysis_result_builder import (
+    build_activity_heatmap_result,
     build_frequent_start_points_result,
 )
 
@@ -24,6 +25,26 @@ class TestAnalysisResultBuilder(unittest.TestCase):
         self.assertEqual(
             result.status,
             "Showing top 2 frequent starting-point clusters",
+        )
+        self.assertIs(result.layer, layer)
+
+    def test_build_activity_heatmap_result_reports_empty(self):
+        result = build_activity_heatmap_result(None, 0)
+
+        self.assertEqual(
+            result.status,
+            "No activity heatmap data matched the current filters",
+        )
+        self.assertIsNone(result.layer)
+
+    def test_build_activity_heatmap_result_reports_success(self):
+        layer = object()
+
+        result = build_activity_heatmap_result(layer, 42)
+
+        self.assertEqual(
+            result.status,
+            "Showing activity heatmap from 42 sampled route points",
         )
         self.assertIs(result.layer, layer)
 
