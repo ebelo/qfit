@@ -33,10 +33,10 @@ from .activities.domain.activity_query import (
     filter_activities,
 )
 from .activities.application import (
-    ActivityPreviewRequest,
     ActivitySelectionState,
     ActivityTypeOptionsResult,
     build_activity_selection_state,
+    build_activity_preview_request,
     build_activity_type_options_from_activities,
     build_activity_type_options_from_records,
 )
@@ -872,7 +872,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 logger.debug("Failed to remove stale analysis layer", exc_info=True)
 
     def _current_activity_preview_request(self):
-        return ActivityPreviewRequest(
+        return build_activity_preview_request(
             activities=self.activities,
             activity_type=self.activityTypeComboBox.currentText() or "All",
             date_from=self.dateFromEdit.date().toString("yyyy-MM-dd") if self.dateFromEdit.date().isValid() else None,

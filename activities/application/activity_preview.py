@@ -39,6 +39,33 @@ class ActivityPreviewResult:
     preview_text: str
 
 
+def build_activity_preview_request(
+    *,
+    activities: Sequence[object],
+    activity_type: str | None = "All",
+    date_from: str | None = None,
+    date_to: str | None = None,
+    min_distance_km: float | int | None = None,
+    max_distance_km: float | int | None = None,
+    search_text: str | None = None,
+    detailed_route_filter: str | None = None,
+    sort_label: str | None = DEFAULT_SORT_LABEL,
+    preview_limit: int = 10,
+) -> ActivityPreviewRequest:
+    return ActivityPreviewRequest(
+        activities=activities,
+        activity_type=activity_type,
+        date_from=date_from,
+        date_to=date_to,
+        min_distance_km=min_distance_km,
+        max_distance_km=max_distance_km,
+        search_text=search_text,
+        detailed_route_filter=detailed_route_filter,
+        sort_label=sort_label,
+        preview_limit=preview_limit,
+    )
+
+
 def build_activity_query(request: ActivityPreviewRequest) -> ActivityQuery:
     return ActivityQuery(
         activity_type=request.activity_type or "All",

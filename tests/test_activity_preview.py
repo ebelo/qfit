@@ -6,6 +6,7 @@ from tests import _path  # noqa: F401
 from qfit.activities.application.activity_preview import (
     ActivityPreviewRequest,
     build_activity_preview,
+    build_activity_preview_request,
     build_activity_query,
     build_activity_selection_state,
 )
@@ -58,6 +59,32 @@ class ActivityPreviewTests(unittest.TestCase):
         self.assertEqual(query.search_text, "lunch")
         self.assertEqual(query.detailed_route_filter, DETAILED_ROUTE_FILTER_MISSING)
         self.assertEqual(query.sort_label, "Name (A–Z)")
+
+    def test_build_activity_preview_request_preserves_inputs(self):
+        request = build_activity_preview_request(
+            activities=self.activities,
+            activity_type="Run",
+            date_from="2026-04-01",
+            date_to="2026-04-30",
+            min_distance_km=2,
+            max_distance_km=8,
+            search_text="lunch",
+            detailed_route_filter=DETAILED_ROUTE_FILTER_MISSING,
+            sort_label="Name (A–Z)",
+            preview_limit=5,
+        )
+
+        self.assertIsInstance(request, ActivityPreviewRequest)
+        self.assertEqual(request.activities, self.activities)
+        self.assertEqual(request.activity_type, "Run")
+        self.assertEqual(request.date_from, "2026-04-01")
+        self.assertEqual(request.date_to, "2026-04-30")
+        self.assertEqual(request.min_distance_km, 2)
+        self.assertEqual(request.max_distance_km, 8)
+        self.assertEqual(request.search_text, "lunch")
+        self.assertEqual(request.detailed_route_filter, DETAILED_ROUTE_FILTER_MISSING)
+        self.assertEqual(request.sort_label, "Name (A–Z)")
+        self.assertEqual(request.preview_limit, 5)
 
     def test_build_activity_selection_state_filters_with_query(self):
         request = ActivityPreviewRequest(

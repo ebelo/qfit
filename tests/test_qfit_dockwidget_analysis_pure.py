@@ -655,18 +655,27 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.activitySearchLineEdit = _FakeLineEdit(" lunch ")
         dock.detailedRouteStatusComboBox = SimpleNamespace(currentData=lambda: "missing")
         dock.previewSortComboBox = _FakeComboBox(current_text="Name (A–Z)")
+        preview_request = SimpleNamespace()
 
-        request = self.module.QfitDockWidget._current_activity_preview_request(dock)
+        with patch.object(
+            self.module,
+            "build_activity_preview_request",
+            return_value=preview_request,
+        ) as build_request:
+            request = self.module.QfitDockWidget._current_activity_preview_request(dock)
 
-        self.assertEqual(request.activities, ["a1", "a2"])
-        self.assertEqual(request.activity_type, "Run")
-        self.assertEqual(request.date_from, "2026-04-01")
-        self.assertEqual(request.date_to, "2026-04-30")
-        self.assertEqual(request.min_distance_km, 5)
-        self.assertEqual(request.max_distance_km, 42)
-        self.assertEqual(request.search_text, "lunch")
-        self.assertEqual(request.detailed_route_filter, "missing")
-        self.assertEqual(request.sort_label, "Name (A–Z)")
+        self.assertIs(request, preview_request)
+        build_request.assert_called_once_with(
+            activities=["a1", "a2"],
+            activity_type="Run",
+            date_from="2026-04-01",
+            date_to="2026-04-30",
+            min_distance_km=5,
+            max_distance_km=42,
+            search_text="lunch",
+            detailed_route_filter="missing",
+            sort_label="Name (A–Z)",
+        )
 
     def test_current_activity_selection_state_delegates_to_activity_preview_workflow(self):
         dock = object.__new__(self.module.QfitDockWidget)
