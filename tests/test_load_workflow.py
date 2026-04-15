@@ -13,6 +13,11 @@ from qfit.activities.application.load_workflow import (
     LoadWorkflowError,
     LoadWorkflowService,
 )
+from qfit.atlas.publish_atlas import (
+    DEFAULT_ATLAS_MARGIN_PERCENT,
+    DEFAULT_ATLAS_TARGET_ASPECT_RATIO,
+    DEFAULT_MIN_EXTENT_DEGREES,
+)
 from qfit.sync_repository import SyncStats
 
 # Ensure a stub ``qfit.activities.infrastructure.geopackage.gpkg_writer`` is
@@ -442,6 +447,16 @@ class LoadRequestContractTests(unittest.TestCase):
 
         self.assertTrue(request.write_activity_points)
         self.assertEqual(request.point_stride, 5)
+
+    def test_build_write_request_uses_internal_atlas_defaults_when_ui_omits_fields(self):
+        request = LoadWorkflowService.build_write_request(
+            activities=["a"],
+            output_path="/tmp/test.gpkg",
+        )
+
+        self.assertEqual(request.atlas_margin_percent, DEFAULT_ATLAS_MARGIN_PERCENT)
+        self.assertEqual(request.atlas_min_extent_degrees, DEFAULT_MIN_EXTENT_DEGREES)
+        self.assertEqual(request.atlas_target_aspect_ratio, DEFAULT_ATLAS_TARGET_ASPECT_RATIO)
 
     def test_build_load_existing_request_returns_dataclass(self):
         request = LoadWorkflowService.build_load_existing_request("/tmp/existing.gpkg")
