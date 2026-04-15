@@ -718,6 +718,25 @@ def _build_cover_summary_from_current_atlas_features(atlas_layer) -> dict:
     return build_cover_summary_from_rows(rows)
 
 
+def _build_cover_data_for_export(
+    atlas_layer,
+    *,
+    atlas_title: str = "",
+    atlas_subtitle: str = "",
+) -> dict:
+    cover_data = _build_cover_summary_from_current_atlas_features(atlas_layer)
+    if not cover_data:
+        return cover_data
+
+    title = atlas_title.strip()
+    subtitle = atlas_subtitle.strip()
+    if title:
+        cover_data["title"] = title
+    if subtitle:
+        cover_data["subtitle"] = subtitle
+    return cover_data
+
+
 def _apply_cover_heatmap_renderer(layer) -> None:
     """Apply a heatmap renderer to *layer* for the cover overview map.
 
@@ -767,6 +786,8 @@ def build_cover_layout(
     if not cover_data:
         return None
 
+    cover_title = str(cover_data.get("title") or "qfit Activity Atlas").strip()
+    cover_subtitle = str(cover_data.get("subtitle") or "").strip()
     cover_summary = cover_data.get("document_cover_summary", "")
     activity_count = cover_data.get("document_activity_count", "")
     date_range_label = cover_data.get("document_date_range_label", "")
@@ -805,7 +826,7 @@ def build_cover_layout(
         activity_noun = "activity" if str(activity_count) == "1" else "activities"
         activity_count_label = f"{activity_count} {activity_noun}"
 
-    subtitle_line = _join_cover_parts([
+    subtitle_line = cover_subtitle or _join_cover_parts([
         activity_count_label,
         date_range_label,
         activity_types_label,
@@ -828,7 +849,7 @@ def build_cover_layout(
     title_y = cover_top_margin_mm
     _add_label(
         layout,
-        "qfit Activity Atlas",
+        cover_title,
         x=content_x,
         y=title_y,
         w=content_width,
@@ -1110,7 +1131,9 @@ class AtlasExportTask(QgsTask):
         self,
         atlas_layer,
         output_path: str,
-        on_finished,
+        on_finished=None,
+        atlas_title: str = "",
+        atlas_subtitle: str = "",
         project=None,
         restore_tile_mode: str | None = None,
         layer_manager=None,
@@ -1124,6 +1147,8 @@ class AtlasExportTask(QgsTask):
         super().__init__("Export qfit atlas PDF", QgsTask.CanCancel)
         self._atlas_layer = atlas_layer
         self._output_path = output_path
+        self._atlas_title = atlas_title
+        self._atlas_subtitle = atlas_subtitle
         self._on_finished = on_finished
         self._project = project
         self._restore_tile_mode = restore_tile_mode
@@ -1163,7 +1188,13 @@ class AtlasExportTask(QgsTask):
             build_pdf_export_settings=self._build_pdf_export_settings,
             ensure_output_directory=self._ensure_output_directory,
             build_page_export_runner=self._build_page_export_runner,
-            export_cover_page=self._export_cover_page,
+            export_cover_page=lambda atlas_layer, output_path, project=None: self._export_cover_page(
+                atlas_layer,
+                output_path,
+                atlas_title=self._atlas_title,
+                atlas_subtitle=self._atlas_subtitle,
+                project=project,
+            ),
             export_toc_page=self._export_toc_page,
             assemble_output_pdf=self._assemble_output_pdf,
             logger=logger,
@@ -1224,6 +1255,8 @@ class AtlasExportTask(QgsTask):
     def _export_cover_page(
         atlas_layer,
         output_path: str,
+        atlas_title: str = "",
+        atlas_subtitle: str = "",
         project=None,
         cover_composer=_DEFAULT_COVER_COMPOSER,
     ) -> str | None:
@@ -1233,7 +1266,11 @@ class AtlasExportTask(QgsTask):
             output_path,
             project=project,
             get_project_instance=QgsProject.instance,
-            build_cover_data=_build_cover_summary_from_current_atlas_features,
+            build_cover_data=lambda layer: _build_cover_data_for_export(
+                layer,
+                atlas_title=atlas_title,
+                atlas_subtitle=atlas_subtitle,
+            ),
             apply_cover_heatmap_renderer=_apply_cover_heatmap_renderer,
             build_cover_layout_fn=cover_composer.build_layout,
             layout_exporter_cls=QgsLayoutExporter,

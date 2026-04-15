@@ -132,34 +132,22 @@ DOCK_HELP_ENTRIES: tuple[HelpEntry, ...] = (
         help_button=True,
     ),
     HelpEntry(
-        anchor_name="atlasMarginPercentSpinBox",
-        label_name="atlasMarginPercentLabel",
-        label_text="Atlas margin around route (%)",
+        anchor_name="atlasTitleLineEdit",
+        label_name="atlasTitleLabel",
+        label_text="Atlas title",
         tooltip=(
-            "Adds extra space around each activity when qfit builds the activity_atlas_pages layer."
+            "Sets the title shown on the exported atlas cover page."
         ),
     ),
     HelpEntry(
-        anchor_name="atlasMinExtentSpinBox",
-        label_name="atlasMinExtentLabel",
-        label_text="Minimum atlas extent (°)",
+        anchor_name="atlasSubtitleLineEdit",
+        label_name="atlasSubtitleLabel",
+        label_text="Atlas subtitle",
         tooltip=(
-            "Prevents very short or compact activities from collapsing into tiny atlas pages by enforcing a minimum "
-            "latitude/longitude extent before qfit expands to Web Mercator for layout work."
-        ),
-    ),
-    HelpEntry(
-        anchor_name="atlasTargetAspectRatioSpinBox",
-        label_name="atlasTargetAspectRatioLabel",
-        label_text="Target page aspect ratio",
-        tooltip=(
-            "Width divided by height for atlas framing in Web Mercator meters. Use 0 to keep each activity's natural "
-            "shape, 1 for square framing, or larger values for wider landscape layouts."
+            "Overrides the cover-page subtitle. Leave it blank to keep qfit's generated activity/date summary."
         ),
         helper_text=(
-            "These publish settings shape the generated activity_atlas_pages layer. Start with the defaults, then bump "
-            "margin for more surrounding context, minimum extent for short activities, or aspect ratio when your print "
-            "layout has a fixed frame shape."
+            "Atlas layout framing stays on qfit's internal defaults. These fields only affect the exported PDF cover text."
         ),
         help_button=True,
     ),

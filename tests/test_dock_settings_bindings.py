@@ -5,7 +5,6 @@ from tests import _path  # noqa: F401
 from qfit.configuration.infrastructure.credential_store import InMemoryCredentialStore
 from qfit.configuration.application.settings_service import SettingsService
 from qfit.activities.domain.activity_query import DEFAULT_SORT_LABEL, DETAILED_ROUTE_FILTER_ANY
-from qfit.atlas.layout_metrics import BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
 from qfit.configuration.application.dock_settings_bindings import build_dock_settings_bindings
 from qfit.configuration.application.ui_settings_binding import load_bindings, save_bindings
 from qfit.detailed_route_strategy import DEFAULT_DETAILED_ROUTE_STRATEGY
@@ -120,9 +119,8 @@ class FakeDock:
         self.backgroundMapCheckBox = CheckWidget(False)
         self.mapboxStyleOwnerLineEdit = TextWidget()
         self.mapboxStyleIdLineEdit = TextWidget()
-        self.atlasMarginPercentSpinBox = SpinWidget(8.0)
-        self.atlasMinExtentSpinBox = SpinWidget(0.01)
-        self.atlasTargetAspectRatioSpinBox = SpinWidget(BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO)
+        self.atlasTitleLineEdit = TextWidget("qfit Activity Atlas")
+        self.atlasSubtitleLineEdit = TextWidget()
         self.atlasPdfPathLineEdit = TextWidget()
         self.analysisModeComboBox = ComboWidget(["None", "Most frequent starting points"])
         self.backgroundPresetComboBox = ComboWidget([DEFAULT_BACKGROUND_PRESET, "Custom"])
@@ -178,16 +176,6 @@ class FakeDock:
         except (TypeError, ValueError):
             spin_box.setValue(float(default))
 
-    def _set_atlas_target_aspect_ratio_value(self, value):
-        try:
-            aspect_ratio = float(value)
-        except (TypeError, ValueError):
-            aspect_ratio = BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
-        if aspect_ratio <= 0:
-            aspect_ratio = BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
-        self.atlasTargetAspectRatioSpinBox.setValue(aspect_ratio)
-
-
 class DockSettingsBindingsTests(unittest.TestCase):
     EXPECTED_KEYS = {
         "client_id",
@@ -208,9 +196,8 @@ class DockSettingsBindingsTests(unittest.TestCase):
         "use_background_map",
         "mapbox_style_owner",
         "mapbox_style_id",
-        "atlas_margin_percent",
-        "atlas_min_extent_degrees",
-        "atlas_target_aspect_ratio",
+        "atlas_title",
+        "atlas_subtitle",
         "atlas_pdf_path",
         "analysis_mode",
         "background_preset",
@@ -233,7 +220,8 @@ class DockSettingsBindingsTests(unittest.TestCase):
                 "qfit/use_detailed_streams": "true",
                 "qfit/detailed_route_filter": "missing",
                 "qfit/use_background_map": True,
-                "qfit/atlas_target_aspect_ratio": "2.5",
+                "qfit/atlas_title": "Spring Atlas",
+                "qfit/atlas_subtitle": "Selected rides",
                 "qfit/preview_sort": "Newest first",
                 "qfit/style_preset": "Heatmap",
             }
@@ -248,7 +236,8 @@ class DockSettingsBindingsTests(unittest.TestCase):
         self.assertTrue(dock.detailedStreamsCheckBox.isChecked())
         self.assertEqual(dock.detailedRouteStatusComboBox.currentData(), "missing")
         self.assertTrue(dock.backgroundMapCheckBox.isChecked())
-        self.assertEqual(dock.atlasTargetAspectRatioSpinBox.value(), 2.5)
+        self.assertEqual(dock.atlasTitleLineEdit.text(), "Spring Atlas")
+        self.assertEqual(dock.atlasSubtitleLineEdit.text(), "Selected rides")
         self.assertEqual(dock.previewSortComboBox.currentText(), "Newest first")
         self.assertEqual(dock.stylePresetComboBox.currentText(), "Heatmap")
         self.assertEqual(dock.analysisModeComboBox.currentText(), "None")
@@ -271,9 +260,8 @@ class DockSettingsBindingsTests(unittest.TestCase):
         dock.backgroundMapCheckBox.setChecked(True)
         dock.mapboxStyleOwnerLineEdit.setText("custom-owner")
         dock.mapboxStyleIdLineEdit.setText("style-id")
-        dock.atlasMarginPercentSpinBox.setValue(12.0)
-        dock.atlasMinExtentSpinBox.setValue(0.25)
-        dock.atlasTargetAspectRatioSpinBox.setValue(1.75)
+        dock.atlasTitleLineEdit.setText(" Weekend Atlas ")
+        dock.atlasSubtitleLineEdit.setText("  Alpine routes  ")
         dock.atlasPdfPathLineEdit.setText("/tmp/atlas.pdf")
         dock.analysisModeComboBox.setCurrentIndex(1)
         dock.backgroundPresetComboBox.setCurrentIndex(1)
@@ -292,7 +280,8 @@ class DockSettingsBindingsTests(unittest.TestCase):
         self.assertFalse(settings.get_bool("write_activity_points", True))
         self.assertEqual(settings.get("detailed_route_filter"), "missing")
         self.assertEqual(settings.get("mapbox_style_owner"), "custom-owner")
-        self.assertEqual(settings.get("atlas_target_aspect_ratio"), 1.75)
+        self.assertEqual(settings.get("atlas_title"), "Weekend Atlas")
+        self.assertEqual(settings.get("atlas_subtitle"), "Alpine routes")
         self.assertEqual(settings.get("analysis_mode"), "Most frequent starting points")
         self.assertEqual(settings.get("style_preset"), "Heatmap")
 

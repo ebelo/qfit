@@ -289,11 +289,8 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertFalse(dock.publishSectionContentWidget.isHidden())
             self.assertTrue(dock.publishSettingsWidget.parent() is dock.publishSectionContentWidget or dock.publishSettingsWidget.isVisible())
             self.assertEqual(dock.tileModeComboBox.currentText(), TILE_MODE_RASTER)
-            self.assertAlmostEqual(
-                dock.atlasTargetAspectRatioSpinBox.value(),
-                BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO,
-                places=3,
-            )
+            self.assertEqual(dock.atlasTitleLineEdit.text(), "qfit Activity Atlas")
+            self.assertEqual(dock.atlasSubtitleLineEdit.text(), "")
             self.assertEqual(dock.detailedRouteStrategyComboBox.currentText(), "Missing routes only")
             self.assertIsNotNone(dock.findChild(QLabel, "detailedRouteStrategyComboBoxContextHelpLabel"))
             self.assertIsNotNone(dock.findChild(QWidget, "detailedRouteStrategyComboBoxHelpField"))
@@ -382,7 +379,8 @@ class QgisSmokeTests(unittest.TestCase):
             dock.previewSortComboBox.setCurrentText(preview_sort_text)
             dock.stylePresetComboBox.setCurrentText(style_preset_text)
             dock.analysisModeComboBox.setCurrentText("Most frequent starting points")
-            dock.atlasTargetAspectRatioSpinBox.setValue(1.75)
+            dock.atlasTitleLineEdit.setText("Spring Atlas")
+            dock.atlasSubtitleLineEdit.setText("Road and trail")
             dock.atlasPdfPathLineEdit.setText("/tmp/roundtrip.pdf")
 
             dock._save_settings()
@@ -398,7 +396,8 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertEqual(settings.get("style_preset"), style_preset_text)
             self.assertIsNone(settings.get("temporal_mode"))
             self.assertEqual(settings.get("analysis_mode"), "Most frequent starting points")
-            self.assertAlmostEqual(float(settings.get("atlas_target_aspect_ratio")), 1.75, places=2)
+            self.assertEqual(settings.get("atlas_title"), "Spring Atlas")
+            self.assertEqual(settings.get("atlas_subtitle"), "Road and trail")
             self.assertEqual(settings.get("atlas_pdf_path"), "/tmp/roundtrip.pdf")
         finally:
             dock.close()
@@ -417,7 +416,8 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertEqual(dock_reloaded.stylePresetComboBox.currentText(), style_preset_text)
             self.assertEqual(dock_reloaded.temporalModeComboBox.currentText(), DEFAULT_TEMPORAL_MODE_LABEL)
             self.assertEqual(dock_reloaded.analysisModeComboBox.currentText(), "Most frequent starting points")
-            self.assertAlmostEqual(dock_reloaded.atlasTargetAspectRatioSpinBox.value(), 1.75, places=2)
+            self.assertEqual(dock_reloaded.atlasTitleLineEdit.text(), "Spring Atlas")
+            self.assertEqual(dock_reloaded.atlasSubtitleLineEdit.text(), "Road and trail")
             self.assertEqual(dock_reloaded.atlasPdfPathLineEdit.text(), "/tmp/roundtrip.pdf")
         finally:
             dock_reloaded.close()
@@ -448,6 +448,8 @@ class QgisSmokeTests(unittest.TestCase):
             dock.atlas_layer = MagicMock()
             dock.atlas_layer.featureCount.return_value = 3
             dock.atlasPdfPathLineEdit.setText("/tmp/qfit-atlas.pdf")
+            dock.atlasTitleLineEdit.setText("Custom Atlas")
+            dock.atlasSubtitleLineEdit.setText("April 2026")
 
             from qfit.atlas.export_use_case import PrepareAtlasPdfExportResult
 
@@ -502,6 +504,8 @@ class QgisSmokeTests(unittest.TestCase):
 
             build_style.assert_called_once_with(dock.settings)
             export_command = dock.atlas_export_use_case.prepare_export.call_args.args[0]
+            self.assertEqual(export_command.atlas_title, "Custom Atlas")
+            self.assertEqual(export_command.atlas_subtitle, "April 2026")
             self.assertEqual(export_command.profile_plot_style, "style-override")
             dock.atlas_export_use_case.start_export.assert_called_once_with(
                 prepared_export,

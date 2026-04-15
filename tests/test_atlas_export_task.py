@@ -3318,6 +3318,26 @@ class TestBuildCoverLayout(unittest.TestCase):
         label_texts = [label.setText.call_args[0][0] for label in labels]
         self.assertIn("legacy summary", label_texts)
 
+    def test_build_cover_layout_uses_custom_title_and_subtitle_when_provided(self):
+        layer = _make_cover_atlas_layer()
+        cover_data = {
+            "title": "Weekend Atlas",
+            "subtitle": "April highlights",
+            "document_cover_summary": "",
+            "document_activity_count": "2",
+            "document_date_range_label": "2026-04-01 → 2026-04-02",
+            "document_total_distance_label": "20.0 km",
+            "document_total_duration_label": "2h 00m",
+            "document_total_elevation_gain_label": "",
+            "document_activity_types_label": "Ride",
+        }
+        result, _layout, labels = self._capture_cover_labels(layer, cover_data=cover_data)
+        self.assertIsNotNone(result)
+        label_texts = [label.setText.call_args[0][0] for label in labels]
+        self.assertIn("Weekend Atlas", label_texts)
+        self.assertIn("April highlights", label_texts)
+        self.assertNotIn("2 activities · 2026-04-01 → 2026-04-02 · Ride", label_texts)
+
     def test_build_cover_layout_skips_zero_activity_count_row(self):
         """Activity count of '0' should not appear in the metrics band."""
         layer = _make_cover_atlas_layer()

@@ -3,6 +3,11 @@ import os
 from dataclasses import dataclass, field
 from datetime import date
 
+from ...atlas.publish_atlas import (
+    DEFAULT_ATLAS_MARGIN_PERCENT,
+    DEFAULT_ATLAS_TARGET_ASPECT_RATIO,
+    DEFAULT_MIN_EXTENT_DEGREES,
+)
 from ...sync_repository import SyncStats
 from ...visualization.application.layer_gateway import LayerGateway
 
@@ -17,9 +22,9 @@ class StoreActivitiesRequest:
     output_path: str = ""
     write_activity_points: bool = True
     point_stride: int = 5
-    atlas_margin_percent: float = 0.0
-    atlas_min_extent_degrees: float = 0.0
-    atlas_target_aspect_ratio: float = 0.0
+    atlas_margin_percent: float = DEFAULT_ATLAS_MARGIN_PERCENT
+    atlas_min_extent_degrees: float = DEFAULT_MIN_EXTENT_DEGREES
+    atlas_target_aspect_ratio: float = DEFAULT_ATLAS_TARGET_ASPECT_RATIO
     sync_metadata: dict | None = None
     last_sync_date: str | None = None
 
@@ -88,9 +93,9 @@ class LoadWorkflowService:
         output_path,
         write_activity_points=True,
         point_stride=5,
-        atlas_margin_percent=0.0,
-        atlas_min_extent_degrees=0.0,
-        atlas_target_aspect_ratio=0.0,
+        atlas_margin_percent=DEFAULT_ATLAS_MARGIN_PERCENT,
+        atlas_min_extent_degrees=DEFAULT_MIN_EXTENT_DEGREES,
+        atlas_target_aspect_ratio=DEFAULT_ATLAS_TARGET_ASPECT_RATIO,
         sync_metadata=None,
         last_sync_date=None,
     ) -> StoreActivitiesRequest:

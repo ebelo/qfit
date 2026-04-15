@@ -96,7 +96,6 @@ from .visualization.application import (
     build_background_map_failure_status,
     build_background_map_failure_title,
 )
-from .atlas.layout_metrics import BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
 from .providers.domain.provider import ProviderError
 from .providers.infrastructure.strava_provider import StravaProvider
 from .visualization.application import DEFAULT_TEMPORAL_MODE_LABEL, temporal_mode_labels
@@ -358,15 +357,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         except (TypeError, ValueError):
             spin_box.setValue(float(default))
 
-    def _set_atlas_target_aspect_ratio_value(self, value) -> None:
-        try:
-            aspect_ratio = float(value)
-        except (TypeError, ValueError):
-            aspect_ratio = BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
-        if aspect_ratio <= 0:
-            aspect_ratio = BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
-        self.atlasTargetAspectRatioSpinBox.setValue(aspect_ratio)
-
     def _default_output_path(self) -> str:
         return os.path.join(os.path.expanduser("~"), "qfit_activities.gpkg")
 
@@ -618,9 +608,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 output_path=self.outputPathLineEdit.text().strip(),
                 write_activity_points=self.writeActivityPointsCheckBox.isChecked(),
                 point_stride=self.pointSamplingStrideSpinBox.value(),
-                atlas_margin_percent=self.atlasMarginPercentSpinBox.value(),
-                atlas_min_extent_degrees=self.atlasMinExtentSpinBox.value(),
-                atlas_target_aspect_ratio=self.atlasTargetAspectRatioSpinBox.value(),
                 sync_metadata=self.last_fetch_context,
                 last_sync_date=self.settings.get("last_sync_date", None),
             )
@@ -1005,6 +992,8 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 self._current_activity_preview_request()
             ),
             output_path=self.atlasPdfPathLineEdit.text().strip(),
+            atlas_title=self.atlasTitleLineEdit.text().strip(),
+            atlas_subtitle=self.atlasSubtitleLineEdit.text().strip(),
             on_finished=self._on_atlas_export_finished,
             pre_export_tile_mode=self.tileModeComboBox.currentText(),
             preset_name=self.backgroundPresetComboBox.currentText(),

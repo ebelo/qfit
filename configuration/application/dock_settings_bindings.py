@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from .ui_settings_binding import UIFieldBinding
 from ...activities.domain.activity_query import DEFAULT_SORT_LABEL, DETAILED_ROUTE_FILTER_ANY
-from ...atlas.layout_metrics import BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
 from ...detailed_route_strategy import DEFAULT_DETAILED_ROUTE_STRATEGY
 from ...mapbox_config import DEFAULT_BACKGROUND_PRESET, TILE_MODE_RASTER
 from ...providers.infrastructure.strava_provider import StravaProvider
@@ -107,22 +106,16 @@ def build_dock_settings_bindings(dock) -> list[UIFieldBinding]:
             dock.mapboxStyleIdLineEdit.setText,
         ),
         UIFieldBinding(
-            "atlas_margin_percent",
-            8.0,
-            lambda: dock.atlasMarginPercentSpinBox.value(),
-            lambda value: dock._set_float_value(dock.atlasMarginPercentSpinBox, value, 8.0),
+            "atlas_title",
+            "qfit Activity Atlas",
+            lambda: dock.atlasTitleLineEdit.text().strip(),
+            dock.atlasTitleLineEdit.setText,
         ),
         UIFieldBinding(
-            "atlas_min_extent_degrees",
-            0.01,
-            lambda: dock.atlasMinExtentSpinBox.value(),
-            lambda value: dock._set_float_value(dock.atlasMinExtentSpinBox, value, 0.01),
-        ),
-        UIFieldBinding(
-            "atlas_target_aspect_ratio",
-            BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO,
-            lambda: dock.atlasTargetAspectRatioSpinBox.value(),
-            dock._set_atlas_target_aspect_ratio_value,
+            "atlas_subtitle",
+            "",
+            lambda: dock.atlasSubtitleLineEdit.text().strip(),
+            dock.atlasSubtitleLineEdit.setText,
         ),
         UIFieldBinding(
             "atlas_pdf_path",
