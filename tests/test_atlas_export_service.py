@@ -183,6 +183,8 @@ class BuildTaskTests(unittest.TestCase):
         request = GenerateAtlasPdfRequest(
             atlas_layer=MagicMock(),
             output_path="/out.pdf",
+            atlas_title="Atlas",
+            atlas_subtitle="Spring rides",
             on_finished=MagicMock(),
             pre_export_tile_mode="Raster",
             preset_name="Dark",
@@ -200,6 +202,8 @@ class BuildTaskTests(unittest.TestCase):
         self.service.build_task(
             atlas_layer=MagicMock(),
             output_path="/out.pdf",
+            atlas_title="Atlas",
+            atlas_subtitle="Subset",
             on_finished=MagicMock(),
             pre_export_tile_mode="Vector",
             preset_name="Light",
@@ -211,6 +215,8 @@ class BuildTaskTests(unittest.TestCase):
 
         request = self.runtime.build_task.call_args.args[0]
         self.assertIsInstance(request, GenerateAtlasPdfRequest)
+        self.assertEqual(request.atlas_title, "Atlas")
+        self.assertEqual(request.atlas_subtitle, "Subset")
         self.assertFalse(request.background_enabled)
         self.assertEqual(request.pre_export_tile_mode, "Vector")
 
@@ -220,6 +226,8 @@ class BuildTaskTests(unittest.TestCase):
         self.service.build_task(
             atlas_layer=MagicMock(),
             output_path="/out.pdf",
+            atlas_title="Atlas",
+            atlas_subtitle="Subset",
             on_finished=MagicMock(),
             pre_export_tile_mode="Vector",
             preset_name="Light",
@@ -238,6 +246,8 @@ class AtlasExportRequestContractTests(unittest.TestCase):
     def test_build_plan_returns_dataclass(self):
         plan = AtlasExportService.build_plan(
             output_path="/tmp/atlas.pdf",
+            atlas_title="Atlas",
+            atlas_subtitle="Spring",
             pre_export_tile_mode="Raster",
             preset_name="Dark",
             access_token="tok",
@@ -248,12 +258,16 @@ class AtlasExportRequestContractTests(unittest.TestCase):
 
         self.assertIsInstance(plan, AtlasExportPlan)
         self.assertEqual(plan.output_path, "/tmp/atlas.pdf")
+        self.assertEqual(plan.atlas_title, "Atlas")
+        self.assertEqual(plan.atlas_subtitle, "Spring")
         self.assertTrue(plan.background_enabled)
 
     def test_build_request_returns_dataclass(self):
         request = AtlasExportService.build_request(
             atlas_layer=MagicMock(),
             output_path="/tmp/atlas.pdf",
+            atlas_title="Atlas",
+            atlas_subtitle="Spring",
             on_finished=MagicMock(),
             pre_export_tile_mode="Raster",
             preset_name="Dark",
@@ -265,6 +279,8 @@ class AtlasExportRequestContractTests(unittest.TestCase):
 
         self.assertIsInstance(request, GenerateAtlasPdfRequest)
         self.assertEqual(request.output_path, "/tmp/atlas.pdf")
+        self.assertEqual(request.atlas_title, "Atlas")
+        self.assertEqual(request.atlas_subtitle, "Spring")
         self.assertTrue(request.background_enabled)
 
     def test_build_request_preserves_profile_plot_style(self):
@@ -273,6 +289,8 @@ class AtlasExportRequestContractTests(unittest.TestCase):
         request = AtlasExportService.build_request(
             atlas_layer=MagicMock(),
             output_path="/tmp/atlas.pdf",
+            atlas_title="Atlas",
+            atlas_subtitle="Spring",
             on_finished=MagicMock(),
             pre_export_tile_mode="Raster",
             preset_name="Dark",
@@ -288,6 +306,8 @@ class AtlasExportRequestContractTests(unittest.TestCase):
     def test_build_request_from_plan_returns_dataclass(self):
         plan = AtlasExportService.build_plan(
             output_path="/tmp/atlas.pdf",
+            atlas_title="Atlas",
+            atlas_subtitle="Spring",
             pre_export_tile_mode="Raster",
             preset_name="Dark",
             access_token="tok",
@@ -304,4 +324,6 @@ class AtlasExportRequestContractTests(unittest.TestCase):
 
         self.assertIsInstance(request, GenerateAtlasPdfRequest)
         self.assertEqual(request.output_path, "/tmp/atlas.pdf")
+        self.assertEqual(request.atlas_title, "Atlas")
+        self.assertEqual(request.atlas_subtitle, "Spring")
         self.assertTrue(request.background_enabled)

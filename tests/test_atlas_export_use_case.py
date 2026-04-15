@@ -24,12 +24,16 @@ class AtlasExportUseCaseTests(unittest.TestCase):
         selection_state = ActivitySelectionState(query=ActivityQuery(search_text="ride"), filtered_count=7)
         command = self.use_case.build_command(
             output_path="/tmp/atlas.pdf",
+            atlas_title="Atlas",
+            atlas_subtitle="Spring",
             background_enabled=True,
             selection_state=selection_state,
         )
 
         self.assertIsInstance(command, GenerateAtlasPdfCommand)
         self.assertEqual(command.output_path, "/tmp/atlas.pdf")
+        self.assertEqual(command.atlas_title, "Atlas")
+        self.assertEqual(command.atlas_subtitle, "Spring")
         self.assertTrue(command.background_enabled)
         self.assertIs(command.selection_state, selection_state)
 
@@ -79,6 +83,8 @@ class AtlasExportUseCaseTests(unittest.TestCase):
         command = GenerateAtlasPdfCommand(
             atlas_layer=object(),
             output_path="/tmp/atlas",
+            atlas_title="Atlas",
+            atlas_subtitle="Spring",
             on_finished=MagicMock(),
             pre_export_tile_mode="Raster",
             preset_name="Outdoor",
@@ -96,6 +102,8 @@ class AtlasExportUseCaseTests(unittest.TestCase):
         self.assertTrue(result.path_changed)
         self.service.build_plan.assert_called_once_with(
             output_path="/tmp/atlas.pdf",
+            atlas_title="Atlas",
+            atlas_subtitle="Spring",
             pre_export_tile_mode="Raster",
             preset_name="Outdoor",
             access_token="tok",

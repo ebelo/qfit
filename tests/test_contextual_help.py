@@ -261,7 +261,8 @@ class ContextualHelpTests(unittest.TestCase):
             "writeActivityPointsCheckBox",
             "pointSamplingStrideSpinBox",
             "backgroundPresetComboBox",
-            "atlasTargetAspectRatioSpinBox",
+            "atlasTitleLineEdit",
+            "atlasSubtitleLineEdit",
             "refreshButton",
             "loadButton",
             "applyFiltersButton",
@@ -276,7 +277,8 @@ class ContextualHelpTests(unittest.TestCase):
         self.assertIn("downloads up to 25 new detailed routes", entries["maxDetailedActivitiesSpinBox"].helper_text)
         self.assertEqual(entries["pointSamplingStrideSpinBox"].label_text, "Keep every Nth point")
         self.assertEqual(entries["backgroundPresetComboBox"].label_text, "Basemap preset")
-        self.assertEqual(entries["atlasTargetAspectRatioSpinBox"].label_text, "Target page aspect ratio")
+        self.assertEqual(entries["atlasTitleLineEdit"].label_text, "Atlas title")
+        self.assertEqual(entries["atlasSubtitleLineEdit"].label_text, "Atlas subtitle")
         self.assertEqual(entries["refreshButton"].target_text, "Fetch activities")
         self.assertIn("Store activities", entries["buttonLayout"].helper_text)
 

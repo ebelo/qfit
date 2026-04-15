@@ -40,6 +40,8 @@ class QgisAtlasExportRuntimeTests(unittest.TestCase):
         request = GenerateAtlasPdfRequest(
             atlas_layer=atlas_layer,
             output_path="/out.pdf",
+            atlas_title="Atlas",
+            atlas_subtitle="Spring",
             on_finished=on_finished,
             pre_export_tile_mode="Raster",
             preset_name="Dark",
@@ -56,6 +58,8 @@ class QgisAtlasExportRuntimeTests(unittest.TestCase):
         mock_task.assert_called_once_with(
             atlas_layer=atlas_layer,
             output_path="/out.pdf",
+            atlas_title="Atlas",
+            atlas_subtitle="Spring",
             on_finished=on_finished,
             restore_tile_mode="Raster",
             layer_manager=layer_gateway,

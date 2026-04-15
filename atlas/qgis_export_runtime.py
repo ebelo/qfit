@@ -23,6 +23,8 @@ class QgisAtlasExportRuntime(AtlasExportRuntime):
         return AtlasExportTask(
             atlas_layer=request.atlas_layer,
             output_path=request.output_path,
+            atlas_title=request.atlas_title,
+            atlas_subtitle=request.atlas_subtitle,
             on_finished=request.on_finished,
             restore_tile_mode=request.pre_export_tile_mode,
             layer_manager=layer_gateway,

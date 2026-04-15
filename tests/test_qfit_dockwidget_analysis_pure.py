@@ -935,9 +935,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.outputPathLineEdit = _FakeLineEdit("/tmp/qfit.gpkg")
         dock.writeActivityPointsCheckBox = _FakeCheckBox(True)
         dock.pointSamplingStrideSpinBox = _FakeSpinBox(2)
-        dock.atlasMarginPercentSpinBox = _FakeSpinBox(10)
-        dock.atlasMinExtentSpinBox = _FakeSpinBox(0.01)
-        dock.atlasTargetAspectRatioSpinBox = _FakeSpinBox(1.5)
         dock.last_fetch_context = {"provider": "strava"}
         dock.settings = _FakeSettings({"last_sync_date": "2026-04-07"})
         dock.loadButton = _FakeButton("Store activities")
@@ -955,7 +952,14 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             self.module.QfitDockWidget.on_load_clicked(dock)
 
         dock._save_settings.assert_called_once_with()
-        dock.load_workflow.build_write_request.assert_called_once()
+        dock.load_workflow.build_write_request.assert_called_once_with(
+            activities=dock.activities,
+            output_path="/tmp/qfit.gpkg",
+            write_activity_points=True,
+            point_stride=2,
+            sync_metadata={"provider": "strava"},
+            last_sync_date="2026-04-07",
+        )
         build_store_task.assert_called_once()
         self.assertIs(dock._store_task, fake_task)
         self.assertEqual(dock.loadButton.text(), "Store in progress...")

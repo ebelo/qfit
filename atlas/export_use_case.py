@@ -20,6 +20,8 @@ class GenerateAtlasPdfCommand:
     atlas_layer: object = None
     selection_state: ActivitySelectionState = field(default_factory=ActivitySelectionState)
     output_path: str = ""
+    atlas_title: str = ""
+    atlas_subtitle: str = ""
     on_finished: Callable | None = None
     pre_export_tile_mode: str = ""
     preset_name: str = ""
@@ -93,6 +95,8 @@ class AtlasExportUseCase:
 
         plan = self.service.build_plan(
             output_path=output_path,
+            atlas_title=command.atlas_title,
+            atlas_subtitle=command.atlas_subtitle,
             pre_export_tile_mode=command.pre_export_tile_mode,
             preset_name=command.preset_name,
             access_token=command.access_token,
