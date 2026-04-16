@@ -7,11 +7,16 @@ from tests import _path  # noqa: F401
 from qfit.activities.application.load_workflow import (
     ClearDatabaseRequest,
     ClearDatabaseResult,
+    ClearDatabaseWorkflow,
     LoadDatabaseRequest,
+    LoadDatasetResult,
+    LoadDatasetWorkflow,
     LoadExistingRequest,
     LoadResult,
     LoadWorkflowError,
     LoadWorkflowService,
+    StoreActivitiesResult,
+    StoreActivitiesWorkflow,
 )
 from qfit.atlas.publish_atlas import (
     DEFAULT_ATLAS_MARGIN_PERCENT,
@@ -36,6 +41,78 @@ def tearDownModule():
         sys.modules.pop(_GPKG_WRITER_MODULE, None)
     else:
         sys.modules[_GPKG_WRITER_MODULE] = _original_gpkg_writer
+
+
+class StoreActivitiesWorkflowTests(unittest.TestCase):
+    def test_write_database_request_returns_focused_store_result(self):
+        writer = MagicMock()
+        writer.write_activities.return_value = {
+            "path": "/tmp/out.gpkg",
+            "fetched_count": 2,
+            "track_count": 2,
+            "start_count": 2,
+            "point_count": 0,
+            "atlas_count": 2,
+            "sync": SyncStats(total_count=7, inserted=2, updated=1, unchanged=0),
+        }
+        workflow = StoreActivitiesWorkflow(writer_factory=lambda **_kwargs: writer)
+
+        result = workflow.write_database_request(
+            workflow.build_write_request(
+                activities=["a", "b"],
+                output_path="/tmp/out.gpkg",
+            )
+        )
+
+        self.assertIsInstance(result, StoreActivitiesResult)
+        self.assertEqual(result.output_path, "/tmp/out.gpkg")
+        self.assertEqual(result.total_stored, 7)
+        self.assertIn("Use Load activity layers in Visualize", result.status)
+
+
+class LoadDatasetWorkflowTests(unittest.TestCase):
+    def test_load_existing_request_returns_focused_load_result(self):
+        layer_gateway = MagicMock()
+        activities_layer = MagicMock()
+        activities_layer.featureCount.return_value = 42
+        layer_gateway.load_output_layers.return_value = (
+            activities_layer,
+            MagicMock(name="starts"),
+            MagicMock(name="points"),
+            MagicMock(name="atlas"),
+        )
+        workflow = LoadDatasetWorkflow(layer_gateway, path_exists=lambda _path: True)
+
+        result = workflow.load_existing_request(
+            workflow.build_load_existing_request("/tmp/existing.gpkg")
+        )
+
+        self.assertIsInstance(result, LoadDatasetResult)
+        self.assertEqual(result.total_stored, 42)
+        self.assertIn("/tmp/existing.gpkg", result.status)
+
+
+class ClearDatabaseWorkflowTests(unittest.TestCase):
+    def test_clear_database_request_deletes_existing_file(self):
+        layer_gateway = MagicMock()
+        remove_file = MagicMock()
+        workflow = ClearDatabaseWorkflow(
+            layer_gateway,
+            path_exists=lambda _path: True,
+            remove_file=remove_file,
+        )
+
+        result = workflow.clear_database_request(
+            workflow.build_clear_database_request(
+                "/tmp/out.gpkg",
+                layers=["activities", "atlas"],
+            )
+        )
+
+        self.assertIsInstance(result, ClearDatabaseResult)
+        self.assertTrue(result.deleted)
+        layer_gateway.remove_layers.assert_called_once_with(["activities", "atlas"])
+        remove_file.assert_called_once_with("/tmp/out.gpkg")
 
 
 class WriteAndLoadValidationTests(unittest.TestCase):
