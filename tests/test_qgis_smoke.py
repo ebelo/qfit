@@ -9,6 +9,7 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 from tests import _path  # noqa: F401
+from tests.qgis_app import get_shared_qgis_app
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -165,14 +166,11 @@ class _FakeQSettings:
 class QgisSmokeTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        QgsApplication.setPrefixPath("/usr", True)
-        cls.qgs = QgsApplication([], False)
-        cls.qgs.initQgis()
+        cls.qgs = get_shared_qgis_app(QgsApplication)
 
     @classmethod
     def tearDownClass(cls):
         QgsProject.instance().clear()
-        cls.qgs.exitQgis()
 
     def setUp(self):
         QgsProject.instance().clear()

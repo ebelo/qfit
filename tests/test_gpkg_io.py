@@ -5,6 +5,7 @@ import unittest
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 from tests import _path  # noqa: F401
+from tests.qgis_app import get_shared_qgis_app
 
 try:
     from qgis.core import QgsApplication
@@ -22,16 +23,8 @@ else:  # pragma: no cover
     build_start_layer = None
     build_track_layer = None
 
-
-_QGIS_APP = None
-
-
 def _ensure_qgis_app():
-    global _QGIS_APP
-    if _QGIS_APP is None:
-        _QGIS_APP = QgsApplication([], False)
-        _QGIS_APP.initQgis()
-    return _QGIS_APP
+    return get_shared_qgis_app(QgsApplication)
 
 
 @unittest.skipIf(QgsApplication is None, "QGIS Python bindings are not available")

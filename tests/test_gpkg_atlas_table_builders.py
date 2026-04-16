@@ -6,6 +6,7 @@ import unittest
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 from tests import _path  # noqa: F401
+from tests.qgis_app import get_shared_qgis_app
 
 try:
     _REAL_QGIS_PRESENT = importlib.util.find_spec("qgis") is not None
@@ -34,9 +35,6 @@ else:  # pragma: no cover
     build_profile_sample_layer = None
     build_toc_layer = None
 
-_QGIS_APP = None
-
-
 def _ensure_qgis_app():
     if not _REAL_QGIS_PRESENT:
         raise unittest.SkipTest("QGIS Python bindings are not available")
@@ -47,7 +45,6 @@ def _ensure_qgis_app():
     global build_page_detail_item_layer
     global build_profile_sample_layer
     global build_toc_layer
-    global _QGIS_APP
     if QgsApplication is None and _REAL_QGIS_PRESENT:
         for module_name in [
             "qgis.core",
@@ -79,10 +76,7 @@ def _ensure_qgis_app():
         build_page_detail_item_layer = real_build_page_detail_item_layer
         build_profile_sample_layer = real_build_profile_sample_layer
         build_toc_layer = real_build_toc_layer
-    if _QGIS_APP is None:
-        _QGIS_APP = QgsApplication([], False)
-        _QGIS_APP.initQgis()
-    return _QGIS_APP
+    return get_shared_qgis_app(QgsApplication)
 
 
 @unittest.skipIf(not _REAL_QGIS_PRESENT, "QGIS Python bindings are not available")

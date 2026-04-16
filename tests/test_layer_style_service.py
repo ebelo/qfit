@@ -9,6 +9,7 @@ from types import ModuleType, SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 from tests import _path  # noqa: F401
+from tests.qgis_app import get_shared_qgis_app
 from qfit.visualization.application.render_plan import (
     LayerRenderPlan,
     RenderPlan,
@@ -159,14 +160,11 @@ def _sample_activities():
 class LayerStyleServiceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        QgsApplication.setPrefixPath("/usr", True)
-        cls.qgs = QgsApplication([], False)
-        cls.qgs.initQgis()
+        cls.qgs = get_shared_qgis_app(QgsApplication)
 
     @classmethod
     def tearDownClass(cls):
         QgsProject.instance().clear()
-        cls.qgs.exitQgis()
 
     def setUp(self):
         QgsProject.instance().clear()
