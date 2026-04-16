@@ -1,7 +1,9 @@
-"""Compatibility wrapper for activity-domain classification helpers.
+"""Deprecated compatibility shim for activity-domain classification helpers.
 
 The canonical provider-neutral activity classification logic now lives in
 :mod:`qfit.activities.domain.activity_classification`.
+
+Do not add new in-repo imports here.
 """
 
 from .activities.domain.activity_classification import (

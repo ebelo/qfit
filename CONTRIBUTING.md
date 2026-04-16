@@ -63,6 +63,7 @@ Keep these rules lightweight and practical:
 - Do not add new top-level Python modules for feature-specific code; prefer the owning feature package (`activities/`, `atlas/`, `providers/`, `visualization/`, `ui/`, `validation/`).
 - Treat existing root-level modules as grandfathered transitional modules unless the code is truly shared across features.
 - If you touch a transitional root module that now only forwards imports, prefer moving the real implementation in the owned package and keep the root file as a thin compatibility shim instead of re-expanding it.
+- Deprecated compatibility shims currently include `activity_classification.py`, `activity_query.py`, `models.py`, `activity_storage.py`, and `layer_manager.py`; new in-repo imports should target their package-owned replacements instead.
 - If a new top-level shared module is genuinely needed, document the reason and update `tests/test_architecture_boundaries.py` in the same PR.
 - Keep `QfitDockWidget` and other UI classes focused on widget wiring, input mapping, and result rendering.
 - Put workflow orchestration into controllers/services/use cases instead of the dock widget where practical.
