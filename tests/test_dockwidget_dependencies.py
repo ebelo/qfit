@@ -2,6 +2,7 @@ import os
 import sys
 import unittest
 from types import ModuleType
+from typing import get_type_hints
 from unittest.mock import MagicMock, call, patch, sentinel
 
 from tests import _path  # noqa: F401
@@ -9,10 +10,13 @@ from tests import _path  # noqa: F401
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 from qfit.ui.dockwidget_dependencies import (
+    DockWidgetDependencies,
     build_dockwidget_dependencies,
     _build_cache,
     _build_project_hygiene_service,
 )
+from qfit.visualization.application.layer_gateway import LayerGateway
+from qfit.visualization.application.project_hygiene_port import ProjectHygienePort
 from qfit.ui.dock_startup_coordinator import DockStartupCoordinator, DockStartupResult
 
 
@@ -25,8 +29,16 @@ class _FakeIface:
 
 
 class DockWidgetDependenciesTests(unittest.TestCase):
+    def test_dependency_annotations_use_explicit_ports(self):
+        hints = get_type_hints(DockWidgetDependencies)
+
+        self.assertIs(hints["layer_gateway"], LayerGateway)
+        self.assertIs(hints["project_hygiene_service"], ProjectHygienePort)
+
     def test_build_dockwidget_dependencies_wires_shared_gateway_and_sync_controller(self):
         iface = _FakeIface()
+        layer_gateway = MagicMock(spec=LayerGateway)
+        project_hygiene_service = MagicMock(spec=ProjectHygienePort)
 
         with (
             patch("qfit.ui.dockwidget_dependencies.SettingsService", return_value=sentinel.settings),
@@ -45,7 +57,7 @@ class DockWidgetDependenciesTests(unittest.TestCase):
             ) as atlas_export_use_case,
             patch(
                 "qfit.ui.dockwidget_dependencies._build_layer_gateway",
-                return_value=sentinel.layer_gateway,
+                return_value=layer_gateway,
             ),
             patch(
                 "qfit.ui.dockwidget_dependencies.BackgroundMapController",
@@ -53,7 +65,7 @@ class DockWidgetDependenciesTests(unittest.TestCase):
             ) as background_controller,
             patch(
                 "qfit.ui.dockwidget_dependencies._build_project_hygiene_service",
-                return_value=sentinel.project_hygiene_service,
+                return_value=project_hygiene_service,
             ),
             patch(
                 "qfit.ui.dockwidget_dependencies.LoadWorkflowService",
@@ -88,19 +100,19 @@ class DockWidgetDependenciesTests(unittest.TestCase):
         self.assertIs(dependencies.analysis_workflow, sentinel.analysis_workflow)
         self.assertIs(dependencies.atlas_export_controller, sentinel.atlas_export_controller)
         self.assertIs(dependencies.atlas_export_use_case, sentinel.atlas_export_use_case)
-        self.assertIs(dependencies.layer_gateway, sentinel.layer_gateway)
+        self.assertIs(dependencies.layer_gateway, layer_gateway)
         self.assertIs(dependencies.background_controller, sentinel.background_controller)
-        self.assertIs(dependencies.project_hygiene_service, sentinel.project_hygiene_service)
+        self.assertIs(dependencies.project_hygiene_service, project_hygiene_service)
         self.assertIs(dependencies.load_workflow, sentinel.load_workflow)
         self.assertIs(dependencies.visual_apply, sentinel.visual_apply)
         self.assertIs(dependencies.atlas_export_service, sentinel.atlas_export_service)
         self.assertIs(dependencies.activity_workflow, sentinel.activity_workflow)
         self.assertIs(dependencies.cache, sentinel.cache)
 
-        background_controller.assert_called_once_with(sentinel.layer_gateway)
-        load_workflow.assert_called_once_with(sentinel.layer_gateway)
-        visual_apply.assert_called_once_with(sentinel.layer_gateway)
-        atlas_export_service.assert_called_once_with(sentinel.layer_gateway)
+        background_controller.assert_called_once_with(layer_gateway)
+        load_workflow.assert_called_once_with(layer_gateway)
+        visual_apply.assert_called_once_with(layer_gateway)
+        atlas_export_service.assert_called_once_with(layer_gateway)
         atlas_export_use_case.assert_called_once_with(
             sentinel.atlas_export_controller,
             sentinel.atlas_export_service,

@@ -7,6 +7,7 @@ from tests import _path  # noqa: F401
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 from qfit.visualization.infrastructure import project_hygiene_service as project_hygiene_service_module
+from qfit.visualization.application.project_hygiene_port import ProjectHygienePort
 from qfit.visualization.infrastructure.project_hygiene_service import ProjectHygieneService
 
 
@@ -39,6 +40,11 @@ class _FakeProject:
 
 
 class ProjectHygieneServiceTests(unittest.TestCase):
+    def test_service_satisfies_project_hygiene_port(self):
+        service = ProjectHygieneService(project=_FakeProject({}), path_exists=lambda _path: True)
+
+        self.assertIsInstance(service, ProjectHygienePort)
+
     def test_remove_stale_qfit_layers_removes_only_missing_known_file_backed_layers(self):
         project = _FakeProject(
             {
