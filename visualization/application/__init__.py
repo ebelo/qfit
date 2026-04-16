@@ -15,6 +15,7 @@ from .background_map_messages import (
     build_styled_visual_apply_status,
 )
 from .layer_gateway import LayerGateway
+from .project_hygiene_port import ProjectHygienePort
 from .render_plan import (
     BY_ACTIVITY_TYPE_PRESET,
     CLUSTERED_STARTS_PRESET,
@@ -93,6 +94,7 @@ __all__ = [
     "RENDERER_START_POINTS",
     "RENDERER_TRACK_POINTS",
     "RenderPlan",
+    "ProjectHygienePort",
     "SOURCE_ROLE_POINTS",
     "SOURCE_ROLE_STARTS",
     "START_POINTS_PRESET",

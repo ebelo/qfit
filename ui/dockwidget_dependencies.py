@@ -1,6 +1,5 @@
 import os
 from dataclasses import dataclass
-from typing import Any
 
 from ..analysis.application.analysis_workflow_provider import build_analysis_workflow
 from ..analysis.application.analysis_workflow_port import AnalysisWorkflowPort
@@ -14,7 +13,12 @@ from ..qfit_cache import QfitCache
 from ..configuration.application.settings_service import SettingsService
 from ..activities.application.sync_controller import SyncController
 from ..ui.application import DockActivityWorkflowCoordinator
-from ..visualization.application import BackgroundMapController, VisualApplyService
+from ..visualization.application import (
+    BackgroundMapController,
+    LayerGateway,
+    ProjectHygienePort,
+    VisualApplyService,
+)
 
 
 @dataclass(frozen=True)
@@ -31,9 +35,9 @@ class DockWidgetDependencies:
     analysis_workflow: AnalysisWorkflowPort
     atlas_export_controller: AtlasExportController
     atlas_export_use_case: AtlasExportUseCase
-    layer_gateway: Any
+    layer_gateway: LayerGateway
     background_controller: BackgroundMapController
-    project_hygiene_service: Any
+    project_hygiene_service: ProjectHygienePort
     load_workflow: LoadWorkflowService
     visual_apply: VisualApplyService
     atlas_export_service: AtlasExportService
@@ -73,13 +77,13 @@ def build_dockwidget_dependencies(iface) -> DockWidgetDependencies:
     )
 
 
-def _build_layer_gateway(iface):
+def _build_layer_gateway(iface) -> LayerGateway:
     from ..visualization.infrastructure.qgis_layer_gateway import QgisLayerGateway
 
     return QgisLayerGateway(iface)
 
 
-def _build_project_hygiene_service():
+def _build_project_hygiene_service() -> ProjectHygienePort:
     from ..visualization.infrastructure.project_hygiene_service import ProjectHygieneService
 
     return ProjectHygieneService()
