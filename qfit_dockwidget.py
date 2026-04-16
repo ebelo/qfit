@@ -72,6 +72,8 @@ from .atlas.profile_style import build_native_profile_plot_style_from_settings
 from .ui.application import (
     ApplyVisualizationAction,
     DockActionDispatcher,
+    DockFetchCompletionRequest,
+    DockFetchRequest,
     RunAnalysisAction,
     build_visual_layer_refs,
     build_visual_workflow_action,
@@ -311,8 +313,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.load_workflow = dependencies.load_workflow
         self.visual_apply = dependencies.visual_apply
         self.atlas_export_service = dependencies.atlas_export_service
-        self.fetch_result_service = dependencies.fetch_result_service
-        self.activity_preview_service = dependencies.activity_preview_service
+        self.activity_workflow = dependencies.activity_workflow
         self.cache = dependencies.cache
 
     @staticmethod
@@ -524,30 +525,23 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
     def _start_fetch(self, detailed_route_strategy, status_text, use_detailed_streams=None):
         self._save_settings()
-        advanced_fetch_enabled = self.advancedFetchGroupBox.isChecked()
-        if use_detailed_streams is None:
-            use_detailed_streams = self.detailedStreamsCheckBox.isChecked() if advanced_fetch_enabled else False
-        per_page = self.perPageSpinBox.value() if advanced_fetch_enabled else 200
-        max_pages = self.maxPagesSpinBox.value() if advanced_fetch_enabled else 0
-        max_detailed_activities = (
-            self.maxDetailedActivitiesSpinBox.value()
-            if advanced_fetch_enabled or use_detailed_streams
-            else 25
-        )
         try:
-            fetch_request = self.sync_controller.build_fetch_task_request(
-                client_id=self.clientIdLineEdit.text().strip(),
-                client_secret=self.clientSecretLineEdit.text().strip(),
-                refresh_token=self.refreshTokenLineEdit.text().strip(),
-                cache=self.cache,
-                per_page=per_page,
-                max_pages=max_pages,
-                use_detailed_streams=use_detailed_streams,
-                max_detailed_activities=max_detailed_activities,
-                detailed_route_strategy=detailed_route_strategy,
-                on_finished=self._on_fetch_finished,
+            self._fetch_task = self.activity_workflow.build_fetch_task(
+                DockFetchRequest(
+                    client_id=self.clientIdLineEdit.text().strip(),
+                    client_secret=self.clientSecretLineEdit.text().strip(),
+                    refresh_token=self.refreshTokenLineEdit.text().strip(),
+                    cache=self.cache,
+                    detailed_route_strategy=detailed_route_strategy,
+                    on_finished=self._on_fetch_finished,
+                    advanced_fetch_enabled=self.advancedFetchGroupBox.isChecked(),
+                    detailed_streams_checked=self.detailedStreamsCheckBox.isChecked(),
+                    per_page_value=self.perPageSpinBox.value(),
+                    max_pages_value=self.maxPagesSpinBox.value(),
+                    max_detailed_activities_value=self.maxDetailedActivitiesSpinBox.value(),
+                    use_detailed_streams_override=use_detailed_streams,
+                )
             )
-            self._fetch_task = self.sync_controller.build_fetch_task(fetch_request)
         except ProviderError as exc:
             self._show_error("Strava import failed", str(exc))
             self._set_status("Strava fetch failed")
@@ -569,31 +563,36 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._fetch_task = None
         self._set_fetch_running(False)
 
-        fetch_request = self.fetch_result_service.build_request(
-            activities=activities,
-            error=error,
-            cancelled=cancelled,
-            provider=provider,
+        result = self.activity_workflow.build_fetch_completion_result(
+            DockFetchCompletionRequest(
+                activities=[] if activities is None else list(activities),
+                error=error,
+                cancelled=cancelled,
+                provider=provider,
+                current_activity_type=self.activityTypeComboBox.currentText() or "All",
+                preview_request=self._current_activity_preview_request(),
+            )
         )
-        result = self.fetch_result_service.build_result_request(fetch_request)
 
-        if cancelled:
+        if result.cancelled:
             self._set_status(result.status_text)
             return
 
-        if error is not None:
-            self._show_error("Strava import failed", error)
+        if result.error_message is not None:
+            self._show_error(result.error_title or "Strava import failed", result.error_message)
             self._set_status(result.status_text)
             return
 
         self.activities = result.activities
         self.last_fetch_context = result.metadata
-        # Persist last sync date
         self.settings.set("last_sync_date", result.today_str)
 
-        self._populate_activity_types()
+        if result.activity_type_options is not None:
+            self._apply_activity_type_options(result.activity_type_options)
         self.countLabel.setText(result.count_label_text)
-        self._refresh_activity_preview()
+        if result.preview_result is not None:
+            self.querySummaryLabel.setText(result.preview_result.query_summary_text)
+            self.activityPreviewPlainTextEdit.setPlainText(result.preview_result.preview_text)
         self._set_status(result.status_text)
 
     def on_load_clicked(self):
@@ -875,7 +874,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         )
 
     def _refresh_activity_preview(self):
-        preview = self.activity_preview_service.build_result_request(
+        preview = self.activity_workflow.build_preview_result(
             self._current_activity_preview_request()
         )
         self.querySummaryLabel.setText(preview.query_summary_text)

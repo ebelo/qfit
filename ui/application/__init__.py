@@ -6,6 +6,12 @@ from .dock_action_dispatcher import (
     DockActionResult,
     RunAnalysisAction,
 )
+from .dock_activity_workflow import (
+    DockActivityWorkflowCoordinator,
+    DockFetchCompletionRequest,
+    DockFetchCompletionResult,
+    DockFetchRequest,
+)
 from .visual_workflow_action_builder import build_visual_workflow_action
 from .visual_workflow_action_builder import build_visual_workflow_action_inputs
 from .visual_workflow_action_builder import build_visual_workflow_background_inputs
@@ -20,6 +26,10 @@ __all__ = [
     "ApplyVisualizationAction",
     "DockActionDispatcher",
     "DockActionResult",
+    "DockActivityWorkflowCoordinator",
+    "DockFetchCompletionRequest",
+    "DockFetchCompletionResult",
+    "DockFetchRequest",
     "RunAnalysisAction",
     "VisualWorkflowBackgroundInputs",
     "VisualWorkflowActionInputs",
