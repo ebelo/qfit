@@ -12,6 +12,12 @@ from .dock_activity_workflow import (
     DockFetchCompletionResult,
     DockFetchRequest,
 )
+from .dock_runtime_state import (
+    DockRuntimeLayers,
+    DockRuntimeState,
+    DockRuntimeStore,
+    DockRuntimeTasks,
+)
 from .visual_workflow_action_builder import build_visual_workflow_action
 from .visual_workflow_action_builder import build_visual_workflow_action_inputs
 from .visual_workflow_action_builder import build_visual_workflow_background_inputs
@@ -30,6 +36,10 @@ __all__ = [
     "DockFetchCompletionRequest",
     "DockFetchCompletionResult",
     "DockFetchRequest",
+    "DockRuntimeLayers",
+    "DockRuntimeState",
+    "DockRuntimeStore",
+    "DockRuntimeTasks",
     "RunAnalysisAction",
     "VisualWorkflowBackgroundInputs",
     "VisualWorkflowActionInputs",

@@ -17,16 +17,11 @@ except Exception as exc:
     QGIS_IMPORT_ERROR = exc
 
 
-class FakeMainWindow:
-    """Minimal stand-in for iface.mainWindow()."""
-    pass
-
-
 class FakeIface:
     """Minimal iface stub that records plugin menu and toolbar registrations."""
 
     def __init__(self):
-        self._main_window = FakeMainWindow()
+        self._main_window = None
         self.menu_actions: list[tuple[str, object]] = []
         self.toolbar_actions: list[object] = []
         self.removed_menu_actions: list[tuple[str, object]] = []
