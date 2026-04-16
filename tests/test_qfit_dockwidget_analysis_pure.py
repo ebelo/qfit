@@ -226,6 +226,9 @@ class _FakeSettings:
     def get(self, key, default=None):
         return self._values.get(key, default)
 
+    def set(self, key, value):
+        self._values[key] = value
+
 
 class _FakeQDate:
     def __init__(self, value=None):
@@ -986,6 +989,139 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertEqual(dock.output_path, "/tmp/qfit.gpkg")
         dock._update_stored_activities_summary.assert_called_once_with(12)
         dock._set_status.assert_called_once_with("Stored 12 activities")
+
+    def test_on_refresh_clicked_cancels_existing_fetch_task(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        running_task = MagicMock()
+        dock._fetch_task = running_task
+        dock._set_fetch_running = MagicMock()
+        dock._set_status = MagicMock()
+
+        self.module.QfitDockWidget.on_refresh_clicked(dock)
+
+        running_task.cancel.assert_called_once_with()
+        self.assertIsNone(dock._fetch_task)
+        dock._set_fetch_running.assert_called_once_with(False)
+        dock._set_status.assert_called_once_with("Fetch cancelled.")
+
+    def test_on_fetch_finished_updates_runtime_state_on_success(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._fetch_task = object()
+        dock._set_fetch_running = MagicMock()
+        dock.activityTypeComboBox = _FakeComboBox(current_text="All")
+        dock._current_activity_preview_request = MagicMock(return_value="preview-request")
+        dock.activity_workflow = MagicMock()
+        dock.settings = _FakeSettings()
+        dock._apply_activity_type_options = MagicMock()
+        dock.countLabel = _FakeLabel("")
+        dock.querySummaryLabel = SimpleNamespace(setText=MagicMock())
+        dock.activityPreviewPlainTextEdit = SimpleNamespace(setPlainText=MagicMock())
+        dock._set_status = MagicMock()
+        result = SimpleNamespace(
+            cancelled=False,
+            error_message=None,
+            activities=[{"id": 1}],
+            metadata={"provider": "strava"},
+            today_str="2026-04-16",
+            activity_type_options=SimpleNamespace(options=["All"], selected_value="All"),
+            count_label_text="Activities fetched: 1",
+            preview_result=SimpleNamespace(
+                query_summary_text="1 activity",
+                preview_text="Morning Run",
+            ),
+            status_text="Fetched 1 activity",
+        )
+        dock.activity_workflow.build_fetch_completion_result.return_value = result
+
+        self.module.QfitDockWidget._on_fetch_finished(dock, [{"id": 1}], None, False, object())
+
+        self.assertIsNone(dock._fetch_task)
+        self.assertEqual(dock.activities, [{"id": 1}])
+        self.assertEqual(dock.last_fetch_context, {"provider": "strava"})
+        self.assertEqual(dock.settings.get("last_sync_date"), "2026-04-16")
+        dock._set_fetch_running.assert_called_once_with(False)
+        dock._apply_activity_type_options.assert_called_once_with(result.activity_type_options)
+        self.assertEqual(dock.countLabel.text(), "Activities fetched: 1")
+        dock.querySummaryLabel.setText.assert_called_once_with("1 activity")
+        dock.activityPreviewPlainTextEdit.setPlainText.assert_called_once_with("Morning Run")
+        dock._set_status.assert_called_once_with("Fetched 1 activity")
+
+    def test_on_load_layers_clicked_updates_runtime_state_from_result(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._save_settings = MagicMock()
+        dock.outputPathLineEdit = _FakeLineEdit("/tmp/qfit.gpkg")
+        dock._populate_activity_types_from_layer = MagicMock()
+        dock._apply_visual_configuration = MagicMock(return_value="Styled layers")
+        dock._update_loaded_activities_summary = MagicMock()
+        dock._set_status = MagicMock()
+        workflow = MagicMock()
+        workflow.build_load_existing_request.return_value = "load-request"
+        result = SimpleNamespace(
+            output_path="/tmp/qfit.gpkg",
+            activities_layer="activities-layer",
+            starts_layer="starts-layer",
+            points_layer="points-layer",
+            atlas_layer="atlas-layer",
+            total_stored=12,
+            status="Loaded 12 activities",
+        )
+        workflow.load_existing_request.return_value = result
+        dock.dataset_load_workflow = workflow
+
+        self.module.QfitDockWidget.on_load_layers_clicked(dock)
+
+        self.assertEqual(dock.output_path, "/tmp/qfit.gpkg")
+        self.assertEqual(dock.activities_layer, "activities-layer")
+        self.assertEqual(dock.starts_layer, "starts-layer")
+        self.assertEqual(dock.points_layer, "points-layer")
+        self.assertEqual(dock.atlas_layer, "atlas-layer")
+        dock._populate_activity_types_from_layer.assert_called_once_with()
+        dock._apply_visual_configuration.assert_called_once_with(apply_subset_filters=False)
+        dock._update_loaded_activities_summary.assert_called_once_with(12)
+        dock._set_status.assert_called_once_with("Loaded 12 activities Styled layers")
+
+    def test_on_generate_atlas_pdf_clicked_cancels_existing_export_task(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        running_task = MagicMock()
+        dock._atlas_export_task = running_task
+        dock._set_atlas_pdf_status = MagicMock()
+        dock._set_atlas_export_running = MagicMock()
+
+        self.module.QfitDockWidget.on_generate_atlas_pdf_clicked(dock)
+
+        running_task.cancel.assert_called_once_with()
+        self.assertIsNone(dock._atlas_export_task)
+        dock._set_atlas_pdf_status.assert_called_once_with("Atlas PDF export cancelled.")
+        dock._set_atlas_export_running.assert_called_once_with(False)
+
+    def test_on_atlas_export_finished_clears_task_and_updates_status(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._atlas_export_task = object()
+        dock._set_atlas_export_running = MagicMock()
+        dock._set_atlas_pdf_status = MagicMock()
+        dock._set_status = MagicMock()
+        dock._show_error = MagicMock()
+        dock.atlas_export_use_case = MagicMock()
+        dock.atlas_export_use_case.finish_export.return_value = SimpleNamespace(
+            pdf_status="Atlas PDF ready",
+            main_status="Atlas created",
+            error=None,
+            cancelled=False,
+        )
+
+        self.module.QfitDockWidget._on_atlas_export_finished(
+            dock,
+            "/tmp/qfit-atlas.pdf",
+            None,
+            False,
+            3,
+        )
+
+        self.assertIsNone(dock._atlas_export_task)
+        dock._set_atlas_export_running.assert_called_once_with(False)
+        dock._set_atlas_pdf_status.assert_called_once_with("Atlas PDF ready")
+        dock._set_status.assert_called_once_with("Atlas created")
+        dock._show_error.assert_not_called()
 
     def test_on_clear_database_clicked_reports_missing_output_path_via_helper(self):
         dock = object.__new__(self.module.QfitDockWidget)

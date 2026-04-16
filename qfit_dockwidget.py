@@ -74,6 +74,7 @@ from .ui.application import (
     DockActionDispatcher,
     DockFetchCompletionRequest,
     DockFetchRequest,
+    DockRuntimeStore,
     RunAnalysisAction,
     build_visual_layer_refs,
     build_visual_workflow_action,
@@ -128,18 +129,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             parent = iface.mainWindow()
         super().__init__(parent)
         self.iface = iface
-        self.activities = []
-        self.output_path = None
-        self.activities_layer = None
-        self.starts_layer = None
-        self.points_layer = None
-        self.atlas_layer = None
-        self.background_layer = None
-        self.analysis_layer = None
-        self.last_fetch_context = {}
-        self._fetch_task = None
-        self._store_task = None
-        self._atlas_export_task = None
+        self._runtime_state_store = DockRuntimeStore()
         self._dependencies = dependencies or build_dockwidget_dependencies(iface)
         self._bind_dependencies(self._dependencies)
         self.setupUi(self)
@@ -154,6 +144,133 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             save_settings=self._save_settings,
             run_analysis=self._apply_analysis_configuration,
         )
+
+    def _runtime_store(self) -> DockRuntimeStore:
+        store = getattr(self, "_runtime_state_store", None)
+        if store is None:
+            store = DockRuntimeStore()
+            self._runtime_state_store = store
+        return store
+
+    @property
+    def runtime_state(self):
+        return self._runtime_store().state
+
+    @property
+    def activities(self):
+        return list(self.runtime_state.activities)
+
+    @activities.setter
+    def activities(self, value):
+        self._runtime_store().set_activities(value)
+
+    @property
+    def output_path(self):
+        return self.runtime_state.output_path
+
+    @output_path.setter
+    def output_path(self, value):
+        self._runtime_store().set_output_path(value)
+
+    @property
+    def activities_layer(self):
+        return self.runtime_state.layers.activities
+
+    @activities_layer.setter
+    def activities_layer(self, value):
+        self._runtime_store().set_dataset_layers(
+            activities_layer=value,
+            starts_layer=self.starts_layer,
+            points_layer=self.points_layer,
+            atlas_layer=self.atlas_layer,
+        )
+
+    @property
+    def starts_layer(self):
+        return self.runtime_state.layers.starts
+
+    @starts_layer.setter
+    def starts_layer(self, value):
+        self._runtime_store().set_dataset_layers(
+            activities_layer=self.activities_layer,
+            starts_layer=value,
+            points_layer=self.points_layer,
+            atlas_layer=self.atlas_layer,
+        )
+
+    @property
+    def points_layer(self):
+        return self.runtime_state.layers.points
+
+    @points_layer.setter
+    def points_layer(self, value):
+        self._runtime_store().set_dataset_layers(
+            activities_layer=self.activities_layer,
+            starts_layer=self.starts_layer,
+            points_layer=value,
+            atlas_layer=self.atlas_layer,
+        )
+
+    @property
+    def atlas_layer(self):
+        return self.runtime_state.layers.atlas
+
+    @atlas_layer.setter
+    def atlas_layer(self, value):
+        self._runtime_store().set_dataset_layers(
+            activities_layer=self.activities_layer,
+            starts_layer=self.starts_layer,
+            points_layer=self.points_layer,
+            atlas_layer=value,
+        )
+
+    @property
+    def background_layer(self):
+        return self.runtime_state.layers.background
+
+    @background_layer.setter
+    def background_layer(self, value):
+        self._runtime_store().set_background_layer(value)
+
+    @property
+    def analysis_layer(self):
+        return self.runtime_state.layers.analysis
+
+    @analysis_layer.setter
+    def analysis_layer(self, value):
+        self._runtime_store().set_analysis_layer(value)
+
+    @property
+    def last_fetch_context(self):
+        return dict(self.runtime_state.last_fetch_context)
+
+    @last_fetch_context.setter
+    def last_fetch_context(self, value):
+        self._runtime_store().set_last_fetch_context(value)
+
+    @property
+    def _fetch_task(self):
+        return self.runtime_state.tasks.fetch
+
+    @_fetch_task.setter
+    def _fetch_task(self, value):
+        self._runtime_store().set_fetch_task(value)
+
+    @property
+    def _store_task(self):
+        return self.runtime_state.tasks.store
+
+    @_store_task.setter
+    def _store_task(self, value):
+        self._runtime_store().set_store_task(value)
+
+    @property
+    def _atlas_export_task(self):
+        return self.runtime_state.tasks.atlas_export
+
+    @_atlas_export_task.setter
+    def _atlas_export_task(self, value):
+        self._runtime_store().set_atlas_export_task(value)
 
     def _remove_stale_qfit_layers(self):
         """Remove stale qfit project layers before startup signals begin firing."""
@@ -417,7 +534,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 tile_mode=self.tileModeComboBox.currentText(),
             )
             result = self.background_controller.load_background_request(request)
-            self.background_layer = result.layer
+            self._runtime_store().set_background_layer(result.layer)
         except (MapboxConfigError, RuntimeError) as exc:
             self._show_error(build_background_map_failure_title(), str(exc))
             self._set_status(build_background_map_failure_status())
@@ -523,9 +640,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         # If a fetch is already running, cancel it.
         if self._fetch_task is not None:
             self._fetch_task.cancel()
+            self._runtime_store().clear_fetch()
             self._set_fetch_running(False)
             self._set_status("Fetch cancelled.")
-            self._fetch_task = None
             return
 
         self._start_fetch(
@@ -546,7 +663,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def _start_fetch(self, detailed_route_strategy, status_text, use_detailed_streams=None):
         self._save_settings()
         try:
-            self._fetch_task = self.activity_workflow.build_fetch_task(
+            fetch_task = self.activity_workflow.build_fetch_task(
                 DockFetchRequest(
                     client_id=self.clientIdLineEdit.text().strip(),
                     client_secret=self.clientSecretLineEdit.text().strip(),
@@ -567,9 +684,10 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._set_status("Strava fetch failed")
             return
 
+        self._runtime_store().begin_fetch(fetch_task)
         self._set_fetch_running(True)
         self._set_status(status_text)
-        QgsApplication.taskManager().addTask(self._fetch_task)
+        QgsApplication.taskManager().addTask(fetch_task)
 
     def _set_fetch_running(self, running):
         """Toggle UI state while a background fetch is in progress."""
@@ -580,7 +698,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
     def _on_fetch_finished(self, activities, error, cancelled, provider):
         """Called on the main thread when the background fetch completes."""
-        self._fetch_task = None
+        self._runtime_store().clear_fetch()
         self._set_fetch_running(False)
 
         result = self.activity_workflow.build_fetch_completion_result(
@@ -603,8 +721,10 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._set_status(result.status_text)
             return
 
-        self.activities = result.activities
-        self.last_fetch_context = result.metadata
+        self._runtime_store().finish_fetch(
+            activities=result.activities,
+            metadata=result.metadata,
+        )
         self.settings.set("last_sync_date", result.today_str)
 
         if result.activity_type_options is not None:
@@ -641,18 +761,19 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._set_status(_msg)
             return
 
-        self._store_task = build_store_task(
+        store_task = build_store_task(
             workflow,
             request,
             on_finished=self._handle_store_task_finished,
         )
+        self._runtime_store().begin_store(store_task)
         self.loadButton.setEnabled(False)
         self.loadButton.setText("Store in progress...")
         self._set_status("Store started...")
-        QgsApplication.taskManager().addTask(self._store_task)
+        QgsApplication.taskManager().addTask(store_task)
 
     def _handle_store_task_finished(self, result, error_message, cancelled):
-        self._store_task = None
+        self._runtime_store().clear_store()
         self.loadButton.setEnabled(True)
         self.loadButton.setText("Store activities")
 
@@ -668,7 +789,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._set_status("GeoPackage export failed")
             return
 
-        self.output_path = result.output_path
+        self._runtime_store().finish_store(output_path=result.output_path)
         self._update_stored_activities_summary(result.total_stored)
         self._set_status(result.status)
 
@@ -691,11 +812,13 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._set_status(_msg)
             return
 
-        self.output_path = result.output_path
-        self.activities_layer = result.activities_layer
-        self.starts_layer = result.starts_layer
-        self.points_layer = result.points_layer
-        self.atlas_layer = result.atlas_layer
+        self._runtime_store().load_dataset(
+            output_path=result.output_path,
+            activities_layer=result.activities_layer,
+            starts_layer=result.starts_layer,
+            points_layer=result.points_layer,
+            atlas_layer=result.atlas_layer,
+        )
 
         self._populate_activity_types_from_layer()
         visual_status = self._apply_visual_configuration(apply_subset_filters=False)
@@ -743,14 +866,8 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._set_status(build_clear_database_delete_failure_status())
             return
 
-        self.activities_layer = None
-        self.starts_layer = None
-        self.points_layer = None
-        self.atlas_layer = None
+        self._runtime_store().reset_loaded_dataset()
         self._clear_analysis_layer()
-        self.activities = []
-        self.output_path = None
-        self.last_fetch_context = {}
 
         self._update_cleared_activities_summary()
         self._set_status(result.status)
@@ -773,7 +890,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         if result.background_error:
             self._show_error(build_background_map_failure_title(), result.background_error)
         if result.background_layer is not None:
-            self.background_layer = result.background_layer
+            self._runtime_store().set_background_layer(result.background_layer)
         if result.status:
             self._set_status(result.status)
 
@@ -823,7 +940,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
         QgsProject.instance().addMapLayer(result.layer, False)
         QgsProject.instance().layerTreeRoot().insertLayer(0, result.layer)
-        self.analysis_layer = result.layer
+        self._runtime_store().set_analysis_layer(result.layer)
         return result.status
 
     def _apply_visual_configuration(self, apply_subset_filters):
@@ -835,7 +952,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         if result.background_error:
             self._show_error(build_background_map_failure_title(), result.background_error)
         if result.background_layer is not None:
-            self.background_layer = result.background_layer
+            self._runtime_store().set_background_layer(result.background_layer)
         return result.status
 
     def _apply_analysis_configuration(
@@ -869,7 +986,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 project.removeMapLayer(self.analysis_layer.id())
             except RuntimeError:
                 logger.debug("Failed to remove analysis layer", exc_info=True)
-            self.analysis_layer = None
+            self._runtime_store().clear_analysis_layer()
 
         analysis_layer_names = {
             FREQUENT_STARTING_POINTS_LAYER_NAME,
@@ -1005,7 +1122,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._atlas_export_task.cancel()
             self._set_atlas_pdf_status("Atlas PDF export cancelled.")
             self._set_atlas_export_running(False)
-            self._atlas_export_task = None
+            self._runtime_store().clear_atlas_export()
             return
 
         export_command = self.atlas_export_use_case.build_command(
@@ -1037,10 +1154,11 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             return
 
         self._save_settings()
-        self._atlas_export_task = self.atlas_export_use_case.start_export(
+        atlas_export_task = self.atlas_export_use_case.start_export(
             prepared_export,
             export_command,
         )
+        self._runtime_store().begin_atlas_export(atlas_export_task)
 
         self._set_atlas_export_running(True)
         self._set_atlas_pdf_status(
@@ -1048,7 +1166,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         )
         self._set_status("Generating atlas PDF…")
 
-        QgsApplication.taskManager().addTask(self._atlas_export_task)
+        QgsApplication.taskManager().addTask(atlas_export_task)
 
     def _set_atlas_export_running(self, running: bool) -> None:
         self.generateAtlasPdfButton.setText(
@@ -1066,7 +1184,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         page_count,
     ) -> None:
         """Called on the main thread when the atlas export task completes."""
-        self._atlas_export_task = None
+        self._runtime_store().clear_atlas_export()
         self._set_atlas_export_running(False)
 
         result = self.atlas_export_use_case.finish_export(output_path, error, cancelled, page_count)
