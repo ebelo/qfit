@@ -1,26 +1,12 @@
-from __future__ import annotations
+"""Deprecated compatibility shim for qfit's activity storage helpers.
 
-from typing import Protocol, runtime_checkable
+Use :mod:`qfit.activities.application.activity_storage` for the
+application-facing port and
+:mod:`qfit.activities.infrastructure.geopackage.activity_storage` for the
+GeoPackage adapter. Do not add new in-repo imports here.
+"""
 
-from .sync_repository import SyncRepository, SyncStats
+from .activities.application.activity_storage import ActivityStore
+from .activities.infrastructure.geopackage.activity_storage import GeoPackageActivityStore
 
-
-@runtime_checkable
-class ActivityStore(Protocol):
-    """Application-facing port for persisted qfit activity storage."""
-
-    def ensure_schema(self) -> None:
-        """Create or update storage metadata/schema as needed."""
-
-    def upsert_activities(self, activities, sync_metadata=None) -> SyncStats:
-        """Persist fetched activities and return sync counters."""
-
-    def load_all_activity_records(self) -> list[dict]:
-        """Return all stored activity records in canonical registry form."""
-
-    def load_all_activities(self):
-        """Return all stored activities as domain objects."""
-
-
-class GeoPackageActivityStore(SyncRepository):
-    """GeoPackage-backed adapter implementing the ActivityStore port."""
+__all__ = ["ActivityStore", "GeoPackageActivityStore"]

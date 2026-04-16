@@ -1,6 +1,6 @@
 import os
 
-from ....activity_storage import GeoPackageActivityStore
+from .activity_storage import GeoPackageActivityStore
 from .gpkg_schema import GPKG_LAYER_SCHEMA
 from .gpkg_write_orchestration import (
     bootstrap_empty_gpkg,

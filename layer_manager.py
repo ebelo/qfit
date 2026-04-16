@@ -1,4 +1,8 @@
-"""Backward-compatible import for qfit's QGIS layer gateway adapter."""
+"""Deprecated compatibility shim for qfit's QGIS layer gateway adapter.
+
+Use :mod:`qfit.visualization.infrastructure.qgis_layer_gateway` for new
+in-repo imports.
+"""
 
 from .visualization.infrastructure.qgis_layer_gateway import QgisLayerGateway
 

@@ -51,6 +51,20 @@ The codebase now already reflects most of that shape:
 
 Some root-level modules still exist as **compatibility shims** so imports remain stable while the migration settles. Those files are transitional; new feature logic should not be added there.
 
+Current deprecated compatibility shims are:
+
+- `activity_classification.py` -> `activities/domain/activity_classification.py`
+- `activity_query.py` -> `activities/domain/activity_query.py`
+- `models.py` -> `activities/domain/models.py`
+- `activity_storage.py` -> `activities/application/activity_storage.py` plus `activities/infrastructure/geopackage/activity_storage.py`
+- `layer_manager.py` -> `visualization/infrastructure/qgis_layer_gateway.py`
+
+Migration policy for these shims:
+
+- new in-repo imports should use the canonical package-owned module, never the root shim
+- keep root shims as tiny forwarding modules only while external import stability still matters
+- once in-repo callers are gone and import stability is no longer needed, delete the shim instead of re-expanding it
+
 ## 2. Working layers
 
 Use these layers as a placement heuristic.

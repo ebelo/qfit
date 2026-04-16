@@ -9,6 +9,7 @@ from importlib import import_module
 _ACTIVITY_PREVIEW_MODULE = ".activity_preview"
 
 __all__ = [
+    "ActivityStore",
     "ActivityPreviewRequest",
     "ActivityPreviewResult",
     "ActivityPreviewService",
@@ -43,6 +44,7 @@ __all__ = [
 _ACTIVITY_TYPE_OPTIONS_MODULE = ".activity_type_options"
 
 _EXPORTS = {
+    "ActivityStore": (".activity_storage", "ActivityStore"),
     "ActivityPreviewRequest": (_ACTIVITY_PREVIEW_MODULE, "ActivityPreviewRequest"),
     "ActivityPreviewResult": (_ACTIVITY_PREVIEW_MODULE, "ActivityPreviewResult"),
     "ActivityPreviewService": (".activity_preview_service", "ActivityPreviewService"),

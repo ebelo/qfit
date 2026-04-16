@@ -101,6 +101,35 @@ def _module_scope_import_targets(relative_path: str) -> set[str]:
     return _collect_module_scope_import_targets(tree)
 
 
+def _module_name_parts(relative_path: str) -> list[str]:
+    parts = list(pathlib.Path(relative_path).with_suffix("").parts)
+    if parts and parts[-1] == "__init__":
+        parts = parts[:-1]
+    return ["qfit", *parts]
+
+
+def _resolved_import_targets(relative_path: str) -> set[str]:
+    resolved: set[str] = set()
+    module_parts = _module_name_parts(relative_path)
+    package_parts = module_parts
+    if pathlib.Path(relative_path).stem != "__init__":
+        package_parts = module_parts[:-1]
+
+    for target in _import_targets(relative_path):
+        level = len(target) - len(target.lstrip("."))
+        if level == 0:
+            resolved.add(target)
+            continue
+
+        remainder = target[level:]
+        base_parts = package_parts[: len(package_parts) - (level - 1)]
+        pieces = list(base_parts)
+        if remainder:
+            pieces.extend(remainder.split("."))
+        resolved.add(".".join(pieces))
+    return resolved
+
+
 class CoreModuleBoundaryTests(unittest.TestCase):
     CORE_MODULES = [
         "activities/domain/activity_classification.py",
@@ -279,6 +308,66 @@ class ModuleScopeImportScannerTests(unittest.TestCase):
             "        import delta\n"
         )
         self.assertEqual({"alpha", "beta", "gamma", "delta"}, imports)
+
+
+class DeprecatedCompatibilityShimTests(unittest.TestCase):
+    DEPRECATED_ROOT_SHIMS = {
+        "activity_classification.py": "qfit.activities.domain.activity_classification",
+        "activity_query.py": "qfit.activities.domain.activity_query",
+        "models.py": "qfit.activities.domain.models",
+        "activity_storage.py": "qfit.activities.application.activity_storage",
+        "layer_manager.py": "qfit.visualization.infrastructure.qgis_layer_gateway",
+    }
+
+    FEATURE_ROOTS = (
+        "activities",
+        "analysis",
+        "atlas",
+        "configuration",
+        "providers",
+        "ui",
+        "validation",
+        "visualization",
+    )
+
+    def test_deprecated_root_shims_are_explicitly_marked(self):
+        for relative_path, canonical_module in self.DEPRECATED_ROOT_SHIMS.items():
+            source = (REPO_ROOT / relative_path).read_text()
+            self.assertIn(
+                "Deprecated compatibility shim",
+                source,
+                f"{relative_path} should clearly advertise its deprecated compatibility-shim status.",
+            )
+            self.assertIn(
+                canonical_module,
+                source,
+                f"{relative_path} should point contributors at its canonical module.",
+            )
+
+    def test_feature_owned_modules_do_not_import_deprecated_root_shims(self):
+        shim_prefixes = tuple(
+            f"qfit.{pathlib.Path(relative_path).stem}"
+            for relative_path in self.DEPRECATED_ROOT_SHIMS
+        )
+        offenders = {}
+
+        for feature_root in self.FEATURE_ROOTS:
+            for path in sorted((REPO_ROOT / feature_root).rglob("*.py")):
+                relative_path = path.relative_to(REPO_ROOT).as_posix()
+                forbidden = sorted(
+                    target
+                    for target in _resolved_import_targets(relative_path)
+                    if target.startswith(shim_prefixes)
+                )
+                if forbidden:
+                    offenders[relative_path] = forbidden
+
+        self.assertEqual(
+            {},
+            offenders,
+            "Feature-owned packages should import canonical package modules rather than deprecated root shims: "
+            f"{offenders}",
+        )
 
 
 class PackageOwnershipBoundaryTests(unittest.TestCase):

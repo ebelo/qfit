@@ -5,8 +5,11 @@ from datetime import datetime
 from math import atan, exp, log, pi, tan
 from typing import Iterable
 
-from ..activity_classification import activity_prefers_pace, canonical_activity_label
-from ..activity_query import format_duration
+from ..activities.domain.activity_classification import (
+    activity_prefers_pace,
+    canonical_activity_label,
+)
+from ..activities.domain.activity_query import format_duration
 from ..polyline_utils import decode_polyline
 
 DEFAULT_ATLAS_MARGIN_PERCENT = 8.0
