@@ -13,6 +13,7 @@ from ..activities.application.load_workflow import LoadWorkflowService
 from ..qfit_cache import QfitCache
 from ..configuration.application.settings_service import SettingsService
 from ..activities.application.sync_controller import SyncController
+from ..ui.application import DockActivityWorkflowCoordinator
 from ..visualization.application import BackgroundMapController, VisualApplyService
 
 
@@ -36,8 +37,7 @@ class DockWidgetDependencies:
     load_workflow: LoadWorkflowService
     visual_apply: VisualApplyService
     atlas_export_service: AtlasExportService
-    fetch_result_service: FetchResultService
-    activity_preview_service: ActivityPreviewService
+    activity_workflow: DockActivityWorkflowCoordinator
     cache: QfitCache
 
 
@@ -50,6 +50,8 @@ def build_dockwidget_dependencies(iface) -> DockWidgetDependencies:
     layer_gateway = _build_layer_gateway(iface)
     cache = _build_cache()
     atlas_export_service = AtlasExportService(layer_gateway)
+    fetch_result_service = FetchResultService(sync_controller)
+    activity_preview_service = ActivityPreviewService()
     return DockWidgetDependencies(
         settings=settings,
         sync_controller=sync_controller,
@@ -62,8 +64,11 @@ def build_dockwidget_dependencies(iface) -> DockWidgetDependencies:
         load_workflow=LoadWorkflowService(layer_gateway),
         visual_apply=VisualApplyService(layer_gateway),
         atlas_export_service=atlas_export_service,
-        fetch_result_service=FetchResultService(sync_controller),
-        activity_preview_service=ActivityPreviewService(),
+        activity_workflow=DockActivityWorkflowCoordinator(
+            sync_controller=sync_controller,
+            fetch_result_service=fetch_result_service,
+            activity_preview_service=activity_preview_service,
+        ),
         cache=cache,
     )
 

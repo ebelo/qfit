@@ -201,7 +201,7 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertIs(dock.load_workflow, dependencies.load_workflow)
             self.assertIs(dock.visual_apply, dependencies.visual_apply)
             self.assertIs(dock.atlas_export_service, dependencies.atlas_export_service)
-            self.assertIs(dock.fetch_result_service, dependencies.fetch_result_service)
+            self.assertIs(dock.activity_workflow, dependencies.activity_workflow)
             self.assertIs(dock.cache, dependencies.cache)
         finally:
             dock.close()
