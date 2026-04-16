@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Iterable
 
-from ..activity_classification import ordered_canonical_activity_labels
+from ..activities.domain.activity_classification import ordered_canonical_activity_labels
 from .publish_atlas import (
     build_date_range_label,
     format_distance_label,

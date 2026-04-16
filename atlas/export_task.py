@@ -59,7 +59,7 @@ from qgis.core import (
 from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QColor, QFont
 
-from ..activity_classification import ordered_canonical_activity_labels
+from ..activities.domain.activity_classification import ordered_canonical_activity_labels
 from .layout_metrics import BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
 from .profile_item import (
     NativeProfileItemConfig,

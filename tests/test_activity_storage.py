@@ -4,7 +4,16 @@ import unittest
 from pathlib import Path
 
 from tests import _path  # noqa: F401
-from qfit.activity_storage import ActivityStore, GeoPackageActivityStore
+from qfit.activities.application.activity_storage import ActivityStore
+from qfit.activities.infrastructure.geopackage.activity_storage import GeoPackageActivityStore
+from qfit.activity_storage import ActivityStore as LegacyActivityStore
+from qfit.activity_storage import GeoPackageActivityStore as LegacyGeoPackageActivityStore
+
+
+class ActivityStorageCompatibilityTests(unittest.TestCase):
+    def test_legacy_activity_storage_imports_remain_aliases(self):
+        self.assertIs(LegacyActivityStore, ActivityStore)
+        self.assertIs(LegacyGeoPackageActivityStore, GeoPackageActivityStore)
 
 
 class ActivityStoreAdapterTests(unittest.TestCase):

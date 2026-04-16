@@ -1,7 +1,9 @@
-"""Compatibility wrapper for activity-domain query helpers.
+"""Deprecated compatibility shim for activity-domain query helpers.
 
 The canonical provider-neutral activity query/summary logic now lives in
 :mod:`qfit.activities.domain.activity_query`.
+
+Do not add new in-repo imports here.
 """
 
 from .activities.domain.activity_query import (
