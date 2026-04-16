@@ -68,6 +68,18 @@ class DockWidgetDependenciesTests(unittest.TestCase):
                 return_value=project_hygiene_service,
             ),
             patch(
+                "qfit.ui.dockwidget_dependencies.StoreActivitiesWorkflow",
+                return_value=sentinel.store_workflow,
+            ) as store_workflow,
+            patch(
+                "qfit.ui.dockwidget_dependencies.LoadDatasetWorkflow",
+                return_value=sentinel.dataset_load_workflow,
+            ) as dataset_load_workflow,
+            patch(
+                "qfit.ui.dockwidget_dependencies.ClearDatabaseWorkflow",
+                return_value=sentinel.clear_database_workflow,
+            ) as clear_database_workflow,
+            patch(
                 "qfit.ui.dockwidget_dependencies.LoadWorkflowService",
                 return_value=sentinel.load_workflow,
             ) as load_workflow,
@@ -103,6 +115,9 @@ class DockWidgetDependenciesTests(unittest.TestCase):
         self.assertIs(dependencies.layer_gateway, layer_gateway)
         self.assertIs(dependencies.background_controller, sentinel.background_controller)
         self.assertIs(dependencies.project_hygiene_service, project_hygiene_service)
+        self.assertIs(dependencies.store_workflow, sentinel.store_workflow)
+        self.assertIs(dependencies.dataset_load_workflow, sentinel.dataset_load_workflow)
+        self.assertIs(dependencies.clear_database_workflow, sentinel.clear_database_workflow)
         self.assertIs(dependencies.load_workflow, sentinel.load_workflow)
         self.assertIs(dependencies.visual_apply, sentinel.visual_apply)
         self.assertIs(dependencies.atlas_export_service, sentinel.atlas_export_service)
@@ -110,7 +125,15 @@ class DockWidgetDependenciesTests(unittest.TestCase):
         self.assertIs(dependencies.cache, sentinel.cache)
 
         background_controller.assert_called_once_with(layer_gateway)
-        load_workflow.assert_called_once_with(layer_gateway)
+        store_workflow.assert_called_once_with()
+        dataset_load_workflow.assert_called_once_with(layer_gateway)
+        clear_database_workflow.assert_called_once_with(layer_gateway)
+        load_workflow.assert_called_once_with(
+            layer_gateway,
+            store_workflow=sentinel.store_workflow,
+            dataset_load_workflow=sentinel.dataset_load_workflow,
+            clear_database_workflow=sentinel.clear_database_workflow,
+        )
         visual_apply.assert_called_once_with(layer_gateway)
         atlas_export_service.assert_called_once_with(layer_gateway)
         atlas_export_use_case.assert_called_once_with(

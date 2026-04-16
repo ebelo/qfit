@@ -310,11 +310,31 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.layer_gateway = dependencies.layer_gateway
         self.background_controller = dependencies.background_controller
         self.project_hygiene_service = dependencies.project_hygiene_service
+        self.store_workflow = getattr(dependencies, "store_workflow", dependencies.load_workflow)
+        self.dataset_load_workflow = getattr(
+            dependencies,
+            "dataset_load_workflow",
+            dependencies.load_workflow,
+        )
+        self.clear_database_workflow = getattr(
+            dependencies,
+            "clear_database_workflow",
+            dependencies.load_workflow,
+        )
         self.load_workflow = dependencies.load_workflow
         self.visual_apply = dependencies.visual_apply
         self.atlas_export_service = dependencies.atlas_export_service
         self.activity_workflow = dependencies.activity_workflow
         self.cache = dependencies.cache
+
+    def _store_activities_workflow(self):
+        return getattr(self, "store_workflow", None) or self.load_workflow
+
+    def _dataset_load_workflow_service(self):
+        return getattr(self, "dataset_load_workflow", None) or self.load_workflow
+
+    def _clear_database_workflow_service(self):
+        return getattr(self, "clear_database_workflow", None) or self.load_workflow
 
     @staticmethod
     def _set_combo_value(combo_box, value, default_text) -> None:
@@ -601,8 +621,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             return
 
         self._save_settings()
+        workflow = self._store_activities_workflow()
         try:
-            request = self.load_workflow.build_write_request(
+            request = workflow.build_write_request(
                 activities=self.activities,
                 output_path=self.outputPathLineEdit.text().strip(),
                 write_activity_points=self.writeActivityPointsCheckBox.isChecked(),
@@ -621,7 +642,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             return
 
         self._store_task = build_store_task(
-            self.load_workflow,
+            workflow,
             request,
             on_finished=self._handle_store_task_finished,
         )
@@ -654,11 +675,12 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def on_load_layers_clicked(self):
         """Load an existing GeoPackage into QGIS without fetching from Strava."""
         self._save_settings()
+        workflow = self._dataset_load_workflow_service()
         try:
-            request = self.load_workflow.build_load_existing_request(
+            request = workflow.build_load_existing_request(
                 self.outputPathLineEdit.text().strip(),
             )
-            result = self.load_workflow.load_existing_request(request)
+            result = workflow.load_existing_request(request)
         except LoadWorkflowError as exc:
             self._show_error("GeoPackage not found", str(exc))
             return
@@ -701,8 +723,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         if reply != QMessageBox.Yes:
             return
 
+        workflow = self._clear_database_workflow_service()
         try:
-            request = self.load_workflow.build_clear_database_request(
+            request = workflow.build_clear_database_request(
                 output_path=output_path,
                 layers=[
                     self.activities_layer,
@@ -711,7 +734,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                     self.atlas_layer,
                 ],
             )
-            result = self.load_workflow.clear_database_request(request)
+            result = workflow.clear_database_request(request)
         except LoadWorkflowError as exc:
             self._show_error(build_clear_database_load_workflow_error_title(), str(exc))
             return
