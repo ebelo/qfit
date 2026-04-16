@@ -649,7 +649,8 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         with patch.object(self.module, "build_activity_type_options_from_activities", return_value=result) as build_options:
             self.module.QfitDockWidget._populate_activity_types(dock)
 
-        build_options.assert_called_once_with(["a1", "a2"], current_value="Run")
+        build_options.assert_called_once_with(("a1", "a2"), current_value="Run")
+        self.assertIs(build_options.call_args.args[0], dock.runtime_state.activities)
         dock._apply_activity_type_options.assert_called_once_with(result)
 
     def test_current_activity_preview_request_reads_current_ui_filters(self):
@@ -674,7 +675,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
         self.assertIs(request, preview_request)
         build_request.assert_called_once_with(
-            activities=["a1", "a2"],
+            activities=("a1", "a2"),
             activity_type="Run",
             date_from="2026-04-01",
             date_to="2026-04-30",
@@ -684,6 +685,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             detailed_route_filter="missing",
             sort_label="Name (A–Z)",
         )
+        self.assertIs(build_request.call_args.kwargs["activities"], dock.runtime_state.activities)
 
     def test_refresh_activity_preview_delegates_and_updates_widgets(self):
         dock = object.__new__(self.module.QfitDockWidget)
@@ -956,12 +958,16 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
         dock._save_settings.assert_called_once_with()
         dock.load_workflow.build_write_request.assert_called_once_with(
-            activities=dock.activities,
+            activities=dock.runtime_state.activities,
             output_path="/tmp/qfit.gpkg",
             write_activity_points=True,
             point_stride=2,
             sync_metadata={"provider": "strava"},
             last_sync_date="2026-04-07",
+        )
+        self.assertIs(
+            dock.load_workflow.build_write_request.call_args.kwargs["activities"],
+            dock.runtime_state.activities,
         )
         build_store_task.assert_called_once()
         self.assertIs(dock._store_task, fake_task)

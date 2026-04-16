@@ -744,7 +744,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         workflow = self._store_activities_workflow()
         try:
             request = workflow.build_write_request(
-                activities=self.activities,
+                activities=self.runtime_state.activities,
                 output_path=self.outputPathLineEdit.text().strip(),
                 write_activity_points=self.writeActivityPointsCheckBox.isChecked(),
                 point_stride=self.pointSamplingStrideSpinBox.value(),
@@ -1002,7 +1002,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
     def _current_activity_preview_request(self):
         return build_activity_preview_request(
-            activities=self.activities,
+            activities=self.runtime_state.activities,
             activity_type=self.activityTypeComboBox.currentText() or "All",
             date_from=self.dateFromEdit.date().toString("yyyy-MM-dd") if self.dateFromEdit.date().isValid() else None,
             date_to=self.dateToEdit.date().toString("yyyy-MM-dd") if self.dateToEdit.date().isValid() else None,
@@ -1066,7 +1066,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def _populate_activity_types(self):
         self._apply_activity_type_options(
             build_activity_type_options_from_activities(
-                self.activities,
+                self.runtime_state.activities,
                 current_value=self.activityTypeComboBox.currentText() or "All",
             )
         )
