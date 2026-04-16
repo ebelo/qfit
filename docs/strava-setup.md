@@ -22,7 +22,7 @@ A practical default for local testing is:
 
 ## Generate the refresh token inside qfit
 
-1. Open the qfit dock in QGIS.
+1. Open `qfit` → `Configuration` in QGIS.
 2. Enter your `client_id` and `client_secret`.
 3. Enter the same redirect URI you configured in Strava.
 4. Click **Open Strava authorize page**.

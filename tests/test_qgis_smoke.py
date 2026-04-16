@@ -52,6 +52,7 @@ try:
     from qfit.layer_manager import LayerManager
     from qfit.mapbox_config import TILE_MODE_RASTER
     from qfit.activities.domain.models import Activity
+    from qfit.qfit_config_dialog import QfitConfigDialog
     from qfit.qfit_dockwidget import ApplyVisualizationAction, QfitDockWidget
     from qfit.configuration.application.settings_service import SettingsService
     from qfit.ui.dockwidget_dependencies import build_dockwidget_dependencies
@@ -78,6 +79,7 @@ except Exception as exc:  # pragma: no cover - exercised only when QGIS is unava
     LayerManager = None
     TILE_MODE_RASTER = None
     Activity = None
+    QfitConfigDialog = None
     QfitDockWidget = None
     build_dockwidget_dependencies = None
     QGIS_AVAILABLE = False
@@ -800,6 +802,75 @@ class QgisSmokeTests(unittest.TestCase):
         finally:
             dock.close()
             dock.deleteLater()
+
+    def test_config_dialog_exposes_strava_oauth_helper_controls(self):
+        dialog = QfitConfigDialog(
+            settings_service=SettingsService(
+                qsettings=_FakeQSettings(),
+                credential_store=InMemoryCredentialStore(),
+            )
+        )
+        try:
+            self.assertEqual(dialog._authorization_code_edit.objectName(), "cfgAuthorizationCodeEdit")
+            self.assertEqual(dialog._open_authorize_button.objectName(), "cfgOpenAuthorizeButton")
+            self.assertEqual(dialog._exchange_code_button.objectName(), "cfgExchangeCodeButton")
+            self.assertIn("Do not paste", dialog._oauth_help_label.text())
+            self.assertEqual(dialog._strava_oauth_status_label.text(), "Not started")
+        finally:
+            dialog.close()
+            dialog.deleteLater()
+
+    def test_config_dialog_open_authorize_clicked_builds_authorize_url_via_sync_controller(self):
+        dialog = QfitConfigDialog(
+            settings_service=SettingsService(
+                qsettings=_FakeQSettings(),
+                credential_store=InMemoryCredentialStore(),
+            )
+        )
+        try:
+            dialog._save = MagicMock()
+            dialog._sync_controller.build_authorize_request = MagicMock(return_value="authorize-request")
+            dialog._sync_controller.build_authorize_url = MagicMock(return_value="https://strava.test/auth")
+
+            with patch("qfit.qfit_config_dialog.QDesktopServices.openUrl", return_value=True) as open_url:
+                dialog._open_strava_authorize_page()
+
+            dialog._sync_controller.build_authorize_request.assert_called_once()
+            dialog._sync_controller.build_authorize_url.assert_called_once_with("authorize-request")
+            open_url.assert_called_once()
+            self.assertIn("Strava authorization opened", dialog._strava_oauth_status_label.text())
+        finally:
+            dialog.close()
+            dialog.deleteLater()
+
+    def test_config_dialog_exchange_code_clicked_uses_sync_controller_exchange_workflow(self):
+        dialog = QfitConfigDialog(
+            settings_service=SettingsService(
+                qsettings=_FakeQSettings(),
+                credential_store=InMemoryCredentialStore(),
+            )
+        )
+        try:
+            dialog._authorization_code_edit.setText("abc123")
+            dialog._save = MagicMock()
+            dialog._sync_controller.build_exchange_code_request = MagicMock(return_value="exchange-request")
+            dialog._sync_controller.exchange_code_for_tokens = MagicMock(
+                return_value={
+                    "refresh_token": "rtok",
+                    "athlete": {"firstname": "Ada", "lastname": "Lovelace"},
+                }
+            )
+
+            dialog._exchange_strava_code()
+
+            dialog._sync_controller.build_exchange_code_request.assert_called_once()
+            dialog._sync_controller.exchange_code_for_tokens.assert_called_once_with("exchange-request")
+            self.assertEqual(dialog._refresh_token_edit.text(), "rtok")
+            self.assertEqual(dialog._authorization_code_edit.text(), "")
+            self.assertIn("Ada Lovelace", dialog._strava_oauth_status_label.text())
+        finally:
+            dialog.close()
+            dialog.deleteLater()
 
     def test_exchange_code_clicked_uses_sync_controller_exchange_workflow(self):
         dock = QfitDockWidget(self.iface)
