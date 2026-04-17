@@ -6,14 +6,6 @@ from pathlib import Path
 from tests import _path  # noqa: F401
 from qfit.activities.application.activity_storage import ActivityStore
 from qfit.activities.infrastructure.geopackage.activity_storage import GeoPackageActivityStore
-from qfit.activity_storage import ActivityStore as LegacyActivityStore
-from qfit.activity_storage import GeoPackageActivityStore as LegacyGeoPackageActivityStore
-
-
-class ActivityStorageCompatibilityTests(unittest.TestCase):
-    def test_legacy_activity_storage_imports_remain_aliases(self):
-        self.assertIs(LegacyActivityStore, ActivityStore)
-        self.assertIs(LegacyGeoPackageActivityStore, GeoPackageActivityStore)
 
 
 class ActivityStoreAdapterTests(unittest.TestCase):
@@ -24,6 +16,31 @@ class ActivityStoreAdapterTests(unittest.TestCase):
 
 
 class GeoPackageWriterStoragePortTests(unittest.TestCase):
+    def test_writer_module_uses_canonical_activity_storage_adapter(self):
+        module_path = (
+            Path(__file__).resolve().parents[1]
+            / "activities"
+            / "infrastructure"
+            / "geopackage"
+            / "gpkg_writer.py"
+        )
+        tree = ast.parse(module_path.read_text(), filename=str(module_path))
+
+        import_targets = set()
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                import_targets.update(alias.name for alias in node.names)
+            elif isinstance(node, ast.ImportFrom):
+                base = ('.' * node.level) + (node.module or '')
+                for alias in node.names:
+                    import_targets.add(f"{base}.{alias.name}" if base else alias.name)
+
+        self.assertIn(
+            ".activity_storage.GeoPackageActivityStore",
+            import_targets,
+        )
+        self.assertNotIn("qfit.activity_storage.GeoPackageActivityStore", import_targets)
+
     def test_writer_accepts_and_stores_activity_store_factory(self):
         module_path = (
             Path(__file__).resolve().parents[1]
