@@ -18,6 +18,7 @@ EXCLUDED_DIRS = {
     ".git",
     ".github",
     ".pytest_cache",
+    ".venv",
     "__pycache__",
     "dist",
     "docs",
