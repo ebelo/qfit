@@ -13,6 +13,8 @@ class LayerGateway(Protocol):
 
     def remove_layers(self, layers): ...
 
+    def has_features(self, layer): ...
+
     def ensure_background_layer(
         self,
         enabled,
