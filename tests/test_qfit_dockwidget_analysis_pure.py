@@ -1123,6 +1123,104 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._set_atlas_pdf_status.assert_called_once_with("Atlas PDF export cancelled.")
         dock._set_atlas_export_running.assert_called_once_with(False)
 
+    def test_current_atlas_export_request_uses_current_ui_state(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.atlas_layer = "atlas-layer"
+        dock._current_activity_preview_request = MagicMock(return_value="preview-request")
+        dock.atlasPdfPathLineEdit = _FakeLineEdit(" /tmp/qfit-atlas.pdf ")
+        dock.atlasTitleLineEdit = _FakeLineEdit(" Spring Atlas ")
+        dock.atlasSubtitleLineEdit = _FakeLineEdit(" Road and trail ")
+        dock.tileModeComboBox = _FakeComboBox(current_text="Raster")
+        dock.backgroundPresetComboBox = _FakeComboBox(current_text="Outdoors")
+        dock.backgroundMapCheckBox = _FakeCheckBox(True)
+        dock.mapboxStyleOwnerLineEdit = _FakeLineEdit(" mapbox ")
+        dock.mapboxStyleIdLineEdit = _FakeLineEdit(" outdoors-v12 ")
+        dock.settings = _FakeSettings()
+        dock._on_atlas_export_finished = MagicMock()
+        dock._mapbox_access_token = MagicMock(return_value="token")
+
+        with patch.object(
+            self.module,
+            "build_activity_preview_selection_state",
+            return_value="selection",
+        ) as build_selection, patch.object(
+            self.module,
+            "build_native_profile_plot_style_from_settings",
+            return_value="profile-style",
+        ) as build_profile_style:
+            request = self.module.QfitDockWidget._current_atlas_export_request(dock)
+
+        self.assertEqual(request.atlas_layer, "atlas-layer")
+        self.assertEqual(request.selection_state, "selection")
+        self.assertEqual(request.output_path, "/tmp/qfit-atlas.pdf")
+        self.assertEqual(request.atlas_title, "Spring Atlas")
+        self.assertEqual(request.atlas_subtitle, "Road and trail")
+        self.assertIs(request.on_finished, dock._on_atlas_export_finished)
+        self.assertEqual(request.pre_export_tile_mode, "Raster")
+        self.assertEqual(request.preset_name, "Outdoors")
+        self.assertEqual(request.access_token, "token")
+        self.assertEqual(request.style_owner, "mapbox")
+        self.assertEqual(request.style_id, "outdoors-v12")
+        self.assertTrue(request.background_enabled)
+        self.assertEqual(request.profile_plot_style, "profile-style")
+        build_selection.assert_called_once_with("preview-request")
+        build_profile_style.assert_called_once_with(dock.settings)
+
+    def test_on_generate_atlas_pdf_clicked_builds_command_via_atlas_workflow(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        atlas_layer = MagicMock()
+        atlas_layer.featureCount.return_value = 3
+        dock.atlas_export_use_case = MagicMock()
+        dock.atlas_export_use_case.prepare_export.return_value = SimpleNamespace(
+            path_changed=False,
+            is_ready=True,
+            output_path="/tmp/qfit-atlas.pdf",
+        )
+        dock.atlas_export_use_case.start_export.return_value = "atlas-task"
+        dock._save_settings = MagicMock()
+        runtime_store = MagicMock()
+        runtime_store.state = SimpleNamespace(
+            tasks=SimpleNamespace(atlas_export=None),
+            layers=SimpleNamespace(atlas=atlas_layer),
+        )
+        dock._runtime_state_store = runtime_store
+        dock._set_atlas_export_running = MagicMock()
+        dock._set_atlas_pdf_status = MagicMock()
+        dock._set_status = MagicMock()
+        atlas_workflow = MagicMock()
+        atlas_workflow.build_export_command.return_value = "command"
+        task_manager = MagicMock()
+
+        with patch.object(
+            self.module.QfitDockWidget,
+            "_current_atlas_export_request",
+            return_value="request",
+        ) as current_request, patch.object(
+            self.module.QfitDockWidget,
+            "_atlas_workflow_service",
+            return_value=atlas_workflow,
+        ) as atlas_workflow_service, patch.object(
+            self.module.QgsApplication,
+            "taskManager",
+            return_value=task_manager,
+        ):
+            self.module.QfitDockWidget.on_generate_atlas_pdf_clicked(dock)
+
+        atlas_workflow_service.assert_called_once_with()
+        current_request.assert_called_once_with()
+        atlas_workflow.build_export_command.assert_called_once_with("request")
+        dock.atlas_export_use_case.prepare_export.assert_called_once_with("command")
+        dock._save_settings.assert_called_once_with()
+        dock.atlas_export_use_case.start_export.assert_called_once_with(
+            dock.atlas_export_use_case.prepare_export.return_value,
+            "command",
+        )
+        runtime_store.begin_atlas_export.assert_called_once_with("atlas-task")
+        dock._set_atlas_export_running.assert_called_once_with(True)
+        dock._set_atlas_pdf_status.assert_called_once_with("Exporting atlas (3 pages)…")
+        dock._set_status.assert_called_once_with("Generating atlas PDF…")
+        task_manager.addTask.assert_called_once_with("atlas-task")
+
     def test_on_atlas_export_finished_clears_task_and_updates_status(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._atlas_export_task = object()

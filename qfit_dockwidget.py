@@ -71,6 +71,8 @@ from .atlas.profile_style import build_native_profile_plot_style_from_settings
 from .ui.application import (
     ApplyVisualizationAction,
     DockActionDispatcher,
+    DockAtlasExportRequest,
+    DockAtlasWorkflowCoordinator,
     DockFetchCompletionRequest,
     DockFetchRequest,
     DockRuntimeStore,
@@ -444,6 +446,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.visual_apply = dependencies.visual_apply
         self.atlas_export_service = dependencies.atlas_export_service
         self.activity_workflow = dependencies.activity_workflow
+        self.atlas_workflow = getattr(dependencies, "atlas_workflow", None)
         self.cache = dependencies.cache
 
     def _store_activities_workflow(self):
@@ -454,6 +457,15 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
     def _clear_database_workflow_service(self):
         return getattr(self, "clear_database_workflow", None) or self.load_workflow
+
+    def _atlas_workflow_service(self):
+        atlas_workflow = getattr(self, "atlas_workflow", None)
+        if atlas_workflow is None:
+            atlas_workflow = DockAtlasWorkflowCoordinator(
+                atlas_export_use_case=self.atlas_export_use_case,
+            )
+            self.atlas_workflow = atlas_workflow
+        return atlas_workflow
 
     @staticmethod
     def _set_combo_value(combo_box, value, default_text) -> None:
@@ -1136,22 +1148,8 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._runtime_store().clear_atlas_export()
             return
 
-        export_command = self.atlas_export_use_case.build_command(
-            atlas_layer=self.atlas_layer,
-            selection_state=build_activity_preview_selection_state(
-                self._current_activity_preview_request()
-            ),
-            output_path=self.atlasPdfPathLineEdit.text().strip(),
-            atlas_title=self.atlasTitleLineEdit.text().strip(),
-            atlas_subtitle=self.atlasSubtitleLineEdit.text().strip(),
-            on_finished=self._on_atlas_export_finished,
-            pre_export_tile_mode=self.tileModeComboBox.currentText(),
-            preset_name=self.backgroundPresetComboBox.currentText(),
-            access_token=self._mapbox_access_token(),
-            style_owner=self.mapboxStyleOwnerLineEdit.text().strip(),
-            style_id=self.mapboxStyleIdLineEdit.text().strip(),
-            background_enabled=self.backgroundMapCheckBox.isChecked(),
-            profile_plot_style=build_native_profile_plot_style_from_settings(self.settings),
+        export_command = self._atlas_workflow_service().build_export_command(
+            self._current_atlas_export_request(),
         )
         prepared_export = self.atlas_export_use_case.prepare_export(export_command)
         if prepared_export.path_changed:
@@ -1178,6 +1176,25 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._set_status("Generating atlas PDF…")
 
         QgsApplication.taskManager().addTask(atlas_export_task)
+
+    def _current_atlas_export_request(self):
+        return DockAtlasExportRequest(
+            atlas_layer=self.atlas_layer,
+            selection_state=build_activity_preview_selection_state(
+                self._current_activity_preview_request()
+            ),
+            output_path=self.atlasPdfPathLineEdit.text().strip(),
+            atlas_title=self.atlasTitleLineEdit.text().strip(),
+            atlas_subtitle=self.atlasSubtitleLineEdit.text().strip(),
+            on_finished=self._on_atlas_export_finished,
+            pre_export_tile_mode=self.tileModeComboBox.currentText(),
+            preset_name=self.backgroundPresetComboBox.currentText(),
+            access_token=self._mapbox_access_token(),
+            style_owner=self.mapboxStyleOwnerLineEdit.text().strip(),
+            style_id=self.mapboxStyleIdLineEdit.text().strip(),
+            background_enabled=self.backgroundMapCheckBox.isChecked(),
+            profile_plot_style=build_native_profile_plot_style_from_settings(self.settings),
+        )
 
     def _set_atlas_export_running(self, running: bool) -> None:
         self.generateAtlasPdfButton.setText(
