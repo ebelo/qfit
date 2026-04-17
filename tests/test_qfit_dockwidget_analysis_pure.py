@@ -378,24 +378,26 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
     def test_dispatch_dock_action_returns_early_without_layers(self):
         dock = object.__new__(self.module.QfitDockWidget)
-        dock._build_visual_workflow_action = MagicMock(
-            return_value=SimpleNamespace(layers=SimpleNamespace(has_any=lambda: False))
-        )
-        dock._dock_action_dispatcher = MagicMock()
+        dock._dock_visual_workflow = MagicMock()
+        dock._dock_visual_workflow.dispatch_action.return_value = None
+        dock._current_visual_workflow_request = MagicMock(return_value="request")
 
         self.module.QfitDockWidget._dispatch_dock_action(
             dock,
             self.module.ApplyVisualizationAction,
         )
 
-        dock._dock_action_dispatcher.dispatch.assert_not_called()
+        dock._dock_visual_workflow.dispatch_action.assert_called_once_with(
+            self.module.ApplyVisualizationAction,
+            "request",
+            require_layers=True,
+        )
 
     def test_dispatch_dock_action_handles_structured_dispatch_result(self):
         dock = object.__new__(self.module.QfitDockWidget)
-        action = SimpleNamespace(layers=SimpleNamespace(has_any=lambda: True))
-        dock._build_visual_workflow_action = MagicMock(return_value=action)
-        dock._dock_action_dispatcher = MagicMock()
-        dock._dock_action_dispatcher.dispatch.return_value = SimpleNamespace(
+        dock._dock_visual_workflow = MagicMock()
+        dock._current_visual_workflow_request = MagicMock(return_value="request")
+        dock._dock_visual_workflow.dispatch_action.return_value = SimpleNamespace(
             unsupported_reason="",
             background_error="boom",
             background_layer="background-layer",
@@ -414,7 +416,11 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
                 self.module.RunAnalysisAction,
             )
 
-        dock._dock_action_dispatcher.dispatch.assert_called_once_with(action)
+        dock._dock_visual_workflow.dispatch_action.assert_called_once_with(
+            self.module.RunAnalysisAction,
+            "request",
+            require_layers=True,
+        )
         build_title.assert_called_once_with()
         dock._show_error.assert_called_once_with("Background map failed", "boom")
         self.assertEqual(dock.background_layer, "background-layer")
@@ -422,10 +428,9 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
     def test_dispatch_dock_action_reports_unsupported_reason(self):
         dock = object.__new__(self.module.QfitDockWidget)
-        action = SimpleNamespace(layers=SimpleNamespace(has_any=lambda: True))
-        dock._build_visual_workflow_action = MagicMock(return_value=action)
-        dock._dock_action_dispatcher = MagicMock()
-        dock._dock_action_dispatcher.dispatch.return_value = SimpleNamespace(
+        dock._dock_visual_workflow = MagicMock()
+        dock._current_visual_workflow_request = MagicMock(return_value="request")
+        dock._dock_visual_workflow.dispatch_action.return_value = SimpleNamespace(
             unsupported_reason="Unsupported dock action: object",
             background_error="",
             background_layer=None,
@@ -509,21 +514,17 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             self.module,
             "build_visual_workflow_background_inputs",
             return_value="background",
-        ) as build_background, patch.object(
-            self.module,
-            "build_visual_workflow_action_inputs",
-            return_value="inputs",
-        ) as build_inputs, patch.object(
-            self.module,
-            "build_visual_workflow_action",
-            return_value="action",
-        ) as build_action:
-            action = self.module.QfitDockWidget._build_visual_workflow_action(
+        ) as build_background:
+            request = self.module.QfitDockWidget._current_visual_workflow_request(
                 dock,
-                self.module.ApplyVisualizationAction,
+                apply_subset_filters=False,
             )
 
-        self.assertEqual(action, "action")
+        self.assertEqual(request.layers, "layers")
+        self.assertEqual(request.selection_state, "selection")
+        self.assertEqual(request.settings, "settings")
+        self.assertEqual(request.background, "background")
+        self.assertFalse(request.apply_subset_filters)
         build_layers.assert_called_once_with(
             activities_layer="activities",
             starts_layer="starts",
@@ -532,13 +533,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         )
         build_selection.assert_called_once_with("preview-request")
         build_selection_handoff.assert_called_once_with(selection_state)
-        build_inputs.assert_called_once_with(
-            layers="layers",
-            selection_state="selection",
-            settings="settings",
-            background="background",
-            apply_subset_filters=True,
-        )
         build_settings.assert_called_once_with(
             style_preset="By activity type",
             temporal_mode=self.module.DEFAULT_TEMPORAL_MODE_LABEL,
@@ -552,7 +546,24 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             style_id="style-id",
             tile_mode="Raster",
         )
-        build_action.assert_called_once_with(self.module.ApplyVisualizationAction, "inputs")
+
+    def test_build_visual_workflow_action_delegates_to_visual_workflow_coordinator(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._dock_visual_workflow = MagicMock()
+        dock._dock_visual_workflow.build_action.return_value = "action"
+        dock._current_visual_workflow_request = MagicMock(return_value="request")
+
+        action = self.module.QfitDockWidget._build_visual_workflow_action(
+            dock,
+            self.module.ApplyVisualizationAction,
+        )
+
+        self.assertEqual(action, "action")
+        dock._current_visual_workflow_request.assert_called_once_with()
+        dock._dock_visual_workflow.build_action.assert_called_once_with(
+            self.module.ApplyVisualizationAction,
+            "request",
+        )
 
     def test_run_selected_analysis_delegates_to_analysis_workflow(self):
         dock = object.__new__(self.module.QfitDockWidget)
@@ -612,18 +623,9 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
     def test_apply_visual_configuration_dispatches_apply_action(self):
         dock = object.__new__(self.module.QfitDockWidget)
-        action = self.module.ApplyVisualizationAction(
-            layers=self.module.LayerRefs(activities="activities"),
-            selection_state=self.module.ActivitySelectionState(query=object(), filtered_count=1),
-            style_preset="By activity type",
-            temporal_mode="By month",
-            background_config=SimpleNamespace(),
-            analysis_mode="None",
-            apply_subset_filters=True,
-        )
-        dock._build_visual_workflow_action = MagicMock(return_value=action)
-        dock._dock_action_dispatcher = MagicMock()
-        dock._dock_action_dispatcher.dispatch.return_value = SimpleNamespace(
+        dock._dock_visual_workflow = MagicMock()
+        dock._current_visual_workflow_request = MagicMock(return_value="request")
+        dock._dock_visual_workflow.dispatch_action.return_value = SimpleNamespace(
             status="Applied styling",
             background_error="",
             background_layer="background-layer",
@@ -632,8 +634,14 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
         status = self.module.QfitDockWidget._apply_visual_configuration(dock, False)
 
-        dispatched_action = dock._dock_action_dispatcher.dispatch.call_args.args[0]
-        self.assertFalse(dispatched_action.apply_subset_filters)
+        dock._current_visual_workflow_request.assert_called_once_with(
+            apply_subset_filters=False
+        )
+        dock._dock_visual_workflow.dispatch_action.assert_called_once_with(
+            self.module.ApplyVisualizationAction,
+            "request",
+            require_layers=False,
+        )
         self.assertEqual(status, "Applied styling")
         self.assertEqual(dock.background_layer, "background-layer")
         dock._show_error.assert_not_called()

@@ -1,6 +1,5 @@
 import logging
 import os
-from dataclasses import replace
 from datetime import date
 
 logger = logging.getLogger(__name__)
@@ -75,10 +74,10 @@ from .ui.application import (
     DockFetchCompletionRequest,
     DockFetchRequest,
     DockRuntimeStore,
+    DockVisualWorkflowCoordinator,
+    DockVisualWorkflowRequest,
     RunAnalysisAction,
     build_visual_layer_refs,
-    build_visual_workflow_action,
-    build_visual_workflow_action_inputs,
     build_visual_workflow_background_inputs,
     build_visual_workflow_selection_state_handoff,
     build_visual_workflow_settings_snapshot,
@@ -143,6 +142,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             visual_apply=self.visual_apply,
             save_settings=self._save_settings,
             run_analysis=self._apply_analysis_configuration,
+        )
+        self._dock_visual_workflow = DockVisualWorkflowCoordinator(
+            dispatcher=self._dock_action_dispatcher,
         )
 
     def _runtime_store(self) -> DockRuntimeStore:
@@ -878,11 +880,14 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._dispatch_dock_action(RunAnalysisAction)
 
     def _dispatch_dock_action(self, action_type):
-        action = self._build_visual_workflow_action(action_type)
-        if not action.layers.has_any():
+        result = self._dock_visual_workflow.dispatch_action(
+            action_type,
+            self._current_visual_workflow_request(),
+            require_layers=True,
+        )
+        if result is None:
             return
 
-        result = self._dock_action_dispatcher.dispatch(action)
         if result.unsupported_reason:
             self._set_status(result.unsupported_reason)
             return
@@ -894,35 +899,40 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._set_status(result.status)
 
     def _build_visual_workflow_action(self, action_type):
-        return build_visual_workflow_action(
+        """Compatibility wrapper while older smoke tests migrate to coordinator entry points."""
+
+        return self._dock_visual_workflow.build_action(
             action_type,
-            build_visual_workflow_action_inputs(
-                layers=build_visual_layer_refs(
-                    activities_layer=self.activities_layer,
-                    starts_layer=self.starts_layer,
-                    points_layer=self.points_layer,
-                    atlas_layer=self.atlas_layer,
-                ),
-                selection_state=build_visual_workflow_selection_state_handoff(
-                    build_activity_preview_selection_state(
-                        self._current_activity_preview_request()
-                    )
-                ),
-                settings=build_visual_workflow_settings_snapshot(
-                    style_preset=self.stylePresetComboBox.currentText(),
-                    temporal_mode=DEFAULT_TEMPORAL_MODE_LABEL,
-                    analysis_mode=self.analysisModeComboBox.currentText(),
-                ),
-                background=build_visual_workflow_background_inputs(
-                    enabled=self.backgroundMapCheckBox.isChecked(),
-                    preset_name=self.backgroundPresetComboBox.currentText(),
-                    access_token=self._mapbox_access_token(),
-                    style_owner=self.mapboxStyleOwnerLineEdit.text().strip(),
-                    style_id=self.mapboxStyleIdLineEdit.text().strip(),
-                    tile_mode=self.tileModeComboBox.currentText(),
-                ),
-                apply_subset_filters=True,
+            self._current_visual_workflow_request(),
+        )
+
+    def _current_visual_workflow_request(self, *, apply_subset_filters=True):
+        return DockVisualWorkflowRequest(
+            layers=build_visual_layer_refs(
+                activities_layer=self.activities_layer,
+                starts_layer=self.starts_layer,
+                points_layer=self.points_layer,
+                atlas_layer=self.atlas_layer,
             ),
+            selection_state=build_visual_workflow_selection_state_handoff(
+                build_activity_preview_selection_state(
+                    self._current_activity_preview_request()
+                )
+            ),
+            settings=build_visual_workflow_settings_snapshot(
+                style_preset=self.stylePresetComboBox.currentText(),
+                temporal_mode=DEFAULT_TEMPORAL_MODE_LABEL,
+                analysis_mode=self.analysisModeComboBox.currentText(),
+            ),
+            background=build_visual_workflow_background_inputs(
+                enabled=self.backgroundMapCheckBox.isChecked(),
+                preset_name=self.backgroundPresetComboBox.currentText(),
+                access_token=self._mapbox_access_token(),
+                style_owner=self.mapboxStyleOwnerLineEdit.text().strip(),
+                style_id=self.mapboxStyleIdLineEdit.text().strip(),
+                tile_mode=self.tileModeComboBox.currentText(),
+            ),
+            apply_subset_filters=apply_subset_filters,
         )
 
     def _run_selected_analysis(self, analysis_mode, starts_layer, selection_state=None):
@@ -943,11 +953,13 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         return result.status
 
     def _apply_visual_configuration(self, apply_subset_filters):
-        action = replace(
-            self._build_visual_workflow_action(ApplyVisualizationAction),
-            apply_subset_filters=apply_subset_filters,
+        result = self._dock_visual_workflow.dispatch_action(
+            ApplyVisualizationAction,
+            self._current_visual_workflow_request(
+                apply_subset_filters=apply_subset_filters,
+            ),
+            require_layers=False,
         )
-        result = self._dock_action_dispatcher.dispatch(action)
         if result.background_error:
             self._show_error(build_background_map_failure_title(), result.background_error)
         if result.background_layer is not None:
