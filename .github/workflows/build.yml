@@ -33,10 +33,14 @@ jobs:
 
       - name: Build artifact metadata
         id: artifact
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REF_NAME: ${{ github.ref_name }}
         run: |
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            echo "name=qfit-plugin-pr-${{ github.event.pull_request.number }}-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
-          elif [ "${{ github.ref_name }}" = "main" ]; then
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            echo "name=qfit-plugin-pr-${PR_NUMBER}-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+          elif [ "$REF_NAME" = "main" ]; then
             echo "name=qfit-plugin-main-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
           else
             echo "name=qfit-plugin-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"

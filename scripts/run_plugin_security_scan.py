@@ -58,9 +58,9 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 
 def prepare_scan_tree(reports_dir: Path) -> tuple[Path, Path]:
-    archive_path = package_plugin.build_zip()
     if reports_dir.exists():
         shutil.rmtree(reports_dir)
+    archive_path = package_plugin.build_zip()
     extracted_dir = reports_dir / "extracted"
     extracted_dir.mkdir(parents=True, exist_ok=True)
 
@@ -185,7 +185,13 @@ def build_scan_commands(plugin_root: Path, reports_dir: Path) -> list[tuple[str,
         ),
         (
             "flake8",
-            [sys.executable, "-m", "flake8", str(plugin_root)],
+            [
+                sys.executable,
+                "-m",
+                "flake8",
+                "--extend-exclude=vendor/",
+                str(plugin_root),
+            ],
             reports_dir / "flake8.txt",
             exit_code_one_is_findings,
         ),

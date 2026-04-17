@@ -20,6 +20,7 @@ EXCLUDED_DIRS = {
     ".pytest_cache",
     ".venv",
     "__pycache__",
+    "debug",
     "dist",
     "docs",
     "scripts",

@@ -29,6 +29,7 @@ class PackagePluginTests(unittest.TestCase):
                 root / "tests" / "test_example.py",
                 root / ".pytest_cache" / "v" / "cache" / "nodeids",
                 root / ".venv" / "lib" / "python3.12" / "site-packages" / "sample.py",
+                root / "debug" / "plugin-security-scan" / "summary.txt",
                 root / "validation" / "sample.txt",
                 root / "validation_artifacts" / "artifact.txt",
             ]
@@ -57,6 +58,8 @@ class PackagePluginTests(unittest.TestCase):
             (root / ".pytest_cache" / "README.md").write_text("cache\n", encoding="utf-8")
             (root / ".venv" / "lib" / "python3.12" / "site-packages").mkdir(parents=True)
             (root / ".venv" / "lib" / "python3.12" / "site-packages" / "sample.py").write_text("# venv\n", encoding="utf-8")
+            (root / "debug" / "plugin-security-scan").mkdir(parents=True)
+            (root / "debug" / "plugin-security-scan" / "summary.txt").write_text("summary\n", encoding="utf-8")
             (root / "validation").mkdir()
             (root / "validation" / "sample.txt").write_text("validation\n", encoding="utf-8")
             (root / "validation_artifacts").mkdir()
@@ -79,6 +82,7 @@ class PackagePluginTests(unittest.TestCase):
             self.assertFalse(any(name.startswith("qfit/tests/") for name in names))
             self.assertFalse(any(name.startswith("qfit/.pytest_cache/") for name in names))
             self.assertFalse(any(name.startswith("qfit/.venv/") for name in names))
+            self.assertFalse(any(name.startswith("qfit/debug/") for name in names))
             self.assertFalse(any(name.startswith("qfit/validation/") for name in names))
             self.assertFalse(any(name.startswith("qfit/validation_artifacts/") for name in names))
 
