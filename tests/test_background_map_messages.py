@@ -48,6 +48,12 @@ class BackgroundMapMessagesTests(unittest.TestCase):
             "Background map cleared",
         )
 
+    def test_build_background_map_result_status_when_enabled_but_not_loaded(self):
+        self.assertEqual(
+            build_background_map_result_status(enabled=True, background_loaded=False),
+            "Background map cleared",
+        )
+
     def test_build_styled_background_map_failure_status(self):
         self.assertEqual(
             build_styled_background_map_failure_status(),
