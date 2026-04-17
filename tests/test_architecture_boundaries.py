@@ -316,7 +316,6 @@ class DeprecatedCompatibilityShimTests(unittest.TestCase):
         "activity_query.py": "qfit.activities.domain.activity_query",
         "models.py": "qfit.activities.domain.models",
         "activity_storage.py": "qfit.activities.application.activity_storage",
-        "layer_manager.py": "qfit.visualization.infrastructure.qgis_layer_gateway",
     }
 
     FEATURE_ROOTS = (
@@ -385,7 +384,6 @@ class PackageOwnershipBoundaryTests(unittest.TestCase):
         "activity_query.py",
         "activity_storage.py",
         "detailed_route_strategy.py",
-        "layer_manager.py",
         "mapbox_config.py",
         "models.py",
         "polyline_utils.py",
