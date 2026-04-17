@@ -55,11 +55,11 @@ class DockStartupCoordinator:
         dock._load_settings()
         performed_steps.append("load_settings")
 
-        dock._wire_events()
-        performed_steps.append("wire_events")
-
         dock._set_default_dates()
         performed_steps.append("set_default_dates")
+
+        dock._wire_events()
+        performed_steps.append("wire_events")
 
         self.workflow_section_coordinator.configure_workflow_sections()
         performed_steps.append("configure_workflow_sections")
