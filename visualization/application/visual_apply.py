@@ -4,16 +4,11 @@ from dataclasses import dataclass, field
 from ...activities.application.activity_selection_state import ActivitySelectionState
 from ...activities.domain.activity_query import ActivityQuery
 from ...mapbox_config import MapboxConfigError
-from .background_map_messages import (
-    build_background_map_failure_status,
-    build_styled_background_map_failure_status,
-)
 from .layer_gateway import LayerGateway
 from .render_plan import build_render_plan
 from .visual_apply_messages import (
-    append_visual_apply_temporal_note,
-    build_filtered_visual_apply_status,
-    build_visual_apply_status,
+    build_visual_apply_background_failure_result_status,
+    build_visual_apply_result_status,
 )
 
 logger = logging.getLogger(__name__)
@@ -164,8 +159,9 @@ class VisualApplyService:
         if self.should_update_background(request.apply_subset_filters):
             background_layer, bg_error = self._ensure_background(request.background_config)
             if bg_error is not None:
-                failure_status = self._background_failure_status(
-                    has_layers, temporal_note, bg_error
+                failure_status = build_visual_apply_background_failure_result_status(
+                    has_layers=has_layers,
+                    temporal_note=temporal_note,
                 )
                 return VisualApplyResult(
                     status=failure_status,
@@ -173,12 +169,12 @@ class VisualApplyService:
                     background_error=bg_error,
                 )
 
-        status = self._build_status(
+        status = build_visual_apply_result_status(
             has_layers=has_layers,
             apply_subset_filters=request.apply_subset_filters,
             filtered_count=request.filtered_count,
             wants_background=request.background_config.enabled,
-            background_layer=background_layer,
+            background_loaded=background_layer is not None,
             temporal_note=temporal_note,
         )
         return VisualApplyResult(status=status, background_layer=background_layer)
@@ -228,29 +224,3 @@ class VisualApplyService:
         except (AttributeError, TypeError):
             return False
 
-    @staticmethod
-    def _background_failure_status(has_layers, temporal_note, error):
-        if not has_layers:
-            status = build_background_map_failure_status()
-        else:
-            status = build_styled_background_map_failure_status()
-        return append_visual_apply_temporal_note(status, temporal_note)
-
-    @staticmethod
-    def _build_status(
-        has_layers,
-        apply_subset_filters,
-        filtered_count,
-        wants_background,
-        background_layer,
-        temporal_note,
-    ):
-        status = build_visual_apply_status(
-            has_layers=has_layers,
-            apply_subset_filters=apply_subset_filters,
-            filtered_count=filtered_count,
-            wants_background=wants_background,
-            background_loaded=background_layer is not None,
-        )
-
-        return append_visual_apply_temporal_note(status, temporal_note)
