@@ -16,7 +16,8 @@ from qfit.visualization.application.visual_apply import (
     VisualApplyService,
 )
 from qfit.visualization.application.visual_apply_messages import (
-    append_visual_apply_temporal_note,
+    build_visual_apply_background_failure_result_status,
+    build_visual_apply_result_status,
 )
 
 
@@ -186,7 +187,7 @@ class ApplyWithSubsetFiltersTests(unittest.TestCase):
 
     def test_status_selection_uses_helper(self):
         with patch(
-            "qfit.visualization.application.visual_apply.build_visual_apply_status",
+            "qfit.visualization.application.visual_apply.build_visual_apply_result_status",
             return_value="Applied filters and styling (42 matching activities)",
         ) as build_status:
             result = self.service.apply(
@@ -206,6 +207,7 @@ class ApplyWithSubsetFiltersTests(unittest.TestCase):
             filtered_count=42,
             wants_background=False,
             background_loaded=False,
+            temporal_note="",
         )
 
     def test_does_not_update_background_on_filter_apply(self):
@@ -267,7 +269,7 @@ class ApplyWithoutSubsetFiltersTests(unittest.TestCase):
         self.layer_manager.ensure_background_layer.return_value = None
 
         with patch(
-            "qfit.visualization.application.visual_apply.build_visual_apply_status",
+            "qfit.visualization.application.visual_apply.build_visual_apply_result_status",
             return_value="Background map cleared",
         ) as build_status:
             result = self.service.apply(
@@ -287,11 +289,12 @@ class ApplyWithoutSubsetFiltersTests(unittest.TestCase):
             filtered_count=0,
             wants_background=False,
             background_loaded=False,
+            temporal_note="",
         )
 
     def test_returns_loaded_background_status_via_helper_when_only_background_is_loaded(self):
         with patch(
-            "qfit.visualization.application.visual_apply.build_visual_apply_status",
+            "qfit.visualization.application.visual_apply.build_visual_apply_result_status",
             return_value="Background map loaded below the qfit activity layers",
         ) as build_status:
             result = self.service.apply(
@@ -311,6 +314,7 @@ class ApplyWithoutSubsetFiltersTests(unittest.TestCase):
             filtered_count=0,
             wants_background=True,
             background_loaded=True,
+            temporal_note="",
         )
 
     def test_applies_style_and_temporal(self):
@@ -370,7 +374,7 @@ class ApplyWithoutSubsetFiltersTests(unittest.TestCase):
         bg = _make_bg_config(enabled=True)
 
         with patch(
-            "qfit.visualization.application.visual_apply.build_visual_apply_status",
+            "qfit.visualization.application.visual_apply.build_visual_apply_result_status",
             return_value="Applied styling and loaded the background map below the qfit activity layers",
         ) as build_status:
             result = self.service.apply(
@@ -393,6 +397,7 @@ class ApplyWithoutSubsetFiltersTests(unittest.TestCase):
             filtered_count=0,
             wants_background=True,
             background_loaded=True,
+            temporal_note="",
         )
 
     def test_status_without_background(self):
@@ -436,7 +441,7 @@ class BackgroundFailureTests(unittest.TestCase):
         layers = LayerRefs(activities=MagicMock())
 
         with patch(
-            "qfit.visualization.application.visual_apply.build_styled_background_map_failure_status",
+            "qfit.visualization.application.visual_apply.build_visual_apply_background_failure_result_status",
             return_value="Loaded layers with styling, but the background map could not be updated",
         ) as build_status:
             result = self.service.apply(
@@ -450,13 +455,16 @@ class BackgroundFailureTests(unittest.TestCase):
             )
 
         self.assertIn("loaded layers", result.status.lower())
-        build_status.assert_called_once_with()
+        build_status.assert_called_once_with(
+            has_layers=True,
+            temporal_note="",
+        )
 
     def test_error_status_without_layers(self):
         layers = LayerRefs()
 
         with patch(
-            "qfit.visualization.application.visual_apply.build_background_map_failure_status",
+            "qfit.visualization.application.visual_apply.build_visual_apply_background_failure_result_status",
             return_value="Background map could not be updated",
         ) as build_status:
             result = self.service.apply(
@@ -471,7 +479,10 @@ class BackgroundFailureTests(unittest.TestCase):
 
         self.assertNotIn("loaded layers", result.status.lower())
         self.assertIn("could not be updated", result.status.lower())
-        build_status.assert_called_once_with()
+        build_status.assert_called_once_with(
+            has_layers=False,
+            temporal_note="",
+        )
 
     def test_unexpected_background_exception_propagates(self):
         self.layer_manager.ensure_background_layer.side_effect = TypeError("boom")
@@ -526,7 +537,7 @@ class NoLayersTests(unittest.TestCase):
         layers = LayerRefs(activities=MagicMock())
 
         with patch(
-            "qfit.visualization.application.visual_apply.build_visual_apply_status",
+            "qfit.visualization.application.visual_apply.build_visual_apply_result_status",
             return_value="Applied styling to the loaded qfit layers",
         ) as build_status:
             result = self.service.apply(
@@ -546,6 +557,7 @@ class NoLayersTests(unittest.TestCase):
             filtered_count=0,
             wants_background=False,
             background_loaded=False,
+            temporal_note="",
         )
 
 
@@ -559,9 +571,9 @@ class TemporalNoteTests(unittest.TestCase):
 
     def test_temporal_note_appended_to_status(self):
         with patch(
-            "qfit.visualization.application.visual_apply.append_visual_apply_temporal_note",
-            wraps=append_visual_apply_temporal_note,
-        ) as append_note:
+            "qfit.visualization.application.visual_apply.build_visual_apply_result_status",
+            wraps=build_visual_apply_result_status,
+        ) as build_status:
             result = self.service.apply(
                 layers=self.layers,
                 query=_make_query(),
@@ -573,14 +585,21 @@ class TemporalNoteTests(unittest.TestCase):
             )
 
         self.assertIn("Temporal mode: Monthly", result.status)
-        append_note.assert_called()
+        build_status.assert_called_once_with(
+            has_layers=True,
+            apply_subset_filters=False,
+            filtered_count=0,
+            wants_background=False,
+            background_loaded=False,
+            temporal_note="Temporal mode: Monthly",
+        )
 
     def test_temporal_note_appended_to_failure_status(self):
         self.layer_manager.ensure_background_layer.side_effect = RuntimeError("fail")
         with patch(
-            "qfit.visualization.application.visual_apply.append_visual_apply_temporal_note",
-            wraps=append_visual_apply_temporal_note,
-        ) as append_note:
+            "qfit.visualization.application.visual_apply.build_visual_apply_background_failure_result_status",
+            wraps=build_visual_apply_background_failure_result_status,
+        ) as build_status:
             result = self.service.apply(
                 layers=self.layers,
                 query=_make_query(),
@@ -593,7 +612,10 @@ class TemporalNoteTests(unittest.TestCase):
 
         self.assertIn("Temporal mode: Monthly", result.status)
         self.assertIn("could not be updated", result.status.lower())
-        append_note.assert_called()
+        build_status.assert_called_once_with(
+            has_layers=True,
+            temporal_note="Temporal mode: Monthly",
+        )
 
 
 class BackgroundPresetPassthroughTests(unittest.TestCase):

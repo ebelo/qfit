@@ -5,6 +5,8 @@ from tests import _path  # noqa: F401
 from qfit.visualization.application.visual_apply_messages import (
     append_visual_apply_temporal_note,
     build_filtered_visual_apply_status,
+    build_visual_apply_background_failure_result_status,
+    build_visual_apply_result_status,
     build_visual_apply_status,
 )
 
@@ -62,6 +64,37 @@ class VisualApplyMessagesTests(unittest.TestCase):
         self.assertEqual(
             build_visual_apply_status(False, False, 0, False, False),
             "Background map cleared",
+        )
+
+    def test_build_visual_apply_result_status_appends_temporal_note(self):
+        self.assertEqual(
+            build_visual_apply_result_status(
+                has_layers=True,
+                apply_subset_filters=False,
+                filtered_count=0,
+                wants_background=False,
+                background_loaded=False,
+                temporal_note="Temporal mode: Monthly",
+            ),
+            "Applied styling to the loaded qfit layers. Temporal mode: Monthly.",
+        )
+
+    def test_build_visual_apply_background_failure_result_status_for_layers(self):
+        self.assertEqual(
+            build_visual_apply_background_failure_result_status(
+                has_layers=True,
+                temporal_note="Temporal mode: Monthly",
+            ),
+            "Loaded layers with styling, but the background map could not be updated. Temporal mode: Monthly.",
+        )
+
+    def test_build_visual_apply_background_failure_result_status_without_layers(self):
+        self.assertEqual(
+            build_visual_apply_background_failure_result_status(
+                has_layers=False,
+                temporal_note="",
+            ),
+            "Background map could not be updated",
         )
 
 
