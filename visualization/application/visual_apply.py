@@ -129,8 +129,8 @@ class VisualApplyService:
         if has_layers:
             render_plan = build_render_plan(
                 request.style_preset,
-                has_start_features=self._has_features(request.layers.starts),
-                has_point_features=self._has_features(request.layers.points),
+                has_start_features=self.layer_gateway.has_features(request.layers.starts),
+                has_point_features=self.layer_gateway.has_features(request.layers.points),
                 has_points_layer=request.layers.points is not None,
                 background_preset_name=(
                     request.background_config.preset_name
@@ -214,13 +214,3 @@ class VisualApplyService:
             return layer, None
         except (MapboxConfigError, RuntimeError) as exc:
             return None, str(exc)
-
-    @staticmethod
-    def _has_features(layer):
-        if layer is None:
-            return False
-        try:
-            return layer.featureCount() > 0
-        except (AttributeError, TypeError):
-            return False
-

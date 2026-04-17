@@ -93,6 +93,30 @@ class LayerGatewayBoundaryTests(unittest.TestCase):
         modules["qgis.core"].QgsProject.instance.return_value.removeMapLayer.assert_any_call(layer_a)
         modules["qgis.core"].QgsProject.instance.return_value.removeMapLayer.assert_any_call(layer_b)
 
+    def test_qgis_gateway_has_features_handles_missing_feature_count(self):
+        modules = self._qgis_gateway_modules()
+
+        with patch.dict(sys.modules, modules, clear=False):
+            self._reset_qgis_gateway_imports()
+            adapter_module = importlib.import_module(
+                "qfit.visualization.infrastructure.qgis_layer_gateway"
+            )
+
+            gateway = adapter_module.QgisLayerGateway(MagicMock(name="iface"))
+            populated_layer = MagicMock(name="populated_layer")
+            populated_layer.featureCount.return_value = 3
+            empty_layer = MagicMock(name="empty_layer")
+            empty_layer.featureCount.return_value = 0
+            zombie_layer = MagicMock(name="zombie_layer")
+            zombie_layer.featureCount.side_effect = RuntimeError("wrapped C/C++ object has been deleted")
+            opaque_layer = object()
+
+        self.assertTrue(gateway.has_features(populated_layer))
+        self.assertFalse(gateway.has_features(empty_layer))
+        self.assertFalse(gateway.has_features(zombie_layer))
+        self.assertFalse(gateway.has_features(opaque_layer))
+        self.assertFalse(gateway.has_features(None))
+
     def test_qgis_gateway_lazy_services_delegate_cleanly(self):
         modules = self._qgis_gateway_modules()
 

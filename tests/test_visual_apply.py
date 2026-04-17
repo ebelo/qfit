@@ -133,8 +133,7 @@ class ApplyWithSubsetFiltersTests(unittest.TestCase):
         self.assertEqual(args[0][4], "Speed gradient")
 
     def test_builds_and_passes_render_plan(self):
-        self.layers.starts.featureCount.return_value = 0
-        self.layers.points.featureCount.return_value = 4
+        self.layer_manager.has_features.side_effect = [False, True]
 
         self.service.apply(
             layers=self.layers,
@@ -151,10 +150,14 @@ class ApplyWithSubsetFiltersTests(unittest.TestCase):
         self.assertEqual(render_plan.selected_source_role, SOURCE_ROLE_POINTS)
         self.assertEqual(render_plan.points.renderer_family, RENDERER_HEATMAP)
         self.assertEqual(render_plan.background_preset_name, "Satellite")
+        self.layer_manager.has_features.assert_has_calls(
+            [call(self.layers.starts), call(self.layers.points)]
+        )
 
     def test_render_plan_tolerates_layers_without_feature_count(self):
         self.layers.starts = SimpleNamespace(name="starts")
         self.layers.points = SimpleNamespace(name="points")
+        self.layer_manager.has_features.side_effect = [False, False]
 
         self.service.apply(
             layers=self.layers,
@@ -170,6 +173,9 @@ class ApplyWithSubsetFiltersTests(unittest.TestCase):
         render_plan = kwargs["render_plan"]
         self.assertEqual(render_plan.selected_source_role, SOURCE_ROLE_STARTS)
         self.assertEqual(render_plan.starts.renderer_family, RENDERER_HEATMAP)
+        self.layer_manager.has_features.assert_has_calls(
+            [call(self.layers.starts), call(self.layers.points)]
+        )
 
     def test_status_includes_filtered_count(self):
         result = self.service.apply(
