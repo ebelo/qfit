@@ -17,7 +17,7 @@ from ..activities.application.load_workflow import (
 from ..qfit_cache import QfitCache
 from ..configuration.application.settings_service import SettingsService
 from ..activities.application.sync_controller import SyncController
-from ..ui.application import DockActivityWorkflowCoordinator
+from ..ui.application import DockActivityWorkflowCoordinator, DockAtlasWorkflowCoordinator
 from ..visualization.application import (
     BackgroundMapController,
     LayerGateway,
@@ -50,6 +50,7 @@ class DockWidgetDependencies:
     visual_apply: VisualApplyService
     atlas_export_service: AtlasExportService
     activity_workflow: DockActivityWorkflowCoordinator
+    atlas_workflow: DockAtlasWorkflowCoordinator
     cache: QfitCache
 
 
@@ -62,6 +63,7 @@ def build_dockwidget_dependencies(iface) -> DockWidgetDependencies:
     layer_gateway = _build_layer_gateway(iface)
     cache = _build_cache()
     atlas_export_service = AtlasExportService(layer_gateway)
+    atlas_export_use_case = AtlasExportUseCase(atlas_export_controller, atlas_export_service)
     fetch_result_service = FetchResultService(sync_controller)
     activity_preview_service = ActivityPreviewService()
     store_workflow = StoreActivitiesWorkflow()
@@ -72,7 +74,7 @@ def build_dockwidget_dependencies(iface) -> DockWidgetDependencies:
         sync_controller=sync_controller,
         analysis_workflow=build_analysis_workflow(),
         atlas_export_controller=atlas_export_controller,
-        atlas_export_use_case=AtlasExportUseCase(atlas_export_controller, atlas_export_service),
+        atlas_export_use_case=atlas_export_use_case,
         layer_gateway=layer_gateway,
         background_controller=BackgroundMapController(layer_gateway),
         project_hygiene_service=_build_project_hygiene_service(),
@@ -91,6 +93,9 @@ def build_dockwidget_dependencies(iface) -> DockWidgetDependencies:
             sync_controller=sync_controller,
             fetch_result_service=fetch_result_service,
             activity_preview_service=activity_preview_service,
+        ),
+        atlas_workflow=DockAtlasWorkflowCoordinator(
+            atlas_export_use_case=atlas_export_use_case,
         ),
         cache=cache,
     )

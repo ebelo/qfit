@@ -488,6 +488,8 @@ class QgisSmokeTests(unittest.TestCase):
             dock.atlas_layer = MagicMock()
             dock.atlas_layer.featureCount.return_value = 3
             dock.atlasPdfPathLineEdit.setText("/tmp/qfit-atlas.pdf")
+            dock.atlasTitleLineEdit.setText("Custom Atlas")
+            dock.atlasSubtitleLineEdit.setText("April 2026")
 
             prepared_export = MagicMock(name="prepared_export")
             prepared_export.is_ready = True

@@ -12,6 +12,10 @@ from .dock_activity_workflow import (
     DockFetchCompletionResult,
     DockFetchRequest,
 )
+from .dock_atlas_workflow import (
+    DockAtlasExportRequest,
+    DockAtlasWorkflowCoordinator,
+)
 from .dock_visual_workflow import (
     DockVisualWorkflowCoordinator,
     DockVisualWorkflowRequest,
@@ -37,6 +41,8 @@ __all__ = [
     "DockActionDispatcher",
     "DockActionResult",
     "DockActivityWorkflowCoordinator",
+    "DockAtlasExportRequest",
+    "DockAtlasWorkflowCoordinator",
     "DockFetchCompletionRequest",
     "DockFetchCompletionResult",
     "DockFetchRequest",
