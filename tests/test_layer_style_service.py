@@ -40,7 +40,9 @@ try:
     )
 
     from qfit.activities.infrastructure.geopackage.gpkg_writer import GeoPackageWriter
-    from qfit.layer_manager import LayerManager
+    from qfit.visualization.infrastructure.qgis_layer_gateway import (
+        QgisLayerGateway as LayerManager,
+    )
     from qfit.visualization.infrastructure.layer_style_service import LayerStyleService
 
     QGIS_AVAILABLE = True
