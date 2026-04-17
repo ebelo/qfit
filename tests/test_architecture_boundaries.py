@@ -312,9 +312,6 @@ class ModuleScopeImportScannerTests(unittest.TestCase):
 
 class DeprecatedCompatibilityShimTests(unittest.TestCase):
     DEPRECATED_ROOT_SHIMS = {
-        "activity_classification.py": "qfit.activities.domain.activity_classification",
-        "activity_query.py": "qfit.activities.domain.activity_query",
-        "models.py": "qfit.activities.domain.models",
     }
 
     FEATURE_ROOTS = (
@@ -379,11 +376,8 @@ class PackageOwnershipBoundaryTests(unittest.TestCase):
 
     ALLOWED_TOP_LEVEL_PYTHON_MODULES = {
         "__init__.py",
-        "activity_classification.py",
-        "activity_query.py",
         "detailed_route_strategy.py",
         "mapbox_config.py",
-        "models.py",
         "polyline_utils.py",
         "qfit_cache.py",
         "qfit_config_dialog.py",
