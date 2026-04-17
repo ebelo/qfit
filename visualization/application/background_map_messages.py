@@ -17,6 +17,12 @@ def build_background_map_loaded_status() -> str:
     return "Background map loaded below the qfit activity layers"
 
 
+def build_background_map_result_status(enabled: bool, background_loaded: bool) -> str:
+    if enabled and background_loaded:
+        return build_background_map_loaded_status()
+    return build_background_map_cleared_status()
+
+
 def build_styled_background_map_failure_status() -> str:
     return "Loaded layers with styling, but the background map could not be updated"
 
