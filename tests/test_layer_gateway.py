@@ -107,10 +107,13 @@ class LayerGatewayBoundaryTests(unittest.TestCase):
             populated_layer.featureCount.return_value = 3
             empty_layer = MagicMock(name="empty_layer")
             empty_layer.featureCount.return_value = 0
+            zombie_layer = MagicMock(name="zombie_layer")
+            zombie_layer.featureCount.side_effect = RuntimeError("wrapped C/C++ object has been deleted")
             opaque_layer = object()
 
         self.assertTrue(gateway.has_features(populated_layer))
         self.assertFalse(gateway.has_features(empty_layer))
+        self.assertFalse(gateway.has_features(zombie_layer))
         self.assertFalse(gateway.has_features(opaque_layer))
         self.assertFalse(gateway.has_features(None))
 

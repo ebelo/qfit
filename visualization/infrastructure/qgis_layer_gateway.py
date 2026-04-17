@@ -115,7 +115,7 @@ class QgisLayerGateway:
             return False
         try:
             return layer.featureCount() > 0
-        except (AttributeError, TypeError):
+        except (AttributeError, RuntimeError, TypeError):
             return False
 
     def ensure_background_layer(self, enabled, preset_name, access_token, style_owner="", style_id="", tile_mode=TILE_MODE_RASTER):
