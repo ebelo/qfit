@@ -880,7 +880,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._dispatch_dock_action(RunAnalysisAction)
 
     def _dispatch_dock_action(self, action_type):
-        result = self._visual_workflow_coordinator().dispatch_action(
+        result = self._dock_visual_workflow.dispatch_action(
             action_type,
             self._current_visual_workflow_request(),
             require_layers=True,
@@ -898,14 +898,13 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         if result.status:
             self._set_status(result.status)
 
-    def _visual_workflow_coordinator(self):
-        coordinator = getattr(self, "_dock_visual_workflow", None)
-        if coordinator is None:
-            coordinator = DockVisualWorkflowCoordinator(
-                dispatcher=self._dock_action_dispatcher,
-            )
-            self._dock_visual_workflow = coordinator
-        return coordinator
+    def _build_visual_workflow_action(self, action_type):
+        """Compatibility wrapper while older smoke tests migrate to coordinator entry points."""
+
+        return self._dock_visual_workflow.build_action(
+            action_type,
+            self._current_visual_workflow_request(),
+        )
 
     def _current_visual_workflow_request(self, *, apply_subset_filters=True):
         return DockVisualWorkflowRequest(
@@ -954,7 +953,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         return result.status
 
     def _apply_visual_configuration(self, apply_subset_filters):
-        result = self._visual_workflow_coordinator().dispatch_action(
+        result = self._dock_visual_workflow.dispatch_action(
             ApplyVisualizationAction,
             self._current_visual_workflow_request(
                 apply_subset_filters=apply_subset_filters,

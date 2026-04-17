@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from ...activities.application.activity_selection_state import ActivitySelectionState
+from ...visualization.application import LayerRefs
 from .visual_workflow_action_builder import (
     VisualWorkflowBackgroundInputs,
     VisualWorkflowSettingsSnapshot,
@@ -12,8 +14,8 @@ from .visual_workflow_action_builder import (
 
 @dataclass(frozen=True)
 class DockVisualWorkflowRequest:
-    layers: object
-    selection_state: object
+    layers: LayerRefs
+    selection_state: ActivitySelectionState
     settings: VisualWorkflowSettingsSnapshot
     background: VisualWorkflowBackgroundInputs
     apply_subset_filters: bool = True

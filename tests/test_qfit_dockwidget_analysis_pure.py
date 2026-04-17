@@ -547,6 +547,24 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             tile_mode="Raster",
         )
 
+    def test_build_visual_workflow_action_delegates_to_visual_workflow_coordinator(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._dock_visual_workflow = MagicMock()
+        dock._dock_visual_workflow.build_action.return_value = "action"
+        dock._current_visual_workflow_request = MagicMock(return_value="request")
+
+        action = self.module.QfitDockWidget._build_visual_workflow_action(
+            dock,
+            self.module.ApplyVisualizationAction,
+        )
+
+        self.assertEqual(action, "action")
+        dock._current_visual_workflow_request.assert_called_once_with()
+        dock._dock_visual_workflow.build_action.assert_called_once_with(
+            self.module.ApplyVisualizationAction,
+            "request",
+        )
+
     def test_run_selected_analysis_delegates_to_analysis_workflow(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock.analysis_workflow = MagicMock()
