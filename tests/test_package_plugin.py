@@ -12,8 +12,11 @@ if str(_SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS_DIR))
 
 _SPEC = importlib.util.spec_from_file_location("qfit_package_plugin", _SCRIPTS_DIR / "package_plugin.py")
+if _SPEC is None:
+    raise RuntimeError(f"Could not locate package_plugin.py at {_SCRIPTS_DIR}")
 package_plugin = importlib.util.module_from_spec(_SPEC)
-assert _SPEC.loader is not None
+if _SPEC.loader is None:
+    raise RuntimeError("package_plugin.py spec has no loader")
 _SPEC.loader.exec_module(package_plugin)
 
 
