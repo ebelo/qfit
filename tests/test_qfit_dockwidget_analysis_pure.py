@@ -333,6 +333,21 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         )
         self.assertEqual(dock.runAnalysisButton.text(), "Run analysis")
 
+    def test_set_default_dates_uses_current_date_window(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.dateFromEdit = MagicMock()
+        dock.dateToEdit = MagicMock()
+        today = MagicMock()
+        last_year = object()
+        today.addYears.return_value = last_year
+
+        with patch.object(self.module.QDate, "currentDate", return_value=today):
+            self.module.QfitDockWidget._set_default_dates(dock)
+
+        dock.dateFromEdit.setDate.assert_called_once_with(last_year)
+        dock.dateToEdit.setDate.assert_called_once_with(today)
+        today.addYears.assert_called_once_with(-1)
+
     def test_remove_stale_qfit_layers_delegates_to_project_hygiene_service(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock.project_hygiene_service = MagicMock()

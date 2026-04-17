@@ -513,10 +513,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
 
     def _set_default_dates(self):
-        if not self.dateFromEdit.date().isValid():
-            self.dateFromEdit.setDate(QDate.currentDate().addYears(-1))
-        if not self.dateToEdit.date().isValid():
-            self.dateToEdit.setDate(QDate.currentDate())
+        today = QDate.currentDate()
+        self.dateFromEdit.setDate(today.addYears(-1))
+        self.dateToEdit.setDate(today)
 
     def on_background_preset_changed(self, preset_name):
         self._sync_background_style_fields(preset_name, force=True)
