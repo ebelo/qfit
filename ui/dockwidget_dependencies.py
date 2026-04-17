@@ -113,12 +113,10 @@ def _build_project_hygiene_service() -> ProjectHygienePort:
     return ProjectHygieneService()
 
 
-
 def _writable_app_data_location() -> str:
     from qgis.PyQt.QtCore import QStandardPaths
 
     return QStandardPaths.writableLocation(QStandardPaths.AppDataLocation)
-
 
 
 def _build_cache() -> QfitCache:
