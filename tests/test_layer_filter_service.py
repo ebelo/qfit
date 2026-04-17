@@ -20,7 +20,9 @@ except ValueError:
     )
 
 try:
-    from qfit.layer_manager import LayerManager
+    from qfit.visualization.infrastructure.qgis_layer_gateway import (
+        QgisLayerGateway as LayerManager,
+    )
 
     QGIS_AVAILABLE = True
     QGIS_IMPORT_ERROR = None

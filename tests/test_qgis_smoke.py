@@ -50,7 +50,9 @@ try:
     from qfit.atlas.profile_item import build_profile_item_adapter
     from qfit.configuration.infrastructure.credential_store import InMemoryCredentialStore
     from qfit.activities.infrastructure.geopackage.gpkg_writer import GeoPackageWriter
-    from qfit.layer_manager import LayerManager
+    from qfit.visualization.infrastructure.qgis_layer_gateway import (
+        QgisLayerGateway as LayerManager,
+    )
     from qfit.mapbox_config import TILE_MODE_RASTER
     from qfit.activities.domain.models import Activity
     from qfit.qfit_config_dialog import QfitConfigDialog
@@ -1722,7 +1724,9 @@ class QgisSmokeTests(unittest.TestCase):
             )
             from qfit.atlas.profile_item import build_profile_item_adapter
             from qfit.activities.infrastructure.geopackage.gpkg_writer import GeoPackageWriter
-            from qfit.layer_manager import LayerManager
+            from qfit.visualization.infrastructure.qgis_layer_gateway import (
+                QgisLayerGateway as LayerManager,
+            )
 
             class _FakeCanvas:
                 def __init__(self):

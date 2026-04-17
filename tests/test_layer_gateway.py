@@ -25,7 +25,7 @@ class LayerGatewayBoundaryTests(unittest.TestCase):
 
         self.assertIs(service.layer_gateway, gateway)
 
-    def test_qgis_gateway_adapter_and_legacy_import_share_same_class(self):
+    def test_qgis_gateway_package_export_points_at_canonical_module(self):
         modules = self._qgis_gateway_modules()
 
         with patch.dict(sys.modules, modules, clear=False):
@@ -33,9 +33,15 @@ class LayerGatewayBoundaryTests(unittest.TestCase):
             adapter_module = importlib.import_module(
                 "qfit.visualization.infrastructure.qgis_layer_gateway"
             )
-            layer_manager_module = importlib.import_module("qfit.layer_manager")
+            infrastructure_module = importlib.import_module(
+                "qfit.visualization.infrastructure"
+            )
 
-        self.assertIs(layer_manager_module.LayerManager, adapter_module.QgisLayerGateway)
+        self.assertEqual(infrastructure_module.LayerManager.__name__, "QgisLayerGateway")
+        self.assertEqual(
+            infrastructure_module.LayerManager.__module__,
+            adapter_module.QgisLayerGateway.__module__,
+        )
 
     def test_qgis_gateway_satisfies_protocol_and_delegates_to_services(self):
         modules = self._qgis_gateway_modules()
@@ -198,7 +204,6 @@ class LayerGatewayBoundaryTests(unittest.TestCase):
     @staticmethod
     def _reset_qgis_gateway_imports():
         for name in [
-            "qfit.layer_manager",
             "qfit.visualization.infrastructure",
             "qfit.visualization.infrastructure.background_map_service",
             "qfit.visualization.infrastructure.layer_filter_service",
