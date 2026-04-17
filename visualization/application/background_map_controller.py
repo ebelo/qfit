@@ -3,8 +3,7 @@ from dataclasses import dataclass
 
 from ...mapbox_config import preset_defaults, preset_requires_custom_style
 from .background_map_messages import (
-    build_background_map_cleared_status,
-    build_background_map_loaded_status,
+    build_background_map_result_status,
 )
 from .layer_gateway import LayerGateway
 
@@ -83,10 +82,9 @@ class BackgroundMapController:
             style_id=request.style_id,
             tile_mode=request.tile_mode,
         )
-        status = (
-            build_background_map_loaded_status()
-            if request.enabled and layer is not None
-            else build_background_map_cleared_status()
+        status = build_background_map_result_status(
+            enabled=request.enabled,
+            background_loaded=layer is not None,
         )
         return LoadBackgroundResult(layer=layer, status=status)
 

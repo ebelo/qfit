@@ -7,6 +7,7 @@ from qfit.visualization.application.background_map_messages import (
     build_background_map_failure_status,
     build_background_map_failure_title,
     build_background_map_loaded_status,
+    build_background_map_result_status,
     build_styled_background_map_failure_status,
     build_styled_background_map_loaded_status,
     build_styled_visual_apply_status,
@@ -33,6 +34,24 @@ class BackgroundMapMessagesTests(unittest.TestCase):
         self.assertEqual(
             build_background_map_loaded_status(),
             "Background map loaded below the qfit activity layers",
+        )
+
+    def test_build_background_map_result_status_for_loaded_background(self):
+        self.assertEqual(
+            build_background_map_result_status(enabled=True, background_loaded=True),
+            "Background map loaded below the qfit activity layers",
+        )
+
+    def test_build_background_map_result_status_for_cleared_background(self):
+        self.assertEqual(
+            build_background_map_result_status(enabled=False, background_loaded=False),
+            "Background map cleared",
+        )
+
+    def test_build_background_map_result_status_when_enabled_but_not_loaded(self):
+        self.assertEqual(
+            build_background_map_result_status(enabled=True, background_loaded=False),
+            "Background map cleared",
         )
 
     def test_build_styled_background_map_failure_status(self):

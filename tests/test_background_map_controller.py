@@ -63,7 +63,7 @@ class LoadBackgroundTests(unittest.TestCase):
         ctrl = BackgroundMapController(lm)
 
         with patch(
-            "qfit.visualization.application.background_map_controller.build_background_map_loaded_status",
+            "qfit.visualization.application.background_map_controller.build_background_map_result_status",
             return_value="Background map loaded below the qfit activity layers",
         ) as build_status:
             result = ctrl.load_background(
@@ -78,7 +78,7 @@ class LoadBackgroundTests(unittest.TestCase):
         self.assertIsInstance(result, LoadBackgroundResult)
         self.assertIs(result.layer, sentinel)
         self.assertEqual(result.status, "Background map loaded below the qfit activity layers")
-        build_status.assert_called_once_with()
+        build_status.assert_called_once_with(enabled=True, background_loaded=True)
         lm.ensure_background_layer.assert_called_once_with(
             enabled=True,
             preset_name="Mapbox Dark",
@@ -94,7 +94,7 @@ class LoadBackgroundTests(unittest.TestCase):
         ctrl = BackgroundMapController(lm)
 
         with patch(
-            "qfit.visualization.application.background_map_controller.build_background_map_cleared_status",
+            "qfit.visualization.application.background_map_controller.build_background_map_result_status",
             return_value="Background map cleared",
         ) as build_status:
             result = ctrl.load_background(
@@ -108,4 +108,4 @@ class LoadBackgroundTests(unittest.TestCase):
 
         self.assertIsNone(result.layer)
         self.assertEqual(result.status, "Background map cleared")
-        build_status.assert_called_once_with()
+        build_status.assert_called_once_with(enabled=False, background_loaded=False)
