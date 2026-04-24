@@ -226,14 +226,17 @@
                  <item row="1" column="0">
                   <widget class="QLabel" name="maxPagesLabel">
                    <property name="text">
-                    <string>Max pages (0 = all)</string>
+                    <string>Max pages</string>
                    </property>
                   </widget>
                  </item>
                  <item row="1" column="1">
                   <widget class="QSpinBox" name="maxPagesSpinBox">
                    <property name="toolTip">
-                    <string>Maximum number of pages to fetch from Strava. Set to 0 to fetch all available activities (recommended).</string>
+                    <string>Maximum number of pages to fetch from Strava. Use All to fetch every available activity (recommended).</string>
+                   </property>
+                   <property name="specialValueText">
+                    <string>All</string>
                    </property>
                    <property name="minimum">
                     <number>0</number>
