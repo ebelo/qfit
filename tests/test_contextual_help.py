@@ -258,6 +258,8 @@ class ContextualHelpTests(unittest.TestCase):
         for anchor_name in [
             "detailedRouteStrategyComboBox",
             "maxDetailedActivitiesSpinBox",
+            "perPageSpinBox",
+            "maxPagesSpinBox",
             "writeActivityPointsCheckBox",
             "pointSamplingStrideSpinBox",
             "backgroundPresetComboBox",
@@ -275,6 +277,11 @@ class ContextualHelpTests(unittest.TestCase):
         self.assertEqual(entries["maxDetailedActivitiesSpinBox"].label_text, "Max new detailed routes this run")
         self.assertTrue(entries["maxDetailedActivitiesSpinBox"].help_button)
         self.assertIn("downloads up to 25 new detailed routes", entries["maxDetailedActivitiesSpinBox"].helper_text)
+        self.assertEqual(entries["perPageSpinBox"].label_text, "Activities per page")
+        self.assertIn("fewer API requests", entries["perPageSpinBox"].tooltip)
+        self.assertEqual(entries["maxPagesSpinBox"].label_text, "Max pages")
+        self.assertTrue(entries["maxPagesSpinBox"].help_button)
+        self.assertIn("All is recommended", entries["maxPagesSpinBox"].helper_text)
         self.assertEqual(entries["pointSamplingStrideSpinBox"].label_text, "Keep every Nth point")
         self.assertEqual(entries["backgroundPresetComboBox"].label_text, "Basemap preset")
         self.assertEqual(entries["atlasTitleLineEdit"].label_text, "Atlas title")

@@ -58,6 +58,29 @@ DOCK_HELP_ENTRIES: tuple[HelpEntry, ...] = (
         help_button=True,
     ),
     HelpEntry(
+        anchor_name="perPageSpinBox",
+        label_name="perPageLabel",
+        label_text="Activities per page",
+        tooltip=(
+            "Number of activities qfit asks Strava for in each API page. Higher values usually finish large "
+            "syncs with fewer API requests."
+        ),
+    ),
+    HelpEntry(
+        anchor_name="maxPagesSpinBox",
+        label_name="maxPagesLabel",
+        label_text="Max pages",
+        tooltip=(
+            "Limits how many Strava result pages qfit fetches in this run. Use All for a full sync, or a small "
+            "number when testing credentials and paging behavior."
+        ),
+        helper_text=(
+            "All is recommended for normal syncs. Smaller limits are useful for quick checks because they stop "
+            "after that many Strava pages even when more activities exist."
+        ),
+        help_button=True,
+    ),
+    HelpEntry(
         anchor_name="backgroundMapCheckBox",
         target_text="Load a Mapbox basemap in QGIS",
         tooltip=(
