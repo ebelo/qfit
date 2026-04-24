@@ -270,6 +270,7 @@ class _FakeWidget:
         self.title = None
         self.checkable = None
         self.object_name = None
+        self.tooltip = None
 
     def setParent(self, parent):
         self.parent_obj = parent
@@ -292,6 +293,9 @@ class _FakeWidget:
     def setCheckable(self, value):
         self.checkable = value
 
+    def setToolTip(self, text):
+        self.tooltip = text
+
 
 class _FakeLabel(_FakeWidget):
     def __init__(self):
@@ -310,6 +314,7 @@ class _FakeGroupBox:
         self.visible = None
         self.title = None
         self.checkable = None
+        self.tooltip = None
 
     def setParent(self, parent):
         self.parent_obj = parent
@@ -328,6 +333,9 @@ class _FakeGroupBox:
 
     def setCheckable(self, value):
         self.checkable = value
+
+    def setToolTip(self, text):
+        self.tooltip = text
 
 
 class WorkflowSectionCoordinatorTests(unittest.TestCase):
@@ -348,6 +356,12 @@ class WorkflowSectionCoordinatorTests(unittest.TestCase):
         dock.credentialsGroupBox = _FakeWidget()
         dock.workflowLabel = _FakeLabel()
         dock.activitiesIntroLabel = _FakeLabel()
+        dock.outputIntroLabel = _FakeLabel()
+        dock.outputIntroLabel.text = "Pick where qfit should store the synced GeoPackage."
+        dock.atlasPdfHelpLabel = _FakeLabel()
+        dock.atlasPdfHelpLabel.text = "Export a per-activity PDF atlas using loaded activity_atlas_pages."
+        dock.atlasPdfGroupBox = _FakeGroupBox()
+        dock.generateAtlasPdfButton = _FakeWidget()
         dock.mapboxAccessTokenLabel = _FakeWidget()
         dock.mapboxAccessTokenLineEdit = _FakeWidget()
         dock.loadLayersButton = _FakeWidget()
@@ -425,6 +439,14 @@ class WorkflowSectionCoordinatorTests(unittest.TestCase):
         self.assertTrue(hasattr(dock, "activitiesSectionToggleButton"))
         self.assertTrue(hasattr(dock, "activitiesSectionContentWidget"))
         self.assertTrue(hasattr(dock, "styleSectionToggleButton"))
+        self.assertFalse(dock.activitiesIntroLabel.visible)
+        self.assertIn("saved in qfit → Configuration", dock.activitiesSectionToggleButton.tooltip)
+        self.assertEqual(dock.activitiesGroupBox.tooltip, dock.activitiesSectionToggleButton.tooltip)
+        self.assertFalse(dock.outputIntroLabel.visible)
+        self.assertEqual(dock.outputGroupBox.tooltip, dock.outputIntroLabel.text)
+        self.assertFalse(dock.atlasPdfHelpLabel.visible)
+        self.assertEqual(dock.atlasPdfGroupBox.tooltip, dock.atlasPdfHelpLabel.text)
+        self.assertEqual(dock.generateAtlasPdfButton.tooltip, dock.atlasPdfHelpLabel.text)
         self.assertFalse(dock.mapboxAccessTokenLabel.visible)
         self.assertFalse(dock.mapboxAccessTokenLineEdit.visible)
 

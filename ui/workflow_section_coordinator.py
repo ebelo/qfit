@@ -49,6 +49,17 @@ class WorkflowSectionCoordinator:
             "4. Publish / atlas",
             "publish",
         )
+        self._move_help_label_to_tooltip(
+            dock.activitiesIntroLabel,
+            getattr(dock, "activitiesSectionToggleButton", None),
+            dock.activitiesGroupBox,
+        )
+        self._move_help_label_to_tooltip(dock.outputIntroLabel, dock.outputGroupBox)
+        self._move_help_label_to_tooltip(
+            dock.atlasPdfHelpLabel,
+            dock.atlasPdfGroupBox,
+            dock.generateAtlasPdfButton,
+        )
         dock.mapboxAccessTokenLabel.hide()
         dock.mapboxAccessTokenLineEdit.hide()
 
@@ -105,6 +116,23 @@ class WorkflowSectionCoordinator:
             toggle.setArrowType(Qt.DownArrow if expanded else Qt.RightArrow)
         if content is not None:
             content.setVisible(expanded)
+
+    def _move_help_label_to_tooltip(self, label, *widgets) -> None:
+        if label is None:
+            return
+
+        text = getattr(label, "text", None)
+        if callable(text):
+            text = text()
+        if not text:
+            return
+
+        for widget in widgets:
+            if widget is not None and hasattr(widget, "setToolTip"):
+                widget.setToolTip(text)
+
+        if hasattr(label, "hide"):
+            label.hide()
 
     def configure_workflow_sections(self) -> None:
         dock = self.dock_widget
