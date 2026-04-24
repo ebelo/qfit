@@ -26,6 +26,7 @@ from .dock_runtime_state import (
     DockRuntimeStore,
     DockRuntimeTasks,
 )
+from .dock_summary_status import build_dock_summary_status
 from .visual_workflow_action_builder import build_visual_workflow_action
 from .visual_workflow_action_builder import build_visual_workflow_action_inputs
 from .visual_workflow_action_builder import build_visual_workflow_background_inputs
@@ -56,6 +57,7 @@ __all__ = [
     "VisualWorkflowBackgroundInputs",
     "VisualWorkflowActionInputs",
     "VisualWorkflowSettingsSnapshot",
+    "build_dock_summary_status",
     "build_visual_layer_refs",
     "build_visual_workflow_action",
     "build_visual_workflow_action_inputs",
