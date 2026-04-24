@@ -198,6 +198,14 @@ DOCK_HELP_ENTRIES: tuple[HelpEntry, ...] = (
         ),
     ),
     HelpEntry(
+        anchor_name="clearDatabaseButton",
+        target_text="Clear database…",
+        tooltip=(
+            "Deletes qfit's stored activities and derived layers from the selected GeoPackage after confirmation. "
+            "Use this only when you want to rebuild the local qfit database from scratch."
+        ),
+    ),
+    HelpEntry(
         anchor_name="loadLayersButton",
         target_text="Load activity layers",
         tooltip=(
