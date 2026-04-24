@@ -57,6 +57,13 @@ class DockUiFieldGrammarTests(unittest.TestCase):
         )
         self.assertIn("recommended full-sync defaults", _property_text(group_box, "toolTip"))
 
+    def test_atlas_labels_use_sentence_case(self):
+        self.assertEqual(_property_text(_widget(self.root, "atlasTitleLabel"), "text"), "Atlas title")
+        self.assertEqual(
+            _property_text(_widget(self.root, "atlasSubtitleLabel"), "text"),
+            "Atlas subtitle",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
