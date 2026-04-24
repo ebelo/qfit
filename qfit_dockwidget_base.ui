@@ -191,7 +191,10 @@
            <item>
             <widget class="QGroupBox" name="advancedFetchGroupBox">
              <property name="title">
-              <string>Advanced fetch settings</string>
+              <string>Advanced fetch settings (optional)</string>
+             </property>
+             <property name="toolTip">
+              <string>Optional limits for Strava paging and detailed-route downloads. Leave collapsed for the recommended full-sync defaults.</string>
              </property>
              <property name="checkable">
               <bool>true</bool>
