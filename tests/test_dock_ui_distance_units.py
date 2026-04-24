@@ -23,7 +23,7 @@ def _property_text(widget: ET.Element, property_name: str) -> str:
     raise AssertionError(f"property {property_name!r} not found on {widget.get('name')!r}")
 
 
-class DockUiDistanceUnitTests(unittest.TestCase):
+class DockUiFieldGrammarTests(unittest.TestCase):
     def setUp(self):
         self.root = ET.parse(UI_PATH).getroot()
 
@@ -40,6 +40,13 @@ class DockUiDistanceUnitTests(unittest.TestCase):
         self.assertEqual(
             _property_text(_widget(self.root, "maxDistanceSpinBox"), "suffix"),
             " km",
+        )
+
+    def test_max_pages_all_hint_lives_on_spinbox(self):
+        self.assertEqual(_property_text(_widget(self.root, "maxPagesLabel"), "text"), "Max pages")
+        self.assertEqual(
+            _property_text(_widget(self.root, "maxPagesSpinBox"), "specialValueText"),
+            "All",
         )
 
 
