@@ -79,6 +79,7 @@ from .ui.application import (
     DockVisualWorkflowCoordinator,
     DockVisualWorkflowRequest,
     RunAnalysisAction,
+    build_dock_summary_status,
     build_visual_layer_refs,
     build_visual_workflow_background_inputs,
     build_visual_workflow_selection_state_handoff,
@@ -1042,10 +1043,12 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         )
         self.querySummaryLabel.setText(preview.query_summary_text)
         self.activityPreviewPlainTextEdit.setPlainText(preview.preview_text)
+        self._refresh_summary_status()
         return preview.fetched_activities
 
     def _update_cleared_activities_summary(self):
         self.countLabel.setText(build_cleared_activities_summary())
+        self._refresh_summary_status()
 
     def _update_last_sync_summary(self):
         summary = build_last_sync_summary(
@@ -1053,6 +1056,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         )
         if summary:
             self.countLabel.setText(summary)
+            self._refresh_summary_status()
 
     def _update_loaded_activities_summary(self, total_activities):
         self.countLabel.setText(
@@ -1061,6 +1065,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 last_sync_date=self.settings.get("last_sync_date", "unknown"),
             )
         )
+        self._refresh_summary_status()
 
     def _update_stored_activities_summary(self, total_activities):
         self.countLabel.setText(
@@ -1069,6 +1074,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 last_sync_date=self.settings.get("last_sync_date", date.today().isoformat()),
             )
         )
+        self._refresh_summary_status()
 
     def _redirect_uri(self):
         return self.redirectUriLineEdit.text().strip() or StravaProvider.DEFAULT_REDIRECT_URI
@@ -1126,6 +1132,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 refresh_token=self.refreshTokenLineEdit.text(),
             )
         )
+        self._refresh_summary_status()
 
     def on_atlas_pdf_browse_clicked(self):
         path, _selected = QFileDialog.getSaveFileName(
@@ -1228,6 +1235,30 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
     def _set_status(self, text):
         self.statusLabel.setText(text)
+        self._refresh_summary_status()
+
+    def _refresh_summary_status(self) -> None:
+        label = getattr(self, "summaryStatusLabel", None)
+        if label is None:
+            return
+
+        label.setText(
+            build_dock_summary_status(
+                connection_status=self._label_text("connectionStatusLabel"),
+                activity_summary=self._label_text("countLabel"),
+                query_summary=self._label_text("querySummaryLabel"),
+                workflow_status=self._label_text("statusLabel"),
+            )
+        )
+
+    def _label_text(self, name: str) -> str:
+        label = getattr(self, name, None)
+        if label is None:
+            return ""
+        text = getattr(label, "text", "")
+        if callable(text):
+            return text()
+        return text or ""
 
     def _show_info(self, title, message):
         QMessageBox.information(self, title, message)
