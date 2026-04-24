@@ -49,6 +49,14 @@ class DockUiFieldGrammarTests(unittest.TestCase):
             "All",
         )
 
+    def test_advanced_fetch_group_signals_optional_defaults(self):
+        group_box = _widget(self.root, "advancedFetchGroupBox")
+        self.assertEqual(
+            _property_text(group_box, "title"),
+            "Advanced fetch settings (optional)",
+        )
+        self.assertIn("recommended full-sync defaults", _property_text(group_box, "toolTip"))
+
 
 if __name__ == "__main__":
     unittest.main()
