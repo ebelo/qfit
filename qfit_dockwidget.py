@@ -747,7 +747,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         if result.preview_result is not None:
             self.querySummaryLabel.setText(result.preview_result.query_summary_text)
             self.activityPreviewPlainTextEdit.setPlainText(result.preview_result.preview_text)
-            self._refresh_summary_status()
         self._set_status(result.status_text)
 
     def on_load_clicked(self):
