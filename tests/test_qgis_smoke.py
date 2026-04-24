@@ -248,6 +248,9 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertTrue(dock.activitiesSectionToggleButton.isChecked())
             self.assertEqual(dock.activitiesSectionToggleButton.arrowType(), Qt.DownArrow)
             self.assertFalse(dock.activitiesSectionContentWidget.isHidden())
+            self.assertTrue(dock.activitiesIntroLabel.isHidden())
+            self.assertIn("saved in qfit → Configuration", dock.activitiesSectionToggleButton.toolTip())
+            self.assertEqual(dock.activitiesGroupBox.toolTip(), dock.activitiesSectionToggleButton.toolTip())
             self.assertFalse(dock.mapboxAccessTokenLabel.isVisible())
             self.assertFalse(dock.mapboxAccessTokenLineEdit.isVisible())
             self.assertEqual(dock.refreshButton.text(), "Fetch activities")
@@ -261,6 +264,11 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertFalse(dock.analysisHelpLabel.isVisible())
             self.assertFalse(dock.publishHelpLabel.isVisible())
             self.assertFalse(dock.temporalHelpLabel.isVisible())
+            self.assertTrue(dock.outputIntroLabel.isHidden())
+            self.assertEqual(
+                dock.outputGroupBox.toolTip(),
+                "Pick where qfit should store the synced GeoPackage. Tracks and start points are always written; sampled point analysis is optional.",
+            )
             self.assertEqual(dock.outputGroupBox.title(), "Store / database")
             self.assertEqual(dock.outputGroupBox.parent(), dock.activitiesSectionContentWidget)
             self.assertGreater(dock.activitiesSectionContentWidget.layout().indexOf(dock.outputGroupBox), dock.activitiesSectionContentWidget.layout().indexOf(dock.previewGroupBox))
@@ -290,6 +298,9 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertEqual(dock.publishSectionToggleButton.text(), "4. Publish / atlas")
             self.assertFalse(dock.publishSectionContentWidget.isHidden())
             self.assertTrue(dock.publishSettingsWidget.parent() is dock.publishSectionContentWidget or dock.publishSettingsWidget.isVisible())
+            self.assertTrue(dock.atlasPdfHelpLabel.isHidden())
+            self.assertIn("per-activity PDF atlas", dock.atlasPdfGroupBox.toolTip())
+            self.assertEqual(dock.generateAtlasPdfButton.toolTip(), dock.atlasPdfGroupBox.toolTip())
             self.assertEqual(dock.tileModeComboBox.currentText(), TILE_MODE_RASTER)
             self.assertEqual(dock.atlasTitleLineEdit.text(), "qfit Activity Atlas")
             self.assertEqual(dock.atlasSubtitleLineEdit.text(), "")
