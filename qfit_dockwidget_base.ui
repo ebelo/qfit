@@ -587,7 +587,7 @@
               <item row="4" column="0">
                <widget class="QLabel" name="distanceLabel">
                 <property name="text">
-                 <string>Min distance (km)</string>
+                 <string>Min distance</string>
                 </property>
                </widget>
               </item>
@@ -595,6 +595,9 @@
                <widget class="QDoubleSpinBox" name="minDistanceSpinBox">
                 <property name="decimals">
                  <number>1</number>
+                </property>
+                <property name="suffix">
+                 <string> km</string>
                 </property>
                 <property name="maximum">
                  <double>1000.000000000000000</double>
@@ -604,7 +607,7 @@
               <item row="5" column="0">
                <widget class="QLabel" name="maxDistanceLabel">
                 <property name="text">
-                 <string>Max distance (km)</string>
+                 <string>Max distance</string>
                 </property>
                </widget>
               </item>
@@ -612,6 +615,9 @@
                <widget class="QDoubleSpinBox" name="maxDistanceSpinBox">
                 <property name="decimals">
                  <number>1</number>
+                </property>
+                <property name="suffix">
+                 <string> km</string>
                 </property>
                 <property name="maximum">
                  <double>1000.000000000000000</double>
