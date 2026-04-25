@@ -207,6 +207,11 @@ class UiWidgetCompatTests(unittest.TestCase):
         self.assertEqual([item.checkState() for item in list_widget.items], [Qt.Unchecked, Qt.Unchecked])
         self.assertEqual(checked_list_values(list_widget), [])
 
+    def test_checkable_list_rejects_malformed_tuple_options(self):
+        with patch.dict(sys.modules, {"qgis.PyQt.QtWidgets": _fake_qt_widgets()}):
+            with self.assertRaisesRegex(ValueError, "Expected a \\(value, label\\) pair"):
+                make_checkable_list([("run", "Run", "extra")])
+
     def test_uses_native_double_range_slider_when_qgis_provides_it(self):
         with patch.dict(
             sys.modules,

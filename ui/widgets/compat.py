@@ -70,6 +70,9 @@ def checked_list_values(list_widget) -> list[str]:
 
 def _normalise_checkable_list_option(option: CheckableListOption) -> tuple[str, str]:
     if isinstance(option, tuple):
+        if len(option) != 2:
+            msg = f"Expected a (value, label) pair, got {option!r}"
+            raise ValueError(msg)
         return option
     return option, option
 
