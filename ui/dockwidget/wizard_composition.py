@@ -152,13 +152,15 @@ def refresh_wizard_shell_composition(
     analysis_state: AnalysisPageState | None = None,
     atlas_state: AtlasPageState | None = None,
     footer_text: str | None = None,
+    progress: DockWizardProgress | None = None,
 ) -> WizardShellComposition:
     """Refresh installed wizard page state without rebuilding the shell.
 
     This is the small adapter seam the future dock can use when real workflow
     facts change: update only the installed page widgets, then refresh the
-    persistent footer from the same render-neutral state snapshots. Missing page
-    content is skipped so partial/spec-filtered wizard assemblies remain valid.
+    persistent footer and optional stepper progress from the same render-neutral
+    state snapshots. Missing page content is skipped so partial/spec-filtered
+    wizard assemblies remain valid.
     """
 
     next_connection_state = _resolve_state(
@@ -202,6 +204,8 @@ def refresh_wizard_shell_composition(
             atlas_state=next_atlas_state,
         )
     )
+    if progress is not None:
+        composition.presenter.set_progress(progress)
 
     composition.connection_state = next_connection_state
     composition.sync_state = next_sync_state

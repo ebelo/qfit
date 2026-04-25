@@ -405,6 +405,27 @@ class WizardShellCompositionTest(unittest.TestCase):
             "Hidden sync page should not affect footer",
         )
 
+    def test_refresh_can_update_progress_without_rebuilding_shell(self):
+        assembled = self.composition.build_placeholder_wizard_shell()
+        progress = DockWizardProgress(
+            current_key="map",
+            completed_keys=frozenset({"connection", "sync"}),
+            visited_keys=frozenset({"map"}),
+        )
+
+        refreshed = self.composition.refresh_wizard_shell_composition(
+            assembled,
+            progress=progress,
+        )
+
+        self.assertIs(refreshed, assembled)
+        self.assertEqual(assembled.presenter.progress, progress)
+        self.assertEqual(assembled.shell.pages_stack.currentIndex(), 2)
+        self.assertEqual(
+            assembled.shell.stepper_bar.states(),
+            ("done", "done", "current", "locked", "locked"),
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

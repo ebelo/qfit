@@ -33,6 +33,15 @@ class WizardShellPresenter:
 
         return self._progress
 
+    def set_progress(self, progress: DockWizardProgress) -> None:
+        """Replace the current progress snapshot and refresh the shell."""
+
+        # Reuse the render path for validation so invalid workflow keys fail
+        # before the shell state is mutated.
+        build_progress_wizard_step_statuses(progress)
+        self._progress = progress
+        self._render()
+
     def request_step(self, index: int) -> bool:
         """Move to ``index`` when the current workflow status allows it."""
 

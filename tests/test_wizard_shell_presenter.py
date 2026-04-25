@@ -91,6 +91,44 @@ class WizardShellPresenterTest(unittest.TestCase):
             ("current", "upcoming", "locked", "locked", "locked"),
         )
 
+    def test_set_progress_refreshes_stepper_and_visible_page(self):
+        shell = self._build_shell_with_pages()
+        presenter = self.presenter.WizardShellPresenter(shell)
+        progress = self.presenter.DockWizardProgress(
+            current_key="analysis",
+            completed_keys=frozenset({"connection", "sync", "map"}),
+            visited_keys=frozenset({"analysis"}),
+        )
+
+        presenter.set_progress(progress)
+
+        self.assertEqual(presenter.progress, progress)
+        self.assertEqual(shell.pages_stack.currentIndex(), 3)
+        self.assertEqual(
+            shell.stepper_bar.states(),
+            ("done", "done", "done", "current", "locked"),
+        )
+
+    def test_set_progress_rejects_unknown_keys_without_mutating_shell(self):
+        shell = self._build_shell_with_pages()
+        presenter = self.presenter.WizardShellPresenter(shell)
+
+        with self.assertRaises(KeyError):
+            presenter.set_progress(
+                self.presenter.DockWizardProgress(
+                    current_key="review",
+                    completed_keys=frozenset(),
+                    visited_keys=frozenset(),
+                )
+            )
+
+        self.assertEqual(presenter.progress.current_key, "connection")
+        self.assertEqual(shell.pages_stack.currentIndex(), 0)
+        self.assertEqual(
+            shell.stepper_bar.states(),
+            ("current", "locked", "locked", "locked", "locked"),
+        )
+
     def test_rejects_unknown_completed_step_key(self):
         shell = self._build_shell_with_pages()
         presenter = self.presenter.WizardShellPresenter(shell)
