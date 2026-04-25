@@ -308,6 +308,8 @@ class WizardShellTest(unittest.TestCase):
         self.assertEqual(shell.add_page(first_page), 0)
         self.assertEqual(shell.add_page(second_page), 1)
         shell.set_step_states(["done", "current", "upcoming", "locked", "locked"])
+        self.assertEqual(shell.stepper_bar.states(), ("done", "current", "upcoming", "locked", "locked"))
+
         shell.set_current_step(1)
 
         self.assertEqual(shell.page_count(), 2)

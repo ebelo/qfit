@@ -2,9 +2,10 @@ from __future__ import annotations
 
 from typing import Sequence
 
-from .stepper_bar import STEPPER_LABELS, StepperBar, _import_qt_module
+from ._qt_compat import import_qt_module
+from .stepper_bar import STEPPER_LABELS, StepperBar
 
-_qtwidgets = _import_qt_module(
+_qtwidgets = import_qt_module(
     "qgis.PyQt.QtWidgets",
     "PyQt5.QtWidgets",
     (
@@ -101,8 +102,7 @@ class WizardShell(QWidget):
         scroll = QScrollArea(self)
         scroll.setObjectName("qfitWizardContentScroll")
         scroll.setWidgetResizable(True)
-        if hasattr(QFrame, "NoFrame") and hasattr(scroll, "setFrameShape"):
-            scroll.setFrameShape(QFrame.NoFrame)
+        scroll.setFrameShape(QFrame.NoFrame)
         return scroll
 
     def _build_pages_stack(self):

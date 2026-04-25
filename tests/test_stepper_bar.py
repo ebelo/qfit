@@ -236,7 +236,7 @@ class StepperBarTest(unittest.TestCase):
                 "fallback.QtWidgets": fallback_qtwidgets,
             },
         ):
-            module = self.stepper._import_qt_module(
+            module = self.stepper.import_qt_module(
                 "qgis.PyQt.QtWidgets",
                 "fallback.QtWidgets",
                 ("QWidget", "QFrame"),
