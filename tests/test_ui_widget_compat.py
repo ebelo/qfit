@@ -9,7 +9,9 @@ from qgis.PyQt.QtCore import Qt
 
 from qfit.ui.widgets.compat import (
     checked_list_values,
+    file_widget_path,
     make_checkable_list,
+    make_file_widget,
     make_password_line_edit,
     make_range_slider,
 )
@@ -138,8 +140,35 @@ class _FakePasswordLineEdit:
     def setText(self, text):  # noqa: N802
         self.text_value = text
 
+    def text(self):
+        return self.text_value
+
     def setPlaceholderText(self, text):  # noqa: N802
         self.placeholder_text = text
+
+
+class _FakeFileWidget:
+    def __init__(self, parent=None):
+        self.parent = parent
+        self.file_path = ""
+        self.dialog_title = ""
+        self.filter_text = ""
+        self.storage_mode = None
+
+    def setFilePath(self, file_path):  # noqa: N802
+        self.file_path = file_path
+
+    def filePath(self):  # noqa: N802
+        return self.file_path
+
+    def setDialogTitle(self, dialog_title):  # noqa: N802
+        self.dialog_title = dialog_title
+
+    def setFilter(self, filter_text):  # noqa: N802
+        self.filter_text = filter_text
+
+    def setStorageMode(self, storage_mode):  # noqa: N802
+        self.storage_mode = storage_mode
 
 
 class _FakeLineEdit(_FakePasswordLineEdit):
@@ -197,6 +226,7 @@ class _FakeListWidgetItem:
 def _fake_qgis_gui(
     *,
     double_range_slider=None,
+    file_widget=None,
     password_line_edit=None,
     range_slider=_FakeIntegerRangeSlider,
 ):
@@ -204,6 +234,8 @@ def _fake_qgis_gui(
     module.QgsRangeSlider = range_slider
     if double_range_slider is not None:
         module.QgsDoubleRangeSlider = double_range_slider
+    if file_widget is not None:
+        module.QgsFileWidget = file_widget
     if password_line_edit is not None:
         module.QgsPasswordLineEdit = password_line_edit
     return module
@@ -248,6 +280,61 @@ class UiWidgetCompatTests(unittest.TestCase):
         with patch.dict(sys.modules, {"qgis.PyQt.QtWidgets": _fake_qt_widgets()}):
             with self.assertRaisesRegex(ValueError, "Expected a \\(value, label\\) pair"):
                 make_checkable_list([("run", "Run", "extra")])
+
+    def test_uses_native_file_widget_when_qgis_provides_it(self):
+        parent = object()
+        storage_mode = object()
+        with patch.dict(sys.modules, {"qgis.gui": _fake_qgis_gui(file_widget=_FakeFileWidget)}):
+            widget = make_file_widget(
+                file_path="/tmp/activities.gpkg",
+                dialog_title="Select GeoPackage",
+                filter_text="GeoPackage (*.gpkg)",
+                storage_mode=storage_mode,
+                parent=parent,
+            )
+
+        self.assertIsInstance(widget, _FakeFileWidget)
+        self.assertIs(widget.parent, parent)
+        self.assertEqual(widget.file_path, "/tmp/activities.gpkg")
+        self.assertEqual(widget.dialog_title, "Select GeoPackage")
+        self.assertEqual(widget.filter_text, "GeoPackage (*.gpkg)")
+        self.assertIs(widget.storage_mode, storage_mode)
+        self.assertEqual(file_widget_path(widget), "/tmp/activities.gpkg")
+
+    def test_file_widget_falls_back_to_line_edit(self):
+        parent = object()
+        with patch.dict(
+            sys.modules,
+            {
+                "qgis.gui": _fake_qgis_gui(),
+                "qgis.PyQt.QtWidgets": _fake_qt_widgets(),
+            },
+        ):
+            widget = make_file_widget(
+                file_path="/tmp/export.pdf",
+                dialog_title="Export PDF",
+                parent=parent,
+            )
+
+        self.assertIsInstance(widget, _FakeLineEdit)
+        self.assertIs(widget.parent, parent)
+        self.assertEqual(widget.text_value, "/tmp/export.pdf")
+        self.assertEqual(widget.placeholder_text, "Export PDF")
+        self.assertEqual(file_widget_path(widget), "/tmp/export.pdf")
+
+    def test_file_widget_falls_back_when_qgis_gui_module_is_missing(self):
+        def import_module_side_effect(name):
+            if name == "qgis.gui":
+                raise ModuleNotFoundError(name=name)
+            if name == "qgis.PyQt.QtWidgets":
+                return _fake_qt_widgets()
+            raise AssertionError(name)
+
+        with patch("qfit.ui.widgets.compat.import_module", side_effect=import_module_side_effect):
+            widget = make_file_widget(file_path="/tmp/fallback.gpkg")
+
+        self.assertIsInstance(widget, _FakeLineEdit)
+        self.assertEqual(file_widget_path(widget), "/tmp/fallback.gpkg")
 
     def test_uses_native_password_line_edit_when_qgis_provides_it(self):
         parent = object()
