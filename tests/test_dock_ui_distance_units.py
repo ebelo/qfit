@@ -70,6 +70,12 @@ class DockUiFieldGrammarTests(unittest.TestCase):
             "Generate sampled activity points for analysis",
         )
 
+    def test_point_sampling_label_describes_user_visible_effect(self):
+        self.assertEqual(
+            _property_text(_widget(self.root, "pointSamplingStrideLabel"), "text"),
+            "Keep every Nth point",
+        )
+
     def test_atlas_pdf_labels_use_sentence_case(self):
         self.assertEqual(_property_text(_widget(self.root, "atlasPdfGroupBox"), "title"), "Generate atlas PDF")
         self.assertEqual(

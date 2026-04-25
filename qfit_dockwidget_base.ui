@@ -369,7 +369,7 @@
              <item row="1" column="0">
               <widget class="QLabel" name="pointSamplingStrideLabel">
                <property name="text">
-                <string>Point sampling stride</string>
+                <string>Keep every Nth point</string>
                </property>
               </widget>
              </item>
