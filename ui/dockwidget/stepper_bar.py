@@ -3,7 +3,7 @@ from __future__ import annotations
 from importlib import import_module
 from typing import Sequence
 
-from qfit.ui.widgets.tokens import COLOR_ACCENT, COLOR_MUTED, COLOR_SEPARATOR, COLOR_TEXT
+from qfit.ui.widgets.tokens import COLOR_ACCENT, COLOR_HOVER, COLOR_MUTED, COLOR_SEPARATOR, COLOR_TEXT
 
 STEPPER_LABELS = ("Connexion", "Synchronisation", "Carte", "Analyse", "Atlas")
 STEPPER_STATES = frozenset({"done", "current", "upcoming", "locked"})
@@ -60,7 +60,11 @@ class StepperBar(QWidget):
         self._configure_connectors()
 
     def set_current(self, index: int) -> None:
-        """Mark one step current and leave all other steps dim/upcoming."""
+        """Mark one step current and leave all other steps dim/upcoming.
+
+        Use ``set_state`` instead when navigation must preserve completed-step
+        history.
+        """
 
         if index < 0 or index >= len(STEPPER_LABELS):
             raise ValueError(f"Stepper index {index} is outside 0..{len(STEPPER_LABELS) - 1}")
@@ -110,7 +114,7 @@ class StepperBar(QWidget):
     def _configure_connectors(self) -> None:
         for index, connector in enumerate(self._connectors):
             previous_step_is_done = self._states[index] == "done"
-            color = COLOR_ACCENT if previous_step_is_done else "#d0d3d8"
+            color = COLOR_ACCENT if previous_step_is_done else COLOR_SEPARATOR
             connector.setProperty("wizardState", "done" if previous_step_is_done else "upcoming")
             connector.setStyleSheet(f"QFrame#{connector.objectName()} {{ border: 0; background: {color}; }}")
 
@@ -166,8 +170,7 @@ def _button_stylesheet(state: str) -> str:
         f"font-weight: {font_weight}; "
         "font-size: 9.5pt; "
         "} "
-        "QToolButton:hover:enabled { background: #e8e8e8; color: #202124; }"
-    )
+        f"QToolButton:hover:enabled {{ background: {COLOR_HOVER}; color: {COLOR_TEXT}; }}"    )
 
 
 __all__ = ["STEPPER_LABELS", "STEPPER_STATES", "StepperBar"]
