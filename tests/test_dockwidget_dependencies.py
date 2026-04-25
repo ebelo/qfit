@@ -368,6 +368,8 @@ class WorkflowSectionCoordinatorTests(unittest.TestCase):
         dock.mapboxAccessTokenLineEdit = _FakeWidget()
         dock.loadLayersButton = _FakeWidget()
         dock.summaryStatusLabel = _FakeWidget()
+        dock.countLabel = _FakeWidget()
+        dock.statusLabel = _FakeWidget()
         return dock
 
     def test_configure_starting_sections_moves_widgets_and_installs_collapsibles(self):
@@ -442,6 +444,8 @@ class WorkflowSectionCoordinatorTests(unittest.TestCase):
         self.assertIn(dock.summaryStatusLabel, dock.verticalLayout.removed_widgets)
         self.assertIn(dock.summaryStatusLabel, dock.outerLayout.added_widgets)
         self.assertTrue(dock._summary_status_footer_pinned)
+        self.assertFalse(dock.countLabel.visible)
+        self.assertFalse(dock.statusLabel.visible)
         self.assertEqual(dock.outputGroupBox.visible, None)
         self.assertTrue(hasattr(dock, "activitiesSectionToggleButton"))
         self.assertTrue(hasattr(dock, "activitiesSectionContentWidget"))
