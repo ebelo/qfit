@@ -196,6 +196,136 @@ class WizardShellCompositionTest(unittest.TestCase):
             "Strava not connected · Atlas PDF not exported yet",
         )
 
+    def test_refreshes_page_content_and_footer_without_rebuilding_shell(self):
+        assembled = self.composition.build_placeholder_wizard_shell()
+
+        refreshed = self.composition.refresh_wizard_shell_composition(
+            assembled,
+            connection_state=self.composition.ConnectionPageState(
+                connected=True,
+                status_text="Strava connected",
+                detail_text="Credentials are ready.",
+                primary_action_label="Review connection",
+            ),
+            sync_state=self.composition.SyncPageState(
+                ready=True,
+                status_text="Ready to sync",
+                activity_summary_text="12 activities stored",
+                primary_action_label="Fetch latest activities",
+            ),
+            map_state=self.composition.MapPageState(
+                loaded=True,
+                status_text="Map ready",
+                layer_summary_text="3 activity layers loaded",
+            ),
+            analysis_state=self.composition.AnalysisPageState(
+                ready=True,
+                status_text="Analysis ready",
+            ),
+            atlas_state=self.composition.AtlasPageState(
+                ready=True,
+                status_text="Atlas ready",
+            ),
+        )
+
+        self.assertIs(refreshed, assembled)
+        self.assertIs(refreshed.shell, assembled.shell)
+        self.assertIs(refreshed.pages, assembled.pages)
+        self.assertIs(refreshed.connection_content, assembled.connection_content)
+        self.assertEqual(
+            assembled.connection_content.status_label.text(),
+            "Strava connected",
+        )
+        self.assertEqual(
+            assembled.connection_content.configure_button.text(),
+            "Review connection",
+        )
+        self.assertEqual(assembled.sync_content.status_label.text(), "Ready to sync")
+        self.assertEqual(
+            assembled.sync_content.sync_button.text(),
+            "Fetch latest activities",
+        )
+        self.assertEqual(assembled.map_content.status_label.text(), "Map ready")
+        self.assertEqual(
+            assembled.analysis_content.status_label.text(),
+            "Analysis ready",
+        )
+        self.assertEqual(assembled.atlas_content.status_label.text(), "Atlas ready")
+        self.assertEqual(
+            assembled.shell.footer_bar.text(),
+            "Strava connected · 12 activities stored · 3 activity layers loaded · "
+            "Analysis ready · Atlas ready",
+        )
+        self.assertEqual(refreshed.connection_state.status_text, "Strava connected")
+
+    def test_partial_refresh_keeps_previous_snapshots_without_reassignment(self):
+        assembled = self.composition.build_placeholder_wizard_shell()
+
+        self.composition.refresh_wizard_shell_composition(
+            assembled,
+            connection_state=self.composition.ConnectionPageState(
+                connected=True,
+                status_text="Strava connected",
+            ),
+        )
+        self.composition.refresh_wizard_shell_composition(
+            assembled,
+            sync_state=self.composition.SyncPageState(
+                ready=True,
+                activity_summary_text="12 activities stored",
+            ),
+        )
+
+        self.assertEqual(
+            assembled.connection_content.status_label.text(),
+            "Strava connected",
+        )
+        self.assertEqual(
+            assembled.sync_content.activity_summary_label.text(),
+            "12 activities stored",
+        )
+        self.assertEqual(
+            assembled.shell.footer_bar.text(),
+            "Strava connected · 12 activities stored · "
+            "No activity layers on the map · Analysis not run yet · "
+            "Atlas PDF not exported yet",
+        )
+
+    def test_refresh_supports_explicit_footer_and_partial_page_specs(self):
+        specs = (
+            self.composition.DockWizardPageSpec(
+                key="connection",
+                title="Connection",
+                summary="Connect qfit to Strava.",
+                primary_action_hint="Primary action: configure connection",
+            ),
+        )
+        assembled = self.composition.build_placeholder_wizard_shell(specs=specs)
+
+        refreshed = self.composition.refresh_wizard_shell_composition(
+            assembled,
+            connection_state=self.composition.ConnectionPageState(
+                connected=True,
+                status_text="Strava connected",
+            ),
+            sync_state=self.composition.SyncPageState(
+                ready=True,
+                activity_summary_text="Hidden sync page should not affect footer",
+            ),
+            footer_text="Custom status",
+        )
+
+        self.assertEqual(
+            assembled.connection_content.status_label.text(),
+            "Strava connected",
+        )
+        self.assertIsNone(assembled.sync_content)
+        self.assertEqual(assembled.shell.footer_bar.text(), "Custom status")
+        self.assertEqual(
+            refreshed.sync_state.activity_summary_text,
+            "Hidden sync page should not affect footer",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
