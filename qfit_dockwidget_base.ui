@@ -42,7 +42,7 @@
         <item>
          <widget class="QLabel" name="workflowLabel">
           <property name="text">
-           <string>Workflow: Connect → Fetch → Store → Visualize → Analyze → Publish</string>
+           <string>Sections: Fetch &amp; store · Visualize · Analyze · Publish</string>
           </property>
           <property name="wordWrap">
            <bool>true</bool>
@@ -52,7 +52,7 @@
         <item>
          <widget class="QGroupBox" name="credentialsGroupBox">
           <property name="title">
-           <string>1. Connect</string>
+           <string>Strava connection</string>
           </property>
           <layout class="QVBoxLayout" name="credentialsGroupLayout">
            <item>
@@ -161,7 +161,7 @@
         <item>
          <widget class="QGroupBox" name="activitiesGroupBox">
           <property name="title">
-           <string>2. Fetch activities</string>
+           <string>Fetch activities</string>
           </property>
           <layout class="QVBoxLayout" name="activitiesGroupLayout">
            <item>
@@ -330,7 +330,7 @@
         <item>
          <widget class="QGroupBox" name="outputGroupBox">
           <property name="title">
-           <string>3. Store data</string>
+           <string>Store data</string>
           </property>
           <layout class="QVBoxLayout" name="outputGroupLayout">
            <item>
@@ -434,7 +434,7 @@
         <item>
          <widget class="QGroupBox" name="styleGroupBox">
           <property name="title">
-           <string>4. Visualize</string>
+           <string>Visualize</string>
           </property>
           <layout class="QVBoxLayout" name="styleGroupLayout">
            <item>
@@ -711,7 +711,7 @@
         <item>
          <widget class="QGroupBox" name="analysisWorkflowGroupBox">
           <property name="title">
-           <string>5. Analyze</string>
+           <string>Analyze</string>
           </property>
           <layout class="QVBoxLayout" name="analysisWorkflowLayout">
            <property name="spacing">
@@ -787,7 +787,7 @@
         <item>
          <widget class="QGroupBox" name="publishGroupBox">
           <property name="title">
-           <string>6. Publish / atlas</string>
+           <string>Publish / atlas</string>
           </property>
           <property name="checkable">
            <bool>true</bool>

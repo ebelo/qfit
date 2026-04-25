@@ -17,7 +17,7 @@ class WorkflowSectionCoordinator:
 
     def configure_starting_sections(self) -> None:
         dock = self.dock_widget
-        dock.workflowLabel.setText("Workflow: Fetch & store → Visualize → Analyze → Publish")
+        dock.workflowLabel.setText("Sections: Fetch & store · Visualize · Analyze · Publish")
         dock.credentialsGroupBox.hide()
         dock.activitiesGroupBox.setTitle("")
         dock.activitiesIntroLabel.setText(
@@ -33,20 +33,20 @@ class WorkflowSectionCoordinator:
         self.install_collapsible_section(
             dock.activitiesGroupBox,
             "activitiesGroupLayout",
-            "1. Fetch and store activities",
+            "Fetch and store",
             "activities",
         )
-        self.install_collapsible_section(dock.styleGroupBox, "styleGroupLayout", "2. Visualize", "style")
+        self.install_collapsible_section(dock.styleGroupBox, "styleGroupLayout", "Visualize", "style")
         self.install_collapsible_section(
             dock.analysisWorkflowGroupBox,
             "analysisWorkflowLayout",
-            "3. Analyze",
+            "Analyze",
             "analysis",
         )
         self.install_collapsible_section(
             dock.publishGroupBox,
             "publishGroupLayout",
-            "4. Publish / atlas",
+            "Publish / atlas",
             "publish",
         )
         self._move_help_label_to_tooltip(

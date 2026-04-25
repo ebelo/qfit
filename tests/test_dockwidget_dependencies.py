@@ -431,7 +431,7 @@ class WorkflowSectionCoordinatorTests(unittest.TestCase):
             coordinator.configure_starting_sections()
         dock = coordinator.dock_widget
 
-        self.assertEqual(dock.workflowLabel.text, "Workflow: Fetch & store → Visualize → Analyze → Publish")
+        self.assertEqual(dock.workflowLabel.text, "Sections: Fetch & store · Visualize · Analyze · Publish")
         self.assertFalse(dock.credentialsGroupBox.visible)
         self.assertEqual(dock.outputGroupBox.parent(), dock.activitiesGroupBox)
         self.assertEqual(dock.loadLayersButton.parent(), dock.styleGroupBox)
