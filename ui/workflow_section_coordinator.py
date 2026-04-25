@@ -30,6 +30,7 @@ class WorkflowSectionCoordinator:
         dock.outputGroupBox.setTitle("Store / database")
         dock.publishGroupBox.setCheckable(False)
         dock.publishSettingsWidget.setVisible(True)
+        self._pin_summary_status_footer()
         self.install_collapsible_section(
             dock.activitiesGroupBox,
             "activitiesGroupLayout",
@@ -62,6 +63,37 @@ class WorkflowSectionCoordinator:
         )
         dock.mapboxAccessTokenLabel.hide()
         dock.mapboxAccessTokenLineEdit.hide()
+
+    def _pin_summary_status_footer(self) -> None:
+        dock = self.dock_widget
+        if getattr(dock, "_summary_status_footer_pinned", False):
+            return
+
+        label = getattr(dock, "summaryStatusLabel", None)
+        outer_layout = getattr(dock, "outerLayout", None)
+        if label is None or outer_layout is None:
+            return
+
+        scroll_layout = getattr(dock, "verticalLayout", None)
+        if scroll_layout is not None and hasattr(scroll_layout, "removeWidget"):
+            scroll_layout.removeWidget(label)
+
+        parent = getattr(dock, "dockWidgetContents", None)
+        if parent is not None and hasattr(label, "setParent"):
+            label.setParent(parent)
+
+        if hasattr(label, "setMinimumHeight"):
+            label.setMinimumHeight(28)
+        if hasattr(label, "setStyleSheet"):
+            label.setStyleSheet(
+                "QLabel#summaryStatusLabel { "
+                "border-top: 1px solid palette(mid); "
+                "padding: 4px 8px; "
+                "}"
+            )
+
+        outer_layout.addWidget(label)
+        dock._summary_status_footer_pinned = True
 
     def install_collapsible_section(self, group_box, layout_attr: str, title: str, key: str) -> None:
         dock = self.dock_widget
