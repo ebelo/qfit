@@ -1221,6 +1221,27 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._set_status.assert_called_once_with("Generating atlas PDF…")
         task_manager.addTask.assert_called_once_with("atlas-task")
 
+    def test_set_atlas_export_running_restores_sentence_case_button_label(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.generateAtlasPdfButton = _FakeButton("Generate atlas PDF")
+        dock.loadButton = _FakeButton("Store activities")
+        dock.loadLayersButton = _FakeButton("Load activity layers")
+        dock.refreshButton = _FakeButton("Fetch activities")
+
+        self.module.QfitDockWidget._set_atlas_export_running(dock, True)
+
+        self.assertEqual(dock.generateAtlasPdfButton.text(), "Cancel export")
+        self.assertFalse(dock.loadButton.isEnabled())
+        self.assertFalse(dock.loadLayersButton.isEnabled())
+        self.assertFalse(dock.refreshButton.isEnabled())
+
+        self.module.QfitDockWidget._set_atlas_export_running(dock, False)
+
+        self.assertEqual(dock.generateAtlasPdfButton.text(), "Generate atlas PDF")
+        self.assertTrue(dock.loadButton.isEnabled())
+        self.assertTrue(dock.loadLayersButton.isEnabled())
+        self.assertTrue(dock.refreshButton.isEnabled())
+
     def test_on_atlas_export_finished_clears_task_and_updates_status(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._atlas_export_task = object()
