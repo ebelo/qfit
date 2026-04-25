@@ -2,10 +2,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from qfit.ui.tokens import COLOR_ACCENT, COLOR_MUTED, COLOR_WARN
-
 from ._qt_compat import import_qt_module
 from .action_row import build_wizard_action_row, style_primary_action_button
+from .page_content_style import (
+    style_detail_label,
+    style_status_pill,
+    style_summary_label,
+)
 
 _qtcore = import_qt_module("qgis.PyQt.QtCore", "PyQt5.QtCore", ("pyqtSignal",))
 _qtwidgets = import_qt_module(
@@ -51,8 +54,10 @@ class SyncPageContent(QWidget):
         self.detail_label.setObjectName("qfitWizardSyncDetail")
         if hasattr(self.detail_label, "setWordWrap"):
             self.detail_label.setWordWrap(True)
+        style_detail_label(self.detail_label)
         self.activity_summary_label = QLabel("", self)
         self.activity_summary_label.setObjectName("qfitWizardSyncActivitySummary")
+        style_summary_label(self.activity_summary_label)
         self.sync_button = QToolButton(self)
         self.sync_button.setObjectName("qfitWizardSyncButton")
         style_primary_action_button(
@@ -74,11 +79,8 @@ class SyncPageContent(QWidget):
         sync_state = "ready" if state.ready else "not_synced"
         self.status_label.setText(state.status_text)
         self.status_label.setProperty("syncState", sync_state)
-        self.status_label.setStyleSheet(_status_stylesheet(ready=state.ready))
+        style_status_pill(self.status_label, active=state.ready)
         self.detail_label.setText(state.detail_text)
-        self.detail_label.setStyleSheet(
-            f"QLabel#qfitWizardSyncDetail {{ color: {COLOR_MUTED}; }}"
-        )
         self.activity_summary_label.setText(state.activity_summary_text)
         self.activity_summary_label.setProperty("syncState", sync_state)
         self.sync_button.setText(state.primary_action_label)
@@ -126,16 +128,6 @@ def install_sync_page_content(
     page.body_layout().addWidget(content)
     page.retire_primary_action_hint()
     return content
-
-
-def _status_stylesheet(*, ready: bool) -> str:
-    color = COLOR_ACCENT if ready else COLOR_WARN
-    return (
-        "QLabel#qfitWizardSyncStatus { "
-        f"color: {color}; "
-        "font-weight: 700; "
-        "}"
-    )
 
 
 __all__ = [

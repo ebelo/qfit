@@ -2,10 +2,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from qfit.ui.tokens import COLOR_ACCENT, COLOR_MUTED, COLOR_WARN
-
 from ._qt_compat import import_qt_module
 from .action_row import build_wizard_action_row, style_primary_action_button
+from .page_content_style import style_detail_label, style_status_pill
 
 _qtcore = import_qt_module("qgis.PyQt.QtCore", "PyQt5.QtCore", ("pyqtSignal",))
 _qtwidgets = import_qt_module(
@@ -55,6 +54,7 @@ class ConnectionPageContent(QWidget):
         self.detail_label.setObjectName("qfitWizardConnectionDetail")
         if hasattr(self.detail_label, "setWordWrap"):
             self.detail_label.setWordWrap(True)
+        style_detail_label(self.detail_label)
         self.configure_button = QToolButton(self)
         self.configure_button.setObjectName("qfitWizardConnectionConfigureButton")
         style_primary_action_button(
@@ -78,11 +78,8 @@ class ConnectionPageContent(QWidget):
             "connectionState",
             "connected" if state.connected else "not_connected",
         )
-        self.status_label.setStyleSheet(_status_stylesheet(connected=state.connected))
+        style_status_pill(self.status_label, active=state.connected)
         self.detail_label.setText(state.detail_text)
-        self.detail_label.setStyleSheet(
-            f"QLabel#qfitWizardConnectionDetail {{ color: {COLOR_MUTED}; }}"
-        )
         self.configure_button.setText(state.primary_action_label)
 
     def outer_layout(self):
@@ -127,16 +124,6 @@ def install_connection_page_content(
     page.body_layout().addWidget(content)
     page.retire_primary_action_hint()
     return content
-
-
-def _status_stylesheet(*, connected: bool) -> str:
-    color = COLOR_ACCENT if connected else COLOR_WARN
-    return (
-        "QLabel#qfitWizardConnectionStatus { "
-        f"color: {color}; "
-        "font-weight: 700; "
-        "}"
-    )
 
 
 __all__ = [

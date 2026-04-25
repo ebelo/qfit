@@ -2,14 +2,17 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from qfit.ui.tokens import COLOR_ACCENT, COLOR_MUTED, COLOR_WARN
-
 from ._qt_compat import import_qt_module
 from .action_row import (
     build_wizard_action_row,
     set_wizard_action_availability,
     style_primary_action_button,
     style_secondary_action_button,
+)
+from .page_content_style import (
+    style_detail_label,
+    style_status_pill,
+    style_summary_label,
 )
 
 _qtcore = import_qt_module("qgis.PyQt.QtCore", "PyQt5.QtCore", ("pyqtSignal",))
@@ -61,10 +64,13 @@ class MapPageContent(QWidget):
         self.detail_label.setObjectName("qfitWizardMapDetail")
         if hasattr(self.detail_label, "setWordWrap"):
             self.detail_label.setWordWrap(True)
+        style_detail_label(self.detail_label)
         self.layer_summary_label = QLabel("", self)
         self.layer_summary_label.setObjectName("qfitWizardMapLayerSummary")
+        style_summary_label(self.layer_summary_label)
         self.filter_summary_label = QLabel("", self)
         self.filter_summary_label.setObjectName("qfitWizardMapFilterSummary")
+        style_summary_label(self.filter_summary_label)
         self.load_layers_button = QToolButton(self)
         self.load_layers_button.setObjectName("qfitWizardMapLoadLayersButton")
         style_secondary_action_button(
@@ -94,11 +100,8 @@ class MapPageContent(QWidget):
         map_state = "loaded" if state.loaded else "not_loaded"
         self.status_label.setText(state.status_text)
         self.status_label.setProperty("mapState", map_state)
-        self.status_label.setStyleSheet(_status_stylesheet(loaded=state.loaded))
+        style_status_pill(self.status_label, active=state.loaded)
         self.detail_label.setText(state.detail_text)
-        self.detail_label.setStyleSheet(
-            f"QLabel#qfitWizardMapDetail {{ color: {COLOR_MUTED}; }}"
-        )
         self.layer_summary_label.setText(state.layer_summary_text)
         self.layer_summary_label.setProperty("mapState", map_state)
         self.filter_summary_label.setText(state.filter_summary_text)
@@ -158,16 +161,6 @@ def install_map_page_content(
     page.body_layout().addWidget(content)
     page.retire_primary_action_hint()
     return content
-
-
-def _status_stylesheet(*, loaded: bool) -> str:
-    color = COLOR_ACCENT if loaded else COLOR_WARN
-    return (
-        "QLabel#qfitWizardMapStatus { "
-        f"color: {color}; "
-        "font-weight: 700; "
-        "}"
-    )
 
 
 __all__ = [

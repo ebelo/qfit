@@ -7,6 +7,7 @@ from tests import _path  # noqa: F401
 from tests.test_wizard_shell import _fake_qt_modules
 
 from qfit.ui.application.wizard_page_specs import build_default_wizard_page_specs
+from qfit.ui.tokens import COLOR_MUTED
 
 
 def _load_connection_modules():
@@ -39,8 +40,11 @@ class ConnectionPageContentTest(unittest.TestCase):
             content.status_label.property("connectionState"),
             "not_connected",
         )
+        self.assertEqual(content.status_label.property("tone"), "warn")
+        self.assertIn("QLabel#qfitWizardConnectionStatus", content.status_label.styleSheet())
         self.assertEqual(content.detail_label.objectName(), "qfitWizardConnectionDetail")
         self.assertIn("continue to synchronization", content.detail_label.text())
+        self.assertIn(COLOR_MUTED, content.detail_label.styleSheet())
         self.assertEqual(
             content.configure_button.objectName(),
             "qfitWizardConnectionConfigureButton",
@@ -74,6 +78,7 @@ class ConnectionPageContentTest(unittest.TestCase):
 
         self.assertEqual(content.status_label.text(), "Connected to Strava")
         self.assertEqual(content.status_label.property("connectionState"), "connected")
+        self.assertEqual(content.status_label.property("tone"), "ok")
         self.assertEqual(content.detail_label.text(), "Credentials are ready.")
         self.assertEqual(content.configure_button.text(), "Review connection")
 
