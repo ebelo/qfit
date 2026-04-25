@@ -75,6 +75,19 @@ class WizardPageTest(unittest.TestCase):
             [page.title_label, page.summary_label, page.body_container, page.primary_hint_label],
         )
 
+    def test_retiring_primary_hint_removes_placeholder_copy(self):
+        spec = build_default_wizard_page_specs()[1]
+        page = self.wizard_page.WizardPage(spec)
+
+        page.retire_primary_action_hint()
+
+        self.assertEqual(page.primary_hint_label.text(), "")
+        self.assertEqual(
+            page.primary_hint_label.property("wizardPlaceholderHint"),
+            "retired",
+        )
+        self.assertFalse(page.primary_hint_label.isVisible())
+
     def test_build_pages_preserves_explicit_empty_specs(self):
         pages = self.wizard_page.build_wizard_pages(specs=())
 

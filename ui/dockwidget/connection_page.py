@@ -125,6 +125,7 @@ def install_connection_page_content(
         )
     content = build_connection_page_content(parent=page, state=state)
     page.body_layout().addWidget(content)
+    page.retire_primary_action_hint()
     return content
 
 

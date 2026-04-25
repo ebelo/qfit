@@ -62,6 +62,13 @@ class _FakeWidget:
         self._cursor = _FakeCursor(None)
         self._tooltip = ""
         self._stylesheet = ""
+        self._visible = True
+
+    def setVisible(self, value):  # noqa: N802
+        self._visible = value
+
+    def isVisible(self):  # noqa: N802
+        return self._visible
 
     def setFixedHeight(self, value):  # noqa: N802
         self._height = value
