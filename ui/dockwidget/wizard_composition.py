@@ -11,6 +11,7 @@ from .connection_page import (
     ConnectionPageState,
     install_connection_page_content,
 )
+from .map_page import MapPageContent, MapPageState, install_map_page_content
 from .sync_page import SyncPageContent, SyncPageState, install_sync_page_content
 from .wizard_page import WizardPage, install_wizard_pages
 from .wizard_shell import WizardShell
@@ -32,6 +33,7 @@ class WizardShellComposition:
     presenter: WizardShellPresenter
     connection_content: ConnectionPageContent | None = None
     sync_content: SyncPageContent | None = None
+    map_content: MapPageContent | None = None
 
 
 def build_placeholder_wizard_shell(
@@ -42,6 +44,7 @@ def build_placeholder_wizard_shell(
     specs: Sequence[DockWizardPageSpec] | None = None,
     connection_state: ConnectionPageState | None = None,
     sync_state: SyncPageState | None = None,
+    map_state: MapPageState | None = None,
 ) -> WizardShellComposition:
     """Build the placeholder #609 wizard shell with pages and presenter wired.
 
@@ -58,6 +61,7 @@ def build_placeholder_wizard_shell(
         connection_state=connection_state,
     )
     sync_content = _install_sync_content(pages, sync_state=sync_state)
+    map_content = _install_map_content(pages, map_state=map_state)
     presenter = WizardShellPresenter(shell, progress)
     return WizardShellComposition(
         shell=shell,
@@ -65,6 +69,7 @@ def build_placeholder_wizard_shell(
         presenter=presenter,
         connection_content=connection_content,
         sync_content=sync_content,
+        map_content=map_content,
     )
 
 
@@ -87,6 +92,17 @@ def _install_sync_content(
     for page in pages:
         if page.spec.key == "sync":
             return install_sync_page_content(page, state=sync_state)
+    return None
+
+
+def _install_map_content(
+    pages: Sequence[WizardPage],
+    *,
+    map_state: MapPageState | None,
+) -> MapPageContent | None:
+    for page in pages:
+        if page.spec.key == "map":
+            return install_map_page_content(page, state=map_state)
     return None
 
 
