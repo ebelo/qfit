@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-from qfit.ui.tokens import COLOR_MUTED
-from qfit.ui.widgets.pill import set_pill_tone
+from qfit.ui.tokens import COLOR_MUTED, pill_tone_palette
 
 _DETAIL_LABEL_QSS = f"QLabel {{ color: {COLOR_MUTED}; }}"
 _SUMMARY_LABEL_QSS = (
@@ -27,10 +26,22 @@ def style_summary_label(label) -> None:
 def style_status_pill(label, *, active: bool) -> None:
     """Render a wizard page status label as an ok/warn token pill."""
 
-    set_pill_tone(
-        label,
-        "ok" if active else "warn",
-        object_name=label.objectName(),
+    tone = "ok" if active else "warn"
+    label.setProperty("tone", tone)
+    label.setStyleSheet(_status_pill_stylesheet(tone, object_name=label.objectName()))
+
+
+def _status_pill_stylesheet(tone: str, *, object_name: str) -> str:
+    background, foreground = pill_tone_palette(tone)
+    return (
+        f"QLabel#{object_name} {{ "
+        f"background: {background}; "
+        f"color: {foreground}; "
+        "border: 0; "
+        "border-radius: 8px; "
+        "padding: 1px 6px; "
+        "font-weight: 600; "
+        "}"
     )
 
 
