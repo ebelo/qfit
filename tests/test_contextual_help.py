@@ -278,6 +278,7 @@ class ContextualHelpTests(unittest.TestCase):
         self.assertEqual(entries["maxDetailedActivitiesSpinBox"].label_text, "Max new detailed routes this run")
         self.assertTrue(entries["maxDetailedActivitiesSpinBox"].help_button)
         self.assertIn("downloads up to 25 new detailed routes", entries["maxDetailedActivitiesSpinBox"].helper_text)
+        self.assertEqual(entries["backgroundMapCheckBox"].target_text, "Enable Mapbox basemap")
         self.assertEqual(entries["perPageSpinBox"].label_text, "Activities per page")
         self.assertIn("fewer API requests", entries["perPageSpinBox"].tooltip)
         self.assertEqual(entries["maxPagesSpinBox"].label_text, "Max pages")

@@ -446,7 +446,7 @@
               <item row="0" column="0" colspan="2">
                <widget class="QCheckBox" name="backgroundMapCheckBox">
                 <property name="text">
-                 <string>Load a Mapbox basemap in QGIS</string>
+                 <string>Enable Mapbox basemap</string>
                 </property>
                </widget>
               </item>

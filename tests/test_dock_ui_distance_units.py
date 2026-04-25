@@ -79,6 +79,9 @@ class DockUiFieldGrammarTests(unittest.TestCase):
     def test_apply_filters_button_uses_short_primary_action_label(self):
         self.assertEqual(_property_text(_widget(self.root, "applyFiltersButton"), "text"), "Apply filters")
 
+    def test_basemap_checkbox_uses_short_action_label(self):
+        self.assertEqual(_property_text(_widget(self.root, "backgroundMapCheckBox"), "text"), "Enable Mapbox basemap")
+
     def test_atlas_pdf_labels_use_sentence_case(self):
         self.assertEqual(_property_text(_widget(self.root, "atlasPdfGroupBox"), "title"), "Generate atlas PDF")
         self.assertEqual(

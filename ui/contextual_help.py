@@ -82,7 +82,7 @@ DOCK_HELP_ENTRIES: tuple[HelpEntry, ...] = (
     ),
     HelpEntry(
         anchor_name="backgroundMapCheckBox",
-        target_text="Load a Mapbox basemap in QGIS",
+        target_text="Enable Mapbox basemap",
         tooltip=(
             "Adds a background basemap underneath qfit layers. Use the separate load button when you want to add "
             "or refresh it explicitly."
