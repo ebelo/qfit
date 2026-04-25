@@ -27,6 +27,7 @@ class WorkflowSectionCoordinator:
         self._move_store_section_under_fetch()
         self._move_load_layers_to_visualize()
         self._move_temporal_controls_to_visualize()
+        self._move_clear_database_to_actions_menu()
         dock.outputGroupBox.setTitle("Store / database")
         dock.publishGroupBox.setCheckable(False)
         dock.publishSettingsWidget.setVisible(True)
@@ -101,6 +102,45 @@ class WorkflowSectionCoordinator:
             label = getattr(self.dock_widget, name, None)
             if label is not None and hasattr(label, "hide"):
                 label.hide()
+
+    def _move_clear_database_to_actions_menu(self) -> None:
+        dock = self.dock_widget
+        if hasattr(dock, "databaseActionsButton"):
+            return
+
+        clear_button = getattr(dock, "clearDatabaseButton", None)
+        output_layout = getattr(dock, "outputGroupLayout", None)
+        if clear_button is None or output_layout is None:
+            return
+
+        from qgis.PyQt.QtWidgets import QMenu, QToolButton
+
+        menu = QMenu(getattr(dock, "outputGroupBox", None))
+        if hasattr(menu, "setObjectName"):
+            menu.setObjectName("databaseActionsMenu")
+        clear_action = menu.addAction("Clear database…")
+        clear_action.setToolTip(
+            "Delete qfit's stored activities and derived layers after confirmation."
+        )
+        clear_action.triggered.connect(clear_button.click)
+
+        menu_button = QToolButton(getattr(dock, "outputGroupBox", None))
+        menu_button.setObjectName("databaseActionsButton")
+        menu_button.setText("Database actions")
+        menu_button.setToolTip(
+            "Less common database operations; destructive actions ask for confirmation."
+        )
+        menu_button.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        menu_button.setPopupMode(QToolButton.InstantPopup)
+        menu_button.setMenu(menu)
+
+        output_layout.removeWidget(clear_button)
+        clear_button.hide()
+        output_layout.addWidget(menu_button)
+
+        dock.databaseActionsMenu = menu
+        dock.databaseActionsButton = menu_button
+        dock.clearDatabaseAction = clear_action
 
     def install_collapsible_section(self, group_box, layout_attr: str, title: str, key: str) -> None:
         dock = self.dock_widget
