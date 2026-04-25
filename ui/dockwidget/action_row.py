@@ -100,13 +100,16 @@ def set_wizard_action_availability(
     enabled: bool,
     tooltip: str = "",
 ) -> QToolButton:
-    """Apply a wizard-specific availability state to an action button."""
+    """Apply a wizard-specific availability state to an action button.
+
+    The tooltip is only shown while the action is blocked; available actions
+    clear it so stale prerequisite copy does not linger after state refreshes.
+    """
 
     button.setEnabled(enabled)
     action_availability = "available" if enabled else "blocked"
     button.setProperty("wizardActionAvailability", action_availability)
-    if hasattr(button, "setToolTip"):
-        button.setToolTip("" if enabled else tooltip)
+    button.setToolTip("" if enabled else tooltip)
     return button
 
 
