@@ -39,6 +39,48 @@ class _ScaledSignal:
             slot(*args)
 
 
+def make_collapsible_group_box(
+    *,
+    title: str = "",
+    collapsed: bool = False,
+    checkable: bool = True,
+    parent=None,
+):
+    """Create a collapsible group box with a Qt fallback.
+
+    The wizard spec calls for ``QgsCollapsibleGroupBox`` so sections expose a
+    standard QGIS chevron. Minimal test environments and older installs may not
+    provide it, so fallback to a checkable ``QGroupBox`` while preserving the
+    same construction API for future wizard pages.
+    """
+
+    gui = _import_optional_qgis_gui()
+    group_box_class = getattr(gui, "QgsCollapsibleGroupBox", None) if gui is not None else None
+    if group_box_class is not None:
+        group_box = _construct_group_box(group_box_class, title, parent)
+    else:
+        widgets = import_module("qgis.PyQt.QtWidgets")
+        group_box = _construct_group_box(widgets.QGroupBox, title, parent)
+
+    _configure_collapsible_group_box(
+        group_box,
+        title=title,
+        collapsed=collapsed,
+        checkable=checkable,
+    )
+    return group_box
+
+
+def collapsible_group_box_expanded(group_box) -> bool:
+    """Return whether a native or fallback collapsible group box is expanded."""
+
+    if hasattr(group_box, "isCollapsed"):
+        return not group_box.isCollapsed()
+    if hasattr(group_box, "isChecked"):
+        return bool(group_box.isChecked())
+    return True
+
+
 def make_checkable_list(
     options: Sequence[CheckableListOption],
     *,
@@ -223,6 +265,33 @@ def _import_optional_qgis_gui():
         if exc.name not in {"qgis", "qgis.gui"}:
             raise
         return None
+
+
+def _construct_group_box(group_box_class, title: str, parent):
+    try:
+        return group_box_class(title, parent)
+    except TypeError:
+        group_box = group_box_class(parent)
+        if title and hasattr(group_box, "setTitle"):
+            group_box.setTitle(title)
+        return group_box
+
+
+def _configure_collapsible_group_box(
+    group_box,
+    *,
+    title: str,
+    collapsed: bool,
+    checkable: bool,
+) -> None:
+    if title and hasattr(group_box, "setTitle"):
+        group_box.setTitle(title)
+    if hasattr(group_box, "setCheckable"):
+        group_box.setCheckable(checkable)
+    if hasattr(group_box, "setCollapsed"):
+        group_box.setCollapsed(collapsed)
+    elif hasattr(group_box, "setChecked"):
+        group_box.setChecked(not collapsed if checkable else True)
 
 
 def _configure_native_file_widget(
