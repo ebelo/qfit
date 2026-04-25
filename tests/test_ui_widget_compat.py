@@ -58,9 +58,43 @@ class _FakeDoubleRangeSlider(_FakeIntegerRangeSlider):
     pass
 
 
-def _fake_qgis_gui(*, double_range_slider=None):
+class _FakeParentOnlyDoubleRangeSlider:
+    def __init__(self, parent=None):
+        self.parent = parent
+        self.orientation = None
+        self.minimum_value = None
+        self.maximum_value = None
+        self.lower_value = None
+        self.upper_value = None
+
+    def setOrientation(self, orientation):  # noqa: N802
+        self.orientation = orientation
+
+    def setMinimum(self, value):  # noqa: N802
+        self.minimum_value = value
+
+    def setMaximum(self, value):  # noqa: N802
+        self.maximum_value = value
+
+    def setLowerValue(self, value):  # noqa: N802
+        self.lower_value = value
+
+    def setUpperValue(self, value):  # noqa: N802
+        self.upper_value = value
+
+
+class _FakeParentOnlyIntegerRangeSlider(_FakeIntegerRangeSlider):
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+        self.orientation_set_later = None
+
+    def setOrientation(self, orientation):  # noqa: N802
+        self.orientation_set_later = orientation
+
+
+def _fake_qgis_gui(*, double_range_slider=None, range_slider=_FakeIntegerRangeSlider):
     module = types.ModuleType("qgis.gui")
-    module.QgsRangeSlider = _FakeIntegerRangeSlider
+    module.QgsRangeSlider = range_slider
     if double_range_slider is not None:
         module.QgsDoubleRangeSlider = double_range_slider
     return module
@@ -95,9 +129,13 @@ class UiWidgetCompatTests(unittest.TestCase):
         self.assertEqual(slider.lowerValue(), 5.5)
         self.assertEqual(slider.upperValue(), 21.25)
 
+        slider.setMinimum(1.25)
+        slider.setMaximum(40.75)
         slider.setLowerValue(6.75)
         slider.setUpperValue(20.5)
 
+        self.assertEqual(slider.minimum_raw, 125)
+        self.assertEqual(slider.maximum_raw, 4075)
         self.assertEqual(slider.lower_raw, 675)
         self.assertEqual(slider.upper_raw, 2050)
         self.assertEqual(slider.lowerValue(), 6.75)
@@ -110,6 +148,49 @@ class UiWidgetCompatTests(unittest.TestCase):
         self.assertEqual(slider.selected_values, (10, 25))
         self.assertEqual(slider.lowerValue(), 1.0)
         self.assertEqual(slider.upperValue(), 2.5)
+
+    def test_configures_parent_only_native_slider_api(self):
+        parent = object()
+        with patch.dict(
+            sys.modules,
+            {"qgis.gui": _fake_qgis_gui(double_range_slider=_FakeParentOnlyDoubleRangeSlider)},
+        ):
+            slider = make_range_slider(
+                minimum=1.5,
+                maximum=9.5,
+                lower=2.5,
+                upper=8.5,
+                orientation=Qt.Vertical,
+                parent=parent,
+            )
+
+        self.assertIs(slider.parent, parent)
+        self.assertEqual(slider.orientation, Qt.Vertical)
+        self.assertEqual(slider.minimum_value, 1.5)
+        self.assertEqual(slider.maximum_value, 9.5)
+        self.assertEqual(slider.lower_value, 2.5)
+        self.assertEqual(slider.upper_value, 8.5)
+
+    def test_configures_parent_only_fallback_slider_api(self):
+        parent = object()
+        with patch.dict(
+            sys.modules,
+            {"qgis.gui": _fake_qgis_gui(range_slider=_FakeParentOnlyIntegerRangeSlider)},
+        ):
+            slider = make_range_slider(
+                minimum=1.5,
+                maximum=9.5,
+                lower=2.5,
+                upper=8.5,
+                decimals=1,
+                orientation=Qt.Vertical,
+                parent=parent,
+            )
+
+        self.assertIs(slider.parent, parent)
+        self.assertEqual(slider.orientation_set_later, Qt.Vertical)
+        self.assertEqual(slider.limit_values, (15, 95))
+        self.assertEqual(slider.selected_values, (25, 85))
 
 
 if __name__ == "__main__":
