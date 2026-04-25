@@ -149,6 +149,13 @@ class UiWidgetCompatTests(unittest.TestCase):
         self.assertEqual(slider.lowerValue(), 1.0)
         self.assertEqual(slider.upperValue(), 2.5)
 
+    def test_reuses_fallback_class_for_consistent_slider_types(self):
+        with patch.dict(sys.modules, {"qgis.gui": _fake_qgis_gui()}):
+            first_slider = make_range_slider(minimum=1.0, maximum=2.5, decimals=1)
+            second_slider = make_range_slider(minimum=2.0, maximum=5.0, decimals=2)
+
+        self.assertIs(type(first_slider), type(second_slider))
+
     def test_configures_parent_only_native_slider_api(self):
         parent = object()
         with patch.dict(

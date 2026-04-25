@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from functools import lru_cache
 from importlib import import_module
 
 from qgis.PyQt.QtCore import Qt
@@ -19,10 +20,12 @@ def make_range_slider(
 
     QGIS 3.38+ provides QgsDoubleRangeSlider. Earlier supported versions only
     expose QgsRangeSlider, which stores integer values. The fallback scales
-    values internally while keeping a float-oriented API for wizard/page code.
+    values internally using ``decimals`` while keeping a float-oriented API for
+    wizard/page code.
     """
 
     gui = import_module("qgis.gui")
+    precision = _normalise_decimals(decimals)
 
     slider_class = getattr(gui, "QgsDoubleRangeSlider", None)
     if slider_class is not None:
@@ -31,9 +34,13 @@ def make_range_slider(
         return slider
 
     fallback_class = _build_scaled_range_slider(getattr(gui, "QgsRangeSlider"))
-    slider = fallback_class(orientation=orientation, parent=parent, decimals=decimals)
+    slider = fallback_class(orientation=orientation, parent=parent, decimals=precision)
     _configure_slider(slider, minimum, maximum, lower, upper)
     return slider
+
+
+def _normalise_decimals(decimals: int) -> int:
+    return max(0, int(decimals))
 
 
 def _construct_slider(slider_class, orientation, parent):
@@ -63,10 +70,11 @@ def _configure_slider(slider, minimum, maximum, lower, upper) -> None:
         slider.setUpperValue(upper_value)
 
 
+@lru_cache(maxsize=None)
 def _build_scaled_range_slider(range_slider_class):
     class ScaledRangeSlider(range_slider_class):
         def __init__(self, orientation=Qt.Horizontal, parent=None, *, decimals: int = 1):
-            self._scale = 10 ** max(0, int(decimals))
+            self._scale = 10 ** decimals
             try:
                 super().__init__(orientation, parent)
             except TypeError:
