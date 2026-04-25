@@ -362,7 +362,7 @@
              <item row="0" column="0" colspan="2">
               <widget class="QCheckBox" name="writeActivityPointsCheckBox">
                <property name="text">
-                <string>Generate sampled activity_points for analysis</string>
+                <string>Generate sampled activity points for analysis</string>
                </property>
               </widget>
              </item>

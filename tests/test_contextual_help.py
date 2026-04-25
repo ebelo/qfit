@@ -283,6 +283,11 @@ class ContextualHelpTests(unittest.TestCase):
         self.assertEqual(entries["maxPagesSpinBox"].label_text, "Max pages")
         self.assertTrue(entries["maxPagesSpinBox"].help_button)
         self.assertIn("All is recommended", entries["maxPagesSpinBox"].helper_text)
+        self.assertEqual(
+            entries["writeActivityPointsCheckBox"].target_text,
+            "Write sampled activity points from detailed tracks",
+        )
+        self.assertIn("activity_points layer", entries["writeActivityPointsCheckBox"].helper_text)
         self.assertEqual(entries["pointSamplingStrideSpinBox"].label_text, "Keep every Nth point")
         self.assertEqual(entries["backgroundPresetComboBox"].label_text, "Basemap preset")
         self.assertEqual(entries["atlasTitleLineEdit"].label_text, "Atlas title")
