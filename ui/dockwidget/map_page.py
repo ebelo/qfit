@@ -59,9 +59,11 @@ class MapPageContent(QWidget):
         self.filter_summary_label.setObjectName("qfitWizardMapFilterSummary")
         self.load_layers_button = QToolButton(self)
         self.load_layers_button.setObjectName("qfitWizardMapLoadLayersButton")
+        self.load_layers_button.setProperty("secondaryAction", "load_activity_layers")
         self.load_layers_button.clicked.connect(self.loadLayersRequested.emit)
         self.apply_filters_button = QToolButton(self)
         self.apply_filters_button.setObjectName("qfitWizardMapApplyFiltersButton")
+        self.apply_filters_button.setProperty("primaryAction", "apply_map_filters")
         self.apply_filters_button.clicked.connect(self.applyFiltersRequested.emit)
         self._layout = self._build_layout()
         self.set_state(state or MapPageState())
@@ -82,9 +84,7 @@ class MapPageContent(QWidget):
         self.filter_summary_label.setText(state.filter_summary_text)
         self.filter_summary_label.setProperty("mapState", map_state)
         self.load_layers_button.setText(state.load_action_label)
-        self.load_layers_button.setProperty("secondaryAction", "load_activity_layers")
         self.apply_filters_button.setText(state.primary_action_label)
-        self.apply_filters_button.setProperty("primaryAction", "apply_map_filters")
 
     def outer_layout(self):
         """Expose the layout for adapter wiring and pure tests."""
