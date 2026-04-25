@@ -102,7 +102,7 @@ class StepperBar(QWidget):
         layout = QHBoxLayout(self)
         layout.setContentsMargins(4, 2, 10, 2)
         layout.setSpacing(4)
-        for index, label in enumerate(STEPPER_LABELS):
+        for index, _label in enumerate(STEPPER_LABELS):
             button = QToolButton(self)
             button.setObjectName(f"qfitStepperStep{index + 1}")
             button.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
