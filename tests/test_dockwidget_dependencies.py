@@ -287,6 +287,9 @@ class _FakeWidget:
     def hide(self):
         self.visible = False
 
+    def click(self):
+        pass
+
     def setTitle(self, title):
         self.title = title
 
@@ -367,6 +370,7 @@ class WorkflowSectionCoordinatorTests(unittest.TestCase):
         dock.mapboxAccessTokenLabel = _FakeWidget()
         dock.mapboxAccessTokenLineEdit = _FakeWidget()
         dock.loadLayersButton = _FakeWidget()
+        dock.clearDatabaseButton = _FakeWidget()
         dock.summaryStatusLabel = _FakeWidget()
         dock.countLabel = _FakeWidget()
         dock.statusLabel = _FakeWidget()
@@ -376,8 +380,30 @@ class WorkflowSectionCoordinatorTests(unittest.TestCase):
         import qfit.ui.workflow_section_coordinator as workflow_section_coordinator
 
         class _FakeSignal:
-            def connect(self, _callback):
-                pass
+            def __init__(self):
+                self.callback = None
+
+            def connect(self, callback):
+                self.callback = callback
+
+        class _FakeAction:
+            def __init__(self, text):
+                self.text = text
+                self.tooltip = None
+                self.triggered = _FakeSignal()
+
+            def setToolTip(self, text):
+                self.tooltip = text
+
+        class _FakeMenu(_FakeWidget):
+            def __init__(self, parent=None):
+                super().__init__(parent)
+                self.actions = []
+
+            def addAction(self, text):
+                action = _FakeAction(text)
+                self.actions.append(action)
+                return action
 
         class _FakeToolButton(_FakeWidget):
             def __init__(self, _parent=None):
@@ -387,6 +413,8 @@ class WorkflowSectionCoordinatorTests(unittest.TestCase):
                 self.checked = None
                 self.object_name = None
                 self.text = None
+                self.menu = None
+                self.popup_mode = None
 
             def setObjectName(self, name):
                 self.object_name = name
@@ -402,6 +430,12 @@ class WorkflowSectionCoordinatorTests(unittest.TestCase):
 
             def setChecked(self, checked):
                 self.checked = checked
+
+            def setPopupMode(self, mode):
+                self.popup_mode = mode
+
+            def setMenu(self, menu):
+                self.menu = menu
 
             def setStyleSheet(self, _style):
                 pass
@@ -426,7 +460,10 @@ class WorkflowSectionCoordinatorTests(unittest.TestCase):
             def addItem(self, item):
                 self.items.append(("item", item))
 
+        _FakeToolButton.InstantPopup = "instant-popup"
+
         qtwidgets = ModuleType("qgis.PyQt.QtWidgets")
+        qtwidgets.QMenu = _FakeMenu
         qtwidgets.QToolButton = _FakeToolButton
         qtwidgets.QVBoxLayout = _FakeVBoxLayout
         qtwidgets.QWidget = _FakeWidget
@@ -440,6 +477,15 @@ class WorkflowSectionCoordinatorTests(unittest.TestCase):
         self.assertFalse(dock.credentialsGroupBox.visible)
         self.assertEqual(dock.outputGroupBox.parent(), dock.activitiesGroupBox)
         self.assertEqual(dock.loadLayersButton.parent(), dock.styleGroupBox)
+        self.assertFalse(dock.clearDatabaseButton.visible)
+        self.assertIn(dock.clearDatabaseButton, dock.outputGroupLayout.removed_widgets)
+        self.assertIn(dock.databaseActionsButton, dock.outputGroupLayout.added_widgets)
+        self.assertEqual(dock.databaseActionsButton.text, "Database actions")
+        self.assertEqual(dock.databaseActionsMenu.actions[0].text, "Clear database…")
+        self.assertIs(
+            dock.databaseActionsMenu.actions[0].triggered.callback.__self__,
+            dock.clearDatabaseButton,
+        )
         self.assertEqual(dock.summaryStatusLabel.parent(), dock.dockWidgetContents)
         self.assertIn(dock.summaryStatusLabel, dock.verticalLayout.removed_widgets)
         self.assertIn(dock.summaryStatusLabel, dock.outerLayout.added_widgets)
