@@ -77,6 +77,13 @@ class DockUiFieldGrammarTests(unittest.TestCase):
             "Generate atlas PDF",
         )
 
+    def test_atlas_help_uses_plain_language_layer_name(self):
+        publish_help = _property_text(_widget(self.root, "publishHelpLabel"), "text")
+        atlas_help = _property_text(_widget(self.root, "atlasPdfHelpLabel"), "text")
+        self.assertNotIn("activity_atlas_pages", publish_help)
+        self.assertNotIn("activity_atlas_pages", atlas_help)
+        self.assertIn("atlas pages layer", atlas_help)
+
 
 if __name__ == "__main__":
     unittest.main()

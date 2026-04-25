@@ -830,7 +830,7 @@
               <item row="2" column="0" colspan="2">
                <widget class="QLabel" name="publishHelpLabel">
                 <property name="text">
-                 <string>Set the cover title and optional subtitle for the exported atlas PDF. qfit keeps the atlas page layout defaults internal when building activity_atlas_pages.</string>
+                 <string>Set the cover title and optional subtitle for the exported atlas PDF. qfit keeps the generated atlas page layout defaults internal.</string>
                 </property>
                 <property name="wordWrap">
                  <bool>true</bool>
@@ -849,7 +849,7 @@
               <item>
                <widget class="QLabel" name="atlasPdfHelpLabel">
                 <property name="text">
-                 <string>Export a per-activity PDF atlas using the loaded activity_atlas_pages layer. Each page shows the activity title, date, stats, and a map centred on the activity extent. Store activities first, then load activity layers.</string>
+                 <string>Export a per-activity PDF atlas using the loaded atlas pages layer. Each page shows the activity title, date, stats, and a map centred on the activity extent. Store activities first, then load activity layers.</string>
                 </property>
                 <property name="wordWrap">
                  <bool>true</bool>
