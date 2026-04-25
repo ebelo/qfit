@@ -70,6 +70,13 @@ class DockUiFieldGrammarTests(unittest.TestCase):
             "Generate sampled activity points for analysis",
         )
 
+    def test_atlas_pdf_labels_use_sentence_case(self):
+        self.assertEqual(_property_text(_widget(self.root, "atlasPdfGroupBox"), "title"), "Generate atlas PDF")
+        self.assertEqual(
+            _property_text(_widget(self.root, "generateAtlasPdfButton"), "text"),
+            "Generate atlas PDF",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

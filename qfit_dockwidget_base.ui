@@ -843,7 +843,7 @@
            <item>
             <widget class="QGroupBox" name="atlasPdfGroupBox">
              <property name="title">
-              <string>Generate Atlas PDF</string>
+              <string>Generate atlas PDF</string>
              </property>
              <layout class="QVBoxLayout" name="atlasPdfGroupLayout">
               <item>
@@ -877,7 +877,7 @@
               <item>
                <widget class="QPushButton" name="generateAtlasPdfButton">
                 <property name="text">
-                 <string>Generate Atlas PDF</string>
+                 <string>Generate atlas PDF</string>
                 </property>
                </widget>
               </item>
