@@ -111,6 +111,46 @@ class WizardShellCompositionTest(unittest.TestCase):
             ("done", "done", "current", "locked", "locked"),
         )
 
+    def test_builds_default_footer_from_page_status_facts(self):
+        assembled = self.composition.build_placeholder_wizard_shell()
+
+        self.assertEqual(
+            assembled.shell.footer_bar.text(),
+            "Strava not connected · No activities stored · "
+            "No activity layers on the map · Analysis not run yet · "
+            "Atlas PDF not exported yet",
+        )
+
+    def test_page_state_inputs_drive_default_footer_text(self):
+        assembled = self.composition.build_placeholder_wizard_shell(
+            connection_state=self.composition.ConnectionPageState(
+                connected=True,
+                status_text="Strava connected",
+            ),
+            sync_state=self.composition.SyncPageState(
+                ready=True,
+                activity_summary_text="12 activities stored",
+            ),
+            map_state=self.composition.MapPageState(
+                loaded=True,
+                layer_summary_text="3 activity layers loaded",
+            ),
+            analysis_state=self.composition.AnalysisPageState(
+                ready=True,
+                status_text="Analysis ready",
+            ),
+            atlas_state=self.composition.AtlasPageState(
+                ready=True,
+                status_text="Atlas ready",
+            ),
+        )
+
+        self.assertEqual(
+            assembled.shell.footer_bar.text(),
+            "Strava connected · 12 activities stored · 3 activity layers loaded · "
+            "Analysis ready · Atlas ready",
+        )
+
     def test_supports_explicit_empty_specs_without_binding_current_dock_controls(self):
         assembled = self.composition.build_placeholder_wizard_shell(specs=())
 
@@ -121,8 +161,32 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertIsNone(assembled.analysis_content)
         self.assertIsNone(assembled.atlas_content)
         self.assertEqual(assembled.shell.page_count(), 0)
+        self.assertEqual(assembled.shell.footer_bar.text(), "Ready")
         self.assertEqual(assembled.shell.pages_stack.currentIndex(), -1)
         self.assertEqual(assembled.presenter.progress.current_key, "connection")
+
+    def test_default_footer_only_summarizes_installed_pages(self):
+        specs = (
+            self.composition.DockWizardPageSpec(
+                key="connection",
+                title="Connection",
+                summary="Connect qfit to Strava.",
+                primary_action_hint="Primary action: configure connection",
+            ),
+            self.composition.DockWizardPageSpec(
+                key="atlas",
+                title="Atlas PDF",
+                summary="Export a PDF atlas.",
+                primary_action_hint="Primary action: export atlas PDF",
+            ),
+        )
+
+        assembled = self.composition.build_placeholder_wizard_shell(specs=specs)
+
+        self.assertEqual(
+            assembled.shell.footer_bar.text(),
+            "Strava not connected · Atlas PDF not exported yet",
+        )
 
 
 if __name__ == "__main__":
