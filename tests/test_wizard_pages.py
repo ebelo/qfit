@@ -8,6 +8,7 @@ from tests.test_wizard_shell import _fake_qt_modules
 
 from qfit.ui.application import wizard_page_specs
 from qfit.ui.application.wizard_page_specs import build_default_wizard_page_specs
+from qfit.ui.tokens import COLOR_MUTED, COLOR_TEXT
 
 
 class WizardPageSpecsTests(unittest.TestCase):
@@ -64,8 +65,13 @@ class WizardPageTest(unittest.TestCase):
         self.assertEqual(page.objectName(), "qfitWizardMapPage")
         self.assertEqual(page.title_label.objectName(), "qfitWizardMapPageTitle")
         self.assertEqual(page.title_label.text(), "Map & filters")
+        self.assertIn(COLOR_TEXT, page.title_label.styleSheet())
+        self.assertIn("font-weight: 700", page.title_label.styleSheet())
         self.assertEqual(page.summary_label.objectName(), "qfitWizardMapPageSummary")
         self.assertIn("background map", page.summary_label.text())
+        self.assertIn(COLOR_MUTED, page.summary_label.styleSheet())
+        self.assertIn(COLOR_MUTED, page.primary_hint_label.styleSheet())
+        self.assertIn("font-style: italic", page.primary_hint_label.styleSheet())
         self.assertEqual(page.body_container.objectName(), "qfitWizardMapPageBody")
         self.assertEqual(page.body_layout().contents_margins, (0, 0, 0, 0))
         self.assertEqual(page.primary_hint_label.objectName(), "qfitWizardMapPagePrimaryHint")

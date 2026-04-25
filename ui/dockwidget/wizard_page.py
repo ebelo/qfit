@@ -6,6 +6,7 @@ from qfit.ui.application.wizard_page_specs import (
     DockWizardPageSpec,
     build_default_wizard_page_specs,
 )
+from qfit.ui.tokens import COLOR_MUTED, COLOR_TEXT
 
 from ._qt_compat import import_qt_module
 
@@ -23,6 +24,21 @@ QLabel = _qtwidgets.QLabel
 QVBoxLayout = _qtwidgets.QVBoxLayout
 QWidget = _qtwidgets.QWidget
 
+_TITLE_LABEL_QSS = (
+    "QLabel { "
+    f"color: {COLOR_TEXT}; "
+    "font-size: 15px; "
+    "font-weight: 700; "
+    "}"
+)
+_SUMMARY_LABEL_QSS = f"QLabel {{ color: {COLOR_MUTED}; }}"
+_PRIMARY_HINT_LABEL_QSS = (
+    "QLabel { "
+    f"color: {COLOR_MUTED}; "
+    "font-style: italic; "
+    "}"
+)
+
 
 class WizardPage(QWidget):
     """Reusable visible page container for the #609 wizard shell.
@@ -37,12 +53,21 @@ class WizardPage(QWidget):
         super().__init__(parent)
         self.spec = spec
         self.setObjectName(spec.page_object_name)
-        self.title_label = self._build_label(spec.title, spec.title_object_name)
-        self.summary_label = self._build_label(spec.summary, spec.summary_object_name)
+        self.title_label = self._build_label(
+            spec.title,
+            spec.title_object_name,
+            style=_TITLE_LABEL_QSS,
+        )
+        self.summary_label = self._build_label(
+            spec.summary,
+            spec.summary_object_name,
+            style=_SUMMARY_LABEL_QSS,
+        )
         self.body_container, self._body_layout = self._build_body_container()
         self.primary_hint_label = self._build_label(
             spec.primary_action_hint,
             spec.primary_hint_object_name,
+            style=_PRIMARY_HINT_LABEL_QSS,
         )
         self._layout = self._build_layout()
 
@@ -69,11 +94,13 @@ class WizardPage(QWidget):
 
         return self._layout
 
-    def _build_label(self, text: str, object_name: str):
+    def _build_label(self, text: str, object_name: str, *, style: str = ""):
         label = QLabel(text, self)
         label.setObjectName(object_name)
         if hasattr(label, "setWordWrap"):
             label.setWordWrap(True)
+        if style:
+            label.setStyleSheet(style)
         return label
 
     def _build_body_container(self):
