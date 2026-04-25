@@ -32,6 +32,23 @@ from .wizard_shell_presenter import WizardShellPresenter
 _StateT = TypeVar("_StateT")
 
 
+@dataclass(frozen=True)
+class WizardActionCallbacks:
+    """Optional adapters for concrete wizard page actions.
+
+    The placeholder shell can now expose visible CTAs without importing the
+    current dock widget. A future dock swap can pass bound methods here while
+    pure tests keep the page widgets independent from the long-scroll dock.
+    """
+
+    configure_connection: Callable[[], None] | None = None
+    sync_activities: Callable[[], None] | None = None
+    load_activity_layers: Callable[[], None] | None = None
+    apply_map_filters: Callable[[], None] | None = None
+    run_analysis: Callable[[], None] | None = None
+    export_atlas: Callable[[], None] | None = None
+
+
 @dataclass
 class WizardShellComposition:
     """Concrete placeholder wizard assembly for the future dock replacement.
@@ -50,6 +67,7 @@ class WizardShellComposition:
     map_content: MapPageContent | None = None
     analysis_content: AnalysisPageContent | None = None
     atlas_content: AtlasPageContent | None = None
+    action_callbacks: WizardActionCallbacks | None = None
     connection_state: ConnectionPageState | None = None
     sync_state: SyncPageState | None = None
     map_state: MapPageState | None = None
@@ -193,6 +211,55 @@ def refresh_wizard_shell_composition(
     return composition
 
 
+def connect_wizard_action_callbacks(
+    composition: WizardShellComposition,
+    callbacks: WizardActionCallbacks,
+) -> WizardShellComposition:
+    """Wire concrete action callbacks into an assembled wizard shell.
+
+    This keeps the reusable #609 shell decoupled from ``QfitDockWidget`` while
+    giving the future dock swap a single adapter seam for visible page CTAs.
+    Missing page content is skipped so partial wizard assemblies remain safe.
+    """
+
+    if composition.action_callbacks is not None:
+        return composition
+
+    _connect_action_callbacks(
+        connection_content=composition.connection_content,
+        sync_content=composition.sync_content,
+        map_content=composition.map_content,
+        analysis_content=composition.analysis_content,
+        atlas_content=composition.atlas_content,
+        callbacks=callbacks,
+    )
+    composition.action_callbacks = callbacks
+    return composition
+
+
+def _connect_action_callbacks(
+    *,
+    connection_content: ConnectionPageContent | None,
+    sync_content: SyncPageContent | None,
+    map_content: MapPageContent | None,
+    analysis_content: AnalysisPageContent | None,
+    atlas_content: AtlasPageContent | None,
+    callbacks: WizardActionCallbacks,
+) -> None:
+    if connection_content is not None and callbacks.configure_connection is not None:
+        connection_content.configureRequested.connect(callbacks.configure_connection)
+    if sync_content is not None and callbacks.sync_activities is not None:
+        sync_content.syncRequested.connect(callbacks.sync_activities)
+    if map_content is not None and callbacks.load_activity_layers is not None:
+        map_content.loadLayersRequested.connect(callbacks.load_activity_layers)
+    if map_content is not None and callbacks.apply_map_filters is not None:
+        map_content.applyFiltersRequested.connect(callbacks.apply_map_filters)
+    if analysis_content is not None and callbacks.run_analysis is not None:
+        analysis_content.runAnalysisRequested.connect(callbacks.run_analysis)
+    if atlas_content is not None and callbacks.export_atlas is not None:
+        atlas_content.exportAtlasRequested.connect(callbacks.export_atlas)
+
+
 def _resolve_state(
     provided: _StateT | None,
     existing: _StateT | None,
@@ -295,7 +362,9 @@ def _install_atlas_content(
 
 
 __all__ = [
+    "WizardActionCallbacks",
     "WizardShellComposition",
     "build_placeholder_wizard_shell",
+    "connect_wizard_action_callbacks",
     "refresh_wizard_shell_composition",
 ]
