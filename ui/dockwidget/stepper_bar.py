@@ -73,7 +73,7 @@ class StepperBar(QWidget):
 
         validated_states = _validate_states(states)
         self._states = list(validated_states)
-        for index, (button, state) in enumerate(zip(self._buttons, self._states, strict=True)):
+        for index, (button, state) in enumerate(zip(self._buttons, self._states)):
             self._configure_button(button, index, state)
         self._configure_connectors()
 
