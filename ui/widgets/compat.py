@@ -1,12 +1,21 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
+from dataclasses import dataclass
 from functools import lru_cache
 from importlib import import_module
 
 from qgis.PyQt.QtCore import Qt
 
 CheckableListOption = str | tuple[str, str]
+
+
+@dataclass(frozen=True)
+class DateTimeRangeEdits:
+    """Pair of native date-time edits for start/end range selection."""
+
+    start: object
+    end: object
 
 
 class _ScaledSignal:
@@ -36,7 +45,7 @@ def make_checkable_list(
 ):
     """Create a native Qt checkable list for multi-select wizard controls.
 
-    QGIS does not provide ``QgsCheckableComboBox``. The wizard should use a
+    QGIS does not provide a native checkable combo box. The wizard should use a
     ``QListWidget`` with ``Qt.ItemIsUserCheckable`` items instead; this helper
     keeps that construction consistent and stores stable option values in
     ``Qt.UserRole`` for later request builders.
@@ -142,6 +151,50 @@ def make_password_line_edit(*, text: str = "", placeholder_text: str = "", paren
     return widget
 
 
+def make_datetime_range_edits(
+    *,
+    start_datetime=None,
+    end_datetime=None,
+    display_format: str = "yyyy-MM-dd HH:mm",
+    calendar_popup: bool = True,
+    parent=None,
+) -> DateTimeRangeEdits:
+    """Create paired date-time edits for wizard filter ranges.
+
+    The wizard spec uses two native QGIS date-time edits side by side. Minimal
+    test environments may not expose the QGIS widget, so fall back to Qt's
+    ``QDateTimeEdit`` while keeping one construction API for future pages.
+    """
+
+    gui = _import_optional_qgis_gui()
+    edit_class = getattr(gui, "QgsDateTimeEdit", None) if gui is not None else None
+    if edit_class is None:
+        widgets = import_module("qgis.PyQt.QtWidgets")
+        edit_class = widgets.QDateTimeEdit
+
+    start = edit_class(parent)
+    end = edit_class(parent)
+    _configure_datetime_edit(
+        start,
+        value=start_datetime,
+        display_format=display_format,
+        calendar_popup=calendar_popup,
+    )
+    _configure_datetime_edit(
+        end,
+        value=end_datetime,
+        display_format=display_format,
+        calendar_popup=calendar_popup,
+    )
+    return DateTimeRangeEdits(start=start, end=end)
+
+
+def datetime_range_values(range_edits: DateTimeRangeEdits) -> tuple[object | None, object | None]:
+    """Return the current start/end date-time values when supported."""
+
+    return (_datetime_edit_value(range_edits.start), _datetime_edit_value(range_edits.end))
+
+
 def _import_optional_qgis_gui():
     try:
         return import_module("qgis.gui")
@@ -176,6 +229,27 @@ def _normalise_checkable_list_option(option: CheckableListOption) -> tuple[str, 
             raise ValueError(msg)
         return option
     return option, option
+
+
+def _configure_datetime_edit(
+    widget,
+    *,
+    value,
+    display_format: str,
+    calendar_popup: bool,
+) -> None:
+    if value is not None and hasattr(widget, "setDateTime"):
+        widget.setDateTime(value)
+    if display_format and hasattr(widget, "setDisplayFormat"):
+        widget.setDisplayFormat(display_format)
+    if hasattr(widget, "setCalendarPopup"):
+        widget.setCalendarPopup(calendar_popup)
+
+
+def _datetime_edit_value(widget):
+    if hasattr(widget, "dateTime"):
+        return widget.dateTime()
+    return None
 
 
 def make_range_slider(
