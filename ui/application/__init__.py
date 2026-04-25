@@ -38,6 +38,20 @@ from .dock_workflow_sections import (
     build_wizard_step_statuses,
     get_workflow_section,
 )
+from .wizard_settings import (
+    COLLAPSED_GROUPS_KEY,
+    DEFAULT_COLLAPSED_GROUP_OBJECT_NAMES,
+    LAST_STEP_INDEX_KEY,
+    WIZARD_STEP_COUNT,
+    WIZARD_VERSION,
+    WIZARD_VERSION_KEY,
+    WizardSettingsSnapshot,
+    clamp_wizard_step_index,
+    ensure_wizard_settings,
+    load_wizard_settings,
+    save_collapsed_groups,
+    save_last_step_index,
+)
 from .visual_workflow_action_builder import build_visual_workflow_action
 from .visual_workflow_action_builder import build_visual_workflow_action_inputs
 from .visual_workflow_action_builder import build_visual_workflow_background_inputs
@@ -50,6 +64,8 @@ from .visual_workflow_action_builder import build_visual_workflow_settings_snaps
 
 __all__ = [
     "ApplyVisualizationAction",
+    "COLLAPSED_GROUPS_KEY",
+    "DEFAULT_COLLAPSED_GROUP_OBJECT_NAMES",
     "DockActionDispatcher",
     "DockActionResult",
     "DockActivityWorkflowCoordinator",
@@ -68,11 +84,16 @@ __all__ = [
     "DockWorkflowStepState",
     "DockWorkflowStepStatus",
     "CURRENT_DOCK_SECTIONS",
+    "LAST_STEP_INDEX_KEY",
     "WIZARD_WORKFLOW_STEPS",
+    "WIZARD_STEP_COUNT",
+    "WIZARD_VERSION",
+    "WIZARD_VERSION_KEY",
     "RunAnalysisAction",
     "VisualWorkflowBackgroundInputs",
     "VisualWorkflowActionInputs",
     "VisualWorkflowSettingsSnapshot",
+    "WizardSettingsSnapshot",
     "build_current_dock_workflow_label",
     "build_dock_summary_status",
     "build_initial_wizard_step_statuses",
@@ -83,5 +104,10 @@ __all__ = [
     "build_visual_workflow_background_inputs",
     "build_visual_workflow_selection_state_handoff",
     "build_visual_workflow_settings_snapshot",
+    "clamp_wizard_step_index",
+    "ensure_wizard_settings",
     "get_workflow_section",
+    "load_wizard_settings",
+    "save_collapsed_groups",
+    "save_last_step_index",
 ]
