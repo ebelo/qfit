@@ -13,6 +13,7 @@ def _load_wizard_composition_module():
     for name in (
         "qfit.ui.dockwidget.wizard_composition",
         "qfit.ui.dockwidget.connection_page",
+        "qfit.ui.dockwidget.sync_page",
         "qfit.ui.dockwidget.wizard_shell_presenter",
         "qfit.ui.dockwidget.wizard_page",
         "qfit.ui.dockwidget.wizard_shell",
@@ -51,6 +52,15 @@ class WizardShellCompositionTest(unittest.TestCase):
             assembled.connection_content.status_label.text(),
             "Strava not connected",
         )
+        self.assertIsNotNone(assembled.sync_content)
+        self.assertIs(
+            assembled.pages[1].body_layout().widgets[-1],
+            assembled.sync_content,
+        )
+        self.assertEqual(
+            assembled.sync_content.status_label.text(),
+            "Activities not synced yet",
+        )
         self.assertEqual(
             assembled.shell.stepper_bar.states(),
             ("current", "locked", "locked", "locked", "locked"),
@@ -76,6 +86,7 @@ class WizardShellCompositionTest(unittest.TestCase):
 
         self.assertEqual(assembled.pages, ())
         self.assertIsNone(assembled.connection_content)
+        self.assertIsNone(assembled.sync_content)
         self.assertEqual(assembled.shell.page_count(), 0)
         self.assertEqual(assembled.shell.pages_stack.currentIndex(), -1)
         self.assertEqual(assembled.presenter.progress.current_key, "connection")
