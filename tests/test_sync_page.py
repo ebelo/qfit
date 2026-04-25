@@ -93,7 +93,9 @@ class SyncPageContentTest(unittest.TestCase):
         self.assertEqual(calls, ["sync"])
 
     def test_installs_only_on_sync_wizard_page_body(self):
-        sync_spec = build_default_wizard_page_specs()[1]
+        sync_spec = next(
+            spec for spec in build_default_wizard_page_specs() if spec.key == "sync"
+        )
         sync_page = self.wizard_page.WizardPage(sync_spec)
 
         content = self.sync_page.install_sync_page_content(sync_page)
@@ -101,7 +103,9 @@ class SyncPageContentTest(unittest.TestCase):
         self.assertIs(sync_page.body_layout().widgets[-1], content)
 
     def test_rejects_installing_on_other_wizard_page(self):
-        connection_spec = build_default_wizard_page_specs()[0]
+        connection_spec = next(
+            spec for spec in build_default_wizard_page_specs() if spec.key == "connection"
+        )
         connection_page = self.wizard_page.WizardPage(connection_spec)
 
         with self.assertRaisesRegex(ValueError, "synchronization wizard page"):
