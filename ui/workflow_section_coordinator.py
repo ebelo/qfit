@@ -3,6 +3,10 @@ from __future__ import annotations
 from qgis.PyQt.QtCore import Qt
 
 from ..mapbox_config import preset_requires_custom_style
+from .application.dock_workflow_sections import (
+    CURRENT_DOCK_SECTIONS,
+    build_current_dock_workflow_label,
+)
 
 
 class WorkflowSectionCoordinator:
@@ -17,7 +21,7 @@ class WorkflowSectionCoordinator:
 
     def configure_starting_sections(self) -> None:
         dock = self.dock_widget
-        dock.workflowLabel.setText("Sections: Fetch & store · Visualize · Analyze · Publish")
+        dock.workflowLabel.setText(build_current_dock_workflow_label())
         dock.credentialsGroupBox.hide()
         dock.activitiesGroupBox.setTitle("")
         dock.activitiesIntroLabel.setText(
@@ -33,25 +37,20 @@ class WorkflowSectionCoordinator:
         dock.publishSettingsWidget.setVisible(True)
         self._pin_summary_status_footer()
         self._hide_redundant_status_labels()
-        self.install_collapsible_section(
-            dock.activitiesGroupBox,
-            "activitiesGroupLayout",
-            "Fetch and store",
-            "activities",
-        )
-        self.install_collapsible_section(dock.styleGroupBox, "styleGroupLayout", "Visualize", "style")
-        self.install_collapsible_section(
-            dock.analysisWorkflowGroupBox,
-            "analysisWorkflowLayout",
-            "Analyze",
-            "analysis",
-        )
-        self.install_collapsible_section(
-            dock.publishGroupBox,
-            "publishGroupLayout",
-            "Publish / atlas",
-            "publish",
-        )
+        section_widgets = {
+            "sync": (dock.activitiesGroupBox, "activitiesGroupLayout", "activities"),
+            "map": (dock.styleGroupBox, "styleGroupLayout", "style"),
+            "analysis": (dock.analysisWorkflowGroupBox, "analysisWorkflowLayout", "analysis"),
+            "atlas": (dock.publishGroupBox, "publishGroupLayout", "publish"),
+        }
+        for section in CURRENT_DOCK_SECTIONS:
+            group_box, layout_attr, toggle_key = section_widgets[section.key]
+            self.install_collapsible_section(
+                group_box,
+                layout_attr,
+                section.current_dock_title,
+                toggle_key,
+            )
         self._move_help_label_to_tooltip(
             dock.activitiesIntroLabel,
             getattr(dock, "activitiesSectionToggleButton", None),
