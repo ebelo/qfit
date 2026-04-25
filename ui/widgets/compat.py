@@ -76,6 +76,8 @@ def collapsible_group_box_expanded(group_box) -> bool:
 
     if hasattr(group_box, "isCollapsed"):
         return not group_box.isCollapsed()
+    if hasattr(group_box, "isCheckable") and not group_box.isCheckable():
+        return True
     if hasattr(group_box, "isChecked"):
         return bool(group_box.isChecked())
     return True
@@ -287,11 +289,11 @@ def _configure_collapsible_group_box(
     if title and hasattr(group_box, "setTitle"):
         group_box.setTitle(title)
     if hasattr(group_box, "setCheckable"):
-        group_box.setCheckable(checkable)
+        group_box.setCheckable(checkable or collapsed)
     if hasattr(group_box, "setCollapsed"):
         group_box.setCollapsed(collapsed)
     elif hasattr(group_box, "setChecked"):
-        group_box.setChecked(not collapsed if checkable else True)
+        group_box.setChecked(not collapsed)
 
 
 def _configure_native_file_widget(

@@ -189,6 +189,9 @@ class _FakeCollapsibleGroupBox:
     def setCheckable(self, value):  # noqa: N802
         self.checkable = value
 
+    def isCheckable(self):  # noqa: N802
+        return self.checkable
+
     def setCollapsed(self, value):  # noqa: N802
         self.collapsed = value
 
@@ -220,8 +223,12 @@ class _FakeGroupBox:
     def setCheckable(self, value):  # noqa: N802
         self.checkable = value
 
+    def isCheckable(self):  # noqa: N802
+        return self.checkable
+
     def setChecked(self, value):  # noqa: N802
-        self.checked = value
+        if self.checkable:
+            self.checked = value
 
     def isChecked(self):  # noqa: N802
         return self.checked
@@ -376,6 +383,42 @@ class UiWidgetCompatTests(unittest.TestCase):
         self.assertTrue(group_box.checkable)
         self.assertTrue(group_box.checked)
         self.assertTrue(collapsible_group_box_expanded(group_box))
+
+    def test_fallback_non_checkable_group_box_is_reported_expanded(self):
+        with patch.dict(
+            sys.modules,
+            {
+                "qgis.gui": _fake_qgis_gui(),
+                "qgis.PyQt.QtWidgets": _fake_qt_widgets(),
+            },
+        ):
+            group_box = make_collapsible_group_box(
+                title="Always visible",
+                collapsed=False,
+                checkable=False,
+            )
+
+        self.assertFalse(group_box.checkable)
+        self.assertIsNone(group_box.checked)
+        self.assertTrue(collapsible_group_box_expanded(group_box))
+
+    def test_fallback_enables_checkability_when_initially_collapsed(self):
+        with patch.dict(
+            sys.modules,
+            {
+                "qgis.gui": _fake_qgis_gui(),
+                "qgis.PyQt.QtWidgets": _fake_qt_widgets(),
+            },
+        ):
+            group_box = make_collapsible_group_box(
+                title="Initially collapsed",
+                collapsed=True,
+                checkable=False,
+            )
+
+        self.assertTrue(group_box.checkable)
+        self.assertFalse(group_box.checked)
+        self.assertFalse(collapsible_group_box_expanded(group_box))
 
     def test_configures_parent_only_native_collapsible_group_box_api(self):
         parent = object()
