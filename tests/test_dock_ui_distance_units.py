@@ -82,6 +82,10 @@ class DockUiFieldGrammarTests(unittest.TestCase):
     def test_basemap_checkbox_uses_short_action_label(self):
         self.assertEqual(_property_text(_widget(self.root, "backgroundMapCheckBox"), "text"), "Enable Mapbox basemap")
 
+    def test_detailed_route_actions_use_short_labels(self):
+        self.assertEqual(_property_text(_widget(self.root, "detailedStreamsCheckBox"), "text"), "Fetch detailed routes")
+        self.assertEqual(_property_text(_widget(self.root, "backfillMissingDetailedRoutesButton"), "text"), "Backfill routes")
+
     def test_atlas_pdf_labels_use_sentence_case(self):
         self.assertEqual(_property_text(_widget(self.root, "atlasPdfGroupBox"), "title"), "Generate atlas PDF")
         self.assertEqual(

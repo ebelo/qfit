@@ -778,16 +778,16 @@ class QgisSmokeTests(unittest.TestCase):
             dock.close()
             dock.deleteLater()
 
-    def test_detailed_route_controls_use_missing_route_wording(self):
+    def test_detailed_route_controls_use_short_route_wording(self):
         dock = QfitDockWidget(self.iface)
         try:
             self.assertEqual(
                 dock.detailedStreamsCheckBox.text(),
-                "Fetch detailed routes when available",
+                "Fetch detailed routes",
             )
             self.assertEqual(
                 dock.backfillMissingDetailedRoutesButton.text(),
-                "Backfill missing detailed routes",
+                "Backfill routes",
             )
             self.assertEqual(dock.detailedRouteStrategyLabel.text(), "Detailed route strategy")
             self.assertEqual(

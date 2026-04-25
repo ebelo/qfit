@@ -184,7 +184,7 @@
            <item>
             <widget class="QPushButton" name="backfillMissingDetailedRoutesButton">
              <property name="text">
-              <string>Backfill missing detailed routes</string>
+              <string>Backfill routes</string>
              </property>
             </widget>
            </item>
@@ -255,7 +255,7 @@
                  <item row="2" column="0" colspan="2">
                  <widget class="QCheckBox" name="detailedStreamsCheckBox">
                   <property name="text">
-                    <string>Fetch detailed routes when available</string>
+                    <string>Fetch detailed routes</string>
                   </property>
                  </widget>
                  </item>
