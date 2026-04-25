@@ -51,6 +51,19 @@ class WizardPage(QWidget):
 
         return self._body_layout
 
+    def retire_primary_action_hint(self) -> None:
+        """Hide placeholder CTA copy once concrete page actions are installed.
+
+        The first wizard slices used a textual primary-action hint as a safe
+        placeholder. Once a page owns real action buttons, keeping that hint
+        visible competes with the single primary CTA and adds the textual noise
+        called out in #608.
+        """
+
+        self.primary_hint_label.setText("")
+        self.primary_hint_label.setProperty("wizardPlaceholderHint", "retired")
+        self.primary_hint_label.setVisible(False)
+
     def outer_layout(self):
         """Expose the page layout for adapter wiring and pure tests."""
 

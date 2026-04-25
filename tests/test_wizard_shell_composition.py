@@ -55,6 +55,8 @@ class WizardShellCompositionTest(unittest.TestCase):
             assembled.connection_content.status_label.text(),
             "Strava not connected",
         )
+        self.assertEqual(assembled.pages[0].primary_hint_label.text(), "")
+        self.assertFalse(assembled.pages[0].primary_hint_label.isVisible())
         self.assertIsNotNone(assembled.sync_content)
         self.assertIs(
             assembled.pages[1].body_layout().widgets[-1],
@@ -90,6 +92,12 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertEqual(
             assembled.atlas_content.status_label.text(),
             "Atlas PDF not exported yet",
+        )
+        self.assertTrue(
+            all(
+                page.primary_hint_label.property("wizardPlaceholderHint") == "retired"
+                for page in assembled.pages
+            )
         )
         self.assertEqual(
             assembled.shell.stepper_bar.states(),

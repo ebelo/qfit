@@ -124,6 +124,7 @@ def install_sync_page_content(
         )
     content = build_sync_page_content(parent=page, state=state)
     page.body_layout().addWidget(content)
+    page.retire_primary_action_hint()
     return content
 
 

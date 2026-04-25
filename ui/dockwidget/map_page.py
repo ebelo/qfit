@@ -143,6 +143,7 @@ def install_map_page_content(
         raise ValueError("Map page content can only be installed on the map wizard page")
     content = build_map_page_content(parent=page, state=state)
     page.body_layout().addWidget(content)
+    page.retire_primary_action_hint()
     return content
 
 
