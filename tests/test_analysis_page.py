@@ -7,6 +7,7 @@ from tests import _path  # noqa: F401
 from tests.test_wizard_shell import _fake_qt_modules
 
 from qfit.ui.application.wizard_page_specs import build_default_wizard_page_specs
+from qfit.ui.tokens import COLOR_MUTED
 
 
 def _load_analysis_modules():
@@ -36,8 +37,10 @@ class AnalysisPageContentTest(unittest.TestCase):
         self.assertEqual(content.status_label.objectName(), "qfitWizardAnalysisStatus")
         self.assertEqual(content.status_label.text(), "Analysis not run yet")
         self.assertEqual(content.status_label.property("analysisState"), "not_ready")
+        self.assertEqual(content.status_label.property("tone"), "warn")
         self.assertEqual(content.detail_label.objectName(), "qfitWizardAnalysisDetail")
         self.assertIn("heatmaps", content.detail_label.text())
+        self.assertIn(COLOR_MUTED, content.detail_label.styleSheet())
         self.assertEqual(
             content.input_summary_label.objectName(),
             "qfitWizardAnalysisInputSummary",
@@ -46,6 +49,7 @@ class AnalysisPageContentTest(unittest.TestCase):
             content.input_summary_label.text(),
             "No loaded activity layers available for analysis",
         )
+        self.assertIn(COLOR_MUTED, content.input_summary_label.styleSheet())
         self.assertEqual(
             content.result_summary_label.objectName(),
             "qfitWizardAnalysisResultSummary",
@@ -54,6 +58,7 @@ class AnalysisPageContentTest(unittest.TestCase):
             content.result_summary_label.text(),
             "Analysis outputs will appear in the project once generated",
         )
+        self.assertIn(COLOR_MUTED, content.result_summary_label.styleSheet())
         self.assertEqual(
             content.run_analysis_button.objectName(),
             "qfitWizardAnalysisRunButton",
@@ -104,6 +109,7 @@ class AnalysisPageContentTest(unittest.TestCase):
 
         self.assertEqual(content.status_label.text(), "Analysis ready")
         self.assertEqual(content.status_label.property("analysisState"), "ready")
+        self.assertEqual(content.status_label.property("tone"), "ok")
         self.assertEqual(
             content.detail_label.text(),
             "Run analysis using the loaded filtered activity layers.",

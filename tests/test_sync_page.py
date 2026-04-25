@@ -7,6 +7,7 @@ from tests import _path  # noqa: F401
 from tests.test_wizard_shell import _fake_qt_modules
 
 from qfit.ui.application.wizard_page_specs import build_default_wizard_page_specs
+from qfit.ui.tokens import COLOR_MUTED
 
 
 def _load_sync_modules():
@@ -36,13 +37,16 @@ class SyncPageContentTest(unittest.TestCase):
         self.assertEqual(content.status_label.objectName(), "qfitWizardSyncStatus")
         self.assertEqual(content.status_label.text(), "Activities not synced yet")
         self.assertEqual(content.status_label.property("syncState"), "not_synced")
+        self.assertEqual(content.status_label.property("tone"), "warn")
         self.assertEqual(content.detail_label.objectName(), "qfitWizardSyncDetail")
         self.assertIn("GeoPackage", content.detail_label.text())
+        self.assertIn(COLOR_MUTED, content.detail_label.styleSheet())
         self.assertEqual(
             content.activity_summary_label.objectName(),
             "qfitWizardSyncActivitySummary",
         )
         self.assertEqual(content.activity_summary_label.text(), "No activities stored")
+        self.assertIn(COLOR_MUTED, content.activity_summary_label.styleSheet())
         self.assertEqual(content.sync_button.objectName(), "qfitWizardSyncButton")
         self.assertEqual(content.sync_button.text(), "Sync activities")
         self.assertEqual(
@@ -76,6 +80,7 @@ class SyncPageContentTest(unittest.TestCase):
 
         self.assertEqual(content.status_label.text(), "Ready to sync new activities")
         self.assertEqual(content.status_label.property("syncState"), "ready")
+        self.assertEqual(content.status_label.property("tone"), "ok")
         self.assertEqual(
             content.detail_label.text(),
             "Use the latest saved Strava credentials.",

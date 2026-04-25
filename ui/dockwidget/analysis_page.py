@@ -2,13 +2,16 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from qfit.ui.tokens import COLOR_ACCENT, COLOR_MUTED, COLOR_WARN
-
 from ._qt_compat import import_qt_module
 from .action_row import (
     build_wizard_action_row,
     set_wizard_action_availability,
     style_primary_action_button,
+)
+from .page_content_style import (
+    style_detail_label,
+    style_status_pill,
+    style_summary_label,
 )
 
 _qtcore = import_qt_module("qgis.PyQt.QtCore", "PyQt5.QtCore", ("pyqtSignal",))
@@ -60,10 +63,13 @@ class AnalysisPageContent(QWidget):
         self.detail_label.setObjectName("qfitWizardAnalysisDetail")
         if hasattr(self.detail_label, "setWordWrap"):
             self.detail_label.setWordWrap(True)
+        style_detail_label(self.detail_label)
         self.input_summary_label = QLabel("", self)
         self.input_summary_label.setObjectName("qfitWizardAnalysisInputSummary")
+        style_summary_label(self.input_summary_label)
         self.result_summary_label = QLabel("", self)
         self.result_summary_label.setObjectName("qfitWizardAnalysisResultSummary")
+        style_summary_label(self.result_summary_label)
         self.run_analysis_button = QToolButton(self)
         self.run_analysis_button.setObjectName("qfitWizardAnalysisRunButton")
         style_primary_action_button(
@@ -85,11 +91,8 @@ class AnalysisPageContent(QWidget):
         analysis_state = "ready" if state.ready else "not_ready"
         self.status_label.setText(state.status_text)
         self.status_label.setProperty("analysisState", analysis_state)
-        self.status_label.setStyleSheet(_status_stylesheet(ready=state.ready))
+        style_status_pill(self.status_label, active=state.ready)
         self.detail_label.setText(state.detail_text)
-        self.detail_label.setStyleSheet(
-            f"QLabel#qfitWizardAnalysisDetail {{ color: {COLOR_MUTED}; }}"
-        )
         self.input_summary_label.setText(state.input_summary_text)
         self.input_summary_label.setProperty("analysisState", analysis_state)
         self.result_summary_label.setText(state.result_summary_text)
@@ -153,16 +156,6 @@ def install_analysis_page_content(
     page.body_layout().addWidget(content)
     page.retire_primary_action_hint()
     return content
-
-
-def _status_stylesheet(*, ready: bool) -> str:
-    color = COLOR_ACCENT if ready else COLOR_WARN
-    return (
-        "QLabel#qfitWizardAnalysisStatus { "
-        f"color: {color}; "
-        "font-weight: 700; "
-        "}"
-    )
 
 
 __all__ = [

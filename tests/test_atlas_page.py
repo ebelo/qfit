@@ -7,6 +7,7 @@ from tests import _path  # noqa: F401
 from tests.test_wizard_shell import _fake_qt_modules
 
 from qfit.ui.application.wizard_page_specs import build_default_wizard_page_specs
+from qfit.ui.tokens import COLOR_MUTED
 
 
 def _load_atlas_modules():
@@ -36,8 +37,10 @@ class AtlasPageContentTest(unittest.TestCase):
         self.assertEqual(content.status_label.objectName(), "qfitWizardAtlasStatus")
         self.assertEqual(content.status_label.text(), "Atlas PDF not exported yet")
         self.assertEqual(content.status_label.property("atlasState"), "not_ready")
+        self.assertEqual(content.status_label.property("tone"), "warn")
         self.assertEqual(content.detail_label.objectName(), "qfitWizardAtlasDetail")
         self.assertIn("PDF title", content.detail_label.text())
+        self.assertIn(COLOR_MUTED, content.detail_label.styleSheet())
         self.assertEqual(
             content.input_summary_label.objectName(),
             "qfitWizardAtlasInputSummary",
@@ -46,6 +49,7 @@ class AtlasPageContentTest(unittest.TestCase):
             content.input_summary_label.text(),
             "No atlas layer selected for export",
         )
+        self.assertIn(COLOR_MUTED, content.input_summary_label.styleSheet())
         self.assertEqual(
             content.output_summary_label.objectName(),
             "qfitWizardAtlasOutputSummary",
@@ -54,6 +58,7 @@ class AtlasPageContentTest(unittest.TestCase):
             content.output_summary_label.text(),
             "PDF output path will be chosen before generation",
         )
+        self.assertIn(COLOR_MUTED, content.output_summary_label.styleSheet())
         self.assertEqual(
             content.export_atlas_button.objectName(),
             "qfitWizardAtlasExportButton",
@@ -104,6 +109,7 @@ class AtlasPageContentTest(unittest.TestCase):
 
         self.assertEqual(content.status_label.text(), "Atlas ready")
         self.assertEqual(content.status_label.property("atlasState"), "ready")
+        self.assertEqual(content.status_label.property("tone"), "ok")
         self.assertEqual(
             content.detail_label.text(),
             "Export the filtered activity atlas to the selected PDF path.",

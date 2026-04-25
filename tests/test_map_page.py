@@ -7,6 +7,7 @@ from tests import _path  # noqa: F401
 from tests.test_wizard_shell import _fake_qt_modules
 
 from qfit.ui.application.wizard_page_specs import build_default_wizard_page_specs
+from qfit.ui.tokens import COLOR_MUTED
 
 
 def _load_map_modules():
@@ -36,8 +37,10 @@ class MapPageContentTest(unittest.TestCase):
         self.assertEqual(content.status_label.objectName(), "qfitWizardMapStatus")
         self.assertEqual(content.status_label.text(), "Activity layers not loaded")
         self.assertEqual(content.status_label.property("mapState"), "not_loaded")
+        self.assertEqual(content.status_label.property("tone"), "warn")
         self.assertEqual(content.detail_label.objectName(), "qfitWizardMapDetail")
         self.assertIn("apply filters", content.detail_label.text())
+        self.assertIn(COLOR_MUTED, content.detail_label.styleSheet())
         self.assertEqual(
             content.layer_summary_label.objectName(),
             "qfitWizardMapLayerSummary",
@@ -46,6 +49,7 @@ class MapPageContentTest(unittest.TestCase):
             content.layer_summary_label.text(),
             "No activity layers on the map",
         )
+        self.assertIn(COLOR_MUTED, content.layer_summary_label.styleSheet())
         self.assertEqual(
             content.filter_summary_label.objectName(),
             "qfitWizardMapFilterSummary",
@@ -54,6 +58,7 @@ class MapPageContentTest(unittest.TestCase):
             content.filter_summary_label.text(),
             "All stored activities visible once layers are loaded",
         )
+        self.assertIn(COLOR_MUTED, content.filter_summary_label.styleSheet())
         self.assertEqual(
             content.load_layers_button.objectName(),
             "qfitWizardMapLoadLayersButton",
@@ -112,6 +117,7 @@ class MapPageContentTest(unittest.TestCase):
 
         self.assertEqual(content.status_label.text(), "Map ready")
         self.assertEqual(content.status_label.property("mapState"), "loaded")
+        self.assertEqual(content.status_label.property("tone"), "ok")
         self.assertEqual(
             content.detail_label.text(),
             "Use saved filters for the loaded activity layers.",
