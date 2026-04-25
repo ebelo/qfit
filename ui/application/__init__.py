@@ -27,6 +27,13 @@ from .dock_runtime_state import (
     DockRuntimeTasks,
 )
 from .dock_summary_status import build_dock_summary_status
+from .dock_workflow_sections import (
+    CURRENT_DOCK_SECTIONS,
+    WIZARD_WORKFLOW_STEPS,
+    DockWorkflowSection,
+    build_current_dock_workflow_label,
+    get_workflow_section,
+)
 from .visual_workflow_action_builder import build_visual_workflow_action
 from .visual_workflow_action_builder import build_visual_workflow_action_inputs
 from .visual_workflow_action_builder import build_visual_workflow_background_inputs
@@ -53,10 +60,14 @@ __all__ = [
     "DockRuntimeTasks",
     "DockVisualWorkflowCoordinator",
     "DockVisualWorkflowRequest",
+    "DockWorkflowSection",
+    "CURRENT_DOCK_SECTIONS",
+    "WIZARD_WORKFLOW_STEPS",
     "RunAnalysisAction",
     "VisualWorkflowBackgroundInputs",
     "VisualWorkflowActionInputs",
     "VisualWorkflowSettingsSnapshot",
+    "build_current_dock_workflow_label",
     "build_dock_summary_status",
     "build_visual_layer_refs",
     "build_visual_workflow_action",
@@ -64,4 +75,5 @@ __all__ = [
     "build_visual_workflow_background_inputs",
     "build_visual_workflow_selection_state_handoff",
     "build_visual_workflow_settings_snapshot",
+    "get_workflow_section",
 ]
