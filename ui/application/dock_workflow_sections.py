@@ -47,7 +47,7 @@ WIZARD_WORKFLOW_STEPS: tuple[DockWorkflowSection, ...] = (
     ),
 )
 
-CURRENT_DOCK_SECTION_KEYS: tuple[str, ...] = ("sync", "map", "analysis", "atlas")
+CURRENT_DOCK_SECTION_KEYS: frozenset[str] = frozenset({"sync", "map", "analysis", "atlas"})
 CURRENT_DOCK_SECTIONS: tuple[DockWorkflowSection, ...] = tuple(
     section for section in WIZARD_WORKFLOW_STEPS if section.key in CURRENT_DOCK_SECTION_KEYS
 )

@@ -43,6 +43,10 @@ class WorkflowSectionCoordinator:
             "analysis": (dock.analysisWorkflowGroupBox, "analysisWorkflowLayout", "analysis"),
             "atlas": (dock.publishGroupBox, "publishGroupLayout", "publish"),
         }
+        section_keys = {section.key for section in CURRENT_DOCK_SECTIONS}
+        if set(section_widgets) != section_keys:
+            raise RuntimeError("Current dock workflow bindings must match shared section metadata")
+
         for section in CURRENT_DOCK_SECTIONS:
             group_box, layout_attr, toggle_key = section_widgets[section.key]
             self.install_collapsible_section(
