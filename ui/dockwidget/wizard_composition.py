@@ -4,6 +4,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 
 from qfit.ui.application.dock_workflow_sections import DockWizardProgress
+from qfit.ui.application.wizard_footer_status import build_wizard_footer_status
 from qfit.ui.application.wizard_page_specs import DockWizardPageSpec
 
 from .analysis_page import (
@@ -64,7 +65,22 @@ def build_placeholder_wizard_shell(
     migrate later through the stable ``WizardPage.body_layout()`` seams.
     """
 
-    shell = WizardShell(parent=parent, footer_text=footer_text)
+    connection_state = connection_state or ConnectionPageState()
+    sync_state = sync_state or SyncPageState()
+    map_state = map_state or MapPageState()
+    analysis_state = analysis_state or AnalysisPageState()
+    atlas_state = atlas_state or AtlasPageState()
+    shell = WizardShell(
+        parent=parent,
+        footer_text=footer_text
+        or _build_default_footer_text(
+            connection_state=connection_state,
+            sync_state=sync_state,
+            map_state=map_state,
+            analysis_state=analysis_state,
+            atlas_state=atlas_state,
+        ),
+    )
     pages = install_wizard_pages(shell, specs=specs)
     connection_content = _install_connection_content(
         pages,
@@ -87,6 +103,23 @@ def build_placeholder_wizard_shell(
         map_content=map_content,
         analysis_content=analysis_content,
         atlas_content=atlas_content,
+    )
+
+
+def _build_default_footer_text(
+    *,
+    connection_state: ConnectionPageState,
+    sync_state: SyncPageState,
+    map_state: MapPageState,
+    analysis_state: AnalysisPageState,
+    atlas_state: AtlasPageState,
+) -> str:
+    return build_wizard_footer_status(
+        connection_status=connection_state.status_text,
+        activity_summary=sync_state.activity_summary_text,
+        map_summary=map_state.layer_summary_text,
+        analysis_status=analysis_state.status_text,
+        atlas_status=atlas_state.status_text,
     )
 
 

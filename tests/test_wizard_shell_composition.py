@@ -111,6 +111,46 @@ class WizardShellCompositionTest(unittest.TestCase):
             ("done", "done", "current", "locked", "locked"),
         )
 
+    def test_builds_default_footer_from_page_status_facts(self):
+        assembled = self.composition.build_placeholder_wizard_shell()
+
+        self.assertEqual(
+            assembled.shell.footer_bar.text(),
+            "Strava not connected · No activities stored · "
+            "No activity layers on the map · Analysis not run yet · "
+            "Atlas PDF not exported yet",
+        )
+
+    def test_page_state_inputs_drive_default_footer_text(self):
+        assembled = self.composition.build_placeholder_wizard_shell(
+            connection_state=self.composition.ConnectionPageState(
+                connected=True,
+                status_text="Strava connected",
+            ),
+            sync_state=self.composition.SyncPageState(
+                ready=True,
+                activity_summary_text="12 activities stored",
+            ),
+            map_state=self.composition.MapPageState(
+                loaded=True,
+                layer_summary_text="3 activity layers loaded",
+            ),
+            analysis_state=self.composition.AnalysisPageState(
+                ready=True,
+                status_text="Analysis ready",
+            ),
+            atlas_state=self.composition.AtlasPageState(
+                ready=True,
+                status_text="Atlas ready",
+            ),
+        )
+
+        self.assertEqual(
+            assembled.shell.footer_bar.text(),
+            "Strava connected · 12 activities stored · 3 activity layers loaded · "
+            "Analysis ready · Atlas ready",
+        )
+
     def test_supports_explicit_empty_specs_without_binding_current_dock_controls(self):
         assembled = self.composition.build_placeholder_wizard_shell(specs=())
 
