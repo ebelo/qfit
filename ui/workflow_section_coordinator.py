@@ -103,6 +103,38 @@ class WorkflowSectionCoordinator:
             if label is not None and hasattr(label, "hide"):
                 label.hide()
 
+    def configure_spinbox_unit_copy(self) -> None:
+        """Keep units in spin boxes instead of repeating them in form labels."""
+
+        for label_name, label_text, spinbox_name, suffix in (
+            ("perPageLabel", "Page size", "perPageSpinBox", " activities"),
+            ("maxPagesLabel", "Pages to fetch", "maxPagesSpinBox", " pages"),
+            (
+                "maxDetailedActivitiesLabel",
+                "Detailed route limit",
+                "maxDetailedActivitiesSpinBox",
+                " routes",
+            ),
+            (
+                "pointSamplingStrideLabel",
+                "Point sampling stride",
+                "pointSamplingStrideSpinBox",
+                " points",
+            ),
+        ):
+            self._set_label_text(label_name, label_text)
+            self._set_spinbox_suffix(spinbox_name, suffix)
+
+    def _set_label_text(self, name: str, text: str) -> None:
+        label = getattr(self.dock_widget, name, None)
+        if label is not None and hasattr(label, "setText"):
+            label.setText(text)
+
+    def _set_spinbox_suffix(self, name: str, suffix: str) -> None:
+        spinbox = getattr(self.dock_widget, name, None)
+        if spinbox is not None and hasattr(spinbox, "setSuffix"):
+            spinbox.setSuffix(suffix)
+
     def _move_clear_database_to_actions_menu(self) -> None:
         dock = self.dock_widget
         if hasattr(dock, "databaseActionsButton"):
