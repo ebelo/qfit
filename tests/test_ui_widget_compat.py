@@ -9,8 +9,10 @@ from qgis.PyQt.QtCore import Qt
 
 from qfit.ui.widgets.compat import (
     checked_list_values,
+    datetime_range_values,
     file_widget_path,
     make_checkable_list,
+    make_datetime_range_edits,
     make_file_widget,
     make_password_line_edit,
     make_range_slider,
@@ -171,6 +173,28 @@ class _FakeFileWidget:
         self.storage_mode = storage_mode
 
 
+class _FakeDateTimeEdit:
+    def __init__(self, parent=None):
+        self.parent = parent
+        self.date_time = "constructor-default"
+        self.display_format = ""
+        self.calendar_popup = None
+        self.dateTimeChanged = _FakeSignal()
+
+    def setDateTime(self, value):  # noqa: N802
+        self.date_time = value
+        self.dateTimeChanged.emit(value)
+
+    def dateTime(self):  # noqa: N802
+        return self.date_time
+
+    def setDisplayFormat(self, value):  # noqa: N802
+        self.display_format = value
+
+    def setCalendarPopup(self, value):  # noqa: N802
+        self.calendar_popup = value
+
+
 class _FakeLineEdit(_FakePasswordLineEdit):
     Password = 2
 
@@ -225,6 +249,7 @@ class _FakeListWidgetItem:
 
 def _fake_qgis_gui(
     *,
+    datetime_edit=None,
     double_range_slider=None,
     file_widget=None,
     password_line_edit=None,
@@ -232,6 +257,8 @@ def _fake_qgis_gui(
 ):
     module = types.ModuleType("qgis.gui")
     module.QgsRangeSlider = range_slider
+    if datetime_edit is not None:
+        module.QgsDateTimeEdit = datetime_edit
     if double_range_slider is not None:
         module.QgsDoubleRangeSlider = double_range_slider
     if file_widget is not None:
@@ -243,6 +270,7 @@ def _fake_qgis_gui(
 
 def _fake_qt_widgets():
     module = types.ModuleType("qgis.PyQt.QtWidgets")
+    module.QDateTimeEdit = _FakeDateTimeEdit
     module.QLineEdit = _FakeLineEdit
     module.QListWidget = _FakeListWidget
     module.QListWidgetItem = _FakeListWidgetItem
@@ -368,6 +396,98 @@ class UiWidgetCompatTests(unittest.TestCase):
         self.assertIs(widget.parent, parent)
         self.assertEqual(widget.echo_mode, _FakeLineEdit.Password)
         self.assertEqual(widget.placeholder_text, "Client secret")
+
+    def test_uses_native_datetime_edits_for_range_filters(self):
+        parent = object()
+        with patch.dict(sys.modules, {"qgis.gui": _fake_qgis_gui(datetime_edit=_FakeDateTimeEdit)}):
+            edits = make_datetime_range_edits(
+                start_datetime="2026-04-01T08:00:00",
+                end_datetime="2026-04-30T18:30:00",
+                display_format="dd.MM.yyyy HH:mm",
+                calendar_popup=False,
+                parent=parent,
+            )
+
+        self.assertIsInstance(edits.start, _FakeDateTimeEdit)
+        self.assertIsInstance(edits.end, _FakeDateTimeEdit)
+        self.assertIs(edits.start.parent, parent)
+        self.assertIs(edits.end.parent, parent)
+        self.assertTrue(edits.start_enabled)
+        self.assertTrue(edits.end_enabled)
+        self.assertEqual(edits.start.date_time, "2026-04-01T08:00:00")
+        self.assertEqual(edits.end.date_time, "2026-04-30T18:30:00")
+        self.assertEqual(edits.start.display_format, "dd.MM.yyyy HH:mm")
+        self.assertEqual(edits.end.display_format, "dd.MM.yyyy HH:mm")
+        self.assertFalse(edits.start.calendar_popup)
+        self.assertFalse(edits.end.calendar_popup)
+        self.assertEqual(
+            datetime_range_values(edits),
+            ("2026-04-01T08:00:00", "2026-04-30T18:30:00"),
+        )
+
+    def test_datetime_range_edits_fall_back_to_qt_widgets(self):
+        def import_module_side_effect(name):
+            if name == "qgis.gui":
+                raise ModuleNotFoundError(name=name)
+            if name == "qgis.PyQt.QtWidgets":
+                return _fake_qt_widgets()
+            raise AssertionError(name)
+
+        with patch("qfit.ui.widgets.compat.import_module", side_effect=import_module_side_effect):
+            edits = make_datetime_range_edits(start_datetime="start", end_datetime="end")
+
+        self.assertIsInstance(edits.start, _FakeDateTimeEdit)
+        self.assertEqual(edits.start.date_time, "start")
+        self.assertEqual(edits.end.date_time, "end")
+        self.assertEqual(edits.start.display_format, "yyyy-MM-dd HH:mm")
+        self.assertTrue(edits.start.calendar_popup)
+
+    def test_datetime_range_values_preserve_unset_bounds(self):
+        with patch.dict(sys.modules, {"qgis.gui": _fake_qgis_gui(datetime_edit=_FakeDateTimeEdit)}):
+            edits = make_datetime_range_edits(end_datetime="2026-04-30T18:30:00")
+
+        self.assertFalse(edits.start_enabled)
+        self.assertTrue(edits.end_enabled)
+        self.assertEqual(edits.start.date_time, "constructor-default")
+        self.assertEqual(
+            datetime_range_values(edits),
+            (None, "2026-04-30T18:30:00"),
+        )
+
+    def test_datetime_range_enabled_flags_override_initial_values(self):
+        with patch.dict(sys.modules, {"qgis.gui": _fake_qgis_gui(datetime_edit=_FakeDateTimeEdit)}):
+            edits = make_datetime_range_edits(
+                start_datetime="2026-04-01T08:00:00",
+                end_datetime="2026-04-30T18:30:00",
+                start_enabled=False,
+                end_enabled=True,
+            )
+
+        self.assertEqual(
+            datetime_range_values(edits),
+            (None, "2026-04-30T18:30:00"),
+        )
+
+    def test_datetime_range_values_accept_read_time_enabled_flags(self):
+        with patch.dict(sys.modules, {"qgis.gui": _fake_qgis_gui(datetime_edit=_FakeDateTimeEdit)}):
+            edits = make_datetime_range_edits(start_datetime="2026-04-01T08:00:00")
+
+        self.assertEqual(
+            datetime_range_values(edits, start_enabled=False, end_enabled=True),
+            (None, "constructor-default"),
+        )
+
+    def test_datetime_range_edits_enable_bound_after_user_change(self):
+        with patch.dict(sys.modules, {"qgis.gui": _fake_qgis_gui(datetime_edit=_FakeDateTimeEdit)}):
+            edits = make_datetime_range_edits()
+
+        edits.start.setDateTime("2026-04-01T08:00:00")
+
+        self.assertTrue(edits.start_enabled)
+        self.assertEqual(
+            datetime_range_values(edits),
+            ("2026-04-01T08:00:00", None),
+        )
 
     def test_uses_native_double_range_slider_when_qgis_provides_it(self):
         with patch.dict(
