@@ -293,9 +293,12 @@ class ContextualHelpTests(unittest.TestCase):
         self.assertEqual(entries["atlasTitleLineEdit"].label_text, "Atlas title")
         self.assertEqual(entries["atlasSubtitleLineEdit"].label_text, "Atlas subtitle")
         self.assertEqual(entries["refreshButton"].target_text, "Fetch activities")
+        self.assertEqual(entries["applyFiltersButton"].target_text, "Apply filters")
         self.assertEqual(entries["clearDatabaseButton"].target_text, "Clear database…")
         self.assertIn("after confirmation", entries["clearDatabaseButton"].tooltip)
         self.assertIn("Store activities", entries["buttonLayout"].helper_text)
+        self.assertIn("Use Apply filters", entries["buttonLayout"].helper_text)
+        self.assertNotIn("Apply current filters", entries["buttonLayout"].helper_text)
 
     def test_contextual_help_binder_is_importable_without_instantiating_qgis_widgets(self):
         binder = ContextualHelpBinder(root=object())

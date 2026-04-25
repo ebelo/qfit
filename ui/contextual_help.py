@@ -216,7 +216,7 @@ DOCK_HELP_ENTRIES: tuple[HelpEntry, ...] = (
     ),
     HelpEntry(
         anchor_name="applyFiltersButton",
-        target_text="Apply current filters to loaded layers",
+        target_text="Apply filters",
         tooltip=(
             "Turns the current dock query into real QGIS layer subset filters and reapplies styling/background logic "
             "to the already loaded layers."
@@ -226,7 +226,7 @@ DOCK_HELP_ENTRIES: tuple[HelpEntry, ...] = (
         anchor_name="buttonLayout",
         helper_text=(
             "Use Store activities to update the GeoPackage database. Then use Load activity layers in Visualize when you want "
-            "the stored dataset in QGIS. Apply current filters only when you want loaded layers and tables to match "
+            "the stored dataset in QGIS. Use Apply filters only when you want loaded layers and tables to match "
             "the current dock query."
         ),
     ),
