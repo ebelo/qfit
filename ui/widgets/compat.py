@@ -68,6 +68,55 @@ def checked_list_values(list_widget) -> list[str]:
     return values
 
 
+def make_file_widget(
+    *,
+    file_path: str = "",
+    dialog_title: str = "",
+    filter_text: str = "",
+    storage_mode: object | None = None,
+    parent=None,
+):
+    """Create a file path selector that prefers the native QGIS widget.
+
+    The wizard spec uses ``QgsFileWidget`` for GeoPackage/PDF paths. Minimal
+    test environments may not expose it, so fall back to a plain ``QLineEdit``
+    while preserving a tiny construction API that wizard pages can share.
+    Pass a real ``QgsFileWidget.StorageMode`` enum value as ``storage_mode``;
+    string names are not converted.
+    """
+
+    gui = _import_optional_qgis_gui()
+    file_widget_class = getattr(gui, "QgsFileWidget", None) if gui is not None else None
+    if file_widget_class is not None:
+        widget = file_widget_class(parent)
+        _configure_native_file_widget(
+            widget,
+            file_path=file_path,
+            dialog_title=dialog_title,
+            filter_text=filter_text,
+            storage_mode=storage_mode,
+        )
+        return widget
+
+    widgets = import_module("qgis.PyQt.QtWidgets")
+    widget = widgets.QLineEdit(parent)
+    if file_path:
+        widget.setText(file_path)
+    if dialog_title:
+        widget.setPlaceholderText(dialog_title)
+    return widget
+
+
+def file_widget_path(widget) -> str:
+    """Return the selected path from a native or fallback file widget."""
+
+    if hasattr(widget, "filePath"):
+        return str(widget.filePath())
+    if hasattr(widget, "text"):
+        return str(widget.text())
+    return ""
+
+
 def make_password_line_edit(*, text: str = "", placeholder_text: str = "", parent=None):
     """Create a password field that prefers the native QGIS widget.
 
@@ -91,6 +140,33 @@ def make_password_line_edit(*, text: str = "", placeholder_text: str = "", paren
     if placeholder_text:
         widget.setPlaceholderText(placeholder_text)
     return widget
+
+
+def _import_optional_qgis_gui():
+    try:
+        return import_module("qgis.gui")
+    except ModuleNotFoundError as exc:
+        if exc.name not in {"qgis", "qgis.gui"}:
+            raise
+        return None
+
+
+def _configure_native_file_widget(
+    widget,
+    *,
+    file_path: str,
+    dialog_title: str,
+    filter_text: str,
+    storage_mode: object | None,
+) -> None:
+    if storage_mode is not None and hasattr(widget, "setStorageMode"):
+        widget.setStorageMode(storage_mode)
+    if filter_text and hasattr(widget, "setFilter"):
+        widget.setFilter(filter_text)
+    if dialog_title and hasattr(widget, "setDialogTitle"):
+        widget.setDialogTitle(dialog_title)
+    if file_path:
+        widget.setFilePath(file_path)
 
 
 def _normalise_checkable_list_option(option: CheckableListOption) -> tuple[str, str]:
