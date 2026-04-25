@@ -50,8 +50,6 @@ class _FakeQt:
     ForbiddenCursor = 10
     PointingHandCursor = 11
     ToolButtonTextBesideIcon = 12
-    Horizontal = 13
-    Orientation = int
 
 
 class _FakeWidget:
@@ -122,20 +120,17 @@ class _FakeToolButton(_FakeWidget):
     def setSizePolicy(self, horizontal, vertical):  # noqa: N802
         self.size_policy = (horizontal, vertical)
 
-    def setText(self, value):  # noqa: N802
+    def setText(self, value):
         self._text = value
 
     def text(self):
         return self._text
 
-    def click(self):
-        if self.isEnabled():
-            self.clicked.emit(False)
-
 
 class _FakeFrame(_FakeWidget):
     HLine = 1
     Plain = 2
+    NoFrame = 3
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -153,12 +148,67 @@ class _FakeFrame(_FakeWidget):
         self.fixed_width = value
 
 
-class _FakeHBoxLayout:
+class _FakeLabel(_FakeWidget):
+    def __init__(self, text="", parent=None):
+        super().__init__(parent)
+        self._text = text
+
+    def setText(self, value):  # noqa: N802
+        self._text = value
+
+    def text(self):
+        return self._text
+
+
+class _FakeScrollArea(_FakeWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.widget_resizable = False
+        self.widget = None
+        self.frame_shape = None
+
+    def setWidgetResizable(self, value):  # noqa: N802
+        self.widget_resizable = value
+
+    def setWidget(self, widget):  # noqa: N802
+        self.widget = widget
+
+    def setFrameShape(self, value):  # noqa: N802
+        self.frame_shape = value
+
+
+class _FakeStackedWidget(_FakeWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.widgets = []
+        self.current_index = -1
+
+    def addWidget(self, widget):  # noqa: N802
+        self.widgets.append(widget)
+        if self.current_index == -1:
+            self.current_index = 0
+        return len(self.widgets) - 1
+
+    def count(self):
+        return len(self.widgets)
+
+    def setCurrentIndex(self, index):  # noqa: N802
+        self.current_index = index
+
+    def currentIndex(self):  # noqa: N802
+        return self.current_index
+
+
+class _FakeVBoxLayout:
     def __init__(self, parent=None):
         self.parent = parent
+        self.object_name = ""
         self.contents_margins = None
         self.spacing = None
         self.widgets = []
+
+    def setObjectName(self, value):  # noqa: N802
+        self.object_name = value
 
     def setContentsMargins(self, *values):  # noqa: N802
         self.contents_margins = values
@@ -168,6 +218,10 @@ class _FakeHBoxLayout:
 
     def addWidget(self, widget):  # noqa: N802
         self.widgets.append(widget)
+
+
+class _FakeHBoxLayout(_FakeVBoxLayout):
+    pass
 
 
 class _FakeSizePolicy:
@@ -185,8 +239,12 @@ def _fake_qt_modules():
     qtwidgets = types.ModuleType("qgis.PyQt.QtWidgets")
     qtwidgets.QFrame = _FakeFrame
     qtwidgets.QHBoxLayout = _FakeHBoxLayout
+    qtwidgets.QLabel = _FakeLabel
+    qtwidgets.QScrollArea = _FakeScrollArea
     qtwidgets.QSizePolicy = _FakeSizePolicy
+    qtwidgets.QStackedWidget = _FakeStackedWidget
     qtwidgets.QToolButton = _FakeToolButton
+    qtwidgets.QVBoxLayout = _FakeVBoxLayout
     qtwidgets.QWidget = _FakeWidget
     qgis.PyQt = pyqt
     return {
@@ -197,111 +255,73 @@ def _fake_qt_modules():
     }
 
 
-def _load_stepper_module():
-    for name in ("qfit.ui.dockwidget.stepper_bar", "qfit.ui.dockwidget"):
+def _load_wizard_shell_module():
+    for name in (
+        "qfit.ui.dockwidget.wizard_shell",
+        "qfit.ui.dockwidget.stepper_bar",
+        "qfit.ui.dockwidget",
+    ):
         sys.modules.pop(name, None)
     with patch.dict(sys.modules, _fake_qt_modules()):
-        return importlib.import_module("qfit.ui.dockwidget.stepper_bar")
+        return importlib.import_module("qfit.ui.dockwidget.wizard_shell")
 
 
-class StepperBarTest(unittest.TestCase):
+class WizardShellTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.stepper = _load_stepper_module()
+        cls.wizard_shell = _load_wizard_shell_module()
 
-    def test_initial_state_matches_first_launch_spec(self):
-        bar = self.stepper.StepperBar()
+    def test_builds_spec_shell_structure_with_empty_pages_stack(self):
+        shell = self.wizard_shell.WizardShell(footer_text="Ready")
 
-        self.assertEqual(bar.states(), ("current", "locked", "locked", "locked", "locked"))
-        self.assertEqual(len(bar.step_buttons()), 5)
-        self.assertEqual([button.toolTip() for button in bar.step_buttons()], list(self.stepper.STEPPER_LABELS))
-        self.assertEqual(bar.height(), 36)
+        self.assertEqual(shell.objectName(), "qfitWizardShell")
+        self.assertEqual(shell.stepper_bar.objectName(), "qfitStepperBar")
+        self.assertEqual(shell.separator.objectName(), "qfitWizardShellSeparator")
+        self.assertEqual(shell.separator.frame_shape, _FakeFrame.HLine)
+        self.assertEqual(shell.content_scroll.objectName(), "qfitWizardContentScroll")
+        self.assertTrue(shell.content_scroll.widget_resizable)
+        self.assertEqual(shell.content_scroll.frame_shape, _FakeFrame.NoFrame)
+        self.assertIs(shell.content_scroll.widget, shell.pages_stack)
+        self.assertEqual(shell.pages_stack.objectName(), "qfitWizardPagesStack")
+        self.assertEqual(shell.page_count(), 0)
+        self.assertEqual(shell.footer_bar.objectName(), "qfitWizardFooterBar")
+        self.assertEqual(shell.footer_bar.height(), 28)
+        self.assertEqual(shell.footer_bar.text(), "Ready")
 
-    def test_labels_come_from_shared_workflow_metadata(self):
+    def test_outer_layout_matches_wizard_spec_order(self):
+        shell = self.wizard_shell.WizardShell()
+        layout = shell.outer_layout()
+
+        self.assertEqual(layout.object_name, "qfitWizardOuterLayout")
+        self.assertEqual(layout.contents_margins, (0, 0, 0, 0))
+        self.assertEqual(layout.spacing, 0)
         self.assertEqual(
-            self.stepper.STEPPER_LABELS,
-            ("Connection", "Synchronization", "Map & filters", "Spatial analysis", "Atlas PDF"),
+            layout.widgets,
+            [shell.stepper_bar, shell.separator, shell.content_scroll, shell.footer_bar],
         )
 
-    def test_qt_import_guard_requires_all_widget_classes(self):
-        incomplete_qtwidgets = types.ModuleType("qgis.PyQt.QtWidgets")
-        incomplete_qtwidgets.QWidget = object
-        fallback_qtwidgets = types.ModuleType("fallback.QtWidgets")
-        fallback_qtwidgets.QWidget = object
-        fallback_qtwidgets.QFrame = object
-        with patch.dict(
-            sys.modules,
-            {
-                "qgis.PyQt.QtWidgets": incomplete_qtwidgets,
-                "fallback.QtWidgets": fallback_qtwidgets,
-            },
-        ):
-            module = self.stepper.import_qt_module(
-                "qgis.PyQt.QtWidgets",
-                "fallback.QtWidgets",
-                ("QWidget", "QFrame"),
-            )
+    def test_delegates_stepper_state_and_page_selection(self):
+        shell = self.wizard_shell.WizardShell()
+        first_page = _FakeWidget()
+        second_page = _FakeWidget()
 
-        self.assertIs(module, fallback_qtwidgets)
+        self.assertEqual(shell.add_page(first_page), 0)
+        self.assertEqual(shell.add_page(second_page), 1)
+        shell.set_step_states(["done", "current", "upcoming", "locked", "locked"])
+        self.assertEqual(shell.stepper_bar.states(), ("done", "current", "upcoming", "locked", "locked"))
 
-    def test_set_state_does_not_require_python310_zip_strict_keyword(self):
-        original_zip = zip
+        shell.set_current_step(1)
 
-        def python39_zip(*args, **kwargs):
-            if kwargs:
-                raise TypeError("zip() takes no keyword arguments")
-            return original_zip(*args)
+        self.assertEqual(shell.page_count(), 2)
+        self.assertEqual(shell.stepper_bar.states(), ("upcoming", "current", "upcoming", "upcoming", "upcoming"))
+        self.assertEqual(shell.pages_stack.currentIndex(), 1)
 
-        bar = self.stepper.StepperBar()
-        with patch("builtins.zip", python39_zip):
-            bar.set_state(["done", "current", "upcoming", "locked", "upcoming"])
+    def test_updates_footer_text_without_rebuilding_shell(self):
+        shell = self.wizard_shell.WizardShell(footer_text="Starting")
 
-        self.assertEqual(bar.states(), ("done", "current", "upcoming", "locked", "upcoming"))
+        shell.set_footer_text("Connected · 42 activities")
 
-    def test_applies_state_properties_and_labels(self):
-        bar = self.stepper.StepperBar()
-
-        bar.set_state(["done", "current", "upcoming", "locked", "upcoming"])
-
-        buttons = bar.step_buttons()
-        self.assertEqual(bar.states(), ("done", "current", "upcoming", "locked", "upcoming"))
-        self.assertTrue(buttons[0].text().startswith("✓"))
-        self.assertEqual(buttons[1].property("wizardState"), "current")
-        self.assertTrue(buttons[2].isEnabled())
-        self.assertFalse(buttons[3].isEnabled())
-        self.assertEqual(buttons[3].cursor().shape(), _FakeQt.ForbiddenCursor)
-
-    def test_set_current_marks_other_steps_upcoming(self):
-        bar = self.stepper.StepperBar()
-
-        bar.set_current(2)
-
-        self.assertEqual(bar.states(), ("upcoming", "upcoming", "current", "upcoming", "upcoming"))
-
-    def test_rejects_invalid_state_payloads(self):
-        bar = self.stepper.StepperBar()
-
-        with self.assertRaisesRegex(ValueError, "requires 5 states"):
-            bar.set_state(["current"])
-
-        with self.assertRaisesRegex(ValueError, "Unknown stepper state"):
-            bar.set_state(["current", "done", "waiting", "locked", "upcoming"])
-
-        with self.assertRaisesRegex(ValueError, "outside 0..4"):
-            bar.set_current(5)
-
-    def test_emits_requested_index_only_for_unlocked_steps(self):
-        bar = self.stepper.StepperBar()
-        requested = []
-        bar.stepRequested.connect(requested.append)
-        bar.set_state(["done", "current", "upcoming", "locked", "upcoming"])
-
-        buttons = bar.step_buttons()
-        buttons[0].click()
-        buttons[2].click()
-        buttons[3].click()
-
-        self.assertEqual(requested, [0, 2])
+        self.assertEqual(shell.footer_bar.text(), "Connected · 42 activities")
 
 
 if __name__ == "__main__":
