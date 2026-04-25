@@ -68,6 +68,31 @@ def checked_list_values(list_widget) -> list[str]:
     return values
 
 
+def make_password_line_edit(*, text: str = "", placeholder_text: str = "", parent=None):
+    """Create a password field that prefers the native QGIS widget.
+
+    QGIS provides ``QgsPasswordLineEdit`` for secret values. Older or minimal
+    test environments may not expose it, so fall back to a ``QLineEdit`` with
+    password echo mode while keeping the same simple construction API for
+    wizard pages and configuration dialogs.
+    """
+
+    gui = import_module("qgis.gui")
+    password_class = getattr(gui, "QgsPasswordLineEdit", None)
+    if password_class is not None:
+        widget = password_class(parent)
+    else:
+        widgets = import_module("qgis.PyQt.QtWidgets")
+        widget = widgets.QLineEdit(parent)
+        widget.setEchoMode(widgets.QLineEdit.Password)
+
+    if text:
+        widget.setText(text)
+    if placeholder_text:
+        widget.setPlaceholderText(placeholder_text)
+    return widget
+
+
 def _normalise_checkable_list_option(option: CheckableListOption) -> tuple[str, str]:
     if isinstance(option, tuple):
         if len(option) != 2:

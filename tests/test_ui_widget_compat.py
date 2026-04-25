@@ -7,7 +7,12 @@ from tests import _path  # noqa: F401
 
 from qgis.PyQt.QtCore import Qt
 
-from qfit.ui.widgets.compat import checked_list_values, make_checkable_list, make_range_slider
+from qfit.ui.widgets.compat import (
+    checked_list_values,
+    make_checkable_list,
+    make_password_line_edit,
+    make_range_slider,
+)
 
 
 class _FakeSignal:
@@ -124,6 +129,30 @@ class _FakeParentOnlyIntegerRangeSlider(_FakeIntegerRangeSlider):
         self.orientation_set_later = orientation
 
 
+class _FakePasswordLineEdit:
+    def __init__(self, parent=None):
+        self.parent = parent
+        self.text_value = ""
+        self.placeholder_text = ""
+
+    def setText(self, text):  # noqa: N802
+        self.text_value = text
+
+    def setPlaceholderText(self, text):  # noqa: N802
+        self.placeholder_text = text
+
+
+class _FakeLineEdit(_FakePasswordLineEdit):
+    Password = 2
+
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+        self.echo_mode = None
+
+    def setEchoMode(self, echo_mode):  # noqa: N802
+        self.echo_mode = echo_mode
+
+
 class _FakeListWidget:
     def __init__(self, parent=None):
         self.parent = parent
@@ -165,16 +194,24 @@ class _FakeListWidgetItem:
         return self._data[role]
 
 
-def _fake_qgis_gui(*, double_range_slider=None, range_slider=_FakeIntegerRangeSlider):
+def _fake_qgis_gui(
+    *,
+    double_range_slider=None,
+    password_line_edit=None,
+    range_slider=_FakeIntegerRangeSlider,
+):
     module = types.ModuleType("qgis.gui")
     module.QgsRangeSlider = range_slider
     if double_range_slider is not None:
         module.QgsDoubleRangeSlider = double_range_slider
+    if password_line_edit is not None:
+        module.QgsPasswordLineEdit = password_line_edit
     return module
 
 
 def _fake_qt_widgets():
     module = types.ModuleType("qgis.PyQt.QtWidgets")
+    module.QLineEdit = _FakeLineEdit
     module.QListWidget = _FakeListWidget
     module.QListWidgetItem = _FakeListWidgetItem
     return module
@@ -211,6 +248,39 @@ class UiWidgetCompatTests(unittest.TestCase):
         with patch.dict(sys.modules, {"qgis.PyQt.QtWidgets": _fake_qt_widgets()}):
             with self.assertRaisesRegex(ValueError, "Expected a \\(value, label\\) pair"):
                 make_checkable_list([("run", "Run", "extra")])
+
+    def test_uses_native_password_line_edit_when_qgis_provides_it(self):
+        parent = object()
+        with patch.dict(
+            sys.modules,
+            {"qgis.gui": _fake_qgis_gui(password_line_edit=_FakePasswordLineEdit)},
+        ):
+            widget = make_password_line_edit(
+                text="secret",
+                placeholder_text="Access token",
+                parent=parent,
+            )
+
+        self.assertIsInstance(widget, _FakePasswordLineEdit)
+        self.assertIs(widget.parent, parent)
+        self.assertEqual(widget.text_value, "secret")
+        self.assertEqual(widget.placeholder_text, "Access token")
+
+    def test_password_line_edit_falls_back_to_qlineedit_password_mode(self):
+        parent = object()
+        with patch.dict(
+            sys.modules,
+            {
+                "qgis.gui": _fake_qgis_gui(),
+                "qgis.PyQt.QtWidgets": _fake_qt_widgets(),
+            },
+        ):
+            widget = make_password_line_edit(placeholder_text="Client secret", parent=parent)
+
+        self.assertIsInstance(widget, _FakeLineEdit)
+        self.assertIs(widget.parent, parent)
+        self.assertEqual(widget.echo_mode, _FakeLineEdit.Password)
+        self.assertEqual(widget.placeholder_text, "Client secret")
 
     def test_uses_native_double_range_slider_when_qgis_provides_it(self):
         with patch.dict(
