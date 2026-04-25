@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from qfit.ui.tokens import COLOR_ACCENT, COLOR_MUTED, COLOR_WARN
 
 from ._qt_compat import import_qt_module
+from .action_row import build_wizard_action_row, style_primary_action_button
 
 _qtcore = import_qt_module("qgis.PyQt.QtCore", "PyQt5.QtCore", ("pyqtSignal",))
 _qtwidgets = import_qt_module(
@@ -54,7 +55,16 @@ class SyncPageContent(QWidget):
         self.activity_summary_label.setObjectName("qfitWizardSyncActivitySummary")
         self.sync_button = QToolButton(self)
         self.sync_button.setObjectName("qfitWizardSyncButton")
+        style_primary_action_button(
+            self.sync_button,
+            action_name="sync_activities",
+        )
         self.sync_button.clicked.connect(self.syncRequested.emit)
+        self.action_row = build_wizard_action_row(
+            self.sync_button,
+            parent=self,
+            object_name="qfitWizardSyncActionRow",
+        )
         self._layout = self._build_layout()
         self.set_state(state or SyncPageState())
 
@@ -72,7 +82,6 @@ class SyncPageContent(QWidget):
         self.activity_summary_label.setText(state.activity_summary_text)
         self.activity_summary_label.setProperty("syncState", sync_state)
         self.sync_button.setText(state.primary_action_label)
-        self.sync_button.setProperty("primaryAction", "sync_activities")
 
     def outer_layout(self):
         """Expose the layout for adapter wiring and pure tests."""
@@ -88,7 +97,7 @@ class SyncPageContent(QWidget):
         layout.addWidget(self.status_label)
         layout.addWidget(self.detail_label)
         layout.addWidget(self.activity_summary_label)
-        layout.addWidget(self.sync_button)
+        layout.addWidget(self.action_row)
         return layout
 
 

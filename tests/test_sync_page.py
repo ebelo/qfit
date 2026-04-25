@@ -13,6 +13,7 @@ def _load_sync_modules():
     for name in (
         "qfit.ui.dockwidget.sync_page",
         "qfit.ui.dockwidget.wizard_page",
+        "qfit.ui.dockwidget.action_row",
         "qfit.ui.dockwidget",
     ):
         sys.modules.pop(name, None)
@@ -48,13 +49,16 @@ class SyncPageContentTest(unittest.TestCase):
             content.sync_button.property("primaryAction"),
             "sync_activities",
         )
+        self.assertEqual(content.sync_button.property("wizardActionRole"), "primary")
+        self.assertEqual(content.action_row.objectName(), "qfitWizardSyncActionRow")
+        self.assertEqual(content.action_row.outer_layout().widgets, [content.sync_button])
         self.assertEqual(
             content.outer_layout().widgets,
             [
                 content.status_label,
                 content.detail_label,
                 content.activity_summary_label,
-                content.sync_button,
+                content.action_row,
             ],
         )
 

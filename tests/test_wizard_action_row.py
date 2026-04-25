@@ -1,0 +1,71 @@
+import importlib
+import sys
+import unittest
+from unittest.mock import patch
+
+from tests import _path  # noqa: F401
+from tests.test_wizard_shell import _fake_qt_modules
+
+
+def _load_action_row_module():
+    for name in (
+        "qfit.ui.dockwidget.action_row",
+        "qfit.ui.dockwidget",
+    ):
+        sys.modules.pop(name, None)
+    with patch.dict(sys.modules, _fake_qt_modules()):
+        return importlib.import_module("qfit.ui.dockwidget.action_row")
+
+
+class WizardActionRowTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.action_row = _load_action_row_module()
+
+    def test_builds_scoped_row_with_supplied_buttons(self):
+        primary = self.action_row.QToolButton()
+        secondary = self.action_row.QToolButton()
+
+        row = self.action_row.build_wizard_action_row(
+            secondary,
+            primary,
+            object_name="qfitWizardMapActionRow",
+        )
+
+        self.assertEqual(row.objectName(), "qfitWizardMapActionRow")
+        self.assertEqual(row.outer_layout().object_name, "qfitWizardActionRowLayout")
+        self.assertEqual(row.outer_layout().contents_margins, (0, 4, 0, 0))
+        self.assertEqual(row.outer_layout().spacing, 8)
+        self.assertEqual(row.outer_layout().widgets, [secondary, primary])
+
+    def test_primary_action_button_gets_cta_role_and_chrome(self):
+        button = self.action_row.QToolButton()
+
+        returned = self.action_row.style_primary_action_button(
+            button,
+            action_name="sync_activities",
+        )
+
+        self.assertIs(returned, button)
+        self.assertEqual(button.property("primaryAction"), "sync_activities")
+        self.assertEqual(button.property("wizardActionRole"), "primary")
+        self.assertIn("font-weight: 700", button.styleSheet())
+        self.assertIsNotNone(button.cursor().shape())
+
+    def test_secondary_action_button_gets_secondary_role_and_chrome(self):
+        button = self.action_row.QToolButton()
+
+        returned = self.action_row.style_secondary_action_button(
+            button,
+            action_name="load_activity_layers",
+        )
+
+        self.assertIs(returned, button)
+        self.assertEqual(button.property("secondaryAction"), "load_activity_layers")
+        self.assertEqual(button.property("wizardActionRole"), "secondary")
+        self.assertIn("font-weight: 500", button.styleSheet())
+        self.assertIsNotNone(button.cursor().shape())
+
+
+if __name__ == "__main__":
+    unittest.main()

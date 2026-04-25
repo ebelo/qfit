@@ -5,6 +5,11 @@ from dataclasses import dataclass
 from qfit.ui.tokens import COLOR_ACCENT, COLOR_MUTED, COLOR_WARN
 
 from ._qt_compat import import_qt_module
+from .action_row import (
+    build_wizard_action_row,
+    style_primary_action_button,
+    style_secondary_action_button,
+)
 
 _qtcore = import_qt_module("qgis.PyQt.QtCore", "PyQt5.QtCore", ("pyqtSignal",))
 _qtwidgets = import_qt_module(
@@ -59,12 +64,24 @@ class MapPageContent(QWidget):
         self.filter_summary_label.setObjectName("qfitWizardMapFilterSummary")
         self.load_layers_button = QToolButton(self)
         self.load_layers_button.setObjectName("qfitWizardMapLoadLayersButton")
-        self.load_layers_button.setProperty("secondaryAction", "load_activity_layers")
+        style_secondary_action_button(
+            self.load_layers_button,
+            action_name="load_activity_layers",
+        )
         self.load_layers_button.clicked.connect(self.loadLayersRequested.emit)
         self.apply_filters_button = QToolButton(self)
         self.apply_filters_button.setObjectName("qfitWizardMapApplyFiltersButton")
-        self.apply_filters_button.setProperty("primaryAction", "apply_map_filters")
+        style_primary_action_button(
+            self.apply_filters_button,
+            action_name="apply_map_filters",
+        )
         self.apply_filters_button.clicked.connect(self.applyFiltersRequested.emit)
+        self.action_row = build_wizard_action_row(
+            self.load_layers_button,
+            self.apply_filters_button,
+            parent=self,
+            object_name="qfitWizardMapActionRow",
+        )
         self._layout = self._build_layout()
         self.set_state(state or MapPageState())
 
@@ -101,8 +118,7 @@ class MapPageContent(QWidget):
         layout.addWidget(self.detail_label)
         layout.addWidget(self.layer_summary_label)
         layout.addWidget(self.filter_summary_label)
-        layout.addWidget(self.load_layers_button)
-        layout.addWidget(self.apply_filters_button)
+        layout.addWidget(self.action_row)
         return layout
 
 
