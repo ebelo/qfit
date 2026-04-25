@@ -10,10 +10,40 @@ from qgis.PyQt.QtCore import Qt
 from qfit.ui.widgets.compat import make_range_slider
 
 
+class _FakeSignal:
+    def __init__(self):
+        self._slots = []
+
+    def connect(self, slot):
+        self._slots.append(slot)
+        return slot
+
+    def emit(self, *args):
+        for slot in list(self._slots):
+            slot(*args)
+
+
+class _FakeSignalDescriptor:
+    def __init__(self, name):
+        self.name = name
+
+    def __get__(self, instance, _owner):
+        if instance is None:
+            return self
+        return instance.base_signals[self.name]
+
+
 class _FakeIntegerRangeSlider:
+    rangeChanged = _FakeSignalDescriptor("rangeChanged")
+    rangeLimitsChanged = _FakeSignalDescriptor("rangeLimitsChanged")
+
     def __init__(self, orientation=Qt.Horizontal, parent=None):
         self.orientation = orientation
         self.parent = parent
+        self.base_signals = {
+            "rangeChanged": _FakeSignal(),
+            "rangeLimitsChanged": _FakeSignal(),
+        }
         self.limit_values = None
         self.selected_values = None
         self.lower_raw = None
@@ -23,6 +53,7 @@ class _FakeIntegerRangeSlider:
         self.limit_values = (minimum, maximum)
         self.minimum_raw = minimum
         self.maximum_raw = maximum
+        self.base_signals["rangeLimitsChanged"].emit(minimum, maximum)
 
     def setMinimum(self, value):  # noqa: N802
         self.minimum_raw = value
@@ -40,6 +71,7 @@ class _FakeIntegerRangeSlider:
         self.selected_values = (lower, upper)
         self.lower_raw = lower
         self.upper_raw = upper
+        self.base_signals["rangeChanged"].emit(lower, upper)
 
     def setLowerValue(self, value):  # noqa: N802
         self.lower_raw = value
@@ -155,6 +187,23 @@ class UiWidgetCompatTests(unittest.TestCase):
             second_slider = make_range_slider(minimum=2.0, maximum=5.0, decimals=2)
 
         self.assertIs(type(first_slider), type(second_slider))
+
+    def test_fallback_signals_emit_logical_float_values(self):
+        with patch.dict(sys.modules, {"qgis.gui": _fake_qgis_gui()}):
+            slider = make_range_slider(minimum=1.0, maximum=2.5, decimals=2)
+
+        range_changes = []
+        range_limit_changes = []
+        slider.rangeChanged.connect(lambda lower, upper: range_changes.append((lower, upper)))
+        slider.rangeLimitsChanged.connect(
+            lambda minimum, maximum: range_limit_changes.append((minimum, maximum)),
+        )
+
+        slider.setRange(6.75, 20.5)
+        slider.setRangeLimits(1.25, 40.75)
+
+        self.assertEqual(range_changes, [(6.75, 20.5)])
+        self.assertEqual(range_limit_changes, [(1.25, 40.75)])
 
     def test_configures_parent_only_native_slider_api(self):
         parent = object()

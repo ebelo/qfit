@@ -6,6 +6,25 @@ from importlib import import_module
 from qgis.PyQt.QtCore import Qt
 
 
+class _ScaledSignal:
+    def __init__(self):
+        self._slots = []
+
+    def connect(self, slot):
+        self._slots.append(slot)
+        return slot
+
+    def disconnect(self, slot=None):
+        if slot is None:
+            self._slots.clear()
+            return
+        self._slots.remove(slot)
+
+    def emit(self, *args) -> None:
+        for slot in list(self._slots):
+            slot(*args)
+
+
 def make_range_slider(
     *,
     minimum: float,
@@ -70,6 +89,17 @@ def _configure_slider(slider, minimum, maximum, lower, upper) -> None:
         slider.setUpperValue(upper_value)
 
 
+def _bind_base_signal(signal_owner, signal_name: str, instance):
+    signal = getattr(signal_owner, signal_name, None)
+    if signal is None:
+        return None
+    if hasattr(signal, "__get__"):
+        signal = signal.__get__(instance, type(instance))
+    if not hasattr(signal, "connect"):
+        return None
+    return signal
+
+
 @lru_cache(maxsize=None)
 def _build_scaled_range_slider(range_slider_class):
     class ScaledRangeSlider(range_slider_class):
@@ -81,6 +111,37 @@ def _build_scaled_range_slider(range_slider_class):
                 super().__init__(parent)
                 if hasattr(self, "setOrientation"):
                     self.setOrientation(orientation)
+            self._wire_scaled_signals(range_slider_class)
+
+        def _wire_scaled_signals(self, range_slider_base_class) -> None:
+            base_range_changed = _bind_base_signal(
+                range_slider_base_class,
+                "rangeChanged",
+                self,
+            )
+            base_range_limits_changed = _bind_base_signal(
+                range_slider_base_class,
+                "rangeLimitsChanged",
+                self,
+            )
+            self.rangeChanged = _ScaledSignal()
+            self.rangeLimitsChanged = _ScaledSignal()
+            if base_range_changed is not None:
+                base_range_changed.connect(self._emit_scaled_range_changed)
+            if base_range_limits_changed is not None:
+                base_range_limits_changed.connect(self._emit_scaled_range_limits_changed)
+
+        def _emit_scaled_range_changed(self, lower: int, upper: int) -> None:
+            self.rangeChanged.emit(
+                self._from_slider_value(lower),
+                self._from_slider_value(upper),
+            )
+
+        def _emit_scaled_range_limits_changed(self, minimum: int, maximum: int) -> None:
+            self.rangeLimitsChanged.emit(
+                self._from_slider_value(minimum),
+                self._from_slider_value(maximum),
+            )
 
         def setRangeLimits(self, minimum: float, maximum: float) -> None:  # noqa: N802
             super().setRangeLimits(self._to_slider_value(minimum), self._to_slider_value(maximum))
