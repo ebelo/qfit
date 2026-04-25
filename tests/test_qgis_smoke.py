@@ -778,7 +778,7 @@ class QgisSmokeTests(unittest.TestCase):
             dock.close()
             dock.deleteLater()
 
-    def test_detailed_route_controls_use_missing_route_wording(self):
+    def test_detailed_route_controls_use_short_route_wording(self):
         dock = QfitDockWidget(self.iface)
         try:
             self.assertEqual(
