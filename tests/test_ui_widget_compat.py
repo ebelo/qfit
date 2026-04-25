@@ -9,9 +9,11 @@ from qgis.PyQt.QtCore import Qt
 
 from qfit.ui.widgets.compat import (
     checked_list_values,
+    collapsible_group_box_expanded,
     datetime_range_values,
     file_widget_path,
     make_checkable_list,
+    make_collapsible_group_box,
     make_datetime_range_edits,
     make_file_widget,
     make_password_line_edit,
@@ -173,6 +175,65 @@ class _FakeFileWidget:
         self.storage_mode = storage_mode
 
 
+class _FakeCollapsibleGroupBox:
+    def __init__(self, title="", parent=None):
+        self.title = title
+        self.parent = parent
+        self.checkable = None
+        self.collapsed = None
+        self.checked = None
+
+    def setTitle(self, title):  # noqa: N802
+        self.title = title
+
+    def setCheckable(self, value):  # noqa: N802
+        self.checkable = value
+
+    def isCheckable(self):  # noqa: N802
+        return self.checkable
+
+    def setCollapsed(self, value):  # noqa: N802
+        self.collapsed = value
+
+    def isCollapsed(self):  # noqa: N802
+        return self.collapsed
+
+    def setChecked(self, value):  # noqa: N802
+        self.checked = value
+
+    def isChecked(self):  # noqa: N802
+        return self.checked
+
+
+class _FakeParentOnlyCollapsibleGroupBox(_FakeCollapsibleGroupBox):
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+
+
+class _FakeGroupBox:
+    def __init__(self, title="", parent=None):
+        self.title = title
+        self.parent = parent
+        self.checkable = None
+        self.checked = None
+
+    def setTitle(self, title):  # noqa: N802
+        self.title = title
+
+    def setCheckable(self, value):  # noqa: N802
+        self.checkable = value
+
+    def isCheckable(self):  # noqa: N802
+        return self.checkable
+
+    def setChecked(self, value):  # noqa: N802
+        if self.checkable:
+            self.checked = value
+
+    def isChecked(self):  # noqa: N802
+        return self.checked
+
+
 class _FakeDateTimeEdit:
     def __init__(self, parent=None):
         self.parent = parent
@@ -249,6 +310,7 @@ class _FakeListWidgetItem:
 
 def _fake_qgis_gui(
     *,
+    collapsible_group_box=None,
     datetime_edit=None,
     double_range_slider=None,
     file_widget=None,
@@ -257,6 +319,8 @@ def _fake_qgis_gui(
 ):
     module = types.ModuleType("qgis.gui")
     module.QgsRangeSlider = range_slider
+    if collapsible_group_box is not None:
+        module.QgsCollapsibleGroupBox = collapsible_group_box
     if datetime_edit is not None:
         module.QgsDateTimeEdit = datetime_edit
     if double_range_slider is not None:
@@ -271,6 +335,7 @@ def _fake_qgis_gui(
 def _fake_qt_widgets():
     module = types.ModuleType("qgis.PyQt.QtWidgets")
     module.QDateTimeEdit = _FakeDateTimeEdit
+    module.QGroupBox = _FakeGroupBox
     module.QLineEdit = _FakeLineEdit
     module.QListWidget = _FakeListWidget
     module.QListWidgetItem = _FakeListWidgetItem
@@ -278,6 +343,121 @@ def _fake_qt_widgets():
 
 
 class UiWidgetCompatTests(unittest.TestCase):
+    def test_uses_native_collapsible_group_box_when_qgis_provides_it(self):
+        parent = object()
+        with patch.dict(
+            sys.modules,
+            {"qgis.gui": _fake_qgis_gui(collapsible_group_box=_FakeCollapsibleGroupBox)},
+        ):
+            group_box = make_collapsible_group_box(
+                title="Map & filters",
+                collapsed=True,
+                parent=parent,
+            )
+
+        self.assertIsInstance(group_box, _FakeCollapsibleGroupBox)
+        self.assertIs(group_box.parent, parent)
+        self.assertEqual(group_box.title, "Map & filters")
+        self.assertTrue(group_box.checkable)
+        self.assertTrue(group_box.collapsed)
+        self.assertFalse(collapsible_group_box_expanded(group_box))
+
+    def test_collapsible_group_box_falls_back_to_checkable_qgroupbox(self):
+        parent = object()
+        with patch.dict(
+            sys.modules,
+            {
+                "qgis.gui": _fake_qgis_gui(),
+                "qgis.PyQt.QtWidgets": _fake_qt_widgets(),
+            },
+        ):
+            group_box = make_collapsible_group_box(
+                title="Atlas PDF",
+                collapsed=False,
+                parent=parent,
+            )
+
+        self.assertIsInstance(group_box, _FakeGroupBox)
+        self.assertIs(group_box.parent, parent)
+        self.assertEqual(group_box.title, "Atlas PDF")
+        self.assertTrue(group_box.checkable)
+        self.assertTrue(group_box.checked)
+        self.assertTrue(collapsible_group_box_expanded(group_box))
+
+    def test_native_collapsible_group_box_respects_explicit_non_checkable_state(self):
+        with patch.dict(
+            sys.modules,
+            {"qgis.gui": _fake_qgis_gui(collapsible_group_box=_FakeCollapsibleGroupBox)},
+        ):
+            group_box = make_collapsible_group_box(
+                title="Native collapsed",
+                collapsed=True,
+                checkable=False,
+            )
+
+        self.assertFalse(group_box.checkable)
+        self.assertTrue(group_box.collapsed)
+        self.assertFalse(collapsible_group_box_expanded(group_box))
+
+    def test_fallback_non_checkable_group_box_is_reported_expanded(self):
+        with patch.dict(
+            sys.modules,
+            {
+                "qgis.gui": _fake_qgis_gui(),
+                "qgis.PyQt.QtWidgets": _fake_qt_widgets(),
+            },
+        ):
+            group_box = make_collapsible_group_box(
+                title="Always visible",
+                collapsed=False,
+                checkable=False,
+            )
+
+        self.assertFalse(group_box.checkable)
+        self.assertIsNone(group_box.checked)
+        self.assertTrue(collapsible_group_box_expanded(group_box))
+
+    def test_fallback_enables_checkability_when_initially_collapsed(self):
+        with patch.dict(
+            sys.modules,
+            {
+                "qgis.gui": _fake_qgis_gui(),
+                "qgis.PyQt.QtWidgets": _fake_qt_widgets(),
+            },
+        ):
+            group_box = make_collapsible_group_box(
+                title="Initially collapsed",
+                collapsed=True,
+                checkable=False,
+            )
+
+        self.assertTrue(group_box.checkable)
+        self.assertFalse(group_box.checked)
+        self.assertFalse(collapsible_group_box_expanded(group_box))
+
+    def test_configures_parent_only_native_collapsible_group_box_api(self):
+        parent = object()
+        with patch.dict(
+            sys.modules,
+            {
+                "qgis.gui": _fake_qgis_gui(
+                    collapsible_group_box=_FakeParentOnlyCollapsibleGroupBox,
+                )
+            },
+        ):
+            group_box = make_collapsible_group_box(
+                title="Spatial analysis",
+                collapsed=False,
+                checkable=False,
+                parent=parent,
+            )
+
+        self.assertIs(group_box.parent, parent)
+        self.assertEqual(group_box.title, "Spatial analysis")
+        self.assertFalse(group_box.checkable)
+        self.assertFalse(group_box.collapsed)
+        self.assertTrue(collapsible_group_box_expanded(group_box))
+
     def test_creates_native_checkable_list_with_stable_values(self):
         parent = object()
         with patch.dict(sys.modules, {"qgis.PyQt.QtWidgets": _fake_qt_widgets()}):
