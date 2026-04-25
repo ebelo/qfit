@@ -1205,7 +1205,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
     def _set_atlas_export_running(self, running: bool) -> None:
         self.generateAtlasPdfButton.setText(
-            "Cancel export" if running else "Generate Atlas PDF"
+            "Cancel export" if running else "Generate atlas PDF"
         )
         self.loadButton.setEnabled(not running)
         self.loadLayersButton.setEnabled(not running)
