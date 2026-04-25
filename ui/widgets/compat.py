@@ -288,11 +288,13 @@ def _configure_collapsible_group_box(
 ) -> None:
     if title and hasattr(group_box, "setTitle"):
         group_box.setTitle(title)
-    if hasattr(group_box, "setCheckable"):
-        group_box.setCheckable(checkable or collapsed)
     if hasattr(group_box, "setCollapsed"):
+        if hasattr(group_box, "setCheckable"):
+            group_box.setCheckable(checkable)
         group_box.setCollapsed(collapsed)
     elif hasattr(group_box, "setChecked"):
+        if hasattr(group_box, "setCheckable"):
+            group_box.setCheckable(checkable or collapsed)
         group_box.setChecked(not collapsed)
 
 

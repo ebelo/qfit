@@ -384,6 +384,21 @@ class UiWidgetCompatTests(unittest.TestCase):
         self.assertTrue(group_box.checked)
         self.assertTrue(collapsible_group_box_expanded(group_box))
 
+    def test_native_collapsible_group_box_respects_explicit_non_checkable_state(self):
+        with patch.dict(
+            sys.modules,
+            {"qgis.gui": _fake_qgis_gui(collapsible_group_box=_FakeCollapsibleGroupBox)},
+        ):
+            group_box = make_collapsible_group_box(
+                title="Native collapsed",
+                collapsed=True,
+                checkable=False,
+            )
+
+        self.assertFalse(group_box.checkable)
+        self.assertTrue(group_box.collapsed)
+        self.assertFalse(collapsible_group_box_expanded(group_box))
+
     def test_fallback_non_checkable_group_box_is_reported_expanded(self):
         with patch.dict(
             sys.modules,
