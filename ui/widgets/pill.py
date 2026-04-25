@@ -54,6 +54,8 @@ def set_pill_tone(
 
     if object_name is None:
         object_name = widget.objectName() or DEFAULT_PILL_OBJECT_NAME
+    if widget.objectName() != object_name:
+        widget.setObjectName(object_name)
     widget.setProperty("tone", tone)
     widget.setStyleSheet(build_pill_stylesheet(tone, object_name=object_name))
 

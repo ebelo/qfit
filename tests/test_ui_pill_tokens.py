@@ -59,6 +59,14 @@ class UiPillTokensTests(unittest.TestCase):
         self.assertEqual(pill_tone(pill), "info")
         self.assertIn("#124c8c", pill.styleSheet())
 
+    def test_set_pill_tone_updates_explicit_scoped_object_name(self):
+        label = _FakeLabel("3 couches")
+
+        set_pill_tone(label, "muted", object_name="layerCountPill")
+
+        self.assertEqual(label.objectName(), "layerCountPill")
+        self.assertIn("QLabel#layerCountPill", label.styleSheet())
+
 
 class _FakeQt:
     AlignCenter = "align-center"
