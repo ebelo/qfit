@@ -38,7 +38,7 @@ class WizardActionRow(QWidget):
             self.add_button(button)
 
     def add_button(self, button: QToolButton) -> None:
-        """Append an action button to the row without changing ownership."""
+        """Append an action button and let Qt re-parent it into the row."""
 
         self._layout.addWidget(button)
 
@@ -99,8 +99,10 @@ def _apply_button_chrome(button: QToolButton, *, primary: bool) -> None:
         button.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
     if hasattr(button, "setSizePolicy"):
         button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-    button.setCursor(Qt.PointingHandCursor)
-    button.setStyleSheet(_button_stylesheet(primary=primary))
+    if hasattr(button, "setCursor"):
+        button.setCursor(Qt.PointingHandCursor)
+    if hasattr(button, "setStyleSheet"):
+        button.setStyleSheet(_button_stylesheet(primary=primary))
 
 
 def _button_stylesheet(*, primary: bool) -> str:
@@ -114,7 +116,12 @@ def _button_stylesheet(*, primary: bool) -> str:
             "padding: 5px 10px; "
             "font-weight: 700; "
             "} "
-            f"QToolButton:hover:enabled {{ background: {COLOR_ACCENT_DARK}; }}"
+            f"QToolButton:hover:enabled {{ background: {COLOR_ACCENT_DARK}; }} "
+            "QToolButton:disabled { "
+            f"background: {COLOR_SEPARATOR}; "
+            f"border-color: {COLOR_SEPARATOR}; "
+            f"color: {COLOR_MUTED}; "
+            "}"
         )
     return (
         "QToolButton { "

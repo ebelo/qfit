@@ -50,6 +50,7 @@ class WizardActionRowTest(unittest.TestCase):
         self.assertEqual(button.property("primaryAction"), "sync_activities")
         self.assertEqual(button.property("wizardActionRole"), "primary")
         self.assertIn("font-weight: 700", button.styleSheet())
+        self.assertIn("QToolButton:disabled", button.styleSheet())
         self.assertIsNotNone(button.cursor().shape())
 
     def test_secondary_action_button_gets_secondary_role_and_chrome(self):
