@@ -91,7 +91,7 @@ def build_wizard_pages(
 ) -> tuple[WizardPage, ...]:
     """Build visible wizard page containers from render-neutral specs."""
 
-    page_specs = tuple(specs or build_default_wizard_page_specs())
+    page_specs = build_default_wizard_page_specs() if specs is None else tuple(specs)
     return tuple(WizardPage(spec, parent) for spec in page_specs)
 
 
