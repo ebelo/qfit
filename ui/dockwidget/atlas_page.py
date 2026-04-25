@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from qfit.ui.tokens import COLOR_ACCENT, COLOR_MUTED, COLOR_WARN
 
 from ._qt_compat import import_qt_module
+from .action_row import build_wizard_action_row, style_primary_action_button
 
 _qtcore = import_qt_module("qgis.PyQt.QtCore", "PyQt5.QtCore", ("pyqtSignal",))
 _qtwidgets = import_qt_module(
@@ -57,8 +58,16 @@ class AtlasPageContent(QWidget):
         self.output_summary_label.setObjectName("qfitWizardAtlasOutputSummary")
         self.export_atlas_button = QToolButton(self)
         self.export_atlas_button.setObjectName("qfitWizardAtlasExportButton")
-        self.export_atlas_button.setProperty("primaryAction", "export_atlas_pdf")
+        style_primary_action_button(
+            self.export_atlas_button,
+            action_name="export_atlas_pdf",
+        )
         self.export_atlas_button.clicked.connect(self.exportAtlasRequested.emit)
+        self.action_row = build_wizard_action_row(
+            self.export_atlas_button,
+            parent=self,
+            object_name="qfitWizardAtlasActionRow",
+        )
         self._layout = self._build_layout()
         self.set_state(state or AtlasPageState())
 
@@ -95,7 +104,7 @@ class AtlasPageContent(QWidget):
             self.detail_label,
             self.input_summary_label,
             self.output_summary_label,
-            self.export_atlas_button,
+            self.action_row,
         ):
             layout.addWidget(widget)
         return layout

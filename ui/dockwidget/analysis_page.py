@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from qfit.ui.tokens import COLOR_ACCENT, COLOR_MUTED, COLOR_WARN
 
 from ._qt_compat import import_qt_module
+from .action_row import build_wizard_action_row, style_primary_action_button
 
 _qtcore = import_qt_module("qgis.PyQt.QtCore", "PyQt5.QtCore", ("pyqtSignal",))
 _qtwidgets = import_qt_module(
@@ -59,8 +60,16 @@ class AnalysisPageContent(QWidget):
         self.result_summary_label.setObjectName("qfitWizardAnalysisResultSummary")
         self.run_analysis_button = QToolButton(self)
         self.run_analysis_button.setObjectName("qfitWizardAnalysisRunButton")
-        self.run_analysis_button.setProperty("primaryAction", "run_analysis")
+        style_primary_action_button(
+            self.run_analysis_button,
+            action_name="run_analysis",
+        )
         self.run_analysis_button.clicked.connect(self.runAnalysisRequested.emit)
+        self.action_row = build_wizard_action_row(
+            self.run_analysis_button,
+            parent=self,
+            object_name="qfitWizardAnalysisActionRow",
+        )
         self._layout = self._build_layout()
         self.set_state(state or AnalysisPageState())
 
@@ -97,7 +106,7 @@ class AnalysisPageContent(QWidget):
             self.detail_label,
             self.input_summary_label,
             self.result_summary_label,
-            self.run_analysis_button,
+            self.action_row,
         ):
             layout.addWidget(widget)
         return layout

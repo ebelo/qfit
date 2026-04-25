@@ -13,6 +13,7 @@ def _load_connection_modules():
     for name in (
         "qfit.ui.dockwidget.connection_page",
         "qfit.ui.dockwidget.wizard_page",
+        "qfit.ui.dockwidget.action_row",
         "qfit.ui.dockwidget",
     ):
         sys.modules.pop(name, None)
@@ -49,9 +50,15 @@ class ConnectionPageContentTest(unittest.TestCase):
             content.configure_button.property("primaryAction"),
             "configure_connection",
         )
+        self.assertEqual(content.configure_button.property("wizardActionRole"), "primary")
+        self.assertEqual(
+            content.action_row.objectName(),
+            "qfitWizardConnectionActionRow",
+        )
+        self.assertEqual(content.action_row.outer_layout().widgets, [content.configure_button])
         self.assertEqual(
             content.outer_layout().widgets,
-            [content.status_label, content.detail_label, content.configure_button],
+            [content.status_label, content.detail_label, content.action_row],
         )
 
     def test_refreshes_connected_state_without_rebuilding(self):

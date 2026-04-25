@@ -13,6 +13,7 @@ def _load_atlas_modules():
     for name in (
         "qfit.ui.dockwidget.atlas_page",
         "qfit.ui.dockwidget.wizard_page",
+        "qfit.ui.dockwidget.action_row",
         "qfit.ui.dockwidget",
     ):
         sys.modules.pop(name, None)
@@ -63,13 +64,22 @@ class AtlasPageContentTest(unittest.TestCase):
             "export_atlas_pdf",
         )
         self.assertEqual(
+            content.export_atlas_button.property("wizardActionRole"),
+            "primary",
+        )
+        self.assertEqual(content.action_row.objectName(), "qfitWizardAtlasActionRow")
+        self.assertEqual(
+            content.action_row.outer_layout().widgets,
+            [content.export_atlas_button],
+        )
+        self.assertEqual(
             content.outer_layout().widgets,
             [
                 content.status_label,
                 content.detail_label,
                 content.input_summary_label,
                 content.output_summary_label,
-                content.export_atlas_button,
+                content.action_row,
             ],
         )
 

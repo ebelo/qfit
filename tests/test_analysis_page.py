@@ -13,6 +13,7 @@ def _load_analysis_modules():
     for name in (
         "qfit.ui.dockwidget.analysis_page",
         "qfit.ui.dockwidget.wizard_page",
+        "qfit.ui.dockwidget.action_row",
         "qfit.ui.dockwidget",
     ):
         sys.modules.pop(name, None)
@@ -63,13 +64,22 @@ class AnalysisPageContentTest(unittest.TestCase):
             "run_analysis",
         )
         self.assertEqual(
+            content.run_analysis_button.property("wizardActionRole"),
+            "primary",
+        )
+        self.assertEqual(content.action_row.objectName(), "qfitWizardAnalysisActionRow")
+        self.assertEqual(
+            content.action_row.outer_layout().widgets,
+            [content.run_analysis_button],
+        )
+        self.assertEqual(
             content.outer_layout().widgets,
             [
                 content.status_label,
                 content.detail_label,
                 content.input_summary_label,
                 content.result_summary_label,
-                content.run_analysis_button,
+                content.action_row,
             ],
         )
 

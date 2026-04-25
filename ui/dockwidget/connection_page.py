@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from qfit.ui.tokens import COLOR_ACCENT, COLOR_MUTED, COLOR_WARN
 
 from ._qt_compat import import_qt_module
+from .action_row import build_wizard_action_row, style_primary_action_button
 
 _qtcore = import_qt_module("qgis.PyQt.QtCore", "PyQt5.QtCore", ("pyqtSignal",))
 _qtwidgets = import_qt_module(
@@ -56,7 +57,16 @@ class ConnectionPageContent(QWidget):
             self.detail_label.setWordWrap(True)
         self.configure_button = QToolButton(self)
         self.configure_button.setObjectName("qfitWizardConnectionConfigureButton")
+        style_primary_action_button(
+            self.configure_button,
+            action_name="configure_connection",
+        )
         self.configure_button.clicked.connect(self.configureRequested.emit)
+        self.action_row = build_wizard_action_row(
+            self.configure_button,
+            parent=self,
+            object_name="qfitWizardConnectionActionRow",
+        )
         self._layout = self._build_layout()
         self.set_state(state or ConnectionPageState())
 
@@ -74,7 +84,6 @@ class ConnectionPageContent(QWidget):
             f"QLabel#qfitWizardConnectionDetail {{ color: {COLOR_MUTED}; }}"
         )
         self.configure_button.setText(state.primary_action_label)
-        self.configure_button.setProperty("primaryAction", "configure_connection")
 
     def outer_layout(self):
         """Expose the layout for adapter wiring and pure tests."""
@@ -89,7 +98,7 @@ class ConnectionPageContent(QWidget):
         layout.setSpacing(8)
         layout.addWidget(self.status_label)
         layout.addWidget(self.detail_label)
-        layout.addWidget(self.configure_button)
+        layout.addWidget(self.action_row)
         return layout
 
 

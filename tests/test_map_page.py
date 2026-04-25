@@ -13,6 +13,7 @@ def _load_map_modules():
     for name in (
         "qfit.ui.dockwidget.map_page",
         "qfit.ui.dockwidget.wizard_page",
+        "qfit.ui.dockwidget.action_row",
         "qfit.ui.dockwidget",
     ):
         sys.modules.pop(name, None)
@@ -62,6 +63,7 @@ class MapPageContentTest(unittest.TestCase):
             content.load_layers_button.property("secondaryAction"),
             "load_activity_layers",
         )
+        self.assertEqual(content.load_layers_button.property("wizardActionRole"), "secondary")
         self.assertEqual(
             content.apply_filters_button.objectName(),
             "qfitWizardMapApplyFiltersButton",
@@ -71,6 +73,12 @@ class MapPageContentTest(unittest.TestCase):
             content.apply_filters_button.property("primaryAction"),
             "apply_map_filters",
         )
+        self.assertEqual(content.apply_filters_button.property("wizardActionRole"), "primary")
+        self.assertEqual(content.action_row.objectName(), "qfitWizardMapActionRow")
+        self.assertEqual(
+            content.action_row.outer_layout().widgets,
+            [content.load_layers_button, content.apply_filters_button],
+        )
         self.assertEqual(
             content.outer_layout().widgets,
             [
@@ -78,8 +86,7 @@ class MapPageContentTest(unittest.TestCase):
                 content.detail_label,
                 content.layer_summary_label,
                 content.filter_summary_label,
-                content.load_layers_button,
-                content.apply_filters_button,
+                content.action_row,
             ],
         )
 
