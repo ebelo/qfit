@@ -14,6 +14,7 @@ def _load_wizard_composition_module():
         "qfit.ui.dockwidget.wizard_composition",
         "qfit.ui.dockwidget.connection_page",
         "qfit.ui.dockwidget.sync_page",
+        "qfit.ui.dockwidget.map_page",
         "qfit.ui.dockwidget.wizard_shell_presenter",
         "qfit.ui.dockwidget.wizard_page",
         "qfit.ui.dockwidget.wizard_shell",
@@ -61,6 +62,15 @@ class WizardShellCompositionTest(unittest.TestCase):
             assembled.sync_content.status_label.text(),
             "Activities not synced yet",
         )
+        self.assertIsNotNone(assembled.map_content)
+        self.assertIs(
+            assembled.pages[2].body_layout().widgets[-1],
+            assembled.map_content,
+        )
+        self.assertEqual(
+            assembled.map_content.status_label.text(),
+            "Activity layers not loaded",
+        )
         self.assertEqual(
             assembled.shell.stepper_bar.states(),
             ("current", "locked", "locked", "locked", "locked"),
@@ -87,6 +97,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertEqual(assembled.pages, ())
         self.assertIsNone(assembled.connection_content)
         self.assertIsNone(assembled.sync_content)
+        self.assertIsNone(assembled.map_content)
         self.assertEqual(assembled.shell.page_count(), 0)
         self.assertEqual(assembled.shell.pages_stack.currentIndex(), -1)
         self.assertEqual(assembled.presenter.progress.current_key, "connection")
