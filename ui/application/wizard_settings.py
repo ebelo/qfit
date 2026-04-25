@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 from typing import Any
 
 from ...configuration.application.settings_port import SettingsPort
@@ -55,7 +55,12 @@ def ensure_wizard_settings(settings: SettingsPort) -> WizardSettingsSnapshot:
     if snapshot.first_launch:
         settings.set(WIZARD_VERSION_KEY, WIZARD_VERSION)
         settings.set(COLLAPSED_GROUPS_KEY, list(snapshot.collapsed_groups))
-        return replace(snapshot, wizard_version=WIZARD_VERSION)
+        return WizardSettingsSnapshot(
+            wizard_version=WIZARD_VERSION,
+            last_step_index=snapshot.last_step_index,
+            collapsed_groups=snapshot.collapsed_groups,
+            first_launch=snapshot.first_launch,
+        )
     return snapshot
 
 
