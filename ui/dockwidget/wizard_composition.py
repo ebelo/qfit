@@ -4,7 +4,10 @@ from collections.abc import Callable, Collection, Sequence
 from dataclasses import dataclass
 from typing import TypeVar
 
-from qfit.ui.application.dock_workflow_sections import DockWizardProgress
+from qfit.ui.application.dock_workflow_sections import (
+    DockWizardProgress,
+    build_progress_wizard_step_statuses,
+)
 from qfit.ui.application.wizard_footer_status import build_wizard_footer_status
 from qfit.ui.application.wizard_page_specs import (
     DockWizardPageSpec,
@@ -125,7 +128,12 @@ def build_placeholder_wizard_shell(
         analysis_state=analysis_state,
     )
     atlas_content = _install_atlas_content(pages, atlas_state=atlas_state)
-    presenter = WizardShellPresenter(shell, progress)
+    _validate_progress_targets_installed_page(progress, pages)
+    presenter = WizardShellPresenter(
+        shell,
+        progress,
+        page_indices_by_key=_build_page_indices_by_key(pages),
+    )
     return WizardShellComposition(
         shell=shell,
         pages=pages,
@@ -152,13 +160,15 @@ def refresh_wizard_shell_composition(
     analysis_state: AnalysisPageState | None = None,
     atlas_state: AtlasPageState | None = None,
     footer_text: str | None = None,
+    progress: DockWizardProgress | None = None,
 ) -> WizardShellComposition:
     """Refresh installed wizard page state without rebuilding the shell.
 
     This is the small adapter seam the future dock can use when real workflow
     facts change: update only the installed page widgets, then refresh the
-    persistent footer from the same render-neutral state snapshots. Missing page
-    content is skipped so partial/spec-filtered wizard assemblies remain valid.
+    persistent footer and optional stepper progress from the same render-neutral
+    state snapshots. Missing page content is skipped so partial/spec-filtered
+    wizard assemblies remain valid.
     """
 
     next_connection_state = _resolve_state(
@@ -178,6 +188,7 @@ def refresh_wizard_shell_composition(
         composition.atlas_state,
         AtlasPageState,
     )
+    _validate_progress_targets_installed_page(progress, composition.pages)
 
     if composition.connection_content is not None:
         composition.connection_content.set_state(next_connection_state)
@@ -202,6 +213,8 @@ def refresh_wizard_shell_composition(
             atlas_state=next_atlas_state,
         )
     )
+    if progress is not None:
+        composition.presenter.set_progress(progress)
 
     composition.connection_state = next_connection_state
     composition.sync_state = next_sync_state
@@ -258,6 +271,21 @@ def _connect_action_callbacks(
         analysis_content.runAnalysisRequested.connect(callbacks.run_analysis)
     if atlas_content is not None and callbacks.export_atlas is not None:
         atlas_content.exportAtlasRequested.connect(callbacks.export_atlas)
+
+
+def _validate_progress_targets_installed_page(
+    progress: DockWizardProgress | None,
+    pages: Sequence[WizardPage],
+) -> None:
+    if progress is None:
+        return
+    build_progress_wizard_step_statuses(progress)
+    if progress.current_key not in {page.spec.key for page in pages}:
+        raise ValueError(f"No installed wizard page for {progress.current_key!r}")
+
+
+def _build_page_indices_by_key(pages: Sequence[WizardPage]) -> dict[str, int]:
+    return {page.spec.key: index for index, page in enumerate(pages)}
 
 
 def _resolve_state(

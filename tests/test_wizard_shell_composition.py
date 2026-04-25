@@ -405,6 +405,116 @@ class WizardShellCompositionTest(unittest.TestCase):
             "Hidden sync page should not affect footer",
         )
 
+    def test_refresh_can_update_progress_without_rebuilding_shell(self):
+        assembled = self.composition.build_placeholder_wizard_shell()
+        progress = DockWizardProgress(
+            current_key="map",
+            completed_keys=frozenset({"connection", "sync"}),
+            visited_keys=frozenset({"map"}),
+        )
+
+        refreshed = self.composition.refresh_wizard_shell_composition(
+            assembled,
+            progress=progress,
+        )
+
+        self.assertIs(refreshed, assembled)
+        self.assertEqual(assembled.presenter.progress, progress)
+        self.assertEqual(assembled.shell.pages_stack.currentIndex(), 2)
+        self.assertEqual(
+            assembled.shell.stepper_bar.states(),
+            ("done", "done", "current", "locked", "locked"),
+        )
+
+    def test_refresh_validates_progress_before_mutating_page_state(self):
+        assembled = self.composition.build_placeholder_wizard_shell()
+
+        with self.assertRaises(KeyError):
+            self.composition.refresh_wizard_shell_composition(
+                assembled,
+                connection_state=self.composition.ConnectionPageState(
+                    connected=True,
+                    status_text="Strava connected",
+                ),
+                footer_text="Changed footer",
+                progress=DockWizardProgress(current_key="review"),
+            )
+
+        self.assertEqual(
+            assembled.connection_content.status_label.text(),
+            "Strava not connected",
+        )
+        self.assertEqual(assembled.connection_state.status_text, "Strava not connected")
+        self.assertEqual(
+            assembled.shell.footer_bar.text(),
+            "Strava not connected · No activities stored · "
+            "No activity layers on the map · Analysis not run yet · "
+            "Atlas PDF not exported yet",
+        )
+        self.assertEqual(assembled.presenter.progress.current_key, "connection")
+        self.assertEqual(assembled.shell.pages_stack.currentIndex(), 0)
+
+    def test_partial_refresh_rejects_progress_for_uninstalled_page(self):
+        specs = (
+            self.composition.DockWizardPageSpec(
+                key="connection",
+                title="Connection",
+                summary="Connect qfit to Strava.",
+                primary_action_hint="Primary action: configure connection",
+            ),
+        )
+        assembled = self.composition.build_placeholder_wizard_shell(specs=specs)
+
+        with self.assertRaises(ValueError):
+            self.composition.refresh_wizard_shell_composition(
+                assembled,
+                connection_state=self.composition.ConnectionPageState(
+                    connected=True,
+                    status_text="Strava connected",
+                ),
+                footer_text="Changed footer",
+                progress=DockWizardProgress(current_key="sync"),
+            )
+
+        self.assertEqual(
+            assembled.connection_content.status_label.text(),
+            "Strava not connected",
+        )
+        self.assertEqual(assembled.connection_state.status_text, "Strava not connected")
+        self.assertEqual(assembled.shell.footer_bar.text(), "Strava not connected")
+        self.assertEqual(assembled.presenter.progress.current_key, "connection")
+        self.assertEqual(assembled.shell.pages_stack.currentIndex(), 0)
+
+    def test_partial_progress_uses_installed_page_stack_index(self):
+        specs = (
+            self.composition.DockWizardPageSpec(
+                key="connection",
+                title="Connection",
+                summary="Connect qfit to Strava.",
+                primary_action_hint="Primary action: configure connection",
+            ),
+            self.composition.DockWizardPageSpec(
+                key="atlas",
+                title="Atlas PDF",
+                summary="Export a PDF atlas.",
+                primary_action_hint="Primary action: export atlas PDF",
+            ),
+        )
+        assembled = self.composition.build_placeholder_wizard_shell(specs=specs)
+        progress = DockWizardProgress(
+            current_key="atlas",
+            completed_keys=frozenset({"connection", "sync", "map", "analysis"}),
+            visited_keys=frozenset({"atlas"}),
+        )
+
+        self.composition.refresh_wizard_shell_composition(
+            assembled,
+            progress=progress,
+        )
+
+        self.assertEqual(assembled.presenter.progress, progress)
+        self.assertEqual(assembled.shell.pages_stack.currentIndex(), 1)
+
 
 if __name__ == "__main__":
     unittest.main()
