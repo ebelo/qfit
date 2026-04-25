@@ -10,7 +10,7 @@ from qfit.ui.application.stepper_presenter import (
     STEPPER_STATE_LOCKED,
     STEPPER_STATE_UPCOMING,
 )
-from qfit.ui.widgets.tokens import COLOR_ACCENT, COLOR_HOVER, COLOR_MUTED, COLOR_SEPARATOR, COLOR_TEXT
+from qfit.ui.tokens import COLOR_ACCENT, COLOR_HOVER, COLOR_MUTED, COLOR_SEPARATOR, COLOR_TEXT
 
 STEPPER_LABELS = tuple(section.title for section in WIZARD_WORKFLOW_STEPS)
 STEPPER_STATES = frozenset(
