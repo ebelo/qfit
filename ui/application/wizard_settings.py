@@ -44,11 +44,12 @@ def load_wizard_settings(settings: SettingsPort) -> WizardSettingsSnapshot:
 
 
 def ensure_wizard_settings(settings: SettingsPort) -> WizardSettingsSnapshot:
-    """Write first-launch wizard defaults and return the pre-existing snapshot.
+    """Write first-launch defaults and return the populated wizard snapshot.
 
-    The wizard implementation can use ``first_launch`` from the returned
-    snapshot to apply the spec's initial step state while this helper persists
-    ``qfit/ui/wizard_version`` for subsequent launches.
+    On first launch, this persists ``qfit/ui/wizard_version`` and returns a
+    snapshot with ``wizard_version`` populated while preserving
+    ``first_launch=True`` so the wizard can still apply the spec's initial step
+    state. Existing wizard settings are returned unchanged.
     """
 
     snapshot = load_wizard_settings(settings)
@@ -83,7 +84,9 @@ def save_collapsed_groups(settings: SettingsPort, object_names: list[str] | tupl
 def clamp_wizard_step_index(value: Any) -> int:
     """Coerce a persisted step index into the wizard's 0-based page range."""
 
-    step_index = _coerce_int(value) or 0
+    step_index = _coerce_int(value)
+    if step_index is None:
+        step_index = 0
     return min(max(step_index, 0), WIZARD_STEP_COUNT - 1)
 
 
