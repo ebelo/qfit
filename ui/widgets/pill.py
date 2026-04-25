@@ -52,7 +52,6 @@ def set_pill_tone(
 ) -> None:
     """Apply one of the shared pill tone palettes to an existing QLabel-like widget."""
 
-    pill_tone_palette(tone)
     if object_name is None:
         object_name = widget.objectName() or DEFAULT_PILL_OBJECT_NAME
     widget.setProperty("tone", tone)
@@ -74,14 +73,17 @@ def make_pill(text: str = "", tone: str = DEFAULT_PILL_TONE, parent=None):
     return label
 
 
-def Pill(text: str = "", tone: str = DEFAULT_PILL_TONE, parent=None):  # noqa: N802
-    """Create a reusable compact status pill for the wizard dock.
+class Pill:  # noqa: N801
+    """Constructor-style pill factory from the wizard spec.
 
-    The public constructor-style name mirrors the wizard spec while keeping Qt
-    imports lazy so pure tests that temporarily stub ``qgis.PyQt`` remain safe.
+    ``Pill(...)`` returns a configured QLabel-compatible widget while keeping
+    Qt imports lazy so pure tests that temporarily stub ``qgis.PyQt`` remain
+    safe. Use ``pill_tone(widget)`` and ``set_pill_tone(widget, tone)`` for the
+    tone-specific API shared by returned widgets.
     """
 
-    return make_pill(text=text, tone=tone, parent=parent)
+    def __new__(cls, text: str = "", tone: str = DEFAULT_PILL_TONE, parent=None):
+        return make_pill(text=text, tone=tone, parent=parent)
 
 
 def _import_qtcore():
