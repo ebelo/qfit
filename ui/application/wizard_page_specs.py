@@ -70,6 +70,11 @@ def build_default_wizard_page_specs() -> tuple[DockWizardPageSpec, ...]:
 
     specs = []
     for step in WIZARD_WORKFLOW_STEPS:
+        if step.key not in _PAGE_COPY_BY_KEY:
+            raise KeyError(
+                f"No page copy found for wizard step {step.key!r}. "
+                "Add an entry to _PAGE_COPY_BY_KEY."
+            )
         summary, primary_action_hint = _PAGE_COPY_BY_KEY[step.key]
         specs.append(
             DockWizardPageSpec(

@@ -39,7 +39,7 @@ class WizardPage(QWidget):
         self.setObjectName(spec.page_object_name)
         self.title_label = self._build_label(spec.title, spec.title_object_name)
         self.summary_label = self._build_label(spec.summary, spec.summary_object_name)
-        self.body_container = self._build_body_container()
+        self.body_container, self._body_layout = self._build_body_container()
         self.primary_hint_label = self._build_label(
             spec.primary_action_hint,
             spec.primary_hint_object_name,
@@ -66,10 +66,10 @@ class WizardPage(QWidget):
     def _build_body_container(self):
         body = QWidget(self)
         body.setObjectName(self.spec.body_object_name)
-        self._body_layout = QVBoxLayout(body)
-        self._body_layout.setContentsMargins(0, 0, 0, 0)
-        self._body_layout.setSpacing(8)
-        return body
+        body_layout = QVBoxLayout(body)
+        body_layout.setContentsMargins(0, 0, 0, 0)
+        body_layout.setSpacing(8)
+        return body, body_layout
 
     def _build_layout(self):
         layout = QVBoxLayout(self)

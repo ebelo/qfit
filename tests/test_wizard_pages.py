@@ -6,6 +6,7 @@ from unittest.mock import patch
 from tests import _path  # noqa: F401
 from tests.test_wizard_shell import _fake_qt_modules
 
+from qfit.ui.application import wizard_page_specs
 from qfit.ui.application.wizard_page_specs import build_default_wizard_page_specs
 
 
@@ -26,6 +27,13 @@ class WizardPageSpecsTests(unittest.TestCase):
         self.assertEqual(specs[0].page_object_name, "qfitWizardConnectionPage")
         self.assertEqual(specs[0].body_object_name, "qfitWizardConnectionPageBody")
         self.assertIn("configure connection", specs[0].primary_action_hint)
+
+    def test_default_specs_reject_missing_page_copy_with_clear_message(self):
+        unknown_step = type("UnknownStep", (), {"key": "review", "title": "Review"})()
+
+        with patch.object(wizard_page_specs, "WIZARD_WORKFLOW_STEPS", (unknown_step,)):
+            with self.assertRaisesRegex(KeyError, "No page copy found for wizard step 'review'"):
+                build_default_wizard_page_specs()
 
 
 def _load_wizard_modules():
