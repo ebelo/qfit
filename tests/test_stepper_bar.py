@@ -217,6 +217,33 @@ class StepperBarTest(unittest.TestCase):
         self.assertEqual([button.toolTip() for button in bar.step_buttons()], list(self.stepper.STEPPER_LABELS))
         self.assertEqual(bar.height(), 36)
 
+    def test_labels_come_from_shared_workflow_metadata(self):
+        self.assertEqual(
+            self.stepper.STEPPER_LABELS,
+            ("Connection", "Synchronization", "Map & filters", "Spatial analysis", "Atlas PDF"),
+        )
+
+    def test_qt_import_guard_requires_all_widget_classes(self):
+        incomplete_qtwidgets = types.ModuleType("qgis.PyQt.QtWidgets")
+        incomplete_qtwidgets.QWidget = object
+        fallback_qtwidgets = types.ModuleType("fallback.QtWidgets")
+        fallback_qtwidgets.QWidget = object
+        fallback_qtwidgets.QFrame = object
+        with patch.dict(
+            sys.modules,
+            {
+                "qgis.PyQt.QtWidgets": incomplete_qtwidgets,
+                "fallback.QtWidgets": fallback_qtwidgets,
+            },
+        ):
+            module = self.stepper._import_qt_module(
+                "qgis.PyQt.QtWidgets",
+                "fallback.QtWidgets",
+                ("QWidget", "QFrame"),
+            )
+
+        self.assertIs(module, fallback_qtwidgets)
+
     def test_applies_state_properties_and_labels(self):
         bar = self.stepper.StepperBar()
 

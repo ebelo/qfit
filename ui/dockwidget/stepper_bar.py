@@ -3,28 +3,46 @@ from __future__ import annotations
 from importlib import import_module
 from typing import Sequence
 
+from qfit.ui.application.dock_workflow_sections import WIZARD_WORKFLOW_STEPS
+from qfit.ui.application.stepper_presenter import (
+    STEPPER_STATE_CURRENT,
+    STEPPER_STATE_DONE,
+    STEPPER_STATE_LOCKED,
+    STEPPER_STATE_UPCOMING,
+)
 from qfit.ui.widgets.tokens import COLOR_ACCENT, COLOR_HOVER, COLOR_MUTED, COLOR_SEPARATOR, COLOR_TEXT
 
-STEPPER_LABELS = ("Connexion", "Synchronisation", "Carte", "Analyse", "Atlas")
-STEPPER_STATES = frozenset({"done", "current", "upcoming", "locked"})
+STEPPER_LABELS = tuple(section.title for section in WIZARD_WORKFLOW_STEPS)
+STEPPER_STATES = frozenset(
+    {
+        STEPPER_STATE_DONE,
+        STEPPER_STATE_CURRENT,
+        STEPPER_STATE_UPCOMING,
+        STEPPER_STATE_LOCKED,
+    }
+)
 
 
-def _import_qt_module(qgis_module: str, pyqt_module: str, required_attribute: str):
+def _import_qt_module(qgis_module: str, pyqt_module: str, required_attributes: Sequence[str]):
     try:
         module = import_module(qgis_module)
     except ModuleNotFoundError as exc:
         if not str(exc).startswith("No module named 'qgis"):
             raise
         return import_module(pyqt_module)
-    if hasattr(module, required_attribute):
+    if all(hasattr(module, attribute) for attribute in required_attributes):
         return module
     # Some pure tests temporarily register tiny qgis.PyQt stubs. Fall back to
-    # PyQt5 when those stubs do not provide the widget APIs needed here.
+    # PyQt5 when those stubs do not provide every widget API needed here.
     return import_module(pyqt_module)
 
 
-_qtcore = _import_qt_module("qgis.PyQt.QtCore", "PyQt5.QtCore", "pyqtSignal")
-_qtwidgets = _import_qt_module("qgis.PyQt.QtWidgets", "PyQt5.QtWidgets", "QWidget")
+_qtcore = _import_qt_module("qgis.PyQt.QtCore", "PyQt5.QtCore", ("Qt", "pyqtSignal"))
+_qtwidgets = _import_qt_module(
+    "qgis.PyQt.QtWidgets",
+    "PyQt5.QtWidgets",
+    ("QFrame", "QHBoxLayout", "QSizePolicy", "QToolButton", "QWidget"),
+)
 
 Qt = _qtcore.Qt
 pyqtSignal = _qtcore.pyqtSignal
