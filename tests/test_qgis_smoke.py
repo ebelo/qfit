@@ -783,11 +783,11 @@ class QgisSmokeTests(unittest.TestCase):
         try:
             self.assertEqual(
                 dock.detailedStreamsCheckBox.text(),
-                "Fetch detailed routes when available",
+                "Fetch detailed routes",
             )
             self.assertEqual(
                 dock.backfillMissingDetailedRoutesButton.text(),
-                "Backfill missing detailed routes",
+                "Backfill routes",
             )
             self.assertEqual(dock.detailedRouteStrategyLabel.text(), "Detailed route strategy")
             self.assertEqual(

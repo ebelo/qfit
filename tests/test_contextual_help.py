@@ -258,6 +258,7 @@ class ContextualHelpTests(unittest.TestCase):
         for anchor_name in [
             "detailedRouteStrategyComboBox",
             "maxDetailedActivitiesSpinBox",
+            "backfillMissingDetailedRoutesButton",
             "perPageSpinBox",
             "maxPagesSpinBox",
             "writeActivityPointsCheckBox",
@@ -273,6 +274,9 @@ class ContextualHelpTests(unittest.TestCase):
         ]:
             self.assertIn(anchor_name, entries)
 
+        self.assertEqual(entries["detailedStreamsCheckBox"].target_text, "Fetch detailed routes")
+        self.assertEqual(entries["backfillMissingDetailedRoutesButton"].target_text, "Backfill routes")
+        self.assertIn("still missing", entries["backfillMissingDetailedRoutesButton"].tooltip)
         self.assertEqual(entries["detailedRouteStrategyComboBox"].label_text, "Detailed route strategy")
         self.assertIn("Missing routes only", entries["detailedRouteStrategyComboBox"].helper_text)
         self.assertEqual(entries["maxDetailedActivitiesSpinBox"].label_text, "Max new detailed routes this run")

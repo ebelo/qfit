@@ -18,7 +18,7 @@ class HelpEntry:
 DOCK_HELP_ENTRIES: tuple[HelpEntry, ...] = (
     HelpEntry(
         anchor_name="detailedStreamsCheckBox",
-        target_text="Fetch detailed routes when available",
+        target_text="Fetch detailed routes",
         tooltip=(
             "Downloads higher-fidelity Strava route data for some activities so qfit can write richer "
             "geometry, timestamps, sampled points, and publish/profile metadata."
@@ -26,6 +26,14 @@ DOCK_HELP_ENTRIES: tuple[HelpEntry, ...] = (
         helper_text=(
             "Turn this on when you want more than start/end points. qfit caches downloaded routes locally, "
             "and already detailed or cached routes do not consume the per-run download budget."
+        ),
+    ),
+    HelpEntry(
+        anchor_name="backfillMissingDetailedRoutesButton",
+        target_text="Backfill routes",
+        tooltip=(
+            "Downloads detailed Strava routes for stored activities that are still missing them, then rewrites the "
+            "GeoPackage with the enriched geometry and sampled points."
         ),
     ),
     HelpEntry(
