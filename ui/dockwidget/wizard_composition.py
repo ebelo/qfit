@@ -6,6 +6,11 @@ from dataclasses import dataclass
 from qfit.ui.application.dock_workflow_sections import DockWizardProgress
 from qfit.ui.application.wizard_page_specs import DockWizardPageSpec
 
+from .connection_page import (
+    ConnectionPageContent,
+    ConnectionPageState,
+    install_connection_page_content,
+)
 from .wizard_page import WizardPage, install_wizard_pages
 from .wizard_shell import WizardShell
 from .wizard_shell_presenter import WizardShellPresenter
@@ -24,6 +29,7 @@ class WizardShellComposition:
     shell: WizardShell
     pages: tuple[WizardPage, ...]
     presenter: WizardShellPresenter
+    connection_content: ConnectionPageContent | None = None
 
 
 def build_placeholder_wizard_shell(
@@ -32,6 +38,7 @@ def build_placeholder_wizard_shell(
     footer_text: str = "",
     progress: DockWizardProgress | None = None,
     specs: Sequence[DockWizardPageSpec] | None = None,
+    connection_state: ConnectionPageState | None = None,
 ) -> WizardShellComposition:
     """Build the placeholder #609 wizard shell with pages and presenter wired.
 
@@ -43,8 +50,28 @@ def build_placeholder_wizard_shell(
 
     shell = WizardShell(parent=parent, footer_text=footer_text)
     pages = install_wizard_pages(shell, specs=specs)
+    connection_content = _install_connection_content(
+        pages,
+        connection_state=connection_state,
+    )
     presenter = WizardShellPresenter(shell, progress)
-    return WizardShellComposition(shell=shell, pages=pages, presenter=presenter)
+    return WizardShellComposition(
+        shell=shell,
+        pages=pages,
+        presenter=presenter,
+        connection_content=connection_content,
+    )
+
+
+def _install_connection_content(
+    pages: Sequence[WizardPage],
+    *,
+    connection_state: ConnectionPageState | None,
+) -> ConnectionPageContent | None:
+    for page in pages:
+        if page.spec.key == "connection":
+            return install_connection_page_content(page, state=connection_state)
+    return None
 
 
 __all__ = ["WizardShellComposition", "build_placeholder_wizard_shell"]
