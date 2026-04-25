@@ -57,7 +57,11 @@ def can_request_step(
     statuses: Sequence[DockWorkflowStepStatus],
     index: int,
 ) -> bool:
-    """Return whether a StepperBar click should be accepted."""
+    """Return whether a StepperBar click should be accepted.
+
+    ``statuses`` must be in StepperBar index order, as returned by the wizard
+    workflow status builders.
+    """
 
     status = _status_for_index(statuses, index)
     return status.state is not DockWorkflowStepState.LOCKED
@@ -74,9 +78,9 @@ def step_key_for_index(index: int) -> str:
 def step_index_for_key(key: str) -> int:
     """Return the StepperBar index for a stable wizard step key."""
 
-    for section in WIZARD_WORKFLOW_STEPS:
+    for index, section in enumerate(WIZARD_WORKFLOW_STEPS):
         if section.key == key:
-            return WIZARD_WORKFLOW_STEPS.index(section)
+            return index
     raise KeyError(key)
 
 
@@ -95,6 +99,8 @@ def _status_for_index(
     statuses: Sequence[DockWorkflowStepStatus],
     index: int,
 ) -> DockWorkflowStepStatus:
+    """Return a status from a sequence already ordered by StepperBar index."""
+
     if index < 0 or index >= len(statuses):
         raise IndexError(index)
     return statuses[index]
