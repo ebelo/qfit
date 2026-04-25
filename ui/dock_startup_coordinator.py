@@ -34,6 +34,9 @@ class DockStartupCoordinator:
         dock._apply_contextual_help()
         performed_steps.append("apply_contextual_help")
 
+        self.workflow_section_coordinator.configure_spinbox_unit_copy()
+        performed_steps.append("configure_spinbox_unit_copy")
+
         dock._configure_background_preset_options()
         performed_steps.append("configure_background_preset_options")
 

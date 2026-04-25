@@ -318,8 +318,6 @@ class _FakeSpinBox(_FakeWidget):
         self.suffix = suffix
 
 
-
-
 class _FakeGroupBox:
     def __init__(self):
         self.parent_obj = None
@@ -521,6 +519,16 @@ class WorkflowSectionCoordinatorTests(unittest.TestCase):
         self.assertFalse(dock.atlasPdfHelpLabel.visible)
         self.assertEqual(dock.atlasPdfGroupBox.tooltip, dock.atlasPdfHelpLabel.text)
         self.assertEqual(dock.generateAtlasPdfButton.tooltip, dock.atlasPdfHelpLabel.text)
+        self.assertFalse(dock.mapboxAccessTokenLabel.visible)
+        self.assertFalse(dock.mapboxAccessTokenLineEdit.visible)
+
+    def test_configure_spinbox_unit_copy_moves_units_to_spinbox_suffixes(self):
+        import qfit.ui.workflow_section_coordinator as workflow_section_coordinator
+
+        coordinator = workflow_section_coordinator.WorkflowSectionCoordinator(self._make_section_dock())
+        coordinator.configure_spinbox_unit_copy()
+        dock = coordinator.dock_widget
+
         self.assertEqual(dock.perPageLabel.text, "Page size")
         self.assertEqual(dock.perPageSpinBox.suffix, " activities")
         self.assertEqual(dock.maxPagesLabel.text, "Pages to fetch")
@@ -529,8 +537,6 @@ class WorkflowSectionCoordinatorTests(unittest.TestCase):
         self.assertEqual(dock.maxDetailedActivitiesSpinBox.suffix, " routes")
         self.assertEqual(dock.pointSamplingStrideLabel.text, "Point sampling stride")
         self.assertEqual(dock.pointSamplingStrideSpinBox.suffix, " points")
-        self.assertFalse(dock.mapboxAccessTokenLabel.visible)
-        self.assertFalse(dock.mapboxAccessTokenLineEdit.visible)
 
     def test_set_section_expanded_updates_toggle_arrow_and_content_visibility(self):
         import qfit.ui.workflow_section_coordinator as workflow_section_coordinator
@@ -639,6 +645,7 @@ class DockStartupCoordinatorTests(unittest.TestCase):
                     "configure_starting_sections",
                     "remove_stale_qfit_layers",
                     "apply_contextual_help",
+                    "configure_spinbox_unit_copy",
                     "configure_background_preset_options",
                     "configure_detailed_route_filter_options",
                     "configure_detailed_route_strategy_options",
@@ -678,6 +685,7 @@ class DockStartupCoordinatorTests(unittest.TestCase):
             workflow_section_coordinator.mock_calls,
             [
                 call.configure_starting_sections(),
+                call.configure_spinbox_unit_copy(),
                 call.configure_workflow_sections(),
             ],
         )
