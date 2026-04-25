@@ -104,6 +104,85 @@ class WizardShellCompositionTest(unittest.TestCase):
             ("current", "locked", "locked", "locked", "locked"),
         )
 
+    def test_action_callbacks_are_wired_to_installed_page_ctas(self):
+        calls = []
+        callbacks = self.composition.WizardActionCallbacks(
+            configure_connection=lambda: calls.append("configure"),
+            sync_activities=lambda: calls.append("sync"),
+            load_activity_layers=lambda: calls.append("load"),
+            apply_map_filters=lambda: calls.append("filter"),
+            run_analysis=lambda: calls.append("analysis"),
+            export_atlas=lambda: calls.append("atlas"),
+        )
+
+        assembled = self.composition.build_placeholder_wizard_shell(
+            map_state=self.composition.MapPageState(loaded=True),
+            analysis_state=self.composition.AnalysisPageState(ready=True),
+            atlas_state=self.composition.AtlasPageState(ready=True),
+        )
+
+        returned = self.composition.connect_wizard_action_callbacks(assembled, callbacks)
+
+        assembled.connection_content.configure_button.clicked.emit()
+        assembled.sync_content.sync_button.clicked.emit()
+        assembled.map_content.load_layers_button.clicked.emit()
+        assembled.map_content.apply_filters_button.clicked.emit()
+        assembled.analysis_content.run_analysis_button.clicked.emit()
+        assembled.atlas_content.export_atlas_button.clicked.emit()
+
+        self.assertIs(returned, assembled)
+        self.assertIs(assembled.action_callbacks, callbacks)
+        self.assertEqual(
+            calls,
+            ["configure", "sync", "load", "filter", "analysis", "atlas"],
+        )
+
+    def test_action_callbacks_are_only_wired_once_per_composition(self):
+        calls = []
+        assembled = self.composition.build_placeholder_wizard_shell()
+        first_callbacks = self.composition.WizardActionCallbacks(
+            configure_connection=lambda: calls.append("first"),
+        )
+        second_callbacks = self.composition.WizardActionCallbacks(
+            configure_connection=lambda: calls.append("second"),
+        )
+
+        self.composition.connect_wizard_action_callbacks(assembled, first_callbacks)
+        returned = self.composition.connect_wizard_action_callbacks(
+            assembled,
+            second_callbacks,
+        )
+        assembled.connection_content.configure_button.clicked.emit()
+
+        self.assertIs(returned, assembled)
+        self.assertIs(assembled.action_callbacks, first_callbacks)
+        self.assertEqual(calls, ["first"])
+
+    def test_action_callbacks_ignore_pages_missing_from_partial_specs(self):
+        calls = []
+        specs = (
+            self.composition.DockWizardPageSpec(
+                key="connection",
+                title="Connection",
+                summary="Connect qfit to Strava.",
+                primary_action_hint="Primary action: configure connection",
+            ),
+        )
+
+        assembled = self.composition.build_placeholder_wizard_shell(specs=specs)
+        self.composition.connect_wizard_action_callbacks(
+            assembled,
+            self.composition.WizardActionCallbacks(
+                configure_connection=lambda: calls.append("configure"),
+                sync_activities=lambda: calls.append("sync"),
+            ),
+        )
+
+        assembled.connection_content.configure_button.clicked.emit()
+
+        self.assertEqual(calls, ["configure"])
+        self.assertIsNone(assembled.sync_content)
+
     def test_initial_progress_selects_matching_installed_page(self):
         progress = DockWizardProgress(
             current_key="map",
