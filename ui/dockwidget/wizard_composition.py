@@ -11,6 +11,7 @@ from .analysis_page import (
     AnalysisPageState,
     install_analysis_page_content,
 )
+from .atlas_page import AtlasPageContent, AtlasPageState, install_atlas_page_content
 from .connection_page import (
     ConnectionPageContent,
     ConnectionPageState,
@@ -40,6 +41,7 @@ class WizardShellComposition:
     sync_content: SyncPageContent | None = None
     map_content: MapPageContent | None = None
     analysis_content: AnalysisPageContent | None = None
+    atlas_content: AtlasPageContent | None = None
 
 
 def build_placeholder_wizard_shell(
@@ -52,6 +54,7 @@ def build_placeholder_wizard_shell(
     sync_state: SyncPageState | None = None,
     map_state: MapPageState | None = None,
     analysis_state: AnalysisPageState | None = None,
+    atlas_state: AtlasPageState | None = None,
 ) -> WizardShellComposition:
     """Build the placeholder #609 wizard shell with pages and presenter wired.
 
@@ -73,6 +76,7 @@ def build_placeholder_wizard_shell(
         pages,
         analysis_state=analysis_state,
     )
+    atlas_content = _install_atlas_content(pages, atlas_state=atlas_state)
     presenter = WizardShellPresenter(shell, progress)
     return WizardShellComposition(
         shell=shell,
@@ -82,6 +86,7 @@ def build_placeholder_wizard_shell(
         sync_content=sync_content,
         map_content=map_content,
         analysis_content=analysis_content,
+        atlas_content=atlas_content,
     )
 
 
@@ -126,6 +131,17 @@ def _install_analysis_content(
     for page in pages:
         if page.spec.key == "analysis":
             return install_analysis_page_content(page, state=analysis_state)
+    return None
+
+
+def _install_atlas_content(
+    pages: Sequence[WizardPage],
+    *,
+    atlas_state: AtlasPageState | None,
+) -> AtlasPageContent | None:
+    for page in pages:
+        if page.spec.key == "atlas":
+            return install_atlas_page_content(page, state=atlas_state)
     return None
 
 
