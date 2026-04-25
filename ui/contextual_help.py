@@ -226,7 +226,7 @@ DOCK_HELP_ENTRIES: tuple[HelpEntry, ...] = (
         anchor_name="buttonLayout",
         helper_text=(
             "Use Store activities to update the GeoPackage database. Then use Load activity layers in Visualize when you want "
-            "the stored dataset in QGIS. Apply current filters only when you want loaded layers and tables to match "
+            "the stored dataset in QGIS. Use Apply filters only when you want loaded layers and tables to match "
             "the current dock query."
         ),
     ),
