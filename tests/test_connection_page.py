@@ -55,6 +55,12 @@ class ConnectionPageContentTest(unittest.TestCase):
             "configure_connection",
         )
         self.assertEqual(content.configure_button.property("wizardActionRole"), "primary")
+        self.assertTrue(content.configure_button.isEnabled())
+        self.assertEqual(
+            content.configure_button.property("wizardActionAvailability"),
+            "available",
+        )
+        self.assertEqual(content.configure_button.toolTip(), "")
         self.assertEqual(
             content.action_row.objectName(),
             "qfitWizardConnectionActionRow",
@@ -81,6 +87,38 @@ class ConnectionPageContentTest(unittest.TestCase):
         self.assertEqual(content.status_label.property("tone"), "ok")
         self.assertEqual(content.detail_label.text(), "Credentials are ready.")
         self.assertEqual(content.configure_button.text(), "Review connection")
+
+    def test_can_block_configure_action_with_tooltip_copy(self):
+        content = self.connection_page.ConnectionPageContent(
+            self.connection_page.ConnectionPageState(
+                primary_action_enabled=False,
+                primary_action_blocked_tooltip="OAuth dialog is already open.",
+            )
+        )
+
+        self.assertFalse(content.configure_button.isEnabled())
+        self.assertEqual(
+            content.configure_button.property("wizardActionAvailability"),
+            "blocked",
+        )
+        self.assertEqual(
+            content.configure_button.toolTip(),
+            "OAuth dialog is already open.",
+        )
+
+        content.set_state(
+            self.connection_page.ConnectionPageState(
+                connected=True,
+                primary_action_label="Review connection",
+            )
+        )
+
+        self.assertTrue(content.configure_button.isEnabled())
+        self.assertEqual(
+            content.configure_button.property("wizardActionAvailability"),
+            "available",
+        )
+        self.assertEqual(content.configure_button.toolTip(), "")
 
     def test_configure_button_emits_reusable_page_signal(self):
         content = self.connection_page.ConnectionPageContent()

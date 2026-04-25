@@ -3,7 +3,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from ._qt_compat import import_qt_module
-from .action_row import build_wizard_action_row, style_primary_action_button
+from .action_row import (
+    build_wizard_action_row,
+    set_wizard_action_availability,
+    style_primary_action_button,
+)
 from .page_content_style import (
     style_detail_label,
     style_status_pill,
@@ -38,6 +42,8 @@ class SyncPageState:
     detail_text: str = "Fetch Strava activities and store detailed routes in the GeoPackage."
     activity_summary_text: str = "No activities stored"
     primary_action_label: str = "Sync activities"
+    primary_action_enabled: bool = True
+    primary_action_blocked_tooltip: str = "Configure the Strava connection before syncing."
 
 
 class SyncPageContent(QWidget):
@@ -84,6 +90,11 @@ class SyncPageContent(QWidget):
         self.activity_summary_label.setText(state.activity_summary_text)
         self.activity_summary_label.setProperty("syncState", sync_state)
         self.sync_button.setText(state.primary_action_label)
+        set_wizard_action_availability(
+            self.sync_button,
+            enabled=state.primary_action_enabled,
+            tooltip=state.primary_action_blocked_tooltip,
+        )
 
     def outer_layout(self):
         """Expose the layout for adapter wiring and pure tests."""
