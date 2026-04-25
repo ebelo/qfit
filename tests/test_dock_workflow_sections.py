@@ -5,9 +5,11 @@ from tests import _path  # noqa: F401
 from qfit.ui.application.dock_workflow_sections import (
     CURRENT_DOCK_SECTIONS,
     WIZARD_WORKFLOW_STEPS,
+    DockWizardProgress,
     DockWorkflowStepState,
     build_current_dock_workflow_label,
     build_initial_wizard_step_statuses,
+    build_progress_wizard_step_statuses,
     build_wizard_step_statuses,
     get_workflow_section,
 )
@@ -69,6 +71,65 @@ class DockWorkflowSectionsTests(unittest.TestCase):
             ],
         )
 
+    def test_progress_statuses_unlock_next_step_when_previous_is_done(self):
+        statuses = build_progress_wizard_step_statuses(
+            DockWizardProgress(
+                current_key="map",
+                completed_keys=frozenset({"connection", "sync"}),
+            )
+        )
+
+        self.assertEqual(
+            [status.state for status in statuses],
+            [
+                DockWorkflowStepState.DONE,
+                DockWorkflowStepState.DONE,
+                DockWorkflowStepState.CURRENT,
+                DockWorkflowStepState.LOCKED,
+                DockWorkflowStepState.LOCKED,
+            ],
+        )
+
+    def test_progress_statuses_keep_visited_future_step_unlocked_not_done(self):
+        statuses = build_progress_wizard_step_statuses(
+            DockWizardProgress(
+                current_key="analysis",
+                completed_keys=frozenset({"connection", "sync", "map"}),
+                visited_keys=frozenset({"atlas"}),
+            )
+        )
+
+        self.assertEqual(
+            [(status.key, status.state) for status in statuses],
+            [
+                ("connection", DockWorkflowStepState.DONE),
+                ("sync", DockWorkflowStepState.DONE),
+                ("map", DockWorkflowStepState.DONE),
+                ("analysis", DockWorkflowStepState.CURRENT),
+                ("atlas", DockWorkflowStepState.UNLOCKED),
+            ],
+        )
+
+    def test_progress_statuses_leave_step4_unlocked_until_analysis_runs(self):
+        statuses = build_progress_wizard_step_statuses(
+            DockWizardProgress(
+                current_key="atlas",
+                completed_keys=frozenset({"connection", "sync", "map"}),
+                visited_keys=frozenset({"atlas"}),
+            )
+        )
+
+        self.assertEqual(
+            [(status.key, status.state) for status in statuses],
+            [
+                ("connection", DockWorkflowStepState.DONE),
+                ("sync", DockWorkflowStepState.DONE),
+                ("map", DockWorkflowStepState.DONE),
+                ("analysis", DockWorkflowStepState.UNLOCKED),
+                ("atlas", DockWorkflowStepState.CURRENT),
+            ],
+        )
+
     def test_get_workflow_section_rejects_unknown_keys(self):
         with self.assertRaises(KeyError):
             get_workflow_section("unknown")
@@ -78,6 +139,10 @@ class DockWorkflowSectionsTests(unittest.TestCase):
             build_wizard_step_statuses(current_key="unknown")
         with self.assertRaises(KeyError):
             build_wizard_step_statuses(current_key="connection", unlocked_keys={"unknown"})
+        with self.assertRaises(KeyError):
+            build_progress_wizard_step_statuses(
+                DockWizardProgress(current_key="connection", visited_keys=frozenset({"unknown"}))
+            )
 
 
 if __name__ == "__main__":

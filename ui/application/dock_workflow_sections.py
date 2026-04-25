@@ -38,6 +38,20 @@ class DockWorkflowStepStatus:
     state: DockWorkflowStepState
 
 
+@dataclass(frozen=True)
+class DockWizardProgress:
+    """Render-neutral wizard progression inputs from the dock state store.
+
+    ``completed_keys`` represent real workflow completion. ``visited_keys``
+    represent pages the user has already opened in the current session; visited
+    pages remain unlocked without being treated as done.
+    """
+
+    current_key: str = "connection"
+    completed_keys: frozenset[str] = frozenset()
+    visited_keys: frozenset[str] = frozenset()
+
+
 WIZARD_WORKFLOW_STEPS: tuple[DockWorkflowSection, ...] = (
     DockWorkflowSection(
         key="connection",
@@ -112,6 +126,41 @@ def build_wizard_step_statuses(
     _validate_workflow_keys(current_key, completed_keys, unlocked_keys)
     completed = set(completed_keys)
     unlocked = set(unlocked_keys)
+    return _build_wizard_step_status_tuple(
+        current_key=current_key,
+        completed_keys=completed,
+        unlocked_keys=unlocked,
+    )
+
+
+def build_progress_wizard_step_statuses(
+    progress: DockWizardProgress,
+) -> tuple[DockWorkflowStepStatus, ...]:
+    """Build wizard step statuses from progress facts.
+
+    This encodes the #609 progression rule without depending on concrete Qt
+    widgets: a step is unlocked when its previous step is done or when the user
+    has already visited it during the current session. Unlocked is kept distinct
+    from done so future pages can expose reachable steps without over-reporting
+    workflow completion.
+    """
+
+    completed = set(progress.completed_keys)
+    visited = set(progress.visited_keys) | {progress.current_key}
+    _validate_workflow_keys(progress.current_key, completed, visited)
+    return _build_wizard_step_status_tuple(
+        current_key=progress.current_key,
+        completed_keys=completed,
+        unlocked_keys=_derive_unlocked_step_keys(completed_keys=completed, visited_keys=visited),
+    )
+
+
+def _build_wizard_step_status_tuple(
+    *,
+    current_key: str,
+    completed_keys: set[str],
+    unlocked_keys: set[str],
+) -> tuple[DockWorkflowStepStatus, ...]:
     statuses = []
     for index, section in enumerate(WIZARD_WORKFLOW_STEPS):
         statuses.append(
@@ -119,10 +168,22 @@ def build_wizard_step_statuses(
                 key=section.key,
                 index=index,
                 title=section.title,
-                state=_resolve_step_state(section.key, current_key, completed, unlocked),
+                state=_resolve_step_state(section.key, current_key, completed_keys, unlocked_keys),
             )
         )
     return tuple(statuses)
+
+
+def _derive_unlocked_step_keys(
+    *,
+    completed_keys: set[str],
+    visited_keys: set[str],
+) -> set[str]:
+    unlocked = set(visited_keys)
+    for previous, section in zip(WIZARD_WORKFLOW_STEPS, WIZARD_WORKFLOW_STEPS[1:]):
+        if previous.key in completed_keys:
+            unlocked.add(section.key)
+    return unlocked
 
 
 def _resolve_step_state(
