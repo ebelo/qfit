@@ -426,6 +426,34 @@ class WizardShellCompositionTest(unittest.TestCase):
             ("done", "done", "current", "locked", "locked"),
         )
 
+    def test_refresh_validates_progress_before_mutating_page_state(self):
+        assembled = self.composition.build_placeholder_wizard_shell()
+
+        with self.assertRaises(KeyError):
+            self.composition.refresh_wizard_shell_composition(
+                assembled,
+                connection_state=self.composition.ConnectionPageState(
+                    connected=True,
+                    status_text="Strava connected",
+                ),
+                footer_text="Changed footer",
+                progress=DockWizardProgress(current_key="review"),
+            )
+
+        self.assertEqual(
+            assembled.connection_content.status_label.text(),
+            "Strava not connected",
+        )
+        self.assertEqual(assembled.connection_state.status_text, "Strava not connected")
+        self.assertEqual(
+            assembled.shell.footer_bar.text(),
+            "Strava not connected · No activities stored · "
+            "No activity layers on the map · Analysis not run yet · "
+            "Atlas PDF not exported yet",
+        )
+        self.assertEqual(assembled.presenter.progress.current_key, "connection")
+        self.assertEqual(assembled.shell.pages_stack.currentIndex(), 0)
+
 
 if __name__ == "__main__":
     unittest.main()

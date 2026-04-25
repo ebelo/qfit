@@ -4,7 +4,10 @@ from collections.abc import Callable, Collection, Sequence
 from dataclasses import dataclass
 from typing import TypeVar
 
-from qfit.ui.application.dock_workflow_sections import DockWizardProgress
+from qfit.ui.application.dock_workflow_sections import (
+    DockWizardProgress,
+    build_progress_wizard_step_statuses,
+)
 from qfit.ui.application.wizard_footer_status import build_wizard_footer_status
 from qfit.ui.application.wizard_page_specs import (
     DockWizardPageSpec,
@@ -180,6 +183,8 @@ def refresh_wizard_shell_composition(
         composition.atlas_state,
         AtlasPageState,
     )
+    if progress is not None:
+        build_progress_wizard_step_statuses(progress)
 
     if composition.connection_content is not None:
         composition.connection_content.set_state(next_connection_state)
