@@ -149,4 +149,4 @@ def _validate_workflow_keys(
     all_provided_keys = {current_key} | set(completed_keys) | set(unlocked_keys)
     unknown_keys = all_provided_keys - known_keys
     if unknown_keys:
-        raise KeyError(sorted(unknown_keys)[0])
+        raise KeyError(min(unknown_keys))
