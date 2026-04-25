@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
 from functools import lru_cache
 from importlib import import_module
 
 from qgis.PyQt.QtCore import Qt
+
+CheckableListOption = str | tuple[str, str]
 
 
 class _ScaledSignal:
@@ -23,6 +26,52 @@ class _ScaledSignal:
     def emit(self, *args) -> None:
         for slot in self._slots:
             slot(*args)
+
+
+def make_checkable_list(
+    options: Sequence[CheckableListOption],
+    *,
+    checked_values: Sequence[str] | None = None,
+    parent=None,
+):
+    """Create a native Qt checkable list for multi-select wizard controls.
+
+    QGIS does not provide ``QgsCheckableComboBox``. The wizard should use a
+    ``QListWidget`` with ``Qt.ItemIsUserCheckable`` items instead; this helper
+    keeps that construction consistent and stores stable option values in
+    ``Qt.UserRole`` for later request builders.
+    """
+
+    widgets = import_module("qgis.PyQt.QtWidgets")
+    checked = set(checked_values or ())
+    list_widget = widgets.QListWidget(parent)
+
+    for option in options:
+        value, label = _normalise_checkable_list_option(option)
+        item = widgets.QListWidgetItem(label)
+        item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
+        item.setData(Qt.UserRole, value)
+        item.setCheckState(Qt.Checked if value in checked else Qt.Unchecked)
+        list_widget.addItem(item)
+
+    return list_widget
+
+
+def checked_list_values(list_widget) -> list[str]:
+    """Return stable values for checked items in list order."""
+
+    values = []
+    for index in range(list_widget.count()):
+        item = list_widget.item(index)
+        if item.checkState() == Qt.Checked:
+            values.append(item.data(Qt.UserRole))
+    return values
+
+
+def _normalise_checkable_list_option(option: CheckableListOption) -> tuple[str, str]:
+    if isinstance(option, tuple):
+        return option
+    return option, option
 
 
 def make_range_slider(

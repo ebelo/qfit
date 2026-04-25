@@ -7,7 +7,7 @@ from tests import _path  # noqa: F401
 
 from qgis.PyQt.QtCore import Qt
 
-from qfit.ui.widgets.compat import make_range_slider
+from qfit.ui.widgets.compat import checked_list_values, make_checkable_list, make_range_slider
 
 
 class _FakeSignal:
@@ -124,6 +124,47 @@ class _FakeParentOnlyIntegerRangeSlider(_FakeIntegerRangeSlider):
         self.orientation_set_later = orientation
 
 
+class _FakeListWidget:
+    def __init__(self, parent=None):
+        self.parent = parent
+        self.items = []
+
+    def addItem(self, item):  # noqa: N802
+        self.items.append(item)
+
+    def count(self):
+        return len(self.items)
+
+    def item(self, index):
+        return self.items[index]
+
+
+class _FakeListWidgetItem:
+    def __init__(self, text):
+        self.text = text
+        self._flags = 0
+        self._check_state = None
+        self._data = {}
+
+    def flags(self):
+        return self._flags
+
+    def setFlags(self, flags):  # noqa: N802
+        self._flags = flags
+
+    def setCheckState(self, check_state):  # noqa: N802
+        self._check_state = check_state
+
+    def checkState(self):  # noqa: N802
+        return self._check_state
+
+    def setData(self, role, value):  # noqa: N802
+        self._data[role] = value
+
+    def data(self, role):
+        return self._data[role]
+
+
 def _fake_qgis_gui(*, double_range_slider=None, range_slider=_FakeIntegerRangeSlider):
     module = types.ModuleType("qgis.gui")
     module.QgsRangeSlider = range_slider
@@ -132,7 +173,40 @@ def _fake_qgis_gui(*, double_range_slider=None, range_slider=_FakeIntegerRangeSl
     return module
 
 
+def _fake_qt_widgets():
+    module = types.ModuleType("qgis.PyQt.QtWidgets")
+    module.QListWidget = _FakeListWidget
+    module.QListWidgetItem = _FakeListWidgetItem
+    return module
+
+
 class UiWidgetCompatTests(unittest.TestCase):
+    def test_creates_native_checkable_list_with_stable_values(self):
+        parent = object()
+        with patch.dict(sys.modules, {"qgis.PyQt.QtWidgets": _fake_qt_widgets()}):
+            list_widget = make_checkable_list(
+                [("run", "Run"), ("ride", "Ride"), ("hike", "Hike")],
+                checked_values=["ride", "hike"],
+                parent=parent,
+            )
+
+        self.assertIs(list_widget.parent, parent)
+        self.assertEqual([item.text for item in list_widget.items], ["Run", "Ride", "Hike"])
+        self.assertTrue(list_widget.items[0].flags() & Qt.ItemIsUserCheckable)
+        self.assertEqual(list_widget.items[0].data(Qt.UserRole), "run")
+        self.assertEqual(list_widget.items[0].checkState(), Qt.Unchecked)
+        self.assertEqual(list_widget.items[1].checkState(), Qt.Checked)
+        self.assertEqual(checked_list_values(list_widget), ["ride", "hike"])
+
+    def test_checkable_list_uses_string_options_as_labels_and_values(self):
+        with patch.dict(sys.modules, {"qgis.PyQt.QtWidgets": _fake_qt_widgets()}):
+            list_widget = make_checkable_list(["Run", "Ride"])
+
+        self.assertEqual([item.text for item in list_widget.items], ["Run", "Ride"])
+        self.assertEqual([item.data(Qt.UserRole) for item in list_widget.items], ["Run", "Ride"])
+        self.assertEqual([item.checkState() for item in list_widget.items], [Qt.Unchecked, Qt.Unchecked])
+        self.assertEqual(checked_list_values(list_widget), [])
+
     def test_uses_native_double_range_slider_when_qgis_provides_it(self):
         with patch.dict(
             sys.modules,
