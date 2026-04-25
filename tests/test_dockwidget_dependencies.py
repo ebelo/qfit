@@ -346,7 +346,9 @@ class WorkflowSectionCoordinatorTests(unittest.TestCase):
         dock.analysisWorkflowLayout = _FakeLayoutContainer([_FakeItem(widget=object())])
         dock.publishGroupLayout = _FakeLayoutContainer([_FakeItem(widget=object())])
         dock.verticalLayout = _FakeLayoutContainer()
+        dock.outerLayout = _FakeLayoutContainer()
         dock.outputGroupLayout = _FakeLayoutContainer()
+        dock.dockWidgetContents = _FakeWidget()
         dock.activitiesGroupBox = _FakeGroupBox()
         dock.styleGroupBox = _FakeGroupBox()
         dock.analysisWorkflowGroupBox = _FakeGroupBox()
@@ -365,6 +367,7 @@ class WorkflowSectionCoordinatorTests(unittest.TestCase):
         dock.mapboxAccessTokenLabel = _FakeWidget()
         dock.mapboxAccessTokenLineEdit = _FakeWidget()
         dock.loadLayersButton = _FakeWidget()
+        dock.summaryStatusLabel = _FakeWidget()
         return dock
 
     def test_configure_starting_sections_moves_widgets_and_installs_collapsibles(self):
@@ -435,6 +438,10 @@ class WorkflowSectionCoordinatorTests(unittest.TestCase):
         self.assertFalse(dock.credentialsGroupBox.visible)
         self.assertEqual(dock.outputGroupBox.parent(), dock.activitiesGroupBox)
         self.assertEqual(dock.loadLayersButton.parent(), dock.styleGroupBox)
+        self.assertEqual(dock.summaryStatusLabel.parent(), dock.dockWidgetContents)
+        self.assertIn(dock.summaryStatusLabel, dock.verticalLayout.removed_widgets)
+        self.assertIn(dock.summaryStatusLabel, dock.outerLayout.added_widgets)
+        self.assertTrue(dock._summary_status_footer_pinned)
         self.assertEqual(dock.outputGroupBox.visible, None)
         self.assertTrue(hasattr(dock, "activitiesSectionToggleButton"))
         self.assertTrue(hasattr(dock, "activitiesSectionContentWidget"))
