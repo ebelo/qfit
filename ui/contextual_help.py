@@ -130,14 +130,15 @@ DOCK_HELP_ENTRIES: tuple[HelpEntry, ...] = (
     ),
     HelpEntry(
         anchor_name="writeActivityPointsCheckBox",
-        target_text="Write sampled activity_points from detailed tracks",
+        target_text="Write sampled activity points from detailed tracks",
         tooltip=(
             "Creates an optional point layer along each detailed activity so you can style, analyze, or animate "
             "sampled stream data in QGIS."
         ),
         helper_text=(
-            "Best when detailed tracks are enabled. The point layer can include sampled distance, time, elevation, "
-            "speed, heart rate, cadence, power, temperature, and moving-state values when Strava provides them."
+            "Best when detailed tracks are enabled. qfit writes this data to the activity_points layer, which can "
+            "include sampled distance, time, elevation, speed, heart rate, cadence, power, temperature, and "
+            "moving-state values when Strava provides them."
         ),
     ),
     HelpEntry(

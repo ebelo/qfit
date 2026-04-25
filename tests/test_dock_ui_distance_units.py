@@ -64,6 +64,12 @@ class DockUiFieldGrammarTests(unittest.TestCase):
             "Atlas subtitle",
         )
 
+    def test_activity_points_checkbox_uses_human_readable_label(self):
+        self.assertEqual(
+            _property_text(_widget(self.root, "writeActivityPointsCheckBox"), "text"),
+            "Generate sampled activity points for analysis",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
