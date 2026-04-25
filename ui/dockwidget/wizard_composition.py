@@ -6,6 +6,11 @@ from dataclasses import dataclass
 from qfit.ui.application.dock_workflow_sections import DockWizardProgress
 from qfit.ui.application.wizard_page_specs import DockWizardPageSpec
 
+from .analysis_page import (
+    AnalysisPageContent,
+    AnalysisPageState,
+    install_analysis_page_content,
+)
 from .connection_page import (
     ConnectionPageContent,
     ConnectionPageState,
@@ -34,6 +39,7 @@ class WizardShellComposition:
     connection_content: ConnectionPageContent | None = None
     sync_content: SyncPageContent | None = None
     map_content: MapPageContent | None = None
+    analysis_content: AnalysisPageContent | None = None
 
 
 def build_placeholder_wizard_shell(
@@ -45,6 +51,7 @@ def build_placeholder_wizard_shell(
     connection_state: ConnectionPageState | None = None,
     sync_state: SyncPageState | None = None,
     map_state: MapPageState | None = None,
+    analysis_state: AnalysisPageState | None = None,
 ) -> WizardShellComposition:
     """Build the placeholder #609 wizard shell with pages and presenter wired.
 
@@ -62,6 +69,10 @@ def build_placeholder_wizard_shell(
     )
     sync_content = _install_sync_content(pages, sync_state=sync_state)
     map_content = _install_map_content(pages, map_state=map_state)
+    analysis_content = _install_analysis_content(
+        pages,
+        analysis_state=analysis_state,
+    )
     presenter = WizardShellPresenter(shell, progress)
     return WizardShellComposition(
         shell=shell,
@@ -70,6 +81,7 @@ def build_placeholder_wizard_shell(
         connection_content=connection_content,
         sync_content=sync_content,
         map_content=map_content,
+        analysis_content=analysis_content,
     )
 
 
@@ -103,6 +115,17 @@ def _install_map_content(
     for page in pages:
         if page.spec.key == "map":
             return install_map_page_content(page, state=map_state)
+    return None
+
+
+def _install_analysis_content(
+    pages: Sequence[WizardPage],
+    *,
+    analysis_state: AnalysisPageState | None,
+) -> AnalysisPageContent | None:
+    for page in pages:
+        if page.spec.key == "analysis":
+            return install_analysis_page_content(page, state=analysis_state)
     return None
 
 

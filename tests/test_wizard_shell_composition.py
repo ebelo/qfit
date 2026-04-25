@@ -12,6 +12,7 @@ from qfit.ui.application.dock_workflow_sections import DockWizardProgress
 def _load_wizard_composition_module():
     for name in (
         "qfit.ui.dockwidget.wizard_composition",
+        "qfit.ui.dockwidget.analysis_page",
         "qfit.ui.dockwidget.connection_page",
         "qfit.ui.dockwidget.sync_page",
         "qfit.ui.dockwidget.map_page",
@@ -71,6 +72,15 @@ class WizardShellCompositionTest(unittest.TestCase):
             assembled.map_content.status_label.text(),
             "Activity layers not loaded",
         )
+        self.assertIsNotNone(assembled.analysis_content)
+        self.assertIs(
+            assembled.pages[3].body_layout().widgets[-1],
+            assembled.analysis_content,
+        )
+        self.assertEqual(
+            assembled.analysis_content.status_label.text(),
+            "Analysis not run yet",
+        )
         self.assertEqual(
             assembled.shell.stepper_bar.states(),
             ("current", "locked", "locked", "locked", "locked"),
@@ -98,6 +108,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertIsNone(assembled.connection_content)
         self.assertIsNone(assembled.sync_content)
         self.assertIsNone(assembled.map_content)
+        self.assertIsNone(assembled.analysis_content)
         self.assertEqual(assembled.shell.page_count(), 0)
         self.assertEqual(assembled.shell.pages_stack.currentIndex(), -1)
         self.assertEqual(assembled.presenter.progress.current_key, "connection")
