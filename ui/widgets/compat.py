@@ -16,6 +16,8 @@ class DateTimeRangeEdits:
 
     start: object
     end: object
+    start_enabled: bool = False
+    end_enabled: bool = False
 
 
 class _ScaledSignal:
@@ -155,6 +157,8 @@ def make_datetime_range_edits(
     *,
     start_datetime=None,
     end_datetime=None,
+    start_enabled: bool | None = None,
+    end_enabled: bool | None = None,
     display_format: str = "yyyy-MM-dd HH:mm",
     calendar_popup: bool = True,
     parent=None,
@@ -186,13 +190,20 @@ def make_datetime_range_edits(
         display_format=display_format,
         calendar_popup=calendar_popup,
     )
-    return DateTimeRangeEdits(start=start, end=end)
+    return DateTimeRangeEdits(
+        start=start,
+        end=end,
+        start_enabled=_resolve_datetime_bound_enabled(start_datetime, start_enabled),
+        end_enabled=_resolve_datetime_bound_enabled(end_datetime, end_enabled),
+    )
 
 
 def datetime_range_values(range_edits: DateTimeRangeEdits) -> tuple[object | None, object | None]:
-    """Return the current start/end date-time values when supported."""
+    """Return active start/end date-time values, preserving unset bounds as ``None``."""
 
-    return (_datetime_edit_value(range_edits.start), _datetime_edit_value(range_edits.end))
+    start = _datetime_edit_value(range_edits.start) if range_edits.start_enabled else None
+    end = _datetime_edit_value(range_edits.end) if range_edits.end_enabled else None
+    return (start, end)
 
 
 def _import_optional_qgis_gui():
@@ -250,6 +261,12 @@ def _datetime_edit_value(widget):
     if hasattr(widget, "dateTime"):
         return widget.dateTime()
     return None
+
+
+def _resolve_datetime_bound_enabled(value, enabled: bool | None) -> bool:
+    if enabled is not None:
+        return enabled
+    return value is not None
 
 
 def make_range_slider(
