@@ -1,11 +1,14 @@
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Collection, Sequence
 from dataclasses import dataclass
 
 from qfit.ui.application.dock_workflow_sections import DockWizardProgress
 from qfit.ui.application.wizard_footer_status import build_wizard_footer_status
-from qfit.ui.application.wizard_page_specs import DockWizardPageSpec
+from qfit.ui.application.wizard_page_specs import (
+    DockWizardPageSpec,
+    build_default_wizard_page_specs,
+)
 
 from .analysis_page import (
     AnalysisPageContent,
@@ -70,10 +73,12 @@ def build_placeholder_wizard_shell(
     map_state = map_state or MapPageState()
     analysis_state = analysis_state or AnalysisPageState()
     atlas_state = atlas_state or AtlasPageState()
+    page_specs = _resolve_page_specs(specs)
     shell = WizardShell(
         parent=parent,
         footer_text=footer_text
         or _build_default_footer_text(
+            installed_keys={spec.key for spec in page_specs},
             connection_state=connection_state,
             sync_state=sync_state,
             map_state=map_state,
@@ -81,7 +86,7 @@ def build_placeholder_wizard_shell(
             atlas_state=atlas_state,
         ),
     )
-    pages = install_wizard_pages(shell, specs=specs)
+    pages = install_wizard_pages(shell, specs=page_specs)
     connection_content = _install_connection_content(
         pages,
         connection_state=connection_state,
@@ -106,8 +111,17 @@ def build_placeholder_wizard_shell(
     )
 
 
+def _resolve_page_specs(
+    specs: Sequence[DockWizardPageSpec] | None,
+) -> tuple[DockWizardPageSpec, ...]:
+    if specs is None:
+        return build_default_wizard_page_specs()
+    return tuple(specs)
+
+
 def _build_default_footer_text(
     *,
+    installed_keys: Collection[str],
     connection_state: ConnectionPageState,
     sync_state: SyncPageState,
     map_state: MapPageState,
@@ -115,11 +129,19 @@ def _build_default_footer_text(
     atlas_state: AtlasPageState,
 ) -> str:
     return build_wizard_footer_status(
-        connection_status=connection_state.status_text,
-        activity_summary=sync_state.activity_summary_text,
-        map_summary=map_state.layer_summary_text,
-        analysis_status=analysis_state.status_text,
-        atlas_status=atlas_state.status_text,
+        connection_status=(
+            connection_state.status_text if "connection" in installed_keys else None
+        ),
+        activity_summary=(
+            sync_state.activity_summary_text if "sync" in installed_keys else None
+        ),
+        map_summary=(
+            map_state.layer_summary_text if "map" in installed_keys else None
+        ),
+        analysis_status=(
+            analysis_state.status_text if "analysis" in installed_keys else None
+        ),
+        atlas_status=atlas_state.status_text if "atlas" in installed_keys else None,
     )
 
 

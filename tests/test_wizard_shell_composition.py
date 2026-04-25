@@ -161,8 +161,32 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertIsNone(assembled.analysis_content)
         self.assertIsNone(assembled.atlas_content)
         self.assertEqual(assembled.shell.page_count(), 0)
+        self.assertEqual(assembled.shell.footer_bar.text(), "Ready")
         self.assertEqual(assembled.shell.pages_stack.currentIndex(), -1)
         self.assertEqual(assembled.presenter.progress.current_key, "connection")
+
+    def test_default_footer_only_summarizes_installed_pages(self):
+        specs = (
+            self.composition.DockWizardPageSpec(
+                key="connection",
+                title="Connection",
+                summary="Connect qfit to Strava.",
+                primary_action_hint="Primary action: configure connection",
+            ),
+            self.composition.DockWizardPageSpec(
+                key="atlas",
+                title="Atlas PDF",
+                summary="Export a PDF atlas.",
+                primary_action_hint="Primary action: export atlas PDF",
+            ),
+        )
+
+        assembled = self.composition.build_placeholder_wizard_shell(specs=specs)
+
+        self.assertEqual(
+            assembled.shell.footer_bar.text(),
+            "Strava not connected · Atlas PDF not exported yet",
+        )
 
 
 if __name__ == "__main__":
