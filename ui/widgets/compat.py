@@ -172,6 +172,45 @@ def file_widget_path(widget) -> str:
     return ""
 
 
+def make_filter_line_edit(
+    *,
+    text: str = "",
+    placeholder_text: str = "",
+    clear_button_enabled: bool = True,
+    parent=None,
+):
+    """Create a search/filter field that prefers the native QGIS widget.
+
+    The wizard spec uses ``QgsFilterLineEdit`` for search fields. Minimal test
+    environments may not expose it, so fall back to ``QLineEdit`` while keeping
+    one construction API for future wizard pages and filter panels.
+    """
+
+    gui = _import_optional_qgis_gui()
+    filter_line_edit_class = getattr(gui, "QgsFilterLineEdit", None) if gui is not None else None
+    if filter_line_edit_class is not None:
+        widget = filter_line_edit_class(parent)
+    else:
+        widgets = import_module("qgis.PyQt.QtWidgets")
+        widget = widgets.QLineEdit(parent)
+
+    _configure_filter_line_edit(
+        widget,
+        text=text,
+        placeholder_text=placeholder_text,
+        clear_button_enabled=clear_button_enabled,
+    )
+    return widget
+
+
+def filter_line_edit_text(widget) -> str:
+    """Return text from a native or fallback filter line edit."""
+
+    if hasattr(widget, "text"):
+        return str(widget.text())
+    return ""
+
+
 def make_password_line_edit(*, text: str = "", placeholder_text: str = "", parent=None):
     """Create a password field that prefers the native QGIS widget.
 
@@ -314,6 +353,21 @@ def _configure_native_file_widget(
         widget.setDialogTitle(dialog_title)
     if file_path:
         widget.setFilePath(file_path)
+
+
+def _configure_filter_line_edit(
+    widget,
+    *,
+    text: str,
+    placeholder_text: str,
+    clear_button_enabled: bool,
+) -> None:
+    if text and hasattr(widget, "setText"):
+        widget.setText(text)
+    if placeholder_text and hasattr(widget, "setPlaceholderText"):
+        widget.setPlaceholderText(placeholder_text)
+    if hasattr(widget, "setClearButtonEnabled"):
+        widget.setClearButtonEnabled(clear_button_enabled)
 
 
 def _normalise_checkable_list_option(option: CheckableListOption) -> tuple[str, str]:

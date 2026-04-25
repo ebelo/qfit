@@ -12,9 +12,11 @@ from qfit.ui.widgets.compat import (
     collapsible_group_box_expanded,
     datetime_range_values,
     file_widget_path,
+    filter_line_edit_text,
     make_checkable_list,
     make_collapsible_group_box,
     make_datetime_range_edits,
+    make_filter_line_edit,
     make_file_widget,
     make_password_line_edit,
     make_range_slider,
@@ -175,6 +177,26 @@ class _FakeFileWidget:
         self.storage_mode = storage_mode
 
 
+class _FakeFilterLineEdit:
+    def __init__(self, parent=None):
+        self.parent = parent
+        self.text_value = ""
+        self.placeholder_text = ""
+        self.clear_button_enabled = None
+
+    def setText(self, text):  # noqa: N802
+        self.text_value = text
+
+    def text(self):
+        return self.text_value
+
+    def setPlaceholderText(self, text):  # noqa: N802
+        self.placeholder_text = text
+
+    def setClearButtonEnabled(self, enabled):  # noqa: N802
+        self.clear_button_enabled = enabled
+
+
 class _FakeCollapsibleGroupBox:
     def __init__(self, title="", parent=None):
         self.title = title
@@ -266,6 +288,9 @@ class _FakeLineEdit(_FakePasswordLineEdit):
     def setEchoMode(self, echo_mode):  # noqa: N802
         self.echo_mode = echo_mode
 
+    def setClearButtonEnabled(self, enabled):  # noqa: N802
+        self.clear_button_enabled = enabled
+
 
 class _FakeListWidget:
     def __init__(self, parent=None):
@@ -314,6 +339,7 @@ def _fake_qgis_gui(
     datetime_edit=None,
     double_range_slider=None,
     file_widget=None,
+    filter_line_edit=None,
     password_line_edit=None,
     range_slider=_FakeIntegerRangeSlider,
 ):
@@ -327,6 +353,8 @@ def _fake_qgis_gui(
         module.QgsDoubleRangeSlider = double_range_slider
     if file_widget is not None:
         module.QgsFileWidget = file_widget
+    if filter_line_edit is not None:
+        module.QgsFilterLineEdit = filter_line_edit
     if password_line_edit is not None:
         module.QgsPasswordLineEdit = password_line_edit
     return module
@@ -543,6 +571,60 @@ class UiWidgetCompatTests(unittest.TestCase):
 
         self.assertIsInstance(widget, _FakeLineEdit)
         self.assertEqual(file_widget_path(widget), "/tmp/fallback.gpkg")
+
+    def test_uses_native_filter_line_edit_when_qgis_provides_it(self):
+        parent = object()
+        with patch.dict(
+            sys.modules,
+            {"qgis.gui": _fake_qgis_gui(filter_line_edit=_FakeFilterLineEdit)},
+        ):
+            widget = make_filter_line_edit(
+                text="gravel",
+                placeholder_text="Search activities",
+                clear_button_enabled=False,
+                parent=parent,
+            )
+
+        self.assertIsInstance(widget, _FakeFilterLineEdit)
+        self.assertIs(widget.parent, parent)
+        self.assertEqual(widget.text_value, "gravel")
+        self.assertEqual(widget.placeholder_text, "Search activities")
+        self.assertFalse(widget.clear_button_enabled)
+        self.assertEqual(filter_line_edit_text(widget), "gravel")
+
+    def test_filter_line_edit_falls_back_to_qlineedit(self):
+        parent = object()
+        with patch.dict(
+            sys.modules,
+            {
+                "qgis.gui": _fake_qgis_gui(),
+                "qgis.PyQt.QtWidgets": _fake_qt_widgets(),
+            },
+        ):
+            widget = make_filter_line_edit(
+                placeholder_text="Filter by name, type, or sport",
+                parent=parent,
+            )
+
+        self.assertIsInstance(widget, _FakeLineEdit)
+        self.assertIs(widget.parent, parent)
+        self.assertEqual(widget.placeholder_text, "Filter by name, type, or sport")
+        self.assertTrue(widget.clear_button_enabled)
+        self.assertEqual(filter_line_edit_text(widget), "")
+
+    def test_filter_line_edit_falls_back_when_qgis_gui_module_is_missing(self):
+        def import_module_side_effect(name):
+            if name == "qgis.gui":
+                raise ModuleNotFoundError(name=name)
+            if name == "qgis.PyQt.QtWidgets":
+                return _fake_qt_widgets()
+            raise AssertionError(name)
+
+        with patch("qfit.ui.widgets.compat.import_module", side_effect=import_module_side_effect):
+            widget = make_filter_line_edit(text="ride")
+
+        self.assertIsInstance(widget, _FakeLineEdit)
+        self.assertEqual(filter_line_edit_text(widget), "ride")
 
     def test_uses_native_password_line_edit_when_qgis_provides_it(self):
         parent = object()
