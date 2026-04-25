@@ -27,6 +27,24 @@ class DockUiFieldGrammarTests(unittest.TestCase):
     def setUp(self):
         self.root = ET.parse(UI_PATH).getroot()
 
+    def test_top_level_sections_use_task_labels_without_step_numbers(self):
+        self.assertEqual(
+            _property_text(_widget(self.root, "workflowLabel"), "text"),
+            "Sections: Fetch & store · Visualize · Analyze · Publish",
+        )
+
+        expected_titles = {
+            "credentialsGroupBox": "Strava connection",
+            "activitiesGroupBox": "Fetch activities",
+            "outputGroupBox": "Store data",
+            "styleGroupBox": "Visualize",
+            "analysisWorkflowGroupBox": "Analyze",
+            "publishGroupBox": "Publish / atlas",
+        }
+        for widget_name, title in expected_titles.items():
+            with self.subTest(widget_name=widget_name):
+                self.assertEqual(_property_text(_widget(self.root, widget_name), "title"), title)
+
     def test_distance_labels_keep_units_in_spinbox_suffixes(self):
         self.assertEqual(_property_text(_widget(self.root, "distanceLabel"), "text"), "Min distance")
         self.assertEqual(
