@@ -31,6 +31,7 @@ class WorkflowSectionCoordinator:
         dock.publishGroupBox.setCheckable(False)
         dock.publishSettingsWidget.setVisible(True)
         self._pin_summary_status_footer()
+        self._hide_redundant_status_labels()
         self.install_collapsible_section(
             dock.activitiesGroupBox,
             "activitiesGroupLayout",
@@ -94,6 +95,12 @@ class WorkflowSectionCoordinator:
 
         outer_layout.addWidget(label)
         dock._summary_status_footer_pinned = True
+
+    def _hide_redundant_status_labels(self) -> None:
+        for name in ("countLabel", "statusLabel"):
+            label = getattr(self.dock_widget, name, None)
+            if label is not None and hasattr(label, "hide"):
+                label.hide()
 
     def install_collapsible_section(self, group_box, layout_attr: str, title: str, key: str) -> None:
         dock = self.dock_widget
