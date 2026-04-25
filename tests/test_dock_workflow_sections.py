@@ -119,8 +119,16 @@ class DockWorkflowSectionsTests(unittest.TestCase):
             )
         )
 
-        self.assertEqual(statuses[3].state, DockWorkflowStepState.UNLOCKED)
-        self.assertEqual(statuses[4].state, DockWorkflowStepState.CURRENT)
+        self.assertEqual(
+            [(status.key, status.state) for status in statuses],
+            [
+                ("connection", DockWorkflowStepState.DONE),
+                ("sync", DockWorkflowStepState.DONE),
+                ("map", DockWorkflowStepState.DONE),
+                ("analysis", DockWorkflowStepState.UNLOCKED),
+                ("atlas", DockWorkflowStepState.CURRENT),
+            ],
+        )
 
     def test_get_workflow_section_rejects_unknown_keys(self):
         with self.assertRaises(KeyError):
