@@ -216,7 +216,7 @@ DOCK_HELP_ENTRIES: tuple[HelpEntry, ...] = (
     ),
     HelpEntry(
         anchor_name="applyFiltersButton",
-        target_text="Apply current filters to loaded layers",
+        target_text="Apply filters",
         tooltip=(
             "Turns the current dock query into real QGIS layer subset filters and reapplies styling/background logic "
             "to the already loaded layers."

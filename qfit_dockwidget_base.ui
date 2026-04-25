@@ -701,7 +701,7 @@
            <item>
             <widget class="QPushButton" name="applyFiltersButton">
              <property name="text">
-              <string>Apply current filters to loaded layers</string>
+              <string>Apply filters</string>
              </property>
             </widget>
            </item>
