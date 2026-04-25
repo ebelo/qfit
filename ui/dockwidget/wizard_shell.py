@@ -55,6 +55,11 @@ class WizardShell(QWidget):
         """Mark the active step and show the matching page when it exists."""
 
         self.stepper_bar.set_current(index)
+        self.show_page(index)
+
+    def show_page(self, index: int) -> None:
+        """Show a page by stack index when that page has been installed."""
+
         if index < self.pages_stack.count():
             self.pages_stack.setCurrentIndex(index)
 
