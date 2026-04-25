@@ -24,6 +24,7 @@ class WorkflowSectionCoordinator:
             "Fetch your activities from Strava using the credentials saved in qfit → Configuration. "
             "Store or clear the local GeoPackage here too. Filters are applied later in the Visualize step — no re-fetch needed."
         )
+        self._configure_spinbox_unit_copy()
         self._move_store_section_under_fetch()
         self._move_load_layers_to_visualize()
         self._move_temporal_controls_to_visualize()
@@ -102,6 +103,38 @@ class WorkflowSectionCoordinator:
             label = getattr(self.dock_widget, name, None)
             if label is not None and hasattr(label, "hide"):
                 label.hide()
+
+    def _configure_spinbox_unit_copy(self) -> None:
+        """Keep units in spin boxes instead of repeating them in form labels."""
+
+        for label_name, label_text, spinbox_name, suffix in (
+            ("perPageLabel", "Page size", "perPageSpinBox", " activities"),
+            ("maxPagesLabel", "Pages to fetch", "maxPagesSpinBox", " pages"),
+            (
+                "maxDetailedActivitiesLabel",
+                "Detailed route limit",
+                "maxDetailedActivitiesSpinBox",
+                " routes",
+            ),
+            (
+                "pointSamplingStrideLabel",
+                "Point sampling stride",
+                "pointSamplingStrideSpinBox",
+                " points",
+            ),
+        ):
+            self._set_label_text(label_name, label_text)
+            self._set_spinbox_suffix(spinbox_name, suffix)
+
+    def _set_label_text(self, name: str, text: str) -> None:
+        label = getattr(self.dock_widget, name, None)
+        if label is not None and hasattr(label, "setText"):
+            label.setText(text)
+
+    def _set_spinbox_suffix(self, name: str, suffix: str) -> None:
+        spinbox = getattr(self.dock_widget, name, None)
+        if spinbox is not None and hasattr(spinbox, "setSuffix"):
+            spinbox.setSuffix(suffix)
 
     def _move_clear_database_to_actions_menu(self) -> None:
         dock = self.dock_widget

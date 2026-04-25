@@ -309,6 +309,15 @@ class _FakeLabel(_FakeWidget):
         self.text = text
 
 
+class _FakeSpinBox(_FakeWidget):
+    def __init__(self):
+        super().__init__()
+        self.suffix = None
+
+    def setSuffix(self, suffix):
+        self.suffix = suffix
+
+
 
 
 class _FakeGroupBox:
@@ -365,6 +374,14 @@ class WorkflowSectionCoordinatorTests(unittest.TestCase):
         dock.outputIntroLabel.text = "Pick where qfit should store the synced GeoPackage."
         dock.atlasPdfHelpLabel = _FakeLabel()
         dock.atlasPdfHelpLabel.text = "Export a per-activity PDF atlas using loaded activity_atlas_pages."
+        dock.perPageLabel = _FakeLabel()
+        dock.perPageSpinBox = _FakeSpinBox()
+        dock.maxPagesLabel = _FakeLabel()
+        dock.maxPagesSpinBox = _FakeSpinBox()
+        dock.maxDetailedActivitiesLabel = _FakeLabel()
+        dock.maxDetailedActivitiesSpinBox = _FakeSpinBox()
+        dock.pointSamplingStrideLabel = _FakeLabel()
+        dock.pointSamplingStrideSpinBox = _FakeSpinBox()
         dock.atlasPdfGroupBox = _FakeGroupBox()
         dock.generateAtlasPdfButton = _FakeWidget()
         dock.mapboxAccessTokenLabel = _FakeWidget()
@@ -504,6 +521,14 @@ class WorkflowSectionCoordinatorTests(unittest.TestCase):
         self.assertFalse(dock.atlasPdfHelpLabel.visible)
         self.assertEqual(dock.atlasPdfGroupBox.tooltip, dock.atlasPdfHelpLabel.text)
         self.assertEqual(dock.generateAtlasPdfButton.tooltip, dock.atlasPdfHelpLabel.text)
+        self.assertEqual(dock.perPageLabel.text, "Page size")
+        self.assertEqual(dock.perPageSpinBox.suffix, " activities")
+        self.assertEqual(dock.maxPagesLabel.text, "Pages to fetch")
+        self.assertEqual(dock.maxPagesSpinBox.suffix, " pages")
+        self.assertEqual(dock.maxDetailedActivitiesLabel.text, "Detailed route limit")
+        self.assertEqual(dock.maxDetailedActivitiesSpinBox.suffix, " routes")
+        self.assertEqual(dock.pointSamplingStrideLabel.text, "Point sampling stride")
+        self.assertEqual(dock.pointSamplingStrideSpinBox.suffix, " points")
         self.assertFalse(dock.mapboxAccessTokenLabel.visible)
         self.assertFalse(dock.mapboxAccessTokenLineEdit.visible)
 
