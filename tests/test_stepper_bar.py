@@ -244,6 +244,20 @@ class StepperBarTest(unittest.TestCase):
 
         self.assertIs(module, fallback_qtwidgets)
 
+    def test_set_state_does_not_require_python310_zip_strict_keyword(self):
+        original_zip = zip
+
+        def python39_zip(*args, **kwargs):
+            if kwargs:
+                raise TypeError("zip() takes no keyword arguments")
+            return original_zip(*args)
+
+        bar = self.stepper.StepperBar()
+        with patch("builtins.zip", python39_zip):
+            bar.set_state(["done", "current", "upcoming", "locked", "upcoming"])
+
+        self.assertEqual(bar.states(), ("done", "current", "upcoming", "locked", "upcoming"))
+
     def test_applies_state_properties_and_labels(self):
         bar = self.stepper.StepperBar()
 
