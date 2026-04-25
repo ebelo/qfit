@@ -75,6 +75,8 @@ class DockWorkflowSectionsTests(unittest.TestCase):
 
     def test_wizard_step_statuses_reject_unknown_keys(self):
         with self.assertRaises(KeyError):
+            build_wizard_step_statuses(current_key="unknown")
+        with self.assertRaises(KeyError):
             build_wizard_step_statuses(current_key="connection", unlocked_keys={"unknown"})
 
 
