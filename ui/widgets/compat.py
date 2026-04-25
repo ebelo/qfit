@@ -21,7 +21,7 @@ class _ScaledSignal:
         self._slots.remove(slot)
 
     def emit(self, *args) -> None:
-        for slot in list(self._slots):
+        for slot in self._slots:
             slot(*args)
 
 
