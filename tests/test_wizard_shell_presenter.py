@@ -129,6 +129,67 @@ class WizardShellPresenterTest(unittest.TestCase):
             ("current", "locked", "locked", "locked", "locked"),
         )
 
+    def test_partial_page_mapping_renders_installed_page_stack_index(self):
+        shell = self.wizard_shell.WizardShell()
+        pages = self.wizard_page.install_wizard_pages(
+            shell,
+            specs=(
+                self.wizard_page.DockWizardPageSpec(
+                    key="connection",
+                    title="Connection",
+                    summary="Connect qfit to Strava.",
+                    primary_action_hint="Primary action: configure connection",
+                ),
+                self.wizard_page.DockWizardPageSpec(
+                    key="atlas",
+                    title="Atlas PDF",
+                    summary="Export a PDF atlas.",
+                    primary_action_hint="Primary action: export atlas PDF",
+                ),
+            ),
+        )
+        page_indices = {page.spec.key: index for index, page in enumerate(pages)}
+        presenter = self.presenter.WizardShellPresenter(
+            shell,
+            page_indices_by_key=page_indices,
+        )
+
+        presenter.set_progress(
+            self.presenter.DockWizardProgress(
+                current_key="atlas",
+                completed_keys=frozenset({"connection", "sync", "map", "analysis"}),
+                visited_keys=frozenset({"atlas"}),
+            )
+        )
+
+        self.assertEqual(shell.pages_stack.currentIndex(), 1)
+        self.assertEqual(presenter.progress.current_key, "atlas")
+
+    def test_partial_page_mapping_rejects_uninstalled_current_step(self):
+        shell = self.wizard_shell.WizardShell()
+        pages = self.wizard_page.install_wizard_pages(
+            shell,
+            specs=(
+                self.wizard_page.DockWizardPageSpec(
+                    key="connection",
+                    title="Connection",
+                    summary="Connect qfit to Strava.",
+                    primary_action_hint="Primary action: configure connection",
+                ),
+            ),
+        )
+        page_indices = {page.spec.key: index for index, page in enumerate(pages)}
+        presenter = self.presenter.WizardShellPresenter(
+            shell,
+            page_indices_by_key=page_indices,
+        )
+
+        with self.assertRaises(ValueError):
+            presenter.set_progress(self.presenter.DockWizardProgress(current_key="sync"))
+
+        self.assertEqual(presenter.progress.current_key, "connection")
+        self.assertEqual(shell.pages_stack.currentIndex(), 0)
+
     def test_rejects_unknown_completed_step_key(self):
         shell = self._build_shell_with_pages()
         presenter = self.presenter.WizardShellPresenter(shell)

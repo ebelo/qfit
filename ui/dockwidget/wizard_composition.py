@@ -128,7 +128,12 @@ def build_placeholder_wizard_shell(
         analysis_state=analysis_state,
     )
     atlas_content = _install_atlas_content(pages, atlas_state=atlas_state)
-    presenter = WizardShellPresenter(shell, progress)
+    _validate_progress_targets_installed_page(progress, pages)
+    presenter = WizardShellPresenter(
+        shell,
+        progress,
+        page_indices_by_key=_build_page_indices_by_key(pages),
+    )
     return WizardShellComposition(
         shell=shell,
         pages=pages,
@@ -183,8 +188,7 @@ def refresh_wizard_shell_composition(
         composition.atlas_state,
         AtlasPageState,
     )
-    if progress is not None:
-        build_progress_wizard_step_statuses(progress)
+    _validate_progress_targets_installed_page(progress, composition.pages)
 
     if composition.connection_content is not None:
         composition.connection_content.set_state(next_connection_state)
@@ -267,6 +271,21 @@ def _connect_action_callbacks(
         analysis_content.runAnalysisRequested.connect(callbacks.run_analysis)
     if atlas_content is not None and callbacks.export_atlas is not None:
         atlas_content.exportAtlasRequested.connect(callbacks.export_atlas)
+
+
+def _validate_progress_targets_installed_page(
+    progress: DockWizardProgress | None,
+    pages: Sequence[WizardPage],
+) -> None:
+    if progress is None:
+        return
+    build_progress_wizard_step_statuses(progress)
+    if progress.current_key not in {page.spec.key for page in pages}:
+        raise ValueError(f"No installed wizard page for {progress.current_key!r}")
+
+
+def _build_page_indices_by_key(pages: Sequence[WizardPage]) -> dict[str, int]:
+    return {page.spec.key: index for index, page in enumerate(pages)}
 
 
 def _resolve_state(
