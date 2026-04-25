@@ -67,6 +67,12 @@ class AtlasPageContentTest(unittest.TestCase):
             content.export_atlas_button.property("wizardActionRole"),
             "primary",
         )
+        self.assertFalse(content.export_atlas_button.isEnabled())
+        self.assertEqual(
+            content.export_atlas_button.property("wizardActionAvailability"),
+            "blocked",
+        )
+        self.assertIn("Select atlas inputs", content.export_atlas_button.toolTip())
         self.assertEqual(content.action_row.objectName(), "qfitWizardAtlasActionRow")
         self.assertEqual(
             content.action_row.outer_layout().widgets,
@@ -113,6 +119,27 @@ class AtlasPageContentTest(unittest.TestCase):
         )
         self.assertEqual(content.output_summary_label.property("atlasState"), "ready")
         self.assertEqual(content.export_atlas_button.text(), "Refresh atlas PDF")
+        self.assertTrue(content.export_atlas_button.isEnabled())
+        self.assertEqual(
+            content.export_atlas_button.property("wizardActionAvailability"),
+            "available",
+        )
+        self.assertEqual(content.export_atlas_button.toolTip(), "")
+
+    def test_can_override_export_availability(self):
+        content = self.atlas_page.AtlasPageContent(
+            self.atlas_page.AtlasPageState(
+                ready=True,
+                primary_action_enabled=False,
+                primary_action_blocked_tooltip="Choose a PDF output path.",
+            )
+        )
+
+        self.assertFalse(content.export_atlas_button.isEnabled())
+        self.assertEqual(
+            content.export_atlas_button.toolTip(),
+            "Choose a PDF output path.",
+        )
 
     def test_button_emits_reusable_page_signal(self):
         content = self.atlas_page.AtlasPageContent()

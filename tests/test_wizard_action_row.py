@@ -67,6 +67,26 @@ class WizardActionRowTest(unittest.TestCase):
         self.assertIn("font-weight: 500", button.styleSheet())
         self.assertIsNotNone(button.cursor().shape())
 
+    def test_action_availability_marks_blocked_and_available_buttons(self):
+        button = self.action_row.QToolButton()
+
+        returned = self.action_row.set_wizard_action_availability(
+            button,
+            enabled=False,
+            tooltip="Load activity layers first.",
+        )
+
+        self.assertIs(returned, button)
+        self.assertFalse(button.isEnabled())
+        self.assertEqual(button.property("wizardActionAvailability"), "blocked")
+        self.assertEqual(button.toolTip(), "Load activity layers first.")
+
+        self.action_row.set_wizard_action_availability(button, enabled=True)
+
+        self.assertTrue(button.isEnabled())
+        self.assertEqual(button.property("wizardActionAvailability"), "available")
+        self.assertEqual(button.toolTip(), "")
+
 
 if __name__ == "__main__":
     unittest.main()

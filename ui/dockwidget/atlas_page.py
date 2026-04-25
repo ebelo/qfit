@@ -5,7 +5,11 @@ from dataclasses import dataclass
 from qfit.ui.tokens import COLOR_ACCENT, COLOR_MUTED, COLOR_WARN
 
 from ._qt_compat import import_qt_module
-from .action_row import build_wizard_action_row, style_primary_action_button
+from .action_row import (
+    build_wizard_action_row,
+    set_wizard_action_availability,
+    style_primary_action_button,
+)
 
 _qtcore = import_qt_module("qgis.PyQt.QtCore", "PyQt5.QtCore", ("pyqtSignal",))
 _qtwidgets = import_qt_module(
@@ -36,6 +40,8 @@ class AtlasPageState:
     input_summary_text: str = "No atlas layer selected for export"
     output_summary_text: str = "PDF output path will be chosen before generation"
     primary_action_label: str = "Export atlas PDF"
+    primary_action_enabled: bool | None = None
+    primary_action_blocked_tooltip: str = "Select atlas inputs before exporting PDF."
 
 
 class AtlasPageContent(QWidget):
@@ -87,6 +93,16 @@ class AtlasPageContent(QWidget):
         self.output_summary_label.setText(state.output_summary_text)
         self.output_summary_label.setProperty("atlasState", atlas_state)
         self.export_atlas_button.setText(state.primary_action_label)
+        primary_action_enabled = (
+            state.ready
+            if state.primary_action_enabled is None
+            else state.primary_action_enabled
+        )
+        set_wizard_action_availability(
+            self.export_atlas_button,
+            enabled=primary_action_enabled,
+            tooltip=state.primary_action_blocked_tooltip,
+        )
 
     def outer_layout(self):
         """Expose the layout for adapter wiring and pure tests."""

@@ -7,6 +7,7 @@ from qfit.ui.tokens import COLOR_ACCENT, COLOR_MUTED, COLOR_WARN
 from ._qt_compat import import_qt_module
 from .action_row import (
     build_wizard_action_row,
+    set_wizard_action_availability,
     style_primary_action_button,
     style_secondary_action_button,
 )
@@ -41,6 +42,8 @@ class MapPageState:
     filter_summary_text: str = "All stored activities visible once layers are loaded"
     load_action_label: str = "Load activity layers"
     primary_action_label: str = "Apply filters"
+    apply_action_enabled: bool | None = None
+    apply_action_blocked_tooltip: str = "Load activity layers before applying filters."
 
 
 class MapPageContent(QWidget):
@@ -102,6 +105,16 @@ class MapPageContent(QWidget):
         self.filter_summary_label.setProperty("mapState", map_state)
         self.load_layers_button.setText(state.load_action_label)
         self.apply_filters_button.setText(state.primary_action_label)
+        apply_action_enabled = (
+            state.loaded
+            if state.apply_action_enabled is None
+            else state.apply_action_enabled
+        )
+        set_wizard_action_availability(
+            self.apply_filters_button,
+            enabled=apply_action_enabled,
+            tooltip=state.apply_action_blocked_tooltip,
+        )
 
     def outer_layout(self):
         """Expose the layout for adapter wiring and pure tests."""
