@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from collections.abc import Collection, Sequence
+from collections.abc import Callable, Collection, Sequence
 from dataclasses import dataclass
+from typing import TypeVar
 
 from qfit.ui.application.dock_workflow_sections import DockWizardProgress
 from qfit.ui.application.wizard_footer_status import build_wizard_footer_status
@@ -28,7 +29,10 @@ from .wizard_shell import WizardShell
 from .wizard_shell_presenter import WizardShellPresenter
 
 
-@dataclass(frozen=True)
+_StateT = TypeVar("_StateT")
+
+
+@dataclass
 class WizardShellComposition:
     """Concrete placeholder wizard assembly for the future dock replacement.
 
@@ -46,6 +50,11 @@ class WizardShellComposition:
     map_content: MapPageContent | None = None
     analysis_content: AnalysisPageContent | None = None
     atlas_content: AtlasPageContent | None = None
+    connection_state: ConnectionPageState | None = None
+    sync_state: SyncPageState | None = None
+    map_state: MapPageState | None = None
+    analysis_state: AnalysisPageState | None = None
+    atlas_state: AtlasPageState | None = None
 
 
 def build_placeholder_wizard_shell(
@@ -108,7 +117,92 @@ def build_placeholder_wizard_shell(
         map_content=map_content,
         analysis_content=analysis_content,
         atlas_content=atlas_content,
+        connection_state=connection_state,
+        sync_state=sync_state,
+        map_state=map_state,
+        analysis_state=analysis_state,
+        atlas_state=atlas_state,
     )
+
+
+def refresh_wizard_shell_composition(
+    composition: WizardShellComposition,
+    *,
+    connection_state: ConnectionPageState | None = None,
+    sync_state: SyncPageState | None = None,
+    map_state: MapPageState | None = None,
+    analysis_state: AnalysisPageState | None = None,
+    atlas_state: AtlasPageState | None = None,
+    footer_text: str | None = None,
+) -> WizardShellComposition:
+    """Refresh installed wizard page state without rebuilding the shell.
+
+    This is the small adapter seam the future dock can use when real workflow
+    facts change: update only the installed page widgets, then refresh the
+    persistent footer from the same render-neutral state snapshots. Missing page
+    content is skipped so partial/spec-filtered wizard assemblies remain valid.
+    """
+
+    next_connection_state = _resolve_state(
+        connection_state,
+        composition.connection_state,
+        ConnectionPageState,
+    )
+    next_sync_state = _resolve_state(sync_state, composition.sync_state, SyncPageState)
+    next_map_state = _resolve_state(map_state, composition.map_state, MapPageState)
+    next_analysis_state = _resolve_state(
+        analysis_state,
+        composition.analysis_state,
+        AnalysisPageState,
+    )
+    next_atlas_state = _resolve_state(
+        atlas_state,
+        composition.atlas_state,
+        AtlasPageState,
+    )
+
+    if composition.connection_content is not None:
+        composition.connection_content.set_state(next_connection_state)
+    if composition.sync_content is not None:
+        composition.sync_content.set_state(next_sync_state)
+    if composition.map_content is not None:
+        composition.map_content.set_state(next_map_state)
+    if composition.analysis_content is not None:
+        composition.analysis_content.set_state(next_analysis_state)
+    if composition.atlas_content is not None:
+        composition.atlas_content.set_state(next_atlas_state)
+
+    composition.shell.set_footer_text(
+        footer_text
+        if footer_text is not None
+        else _build_default_footer_text(
+            installed_keys={page.spec.key for page in composition.pages},
+            connection_state=next_connection_state,
+            sync_state=next_sync_state,
+            map_state=next_map_state,
+            analysis_state=next_analysis_state,
+            atlas_state=next_atlas_state,
+        )
+    )
+
+    composition.connection_state = next_connection_state
+    composition.sync_state = next_sync_state
+    composition.map_state = next_map_state
+    composition.analysis_state = next_analysis_state
+    composition.atlas_state = next_atlas_state
+    return composition
+
+
+def _resolve_state(
+    provided: _StateT | None,
+    existing: _StateT | None,
+    default_factory: Callable[[], _StateT],
+) -> _StateT:
+    if provided is not None:
+        return provided
+    if existing is not None:
+        return existing
+    return default_factory()
 
 
 def _resolve_page_specs(
@@ -200,4 +294,8 @@ def _install_atlas_content(
     return None
 
 
-__all__ = ["WizardShellComposition", "build_placeholder_wizard_shell"]
+__all__ = [
+    "WizardShellComposition",
+    "build_placeholder_wizard_shell",
+    "refresh_wizard_shell_composition",
+]
