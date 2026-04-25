@@ -10,7 +10,7 @@ from qgis.PyQt.QtCore import Qt
 CheckableListOption = str | tuple[str, str]
 
 
-@dataclass(frozen=True)
+@dataclass
 class DateTimeRangeEdits:
     """Pair of native date-time edits for start/end range selection."""
 
@@ -190,19 +190,29 @@ def make_datetime_range_edits(
         display_format=display_format,
         calendar_popup=calendar_popup,
     )
-    return DateTimeRangeEdits(
+    range_edits = DateTimeRangeEdits(
         start=start,
         end=end,
         start_enabled=_resolve_datetime_bound_enabled(start_datetime, start_enabled),
         end_enabled=_resolve_datetime_bound_enabled(end_datetime, end_enabled),
     )
+    _bind_datetime_bound_activation(start, range_edits, "start_enabled")
+    _bind_datetime_bound_activation(end, range_edits, "end_enabled")
+    return range_edits
 
 
-def datetime_range_values(range_edits: DateTimeRangeEdits) -> tuple[object | None, object | None]:
+def datetime_range_values(
+    range_edits: DateTimeRangeEdits,
+    *,
+    start_enabled: bool | None = None,
+    end_enabled: bool | None = None,
+) -> tuple[object | None, object | None]:
     """Return active start/end date-time values, preserving unset bounds as ``None``."""
 
-    start = _datetime_edit_value(range_edits.start) if range_edits.start_enabled else None
-    end = _datetime_edit_value(range_edits.end) if range_edits.end_enabled else None
+    start_is_enabled = range_edits.start_enabled if start_enabled is None else start_enabled
+    end_is_enabled = range_edits.end_enabled if end_enabled is None else end_enabled
+    start = _datetime_edit_value(range_edits.start) if start_is_enabled else None
+    end = _datetime_edit_value(range_edits.end) if end_is_enabled else None
     return (start, end)
 
 
@@ -267,6 +277,13 @@ def _resolve_datetime_bound_enabled(value, enabled: bool | None) -> bool:
     if enabled is not None:
         return enabled
     return value is not None
+
+
+def _bind_datetime_bound_activation(widget, range_edits: DateTimeRangeEdits, field_name: str) -> None:
+    signal = getattr(widget, "dateTimeChanged", None)
+    if signal is None or not hasattr(signal, "connect"):
+        return
+    signal.connect(lambda *_args: setattr(range_edits, field_name, True))
 
 
 def make_range_slider(

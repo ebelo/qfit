@@ -179,9 +179,11 @@ class _FakeDateTimeEdit:
         self.date_time = "constructor-default"
         self.display_format = ""
         self.calendar_popup = None
+        self.dateTimeChanged = _FakeSignal()
 
     def setDateTime(self, value):  # noqa: N802
         self.date_time = value
+        self.dateTimeChanged.emit(value)
 
     def dateTime(self):  # noqa: N802
         return self.date_time
@@ -464,6 +466,27 @@ class UiWidgetCompatTests(unittest.TestCase):
         self.assertEqual(
             datetime_range_values(edits),
             (None, "2026-04-30T18:30:00"),
+        )
+
+    def test_datetime_range_values_accept_read_time_enabled_flags(self):
+        with patch.dict(sys.modules, {"qgis.gui": _fake_qgis_gui(datetime_edit=_FakeDateTimeEdit)}):
+            edits = make_datetime_range_edits(start_datetime="2026-04-01T08:00:00")
+
+        self.assertEqual(
+            datetime_range_values(edits, start_enabled=False, end_enabled=True),
+            (None, "constructor-default"),
+        )
+
+    def test_datetime_range_edits_enable_bound_after_user_change(self):
+        with patch.dict(sys.modules, {"qgis.gui": _fake_qgis_gui(datetime_edit=_FakeDateTimeEdit)}):
+            edits = make_datetime_range_edits()
+
+        edits.start.setDateTime("2026-04-01T08:00:00")
+
+        self.assertTrue(edits.start_enabled)
+        self.assertEqual(
+            datetime_range_values(edits),
+            ("2026-04-01T08:00:00", None),
         )
 
     def test_uses_native_double_range_slider_when_qgis_provides_it(self):
