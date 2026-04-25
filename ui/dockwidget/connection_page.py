@@ -3,7 +3,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from ._qt_compat import import_qt_module
-from .action_row import build_wizard_action_row, style_primary_action_button
+from .action_row import (
+    build_wizard_action_row,
+    set_wizard_action_availability,
+    style_primary_action_button,
+)
 from .page_content_style import style_detail_label, style_status_pill
 
 _qtcore = import_qt_module("qgis.PyQt.QtCore", "PyQt5.QtCore", ("pyqtSignal",))
@@ -38,6 +42,10 @@ class ConnectionPageState:
     status_text: str = "Strava not connected"
     detail_text: str = "Configure qfit once, then continue to synchronization."
     primary_action_label: str = "Configure connection"
+    primary_action_enabled: bool = True
+    primary_action_blocked_tooltip: str = (
+        "Connection configuration is not available right now."
+    )
 
 
 class ConnectionPageContent(QWidget):
@@ -81,6 +89,11 @@ class ConnectionPageContent(QWidget):
         style_status_pill(self.status_label, active=state.connected)
         self.detail_label.setText(state.detail_text)
         self.configure_button.setText(state.primary_action_label)
+        set_wizard_action_availability(
+            self.configure_button,
+            enabled=state.primary_action_enabled,
+            tooltip=state.primary_action_blocked_tooltip,
+        )
 
     def outer_layout(self):
         """Expose the layout for adapter wiring and pure tests."""

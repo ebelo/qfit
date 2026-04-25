@@ -54,6 +54,12 @@ class SyncPageContentTest(unittest.TestCase):
             "sync_activities",
         )
         self.assertEqual(content.sync_button.property("wizardActionRole"), "primary")
+        self.assertTrue(content.sync_button.isEnabled())
+        self.assertEqual(
+            content.sync_button.property("wizardActionAvailability"),
+            "available",
+        )
+        self.assertEqual(content.sync_button.toolTip(), "")
         self.assertEqual(content.action_row.objectName(), "qfitWizardSyncActionRow")
         self.assertEqual(content.action_row.outer_layout().widgets, [content.sync_button])
         self.assertEqual(
@@ -91,6 +97,35 @@ class SyncPageContentTest(unittest.TestCase):
         )
         self.assertEqual(content.activity_summary_label.property("syncState"), "ready")
         self.assertEqual(content.sync_button.text(), "Fetch latest activities")
+
+    def test_can_block_sync_action_with_tooltip_copy(self):
+        content = self.sync_page.SyncPageContent(
+            self.sync_page.SyncPageState(
+                primary_action_enabled=False,
+                primary_action_blocked_tooltip="Configure Strava first.",
+            )
+        )
+
+        self.assertFalse(content.sync_button.isEnabled())
+        self.assertEqual(
+            content.sync_button.property("wizardActionAvailability"),
+            "blocked",
+        )
+        self.assertEqual(content.sync_button.toolTip(), "Configure Strava first.")
+
+        content.set_state(
+            self.sync_page.SyncPageState(
+                ready=True,
+                primary_action_label="Fetch latest activities",
+            )
+        )
+
+        self.assertTrue(content.sync_button.isEnabled())
+        self.assertEqual(
+            content.sync_button.property("wizardActionAvailability"),
+            "available",
+        )
+        self.assertEqual(content.sync_button.toolTip(), "")
 
     def test_sync_button_emits_reusable_page_signal(self):
         content = self.sync_page.SyncPageContent()
