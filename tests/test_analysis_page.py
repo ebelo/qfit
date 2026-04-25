@@ -67,6 +67,12 @@ class AnalysisPageContentTest(unittest.TestCase):
             content.run_analysis_button.property("wizardActionRole"),
             "primary",
         )
+        self.assertFalse(content.run_analysis_button.isEnabled())
+        self.assertEqual(
+            content.run_analysis_button.property("wizardActionAvailability"),
+            "blocked",
+        )
+        self.assertIn("Load activity layers", content.run_analysis_button.toolTip())
         self.assertEqual(content.action_row.objectName(), "qfitWizardAnalysisActionRow")
         self.assertEqual(
             content.action_row.outer_layout().widgets,
@@ -113,6 +119,27 @@ class AnalysisPageContentTest(unittest.TestCase):
         )
         self.assertEqual(content.result_summary_label.property("analysisState"), "ready")
         self.assertEqual(content.run_analysis_button.text(), "Refresh analysis")
+        self.assertTrue(content.run_analysis_button.isEnabled())
+        self.assertEqual(
+            content.run_analysis_button.property("wizardActionAvailability"),
+            "available",
+        )
+        self.assertEqual(content.run_analysis_button.toolTip(), "")
+
+    def test_can_override_run_analysis_availability(self):
+        content = self.analysis_page.AnalysisPageContent(
+            self.analysis_page.AnalysisPageState(
+                ready=True,
+                primary_action_enabled=False,
+                primary_action_blocked_tooltip="Choose an analysis input layer.",
+            )
+        )
+
+        self.assertFalse(content.run_analysis_button.isEnabled())
+        self.assertEqual(
+            content.run_analysis_button.toolTip(),
+            "Choose an analysis input layer.",
+        )
 
     def test_button_emits_reusable_page_signal(self):
         content = self.analysis_page.AnalysisPageContent()

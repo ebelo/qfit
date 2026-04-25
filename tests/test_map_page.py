@@ -74,6 +74,12 @@ class MapPageContentTest(unittest.TestCase):
             "apply_map_filters",
         )
         self.assertEqual(content.apply_filters_button.property("wizardActionRole"), "primary")
+        self.assertFalse(content.apply_filters_button.isEnabled())
+        self.assertEqual(
+            content.apply_filters_button.property("wizardActionAvailability"),
+            "blocked",
+        )
+        self.assertIn("Load activity layers", content.apply_filters_button.toolTip())
         self.assertEqual(content.action_row.objectName(), "qfitWizardMapActionRow")
         self.assertEqual(
             content.action_row.outer_layout().widgets,
@@ -122,6 +128,27 @@ class MapPageContentTest(unittest.TestCase):
         self.assertEqual(content.filter_summary_label.property("mapState"), "loaded")
         self.assertEqual(content.load_layers_button.text(), "Reload layers")
         self.assertEqual(content.apply_filters_button.text(), "Apply saved filters")
+        self.assertTrue(content.apply_filters_button.isEnabled())
+        self.assertEqual(
+            content.apply_filters_button.property("wizardActionAvailability"),
+            "available",
+        )
+        self.assertEqual(content.apply_filters_button.toolTip(), "")
+
+    def test_can_override_apply_filter_availability(self):
+        content = self.map_page.MapPageContent(
+            self.map_page.MapPageState(
+                loaded=True,
+                apply_action_enabled=False,
+                apply_action_blocked_tooltip="Choose at least one activity layer.",
+            )
+        )
+
+        self.assertFalse(content.apply_filters_button.isEnabled())
+        self.assertEqual(
+            content.apply_filters_button.toolTip(),
+            "Choose at least one activity layer.",
+        )
 
     def test_buttons_emit_reusable_page_signals(self):
         content = self.map_page.MapPageContent()

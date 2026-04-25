@@ -5,7 +5,11 @@ from dataclasses import dataclass
 from qfit.ui.tokens import COLOR_ACCENT, COLOR_MUTED, COLOR_WARN
 
 from ._qt_compat import import_qt_module
-from .action_row import build_wizard_action_row, style_primary_action_button
+from .action_row import (
+    build_wizard_action_row,
+    set_wizard_action_availability,
+    style_primary_action_button,
+)
 
 _qtcore = import_qt_module("qgis.PyQt.QtCore", "PyQt5.QtCore", ("pyqtSignal",))
 _qtwidgets = import_qt_module(
@@ -38,6 +42,8 @@ class AnalysisPageState:
     input_summary_text: str = "No loaded activity layers available for analysis"
     result_summary_text: str = "Analysis outputs will appear in the project once generated"
     primary_action_label: str = "Run analysis"
+    primary_action_enabled: bool | None = None
+    primary_action_blocked_tooltip: str = "Load activity layers before running analysis."
 
 
 class AnalysisPageContent(QWidget):
@@ -89,6 +95,16 @@ class AnalysisPageContent(QWidget):
         self.result_summary_label.setText(state.result_summary_text)
         self.result_summary_label.setProperty("analysisState", analysis_state)
         self.run_analysis_button.setText(state.primary_action_label)
+        primary_action_enabled = (
+            state.ready
+            if state.primary_action_enabled is None
+            else state.primary_action_enabled
+        )
+        set_wizard_action_availability(
+            self.run_analysis_button,
+            enabled=primary_action_enabled,
+            tooltip=state.primary_action_blocked_tooltip,
+        )
 
     def outer_layout(self):
         """Expose the layout for adapter wiring and pure tests."""

@@ -94,6 +94,22 @@ def style_secondary_action_button(
     return button
 
 
+def set_wizard_action_availability(
+    button: QToolButton,
+    *,
+    enabled: bool,
+    tooltip: str = "",
+) -> QToolButton:
+    """Apply a wizard-specific availability state to an action button."""
+
+    button.setEnabled(enabled)
+    action_availability = "available" if enabled else "blocked"
+    button.setProperty("wizardActionAvailability", action_availability)
+    if hasattr(button, "setToolTip"):
+        button.setToolTip("" if enabled else tooltip)
+    return button
+
+
 def _apply_button_chrome(button: QToolButton, *, primary: bool) -> None:
     if hasattr(button, "setToolButtonStyle"):
         button.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
@@ -140,6 +156,7 @@ def _button_stylesheet(*, primary: bool) -> str:
 __all__ = [
     "WizardActionRow",
     "build_wizard_action_row",
+    "set_wizard_action_availability",
     "style_primary_action_button",
     "style_secondary_action_button",
 ]
