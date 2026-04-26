@@ -295,6 +295,7 @@ class WizardShellCompositionTest(unittest.TestCase):
             activities_stored=True,
             activity_count=12,
             output_name="qfit.gpkg",
+            last_sync_date="2026-04-16",
         )
 
         assembled = self.composition.build_placeholder_wizard_shell(progress_facts=facts)
@@ -306,6 +307,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertIn("12 activities stored in qfit.gpkg", assembled.shell.footer_bar.text())
         self.assertEqual(assembled.shell.footer_bar.strava_pill.property("tone"), "ok")
         self.assertEqual(assembled.shell.footer_bar.activity_pill.text(), "12 activities")
+        self.assertEqual(assembled.shell.footer_bar.sync_pill.text(), "sync 2026-04-16")
         self.assertEqual(assembled.shell.footer_bar.path_label.text(), "qfit.gpkg")
 
     def test_sync_page_summary_uses_singular_activity_count(self):

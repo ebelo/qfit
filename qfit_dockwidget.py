@@ -233,7 +233,20 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             filters_active=filters_active,
             filtered_activity_count=filtered_activity_count,
             activity_style_preset=self._current_wizard_activity_style_preset(),
+            last_sync_date=self._current_wizard_last_sync_date(),
         )
+
+    def _current_wizard_last_sync_date(self) -> str | None:
+        """Return the persisted last sync date for wizard status summaries."""
+
+        settings = getattr(self, "settings", None)
+        get_value = getattr(settings, "get", None)
+        if not callable(get_value):
+            return None
+        value = get_value("last_sync_date", None)
+        if not isinstance(value, str):
+            return None
+        return value.strip() or None
 
     def _current_wizard_activity_style_preset(self) -> str | None:
         """Return current activity style copy for the optional wizard map page."""

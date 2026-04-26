@@ -230,6 +230,14 @@ class WizardProgressFactsTests(unittest.TestCase):
 
         self.assertEqual(facts.activity_style_preset, "By activity type")
 
+    def test_runtime_state_adapter_preserves_explicit_last_sync_date(self):
+        facts = build_wizard_progress_facts_from_runtime_state(
+            DockRuntimeState(output_path="/tmp/qfit.gpkg"),
+            last_sync_date=" 2026-04-16 ",
+        )
+
+        self.assertEqual(facts.last_sync_date, "2026-04-16")
+
     def test_defaults_keep_connection_current_with_no_completed_steps(self):
         progress = build_wizard_progress_from_facts(WizardProgressFacts())
 
