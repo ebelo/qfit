@@ -389,6 +389,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             parent=self if parent is None else parent,
             progress_facts=self._current_wizard_progress_facts(),
             wizard_settings=load_wizard_settings(self.settings),
+            use_step_pages=True,
             on_current_step_changed=self._persist_wizard_step_index,
         )
         self._wizard_shell_composition = connect_wizard_action_callbacks(
