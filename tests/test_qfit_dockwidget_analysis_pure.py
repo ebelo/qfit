@@ -566,6 +566,29 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.on_load_clicked.assert_called_once_with()
         dock.on_refresh_clicked.assert_not_called()
 
+    def test_run_wizard_map_step_loads_layers_before_filters_are_available(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._runtime_state_store = self.module.DockRuntimeStore()
+        dock.on_load_layers_clicked = MagicMock()
+        dock.on_apply_filters_clicked = MagicMock()
+
+        self.module.QfitDockWidget._run_wizard_map_step(dock)
+
+        dock.on_load_layers_clicked.assert_called_once_with()
+        dock.on_apply_filters_clicked.assert_not_called()
+
+    def test_run_wizard_map_step_applies_filters_after_layers_are_loaded(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._runtime_state_store = self.module.DockRuntimeStore()
+        dock._runtime_store().set_dataset_layers(activities_layer=object())
+        dock.on_load_layers_clicked = MagicMock()
+        dock.on_apply_filters_clicked = MagicMock()
+
+        self.module.QfitDockWidget._run_wizard_map_step(dock)
+
+        dock.on_apply_filters_clicked.assert_called_once_with()
+        dock.on_load_layers_clicked.assert_not_called()
+
     def test_build_wizard_shell_from_runtime_wires_persistence_and_callbacks(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._runtime_state_store = self.module.DockRuntimeStore()
@@ -624,7 +647,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "configure_connection": "_show_connection_configuration_hint",
             "sync_activities": "_run_wizard_sync_step",
             "load_activity_layers": "on_load_layers_clicked",
-            "apply_map_filters": "on_apply_filters_clicked",
+            "apply_map_filters": "_run_wizard_map_step",
             "run_analysis": "on_run_analysis_clicked",
             "export_atlas": "on_generate_atlas_pdf_clicked",
         }

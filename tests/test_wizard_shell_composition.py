@@ -225,12 +225,17 @@ class WizardShellCompositionTest(unittest.TestCase):
             assembled.map_content.status_label.text(),
             "Stored activities ready to load",
         )
-        self.assertTrue(assembled.map_content.load_layers_button.isEnabled())
+        self.assertFalse(assembled.map_content.load_layers_button.isEnabled())
         self.assertEqual(
-            assembled.map_content.load_layers_button.property("wizardActionAvailability"),
+            assembled.map_content.load_layers_button.toolTip(),
+            "Use the primary action to load activity layers.",
+        )
+        self.assertEqual(assembled.map_content.apply_filters_button.text(), "Load activity layers")
+        self.assertTrue(assembled.map_content.apply_filters_button.isEnabled())
+        self.assertEqual(
+            assembled.map_content.apply_filters_button.property("wizardActionAvailability"),
             "available",
         )
-        self.assertFalse(assembled.map_content.apply_filters_button.isEnabled())
 
     def test_existing_wizard_settings_restore_reachable_initial_step(self):
         settings = self.composition.WizardSettingsSnapshot(
@@ -1115,7 +1120,9 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertEqual(assembled.connection_content.status_label.text(), "Strava connected")
         self.assertEqual(assembled.sync_content.status_label.text(), "Activities stored")
         self.assertEqual(assembled.map_content.status_label.text(), "Activity layers loaded")
+        self.assertEqual(assembled.map_content.load_layers_button.text(), "Reload activity layers")
         self.assertTrue(assembled.map_content.load_layers_button.isEnabled())
+        self.assertEqual(assembled.map_content.apply_filters_button.text(), "Apply filters")
         self.assertTrue(assembled.map_content.apply_filters_button.isEnabled())
         self.assertFalse(assembled.analysis_state.ready)
         self.assertTrue(assembled.analysis_content.run_analysis_button.isEnabled())
