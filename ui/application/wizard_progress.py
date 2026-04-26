@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from pathlib import Path, PureWindowsPath
 
 from .dock_runtime_state import DockRuntimeState
 from .dock_workflow_sections import DockWizardProgress, WIZARD_WORKFLOW_STEPS
@@ -25,6 +26,8 @@ class WizardProgressFacts:
     analysis_generated: bool = False
     atlas_exported: bool = False
     preferred_current_key: str | None = None
+    activity_count: int | None = None
+    output_name: str | None = None
 
 
 def build_wizard_progress_facts_from_runtime_state(
@@ -40,9 +43,12 @@ def build_wizard_progress_facts_from_runtime_state(
     workflow state into ``WizardProgressFacts``. Keep connection and atlas
     completion explicit because they live outside the current runtime snapshot:
     connection is persisted in configuration settings, and atlas exports do not
-    yet retain a durable output artifact after the task completes.
+    yet retain a durable output artifact after the task completes. The runtime
+    ``activities`` tuple is a fetch payload, not a persisted dataset count, so
+    this adapter deliberately leaves ``activity_count`` unknown.
     """
 
+    output_name = _output_name(state.output_path)
     return WizardProgressFacts(
         connection_configured=connection_configured,
         activities_stored=_has_output_path(state),
@@ -50,6 +56,8 @@ def build_wizard_progress_facts_from_runtime_state(
         analysis_generated=state.analysis_layer is not None,
         atlas_exported=atlas_exported,
         preferred_current_key=preferred_current_key,
+        activity_count=None,
+        output_name=output_name,
     )
 
 
@@ -95,6 +103,8 @@ def build_wizard_progress_from_facts_and_settings(
             analysis_generated=facts.analysis_generated,
             atlas_exported=facts.atlas_exported,
             preferred_current_key=preferred_current_key_from_settings(settings),
+            activity_count=facts.activity_count,
+            output_name=facts.output_name,
         )
     )
 
@@ -145,6 +155,15 @@ def _workflow_keys() -> tuple[str, ...]:
 
 def _has_output_path(state: DockRuntimeState) -> bool:
     return bool((state.output_path or "").strip())
+
+
+def _output_name(output_path: str | None) -> str | None:
+    stripped = (output_path or "").strip()
+    if not stripped:
+        return None
+    if "\\" in stripped:
+        return PureWindowsPath(stripped).name or stripped
+    return Path(stripped).name or stripped
 
 
 __all__ = [

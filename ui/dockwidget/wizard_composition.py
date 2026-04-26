@@ -422,6 +422,8 @@ def _completed_prefix_facts(facts: WizardProgressFacts) -> WizardProgressFacts:
         analysis_generated="analysis" in completed,
         atlas_exported="atlas" in completed,
         preferred_current_key=facts.preferred_current_key,
+        activity_count=facts.activity_count,
+        output_name=facts.output_name,
     )
 
 
@@ -449,12 +451,24 @@ def _sync_state_from_facts(facts: WizardProgressFacts) -> SyncPageState:
             else default.detail_text
         ),
         activity_summary_text=(
-            "Activities stored in GeoPackage"
+            _stored_activity_summary(facts)
             if facts.activities_stored
             else default.activity_summary_text
         ),
         primary_action_enabled=facts.connection_configured,
     )
+
+
+def _stored_activity_summary(facts: WizardProgressFacts) -> str:
+    if facts.activity_count is None and facts.output_name is None:
+        return "Activities stored in GeoPackage"
+    if facts.activity_count is None:
+        activity_summary = "Activities"
+    else:
+        noun = "activity" if facts.activity_count == 1 else "activities"
+        activity_summary = f"{max(facts.activity_count, 0)} {noun}"
+    output_summary = facts.output_name or "GeoPackage"
+    return f"{activity_summary} stored in {output_summary}"
 
 
 def _map_state_from_facts(facts: WizardProgressFacts) -> MapPageState:
