@@ -15,6 +15,19 @@ from qfit.ui.application.wizard_progress import (
 from qfit.ui.application.wizard_settings import WizardSettingsSnapshot
 
 
+class _NamedLayer:
+    def __init__(self, name):
+        self._name = name
+
+    def name(self):
+        return self._name
+
+
+class _BrokenLayerName:
+    def name(self):
+        raise RuntimeError("layer has been deleted")
+
+
 class WizardProgressFactsTests(unittest.TestCase):
     def test_runtime_state_adapter_defaults_to_no_completed_workflow_facts(self):
         facts = build_wizard_progress_facts_from_runtime_state(DockRuntimeState())
@@ -120,6 +133,24 @@ class WizardProgressFactsTests(unittest.TestCase):
         )
 
         self.assertEqual(facts.atlas_output_name, "qfit-atlas.pdf")
+
+    def test_runtime_state_adapter_names_analysis_output_layer(self):
+        facts = build_wizard_progress_facts_from_runtime_state(
+            DockRuntimeState(
+                layers=DockRuntimeLayers(
+                    analysis=_NamedLayer(" qfit activity heatmap ")
+                ),
+            )
+        )
+
+        self.assertEqual(facts.analysis_output_name, "qfit activity heatmap")
+
+    def test_runtime_state_adapter_ignores_unreadable_analysis_output_name(self):
+        facts = build_wizard_progress_facts_from_runtime_state(
+            DockRuntimeState(layers=DockRuntimeLayers(analysis=_BrokenLayerName())),
+        )
+
+        self.assertIsNone(facts.analysis_output_name)
 
     def test_runtime_state_adapter_preserves_explicit_map_filter_facts(self):
         facts = build_wizard_progress_facts_from_runtime_state(
