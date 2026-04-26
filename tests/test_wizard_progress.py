@@ -8,6 +8,7 @@ from qfit.ui.application.dock_runtime_state import (
 from qfit.ui.application.dock_workflow_sections import build_progress_wizard_step_statuses
 from qfit.ui.application.wizard_progress import (
     WizardProgressFacts,
+    build_startup_wizard_progress_facts,
     build_wizard_progress_facts_from_runtime_state,
     build_wizard_progress_from_facts,
     build_wizard_progress_from_facts_and_settings,
@@ -351,6 +352,51 @@ class WizardProgressFactsTests(unittest.TestCase):
             progress.completed_keys,
             frozenset({"connection", "sync", "map"}),
         )
+
+    def test_existing_connection_step_setting_remains_sticky_for_refresh(self):
+        progress = build_wizard_progress_from_facts_and_settings(
+            WizardProgressFacts(connection_configured=True),
+            WizardSettingsSnapshot(
+                wizard_version=1,
+                last_step_index=0,
+                first_launch=False,
+            ),
+        )
+
+        self.assertEqual(progress.current_key, "connection")
+        self.assertEqual(progress.completed_keys, frozenset({"connection"}))
+
+    def test_startup_facts_skip_configured_connection_restore_target(self):
+        settings = WizardSettingsSnapshot(
+            wizard_version=1,
+            last_step_index=0,
+            first_launch=False,
+        )
+        startup_facts = build_startup_wizard_progress_facts(
+            WizardProgressFacts(connection_configured=True),
+            settings,
+        )
+
+        progress = build_wizard_progress_from_facts_and_settings(
+            startup_facts,
+            settings,
+        )
+
+        self.assertEqual(progress.current_key, "sync")
+        self.assertEqual(progress.completed_keys, frozenset({"connection"}))
+
+    def test_existing_connection_step_setting_still_routes_missing_connection_to_connection(self):
+        progress = build_wizard_progress_from_facts_and_settings(
+            WizardProgressFacts(connection_configured=False),
+            WizardSettingsSnapshot(
+                wizard_version=1,
+                last_step_index=0,
+                first_launch=False,
+            ),
+        )
+
+        self.assertEqual(progress.current_key, "connection")
+        self.assertEqual(progress.completed_keys, frozenset())
 
     def test_first_launch_settings_keep_default_connection_step(self):
         progress = build_wizard_progress_from_facts_and_settings(
