@@ -426,6 +426,7 @@ def _completed_prefix_facts(facts: WizardProgressFacts) -> WizardProgressFacts:
         preferred_current_key=facts.preferred_current_key,
         activity_count=facts.activity_count,
         output_name=facts.output_name,
+        atlas_output_name=facts.atlas_output_name,
     )
 
 
@@ -553,15 +554,13 @@ def _analysis_state_from_facts(facts: WizardProgressFacts) -> AnalysisPageState:
 def _atlas_state_from_facts(facts: WizardProgressFacts) -> AtlasPageState:
     default = AtlasPageState()
     status_text = default.status_text
-    output_summary_text = default.output_summary_text
+    output_summary_text = _atlas_output_summary(facts, default)
     atlas_blocked_tooltip = default.primary_action_blocked_tooltip
     if facts.atlas_exported:
         status_text = "Atlas PDF exported"
-        output_summary_text = "Latest atlas PDF has been exported"
     primary_action_label = default.primary_action_label
     if facts.atlas_export_in_progress:
         status_text = "Atlas export in progress"
-        output_summary_text = "PDF export is running."
         primary_action_label = "Export in progress…"
         atlas_blocked_tooltip = "Wait for the current atlas export to finish."
     return AtlasPageState(
@@ -579,6 +578,23 @@ def _atlas_state_from_facts(facts: WizardProgressFacts) -> AtlasPageState:
         ),
         primary_action_blocked_tooltip=atlas_blocked_tooltip,
     )
+
+
+def _atlas_output_summary(
+    facts: WizardProgressFacts,
+    default: AtlasPageState,
+) -> str:
+    if facts.atlas_export_in_progress:
+        if facts.atlas_output_name is not None:
+            return f"Exporting {facts.atlas_output_name}"
+        return "PDF export is running."
+    if facts.atlas_exported:
+        if facts.atlas_output_name is not None:
+            return f"Latest atlas PDF exported to {facts.atlas_output_name}"
+        return "Latest atlas PDF has been exported"
+    if facts.atlas_output_name is not None:
+        return f"Ready to export {facts.atlas_output_name}"
+    return default.output_summary_text
 
 
 def _validate_progress_targets_installed_page(

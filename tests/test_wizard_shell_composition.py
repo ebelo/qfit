@@ -456,6 +456,56 @@ class WizardShellCompositionTest(unittest.TestCase):
         )
         self.assertIn("Synchronization in progress", assembled.shell.footer_bar.text())
 
+    def test_atlas_page_summary_uses_configured_output_name_before_export(self):
+        assembled = self.composition.build_placeholder_wizard_shell(
+            progress_facts=self.composition.WizardProgressFacts(
+                connection_configured=True,
+                activities_stored=True,
+                activity_layers_loaded=True,
+                analysis_generated=True,
+                atlas_output_name="qfit-atlas.pdf",
+            )
+        )
+
+        self.assertEqual(
+            assembled.atlas_content.output_summary_label.text(),
+            "Ready to export qfit-atlas.pdf",
+        )
+
+    def test_busy_atlas_page_summary_uses_configured_output_name(self):
+        assembled = self.composition.build_placeholder_wizard_shell(
+            progress_facts=self.composition.WizardProgressFacts(
+                connection_configured=True,
+                activities_stored=True,
+                activity_layers_loaded=True,
+                analysis_generated=True,
+                atlas_export_in_progress=True,
+                atlas_output_name="qfit-atlas.pdf",
+            )
+        )
+
+        self.assertEqual(
+            assembled.atlas_content.output_summary_label.text(),
+            "Exporting qfit-atlas.pdf",
+        )
+
+    def test_exported_atlas_page_summary_uses_configured_output_name(self):
+        assembled = self.composition.build_placeholder_wizard_shell(
+            progress_facts=self.composition.WizardProgressFacts(
+                connection_configured=True,
+                activities_stored=True,
+                activity_layers_loaded=True,
+                analysis_generated=True,
+                atlas_exported=True,
+                atlas_output_name="qfit-atlas.pdf",
+            )
+        )
+
+        self.assertEqual(
+            assembled.atlas_content.output_summary_label.text(),
+            "Latest atlas PDF exported to qfit-atlas.pdf",
+        )
+
     def test_explicit_page_state_overrides_progress_fact_defaults(self):
         assembled = self.composition.build_placeholder_wizard_shell(
             progress_facts=self.composition.WizardProgressFacts(connection_configured=True),
