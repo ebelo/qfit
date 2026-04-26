@@ -71,6 +71,7 @@ from .wizard_settings import (
 )
 from .wizard_progress import (
     WizardProgressFacts,
+    build_wizard_progress_facts_from_runtime_state,
     build_wizard_progress_from_facts,
     build_wizard_progress_from_facts_and_settings,
 )
@@ -130,6 +131,7 @@ __all__ = [
     "build_progress_wizard_step_statuses",
     "build_stepper_items",
     "build_stepper_states",
+    "build_wizard_progress_facts_from_runtime_state",
     "build_wizard_progress_from_facts",
     "build_wizard_progress_from_facts_and_settings",
     "build_wizard_step_statuses",
