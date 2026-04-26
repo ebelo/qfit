@@ -139,23 +139,33 @@ def build_wizard_progress_from_facts_and_settings(
 
     if facts.preferred_current_key is not None:
         return build_wizard_progress_from_facts(facts)
-    preferred_current_key = _startup_preferred_current_key(facts, settings)
     return build_wizard_progress_from_facts(
         _wizard_progress_facts_with_preferred_current_key(
             facts,
-            preferred_current_key=preferred_current_key,
+            preferred_current_key=preferred_current_key_from_settings(settings),
         )
     )
 
 
-def _startup_preferred_current_key(
+def build_startup_wizard_progress_facts(
     facts: WizardProgressFacts,
     settings: WizardSettingsSnapshot,
-) -> str | None:
+) -> WizardProgressFacts:
+    """Return startup-only facts for the first visible wizard page.
+
+    Persisted step settings still control normal refreshes. Startup is the one
+    place where a saved default Connection target should not make configured
+    users reconfirm an already-completed prerequisite before continuing.
+    """
+
     preferred_current_key = preferred_current_key_from_settings(settings)
     if preferred_current_key == "connection" and facts.connection_configured:
-        return None
-    return preferred_current_key
+        progress = build_wizard_progress_from_facts(facts)
+        return _wizard_progress_facts_with_preferred_current_key(
+            facts,
+            preferred_current_key=progress.current_key,
+        )
+    return facts
 
 
 def _wizard_progress_facts_with_preferred_current_key(
@@ -301,6 +311,7 @@ def _layer_name(layer) -> str | None:
 
 __all__ = [
     "WizardProgressFacts",
+    "build_startup_wizard_progress_facts",
     "build_wizard_progress_facts_from_runtime_state",
     "build_wizard_progress_from_facts_and_settings",
     "build_wizard_progress_from_facts",

@@ -221,7 +221,7 @@ class WizardShellCompositionTest(unittest.TestCase):
             "Suivant: Map & filters →",
         )
 
-    def test_configured_connection_startup_opens_sync_but_keeps_connection_accessible(self):
+    def test_configured_connection_restore_keeps_connection_page_accessible(self):
         assembled = self.composition.build_placeholder_wizard_shell(
             progress_facts=self.composition.WizardProgressFacts(
                 connection_configured=True,
@@ -233,26 +233,26 @@ class WizardShellCompositionTest(unittest.TestCase):
             ),
         )
 
-        self.assertEqual(assembled.presenter.progress.current_key, "sync")
-        self.assertEqual(assembled.shell.pages_stack.currentIndex(), 1)
-        self.assertEqual(
-            assembled.shell.stepper_bar.states(),
-            ("done", "current", "locked", "locked", "locked"),
-        )
-        self.assertTrue(assembled.pages[1].back_button.isEnabled())
-        self.assertEqual(
-            assembled.pages[1].back_button.text(),
-            "Précédent: Connection",
-        )
-
-        assembled.shell.stepper_bar.step_buttons()[0].clicked.emit()
-
         self.assertEqual(assembled.presenter.progress.current_key, "connection")
         self.assertEqual(assembled.shell.pages_stack.currentIndex(), 0)
+        self.assertEqual(
+            assembled.shell.stepper_bar.states(),
+            ("current", "upcoming", "locked", "locked", "locked"),
+        )
         self.assertTrue(assembled.pages[0].next_button.isEnabled())
         self.assertEqual(
             assembled.pages[0].next_button.text(),
             "Suivant: Synchronization →",
+        )
+
+        assembled.pages[0].next_button.clicked.emit()
+
+        self.assertEqual(assembled.presenter.progress.current_key, "sync")
+        self.assertEqual(assembled.shell.pages_stack.currentIndex(), 1)
+        self.assertTrue(assembled.pages[1].back_button.isEnabled())
+        self.assertEqual(
+            assembled.pages[1].back_button.text(),
+            "Précédent: Connection",
         )
 
     def test_refresh_resyncs_spec_step_page_navigation_buttons(self):

@@ -81,12 +81,14 @@ from .ui.application import (
     DockVisualWorkflowRequest,
     RunAnalysisAction,
     build_dock_summary_status,
+    build_startup_wizard_progress_facts,
     build_visual_layer_refs,
     build_wizard_filter_description,
     build_wizard_progress_facts_from_runtime_state,
     ensure_wizard_settings,
     load_wizard_settings,
     save_last_step_index,
+    step_index_for_key,
     build_visual_workflow_background_inputs,
     build_visual_workflow_selection_state_handoff,
     build_visual_workflow_settings_snapshot,
@@ -404,10 +406,20 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             connect_wizard_action_callbacks,
         )
 
+        progress_facts = self._current_wizard_progress_facts()
+        wizard_settings = load_wizard_settings(self.settings)
+        startup_progress_facts = build_startup_wizard_progress_facts(
+            progress_facts,
+            wizard_settings,
+        )
+        self._persist_startup_wizard_step_if_needed(
+            progress_facts=progress_facts,
+            startup_progress_facts=startup_progress_facts,
+        )
         composition = build_placeholder_wizard_shell(
             parent=self if parent is None else parent,
-            progress_facts=self._current_wizard_progress_facts(),
-            wizard_settings=load_wizard_settings(self.settings),
+            progress_facts=startup_progress_facts,
+            wizard_settings=wizard_settings,
             use_step_pages=True,
             on_current_step_changed=self._persist_wizard_step_index,
         )
@@ -427,6 +439,17 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._install_wizard_filter_controls(self._wizard_shell_composition)
         self._bind_wizard_analysis_mode_controls(self._wizard_shell_composition)
         return self._wizard_shell_composition
+
+    def _persist_startup_wizard_step_if_needed(
+        self,
+        *,
+        progress_facts,
+        startup_progress_facts,
+    ) -> None:
+        startup_key = startup_progress_facts.preferred_current_key
+        if startup_key is None or startup_key == progress_facts.preferred_current_key:
+            return
+        self._persist_wizard_step_index(step_index_for_key(startup_key))
 
     def _install_wizard_filter_controls(self, composition) -> None:
         """Move the live map-filter controls into the wizard map page."""
