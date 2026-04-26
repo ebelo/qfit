@@ -1,0 +1,272 @@
+from __future__ import annotations
+
+from ._qt_compat import import_qt_module
+from qfit.ui.widgets.pill import set_pill_tone
+from qfit.ui.widgets.tokens import (
+    COLOR_ACCENT,
+    COLOR_ACCENT_DARK,
+    COLOR_GROUP_BORDER,
+    COLOR_MUTED,
+    COLOR_PANEL,
+    COLOR_TEXT,
+)
+
+_qtcore = import_qt_module("qgis.PyQt.QtCore", "PyQt5.QtCore", ("Qt", "pyqtSignal"))
+_qtwidgets = import_qt_module(
+    "qgis.PyQt.QtWidgets",
+    "PyQt5.QtWidgets",
+    (
+        "QHBoxLayout",
+        "QLabel",
+        "QToolButton",
+        "QVBoxLayout",
+        "QWidget",
+    ),
+)
+
+Qt = _qtcore.Qt
+pyqtSignal = _qtcore.pyqtSignal
+QHBoxLayout = _qtwidgets.QHBoxLayout
+QLabel = _qtwidgets.QLabel
+QToolButton = _qtwidgets.QToolButton
+QVBoxLayout = _qtwidgets.QVBoxLayout
+QWidget = _qtwidgets.QWidget
+
+
+class StepPage(QWidget):
+    """Shared #609 wizard page chrome: header, content area, and navigation.
+
+    Concrete pages can add controls to :meth:`content_layout` while reusing the
+    specified step header, status pill, back button, and single primary next CTA.
+    Keeping this as a standalone widget avoids further investment in the legacy
+    long-scroll dock while providing the base class named by the Option B spec.
+    """
+
+    backRequested = pyqtSignal()
+    nextRequested = pyqtSignal()
+
+    def __init__(
+        self,
+        step_num: int,
+        step_total: int,
+        title: str,
+        subtitle: str,
+        status_pill=None,
+        parent=None,
+    ) -> None:
+        super().__init__(parent)
+        self.step_num = step_num
+        self.step_total = step_total
+        self.setObjectName("qfitWizardStepPage")
+        self.step_label = self._build_step_label(step_num, step_total)
+        self.title_label = self._build_title_label(title)
+        self.subtitle_label = self._build_subtitle_label(subtitle)
+        self.status_pill = status_pill or self._build_status_pill()
+        self.content_container = QWidget(self)
+        self.content_container.setObjectName("qfitWizardStepContent")
+        self._content_layout = self._build_content_layout(self.content_container)
+        self.back_button = self._build_back_button()
+        self.next_button = self._build_next_button()
+        self._extra_left_layout = self._build_extra_button_layout("qfitWizardStepLeftExtraLayout")
+        self._extra_right_layout = self._build_extra_button_layout("qfitWizardStepRightExtraLayout")
+        self._header_layout = self._build_header_layout()
+        self._nav_layout = self._build_nav_layout()
+        self._layout = self._build_layout()
+        self.set_status(None)
+        self.set_back()
+        self.set_next("Suivant")
+
+    def set_status(self, text: str | None, tone: str = "muted") -> None:
+        """Update the optional header status pill and hide it when text is blank."""
+
+        label = (text or "").strip()
+        self.status_pill.setText(label)
+        set_pill_tone(self.status_pill, tone, object_name="qfitWizardStepStatusPill")
+        self.status_pill.setVisible(bool(label))
+
+    def set_next(
+        self,
+        label: str,
+        icon: str = "→",
+        primary: bool = True,
+        enabled: bool = True,
+    ) -> None:
+        """Configure the right-side next/primary wizard action."""
+
+        self.next_button.setText(_button_text(label, icon))
+        self.next_button.setEnabled(enabled)
+        self.next_button.setProperty("wizardActionRole", "primary" if primary else "secondary")
+        self.next_button.setStyleSheet(
+            _primary_button_stylesheet() if primary else _ghost_button_stylesheet()
+        )
+
+    def set_back(self, label: str = "Précédent", enabled: bool = True) -> None:
+        """Configure the left-side back navigation action."""
+
+        self.back_button.setText(label)
+        self.back_button.setEnabled(enabled)
+        self.back_button.setProperty("wizardActionRole", "back")
+        self.back_button.setStyleSheet(_ghost_button_stylesheet())
+
+    def add_extra_button(self, btn, align: str = "right") -> None:
+        """Add a page-specific secondary button to the navigation row."""
+
+        btn.setProperty("wizardActionRole", "extra")
+        if align == "left":
+            self._extra_left_layout.addWidget(btn)
+            return
+        if align == "right":
+            self._extra_right_layout.addWidget(btn)
+            return
+        raise ValueError("align must be 'left' or 'right'")
+
+    def content_layout(self):
+        """Return the layout where concrete step pages install their controls."""
+
+        return self._content_layout
+
+    def outer_layout(self):
+        """Expose the full page layout for adapter wiring and pure tests."""
+
+        return self._layout
+
+    def _build_step_label(self, step_num: int, step_total: int):
+        label = QLabel(f"ÉTAPE {step_num}/{step_total}", self)
+        label.setObjectName("qfitWizardStepKickerLabel")
+        label.setStyleSheet(
+            f"QLabel#qfitWizardStepKickerLabel {{ color: {COLOR_MUTED}; "
+            "font-size: 10.5pt; font-weight: 600; letter-spacing: .5px; }}"
+        )
+        return label
+
+    def _build_title_label(self, title: str):
+        label = QLabel(title, self)
+        label.setObjectName("qfitWizardStepTitleLabel")
+        label.setStyleSheet(
+            f"QLabel#qfitWizardStepTitleLabel {{ color: {COLOR_TEXT}; "
+            "font-size: 14pt; font-weight: 600; }}"
+        )
+        return label
+
+    def _build_subtitle_label(self, subtitle: str):
+        label = QLabel(subtitle, self)
+        label.setObjectName("qfitWizardStepSubtitleLabel")
+        if hasattr(label, "setWordWrap"):
+            label.setWordWrap(True)
+        label.setStyleSheet(
+            f"QLabel#qfitWizardStepSubtitleLabel {{ color: {COLOR_MUTED}; "
+            "font-size: 11pt; margin-top: 3px; line-height: 1.45; }}"
+        )
+        return label
+
+    def _build_status_pill(self):
+        label = QLabel("", self)
+        label.setObjectName("qfitWizardStepStatusPill")
+        label.setAlignment(Qt.AlignCenter)
+        label.setMinimumHeight(18)
+        return label
+
+    def _build_back_button(self):
+        button = QToolButton(self)
+        button.setObjectName("qfitWizardStepBackButton")
+        button.clicked.connect(self.backRequested.emit)
+        return button
+
+    def _build_next_button(self):
+        button = QToolButton(self)
+        button.setObjectName("qfitWizardStepNextButton")
+        button.clicked.connect(self.nextRequested.emit)
+        return button
+
+    def _build_content_layout(self, parent):
+        layout = QVBoxLayout(parent)
+        if hasattr(layout, "setObjectName"):
+            layout.setObjectName("qfitWizardStepContentLayout")
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(8)
+        return layout
+
+    def _build_header_layout(self):
+        layout = QHBoxLayout()
+        if hasattr(layout, "setObjectName"):
+            layout.setObjectName("qfitWizardStepHeaderLayout")
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(8)
+        layout.addWidget(self.step_label)
+        layout.addWidget(self.title_label)
+        layout.addStretch(1)
+        layout.addWidget(self.status_pill)
+        return layout
+
+    def _build_extra_button_layout(self, object_name: str):
+        layout = QHBoxLayout()
+        if hasattr(layout, "setObjectName"):
+            layout.setObjectName(object_name)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(8)
+        return layout
+
+    def _build_nav_layout(self):
+        layout = QHBoxLayout()
+        if hasattr(layout, "setObjectName"):
+            layout.setObjectName("qfitWizardStepNavLayout")
+        layout.setContentsMargins(0, 10, 0, 0)
+        layout.setSpacing(8)
+        layout.addWidget(self.back_button)
+        layout.addWidget(_LayoutWidget(self._extra_left_layout, self))
+        layout.addStretch(1)
+        layout.addWidget(_LayoutWidget(self._extra_right_layout, self))
+        layout.addWidget(self.next_button)
+        return layout
+
+    def _build_layout(self):
+        layout = QVBoxLayout(self)
+        if hasattr(layout, "setObjectName"):
+            layout.setObjectName("qfitWizardStepPageLayout")
+        layout.setContentsMargins(12, 12, 12, 12)
+        layout.setSpacing(10)
+        layout.addWidget(_LayoutWidget(self._header_layout, self))
+        layout.addWidget(self.subtitle_label)
+        layout.addWidget(self.content_container)
+        layout.addWidget(_LayoutWidget(self._nav_layout, self))
+        return layout
+
+
+class _LayoutWidget(QWidget):
+    """Small wrapper so fake and real Qt layouts can be inserted as widgets."""
+
+    def __init__(self, layout, parent=None) -> None:
+        super().__init__(parent)
+        if hasattr(self, "setLayout"):
+            self.setLayout(layout)
+
+
+def _button_text(label: str, icon: str) -> str:
+    stripped_label = label.strip()
+    stripped_icon = icon.strip()
+    if not stripped_icon:
+        return stripped_label
+    return f"{stripped_label} {stripped_icon}"
+
+
+def _primary_button_stylesheet() -> str:
+    return (
+        "QToolButton { "
+        f"background: {COLOR_ACCENT}; color: white; font-weight: 600; "
+        f"border: 1px solid {COLOR_ACCENT_DARK}; border-radius: 2px; "
+        "padding: 4px 12px; min-height: 22px; "
+        "}"
+    )
+
+
+def _ghost_button_stylesheet() -> str:
+    return (
+        "QToolButton { "
+        f"background: {COLOR_PANEL}; color: {COLOR_TEXT}; "
+        f"border: 1px solid {COLOR_GROUP_BORDER}; border-radius: 2px; "
+        "padding: 4px 12px; min-height: 22px; "
+        "}"
+    )
+
+
+__all__ = ["StepPage"]
