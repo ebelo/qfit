@@ -125,8 +125,13 @@ class StepPageTest(unittest.TestCase):
         self.assertEqual(page.objectName(), "qfitWizardMapPage")
         self.assertEqual(page.step_label.text(), "ÉTAPE 3/5")
         self.assertEqual(page.title_label.objectName(), "qfitWizardMapPageTitle")
+        self.assertIn("QLabel#qfitWizardMapPageTitle", page.title_label.styleSheet())
         self.assertEqual(page.summary_label.objectName(), "qfitWizardMapPageSummary")
         self.assertEqual(page.summary_label.text(), spec.summary)
+        self.assertIn(
+            "QLabel#qfitWizardMapPageSummary",
+            page.summary_label.styleSheet(),
+        )
         self.assertIs(page.body_container, page.content_container)
         self.assertEqual(page.body_container.objectName(), "qfitWizardMapPageBody")
         self.assertIs(page.body_layout(), page.content_layout())

@@ -139,19 +139,13 @@ class StepPage(QWidget):
     def _build_step_label(self, step_num: int, step_total: int):
         label = QLabel(f"ÉTAPE {step_num}/{step_total}", self)
         label.setObjectName("qfitWizardStepKickerLabel")
-        label.setStyleSheet(
-            f"QLabel#qfitWizardStepKickerLabel {{ color: {COLOR_MUTED}; "
-            "font-size: 10.5pt; font-weight: 600; letter-spacing: .5px; }}"
-        )
+        label.setStyleSheet(_step_kicker_label_stylesheet(label.objectName()))
         return label
 
     def _build_title_label(self, title: str):
         label = QLabel(title, self)
         label.setObjectName("qfitWizardStepTitleLabel")
-        label.setStyleSheet(
-            f"QLabel#qfitWizardStepTitleLabel {{ color: {COLOR_TEXT}; "
-            "font-size: 14pt; font-weight: 600; }}"
-        )
+        label.setStyleSheet(_step_title_label_stylesheet(label.objectName()))
         return label
 
     def _build_subtitle_label(self, subtitle: str):
@@ -160,8 +154,7 @@ class StepPage(QWidget):
         if hasattr(label, "setWordWrap"):
             label.setWordWrap(True)
         label.setStyleSheet(
-            f"QLabel#qfitWizardStepSubtitleLabel {{ color: {COLOR_MUTED}; "
-            "font-size: 11pt; margin-top: 3px; line-height: 1.45; }}"
+            _step_subtitle_label_stylesheet(label.objectName())
         )
         return label
 
@@ -267,8 +260,14 @@ class WizardStepPage(StepPage):
         self.spec = spec
         self.setObjectName(spec.page_object_name)
         self.title_label.setObjectName(spec.title_object_name)
+        self.title_label.setStyleSheet(
+            _step_title_label_stylesheet(spec.title_object_name)
+        )
         self.summary_label = self.subtitle_label
         self.summary_label.setObjectName(spec.summary_object_name)
+        self.summary_label.setStyleSheet(
+            _step_subtitle_label_stylesheet(spec.summary_object_name)
+        )
         self.body_container = self.content_container
         self.body_container.setObjectName(spec.body_object_name)
         self.primary_hint_label = self._build_primary_hint_label(spec.primary_action_hint)
@@ -340,6 +339,27 @@ def _button_text(label: str, icon: str) -> str:
     if not stripped_icon:
         return stripped_label
     return f"{stripped_label} {stripped_icon}"
+
+
+def _step_kicker_label_stylesheet(object_name: str) -> str:
+    return (
+        f"QLabel#{object_name} {{ color: {COLOR_MUTED}; "
+        "font-size: 10.5pt; font-weight: 600; letter-spacing: .5px; }}"
+    )
+
+
+def _step_title_label_stylesheet(object_name: str) -> str:
+    return (
+        f"QLabel#{object_name} {{ color: {COLOR_TEXT}; "
+        "font-size: 14pt; font-weight: 600; }}"
+    )
+
+
+def _step_subtitle_label_stylesheet(object_name: str) -> str:
+    return (
+        f"QLabel#{object_name} {{ color: {COLOR_MUTED}; "
+        "font-size: 11pt; margin-top: 3px; line-height: 1.45; }}"
+    )
 
 
 def _primary_button_stylesheet() -> str:
