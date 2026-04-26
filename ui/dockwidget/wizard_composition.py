@@ -445,6 +445,7 @@ def _connection_state_from_facts(facts: WizardProgressFacts) -> ConnectionPageSt
         connected=True,
         status_text="Strava connected",
         detail_text="Connection is configured; continue to synchronization.",
+        credential_summary_text="Strava OAuth credentials are stored in qfit settings",
         primary_action_label="Review connection",
         primary_action_enabled=True,
     )

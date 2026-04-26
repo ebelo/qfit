@@ -46,6 +46,19 @@ class ConnectionPageContentTest(unittest.TestCase):
         self.assertIn("continue to synchronization", content.detail_label.text())
         self.assertIn(COLOR_MUTED, content.detail_label.styleSheet())
         self.assertEqual(
+            content.credential_summary_label.objectName(),
+            "qfitWizardConnectionCredentialSummary",
+        )
+        self.assertEqual(
+            content.credential_summary_label.text(),
+            "No Strava credentials configured",
+        )
+        self.assertEqual(
+            content.credential_summary_label.property("connectionState"),
+            "not_connected",
+        )
+        self.assertIn(COLOR_MUTED, content.credential_summary_label.styleSheet())
+        self.assertEqual(
             content.configure_button.objectName(),
             "qfitWizardConnectionConfigureButton",
         )
@@ -68,7 +81,12 @@ class ConnectionPageContentTest(unittest.TestCase):
         self.assertEqual(content.action_row.outer_layout().widgets, [content.configure_button])
         self.assertEqual(
             content.outer_layout().widgets,
-            [content.status_label, content.detail_label, content.action_row],
+            [
+                content.status_label,
+                content.detail_label,
+                content.credential_summary_label,
+                content.action_row,
+            ],
         )
 
     def test_refreshes_connected_state_without_rebuilding(self):
@@ -77,6 +95,7 @@ class ConnectionPageContentTest(unittest.TestCase):
             connected=True,
             status_text="Connected to Strava",
             detail_text="Credentials are ready.",
+            credential_summary_text="Refresh token saved for Strava sync",
             primary_action_label="Review connection",
         )
 
@@ -86,6 +105,14 @@ class ConnectionPageContentTest(unittest.TestCase):
         self.assertEqual(content.status_label.property("connectionState"), "connected")
         self.assertEqual(content.status_label.property("tone"), "ok")
         self.assertEqual(content.detail_label.text(), "Credentials are ready.")
+        self.assertEqual(
+            content.credential_summary_label.text(),
+            "Refresh token saved for Strava sync",
+        )
+        self.assertEqual(
+            content.credential_summary_label.property("connectionState"),
+            "connected",
+        )
         self.assertEqual(content.configure_button.text(), "Review connection")
 
     def test_can_block_configure_action_with_tooltip_copy(self):
