@@ -13,6 +13,10 @@ from qfit.ui.application.wizard_page_specs import (
     DockWizardPageSpec,
     build_default_wizard_page_specs,
 )
+from qfit.ui.application.wizard_progress import (
+    WizardProgressFacts,
+    build_wizard_progress_from_facts,
+)
 
 from .analysis_page import (
     AnalysisPageContent,
@@ -83,6 +87,7 @@ def build_placeholder_wizard_shell(
     parent=None,
     footer_text: str = "",
     progress: DockWizardProgress | None = None,
+    progress_facts: WizardProgressFacts | None = None,
     specs: Sequence[DockWizardPageSpec] | None = None,
     connection_state: ConnectionPageState | None = None,
     sync_state: SyncPageState | None = None,
@@ -103,6 +108,10 @@ def build_placeholder_wizard_shell(
     map_state = map_state or MapPageState()
     analysis_state = analysis_state or AnalysisPageState()
     atlas_state = atlas_state or AtlasPageState()
+    resolved_progress = _resolve_progress(
+        progress=progress,
+        progress_facts=progress_facts,
+    )
     page_specs = _resolve_page_specs(specs)
     shell = WizardShell(
         parent=parent,
@@ -128,10 +137,10 @@ def build_placeholder_wizard_shell(
         analysis_state=analysis_state,
     )
     atlas_content = _install_atlas_content(pages, atlas_state=atlas_state)
-    _validate_progress_targets_installed_page(progress, pages)
+    _validate_progress_targets_installed_page(resolved_progress, pages)
     presenter = WizardShellPresenter(
         shell,
-        progress,
+        resolved_progress,
         page_indices_by_key=_build_page_indices_by_key(pages),
     )
     return WizardShellComposition(
@@ -161,6 +170,7 @@ def refresh_wizard_shell_composition(
     atlas_state: AtlasPageState | None = None,
     footer_text: str | None = None,
     progress: DockWizardProgress | None = None,
+    progress_facts: WizardProgressFacts | None = None,
 ) -> WizardShellComposition:
     """Refresh installed wizard page state without rebuilding the shell.
 
@@ -188,7 +198,11 @@ def refresh_wizard_shell_composition(
         composition.atlas_state,
         AtlasPageState,
     )
-    _validate_progress_targets_installed_page(progress, composition.pages)
+    resolved_progress = _resolve_progress(
+        progress=progress,
+        progress_facts=progress_facts,
+    )
+    _validate_progress_targets_installed_page(resolved_progress, composition.pages)
 
     if composition.connection_content is not None:
         composition.connection_content.set_state(next_connection_state)
@@ -213,8 +227,8 @@ def refresh_wizard_shell_composition(
             atlas_state=next_atlas_state,
         )
     )
-    if progress is not None:
-        composition.presenter.set_progress(progress)
+    if resolved_progress is not None:
+        composition.presenter.set_progress(resolved_progress)
 
     composition.connection_state = next_connection_state
     composition.sync_state = next_sync_state
@@ -271,6 +285,18 @@ def _connect_action_callbacks(
         analysis_content.runAnalysisRequested.connect(callbacks.run_analysis)
     if atlas_content is not None and callbacks.export_atlas is not None:
         atlas_content.exportAtlasRequested.connect(callbacks.export_atlas)
+
+
+def _resolve_progress(
+    *,
+    progress: DockWizardProgress | None,
+    progress_facts: WizardProgressFacts | None,
+) -> DockWizardProgress | None:
+    if progress is not None and progress_facts is not None:
+        raise ValueError("Pass progress or progress_facts, not both")
+    if progress_facts is None:
+        return progress
+    return build_wizard_progress_from_facts(progress_facts)
 
 
 def _validate_progress_targets_installed_page(
@@ -391,6 +417,7 @@ def _install_atlas_content(
 
 __all__ = [
     "WizardActionCallbacks",
+    "WizardProgressFacts",
     "WizardShellComposition",
     "build_placeholder_wizard_shell",
     "connect_wizard_action_callbacks",
