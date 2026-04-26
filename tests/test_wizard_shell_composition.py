@@ -356,6 +356,36 @@ class WizardShellCompositionTest(unittest.TestCase):
             assembled.shell.footer_bar.text(),
         )
 
+    def test_loaded_map_page_summary_reports_visible_filter_count(self):
+        facts = self.composition.WizardProgressFacts(
+            connection_configured=True,
+            activities_stored=True,
+            activity_layers_loaded=True,
+            filters_active=True,
+            filtered_activity_count=3,
+        )
+
+        assembled = self.composition.build_placeholder_wizard_shell(progress_facts=facts)
+
+        self.assertEqual(
+            assembled.map_content.filter_summary_label.text(),
+            "Filters match 3 loaded activities",
+        )
+
+    def test_loaded_map_page_summary_reports_all_visible_when_unfiltered(self):
+        facts = self.composition.WizardProgressFacts(
+            connection_configured=True,
+            activities_stored=True,
+            activity_layers_loaded=True,
+        )
+
+        assembled = self.composition.build_placeholder_wizard_shell(progress_facts=facts)
+
+        self.assertEqual(
+            assembled.map_content.filter_summary_label.text(),
+            "All loaded activities are visible",
+        )
+
     def test_progress_facts_drive_page_cta_prerequisites_without_marking_done(self):
         facts = self.composition.WizardProgressFacts(connection_configured=True)
 

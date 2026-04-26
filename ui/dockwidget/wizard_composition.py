@@ -427,6 +427,8 @@ def _completed_prefix_facts(facts: WizardProgressFacts) -> WizardProgressFacts:
         activity_count=facts.activity_count,
         output_name=facts.output_name,
         atlas_output_name=facts.atlas_output_name,
+        filters_active=facts.filters_active,
+        filtered_activity_count=facts.filtered_activity_count,
     )
 
 
@@ -507,6 +509,7 @@ def _map_state_from_facts(facts: WizardProgressFacts) -> MapPageState:
         loaded=facts.activity_layers_loaded,
         status_text=_map_status_text(facts, default),
         layer_summary_text=_map_layer_summary(facts, default),
+        filter_summary_text=_map_filter_summary(facts, default),
         load_action_enabled=facts.activities_stored,
         apply_action_enabled=facts.activity_layers_loaded,
     )
@@ -530,6 +533,17 @@ def _map_layer_summary(facts: WizardProgressFacts, default: MapPageState) -> str
             return f"Stored activities in {facts.output_name} are ready to load"
         return "Stored activities are ready to load"
     return default.layer_summary_text
+
+
+def _map_filter_summary(facts: WizardProgressFacts, default: MapPageState) -> str:
+    if not facts.activity_layers_loaded:
+        return default.filter_summary_text
+    if facts.filters_active:
+        if facts.filtered_activity_count is None:
+            return "Subset filters are active"
+        noun = "activity" if facts.filtered_activity_count == 1 else "activities"
+        return f"Filters match {max(facts.filtered_activity_count, 0)} loaded {noun}"
+    return "All loaded activities are visible"
 
 
 def _analysis_state_from_facts(facts: WizardProgressFacts) -> AnalysisPageState:

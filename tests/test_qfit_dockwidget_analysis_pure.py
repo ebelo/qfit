@@ -192,6 +192,18 @@ class _FakeLayer:
         return self._id
 
 
+class _FakeSubsetLayer:
+    def __init__(self, subset="", feature_count=0):
+        self._subset = subset
+        self._feature_count = feature_count
+
+    def subsetString(self):
+        return self._subset
+
+    def featureCount(self):
+        return self._feature_count
+
+
 class _FakeLineEdit:
     def __init__(self, text=""):
         self._text = text
@@ -401,6 +413,38 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertTrue(facts.atlas_exported)
         self.assertTrue(facts.atlas_export_in_progress)
         self.assertEqual(facts.atlas_output_name, "running-atlas.pdf")
+
+    def test_current_wizard_filter_facts_prefers_loaded_layer_subset(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._runtime_state_store = self.module.DockRuntimeStore()
+        dock._runtime_store().set_activities([object(), object(), object()])
+        dock._runtime_store().load_dataset(
+            output_path="/tmp/qfit.gpkg",
+            activities_layer=_FakeSubsetLayer('"activity_type" = \'Run\'', 2),
+        )
+
+        filters_active, filtered_count = (
+            self.module.QfitDockWidget._current_wizard_filter_facts(dock)
+        )
+
+        self.assertTrue(filters_active)
+        self.assertEqual(filtered_count, 2)
+
+    def test_current_wizard_filter_facts_treats_empty_loaded_subset_as_unfiltered(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._runtime_state_store = self.module.DockRuntimeStore()
+        dock._runtime_store().set_activities([object(), object(), object()])
+        dock._runtime_store().load_dataset(
+            output_path="/tmp/qfit.gpkg",
+            activities_layer=_FakeSubsetLayer("", 3),
+        )
+
+        filters_active, filtered_count = (
+            self.module.QfitDockWidget._current_wizard_filter_facts(dock)
+        )
+
+        self.assertFalse(filters_active)
+        self.assertIsNone(filtered_count)
 
     def test_persist_wizard_step_index_clamps_and_saves_setting(self):
         dock = object.__new__(self.module.QfitDockWidget)

@@ -31,6 +31,8 @@ class WizardProgressFacts:
     activity_count: int | None = None
     output_name: str | None = None
     atlas_output_name: str | None = None
+    filters_active: bool = False
+    filtered_activity_count: int | None = None
 
 
 def build_wizard_progress_facts_from_runtime_state(
@@ -40,6 +42,8 @@ def build_wizard_progress_facts_from_runtime_state(
     atlas_exported: bool = False,
     preferred_current_key: str | None = None,
     atlas_output_path: str | None = None,
+    filters_active: bool = False,
+    filtered_activity_count: int | None = None,
 ) -> WizardProgressFacts:
     """Derive #609 wizard progress facts from the dock runtime snapshot.
 
@@ -68,6 +72,8 @@ def build_wizard_progress_facts_from_runtime_state(
         activity_count=None,
         output_name=output_name,
         atlas_output_name=atlas_output_name,
+        filters_active=filters_active,
+        filtered_activity_count=filtered_activity_count,
     )
 
 
@@ -118,6 +124,8 @@ def build_wizard_progress_from_facts_and_settings(
             activity_count=facts.activity_count,
             output_name=facts.output_name,
             atlas_output_name=facts.atlas_output_name,
+            filters_active=facts.filters_active,
+            filtered_activity_count=facts.filtered_activity_count,
         )
     )
 

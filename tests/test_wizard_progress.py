@@ -121,6 +121,16 @@ class WizardProgressFactsTests(unittest.TestCase):
 
         self.assertEqual(facts.atlas_output_name, "qfit-atlas.pdf")
 
+    def test_runtime_state_adapter_preserves_explicit_map_filter_facts(self):
+        facts = build_wizard_progress_facts_from_runtime_state(
+            DockRuntimeState(output_path="/tmp/qfit.gpkg"),
+            filters_active=True,
+            filtered_activity_count=3,
+        )
+
+        self.assertTrue(facts.filters_active)
+        self.assertEqual(facts.filtered_activity_count, 3)
+
     def test_defaults_keep_connection_current_with_no_completed_steps(self):
         progress = build_wizard_progress_from_facts(WizardProgressFacts())
 
