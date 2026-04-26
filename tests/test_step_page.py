@@ -81,11 +81,17 @@ class StepPageTest(unittest.TestCase):
     def test_next_and_back_configuration_updates_roles_and_availability(self):
         page = self.step_page.StepPage(4, 5, "Analyse", "Calcule les sorties.")
 
-        page.set_next("Lancer l'analyse", primary=False, enabled=False)
+        page.set_next(
+            "Lancer l'analyse",
+            primary=False,
+            enabled=False,
+            visible=False,
+        )
         page.set_back("Retour", enabled=False)
 
         self.assertEqual(page.next_button.text(), "Lancer l'analyse")
         self.assertFalse(page.next_button.isEnabled())
+        self.assertFalse(page.next_button.isVisible())
         self.assertEqual(page.next_button.property("wizardActionRole"), "secondary")
         self.assertEqual(page.back_button.text(), "Retour")
         self.assertFalse(page.back_button.isEnabled())

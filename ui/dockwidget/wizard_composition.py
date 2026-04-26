@@ -994,6 +994,7 @@ def _sync_step_page_navigation_buttons(
                 and can_request_step(statuses, previous_index)
             ),
         )
+        has_next_page = next_index is not None
         page.set_next(
             label=_navigation_label(
                 prefix="Suivant",
@@ -1002,10 +1003,11 @@ def _sync_step_page_navigation_buttons(
             ),
             icon="→",
             enabled=(
-                next_index is not None
+                has_next_page
                 and next_index <= last_index
                 and can_request_step(statuses, next_index)
             ),
+            visible=has_next_page,
         )
 
 

@@ -258,11 +258,13 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertEqual(assembled.presenter.progress.current_key, "atlas")
         self.assertTrue(assembled.pages[1].back_button.isEnabled())
         self.assertFalse(assembled.pages[1].next_button.isEnabled())
+        self.assertFalse(assembled.pages[1].next_button.isVisible())
 
         assembled.pages[1].back_button.clicked.emit()
 
         self.assertEqual(assembled.presenter.progress.current_key, "connection")
         self.assertEqual(assembled.shell.pages_stack.currentIndex(), 0)
+        self.assertTrue(assembled.pages[0].next_button.isVisible())
 
     def test_action_callbacks_are_wired_to_installed_page_ctas(self):
         calls = []
@@ -1047,6 +1049,7 @@ class WizardShellCompositionTest(unittest.TestCase):
             assembled.atlas_content.input_summary_label.text(),
             "Analysis outputs ready for atlas export",
         )
+        self.assertFalse(assembled.pages[4].next_button.isVisible())
 
     def test_busy_atlas_page_summary_uses_configured_output_name(self):
         assembled = self.composition.build_placeholder_wizard_shell(
