@@ -179,6 +179,11 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
         return save_last_step_index(self.settings, index)
 
+    def _persist_wizard_startup_step_index(self, index: int) -> int:
+        """Persist a startup-derived wizard step without marking it user-chosen."""
+
+        return save_last_step_index(self.settings, index, user_selected=False)
+
     def _show_connection_configuration_hint(self) -> None:
         """Open or describe the dedicated qfit configuration dialog for wizard users."""
 
@@ -449,7 +454,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         startup_key = startup_progress_facts.preferred_current_key
         if startup_key is None or startup_key == progress_facts.preferred_current_key:
             return
-        self._persist_wizard_step_index(step_index_for_key(startup_key))
+        self._persist_wizard_startup_step_index(step_index_for_key(startup_key))
 
     def _install_wizard_filter_controls(self, composition) -> None:
         """Move the live map-filter controls into the wizard map page."""

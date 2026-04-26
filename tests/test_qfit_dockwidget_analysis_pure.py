@@ -575,6 +575,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
         self.assertEqual(saved_index, 4)
         self.assertEqual(dock.settings.get("ui/last_step_index"), 4)
+        self.assertTrue(dock.settings.get("ui/last_step_index_user_selected"))
 
     def test_show_connection_configuration_hint_opens_config_when_available(self):
         dock = object.__new__(self.module.QfitDockWidget)
@@ -779,6 +780,45 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         _args, kwargs = fake_wizard_composition.build_placeholder_wizard_shell.call_args
         self.assertEqual(kwargs["progress_facts"].preferred_current_key, "sync")
         self.assertEqual(dock.settings.get("ui/last_step_index"), 1)
+        self.assertFalse(dock.settings.get("ui/last_step_index_user_selected"))
+
+    def test_build_wizard_shell_from_runtime_preserves_user_selected_connection(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._runtime_state_store = self.module.DockRuntimeStore()
+        dock.clientIdLineEdit = _FakeLineEdit("client-id")
+        dock.clientSecretLineEdit = _FakeLineEdit("client-secret")
+        dock.refreshTokenLineEdit = _FakeLineEdit("refresh-token")
+        dock._atlas_export_completed = False
+        dock.settings = _FakeSettings(
+            {
+                "ui/wizard_version": 1,
+                "ui/last_step_index": 0,
+                "ui/last_step_index_user_selected": True,
+            }
+        )
+
+        class FakeWizardActionCallbacks(SimpleNamespace):
+            pass
+
+        fake_wizard_composition = ModuleType("qfit.ui.dockwidget.wizard_composition")
+        fake_wizard_composition.WizardActionCallbacks = FakeWizardActionCallbacks
+        fake_wizard_composition.build_placeholder_wizard_shell = MagicMock(
+            return_value="composition"
+        )
+        fake_wizard_composition.connect_wizard_action_callbacks = MagicMock(
+            return_value="connected-composition"
+        )
+
+        with patch.dict(
+            sys.modules,
+            {"qfit.ui.dockwidget.wizard_composition": fake_wizard_composition},
+        ):
+            self.module.QfitDockWidget._build_wizard_shell_from_runtime(dock)
+
+        _args, kwargs = fake_wizard_composition.build_placeholder_wizard_shell.call_args
+        self.assertIsNone(kwargs["progress_facts"].preferred_current_key)
+        self.assertEqual(dock.settings.get("ui/last_step_index"), 0)
+        self.assertTrue(dock.settings.get("ui/last_step_index_user_selected"))
 
 
     def test_install_wizard_filter_controls_moves_live_filter_group_into_map_panel(self):

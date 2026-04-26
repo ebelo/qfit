@@ -385,6 +385,26 @@ class WizardProgressFactsTests(unittest.TestCase):
         self.assertEqual(progress.current_key, "sync")
         self.assertEqual(progress.completed_keys, frozenset({"connection"}))
 
+    def test_startup_facts_preserve_explicit_user_selected_connection_step(self):
+        settings = WizardSettingsSnapshot(
+            wizard_version=1,
+            last_step_index=0,
+            last_step_index_user_selected=True,
+            first_launch=False,
+        )
+        startup_facts = build_startup_wizard_progress_facts(
+            WizardProgressFacts(connection_configured=True),
+            settings,
+        )
+
+        progress = build_wizard_progress_from_facts_and_settings(
+            startup_facts,
+            settings,
+        )
+
+        self.assertEqual(progress.current_key, "connection")
+        self.assertEqual(progress.completed_keys, frozenset({"connection"}))
+
     def test_existing_connection_step_setting_still_routes_missing_connection_to_connection(self):
         progress = build_wizard_progress_from_facts_and_settings(
             WizardProgressFacts(connection_configured=False),

@@ -159,7 +159,11 @@ def build_startup_wizard_progress_facts(
     """
 
     preferred_current_key = preferred_current_key_from_settings(settings)
-    if preferred_current_key == "connection" and facts.connection_configured:
+    if (
+        preferred_current_key == "connection"
+        and facts.connection_configured
+        and not settings.last_step_index_user_selected
+    ):
         progress = build_wizard_progress_from_facts(facts)
         return _wizard_progress_facts_with_preferred_current_key(
             facts,
