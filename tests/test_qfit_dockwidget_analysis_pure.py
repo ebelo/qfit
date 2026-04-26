@@ -596,6 +596,22 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "Open qfit → Configuration to edit Strava credentials."
         )
 
+    def test_refresh_configuration_from_settings_updates_live_connection_state(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._load_settings = MagicMock()
+        dock._update_connection_status = MagicMock()
+        dock._refresh_summary_status = MagicMock()
+        dock._set_status = MagicMock()
+
+        self.module.QfitDockWidget.refresh_configuration_from_settings(dock)
+
+        dock._load_settings.assert_called_once_with()
+        dock._update_connection_status.assert_called_once_with()
+        dock._refresh_summary_status.assert_not_called()
+        dock._set_status.assert_called_once_with(
+            "Configuration saved; qfit dock connection state refreshed."
+        )
+
     def test_run_wizard_sync_step_fetches_when_no_activities_are_ready(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._runtime_state_store = self.module.DockRuntimeStore()

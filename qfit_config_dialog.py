@@ -8,7 +8,7 @@ specific Mapbox styling options, which belong in the main map workflow.
 
 import logging
 
-from qgis.PyQt.QtCore import Qt, QUrl
+from qgis.PyQt.QtCore import Qt, QUrl, pyqtSignal
 from qgis.PyQt.QtGui import QDesktopServices
 from qgis.PyQt.QtWidgets import (
     QApplication,
@@ -57,6 +57,8 @@ class QfitConfigDialog(QDialog):
     access token, run the Strava OAuth helper flow, and test provider
     connections before saving. Changes are persisted to QSettings on save.
     """
+
+    settingsSaved = pyqtSignal()
 
     def __init__(
         self,
@@ -241,9 +243,10 @@ class QfitConfigDialog(QDialog):
         self._mapbox_test_status_label.setText(_NOT_TESTED_LABEL)
 
     def _save(self) -> None:
-        """Persist edited fields to QSettings and refresh status labels."""
+        """Persist edited fields, refresh status labels, and notify live docks."""
         save_bindings(self._bindings, self._settings)
         self._refresh_status_labels()
+        self.settingsSaved.emit()
 
     def _refresh_status_labels(self) -> None:
         self._strava_status_label.setText(strava_status_text(self._settings))

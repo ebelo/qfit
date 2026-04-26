@@ -1,5 +1,6 @@
 import os
 import unittest
+from unittest.mock import MagicMock, patch
 
 from tests import _path  # noqa: F401
 
@@ -106,6 +107,45 @@ class TestQfitPluginMenuStructure(unittest.TestCase):
         self.assertIsNone(plugin.activities_action)
         self.assertIsNone(plugin.config_action)
         self.assertIsNone(plugin.dockwidget)
+
+    def test_config_dialog_save_signal_refreshes_existing_dock(self):
+        plugin, _iface = self._make_plugin()
+        plugin.dockwidget = MagicMock()
+
+        class FakeSignal:
+            def __init__(self):
+                self.connected_slot = None
+
+            def connect(self, slot):
+                self.connected_slot = slot
+
+        class FakeConfigDialog:
+            created = []
+
+            def __init__(self, parent=None):
+                self.parent = parent
+                self.settingsSaved = FakeSignal()
+                self.show = MagicMock()
+                self.raise_ = MagicMock()
+                self.activateWindow = MagicMock()
+                FakeConfigDialog.created.append(self)
+
+        with patch("qfit.qfit_plugin.QfitConfigDialog", FakeConfigDialog):
+            plugin.show_config()
+
+        dialog = FakeConfigDialog.created[-1]
+        self.assertIs(
+            dialog.settingsSaved.connected_slot.__self__,
+            plugin,
+        )
+        self.assertIs(
+            dialog.settingsSaved.connected_slot.__func__,
+            QfitPlugin._refresh_dock_configuration,
+        )
+
+        dialog.settingsSaved.connected_slot()
+
+        plugin.dockwidget.refresh_configuration_from_settings.assert_called_once_with()
 
 
 if __name__ == "__main__":
