@@ -25,6 +25,9 @@ class DockStartupCoordinator:
         dock.setAllowedAreas(dock.STARTUP_ALLOWED_AREAS)
         performed_steps.append("set_allowed_areas")
 
+        dock._ensure_wizard_settings()
+        performed_steps.append("ensure_wizard_settings")
+
         self.workflow_section_coordinator.configure_starting_sections()
         performed_steps.append("configure_starting_sections")
 
