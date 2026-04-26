@@ -552,11 +552,7 @@ def _analysis_state_from_facts(facts: WizardProgressFacts) -> AnalysisPageState:
     return AnalysisPageState(
         ready=facts.analysis_generated,
         status_text="Analysis ready" if facts.analysis_generated else default.status_text,
-        input_summary_text=(
-            "Activity layers ready for analysis"
-            if facts.activity_layers_loaded
-            else default.input_summary_text
-        ),
+        input_summary_text=_analysis_input_summary(facts, default),
         result_summary_text=(
             _analysis_result_summary(facts)
             if facts.analysis_generated
@@ -564,6 +560,20 @@ def _analysis_state_from_facts(facts: WizardProgressFacts) -> AnalysisPageState:
         ),
         primary_action_enabled=facts.activity_layers_loaded,
     )
+
+
+def _analysis_input_summary(
+    facts: WizardProgressFacts,
+    default: AnalysisPageState,
+) -> str:
+    if not facts.activity_layers_loaded:
+        return default.input_summary_text
+    if facts.filters_active:
+        if facts.filtered_activity_count is None:
+            return "Filtered activity subset ready for analysis"
+        noun = "activity" if facts.filtered_activity_count == 1 else "activities"
+        return f"{max(facts.filtered_activity_count, 0)} filtered {noun} ready for analysis"
+    return "Activity layers ready for analysis"
 
 
 def _analysis_result_summary(facts: WizardProgressFacts) -> str:
