@@ -518,6 +518,37 @@ class WizardShellCompositionTest(unittest.TestCase):
             "Analysis output qfit activity heatmap is available",
         )
 
+    def test_atlas_page_input_summary_names_analysis_output(self):
+        assembled = self.composition.build_placeholder_wizard_shell(
+            progress_facts=self.composition.WizardProgressFacts(
+                connection_configured=True,
+                activities_stored=True,
+                activity_layers_loaded=True,
+                analysis_generated=True,
+                analysis_output_name="qfit activity heatmap",
+            )
+        )
+
+        self.assertEqual(
+            assembled.atlas_content.input_summary_label.text(),
+            "Analysis output qfit activity heatmap ready for atlas export",
+        )
+
+    def test_atlas_page_input_summary_keeps_generic_copy_without_named_output(self):
+        assembled = self.composition.build_placeholder_wizard_shell(
+            progress_facts=self.composition.WizardProgressFacts(
+                connection_configured=True,
+                activities_stored=True,
+                activity_layers_loaded=True,
+                analysis_generated=True,
+            )
+        )
+
+        self.assertEqual(
+            assembled.atlas_content.input_summary_label.text(),
+            "Analysis outputs ready for atlas export",
+        )
+
     def test_busy_atlas_page_summary_uses_configured_output_name(self):
         assembled = self.composition.build_placeholder_wizard_shell(
             progress_facts=self.composition.WizardProgressFacts(

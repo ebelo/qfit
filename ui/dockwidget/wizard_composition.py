@@ -587,11 +587,7 @@ def _atlas_state_from_facts(facts: WizardProgressFacts) -> AtlasPageState:
     return AtlasPageState(
         ready=facts.atlas_exported,
         status_text=status_text,
-        input_summary_text=(
-            "Analysis outputs ready for atlas export"
-            if facts.analysis_generated
-            else default.input_summary_text
-        ),
+        input_summary_text=_atlas_input_summary(facts, default),
         output_summary_text=output_summary_text,
         primary_action_label=primary_action_label,
         primary_action_enabled=(
@@ -599,6 +595,17 @@ def _atlas_state_from_facts(facts: WizardProgressFacts) -> AtlasPageState:
         ),
         primary_action_blocked_tooltip=atlas_blocked_tooltip,
     )
+
+
+def _atlas_input_summary(
+    facts: WizardProgressFacts,
+    default: AtlasPageState,
+) -> str:
+    if not facts.analysis_generated:
+        return default.input_summary_text
+    if facts.analysis_output_name is not None:
+        return f"Analysis output {facts.analysis_output_name} ready for atlas export"
+    return "Analysis outputs ready for atlas export"
 
 
 def _atlas_output_summary(
