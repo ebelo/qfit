@@ -633,6 +633,23 @@ class WizardShellCompositionTest(unittest.TestCase):
             "Filters match 3 loaded activities",
         )
 
+    def test_loaded_map_page_summary_includes_filter_description_when_available(self):
+        facts = self.composition.WizardProgressFacts(
+            connection_configured=True,
+            activities_stored=True,
+            activity_layers_loaded=True,
+            filters_active=True,
+            filtered_activity_count=3,
+            filter_description="type: Run · distance: ≥ 10 km",
+        )
+
+        assembled = self.composition.build_placeholder_wizard_shell(progress_facts=facts)
+
+        self.assertEqual(
+            assembled.map_content.filter_summary_label.text(),
+            "Filters match 3 loaded activities · type: Run · distance: ≥ 10 km",
+        )
+
     def test_loaded_map_page_summary_reports_all_visible_when_unfiltered(self):
         facts = self.composition.WizardProgressFacts(
             connection_configured=True,

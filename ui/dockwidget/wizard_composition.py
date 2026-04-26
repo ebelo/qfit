@@ -459,6 +459,7 @@ def _completed_prefix_facts(facts: WizardProgressFacts) -> WizardProgressFacts:
         background_name=facts.background_name,
         filters_active=facts.filters_active,
         filtered_activity_count=facts.filtered_activity_count,
+        filter_description=facts.filter_description,
         activity_style_preset=facts.activity_style_preset,
         loaded_layer_count=facts.loaded_layer_count,
         last_sync_date=facts.last_sync_date,
@@ -654,11 +655,20 @@ def _map_filter_summary(facts: WizardProgressFacts, default: MapPageState) -> st
     if not facts.activity_layers_loaded:
         return default.filter_summary_text
     if facts.filters_active:
-        if facts.filtered_activity_count is None:
-            return "Subset filters are active"
-        noun = "activity" if facts.filtered_activity_count == 1 else "activities"
-        return f"Filters match {max(facts.filtered_activity_count, 0)} loaded {noun}"
+        return _map_active_filter_summary(facts)
     return "All loaded activities are visible"
+
+
+def _map_active_filter_summary(facts: WizardProgressFacts) -> str:
+    if facts.filtered_activity_count is None:
+        summary = "Subset filters are active"
+    else:
+        noun = "activity" if facts.filtered_activity_count == 1 else "activities"
+        summary = f"Filters match {max(facts.filtered_activity_count, 0)} loaded {noun}"
+    filter_description = (facts.filter_description or "").strip()
+    if not filter_description:
+        return summary
+    return f"{summary} · {filter_description}"
 
 
 def _analysis_state_from_facts(facts: WizardProgressFacts) -> AnalysisPageState:

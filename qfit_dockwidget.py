@@ -82,6 +82,7 @@ from .ui.application import (
     RunAnalysisAction,
     build_dock_summary_status,
     build_visual_layer_refs,
+    build_wizard_filter_description,
     build_wizard_progress_facts_from_runtime_state,
     ensure_wizard_settings,
     load_wizard_settings,
@@ -221,7 +222,11 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             background_layer_loaded,
             background_name,
         ) = self._current_wizard_background_facts(runtime_state)
-        filters_active, filtered_activity_count = self._current_wizard_filter_facts()
+        (
+            filters_active,
+            filtered_activity_count,
+            filter_description,
+        ) = self._current_wizard_filter_facts()
         return build_wizard_progress_facts_from_runtime_state(
             runtime_state,
             connection_configured=self._has_configured_strava_connection(),
@@ -232,6 +237,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             background_name=background_name,
             filters_active=filters_active,
             filtered_activity_count=filtered_activity_count,
+            filter_description=filter_description,
             activity_style_preset=self._current_wizard_activity_style_preset(),
             last_sync_date=self._current_wizard_last_sync_date(),
         )
@@ -314,23 +320,28 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         stripped = preset_name.strip()
         return stripped or None
 
-    def _current_wizard_filter_facts(self) -> tuple[bool, int | None]:
+    def _current_wizard_filter_facts(self) -> tuple[bool, int | None, str | None]:
         """Return the current map-filter facts the optional wizard can summarize."""
 
         layer_filter_facts = self._current_wizard_layer_filter_facts()
         if layer_filter_facts is not None:
-            return layer_filter_facts
+            filters_active, filtered_activity_count = layer_filter_facts
+            filter_description = "layer subset" if filters_active else None
+            return filters_active, filtered_activity_count, filter_description
 
         activities = tuple(self.runtime_state.activities)
         if not activities:
-            return False, None
-        selection_state = build_activity_preview_selection_state(
-            self._current_activity_preview_request()
-        )
+            return False, None, None
+        preview_request = self._current_activity_preview_request()
+        selection_state = build_activity_preview_selection_state(preview_request)
         filters_active = selection_state.filtered_count != len(activities)
         if not filters_active:
-            return False, None
-        return True, selection_state.filtered_count
+            return False, None, None
+        return (
+            True,
+            selection_state.filtered_count,
+            build_wizard_filter_description(preview_request),
+        )
 
     def _current_wizard_layer_filter_facts(self) -> tuple[bool, int | None] | None:
         layer = self.runtime_state.activities_layer
