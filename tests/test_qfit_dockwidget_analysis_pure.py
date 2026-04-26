@@ -727,7 +727,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "configure_connection": "_show_connection_configuration_hint",
             "sync_activities": "_run_wizard_sync_step",
             "load_activity_layers": "on_load_layers_clicked",
-            "edit_map_filters": "_set_wizard_filter_controls_visible",
+            "edit_map_filters": "_update_status_for_filter_visibility",
             "apply_map_filters": "_run_wizard_map_step",
             "run_analysis": "on_run_analysis_clicked",
             "set_analysis_mode": "_set_wizard_analysis_mode",
@@ -782,12 +782,12 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
         map_content.filter_controls_layout.assert_not_called()
 
-    def test_set_wizard_filter_controls_visible_updates_status_copy(self):
+    def test_update_status_for_filter_visibility_updates_status_copy(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._set_status = MagicMock()
 
-        self.module.QfitDockWidget._set_wizard_filter_controls_visible(dock, True)
-        self.module.QfitDockWidget._set_wizard_filter_controls_visible(dock, False)
+        self.module.QfitDockWidget._update_status_for_filter_visibility(dock, True)
+        self.module.QfitDockWidget._update_status_for_filter_visibility(dock, False)
 
         dock._set_status.assert_any_call(
             "Edit map filters, then apply filters when ready."

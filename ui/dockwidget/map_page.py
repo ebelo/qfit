@@ -151,7 +151,9 @@ class MapPageContent(QWidget):
             enabled=state.edit_filters_action_enabled,
             tooltip=state.edit_filters_action_blocked_tooltip,
         )
-        if self.filter_controls_panel.isVisible():
+        if not state.edit_filters_action_enabled and self.filter_controls_panel.isVisible():
+            self.set_filter_controls_visible(False)
+        elif self.filter_controls_panel.isVisible():
             self.edit_filters_button.setText("Hide filters")
         self.apply_filters_button.setText(state.primary_action_label)
         apply_action_enabled = (

@@ -417,7 +417,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 configure_connection=self._show_connection_configuration_hint,
                 sync_activities=self._run_wizard_sync_step,
                 load_activity_layers=self.on_load_layers_clicked,
-                edit_map_filters=self._set_wizard_filter_controls_visible,
+                edit_map_filters=self._update_status_for_filter_visibility,
                 apply_map_filters=self._run_wizard_map_step,
                 run_analysis=self.on_run_analysis_clicked,
                 set_analysis_mode=self._set_wizard_analysis_mode,
@@ -462,7 +462,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         if parent_layout is not None and hasattr(parent_layout, "removeWidget"):
             parent_layout.removeWidget(widget)
 
-    def _set_wizard_filter_controls_visible(self, visible: bool) -> None:
+    def _update_status_for_filter_visibility(self, visible: bool) -> None:
         """Reflect wizard filter-panel visibility in concise dock status copy."""
 
         if visible:

@@ -263,6 +263,21 @@ class MapPageContentTest(unittest.TestCase):
         )
         self.assertEqual(content.edit_filters_button.toolTip(), "")
 
+    def test_disabling_edit_filters_collapses_embedded_filter_controls(self):
+        content = self.map_page.MapPageContent(
+            self.map_page.MapPageState(edit_filters_action_enabled=True)
+        )
+        content.set_filter_controls_visible(True)
+
+        content.set_state(self.map_page.MapPageState(edit_filters_action_enabled=False))
+
+        self.assertFalse(content.filter_controls_panel.isVisible())
+        self.assertEqual(
+            content.filter_controls_panel.property("filterControlsState"),
+            "collapsed",
+        )
+        self.assertEqual(content.edit_filters_button.text(), "Edit filters")
+
     def test_edit_filters_button_toggles_embedded_filter_controls(self):
         content = self.map_page.MapPageContent(
             self.map_page.MapPageState(edit_filters_action_enabled=True)
