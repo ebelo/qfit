@@ -352,6 +352,32 @@ class WizardProgressFactsTests(unittest.TestCase):
             frozenset({"connection", "sync", "map"}),
         )
 
+    def test_existing_connection_step_setting_does_not_block_configured_startup(self):
+        progress = build_wizard_progress_from_facts_and_settings(
+            WizardProgressFacts(connection_configured=True),
+            WizardSettingsSnapshot(
+                wizard_version=1,
+                last_step_index=0,
+                first_launch=False,
+            ),
+        )
+
+        self.assertEqual(progress.current_key, "sync")
+        self.assertEqual(progress.completed_keys, frozenset({"connection"}))
+
+    def test_existing_connection_step_setting_still_routes_missing_connection_to_connection(self):
+        progress = build_wizard_progress_from_facts_and_settings(
+            WizardProgressFacts(connection_configured=False),
+            WizardSettingsSnapshot(
+                wizard_version=1,
+                last_step_index=0,
+                first_launch=False,
+            ),
+        )
+
+        self.assertEqual(progress.current_key, "connection")
+        self.assertEqual(progress.completed_keys, frozenset())
+
     def test_first_launch_settings_keep_default_connection_step(self):
         progress = build_wizard_progress_from_facts_and_settings(
             WizardProgressFacts(connection_configured=True),
