@@ -169,9 +169,10 @@ def build_wizard_progress_from_facts_and_settings(
 
 
 def _completed_keys_from_facts(facts: WizardProgressFacts) -> tuple[str, ...]:
+    connection_complete = facts.connection_configured or facts.activities_stored
     completed: list[str] = []
     for key, complete in (
-        ("connection", facts.connection_configured),
+        ("connection", connection_complete),
         ("sync", facts.activities_stored),
         ("map", facts.activity_layers_loaded),
         ("analysis", facts.analysis_generated),

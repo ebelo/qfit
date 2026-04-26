@@ -265,6 +265,18 @@ class WizardProgressFactsTests(unittest.TestCase):
             ["done", "done", "done", "current", "locked"],
         )
 
+    def test_local_geopackage_store_unlocks_map_without_strava_connection(self):
+        progress = build_wizard_progress_from_facts(
+            WizardProgressFacts(
+                connection_configured=False,
+                activities_stored=True,
+                preferred_current_key="map",
+            )
+        )
+
+        self.assertEqual(progress.current_key, "map")
+        self.assertEqual(progress.completed_keys, frozenset({"connection", "sync"}))
+
     def test_ignores_later_completed_facts_until_prerequisites_are_done(self):
         progress = build_wizard_progress_from_facts(
             WizardProgressFacts(
