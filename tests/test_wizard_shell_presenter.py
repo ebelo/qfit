@@ -36,8 +36,12 @@ class WizardShellPresenterTest(unittest.TestCase):
 
     def test_renders_initial_progress_without_entrenching_current_dock(self):
         shell = self._build_shell_with_pages()
+        persisted_step_indexes = []
 
-        presenter = self.presenter.WizardShellPresenter(shell)
+        presenter = self.presenter.WizardShellPresenter(
+            shell,
+            on_current_step_changed=persisted_step_indexes.append,
+        )
 
         self.assertEqual(presenter.progress.current_key, "connection")
         self.assertEqual(
@@ -45,10 +49,15 @@ class WizardShellPresenterTest(unittest.TestCase):
             ("current", "locked", "locked", "locked", "locked"),
         )
         self.assertEqual(shell.pages_stack.currentIndex(), 0)
+        self.assertEqual(persisted_step_indexes, [])
 
     def test_rejects_locked_step_requests_without_changing_page(self):
         shell = self._build_shell_with_pages()
-        presenter = self.presenter.WizardShellPresenter(shell)
+        persisted_step_indexes = []
+        presenter = self.presenter.WizardShellPresenter(
+            shell,
+            on_current_step_changed=persisted_step_indexes.append,
+        )
 
         accepted = presenter.request_step(2)
 
@@ -59,10 +68,15 @@ class WizardShellPresenterTest(unittest.TestCase):
             shell.stepper_bar.states(),
             ("current", "locked", "locked", "locked", "locked"),
         )
+        self.assertEqual(persisted_step_indexes, [])
 
     def test_completion_unlocks_next_page_and_stepper_signal_navigates(self):
         shell = self._build_shell_with_pages()
-        presenter = self.presenter.WizardShellPresenter(shell)
+        persisted_step_indexes = []
+        presenter = self.presenter.WizardShellPresenter(
+            shell,
+            on_current_step_changed=persisted_step_indexes.append,
+        )
 
         presenter.mark_step_done("connection")
         shell.stepper_bar.stepRequested.emit(1)
@@ -74,6 +88,7 @@ class WizardShellPresenterTest(unittest.TestCase):
             shell.stepper_bar.states(),
             ("done", "current", "locked", "locked", "locked"),
         )
+        self.assertEqual(persisted_step_indexes, [1])
 
     def test_visited_uncompleted_pages_stay_unlocked_without_being_done(self):
         shell = self._build_shell_with_pages()
@@ -93,7 +108,11 @@ class WizardShellPresenterTest(unittest.TestCase):
 
     def test_set_progress_refreshes_stepper_and_visible_page(self):
         shell = self._build_shell_with_pages()
-        presenter = self.presenter.WizardShellPresenter(shell)
+        persisted_step_indexes = []
+        presenter = self.presenter.WizardShellPresenter(
+            shell,
+            on_current_step_changed=persisted_step_indexes.append,
+        )
         progress = self.presenter.DockWizardProgress(
             current_key="analysis",
             completed_keys=frozenset({"connection", "sync", "map"}),
@@ -108,6 +127,7 @@ class WizardShellPresenterTest(unittest.TestCase):
             shell.stepper_bar.states(),
             ("done", "done", "done", "current", "locked"),
         )
+        self.assertEqual(persisted_step_indexes, [3])
 
     def test_set_progress_rejects_unknown_keys_without_mutating_shell(self):
         shell = self._build_shell_with_pages()

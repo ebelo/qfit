@@ -509,7 +509,10 @@ class WizardShellCompositionTest(unittest.TestCase):
         )
 
     def test_refresh_can_update_progress_without_rebuilding_shell(self):
-        assembled = self.composition.build_placeholder_wizard_shell()
+        persisted_step_indexes = []
+        assembled = self.composition.build_placeholder_wizard_shell(
+            on_current_step_changed=persisted_step_indexes.append,
+        )
         progress = DockWizardProgress(
             current_key="map",
             completed_keys=frozenset({"connection", "sync"}),
@@ -528,6 +531,8 @@ class WizardShellCompositionTest(unittest.TestCase):
             assembled.shell.stepper_bar.states(),
             ("done", "done", "current", "locked", "locked"),
         )
+        self.assertIsNotNone(assembled.on_current_step_changed)
+        self.assertEqual(persisted_step_indexes, [2])
 
     def test_refresh_can_update_progress_from_workflow_facts(self):
         assembled = self.composition.build_placeholder_wizard_shell()
