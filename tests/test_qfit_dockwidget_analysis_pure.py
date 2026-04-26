@@ -513,7 +513,21 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertEqual(saved_index, 4)
         self.assertEqual(dock.settings.get("ui/last_step_index"), 4)
 
-    def test_show_connection_configuration_hint_reports_menu_path(self):
+    def test_show_connection_configuration_hint_opens_config_when_available(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._open_configuration = MagicMock()
+        dock._show_info = MagicMock()
+        dock._set_status = MagicMock()
+
+        self.module.QfitDockWidget._show_connection_configuration_hint(dock)
+
+        dock._open_configuration.assert_called_once_with()
+        dock._show_info.assert_not_called()
+        dock._set_status.assert_called_once_with(
+            "qfit configuration opened; save credentials to continue."
+        )
+
+    def test_show_connection_configuration_hint_reports_menu_path_without_opener(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._show_info = MagicMock()
         dock._set_status = MagicMock()

@@ -1,5 +1,6 @@
 import logging
 import os
+from collections.abc import Callable
 from datetime import date
 
 logger = logging.getLogger(__name__)
@@ -130,11 +131,18 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     )
     STARTUP_ALLOWED_AREAS = Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea
 
-    def __init__(self, iface, parent=None, dependencies: DockWidgetDependencies | None = None):
+    def __init__(
+        self,
+        iface,
+        parent=None,
+        dependencies: DockWidgetDependencies | None = None,
+        open_configuration: Callable[[], None] | None = None,
+    ):
         if parent is None and iface is not None and hasattr(iface, "mainWindow"):
             parent = iface.mainWindow()
         super().__init__(parent)
         self.iface = iface
+        self._open_configuration = open_configuration
         self._runtime_state_store = DockRuntimeStore()
         self._atlas_export_completed = False
         self._atlas_export_output_path = None
@@ -168,7 +176,13 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         return save_last_step_index(self.settings, index)
 
     def _show_connection_configuration_hint(self) -> None:
-        """Guide wizard users to the dedicated qfit configuration dialog."""
+        """Open or describe the dedicated qfit configuration dialog for wizard users."""
+
+        open_configuration = getattr(self, "_open_configuration", None)
+        if open_configuration is not None:
+            open_configuration()
+            self._set_status("qfit configuration opened; save credentials to continue.")
+            return
 
         self._show_info(
             "Configure qfit connection",
