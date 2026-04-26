@@ -272,6 +272,7 @@ class WizardShellCompositionTest(unittest.TestCase):
             load_activity_layers=lambda: calls.append("load"),
             apply_map_filters=lambda: calls.append("filter"),
             run_analysis=lambda: calls.append("analysis"),
+            set_analysis_mode=lambda mode: calls.append(f"mode:{mode}"),
             export_atlas=lambda: calls.append("atlas"),
         )
 
@@ -288,13 +289,22 @@ class WizardShellCompositionTest(unittest.TestCase):
         assembled.map_content.load_layers_button.clicked.emit()
         assembled.map_content.apply_filters_button.clicked.emit()
         assembled.analysis_content.run_analysis_button.clicked.emit()
+        assembled.analysis_content.analysis_mode_combo.setCurrentText("Heatmap")
         assembled.atlas_content.export_atlas_button.clicked.emit()
 
         self.assertIs(returned, assembled)
         self.assertIs(assembled.action_callbacks, callbacks)
         self.assertEqual(
             calls,
-            ["configure", "sync", "load", "filter", "analysis", "atlas"],
+            [
+                "configure",
+                "sync",
+                "load",
+                "filter",
+                "analysis",
+                "mode:Heatmap",
+                "atlas",
+            ],
         )
 
     def test_action_callbacks_are_only_wired_once_per_composition(self):

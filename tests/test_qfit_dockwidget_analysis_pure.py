@@ -26,11 +26,15 @@ class _FakeSignal:
 class _FakeLayout:
     def __init__(self):
         self.inserted = []
+        self.added = []
         self.contents_margins = None
         self.spacing = None
 
     def insertWidget(self, index, widget):
         self.inserted.append((index, widget))
+
+    def addWidget(self, widget):
+        self.added.append(widget)
 
     def setContentsMargins(self, *margins):
         self.contents_margins = margins
@@ -90,6 +94,12 @@ class _FakeComboBox(_FakeWidget):
         self.items = []
         self._current_text = None
         self._current_index = 0
+
+    def count(self):
+        return len(self.items)
+
+    def itemText(self, index):
+        return self.items[index]
 
     def findText(self, text):
         try:
@@ -342,7 +352,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertEqual(dock.analysisModeLabel.text(), "Analysis")
         self.assertEqual(
             dock.analysisModeComboBox.items,
-            ["None", "Most frequent starting points"],
+            ["None", "Most frequent starting points", "Heatmap"],
         )
         self.assertEqual(dock.runAnalysisButton.text(), "Run analysis")
 
@@ -719,6 +729,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "load_activity_layers": "on_load_layers_clicked",
             "apply_map_filters": "_run_wizard_map_step",
             "run_analysis": "on_run_analysis_clicked",
+            "set_analysis_mode": "_set_wizard_analysis_mode",
             "export_atlas": "on_generate_atlas_pdf_clicked",
         }
         for callback_name, method_name in expected_callbacks.items():
@@ -728,6 +739,42 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
                 callback.__func__,
                 getattr(self.module.QfitDockWidget, method_name),
             )
+
+
+    def test_bind_wizard_analysis_mode_controls_exposes_non_none_modes(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.analysisModeComboBox = _FakeComboBox()
+        for mode in ("None", "Heatmap", "Most frequent starting points"):
+            dock.analysisModeComboBox.addItem(mode)
+        dock.analysisModeComboBox.setCurrentText("None")
+        analysis_content = SimpleNamespace(set_analysis_mode_options=MagicMock())
+
+        self.module.QfitDockWidget._bind_wizard_analysis_mode_controls(
+            dock,
+            SimpleNamespace(analysis_content=analysis_content),
+        )
+
+        analysis_content.set_analysis_mode_options.assert_called_once_with(
+            ("Heatmap", "Most frequent starting points"),
+            selected="Heatmap",
+        )
+        self.assertEqual(dock.analysisModeComboBox.currentText(), "Heatmap")
+
+    def test_set_wizard_analysis_mode_updates_backing_combo(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.analysisModeComboBox = _FakeComboBox()
+        for mode in ("None", "Heatmap", "Most frequent starting points"):
+            dock.analysisModeComboBox.addItem(mode)
+
+        self.module.QfitDockWidget._set_wizard_analysis_mode(
+            dock,
+            "Most frequent starting points",
+        )
+
+        self.assertEqual(
+            dock.analysisModeComboBox.currentText(),
+            "Most frequent starting points",
+        )
 
     def test_build_wizard_dock_from_runtime_wraps_live_composition(self):
         dock = object.__new__(self.module.QfitDockWidget)
@@ -750,6 +797,52 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "composition",
             parent=parent,
         )
+
+    def test_install_live_wizard_shell_hides_long_scroll_path(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        shell = object()
+        composition = SimpleNamespace(shell=shell)
+        dock.dockWidgetContents = object()
+        dock.outerLayout = _FakeLayout()
+        dock.scrollArea = MagicMock()
+        dock.summaryStatusLabel = MagicMock()
+        dock._build_wizard_shell_from_runtime = MagicMock(return_value=composition)
+
+        self.module.QfitDockWidget._install_live_wizard_shell(dock)
+
+        dock._build_wizard_shell_from_runtime.assert_called_once_with(
+            parent=dock.dockWidgetContents,
+        )
+        dock.scrollArea.hide.assert_called_once_with()
+        dock.summaryStatusLabel.hide.assert_called_once_with()
+        self.assertEqual(dock.outerLayout.added, [shell])
+        self.assertIs(dock._wizard_live_shell, shell)
+        self.assertTrue(dock._wizard_live_path_installed)
+
+    def test_install_live_wizard_shell_is_idempotent(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._wizard_live_path_installed = True
+        dock._build_wizard_shell_from_runtime = MagicMock()
+
+        self.module.QfitDockWidget._install_live_wizard_shell(dock)
+
+        dock._build_wizard_shell_from_runtime.assert_not_called()
+
+    def test_install_live_wizard_shell_does_not_hide_legacy_path_without_layout(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.dockWidgetContents = object()
+        dock.scrollArea = MagicMock()
+        dock.summaryStatusLabel = MagicMock()
+        dock._build_wizard_shell_from_runtime = MagicMock(
+            return_value=SimpleNamespace(shell=object()),
+        )
+
+        with self.assertRaisesRegex(RuntimeError, "base outer layout"):
+            self.module.QfitDockWidget._install_live_wizard_shell(dock)
+
+        dock.scrollArea.hide.assert_not_called()
+        dock.summaryStatusLabel.hide.assert_not_called()
+
 
     def test_refresh_wizard_shell_from_runtime_updates_optional_composition(self):
         dock = object.__new__(self.module.QfitDockWidget)
@@ -1568,6 +1661,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._atlas_export_task_output_path = "/tmp/running-atlas.pdf"
         dock._set_atlas_pdf_status = MagicMock()
         dock._set_atlas_export_running = MagicMock()
+        dock._refresh_summary_status = MagicMock()
 
         self.module.QfitDockWidget.on_generate_atlas_pdf_clicked(dock)
 
@@ -1576,6 +1670,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertIsNone(dock._atlas_export_task_output_path)
         dock._set_atlas_pdf_status.assert_called_once_with("Atlas PDF export cancelled.")
         dock._set_atlas_export_running.assert_called_once_with(False)
+        dock._refresh_summary_status.assert_called_once_with()
 
     def test_current_atlas_export_request_uses_current_ui_state(self):
         dock = object.__new__(self.module.QfitDockWidget)

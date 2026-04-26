@@ -19,6 +19,7 @@ _qtwidgets = import_qt_module(
     "qgis.PyQt.QtWidgets",
     "PyQt5.QtWidgets",
     (
+        "QComboBox",
         "QLabel",
         "QToolButton",
         "QVBoxLayout",
@@ -27,6 +28,7 @@ _qtwidgets = import_qt_module(
 )
 
 pyqtSignal = _qtcore.pyqtSignal
+QComboBox = _qtwidgets.QComboBox
 QLabel = _qtwidgets.QLabel
 QToolButton = _qtwidgets.QToolButton
 QVBoxLayout = _qtwidgets.QVBoxLayout
@@ -53,6 +55,7 @@ class AnalysisPageContent(QWidget):
     """Reusable fourth-page content for the wizard spatial-analysis step."""
 
     runAnalysisRequested = pyqtSignal()
+    analysisModeChanged = pyqtSignal(str)
 
     def __init__(self, state: AnalysisPageState | None = None, parent=None) -> None:
         super().__init__(parent)
@@ -70,6 +73,16 @@ class AnalysisPageContent(QWidget):
         self.result_summary_label = QLabel("", self)
         self.result_summary_label.setObjectName("qfitWizardAnalysisResultSummary")
         style_summary_label(self.result_summary_label)
+        self.analysis_mode_label = QLabel("Analysis mode", self)
+        self.analysis_mode_label.setObjectName("qfitWizardAnalysisModeLabel")
+        style_detail_label(self.analysis_mode_label)
+        self.analysis_mode_combo = QComboBox(self)
+        self.analysis_mode_combo.setObjectName("qfitWizardAnalysisModeComboBox")
+        self.set_analysis_mode_options(("Heatmap", "Most frequent starting points"))
+        if hasattr(self.analysis_mode_combo, "currentTextChanged"):
+            self.analysis_mode_combo.currentTextChanged.connect(
+                self.analysisModeChanged.emit
+            )
         self.run_analysis_button = QToolButton(self)
         self.run_analysis_button.setObjectName("qfitWizardAnalysisRunButton")
         style_primary_action_button(
@@ -84,6 +97,26 @@ class AnalysisPageContent(QWidget):
         )
         self._layout = self._build_layout()
         self.set_state(state or AnalysisPageState())
+
+    def set_analysis_mode_options(
+        self,
+        options: tuple[str, ...],
+        *,
+        selected: str | None = None,
+    ) -> None:
+        """Expose selectable analysis modes in the live wizard surface."""
+
+        if hasattr(self.analysis_mode_combo, "clear"):
+            self.analysis_mode_combo.clear()
+        for option in options:
+            self.analysis_mode_combo.addItem(option)
+        if selected:
+            self.analysis_mode_combo.setCurrentText(selected)
+
+    def current_analysis_mode(self) -> str:
+        """Return the wizard-selected analysis mode."""
+
+        return self.analysis_mode_combo.currentText()
 
     def set_state(self, state: AnalysisPageState) -> None:
         """Refresh copy and state properties without rebuilding the page."""
@@ -125,6 +158,8 @@ class AnalysisPageContent(QWidget):
             self.detail_label,
             self.input_summary_label,
             self.result_summary_label,
+            self.analysis_mode_label,
+            self.analysis_mode_combo,
             self.action_row,
         ):
             layout.addWidget(widget)

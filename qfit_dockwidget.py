@@ -165,6 +165,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._dock_visual_workflow = DockVisualWorkflowCoordinator(
             dispatcher=self._dock_action_dispatcher,
         )
+        self._install_live_wizard_shell()
 
     def _ensure_wizard_settings(self):
         """Persist first-launch wizard defaults for the #609 dock migration."""
@@ -418,10 +419,41 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 load_activity_layers=self.on_load_layers_clicked,
                 apply_map_filters=self._run_wizard_map_step,
                 run_analysis=self.on_run_analysis_clicked,
+                set_analysis_mode=self._set_wizard_analysis_mode,
                 export_atlas=self.on_generate_atlas_pdf_clicked,
             ),
         )
+        self._bind_wizard_analysis_mode_controls(self._wizard_shell_composition)
         return self._wizard_shell_composition
+
+
+    def _bind_wizard_analysis_mode_controls(self, composition) -> None:
+        """Expose the hidden backing analysis selector in the live wizard path."""
+
+        analysis_content = getattr(composition, "analysis_content", None)
+        mode_combo = getattr(self, "analysisModeComboBox", None)
+        if analysis_content is None or mode_combo is None:
+            return
+        options = tuple(
+            mode_combo.itemText(index)
+            for index in range(mode_combo.count())
+            if mode_combo.itemText(index) != "None"
+        )
+        if not options:
+            return
+        selected_mode = mode_combo.currentText()
+        if selected_mode == "None" or selected_mode not in options:
+            selected_mode = options[0]
+        analysis_content.set_analysis_mode_options(options, selected=selected_mode)
+        self._set_wizard_analysis_mode(selected_mode)
+
+    def _set_wizard_analysis_mode(self, mode: str) -> None:
+        """Mirror the wizard analysis mode selector into the backing dock combo."""
+
+        mode_combo = getattr(self, "analysisModeComboBox", None)
+        if mode_combo is None or not mode:
+            return
+        mode_combo.setCurrentText(mode)
 
     def _build_wizard_dock_from_runtime(self, *, parent=None):
         """Build the optional #609 QDockWidget container from runtime facts.
@@ -437,6 +469,43 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._build_wizard_shell_from_runtime(parent=parent),
             parent=parent,
         )
+
+    def _install_live_wizard_shell(self) -> None:
+        """Make the #609 wizard shell the visible dock path.
+
+        The legacy ``.ui`` controls still back settings and workflow actions, but
+        they are no longer the user's default dock surface. Keeping them hidden in
+        the existing dock content lets the wizard CTAs reuse the mature workflow
+        code while closing the long-scroll UX path from #608.
+        """
+
+        if getattr(self, "_wizard_live_path_installed", False):
+            return
+
+        parent = getattr(self, "dockWidgetContents", self)
+        composition = self._build_wizard_shell_from_runtime(parent=parent)
+        shell = getattr(composition, "shell", None)
+        if shell is None:
+            raise RuntimeError("Wizard shell composition must expose a shell widget")
+
+        outer_layout = getattr(self, "outerLayout", None)
+        if outer_layout is None:
+            raise RuntimeError("Wizard dock requires the base outer layout")
+
+        self._hide_legacy_scroll_dock_content()
+        outer_layout.addWidget(shell)
+
+        self._wizard_live_shell = shell
+        self._wizard_live_path_installed = True
+
+    def _hide_legacy_scroll_dock_content(self) -> None:
+        """Hide the replaced long-scroll dock widgets without deleting them."""
+
+        for widget_name in ("scrollArea", "summaryStatusLabel"):
+            widget = getattr(self, widget_name, None)
+            if widget is not None and hasattr(widget, "hide"):
+                widget.hide()
+
 
     def _refresh_wizard_shell_from_runtime(self):
         """Refresh an optional #609 wizard shell composition from dock runtime facts."""
@@ -728,6 +797,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         combo.setObjectName("analysisModeComboBox")
         combo.addItem("None")
         combo.addItem("Most frequent starting points")
+        combo.addItem("Heatmap")
         layout.addWidget(combo)
 
         button = QPushButton("Run analysis", row)
@@ -1484,6 +1554,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._set_atlas_export_running(False)
             self._runtime_store().clear_atlas_export()
             self._atlas_export_task_output_path = None
+            self._refresh_summary_status()
             return
 
         export_command = self._atlas_workflow_service().build_export_command(
