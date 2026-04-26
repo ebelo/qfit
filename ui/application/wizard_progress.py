@@ -196,14 +196,20 @@ def _output_name(output_path: str | None) -> str | None:
 
 
 def _layer_name(layer) -> str | None:
-    if layer is None or not hasattr(layer, "name"):
+    if layer is None:
         return None
     try:
-        name = layer.name()
+        name_method = layer.name
     except Exception:
         # QGIS/Qt wrapper objects may raise different exception types once the
         # underlying C++ layer has been deleted. The layer name is optional
         # summary copy, so keep wizard refreshes resilient.
+        return None
+    if not callable(name_method):
+        return None
+    try:
+        name = name_method()
+    except Exception:
         return None
     if not isinstance(name, str):
         return None

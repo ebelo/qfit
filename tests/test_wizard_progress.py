@@ -28,6 +28,13 @@ class _BrokenLayerName:
         raise ValueError("layer has been deleted")
 
 
+class _DeletedLayerWrapper:
+    def __getattribute__(self, name):
+        if name == "name":
+            raise RuntimeError("wrapped C++ object has been deleted")
+        return super().__getattribute__(name)
+
+
 class WizardProgressFactsTests(unittest.TestCase):
     def test_runtime_state_adapter_defaults_to_no_completed_workflow_facts(self):
         facts = build_wizard_progress_facts_from_runtime_state(DockRuntimeState())
@@ -148,6 +155,13 @@ class WizardProgressFactsTests(unittest.TestCase):
     def test_runtime_state_adapter_ignores_unreadable_analysis_output_name(self):
         facts = build_wizard_progress_facts_from_runtime_state(
             DockRuntimeState(layers=DockRuntimeLayers(analysis=_BrokenLayerName())),
+        )
+
+        self.assertIsNone(facts.analysis_output_name)
+
+    def test_runtime_state_adapter_ignores_deleted_layer_name_attribute(self):
+        facts = build_wizard_progress_facts_from_runtime_state(
+            DockRuntimeState(layers=DockRuntimeLayers(analysis=_DeletedLayerWrapper())),
         )
 
         self.assertIsNone(facts.analysis_output_name)
