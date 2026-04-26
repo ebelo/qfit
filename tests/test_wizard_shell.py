@@ -47,21 +47,27 @@ class _FakeCursor:
 
 
 class _FakeQt:
+    AlignCenter = 9
     ForbiddenCursor = 10
+    Horizontal = 13
+    Orientation = int
     PointingHandCursor = 11
     ToolButtonTextBesideIcon = 12
+    Vertical = 14
 
 
 class _FakeWidget:
     def __init__(self, parent=None):
         self.parent = parent
         self._height = None
+        self._minimum_height = None
         self._object_name = ""
         self._properties = {}
         self._enabled = True
         self._cursor = _FakeCursor(None)
         self._tooltip = ""
         self._stylesheet = ""
+        self._alignment = None
         self._visible = True
 
     def setVisible(self, value):  # noqa: N802
@@ -72,6 +78,12 @@ class _FakeWidget:
 
     def setFixedHeight(self, value):  # noqa: N802
         self._height = value
+
+    def setMinimumHeight(self, value):  # noqa: N802
+        self._minimum_height = value
+
+    def minimumHeight(self):  # noqa: N802
+        return self._minimum_height
 
     def height(self):
         return self._height
@@ -105,6 +117,12 @@ class _FakeWidget:
 
     def toolTip(self):  # noqa: N802
         return self._tooltip
+
+    def setAlignment(self, value):  # noqa: N802
+        self._alignment = value
+
+    def alignment(self):
+        return self._alignment
 
     def setStyleSheet(self, value):  # noqa: N802
         self._stylesheet = value
@@ -213,6 +231,7 @@ class _FakeVBoxLayout:
         self.contents_margins = None
         self.spacing = None
         self.widgets = []
+        self.stretches = []
 
     def setObjectName(self, value):  # noqa: N802
         self.object_name = value
@@ -225,6 +244,9 @@ class _FakeVBoxLayout:
 
     def addWidget(self, widget):  # noqa: N802
         self.widgets.append(widget)
+
+    def addStretch(self, stretch=0):  # noqa: N802
+        self.stretches.append(stretch)
 
 
 class _FakeHBoxLayout(_FakeVBoxLayout):
@@ -265,7 +287,11 @@ def _fake_qt_modules():
 def _load_wizard_shell_module():
     for name in (
         "qfit.ui.dockwidget.wizard_shell",
+        "qfit.ui.dockwidget.footer_status_bar",
         "qfit.ui.dockwidget.stepper_bar",
+        "qfit.ui.widgets.pill",
+        "qfit.ui.widgets.compat",
+        "qfit.ui.widgets",
         "qfit.ui.dockwidget",
     ):
         sys.modules.pop(name, None)
@@ -294,6 +320,7 @@ class WizardShellTest(unittest.TestCase):
         self.assertEqual(shell.footer_bar.objectName(), "qfitWizardFooterBar")
         self.assertEqual(shell.footer_bar.height(), 28)
         self.assertEqual(shell.footer_bar.text(), "Ready")
+        self.assertEqual(shell.footer_bar.path_label.text(), "Ready")
 
     def test_outer_layout_matches_wizard_spec_order(self):
         shell = self.wizard_shell.WizardShell()
@@ -329,6 +356,67 @@ class WizardShellTest(unittest.TestCase):
         shell.set_footer_text("Connected · 42 activities")
 
         self.assertEqual(shell.footer_bar.text(), "Connected · 42 activities")
+        self.assertEqual(shell.footer_bar.path_label.text(), "Connected · 42 activities")
+        self.assertEqual(shell.footer_bar.toolTip(), "Connected · 42 activities")
+
+    def test_footer_bar_exposes_spec_pill_and_path_api(self):
+        footer = self.wizard_shell.FooterStatusBar(footer_text="Ready")
+
+        footer.set_strava(True)
+        footer.set_activity_count(1)
+        footer.set_layer_count(3)
+        footer.set_gpkg_path("/tmp/qfit-test/activities.gpkg")
+
+        self.assertEqual(footer.strava_pill.objectName(), "qfitWizardFooterStravaPill")
+        self.assertEqual(footer.strava_pill.text(), "● Strava")
+        self.assertEqual(footer.strava_pill.property("tone"), "ok")
+        self.assertEqual(footer.activity_pill.text(), "1 activity")
+        self.assertEqual(footer.activity_pill.property("tone"), "info")
+        self.assertEqual(footer.layer_pill.text(), "3 layers")
+        self.assertEqual(footer.layer_pill.property("tone"), "neutral")
+        self.assertEqual(footer.path_label.text(), "activities.gpkg")
+        self.assertEqual(footer.path_label.toolTip(), "/tmp/qfit-test/activities.gpkg")
+
+    def test_footer_bar_uses_muted_copy_for_unknown_counts(self):
+        footer = self.wizard_shell.FooterStatusBar()
+
+        footer.set_strava(False)
+        footer.set_activity_count(None)
+        footer.set_layer_count(0)
+        footer.set_gpkg_path(None)
+
+        self.assertEqual(footer.strava_pill.property("tone"), "danger")
+        self.assertEqual(footer.activity_pill.text(), "— activities")
+        self.assertEqual(footer.activity_pill.property("tone"), "muted")
+        self.assertEqual(footer.layer_pill.text(), "0 layers")
+        self.assertEqual(footer.layer_pill.property("tone"), "muted")
+        self.assertEqual(footer.path_label.text(), "qfit.gpkg")
+
+    def test_footer_bar_uses_muted_tone_for_zero_activities(self):
+        footer = self.wizard_shell.FooterStatusBar()
+
+        footer.set_activity_count(0)
+
+        self.assertEqual(footer.activity_pill.text(), "0 activities")
+        self.assertEqual(footer.activity_pill.property("tone"), "muted")
+
+    def test_footer_status_text_can_clear_compatibility_label(self):
+        footer = self.wizard_shell.FooterStatusBar(footer_text="Ready")
+
+        footer.set_status_text("")
+
+        self.assertEqual(footer.text(), "")
+        self.assertEqual(footer.path_label.text(), "")
+        self.assertEqual(footer.toolTip(), "")
+
+    def test_explicit_empty_gpkg_path_is_not_overwritten_by_status_refresh(self):
+        footer = self.wizard_shell.FooterStatusBar(footer_text="Ready")
+
+        footer.set_gpkg_path(None)
+        footer.set_status_text("Connected · 42 activities")
+
+        self.assertEqual(footer.text(), "Connected · 42 activities")
+        self.assertEqual(footer.path_label.text(), "qfit.gpkg")
 
 
 if __name__ == "__main__":
