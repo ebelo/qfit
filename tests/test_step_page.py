@@ -74,7 +74,7 @@ class StepPageTest(unittest.TestCase):
     def test_next_and_back_configuration_updates_roles_and_availability(self):
         page = self.step_page.StepPage(4, 5, "Analyse", "Calcule les sorties.")
 
-        page.set_next("Lancer l'analyse", icon="", primary=False, enabled=False)
+        page.set_next("Lancer l'analyse", primary=False, enabled=False)
         page.set_back("Retour", enabled=False)
 
         self.assertEqual(page.next_button.text(), "Lancer l'analyse")

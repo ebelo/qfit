@@ -74,7 +74,7 @@ class StepPage(QWidget):
         self._layout = self._build_layout()
         self.set_status(None)
         self.set_back()
-        self.set_next("Suivant")
+        self.set_next("Suivant", icon="→")
 
     def set_status(self, text: str | None, tone: str = "muted") -> None:
         """Update the optional header status pill and hide it when text is blank."""
@@ -87,7 +87,7 @@ class StepPage(QWidget):
     def set_next(
         self,
         label: str,
-        icon: str = "→",
+        icon: str = "",
         primary: bool = True,
         enabled: bool = True,
     ) -> None:
