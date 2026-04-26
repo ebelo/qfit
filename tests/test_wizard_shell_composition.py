@@ -367,6 +367,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         )
         self.assertIn("Updating stored activities", assembled.shell.footer_bar.text())
         self.assertFalse(assembled.sync_content.sync_button.isEnabled())
+        self.assertEqual(assembled.sync_content.sync_button.text(), "Sync in progress…")
         self.assertEqual(
             assembled.sync_content.sync_button.toolTip(),
             "Wait for the current synchronization to finish.",
@@ -376,6 +377,9 @@ class WizardShellCompositionTest(unittest.TestCase):
             "Atlas export in progress",
         )
         self.assertFalse(assembled.atlas_content.export_atlas_button.isEnabled())
+        self.assertEqual(
+            assembled.atlas_content.export_atlas_button.text(), "Export in progress…"
+        )
         self.assertEqual(
             assembled.atlas_content.export_atlas_button.toolTip(),
             "Wait for the current atlas export to finish.",
