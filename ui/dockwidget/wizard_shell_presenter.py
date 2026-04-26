@@ -83,9 +83,19 @@ class WizardShellPresenter:
         return True
 
     def mark_step_done(self, key: str) -> None:
-        """Record real workflow completion for ``key`` and refresh the shell."""
+        """Record real workflow completion for ``key`` and refresh the shell.
 
-        step_index_for_key(key)
+        Completion remains prerequisite-aware: downstream milestones cannot be
+        marked done until every earlier wizard step has actually completed.
+        """
+
+        missing_prerequisites = _missing_completion_prerequisites(
+            key,
+            completed_keys=self._progress.completed_keys,
+        )
+        if missing_prerequisites:
+            missing = ", ".join(missing_prerequisites)
+            raise ValueError(f"Cannot mark {key!r} done before {missing}")
         self._progress = DockWizardProgress(
             current_key=self._progress.current_key,
             completed_keys=self._progress.completed_keys | {key},
@@ -115,6 +125,22 @@ class WizardShellPresenter:
         if self._page_indices_by_key is None:
             return step_index_for_key(key)
         return self._page_indices_by_key.get(key)
+
+
+def _missing_completion_prerequisites(
+    key: str,
+    *,
+    completed_keys: frozenset[str],
+) -> tuple[str, ...]:
+    target_index = step_index_for_key(key)
+    prerequisite_keys = tuple(
+        step_key_for_index(index) for index in range(target_index)
+    )
+    return tuple(
+        prerequisite_key
+        for prerequisite_key in prerequisite_keys
+        if prerequisite_key not in completed_keys
+    )
 
 
 __all__ = ["WizardShellPresenter"]
