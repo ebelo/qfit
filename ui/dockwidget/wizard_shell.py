@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Sequence
 
 from ._qt_compat import import_qt_module
+from .footer_status_bar import FooterStatusBar
 from .stepper_bar import STEPPER_LABELS, StepperBar
 
 _qtwidgets = import_qt_module(
@@ -10,7 +11,6 @@ _qtwidgets = import_qt_module(
     "PyQt5.QtWidgets",
     (
         "QFrame",
-        "QLabel",
         "QScrollArea",
         "QStackedWidget",
         "QVBoxLayout",
@@ -19,7 +19,6 @@ _qtwidgets = import_qt_module(
 )
 
 QFrame = _qtwidgets.QFrame
-QLabel = _qtwidgets.QLabel
 QScrollArea = _qtwidgets.QScrollArea
 QStackedWidget = _qtwidgets.QStackedWidget
 QVBoxLayout = _qtwidgets.QVBoxLayout
@@ -76,7 +75,7 @@ class WizardShell(QWidget):
     def set_footer_text(self, text: str) -> None:
         """Update the compact persistent status/footer text."""
 
-        self.footer_bar.setText(text)
+        self.footer_bar.set_status_text(text)
 
     def outer_layout(self):
         """Expose the structural layout for adapter wiring and pure tests."""
@@ -116,16 +115,7 @@ class WizardShell(QWidget):
         return stack
 
     def _build_footer_bar(self, footer_text: str):
-        footer = QLabel(footer_text, self)
-        footer.setObjectName("qfitWizardFooterBar")
-        footer.setFixedHeight(28)
-        footer.setStyleSheet(
-            "QLabel#qfitWizardFooterBar { "
-            "border-top: 1px solid palette(mid); "
-            "padding: 4px 8px; "
-            "}"
-        )
-        return footer
+        return FooterStatusBar(self, footer_text=footer_text)
 
 
 __all__ = ["STEPPER_LABELS", "WizardShell"]
