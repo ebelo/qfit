@@ -733,7 +733,7 @@ def _with_analysis_input_context(summary: str, *, facts: WizardProgressFacts) ->
     details = tuple(
         detail
         for detail in (
-            facts.filter_description if facts.filters_active else None,
+            _analysis_filter_description(facts),
             _analysis_loaded_layer_count_summary(facts),
         )
         if detail
@@ -741,6 +741,13 @@ def _with_analysis_input_context(summary: str, *, facts: WizardProgressFacts) ->
     if not details:
         return summary
     return f"{summary} · {' · '.join(details)}"
+
+
+def _analysis_filter_description(facts: WizardProgressFacts) -> str | None:
+    if not facts.filters_active:
+        return None
+    description = (facts.filter_description or "").strip()
+    return description or None
 
 
 def _analysis_loaded_layer_count_summary(facts: WizardProgressFacts) -> str | None:
