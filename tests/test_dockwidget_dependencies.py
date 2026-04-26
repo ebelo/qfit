@@ -533,9 +533,12 @@ class WorkflowSectionCoordinatorTests(unittest.TestCase):
         self.assertEqual(dock.perPageSpinBox.suffix, " activities")
         self.assertEqual(dock.maxPagesLabel.text, "Pages to fetch")
         self.assertEqual(dock.maxPagesSpinBox.suffix, " pages")
-        self.assertEqual(dock.maxDetailedActivitiesLabel.text, "Detailed route limit")
+        self.assertEqual(
+            dock.maxDetailedActivitiesLabel.text,
+            "Max new detailed routes this run",
+        )
         self.assertEqual(dock.maxDetailedActivitiesSpinBox.suffix, " routes")
-        self.assertEqual(dock.pointSamplingStrideLabel.text, "Point sampling stride")
+        self.assertEqual(dock.pointSamplingStrideLabel.text, "Keep every Nth point")
         self.assertEqual(dock.pointSamplingStrideSpinBox.suffix, " points")
 
     def test_set_section_expanded_updates_toggle_arrow_and_content_visibility(self):

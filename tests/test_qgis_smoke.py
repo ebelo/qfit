@@ -1195,8 +1195,8 @@ class QgisSmokeTests(unittest.TestCase):
 
             layer_order = self._layer_order()
             self.assertEqual(layer_order[-1], background_name)
+            self.assertNotIn("qfit atlas pages", layer_order)
             self.assertEqual(layer_order[:-1], [
-                "qfit atlas pages",
                 "qfit activity points",
                 "qfit activity starts",
                 "qfit activities",

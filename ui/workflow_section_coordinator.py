@@ -114,13 +114,13 @@ class WorkflowSectionCoordinator:
             ("maxPagesLabel", "Pages to fetch", "maxPagesSpinBox", " pages"),
             (
                 "maxDetailedActivitiesLabel",
-                "Detailed route limit",
+                "Max new detailed routes this run",
                 "maxDetailedActivitiesSpinBox",
                 " routes",
             ),
             (
                 "pointSamplingStrideLabel",
-                "Point sampling stride",
+                "Keep every Nth point",
                 "pointSamplingStrideSpinBox",
                 " points",
             ),
