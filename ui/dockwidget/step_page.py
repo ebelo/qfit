@@ -138,13 +138,14 @@ class StepPage(QWidget):
     def _apply_navigation_button_texts(self) -> None:
         narrow = self._responsive_mode == "narrow"
         self.back_button.setText("←" if narrow else self._back_label)
-        self.back_button.setToolTip(self._back_label)
+        self.back_button.setToolTip(self._back_label if narrow else "")
+        full_next_text = _button_text(self._next_label, self._next_icon)
         self.next_button.setText(
             _compact_button_text(self._next_label, self._next_icon)
             if narrow
-            else _button_text(self._next_label, self._next_icon)
+            else full_next_text
         )
-        self.next_button.setToolTip(_button_text(self._next_label, self._next_icon))
+        self.next_button.setToolTip(full_next_text if narrow else "")
 
     def add_extra_button(self, btn, align: str = "right") -> None:
         """Add a page-specific secondary button to the navigation row."""
@@ -184,6 +185,8 @@ class StepPage(QWidget):
             8 if narrow else 12,
             10 if narrow else 12,
         )
+        if hasattr(self.title_label, "setWordWrap"):
+            self.title_label.setWordWrap(narrow)
         self._apply_navigation_button_texts()
 
     def resizeEvent(self, event) -> None:  # noqa: N802
@@ -213,7 +216,7 @@ class StepPage(QWidget):
     def _build_title_label(self, title: str):
         label = QLabel(title, self)
         label.setObjectName("qfitWizardStepTitleLabel")
-        _allow_label_wrap(label)
+        _allow_horizontal_shrink(label)
         label.setStyleSheet(_step_title_label_stylesheet(label.objectName()))
         return label
 

@@ -159,8 +159,11 @@ class StepPageTest(unittest.TestCase):
 
         self.assertEqual(page.property("responsiveMode"), "wide")
         self.assertEqual(page._nav_layout.direction, self.step_page.QBoxLayout.LeftToRight)
+        self.assertFalse(page.title_label.word_wrap)
         self.assertEqual(page.back_button.text(), "Précédent")
+        self.assertEqual(page.back_button.toolTip(), "")
         self.assertEqual(page.next_button.text(), "Lancer l'analyse spatiale détaillée")
+        self.assertEqual(page.next_button.toolTip(), "")
 
     def test_resize_event_drives_narrow_step_page_mode(self):
         page = self.step_page.StepPage(4, 5, "Analyse", "Calcule les sorties.")
