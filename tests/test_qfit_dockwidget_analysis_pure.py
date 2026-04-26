@@ -381,6 +381,109 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertTrue(facts.analysis_generated)
         self.assertTrue(facts.atlas_exported)
 
+    def test_persist_wizard_step_index_clamps_and_saves_setting(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.settings = _FakeSettings()
+
+        saved_index = self.module.QfitDockWidget._persist_wizard_step_index(dock, 99)
+
+        self.assertEqual(saved_index, 4)
+        self.assertEqual(dock.settings.get("ui/last_step_index"), 4)
+
+    def test_show_connection_configuration_hint_reports_menu_path(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._show_info = MagicMock()
+        dock._set_status = MagicMock()
+
+        self.module.QfitDockWidget._show_connection_configuration_hint(dock)
+
+        dock._show_info.assert_called_once_with(
+            "Configure qfit connection",
+            "Open qfit → Configuration from the QGIS plugin menu to edit Strava "
+            "credentials, then return to the dock to continue the workflow.",
+        )
+        dock._set_status.assert_called_once_with(
+            "Open qfit → Configuration to edit Strava credentials."
+        )
+
+    def test_run_wizard_sync_step_uses_storage_workflow(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.on_load_clicked = MagicMock()
+
+        self.module.QfitDockWidget._run_wizard_sync_step(dock)
+
+        dock.on_load_clicked.assert_called_once_with()
+
+    def test_build_wizard_shell_from_runtime_wires_persistence_and_callbacks(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._runtime_state_store = self.module.DockRuntimeStore()
+        dock.clientIdLineEdit = _FakeLineEdit("client-id")
+        dock.clientSecretLineEdit = _FakeLineEdit("client-secret")
+        dock.refreshTokenLineEdit = _FakeLineEdit("refresh-token")
+        dock._atlas_export_completed = False
+        dock.settings = _FakeSettings(
+            {
+                "ui/wizard_version": 1,
+                "ui/last_step_index": 1,
+            }
+        )
+        parent = object()
+
+        class FakeWizardActionCallbacks(SimpleNamespace):
+            pass
+
+        fake_wizard_composition = ModuleType("qfit.ui.dockwidget.wizard_composition")
+        fake_wizard_composition.WizardActionCallbacks = FakeWizardActionCallbacks
+        fake_wizard_composition.build_placeholder_wizard_shell = MagicMock(
+            return_value="composition"
+        )
+        fake_wizard_composition.connect_wizard_action_callbacks = MagicMock(
+            return_value="connected-composition"
+        )
+
+        with patch.dict(
+            sys.modules,
+            {"qfit.ui.dockwidget.wizard_composition": fake_wizard_composition},
+        ):
+            composition = self.module.QfitDockWidget._build_wizard_shell_from_runtime(
+                dock,
+                parent=parent,
+            )
+
+        self.assertEqual(composition, "connected-composition")
+        self.assertEqual(dock._wizard_shell_composition, "connected-composition")
+        fake_wizard_composition.build_placeholder_wizard_shell.assert_called_once()
+        _args, kwargs = fake_wizard_composition.build_placeholder_wizard_shell.call_args
+        self.assertEqual(kwargs["parent"], parent)
+        self.assertTrue(kwargs["progress_facts"].connection_configured)
+        self.assertEqual(kwargs["wizard_settings"].last_step_index, 1)
+        self.assertFalse(kwargs["wizard_settings"].first_launch)
+        self.assertIs(kwargs["on_current_step_changed"].__self__, dock)
+        self.assertIs(
+            kwargs["on_current_step_changed"].__func__,
+            self.module.QfitDockWidget._persist_wizard_step_index,
+        )
+
+        fake_wizard_composition.connect_wizard_action_callbacks.assert_called_once()
+        connect_args = fake_wizard_composition.connect_wizard_action_callbacks.call_args.args
+        self.assertEqual(connect_args[0], "composition")
+        callbacks = connect_args[1]
+        expected_callbacks = {
+            "configure_connection": "_show_connection_configuration_hint",
+            "sync_activities": "_run_wizard_sync_step",
+            "load_activity_layers": "on_load_layers_clicked",
+            "apply_map_filters": "on_apply_filters_clicked",
+            "run_analysis": "on_run_analysis_clicked",
+            "export_atlas": "on_generate_atlas_pdf_clicked",
+        }
+        for callback_name, method_name in expected_callbacks.items():
+            callback = getattr(callbacks, callback_name)
+            self.assertIs(callback.__self__, dock)
+            self.assertIs(
+                callback.__func__,
+                getattr(self.module.QfitDockWidget, method_name),
+            )
+
     def test_refresh_wizard_shell_from_runtime_updates_optional_composition(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._runtime_state_store = self.module.DockRuntimeStore()

@@ -84,6 +84,7 @@ from .ui.application import (
     build_wizard_progress_facts_from_runtime_state,
     ensure_wizard_settings,
     load_wizard_settings,
+    save_last_step_index,
     build_visual_workflow_background_inputs,
     build_visual_workflow_selection_state_handoff,
     build_visual_workflow_settings_snapshot,
@@ -159,6 +160,26 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
         return ensure_wizard_settings(self.settings)
 
+    def _persist_wizard_step_index(self, index: int) -> int:
+        """Persist the optional #609 wizard shell's current step."""
+
+        return save_last_step_index(self.settings, index)
+
+    def _show_connection_configuration_hint(self) -> None:
+        """Guide wizard users to the dedicated qfit configuration dialog."""
+
+        self._show_info(
+            "Configure qfit connection",
+            "Open qfit → Configuration from the QGIS plugin menu to edit Strava "
+            "credentials, then return to the dock to continue the workflow.",
+        )
+        self._set_status("Open qfit → Configuration to edit Strava credentials.")
+
+    def _run_wizard_sync_step(self) -> None:
+        """Run the storage action that completes the wizard sync milestone."""
+
+        self.on_load_clicked()
+
     def _current_wizard_progress_facts(self):
         """Return render-neutral #609 wizard facts from the live dock state."""
 
@@ -167,6 +188,40 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             connection_configured=self._has_configured_strava_connection(),
             atlas_exported=bool(getattr(self, "_atlas_export_completed", False)),
         )
+
+    def _build_wizard_shell_from_runtime(self, *, parent=None):
+        """Build the optional #609 wizard shell from current dock runtime facts.
+
+        The shell is not installed into the production dock yet; this seam lets
+        the eventual wizard-style dock swap create a live composition with
+        persisted navigation and concrete CTA callbacks without coupling the
+        reusable wizard widgets to ``QfitDockWidget``.
+        """
+
+        from .ui.dockwidget.wizard_composition import (
+            WizardActionCallbacks,
+            build_placeholder_wizard_shell,
+            connect_wizard_action_callbacks,
+        )
+
+        composition = build_placeholder_wizard_shell(
+            parent=self if parent is None else parent,
+            progress_facts=self._current_wizard_progress_facts(),
+            wizard_settings=load_wizard_settings(self.settings),
+            on_current_step_changed=self._persist_wizard_step_index,
+        )
+        self._wizard_shell_composition = connect_wizard_action_callbacks(
+            composition,
+            WizardActionCallbacks(
+                configure_connection=self._show_connection_configuration_hint,
+                sync_activities=self._run_wizard_sync_step,
+                load_activity_layers=self.on_load_layers_clicked,
+                apply_map_filters=self.on_apply_filters_clicked,
+                run_analysis=self.on_run_analysis_clicked,
+                export_atlas=self.on_generate_atlas_pdf_clicked,
+            ),
+        )
+        return self._wizard_shell_composition
 
     def _refresh_wizard_shell_from_runtime(self):
         """Refresh an optional #609 wizard shell composition from dock runtime facts."""
