@@ -325,6 +325,7 @@ def refresh_wizard_shell_composition(
     _apply_footer_facts(composition.shell.footer_bar, footer_facts)
     if resolved_progress is not None:
         composition.presenter.set_progress(resolved_progress)
+        _sync_step_page_navigation_buttons(composition.pages, composition.presenter)
 
     composition.connection_state = next_connection_state
     composition.sync_state = next_sync_state
@@ -842,20 +843,9 @@ def _connect_step_page_navigation(
     if not step_pages:
         return
 
-    def sync_navigation_buttons() -> None:
-        statuses = build_progress_wizard_step_statuses(presenter.progress)
-        last_index = len(statuses) - 1
-        for index, page in step_pages:
-            page.back_button.setEnabled(
-                index > 0 and can_request_step(statuses, index - 1)
-            )
-            page.next_button.setEnabled(
-                index < last_index and can_request_step(statuses, index + 1)
-            )
-
     def request_and_sync(index: int) -> None:
         presenter.request_step(index)
-        sync_navigation_buttons()
+        _sync_step_page_navigation_buttons(pages, presenter)
 
     for index, page in step_pages:
         page.backRequested.connect(
@@ -864,7 +854,24 @@ def _connect_step_page_navigation(
         page.nextRequested.connect(
             lambda _checked=False, target=index + 1: request_and_sync(target)
         )
-    sync_navigation_buttons()
+    _sync_step_page_navigation_buttons(pages, presenter)
+
+
+def _sync_step_page_navigation_buttons(
+    pages: Sequence[WizardCompositionPage],
+    presenter: WizardShellPresenter,
+) -> None:
+    statuses = build_progress_wizard_step_statuses(presenter.progress)
+    last_index = len(statuses) - 1
+    for index, page in enumerate(pages):
+        if not isinstance(page, WizardStepPage):
+            continue
+        page.back_button.setEnabled(
+            index > 0 and can_request_step(statuses, index - 1)
+        )
+        page.next_button.setEnabled(
+            index < last_index and can_request_step(statuses, index + 1)
+        )
 
 
 def _install_connection_content(

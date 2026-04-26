@@ -144,6 +144,23 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertEqual(assembled.presenter.progress.current_key, "map")
         self.assertEqual(assembled.shell.pages_stack.currentIndex(), 2)
 
+    def test_refresh_resyncs_spec_step_page_navigation_buttons(self):
+        assembled = self.composition.build_placeholder_wizard_shell(use_step_pages=True)
+        self.assertFalse(assembled.pages[2].back_button.isEnabled())
+
+        self.composition.refresh_wizard_shell_composition(
+            assembled,
+            progress_facts=self.composition.WizardProgressFacts(
+                connection_configured=True,
+                activities_stored=True,
+                preferred_current_key="map",
+            ),
+        )
+
+        self.assertEqual(assembled.presenter.progress.current_key, "map")
+        self.assertTrue(assembled.pages[2].back_button.isEnabled())
+        self.assertFalse(assembled.pages[2].next_button.isEnabled())
+
     def test_action_callbacks_are_wired_to_installed_page_ctas(self):
         calls = []
         callbacks = self.composition.WizardActionCallbacks(
