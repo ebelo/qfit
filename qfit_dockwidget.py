@@ -194,6 +194,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             )
         )
 
+    def _mark_atlas_export_stale(self) -> None:
+        self._atlas_export_completed = False
+
     def _runtime_store(self) -> DockRuntimeStore:
         store = getattr(self, "_runtime_state_store", None)
         if store is None:
@@ -848,6 +851,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             return
 
         self._runtime_store().finish_store(output_path=result.output_path)
+        self._mark_atlas_export_stale()
         self._update_stored_activities_summary(result.total_stored)
         self._set_status(result.status)
 
@@ -877,6 +881,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             points_layer=result.points_layer,
             atlas_layer=result.atlas_layer,
         )
+        self._mark_atlas_export_stale()
 
         self._populate_activity_types_from_layer()
         visual_status = self._apply_visual_configuration(apply_subset_filters=False)
@@ -926,6 +931,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
         self._runtime_store().reset_loaded_dataset()
         self._clear_analysis_layer()
+        self._mark_atlas_export_stale()
 
         self._update_cleared_activities_summary()
         self._set_status(result.status)
@@ -1048,6 +1054,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         )
 
     def _clear_analysis_layer(self):
+        self._mark_atlas_export_stale()
         project = QgsProject.instance()
         if self.analysis_layer is not None:
             try:
@@ -1267,7 +1274,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._set_atlas_export_running(False)
 
         result = self.atlas_export_use_case.finish_export(output_path, error, cancelled, page_count)
-        if not result.cancelled and result.error is None and getattr(result, "output_path", None):
+        if not result.cancelled and result.error is None and result.output_path:
             self._atlas_export_completed = True
         self._set_atlas_pdf_status(result.pdf_status)
         self._set_status(result.main_status)

@@ -1021,11 +1021,13 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             {"one": stale_layer, "two": _FakeLayer("other"), "three": stale_heatmap_layer}
         )
         dock.analysis_layer = current_layer
+        dock._atlas_export_completed = True
 
         with patch.object(self.module.QgsProject, "instance", return_value=project):
             self.module.QfitDockWidget._clear_analysis_layer(dock)
 
         self.assertIsNone(dock.analysis_layer)
+        self.assertFalse(dock._atlas_export_completed)
         self.assertEqual(
             project.removed,
             [current_layer.id(), stale_layer.id(), stale_heatmap_layer.id()],
@@ -1084,6 +1086,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.countLabel = _FakeLabel("")
         dock._update_stored_activities_summary = MagicMock()
         dock._set_status = MagicMock()
+        dock._atlas_export_completed = True
         result = SimpleNamespace(output_path="/tmp/qfit.gpkg", total_stored=12, status="Stored 12 activities")
 
         self.module.QfitDockWidget._handle_store_task_finished(dock, result, None, False)
@@ -1092,6 +1095,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertTrue(dock.loadButton.isEnabled())
         self.assertEqual(dock.loadButton.text(), "Store activities")
         self.assertEqual(dock.output_path, "/tmp/qfit.gpkg")
+        self.assertFalse(dock._atlas_export_completed)
         dock._update_stored_activities_summary.assert_called_once_with(12)
         dock._set_status.assert_called_once_with("Stored 12 activities")
 
@@ -1159,6 +1163,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._apply_visual_configuration = MagicMock(return_value="Styled layers")
         dock._update_loaded_activities_summary = MagicMock()
         dock._set_status = MagicMock()
+        dock._atlas_export_completed = True
         workflow = MagicMock()
         workflow.build_load_existing_request.return_value = "load-request"
         result = SimpleNamespace(
@@ -1180,6 +1185,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertEqual(dock.starts_layer, "starts-layer")
         self.assertEqual(dock.points_layer, "points-layer")
         self.assertEqual(dock.atlas_layer, "atlas-layer")
+        self.assertFalse(dock._atlas_export_completed)
         dock._populate_activity_types_from_layer.assert_called_once_with()
         dock._apply_visual_configuration.assert_called_once_with(apply_subset_filters=False)
         dock._update_loaded_activities_summary.assert_called_once_with(12)
@@ -1327,6 +1333,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._show_error = MagicMock()
         dock.atlas_export_use_case = MagicMock()
         dock.atlas_export_use_case.finish_export.return_value = SimpleNamespace(
+            output_path="/tmp/qfit-atlas.pdf",
             pdf_status="Atlas PDF ready",
             main_status="Atlas created",
             error=None,
@@ -1342,6 +1349,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         )
 
         self.assertIsNone(dock._atlas_export_task)
+        self.assertTrue(dock._atlas_export_completed)
         dock._set_atlas_export_running.assert_called_once_with(False)
         dock._set_atlas_pdf_status.assert_called_once_with("Atlas PDF ready")
         dock._set_status.assert_called_once_with("Atlas created")
@@ -1476,6 +1484,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._update_cleared_activities_summary = MagicMock()
         dock._set_status = MagicMock()
         dock._show_error = MagicMock()
+        dock._atlas_export_completed = True
         dock.load_workflow = MagicMock()
         dock.load_workflow.build_clear_database_request.return_value = "clear-request"
         dock.load_workflow.clear_database_request.return_value = SimpleNamespace(status="Database cleared")
@@ -1493,6 +1502,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertEqual(dock.activities, [])
         self.assertIsNone(dock.activities_layer)
         self.assertIsNone(dock.output_path)
+        self.assertFalse(dock._atlas_export_completed)
 
 
 if __name__ == "__main__":
