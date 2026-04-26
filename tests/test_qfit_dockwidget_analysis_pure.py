@@ -362,7 +362,9 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.clientIdLineEdit = _FakeLineEdit("client-id")
         dock.clientSecretLineEdit = _FakeLineEdit("client-secret")
         dock.refreshTokenLineEdit = _FakeLineEdit("refresh-token")
+        dock.atlasPdfPathLineEdit = _FakeLineEdit("/tmp/current-atlas.pdf")
         dock._atlas_export_completed = True
+        dock._atlas_export_output_path = "/tmp/exported-atlas.pdf"
 
         dock._runtime_store().load_dataset(
             output_path="/tmp/qfit.gpkg",
@@ -380,6 +382,25 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertTrue(facts.activity_layers_loaded)
         self.assertTrue(facts.analysis_generated)
         self.assertTrue(facts.atlas_exported)
+        self.assertEqual(facts.atlas_output_name, "exported-atlas.pdf")
+
+    def test_current_wizard_progress_facts_uses_frozen_atlas_path_during_export(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._runtime_state_store = self.module.DockRuntimeStore()
+        dock.clientIdLineEdit = _FakeLineEdit("client-id")
+        dock.clientSecretLineEdit = _FakeLineEdit("client-secret")
+        dock.refreshTokenLineEdit = _FakeLineEdit("refresh-token")
+        dock.atlasPdfPathLineEdit = _FakeLineEdit("/tmp/new-atlas.pdf")
+        dock._atlas_export_completed = True
+        dock._atlas_export_output_path = "/tmp/old-atlas.pdf"
+        dock._atlas_export_task_output_path = "/tmp/running-atlas.pdf"
+        dock._runtime_store().set_atlas_export_task(object())
+
+        facts = self.module.QfitDockWidget._current_wizard_progress_facts(dock)
+
+        self.assertTrue(facts.atlas_exported)
+        self.assertTrue(facts.atlas_export_in_progress)
+        self.assertEqual(facts.atlas_output_name, "running-atlas.pdf")
 
     def test_persist_wizard_step_index_clamps_and_saves_setting(self):
         dock = object.__new__(self.module.QfitDockWidget)
@@ -1298,6 +1319,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock = object.__new__(self.module.QfitDockWidget)
         running_task = MagicMock()
         dock._atlas_export_task = running_task
+        dock._atlas_export_task_output_path = "/tmp/running-atlas.pdf"
         dock._set_atlas_pdf_status = MagicMock()
         dock._set_atlas_export_running = MagicMock()
 
@@ -1305,6 +1327,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
         running_task.cancel.assert_called_once_with()
         self.assertIsNone(dock._atlas_export_task)
+        self.assertIsNone(dock._atlas_export_task_output_path)
         dock._set_atlas_pdf_status.assert_called_once_with("Atlas PDF export cancelled.")
         dock._set_atlas_export_running.assert_called_once_with(False)
 
@@ -1401,6 +1424,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "command",
         )
         runtime_store.begin_atlas_export.assert_called_once_with("atlas-task")
+        self.assertEqual(dock._atlas_export_task_output_path, "/tmp/qfit-atlas.pdf")
         dock._set_atlas_export_running.assert_called_once_with(True)
         dock._set_atlas_pdf_status.assert_called_once_with("Exporting atlas (3 pages)…")
         dock._set_status.assert_called_once_with("Generating atlas PDF…")
@@ -1453,10 +1477,58 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
         self.assertIsNone(dock._atlas_export_task)
         self.assertTrue(dock._atlas_export_completed)
+        self.assertEqual(dock._atlas_export_output_path, "/tmp/qfit-atlas.pdf")
+        self.assertIsNone(dock._atlas_export_task_output_path)
         dock._set_atlas_export_running.assert_called_once_with(False)
         dock._set_atlas_pdf_status.assert_called_once_with("Atlas PDF ready")
         dock._set_status.assert_called_once_with("Atlas created")
         dock._show_error.assert_not_called()
+
+    def test_on_atlas_pdf_browse_marks_export_stale_and_refreshes_wizard(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.atlasPdfPathLineEdit = _FakeLineEdit("/tmp/old-atlas.pdf")
+        dock._atlas_export_completed = True
+        dock._atlas_export_output_path = "/tmp/old-atlas.pdf"
+        dock._atlas_export_task_output_path = "/tmp/old-running-atlas.pdf"
+        dock._refresh_summary_status = MagicMock()
+
+        with patch.object(
+            self.module.QFileDialog,
+            "getSaveFileName",
+            return_value=("/tmp/new-atlas", "PDF files (*.pdf)"),
+            create=True,
+        ):
+            self.module.QfitDockWidget.on_atlas_pdf_browse_clicked(dock)
+
+        self.assertEqual(dock.atlasPdfPathLineEdit.text(), "/tmp/new-atlas.pdf")
+        self.assertFalse(dock._atlas_export_completed)
+        self.assertIsNone(dock._atlas_export_output_path)
+        self.assertIsNone(dock._atlas_export_task_output_path)
+        dock._refresh_summary_status.assert_called_once_with()
+
+    def test_on_atlas_pdf_browse_preserves_running_export_output_path(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._runtime_state_store = self.module.DockRuntimeStore()
+        dock._runtime_store().set_atlas_export_task(object())
+        dock.atlasPdfPathLineEdit = _FakeLineEdit("/tmp/old-atlas.pdf")
+        dock._atlas_export_completed = True
+        dock._atlas_export_output_path = "/tmp/old-atlas.pdf"
+        dock._atlas_export_task_output_path = "/tmp/running-atlas.pdf"
+        dock._refresh_summary_status = MagicMock()
+
+        with patch.object(
+            self.module.QFileDialog,
+            "getSaveFileName",
+            return_value=("/tmp/new-atlas", "PDF files (*.pdf)"),
+            create=True,
+        ):
+            self.module.QfitDockWidget.on_atlas_pdf_browse_clicked(dock)
+
+        self.assertEqual(dock.atlasPdfPathLineEdit.text(), "/tmp/new-atlas.pdf")
+        self.assertFalse(dock._atlas_export_completed)
+        self.assertIsNone(dock._atlas_export_output_path)
+        self.assertEqual(dock._atlas_export_task_output_path, "/tmp/running-atlas.pdf")
+        dock._refresh_summary_status.assert_called_once_with()
 
     def test_on_clear_database_clicked_reports_missing_output_path_via_helper(self):
         dock = object.__new__(self.module.QfitDockWidget)

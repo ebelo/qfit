@@ -30,6 +30,7 @@ class WizardProgressFacts:
     preferred_current_key: str | None = None
     activity_count: int | None = None
     output_name: str | None = None
+    atlas_output_name: str | None = None
 
 
 def build_wizard_progress_facts_from_runtime_state(
@@ -38,6 +39,7 @@ def build_wizard_progress_facts_from_runtime_state(
     connection_configured: bool = False,
     atlas_exported: bool = False,
     preferred_current_key: str | None = None,
+    atlas_output_path: str | None = None,
 ) -> WizardProgressFacts:
     """Derive #609 wizard progress facts from the dock runtime snapshot.
 
@@ -47,10 +49,13 @@ def build_wizard_progress_facts_from_runtime_state(
     connection is persisted in configuration settings, and atlas exports do not
     yet retain a durable output artifact after the task completes. The runtime
     ``activities`` tuple is a fetch payload, not a persisted dataset count, so
-    this adapter deliberately leaves ``activity_count`` unknown.
+    this adapter deliberately leaves ``activity_count`` unknown. Atlas output is
+    supplied separately because it currently lives in the dock export controls,
+    not the runtime snapshot.
     """
 
     output_name = _output_name(state.output_path)
+    atlas_output_name = _output_name(atlas_output_path)
     return WizardProgressFacts(
         connection_configured=connection_configured,
         activities_stored=_has_output_path(state),
@@ -62,6 +67,7 @@ def build_wizard_progress_facts_from_runtime_state(
         preferred_current_key=preferred_current_key,
         activity_count=None,
         output_name=output_name,
+        atlas_output_name=atlas_output_name,
     )
 
 
@@ -111,6 +117,7 @@ def build_wizard_progress_from_facts_and_settings(
             preferred_current_key=preferred_current_key_from_settings(settings),
             activity_count=facts.activity_count,
             output_name=facts.output_name,
+            atlas_output_name=facts.atlas_output_name,
         )
     )
 

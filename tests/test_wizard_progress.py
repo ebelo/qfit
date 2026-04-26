@@ -38,6 +38,7 @@ class WizardProgressFactsTests(unittest.TestCase):
             connection_configured=True,
             atlas_exported=True,
             preferred_current_key="atlas",
+            atlas_output_path="/tmp/qfit-atlas.pdf",
         )
 
         self.assertEqual(
@@ -50,6 +51,7 @@ class WizardProgressFactsTests(unittest.TestCase):
                 atlas_exported=True,
                 preferred_current_key="atlas",
                 output_name="qfit.gpkg",
+                atlas_output_name="qfit-atlas.pdf",
             ),
         )
 
@@ -110,6 +112,14 @@ class WizardProgressFactsTests(unittest.TestCase):
         )
 
         self.assertEqual(facts.output_name, "qfit.gpkg")
+
+    def test_runtime_state_adapter_normalises_atlas_output_filename(self):
+        facts = build_wizard_progress_facts_from_runtime_state(
+            DockRuntimeState(),
+            atlas_output_path=r"C:\\Users\\Emman\\qfit-atlas.pdf",
+        )
+
+        self.assertEqual(facts.atlas_output_name, "qfit-atlas.pdf")
 
     def test_defaults_keep_connection_current_with_no_completed_steps(self):
         progress = build_wizard_progress_from_facts(WizardProgressFacts())

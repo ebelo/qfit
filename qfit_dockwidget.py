@@ -137,6 +137,8 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.iface = iface
         self._runtime_state_store = DockRuntimeStore()
         self._atlas_export_completed = False
+        self._atlas_export_output_path = None
+        self._atlas_export_task_output_path = None
         self._dependencies = dependencies or build_dockwidget_dependencies(iface)
         self._bind_dependencies(self._dependencies)
         self.setupUi(self)
@@ -183,11 +185,31 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def _current_wizard_progress_facts(self):
         """Return render-neutral #609 wizard facts from the live dock state."""
 
-        return build_wizard_progress_facts_from_runtime_state(
-            self.runtime_state,
-            connection_configured=self._has_configured_strava_connection(),
-            atlas_exported=bool(getattr(self, "_atlas_export_completed", False)),
+        runtime_state = self.runtime_state
+        atlas_exported = bool(getattr(self, "_atlas_export_completed", False))
+        atlas_export_output_path = self._current_wizard_atlas_output_path(
+            runtime_state=runtime_state,
+            atlas_exported=atlas_exported,
         )
+        return build_wizard_progress_facts_from_runtime_state(
+            runtime_state,
+            connection_configured=self._has_configured_strava_connection(),
+            atlas_exported=atlas_exported,
+            atlas_output_path=atlas_export_output_path,
+        )
+
+    def _current_wizard_atlas_output_path(self, *, runtime_state, atlas_exported: bool):
+        """Return the atlas output path the optional wizard should describe."""
+
+        if runtime_state.atlas_export_task is not None:
+            return (
+                getattr(self, "_atlas_export_task_output_path", None)
+                or self._widget_text("atlasPdfPathLineEdit")
+            )
+        completed_output_path = getattr(self, "_atlas_export_output_path", None)
+        if atlas_exported and completed_output_path:
+            return completed_output_path
+        return self._widget_text("atlasPdfPathLineEdit")
 
     def _build_wizard_shell_from_runtime(self, *, parent=None):
         """Build the optional #609 wizard shell from current dock runtime facts.
@@ -251,6 +273,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
     def _mark_atlas_export_stale(self) -> None:
         self._atlas_export_completed = False
+        self._atlas_export_output_path = None
+        if self.runtime_state.atlas_export_task is None:
+            self._atlas_export_task_output_path = None
 
     def _runtime_store(self) -> DockRuntimeStore:
         store = getattr(self, "_runtime_state_store", None)
@@ -1251,6 +1276,8 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             if not path.lower().endswith(".pdf"):
                 path = f"{path}.pdf"
             self.atlasPdfPathLineEdit.setText(path)
+            self._mark_atlas_export_stale()
+            self._refresh_summary_status()
 
     def on_generate_atlas_pdf_clicked(self):
         # Cancel any running export
@@ -1259,6 +1286,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._set_atlas_pdf_status("Atlas PDF export cancelled.")
             self._set_atlas_export_running(False)
             self._runtime_store().clear_atlas_export()
+            self._atlas_export_task_output_path = None
             return
 
         export_command = self._atlas_workflow_service().build_export_command(
@@ -1281,6 +1309,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             export_command,
         )
         self._runtime_store().begin_atlas_export(atlas_export_task)
+        self._atlas_export_task_output_path = prepared_export.output_path
 
         self._set_atlas_export_running(True)
         self._set_atlas_pdf_status(
@@ -1331,6 +1360,8 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         result = self.atlas_export_use_case.finish_export(output_path, error, cancelled, page_count)
         if not result.cancelled and result.error is None and result.output_path:
             self._atlas_export_completed = True
+            self._atlas_export_output_path = result.output_path
+        self._atlas_export_task_output_path = None
         self._set_atlas_pdf_status(result.pdf_status)
         self._set_status(result.main_status)
         if result.error is not None and not result.cancelled:
