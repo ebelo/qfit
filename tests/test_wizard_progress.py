@@ -39,7 +39,7 @@ class WizardProgressFactsTests(unittest.TestCase):
     def test_runtime_state_adapter_defaults_to_no_completed_workflow_facts(self):
         facts = build_wizard_progress_facts_from_runtime_state(DockRuntimeState())
 
-        self.assertEqual(facts, WizardProgressFacts())
+        self.assertEqual(facts, WizardProgressFacts(loaded_layer_count=0))
 
     def test_runtime_state_adapter_maps_persisted_and_loaded_workflow_facts(self):
         activities_layer = object()

@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from qfit.ui.application.wizard_progress import WizardProgressFacts
+
 
 @dataclass(frozen=True)
 class WizardFooterFacts:
@@ -38,7 +40,9 @@ def build_wizard_footer_status(
     )
 
 
-def build_wizard_footer_facts_from_progress_facts(facts) -> WizardFooterFacts:
+def build_wizard_footer_facts_from_progress_facts(
+    facts: WizardProgressFacts,
+) -> WizardFooterFacts:
     """Build footer pill/path facts from the shared wizard progress facts.
 
     The compact text summary remains as a compatibility seam for the placeholder

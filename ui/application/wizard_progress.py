@@ -221,7 +221,7 @@ def _loaded_dataset_layer_count(state: DockRuntimeState) -> int | None:
             state.atlas_layer,
         )
     )
-    return count or None
+    return count
 
 
 def _output_name(output_path: str | None) -> str | None:
