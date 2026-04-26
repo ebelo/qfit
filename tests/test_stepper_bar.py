@@ -214,7 +214,16 @@ class StepperBarTest(unittest.TestCase):
 
         self.assertEqual(bar.states(), ("current", "locked", "locked", "locked", "locked"))
         self.assertEqual(len(bar.step_buttons()), 5)
-        self.assertEqual([button.toolTip() for button in bar.step_buttons()], list(self.stepper.STEPPER_LABELS))
+        self.assertEqual(
+            [button.toolTip() for button in bar.step_buttons()],
+            [
+                "Connection",
+                "Complete Connection before opening Synchronization.",
+                "Complete Synchronization before opening Map & filters.",
+                "Complete Map & filters before opening Spatial analysis.",
+                "Complete Spatial analysis before opening Atlas PDF.",
+            ],
+        )
         self.assertEqual(bar.height(), 36)
 
     def test_labels_come_from_shared_workflow_metadata(self):
@@ -268,7 +277,12 @@ class StepperBarTest(unittest.TestCase):
         self.assertTrue(buttons[0].text().startswith("✓"))
         self.assertEqual(buttons[1].property("wizardState"), "current")
         self.assertTrue(buttons[2].isEnabled())
+        self.assertEqual(buttons[2].toolTip(), "Map & filters")
         self.assertFalse(buttons[3].isEnabled())
+        self.assertEqual(
+            buttons[3].toolTip(),
+            "Complete Map & filters before opening Spatial analysis.",
+        )
         self.assertEqual(buttons[3].cursor().shape(), _FakeQt.ForbiddenCursor)
 
     def test_set_current_marks_other_steps_upcoming(self):
@@ -277,6 +291,16 @@ class StepperBarTest(unittest.TestCase):
         bar.set_current(2)
 
         self.assertEqual(bar.states(), ("upcoming", "upcoming", "current", "upcoming", "upcoming"))
+
+    def test_locked_first_step_gets_generic_unavailable_tooltip(self):
+        bar = self.stepper.StepperBar()
+
+        bar.set_state(["locked", "locked", "locked", "locked", "locked"])
+
+        self.assertEqual(
+            bar.step_buttons()[0].toolTip(),
+            "This step is not yet available.",
+        )
 
     def test_rejects_invalid_state_payloads(self):
         bar = self.stepper.StepperBar()
