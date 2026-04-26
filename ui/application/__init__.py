@@ -67,6 +67,7 @@ from .wizard_settings import (
     save_collapsed_groups,
     save_last_step_index,
 )
+from .wizard_progress import WizardProgressFacts, build_wizard_progress_from_facts
 from .visual_workflow_action_builder import build_visual_workflow_action
 from .visual_workflow_action_builder import build_visual_workflow_action_inputs
 from .visual_workflow_action_builder import build_visual_workflow_background_inputs
@@ -115,6 +116,7 @@ __all__ = [
     "VisualWorkflowBackgroundInputs",
     "VisualWorkflowActionInputs",
     "VisualWorkflowSettingsSnapshot",
+    "WizardProgressFacts",
     "WizardSettingsSnapshot",
     "build_current_dock_workflow_label",
     "build_dock_summary_status",
@@ -122,6 +124,7 @@ __all__ = [
     "build_progress_wizard_step_statuses",
     "build_stepper_items",
     "build_stepper_states",
+    "build_wizard_progress_from_facts",
     "build_wizard_step_statuses",
     "build_visual_layer_refs",
     "build_visual_workflow_action",
