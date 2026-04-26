@@ -8,11 +8,12 @@ _qtcore = import_qt_module("qgis.PyQt.QtCore", "PyQt5.QtCore", ("Qt",))
 _qtwidgets = import_qt_module(
     "qgis.PyQt.QtWidgets",
     "PyQt5.QtWidgets",
-    ("QDockWidget",),
+    ("QDockWidget", "QWidget"),
 )
 
 Qt = _qtcore.Qt
 QDockWidget = _qtwidgets.QDockWidget
+QWidget = _qtwidgets.QWidget
 
 WIZARD_DOCK_OBJECT_NAME = "qfitWizardDockWidget"
 WIZARD_DOCK_TITLE = "qfit"
@@ -27,7 +28,7 @@ WIZARD_DOCK_FEATURES = (
 class WizardShellCompositionLike(Protocol):
     """Small structural protocol for dock-hostable wizard compositions."""
 
-    shell: object
+    shell: QWidget
 
 
 class WizardDockWidget(QDockWidget):
@@ -59,8 +60,8 @@ class WizardDockWidget(QDockWidget):
         """Install or replace the hosted wizard composition shell."""
 
         shell = _composition_shell(composition)
-        self.composition = composition
         self.setWidget(shell)
+        self.composition = composition
 
 
 def build_wizard_dock_widget(
