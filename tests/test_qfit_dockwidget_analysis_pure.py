@@ -356,6 +356,82 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
         dock.project_hygiene_service.remove_stale_qfit_layers.assert_called_once_with()
 
+    def test_current_wizard_progress_facts_reads_live_dock_runtime(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._runtime_state_store = self.module.DockRuntimeStore()
+        dock.clientIdLineEdit = _FakeLineEdit("client-id")
+        dock.clientSecretLineEdit = _FakeLineEdit("client-secret")
+        dock.refreshTokenLineEdit = _FakeLineEdit("refresh-token")
+        dock._atlas_export_completed = True
+
+        dock._runtime_store().load_dataset(
+            output_path="/tmp/qfit.gpkg",
+            activities_layer=object(),
+            starts_layer=object(),
+            points_layer=object(),
+            atlas_layer=object(),
+        )
+        dock._runtime_store().set_analysis_layer(object())
+
+        facts = self.module.QfitDockWidget._current_wizard_progress_facts(dock)
+
+        self.assertTrue(facts.connection_configured)
+        self.assertTrue(facts.activities_stored)
+        self.assertTrue(facts.activity_layers_loaded)
+        self.assertTrue(facts.analysis_generated)
+        self.assertTrue(facts.atlas_exported)
+
+    def test_refresh_wizard_shell_from_runtime_updates_optional_composition(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._runtime_state_store = self.module.DockRuntimeStore()
+        dock.clientIdLineEdit = _FakeLineEdit("client-id")
+        dock.clientSecretLineEdit = _FakeLineEdit("client-secret")
+        dock.refreshTokenLineEdit = _FakeLineEdit("refresh-token")
+        dock.settings = _FakeSettings(
+            {
+                "ui/wizard_version": 1,
+                "ui/last_step_index": 1,
+            }
+        )
+        composition = object()
+        dock._wizard_shell_composition = composition
+        fake_wizard_composition = ModuleType("qfit.ui.dockwidget.wizard_composition")
+        fake_wizard_composition.refresh_wizard_shell_composition = MagicMock(
+            return_value="refreshed"
+        )
+
+        with patch.dict(
+            sys.modules,
+            {"qfit.ui.dockwidget.wizard_composition": fake_wizard_composition},
+        ):
+            refreshed = self.module.QfitDockWidget._refresh_wizard_shell_from_runtime(dock)
+
+        self.assertEqual(refreshed, "refreshed")
+        self.assertEqual(dock._wizard_shell_composition, "refreshed")
+        fake_wizard_composition.refresh_wizard_shell_composition.assert_called_once()
+        args, kwargs = fake_wizard_composition.refresh_wizard_shell_composition.call_args
+        self.assertEqual(args, (composition,))
+        self.assertTrue(kwargs["progress_facts"].connection_configured)
+        self.assertEqual(kwargs["wizard_settings"].last_step_index, 1)
+        self.assertFalse(kwargs["wizard_settings"].first_launch)
+
+    def test_refresh_summary_status_notifies_optional_wizard_shell_refresh(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.summaryStatusLabel = _FakeLabel("")
+        dock.connectionStatusLabel = _FakeLabel("Strava connection: ready")
+        dock.countLabel = _FakeLabel("12 activities")
+        dock.querySummaryLabel = _FakeLabel("filtered")
+        dock.statusLabel = _FakeLabel("Ready")
+        dock._refresh_wizard_shell_from_runtime = MagicMock()
+
+        self.module.QfitDockWidget._refresh_summary_status(dock)
+
+        self.assertEqual(
+            dock.summaryStatusLabel.text(),
+            "Strava connection: ready · 12 activities · filtered · Ready",
+        )
+        dock._refresh_wizard_shell_from_runtime.assert_called_once_with()
+
     def test_on_apply_filters_clicked_dispatches_apply_visualization_action(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._dispatch_dock_action = MagicMock()
@@ -945,11 +1021,13 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             {"one": stale_layer, "two": _FakeLayer("other"), "three": stale_heatmap_layer}
         )
         dock.analysis_layer = current_layer
+        dock._atlas_export_completed = True
 
         with patch.object(self.module.QgsProject, "instance", return_value=project):
             self.module.QfitDockWidget._clear_analysis_layer(dock)
 
         self.assertIsNone(dock.analysis_layer)
+        self.assertFalse(dock._atlas_export_completed)
         self.assertEqual(
             project.removed,
             [current_layer.id(), stale_layer.id(), stale_heatmap_layer.id()],
@@ -1008,6 +1086,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.countLabel = _FakeLabel("")
         dock._update_stored_activities_summary = MagicMock()
         dock._set_status = MagicMock()
+        dock._atlas_export_completed = True
         result = SimpleNamespace(output_path="/tmp/qfit.gpkg", total_stored=12, status="Stored 12 activities")
 
         self.module.QfitDockWidget._handle_store_task_finished(dock, result, None, False)
@@ -1016,6 +1095,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertTrue(dock.loadButton.isEnabled())
         self.assertEqual(dock.loadButton.text(), "Store activities")
         self.assertEqual(dock.output_path, "/tmp/qfit.gpkg")
+        self.assertFalse(dock._atlas_export_completed)
         dock._update_stored_activities_summary.assert_called_once_with(12)
         dock._set_status.assert_called_once_with("Stored 12 activities")
 
@@ -1083,6 +1163,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._apply_visual_configuration = MagicMock(return_value="Styled layers")
         dock._update_loaded_activities_summary = MagicMock()
         dock._set_status = MagicMock()
+        dock._atlas_export_completed = True
         workflow = MagicMock()
         workflow.build_load_existing_request.return_value = "load-request"
         result = SimpleNamespace(
@@ -1104,6 +1185,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertEqual(dock.starts_layer, "starts-layer")
         self.assertEqual(dock.points_layer, "points-layer")
         self.assertEqual(dock.atlas_layer, "atlas-layer")
+        self.assertFalse(dock._atlas_export_completed)
         dock._populate_activity_types_from_layer.assert_called_once_with()
         dock._apply_visual_configuration.assert_called_once_with(apply_subset_filters=False)
         dock._update_loaded_activities_summary.assert_called_once_with(12)
@@ -1251,6 +1333,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._show_error = MagicMock()
         dock.atlas_export_use_case = MagicMock()
         dock.atlas_export_use_case.finish_export.return_value = SimpleNamespace(
+            output_path="/tmp/qfit-atlas.pdf",
             pdf_status="Atlas PDF ready",
             main_status="Atlas created",
             error=None,
@@ -1266,6 +1349,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         )
 
         self.assertIsNone(dock._atlas_export_task)
+        self.assertTrue(dock._atlas_export_completed)
         dock._set_atlas_export_running.assert_called_once_with(False)
         dock._set_atlas_pdf_status.assert_called_once_with("Atlas PDF ready")
         dock._set_status.assert_called_once_with("Atlas created")
@@ -1400,6 +1484,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._update_cleared_activities_summary = MagicMock()
         dock._set_status = MagicMock()
         dock._show_error = MagicMock()
+        dock._atlas_export_completed = True
         dock.load_workflow = MagicMock()
         dock.load_workflow.build_clear_database_request.return_value = "clear-request"
         dock.load_workflow.clear_database_request.return_value = SimpleNamespace(status="Database cleared")
@@ -1417,6 +1502,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertEqual(dock.activities, [])
         self.assertIsNone(dock.activities_layer)
         self.assertIsNone(dock.output_path)
+        self.assertFalse(dock._atlas_export_completed)
 
 
 if __name__ == "__main__":

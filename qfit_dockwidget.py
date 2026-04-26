@@ -81,7 +81,9 @@ from .ui.application import (
     RunAnalysisAction,
     build_dock_summary_status,
     build_visual_layer_refs,
+    build_wizard_progress_facts_from_runtime_state,
     ensure_wizard_settings,
+    load_wizard_settings,
     build_visual_workflow_background_inputs,
     build_visual_workflow_selection_state_handoff,
     build_visual_workflow_settings_snapshot,
@@ -133,6 +135,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         super().__init__(parent)
         self.iface = iface
         self._runtime_state_store = DockRuntimeStore()
+        self._atlas_export_completed = False
         self._dependencies = dependencies or build_dockwidget_dependencies(iface)
         self._bind_dependencies(self._dependencies)
         self.setupUi(self)
@@ -155,6 +158,44 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         """Persist first-launch wizard defaults for the #609 dock migration."""
 
         return ensure_wizard_settings(self.settings)
+
+    def _current_wizard_progress_facts(self):
+        """Return render-neutral #609 wizard facts from the live dock state."""
+
+        return build_wizard_progress_facts_from_runtime_state(
+            self.runtime_state,
+            connection_configured=self._has_configured_strava_connection(),
+            atlas_exported=bool(getattr(self, "_atlas_export_completed", False)),
+        )
+
+    def _refresh_wizard_shell_from_runtime(self):
+        """Refresh an optional #609 wizard shell composition from dock runtime facts."""
+
+        composition = getattr(self, "_wizard_shell_composition", None)
+        if composition is None:
+            return None
+
+        from .ui.dockwidget.wizard_composition import refresh_wizard_shell_composition
+
+        self._wizard_shell_composition = refresh_wizard_shell_composition(
+            composition,
+            progress_facts=self._current_wizard_progress_facts(),
+            wizard_settings=load_wizard_settings(self.settings),
+        )
+        return self._wizard_shell_composition
+
+    def _has_configured_strava_connection(self) -> bool:
+        return all(
+            self._widget_text(name).strip()
+            for name in (
+                "clientIdLineEdit",
+                "clientSecretLineEdit",
+                "refreshTokenLineEdit",
+            )
+        )
+
+    def _mark_atlas_export_stale(self) -> None:
+        self._atlas_export_completed = False
 
     def _runtime_store(self) -> DockRuntimeStore:
         store = getattr(self, "_runtime_state_store", None)
@@ -810,6 +851,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             return
 
         self._runtime_store().finish_store(output_path=result.output_path)
+        self._mark_atlas_export_stale()
         self._update_stored_activities_summary(result.total_stored)
         self._set_status(result.status)
 
@@ -839,6 +881,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             points_layer=result.points_layer,
             atlas_layer=result.atlas_layer,
         )
+        self._mark_atlas_export_stale()
 
         self._populate_activity_types_from_layer()
         visual_status = self._apply_visual_configuration(apply_subset_filters=False)
@@ -888,6 +931,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
         self._runtime_store().reset_loaded_dataset()
         self._clear_analysis_layer()
+        self._mark_atlas_export_stale()
 
         self._update_cleared_activities_summary()
         self._set_status(result.status)
@@ -1010,6 +1054,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         )
 
     def _clear_analysis_layer(self):
+        self._mark_atlas_export_stale()
         project = QgsProject.instance()
         if self.analysis_layer is not None:
             try:
@@ -1229,6 +1274,8 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._set_atlas_export_running(False)
 
         result = self.atlas_export_use_case.finish_export(output_path, error, cancelled, page_count)
+        if not result.cancelled and result.error is None and result.output_path:
+            self._atlas_export_completed = True
         self._set_atlas_pdf_status(result.pdf_status)
         self._set_status(result.main_status)
         if result.error is not None and not result.cancelled:
@@ -1245,23 +1292,25 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
     def _refresh_summary_status(self) -> None:
         label = getattr(self, "summaryStatusLabel", None)
-        if label is None:
-            return
-
-        label.setText(
-            build_dock_summary_status(
-                connection_status=self._label_text("connectionStatusLabel"),
-                activity_summary=self._label_text("countLabel"),
-                query_summary=self._label_text("querySummaryLabel"),
-                workflow_status=self._label_text("statusLabel"),
+        if label is not None:
+            label.setText(
+                build_dock_summary_status(
+                    connection_status=self._label_text("connectionStatusLabel"),
+                    activity_summary=self._label_text("countLabel"),
+                    query_summary=self._label_text("querySummaryLabel"),
+                    workflow_status=self._label_text("statusLabel"),
+                )
             )
-        )
+        self._refresh_wizard_shell_from_runtime()
 
     def _label_text(self, name: str) -> str:
-        label = getattr(self, name, None)
-        if label is None:
+        return self._widget_text(name)
+
+    def _widget_text(self, name: str) -> str:
+        widget = getattr(self, name, None)
+        if widget is None:
             return ""
-        text = getattr(label, "text", "")
+        text = getattr(widget, "text", "")
         if callable(text):
             return text()
         return text or ""
