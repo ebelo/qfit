@@ -225,6 +225,11 @@ class WizardShellCompositionTest(unittest.TestCase):
             assembled.map_content.status_label.text(),
             "Activity layers not loaded",
         )
+        self.assertTrue(assembled.map_content.load_layers_button.isEnabled())
+        self.assertEqual(
+            assembled.map_content.load_layers_button.property("wizardActionAvailability"),
+            "available",
+        )
         self.assertFalse(assembled.map_content.apply_filters_button.isEnabled())
 
     def test_progress_facts_drive_page_cta_prerequisites_without_marking_done(self):
@@ -244,6 +249,11 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertEqual(
             assembled.sync_content.sync_button.property("wizardActionAvailability"),
             "available",
+        )
+        self.assertFalse(assembled.map_content.load_layers_button.isEnabled())
+        self.assertEqual(
+            assembled.map_content.load_layers_button.toolTip(),
+            "Sync activities before loading map layers.",
         )
         self.assertFalse(assembled.analysis_content.run_analysis_button.isEnabled())
         self.assertFalse(assembled.atlas_content.export_atlas_button.isEnabled())
@@ -277,6 +287,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertFalse(assembled.sync_state.ready)
         self.assertFalse(assembled.sync_content.sync_button.isEnabled())
         self.assertFalse(assembled.map_state.loaded)
+        self.assertFalse(assembled.map_content.load_layers_button.isEnabled())
         self.assertFalse(assembled.map_content.apply_filters_button.isEnabled())
         self.assertFalse(assembled.analysis_state.ready)
         self.assertFalse(assembled.analysis_content.run_analysis_button.isEnabled())
@@ -545,6 +556,8 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertEqual(assembled.connection_content.status_label.text(), "Strava connected")
         self.assertEqual(assembled.sync_content.status_label.text(), "Activities stored")
         self.assertEqual(assembled.map_content.status_label.text(), "Activity layers loaded")
+        self.assertTrue(assembled.map_content.load_layers_button.isEnabled())
+        self.assertTrue(assembled.map_content.apply_filters_button.isEnabled())
         self.assertFalse(assembled.analysis_state.ready)
         self.assertTrue(assembled.analysis_content.run_analysis_button.isEnabled())
         self.assertFalse(assembled.atlas_content.export_atlas_button.isEnabled())

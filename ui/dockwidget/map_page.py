@@ -44,6 +44,8 @@ class MapPageState:
     layer_summary_text: str = "No activity layers on the map"
     filter_summary_text: str = "All stored activities visible once layers are loaded"
     load_action_label: str = "Load activity layers"
+    load_action_enabled: bool = True
+    load_action_blocked_tooltip: str = "Sync activities before loading map layers."
     primary_action_label: str = "Apply filters"
     apply_action_enabled: bool | None = None
     apply_action_blocked_tooltip: str = "Load activity layers before applying filters."
@@ -107,6 +109,11 @@ class MapPageContent(QWidget):
         self.filter_summary_label.setText(state.filter_summary_text)
         self.filter_summary_label.setProperty("mapState", map_state)
         self.load_layers_button.setText(state.load_action_label)
+        set_wizard_action_availability(
+            self.load_layers_button,
+            enabled=state.load_action_enabled,
+            tooltip=state.load_action_blocked_tooltip,
+        )
         self.apply_filters_button.setText(state.primary_action_label)
         apply_action_enabled = (
             state.loaded
