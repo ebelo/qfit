@@ -426,6 +426,7 @@ def _completed_prefix_facts(facts: WizardProgressFacts) -> WizardProgressFacts:
         preferred_current_key=facts.preferred_current_key,
         activity_count=facts.activity_count,
         output_name=facts.output_name,
+        analysis_output_name=facts.analysis_output_name,
         atlas_output_name=facts.atlas_output_name,
         filters_active=facts.filters_active,
         filtered_activity_count=facts.filtered_activity_count,
@@ -557,12 +558,18 @@ def _analysis_state_from_facts(facts: WizardProgressFacts) -> AnalysisPageState:
             else default.input_summary_text
         ),
         result_summary_text=(
-            "Analysis outputs are available"
+            _analysis_result_summary(facts)
             if facts.analysis_generated
             else default.result_summary_text
         ),
         primary_action_enabled=facts.activity_layers_loaded,
     )
+
+
+def _analysis_result_summary(facts: WizardProgressFacts) -> str:
+    if facts.analysis_output_name is not None:
+        return f"Analysis output {facts.analysis_output_name} is available"
+    return "Analysis outputs are available"
 
 
 def _atlas_state_from_facts(facts: WizardProgressFacts) -> AtlasPageState:

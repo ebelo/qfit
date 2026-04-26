@@ -30,6 +30,7 @@ class WizardProgressFacts:
     preferred_current_key: str | None = None
     activity_count: int | None = None
     output_name: str | None = None
+    analysis_output_name: str | None = None
     atlas_output_name: str | None = None
     filters_active: bool = False
     filtered_activity_count: int | None = None
@@ -59,6 +60,7 @@ def build_wizard_progress_facts_from_runtime_state(
     """
 
     output_name = _output_name(state.output_path)
+    analysis_output_name = _layer_name(state.analysis_layer)
     atlas_output_name = _output_name(atlas_output_path)
     return WizardProgressFacts(
         connection_configured=connection_configured,
@@ -71,6 +73,7 @@ def build_wizard_progress_facts_from_runtime_state(
         preferred_current_key=preferred_current_key,
         activity_count=None,
         output_name=output_name,
+        analysis_output_name=analysis_output_name,
         atlas_output_name=atlas_output_name,
         filters_active=filters_active,
         filtered_activity_count=filtered_activity_count,
@@ -123,6 +126,7 @@ def build_wizard_progress_from_facts_and_settings(
             preferred_current_key=preferred_current_key_from_settings(settings),
             activity_count=facts.activity_count,
             output_name=facts.output_name,
+            analysis_output_name=facts.analysis_output_name,
             atlas_output_name=facts.atlas_output_name,
             filters_active=facts.filters_active,
             filtered_activity_count=facts.filtered_activity_count,
@@ -189,6 +193,28 @@ def _output_name(output_path: str | None) -> str | None:
     if "\\" in stripped:
         return PureWindowsPath(stripped).name or stripped
     return Path(stripped).name or stripped
+
+
+def _layer_name(layer) -> str | None:
+    if layer is None:
+        return None
+    try:
+        name_method = layer.name
+    except Exception:
+        # QGIS/Qt wrapper objects may raise different exception types once the
+        # underlying C++ layer has been deleted. The layer name is optional
+        # summary copy, so keep wizard refreshes resilient.
+        return None
+    if not callable(name_method):
+        return None
+    try:
+        name = name_method()
+    except Exception:
+        return None
+    if not isinstance(name, str):
+        return None
+    stripped = name.strip()
+    return stripped or None
 
 
 __all__ = [
