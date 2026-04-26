@@ -269,7 +269,10 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
         background_layer_loaded = runtime_state.background_layer is not None
         if background_layer_loaded:
-            return True, True, None
+            return True, True, self._current_wizard_layer_name(
+                runtime_state.background_layer,
+                log_message="Failed to read wizard background layer name",
+            )
 
         checkbox = getattr(self, "backgroundMapCheckBox", None)
         background_enabled = bool(
@@ -280,6 +283,22 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         if not background_enabled:
             return False, False, None
         return True, False, self._current_wizard_background_name()
+
+    def _current_wizard_layer_name(self, layer, *, log_message: str) -> str | None:
+        if layer is None:
+            return None
+        name_method = getattr(layer, "name", None)
+        if not callable(name_method):
+            return None
+        try:
+            layer_name = name_method()
+        except RuntimeError:
+            logger.debug(log_message, exc_info=True)
+            return None
+        if not isinstance(layer_name, str):
+            return None
+        stripped = layer_name.strip()
+        return stripped or None
 
     def _current_wizard_background_name(self) -> str | None:
         preset_combo = getattr(self, "backgroundPresetComboBox", None)

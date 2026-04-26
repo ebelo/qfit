@@ -391,7 +391,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             atlas_layer=object(),
         )
         dock._runtime_store().set_analysis_layer(object())
-        dock._runtime_store().set_background_layer(object())
+        dock._runtime_store().set_background_layer(_FakeLayer("Outdoors"))
 
         facts = self.module.QfitDockWidget._current_wizard_progress_facts(dock)
 
@@ -404,7 +404,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertEqual(facts.atlas_output_name, "exported-atlas.pdf")
         self.assertTrue(facts.background_enabled)
         self.assertTrue(facts.background_layer_loaded)
-        self.assertIsNone(facts.background_name)
+        self.assertEqual(facts.background_name, "Outdoors")
         self.assertEqual(facts.activity_style_preset, "By activity type")
         self.assertEqual(facts.last_sync_date, "2026-04-16")
 
@@ -436,7 +436,21 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._runtime_state_store = self.module.DockRuntimeStore()
         dock.backgroundMapCheckBox = _FakeCheckBox(False)
         dock.backgroundPresetComboBox = _FakeComboBox(current_text="Outdoors")
-        dock._runtime_store().set_background_layer(object())
+        dock._runtime_store().set_background_layer(_FakeLayer("Satellite"))
+
+        facts = self.module.QfitDockWidget._current_wizard_background_facts(
+            dock,
+            dock.runtime_state,
+        )
+
+        self.assertEqual(facts, (True, True, "Satellite"))
+
+    def test_current_wizard_background_facts_ignore_blank_loaded_layer_name(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._runtime_state_store = self.module.DockRuntimeStore()
+        dock.backgroundMapCheckBox = _FakeCheckBox(False)
+        dock.backgroundPresetComboBox = _FakeComboBox(current_text="Outdoors")
+        dock._runtime_store().set_background_layer(_FakeLayer("   "))
 
         facts = self.module.QfitDockWidget._current_wizard_background_facts(
             dock,
