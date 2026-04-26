@@ -361,6 +361,11 @@ class WizardShellCompositionTest(unittest.TestCase):
             assembled.sync_content.status_label.text(),
             "Synchronization in progress",
         )
+        self.assertEqual(
+            assembled.sync_content.activity_summary_label.text(),
+            "Updating stored activities",
+        )
+        self.assertIn("Updating stored activities", assembled.shell.footer_bar.text())
         self.assertFalse(assembled.sync_content.sync_button.isEnabled())
         self.assertEqual(
             assembled.sync_content.sync_button.toolTip(),
@@ -375,6 +380,36 @@ class WizardShellCompositionTest(unittest.TestCase):
             assembled.atlas_content.export_atlas_button.toolTip(),
             "Wait for the current atlas export to finish.",
         )
+
+    def test_busy_sync_summary_uses_output_name_when_available(self):
+        assembled = self.composition.build_placeholder_wizard_shell(
+            progress_facts=self.composition.WizardProgressFacts(
+                connection_configured=True,
+                activities_stored=True,
+                sync_in_progress=True,
+                output_name="qfit.gpkg",
+            )
+        )
+
+        self.assertEqual(
+            assembled.sync_content.activity_summary_label.text(),
+            "Updating activities in qfit.gpkg",
+        )
+        self.assertIn("Updating activities in qfit.gpkg", assembled.shell.footer_bar.text())
+
+    def test_busy_sync_without_stored_activities_replaces_empty_summary(self):
+        assembled = self.composition.build_placeholder_wizard_shell(
+            progress_facts=self.composition.WizardProgressFacts(
+                connection_configured=True,
+                sync_in_progress=True,
+            )
+        )
+
+        self.assertEqual(
+            assembled.sync_content.activity_summary_label.text(),
+            "Synchronization in progress",
+        )
+        self.assertIn("Synchronization in progress", assembled.shell.footer_bar.text())
 
     def test_explicit_page_state_overrides_progress_fact_defaults(self):
         assembled = self.composition.build_placeholder_wizard_shell(

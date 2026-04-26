@@ -460,14 +460,29 @@ def _sync_state_from_facts(facts: WizardProgressFacts) -> SyncPageState:
         ready=facts.activities_stored,
         status_text=status_text,
         detail_text=detail_text,
-        activity_summary_text=(
-            _stored_activity_summary(facts)
-            if facts.activities_stored
-            else default.activity_summary_text
-        ),
+        activity_summary_text=_sync_activity_summary(facts, default),
         primary_action_enabled=facts.connection_configured and not facts.sync_in_progress,
         primary_action_blocked_tooltip=sync_blocked_tooltip,
     )
+
+
+def _sync_activity_summary(
+    facts: WizardProgressFacts,
+    default: SyncPageState,
+) -> str:
+    if facts.sync_in_progress:
+        return _sync_in_progress_summary(facts)
+    if facts.activities_stored:
+        return _stored_activity_summary(facts)
+    return default.activity_summary_text
+
+
+def _sync_in_progress_summary(facts: WizardProgressFacts) -> str:
+    if not facts.activities_stored:
+        return "Synchronization in progress"
+    if facts.output_name is None:
+        return "Updating stored activities"
+    return f"Updating activities in {facts.output_name}"
 
 
 def _stored_activity_summary(facts: WizardProgressFacts) -> str:
