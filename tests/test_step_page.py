@@ -24,6 +24,22 @@ def _load_step_page_module():
         return step_page, wizard_shell
 
 
+class _FakeSize:
+    def __init__(self, width):
+        self._width = width
+
+    def width(self):
+        return self._width
+
+
+class _FakeResizeEvent:
+    def __init__(self, width):
+        self._size = _FakeSize(width)
+
+    def size(self):
+        return self._size
+
+
 class StepPageTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -145,6 +161,14 @@ class StepPageTest(unittest.TestCase):
         self.assertEqual(page._nav_layout.direction, self.step_page.QBoxLayout.LeftToRight)
         self.assertEqual(page.back_button.text(), "Précédent")
         self.assertEqual(page.next_button.text(), "Lancer l'analyse spatiale détaillée")
+
+    def test_resize_event_drives_narrow_step_page_mode(self):
+        page = self.step_page.StepPage(4, 5, "Analyse", "Calcule les sorties.")
+
+        page.resizeEvent(_FakeResizeEvent(320))
+
+        self.assertEqual(page.property("responsiveMode"), "narrow")
+        self.assertEqual(page._nav_layout.direction, self.step_page.QBoxLayout.TopToBottom)
 
     def test_extra_button_alignment_can_target_left_nav_cluster(self):
         page = self.step_page.StepPage(1, 5, "Connexion", "Configure qfit.")

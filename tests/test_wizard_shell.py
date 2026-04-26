@@ -356,6 +356,22 @@ def _load_wizard_shell_module():
         return importlib.import_module("qfit.ui.dockwidget.wizard_shell")
 
 
+class _FakeSize:
+    def __init__(self, width):
+        self._width = width
+
+    def width(self):
+        return self._width
+
+
+class _FakeResizeEvent:
+    def __init__(self, width):
+        self._size = _FakeSize(width)
+
+    def size(self):
+        return self._size
+
+
 class WizardShellTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -421,6 +437,25 @@ class WizardShellTest(unittest.TestCase):
         shell.add_page(page)
 
         shell.set_responsive_width(320)
+
+        self.assertEqual(shell.property("responsiveMode"), "narrow")
+        self.assertEqual(shell.stepper_bar.property("responsiveMode"), "compact")
+        self.assertEqual(page.widths, [320])
+
+    def test_resize_event_propagates_responsive_width_to_pages(self):
+        class ResponsivePage(_FakeWidget):
+            def __init__(self):
+                super().__init__()
+                self.widths = []
+
+            def set_responsive_width(self, width):
+                self.widths.append(width)
+
+        shell = self.wizard_shell.WizardShell()
+        page = ResponsivePage()
+        shell.add_page(page)
+
+        shell.resizeEvent(_FakeResizeEvent(320))
 
         self.assertEqual(shell.property("responsiveMode"), "narrow")
         self.assertEqual(shell.stepper_bar.property("responsiveMode"), "compact")

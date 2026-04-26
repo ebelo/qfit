@@ -213,6 +213,22 @@ def _load_stepper_module():
         return importlib.import_module("qfit.ui.dockwidget.stepper_bar")
 
 
+class _FakeSize:
+    def __init__(self, width):
+        self._width = width
+
+    def width(self):
+        return self._width
+
+
+class _FakeResizeEvent:
+    def __init__(self, width):
+        self._size = _FakeSize(width)
+
+    def size(self):
+        return self._size
+
+
 class StepperBarTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -362,6 +378,14 @@ class StepperBarTest(unittest.TestCase):
         self.assertEqual(bar.height(), self.stepper.STEPPER_WIDE_HEIGHT)
         self.assertEqual(bar.step_buttons()[1].text(), "2  Synchronization")
         self.assertEqual([connector.fixed_width for connector in bar._connectors], [8, 8, 8, 8])
+
+    def test_resize_event_drives_compact_stepper_mode(self):
+        bar = self.stepper.StepperBar()
+
+        bar.resizeEvent(_FakeResizeEvent(320))
+
+        self.assertEqual(bar.property("responsiveMode"), "compact")
+        self.assertEqual(bar.height(), self.stepper.STEPPER_COMPACT_HEIGHT)
 
 
 if __name__ == "__main__":

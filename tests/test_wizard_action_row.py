@@ -17,6 +17,22 @@ def _load_action_row_module():
         return importlib.import_module("qfit.ui.dockwidget.action_row")
 
 
+class _FakeSize:
+    def __init__(self, width):
+        self._width = width
+
+    def width(self):
+        return self._width
+
+
+class _FakeResizeEvent:
+    def __init__(self, width):
+        self._size = _FakeSize(width)
+
+    def size(self):
+        return self._size
+
+
 class WizardActionRowTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -56,6 +72,14 @@ class WizardActionRowTest(unittest.TestCase):
         self.assertEqual(row.property("responsiveMode"), "wide")
         self.assertEqual(row.outer_layout().direction, self.action_row.QBoxLayout.LeftToRight)
         self.assertEqual(row.outer_layout().spacing, 8)
+
+    def test_resize_event_drives_narrow_action_row_mode(self):
+        row = self.action_row.build_wizard_action_row(self.action_row.QToolButton())
+
+        row.resizeEvent(_FakeResizeEvent(320))
+
+        self.assertEqual(row.property("responsiveMode"), "narrow")
+        self.assertEqual(row.outer_layout().direction, self.action_row.QBoxLayout.TopToBottom)
 
     def test_primary_action_button_gets_cta_role_and_chrome(self):
         button = self.action_row.QToolButton()
