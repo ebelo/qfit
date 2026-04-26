@@ -100,11 +100,13 @@ class StepPage(QWidget):
         icon: str = "",
         primary: bool = True,
         enabled: bool = True,
+        visible: bool = True,
     ) -> None:
         """Configure the right-side next/primary wizard action."""
 
         self.next_button.setText(_button_text(label, icon))
         self.next_button.setEnabled(enabled)
+        self.next_button.setVisible(visible)
         self.next_button.setProperty("wizardActionRole", "primary" if primary else "secondary")
         self.next_button.setStyleSheet(
             _primary_button_stylesheet() if primary else _ghost_button_stylesheet()
