@@ -6,6 +6,7 @@ from unittest.mock import patch
 from tests import _path  # noqa: F401
 from tests.test_wizard_shell import _fake_qt_modules
 
+from qfit.ui.application.dock_workflow_sections import build_wizard_step_statuses
 from qfit.ui.application.wizard_page_specs import build_default_wizard_page_specs
 
 
@@ -171,6 +172,26 @@ class StepPageTest(unittest.TestCase):
         pages = self.step_page.build_wizard_step_pages(specs=())
 
         self.assertEqual(pages, ())
+
+    def test_applies_progress_status_pills_to_step_pages(self):
+        pages = self.step_page.build_wizard_step_pages()
+        statuses = build_wizard_step_statuses(
+            current_key="map",
+            completed_keys={"connection", "sync"},
+            unlocked_keys={"analysis"},
+        )
+
+        self.step_page.apply_wizard_step_page_statuses(pages, statuses)
+
+        self.assertEqual(
+            [page.status_pill.text() for page in pages],
+            ["Done", "Done", "Current", "Available", "Locked"],
+        )
+        self.assertEqual(
+            [page.status_pill.property("tone") for page in pages],
+            ["ok", "ok", "info", "neutral", "muted"],
+        )
+        self.assertTrue(all(page.status_pill.isVisible() for page in pages))
 
     def test_installs_wizard_step_pages_into_shell(self):
         shell = self.wizard_shell.WizardShell()

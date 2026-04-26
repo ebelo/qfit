@@ -2,6 +2,10 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
+from qfit.ui.application.dock_workflow_sections import (
+    DockWorkflowStepState,
+    DockWorkflowStepStatus,
+)
 from qfit.ui.application.wizard_page_specs import (
     DockWizardPageSpec,
     build_default_wizard_page_specs,
@@ -324,6 +328,28 @@ def install_wizard_step_pages(
     return pages
 
 
+def apply_wizard_step_page_statuses(
+    pages: Sequence[WizardStepPage],
+    statuses: Sequence[DockWorkflowStepStatus],
+) -> None:
+    """Render progress status pills on StepPage-backed wizard pages.
+
+    The stepper remains the source of truth for navigation state, but the richer
+    #609 page chrome also exposes a compact header pill. Keeping that mapping in
+    this reusable widget layer lets the future wizard dock show visible progress
+    without binding page widgets to ``QfitDockWidget`` or polishing the legacy
+    long-scroll layout.
+    """
+
+    statuses_by_key = {status.key: status for status in statuses}
+    for page in pages:
+        status = statuses_by_key.get(page.spec.key)
+        if status is None:
+            continue
+        text, tone = _step_status_pill(status.state)
+        page.set_status(text, tone=tone)
+
+
 class _LayoutWidget(QWidget):
     """Small wrapper so fake and real Qt layouts can be inserted as widgets."""
 
@@ -339,6 +365,16 @@ def _button_text(label: str, icon: str) -> str:
     if not stripped_icon:
         return stripped_label
     return f"{stripped_label} {stripped_icon}"
+
+
+def _step_status_pill(state: DockWorkflowStepState) -> tuple[str, str]:
+    if state == DockWorkflowStepState.DONE:
+        return "Done", "ok"
+    if state == DockWorkflowStepState.CURRENT:
+        return "Current", "info"
+    if state == DockWorkflowStepState.UNLOCKED:
+        return "Available", "neutral"
+    return "Locked", "muted"
 
 
 def _step_kicker_label_stylesheet(object_name: str) -> str:
@@ -385,6 +421,7 @@ def _ghost_button_stylesheet() -> str:
 __all__ = [
     "StepPage",
     "WizardStepPage",
+    "apply_wizard_step_page_statuses",
     "build_wizard_step_pages",
     "install_wizard_step_pages",
 ]
