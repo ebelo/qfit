@@ -41,7 +41,11 @@ from .connection_page import (
 )
 from .map_page import MapPageContent, MapPageState, install_map_page_content
 from .sync_page import SyncPageContent, SyncPageState, install_sync_page_content
-from .step_page import WizardStepPage, install_wizard_step_pages
+from .step_page import (
+    WizardStepPage,
+    apply_wizard_step_page_statuses,
+    install_wizard_step_pages,
+)
 from .wizard_page import WizardPage, install_wizard_pages
 from .wizard_shell import WizardShell
 from .wizard_shell_presenter import WizardShellPresenter
@@ -199,7 +203,7 @@ def build_placeholder_wizard_shell(
         page_indices_by_key=_build_page_indices_by_key(pages),
         on_current_step_changed=on_current_step_changed,
     )
-    _connect_step_page_navigation(pages, presenter)
+    _connect_step_page_navigation(shell, pages, presenter)
     return WizardShellComposition(
         shell=shell,
         pages=pages,
@@ -329,6 +333,7 @@ def refresh_wizard_shell_composition(
     if resolved_progress is not None:
         composition.presenter.set_progress(resolved_progress)
         _sync_step_page_navigation_buttons(composition.pages, composition.presenter)
+        _sync_step_page_status_pills(composition.pages, composition.presenter)
 
     composition.connection_state = next_connection_state
     composition.sync_state = next_sync_state
@@ -835,6 +840,7 @@ def _install_shell_pages(
 
 
 def _connect_step_page_navigation(
+    shell: WizardShell,
     pages: Sequence[WizardCompositionPage],
     presenter: WizardShellPresenter,
 ) -> None:
@@ -850,6 +856,7 @@ def _connect_step_page_navigation(
         if index is not None:
             presenter.request_step(index)
         _sync_step_page_navigation_buttons(pages, presenter)
+        _sync_step_page_status_pills(pages, presenter)
 
     for installed_index, page in step_pages:
         previous_index, next_index = _step_page_navigation_targets(
@@ -862,7 +869,11 @@ def _connect_step_page_navigation(
         page.nextRequested.connect(
             lambda _checked=False, target=next_index: request_and_sync(target)
         )
+    shell.stepper_bar.stepRequested.connect(
+        lambda _index: _sync_step_page_status_pills(pages, presenter)
+    )
     _sync_step_page_navigation_buttons(pages, presenter)
+    _sync_step_page_status_pills(pages, presenter)
 
 
 def _sync_step_page_navigation_buttons(
@@ -886,6 +897,19 @@ def _sync_step_page_navigation_buttons(
             and next_index <= last_index
             and can_request_step(statuses, next_index)
         )
+
+
+def _sync_step_page_status_pills(
+    pages: Sequence[WizardCompositionPage],
+    presenter: WizardShellPresenter,
+) -> None:
+    step_pages = tuple(page for page in pages if isinstance(page, WizardStepPage))
+    if not step_pages:
+        return
+    apply_wizard_step_page_statuses(
+        step_pages,
+        build_progress_wizard_step_statuses(presenter.progress),
+    )
 
 
 def _step_page_navigation_targets(
