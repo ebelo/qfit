@@ -198,6 +198,33 @@ class WizardShellCompositionTest(unittest.TestCase):
             ("done", "done", "current", "locked", "locked"),
         )
 
+    def test_initial_progress_can_be_derived_from_workflow_facts(self):
+        facts = self.composition.WizardProgressFacts(
+            connection_configured=True,
+            activities_stored=True,
+            preferred_current_key="map",
+        )
+
+        assembled = self.composition.build_placeholder_wizard_shell(progress_facts=facts)
+
+        self.assertEqual(assembled.presenter.progress.current_key, "map")
+        self.assertEqual(
+            assembled.presenter.progress.completed_keys,
+            frozenset({"connection", "sync"}),
+        )
+        self.assertEqual(assembled.shell.pages_stack.currentIndex(), 2)
+        self.assertEqual(
+            assembled.shell.stepper_bar.states(),
+            ("done", "done", "current", "locked", "locked"),
+        )
+
+    def test_build_rejects_conflicting_progress_inputs(self):
+        with self.assertRaisesRegex(ValueError, "progress or progress_facts"):
+            self.composition.build_placeholder_wizard_shell(
+                progress=DockWizardProgress(current_key="connection"),
+                progress_facts=self.composition.WizardProgressFacts(),
+            )
+
     def test_builds_default_footer_from_page_status_facts(self):
         assembled = self.composition.build_placeholder_wizard_shell()
 
@@ -425,6 +452,51 @@ class WizardShellCompositionTest(unittest.TestCase):
             assembled.shell.stepper_bar.states(),
             ("done", "done", "current", "locked", "locked"),
         )
+
+    def test_refresh_can_update_progress_from_workflow_facts(self):
+        assembled = self.composition.build_placeholder_wizard_shell()
+
+        refreshed = self.composition.refresh_wizard_shell_composition(
+            assembled,
+            progress_facts=self.composition.WizardProgressFacts(
+                connection_configured=True,
+                activities_stored=True,
+                activity_layers_loaded=True,
+                preferred_current_key="analysis",
+            ),
+        )
+
+        self.assertIs(refreshed, assembled)
+        self.assertEqual(assembled.presenter.progress.current_key, "analysis")
+        self.assertEqual(
+            assembled.presenter.progress.completed_keys,
+            frozenset({"connection", "sync", "map"}),
+        )
+        self.assertEqual(assembled.shell.pages_stack.currentIndex(), 3)
+        self.assertEqual(
+            assembled.shell.stepper_bar.states(),
+            ("done", "done", "done", "current", "locked"),
+        )
+
+    def test_refresh_rejects_conflicting_progress_inputs_before_mutation(self):
+        assembled = self.composition.build_placeholder_wizard_shell()
+
+        with self.assertRaisesRegex(ValueError, "progress or progress_facts"):
+            self.composition.refresh_wizard_shell_composition(
+                assembled,
+                connection_state=self.composition.ConnectionPageState(
+                    connected=True,
+                    status_text="Strava connected",
+                ),
+                progress=DockWizardProgress(current_key="connection"),
+                progress_facts=self.composition.WizardProgressFacts(),
+            )
+
+        self.assertEqual(
+            assembled.connection_content.status_label.text(),
+            "Strava not connected",
+        )
+        self.assertEqual(assembled.presenter.progress.current_key, "connection")
 
     def test_refresh_validates_progress_before_mutating_page_state(self):
         assembled = self.composition.build_placeholder_wizard_shell()
