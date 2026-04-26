@@ -704,11 +704,51 @@ def _analysis_input_summary(facts: WizardProgressFacts) -> str:
     if not facts.activity_layers_loaded:
         return "Load activity layers before running analysis"
     if facts.filters_active:
-        if facts.filtered_activity_count is None:
-            return "Filtered activity subset ready for analysis"
+        return _analysis_filtered_input_summary(facts)
+    return _with_analysis_input_context(
+        _analysis_loaded_activity_layer_summary(facts),
+        facts=facts,
+    )
+
+
+def _analysis_filtered_input_summary(facts: WizardProgressFacts) -> str:
+    if facts.filtered_activity_count is None:
+        summary = "Filtered activity subset ready for analysis"
+    else:
         noun = "activity" if facts.filtered_activity_count == 1 else "activities"
-        return f"{max(facts.filtered_activity_count, 0)} filtered {noun} ready for analysis"
-    return "Activity layers ready for analysis"
+        summary = (
+            f"{max(facts.filtered_activity_count, 0)} filtered {noun} "
+            "ready for analysis"
+        )
+    return _with_analysis_input_context(summary, facts=facts)
+
+
+def _analysis_loaded_activity_layer_summary(facts: WizardProgressFacts) -> str:
+    if facts.output_name is None:
+        return "Activity layer ready for analysis"
+    return f"Activity layer from {facts.output_name} ready for analysis"
+
+
+def _with_analysis_input_context(summary: str, *, facts: WizardProgressFacts) -> str:
+    details = tuple(
+        detail
+        for detail in (
+            facts.filter_description if facts.filters_active else None,
+            _analysis_loaded_layer_count_summary(facts),
+        )
+        if detail
+    )
+    if not details:
+        return summary
+    return f"{summary} · {' · '.join(details)}"
+
+
+def _analysis_loaded_layer_count_summary(facts: WizardProgressFacts) -> str | None:
+    if facts.loaded_layer_count is None:
+        return None
+    count = max(facts.loaded_layer_count, 0)
+    noun = "qfit layer" if count == 1 else "qfit layers"
+    return f"{count} {noun} loaded"
 
 
 def _analysis_result_summary(facts: WizardProgressFacts) -> str:
