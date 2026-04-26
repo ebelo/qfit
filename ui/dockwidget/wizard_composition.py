@@ -428,6 +428,9 @@ def _completed_prefix_facts(facts: WizardProgressFacts) -> WizardProgressFacts:
         output_name=facts.output_name,
         analysis_output_name=facts.analysis_output_name,
         atlas_output_name=facts.atlas_output_name,
+        background_enabled=facts.background_enabled,
+        background_layer_loaded=facts.background_layer_loaded,
+        background_name=facts.background_name,
         filters_active=facts.filters_active,
         filtered_activity_count=facts.filtered_activity_count,
     )
@@ -510,6 +513,7 @@ def _map_state_from_facts(facts: WizardProgressFacts) -> MapPageState:
         loaded=facts.activity_layers_loaded,
         status_text=_map_status_text(facts, default),
         layer_summary_text=_map_layer_summary(facts, default),
+        background_summary_text=_map_background_summary(facts, default),
         filter_summary_text=_map_filter_summary(facts, default),
         load_action_enabled=facts.activities_stored,
         apply_action_enabled=facts.activity_layers_loaded,
@@ -534,6 +538,18 @@ def _map_layer_summary(facts: WizardProgressFacts, default: MapPageState) -> str
             return f"Stored activities in {facts.output_name} are ready to load"
         return "Stored activities are ready to load"
     return default.layer_summary_text
+
+
+def _map_background_summary(facts: WizardProgressFacts, default: MapPageState) -> str:
+    if not facts.background_enabled:
+        return default.background_summary_text
+    if facts.background_layer_loaded:
+        if facts.background_name is not None:
+            return f"Basemap loaded: {facts.background_name}"
+        return "Basemap loaded"
+    if facts.background_name is not None:
+        return f"Basemap ready to load: {facts.background_name}"
+    return "Basemap enabled"
 
 
 def _map_filter_summary(facts: WizardProgressFacts, default: MapPageState) -> str:

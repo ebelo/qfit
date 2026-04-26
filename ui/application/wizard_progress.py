@@ -32,6 +32,9 @@ class WizardProgressFacts:
     output_name: str | None = None
     analysis_output_name: str | None = None
     atlas_output_name: str | None = None
+    background_enabled: bool = False
+    background_layer_loaded: bool = False
+    background_name: str | None = None
     filters_active: bool = False
     filtered_activity_count: int | None = None
 
@@ -43,6 +46,9 @@ def build_wizard_progress_facts_from_runtime_state(
     atlas_exported: bool = False,
     preferred_current_key: str | None = None,
     atlas_output_path: str | None = None,
+    background_enabled: bool = False,
+    background_layer_loaded: bool = False,
+    background_name: str | None = None,
     filters_active: bool = False,
     filtered_activity_count: int | None = None,
 ) -> WizardProgressFacts:
@@ -75,6 +81,9 @@ def build_wizard_progress_facts_from_runtime_state(
         output_name=output_name,
         analysis_output_name=analysis_output_name,
         atlas_output_name=atlas_output_name,
+        background_enabled=background_enabled,
+        background_layer_loaded=background_layer_loaded,
+        background_name=_optional_text(background_name),
         filters_active=filters_active,
         filtered_activity_count=filtered_activity_count,
     )
@@ -128,6 +137,9 @@ def build_wizard_progress_from_facts_and_settings(
             output_name=facts.output_name,
             analysis_output_name=facts.analysis_output_name,
             atlas_output_name=facts.atlas_output_name,
+            background_enabled=facts.background_enabled,
+            background_layer_loaded=facts.background_layer_loaded,
+            background_name=facts.background_name,
             filters_active=facts.filters_active,
             filtered_activity_count=facts.filtered_activity_count,
         )
@@ -193,6 +205,11 @@ def _output_name(output_path: str | None) -> str | None:
     if "\\" in stripped:
         return PureWindowsPath(stripped).name or stripped
     return Path(stripped).name or stripped
+
+
+def _optional_text(value: str | None) -> str | None:
+    stripped = (value or "").strip()
+    return stripped or None
 
 
 def _layer_name(layer) -> str | None:

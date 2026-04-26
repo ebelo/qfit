@@ -176,6 +176,18 @@ class WizardProgressFactsTests(unittest.TestCase):
         self.assertTrue(facts.filters_active)
         self.assertEqual(facts.filtered_activity_count, 3)
 
+    def test_runtime_state_adapter_preserves_explicit_background_facts(self):
+        facts = build_wizard_progress_facts_from_runtime_state(
+            DockRuntimeState(output_path="/tmp/qfit.gpkg"),
+            background_enabled=True,
+            background_layer_loaded=True,
+            background_name=" Outdoors ",
+        )
+
+        self.assertTrue(facts.background_enabled)
+        self.assertTrue(facts.background_layer_loaded)
+        self.assertEqual(facts.background_name, "Outdoors")
+
     def test_defaults_keep_connection_current_with_no_completed_steps(self):
         progress = build_wizard_progress_from_facts(WizardProgressFacts())
 

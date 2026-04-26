@@ -51,6 +51,12 @@ class MapPageContentTest(unittest.TestCase):
         )
         self.assertIn(COLOR_MUTED, content.layer_summary_label.styleSheet())
         self.assertEqual(
+            content.background_summary_label.objectName(),
+            "qfitWizardMapBackgroundSummary",
+        )
+        self.assertEqual(content.background_summary_label.text(), "Basemap disabled")
+        self.assertIn(COLOR_MUTED, content.background_summary_label.styleSheet())
+        self.assertEqual(
             content.filter_summary_label.objectName(),
             "qfitWizardMapFilterSummary",
         )
@@ -102,6 +108,7 @@ class MapPageContentTest(unittest.TestCase):
                 content.status_label,
                 content.detail_label,
                 content.layer_summary_label,
+                content.background_summary_label,
                 content.filter_summary_label,
                 content.action_row,
             ],
@@ -114,6 +121,7 @@ class MapPageContentTest(unittest.TestCase):
             status_text="Map ready",
             detail_text="Use saved filters for the loaded activity layers.",
             layer_summary_text="4 layers loaded from qfit.gpkg",
+            background_summary_text="Basemap loaded: Outdoors",
             filter_summary_text="42 activities · Ride and Run · 2026",
             load_action_label="Reload layers",
             primary_action_label="Apply saved filters",
@@ -133,6 +141,8 @@ class MapPageContentTest(unittest.TestCase):
             "4 layers loaded from qfit.gpkg",
         )
         self.assertEqual(content.layer_summary_label.property("mapState"), "loaded")
+        self.assertEqual(content.background_summary_label.text(), "Basemap loaded: Outdoors")
+        self.assertEqual(content.background_summary_label.property("mapState"), "loaded")
         self.assertEqual(
             content.filter_summary_label.text(),
             "42 activities · Ride and Run · 2026",
