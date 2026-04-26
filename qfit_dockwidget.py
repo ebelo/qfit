@@ -191,12 +191,58 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             runtime_state=runtime_state,
             atlas_exported=atlas_exported,
         )
+        filters_active, filtered_activity_count = self._current_wizard_filter_facts()
         return build_wizard_progress_facts_from_runtime_state(
             runtime_state,
             connection_configured=self._has_configured_strava_connection(),
             atlas_exported=atlas_exported,
             atlas_output_path=atlas_export_output_path,
+            filters_active=filters_active,
+            filtered_activity_count=filtered_activity_count,
         )
+
+    def _current_wizard_filter_facts(self) -> tuple[bool, int | None]:
+        """Return the current map-filter facts the optional wizard can summarize."""
+
+        layer_filter_facts = self._current_wizard_layer_filter_facts()
+        if layer_filter_facts is not None:
+            return layer_filter_facts
+
+        activities = tuple(self.runtime_state.activities)
+        if not activities:
+            return False, None
+        selection_state = build_activity_preview_selection_state(
+            self._current_activity_preview_request()
+        )
+        filters_active = selection_state.filtered_count != len(activities)
+        if not filters_active:
+            return False, None
+        return True, selection_state.filtered_count
+
+    def _current_wizard_layer_filter_facts(self) -> tuple[bool, int | None] | None:
+        layer = self.runtime_state.activities_layer
+        if layer is None or not hasattr(layer, "subsetString"):
+            return None
+        try:
+            subset = (layer.subsetString() or "").strip()
+        except RuntimeError:
+            logger.debug("Failed to read activity layer subset", exc_info=True)
+            return None
+        if not subset:
+            return False, None
+        return True, self._current_wizard_layer_feature_count(layer)
+
+    def _current_wizard_layer_feature_count(self, layer) -> int | None:
+        if not hasattr(layer, "featureCount"):
+            return None
+        try:
+            count = layer.featureCount()
+        except RuntimeError:
+            logger.debug("Failed to read activity layer feature count", exc_info=True)
+            return None
+        if not isinstance(count, int):
+            return None
+        return max(count, 0)
 
     def _current_wizard_atlas_output_path(self, *, runtime_state, atlas_exported: bool):
         """Return the atlas output path the optional wizard should describe."""
