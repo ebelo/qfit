@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+from inspect import Parameter, signature
 
 from qfit.ui.application.dock_workflow_sections import (
     DockWizardProgress,
@@ -131,18 +132,34 @@ class WizardShellPresenter:
         if current_key == previous_key:
             return
         step_index = step_index_for_key(current_key)
-        try:
+        if _accepts_user_selected_keyword(self._on_current_step_changed):
             self._on_current_step_changed(
                 step_index,
                 user_selected=user_selected,
             )
-        except TypeError:
-            self._on_current_step_changed(step_index)
+            return
+        self._on_current_step_changed(step_index)
 
     def _page_index_for_key(self, key: str) -> int | None:
         if self._page_indices_by_key is None:
             return step_index_for_key(key)
         return self._page_indices_by_key.get(key)
+
+
+def _accepts_user_selected_keyword(callback: Callable[..., None]) -> bool:
+    try:
+        callback_signature = signature(callback)
+    except (TypeError, ValueError):
+        return False
+    return any(
+        parameter.kind is Parameter.VAR_KEYWORD
+        or (
+            parameter.name == "user_selected"
+            and parameter.kind
+            in (Parameter.KEYWORD_ONLY, Parameter.POSITIONAL_OR_KEYWORD)
+        )
+        for parameter in callback_signature.parameters.values()
+    )
 
 
 def _missing_completion_prerequisites(
