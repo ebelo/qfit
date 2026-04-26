@@ -59,7 +59,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertFalse(assembled.pages[0].next_button.isEnabled())
         self.assertEqual(
             [page.status_pill.text() for page in assembled.pages],
-            ["Current", "Locked", "Locked", "Locked", "Locked"],
+            ["", "Locked", "Locked", "Locked", "Locked"],
         )
         self.assertIsNotNone(assembled.connection_content)
         self.assertIs(
@@ -170,11 +170,11 @@ class WizardShellCompositionTest(unittest.TestCase):
         )
         self.assertEqual(
             [page.status_pill.text() for page in assembled.pages],
-            ["Done", "Done", "Current", "Locked", "Locked"],
+            ["Done", "Done", "", "Locked", "Locked"],
         )
         self.assertEqual(
             [page.status_pill.property("tone") for page in assembled.pages],
-            ["ok", "ok", "info", "muted", "muted"],
+            ["ok", "ok", "muted", "muted", "muted"],
         )
         self.assertTrue(assembled.pages[2].back_button.isEnabled())
         self.assertFalse(assembled.pages[2].next_button.isEnabled())
@@ -183,7 +183,7 @@ class WizardShellCompositionTest(unittest.TestCase):
 
         self.assertEqual(assembled.presenter.progress.current_key, "sync")
         self.assertEqual(assembled.shell.pages_stack.currentIndex(), 1)
-        self.assertEqual(assembled.pages[1].status_pill.text(), "Current")
+        self.assertEqual(assembled.pages[1].status_pill.text(), "")
         self.assertEqual(assembled.pages[2].status_pill.text(), "Available")
         self.assertTrue(assembled.pages[1].next_button.isEnabled())
         self.assertEqual(
@@ -199,7 +199,7 @@ class WizardShellCompositionTest(unittest.TestCase):
 
         self.assertEqual(assembled.presenter.progress.current_key, "map")
         self.assertEqual(assembled.shell.pages_stack.currentIndex(), 2)
-        self.assertEqual(assembled.pages[2].status_pill.text(), "Current")
+        self.assertEqual(assembled.pages[2].status_pill.text(), "")
         self.assertEqual(
             assembled.pages[2].back_button.text(),
             "Précédent: Synchronization",
@@ -213,7 +213,7 @@ class WizardShellCompositionTest(unittest.TestCase):
 
         self.assertEqual(assembled.presenter.progress.current_key, "sync")
         self.assertEqual(assembled.shell.pages_stack.currentIndex(), 1)
-        self.assertEqual(assembled.pages[1].status_pill.text(), "Current")
+        self.assertEqual(assembled.pages[1].status_pill.text(), "")
         self.assertEqual(assembled.pages[2].status_pill.text(), "Available")
         self.assertTrue(assembled.pages[1].next_button.isEnabled())
         self.assertEqual(
@@ -237,7 +237,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertEqual(assembled.presenter.progress.current_key, "map")
         self.assertEqual(
             [page.status_pill.text() for page in assembled.pages],
-            ["Done", "Done", "Current", "Locked", "Locked"],
+            ["Done", "Done", "", "Locked", "Locked"],
         )
         self.assertTrue(assembled.pages[2].back_button.isEnabled())
         self.assertFalse(assembled.pages[2].next_button.isEnabled())
