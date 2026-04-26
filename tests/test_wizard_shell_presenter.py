@@ -129,6 +129,29 @@ class WizardShellPresenterTest(unittest.TestCase):
         )
         self.assertEqual(persisted_step_indexes, [3])
 
+    def test_step_change_callback_marks_only_requested_steps_as_user_selected(self):
+        shell = self._build_shell_with_pages()
+        persisted_steps = []
+        presenter = self.presenter.WizardShellPresenter(
+            shell,
+            on_current_step_changed=(
+                lambda index, *, user_selected: persisted_steps.append(
+                    (index, user_selected)
+                )
+            ),
+        )
+
+        presenter.set_progress(
+            self.presenter.DockWizardProgress(
+                current_key="sync",
+                completed_keys=frozenset({"connection"}),
+                visited_keys=frozenset({"sync"}),
+            )
+        )
+        presenter.request_step(0)
+
+        self.assertEqual(persisted_steps, [(1, False), (0, True)])
+
     def test_set_progress_rejects_unknown_keys_without_mutating_shell(self):
         shell = self._build_shell_with_pages()
         presenter = self.presenter.WizardShellPresenter(shell)

@@ -174,10 +174,19 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
         return ensure_wizard_settings(self.settings)
 
-    def _persist_wizard_step_index(self, index: int) -> int:
+    def _persist_wizard_step_index(
+        self,
+        index: int,
+        *,
+        user_selected: bool = True,
+    ) -> int:
         """Persist the optional #609 wizard shell's current step."""
 
-        return save_last_step_index(self.settings, index)
+        return save_last_step_index(
+            self.settings,
+            index,
+            user_selected=user_selected,
+        )
 
     def _persist_wizard_startup_step_index(self, index: int) -> int:
         """Persist a startup-derived wizard step without marking it user-chosen."""
