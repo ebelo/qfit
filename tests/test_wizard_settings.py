@@ -6,6 +6,7 @@ from qfit.ui.application.wizard_settings import (
     COLLAPSED_GROUPS_KEY,
     DEFAULT_COLLAPSED_GROUP_OBJECT_NAMES,
     LAST_STEP_INDEX_KEY,
+    LAST_STEP_INDEX_USER_SELECTED_KEY,
     WIZARD_VERSION,
     WIZARD_VERSION_KEY,
     clamp_wizard_step_index,
@@ -41,6 +42,7 @@ class WizardSettingsTests(unittest.TestCase):
         self.assertIsNone(snapshot.wizard_version)
         self.assertTrue(snapshot.first_launch)
         self.assertEqual(snapshot.last_step_index, 0)
+        self.assertFalse(snapshot.last_step_index_user_selected)
         self.assertEqual(snapshot.collapsed_groups, DEFAULT_COLLAPSED_GROUP_OBJECT_NAMES)
 
     def test_ensure_writes_version_and_collapsed_defaults_on_first_launch(self):
@@ -63,6 +65,7 @@ class WizardSettingsTests(unittest.TestCase):
             {
                 WIZARD_VERSION_KEY: "1",
                 LAST_STEP_INDEX_KEY: "3",
+                LAST_STEP_INDEX_USER_SELECTED_KEY: "true",
                 COLLAPSED_GROUPS_KEY: ["temporalGroup"],
             }
         )
@@ -72,6 +75,7 @@ class WizardSettingsTests(unittest.TestCase):
         self.assertFalse(snapshot.first_launch)
         self.assertEqual(snapshot.wizard_version, 1)
         self.assertEqual(snapshot.last_step_index, 3)
+        self.assertTrue(snapshot.last_step_index_user_selected)
         self.assertEqual(snapshot.collapsed_groups, ("temporalGroup",))
         self.assertEqual(settings.writes, [])
 
@@ -85,6 +89,16 @@ class WizardSettingsTests(unittest.TestCase):
 
         self.assertEqual(saved, 4)
         self.assertEqual(settings.values[LAST_STEP_INDEX_KEY], 4)
+        self.assertTrue(settings.values[LAST_STEP_INDEX_USER_SELECTED_KEY])
+
+    def test_startup_step_index_save_does_not_mark_step_user_selected(self):
+        settings = FakeSettingsPort()
+
+        saved = save_last_step_index(settings, 1, user_selected=False)
+
+        self.assertEqual(saved, 1)
+        self.assertEqual(settings.values[LAST_STEP_INDEX_KEY], 1)
+        self.assertFalse(settings.values[LAST_STEP_INDEX_USER_SELECTED_KEY])
 
     def test_collapsed_groups_are_saved_in_known_spec_order(self):
         settings = FakeSettingsPort()

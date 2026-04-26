@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+from inspect import Parameter, signature
 
 from qfit.ui.application.dock_workflow_sections import (
     DockWizardProgress,
@@ -29,7 +30,7 @@ class WizardShellPresenter:
         progress: DockWizardProgress | None = None,
         *,
         page_indices_by_key: dict[str, int] | None = None,
-        on_current_step_changed: Callable[[int], None] | None = None,
+        on_current_step_changed: Callable[..., None] | None = None,
     ) -> None:
         self._shell = shell
         self._page_indices_by_key = page_indices_by_key
@@ -61,7 +62,10 @@ class WizardShellPresenter:
         previous_key = self._progress.current_key
         self._progress = progress
         self._render()
-        self._notify_current_step_changed(previous_key=previous_key)
+        self._notify_current_step_changed(
+            previous_key=previous_key,
+            user_selected=False,
+        )
 
     def request_step(self, index: int) -> bool:
         """Move to ``index`` when the current workflow status allows it."""
@@ -79,7 +83,10 @@ class WizardShellPresenter:
             visited_keys=self._progress.visited_keys | {key},
         )
         self._render()
-        self._notify_current_step_changed(previous_key=previous_key)
+        self._notify_current_step_changed(
+            previous_key=previous_key,
+            user_selected=True,
+        )
         return True
 
     def mark_step_done(self, key: str) -> None:
@@ -113,18 +120,46 @@ class WizardShellPresenter:
         if page_index is not None:
             self._shell.show_page(page_index)
 
-    def _notify_current_step_changed(self, *, previous_key: str) -> None:
+    def _notify_current_step_changed(
+        self,
+        *,
+        previous_key: str,
+        user_selected: bool,
+    ) -> None:
         if self._on_current_step_changed is None:
             return
         current_key = self._progress.current_key
         if current_key == previous_key:
             return
-        self._on_current_step_changed(step_index_for_key(current_key))
+        step_index = step_index_for_key(current_key)
+        if _accepts_user_selected_keyword(self._on_current_step_changed):
+            self._on_current_step_changed(
+                step_index,
+                user_selected=user_selected,
+            )
+            return
+        self._on_current_step_changed(step_index)
 
     def _page_index_for_key(self, key: str) -> int | None:
         if self._page_indices_by_key is None:
             return step_index_for_key(key)
         return self._page_indices_by_key.get(key)
+
+
+def _accepts_user_selected_keyword(callback: Callable[..., None]) -> bool:
+    try:
+        callback_signature = signature(callback)
+    except (TypeError, ValueError):
+        return False
+    return any(
+        parameter.kind is Parameter.VAR_KEYWORD
+        or (
+            parameter.name == "user_selected"
+            and parameter.kind
+            in (Parameter.KEYWORD_ONLY, Parameter.POSITIONAL_OR_KEYWORD)
+        )
+        for parameter in callback_signature.parameters.values()
+    )
 
 
 def _missing_completion_prerequisites(

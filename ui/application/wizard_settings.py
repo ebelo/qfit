@@ -9,6 +9,7 @@ from .dock_workflow_sections import WIZARD_WORKFLOW_STEPS
 WIZARD_VERSION = 1
 WIZARD_VERSION_KEY = "ui/wizard_version"
 LAST_STEP_INDEX_KEY = "ui/last_step_index"
+LAST_STEP_INDEX_USER_SELECTED_KEY = "ui/last_step_index_user_selected"
 COLLAPSED_GROUPS_KEY = "ui/collapsed_groups"
 WIZARD_STEP_COUNT = 5
 
@@ -25,6 +26,7 @@ class WizardSettingsSnapshot:
 
     wizard_version: int | None
     last_step_index: int = 0
+    last_step_index_user_selected: bool = False
     collapsed_groups: tuple[str, ...] = DEFAULT_COLLAPSED_GROUP_OBJECT_NAMES
     first_launch: bool = True
 
@@ -37,6 +39,9 @@ def load_wizard_settings(settings: SettingsPort) -> WizardSettingsSnapshot:
     return WizardSettingsSnapshot(
         wizard_version=wizard_version,
         last_step_index=clamp_wizard_step_index(settings.get(LAST_STEP_INDEX_KEY, 0)),
+        last_step_index_user_selected=_coerce_bool(
+            settings.get(LAST_STEP_INDEX_USER_SELECTED_KEY, False)
+        ),
         collapsed_groups=_normalise_collapsed_groups(
             settings.get(COLLAPSED_GROUPS_KEY, DEFAULT_COLLAPSED_GROUP_OBJECT_NAMES)
         ),
@@ -60,17 +65,24 @@ def ensure_wizard_settings(settings: SettingsPort) -> WizardSettingsSnapshot:
         return WizardSettingsSnapshot(
             wizard_version=WIZARD_VERSION,
             last_step_index=snapshot.last_step_index,
+            last_step_index_user_selected=snapshot.last_step_index_user_selected,
             collapsed_groups=snapshot.collapsed_groups,
             first_launch=snapshot.first_launch,
         )
     return snapshot
 
 
-def save_last_step_index(settings: SettingsPort, index: int) -> int:
+def save_last_step_index(
+    settings: SettingsPort,
+    index: int,
+    *,
+    user_selected: bool = True,
+) -> int:
     """Persist the wizard's last step index after clamping to the valid range."""
 
     clamped_index = clamp_wizard_step_index(index)
     settings.set(LAST_STEP_INDEX_KEY, clamped_index)
+    settings.set(LAST_STEP_INDEX_USER_SELECTED_KEY, bool(user_selected))
     return clamped_index
 
 
@@ -122,6 +134,12 @@ def _coerce_int(value: Any) -> int | None:
         return None
 
 
+def _coerce_bool(value: Any) -> bool:
+    if isinstance(value, str):
+        return value.strip().lower() in {"1", "true", "yes", "on"}
+    return bool(value)
+
+
 def _normalise_collapsed_groups(value: Any) -> tuple[str, ...]:
     raw_names = _as_string_sequence(value)
     requested = {name for name in raw_names if name in DEFAULT_COLLAPSED_GROUP_OBJECT_NAMES}
@@ -145,6 +163,7 @@ __all__ = [
     "COLLAPSED_GROUPS_KEY",
     "DEFAULT_COLLAPSED_GROUP_OBJECT_NAMES",
     "LAST_STEP_INDEX_KEY",
+    "LAST_STEP_INDEX_USER_SELECTED_KEY",
     "WIZARD_STEP_COUNT",
     "WIZARD_VERSION",
     "WIZARD_VERSION_KEY",
