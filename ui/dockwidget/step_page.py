@@ -174,12 +174,14 @@ class StepPage(QWidget):
     def _build_back_button(self):
         button = QToolButton(self)
         button.setObjectName("qfitWizardStepBackButton")
+        _apply_wizard_navigation_cursor(button)
         button.clicked.connect(self.backRequested.emit)
         return button
 
     def _build_next_button(self):
         button = QToolButton(self)
         button.setObjectName("qfitWizardStepNextButton")
+        _apply_wizard_navigation_cursor(button)
         button.clicked.connect(self.nextRequested.emit)
         return button
 
@@ -359,6 +361,11 @@ class _LayoutWidget(QWidget):
         super().__init__(parent)
         if hasattr(self, "setLayout"):
             self.setLayout(layout)
+
+
+def _apply_wizard_navigation_cursor(button) -> None:
+    if hasattr(button, "setCursor"):
+        button.setCursor(Qt.PointingHandCursor)
 
 
 def _button_text(label: str, icon: str) -> str:

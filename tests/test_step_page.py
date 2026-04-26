@@ -48,8 +48,16 @@ class StepPageTest(unittest.TestCase):
         self.assertEqual(page.content_layout().contents_margins, (0, 0, 0, 0))
         self.assertEqual(page.back_button.text(), "Précédent")
         self.assertEqual(page.back_button.property("wizardActionRole"), "back")
+        self.assertEqual(
+            page.back_button.cursor().shape(),
+            self.step_page.Qt.PointingHandCursor,
+        )
         self.assertEqual(page.next_button.text(), "Suivant →")
         self.assertEqual(page.next_button.property("wizardActionRole"), "primary")
+        self.assertEqual(
+            page.next_button.cursor().shape(),
+            self.step_page.Qt.PointingHandCursor,
+        )
         self.assertFalse(page.status_pill.isVisible())
 
     def test_status_pill_can_be_shown_and_hidden_with_tone(self):
