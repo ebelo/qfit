@@ -223,7 +223,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertTrue(assembled.sync_content.sync_button.isEnabled())
         self.assertEqual(
             assembled.map_content.status_label.text(),
-            "Activity layers not loaded",
+            "Stored activities ready to load",
         )
         self.assertTrue(assembled.map_content.load_layers_button.isEnabled())
         self.assertEqual(
@@ -313,6 +313,47 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertEqual(
             assembled.sync_content.activity_summary_label.text(),
             "Activities stored in qfit.gpkg",
+        )
+
+    def test_map_page_summary_names_stored_output_before_layers_load(self):
+        facts = self.composition.WizardProgressFacts(
+            connection_configured=True,
+            activities_stored=True,
+            output_name="qfit.gpkg",
+        )
+
+        assembled = self.composition.build_placeholder_wizard_shell(progress_facts=facts)
+
+        self.assertEqual(
+            assembled.map_content.status_label.text(),
+            "Stored activities ready to load",
+        )
+        self.assertEqual(
+            assembled.map_content.layer_summary_label.text(),
+            "Stored activities in qfit.gpkg are ready to load",
+        )
+        self.assertIn(
+            "Stored activities in qfit.gpkg are ready to load",
+            assembled.shell.footer_bar.text(),
+        )
+
+    def test_loaded_map_page_summary_names_source_output(self):
+        facts = self.composition.WizardProgressFacts(
+            connection_configured=True,
+            activities_stored=True,
+            activity_layers_loaded=True,
+            output_name="qfit.gpkg",
+        )
+
+        assembled = self.composition.build_placeholder_wizard_shell(progress_facts=facts)
+
+        self.assertEqual(
+            assembled.map_content.layer_summary_label.text(),
+            "Activity layers from qfit.gpkg are loaded on the map",
+        )
+        self.assertIn(
+            "Activity layers from qfit.gpkg are loaded on the map",
+            assembled.shell.footer_bar.text(),
         )
 
     def test_progress_facts_drive_page_cta_prerequisites_without_marking_done(self):

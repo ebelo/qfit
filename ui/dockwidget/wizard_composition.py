@@ -504,17 +504,31 @@ def _map_state_from_facts(facts: WizardProgressFacts) -> MapPageState:
     default = MapPageState()
     return MapPageState(
         loaded=facts.activity_layers_loaded,
-        status_text=(
-            "Activity layers loaded" if facts.activity_layers_loaded else default.status_text
-        ),
-        layer_summary_text=(
-            "Activity layers are loaded on the map"
-            if facts.activity_layers_loaded
-            else default.layer_summary_text
-        ),
+        status_text=_map_status_text(facts, default),
+        layer_summary_text=_map_layer_summary(facts, default),
         load_action_enabled=facts.activities_stored,
         apply_action_enabled=facts.activity_layers_loaded,
     )
+
+
+def _map_status_text(facts: WizardProgressFacts, default: MapPageState) -> str:
+    if facts.activity_layers_loaded:
+        return "Activity layers loaded"
+    if facts.activities_stored:
+        return "Stored activities ready to load"
+    return default.status_text
+
+
+def _map_layer_summary(facts: WizardProgressFacts, default: MapPageState) -> str:
+    if facts.activity_layers_loaded:
+        if facts.output_name is not None:
+            return f"Activity layers from {facts.output_name} are loaded on the map"
+        return "Activity layers are loaded on the map"
+    if facts.activities_stored:
+        if facts.output_name is not None:
+            return f"Stored activities in {facts.output_name} are ready to load"
+        return "Stored activities are ready to load"
+    return default.layer_summary_text
 
 
 def _analysis_state_from_facts(facts: WizardProgressFacts) -> AnalysisPageState:
