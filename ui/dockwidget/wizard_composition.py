@@ -534,15 +534,35 @@ def _fetched_activity_summary(facts: WizardProgressFacts) -> str:
 
 def _map_state_from_facts(facts: WizardProgressFacts) -> MapPageState:
     default = MapPageState()
+    activity_layers_loaded = facts.activity_layers_loaded
+    stored_without_loaded_layers = facts.activities_stored and not activity_layers_loaded
     return MapPageState(
-        loaded=facts.activity_layers_loaded,
+        loaded=activity_layers_loaded,
         status_text=_map_status_text(facts),
         layer_summary_text=_map_layer_summary(facts),
         background_summary_text=_map_background_summary(facts, default),
         style_summary_text=_map_style_summary(facts, default),
         filter_summary_text=_map_filter_summary(facts, default),
-        load_action_enabled=facts.activities_stored,
-        apply_action_enabled=facts.activity_layers_loaded,
+        load_action_label=(
+            "Reload activity layers" if activity_layers_loaded else default.load_action_label
+        ),
+        load_action_enabled=activity_layers_loaded,
+        load_action_blocked_tooltip=(
+            "Use the primary action to load activity layers."
+            if stored_without_loaded_layers
+            else default.load_action_blocked_tooltip
+        ),
+        primary_action_label=(
+            "Load activity layers"
+            if stored_without_loaded_layers
+            else default.primary_action_label
+        ),
+        apply_action_enabled=facts.activities_stored,
+        apply_action_blocked_tooltip=(
+            "Sync activities before loading map layers."
+            if not facts.activities_stored
+            else default.apply_action_blocked_tooltip
+        ),
     )
 
 

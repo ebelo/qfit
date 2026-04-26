@@ -199,6 +199,14 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             return
         self.on_refresh_clicked()
 
+    def _run_wizard_map_step(self) -> None:
+        """Run the next concrete action for the wizard map-and-filters step."""
+
+        if self.runtime_state.activities_layer is None:
+            self.on_load_layers_clicked()
+            return
+        self.on_apply_filters_clicked()
+
     def _current_wizard_progress_facts(self):
         """Return render-neutral #609 wizard facts from the live dock state."""
 
@@ -357,7 +365,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 configure_connection=self._show_connection_configuration_hint,
                 sync_activities=self._run_wizard_sync_step,
                 load_activity_layers=self.on_load_layers_clicked,
-                apply_map_filters=self.on_apply_filters_clicked,
+                apply_map_filters=self._run_wizard_map_step,
                 run_analysis=self.on_run_analysis_clicked,
                 export_atlas=self.on_generate_atlas_pdf_clicked,
             ),
