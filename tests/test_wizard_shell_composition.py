@@ -47,6 +47,20 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertEqual(assembled.shell.pages_stack.widgets, list(assembled.pages))
         self.assertEqual(assembled.presenter.progress.current_key, "connection")
         self.assertEqual(assembled.shell.pages_stack.currentIndex(), 0)
+        self.assertEqual(
+            [page.step_label.text() for page in assembled.pages],
+            ["ÉTAPE 1/5", "ÉTAPE 2/5", "ÉTAPE 3/5", "ÉTAPE 4/5", "ÉTAPE 5/5"],
+        )
+        self.assertEqual(assembled.pages[0].back_button.text(), "Précédent")
+        self.assertEqual(
+            assembled.pages[0].next_button.text(),
+            "Suivant: Synchronization →",
+        )
+        self.assertFalse(assembled.pages[0].next_button.isEnabled())
+        self.assertEqual(
+            [page.status_pill.text() for page in assembled.pages],
+            ["Current", "Locked", "Locked", "Locked", "Locked"],
+        )
         self.assertIsNotNone(assembled.connection_content)
         self.assertIs(
             assembled.pages[0].body_layout().widgets[-1],
@@ -105,9 +119,25 @@ class WizardShellCompositionTest(unittest.TestCase):
             ("current", "locked", "locked", "locked", "locked"),
         )
 
+    def test_can_build_shell_with_legacy_placeholder_pages_for_compatibility(self):
+        assembled = self.composition.build_placeholder_wizard_shell(
+            use_step_pages=False,
+        )
+
+        self.assertEqual(assembled.shell.page_count(), 5)
+        self.assertFalse(hasattr(assembled.pages[0], "step_label"))
+        self.assertEqual(assembled.pages[0].objectName(), "qfitWizardConnectionPage")
+        self.assertIs(
+            assembled.pages[0].body_layout().widgets[-1],
+            assembled.connection_content,
+        )
+        self.assertEqual(
+            assembled.shell.stepper_bar.states(),
+            ("current", "locked", "locked", "locked", "locked"),
+        )
+
     def test_can_build_shell_with_spec_step_pages(self):
         assembled = self.composition.build_placeholder_wizard_shell(
-            use_step_pages=True,
             progress_facts=self.composition.WizardProgressFacts(
                 connection_configured=True,
                 activities_stored=True,
@@ -192,7 +222,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         )
 
     def test_refresh_resyncs_spec_step_page_navigation_buttons(self):
-        assembled = self.composition.build_placeholder_wizard_shell(use_step_pages=True)
+        assembled = self.composition.build_placeholder_wizard_shell()
         self.assertFalse(assembled.pages[2].back_button.isEnabled())
 
         self.composition.refresh_wizard_shell_composition(
@@ -215,7 +245,6 @@ class WizardShellCompositionTest(unittest.TestCase):
     def test_step_page_navigation_uses_installed_page_keys(self):
         specs = self.composition.build_default_wizard_page_specs()
         assembled = self.composition.build_placeholder_wizard_shell(
-            use_step_pages=True,
             specs=(specs[0], specs[4]),
             progress_facts=self.composition.WizardProgressFacts(
                 connection_configured=True,

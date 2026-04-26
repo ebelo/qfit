@@ -118,7 +118,7 @@ def build_placeholder_wizard_shell(
     progress_facts: WizardProgressFacts | None = None,
     wizard_settings: WizardSettingsSnapshot | None = None,
     specs: Sequence[DockWizardPageSpec] | None = None,
-    use_step_pages: bool = False,
+    use_step_pages: bool = True,
     connection_state: ConnectionPageState | None = None,
     sync_state: SyncPageState | None = None,
     map_state: MapPageState | None = None,
@@ -133,9 +133,10 @@ def build_placeholder_wizard_shell(
     bind any current long-scroll dock controls into the shell; page content can
     migrate later through the stable ``WizardPage.body_layout()`` seams. The
     optional step-change callback is the future dock's seam for persisting
-    ``ui/last_step_index`` when users navigate the wizard. ``use_step_pages``
-    opts into the richer StepPage chrome from the Option B spec while preserving
-    the same content-installer and presenter seams.
+    ``ui/last_step_index`` when users navigate the wizard. The shell now uses
+    the richer StepPage chrome from the Option B spec by default while preserving
+    the same content-installer and presenter seams; pass ``use_step_pages=False``
+    only for legacy placeholder-page compatibility tests.
     """
 
     page_state_defaults = _page_state_defaults_from_progress_facts(progress_facts)
