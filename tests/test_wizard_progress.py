@@ -65,11 +65,13 @@ class WizardProgressFactsTests(unittest.TestCase):
             facts,
             WizardProgressFacts(
                 connection_configured=True,
+                activities_fetched=True,
                 activities_stored=True,
                 activity_layers_loaded=True,
                 analysis_generated=True,
                 atlas_exported=True,
                 preferred_current_key="atlas",
+                fetched_activity_count=2,
                 output_name="qfit.gpkg",
                 atlas_output_name="qfit-atlas.pdf",
             ),
@@ -116,6 +118,8 @@ class WizardProgressFactsTests(unittest.TestCase):
             )
         )
 
+        self.assertTrue(facts.activities_fetched)
+        self.assertEqual(facts.fetched_activity_count, 3)
         self.assertIsNone(facts.activity_count)
         self.assertEqual(facts.output_name, "qfit.gpkg")
 

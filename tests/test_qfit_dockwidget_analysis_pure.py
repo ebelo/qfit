@@ -543,13 +543,28 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "Open qfit → Configuration to edit Strava credentials."
         )
 
-    def test_run_wizard_sync_step_uses_storage_workflow(self):
+    def test_run_wizard_sync_step_fetches_when_no_activities_are_ready(self):
         dock = object.__new__(self.module.QfitDockWidget)
+        dock._runtime_state_store = self.module.DockRuntimeStore()
+        dock.on_refresh_clicked = MagicMock()
+        dock.on_load_clicked = MagicMock()
+
+        self.module.QfitDockWidget._run_wizard_sync_step(dock)
+
+        dock.on_refresh_clicked.assert_called_once_with()
+        dock.on_load_clicked.assert_not_called()
+
+    def test_run_wizard_sync_step_stores_fetched_activities(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._runtime_state_store = self.module.DockRuntimeStore()
+        dock._runtime_store().set_activities([object()])
+        dock.on_refresh_clicked = MagicMock()
         dock.on_load_clicked = MagicMock()
 
         self.module.QfitDockWidget._run_wizard_sync_step(dock)
 
         dock.on_load_clicked.assert_called_once_with()
+        dock.on_refresh_clicked.assert_not_called()
 
     def test_build_wizard_shell_from_runtime_wires_persistence_and_callbacks(self):
         dock = object.__new__(self.module.QfitDockWidget)
