@@ -155,6 +155,13 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertEqual(assembled.shell.pages_stack.currentIndex(), 2)
         self.assertEqual(assembled.pages[2].status_pill.text(), "Current")
 
+        assembled.shell.stepper_bar.step_buttons()[1].clicked.emit()
+
+        self.assertEqual(assembled.presenter.progress.current_key, "sync")
+        self.assertEqual(assembled.shell.pages_stack.currentIndex(), 1)
+        self.assertEqual(assembled.pages[1].status_pill.text(), "Current")
+        self.assertEqual(assembled.pages[2].status_pill.text(), "Available")
+
     def test_refresh_resyncs_spec_step_page_navigation_buttons(self):
         assembled = self.composition.build_placeholder_wizard_shell(use_step_pages=True)
         self.assertFalse(assembled.pages[2].back_button.isEnabled())

@@ -203,7 +203,7 @@ def build_placeholder_wizard_shell(
         page_indices_by_key=_build_page_indices_by_key(pages),
         on_current_step_changed=on_current_step_changed,
     )
-    _connect_step_page_navigation(pages, presenter)
+    _connect_step_page_navigation(shell, pages, presenter)
     return WizardShellComposition(
         shell=shell,
         pages=pages,
@@ -840,6 +840,7 @@ def _install_shell_pages(
 
 
 def _connect_step_page_navigation(
+    shell: WizardShell,
     pages: Sequence[WizardCompositionPage],
     presenter: WizardShellPresenter,
 ) -> None:
@@ -868,6 +869,9 @@ def _connect_step_page_navigation(
         page.nextRequested.connect(
             lambda _checked=False, target=next_index: request_and_sync(target)
         )
+    shell.stepper_bar.stepRequested.connect(
+        lambda _index: _sync_step_page_status_pills(pages, presenter)
+    )
     _sync_step_page_navigation_buttons(pages, presenter)
     _sync_step_page_status_pills(pages, presenter)
 
