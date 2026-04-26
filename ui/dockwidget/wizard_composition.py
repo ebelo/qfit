@@ -91,6 +91,7 @@ class WizardShellComposition:
     map_state: MapPageState | None = None
     analysis_state: AnalysisPageState | None = None
     atlas_state: AtlasPageState | None = None
+    on_current_step_changed: Callable[[int], None] | None = None
 
 
 def build_placeholder_wizard_shell(
@@ -105,13 +106,16 @@ def build_placeholder_wizard_shell(
     map_state: MapPageState | None = None,
     analysis_state: AnalysisPageState | None = None,
     atlas_state: AtlasPageState | None = None,
+    on_current_step_changed: Callable[[int], None] | None = None,
 ) -> WizardShellComposition:
     """Build the placeholder #609 wizard shell with pages and presenter wired.
 
     Pages are installed before the presenter renders so the initial progress
     snapshot selects the matching visible page immediately. The helper does not
     bind any current long-scroll dock controls into the shell; page content can
-    migrate later through the stable ``WizardPage.body_layout()`` seams.
+    migrate later through the stable ``WizardPage.body_layout()`` seams. The
+    optional step-change callback is the future dock's seam for persisting
+    ``ui/last_step_index`` when users navigate the wizard.
     """
 
     page_state_defaults = _page_state_defaults_from_progress_facts(progress_facts)
@@ -174,6 +178,7 @@ def build_placeholder_wizard_shell(
         shell,
         resolved_progress,
         page_indices_by_key=_build_page_indices_by_key(pages),
+        on_current_step_changed=on_current_step_changed,
     )
     return WizardShellComposition(
         shell=shell,
@@ -189,6 +194,7 @@ def build_placeholder_wizard_shell(
         map_state=map_state,
         analysis_state=analysis_state,
         atlas_state=atlas_state,
+        on_current_step_changed=on_current_step_changed,
     )
 
 
