@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from .dock_runtime_state import DockRuntimeState
 from .dock_workflow_sections import DockWizardProgress, WIZARD_WORKFLOW_STEPS
 from .wizard_settings import (
     WizardSettingsSnapshot,
@@ -24,6 +25,32 @@ class WizardProgressFacts:
     analysis_generated: bool = False
     atlas_exported: bool = False
     preferred_current_key: str | None = None
+
+
+def build_wizard_progress_facts_from_runtime_state(
+    state: DockRuntimeState,
+    *,
+    connection_configured: bool = False,
+    atlas_exported: bool = False,
+    preferred_current_key: str | None = None,
+) -> WizardProgressFacts:
+    """Derive #609 wizard progress facts from the dock runtime snapshot.
+
+    The future wizard dock needs a small, render-neutral adapter from the real
+    workflow state into ``WizardProgressFacts``. Keep connection and atlas
+    completion explicit because they live outside the current runtime snapshot:
+    connection is persisted in configuration settings, and atlas exports do not
+    yet retain a durable output artifact after the task completes.
+    """
+
+    return WizardProgressFacts(
+        connection_configured=connection_configured,
+        activities_stored=_has_output_path(state),
+        activity_layers_loaded=state.activities_layer is not None,
+        analysis_generated=state.analysis_layer is not None,
+        atlas_exported=atlas_exported,
+        preferred_current_key=preferred_current_key,
+    )
 
 
 def build_wizard_progress_from_facts(facts: WizardProgressFacts) -> DockWizardProgress:
@@ -116,8 +143,13 @@ def _workflow_keys() -> tuple[str, ...]:
     return tuple(section.key for section in WIZARD_WORKFLOW_STEPS)
 
 
+def _has_output_path(state: DockRuntimeState) -> bool:
+    return bool((state.output_path or "").strip())
+
+
 __all__ = [
     "WizardProgressFacts",
+    "build_wizard_progress_facts_from_runtime_state",
     "build_wizard_progress_from_facts_and_settings",
     "build_wizard_progress_from_facts",
 ]

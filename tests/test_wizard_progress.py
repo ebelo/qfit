@@ -1,8 +1,10 @@
 import unittest
 
+from qfit.ui.application.dock_runtime_state import DockRuntimeLayers, DockRuntimeState
 from qfit.ui.application.dock_workflow_sections import build_progress_wizard_step_statuses
 from qfit.ui.application.wizard_progress import (
     WizardProgressFacts,
+    build_wizard_progress_facts_from_runtime_state,
     build_wizard_progress_from_facts,
     build_wizard_progress_from_facts_and_settings,
 )
@@ -10,6 +12,48 @@ from qfit.ui.application.wizard_settings import WizardSettingsSnapshot
 
 
 class WizardProgressFactsTests(unittest.TestCase):
+    def test_runtime_state_adapter_defaults_to_no_completed_workflow_facts(self):
+        facts = build_wizard_progress_facts_from_runtime_state(DockRuntimeState())
+
+        self.assertEqual(facts, WizardProgressFacts())
+
+    def test_runtime_state_adapter_maps_persisted_and_loaded_workflow_facts(self):
+        activities_layer = object()
+        analysis_layer = object()
+        state = DockRuntimeState(
+            output_path="/tmp/qfit.gpkg",
+            layers=DockRuntimeLayers(
+                activities=activities_layer,
+                analysis=analysis_layer,
+            ),
+        )
+
+        facts = build_wizard_progress_facts_from_runtime_state(
+            state,
+            connection_configured=True,
+            atlas_exported=True,
+            preferred_current_key="atlas",
+        )
+
+        self.assertEqual(
+            facts,
+            WizardProgressFacts(
+                connection_configured=True,
+                activities_stored=True,
+                activity_layers_loaded=True,
+                analysis_generated=True,
+                atlas_exported=True,
+                preferred_current_key="atlas",
+            ),
+        )
+
+    def test_runtime_state_adapter_treats_blank_output_path_as_not_stored(self):
+        facts = build_wizard_progress_facts_from_runtime_state(
+            DockRuntimeState(output_path="   ")
+        )
+
+        self.assertFalse(facts.activities_stored)
+
     def test_defaults_keep_connection_current_with_no_completed_steps(self):
         progress = build_wizard_progress_from_facts(WizardProgressFacts())
 
