@@ -289,6 +289,7 @@ class WizardShellCompositionTest(unittest.TestCase):
 
         assembled.connection_content.configure_button.clicked.emit()
         assembled.sync_content.sync_button.clicked.emit()
+        assembled.sync_content.load_button.clicked.emit()
         assembled.map_content.load_layers_button.clicked.emit()
         assembled.map_content.edit_filters_button.clicked.emit()
         assembled.map_content.apply_filters_button.clicked.emit()
@@ -303,6 +304,7 @@ class WizardShellCompositionTest(unittest.TestCase):
             [
                 "configure",
                 "sync",
+                "load",
                 "load",
                 "edit:True",
                 "filter",
@@ -396,6 +398,8 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertEqual(assembled.connection_content.configure_button.text(), "Review connection")
         self.assertEqual(assembled.sync_content.status_label.text(), "Activities stored")
         self.assertTrue(assembled.sync_content.sync_button.isEnabled())
+        self.assertTrue(assembled.sync_content.load_button.isEnabled())
+        self.assertEqual(assembled.sync_content.load_button.text(), "Load activities")
         self.assertEqual(
             assembled.map_content.status_label.text(),
             "Stored activities ready to load",

@@ -60,8 +60,27 @@ class SyncPageContentTest(unittest.TestCase):
             "available",
         )
         self.assertEqual(content.sync_button.toolTip(), "")
+        self.assertEqual(content.load_button.objectName(), "qfitWizardSyncLoadButton")
+        self.assertEqual(content.load_button.text(), "Load activities")
+        self.assertEqual(
+            content.load_button.property("secondaryAction"),
+            "load_activities",
+        )
+        self.assertEqual(content.load_button.property("wizardActionRole"), "secondary")
+        self.assertFalse(content.load_button.isEnabled())
+        self.assertEqual(
+            content.load_button.property("wizardActionAvailability"),
+            "blocked",
+        )
+        self.assertEqual(
+            content.load_button.toolTip(),
+            "Select an existing GeoPackage before loading activities.",
+        )
         self.assertEqual(content.action_row.objectName(), "qfitWizardSyncActionRow")
-        self.assertEqual(content.action_row.outer_layout().widgets, [content.sync_button])
+        self.assertEqual(
+            content.action_row.outer_layout().widgets,
+            [content.load_button, content.sync_button],
+        )
         self.assertEqual(
             content.outer_layout().widgets,
             [
@@ -80,6 +99,7 @@ class SyncPageContentTest(unittest.TestCase):
             detail_text="Use the latest saved Strava credentials.",
             activity_summary_text="42 activities stored · 40 detailed routes",
             primary_action_label="Fetch latest activities",
+            local_action_enabled=True,
         )
 
         content.set_state(state)
@@ -97,6 +117,8 @@ class SyncPageContentTest(unittest.TestCase):
         )
         self.assertEqual(content.activity_summary_label.property("syncState"), "ready")
         self.assertEqual(content.sync_button.text(), "Fetch latest activities")
+        self.assertTrue(content.load_button.isEnabled())
+        self.assertEqual(content.load_button.toolTip(), "")
 
     def test_can_block_sync_action_with_tooltip_copy(self):
         content = self.sync_page.SyncPageContent(
@@ -135,6 +157,17 @@ class SyncPageContentTest(unittest.TestCase):
         content.sync_button.clicked.emit()
 
         self.assertEqual(calls, ["sync"])
+
+    def test_load_button_emits_reusable_page_signal(self):
+        content = self.sync_page.SyncPageContent(
+            self.sync_page.SyncPageState(local_action_enabled=True)
+        )
+        calls = []
+        content.loadActivitiesRequested.connect(lambda: calls.append("load"))
+
+        content.load_button.clicked.emit()
+
+        self.assertEqual(calls, ["load"])
 
     def test_installs_only_on_sync_wizard_page_body(self):
         sync_spec = next(

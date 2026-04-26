@@ -409,6 +409,11 @@ def _connect_action_callbacks(
     )
     _connect_optional_signal(sync_content, "syncRequested", callbacks.sync_activities)
     _connect_optional_signal(
+        sync_content,
+        "loadActivitiesRequested",
+        callbacks.load_activity_layers,
+    )
+    _connect_optional_signal(
         map_content,
         "loadLayersRequested",
         callbacks.load_activity_layers,
@@ -563,7 +568,20 @@ def _sync_state_from_facts(facts: WizardProgressFacts) -> SyncPageState:
         primary_action_label=primary_action_label,
         primary_action_enabled=facts.connection_configured and not facts.sync_in_progress,
         primary_action_blocked_tooltip=sync_blocked_tooltip,
+        local_action_enabled=facts.activities_stored and not facts.sync_in_progress,
+        local_action_blocked_tooltip=_sync_local_action_blocked_tooltip(facts, default),
     )
+
+
+def _sync_local_action_blocked_tooltip(
+    facts: WizardProgressFacts,
+    default: SyncPageState,
+) -> str:
+    if facts.sync_in_progress:
+        return "Wait for the current synchronization to finish."
+    if not facts.activities_stored:
+        return default.local_action_blocked_tooltip
+    return ""
 
 
 def _sync_activity_summary(

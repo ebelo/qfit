@@ -47,8 +47,8 @@ _PAGE_COPY_BY_KEY = {
         "Primary action: configure connection",
     ),
     "sync": (
-        "Fetch activities and store detailed routes in the GeoPackage.",
-        "Primary action: sync activities",
+        "Sync Strava activities or load an existing GeoPackage.",
+        "Primary action: sync activities; secondary action: load activities",
     ),
     "map": (
         "Load activity layers, choose a background map, and refine filters.",
