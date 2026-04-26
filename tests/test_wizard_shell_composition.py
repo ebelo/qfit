@@ -388,6 +388,22 @@ class WizardShellCompositionTest(unittest.TestCase):
             "Basemap loaded: Satellite",
         )
 
+    def test_map_page_summary_reports_loaded_basemap_without_stale_name(self):
+        facts = self.composition.WizardProgressFacts(
+            connection_configured=True,
+            activities_stored=True,
+            activity_layers_loaded=True,
+            background_enabled=True,
+            background_layer_loaded=True,
+        )
+
+        assembled = self.composition.build_placeholder_wizard_shell(progress_facts=facts)
+
+        self.assertEqual(
+            assembled.map_content.background_summary_label.text(),
+            "Basemap loaded",
+        )
+
     def test_loaded_map_page_summary_reports_visible_filter_count(self):
         facts = self.composition.WizardProgressFacts(
             connection_configured=True,

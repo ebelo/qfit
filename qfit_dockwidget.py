@@ -212,16 +212,19 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def _current_wizard_background_facts(self, runtime_state) -> tuple[bool, bool, str | None]:
         """Return current basemap facts for the optional wizard map page."""
 
+        background_layer_loaded = runtime_state.background_layer is not None
+        if background_layer_loaded:
+            return True, True, None
+
         checkbox = getattr(self, "backgroundMapCheckBox", None)
         background_enabled = bool(
             checkbox is not None
             and hasattr(checkbox, "isChecked")
             and checkbox.isChecked()
         )
-        background_layer_loaded = runtime_state.background_layer is not None
         if not background_enabled:
-            return False, background_layer_loaded, None
-        return True, background_layer_loaded, self._current_wizard_background_name()
+            return False, False, None
+        return True, False, self._current_wizard_background_name()
 
     def _current_wizard_background_name(self) -> str | None:
         preset_combo = getattr(self, "backgroundPresetComboBox", None)

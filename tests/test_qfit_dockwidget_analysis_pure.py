@@ -400,9 +400,22 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertEqual(facts.atlas_output_name, "exported-atlas.pdf")
         self.assertTrue(facts.background_enabled)
         self.assertTrue(facts.background_layer_loaded)
-        self.assertEqual(facts.background_name, "Outdoors")
+        self.assertIsNone(facts.background_name)
 
     def test_current_wizard_background_facts_report_disabled_basemap(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._runtime_state_store = self.module.DockRuntimeStore()
+        dock.backgroundMapCheckBox = _FakeCheckBox(False)
+        dock.backgroundPresetComboBox = _FakeComboBox(current_text="Outdoors")
+
+        facts = self.module.QfitDockWidget._current_wizard_background_facts(
+            dock,
+            dock.runtime_state,
+        )
+
+        self.assertEqual(facts, (False, False, None))
+
+    def test_current_wizard_background_facts_prefers_loaded_layer_over_pending_ui(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._runtime_state_store = self.module.DockRuntimeStore()
         dock.backgroundMapCheckBox = _FakeCheckBox(False)
@@ -414,7 +427,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             dock.runtime_state,
         )
 
-        self.assertEqual(facts, (False, True, None))
+        self.assertEqual(facts, (True, True, None))
 
     def test_current_wizard_background_facts_report_enabled_basemap_name(self):
         dock = object.__new__(self.module.QfitDockWidget)
