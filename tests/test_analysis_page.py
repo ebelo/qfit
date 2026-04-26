@@ -60,6 +60,20 @@ class AnalysisPageContentTest(unittest.TestCase):
         )
         self.assertIn(COLOR_MUTED, content.result_summary_label.styleSheet())
         self.assertEqual(
+            content.analysis_mode_label.objectName(),
+            "qfitWizardAnalysisModeLabel",
+        )
+        self.assertEqual(content.analysis_mode_label.text(), "Analysis mode")
+        self.assertEqual(
+            content.analysis_mode_combo.objectName(),
+            "qfitWizardAnalysisModeComboBox",
+        )
+        self.assertEqual(
+            content.analysis_mode_combo.items,
+            ["Heatmap", "Most frequent starting points"],
+        )
+        self.assertEqual(content.current_analysis_mode(), "Heatmap")
+        self.assertEqual(
             content.run_analysis_button.objectName(),
             "qfitWizardAnalysisRunButton",
         )
@@ -90,6 +104,8 @@ class AnalysisPageContentTest(unittest.TestCase):
                 content.detail_label,
                 content.input_summary_label,
                 content.result_summary_label,
+                content.analysis_mode_label,
+                content.analysis_mode_combo,
                 content.action_row,
             ],
         )
@@ -131,6 +147,26 @@ class AnalysisPageContentTest(unittest.TestCase):
             "available",
         )
         self.assertEqual(content.run_analysis_button.toolTip(), "")
+
+    def test_can_refresh_selectable_analysis_modes(self):
+        content = self.analysis_page.AnalysisPageContent()
+        calls = []
+        content.analysisModeChanged.connect(calls.append)
+
+        content.set_analysis_mode_options(
+            ("Most frequent starting points", "Heatmap"),
+            selected="Most frequent starting points",
+        )
+
+        self.assertEqual(
+            content.analysis_mode_combo.items,
+            ["Most frequent starting points", "Heatmap"],
+        )
+        self.assertEqual(
+            content.current_analysis_mode(),
+            "Most frequent starting points",
+        )
+        self.assertEqual(calls, ["Most frequent starting points"])
 
     def test_can_override_run_analysis_availability(self):
         content = self.analysis_page.AnalysisPageContent(

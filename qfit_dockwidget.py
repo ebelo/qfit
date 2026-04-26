@@ -419,11 +419,41 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 load_activity_layers=self.on_load_layers_clicked,
                 apply_map_filters=self._run_wizard_map_step,
                 run_analysis=self.on_run_analysis_clicked,
+                set_analysis_mode=self._set_wizard_analysis_mode,
                 export_atlas=self.on_generate_atlas_pdf_clicked,
             ),
         )
+        self._bind_wizard_analysis_mode_controls(self._wizard_shell_composition)
         return self._wizard_shell_composition
 
+
+    def _bind_wizard_analysis_mode_controls(self, composition) -> None:
+        """Expose the hidden backing analysis selector in the live wizard path."""
+
+        analysis_content = getattr(composition, "analysis_content", None)
+        mode_combo = getattr(self, "analysisModeComboBox", None)
+        if analysis_content is None or mode_combo is None:
+            return
+        options = tuple(
+            mode_combo.itemText(index)
+            for index in range(mode_combo.count())
+            if mode_combo.itemText(index) != "None"
+        )
+        if not options:
+            return
+        selected_mode = mode_combo.currentText()
+        if selected_mode == "None" or selected_mode not in options:
+            selected_mode = options[0]
+        analysis_content.set_analysis_mode_options(options, selected=selected_mode)
+        self._set_wizard_analysis_mode(selected_mode)
+
+    def _set_wizard_analysis_mode(self, mode: str) -> None:
+        """Mirror the wizard analysis mode selector into the backing dock combo."""
+
+        mode_combo = getattr(self, "analysisModeComboBox", None)
+        if mode_combo is None or not mode:
+            return
+        mode_combo.setCurrentText(mode)
 
     def _build_wizard_dock_from_runtime(self, *, parent=None):
         """Build the optional #609 QDockWidget container from runtime facts.

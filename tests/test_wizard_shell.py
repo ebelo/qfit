@@ -152,6 +152,36 @@ class _FakeToolButton(_FakeWidget):
         return self._text
 
 
+class _FakeComboBox(_FakeWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.currentTextChanged = _FakeSignal()
+        self.items = []
+        self._current_text = ""
+
+    def addItem(self, text):  # noqa: N802
+        self.items.append(text)
+        if not self._current_text:
+            self._current_text = text
+
+    def clear(self):
+        self.items = []
+        self._current_text = ""
+
+    def count(self):
+        return len(self.items)
+
+    def itemText(self, index):  # noqa: N802
+        return self.items[index]
+
+    def setCurrentText(self, text):  # noqa: N802
+        self._current_text = text
+        self.currentTextChanged.emit(text)
+
+    def currentText(self):  # noqa: N802
+        return self._current_text
+
+
 class _FakeFrame(_FakeWidget):
     HLine = 1
     Plain = 2
@@ -266,6 +296,7 @@ def _fake_qt_modules():
     qtcore.Qt = _FakeQt
     qtcore.pyqtSignal = _fake_pyqt_signal
     qtwidgets = types.ModuleType("qgis.PyQt.QtWidgets")
+    qtwidgets.QComboBox = _FakeComboBox
     qtwidgets.QFrame = _FakeFrame
     qtwidgets.QHBoxLayout = _FakeHBoxLayout
     qtwidgets.QLabel = _FakeLabel
