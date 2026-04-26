@@ -1,5 +1,11 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
+
+from qfit.ui.application.wizard_page_specs import (
+    DockWizardPageSpec,
+    build_default_wizard_page_specs,
+)
 from ._qt_compat import import_qt_module
 from qfit.ui.widgets.pill import set_pill_tone
 from qfit.ui.widgets.tokens import (
@@ -232,6 +238,93 @@ class StepPage(QWidget):
         return layout
 
 
+class WizardStepPage(StepPage):
+    """Step-page adapter backed by the canonical #609 page spec.
+
+    ``WizardPage`` still powers the current placeholder shell, but the final
+    dock swap needs spec-keyed pages with the richer ``StepPage`` chrome. This
+    adapter keeps that future page shape compatible with the existing
+    ``body_layout()`` and ``retire_primary_action_hint()`` seams used by the
+    concrete page-content installers, without making the old long-scroll dock
+    any more permanent.
+    """
+
+    def __init__(
+        self,
+        spec: DockWizardPageSpec,
+        *,
+        step_num: int,
+        step_total: int,
+        parent=None,
+    ) -> None:
+        super().__init__(
+            step_num,
+            step_total,
+            spec.title,
+            spec.summary,
+            parent=parent,
+        )
+        self.spec = spec
+        self.setObjectName(spec.page_object_name)
+        self.title_label.setObjectName(spec.title_object_name)
+        self.summary_label = self.subtitle_label
+        self.summary_label.setObjectName(spec.summary_object_name)
+        self.body_container = self.content_container
+        self.body_container.setObjectName(spec.body_object_name)
+        self.primary_hint_label = self._build_primary_hint_label(spec.primary_action_hint)
+
+    def body_layout(self):
+        """Expose the content seam expected by concrete wizard page installers."""
+
+        return self.content_layout()
+
+    def retire_primary_action_hint(self) -> None:
+        """Keep compatibility with placeholder pages while avoiding extra copy."""
+
+        self.primary_hint_label.setText("")
+        self.primary_hint_label.setProperty("wizardPlaceholderHint", "retired")
+        self.primary_hint_label.setVisible(False)
+
+    def _build_primary_hint_label(self, text: str):
+        label = QLabel(text, self)
+        label.setObjectName(self.spec.primary_hint_object_name)
+        label.setProperty("wizardPlaceholderHint", "retired")
+        label.setVisible(False)
+        return label
+
+
+def build_wizard_step_pages(
+    *,
+    parent=None,
+    specs: Sequence[DockWizardPageSpec] | None = None,
+) -> tuple[WizardStepPage, ...]:
+    """Build StepPage-backed pages in stable #609 wizard order."""
+
+    page_specs = build_default_wizard_page_specs() if specs is None else tuple(specs)
+    step_total = len(page_specs)
+    return tuple(
+        WizardStepPage(
+            spec,
+            step_num=index + 1,
+            step_total=step_total,
+            parent=parent,
+        )
+        for index, spec in enumerate(page_specs)
+    )
+
+
+def install_wizard_step_pages(
+    shell,
+    specs: Sequence[DockWizardPageSpec] | None = None,
+) -> tuple[WizardStepPage, ...]:
+    """Create StepPage-backed wizard pages and append them to a shell."""
+
+    pages = build_wizard_step_pages(parent=shell, specs=specs)
+    for page in pages:
+        shell.add_page(page)
+    return pages
+
+
 class _LayoutWidget(QWidget):
     """Small wrapper so fake and real Qt layouts can be inserted as widgets."""
 
@@ -269,4 +362,9 @@ def _ghost_button_stylesheet() -> str:
     )
 
 
-__all__ = ["StepPage"]
+__all__ = [
+    "StepPage",
+    "WizardStepPage",
+    "build_wizard_step_pages",
+    "install_wizard_step_pages",
+]
