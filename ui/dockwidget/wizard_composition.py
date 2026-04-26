@@ -456,7 +456,10 @@ def _sync_state_from_facts(facts: WizardProgressFacts) -> SyncPageState:
     status_text = default.status_text
     detail_text = default.detail_text
     sync_blocked_tooltip = default.primary_action_blocked_tooltip
-    if facts.activities_stored:
+    if not facts.connection_configured:
+        status_text = "Connection required before sync"
+        detail_text = "Configure Strava credentials before syncing activities."
+    elif facts.activities_stored:
         status_text = "Activities stored"
         detail_text = "Stored activities are ready for map loading."
     primary_action_label = default.primary_action_label
@@ -486,6 +489,8 @@ def _sync_activity_summary(
         return _sync_in_progress_summary(facts)
     if facts.activities_stored:
         return _stored_activity_summary(facts)
+    if not facts.connection_configured:
+        return "Connect to Strava to enable synchronization"
     return default.activity_summary_text
 
 
@@ -513,8 +518,8 @@ def _map_state_from_facts(facts: WizardProgressFacts) -> MapPageState:
     default = MapPageState()
     return MapPageState(
         loaded=facts.activity_layers_loaded,
-        status_text=_map_status_text(facts, default),
-        layer_summary_text=_map_layer_summary(facts, default),
+        status_text=_map_status_text(facts),
+        layer_summary_text=_map_layer_summary(facts),
         background_summary_text=_map_background_summary(facts, default),
         style_summary_text=_map_style_summary(facts, default),
         filter_summary_text=_map_filter_summary(facts, default),
@@ -523,15 +528,15 @@ def _map_state_from_facts(facts: WizardProgressFacts) -> MapPageState:
     )
 
 
-def _map_status_text(facts: WizardProgressFacts, default: MapPageState) -> str:
+def _map_status_text(facts: WizardProgressFacts) -> str:
     if facts.activity_layers_loaded:
         return "Activity layers loaded"
     if facts.activities_stored:
         return "Stored activities ready to load"
-    return default.status_text
+    return "Sync required before map loading"
 
 
-def _map_layer_summary(facts: WizardProgressFacts, default: MapPageState) -> str:
+def _map_layer_summary(facts: WizardProgressFacts) -> str:
     if facts.activity_layers_loaded:
         if facts.output_name is not None:
             return f"Activity layers from {facts.output_name} are loaded on the map"
@@ -540,7 +545,7 @@ def _map_layer_summary(facts: WizardProgressFacts, default: MapPageState) -> str
         if facts.output_name is not None:
             return f"Stored activities in {facts.output_name} are ready to load"
         return "Stored activities are ready to load"
-    return default.layer_summary_text
+    return "Sync activities before loading map layers"
 
 
 def _map_background_summary(facts: WizardProgressFacts, default: MapPageState) -> str:
@@ -576,8 +581,8 @@ def _analysis_state_from_facts(facts: WizardProgressFacts) -> AnalysisPageState:
     default = AnalysisPageState()
     return AnalysisPageState(
         ready=facts.analysis_generated,
-        status_text="Analysis ready" if facts.analysis_generated else default.status_text,
-        input_summary_text=_analysis_input_summary(facts, default),
+        status_text=_analysis_status_text(facts, default),
+        input_summary_text=_analysis_input_summary(facts),
         result_summary_text=(
             _analysis_result_summary(facts)
             if facts.analysis_generated
@@ -587,12 +592,20 @@ def _analysis_state_from_facts(facts: WizardProgressFacts) -> AnalysisPageState:
     )
 
 
-def _analysis_input_summary(
+def _analysis_status_text(
     facts: WizardProgressFacts,
     default: AnalysisPageState,
 ) -> str:
+    if facts.analysis_generated:
+        return "Analysis ready"
     if not facts.activity_layers_loaded:
-        return default.input_summary_text
+        return "Map layers required before analysis"
+    return default.status_text
+
+
+def _analysis_input_summary(facts: WizardProgressFacts) -> str:
+    if not facts.activity_layers_loaded:
+        return "Load activity layers before running analysis"
     if facts.filters_active:
         if facts.filtered_activity_count is None:
             return "Filtered activity subset ready for analysis"
@@ -609,11 +622,9 @@ def _analysis_result_summary(facts: WizardProgressFacts) -> str:
 
 def _atlas_state_from_facts(facts: WizardProgressFacts) -> AtlasPageState:
     default = AtlasPageState()
-    status_text = default.status_text
+    status_text = _atlas_status_text(facts, default)
     output_summary_text = _atlas_output_summary(facts, default)
     atlas_blocked_tooltip = default.primary_action_blocked_tooltip
-    if facts.atlas_exported:
-        status_text = "Atlas PDF exported"
     primary_action_label = default.primary_action_label
     if facts.atlas_export_in_progress:
         status_text = "Atlas export in progress"
@@ -622,7 +633,7 @@ def _atlas_state_from_facts(facts: WizardProgressFacts) -> AtlasPageState:
     return AtlasPageState(
         ready=facts.atlas_exported,
         status_text=status_text,
-        input_summary_text=_atlas_input_summary(facts, default),
+        input_summary_text=_atlas_input_summary(facts),
         output_summary_text=output_summary_text,
         primary_action_label=primary_action_label,
         primary_action_enabled=(
@@ -632,12 +643,17 @@ def _atlas_state_from_facts(facts: WizardProgressFacts) -> AtlasPageState:
     )
 
 
-def _atlas_input_summary(
-    facts: WizardProgressFacts,
-    default: AtlasPageState,
-) -> str:
+def _atlas_status_text(facts: WizardProgressFacts, default: AtlasPageState) -> str:
+    if facts.atlas_exported:
+        return "Atlas PDF exported"
     if not facts.analysis_generated:
-        return default.input_summary_text
+        return "Analysis required before atlas export"
+    return default.status_text
+
+
+def _atlas_input_summary(facts: WizardProgressFacts) -> str:
+    if not facts.analysis_generated:
+        return "Run analysis before exporting atlas PDF"
     if facts.analysis_output_name is not None:
         return f"Analysis output {facts.analysis_output_name} ready for atlas export"
     return "Analysis outputs ready for atlas export"

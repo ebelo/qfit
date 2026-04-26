@@ -570,6 +570,52 @@ class WizardShellCompositionTest(unittest.TestCase):
             "Run analysis before exporting atlas PDF.",
         )
 
+    def test_progress_facts_explain_locked_page_prerequisites(self):
+        assembled = self.composition.build_placeholder_wizard_shell(
+            progress_facts=self.composition.WizardProgressFacts()
+        )
+
+        self.assertEqual(
+            assembled.sync_content.status_label.text(),
+            "Connection required before sync",
+        )
+        self.assertEqual(
+            assembled.sync_content.detail_label.text(),
+            "Configure Strava credentials before syncing activities.",
+        )
+        self.assertEqual(
+            assembled.sync_content.activity_summary_label.text(),
+            "Connect to Strava to enable synchronization",
+        )
+        self.assertEqual(
+            assembled.map_content.status_label.text(),
+            "Sync required before map loading",
+        )
+        self.assertEqual(
+            assembled.map_content.layer_summary_label.text(),
+            "Sync activities before loading map layers",
+        )
+        self.assertEqual(
+            assembled.analysis_content.status_label.text(),
+            "Map layers required before analysis",
+        )
+        self.assertEqual(
+            assembled.analysis_content.input_summary_label.text(),
+            "Load activity layers before running analysis",
+        )
+        self.assertEqual(
+            assembled.atlas_content.status_label.text(),
+            "Analysis required before atlas export",
+        )
+        self.assertEqual(
+            assembled.atlas_content.input_summary_label.text(),
+            "Run analysis before exporting atlas PDF",
+        )
+        self.assertIn(
+            "Connect to Strava to enable synchronization",
+            assembled.shell.footer_bar.text(),
+        )
+
     def test_progress_facts_disable_busy_sync_and_atlas_ctas(self):
         assembled = self.composition.build_placeholder_wizard_shell(
             progress_facts=self.composition.WizardProgressFacts(
