@@ -356,6 +356,38 @@ class WizardShellCompositionTest(unittest.TestCase):
             assembled.shell.footer_bar.text(),
         )
 
+    def test_map_page_summary_reports_enabled_basemap_before_load(self):
+        facts = self.composition.WizardProgressFacts(
+            connection_configured=True,
+            activities_stored=True,
+            background_enabled=True,
+            background_name="Outdoors",
+        )
+
+        assembled = self.composition.build_placeholder_wizard_shell(progress_facts=facts)
+
+        self.assertEqual(
+            assembled.map_content.background_summary_label.text(),
+            "Basemap ready to load: Outdoors",
+        )
+
+    def test_map_page_summary_reports_loaded_basemap(self):
+        facts = self.composition.WizardProgressFacts(
+            connection_configured=True,
+            activities_stored=True,
+            activity_layers_loaded=True,
+            background_enabled=True,
+            background_layer_loaded=True,
+            background_name="Satellite",
+        )
+
+        assembled = self.composition.build_placeholder_wizard_shell(progress_facts=facts)
+
+        self.assertEqual(
+            assembled.map_content.background_summary_label.text(),
+            "Basemap loaded: Satellite",
+        )
+
     def test_loaded_map_page_summary_reports_visible_filter_count(self):
         facts = self.composition.WizardProgressFacts(
             connection_configured=True,

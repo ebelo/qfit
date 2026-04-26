@@ -375,6 +375,8 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.clientSecretLineEdit = _FakeLineEdit("client-secret")
         dock.refreshTokenLineEdit = _FakeLineEdit("refresh-token")
         dock.atlasPdfPathLineEdit = _FakeLineEdit("/tmp/current-atlas.pdf")
+        dock.backgroundMapCheckBox = _FakeCheckBox(True)
+        dock.backgroundPresetComboBox = _FakeComboBox(current_text="Outdoors")
         dock._atlas_export_completed = True
         dock._atlas_export_output_path = "/tmp/exported-atlas.pdf"
 
@@ -386,6 +388,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             atlas_layer=object(),
         )
         dock._runtime_store().set_analysis_layer(object())
+        dock._runtime_store().set_background_layer(object())
 
         facts = self.module.QfitDockWidget._current_wizard_progress_facts(dock)
 
@@ -395,6 +398,36 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertTrue(facts.analysis_generated)
         self.assertTrue(facts.atlas_exported)
         self.assertEqual(facts.atlas_output_name, "exported-atlas.pdf")
+        self.assertTrue(facts.background_enabled)
+        self.assertTrue(facts.background_layer_loaded)
+        self.assertEqual(facts.background_name, "Outdoors")
+
+    def test_current_wizard_background_facts_report_disabled_basemap(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._runtime_state_store = self.module.DockRuntimeStore()
+        dock.backgroundMapCheckBox = _FakeCheckBox(False)
+        dock.backgroundPresetComboBox = _FakeComboBox(current_text="Outdoors")
+        dock._runtime_store().set_background_layer(object())
+
+        facts = self.module.QfitDockWidget._current_wizard_background_facts(
+            dock,
+            dock.runtime_state,
+        )
+
+        self.assertEqual(facts, (False, True, None))
+
+    def test_current_wizard_background_facts_report_enabled_basemap_name(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._runtime_state_store = self.module.DockRuntimeStore()
+        dock.backgroundMapCheckBox = _FakeCheckBox(True)
+        dock.backgroundPresetComboBox = _FakeComboBox(current_text=" Satellite ")
+
+        facts = self.module.QfitDockWidget._current_wizard_background_facts(
+            dock,
+            dock.runtime_state,
+        )
+
+        self.assertEqual(facts, (True, False, "Satellite"))
 
     def test_current_wizard_progress_facts_uses_frozen_atlas_path_during_export(self):
         dock = object.__new__(self.module.QfitDockWidget)

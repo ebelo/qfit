@@ -191,15 +191,51 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             runtime_state=runtime_state,
             atlas_exported=atlas_exported,
         )
+        (
+            background_enabled,
+            background_layer_loaded,
+            background_name,
+        ) = self._current_wizard_background_facts(runtime_state)
         filters_active, filtered_activity_count = self._current_wizard_filter_facts()
         return build_wizard_progress_facts_from_runtime_state(
             runtime_state,
             connection_configured=self._has_configured_strava_connection(),
             atlas_exported=atlas_exported,
             atlas_output_path=atlas_export_output_path,
+            background_enabled=background_enabled,
+            background_layer_loaded=background_layer_loaded,
+            background_name=background_name,
             filters_active=filters_active,
             filtered_activity_count=filtered_activity_count,
         )
+
+    def _current_wizard_background_facts(self, runtime_state) -> tuple[bool, bool, str | None]:
+        """Return current basemap facts for the optional wizard map page."""
+
+        checkbox = getattr(self, "backgroundMapCheckBox", None)
+        background_enabled = bool(
+            checkbox is not None
+            and hasattr(checkbox, "isChecked")
+            and checkbox.isChecked()
+        )
+        background_layer_loaded = runtime_state.background_layer is not None
+        if not background_enabled:
+            return False, background_layer_loaded, None
+        return True, background_layer_loaded, self._current_wizard_background_name()
+
+    def _current_wizard_background_name(self) -> str | None:
+        preset_combo = getattr(self, "backgroundPresetComboBox", None)
+        if preset_combo is None or not hasattr(preset_combo, "currentText"):
+            return None
+        try:
+            preset_name = preset_combo.currentText()
+        except RuntimeError:
+            logger.debug("Failed to read wizard background preset", exc_info=True)
+            return None
+        if not isinstance(preset_name, str):
+            return None
+        stripped = preset_name.strip()
+        return stripped or None
 
     def _current_wizard_filter_facts(self) -> tuple[bool, int | None]:
         """Return the current map-filter facts the optional wizard can summarize."""
