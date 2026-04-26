@@ -40,6 +40,7 @@ class WizardProgressFacts:
     filters_active: bool = False
     filtered_activity_count: int | None = None
     activity_style_preset: str | None = None
+    loaded_layer_count: int | None = None
 
 
 def build_wizard_progress_facts_from_runtime_state(
@@ -93,6 +94,7 @@ def build_wizard_progress_facts_from_runtime_state(
         filters_active=filters_active,
         filtered_activity_count=filtered_activity_count,
         activity_style_preset=_optional_text(activity_style_preset),
+        loaded_layer_count=_loaded_dataset_layer_count(state),
     )
 
 
@@ -152,6 +154,7 @@ def build_wizard_progress_from_facts_and_settings(
             filters_active=facts.filters_active,
             filtered_activity_count=facts.filtered_activity_count,
             activity_style_preset=facts.activity_style_preset,
+            loaded_layer_count=facts.loaded_layer_count,
         )
     )
 
@@ -206,6 +209,19 @@ def _has_output_path(state: DockRuntimeState) -> bool:
 
 def _has_sync_task(state: DockRuntimeState) -> bool:
     return state.fetch_task is not None or state.store_task is not None
+
+
+def _loaded_dataset_layer_count(state: DockRuntimeState) -> int | None:
+    count = sum(
+        layer is not None
+        for layer in (
+            state.activities_layer,
+            state.starts_layer,
+            state.points_layer,
+            state.atlas_layer,
+        )
+    )
+    return count
 
 
 def _output_name(output_path: str | None) -> str | None:

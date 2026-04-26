@@ -39,7 +39,7 @@ class WizardProgressFactsTests(unittest.TestCase):
     def test_runtime_state_adapter_defaults_to_no_completed_workflow_facts(self):
         facts = build_wizard_progress_facts_from_runtime_state(DockRuntimeState())
 
-        self.assertEqual(facts, WizardProgressFacts())
+        self.assertEqual(facts, WizardProgressFacts(loaded_layer_count=0))
 
     def test_runtime_state_adapter_maps_persisted_and_loaded_workflow_facts(self):
         activities_layer = object()
@@ -49,6 +49,9 @@ class WizardProgressFactsTests(unittest.TestCase):
             output_path="/tmp/qfit.gpkg",
             layers=DockRuntimeLayers(
                 activities=activities_layer,
+                starts=object(),
+                points=object(),
+                atlas=object(),
                 analysis=analysis_layer,
             ),
         )
@@ -74,8 +77,25 @@ class WizardProgressFactsTests(unittest.TestCase):
                 fetched_activity_count=2,
                 output_name="qfit.gpkg",
                 atlas_output_name="qfit-atlas.pdf",
+                loaded_layer_count=4,
             ),
         )
+
+    def test_runtime_state_adapter_counts_loaded_qfit_dataset_layers(self):
+        facts = build_wizard_progress_facts_from_runtime_state(
+            DockRuntimeState(
+                layers=DockRuntimeLayers(
+                    activities=object(),
+                    starts=object(),
+                    points=None,
+                    atlas=object(),
+                    background=object(),
+                    analysis=object(),
+                )
+            )
+        )
+
+        self.assertEqual(facts.loaded_layer_count, 3)
 
     def test_runtime_state_adapter_maps_running_workflow_tasks(self):
         cases = (

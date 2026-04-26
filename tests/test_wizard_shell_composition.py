@@ -304,6 +304,9 @@ class WizardShellCompositionTest(unittest.TestCase):
             "12 activities stored in qfit.gpkg",
         )
         self.assertIn("12 activities stored in qfit.gpkg", assembled.shell.footer_bar.text())
+        self.assertEqual(assembled.shell.footer_bar.strava_pill.property("tone"), "ok")
+        self.assertEqual(assembled.shell.footer_bar.activity_pill.text(), "12 activities")
+        self.assertEqual(assembled.shell.footer_bar.path_label.text(), "qfit.gpkg")
 
     def test_sync_page_summary_uses_singular_activity_count(self):
         facts = self.composition.WizardProgressFacts(
@@ -881,6 +884,8 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertFalse(assembled.map_state.loaded)
         self.assertFalse(assembled.map_content.load_layers_button.isEnabled())
         self.assertFalse(assembled.map_content.apply_filters_button.isEnabled())
+        self.assertEqual(assembled.shell.footer_bar.activity_pill.text(), "— activities")
+        self.assertEqual(assembled.shell.footer_bar.layer_pill.text(), "0 layers")
         self.assertFalse(assembled.analysis_state.ready)
         self.assertFalse(assembled.analysis_content.run_analysis_button.isEnabled())
         self.assertFalse(assembled.atlas_state.ready)
@@ -1157,9 +1162,39 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertTrue(assembled.map_content.load_layers_button.isEnabled())
         self.assertEqual(assembled.map_content.apply_filters_button.text(), "Apply filters")
         self.assertTrue(assembled.map_content.apply_filters_button.isEnabled())
+        self.assertEqual(assembled.shell.footer_bar.strava_pill.property("tone"), "ok")
+        self.assertEqual(assembled.shell.footer_bar.activity_pill.text(), "— activities")
+        self.assertEqual(assembled.shell.footer_bar.layer_pill.text(), "1 layer")
         self.assertFalse(assembled.analysis_state.ready)
         self.assertTrue(assembled.analysis_content.run_analysis_button.isEnabled())
         self.assertFalse(assembled.atlas_content.export_atlas_button.isEnabled())
+
+    def test_progress_facts_drive_explicit_footer_controls_on_build_and_refresh(self):
+        assembled = self.composition.build_placeholder_wizard_shell(
+            progress_facts=self.composition.WizardProgressFacts(
+                connection_configured=True,
+                activities_stored=True,
+                activity_layers_loaded=True,
+                activity_count=42,
+                output_name="activities.gpkg",
+                loaded_layer_count=4,
+            )
+        )
+
+        self.assertEqual(assembled.shell.footer_bar.strava_pill.property("tone"), "ok")
+        self.assertEqual(assembled.shell.footer_bar.activity_pill.text(), "42 activities")
+        self.assertEqual(assembled.shell.footer_bar.layer_pill.text(), "4 layers")
+        self.assertEqual(assembled.shell.footer_bar.path_label.text(), "activities.gpkg")
+
+        self.composition.refresh_wizard_shell_composition(
+            assembled,
+            progress_facts=self.composition.WizardProgressFacts(),
+        )
+
+        self.assertEqual(assembled.shell.footer_bar.strava_pill.property("tone"), "danger")
+        self.assertEqual(assembled.shell.footer_bar.activity_pill.text(), "— activities")
+        self.assertEqual(assembled.shell.footer_bar.layer_pill.text(), "0 layers")
+        self.assertEqual(assembled.shell.footer_bar.path_label.text(), "qfit.gpkg")
 
     def test_refresh_can_update_progress_from_settings_and_workflow_facts(self):
         assembled = self.composition.build_placeholder_wizard_shell()
