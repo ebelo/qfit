@@ -8,6 +8,7 @@ from qfit.ui.application.dock_workflow_sections import (
     DockWizardProgress,
     build_progress_wizard_step_statuses,
 )
+from qfit.ui.application.stepper_presenter import can_request_step
 from qfit.ui.application.wizard_footer_status import (
     WizardFooterFacts,
     build_wizard_footer_facts_from_progress_facts,
@@ -37,13 +38,14 @@ from .connection_page import (
 )
 from .map_page import MapPageContent, MapPageState, install_map_page_content
 from .sync_page import SyncPageContent, SyncPageState, install_sync_page_content
-from .step_page import install_wizard_step_pages
+from .step_page import WizardStepPage, install_wizard_step_pages
 from .wizard_page import WizardPage, install_wizard_pages
 from .wizard_shell import WizardShell
 from .wizard_shell_presenter import WizardShellPresenter
 
 
 _StateT = TypeVar("_StateT")
+WizardCompositionPage = WizardPage | WizardStepPage
 
 
 @dataclass(frozen=True)
@@ -85,7 +87,7 @@ class WizardShellComposition:
     """
 
     shell: WizardShell
-    pages: tuple[WizardPage, ...]
+    pages: tuple[WizardCompositionPage, ...]
     presenter: WizardShellPresenter
     connection_content: ConnectionPageContent | None = None
     sync_content: SyncPageContent | None = None
@@ -194,6 +196,7 @@ def build_placeholder_wizard_shell(
         page_indices_by_key=_build_page_indices_by_key(pages),
         on_current_step_changed=on_current_step_changed,
     )
+    _connect_step_page_navigation(pages, presenter)
     return WizardShellComposition(
         shell=shell,
         pages=pages,
@@ -755,7 +758,7 @@ def _atlas_output_summary(
 
 def _validate_progress_targets_installed_page(
     progress: DockWizardProgress | None,
-    pages: Sequence[WizardPage],
+    pages: Sequence[WizardCompositionPage],
 ) -> None:
     if progress is None:
         return
@@ -764,7 +767,9 @@ def _validate_progress_targets_installed_page(
         raise ValueError(f"No installed wizard page for {progress.current_key!r}")
 
 
-def _build_page_indices_by_key(pages: Sequence[WizardPage]) -> dict[str, int]:
+def _build_page_indices_by_key(
+    pages: Sequence[WizardCompositionPage],
+) -> dict[str, int]:
     return {page.spec.key: index for index, page in enumerate(pages)}
 
 
@@ -819,14 +824,51 @@ def _install_shell_pages(
     *,
     specs: Sequence[DockWizardPageSpec],
     use_step_pages: bool,
-):
+) -> tuple[WizardCompositionPage, ...]:
     if use_step_pages:
         return install_wizard_step_pages(shell, specs=specs)
     return install_wizard_pages(shell, specs=specs)
 
 
+def _connect_step_page_navigation(
+    pages: Sequence[WizardCompositionPage],
+    presenter: WizardShellPresenter,
+) -> None:
+    step_pages = tuple(
+        (index, page)
+        for index, page in enumerate(pages)
+        if isinstance(page, WizardStepPage)
+    )
+    if not step_pages:
+        return
+
+    def sync_navigation_buttons() -> None:
+        statuses = build_progress_wizard_step_statuses(presenter.progress)
+        last_index = len(statuses) - 1
+        for index, page in step_pages:
+            page.back_button.setEnabled(
+                index > 0 and can_request_step(statuses, index - 1)
+            )
+            page.next_button.setEnabled(
+                index < last_index and can_request_step(statuses, index + 1)
+            )
+
+    def request_and_sync(index: int) -> None:
+        presenter.request_step(index)
+        sync_navigation_buttons()
+
+    for index, page in step_pages:
+        page.backRequested.connect(
+            lambda _checked=False, target=index - 1: request_and_sync(target)
+        )
+        page.nextRequested.connect(
+            lambda _checked=False, target=index + 1: request_and_sync(target)
+        )
+    sync_navigation_buttons()
+
+
 def _install_connection_content(
-    pages: Sequence[WizardPage],
+    pages: Sequence[WizardCompositionPage],
     *,
     connection_state: ConnectionPageState | None,
 ) -> ConnectionPageContent | None:
@@ -837,7 +879,7 @@ def _install_connection_content(
 
 
 def _install_sync_content(
-    pages: Sequence[WizardPage],
+    pages: Sequence[WizardCompositionPage],
     *,
     sync_state: SyncPageState | None,
 ) -> SyncPageContent | None:
@@ -848,7 +890,7 @@ def _install_sync_content(
 
 
 def _install_map_content(
-    pages: Sequence[WizardPage],
+    pages: Sequence[WizardCompositionPage],
     *,
     map_state: MapPageState | None,
 ) -> MapPageContent | None:
@@ -859,7 +901,7 @@ def _install_map_content(
 
 
 def _install_analysis_content(
-    pages: Sequence[WizardPage],
+    pages: Sequence[WizardCompositionPage],
     *,
     analysis_state: AnalysisPageState | None,
 ) -> AnalysisPageContent | None:
@@ -870,7 +912,7 @@ def _install_analysis_content(
 
 
 def _install_atlas_content(
-    pages: Sequence[WizardPage],
+    pages: Sequence[WizardCompositionPage],
     *,
     atlas_state: AtlasPageState | None,
 ) -> AtlasPageContent | None:

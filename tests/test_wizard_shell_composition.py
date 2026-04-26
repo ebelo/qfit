@@ -130,6 +130,19 @@ class WizardShellCompositionTest(unittest.TestCase):
             assembled.shell.stepper_bar.states(),
             ("done", "done", "current", "locked", "locked"),
         )
+        self.assertTrue(assembled.pages[2].back_button.isEnabled())
+        self.assertFalse(assembled.pages[2].next_button.isEnabled())
+
+        assembled.pages[2].back_button.clicked.emit()
+
+        self.assertEqual(assembled.presenter.progress.current_key, "sync")
+        self.assertEqual(assembled.shell.pages_stack.currentIndex(), 1)
+        self.assertTrue(assembled.pages[1].next_button.isEnabled())
+
+        assembled.pages[1].next_button.clicked.emit()
+
+        self.assertEqual(assembled.presenter.progress.current_key, "map")
+        self.assertEqual(assembled.shell.pages_stack.currentIndex(), 2)
 
     def test_action_callbacks_are_wired_to_installed_page_ctas(self):
         calls = []
