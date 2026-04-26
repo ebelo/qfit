@@ -377,6 +377,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.atlasPdfPathLineEdit = _FakeLineEdit("/tmp/current-atlas.pdf")
         dock.backgroundMapCheckBox = _FakeCheckBox(True)
         dock.backgroundPresetComboBox = _FakeComboBox(current_text="Outdoors")
+        dock.stylePresetComboBox = _FakeComboBox(current_text="By activity type")
         dock._atlas_export_completed = True
         dock._atlas_export_output_path = "/tmp/exported-atlas.pdf"
 
@@ -401,6 +402,17 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertTrue(facts.background_enabled)
         self.assertTrue(facts.background_layer_loaded)
         self.assertIsNone(facts.background_name)
+        self.assertEqual(facts.activity_style_preset, "By activity type")
+
+    def test_current_wizard_activity_style_preset_reads_trimmed_combo_text(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.stylePresetComboBox = _FakeComboBox(current_text=" Simple lines ")
+
+        style_preset = (
+            self.module.QfitDockWidget._current_wizard_activity_style_preset(dock)
+        )
+
+        self.assertEqual(style_preset, "Simple lines")
 
     def test_current_wizard_background_facts_report_disabled_basemap(self):
         dock = object.__new__(self.module.QfitDockWidget)

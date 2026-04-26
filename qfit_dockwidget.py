@@ -207,7 +207,24 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             background_name=background_name,
             filters_active=filters_active,
             filtered_activity_count=filtered_activity_count,
+            activity_style_preset=self._current_wizard_activity_style_preset(),
         )
+
+    def _current_wizard_activity_style_preset(self) -> str | None:
+        """Return current activity style copy for the optional wizard map page."""
+
+        preset_combo = getattr(self, "stylePresetComboBox", None)
+        if preset_combo is None or not hasattr(preset_combo, "currentText"):
+            return None
+        try:
+            preset_name = preset_combo.currentText()
+        except RuntimeError:
+            logger.debug("Failed to read wizard activity style preset", exc_info=True)
+            return None
+        if not isinstance(preset_name, str):
+            return None
+        stripped = preset_name.strip()
+        return stripped or None
 
     def _current_wizard_background_facts(self, runtime_state) -> tuple[bool, bool, str | None]:
         """Return current basemap facts for the optional wizard map page."""

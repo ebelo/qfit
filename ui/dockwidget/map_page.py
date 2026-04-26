@@ -43,6 +43,7 @@ class MapPageState:
     detail_text: str = "Load stored activities, choose map context, then apply filters."
     layer_summary_text: str = "No activity layers on the map"
     background_summary_text: str = "Basemap disabled"
+    style_summary_text: str = "Default activity styling"
     filter_summary_text: str = "All stored activities visible once layers are loaded"
     load_action_label: str = "Load activity layers"
     load_action_enabled: bool = True
@@ -74,6 +75,9 @@ class MapPageContent(QWidget):
         self.background_summary_label = QLabel("", self)
         self.background_summary_label.setObjectName("qfitWizardMapBackgroundSummary")
         style_summary_label(self.background_summary_label)
+        self.style_summary_label = QLabel("", self)
+        self.style_summary_label.setObjectName("qfitWizardMapStyleSummary")
+        style_summary_label(self.style_summary_label)
         self.filter_summary_label = QLabel("", self)
         self.filter_summary_label.setObjectName("qfitWizardMapFilterSummary")
         style_summary_label(self.filter_summary_label)
@@ -112,6 +116,8 @@ class MapPageContent(QWidget):
         self.layer_summary_label.setProperty("mapState", map_state)
         self.background_summary_label.setText(state.background_summary_text)
         self.background_summary_label.setProperty("mapState", map_state)
+        self.style_summary_label.setText(state.style_summary_text)
+        self.style_summary_label.setProperty("mapState", map_state)
         self.filter_summary_label.setText(state.filter_summary_text)
         self.filter_summary_label.setProperty("mapState", map_state)
         self.load_layers_button.setText(state.load_action_label)
@@ -147,6 +153,7 @@ class MapPageContent(QWidget):
         layout.addWidget(self.detail_label)
         layout.addWidget(self.layer_summary_label)
         layout.addWidget(self.background_summary_label)
+        layout.addWidget(self.style_summary_label)
         layout.addWidget(self.filter_summary_label)
         layout.addWidget(self.action_row)
         return layout
