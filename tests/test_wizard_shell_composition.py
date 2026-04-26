@@ -270,6 +270,20 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertEqual(assembled.presenter.progress.current_key, "connection")
         self.assertEqual(assembled.shell.pages_stack.currentIndex(), 0)
 
+    def test_connection_page_summary_reports_configured_credentials(self):
+        facts = self.composition.WizardProgressFacts(connection_configured=True)
+
+        assembled = self.composition.build_placeholder_wizard_shell(progress_facts=facts)
+
+        self.assertEqual(
+            assembled.connection_content.credential_summary_label.text(),
+            "Strava OAuth credentials are stored in qfit settings",
+        )
+        self.assertEqual(
+            assembled.connection_content.credential_summary_label.property("connectionState"),
+            "connected",
+        )
+
     def test_sync_page_summary_uses_runtime_activity_count_and_output_name(self):
         facts = self.composition.WizardProgressFacts(
             connection_configured=True,

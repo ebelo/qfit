@@ -8,7 +8,11 @@ from .action_row import (
     set_wizard_action_availability,
     style_primary_action_button,
 )
-from .page_content_style import style_detail_label, style_status_pill
+from .page_content_style import (
+    style_detail_label,
+    style_status_pill,
+    style_summary_label,
+)
 
 _qtcore = import_qt_module("qgis.PyQt.QtCore", "PyQt5.QtCore", ("pyqtSignal",))
 _qtwidgets = import_qt_module(
@@ -41,6 +45,7 @@ class ConnectionPageState:
     connected: bool = False
     status_text: str = "Strava not connected"
     detail_text: str = "Configure qfit once, then continue to synchronization."
+    credential_summary_text: str = "No Strava credentials configured"
     primary_action_label: str = "Configure connection"
     primary_action_enabled: bool = True
     primary_action_blocked_tooltip: str = (
@@ -63,6 +68,9 @@ class ConnectionPageContent(QWidget):
         if hasattr(self.detail_label, "setWordWrap"):
             self.detail_label.setWordWrap(True)
         style_detail_label(self.detail_label)
+        self.credential_summary_label = QLabel("", self)
+        self.credential_summary_label.setObjectName("qfitWizardConnectionCredentialSummary")
+        style_summary_label(self.credential_summary_label)
         self.configure_button = QToolButton(self)
         self.configure_button.setObjectName("qfitWizardConnectionConfigureButton")
         style_primary_action_button(
@@ -88,6 +96,11 @@ class ConnectionPageContent(QWidget):
         )
         style_status_pill(self.status_label, active=state.connected)
         self.detail_label.setText(state.detail_text)
+        self.credential_summary_label.setText(state.credential_summary_text)
+        self.credential_summary_label.setProperty(
+            "connectionState",
+            "connected" if state.connected else "not_connected",
+        )
         self.configure_button.setText(state.primary_action_label)
         set_wizard_action_availability(
             self.configure_button,
@@ -108,6 +121,7 @@ class ConnectionPageContent(QWidget):
         layout.setSpacing(8)
         layout.addWidget(self.status_label)
         layout.addWidget(self.detail_label)
+        layout.addWidget(self.credential_summary_label)
         layout.addWidget(self.action_row)
         return layout
 
