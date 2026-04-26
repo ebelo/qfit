@@ -113,8 +113,38 @@ class StepPageTest(unittest.TestCase):
         page.content_layout().addWidget(content_widget)
 
         self.assertEqual(extra_button.property("wizardActionRole"), "extra")
+        self.assertEqual(extra_button.minimumWidth(), 0)
         self.assertIn(extra_button, page._extra_right_layout.widgets)
         self.assertIn(content_widget, page.content_layout().widgets)
+
+    def test_compacts_navigation_and_wraps_copy_for_narrow_docks(self):
+        page = self.step_page.StepPage(
+            4,
+            5,
+            "Spatial analysis with a long translated title",
+            "Long helper copy should wrap instead of widening the dock.",
+        )
+        page.set_next("Lancer l'analyse spatiale détaillée", icon="")
+
+        page.set_responsive_width(320)
+
+        self.assertEqual(page.property("responsiveMode"), "narrow")
+        self.assertEqual(page._nav_layout.direction, self.step_page.QBoxLayout.TopToBottom)
+        self.assertEqual(page.outer_layout().contents_margins, (8, 10, 8, 10))
+        self.assertTrue(page.title_label.word_wrap)
+        self.assertTrue(page.subtitle_label.word_wrap)
+        self.assertEqual(page.back_button.text(), "←")
+        self.assertEqual(page.back_button.toolTip(), "Précédent")
+        self.assertEqual(page.next_button.text(), "Lancer l'anal…")
+        self.assertEqual(page.next_button.toolTip(), "Lancer l'analyse spatiale détaillée")
+        self.assertEqual(page.next_button.minimumWidth(), 0)
+
+        page.set_responsive_width(600)
+
+        self.assertEqual(page.property("responsiveMode"), "wide")
+        self.assertEqual(page._nav_layout.direction, self.step_page.QBoxLayout.LeftToRight)
+        self.assertEqual(page.back_button.text(), "Précédent")
+        self.assertEqual(page.next_button.text(), "Lancer l'analyse spatiale détaillée")
 
     def test_extra_button_alignment_can_target_left_nav_cluster(self):
         page = self.step_page.StepPage(1, 5, "Connexion", "Configure qfit.")

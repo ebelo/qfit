@@ -39,6 +39,10 @@ QSizePolicy = _qtwidgets.QSizePolicy
 QToolButton = _qtwidgets.QToolButton
 QWidget = _qtwidgets.QWidget
 
+STEPPER_COMPACT_WIDTH = 520
+STEPPER_WIDE_HEIGHT = 36
+STEPPER_COMPACT_HEIGHT = 32
+
 
 class StepperBar(QWidget):
     """Compact clickable five-step wizard stepper for the future dock shell."""
@@ -50,10 +54,40 @@ class StepperBar(QWidget):
         self._buttons: list[QToolButton] = []
         self._connectors: list[QFrame] = []
         self._states = ["locked"] * len(STEPPER_LABELS)
-        self._build_layout()
-        self.setFixedHeight(36)
+        self._compact = False
+        self._layout = self._build_layout()
+        self.setFixedHeight(STEPPER_WIDE_HEIGHT)
         self.setObjectName("qfitStepperBar")
+        self.setProperty("responsiveMode", "wide")
         self.set_state(["current", "locked", "locked", "locked", "locked"])
+
+    def set_responsive_width(self, width: int) -> None:
+        """Compact step labels when the dock becomes too narrow for full copy."""
+
+        compact = int(width) < STEPPER_COMPACT_WIDTH
+        if compact == self._compact:
+            return
+        self._compact = compact
+        self.setProperty("responsiveMode", "compact" if compact else "wide")
+        self.setFixedHeight(STEPPER_COMPACT_HEIGHT if compact else STEPPER_WIDE_HEIGHT)
+        self._layout.setContentsMargins(2 if compact else 4, 2, 6 if compact else 10, 2)
+        self._layout.setSpacing(2 if compact else 4)
+        connector_width = 4 if compact else 8
+        for connector in self._connectors:
+            connector.setFixedWidth(connector_width)
+        self.set_state(self._states)
+
+    def resizeEvent(self, event) -> None:  # noqa: N802
+        """Track live Qt resizes so the stepper does not enforce a wide dock."""
+
+        size = event.size() if hasattr(event, "size") else None
+        if size is not None and hasattr(size, "width"):
+            self.set_responsive_width(size.width())
+        elif hasattr(self, "width"):
+            self.set_responsive_width(self.width())
+        parent_resize = getattr(super(), "resizeEvent", None)
+        if parent_resize is not None:
+            parent_resize(event)
 
     def set_state(self, states: Sequence[str]) -> None:
         """Apply one render state per wizard step."""
@@ -85,7 +119,7 @@ class StepperBar(QWidget):
 
         return tuple(self._buttons)
 
-    def _build_layout(self) -> None:
+    def _build_layout(self):
         layout = QHBoxLayout(self)
         layout.setContentsMargins(4, 2, 10, 2)
         layout.setSpacing(4)
@@ -93,8 +127,12 @@ class StepperBar(QWidget):
             button = QToolButton(self)
             button.setObjectName(f"qfitStepperStep{index + 1}")
             button.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
-            button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-            button.clicked.connect(lambda _checked=False, step_index=index: self._request_step(step_index))
+            button.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Fixed)
+            if hasattr(button, "setMinimumWidth"):
+                button.setMinimumWidth(0)
+            button.clicked.connect(
+                lambda _checked=False, step_index=index: self._request_step(step_index)
+            )
             self._buttons.append(button)
             layout.addWidget(button)
             if index < len(STEPPER_LABELS) - 1:
@@ -106,22 +144,30 @@ class StepperBar(QWidget):
                 connector.setFixedHeight(1)
                 self._connectors.append(connector)
                 layout.addWidget(connector)
+        return layout
 
     def _configure_button(self, button: QToolButton, index: int, state: str) -> None:
-        button.setText(_button_text(index, state))
+        button.setText(_button_text(index, state, compact=self._compact))
         button.setProperty("stepIndex", index)
         button.setProperty("wizardState", state)
+        button.setProperty("responsiveMode", "compact" if self._compact else "wide")
         button.setEnabled(state != "locked")
-        button.setCursor(Qt.ForbiddenCursor if state == "locked" else Qt.PointingHandCursor)
+        button.setCursor(
+            Qt.ForbiddenCursor if state == "locked" else Qt.PointingHandCursor
+        )
         button.setToolTip(_button_tooltip(index, state))
-        button.setStyleSheet(_button_stylesheet(state))
+        button.setStyleSheet(_button_stylesheet(state, compact=self._compact))
 
     def _configure_connectors(self) -> None:
         for index, connector in enumerate(self._connectors):
             previous_step_is_done = self._states[index] == "done"
             color = COLOR_ACCENT if previous_step_is_done else COLOR_SEPARATOR
-            connector.setProperty("wizardState", "done" if previous_step_is_done else "upcoming")
-            connector.setStyleSheet(f"QFrame#{connector.objectName()} {{ border: 0; background: {color}; }}")
+            connector.setProperty(
+                "wizardState", "done" if previous_step_is_done else "upcoming"
+            )
+            connector.setStyleSheet(
+                f"QFrame#{connector.objectName()} {{ border: 0; background: {color}; }}"
+            )
 
     def _request_step(self, index: int) -> None:
         if self._states[index] != "locked":
@@ -139,8 +185,10 @@ def _validate_states(states: Sequence[str]) -> tuple[str, ...]:
     return values
 
 
-def _button_text(index: int, state: str) -> str:
+def _button_text(index: int, state: str, *, compact: bool = False) -> str:
     prefix = "✓" if state == "done" else str(index + 1)
+    if compact:
+        return prefix
     return f"{prefix}  {STEPPER_LABELS[index]}"
 
 
@@ -154,7 +202,7 @@ def _button_tooltip(index: int, state: str) -> str:
     return label
 
 
-def _button_stylesheet(state: str) -> str:
+def _button_stylesheet(state: str, *, compact: bool = False) -> str:
     if state == "done":
         background = "transparent"
         color = COLOR_TEXT
@@ -180,10 +228,10 @@ def _button_stylesheet(state: str) -> str:
         f"background: {background}; "
         f"color: {color}; "
         f"border: {border}; "
-        "border-radius: 8px; "
-        "padding: 2px 6px; "
+        f"border-radius: {'6px' if compact else '8px'}; "
+        f"padding: {'2px 4px' if compact else '2px 6px'}; "
         f"font-weight: {font_weight}; "
-        "font-size: 9.5pt; "
+        f"font-size: {'9pt' if compact else '9.5pt'}; "
         "} "
         f"QToolButton:hover:enabled {{ background: {COLOR_HOVER}; color: {COLOR_TEXT}; }}"    )
 

@@ -26,8 +26,10 @@ _qtwidgets = import_qt_module(
     "qgis.PyQt.QtWidgets",
     "PyQt5.QtWidgets",
     (
+        "QBoxLayout",
         "QHBoxLayout",
         "QLabel",
+        "QSizePolicy",
         "QToolButton",
         "QVBoxLayout",
         "QWidget",
@@ -36,11 +38,15 @@ _qtwidgets = import_qt_module(
 
 Qt = _qtcore.Qt
 pyqtSignal = _qtcore.pyqtSignal
+QBoxLayout = _qtwidgets.QBoxLayout
 QHBoxLayout = _qtwidgets.QHBoxLayout
 QLabel = _qtwidgets.QLabel
+QSizePolicy = _qtwidgets.QSizePolicy
 QToolButton = _qtwidgets.QToolButton
 QVBoxLayout = _qtwidgets.QVBoxLayout
 QWidget = _qtwidgets.QWidget
+
+STEP_PAGE_NARROW_WIDTH = 360
 
 
 class StepPage(QWidget):
@@ -74,7 +80,13 @@ class StepPage(QWidget):
         self.status_pill = status_pill or self._build_status_pill()
         self.content_container = QWidget(self)
         self.content_container.setObjectName("qfitWizardStepContent")
+        _allow_horizontal_shrink(self.content_container)
         self._content_layout = self._build_content_layout(self.content_container)
+        self._responsive_mode = "wide"
+        self.setProperty("responsiveMode", "wide")
+        self._back_label = "Précédent"
+        self._next_label = "Suivant"
+        self._next_icon = "→"
         self.back_button = self._build_back_button()
         self.next_button = self._build_next_button()
         self._extra_left_layout = self._build_extra_button_layout("qfitWizardStepLeftExtraLayout")
@@ -104,7 +116,9 @@ class StepPage(QWidget):
     ) -> None:
         """Configure the right-side next/primary wizard action."""
 
-        self.next_button.setText(_button_text(label, icon))
+        self._next_label = label
+        self._next_icon = icon
+        self._apply_navigation_button_texts()
         self.next_button.setEnabled(enabled)
         self.next_button.setVisible(visible)
         self.next_button.setProperty("wizardActionRole", "primary" if primary else "secondary")
@@ -115,15 +129,28 @@ class StepPage(QWidget):
     def set_back(self, label: str = "Précédent", enabled: bool = True) -> None:
         """Configure the left-side back navigation action."""
 
-        self.back_button.setText(label)
+        self._back_label = label
+        self._apply_navigation_button_texts()
         self.back_button.setEnabled(enabled)
         self.back_button.setProperty("wizardActionRole", "back")
         self.back_button.setStyleSheet(_ghost_button_stylesheet())
+
+    def _apply_navigation_button_texts(self) -> None:
+        narrow = self._responsive_mode == "narrow"
+        self.back_button.setText("←" if narrow else self._back_label)
+        self.back_button.setToolTip(self._back_label)
+        self.next_button.setText(
+            _compact_button_text(self._next_label, self._next_icon)
+            if narrow
+            else _button_text(self._next_label, self._next_icon)
+        )
+        self.next_button.setToolTip(_button_text(self._next_label, self._next_icon))
 
     def add_extra_button(self, btn, align: str = "right") -> None:
         """Add a page-specific secondary button to the navigation row."""
 
         btn.setProperty("wizardActionRole", "extra")
+        _configure_responsive_button(btn)
         if align == "left":
             self._extra_left_layout.addWidget(btn)
             return
@@ -137,6 +164,40 @@ class StepPage(QWidget):
 
         return self._content_layout
 
+    def set_responsive_width(self, width: int) -> None:
+        """Stack/compact page chrome when the dock is narrowed."""
+
+        narrow = int(width) < STEP_PAGE_NARROW_WIDTH
+        mode = "narrow" if narrow else "wide"
+        if mode == self._responsive_mode:
+            return
+        self._responsive_mode = mode
+        self.setProperty("responsiveMode", mode)
+        if hasattr(self._nav_layout, "setDirection"):
+            self._nav_layout.setDirection(
+                QBoxLayout.TopToBottom if narrow else QBoxLayout.LeftToRight
+            )
+        self._nav_layout.setSpacing(6 if narrow else 8)
+        self._layout.setContentsMargins(
+            8 if narrow else 12,
+            10 if narrow else 12,
+            8 if narrow else 12,
+            10 if narrow else 12,
+        )
+        self._apply_navigation_button_texts()
+
+    def resizeEvent(self, event) -> None:  # noqa: N802
+        """Respond to live dock resizes instead of preserving wide size hints."""
+
+        size = event.size() if hasattr(event, "size") else None
+        if size is not None and hasattr(size, "width"):
+            self.set_responsive_width(size.width())
+        elif hasattr(self, "width"):
+            self.set_responsive_width(self.width())
+        parent_resize = getattr(super(), "resizeEvent", None)
+        if parent_resize is not None:
+            parent_resize(event)
+
     def outer_layout(self):
         """Expose the full page layout for adapter wiring and pure tests."""
 
@@ -145,20 +206,21 @@ class StepPage(QWidget):
     def _build_step_label(self, step_num: int, step_total: int):
         label = QLabel(f"ÉTAPE {step_num}/{step_total}", self)
         label.setObjectName("qfitWizardStepKickerLabel")
+        _allow_horizontal_shrink(label)
         label.setStyleSheet(_step_kicker_label_stylesheet(label.objectName()))
         return label
 
     def _build_title_label(self, title: str):
         label = QLabel(title, self)
         label.setObjectName("qfitWizardStepTitleLabel")
+        _allow_label_wrap(label)
         label.setStyleSheet(_step_title_label_stylesheet(label.objectName()))
         return label
 
     def _build_subtitle_label(self, subtitle: str):
         label = QLabel(subtitle, self)
         label.setObjectName("qfitWizardStepSubtitleLabel")
-        if hasattr(label, "setWordWrap"):
-            label.setWordWrap(True)
+        _allow_label_wrap(label)
         label.setStyleSheet(
             _step_subtitle_label_stylesheet(label.objectName())
         )
@@ -169,11 +231,13 @@ class StepPage(QWidget):
         label.setObjectName("qfitWizardStepStatusPill")
         label.setAlignment(Qt.AlignCenter)
         label.setMinimumHeight(18)
+        _allow_horizontal_shrink(label)
         return label
 
     def _build_back_button(self):
         button = QToolButton(self)
         button.setObjectName("qfitWizardStepBackButton")
+        _configure_responsive_button(button)
         _apply_wizard_navigation_cursor(button)
         button.clicked.connect(self.backRequested.emit)
         return button
@@ -181,6 +245,7 @@ class StepPage(QWidget):
     def _build_next_button(self):
         button = QToolButton(self)
         button.setObjectName("qfitWizardStepNextButton")
+        _configure_responsive_button(button)
         _apply_wizard_navigation_cursor(button)
         button.clicked.connect(self.nextRequested.emit)
         return button
@@ -362,6 +427,28 @@ class _LayoutWidget(QWidget):
             self.setLayout(layout)
 
 
+def _allow_horizontal_shrink(widget) -> None:
+    if hasattr(widget, "setMinimumWidth"):
+        widget.setMinimumWidth(0)
+    if hasattr(widget, "setSizePolicy"):
+        widget.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)
+
+
+def _allow_label_wrap(label) -> None:
+    if hasattr(label, "setWordWrap"):
+        label.setWordWrap(True)
+    _allow_horizontal_shrink(label)
+
+
+def _configure_responsive_button(button) -> None:
+    if hasattr(button, "setToolButtonStyle"):
+        button.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+    if hasattr(button, "setMinimumWidth"):
+        button.setMinimumWidth(0)
+    if hasattr(button, "setSizePolicy"):
+        button.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Fixed)
+
+
 def _apply_wizard_navigation_cursor(button) -> None:
     if hasattr(button, "setCursor"):
         button.setCursor(Qt.PointingHandCursor)
@@ -373,6 +460,16 @@ def _button_text(label: str, icon: str) -> str:
     if not stripped_icon:
         return stripped_label
     return f"{stripped_label} {stripped_icon}"
+
+
+def _compact_button_text(label: str, icon: str = "", *, max_chars: int = 14) -> str:
+    stripped_icon = icon.strip()
+    if stripped_icon:
+        return stripped_icon
+    stripped_label = label.strip()
+    if len(stripped_label) <= max_chars:
+        return stripped_label
+    return f"{stripped_label[: max_chars - 1].rstrip()}…"
 
 
 def _step_status_pill(state: DockWorkflowStepState) -> tuple[str, str]:

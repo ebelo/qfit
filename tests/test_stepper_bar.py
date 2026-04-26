@@ -58,6 +58,7 @@ class _FakeWidget:
     def __init__(self, parent=None):
         self.parent = parent
         self._height = None
+        self._minimum_width = None
         self._object_name = ""
         self._properties = {}
         self._enabled = True
@@ -70,6 +71,12 @@ class _FakeWidget:
 
     def height(self):
         return self._height
+
+    def setMinimumWidth(self, value):  # noqa: N802
+        self._minimum_width = value
+
+    def minimumWidth(self):  # noqa: N802
+        return self._minimum_width
 
     def setObjectName(self, value):  # noqa: N802
         self._object_name = value
@@ -173,6 +180,8 @@ class _FakeHBoxLayout:
 class _FakeSizePolicy:
     Expanding = 1
     Fixed = 2
+    Ignored = 3
+    Preferred = 4
 
 
 def _fake_qt_modules():
@@ -326,6 +335,33 @@ class StepperBarTest(unittest.TestCase):
         buttons[3].click()
 
         self.assertEqual(requested, [0, 2])
+
+    def test_compacts_step_labels_for_narrow_docks(self):
+        bar = self.stepper.StepperBar()
+        bar.set_state(["done", "current", "upcoming", "locked", "upcoming"])
+
+        bar.set_responsive_width(320)
+
+        self.assertEqual(bar.property("responsiveMode"), "compact")
+        self.assertEqual(bar.height(), self.stepper.STEPPER_COMPACT_HEIGHT)
+        self.assertEqual(
+            [button.text() for button in bar.step_buttons()],
+            ["✓", "2", "3", "4", "5"],
+        )
+        self.assertEqual(
+            [button.property("responsiveMode") for button in bar.step_buttons()],
+            ["compact"] * 5,
+        )
+        self.assertEqual([connector.fixed_width for connector in bar._connectors], [4, 4, 4, 4])
+        self.assertEqual(bar._layout.contents_margins, (2, 2, 6, 2))
+        self.assertEqual(bar._layout.spacing, 2)
+
+        bar.set_responsive_width(800)
+
+        self.assertEqual(bar.property("responsiveMode"), "wide")
+        self.assertEqual(bar.height(), self.stepper.STEPPER_WIDE_HEIGHT)
+        self.assertEqual(bar.step_buttons()[1].text(), "2  Synchronization")
+        self.assertEqual([connector.fixed_width for connector in bar._connectors], [8, 8, 8, 8])
 
 
 if __name__ == "__main__":

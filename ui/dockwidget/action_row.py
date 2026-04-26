@@ -17,14 +17,17 @@ _qtcore = import_qt_module("qgis.PyQt.QtCore", "PyQt5.QtCore", ("Qt",))
 _qtwidgets = import_qt_module(
     "qgis.PyQt.QtWidgets",
     "PyQt5.QtWidgets",
-    ("QHBoxLayout", "QSizePolicy", "QToolButton", "QWidget"),
+    ("QBoxLayout", "QHBoxLayout", "QSizePolicy", "QToolButton", "QWidget"),
 )
 
 Qt = _qtcore.Qt
+QBoxLayout = _qtwidgets.QBoxLayout
 QHBoxLayout = _qtwidgets.QHBoxLayout
 QSizePolicy = _qtwidgets.QSizePolicy
 QToolButton = _qtwidgets.QToolButton
 QWidget = _qtwidgets.QWidget
+
+ACTION_ROW_NARROW_WIDTH = 360
 
 
 class WizardActionRow(QWidget):
@@ -33,14 +36,44 @@ class WizardActionRow(QWidget):
     def __init__(self, buttons: Iterable[QToolButton] = (), parent=None) -> None:
         super().__init__(parent)
         self.setObjectName("qfitWizardActionRow")
+        self._responsive_mode = "wide"
         self._layout = self._build_layout()
+        self.setProperty("responsiveMode", "wide")
         for button in buttons:
             self.add_button(button)
 
     def add_button(self, button: QToolButton) -> None:
         """Append an action button and let Qt re-parent it into the row."""
 
+        _allow_button_shrink(button)
         self._layout.addWidget(button)
+
+    def set_responsive_width(self, width: int) -> None:
+        """Stack page CTA rows when narrow docks cannot fit full labels."""
+
+        narrow = int(width) < ACTION_ROW_NARROW_WIDTH
+        mode = "narrow" if narrow else "wide"
+        if mode == self._responsive_mode:
+            return
+        self._responsive_mode = mode
+        self.setProperty("responsiveMode", mode)
+        if hasattr(self._layout, "setDirection"):
+            self._layout.setDirection(
+                QBoxLayout.TopToBottom if narrow else QBoxLayout.LeftToRight
+            )
+        self._layout.setSpacing(6 if narrow else 8)
+
+    def resizeEvent(self, event) -> None:  # noqa: N802
+        """Keep the action row liquid as the dock width changes."""
+
+        size = event.size() if hasattr(event, "size") else None
+        if size is not None and hasattr(size, "width"):
+            self.set_responsive_width(size.width())
+        elif hasattr(self, "width"):
+            self.set_responsive_width(self.width())
+        parent_resize = getattr(super(), "resizeEvent", None)
+        if parent_resize is not None:
+            parent_resize(event)
 
     def outer_layout(self):
         """Expose the row layout for adapter wiring and pure tests."""
@@ -113,11 +146,17 @@ def set_wizard_action_availability(
     return button
 
 
+def _allow_button_shrink(button: QToolButton) -> None:
+    if hasattr(button, "setMinimumWidth"):
+        button.setMinimumWidth(0)
+    if hasattr(button, "setSizePolicy"):
+        button.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Fixed)
+
+
 def _apply_button_chrome(button: QToolButton, *, primary: bool) -> None:
     if hasattr(button, "setToolButtonStyle"):
         button.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
-    if hasattr(button, "setSizePolicy"):
-        button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+    _allow_button_shrink(button)
     if hasattr(button, "setCursor"):
         button.setCursor(Qt.PointingHandCursor)
     if hasattr(button, "setStyleSheet"):

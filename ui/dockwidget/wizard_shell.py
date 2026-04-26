@@ -44,6 +44,7 @@ class WizardShell(QWidget):
         self.footer_bar = self._build_footer_bar(footer_text)
         self.content_scroll.setWidget(self.pages_stack)
         self._outer_layout = self._build_layout()
+        self.setProperty("responsiveMode", "wide")
 
     def set_step_states(self, states: Sequence[str]) -> None:
         """Delegate validated step state rendering to the shared stepper."""
@@ -76,6 +77,29 @@ class WizardShell(QWidget):
         """Update the compact persistent status/footer text."""
 
         self.footer_bar.set_status_text(text)
+
+    def set_responsive_width(self, width: int) -> None:
+        """Propagate dock width changes to responsive wizard chrome."""
+
+        mode = "narrow" if int(width) < 360 else "wide"
+        self.setProperty("responsiveMode", mode)
+        self.stepper_bar.set_responsive_width(width)
+        for index in range(self.pages_stack.count()):
+            page = self.pages_stack.widget(index) if hasattr(self.pages_stack, "widget") else None
+            if page is not None and hasattr(page, "set_responsive_width"):
+                page.set_responsive_width(width)
+
+    def resizeEvent(self, event) -> None:  # noqa: N802
+        """Let the shell react to dock resizes without wide-page size hints."""
+
+        size = event.size() if hasattr(event, "size") else None
+        if size is not None and hasattr(size, "width"):
+            self.set_responsive_width(size.width())
+        elif hasattr(self, "width"):
+            self.set_responsive_width(self.width())
+        parent_resize = getattr(super(), "resizeEvent", None)
+        if parent_resize is not None:
+            parent_resize(event)
 
     def outer_layout(self):
         """Expose the structural layout for adapter wiring and pure tests."""
