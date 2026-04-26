@@ -338,11 +338,10 @@ def apply_wizard_step_page_statuses(
 ) -> None:
     """Render progress status pills on StepPage-backed wizard pages.
 
-    The stepper remains the source of truth for navigation state, but the richer
-    #609 page chrome also exposes a compact header pill. Keeping that mapping in
-    this reusable widget layer lets the future wizard dock show visible progress
-    without binding page widgets to ``QfitDockWidget`` or polishing the legacy
-    long-scroll layout.
+    The stepper remains the source of truth for current-step navigation state.
+    Header pills are therefore reserved for non-current states, avoiding a
+    redundant "Current" badge on the active page while preserving Done/Locked
+    context on neighbouring pages.
     """
 
     statuses_by_key = {status.key: status for status in statuses}
@@ -380,7 +379,7 @@ def _step_status_pill(state: DockWorkflowStepState) -> tuple[str, str]:
     if state == DockWorkflowStepState.DONE:
         return "Done", "ok"
     if state == DockWorkflowStepState.CURRENT:
-        return "Current", "info"
+        return "", "muted"
     if state == DockWorkflowStepState.UNLOCKED:
         return "Available", "neutral"
     return "Locked", "muted"

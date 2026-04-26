@@ -199,13 +199,16 @@ class StepPageTest(unittest.TestCase):
 
         self.assertEqual(
             [page.status_pill.text() for page in pages],
-            ["Done", "Done", "Current", "Available", "Locked"],
+            ["Done", "Done", "", "Available", "Locked"],
         )
         self.assertEqual(
             [page.status_pill.property("tone") for page in pages],
-            ["ok", "ok", "info", "neutral", "muted"],
+            ["ok", "ok", "muted", "neutral", "muted"],
         )
-        self.assertTrue(all(page.status_pill.isVisible() for page in pages))
+        self.assertFalse(pages[2].status_pill.isVisible())
+        self.assertTrue(
+            all(page.status_pill.isVisible() for index, page in enumerate(pages) if index != 2)
+        )
 
     def test_installs_wizard_step_pages_into_shell(self):
         shell = self.wizard_shell.WizardShell()
