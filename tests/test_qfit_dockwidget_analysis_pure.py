@@ -356,6 +356,82 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
         dock.project_hygiene_service.remove_stale_qfit_layers.assert_called_once_with()
 
+    def test_current_wizard_progress_facts_reads_live_dock_runtime(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._runtime_state_store = self.module.DockRuntimeStore()
+        dock.clientIdLineEdit = _FakeLineEdit("client-id")
+        dock.clientSecretLineEdit = _FakeLineEdit("client-secret")
+        dock.refreshTokenLineEdit = _FakeLineEdit("refresh-token")
+        dock._atlas_export_completed = True
+
+        dock._runtime_store().load_dataset(
+            output_path="/tmp/qfit.gpkg",
+            activities_layer=object(),
+            starts_layer=object(),
+            points_layer=object(),
+            atlas_layer=object(),
+        )
+        dock._runtime_store().set_analysis_layer(object())
+
+        facts = self.module.QfitDockWidget._current_wizard_progress_facts(dock)
+
+        self.assertTrue(facts.connection_configured)
+        self.assertTrue(facts.activities_stored)
+        self.assertTrue(facts.activity_layers_loaded)
+        self.assertTrue(facts.analysis_generated)
+        self.assertTrue(facts.atlas_exported)
+
+    def test_refresh_wizard_shell_from_runtime_updates_optional_composition(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._runtime_state_store = self.module.DockRuntimeStore()
+        dock.clientIdLineEdit = _FakeLineEdit("client-id")
+        dock.clientSecretLineEdit = _FakeLineEdit("client-secret")
+        dock.refreshTokenLineEdit = _FakeLineEdit("refresh-token")
+        dock.settings = _FakeSettings(
+            {
+                "ui/wizard_version": 1,
+                "ui/last_step_index": 1,
+            }
+        )
+        composition = object()
+        dock._wizard_shell_composition = composition
+        fake_wizard_composition = ModuleType("qfit.ui.dockwidget.wizard_composition")
+        fake_wizard_composition.refresh_wizard_shell_composition = MagicMock(
+            return_value="refreshed"
+        )
+
+        with patch.dict(
+            sys.modules,
+            {"qfit.ui.dockwidget.wizard_composition": fake_wizard_composition},
+        ):
+            refreshed = self.module.QfitDockWidget._refresh_wizard_shell_from_runtime(dock)
+
+        self.assertEqual(refreshed, "refreshed")
+        self.assertEqual(dock._wizard_shell_composition, "refreshed")
+        fake_wizard_composition.refresh_wizard_shell_composition.assert_called_once()
+        args, kwargs = fake_wizard_composition.refresh_wizard_shell_composition.call_args
+        self.assertEqual(args, (composition,))
+        self.assertTrue(kwargs["progress_facts"].connection_configured)
+        self.assertEqual(kwargs["wizard_settings"].last_step_index, 1)
+        self.assertFalse(kwargs["wizard_settings"].first_launch)
+
+    def test_refresh_summary_status_notifies_optional_wizard_shell_refresh(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.summaryStatusLabel = _FakeLabel("")
+        dock.connectionStatusLabel = _FakeLabel("Strava connection: ready")
+        dock.countLabel = _FakeLabel("12 activities")
+        dock.querySummaryLabel = _FakeLabel("filtered")
+        dock.statusLabel = _FakeLabel("Ready")
+        dock._refresh_wizard_shell_from_runtime = MagicMock()
+
+        self.module.QfitDockWidget._refresh_summary_status(dock)
+
+        self.assertEqual(
+            dock.summaryStatusLabel.text(),
+            "Strava connection: ready · 12 activities · filtered · Ready",
+        )
+        dock._refresh_wizard_shell_from_runtime.assert_called_once_with()
+
     def test_on_apply_filters_clicked_dispatches_apply_visualization_action(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._dispatch_dock_action = MagicMock()
