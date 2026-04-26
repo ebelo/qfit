@@ -143,13 +143,13 @@ def _workflow_keys() -> tuple[str, ...]:
     return tuple(section.key for section in WIZARD_WORKFLOW_STEPS)
 
 
+def _has_output_path(state: DockRuntimeState) -> bool:
+    return bool((state.output_path or "").strip())
+
+
 __all__ = [
     "WizardProgressFacts",
     "build_wizard_progress_facts_from_runtime_state",
     "build_wizard_progress_from_facts_and_settings",
     "build_wizard_progress_from_facts",
 ]
-
-
-def _has_output_path(state: DockRuntimeState) -> bool:
-    return bool((state.output_path or "").strip())
