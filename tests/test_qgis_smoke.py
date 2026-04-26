@@ -225,6 +225,20 @@ class QgisSmokeTests(unittest.TestCase):
             dock.close()
             dock.deleteLater()
 
+    def test_dock_widget_defaults_to_wizard_shell_live_path(self):
+        dock = QfitDockWidget(self.iface)
+        try:
+            self.assertTrue(dock._wizard_live_path_installed)
+            self.assertEqual(dock._wizard_live_shell.objectName(), "qfitWizardShell")
+            self.assertIs(dock._wizard_shell_composition.shell, dock._wizard_live_shell)
+            self.assertEqual(dock._wizard_live_shell.page_count(), 5)
+            self.assertTrue(dock.scrollArea.isHidden())
+            self.assertTrue(dock.summaryStatusLabel.isHidden())
+            self.assertGreaterEqual(dock.outerLayout.indexOf(dock._wizard_live_shell), 0)
+        finally:
+            dock.close()
+            dock.deleteLater()
+
     def test_dock_widget_contextual_help_smoke(self):
         dependencies = replace(
             build_dockwidget_dependencies(self.iface),

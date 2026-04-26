@@ -26,11 +26,15 @@ class _FakeSignal:
 class _FakeLayout:
     def __init__(self):
         self.inserted = []
+        self.added = []
         self.contents_margins = None
         self.spacing = None
 
     def insertWidget(self, index, widget):
         self.inserted.append((index, widget))
+
+    def addWidget(self, widget):
+        self.added.append(widget)
 
     def setContentsMargins(self, *margins):
         self.contents_margins = margins
@@ -729,6 +733,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
                 getattr(self.module.QfitDockWidget, method_name),
             )
 
+
     def test_build_wizard_dock_from_runtime_wraps_live_composition(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._build_wizard_shell_from_runtime = MagicMock(return_value="composition")
@@ -750,6 +755,52 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "composition",
             parent=parent,
         )
+
+    def test_install_live_wizard_shell_hides_long_scroll_path(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        shell = object()
+        composition = SimpleNamespace(shell=shell)
+        dock.dockWidgetContents = object()
+        dock.outerLayout = _FakeLayout()
+        dock.scrollArea = MagicMock()
+        dock.summaryStatusLabel = MagicMock()
+        dock._build_wizard_shell_from_runtime = MagicMock(return_value=composition)
+
+        self.module.QfitDockWidget._install_live_wizard_shell(dock)
+
+        dock._build_wizard_shell_from_runtime.assert_called_once_with(
+            parent=dock.dockWidgetContents,
+        )
+        dock.scrollArea.hide.assert_called_once_with()
+        dock.summaryStatusLabel.hide.assert_called_once_with()
+        self.assertEqual(dock.outerLayout.added, [shell])
+        self.assertIs(dock._wizard_live_shell, shell)
+        self.assertTrue(dock._wizard_live_path_installed)
+
+    def test_install_live_wizard_shell_is_idempotent(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._wizard_live_path_installed = True
+        dock._build_wizard_shell_from_runtime = MagicMock()
+
+        self.module.QfitDockWidget._install_live_wizard_shell(dock)
+
+        dock._build_wizard_shell_from_runtime.assert_not_called()
+
+    def test_install_live_wizard_shell_does_not_hide_legacy_path_without_layout(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.dockWidgetContents = object()
+        dock.scrollArea = MagicMock()
+        dock.summaryStatusLabel = MagicMock()
+        dock._build_wizard_shell_from_runtime = MagicMock(
+            return_value=SimpleNamespace(shell=object()),
+        )
+
+        with self.assertRaisesRegex(RuntimeError, "base outer layout"):
+            self.module.QfitDockWidget._install_live_wizard_shell(dock)
+
+        dock.scrollArea.hide.assert_not_called()
+        dock.summaryStatusLabel.hide.assert_not_called()
+
 
     def test_refresh_wizard_shell_from_runtime_updates_optional_composition(self):
         dock = object.__new__(self.module.QfitDockWidget)

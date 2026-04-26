@@ -165,6 +165,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._dock_visual_workflow = DockVisualWorkflowCoordinator(
             dispatcher=self._dock_action_dispatcher,
         )
+        self._install_live_wizard_shell()
 
     def _ensure_wizard_settings(self):
         """Persist first-launch wizard defaults for the #609 dock migration."""
@@ -423,6 +424,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         )
         return self._wizard_shell_composition
 
+
     def _build_wizard_dock_from_runtime(self, *, parent=None):
         """Build the optional #609 QDockWidget container from runtime facts.
 
@@ -437,6 +439,43 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._build_wizard_shell_from_runtime(parent=parent),
             parent=parent,
         )
+
+    def _install_live_wizard_shell(self) -> None:
+        """Make the #609 wizard shell the visible dock path.
+
+        The legacy ``.ui`` controls still back settings and workflow actions, but
+        they are no longer the user's default dock surface. Keeping them hidden in
+        the existing dock content lets the wizard CTAs reuse the mature workflow
+        code while closing the long-scroll UX path from #608.
+        """
+
+        if getattr(self, "_wizard_live_path_installed", False):
+            return
+
+        parent = getattr(self, "dockWidgetContents", self)
+        composition = self._build_wizard_shell_from_runtime(parent=parent)
+        shell = getattr(composition, "shell", None)
+        if shell is None:
+            raise RuntimeError("Wizard shell composition must expose a shell widget")
+
+        outer_layout = getattr(self, "outerLayout", None)
+        if outer_layout is None:
+            raise RuntimeError("Wizard dock requires the base outer layout")
+
+        self._hide_legacy_scroll_dock_content()
+        outer_layout.addWidget(shell)
+
+        self._wizard_live_shell = shell
+        self._wizard_live_path_installed = True
+
+    def _hide_legacy_scroll_dock_content(self) -> None:
+        """Hide the replaced long-scroll dock widgets without deleting them."""
+
+        for widget_name in ("scrollArea", "summaryStatusLabel"):
+            widget = getattr(self, widget_name, None)
+            if widget is not None and hasattr(widget, "hide"):
+                widget.hide()
+
 
     def _refresh_wizard_shell_from_runtime(self):
         """Refresh an optional #609 wizard shell composition from dock runtime facts."""
