@@ -855,8 +855,7 @@ def _connect_step_page_navigation(
     def request_and_sync(index: int | None) -> None:
         if index is not None:
             presenter.request_step(index)
-        _sync_step_page_navigation_buttons(pages, presenter)
-        _sync_step_page_status_pills(pages, presenter)
+        _sync_step_page_navigation_and_status(pages, presenter)
 
     for installed_index, page in step_pages:
         previous_index, next_index = _step_page_navigation_targets(
@@ -870,8 +869,15 @@ def _connect_step_page_navigation(
             lambda _checked=False, target=next_index: request_and_sync(target)
         )
     shell.stepper_bar.stepRequested.connect(
-        lambda _index: _sync_step_page_status_pills(pages, presenter)
+        lambda _index: _sync_step_page_navigation_and_status(pages, presenter)
     )
+    _sync_step_page_navigation_and_status(pages, presenter)
+
+
+def _sync_step_page_navigation_and_status(
+    pages: Sequence[WizardCompositionPage],
+    presenter: WizardShellPresenter,
+) -> None:
     _sync_step_page_navigation_buttons(pages, presenter)
     _sync_step_page_status_pills(pages, presenter)
 
@@ -882,6 +888,7 @@ def _sync_step_page_navigation_buttons(
 ) -> None:
     statuses = build_progress_wizard_step_statuses(presenter.progress)
     last_index = len(statuses) - 1
+    page_titles_by_index = _step_page_titles_by_workflow_index(pages)
     for installed_index, page in enumerate(pages):
         if not isinstance(page, WizardStepPage):
             continue
@@ -889,14 +896,54 @@ def _sync_step_page_navigation_buttons(
             pages,
             installed_index=installed_index,
         )
-        page.back_button.setEnabled(
-            previous_index is not None and can_request_step(statuses, previous_index)
+        page.set_back(
+            label=_navigation_label(
+                prefix="Précédent",
+                target_index=previous_index,
+                titles_by_index=page_titles_by_index,
+            ),
+            enabled=(
+                previous_index is not None
+                and can_request_step(statuses, previous_index)
+            ),
         )
-        page.next_button.setEnabled(
-            next_index is not None
-            and next_index <= last_index
-            and can_request_step(statuses, next_index)
+        page.set_next(
+            label=_navigation_label(
+                prefix="Suivant",
+                target_index=next_index,
+                titles_by_index=page_titles_by_index,
+            ),
+            icon="→",
+            enabled=(
+                next_index is not None
+                and next_index <= last_index
+                and can_request_step(statuses, next_index)
+            ),
         )
+
+
+def _navigation_label(
+    *,
+    prefix: str,
+    target_index: int | None,
+    titles_by_index: dict[int, str],
+) -> str:
+    target_title = (
+        titles_by_index.get(target_index) if target_index is not None else None
+    )
+    if target_title is None:
+        return prefix
+    return f"{prefix}: {target_title}"
+
+
+def _step_page_titles_by_workflow_index(
+    pages: Sequence[WizardCompositionPage],
+) -> dict[int, str]:
+    return {
+        step_index_for_key(page.spec.key): page.spec.title
+        for page in pages
+        if isinstance(page, WizardStepPage)
+    }
 
 
 def _sync_step_page_status_pills(

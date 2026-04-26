@@ -131,6 +131,14 @@ class WizardShellCompositionTest(unittest.TestCase):
             ("done", "done", "current", "locked", "locked"),
         )
         self.assertEqual(
+            assembled.pages[2].back_button.text(),
+            "Précédent: Synchronization",
+        )
+        self.assertEqual(
+            assembled.pages[2].next_button.text(),
+            "Suivant: Spatial analysis →",
+        )
+        self.assertEqual(
             [page.status_pill.text() for page in assembled.pages],
             ["Done", "Done", "Current", "Locked", "Locked"],
         )
@@ -148,12 +156,28 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertEqual(assembled.pages[1].status_pill.text(), "Current")
         self.assertEqual(assembled.pages[2].status_pill.text(), "Available")
         self.assertTrue(assembled.pages[1].next_button.isEnabled())
+        self.assertEqual(
+            assembled.pages[1].back_button.text(),
+            "Précédent: Connection",
+        )
+        self.assertEqual(
+            assembled.pages[1].next_button.text(),
+            "Suivant: Map & filters →",
+        )
 
         assembled.pages[1].next_button.clicked.emit()
 
         self.assertEqual(assembled.presenter.progress.current_key, "map")
         self.assertEqual(assembled.shell.pages_stack.currentIndex(), 2)
         self.assertEqual(assembled.pages[2].status_pill.text(), "Current")
+        self.assertEqual(
+            assembled.pages[2].back_button.text(),
+            "Précédent: Synchronization",
+        )
+        self.assertEqual(
+            assembled.pages[2].next_button.text(),
+            "Suivant: Spatial analysis →",
+        )
 
         assembled.shell.stepper_bar.step_buttons()[1].clicked.emit()
 
@@ -161,6 +185,11 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertEqual(assembled.shell.pages_stack.currentIndex(), 1)
         self.assertEqual(assembled.pages[1].status_pill.text(), "Current")
         self.assertEqual(assembled.pages[2].status_pill.text(), "Available")
+        self.assertTrue(assembled.pages[1].next_button.isEnabled())
+        self.assertEqual(
+            assembled.pages[1].next_button.text(),
+            "Suivant: Map & filters →",
+        )
 
     def test_refresh_resyncs_spec_step_page_navigation_buttons(self):
         assembled = self.composition.build_placeholder_wizard_shell(use_step_pages=True)
