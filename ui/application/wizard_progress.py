@@ -200,7 +200,10 @@ def _layer_name(layer) -> str | None:
         return None
     try:
         name = layer.name()
-    except RuntimeError:
+    except Exception:
+        # QGIS/Qt wrapper objects may raise different exception types once the
+        # underlying C++ layer has been deleted. The layer name is optional
+        # summary copy, so keep wizard refreshes resilient.
         return None
     if not isinstance(name, str):
         return None

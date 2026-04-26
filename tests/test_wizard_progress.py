@@ -25,7 +25,7 @@ class _NamedLayer:
 
 class _BrokenLayerName:
     def name(self):
-        raise RuntimeError("layer has been deleted")
+        raise ValueError("layer has been deleted")
 
 
 class WizardProgressFactsTests(unittest.TestCase):
