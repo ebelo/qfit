@@ -1,6 +1,10 @@
 import unittest
 
-from qfit.ui.application.dock_runtime_state import DockRuntimeLayers, DockRuntimeState
+from qfit.ui.application.dock_runtime_state import (
+    DockRuntimeLayers,
+    DockRuntimeState,
+    DockRuntimeTasks,
+)
 from qfit.ui.application.dock_workflow_sections import build_progress_wizard_step_statuses
 from qfit.ui.application.wizard_progress import (
     WizardProgressFacts,
@@ -48,6 +52,24 @@ class WizardProgressFactsTests(unittest.TestCase):
                 output_name="qfit.gpkg",
             ),
         )
+
+    def test_runtime_state_adapter_maps_running_workflow_tasks(self):
+        cases = (
+            DockRuntimeTasks(fetch="fetch"),
+            DockRuntimeTasks(store="store"),
+            DockRuntimeTasks(fetch="fetch", store="store", atlas_export="atlas"),
+        )
+        for tasks in cases:
+            with self.subTest(tasks=tasks):
+                state = DockRuntimeState(tasks=tasks)
+
+                facts = build_wizard_progress_facts_from_runtime_state(state)
+
+                self.assertTrue(facts.sync_in_progress)
+                self.assertEqual(
+                    facts.atlas_export_in_progress,
+                    tasks.atlas_export is not None,
+                )
 
     def test_runtime_state_adapter_treats_blank_output_path_as_not_stored(self):
         facts = build_wizard_progress_facts_from_runtime_state(
