@@ -417,6 +417,7 @@ def _completed_prefix_facts(facts: WizardProgressFacts) -> WizardProgressFacts:
     completed = build_wizard_progress_from_facts(facts).completed_keys
     return WizardProgressFacts(
         connection_configured="connection" in completed,
+        activities_fetched=facts.activities_fetched,
         activities_stored="sync" in completed,
         activity_layers_loaded="map" in completed,
         analysis_generated="analysis" in completed,
@@ -424,6 +425,7 @@ def _completed_prefix_facts(facts: WizardProgressFacts) -> WizardProgressFacts:
         sync_in_progress=facts.sync_in_progress,
         atlas_export_in_progress=facts.atlas_export_in_progress,
         preferred_current_key=facts.preferred_current_key,
+        fetched_activity_count=facts.fetched_activity_count,
         activity_count=facts.activity_count,
         output_name=facts.output_name,
         analysis_output_name=facts.analysis_output_name,
@@ -462,7 +464,14 @@ def _sync_state_from_facts(facts: WizardProgressFacts) -> SyncPageState:
     elif facts.activities_stored:
         status_text = "Activities stored"
         detail_text = "Stored activities are ready for map loading."
+    elif facts.activities_fetched:
+        status_text = "Activities fetched"
+        detail_text = (
+            "Store fetched activities in the GeoPackage to complete synchronization."
+        )
     primary_action_label = default.primary_action_label
+    if facts.activities_fetched and not facts.activities_stored:
+        primary_action_label = "Store fetched activities"
     if facts.sync_in_progress:
         status_text = "Synchronization in progress"
         detail_text = (
@@ -491,6 +500,8 @@ def _sync_activity_summary(
         return _stored_activity_summary(facts)
     if not facts.connection_configured:
         return "Connect to Strava to enable synchronization"
+    if facts.activities_fetched:
+        return _fetched_activity_summary(facts)
     return default.activity_summary_text
 
 
@@ -512,6 +523,13 @@ def _stored_activity_summary(facts: WizardProgressFacts) -> str:
         activity_summary = f"{max(facts.activity_count, 0)} {noun}"
     output_summary = facts.output_name or "GeoPackage"
     return f"{activity_summary} stored in {output_summary}"
+
+
+def _fetched_activity_summary(facts: WizardProgressFacts) -> str:
+    if facts.fetched_activity_count is None:
+        return "Fetched activities ready to store"
+    noun = "activity" if facts.fetched_activity_count == 1 else "activities"
+    return f"{max(facts.fetched_activity_count, 0)} fetched {noun} ready to store"
 
 
 def _map_state_from_facts(facts: WizardProgressFacts) -> MapPageState:

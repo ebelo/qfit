@@ -192,9 +192,12 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._set_status("Open qfit → Configuration to edit Strava credentials.")
 
     def _run_wizard_sync_step(self) -> None:
-        """Run the storage action that completes the wizard sync milestone."""
+        """Run the next concrete action for the wizard synchronization step."""
 
-        self.on_load_clicked()
+        if self.runtime_state.activities:
+            self.on_load_clicked()
+            return
+        self.on_refresh_clicked()
 
     def _current_wizard_progress_facts(self):
         """Return render-neutral #609 wizard facts from the live dock state."""

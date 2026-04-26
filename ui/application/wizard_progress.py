@@ -21,6 +21,7 @@ class WizardProgressFacts:
     """
 
     connection_configured: bool = False
+    activities_fetched: bool = False
     activities_stored: bool = False
     activity_layers_loaded: bool = False
     analysis_generated: bool = False
@@ -28,6 +29,7 @@ class WizardProgressFacts:
     sync_in_progress: bool = False
     atlas_export_in_progress: bool = False
     preferred_current_key: str | None = None
+    fetched_activity_count: int | None = None
     activity_count: int | None = None
     output_name: str | None = None
     analysis_output_name: str | None = None
@@ -62,9 +64,9 @@ def build_wizard_progress_facts_from_runtime_state(
     connection is persisted in configuration settings, and atlas exports do not
     yet retain a durable output artifact after the task completes. The runtime
     ``activities`` tuple is a fetch payload, not a persisted dataset count, so
-    this adapter deliberately leaves ``activity_count`` unknown. Atlas output is
-    supplied separately because it currently lives in the dock export controls,
-    not the runtime snapshot.
+    this adapter reports it separately as fetched work while deliberately leaving
+    ``activity_count`` unknown. Atlas output is supplied separately because it
+    currently lives in the dock export controls, not the runtime snapshot.
     """
 
     output_name = _output_name(state.output_path)
@@ -72,6 +74,7 @@ def build_wizard_progress_facts_from_runtime_state(
     atlas_output_name = _output_name(atlas_output_path)
     return WizardProgressFacts(
         connection_configured=connection_configured,
+        activities_fetched=bool(state.activities),
         activities_stored=_has_output_path(state),
         activity_layers_loaded=state.activities_layer is not None,
         analysis_generated=state.analysis_layer is not None,
@@ -79,6 +82,7 @@ def build_wizard_progress_facts_from_runtime_state(
         sync_in_progress=_has_sync_task(state),
         atlas_export_in_progress=state.atlas_export_task is not None,
         preferred_current_key=preferred_current_key,
+        fetched_activity_count=len(state.activities) if state.activities else None,
         activity_count=None,
         output_name=output_name,
         analysis_output_name=analysis_output_name,
@@ -129,6 +133,7 @@ def build_wizard_progress_from_facts_and_settings(
     return build_wizard_progress_from_facts(
         WizardProgressFacts(
             connection_configured=facts.connection_configured,
+            activities_fetched=facts.activities_fetched,
             activities_stored=facts.activities_stored,
             activity_layers_loaded=facts.activity_layers_loaded,
             analysis_generated=facts.analysis_generated,
@@ -136,6 +141,7 @@ def build_wizard_progress_from_facts_and_settings(
             sync_in_progress=facts.sync_in_progress,
             atlas_export_in_progress=facts.atlas_export_in_progress,
             preferred_current_key=preferred_current_key_from_settings(settings),
+            fetched_activity_count=facts.fetched_activity_count,
             activity_count=facts.activity_count,
             output_name=facts.output_name,
             analysis_output_name=facts.analysis_output_name,

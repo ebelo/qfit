@@ -329,6 +329,35 @@ class WizardShellCompositionTest(unittest.TestCase):
             "Activities stored in qfit.gpkg",
         )
 
+    def test_sync_page_shows_fetched_activities_ready_to_store(self):
+        facts = self.composition.WizardProgressFacts(
+            connection_configured=True,
+            activities_fetched=True,
+            fetched_activity_count=3,
+        )
+
+        assembled = self.composition.build_placeholder_wizard_shell(progress_facts=facts)
+
+        self.assertEqual(assembled.presenter.progress.current_key, "sync")
+        self.assertEqual(assembled.sync_content.status_label.text(), "Activities fetched")
+        self.assertEqual(
+            assembled.sync_content.detail_label.text(),
+            "Store fetched activities in the GeoPackage to complete synchronization.",
+        )
+        self.assertEqual(
+            assembled.sync_content.activity_summary_label.text(),
+            "3 fetched activities ready to store",
+        )
+        self.assertEqual(
+            assembled.sync_content.sync_button.text(),
+            "Store fetched activities",
+        )
+        self.assertTrue(assembled.sync_content.sync_button.isEnabled())
+        self.assertIn(
+            "3 fetched activities ready to store",
+            assembled.shell.footer_bar.text(),
+        )
+
     def test_map_page_summary_names_stored_output_before_layers_load(self):
         facts = self.composition.WizardProgressFacts(
             connection_configured=True,
