@@ -727,6 +727,59 @@ class WizardShellCompositionTest(unittest.TestCase):
             "Filtered activity subset ready for analysis",
         )
 
+    def test_analysis_page_input_summary_names_source_and_loaded_layer_count(self):
+        facts = self.composition.WizardProgressFacts(
+            connection_configured=True,
+            activities_stored=True,
+            activity_layers_loaded=True,
+            output_name="qfit.gpkg",
+            loaded_layer_count=4,
+        )
+
+        assembled = self.composition.build_placeholder_wizard_shell(progress_facts=facts)
+
+        self.assertEqual(
+            assembled.analysis_content.input_summary_label.text(),
+            "Activity layer from qfit.gpkg ready for analysis · 4 qfit layers loaded",
+        )
+
+    def test_analysis_page_input_summary_includes_filter_description_and_layer_count(self):
+        facts = self.composition.WizardProgressFacts(
+            connection_configured=True,
+            activities_stored=True,
+            activity_layers_loaded=True,
+            filters_active=True,
+            filtered_activity_count=2,
+            filter_description=" type: Ride · distance: ≥ 20 km ",
+            loaded_layer_count=1,
+        )
+
+        assembled = self.composition.build_placeholder_wizard_shell(progress_facts=facts)
+
+        self.assertEqual(
+            assembled.analysis_content.input_summary_label.text(),
+            "2 filtered activities ready for analysis · "
+            "type: Ride · distance: ≥ 20 km · 1 qfit layer loaded",
+        )
+
+    def test_analysis_page_input_summary_drops_blank_filter_description(self):
+        facts = self.composition.WizardProgressFacts(
+            connection_configured=True,
+            activities_stored=True,
+            activity_layers_loaded=True,
+            filters_active=True,
+            filtered_activity_count=2,
+            filter_description="   ",
+            loaded_layer_count=1,
+        )
+
+        assembled = self.composition.build_placeholder_wizard_shell(progress_facts=facts)
+
+        self.assertEqual(
+            assembled.analysis_content.input_summary_label.text(),
+            "2 filtered activities ready for analysis · 1 qfit layer loaded",
+        )
+
     def test_progress_facts_drive_page_cta_prerequisites_without_marking_done(self):
         facts = self.composition.WizardProgressFacts(connection_configured=True)
 
