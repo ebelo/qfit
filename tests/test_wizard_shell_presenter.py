@@ -210,6 +210,36 @@ class WizardShellPresenterTest(unittest.TestCase):
         self.assertEqual(presenter.progress.current_key, "connection")
         self.assertEqual(shell.pages_stack.currentIndex(), 0)
 
+    def test_rejects_completion_before_prerequisites_are_done(self):
+        shell = self._build_shell_with_pages()
+        presenter = self.presenter.WizardShellPresenter(shell)
+
+        with self.assertRaises(ValueError):
+            presenter.mark_step_done("map")
+
+        self.assertEqual(presenter.progress.completed_keys, frozenset())
+        self.assertEqual(shell.pages_stack.currentIndex(), 0)
+        self.assertEqual(
+            shell.stepper_bar.states(),
+            ("current", "locked", "locked", "locked", "locked"),
+        )
+
+    def test_allows_completion_when_prerequisites_are_done(self):
+        shell = self._build_shell_with_pages()
+        presenter = self.presenter.WizardShellPresenter(shell)
+
+        presenter.mark_step_done("connection")
+        presenter.mark_step_done("sync")
+
+        self.assertEqual(
+            presenter.progress.completed_keys,
+            frozenset({"connection", "sync"}),
+        )
+        self.assertEqual(
+            shell.stepper_bar.states(),
+            ("current", "done", "upcoming", "locked", "locked"),
+        )
+
     def test_rejects_unknown_completed_step_key(self):
         shell = self._build_shell_with_pages()
         presenter = self.presenter.WizardShellPresenter(shell)
