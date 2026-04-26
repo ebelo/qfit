@@ -833,6 +833,25 @@ class QgisSmokeTests(unittest.TestCase):
             dialog.close()
             dialog.deleteLater()
 
+    def test_config_dialog_save_emits_settings_saved_signal(self):
+        dialog = QfitConfigDialog(
+            settings_service=SettingsService(
+                qsettings=_FakeQSettings(),
+                credential_store=InMemoryCredentialStore(),
+            )
+        )
+        try:
+            saves = []
+            dialog.settingsSaved.connect(lambda: saves.append("saved"))
+
+            dialog._client_id_edit.setText("client-id")
+            dialog._save()
+
+            self.assertEqual(saves, ["saved"])
+        finally:
+            dialog.close()
+            dialog.deleteLater()
+
     def test_config_dialog_open_authorize_clicked_builds_authorize_url_via_sync_controller(self):
         dialog = QfitConfigDialog(
             settings_service=SettingsService(
