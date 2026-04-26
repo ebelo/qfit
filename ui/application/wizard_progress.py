@@ -25,6 +25,8 @@ class WizardProgressFacts:
     activity_layers_loaded: bool = False
     analysis_generated: bool = False
     atlas_exported: bool = False
+    sync_in_progress: bool = False
+    atlas_export_in_progress: bool = False
     preferred_current_key: str | None = None
     activity_count: int | None = None
     output_name: str | None = None
@@ -55,6 +57,8 @@ def build_wizard_progress_facts_from_runtime_state(
         activity_layers_loaded=state.activities_layer is not None,
         analysis_generated=state.analysis_layer is not None,
         atlas_exported=atlas_exported,
+        sync_in_progress=_has_sync_task(state),
+        atlas_export_in_progress=state.atlas_export_task is not None,
         preferred_current_key=preferred_current_key,
         activity_count=None,
         output_name=output_name,
@@ -102,6 +106,8 @@ def build_wizard_progress_from_facts_and_settings(
             activity_layers_loaded=facts.activity_layers_loaded,
             analysis_generated=facts.analysis_generated,
             atlas_exported=facts.atlas_exported,
+            sync_in_progress=facts.sync_in_progress,
+            atlas_export_in_progress=facts.atlas_export_in_progress,
             preferred_current_key=preferred_current_key_from_settings(settings),
             activity_count=facts.activity_count,
             output_name=facts.output_name,
@@ -155,6 +161,10 @@ def _workflow_keys() -> tuple[str, ...]:
 
 def _has_output_path(state: DockRuntimeState) -> bool:
     return bool((state.output_path or "").strip())
+
+
+def _has_sync_task(state: DockRuntimeState) -> bool:
+    return state.fetch_task is not None or state.store_task is not None
 
 
 def _output_name(output_path: str | None) -> str | None:

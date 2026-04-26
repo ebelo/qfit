@@ -340,6 +340,41 @@ class WizardShellCompositionTest(unittest.TestCase):
         )
         self.assertFalse(assembled.analysis_content.run_analysis_button.isEnabled())
         self.assertFalse(assembled.atlas_content.export_atlas_button.isEnabled())
+        self.assertEqual(
+            assembled.atlas_content.export_atlas_button.toolTip(),
+            "Run analysis before exporting atlas PDF.",
+        )
+
+    def test_progress_facts_disable_busy_sync_and_atlas_ctas(self):
+        assembled = self.composition.build_placeholder_wizard_shell(
+            progress_facts=self.composition.WizardProgressFacts(
+                connection_configured=True,
+                activities_stored=True,
+                activity_layers_loaded=True,
+                analysis_generated=True,
+                sync_in_progress=True,
+                atlas_export_in_progress=True,
+            )
+        )
+
+        self.assertEqual(
+            assembled.sync_content.status_label.text(),
+            "Synchronization in progress",
+        )
+        self.assertFalse(assembled.sync_content.sync_button.isEnabled())
+        self.assertEqual(
+            assembled.sync_content.sync_button.toolTip(),
+            "Wait for the current synchronization to finish.",
+        )
+        self.assertEqual(
+            assembled.atlas_content.status_label.text(),
+            "Atlas export in progress",
+        )
+        self.assertFalse(assembled.atlas_content.export_atlas_button.isEnabled())
+        self.assertEqual(
+            assembled.atlas_content.export_atlas_button.toolTip(),
+            "Wait for the current atlas export to finish.",
+        )
 
     def test_explicit_page_state_overrides_progress_fact_defaults(self):
         assembled = self.composition.build_placeholder_wizard_shell(

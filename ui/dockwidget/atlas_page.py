@@ -44,7 +44,7 @@ class AtlasPageState:
     output_summary_text: str = "PDF output path will be chosen before generation"
     primary_action_label: str = "Export atlas PDF"
     primary_action_enabled: bool | None = None
-    primary_action_blocked_tooltip: str = "Select atlas inputs before exporting PDF."
+    primary_action_blocked_tooltip: str = "Run analysis before exporting atlas PDF."
 
 
 class AtlasPageContent(QWidget):

@@ -421,6 +421,8 @@ def _completed_prefix_facts(facts: WizardProgressFacts) -> WizardProgressFacts:
         activity_layers_loaded="map" in completed,
         analysis_generated="analysis" in completed,
         atlas_exported="atlas" in completed,
+        sync_in_progress=facts.sync_in_progress,
+        atlas_export_in_progress=facts.atlas_export_in_progress,
         preferred_current_key=facts.preferred_current_key,
         activity_count=facts.activity_count,
         output_name=facts.output_name,
@@ -442,20 +444,29 @@ def _connection_state_from_facts(facts: WizardProgressFacts) -> ConnectionPageSt
 
 def _sync_state_from_facts(facts: WizardProgressFacts) -> SyncPageState:
     default = SyncPageState()
+    status_text = default.status_text
+    detail_text = default.detail_text
+    sync_blocked_tooltip = default.primary_action_blocked_tooltip
+    if facts.activities_stored:
+        status_text = "Activities stored"
+        detail_text = "Stored activities are ready for map loading."
+    if facts.sync_in_progress:
+        status_text = "Synchronization in progress"
+        detail_text = (
+            "Wait for the current synchronization to finish before starting another sync."
+        )
+        sync_blocked_tooltip = "Wait for the current synchronization to finish."
     return SyncPageState(
         ready=facts.activities_stored,
-        status_text="Activities stored" if facts.activities_stored else default.status_text,
-        detail_text=(
-            "Stored activities are ready for map loading."
-            if facts.activities_stored
-            else default.detail_text
-        ),
+        status_text=status_text,
+        detail_text=detail_text,
         activity_summary_text=(
             _stored_activity_summary(facts)
             if facts.activities_stored
             else default.activity_summary_text
         ),
-        primary_action_enabled=facts.connection_configured,
+        primary_action_enabled=facts.connection_configured and not facts.sync_in_progress,
+        primary_action_blocked_tooltip=sync_blocked_tooltip,
     )
 
 
@@ -509,20 +520,29 @@ def _analysis_state_from_facts(facts: WizardProgressFacts) -> AnalysisPageState:
 
 def _atlas_state_from_facts(facts: WizardProgressFacts) -> AtlasPageState:
     default = AtlasPageState()
+    status_text = default.status_text
+    output_summary_text = default.output_summary_text
+    atlas_blocked_tooltip = default.primary_action_blocked_tooltip
+    if facts.atlas_exported:
+        status_text = "Atlas PDF exported"
+        output_summary_text = "Latest atlas PDF has been exported"
+    if facts.atlas_export_in_progress:
+        status_text = "Atlas export in progress"
+        output_summary_text = "PDF export is running."
+        atlas_blocked_tooltip = "Wait for the current atlas export to finish."
     return AtlasPageState(
         ready=facts.atlas_exported,
-        status_text="Atlas PDF exported" if facts.atlas_exported else default.status_text,
+        status_text=status_text,
         input_summary_text=(
             "Analysis outputs ready for atlas export"
             if facts.analysis_generated
             else default.input_summary_text
         ),
-        output_summary_text=(
-            "Latest atlas PDF has been exported"
-            if facts.atlas_exported
-            else default.output_summary_text
+        output_summary_text=output_summary_text,
+        primary_action_enabled=(
+            facts.analysis_generated and not facts.atlas_export_in_progress
         ),
-        primary_action_enabled=facts.analysis_generated,
+        primary_action_blocked_tooltip=atlas_blocked_tooltip,
     )
 
 
