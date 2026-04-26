@@ -417,15 +417,58 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 configure_connection=self._show_connection_configuration_hint,
                 sync_activities=self._run_wizard_sync_step,
                 load_activity_layers=self.on_load_layers_clicked,
+                edit_map_filters=self._update_status_for_filter_visibility,
                 apply_map_filters=self._run_wizard_map_step,
                 run_analysis=self.on_run_analysis_clicked,
                 set_analysis_mode=self._set_wizard_analysis_mode,
                 export_atlas=self.on_generate_atlas_pdf_clicked,
             ),
         )
+        self._install_wizard_filter_controls(self._wizard_shell_composition)
         self._bind_wizard_analysis_mode_controls(self._wizard_shell_composition)
         return self._wizard_shell_composition
 
+    def _install_wizard_filter_controls(self, composition) -> None:
+        """Move the live map-filter controls into the wizard map page."""
+
+        if getattr(self, "_wizard_filter_controls_installed", False):
+            return
+
+        map_content = getattr(composition, "map_content", None)
+        filter_group = getattr(self, "filterGroupBox", None)
+        if map_content is None or filter_group is None:
+            return
+        filter_controls_layout = getattr(map_content, "filter_controls_layout", None)
+        if not callable(filter_controls_layout):
+            return
+
+        self._remove_widget_from_current_layout(filter_group)
+        parent_panel = getattr(map_content, "filter_controls_panel", map_content)
+        if hasattr(filter_group, "setParent"):
+            filter_group.setParent(parent_panel)
+        filter_controls_layout().addWidget(filter_group)
+        if hasattr(filter_group, "show"):
+            filter_group.show()
+        elif hasattr(filter_group, "setVisible"):
+            filter_group.setVisible(True)
+        map_content.set_filter_controls_visible(False)
+        self._wizard_filter_controls_installed = True
+
+    def _remove_widget_from_current_layout(self, widget) -> None:
+        parent_widget = (
+            widget.parentWidget() if hasattr(widget, "parentWidget") else None
+        )
+        parent_layout = parent_widget.layout() if parent_widget is not None else None
+        if parent_layout is not None and hasattr(parent_layout, "removeWidget"):
+            parent_layout.removeWidget(widget)
+
+    def _update_status_for_filter_visibility(self, visible: bool) -> None:
+        """Reflect wizard filter-panel visibility in concise dock status copy."""
+
+        if visible:
+            self._set_status("Edit map filters, then apply filters when ready.")
+        else:
+            self._set_status("Map filter controls hidden.")
 
     def _bind_wizard_analysis_mode_controls(self, composition) -> None:
         """Expose the hidden backing analysis selector in the live wizard path."""

@@ -727,6 +727,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "configure_connection": "_show_connection_configuration_hint",
             "sync_activities": "_run_wizard_sync_step",
             "load_activity_layers": "on_load_layers_clicked",
+            "edit_map_filters": "_update_status_for_filter_visibility",
             "apply_map_filters": "_run_wizard_map_step",
             "run_analysis": "on_run_analysis_clicked",
             "set_analysis_mode": "_set_wizard_analysis_mode",
@@ -739,6 +740,59 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
                 callback.__func__,
                 getattr(self.module.QfitDockWidget, method_name),
             )
+
+
+    def test_install_wizard_filter_controls_moves_live_filter_group_into_map_panel(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        parent_layout = MagicMock()
+        parent_widget = SimpleNamespace(layout=lambda: parent_layout)
+        filter_group = MagicMock()
+        filter_group.parentWidget.return_value = parent_widget
+        dock.filterGroupBox = filter_group
+        panel = object()
+        filter_layout = MagicMock()
+        map_content = SimpleNamespace(
+            filter_controls_panel=panel,
+            filter_controls_layout=MagicMock(return_value=filter_layout),
+            set_filter_controls_visible=MagicMock(),
+        )
+
+        self.module.QfitDockWidget._install_wizard_filter_controls(
+            dock,
+            SimpleNamespace(map_content=map_content),
+        )
+
+        parent_layout.removeWidget.assert_called_once_with(filter_group)
+        filter_group.setParent.assert_called_once_with(panel)
+        filter_layout.addWidget.assert_called_once_with(filter_group)
+        filter_group.show.assert_called_once_with()
+        map_content.set_filter_controls_visible.assert_called_once_with(False)
+        self.assertTrue(dock._wizard_filter_controls_installed)
+
+    def test_install_wizard_filter_controls_is_idempotent(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._wizard_filter_controls_installed = True
+        dock.filterGroupBox = MagicMock()
+        map_content = SimpleNamespace(filter_controls_layout=MagicMock())
+
+        self.module.QfitDockWidget._install_wizard_filter_controls(
+            dock,
+            SimpleNamespace(map_content=map_content),
+        )
+
+        map_content.filter_controls_layout.assert_not_called()
+
+    def test_update_status_for_filter_visibility_updates_status_copy(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._set_status = MagicMock()
+
+        self.module.QfitDockWidget._update_status_for_filter_visibility(dock, True)
+        self.module.QfitDockWidget._update_status_for_filter_visibility(dock, False)
+
+        dock._set_status.assert_any_call(
+            "Edit map filters, then apply filters when ready."
+        )
+        dock._set_status.assert_any_call("Map filter controls hidden.")
 
 
     def test_bind_wizard_analysis_mode_controls_exposes_non_none_modes(self):

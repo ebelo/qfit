@@ -91,6 +91,34 @@ class MapPageContentTest(unittest.TestCase):
             content.apply_filters_button.objectName(),
             "qfitWizardMapApplyFiltersButton",
         )
+        self.assertEqual(
+            content.edit_filters_button.objectName(),
+            "qfitWizardMapEditFiltersButton",
+        )
+        self.assertEqual(content.edit_filters_button.text(), "Edit filters")
+        self.assertEqual(
+            content.edit_filters_button.property("secondaryAction"),
+            "edit_map_filters",
+        )
+        self.assertEqual(
+            content.edit_filters_button.property("wizardActionRole"),
+            "secondary",
+        )
+        self.assertFalse(content.edit_filters_button.isEnabled())
+        self.assertEqual(
+            content.edit_filters_button.property("wizardActionAvailability"),
+            "blocked",
+        )
+        self.assertIn("Sync activities", content.edit_filters_button.toolTip())
+        self.assertEqual(
+            content.filter_controls_panel.objectName(),
+            "qfitWizardMapFilterControlsPanel",
+        )
+        self.assertFalse(content.filter_controls_panel.isVisible())
+        self.assertEqual(
+            content.filter_controls_panel.property("filterControlsState"),
+            "collapsed",
+        )
         self.assertEqual(content.apply_filters_button.text(), "Apply filters")
         self.assertEqual(
             content.apply_filters_button.property("primaryAction"),
@@ -106,7 +134,11 @@ class MapPageContentTest(unittest.TestCase):
         self.assertEqual(content.action_row.objectName(), "qfitWizardMapActionRow")
         self.assertEqual(
             content.action_row.outer_layout().widgets,
-            [content.load_layers_button, content.apply_filters_button],
+            [
+                content.load_layers_button,
+                content.edit_filters_button,
+                content.apply_filters_button,
+            ],
         )
         self.assertEqual(
             content.outer_layout().widgets,
@@ -118,6 +150,7 @@ class MapPageContentTest(unittest.TestCase):
                 content.style_summary_label,
                 content.filter_summary_label,
                 content.action_row,
+                content.filter_controls_panel,
             ],
         )
 
@@ -132,6 +165,7 @@ class MapPageContentTest(unittest.TestCase):
             style_summary_text="Selected activity style: By activity type",
             filter_summary_text="42 activities · Ride and Run · 2026",
             load_action_label="Reload layers",
+            edit_filters_action_enabled=True,
             primary_action_label="Apply saved filters",
         )
 
@@ -168,6 +202,12 @@ class MapPageContentTest(unittest.TestCase):
             "available",
         )
         self.assertEqual(content.load_layers_button.toolTip(), "")
+        self.assertTrue(content.edit_filters_button.isEnabled())
+        self.assertEqual(
+            content.edit_filters_button.property("wizardActionAvailability"),
+            "available",
+        )
+        self.assertEqual(content.edit_filters_button.toolTip(), "")
         self.assertEqual(content.apply_filters_button.text(), "Apply saved filters")
         self.assertTrue(content.apply_filters_button.isEnabled())
         self.assertEqual(
@@ -209,16 +249,73 @@ class MapPageContentTest(unittest.TestCase):
             "Choose at least one activity layer.",
         )
 
+    def test_can_override_edit_filter_availability(self):
+        content = self.map_page.MapPageContent(
+            self.map_page.MapPageState(
+                edit_filters_action_enabled=True,
+            )
+        )
+
+        self.assertTrue(content.edit_filters_button.isEnabled())
+        self.assertEqual(
+            content.edit_filters_button.property("wizardActionAvailability"),
+            "available",
+        )
+        self.assertEqual(content.edit_filters_button.toolTip(), "")
+
+    def test_disabling_edit_filters_collapses_embedded_filter_controls(self):
+        content = self.map_page.MapPageContent(
+            self.map_page.MapPageState(edit_filters_action_enabled=True)
+        )
+        content.set_filter_controls_visible(True)
+
+        content.set_state(self.map_page.MapPageState(edit_filters_action_enabled=False))
+
+        self.assertFalse(content.filter_controls_panel.isVisible())
+        self.assertEqual(
+            content.filter_controls_panel.property("filterControlsState"),
+            "collapsed",
+        )
+        self.assertEqual(content.edit_filters_button.text(), "Edit filters")
+
+    def test_edit_filters_button_toggles_embedded_filter_controls(self):
+        content = self.map_page.MapPageContent(
+            self.map_page.MapPageState(edit_filters_action_enabled=True)
+        )
+        calls = []
+        content.editFiltersRequested.connect(lambda visible: calls.append(visible))
+
+        content.edit_filters_button.clicked.emit()
+
+        self.assertTrue(content.filter_controls_panel.isVisible())
+        self.assertEqual(
+            content.filter_controls_panel.property("filterControlsState"),
+            "expanded",
+        )
+        self.assertEqual(content.edit_filters_button.text(), "Hide filters")
+
+        content.edit_filters_button.clicked.emit()
+
+        self.assertFalse(content.filter_controls_panel.isVisible())
+        self.assertEqual(
+            content.filter_controls_panel.property("filterControlsState"),
+            "collapsed",
+        )
+        self.assertEqual(content.edit_filters_button.text(), "Edit filters")
+        self.assertEqual(calls, [True, False])
+
     def test_buttons_emit_reusable_page_signals(self):
         content = self.map_page.MapPageContent()
         calls = []
         content.loadLayersRequested.connect(lambda: calls.append("load"))
+        content.editFiltersRequested.connect(lambda _visible: calls.append("edit"))
         content.applyFiltersRequested.connect(lambda: calls.append("filter"))
 
         content.load_layers_button.clicked.emit()
+        content.edit_filters_button.clicked.emit()
         content.apply_filters_button.clicked.emit()
 
-        self.assertEqual(calls, ["load", "filter"])
+        self.assertEqual(calls, ["load", "edit", "filter"])
 
     def test_installs_only_on_map_wizard_page_body(self):
         map_spec = next(spec for spec in build_default_wizard_page_specs() if spec.key == "map")

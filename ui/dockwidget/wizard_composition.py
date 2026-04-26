@@ -67,6 +67,7 @@ class WizardActionCallbacks:
     configure_connection: Callable[[], None] | None = None
     sync_activities: Callable[[], None] | None = None
     load_activity_layers: Callable[[], None] | None = None
+    edit_map_filters: Callable[[bool], None] | None = None
     apply_map_filters: Callable[[], None] | None = None
     run_analysis: Callable[[], None] | None = None
     set_analysis_mode: Callable[[str], None] | None = None
@@ -401,20 +402,44 @@ def _connect_action_callbacks(
     atlas_content: AtlasPageContent | None,
     callbacks: WizardActionCallbacks,
 ) -> None:
-    if connection_content is not None and callbacks.configure_connection is not None:
-        connection_content.configureRequested.connect(callbacks.configure_connection)
-    if sync_content is not None and callbacks.sync_activities is not None:
-        sync_content.syncRequested.connect(callbacks.sync_activities)
-    if map_content is not None and callbacks.load_activity_layers is not None:
-        map_content.loadLayersRequested.connect(callbacks.load_activity_layers)
-    if map_content is not None and callbacks.apply_map_filters is not None:
-        map_content.applyFiltersRequested.connect(callbacks.apply_map_filters)
-    if analysis_content is not None and callbacks.run_analysis is not None:
-        analysis_content.runAnalysisRequested.connect(callbacks.run_analysis)
-    if analysis_content is not None and callbacks.set_analysis_mode is not None:
-        analysis_content.analysisModeChanged.connect(callbacks.set_analysis_mode)
-    if atlas_content is not None and callbacks.export_atlas is not None:
-        atlas_content.exportAtlasRequested.connect(callbacks.export_atlas)
+    _connect_optional_signal(
+        connection_content,
+        "configureRequested",
+        callbacks.configure_connection,
+    )
+    _connect_optional_signal(sync_content, "syncRequested", callbacks.sync_activities)
+    _connect_optional_signal(
+        map_content,
+        "loadLayersRequested",
+        callbacks.load_activity_layers,
+    )
+    _connect_optional_signal(
+        map_content,
+        "editFiltersRequested",
+        callbacks.edit_map_filters,
+    )
+    _connect_optional_signal(
+        map_content,
+        "applyFiltersRequested",
+        callbacks.apply_map_filters,
+    )
+    _connect_optional_signal(
+        analysis_content,
+        "runAnalysisRequested",
+        callbacks.run_analysis,
+    )
+    _connect_optional_signal(
+        analysis_content,
+        "analysisModeChanged",
+        callbacks.set_analysis_mode,
+    )
+    _connect_optional_signal(atlas_content, "exportAtlasRequested", callbacks.export_atlas)
+
+
+def _connect_optional_signal(content, signal_name: str, callback) -> None:
+    if content is None or callback is None:
+        return
+    getattr(content, signal_name).connect(callback)
 
 
 def _resolve_progress(
@@ -608,6 +633,7 @@ def _map_state_from_facts(facts: WizardProgressFacts) -> MapPageState:
             if stored_without_loaded_layers
             else default.primary_action_label
         ),
+        edit_filters_action_enabled=facts.activities_stored,
         apply_action_enabled=facts.activities_stored,
         apply_action_blocked_tooltip=(
             "Sync activities before loading map layers."
