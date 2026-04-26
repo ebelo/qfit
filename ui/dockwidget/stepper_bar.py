@@ -113,7 +113,7 @@ class StepperBar(QWidget):
         button.setProperty("wizardState", state)
         button.setEnabled(state != "locked")
         button.setCursor(Qt.ForbiddenCursor if state == "locked" else Qt.PointingHandCursor)
-        button.setToolTip(STEPPER_LABELS[index])
+        button.setToolTip(_button_tooltip(index, state))
         button.setStyleSheet(_button_stylesheet(state))
 
     def _configure_connectors(self) -> None:
@@ -142,6 +142,16 @@ def _validate_states(states: Sequence[str]) -> tuple[str, ...]:
 def _button_text(index: int, state: str) -> str:
     prefix = "✓" if state == "done" else str(index + 1)
     return f"{prefix}  {STEPPER_LABELS[index]}"
+
+
+def _button_tooltip(index: int, state: str) -> str:
+    label = STEPPER_LABELS[index]
+    if state == "locked":
+        if index == 0:
+            return "This step is not yet available."
+        previous_label = STEPPER_LABELS[index - 1]
+        return f"Complete {previous_label} before opening {label}."
+    return label
 
 
 def _button_stylesheet(state: str) -> str:
