@@ -6,21 +6,27 @@ from unittest.mock import patch
 from tests import _path  # noqa: F401
 from tests.test_wizard_shell import _fake_qt_modules
 
+from qfit.ui.application.wizard_page_specs import build_default_wizard_page_specs
+
 
 def _load_step_page_module():
     for name in (
         "qfit.ui.dockwidget.step_page",
+        "qfit.ui.dockwidget.wizard_shell",
+        "qfit.ui.dockwidget.stepper_bar",
         "qfit.ui.dockwidget",
     ):
         sys.modules.pop(name, None)
     with patch.dict(sys.modules, _fake_qt_modules()):
-        return importlib.import_module("qfit.ui.dockwidget.step_page")
+        step_page = importlib.import_module("qfit.ui.dockwidget.step_page")
+        wizard_shell = importlib.import_module("qfit.ui.dockwidget.wizard_shell")
+        return step_page, wizard_shell
 
 
 class StepPageTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.step_page = _load_step_page_module()
+        cls.step_page, cls.wizard_shell = _load_step_page_module()
 
     def test_builds_spec_step_chrome_with_header_content_and_nav(self):
         page = self.step_page.StepPage(
@@ -109,6 +115,74 @@ class StepPageTest(unittest.TestCase):
 
         with self.assertRaisesRegex(ValueError, "align must be 'left' or 'right'"):
             page.add_extra_button(self.step_page.QToolButton(page), align="center")
+
+    def test_wizard_step_page_adapts_canonical_spec_to_step_chrome(self):
+        spec = build_default_wizard_page_specs()[2]
+
+        page = self.step_page.WizardStepPage(spec, step_num=3, step_total=5)
+
+        self.assertIs(page.spec, spec)
+        self.assertEqual(page.objectName(), "qfitWizardMapPage")
+        self.assertEqual(page.step_label.text(), "ÉTAPE 3/5")
+        self.assertEqual(page.title_label.objectName(), "qfitWizardMapPageTitle")
+        self.assertIn("QLabel#qfitWizardMapPageTitle", page.title_label.styleSheet())
+        self.assertEqual(page.summary_label.objectName(), "qfitWizardMapPageSummary")
+        self.assertEqual(page.summary_label.text(), spec.summary)
+        self.assertIn(
+            "QLabel#qfitWizardMapPageSummary",
+            page.summary_label.styleSheet(),
+        )
+        self.assertIs(page.body_container, page.content_container)
+        self.assertEqual(page.body_container.objectName(), "qfitWizardMapPageBody")
+        self.assertIs(page.body_layout(), page.content_layout())
+        self.assertEqual(
+            page.primary_hint_label.objectName(),
+            "qfitWizardMapPagePrimaryHint",
+        )
+        self.assertFalse(page.primary_hint_label.isVisible())
+
+    def test_wizard_step_page_retire_primary_hint_is_installer_compatible(self):
+        spec = build_default_wizard_page_specs()[0]
+        page = self.step_page.WizardStepPage(spec, step_num=1, step_total=5)
+
+        page.primary_hint_label.setVisible(True)
+        page.retire_primary_action_hint()
+
+        self.assertEqual(page.primary_hint_label.text(), "")
+        self.assertEqual(
+            page.primary_hint_label.property("wizardPlaceholderHint"),
+            "retired",
+        )
+        self.assertFalse(page.primary_hint_label.isVisible())
+
+    def test_builds_wizard_step_pages_from_default_specs(self):
+        pages = self.step_page.build_wizard_step_pages()
+
+        self.assertEqual(
+            [page.spec.key for page in pages],
+            ["connection", "sync", "map", "analysis", "atlas"],
+        )
+        self.assertEqual(
+            [page.step_label.text() for page in pages],
+            ["ÉTAPE 1/5", "ÉTAPE 2/5", "ÉTAPE 3/5", "ÉTAPE 4/5", "ÉTAPE 5/5"],
+        )
+
+    def test_build_wizard_step_pages_preserves_explicit_empty_specs(self):
+        pages = self.step_page.build_wizard_step_pages(specs=())
+
+        self.assertEqual(pages, ())
+
+    def test_installs_wizard_step_pages_into_shell(self):
+        shell = self.wizard_shell.WizardShell()
+
+        pages = self.step_page.install_wizard_step_pages(shell)
+
+        self.assertEqual(shell.page_count(), 5)
+        self.assertEqual(shell.pages_stack.widgets, list(pages))
+
+        shell.set_current_step(4)
+
+        self.assertEqual(shell.pages_stack.currentIndex(), 4)
 
 
 if __name__ == "__main__":
