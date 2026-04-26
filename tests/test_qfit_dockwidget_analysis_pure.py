@@ -729,6 +729,28 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
                 getattr(self.module.QfitDockWidget, method_name),
             )
 
+    def test_build_wizard_dock_from_runtime_wraps_live_composition(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._build_wizard_shell_from_runtime = MagicMock(return_value="composition")
+        parent = object()
+        fake_wizard_dock = ModuleType("qfit.ui.dockwidget.wizard_dock")
+        fake_wizard_dock.build_wizard_dock_widget = MagicMock(
+            return_value="wizard-dock"
+        )
+
+        with patch.dict(sys.modules, {"qfit.ui.dockwidget.wizard_dock": fake_wizard_dock}):
+            result = self.module.QfitDockWidget._build_wizard_dock_from_runtime(
+                dock,
+                parent=parent,
+            )
+
+        self.assertEqual(result, "wizard-dock")
+        dock._build_wizard_shell_from_runtime.assert_called_once_with(parent=parent)
+        fake_wizard_dock.build_wizard_dock_widget.assert_called_once_with(
+            "composition",
+            parent=parent,
+        )
+
     def test_refresh_wizard_shell_from_runtime_updates_optional_composition(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._runtime_state_store = self.module.DockRuntimeStore()

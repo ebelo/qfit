@@ -423,6 +423,21 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         )
         return self._wizard_shell_composition
 
+    def _build_wizard_dock_from_runtime(self, *, parent=None):
+        """Build the optional #609 QDockWidget container from runtime facts.
+
+        This is the dock-level seam for the eventual wizard swap: the reusable
+        shell composition remains independent, while this helper wraps it in the
+        real QDockWidget shape required by the Option B spec.
+        """
+
+        from .ui.dockwidget.wizard_dock import build_wizard_dock_widget
+
+        return build_wizard_dock_widget(
+            self._build_wizard_shell_from_runtime(parent=parent),
+            parent=parent,
+        )
+
     def _refresh_wizard_shell_from_runtime(self):
         """Refresh an optional #609 wizard shell composition from dock runtime facts."""
 
