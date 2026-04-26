@@ -81,6 +81,7 @@ from .ui.application import (
     RunAnalysisAction,
     build_dock_summary_status,
     build_visual_layer_refs,
+    ensure_wizard_settings,
     build_visual_workflow_background_inputs,
     build_visual_workflow_selection_state_handoff,
     build_visual_workflow_settings_snapshot,
@@ -149,6 +150,11 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._dock_visual_workflow = DockVisualWorkflowCoordinator(
             dispatcher=self._dock_action_dispatcher,
         )
+
+    def _ensure_wizard_settings(self):
+        """Persist first-launch wizard defaults for the #609 dock migration."""
+
+        return ensure_wizard_settings(self.settings)
 
     def _runtime_store(self) -> DockRuntimeStore:
         store = getattr(self, "_runtime_state_store", None)
