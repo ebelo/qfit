@@ -392,6 +392,32 @@ class WizardShellTest(unittest.TestCase):
         self.assertEqual(footer.layer_pill.property("tone"), "muted")
         self.assertEqual(footer.path_label.text(), "qfit.gpkg")
 
+    def test_footer_bar_uses_muted_tone_for_zero_activities(self):
+        footer = self.wizard_shell.FooterStatusBar()
+
+        footer.set_activity_count(0)
+
+        self.assertEqual(footer.activity_pill.text(), "0 activities")
+        self.assertEqual(footer.activity_pill.property("tone"), "muted")
+
+    def test_footer_status_text_can_clear_compatibility_label(self):
+        footer = self.wizard_shell.FooterStatusBar(footer_text="Ready")
+
+        footer.set_status_text("")
+
+        self.assertEqual(footer.text(), "")
+        self.assertEqual(footer.path_label.text(), "")
+        self.assertEqual(footer.toolTip(), "")
+
+    def test_explicit_empty_gpkg_path_is_not_overwritten_by_status_refresh(self):
+        footer = self.wizard_shell.FooterStatusBar(footer_text="Ready")
+
+        footer.set_gpkg_path(None)
+        footer.set_status_text("Connected · 42 activities")
+
+        self.assertEqual(footer.text(), "Connected · 42 activities")
+        self.assertEqual(footer.path_label.text(), "qfit.gpkg")
+
 
 if __name__ == "__main__":
     unittest.main()

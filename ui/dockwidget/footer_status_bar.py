@@ -35,7 +35,7 @@ class FooterStatusBar(QWidget):
         self.setObjectName("qfitWizardFooterBar")
         self.setFixedHeight(28)
         self._summary_text = footer_text
-        self._has_explicit_gpkg_path = False
+        self._path_label_owned_by_status = True
         self.strava_pill = _make_footer_pill(
             "● Strava",
             "muted",
@@ -79,7 +79,7 @@ class FooterStatusBar(QWidget):
         self._summary_text = text
         if hasattr(self, "setToolTip"):
             self.setToolTip(text)
-        if text and not self._has_explicit_gpkg_path:
+        if self._path_label_owned_by_status:
             self.path_label.setText(text)
 
     def text(self) -> str:
@@ -107,7 +107,7 @@ class FooterStatusBar(QWidget):
             count = max(int(n), 0)
             noun = "activity" if count == 1 else "activities"
             self.activity_pill.setText(f"{count} {noun}")
-            tone = "info"
+            tone = "info" if count else "muted"
         _set_footer_pill_tone(
             self.activity_pill,
             tone,
@@ -129,12 +129,11 @@ class FooterStatusBar(QWidget):
     def set_gpkg_path(self, path: str | None) -> None:
         """Display only the GeoPackage basename while keeping the full path in a tooltip."""
 
+        self._path_label_owned_by_status = False
         if not path:
-            self._has_explicit_gpkg_path = False
             self.path_label.setText("qfit.gpkg")
             self.path_label.setToolTip("")
             return
-        self._has_explicit_gpkg_path = True
         self.path_label.setText(Path(path).name)
         self.path_label.setToolTip(path)
 
