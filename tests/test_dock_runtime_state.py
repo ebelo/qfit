@@ -32,12 +32,14 @@ class TestDockRuntimeStore(unittest.TestCase):
         store.begin_store(task)
         self.assertIs(store.state.store_task, task)
 
-        store.finish_store(output_path="/tmp/qfit.gpkg")
+        store.finish_store(output_path="/tmp/qfit.gpkg", stored_activity_count=12)
         self.assertIsNone(store.state.store_task)
         self.assertEqual(store.state.output_path, "/tmp/qfit.gpkg")
+        self.assertEqual(store.state.stored_activity_count, 12)
 
         store.load_dataset(
             output_path="/tmp/qfit.gpkg",
+            stored_activity_count=9,
             activities_layer=activities_layer,
             starts_layer=starts_layer,
             points_layer=points_layer,
@@ -47,6 +49,18 @@ class TestDockRuntimeStore(unittest.TestCase):
         self.assertIs(store.state.starts_layer, starts_layer)
         self.assertIs(store.state.points_layer, points_layer)
         self.assertIs(store.state.atlas_layer, atlas_layer)
+        self.assertEqual(store.state.stored_activity_count, 9)
+
+    def test_store_and_load_lifecycle_clamps_negative_activity_counts(self):
+        store = DockRuntimeStore()
+
+        store.finish_store(output_path="/tmp/qfit.gpkg", stored_activity_count=-3)
+
+        self.assertEqual(store.state.stored_activity_count, 0)
+
+        store.load_dataset(output_path="/tmp/qfit.gpkg", stored_activity_count=-5)
+
+        self.assertEqual(store.state.stored_activity_count, 0)
 
     def test_reset_loaded_dataset_clears_loaded_runtime_fields(self):
         store = DockRuntimeStore()
@@ -54,7 +68,7 @@ class TestDockRuntimeStore(unittest.TestCase):
         analysis_layer = object()
 
         store.finish_fetch(activities=["run"], metadata={"provider": "strava"})
-        store.finish_store(output_path="/tmp/qfit.gpkg")
+        store.finish_store(output_path="/tmp/qfit.gpkg", stored_activity_count=2)
         store.load_dataset(
             output_path="/tmp/qfit.gpkg",
             activities_layer=object(),
@@ -69,6 +83,7 @@ class TestDockRuntimeStore(unittest.TestCase):
 
         self.assertEqual(store.state.activities, ())
         self.assertIsNone(store.state.output_path)
+        self.assertIsNone(store.state.stored_activity_count)
         self.assertIsNone(store.state.activities_layer)
         self.assertIsNone(store.state.starts_layer)
         self.assertIsNone(store.state.points_layer)

@@ -383,6 +383,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
         dock._runtime_store().load_dataset(
             output_path="/tmp/qfit.gpkg",
+            stored_activity_count=4,
             activities_layer=object(),
             starts_layer=object(),
             points_layer=object(),
@@ -395,6 +396,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
         self.assertTrue(facts.connection_configured)
         self.assertTrue(facts.activities_stored)
+        self.assertEqual(facts.activity_count, 4)
         self.assertTrue(facts.activity_layers_loaded)
         self.assertTrue(facts.analysis_generated)
         self.assertTrue(facts.atlas_exported)

@@ -130,6 +130,16 @@ class WizardProgressFactsTests(unittest.TestCase):
         self.assertIsNone(facts.activity_count)
         self.assertEqual(facts.output_name, "qfit.gpkg")
 
+    def test_runtime_state_adapter_maps_stored_activity_count(self):
+        facts = build_wizard_progress_facts_from_runtime_state(
+            DockRuntimeState(
+                output_path="/tmp/qfit.gpkg",
+                stored_activity_count=12,
+            )
+        )
+
+        self.assertEqual(facts.activity_count, 12)
+
     def test_runtime_state_adapter_does_not_treat_fetch_count_as_stored_count(self):
         facts = build_wizard_progress_facts_from_runtime_state(
             DockRuntimeState(

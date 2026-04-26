@@ -65,9 +65,10 @@ def build_wizard_progress_facts_from_runtime_state(
     connection is persisted in configuration settings, and atlas exports do not
     yet retain a durable output artifact after the task completes. The runtime
     ``activities`` tuple is a fetch payload, not a persisted dataset count, so
-    this adapter reports it separately as fetched work while deliberately leaving
-    ``activity_count`` unknown. Atlas output is supplied separately because it
-    currently lives in the dock export controls, not the runtime snapshot.
+    this adapter reports it separately as fetched work. Persisted dataset totals
+    come from the stored activity count captured during store/load transitions.
+    Atlas output is supplied separately because it currently lives in the dock
+    export controls, not the runtime snapshot.
     """
 
     output_name = _output_name(state.output_path)
@@ -84,7 +85,7 @@ def build_wizard_progress_facts_from_runtime_state(
         atlas_export_in_progress=state.atlas_export_task is not None,
         preferred_current_key=preferred_current_key,
         fetched_activity_count=len(state.activities) if state.activities else None,
-        activity_count=None,
+        activity_count=_stored_activity_count(state),
         output_name=output_name,
         analysis_output_name=analysis_output_name,
         atlas_output_name=atlas_output_name,
@@ -209,6 +210,13 @@ def _has_output_path(state: DockRuntimeState) -> bool:
 
 def _has_sync_task(state: DockRuntimeState) -> bool:
     return state.fetch_task is not None or state.store_task is not None
+
+
+def _stored_activity_count(state: DockRuntimeState) -> int | None:
+    count = state.stored_activity_count
+    if count is None:
+        return None
+    return max(int(count), 0)
 
 
 def _loaded_dataset_layer_count(state: DockRuntimeState) -> int | None:
