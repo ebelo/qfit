@@ -41,6 +41,7 @@ class WizardProgressFacts:
     filtered_activity_count: int | None = None
     activity_style_preset: str | None = None
     loaded_layer_count: int | None = None
+    last_sync_date: str | None = None
 
 
 def build_wizard_progress_facts_from_runtime_state(
@@ -56,6 +57,7 @@ def build_wizard_progress_facts_from_runtime_state(
     filters_active: bool = False,
     filtered_activity_count: int | None = None,
     activity_style_preset: str | None = None,
+    last_sync_date: str | None = None,
 ) -> WizardProgressFacts:
     """Derive #609 wizard progress facts from the dock runtime snapshot.
 
@@ -96,6 +98,7 @@ def build_wizard_progress_facts_from_runtime_state(
         filtered_activity_count=filtered_activity_count,
         activity_style_preset=_optional_text(activity_style_preset),
         loaded_layer_count=_loaded_dataset_layer_count(state),
+        last_sync_date=_optional_text(last_sync_date),
     )
 
 
@@ -156,6 +159,7 @@ def build_wizard_progress_from_facts_and_settings(
             filtered_activity_count=facts.filtered_activity_count,
             activity_style_preset=facts.activity_style_preset,
             loaded_layer_count=facts.loaded_layer_count,
+            last_sync_date=facts.last_sync_date,
         )
     )
 

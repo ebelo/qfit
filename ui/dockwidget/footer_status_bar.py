@@ -48,6 +48,12 @@ class FooterStatusBar(QWidget):
             object_name="qfitWizardFooterActivityPill",
             parent=self,
         )
+        self.sync_pill = _make_footer_pill(
+            "sync —",
+            "muted",
+            object_name="qfitWizardFooterSyncPill",
+            parent=self,
+        )
         self.layer_pill = _make_footer_pill(
             "0 layers",
             "muted",
@@ -114,6 +120,22 @@ class FooterStatusBar(QWidget):
             object_name="qfitWizardFooterActivityPill",
         )
 
+    def set_sync_date(self, value: str | None) -> None:
+        """Update the last-sync pill from a persisted sync date string."""
+
+        sync_date = (value or "").strip()
+        if not sync_date:
+            self.sync_pill.setText("sync —")
+            tone = "muted"
+        else:
+            self.sync_pill.setText(f"sync {sync_date}")
+            tone = "neutral"
+        _set_footer_pill_tone(
+            self.sync_pill,
+            tone,
+            object_name="qfitWizardFooterSyncPill",
+        )
+
     def set_layer_count(self, m: int) -> None:
         """Update the qfit layer-count pill."""
 
@@ -150,6 +172,7 @@ class FooterStatusBar(QWidget):
         layout.setSpacing(6)
         layout.addWidget(self.strava_pill)
         layout.addWidget(self.activity_pill)
+        layout.addWidget(self.sync_pill)
         layout.addWidget(self.layer_pill)
         if hasattr(layout, "addStretch"):
             layout.addStretch(1)

@@ -13,6 +13,7 @@ class WizardFooterFacts:
     activity_count: int | None = None
     layer_count: int = 0
     gpkg_path: str | None = None
+    last_sync_date: str | None = None
 
 
 def build_wizard_footer_status(
@@ -56,6 +57,7 @@ def build_wizard_footer_facts_from_progress_facts(
         activity_count=_stored_activity_count(facts),
         layer_count=_loaded_layer_count(facts),
         gpkg_path=facts.output_name,
+        last_sync_date=_optional_text(facts.last_sync_date),
     )
 
 
@@ -72,6 +74,11 @@ def _join_unique_status_parts(*values: str | None) -> str:
     if not parts:
         return "Ready"
     return " · ".join(parts)
+
+
+def _optional_text(value: str | None) -> str | None:
+    stripped = (value or "").strip()
+    return stripped or None
 
 
 def _stored_activity_count(facts) -> int | None:

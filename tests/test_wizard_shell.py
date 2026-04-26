@@ -364,6 +364,7 @@ class WizardShellTest(unittest.TestCase):
 
         footer.set_strava(True)
         footer.set_activity_count(1)
+        footer.set_sync_date("2026-04-16")
         footer.set_layer_count(3)
         footer.set_gpkg_path("/tmp/qfit-test/activities.gpkg")
 
@@ -372,6 +373,8 @@ class WizardShellTest(unittest.TestCase):
         self.assertEqual(footer.strava_pill.property("tone"), "ok")
         self.assertEqual(footer.activity_pill.text(), "1 activity")
         self.assertEqual(footer.activity_pill.property("tone"), "info")
+        self.assertEqual(footer.sync_pill.text(), "sync 2026-04-16")
+        self.assertEqual(footer.sync_pill.property("tone"), "neutral")
         self.assertEqual(footer.layer_pill.text(), "3 layers")
         self.assertEqual(footer.layer_pill.property("tone"), "neutral")
         self.assertEqual(footer.path_label.text(), "activities.gpkg")
@@ -382,12 +385,15 @@ class WizardShellTest(unittest.TestCase):
 
         footer.set_strava(False)
         footer.set_activity_count(None)
+        footer.set_sync_date(None)
         footer.set_layer_count(0)
         footer.set_gpkg_path(None)
 
         self.assertEqual(footer.strava_pill.property("tone"), "danger")
         self.assertEqual(footer.activity_pill.text(), "— activities")
         self.assertEqual(footer.activity_pill.property("tone"), "muted")
+        self.assertEqual(footer.sync_pill.text(), "sync —")
+        self.assertEqual(footer.sync_pill.property("tone"), "muted")
         self.assertEqual(footer.layer_pill.text(), "0 layers")
         self.assertEqual(footer.layer_pill.property("tone"), "muted")
         self.assertEqual(footer.path_label.text(), "qfit.gpkg")

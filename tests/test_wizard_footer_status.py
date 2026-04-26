@@ -56,6 +56,7 @@ class WizardFooterStatusTests(unittest.TestCase):
             activity_count=12,
             output_name="qfit.gpkg",
             loaded_layer_count=4,
+            last_sync_date="2026-04-16",
         )
 
         self.assertEqual(
@@ -65,6 +66,7 @@ class WizardFooterStatusTests(unittest.TestCase):
                 activity_count=12,
                 layer_count=4,
                 gpkg_path="qfit.gpkg",
+                last_sync_date="2026-04-16",
             ),
         )
 
@@ -93,6 +95,13 @@ class WizardFooterStatusTests(unittest.TestCase):
         self.assertEqual(
             build_wizard_footer_facts_from_progress_facts(facts).layer_count,
             1,
+        )
+
+    def test_footer_facts_ignore_blank_last_sync_date(self):
+        facts = WizardProgressFacts(last_sync_date="   ")
+
+        self.assertIsNone(
+            build_wizard_footer_facts_from_progress_facts(facts).last_sync_date
         )
 
 

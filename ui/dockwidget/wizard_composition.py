@@ -445,6 +445,7 @@ def _completed_prefix_facts(facts: WizardProgressFacts) -> WizardProgressFacts:
         filtered_activity_count=facts.filtered_activity_count,
         activity_style_preset=facts.activity_style_preset,
         loaded_layer_count=facts.loaded_layer_count,
+        last_sync_date=facts.last_sync_date,
     )
 
 
@@ -463,6 +464,7 @@ def _apply_footer_facts(footer_bar, footer_facts: WizardFooterFacts | None) -> N
         return
     footer_bar.set_strava(footer_facts.strava_connected)
     footer_bar.set_activity_count(footer_facts.activity_count)
+    footer_bar.set_sync_date(footer_facts.last_sync_date)
     footer_bar.set_layer_count(footer_facts.layer_count)
     footer_bar.set_gpkg_path(footer_facts.gpkg_path)
 

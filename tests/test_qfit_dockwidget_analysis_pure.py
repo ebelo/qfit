@@ -378,6 +378,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.backgroundMapCheckBox = _FakeCheckBox(True)
         dock.backgroundPresetComboBox = _FakeComboBox(current_text="Outdoors")
         dock.stylePresetComboBox = _FakeComboBox(current_text="By activity type")
+        dock.settings = _FakeSettings({"last_sync_date": "2026-04-16"})
         dock._atlas_export_completed = True
         dock._atlas_export_output_path = "/tmp/exported-atlas.pdf"
 
@@ -405,6 +406,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertTrue(facts.background_layer_loaded)
         self.assertIsNone(facts.background_name)
         self.assertEqual(facts.activity_style_preset, "By activity type")
+        self.assertEqual(facts.last_sync_date, "2026-04-16")
 
     def test_current_wizard_activity_style_preset_reads_trimmed_combo_text(self):
         dock = object.__new__(self.module.QfitDockWidget)
