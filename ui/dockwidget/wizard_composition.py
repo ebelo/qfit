@@ -665,15 +665,10 @@ def _map_active_filter_summary(facts: WizardProgressFacts) -> str:
     else:
         noun = "activity" if facts.filtered_activity_count == 1 else "activities"
         summary = f"Filters match {max(facts.filtered_activity_count, 0)} loaded {noun}"
-    filter_description = _optional_text(facts.filter_description)
-    if filter_description is None:
+    filter_description = (facts.filter_description or "").strip()
+    if not filter_description:
         return summary
     return f"{summary} · {filter_description}"
-
-
-def _optional_text(value: str | None) -> str | None:
-    stripped = (value or "").strip()
-    return stripped or None
 
 
 def _analysis_state_from_facts(facts: WizardProgressFacts) -> AnalysisPageState:
