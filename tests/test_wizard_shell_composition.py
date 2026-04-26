@@ -270,6 +270,51 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertEqual(assembled.presenter.progress.current_key, "connection")
         self.assertEqual(assembled.shell.pages_stack.currentIndex(), 0)
 
+    def test_sync_page_summary_uses_runtime_activity_count_and_output_name(self):
+        facts = self.composition.WizardProgressFacts(
+            connection_configured=True,
+            activities_stored=True,
+            activity_count=12,
+            output_name="qfit.gpkg",
+        )
+
+        assembled = self.composition.build_placeholder_wizard_shell(progress_facts=facts)
+
+        self.assertEqual(
+            assembled.sync_content.activity_summary_label.text(),
+            "12 activities stored in qfit.gpkg",
+        )
+        self.assertIn("12 activities stored in qfit.gpkg", assembled.shell.footer_bar.text())
+
+    def test_sync_page_summary_uses_singular_activity_count(self):
+        facts = self.composition.WizardProgressFacts(
+            connection_configured=True,
+            activities_stored=True,
+            activity_count=1,
+            output_name="qfit.gpkg",
+        )
+
+        assembled = self.composition.build_placeholder_wizard_shell(progress_facts=facts)
+
+        self.assertEqual(
+            assembled.sync_content.activity_summary_label.text(),
+            "1 activity stored in qfit.gpkg",
+        )
+
+    def test_sync_page_summary_omits_unknown_activity_count(self):
+        facts = self.composition.WizardProgressFacts(
+            connection_configured=True,
+            activities_stored=True,
+            output_name="qfit.gpkg",
+        )
+
+        assembled = self.composition.build_placeholder_wizard_shell(progress_facts=facts)
+
+        self.assertEqual(
+            assembled.sync_content.activity_summary_label.text(),
+            "Activities stored in qfit.gpkg",
+        )
+
     def test_progress_facts_drive_page_cta_prerequisites_without_marking_done(self):
         facts = self.composition.WizardProgressFacts(connection_configured=True)
 

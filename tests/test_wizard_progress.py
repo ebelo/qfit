@@ -21,6 +21,7 @@ class WizardProgressFactsTests(unittest.TestCase):
         activities_layer = object()
         analysis_layer = object()
         state = DockRuntimeState(
+            activities=(object(), object()),
             output_path="/tmp/qfit.gpkg",
             layers=DockRuntimeLayers(
                 activities=activities_layer,
@@ -44,6 +45,7 @@ class WizardProgressFactsTests(unittest.TestCase):
                 analysis_generated=True,
                 atlas_exported=True,
                 preferred_current_key="atlas",
+                output_name="qfit.gpkg",
             ),
         )
 
@@ -53,6 +55,39 @@ class WizardProgressFactsTests(unittest.TestCase):
         )
 
         self.assertFalse(facts.activities_stored)
+
+    def test_runtime_state_adapter_keeps_unknown_activity_count_for_loaded_file(self):
+        facts = build_wizard_progress_facts_from_runtime_state(
+            DockRuntimeState(output_path="/tmp/qfit.gpkg")
+        )
+
+        self.assertIsNone(facts.activity_count)
+        self.assertEqual(facts.output_name, "qfit.gpkg")
+
+    def test_runtime_state_adapter_does_not_treat_fetch_count_as_stored_count(self):
+        facts = build_wizard_progress_facts_from_runtime_state(
+            DockRuntimeState(
+                activities=(object(), object(), object()),
+                output_path="/tmp/qfit.gpkg",
+            )
+        )
+
+        self.assertIsNone(facts.activity_count)
+        self.assertEqual(facts.output_name, "qfit.gpkg")
+
+    def test_runtime_state_adapter_normalises_windows_output_filename(self):
+        facts = build_wizard_progress_facts_from_runtime_state(
+            DockRuntimeState(output_path="C:\\Users\\Emman\\qfit.gpkg")
+        )
+
+        self.assertEqual(facts.output_name, "qfit.gpkg")
+
+    def test_runtime_state_adapter_normalises_escaped_windows_output_filename(self):
+        facts = build_wizard_progress_facts_from_runtime_state(
+            DockRuntimeState(output_path=r"C:\\Users\\Emman\\qfit.gpkg")
+        )
+
+        self.assertEqual(facts.output_name, "qfit.gpkg")
 
     def test_defaults_keep_connection_current_with_no_completed_steps(self):
         progress = build_wizard_progress_from_facts(WizardProgressFacts())
