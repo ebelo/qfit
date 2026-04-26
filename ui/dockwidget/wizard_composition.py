@@ -37,6 +37,7 @@ from .connection_page import (
 )
 from .map_page import MapPageContent, MapPageState, install_map_page_content
 from .sync_page import SyncPageContent, SyncPageState, install_sync_page_content
+from .step_page import install_wizard_step_pages
 from .wizard_page import WizardPage, install_wizard_pages
 from .wizard_shell import WizardShell
 from .wizard_shell_presenter import WizardShellPresenter
@@ -108,6 +109,7 @@ def build_placeholder_wizard_shell(
     progress_facts: WizardProgressFacts | None = None,
     wizard_settings: WizardSettingsSnapshot | None = None,
     specs: Sequence[DockWizardPageSpec] | None = None,
+    use_step_pages: bool = False,
     connection_state: ConnectionPageState | None = None,
     sync_state: SyncPageState | None = None,
     map_state: MapPageState | None = None,
@@ -122,7 +124,9 @@ def build_placeholder_wizard_shell(
     bind any current long-scroll dock controls into the shell; page content can
     migrate later through the stable ``WizardPage.body_layout()`` seams. The
     optional step-change callback is the future dock's seam for persisting
-    ``ui/last_step_index`` when users navigate the wizard.
+    ``ui/last_step_index`` when users navigate the wizard. ``use_step_pages``
+    opts into the richer StepPage chrome from the Option B spec while preserving
+    the same content-installer and presenter seams.
     """
 
     page_state_defaults = _page_state_defaults_from_progress_facts(progress_facts)
@@ -171,7 +175,7 @@ def build_placeholder_wizard_shell(
         ),
     )
     _apply_footer_facts(shell.footer_bar, footer_facts)
-    pages = install_wizard_pages(shell, specs=page_specs)
+    pages = _install_shell_pages(shell, specs=page_specs, use_step_pages=use_step_pages)
     connection_content = _install_connection_content(
         pages,
         connection_state=connection_state,
@@ -808,6 +812,17 @@ def _build_default_footer_text(
         ),
         atlas_status=atlas_state.status_text if "atlas" in installed_keys else None,
     )
+
+
+def _install_shell_pages(
+    shell: WizardShell,
+    *,
+    specs: Sequence[DockWizardPageSpec],
+    use_step_pages: bool,
+):
+    if use_step_pages:
+        return install_wizard_step_pages(shell, specs=specs)
+    return install_wizard_pages(shell, specs=specs)
 
 
 def _install_connection_content(

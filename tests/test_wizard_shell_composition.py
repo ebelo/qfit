@@ -17,6 +17,7 @@ def _load_wizard_composition_module():
         "qfit.ui.dockwidget.connection_page",
         "qfit.ui.dockwidget.sync_page",
         "qfit.ui.dockwidget.map_page",
+        "qfit.ui.dockwidget.step_page",
         "qfit.ui.dockwidget.wizard_shell_presenter",
         "qfit.ui.dockwidget.wizard_page",
         "qfit.ui.dockwidget.wizard_shell",
@@ -102,6 +103,32 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertEqual(
             assembled.shell.stepper_bar.states(),
             ("current", "locked", "locked", "locked", "locked"),
+        )
+
+    def test_can_build_shell_with_spec_step_pages(self):
+        assembled = self.composition.build_placeholder_wizard_shell(
+            use_step_pages=True,
+            progress_facts=self.composition.WizardProgressFacts(
+                connection_configured=True,
+                activities_stored=True,
+                preferred_current_key="map",
+            ),
+        )
+
+        self.assertEqual(assembled.shell.page_count(), 5)
+        self.assertEqual(
+            [page.step_label.text() for page in assembled.pages],
+            ["ÉTAPE 1/5", "ÉTAPE 2/5", "ÉTAPE 3/5", "ÉTAPE 4/5", "ÉTAPE 5/5"],
+        )
+        self.assertEqual(assembled.pages[2].objectName(), "qfitWizardMapPage")
+        self.assertIs(
+            assembled.pages[2].body_layout().widgets[-1],
+            assembled.map_content,
+        )
+        self.assertEqual(assembled.shell.pages_stack.currentIndex(), 2)
+        self.assertEqual(
+            assembled.shell.stepper_bar.states(),
+            ("done", "done", "current", "locked", "locked"),
         )
 
     def test_action_callbacks_are_wired_to_installed_page_ctas(self):

@@ -651,6 +651,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertTrue(kwargs["progress_facts"].connection_configured)
         self.assertEqual(kwargs["wizard_settings"].last_step_index, 1)
         self.assertFalse(kwargs["wizard_settings"].first_launch)
+        self.assertTrue(kwargs["use_step_pages"])
         self.assertIs(kwargs["on_current_step_changed"].__self__, dock)
         self.assertIs(
             kwargs["on_current_step_changed"].__func__,
