@@ -161,6 +161,29 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertTrue(assembled.pages[2].back_button.isEnabled())
         self.assertFalse(assembled.pages[2].next_button.isEnabled())
 
+    def test_step_page_navigation_uses_installed_page_keys(self):
+        specs = self.composition.build_default_wizard_page_specs()
+        assembled = self.composition.build_placeholder_wizard_shell(
+            use_step_pages=True,
+            specs=(specs[0], specs[4]),
+            progress_facts=self.composition.WizardProgressFacts(
+                connection_configured=True,
+                activities_stored=True,
+                activity_layers_loaded=True,
+                analysis_generated=True,
+                preferred_current_key="atlas",
+            ),
+        )
+
+        self.assertEqual(assembled.presenter.progress.current_key, "atlas")
+        self.assertTrue(assembled.pages[1].back_button.isEnabled())
+        self.assertFalse(assembled.pages[1].next_button.isEnabled())
+
+        assembled.pages[1].back_button.clicked.emit()
+
+        self.assertEqual(assembled.presenter.progress.current_key, "connection")
+        self.assertEqual(assembled.shell.pages_stack.currentIndex(), 0)
+
     def test_action_callbacks_are_wired_to_installed_page_ctas(self):
         calls = []
         callbacks = self.composition.WizardActionCallbacks(

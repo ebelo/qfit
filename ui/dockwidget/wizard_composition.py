@@ -8,7 +8,10 @@ from qfit.ui.application.dock_workflow_sections import (
     DockWizardProgress,
     build_progress_wizard_step_statuses,
 )
-from qfit.ui.application.stepper_presenter import can_request_step
+from qfit.ui.application.stepper_presenter import (
+    can_request_step,
+    step_index_for_key,
+)
 from qfit.ui.application.wizard_footer_status import (
     WizardFooterFacts,
     build_wizard_footer_facts_from_progress_facts,
@@ -843,16 +846,21 @@ def _connect_step_page_navigation(
     if not step_pages:
         return
 
-    def request_and_sync(index: int) -> None:
-        presenter.request_step(index)
+    def request_and_sync(index: int | None) -> None:
+        if index is not None:
+            presenter.request_step(index)
         _sync_step_page_navigation_buttons(pages, presenter)
 
-    for index, page in step_pages:
+    for installed_index, page in step_pages:
+        previous_index, next_index = _step_page_navigation_targets(
+            pages,
+            installed_index=installed_index,
+        )
         page.backRequested.connect(
-            lambda _checked=False, target=index - 1: request_and_sync(target)
+            lambda _checked=False, target=previous_index: request_and_sync(target)
         )
         page.nextRequested.connect(
-            lambda _checked=False, target=index + 1: request_and_sync(target)
+            lambda _checked=False, target=next_index: request_and_sync(target)
         )
     _sync_step_page_navigation_buttons(pages, presenter)
 
@@ -863,15 +871,41 @@ def _sync_step_page_navigation_buttons(
 ) -> None:
     statuses = build_progress_wizard_step_statuses(presenter.progress)
     last_index = len(statuses) - 1
-    for index, page in enumerate(pages):
+    for installed_index, page in enumerate(pages):
         if not isinstance(page, WizardStepPage):
             continue
+        previous_index, next_index = _step_page_navigation_targets(
+            pages,
+            installed_index=installed_index,
+        )
         page.back_button.setEnabled(
-            index > 0 and can_request_step(statuses, index - 1)
+            previous_index is not None and can_request_step(statuses, previous_index)
         )
         page.next_button.setEnabled(
-            index < last_index and can_request_step(statuses, index + 1)
+            next_index is not None
+            and next_index <= last_index
+            and can_request_step(statuses, next_index)
         )
+
+
+def _step_page_navigation_targets(
+    pages: Sequence[WizardCompositionPage],
+    *,
+    installed_index: int,
+) -> tuple[int | None, int | None]:
+    previous_page = pages[installed_index - 1] if installed_index > 0 else None
+    next_page = (
+        pages[installed_index + 1]
+        if installed_index + 1 < len(pages)
+        else None
+    )
+    return _workflow_index_for_page(previous_page), _workflow_index_for_page(next_page)
+
+
+def _workflow_index_for_page(page: WizardCompositionPage | None) -> int | None:
+    if page is None:
+        return None
+    return step_index_for_key(page.spec.key)
 
 
 def _install_connection_content(
