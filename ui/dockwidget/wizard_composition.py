@@ -557,9 +557,7 @@ def _map_background_summary(facts: WizardProgressFacts, default: MapPageState) -
 def _map_style_summary(facts: WizardProgressFacts, default: MapPageState) -> str:
     if facts.activity_style_preset is None:
         return default.style_summary_text
-    if facts.activity_layers_loaded:
-        return f"Activity style applied: {facts.activity_style_preset}"
-    return f"Activity style ready: {facts.activity_style_preset}"
+    return f"Selected activity style: {facts.activity_style_preset}"
 
 
 def _map_filter_summary(facts: WizardProgressFacts, default: MapPageState) -> str:
