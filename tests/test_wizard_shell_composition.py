@@ -404,6 +404,35 @@ class WizardShellCompositionTest(unittest.TestCase):
             "Basemap loaded",
         )
 
+    def test_map_page_summary_reports_selected_activity_style_before_load(self):
+        facts = self.composition.WizardProgressFacts(
+            connection_configured=True,
+            activities_stored=True,
+            activity_style_preset="By activity type",
+        )
+
+        assembled = self.composition.build_placeholder_wizard_shell(progress_facts=facts)
+
+        self.assertEqual(
+            assembled.map_content.style_summary_label.text(),
+            "Selected activity style: By activity type",
+        )
+
+    def test_map_page_summary_does_not_claim_loaded_style_is_applied(self):
+        facts = self.composition.WizardProgressFacts(
+            connection_configured=True,
+            activities_stored=True,
+            activity_layers_loaded=True,
+            activity_style_preset="Simple lines",
+        )
+
+        assembled = self.composition.build_placeholder_wizard_shell(progress_facts=facts)
+
+        self.assertEqual(
+            assembled.map_content.style_summary_label.text(),
+            "Selected activity style: Simple lines",
+        )
+
     def test_loaded_map_page_summary_reports_visible_filter_count(self):
         facts = self.composition.WizardProgressFacts(
             connection_configured=True,

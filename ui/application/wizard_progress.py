@@ -37,6 +37,7 @@ class WizardProgressFacts:
     background_name: str | None = None
     filters_active: bool = False
     filtered_activity_count: int | None = None
+    activity_style_preset: str | None = None
 
 
 def build_wizard_progress_facts_from_runtime_state(
@@ -51,6 +52,7 @@ def build_wizard_progress_facts_from_runtime_state(
     background_name: str | None = None,
     filters_active: bool = False,
     filtered_activity_count: int | None = None,
+    activity_style_preset: str | None = None,
 ) -> WizardProgressFacts:
     """Derive #609 wizard progress facts from the dock runtime snapshot.
 
@@ -86,6 +88,7 @@ def build_wizard_progress_facts_from_runtime_state(
         background_name=_optional_text(background_name),
         filters_active=filters_active,
         filtered_activity_count=filtered_activity_count,
+        activity_style_preset=_optional_text(activity_style_preset),
     )
 
 
@@ -142,6 +145,7 @@ def build_wizard_progress_from_facts_and_settings(
             background_name=facts.background_name,
             filters_active=facts.filters_active,
             filtered_activity_count=facts.filtered_activity_count,
+            activity_style_preset=facts.activity_style_preset,
         )
     )
 

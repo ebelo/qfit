@@ -433,6 +433,7 @@ def _completed_prefix_facts(facts: WizardProgressFacts) -> WizardProgressFacts:
         background_name=facts.background_name,
         filters_active=facts.filters_active,
         filtered_activity_count=facts.filtered_activity_count,
+        activity_style_preset=facts.activity_style_preset,
     )
 
 
@@ -514,6 +515,7 @@ def _map_state_from_facts(facts: WizardProgressFacts) -> MapPageState:
         status_text=_map_status_text(facts, default),
         layer_summary_text=_map_layer_summary(facts, default),
         background_summary_text=_map_background_summary(facts, default),
+        style_summary_text=_map_style_summary(facts, default),
         filter_summary_text=_map_filter_summary(facts, default),
         load_action_enabled=facts.activities_stored,
         apply_action_enabled=facts.activity_layers_loaded,
@@ -550,6 +552,12 @@ def _map_background_summary(facts: WizardProgressFacts, default: MapPageState) -
     if facts.background_name is not None:
         return f"Basemap ready to load: {facts.background_name}"
     return "Basemap enabled"
+
+
+def _map_style_summary(facts: WizardProgressFacts, default: MapPageState) -> str:
+    if facts.activity_style_preset is None:
+        return default.style_summary_text
+    return f"Selected activity style: {facts.activity_style_preset}"
 
 
 def _map_filter_summary(facts: WizardProgressFacts, default: MapPageState) -> str:
