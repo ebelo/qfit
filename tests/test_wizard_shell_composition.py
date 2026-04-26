@@ -386,6 +386,69 @@ class WizardShellCompositionTest(unittest.TestCase):
             "All loaded activities are visible",
         )
 
+    def test_analysis_page_input_summary_reports_filtered_count(self):
+        facts = self.composition.WizardProgressFacts(
+            connection_configured=True,
+            activities_stored=True,
+            activity_layers_loaded=True,
+            filters_active=True,
+            filtered_activity_count=2,
+        )
+
+        assembled = self.composition.build_placeholder_wizard_shell(progress_facts=facts)
+
+        self.assertEqual(
+            assembled.analysis_content.input_summary_label.text(),
+            "2 filtered activities ready for analysis",
+        )
+
+    def test_analysis_page_input_summary_reports_singular_filtered_count(self):
+        facts = self.composition.WizardProgressFacts(
+            connection_configured=True,
+            activities_stored=True,
+            activity_layers_loaded=True,
+            filters_active=True,
+            filtered_activity_count=1,
+        )
+
+        assembled = self.composition.build_placeholder_wizard_shell(progress_facts=facts)
+
+        self.assertEqual(
+            assembled.analysis_content.input_summary_label.text(),
+            "1 filtered activity ready for analysis",
+        )
+
+    def test_analysis_page_input_summary_reports_zero_filtered_count(self):
+        facts = self.composition.WizardProgressFacts(
+            connection_configured=True,
+            activities_stored=True,
+            activity_layers_loaded=True,
+            filters_active=True,
+            filtered_activity_count=0,
+        )
+
+        assembled = self.composition.build_placeholder_wizard_shell(progress_facts=facts)
+
+        self.assertEqual(
+            assembled.analysis_content.input_summary_label.text(),
+            "0 filtered activities ready for analysis",
+        )
+
+    def test_analysis_page_input_summary_reports_filtered_subset_without_count(self):
+        facts = self.composition.WizardProgressFacts(
+            connection_configured=True,
+            activities_stored=True,
+            activity_layers_loaded=True,
+            filters_active=True,
+        )
+
+        assembled = self.composition.build_placeholder_wizard_shell(progress_facts=facts)
+
+        self.assertEqual(
+            assembled.analysis_content.input_summary_label.text(),
+            "Filtered activity subset ready for analysis",
+        )
+
     def test_progress_facts_drive_page_cta_prerequisites_without_marking_done(self):
         facts = self.composition.WizardProgressFacts(connection_configured=True)
 
