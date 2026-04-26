@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 
 from qfit.ui.tokens import COLOR_MUTED, COLOR_SEPARATOR, pill_tone_palette
 
@@ -156,7 +156,7 @@ class FooterStatusBar(QWidget):
             self.path_label.setText("qfit.gpkg")
             self.path_label.setToolTip("")
             return
-        self.path_label.setText(Path(path).name)
+        self.path_label.setText(_path_basename(path))
         self.path_label.setToolTip(path)
 
     def outer_layout(self):
@@ -203,6 +203,12 @@ def _set_footer_pill_tone(widget, tone: str, *, object_name: str) -> None:
         "font-weight: 600; "
         "}"
     )
+
+
+def _path_basename(path: str) -> str:
+    if "\\" in path:
+        return PureWindowsPath(path).name or path
+    return Path(path).name or path
 
 
 __all__ = ["FooterStatusBar"]
