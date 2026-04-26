@@ -453,6 +453,7 @@ def _map_state_from_facts(facts: WizardProgressFacts) -> MapPageState:
             if facts.activity_layers_loaded
             else default.layer_summary_text
         ),
+        load_action_enabled=facts.activities_stored,
         apply_action_enabled=facts.activity_layers_loaded,
     )
 

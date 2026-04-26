@@ -69,6 +69,12 @@ class MapPageContentTest(unittest.TestCase):
             "load_activity_layers",
         )
         self.assertEqual(content.load_layers_button.property("wizardActionRole"), "secondary")
+        self.assertTrue(content.load_layers_button.isEnabled())
+        self.assertEqual(
+            content.load_layers_button.property("wizardActionAvailability"),
+            "available",
+        )
+        self.assertEqual(content.load_layers_button.toolTip(), "")
         self.assertEqual(
             content.apply_filters_button.objectName(),
             "qfitWizardMapApplyFiltersButton",
@@ -133,6 +139,12 @@ class MapPageContentTest(unittest.TestCase):
         )
         self.assertEqual(content.filter_summary_label.property("mapState"), "loaded")
         self.assertEqual(content.load_layers_button.text(), "Reload layers")
+        self.assertTrue(content.load_layers_button.isEnabled())
+        self.assertEqual(
+            content.load_layers_button.property("wizardActionAvailability"),
+            "available",
+        )
+        self.assertEqual(content.load_layers_button.toolTip(), "")
         self.assertEqual(content.apply_filters_button.text(), "Apply saved filters")
         self.assertTrue(content.apply_filters_button.isEnabled())
         self.assertEqual(
@@ -140,6 +152,24 @@ class MapPageContentTest(unittest.TestCase):
             "available",
         )
         self.assertEqual(content.apply_filters_button.toolTip(), "")
+
+    def test_can_block_load_layers_until_sync_prerequisite_is_ready(self):
+        content = self.map_page.MapPageContent(
+            self.map_page.MapPageState(
+                load_action_enabled=False,
+                load_action_blocked_tooltip="Store activities before loading layers.",
+            )
+        )
+
+        self.assertFalse(content.load_layers_button.isEnabled())
+        self.assertEqual(
+            content.load_layers_button.property("wizardActionAvailability"),
+            "blocked",
+        )
+        self.assertEqual(
+            content.load_layers_button.toolTip(),
+            "Store activities before loading layers.",
+        )
 
     def test_can_override_apply_filter_availability(self):
         content = self.map_page.MapPageContent(
