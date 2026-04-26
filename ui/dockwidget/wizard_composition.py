@@ -210,41 +210,61 @@ def refresh_wizard_shell_composition(
     facts change: update only the installed page widgets, then refresh the
     persistent footer and optional stepper progress from the same render-neutral
     state snapshots. Missing page content is skipped so partial/spec-filtered
-    wizard assemblies remain valid.
+    wizard assemblies remain valid. When ``progress_facts`` are provided, their
+    derived page states intentionally replace prior composition state defaults;
+    pass an explicit page state argument for any copy/availability override that
+    should win for that refresh.
     """
 
     page_state_defaults = _page_state_defaults_from_progress_facts(progress_facts)
+    existing_connection_state = (
+        page_state_defaults.connection_state
+        if page_state_defaults is not None
+        else composition.connection_state
+    )
+    existing_sync_state = (
+        page_state_defaults.sync_state
+        if page_state_defaults is not None
+        else composition.sync_state
+    )
+    existing_map_state = (
+        page_state_defaults.map_state
+        if page_state_defaults is not None
+        else composition.map_state
+    )
+    existing_analysis_state = (
+        page_state_defaults.analysis_state
+        if page_state_defaults is not None
+        else composition.analysis_state
+    )
+    existing_atlas_state = (
+        page_state_defaults.atlas_state
+        if page_state_defaults is not None
+        else composition.atlas_state
+    )
     next_connection_state = _resolve_state(
         connection_state,
-        _state_default(
-            page_state_defaults,
-            "connection_state",
-            composition.connection_state,
-        ),
+        existing_connection_state,
         ConnectionPageState,
     )
     next_sync_state = _resolve_state(
         sync_state,
-        _state_default(page_state_defaults, "sync_state", composition.sync_state),
+        existing_sync_state,
         SyncPageState,
     )
     next_map_state = _resolve_state(
         map_state,
-        _state_default(page_state_defaults, "map_state", composition.map_state),
+        existing_map_state,
         MapPageState,
     )
     next_analysis_state = _resolve_state(
         analysis_state,
-        _state_default(
-            page_state_defaults,
-            "analysis_state",
-            composition.analysis_state,
-        ),
+        existing_analysis_state,
         AnalysisPageState,
     )
     next_atlas_state = _resolve_state(
         atlas_state,
-        _state_default(page_state_defaults, "atlas_state", composition.atlas_state),
+        existing_atlas_state,
         AtlasPageState,
     )
     resolved_progress = _resolve_progress(
@@ -324,6 +344,7 @@ def build_wizard_page_states_from_facts(
     available as soon as the connection is configured.
     """
 
+    facts = _completed_prefix_facts(facts)
     return WizardPageStateSnapshots(
         connection_state=_connection_state_from_facts(facts),
         sync_state=_sync_state_from_facts(facts),
@@ -374,6 +395,18 @@ def _page_state_defaults_from_progress_facts(
     if progress_facts is None:
         return None
     return build_wizard_page_states_from_facts(progress_facts)
+
+
+def _completed_prefix_facts(facts: WizardProgressFacts) -> WizardProgressFacts:
+    completed = build_wizard_progress_from_facts(facts).completed_keys
+    return WizardProgressFacts(
+        connection_configured="connection" in completed,
+        activities_stored="sync" in completed,
+        activity_layers_loaded="map" in completed,
+        analysis_generated="analysis" in completed,
+        atlas_exported="atlas" in completed,
+        preferred_current_key=facts.preferred_current_key,
+    )
 
 
 def _connection_state_from_facts(facts: WizardProgressFacts) -> ConnectionPageState:
@@ -487,16 +520,6 @@ def _resolve_state(
     if existing is not None:
         return existing
     return default_factory()
-
-
-def _state_default(
-    page_state_defaults: WizardPageStateSnapshots | None,
-    field_name: str,
-    fallback: _StateT | None,
-) -> _StateT | None:
-    if page_state_defaults is None:
-        return fallback
-    return getattr(page_state_defaults, field_name)
 
 
 def _resolve_page_specs(
