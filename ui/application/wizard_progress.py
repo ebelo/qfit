@@ -3,6 +3,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from .dock_workflow_sections import DockWizardProgress, WIZARD_WORKFLOW_STEPS
+from .wizard_settings import (
+    WizardSettingsSnapshot,
+    preferred_current_key_from_settings,
+)
 
 
 @dataclass(frozen=True)
@@ -40,6 +44,31 @@ def build_wizard_progress_from_facts(facts: WizardProgressFacts) -> DockWizardPr
         current_key=current_key,
         completed_keys=frozenset(completed_keys),
         visited_keys=frozenset({current_key}),
+    )
+
+
+def build_wizard_progress_from_facts_and_settings(
+    facts: WizardProgressFacts,
+    settings: WizardSettingsSnapshot,
+) -> DockWizardProgress:
+    """Build wizard progress while honoring a persisted step preference.
+
+    The persisted step is a preference, not an unlock rule. The normal progress
+    builder still gates it behind completed prerequisites so the wizard cannot
+    restore into a page that should remain locked.
+    """
+
+    if facts.preferred_current_key is not None:
+        return build_wizard_progress_from_facts(facts)
+    return build_wizard_progress_from_facts(
+        WizardProgressFacts(
+            connection_configured=facts.connection_configured,
+            activities_stored=facts.activities_stored,
+            activity_layers_loaded=facts.activity_layers_loaded,
+            analysis_generated=facts.analysis_generated,
+            atlas_exported=facts.atlas_exported,
+            preferred_current_key=preferred_current_key_from_settings(settings),
+        )
     )
 
 
@@ -89,5 +118,6 @@ def _workflow_keys() -> tuple[str, ...]:
 
 __all__ = [
     "WizardProgressFacts",
+    "build_wizard_progress_from_facts_and_settings",
     "build_wizard_progress_from_facts",
 ]

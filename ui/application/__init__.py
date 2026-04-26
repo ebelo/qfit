@@ -64,10 +64,16 @@ from .wizard_settings import (
     clamp_wizard_step_index,
     ensure_wizard_settings,
     load_wizard_settings,
+    preferred_current_key_from_settings,
     save_collapsed_groups,
     save_last_step_index,
+    wizard_step_key_for_index,
 )
-from .wizard_progress import WizardProgressFacts, build_wizard_progress_from_facts
+from .wizard_progress import (
+    WizardProgressFacts,
+    build_wizard_progress_from_facts,
+    build_wizard_progress_from_facts_and_settings,
+)
 from .visual_workflow_action_builder import build_visual_workflow_action
 from .visual_workflow_action_builder import build_visual_workflow_action_inputs
 from .visual_workflow_action_builder import build_visual_workflow_background_inputs
@@ -125,6 +131,7 @@ __all__ = [
     "build_stepper_items",
     "build_stepper_states",
     "build_wizard_progress_from_facts",
+    "build_wizard_progress_from_facts_and_settings",
     "build_wizard_step_statuses",
     "build_visual_layer_refs",
     "build_visual_workflow_action",
@@ -137,8 +144,10 @@ __all__ = [
     "ensure_wizard_settings",
     "get_workflow_section",
     "load_wizard_settings",
+    "preferred_current_key_from_settings",
     "save_collapsed_groups",
     "save_last_step_index",
     "step_index_for_key",
     "step_key_for_index",
+    "wizard_step_key_for_index",
 ]

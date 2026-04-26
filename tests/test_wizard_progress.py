@@ -4,7 +4,9 @@ from qfit.ui.application.dock_workflow_sections import build_progress_wizard_ste
 from qfit.ui.application.wizard_progress import (
     WizardProgressFacts,
     build_wizard_progress_from_facts,
+    build_wizard_progress_from_facts_and_settings,
 )
+from qfit.ui.application.wizard_settings import WizardSettingsSnapshot
 
 
 class WizardProgressFactsTests(unittest.TestCase):
@@ -93,6 +95,42 @@ class WizardProgressFactsTests(unittest.TestCase):
             build_wizard_progress_from_facts(
                 WizardProgressFacts(preferred_current_key="review")
             )
+
+    def test_existing_settings_restore_reachable_preferred_step(self):
+        progress = build_wizard_progress_from_facts_and_settings(
+            WizardProgressFacts(
+                connection_configured=True,
+                activities_stored=True,
+                activity_layers_loaded=True,
+            ),
+            WizardSettingsSnapshot(wizard_version=1, last_step_index=2, first_launch=False),
+        )
+
+        self.assertEqual(progress.current_key, "map")
+        self.assertEqual(
+            progress.completed_keys,
+            frozenset({"connection", "sync", "map"}),
+        )
+
+    def test_first_launch_settings_keep_default_connection_step(self):
+        progress = build_wizard_progress_from_facts_and_settings(
+            WizardProgressFacts(connection_configured=True),
+            WizardSettingsSnapshot(wizard_version=1, last_step_index=4, first_launch=True),
+        )
+
+        self.assertEqual(progress.current_key, "sync")
+
+    def test_explicit_preferred_key_wins_over_persisted_step(self):
+        progress = build_wizard_progress_from_facts_and_settings(
+            WizardProgressFacts(
+                connection_configured=True,
+                activities_stored=True,
+                preferred_current_key="connection",
+            ),
+            WizardSettingsSnapshot(wizard_version=1, last_step_index=2, first_launch=False),
+        )
+
+        self.assertEqual(progress.current_key, "connection")
 
 
 if __name__ == "__main__":
