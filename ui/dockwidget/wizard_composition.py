@@ -450,17 +450,20 @@ def _sync_state_from_facts(facts: WizardProgressFacts) -> SyncPageState:
     if facts.activities_stored:
         status_text = "Activities stored"
         detail_text = "Stored activities are ready for map loading."
+    primary_action_label = default.primary_action_label
     if facts.sync_in_progress:
         status_text = "Synchronization in progress"
         detail_text = (
             "Wait for the current synchronization to finish before starting another sync."
         )
+        primary_action_label = "Sync in progress…"
         sync_blocked_tooltip = "Wait for the current synchronization to finish."
     return SyncPageState(
         ready=facts.activities_stored,
         status_text=status_text,
         detail_text=detail_text,
         activity_summary_text=_sync_activity_summary(facts, default),
+        primary_action_label=primary_action_label,
         primary_action_enabled=facts.connection_configured and not facts.sync_in_progress,
         primary_action_blocked_tooltip=sync_blocked_tooltip,
     )
@@ -541,9 +544,11 @@ def _atlas_state_from_facts(facts: WizardProgressFacts) -> AtlasPageState:
     if facts.atlas_exported:
         status_text = "Atlas PDF exported"
         output_summary_text = "Latest atlas PDF has been exported"
+    primary_action_label = default.primary_action_label
     if facts.atlas_export_in_progress:
         status_text = "Atlas export in progress"
         output_summary_text = "PDF export is running."
+        primary_action_label = "Export in progress…"
         atlas_blocked_tooltip = "Wait for the current atlas export to finish."
     return AtlasPageState(
         ready=facts.atlas_exported,
@@ -554,6 +559,7 @@ def _atlas_state_from_facts(facts: WizardProgressFacts) -> AtlasPageState:
             else default.input_summary_text
         ),
         output_summary_text=output_summary_text,
+        primary_action_label=primary_action_label,
         primary_action_enabled=(
             facts.analysis_generated and not facts.atlas_export_in_progress
         ),
