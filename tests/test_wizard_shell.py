@@ -380,6 +380,17 @@ class WizardShellTest(unittest.TestCase):
         self.assertEqual(footer.path_label.text(), "activities.gpkg")
         self.assertEqual(footer.path_label.toolTip(), "/tmp/qfit-test/activities.gpkg")
 
+    def test_footer_bar_keeps_windows_paths_compact_on_non_windows_hosts(self):
+        footer = self.wizard_shell.FooterStatusBar(footer_text="Ready")
+
+        footer.set_gpkg_path(r"C:\Users\Emman\qfit\activities.gpkg")
+
+        self.assertEqual(footer.path_label.text(), "activities.gpkg")
+        self.assertEqual(
+            footer.path_label.toolTip(),
+            r"C:\Users\Emman\qfit\activities.gpkg",
+        )
+
     def test_footer_bar_uses_muted_copy_for_unknown_counts(self):
         footer = self.wizard_shell.FooterStatusBar()
 
