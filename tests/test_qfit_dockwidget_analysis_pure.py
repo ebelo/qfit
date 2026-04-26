@@ -607,7 +607,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
         dock._load_settings.assert_called_once_with()
         dock._update_connection_status.assert_called_once_with()
-        dock._refresh_summary_status.assert_called_once_with()
+        dock._refresh_summary_status.assert_not_called()
         dock._set_status.assert_called_once_with(
             "Configuration saved; qfit dock connection state refreshed."
         )

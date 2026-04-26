@@ -197,7 +197,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
         self._load_settings()
         self._update_connection_status()
-        self._refresh_summary_status()
         self._set_status("Configuration saved; qfit dock connection state refreshed.")
 
     def _run_wizard_sync_step(self) -> None:
