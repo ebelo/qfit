@@ -217,6 +217,71 @@ class WizardShellCompositionTest(unittest.TestCase):
             assembled.shell.stepper_bar.states(),
             ("done", "done", "current", "locked", "locked"),
         )
+        self.assertEqual(assembled.connection_content.status_label.text(), "Strava connected")
+        self.assertEqual(assembled.connection_content.configure_button.text(), "Review connection")
+        self.assertEqual(assembled.sync_content.status_label.text(), "Activities stored")
+        self.assertTrue(assembled.sync_content.sync_button.isEnabled())
+        self.assertEqual(
+            assembled.map_content.status_label.text(),
+            "Activity layers not loaded",
+        )
+        self.assertFalse(assembled.map_content.apply_filters_button.isEnabled())
+
+    def test_progress_facts_drive_page_cta_prerequisites_without_marking_done(self):
+        facts = self.composition.WizardProgressFacts(connection_configured=True)
+
+        assembled = self.composition.build_placeholder_wizard_shell(progress_facts=facts)
+
+        self.assertEqual(assembled.presenter.progress.current_key, "sync")
+        self.assertEqual(assembled.presenter.progress.completed_keys, frozenset({"connection"}))
+        self.assertEqual(
+            assembled.shell.stepper_bar.states(),
+            ("done", "current", "locked", "locked", "locked"),
+        )
+        self.assertEqual(assembled.sync_content.status_label.text(), "Activities not synced yet")
+        self.assertFalse(assembled.sync_state.ready)
+        self.assertTrue(assembled.sync_content.sync_button.isEnabled())
+        self.assertEqual(
+            assembled.sync_content.sync_button.property("wizardActionAvailability"),
+            "available",
+        )
+        self.assertFalse(assembled.analysis_content.run_analysis_button.isEnabled())
+        self.assertFalse(assembled.atlas_content.export_atlas_button.isEnabled())
+
+    def test_explicit_page_state_overrides_progress_fact_defaults(self):
+        assembled = self.composition.build_placeholder_wizard_shell(
+            progress_facts=self.composition.WizardProgressFacts(connection_configured=True),
+            sync_state=self.composition.SyncPageState(
+                primary_action_enabled=False,
+                primary_action_blocked_tooltip="Sync is paused.",
+            ),
+        )
+
+        self.assertFalse(assembled.sync_content.sync_button.isEnabled())
+        self.assertEqual(assembled.sync_content.sync_button.toolTip(), "Sync is paused.")
+
+    def test_progress_fact_page_states_are_gated_by_completed_prefix(self):
+        assembled = self.composition.build_placeholder_wizard_shell(
+            progress_facts=self.composition.WizardProgressFacts(
+                connection_configured=False,
+                activities_stored=True,
+                activity_layers_loaded=True,
+                analysis_generated=True,
+                atlas_exported=True,
+            )
+        )
+
+        self.assertEqual(assembled.presenter.progress.current_key, "connection")
+        self.assertEqual(assembled.presenter.progress.completed_keys, frozenset())
+        self.assertFalse(assembled.connection_state.connected)
+        self.assertFalse(assembled.sync_state.ready)
+        self.assertFalse(assembled.sync_content.sync_button.isEnabled())
+        self.assertFalse(assembled.map_state.loaded)
+        self.assertFalse(assembled.map_content.apply_filters_button.isEnabled())
+        self.assertFalse(assembled.analysis_state.ready)
+        self.assertFalse(assembled.analysis_content.run_analysis_button.isEnabled())
+        self.assertFalse(assembled.atlas_state.ready)
+        self.assertFalse(assembled.atlas_content.export_atlas_button.isEnabled())
 
     def test_build_rejects_conflicting_progress_inputs(self):
         with self.assertRaisesRegex(ValueError, "progress or progress_facts"):
@@ -477,6 +542,30 @@ class WizardShellCompositionTest(unittest.TestCase):
             assembled.shell.stepper_bar.states(),
             ("done", "done", "done", "current", "locked"),
         )
+        self.assertEqual(assembled.connection_content.status_label.text(), "Strava connected")
+        self.assertEqual(assembled.sync_content.status_label.text(), "Activities stored")
+        self.assertEqual(assembled.map_content.status_label.text(), "Activity layers loaded")
+        self.assertFalse(assembled.analysis_state.ready)
+        self.assertTrue(assembled.analysis_content.run_analysis_button.isEnabled())
+        self.assertFalse(assembled.atlas_content.export_atlas_button.isEnabled())
+
+    def test_refresh_progress_facts_replace_previous_default_state(self):
+        assembled = self.composition.build_placeholder_wizard_shell()
+        self.composition.refresh_wizard_shell_composition(
+            assembled,
+            sync_state=self.composition.SyncPageState(
+                primary_action_enabled=False,
+                primary_action_blocked_tooltip="Sync paused.",
+            ),
+        )
+
+        self.composition.refresh_wizard_shell_composition(
+            assembled,
+            progress_facts=self.composition.WizardProgressFacts(connection_configured=True),
+        )
+
+        self.assertTrue(assembled.sync_content.sync_button.isEnabled())
+        self.assertEqual(assembled.sync_content.sync_button.toolTip(), "")
 
     def test_refresh_rejects_conflicting_progress_inputs_before_mutation(self):
         assembled = self.composition.build_placeholder_wizard_shell()

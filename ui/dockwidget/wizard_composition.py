@@ -56,6 +56,17 @@ class WizardActionCallbacks:
     export_atlas: Callable[[], None] | None = None
 
 
+@dataclass(frozen=True)
+class WizardPageStateSnapshots:
+    """Concrete wizard page state defaults derived from workflow facts."""
+
+    connection_state: ConnectionPageState
+    sync_state: SyncPageState
+    map_state: MapPageState
+    analysis_state: AnalysisPageState
+    atlas_state: AtlasPageState
+
+
 @dataclass
 class WizardShellComposition:
     """Concrete placeholder wizard assembly for the future dock replacement.
@@ -103,11 +114,32 @@ def build_placeholder_wizard_shell(
     migrate later through the stable ``WizardPage.body_layout()`` seams.
     """
 
-    connection_state = connection_state or ConnectionPageState()
-    sync_state = sync_state or SyncPageState()
-    map_state = map_state or MapPageState()
-    analysis_state = analysis_state or AnalysisPageState()
-    atlas_state = atlas_state or AtlasPageState()
+    page_state_defaults = _page_state_defaults_from_progress_facts(progress_facts)
+    connection_state = _resolve_state(
+        connection_state,
+        page_state_defaults.connection_state if page_state_defaults is not None else None,
+        ConnectionPageState,
+    )
+    sync_state = _resolve_state(
+        sync_state,
+        page_state_defaults.sync_state if page_state_defaults is not None else None,
+        SyncPageState,
+    )
+    map_state = _resolve_state(
+        map_state,
+        page_state_defaults.map_state if page_state_defaults is not None else None,
+        MapPageState,
+    )
+    analysis_state = _resolve_state(
+        analysis_state,
+        page_state_defaults.analysis_state if page_state_defaults is not None else None,
+        AnalysisPageState,
+    )
+    atlas_state = _resolve_state(
+        atlas_state,
+        page_state_defaults.atlas_state if page_state_defaults is not None else None,
+        AtlasPageState,
+    )
     resolved_progress = _resolve_progress(
         progress=progress,
         progress_facts=progress_facts,
@@ -178,24 +210,61 @@ def refresh_wizard_shell_composition(
     facts change: update only the installed page widgets, then refresh the
     persistent footer and optional stepper progress from the same render-neutral
     state snapshots. Missing page content is skipped so partial/spec-filtered
-    wizard assemblies remain valid.
+    wizard assemblies remain valid. When ``progress_facts`` are provided, their
+    derived page states intentionally replace prior composition state defaults;
+    pass an explicit page state argument for any copy/availability override that
+    should win for that refresh.
     """
 
+    page_state_defaults = _page_state_defaults_from_progress_facts(progress_facts)
+    existing_connection_state = (
+        page_state_defaults.connection_state
+        if page_state_defaults is not None
+        else composition.connection_state
+    )
+    existing_sync_state = (
+        page_state_defaults.sync_state
+        if page_state_defaults is not None
+        else composition.sync_state
+    )
+    existing_map_state = (
+        page_state_defaults.map_state
+        if page_state_defaults is not None
+        else composition.map_state
+    )
+    existing_analysis_state = (
+        page_state_defaults.analysis_state
+        if page_state_defaults is not None
+        else composition.analysis_state
+    )
+    existing_atlas_state = (
+        page_state_defaults.atlas_state
+        if page_state_defaults is not None
+        else composition.atlas_state
+    )
     next_connection_state = _resolve_state(
         connection_state,
-        composition.connection_state,
+        existing_connection_state,
         ConnectionPageState,
     )
-    next_sync_state = _resolve_state(sync_state, composition.sync_state, SyncPageState)
-    next_map_state = _resolve_state(map_state, composition.map_state, MapPageState)
+    next_sync_state = _resolve_state(
+        sync_state,
+        existing_sync_state,
+        SyncPageState,
+    )
+    next_map_state = _resolve_state(
+        map_state,
+        existing_map_state,
+        MapPageState,
+    )
     next_analysis_state = _resolve_state(
         analysis_state,
-        composition.analysis_state,
+        existing_analysis_state,
         AnalysisPageState,
     )
     next_atlas_state = _resolve_state(
         atlas_state,
-        composition.atlas_state,
+        existing_atlas_state,
         AtlasPageState,
     )
     resolved_progress = _resolve_progress(
@@ -264,6 +333,27 @@ def connect_wizard_action_callbacks(
     return composition
 
 
+def build_wizard_page_states_from_facts(
+    facts: WizardProgressFacts,
+) -> WizardPageStateSnapshots:
+    """Build page status and CTA defaults from render-neutral progress facts.
+
+    The progress facts model completed workflow milestones. Page CTAs need the
+    related prerequisite availability too: for example, the sync step is not
+    complete until activities are stored, but its primary action becomes
+    available as soon as the connection is configured.
+    """
+
+    facts = _completed_prefix_facts(facts)
+    return WizardPageStateSnapshots(
+        connection_state=_connection_state_from_facts(facts),
+        sync_state=_sync_state_from_facts(facts),
+        map_state=_map_state_from_facts(facts),
+        analysis_state=_analysis_state_from_facts(facts),
+        atlas_state=_atlas_state_from_facts(facts),
+    )
+
+
 def _connect_action_callbacks(
     *,
     connection_content: ConnectionPageContent | None,
@@ -297,6 +387,112 @@ def _resolve_progress(
     if progress_facts is None:
         return progress
     return build_wizard_progress_from_facts(progress_facts)
+
+
+def _page_state_defaults_from_progress_facts(
+    progress_facts: WizardProgressFacts | None,
+) -> WizardPageStateSnapshots | None:
+    if progress_facts is None:
+        return None
+    return build_wizard_page_states_from_facts(progress_facts)
+
+
+def _completed_prefix_facts(facts: WizardProgressFacts) -> WizardProgressFacts:
+    completed = build_wizard_progress_from_facts(facts).completed_keys
+    return WizardProgressFacts(
+        connection_configured="connection" in completed,
+        activities_stored="sync" in completed,
+        activity_layers_loaded="map" in completed,
+        analysis_generated="analysis" in completed,
+        atlas_exported="atlas" in completed,
+        preferred_current_key=facts.preferred_current_key,
+    )
+
+
+def _connection_state_from_facts(facts: WizardProgressFacts) -> ConnectionPageState:
+    default = ConnectionPageState()
+    if not facts.connection_configured:
+        return default
+    return ConnectionPageState(
+        connected=True,
+        status_text="Strava connected",
+        detail_text="Connection is configured; continue to synchronization.",
+        primary_action_label="Review connection",
+        primary_action_enabled=True,
+    )
+
+
+def _sync_state_from_facts(facts: WizardProgressFacts) -> SyncPageState:
+    default = SyncPageState()
+    return SyncPageState(
+        ready=facts.activities_stored,
+        status_text="Activities stored" if facts.activities_stored else default.status_text,
+        detail_text=(
+            "Stored activities are ready for map loading."
+            if facts.activities_stored
+            else default.detail_text
+        ),
+        activity_summary_text=(
+            "Activities stored in GeoPackage"
+            if facts.activities_stored
+            else default.activity_summary_text
+        ),
+        primary_action_enabled=facts.connection_configured,
+    )
+
+
+def _map_state_from_facts(facts: WizardProgressFacts) -> MapPageState:
+    default = MapPageState()
+    return MapPageState(
+        loaded=facts.activity_layers_loaded,
+        status_text=(
+            "Activity layers loaded" if facts.activity_layers_loaded else default.status_text
+        ),
+        layer_summary_text=(
+            "Activity layers are loaded on the map"
+            if facts.activity_layers_loaded
+            else default.layer_summary_text
+        ),
+        apply_action_enabled=facts.activity_layers_loaded,
+    )
+
+
+def _analysis_state_from_facts(facts: WizardProgressFacts) -> AnalysisPageState:
+    default = AnalysisPageState()
+    return AnalysisPageState(
+        ready=facts.analysis_generated,
+        status_text="Analysis ready" if facts.analysis_generated else default.status_text,
+        input_summary_text=(
+            "Activity layers ready for analysis"
+            if facts.activity_layers_loaded
+            else default.input_summary_text
+        ),
+        result_summary_text=(
+            "Analysis outputs are available"
+            if facts.analysis_generated
+            else default.result_summary_text
+        ),
+        primary_action_enabled=facts.activity_layers_loaded,
+    )
+
+
+def _atlas_state_from_facts(facts: WizardProgressFacts) -> AtlasPageState:
+    default = AtlasPageState()
+    return AtlasPageState(
+        ready=facts.atlas_exported,
+        status_text="Atlas PDF exported" if facts.atlas_exported else default.status_text,
+        input_summary_text=(
+            "Analysis outputs ready for atlas export"
+            if facts.analysis_generated
+            else default.input_summary_text
+        ),
+        output_summary_text=(
+            "Latest atlas PDF has been exported"
+            if facts.atlas_exported
+            else default.output_summary_text
+        ),
+        primary_action_enabled=facts.analysis_generated,
+    )
 
 
 def _validate_progress_targets_installed_page(
@@ -417,9 +613,11 @@ def _install_atlas_content(
 
 __all__ = [
     "WizardActionCallbacks",
+    "WizardPageStateSnapshots",
     "WizardProgressFacts",
     "WizardShellComposition",
     "build_placeholder_wizard_shell",
+    "build_wizard_page_states_from_facts",
     "connect_wizard_action_callbacks",
     "refresh_wizard_shell_composition",
 ]
