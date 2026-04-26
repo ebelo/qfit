@@ -48,6 +48,11 @@ class MapPageState:
     load_action_label: str = "Load activity layers"
     load_action_enabled: bool = True
     load_action_blocked_tooltip: str = "Sync activities before loading map layers."
+    edit_filters_action_label: str = "Edit filters"
+    edit_filters_action_enabled: bool = False
+    edit_filters_action_blocked_tooltip: str = (
+        "Sync activities before editing map filters."
+    )
     primary_action_label: str = "Apply filters"
     apply_action_enabled: bool | None = None
     apply_action_blocked_tooltip: str = "Load activity layers before applying filters."
@@ -57,6 +62,7 @@ class MapPageContent(QWidget):
     """Reusable third-page content for the wizard map-and-filters step."""
 
     loadLayersRequested = pyqtSignal()
+    editFiltersRequested = pyqtSignal(bool)
     applyFiltersRequested = pyqtSignal()
 
     def __init__(self, state: MapPageState | None = None, parent=None) -> None:
@@ -88,6 +94,13 @@ class MapPageContent(QWidget):
             action_name="load_activity_layers",
         )
         self.load_layers_button.clicked.connect(self.loadLayersRequested.emit)
+        self.edit_filters_button = QToolButton(self)
+        self.edit_filters_button.setObjectName("qfitWizardMapEditFiltersButton")
+        style_secondary_action_button(
+            self.edit_filters_button,
+            action_name="edit_map_filters",
+        )
+        self.edit_filters_button.clicked.connect(self._toggle_filter_controls)
         self.apply_filters_button = QToolButton(self)
         self.apply_filters_button.setObjectName("qfitWizardMapApplyFiltersButton")
         style_primary_action_button(
@@ -97,10 +110,16 @@ class MapPageContent(QWidget):
         self.apply_filters_button.clicked.connect(self.applyFiltersRequested.emit)
         self.action_row = build_wizard_action_row(
             self.load_layers_button,
+            self.edit_filters_button,
             self.apply_filters_button,
             parent=self,
             object_name="qfitWizardMapActionRow",
         )
+        self.filter_controls_panel = QWidget(self)
+        self.filter_controls_panel.setObjectName("qfitWizardMapFilterControlsPanel")
+        self.filter_controls_panel.setVisible(False)
+        self.filter_controls_panel.setProperty("filterControlsState", "collapsed")
+        self._filter_controls_layout = self._build_filter_controls_layout()
         self._layout = self._build_layout()
         self.set_state(state or MapPageState())
 
@@ -126,6 +145,14 @@ class MapPageContent(QWidget):
             enabled=state.load_action_enabled,
             tooltip=state.load_action_blocked_tooltip,
         )
+        self.edit_filters_button.setText(state.edit_filters_action_label)
+        set_wizard_action_availability(
+            self.edit_filters_button,
+            enabled=state.edit_filters_action_enabled,
+            tooltip=state.edit_filters_action_blocked_tooltip,
+        )
+        if self.filter_controls_panel.isVisible():
+            self.edit_filters_button.setText("Hide filters")
         self.apply_filters_button.setText(state.primary_action_label)
         apply_action_enabled = (
             state.loaded
@@ -138,10 +165,38 @@ class MapPageContent(QWidget):
             tooltip=state.apply_action_blocked_tooltip,
         )
 
+    def filter_controls_layout(self):
+        """Expose the wizard panel slot for live map-filter controls."""
+
+        return self._filter_controls_layout
+
+    def set_filter_controls_visible(self, visible: bool) -> None:
+        """Show or hide the embedded filter controls without rebuilding the page."""
+
+        self.filter_controls_panel.setVisible(visible)
+        self.filter_controls_panel.setProperty(
+            "filterControlsState",
+            "expanded" if visible else "collapsed",
+        )
+        self.edit_filters_button.setText("Hide filters" if visible else "Edit filters")
+
+    def _toggle_filter_controls(self) -> None:
+        next_visible = not self.filter_controls_panel.isVisible()
+        self.set_filter_controls_visible(next_visible)
+        self.editFiltersRequested.emit(next_visible)
+
     def outer_layout(self):
         """Expose the layout for adapter wiring and pure tests."""
 
         return self._layout
+
+    def _build_filter_controls_layout(self):
+        layout = QVBoxLayout(self.filter_controls_panel)
+        if hasattr(layout, "setObjectName"):
+            layout.setObjectName("qfitWizardMapFilterControlsLayout")
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(6)
+        return layout
 
     def _build_layout(self):
         layout = QVBoxLayout(self)
@@ -156,6 +211,7 @@ class MapPageContent(QWidget):
         layout.addWidget(self.style_summary_label)
         layout.addWidget(self.filter_summary_label)
         layout.addWidget(self.action_row)
+        layout.addWidget(self.filter_controls_panel)
         return layout
 
 
