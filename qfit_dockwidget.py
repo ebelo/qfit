@@ -1057,7 +1057,10 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._set_status("GeoPackage export failed")
             return
 
-        self._runtime_store().finish_store(output_path=result.output_path)
+        self._runtime_store().finish_store(
+            output_path=result.output_path,
+            stored_activity_count=result.total_stored,
+        )
         self._mark_atlas_export_stale()
         self._update_stored_activities_summary(result.total_stored)
         self._set_status(result.status)
@@ -1083,6 +1086,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
         self._runtime_store().load_dataset(
             output_path=result.output_path,
+            stored_activity_count=result.total_stored,
             activities_layer=result.activities_layer,
             starts_layer=result.starts_layer,
             points_layer=result.points_layer,

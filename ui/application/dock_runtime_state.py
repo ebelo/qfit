@@ -81,6 +81,7 @@ class DockRuntimeTasks:
 class DockRuntimeState:
     activities: tuple[object, ...] = field(default_factory=tuple)
     output_path: str | None = None
+    stored_activity_count: int | None = None
     last_fetch_context: dict[str, Any] = field(default_factory=dict)
     layers: DockRuntimeLayers = field(default_factory=DockRuntimeLayers)
     tasks: DockRuntimeTasks = field(default_factory=DockRuntimeTasks)
@@ -214,10 +215,20 @@ class DockRuntimeStore:
     def begin_store(self, task) -> DockRuntimeState:
         return self.set_store_task(task)
 
-    def finish_store(self, *, output_path: str | None = None) -> DockRuntimeState:
+    def finish_store(
+        self,
+        *,
+        output_path: str | None = None,
+        stored_activity_count: int | None = None,
+    ) -> DockRuntimeState:
         next_state = replace(self._state, tasks=self._state.tasks.clear_store())
         if output_path is not None:
             next_state = replace(next_state, output_path=output_path)
+        if stored_activity_count is not None:
+            next_state = replace(
+                next_state,
+                stored_activity_count=max(int(stored_activity_count), 0),
+            )
         self._state = next_state
         return self._state
 
@@ -225,6 +236,7 @@ class DockRuntimeStore:
         self,
         *,
         output_path: str | None,
+        stored_activity_count: int | None = None,
         activities_layer=None,
         starts_layer=None,
         points_layer=None,
@@ -232,6 +244,11 @@ class DockRuntimeStore:
     ) -> DockRuntimeState:
         return self._replace_state(
             output_path=output_path,
+            stored_activity_count=(
+                None
+                if stored_activity_count is None
+                else max(int(stored_activity_count), 0)
+            ),
             layers=self._state.layers.with_dataset(
                 activities_layer=activities_layer,
                 starts_layer=starts_layer,
@@ -244,6 +261,7 @@ class DockRuntimeStore:
         self,
         *,
         output_path: str | None,
+        stored_activity_count: int | None = None,
         activities_layer=None,
         starts_layer=None,
         points_layer=None,
@@ -251,6 +269,7 @@ class DockRuntimeStore:
     ) -> DockRuntimeState:
         return self.load_dataset(
             output_path=output_path,
+            stored_activity_count=stored_activity_count,
             activities_layer=activities_layer,
             starts_layer=starts_layer,
             points_layer=points_layer,
@@ -261,6 +280,7 @@ class DockRuntimeStore:
         return self._replace_state(
             activities=(),
             output_path=None,
+            stored_activity_count=None,
             last_fetch_context={},
             layers=self._state.layers.clear_dataset(),
         )
