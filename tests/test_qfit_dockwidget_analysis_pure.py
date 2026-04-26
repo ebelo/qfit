@@ -5,6 +5,7 @@ from types import ModuleType, SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 from tests import _path  # noqa: F401
+from qfit.activities.domain.activity_query import DETAILED_ROUTE_FILTER_MISSING
 
 
 class _AutoModule(ModuleType):
@@ -499,12 +500,13 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             activities_layer=_FakeSubsetLayer('"activity_type" = \'Run\'', 2),
         )
 
-        filters_active, filtered_count = (
+        filters_active, filtered_count, filter_description = (
             self.module.QfitDockWidget._current_wizard_filter_facts(dock)
         )
 
         self.assertTrue(filters_active)
         self.assertEqual(filtered_count, 2)
+        self.assertEqual(filter_description, "layer subset")
 
     def test_current_wizard_filter_facts_treats_empty_loaded_subset_as_unfiltered(self):
         dock = object.__new__(self.module.QfitDockWidget)
@@ -515,12 +517,45 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             activities_layer=_FakeSubsetLayer("", 3),
         )
 
-        filters_active, filtered_count = (
+        filters_active, filtered_count, filter_description = (
             self.module.QfitDockWidget._current_wizard_filter_facts(dock)
         )
 
         self.assertFalse(filters_active)
         self.assertIsNone(filtered_count)
+        self.assertIsNone(filter_description)
+
+    def test_current_wizard_filter_facts_describes_preview_request_filters(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._runtime_state_store = self.module.DockRuntimeStore()
+        dock._runtime_store().set_activities([object(), object(), object()])
+        preview_request = SimpleNamespace(
+            activity_type="Run",
+            search_text="alps",
+            date_from="2026-04-01",
+            date_to=None,
+            min_distance_km=10,
+            max_distance_km=None,
+            detailed_route_filter=DETAILED_ROUTE_FILTER_MISSING,
+        )
+        dock._current_activity_preview_request = MagicMock(return_value=preview_request)
+
+        with patch.object(
+            self.module,
+            "build_activity_preview_selection_state",
+            return_value=SimpleNamespace(filtered_count=1),
+        ):
+            filters_active, filtered_count, filter_description = (
+                self.module.QfitDockWidget._current_wizard_filter_facts(dock)
+            )
+
+        self.assertTrue(filters_active)
+        self.assertEqual(filtered_count, 1)
+        self.assertEqual(
+            filter_description,
+            "type: Run · search: “alps” · dates: from 2026-04-01 · "
+            "distance: ≥ 10 km · routes: missing details",
+        )
 
     def test_persist_wizard_step_index_clamps_and_saves_setting(self):
         dock = object.__new__(self.module.QfitDockWidget)

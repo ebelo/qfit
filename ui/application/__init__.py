@@ -53,6 +53,7 @@ from .stepper_presenter import (
     step_index_for_key,
     step_key_for_index,
 )
+from .wizard_filter_summary import build_wizard_filter_description
 from .wizard_settings import (
     COLLAPSED_GROUPS_KEY,
     DEFAULT_COLLAPSED_GROUP_OBJECT_NAMES,
@@ -131,6 +132,7 @@ __all__ = [
     "build_progress_wizard_step_statuses",
     "build_stepper_items",
     "build_stepper_states",
+    "build_wizard_filter_description",
     "build_wizard_progress_facts_from_runtime_state",
     "build_wizard_progress_from_facts",
     "build_wizard_progress_from_facts_and_settings",
