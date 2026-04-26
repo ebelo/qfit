@@ -7,6 +7,7 @@ from .action_row import (
     build_wizard_action_row,
     set_wizard_action_availability,
     style_primary_action_button,
+    style_secondary_action_button,
 )
 from .page_content_style import (
     style_detail_label,
@@ -39,17 +40,21 @@ class SyncPageState:
 
     ready: bool = False
     status_text: str = "Activities not synced yet"
-    detail_text: str = "Fetch Strava activities and store detailed routes in the GeoPackage."
+    detail_text: str = "Sync Strava activities or load an existing GeoPackage."
     activity_summary_text: str = "No activities stored"
     primary_action_label: str = "Sync activities"
     primary_action_enabled: bool = True
     primary_action_blocked_tooltip: str = "Configure the Strava connection before syncing."
+    local_action_label: str = "Load activities"
+    local_action_enabled: bool = False
+    local_action_blocked_tooltip: str = "Select an existing GeoPackage before loading activities."
 
 
 class SyncPageContent(QWidget):
     """Reusable second-page content for the wizard synchronization step."""
 
     syncRequested = pyqtSignal()
+    loadActivitiesRequested = pyqtSignal()
 
     def __init__(self, state: SyncPageState | None = None, parent=None) -> None:
         super().__init__(parent)
@@ -71,7 +76,15 @@ class SyncPageContent(QWidget):
             action_name="sync_activities",
         )
         self.sync_button.clicked.connect(self.syncRequested.emit)
+        self.load_button = QToolButton(self)
+        self.load_button.setObjectName("qfitWizardSyncLoadButton")
+        style_secondary_action_button(
+            self.load_button,
+            action_name="load_activities",
+        )
+        self.load_button.clicked.connect(self.loadActivitiesRequested.emit)
         self.action_row = build_wizard_action_row(
+            self.load_button,
             self.sync_button,
             parent=self,
             object_name="qfitWizardSyncActionRow",
@@ -94,6 +107,12 @@ class SyncPageContent(QWidget):
             self.sync_button,
             enabled=state.primary_action_enabled,
             tooltip=state.primary_action_blocked_tooltip,
+        )
+        self.load_button.setText(state.local_action_label)
+        set_wizard_action_availability(
+            self.load_button,
+            enabled=state.local_action_enabled,
+            tooltip=state.local_action_blocked_tooltip,
         )
 
     def outer_layout(self):

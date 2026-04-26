@@ -409,6 +409,11 @@ def _connect_action_callbacks(
     )
     _connect_optional_signal(sync_content, "syncRequested", callbacks.sync_activities)
     _connect_optional_signal(
+        sync_content,
+        "loadActivitiesRequested",
+        callbacks.load_activity_layers,
+    )
+    _connect_optional_signal(
         map_content,
         "loadLayersRequested",
         callbacks.load_activity_layers,
@@ -469,7 +474,7 @@ def _page_state_defaults_from_progress_facts(
 def _completed_prefix_facts(facts: WizardProgressFacts) -> WizardProgressFacts:
     completed = build_wizard_progress_from_facts(facts).completed_keys
     return WizardProgressFacts(
-        connection_configured="connection" in completed,
+        connection_configured=facts.connection_configured,
         activities_fetched=facts.activities_fetched,
         activities_stored="sync" in completed,
         activity_layers_loaded="map" in completed,
@@ -517,16 +522,29 @@ def _apply_footer_facts(footer_bar, footer_facts: WizardFooterFacts | None) -> N
 
 def _connection_state_from_facts(facts: WizardProgressFacts) -> ConnectionPageState:
     default = ConnectionPageState()
-    if not facts.connection_configured:
-        return default
-    return ConnectionPageState(
-        connected=True,
-        status_text="Strava connected",
-        detail_text="Connection is configured; continue to synchronization.",
-        credential_summary_text="Strava OAuth credentials are stored in qfit settings",
-        primary_action_label="Review connection",
-        primary_action_enabled=True,
-    )
+    if facts.connection_configured:
+        return ConnectionPageState(
+            connected=True,
+            status_text="Strava connected",
+            detail_text="Connection is configured; continue to synchronization.",
+            credential_summary_text="Strava OAuth credentials are stored in qfit settings",
+            primary_action_label="Review connection",
+            primary_action_enabled=True,
+        )
+    if facts.activities_stored:
+        return ConnectionPageState(
+            connected=True,
+            status_text="Local GeoPackage available",
+            detail_text=(
+                "Strava credentials are optional while loading existing activities."
+            ),
+            credential_summary_text=(
+                "Using an existing GeoPackage; configure Strava only to sync new data"
+            ),
+            primary_action_label="Configure Strava",
+            primary_action_enabled=True,
+        )
+    return default
 
 
 def _sync_state_from_facts(facts: WizardProgressFacts) -> SyncPageState:
@@ -534,12 +552,14 @@ def _sync_state_from_facts(facts: WizardProgressFacts) -> SyncPageState:
     status_text = default.status_text
     detail_text = default.detail_text
     sync_blocked_tooltip = default.primary_action_blocked_tooltip
-    if not facts.connection_configured:
+    if facts.activities_stored:
+        status_text = "Activities stored"
+        detail_text = (
+            "Stored activities are ready to load from the existing GeoPackage."
+        )
+    elif not facts.connection_configured:
         status_text = "Connection required before sync"
         detail_text = "Configure Strava credentials before syncing activities."
-    elif facts.activities_stored:
-        status_text = "Activities stored"
-        detail_text = "Stored activities are ready for map loading."
     elif facts.activities_fetched:
         status_text = "Activities fetched"
         detail_text = (
@@ -563,7 +583,20 @@ def _sync_state_from_facts(facts: WizardProgressFacts) -> SyncPageState:
         primary_action_label=primary_action_label,
         primary_action_enabled=facts.connection_configured and not facts.sync_in_progress,
         primary_action_blocked_tooltip=sync_blocked_tooltip,
+        local_action_enabled=facts.activities_stored and not facts.sync_in_progress,
+        local_action_blocked_tooltip=_sync_local_action_blocked_tooltip(facts, default),
     )
+
+
+def _sync_local_action_blocked_tooltip(
+    facts: WizardProgressFacts,
+    default: SyncPageState,
+) -> str:
+    if facts.sync_in_progress:
+        return "Wait for the current synchronization to finish."
+    if not facts.activities_stored:
+        return default.local_action_blocked_tooltip
+    return ""
 
 
 def _sync_activity_summary(

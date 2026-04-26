@@ -289,6 +289,7 @@ class WizardShellCompositionTest(unittest.TestCase):
 
         assembled.connection_content.configure_button.clicked.emit()
         assembled.sync_content.sync_button.clicked.emit()
+        assembled.sync_content.load_button.clicked.emit()
         assembled.map_content.load_layers_button.clicked.emit()
         assembled.map_content.edit_filters_button.clicked.emit()
         assembled.map_content.apply_filters_button.clicked.emit()
@@ -303,6 +304,7 @@ class WizardShellCompositionTest(unittest.TestCase):
             [
                 "configure",
                 "sync",
+                "load",
                 "load",
                 "edit:True",
                 "filter",
@@ -396,6 +398,8 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertEqual(assembled.connection_content.configure_button.text(), "Review connection")
         self.assertEqual(assembled.sync_content.status_label.text(), "Activities stored")
         self.assertTrue(assembled.sync_content.sync_button.isEnabled())
+        self.assertTrue(assembled.sync_content.load_button.isEnabled())
+        self.assertEqual(assembled.sync_content.load_button.text(), "Load activities")
         self.assertEqual(
             assembled.map_content.status_label.text(),
             "Stored activities ready to load",
@@ -412,6 +416,34 @@ class WizardShellCompositionTest(unittest.TestCase):
             assembled.map_content.apply_filters_button.property("wizardActionAvailability"),
             "available",
         )
+
+    def test_local_geopackage_flow_reaches_map_without_strava_connection(self):
+        facts = self.composition.WizardProgressFacts(
+            connection_configured=False,
+            activities_stored=True,
+            output_name="offline.gpkg",
+            preferred_current_key="map",
+        )
+
+        assembled = self.composition.build_placeholder_wizard_shell(progress_facts=facts)
+
+        self.assertEqual(assembled.presenter.progress.current_key, "map")
+        self.assertEqual(
+            assembled.presenter.progress.completed_keys,
+            frozenset({"connection", "sync"}),
+        )
+        self.assertEqual(
+            assembled.connection_content.status_label.text(),
+            "Local GeoPackage available",
+        )
+        self.assertEqual(assembled.sync_content.status_label.text(), "Activities stored")
+        self.assertFalse(assembled.sync_content.sync_button.isEnabled())
+        self.assertTrue(assembled.sync_content.load_button.isEnabled())
+        self.assertEqual(
+            assembled.map_content.status_label.text(),
+            "Stored activities ready to load",
+        )
+        self.assertTrue(assembled.map_content.apply_filters_button.isEnabled())
 
     def test_existing_wizard_settings_restore_reachable_initial_step(self):
         settings = self.composition.WizardSettingsSnapshot(
@@ -1118,7 +1150,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         assembled = self.composition.build_placeholder_wizard_shell(
             progress_facts=self.composition.WizardProgressFacts(
                 connection_configured=False,
-                activities_stored=True,
+                activities_stored=False,
                 activity_layers_loaded=True,
                 analysis_generated=True,
                 atlas_exported=True,
