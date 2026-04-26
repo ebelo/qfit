@@ -1506,6 +1506,30 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertIsNone(dock._atlas_export_task_output_path)
         dock._refresh_summary_status.assert_called_once_with()
 
+    def test_on_atlas_pdf_browse_preserves_running_export_output_path(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._runtime_state_store = self.module.DockRuntimeStore()
+        dock._runtime_store().set_atlas_export_task(object())
+        dock.atlasPdfPathLineEdit = _FakeLineEdit("/tmp/old-atlas.pdf")
+        dock._atlas_export_completed = True
+        dock._atlas_export_output_path = "/tmp/old-atlas.pdf"
+        dock._atlas_export_task_output_path = "/tmp/running-atlas.pdf"
+        dock._refresh_summary_status = MagicMock()
+
+        with patch.object(
+            self.module.QFileDialog,
+            "getSaveFileName",
+            return_value=("/tmp/new-atlas", "PDF files (*.pdf)"),
+            create=True,
+        ):
+            self.module.QfitDockWidget.on_atlas_pdf_browse_clicked(dock)
+
+        self.assertEqual(dock.atlasPdfPathLineEdit.text(), "/tmp/new-atlas.pdf")
+        self.assertFalse(dock._atlas_export_completed)
+        self.assertIsNone(dock._atlas_export_output_path)
+        self.assertEqual(dock._atlas_export_task_output_path, "/tmp/running-atlas.pdf")
+        dock._refresh_summary_status.assert_called_once_with()
+
     def test_on_clear_database_clicked_reports_missing_output_path_via_helper(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock.outputPathLineEdit = _FakeLineEdit("")

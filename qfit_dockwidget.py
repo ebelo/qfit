@@ -274,7 +274,8 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def _mark_atlas_export_stale(self) -> None:
         self._atlas_export_completed = False
         self._atlas_export_output_path = None
-        self._atlas_export_task_output_path = None
+        if self.runtime_state.atlas_export_task is None:
+            self._atlas_export_task_output_path = None
 
     def _runtime_store(self) -> DockRuntimeStore:
         store = getattr(self, "_runtime_state_store", None)
