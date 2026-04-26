@@ -8,7 +8,11 @@ from qfit.ui.application.dock_workflow_sections import (
     DockWizardProgress,
     build_progress_wizard_step_statuses,
 )
-from qfit.ui.application.wizard_footer_status import build_wizard_footer_status
+from qfit.ui.application.wizard_footer_status import (
+    WizardFooterFacts,
+    build_wizard_footer_facts_from_progress_facts,
+    build_wizard_footer_status,
+)
 from qfit.ui.application.wizard_page_specs import (
     DockWizardPageSpec,
     build_default_wizard_page_specs,
@@ -152,6 +156,7 @@ def build_placeholder_wizard_shell(
         progress_facts=progress_facts,
         wizard_settings=wizard_settings,
     )
+    footer_facts = _footer_facts_from_progress_facts(progress_facts)
     page_specs = _resolve_page_specs(specs)
     shell = WizardShell(
         parent=parent,
@@ -165,6 +170,7 @@ def build_placeholder_wizard_shell(
             atlas_state=atlas_state,
         ),
     )
+    _apply_footer_facts(shell.footer_bar, footer_facts)
     pages = install_wizard_pages(shell, specs=page_specs)
     connection_content = _install_connection_content(
         pages,
@@ -283,6 +289,7 @@ def refresh_wizard_shell_composition(
         progress_facts=progress_facts,
         wizard_settings=wizard_settings,
     )
+    footer_facts = _footer_facts_from_progress_facts(progress_facts)
     _validate_progress_targets_installed_page(resolved_progress, composition.pages)
 
     if composition.connection_content is not None:
@@ -308,6 +315,7 @@ def refresh_wizard_shell_composition(
             atlas_state=next_atlas_state,
         )
     )
+    _apply_footer_facts(composition.shell.footer_bar, footer_facts)
     if resolved_progress is not None:
         composition.presenter.set_progress(resolved_progress)
 
@@ -436,7 +444,27 @@ def _completed_prefix_facts(facts: WizardProgressFacts) -> WizardProgressFacts:
         filters_active=facts.filters_active,
         filtered_activity_count=facts.filtered_activity_count,
         activity_style_preset=facts.activity_style_preset,
+        loaded_layer_count=facts.loaded_layer_count,
     )
+
+
+def _footer_facts_from_progress_facts(
+    progress_facts: WizardProgressFacts | None,
+) -> WizardFooterFacts | None:
+    if progress_facts is None:
+        return None
+    return build_wizard_footer_facts_from_progress_facts(
+        _completed_prefix_facts(progress_facts)
+    )
+
+
+def _apply_footer_facts(footer_bar, footer_facts: WizardFooterFacts | None) -> None:
+    if footer_facts is None:
+        return
+    footer_bar.set_strava(footer_facts.strava_connected)
+    footer_bar.set_activity_count(footer_facts.activity_count)
+    footer_bar.set_layer_count(footer_facts.layer_count)
+    footer_bar.set_gpkg_path(footer_facts.gpkg_path)
 
 
 def _connection_state_from_facts(facts: WizardProgressFacts) -> ConnectionPageState:

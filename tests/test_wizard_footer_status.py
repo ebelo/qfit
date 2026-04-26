@@ -2,7 +2,12 @@ import unittest
 
 from tests import _path  # noqa: F401
 
-from qfit.ui.application.wizard_footer_status import build_wizard_footer_status
+from qfit.ui.application.wizard_footer_status import (
+    WizardFooterFacts,
+    build_wizard_footer_facts_from_progress_facts,
+    build_wizard_footer_status,
+)
+from qfit.ui.application.wizard_progress import WizardProgressFacts
 
 
 class WizardFooterStatusTests(unittest.TestCase):
@@ -41,6 +46,53 @@ class WizardFooterStatusTests(unittest.TestCase):
                 atlas_status=None,
             ),
             "Ready",
+        )
+
+    def test_builds_explicit_footer_facts_from_progress_facts(self):
+        facts = WizardProgressFacts(
+            connection_configured=True,
+            activities_stored=True,
+            activity_layers_loaded=True,
+            activity_count=12,
+            output_name="qfit.gpkg",
+            loaded_layer_count=4,
+        )
+
+        self.assertEqual(
+            build_wizard_footer_facts_from_progress_facts(facts),
+            WizardFooterFacts(
+                strava_connected=True,
+                activity_count=12,
+                layer_count=4,
+                gpkg_path="qfit.gpkg",
+            ),
+        )
+
+    def test_footer_facts_do_not_report_unstored_or_unloaded_counts(self):
+        facts = WizardProgressFacts(
+            connection_configured=True,
+            activities_fetched=True,
+            fetched_activity_count=5,
+            activity_count=99,
+            loaded_layer_count=4,
+        )
+
+        self.assertEqual(
+            build_wizard_footer_facts_from_progress_facts(facts),
+            WizardFooterFacts(
+                strava_connected=True,
+                activity_count=None,
+                layer_count=0,
+                gpkg_path=None,
+            ),
+        )
+
+    def test_footer_facts_fall_back_to_single_loaded_layer_when_count_unknown(self):
+        facts = WizardProgressFacts(activity_layers_loaded=True)
+
+        self.assertEqual(
+            build_wizard_footer_facts_from_progress_facts(facts).layer_count,
+            1,
         )
 
 
