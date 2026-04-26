@@ -11,8 +11,10 @@ from qfit.ui.application.wizard_settings import (
     clamp_wizard_step_index,
     ensure_wizard_settings,
     load_wizard_settings,
+    preferred_current_key_from_settings,
     save_collapsed_groups,
     save_last_step_index,
+    wizard_step_key_for_index,
 )
 
 
@@ -106,6 +108,22 @@ class WizardSettingsTests(unittest.TestCase):
         snapshot = load_wizard_settings(settings)
 
         self.assertEqual(snapshot.collapsed_groups, ("layoutGroup", "temporalGroup"))
+
+    def test_persisted_step_index_maps_to_stable_wizard_key(self):
+        self.assertEqual(wizard_step_key_for_index(2), "map")
+        self.assertEqual(wizard_step_key_for_index(99), "atlas")
+
+    def test_first_launch_has_no_preferred_current_key(self):
+        snapshot = load_wizard_settings(FakeSettingsPort())
+
+        self.assertIsNone(preferred_current_key_from_settings(snapshot))
+
+    def test_existing_settings_restore_preferred_current_key(self):
+        snapshot = load_wizard_settings(
+            FakeSettingsPort({WIZARD_VERSION_KEY: WIZARD_VERSION, LAST_STEP_INDEX_KEY: 3})
+        )
+
+        self.assertEqual(preferred_current_key_from_settings(snapshot), "analysis")
 
 
 if __name__ == "__main__":

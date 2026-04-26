@@ -232,6 +232,44 @@ class WizardShellCompositionTest(unittest.TestCase):
         )
         self.assertFalse(assembled.map_content.apply_filters_button.isEnabled())
 
+    def test_existing_wizard_settings_restore_reachable_initial_step(self):
+        settings = self.composition.WizardSettingsSnapshot(
+            wizard_version=1,
+            last_step_index=3,
+            first_launch=False,
+        )
+
+        assembled = self.composition.build_placeholder_wizard_shell(
+            progress_facts=self.composition.WizardProgressFacts(
+                connection_configured=True,
+                activities_stored=True,
+                activity_layers_loaded=True,
+            ),
+            wizard_settings=settings,
+        )
+
+        self.assertEqual(assembled.presenter.progress.current_key, "analysis")
+        self.assertEqual(assembled.shell.pages_stack.currentIndex(), 3)
+        self.assertEqual(
+            assembled.shell.stepper_bar.states(),
+            ("done", "done", "done", "current", "locked"),
+        )
+
+    def test_first_launch_wizard_settings_do_not_restore_saved_step(self):
+        settings = self.composition.WizardSettingsSnapshot(
+            wizard_version=1,
+            last_step_index=4,
+            first_launch=True,
+        )
+
+        assembled = self.composition.build_placeholder_wizard_shell(
+            progress_facts=self.composition.WizardProgressFacts(),
+            wizard_settings=settings,
+        )
+
+        self.assertEqual(assembled.presenter.progress.current_key, "connection")
+        self.assertEqual(assembled.shell.pages_stack.currentIndex(), 0)
+
     def test_progress_facts_drive_page_cta_prerequisites_without_marking_done(self):
         facts = self.composition.WizardProgressFacts(connection_configured=True)
 
@@ -566,6 +604,25 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertFalse(assembled.analysis_state.ready)
         self.assertTrue(assembled.analysis_content.run_analysis_button.isEnabled())
         self.assertFalse(assembled.atlas_content.export_atlas_button.isEnabled())
+
+    def test_refresh_can_update_progress_from_settings_and_workflow_facts(self):
+        assembled = self.composition.build_placeholder_wizard_shell()
+
+        self.composition.refresh_wizard_shell_composition(
+            assembled,
+            progress_facts=self.composition.WizardProgressFacts(
+                connection_configured=True,
+                activities_stored=True,
+            ),
+            wizard_settings=self.composition.WizardSettingsSnapshot(
+                wizard_version=1,
+                last_step_index=2,
+                first_launch=False,
+            ),
+        )
+
+        self.assertEqual(assembled.presenter.progress.current_key, "map")
+        self.assertEqual(assembled.shell.pages_stack.currentIndex(), 2)
 
     def test_refresh_progress_facts_replace_previous_default_state(self):
         assembled = self.composition.build_placeholder_wizard_shell()

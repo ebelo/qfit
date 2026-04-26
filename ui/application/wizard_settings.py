@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from ...configuration.application.settings_port import SettingsPort
+from .dock_workflow_sections import WIZARD_WORKFLOW_STEPS
 
 WIZARD_VERSION = 1
 WIZARD_VERSION_KEY = "ui/wizard_version"
@@ -81,6 +82,28 @@ def save_collapsed_groups(settings: SettingsPort, object_names: list[str] | tupl
     return collapsed_groups
 
 
+def wizard_step_key_for_index(index: int) -> str:
+    """Return the stable wizard step key for a persisted step index."""
+
+    return WIZARD_WORKFLOW_STEPS[clamp_wizard_step_index(index)].key
+
+
+def preferred_current_key_from_settings(
+    snapshot: WizardSettingsSnapshot,
+) -> str | None:
+    """Return the restore target from persisted wizard settings.
+
+    First launch intentionally has no restore target: the #609 spec requires the
+    connection page to be current with all other steps locked. Once wizard
+    settings already exist, the saved index becomes a preferred target that
+    progress derivation can still gate behind incomplete prerequisites.
+    """
+
+    if snapshot.first_launch:
+        return None
+    return wizard_step_key_for_index(snapshot.last_step_index)
+
+
 def clamp_wizard_step_index(value: Any) -> int:
     """Coerce a persisted step index into the wizard's 0-based page range."""
 
@@ -131,4 +154,6 @@ __all__ = [
     "load_wizard_settings",
     "save_collapsed_groups",
     "save_last_step_index",
+    "preferred_current_key_from_settings",
+    "wizard_step_key_for_index",
 ]

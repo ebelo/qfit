@@ -15,8 +15,10 @@ from qfit.ui.application.wizard_page_specs import (
 )
 from qfit.ui.application.wizard_progress import (
     WizardProgressFacts,
+    build_wizard_progress_from_facts_and_settings,
     build_wizard_progress_from_facts,
 )
+from qfit.ui.application.wizard_settings import WizardSettingsSnapshot
 
 from .analysis_page import (
     AnalysisPageContent,
@@ -100,6 +102,7 @@ def build_placeholder_wizard_shell(
     footer_text: str = "",
     progress: DockWizardProgress | None = None,
     progress_facts: WizardProgressFacts | None = None,
+    wizard_settings: WizardSettingsSnapshot | None = None,
     specs: Sequence[DockWizardPageSpec] | None = None,
     connection_state: ConnectionPageState | None = None,
     sync_state: SyncPageState | None = None,
@@ -147,6 +150,7 @@ def build_placeholder_wizard_shell(
     resolved_progress = _resolve_progress(
         progress=progress,
         progress_facts=progress_facts,
+        wizard_settings=wizard_settings,
     )
     page_specs = _resolve_page_specs(specs)
     shell = WizardShell(
@@ -209,6 +213,7 @@ def refresh_wizard_shell_composition(
     footer_text: str | None = None,
     progress: DockWizardProgress | None = None,
     progress_facts: WizardProgressFacts | None = None,
+    wizard_settings: WizardSettingsSnapshot | None = None,
 ) -> WizardShellComposition:
     """Refresh installed wizard page state without rebuilding the shell.
 
@@ -276,6 +281,7 @@ def refresh_wizard_shell_composition(
     resolved_progress = _resolve_progress(
         progress=progress,
         progress_facts=progress_facts,
+        wizard_settings=wizard_settings,
     )
     _validate_progress_targets_installed_page(resolved_progress, composition.pages)
 
@@ -387,12 +393,16 @@ def _resolve_progress(
     *,
     progress: DockWizardProgress | None,
     progress_facts: WizardProgressFacts | None,
+    wizard_settings: WizardSettingsSnapshot | None,
 ) -> DockWizardProgress | None:
-    if progress is not None and progress_facts is not None:
-        raise ValueError("Pass progress or progress_facts, not both")
-    if progress_facts is None:
+    if progress is not None and (progress_facts is not None or wizard_settings is not None):
+        raise ValueError("Pass progress or progress_facts/wizard_settings, not both")
+    if progress_facts is None and wizard_settings is None:
         return progress
-    return build_wizard_progress_from_facts(progress_facts)
+    facts = progress_facts or WizardProgressFacts()
+    if wizard_settings is not None:
+        return build_wizard_progress_from_facts_and_settings(facts, wizard_settings)
+    return build_wizard_progress_from_facts(facts)
 
 
 def _page_state_defaults_from_progress_facts(
@@ -622,6 +632,7 @@ __all__ = [
     "WizardActionCallbacks",
     "WizardPageStateSnapshots",
     "WizardProgressFacts",
+    "WizardSettingsSnapshot",
     "WizardShellComposition",
     "build_placeholder_wizard_shell",
     "build_wizard_page_states_from_facts",
