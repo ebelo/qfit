@@ -1619,6 +1619,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._atlas_export_task_output_path = "/tmp/running-atlas.pdf"
         dock._set_atlas_pdf_status = MagicMock()
         dock._set_atlas_export_running = MagicMock()
+        dock._refresh_summary_status = MagicMock()
 
         self.module.QfitDockWidget.on_generate_atlas_pdf_clicked(dock)
 
@@ -1627,6 +1628,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertIsNone(dock._atlas_export_task_output_path)
         dock._set_atlas_pdf_status.assert_called_once_with("Atlas PDF export cancelled.")
         dock._set_atlas_export_running.assert_called_once_with(False)
+        dock._refresh_summary_status.assert_called_once_with()
 
     def test_current_atlas_export_request_uses_current_ui_state(self):
         dock = object.__new__(self.module.QfitDockWidget)

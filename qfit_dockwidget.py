@@ -1524,6 +1524,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._set_atlas_export_running(False)
             self._runtime_store().clear_atlas_export()
             self._atlas_export_task_output_path = None
+            self._refresh_summary_status()
             return
 
         export_command = self._atlas_workflow_service().build_export_command(
