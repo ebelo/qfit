@@ -626,6 +626,9 @@ def _analysis_state_from_facts(facts: WizardProgressFacts) -> AnalysisPageState:
             if facts.analysis_generated
             else default.result_summary_text
         ),
+        primary_action_label=(
+            "Refresh analysis" if facts.analysis_generated else default.primary_action_label
+        ),
         primary_action_enabled=facts.activity_layers_loaded,
     )
 
@@ -663,7 +666,9 @@ def _atlas_state_from_facts(facts: WizardProgressFacts) -> AtlasPageState:
     status_text = _atlas_status_text(facts, default)
     output_summary_text = _atlas_output_summary(facts, default)
     atlas_blocked_tooltip = default.primary_action_blocked_tooltip
-    primary_action_label = default.primary_action_label
+    primary_action_label = (
+        "Refresh atlas PDF" if facts.atlas_exported else default.primary_action_label
+    )
     if facts.atlas_export_in_progress:
         status_text = "Atlas export in progress"
         primary_action_label = "Export in progress…"

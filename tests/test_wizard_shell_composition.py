@@ -752,6 +752,22 @@ class WizardShellCompositionTest(unittest.TestCase):
             "Analysis output qfit activity heatmap is available",
         )
 
+    def test_analysis_page_cta_switches_to_refresh_after_generation(self):
+        assembled = self.composition.build_placeholder_wizard_shell(
+            progress_facts=self.composition.WizardProgressFacts(
+                connection_configured=True,
+                activities_stored=True,
+                activity_layers_loaded=True,
+                analysis_generated=True,
+            )
+        )
+
+        self.assertEqual(
+            assembled.analysis_content.run_analysis_button.text(),
+            "Refresh analysis",
+        )
+        self.assertTrue(assembled.analysis_content.run_analysis_button.isEnabled())
+
     def test_atlas_page_input_summary_names_analysis_output(self):
         assembled = self.composition.build_placeholder_wizard_shell(
             progress_facts=self.composition.WizardProgressFacts(
@@ -816,6 +832,23 @@ class WizardShellCompositionTest(unittest.TestCase):
             assembled.atlas_content.output_summary_label.text(),
             "Latest atlas PDF exported to qfit-atlas.pdf",
         )
+
+    def test_exported_atlas_page_cta_switches_to_refresh(self):
+        assembled = self.composition.build_placeholder_wizard_shell(
+            progress_facts=self.composition.WizardProgressFacts(
+                connection_configured=True,
+                activities_stored=True,
+                activity_layers_loaded=True,
+                analysis_generated=True,
+                atlas_exported=True,
+            )
+        )
+
+        self.assertEqual(
+            assembled.atlas_content.export_atlas_button.text(),
+            "Refresh atlas PDF",
+        )
+        self.assertTrue(assembled.atlas_content.export_atlas_button.isEnabled())
 
     def test_explicit_page_state_overrides_progress_fact_defaults(self):
         assembled = self.composition.build_placeholder_wizard_shell(
