@@ -1160,6 +1160,8 @@ def _should_skip_optional_analysis_to_atlas(
         and pages[installed_index + 2].spec.key == "atlas"
     ):
         return False
+    # The default wizard order is map -> optional analysis -> atlas; +2 is the
+    # atlas page that follows the optional analysis page checked above.
     atlas_index = step_index_for_key("atlas")
     return statuses is not None and can_request_step(statuses, atlas_index)
 
