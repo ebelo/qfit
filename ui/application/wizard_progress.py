@@ -251,7 +251,7 @@ def _reachable_preferred_keys(
 ) -> set[str]:
     reachable = completed_keys | {first_incomplete_key}
     if "map" in completed_keys:
-        reachable.add("atlas")
+        reachable.update({"analysis", "atlas"})
     return reachable
 
 

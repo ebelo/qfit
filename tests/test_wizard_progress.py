@@ -368,6 +368,23 @@ class WizardProgressFactsTests(unittest.TestCase):
             frozenset({"connection", "sync", "map", "atlas"}),
         )
 
+    def test_atlas_export_without_analysis_keeps_optional_analysis_reachable(self):
+        progress = build_wizard_progress_from_facts(
+            WizardProgressFacts(
+                connection_configured=True,
+                activities_stored=True,
+                activity_layers_loaded=True,
+                atlas_exported=True,
+                preferred_current_key="analysis",
+            )
+        )
+
+        self.assertEqual(progress.current_key, "analysis")
+        self.assertEqual(
+            progress.completed_keys,
+            frozenset({"connection", "sync", "map", "atlas"}),
+        )
+
     def test_rejects_unknown_preferred_current_key(self):
         with self.assertRaisesRegex(KeyError, "review"):
             build_wizard_progress_from_facts(
