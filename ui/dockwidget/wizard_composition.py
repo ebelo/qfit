@@ -6,6 +6,7 @@ from typing import TypeVar
 
 from qfit.ui.application.dock_workflow_sections import (
     DockWizardProgress,
+    DockWorkflowStepStatus,
     build_progress_wizard_step_statuses,
 )
 from qfit.ui.application.stepper_presenter import (
@@ -846,7 +847,7 @@ def _atlas_state_from_facts(facts: WizardProgressFacts) -> AtlasPageState:
         output_summary_text=output_summary_text,
         primary_action_label=primary_action_label,
         primary_action_enabled=(
-            facts.analysis_generated and not facts.atlas_export_in_progress
+            facts.activity_layers_loaded and not facts.atlas_export_in_progress
         ),
         primary_action_blocked_tooltip=atlas_blocked_tooltip,
     )
@@ -855,17 +856,46 @@ def _atlas_state_from_facts(facts: WizardProgressFacts) -> AtlasPageState:
 def _atlas_status_text(facts: WizardProgressFacts, default: AtlasPageState) -> str:
     if facts.atlas_exported:
         return "Atlas PDF exported"
-    if not facts.analysis_generated:
-        return "Analysis required before atlas export"
+    if not facts.activity_layers_loaded:
+        return "Map layers required before atlas export"
     return default.status_text
 
 
 def _atlas_input_summary(facts: WizardProgressFacts) -> str:
-    if not facts.analysis_generated:
-        return "Run analysis before exporting atlas PDF"
+    if not facts.activity_layers_loaded:
+        return "Load activity layers before exporting atlas PDF"
     if facts.analysis_output_name is not None:
         return f"Analysis output {facts.analysis_output_name} ready for atlas export"
-    return "Analysis outputs ready for atlas export"
+    if facts.analysis_generated:
+        return "Analysis outputs ready for atlas export"
+    return _atlas_activity_layer_input_summary(facts)
+
+
+def _atlas_activity_layer_input_summary(facts: WizardProgressFacts) -> str:
+    if facts.filters_active:
+        summary = _atlas_filtered_activity_layer_summary(facts)
+    elif facts.output_name is not None:
+        summary = f"Activity layers from {facts.output_name} ready for atlas export"
+    else:
+        summary = "Activity layers ready for atlas export"
+    details = tuple(
+        detail
+        for detail in (
+            _analysis_filter_description(facts),
+            _analysis_loaded_layer_count_summary(facts),
+        )
+        if detail
+    )
+    if not details:
+        return summary
+    return f"{summary} · {' · '.join(details)}"
+
+
+def _atlas_filtered_activity_layer_summary(facts: WizardProgressFacts) -> str:
+    if facts.filtered_activity_count is None:
+        return "Filtered activity subset ready for atlas export"
+    noun = "activity" if facts.filtered_activity_count == 1 else "activities"
+    return f"{max(facts.filtered_activity_count, 0)} filtered {noun} ready for atlas export"
 
 
 def _atlas_output_summary(
@@ -977,16 +1007,24 @@ def _connect_step_page_navigation(
             presenter.request_step(index)
         _sync_step_page_navigation_and_status(pages, presenter)
 
-    for installed_index, page in step_pages:
+    def navigation_target(installed_index: int, direction: str) -> int | None:
         previous_index, next_index = _step_page_navigation_targets(
             pages,
             installed_index=installed_index,
+            statuses=build_progress_wizard_step_statuses(presenter.progress),
         )
+        return previous_index if direction == "previous" else next_index
+
+    for installed_index, page in step_pages:
         page.backRequested.connect(
-            lambda _checked=False, target=previous_index: request_and_sync(target)
+            lambda _checked=False, page_index=installed_index: request_and_sync(
+                navigation_target(page_index, "previous")
+            )
         )
         page.nextRequested.connect(
-            lambda _checked=False, target=next_index: request_and_sync(target)
+            lambda _checked=False, page_index=installed_index: request_and_sync(
+                navigation_target(page_index, "next")
+            )
         )
     shell.stepper_bar.stepRequested.connect(
         lambda _index: _sync_step_page_navigation_and_status(pages, presenter)
@@ -1015,6 +1053,7 @@ def _sync_step_page_navigation_buttons(
         previous_index, next_index = _step_page_navigation_targets(
             pages,
             installed_index=installed_index,
+            statuses=statuses,
         )
         page.set_back(
             label=_navigation_label(
@@ -1085,14 +1124,44 @@ def _step_page_navigation_targets(
     pages: Sequence[WizardCompositionPage],
     *,
     installed_index: int,
+    statuses: Sequence[DockWorkflowStepStatus] | None = None,
 ) -> tuple[int | None, int | None]:
+    current_page = pages[installed_index]
     previous_page = pages[installed_index - 1] if installed_index > 0 else None
     next_page = (
         pages[installed_index + 1]
         if installed_index + 1 < len(pages)
         else None
     )
+    if _should_skip_optional_analysis_to_atlas(
+        pages,
+        current_page=current_page,
+        next_page=next_page,
+        installed_index=installed_index,
+        statuses=statuses,
+    ):
+        next_page = pages[installed_index + 2]
     return _workflow_index_for_page(previous_page), _workflow_index_for_page(next_page)
+
+
+def _should_skip_optional_analysis_to_atlas(
+    pages: Sequence[WizardCompositionPage],
+    *,
+    current_page: WizardCompositionPage,
+    next_page: WizardCompositionPage | None,
+    installed_index: int,
+    statuses: Sequence[DockWorkflowStepStatus] | None,
+) -> bool:
+    if not (
+        current_page.spec.key == "map"
+        and next_page is not None
+        and next_page.spec.key == "analysis"
+        and installed_index + 2 < len(pages)
+        and pages[installed_index + 2].spec.key == "atlas"
+    ):
+        return False
+    atlas_index = step_index_for_key("atlas")
+    return statuses is not None and can_request_step(statuses, atlas_index)
 
 
 def _workflow_index_for_page(page: WizardCompositionPage | None) -> int | None:

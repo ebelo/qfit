@@ -23,7 +23,7 @@ class DockWorkflowSectionsTests(unittest.TestCase):
         )
         self.assertEqual(
             [section.title for section in WIZARD_WORKFLOW_STEPS],
-            ["Connection", "Synchronization", "Map & filters", "Spatial analysis", "Atlas PDF"],
+            ["Connection", "Synchronization", "Map & filters", "Spatial analysis (optional)", "Atlas PDF"],
         )
 
     def test_current_dock_sections_reuse_wizard_steps_without_connection_page(self):
@@ -66,7 +66,7 @@ class DockWorkflowSectionsTests(unittest.TestCase):
                 ("connection", 0, "Connection", DockWorkflowStepState.DONE),
                 ("sync", 1, "Synchronization", DockWorkflowStepState.DONE),
                 ("map", 2, "Map & filters", DockWorkflowStepState.CURRENT),
-                ("analysis", 3, "Spatial analysis", DockWorkflowStepState.UNLOCKED),
+                ("analysis", 3, "Spatial analysis (optional)", DockWorkflowStepState.UNLOCKED),
                 ("atlas", 4, "Atlas PDF", DockWorkflowStepState.LOCKED),
             ],
         )

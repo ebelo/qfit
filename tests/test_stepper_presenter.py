@@ -35,7 +35,7 @@ class StepperPresenterTests(unittest.TestCase):
                 ("connection", 0, "Connection", STEPPER_STATE_DONE, True),
                 ("sync", 1, "Synchronization", STEPPER_STATE_DONE, True),
                 ("map", 2, "Map & filters", STEPPER_STATE_CURRENT, True),
-                ("analysis", 3, "Spatial analysis", STEPPER_STATE_UPCOMING, True),
+                ("analysis", 3, "Spatial analysis (optional)", STEPPER_STATE_UPCOMING, True),
                 ("atlas", 4, "Atlas PDF", STEPPER_STATE_LOCKED, False),
             ],
         )

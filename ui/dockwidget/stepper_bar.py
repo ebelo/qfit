@@ -197,7 +197,10 @@ def _button_tooltip(index: int, state: str) -> str:
     if state == "locked":
         if index == 0:
             return "This step is not yet available."
-        previous_label = STEPPER_LABELS[index - 1]
+        prerequisite_index = index - 1
+        if label == "Atlas PDF":
+            prerequisite_index = 2
+        previous_label = STEPPER_LABELS[prerequisite_index]
         return f"Complete {previous_label} before opening {label}."
     return label
 

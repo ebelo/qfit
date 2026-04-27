@@ -55,8 +55,8 @@ _PAGE_COPY_BY_KEY = {
         "Primary action: apply map filters",
     ),
     "analysis": (
-        "Run heatmap, corridor, and start-point analysis from loaded data.",
-        "Primary action: run analysis",
+        "Optionally run heatmap, corridor, and start-point analysis from loaded data.",
+        "Optional action: run spatial analysis",
     ),
     "atlas": (
         "Configure and export multi-activity PDF atlases.",

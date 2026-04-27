@@ -71,7 +71,7 @@ WIZARD_WORKFLOW_STEPS: tuple[DockWorkflowSection, ...] = (
     ),
     DockWorkflowSection(
         key="analysis",
-        title="Spatial analysis",
+        title="Spatial analysis (optional)",
         current_dock_title="Analyze",
     ),
     DockWorkflowSection(
@@ -183,6 +183,8 @@ def _derive_unlocked_step_keys(
     for previous, section in zip(WIZARD_WORKFLOW_STEPS, WIZARD_WORKFLOW_STEPS[1:]):
         if previous.key in completed_keys:
             unlocked.add(section.key)
+    if "map" in completed_keys:
+        unlocked.add("atlas")
     return unlocked
 
 

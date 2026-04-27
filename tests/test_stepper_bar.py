@@ -245,8 +245,8 @@ class StepperBarTest(unittest.TestCase):
                 "Connection",
                 "Complete Connection before opening Synchronization.",
                 "Complete Synchronization before opening Map & filters.",
-                "Complete Map & filters before opening Spatial analysis.",
-                "Complete Spatial analysis before opening Atlas PDF.",
+                "Complete Map & filters before opening Spatial analysis (optional).",
+                "Complete Map & filters before opening Atlas PDF.",
             ],
         )
         self.assertEqual(bar.height(), 36)
@@ -254,7 +254,13 @@ class StepperBarTest(unittest.TestCase):
     def test_labels_come_from_shared_workflow_metadata(self):
         self.assertEqual(
             self.stepper.STEPPER_LABELS,
-            ("Connection", "Synchronization", "Map & filters", "Spatial analysis", "Atlas PDF"),
+            (
+                "Connection",
+                "Synchronization",
+                "Map & filters",
+                "Spatial analysis (optional)",
+                "Atlas PDF",
+            ),
         )
 
     def test_qt_import_guard_requires_all_widget_classes(self):
@@ -306,7 +312,7 @@ class StepperBarTest(unittest.TestCase):
         self.assertFalse(buttons[3].isEnabled())
         self.assertEqual(
             buttons[3].toolTip(),
-            "Complete Map & filters before opening Spatial analysis.",
+            "Complete Map & filters before opening Spatial analysis (optional).",
         )
         self.assertEqual(buttons[3].cursor().shape(), _FakeQt.ForbiddenCursor)
 
