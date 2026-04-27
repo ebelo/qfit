@@ -33,6 +33,9 @@ class _FakeLayout:
     def insertWidget(self, index, widget):
         self.inserted.append((index, widget))
 
+    def insertRow(self, index, label, widget):
+        self.inserted.append((index, label, widget))
+
     def addWidget(self, widget):
         self.added.append(widget)
 
@@ -217,13 +220,24 @@ class _FakeSubsetLayer:
 
 class _FakeLineEdit:
     def __init__(self, text=""):
-        self._text = text
+        self._text = text if isinstance(text, str) else ""
+        self.placeholder_text = None
+        self._object_name = None
 
     def text(self):
         return self._text
 
     def setText(self, text):
         self._text = text
+
+    def setObjectName(self, name):
+        self._object_name = name
+
+    def objectName(self):
+        return self._object_name
+
+    def setPlaceholderText(self, text):
+        self.placeholder_text = text
 
 
 class _FakeSpinBox:
@@ -370,6 +384,54 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.dateFromEdit.setDate.assert_called_once_with(last_year)
         dock.dateToEdit.setDate.assert_called_once_with(today)
         today.addYears.assert_called_once_with(-1)
+
+    def test_configure_dependent_date_options_adds_selector_and_birth_date_field(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.filterGroupBox = _FakeWidget()
+        layout = _FakeLayout()
+        dock.filterGroupBox.setLayout(layout)
+        dock.dateFromEdit = MagicMock()
+
+        with patch.multiple(
+            self.module,
+            QComboBox=_FakeComboBox,
+            QLineEdit=_FakeLineEdit,
+        ):
+            self.module.QfitDockWidget._configure_dependent_date_options(dock)
+
+        self.assertEqual(dock.dependentDatePresetComboBox.items, ["None", "Daughter"])
+        self.assertEqual(dock.dependentDatePresetComboBox.objectName(), "dependentDatePresetComboBox")
+        self.assertEqual(dock.dependentBirthDateLineEdit.objectName(), "dependentBirthDateLineEdit")
+        self.assertEqual(dock.dependentBirthDateLineEdit.placeholder_text, "yyyy-MM-dd")
+        self.assertEqual(layout.inserted[0][1], "Dependent")
+        self.assertEqual(layout.inserted[1][1], "Dependent birth date")
+        dock.dateFromEdit.setDisplayFormat.assert_called_once_with("yyyy-MM-dd")
+
+    def test_apply_dependent_birth_date_prefills_from_date_only(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.dependentDatePresetComboBox = _FakeComboBox(current_text="Daughter")
+        dock.dependentBirthDateLineEdit = _FakeLineEdit("2020-02-03")
+        dock.dateFromEdit = MagicMock()
+        dock.dateToEdit = MagicMock()
+        birth_date = MagicMock()
+        birth_date.isValid.return_value = True
+
+        with patch.object(self.module.QDate, "fromString", return_value=birth_date) as from_string:
+            self.module.QfitDockWidget._apply_dependent_birth_date_prefill(dock)
+
+        from_string.assert_called_once_with("2020-02-03", "yyyy-MM-dd")
+        dock.dateFromEdit.setDate.assert_called_once_with(birth_date)
+        dock.dateToEdit.setDate.assert_not_called()
+
+    def test_apply_dependent_birth_date_ignores_manual_mode(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.dependentDatePresetComboBox = _FakeComboBox(current_text="None")
+        dock.dependentBirthDateLineEdit = _FakeLineEdit("2020-02-03")
+        dock.dateFromEdit = MagicMock()
+
+        self.module.QfitDockWidget._apply_dependent_birth_date_prefill(dock)
+
+        dock.dateFromEdit.setDate.assert_not_called()
 
     def test_remove_stale_qfit_layers_delegates_to_project_hygiene_service(self):
         dock = object.__new__(self.module.QfitDockWidget)

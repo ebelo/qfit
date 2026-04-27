@@ -111,6 +111,8 @@ class FakeDock:
         self.writeActivityPointsCheckBox = CheckWidget(True)
         self.pointSamplingStrideSpinBox = SpinWidget(5)
         self.activitySearchLineEdit = TextWidget()
+        self.dependentDatePresetComboBox = ComboWidget(["None", "Daughter"])
+        self.dependentBirthDateLineEdit = TextWidget()
         self.maxDistanceSpinBox = SpinWidget(0.0)
         self.detailedRouteStatusComboBox = ComboWidget(
             ["Any routes", "Detailed routes only", "Missing detailed routes"],
@@ -191,6 +193,8 @@ class DockSettingsBindingsTests(unittest.TestCase):
         "write_activity_points",
         "point_sampling_stride",
         "activity_search_text",
+        "dependent_date_preset",
+        "dependent_birth_date",
         "max_distance_km",
         "detailed_route_filter",
         "use_background_map",
@@ -218,6 +222,8 @@ class DockSettingsBindingsTests(unittest.TestCase):
                 "qfit/redirect_uri": "http://example.test/callback",
                 "qfit/per_page": "75",
                 "qfit/use_detailed_streams": "true",
+                "qfit/dependent_date_preset": "Daughter",
+                "qfit/dependent_birth_date": "2020-02-03",
                 "qfit/detailed_route_filter": "missing",
                 "qfit/use_background_map": True,
                 "qfit/atlas_title": "Spring Atlas",
@@ -241,6 +247,8 @@ class DockSettingsBindingsTests(unittest.TestCase):
         self.assertEqual(dock.previewSortComboBox.currentText(), "Newest first")
         self.assertEqual(dock.stylePresetComboBox.currentText(), "Heatmap")
         self.assertEqual(dock.analysisModeComboBox.currentText(), "None")
+        self.assertEqual(dock.dependentDatePresetComboBox.currentText(), "Daughter")
+        self.assertEqual(dock.dependentBirthDateLineEdit.text(), "2020-02-03")
 
     def test_save_roundtrip_preserves_values(self):
         dock = FakeDock()
@@ -255,6 +263,8 @@ class DockSettingsBindingsTests(unittest.TestCase):
         dock.writeActivityPointsCheckBox.setChecked(False)
         dock.pointSamplingStrideSpinBox.setValue(9)
         dock.activitySearchLineEdit.setText(" commute ")
+        dock.dependentDatePresetComboBox.setCurrentIndex(1)
+        dock.dependentBirthDateLineEdit.setText(" 2020-02-03 ")
         dock.maxDistanceSpinBox.setValue(42.5)
         dock.detailedRouteStatusComboBox.setCurrentIndex(2)
         dock.backgroundMapCheckBox.setChecked(True)
@@ -274,6 +284,8 @@ class DockSettingsBindingsTests(unittest.TestCase):
 
         self.assertEqual(settings.get("client_id"), "abc")
         self.assertEqual(settings.get("activity_search_text"), "commute")
+        self.assertEqual(settings.get("dependent_date_preset"), "Daughter")
+        self.assertEqual(settings.get("dependent_birth_date"), "2020-02-03")
         self.assertEqual(settings.get("per_page"), 123)
         self.assertTrue(settings.get_bool("use_detailed_streams"))
         self.assertEqual(settings.get("detailed_route_strategy"), "Only missing detailed routes")

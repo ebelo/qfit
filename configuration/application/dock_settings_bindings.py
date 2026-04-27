@@ -8,6 +8,7 @@ from ...providers.infrastructure.strava_provider import StravaProvider
 
 
 DEFAULT_STYLE_PRESET = "By activity type"
+DEFAULT_DEPENDENT_DATE_PRESET = "None"
 
 
 def build_dock_settings_bindings(dock) -> list[UIFieldBinding]:
@@ -70,6 +71,22 @@ def build_dock_settings_bindings(dock) -> list[UIFieldBinding]:
             "",
             lambda: dock.activitySearchLineEdit.text().strip(),
             dock.activitySearchLineEdit.setText,
+        ),
+        UIFieldBinding(
+            "dependent_date_preset",
+            DEFAULT_DEPENDENT_DATE_PRESET,
+            lambda: dock.dependentDatePresetComboBox.currentText(),
+            lambda value: dock._set_combo_value(
+                dock.dependentDatePresetComboBox,
+                value,
+                DEFAULT_DEPENDENT_DATE_PRESET,
+            ),
+        ),
+        UIFieldBinding(
+            "dependent_birth_date",
+            "",
+            lambda: dock.dependentBirthDateLineEdit.text().strip(),
+            dock.dependentBirthDateLineEdit.setText,
         ),
         UIFieldBinding(
             "max_distance_km",

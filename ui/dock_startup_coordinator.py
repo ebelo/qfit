@@ -52,6 +52,9 @@ class DockStartupCoordinator:
         dock._configure_preview_sort_options()
         performed_steps.append("configure_preview_sort_options")
 
+        dock._configure_dependent_date_options()
+        performed_steps.append("configure_dependent_date_options")
+
         dock._configure_temporal_mode_options()
         performed_steps.append("configure_temporal_mode_options")
 

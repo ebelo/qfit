@@ -5,6 +5,10 @@ from datetime import date
 
 logger = logging.getLogger(__name__)
 
+DEPENDENT_DATE_PRESET_NONE = "None"
+DEPENDENT_DATE_PRESET_DAUGHTER = "Daughter"
+STANDARD_DATE_FORMAT = "yyyy-MM-dd"
+
 from qgis.core import QgsApplication, QgsProject
 from qgis.PyQt import uic
 from qgis.PyQt.QtCore import QDate, Qt, QUrl
@@ -17,6 +21,7 @@ from qgis.PyQt.QtWidgets import (
     QGridLayout,
     QHBoxLayout,
     QLabel,
+    QLineEdit,
     QMessageBox,
     QPushButton,
     QToolButton,
@@ -784,6 +789,8 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.clientIdLineEdit.textChanged.connect(self._update_connection_status)
         self.clientSecretLineEdit.textChanged.connect(self._update_connection_status)
         self.refreshTokenLineEdit.textChanged.connect(self._update_connection_status)
+        self.dependentDatePresetComboBox.currentTextChanged.connect(self._apply_dependent_birth_date_prefill)
+        self.dependentBirthDateLineEdit.textChanged.connect(self._apply_dependent_birth_date_prefill)
 
         preview_inputs = [
             self.activityTypeComboBox.currentTextChanged,
@@ -835,6 +842,35 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.previewSortComboBox.clear()
         for label in SORT_OPTIONS:
             self.previewSortComboBox.addItem(label)
+
+    def _configure_dependent_date_options(self):
+        """Add optional dependent birth-date controls for the activity date filter."""
+
+        if getattr(self, "dependentDatePresetComboBox", None) is not None:
+            return
+
+        preset_combo = QComboBox(self.filterGroupBox)
+        preset_combo.setObjectName("dependentDatePresetComboBox")
+        preset_combo.addItem(DEPENDENT_DATE_PRESET_NONE)
+        preset_combo.addItem(DEPENDENT_DATE_PRESET_DAUGHTER)
+
+        birth_date_edit = QLineEdit(self.filterGroupBox)
+        birth_date_edit.setObjectName("dependentBirthDateLineEdit")
+        birth_date_edit.setPlaceholderText("yyyy-MM-dd")
+
+        layout = self.filterGroupBox.layout()
+        if layout is not None and hasattr(layout, "insertRow"):
+            layout.insertRow(2, "Dependent", preset_combo)
+            layout.insertRow(3, "Dependent birth date", birth_date_edit)
+        elif layout is not None and hasattr(layout, "addRow"):
+            layout.addRow("Dependent", preset_combo)
+            layout.addRow("Dependent birth date", birth_date_edit)
+
+        if hasattr(self.dateFromEdit, "setDisplayFormat"):
+            self.dateFromEdit.setDisplayFormat(STANDARD_DATE_FORMAT)
+
+        self.dependentDatePresetComboBox = preset_combo
+        self.dependentBirthDateLineEdit = birth_date_edit
 
     def _configure_temporal_mode_options(self):
         outer_layout = self.temporalModeLabel.parentWidget().layout()
@@ -1001,6 +1037,19 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         today = QDate.currentDate()
         self.dateFromEdit.setDate(today.addYears(-1))
         self.dateToEdit.setDate(today)
+        if getattr(self, "dependentDatePresetComboBox", None) is not None:
+            self._apply_dependent_birth_date_prefill()
+
+    def _apply_dependent_birth_date_prefill(self, *_args):
+        if self.dependentDatePresetComboBox.currentText() != DEPENDENT_DATE_PRESET_DAUGHTER:
+            return
+
+        birth_date = QDate.fromString(
+            self.dependentBirthDateLineEdit.text().strip(),
+            STANDARD_DATE_FORMAT,
+        )
+        if birth_date.isValid():
+            self.dateFromEdit.setDate(birth_date)
 
     def on_background_preset_changed(self, preset_name):
         self._sync_background_style_fields(preset_name, force=True)
