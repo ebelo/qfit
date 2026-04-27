@@ -47,6 +47,7 @@ class WizardShell(QWidget):
         self._outer_layout = self._build_layout()
         self._responsive_mode = "wide"
         self._stepper_responsive_mode = "wide"
+        self._responsive_width: int | None = None
         self.setProperty("responsiveMode", "wide")
 
     def set_step_states(self, states: Sequence[str]) -> None:
@@ -69,7 +70,10 @@ class WizardShell(QWidget):
     def add_page(self, page: QWidget) -> int:
         """Append a wizard page and return its stack index."""
 
-        return self.pages_stack.addWidget(page)
+        index = self.pages_stack.addWidget(page)
+        if self._responsive_width is not None and hasattr(page, "set_responsive_width"):
+            page.set_responsive_width(self._responsive_width)
+        return index
 
     def page_count(self) -> int:
         """Return the number of pages currently installed in the shell."""
@@ -85,6 +89,7 @@ class WizardShell(QWidget):
         """Propagate dock width changes to responsive wizard chrome."""
 
         width = int(width)
+        self._responsive_width = width
         mode = "narrow" if width < STEP_PAGE_NARROW_WIDTH else "wide"
         stepper_mode = "compact" if width < STEPPER_COMPACT_WIDTH else "wide"
         if mode == self._responsive_mode and stepper_mode == self._stepper_responsive_mode:

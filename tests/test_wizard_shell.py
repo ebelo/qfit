@@ -461,6 +461,23 @@ class WizardShellTest(unittest.TestCase):
         self.assertEqual(shell.stepper_bar.property("responsiveMode"), "compact")
         self.assertEqual(page.widths, [320])
 
+    def test_new_pages_receive_current_responsive_width_after_resize(self):
+        class ResponsivePage(_FakeWidget):
+            def __init__(self):
+                super().__init__()
+                self.widths = []
+
+            def set_responsive_width(self, width):
+                self.widths.append(width)
+
+        shell = self.wizard_shell.WizardShell()
+        shell.set_responsive_width(320)
+        page = ResponsivePage()
+
+        shell.add_page(page)
+
+        self.assertEqual(page.widths, [320])
+
     def test_updates_footer_text_without_rebuilding_shell(self):
         shell = self.wizard_shell.WizardShell(footer_text="Starting")
 
