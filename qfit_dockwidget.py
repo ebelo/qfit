@@ -5,10 +5,6 @@ from datetime import date
 
 logger = logging.getLogger(__name__)
 
-DEPENDENT_DATE_PRESET_NONE = "None"
-DEPENDENT_DATE_PRESET_DAUGHTER = "Daughter"
-STANDARD_DATE_FORMAT = "yyyy-MM-dd"
-
 from qgis.core import QgsApplication, QgsProject
 from qgis.PyQt import uic
 from qgis.PyQt.QtCore import QDate, Qt, QUrl
@@ -97,6 +93,11 @@ from .ui.application import (
     build_visual_workflow_background_inputs,
     build_visual_workflow_selection_state_handoff,
     build_visual_workflow_settings_snapshot,
+)
+from .ui.application.dependent_date_options import (
+    DEPENDENT_DATE_PRESET_DAUGHTER,
+    DEPENDENT_DATE_PRESET_NONE,
+    STANDARD_DATE_FORMAT,
 )
 from .ui.contextual_help import ContextualHelpBinder, build_dock_help_entries
 from .detailed_route_strategy import (
@@ -789,8 +790,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.clientIdLineEdit.textChanged.connect(self._update_connection_status)
         self.clientSecretLineEdit.textChanged.connect(self._update_connection_status)
         self.refreshTokenLineEdit.textChanged.connect(self._update_connection_status)
-        self.dependentDatePresetComboBox.currentTextChanged.connect(self._apply_dependent_birth_date_prefill)
-        self.dependentBirthDateLineEdit.textChanged.connect(self._apply_dependent_birth_date_prefill)
+        if getattr(self, "dependentDatePresetComboBox", None) is not None:
+            self.dependentDatePresetComboBox.currentTextChanged.connect(self._apply_dependent_birth_date_prefill)
+            self.dependentBirthDateLineEdit.textChanged.connect(self._apply_dependent_birth_date_prefill)
 
         preview_inputs = [
             self.activityTypeComboBox.currentTextChanged,

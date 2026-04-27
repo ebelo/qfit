@@ -5,10 +5,10 @@ from ...activities.domain.activity_query import DEFAULT_SORT_LABEL, DETAILED_ROU
 from ...detailed_route_strategy import DEFAULT_DETAILED_ROUTE_STRATEGY
 from ...mapbox_config import DEFAULT_BACKGROUND_PRESET, TILE_MODE_RASTER
 from ...providers.infrastructure.strava_provider import StravaProvider
+from ...ui.application.dependent_date_options import DEPENDENT_DATE_PRESET_NONE
 
 
 DEFAULT_STYLE_PRESET = "By activity type"
-DEFAULT_DEPENDENT_DATE_PRESET = "None"
 
 
 def build_dock_settings_bindings(dock) -> list[UIFieldBinding]:
@@ -74,12 +74,12 @@ def build_dock_settings_bindings(dock) -> list[UIFieldBinding]:
         ),
         UIFieldBinding(
             "dependent_date_preset",
-            DEFAULT_DEPENDENT_DATE_PRESET,
+            DEPENDENT_DATE_PRESET_NONE,
             lambda: dock.dependentDatePresetComboBox.currentText(),
             lambda value: dock._set_combo_value(
                 dock.dependentDatePresetComboBox,
                 value,
-                DEFAULT_DEPENDENT_DATE_PRESET,
+                DEPENDENT_DATE_PRESET_NONE,
             ),
         ),
         UIFieldBinding(
