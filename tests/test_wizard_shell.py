@@ -61,6 +61,7 @@ class _FakeWidget:
         self.parent = parent
         self._height = None
         self._minimum_height = None
+        self._minimum_width = None
         self._object_name = ""
         self._properties = {}
         self._enabled = True
@@ -84,6 +85,12 @@ class _FakeWidget:
 
     def minimumHeight(self):  # noqa: N802
         return self._minimum_height
+
+    def setMinimumWidth(self, value):  # noqa: N802
+        self._minimum_width = value
+
+    def minimumWidth(self):  # noqa: N802
+        return self._minimum_width
 
     def height(self):
         return self._height
@@ -207,12 +214,16 @@ class _FakeLabel(_FakeWidget):
     def __init__(self, text="", parent=None):
         super().__init__(parent)
         self._text = text
+        self.word_wrap = False
 
     def setText(self, value):  # noqa: N802
         self._text = value
 
     def text(self):
         return self._text
+
+    def setWordWrap(self, value):  # noqa: N802
+        self.word_wrap = value
 
 
 class _FakeScrollArea(_FakeWidget):
@@ -253,6 +264,9 @@ class _FakeStackedWidget(_FakeWidget):
     def currentIndex(self):  # noqa: N802
         return self.current_index
 
+    def widget(self, index):
+        return self.widgets[index]
+
 
 class _FakeVBoxLayout:
     def __init__(self, parent=None):
@@ -260,6 +274,7 @@ class _FakeVBoxLayout:
         self.object_name = ""
         self.contents_margins = None
         self.spacing = None
+        self.direction = None
         self.widgets = []
         self.stretches = []
 
@@ -272,6 +287,9 @@ class _FakeVBoxLayout:
     def setSpacing(self, value):  # noqa: N802
         self.spacing = value
 
+    def setDirection(self, value):  # noqa: N802
+        self.direction = value
+
     def addWidget(self, widget):  # noqa: N802
         self.widgets.append(widget)
 
@@ -283,9 +301,16 @@ class _FakeHBoxLayout(_FakeVBoxLayout):
     pass
 
 
+class _FakeBoxLayout:
+    LeftToRight = 1
+    TopToBottom = 2
+
+
 class _FakeSizePolicy:
     Expanding = 1
     Fixed = 2
+    Ignored = 3
+    Preferred = 4
 
 
 def _fake_qt_modules():
@@ -296,6 +321,7 @@ def _fake_qt_modules():
     qtcore.Qt = _FakeQt
     qtcore.pyqtSignal = _fake_pyqt_signal
     qtwidgets = types.ModuleType("qgis.PyQt.QtWidgets")
+    qtwidgets.QBoxLayout = _FakeBoxLayout
     qtwidgets.QComboBox = _FakeComboBox
     qtwidgets.QFrame = _FakeFrame
     qtwidgets.QHBoxLayout = _FakeHBoxLayout
@@ -328,6 +354,22 @@ def _load_wizard_shell_module():
         sys.modules.pop(name, None)
     with patch.dict(sys.modules, _fake_qt_modules()):
         return importlib.import_module("qfit.ui.dockwidget.wizard_shell")
+
+
+class _FakeSize:
+    def __init__(self, width):
+        self._width = width
+
+    def width(self):
+        return self._width
+
+
+class _FakeResizeEvent:
+    def __init__(self, width):
+        self._size = _FakeSize(width)
+
+    def size(self):
+        return self._size
 
 
 class WizardShellTest(unittest.TestCase):
@@ -380,6 +422,61 @@ class WizardShellTest(unittest.TestCase):
         self.assertEqual(shell.page_count(), 2)
         self.assertEqual(shell.stepper_bar.states(), ("upcoming", "current", "upcoming", "upcoming", "upcoming"))
         self.assertEqual(shell.pages_stack.currentIndex(), 1)
+
+    def test_propagates_responsive_width_to_stepper_and_pages(self):
+        class ResponsivePage(_FakeWidget):
+            def __init__(self):
+                super().__init__()
+                self.widths = []
+
+            def set_responsive_width(self, width):
+                self.widths.append(width)
+
+        shell = self.wizard_shell.WizardShell()
+        page = ResponsivePage()
+        shell.add_page(page)
+
+        shell.set_responsive_width(320)
+
+        self.assertEqual(shell.property("responsiveMode"), "narrow")
+        self.assertEqual(shell.stepper_bar.property("responsiveMode"), "compact")
+        self.assertEqual(page.widths, [320])
+
+    def test_resize_event_propagates_responsive_width_to_pages(self):
+        class ResponsivePage(_FakeWidget):
+            def __init__(self):
+                super().__init__()
+                self.widths = []
+
+            def set_responsive_width(self, width):
+                self.widths.append(width)
+
+        shell = self.wizard_shell.WizardShell()
+        page = ResponsivePage()
+        shell.add_page(page)
+
+        shell.resizeEvent(_FakeResizeEvent(320))
+
+        self.assertEqual(shell.property("responsiveMode"), "narrow")
+        self.assertEqual(shell.stepper_bar.property("responsiveMode"), "compact")
+        self.assertEqual(page.widths, [320])
+
+    def test_new_pages_receive_current_responsive_width_after_resize(self):
+        class ResponsivePage(_FakeWidget):
+            def __init__(self):
+                super().__init__()
+                self.widths = []
+
+            def set_responsive_width(self, width):
+                self.widths.append(width)
+
+        shell = self.wizard_shell.WizardShell()
+        shell.set_responsive_width(320)
+        page = ResponsivePage()
+
+        shell.add_page(page)
+
+        self.assertEqual(page.widths, [320])
 
     def test_updates_footer_text_without_rebuilding_shell(self):
         shell = self.wizard_shell.WizardShell(footer_text="Starting")
