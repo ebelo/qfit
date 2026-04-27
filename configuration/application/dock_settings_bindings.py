@@ -5,7 +5,10 @@ from ...activities.domain.activity_query import DEFAULT_SORT_LABEL, DETAILED_ROU
 from ...detailed_route_strategy import DEFAULT_DETAILED_ROUTE_STRATEGY
 from ...mapbox_config import DEFAULT_BACKGROUND_PRESET, TILE_MODE_RASTER
 from ...providers.infrastructure.strava_provider import StravaProvider
-from ...ui.application.dependent_date_options import DEPENDENT_DATE_PRESET_NONE
+from ...ui.application.dependent_date_options import (
+    DEFAULT_DEPENDENT_BIRTH_DATE,
+    DEPENDENT_DATE_PRESET_NONE,
+)
 
 
 DEFAULT_STYLE_PRESET = "By activity type"
@@ -84,7 +87,7 @@ def build_dock_settings_bindings(dock) -> list[UIFieldBinding]:
         ),
         UIFieldBinding(
             "dependent_birth_date",
-            "",
+            DEFAULT_DEPENDENT_BIRTH_DATE,
             lambda: dock.dependentBirthDateLineEdit.text().strip(),
             dock.dependentBirthDateLineEdit.setText,
         ),

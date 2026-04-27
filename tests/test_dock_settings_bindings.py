@@ -250,6 +250,14 @@ class DockSettingsBindingsTests(unittest.TestCase):
         self.assertEqual(dock.dependentDatePresetComboBox.currentText(), "Daughter")
         self.assertEqual(dock.dependentBirthDateLineEdit.text(), "2020-02-03")
 
+    def test_load_uses_daughter_birth_date_default(self):
+        dock = FakeDock()
+
+        load_bindings(build_dock_settings_bindings(dock), _settings())
+
+        self.assertEqual(dock.dependentDatePresetComboBox.currentText(), "None")
+        self.assertEqual(dock.dependentBirthDateLineEdit.text(), "2022-03-14")
+
     def test_save_roundtrip_preserves_values(self):
         dock = FakeDock()
         dock.clientIdLineEdit.setText("  abc  ")
