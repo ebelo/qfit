@@ -42,7 +42,7 @@ class AnalysisPageState:
     ready: bool = False
     status_text: str = "Analysis not run yet"
     detail_text: str = (
-        "Use loaded activity layers to calculate heatmaps, corridors, and start points."
+        "Optional: calculate heatmaps, corridors, and start points from loaded data."
     )
     input_summary_text: str = "No loaded activity layers available for analysis"
     result_summary_text: str = "Analysis outputs will appear in the project once generated"

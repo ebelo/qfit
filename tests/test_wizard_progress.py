@@ -263,7 +263,7 @@ class WizardProgressFactsTests(unittest.TestCase):
         statuses = build_progress_wizard_step_statuses(progress)
         self.assertEqual(
             [status.state.value for status in statuses],
-            ["done", "done", "done", "current", "locked"],
+            ["done", "done", "done", "current", "unlocked"],
         )
 
     def test_local_geopackage_store_unlocks_map_without_strava_connection(self):
@@ -329,6 +329,60 @@ class WizardProgressFactsTests(unittest.TestCase):
         self.assertEqual(
             progress.completed_keys,
             frozenset({"connection", "sync", "map", "analysis", "atlas"}),
+        )
+
+    def test_map_completion_allows_preferred_atlas_without_analysis(self):
+        progress = build_wizard_progress_from_facts(
+            WizardProgressFacts(
+                connection_configured=True,
+                activities_stored=True,
+                activity_layers_loaded=True,
+                preferred_current_key="atlas",
+            )
+        )
+
+        self.assertEqual(progress.current_key, "atlas")
+        self.assertEqual(
+            progress.completed_keys,
+            frozenset({"connection", "sync", "map"}),
+        )
+        statuses = build_progress_wizard_step_statuses(progress)
+        self.assertEqual(
+            [status.state.value for status in statuses],
+            ["done", "done", "done", "unlocked", "current"],
+        )
+
+    def test_atlas_export_can_complete_without_analysis(self):
+        progress = build_wizard_progress_from_facts(
+            WizardProgressFacts(
+                connection_configured=True,
+                activities_stored=True,
+                activity_layers_loaded=True,
+                atlas_exported=True,
+            )
+        )
+
+        self.assertEqual(progress.current_key, "atlas")
+        self.assertEqual(
+            progress.completed_keys,
+            frozenset({"connection", "sync", "map", "atlas"}),
+        )
+
+    def test_atlas_export_without_analysis_keeps_optional_analysis_reachable(self):
+        progress = build_wizard_progress_from_facts(
+            WizardProgressFacts(
+                connection_configured=True,
+                activities_stored=True,
+                activity_layers_loaded=True,
+                atlas_exported=True,
+                preferred_current_key="analysis",
+            )
+        )
+
+        self.assertEqual(progress.current_key, "analysis")
+        self.assertEqual(
+            progress.completed_keys,
+            frozenset({"connection", "sync", "map", "atlas"}),
         )
 
     def test_rejects_unknown_preferred_current_key(self):

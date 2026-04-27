@@ -211,12 +211,15 @@ def _completed_keys_from_facts(facts: WizardProgressFacts) -> tuple[str, ...]:
         ("connection", connection_complete),
         ("sync", facts.activities_stored),
         ("map", facts.activity_layers_loaded),
-        ("analysis", facts.analysis_generated),
-        ("atlas", facts.atlas_exported),
     ):
         if not complete:
-            break
+            return tuple(completed)
         completed.append(key)
+
+    if facts.analysis_generated:
+        completed.append("analysis")
+    if facts.atlas_exported:
+        completed.append("atlas")
     return tuple(completed)
 
 
@@ -232,13 +235,29 @@ def _resolve_current_key(
         return first_incomplete_key
     if preferred_current_key not in known_keys:
         raise KeyError(preferred_current_key)
-    reachable_keys = completed | {first_incomplete_key}
+    reachable_keys = _reachable_preferred_keys(
+        completed_keys=completed,
+        first_incomplete_key=first_incomplete_key,
+    )
     if preferred_current_key in reachable_keys:
         return preferred_current_key
     return first_incomplete_key
 
 
+def _reachable_preferred_keys(
+    *,
+    completed_keys: set[str],
+    first_incomplete_key: str,
+) -> set[str]:
+    reachable = completed_keys | {first_incomplete_key}
+    if "map" in completed_keys:
+        reachable.update({"analysis", "atlas"})
+    return reachable
+
+
 def _first_incomplete_key(completed_keys: set[str]) -> str:
+    if "atlas" in completed_keys:
+        return "atlas"
     for key in _workflow_keys():
         if key not in completed_keys:
             return key

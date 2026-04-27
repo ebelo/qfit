@@ -125,7 +125,7 @@ class WizardShellPresenterTest(unittest.TestCase):
         self.assertEqual(shell.pages_stack.currentIndex(), 3)
         self.assertEqual(
             shell.stepper_bar.states(),
-            ("done", "done", "done", "current", "locked"),
+            ("done", "done", "done", "current", "upcoming"),
         )
         self.assertEqual(persisted_step_indexes, [3])
 

@@ -166,7 +166,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         )
         self.assertEqual(
             assembled.pages[2].next_button.text(),
-            "Suivant: Spatial analysis →",
+            "Suivant: Spatial analysis (optional) →",
         )
         self.assertEqual(
             [page.status_pill.text() for page in assembled.pages],
@@ -206,7 +206,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         )
         self.assertEqual(
             assembled.pages[2].next_button.text(),
-            "Suivant: Spatial analysis →",
+            "Suivant: Spatial analysis (optional) →",
         )
 
         assembled.shell.stepper_bar.step_buttons()[1].clicked.emit()
@@ -220,6 +220,30 @@ class WizardShellCompositionTest(unittest.TestCase):
             assembled.pages[1].next_button.text(),
             "Suivant: Map & filters →",
         )
+
+    def test_map_next_button_skips_optional_analysis_when_atlas_is_reachable(self):
+        assembled = self.composition.build_placeholder_wizard_shell(
+            progress_facts=self.composition.WizardProgressFacts(
+                connection_configured=True,
+                activities_stored=True,
+                activity_layers_loaded=True,
+                preferred_current_key="map",
+            ),
+        )
+
+        self.assertEqual(
+            assembled.shell.stepper_bar.states(),
+            ("done", "done", "current", "upcoming", "upcoming"),
+        )
+        self.assertEqual(
+            assembled.pages[2].next_button.text(),
+            "Suivant: Atlas PDF →",
+        )
+
+        assembled.pages[2].next_button.clicked.emit()
+
+        self.assertEqual(assembled.presenter.progress.current_key, "atlas")
+        self.assertEqual(assembled.shell.pages_stack.currentIndex(), 4)
 
     def test_configured_connection_restore_keeps_connection_page_accessible(self):
         assembled = self.composition.build_placeholder_wizard_shell(
@@ -499,7 +523,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertEqual(assembled.shell.pages_stack.currentIndex(), 3)
         self.assertEqual(
             assembled.shell.stepper_bar.states(),
-            ("done", "done", "done", "current", "locked"),
+            ("done", "done", "done", "current", "upcoming"),
         )
 
     def test_first_launch_wizard_settings_do_not_restore_saved_step(self):
@@ -918,7 +942,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertFalse(assembled.atlas_content.export_atlas_button.isEnabled())
         self.assertEqual(
             assembled.atlas_content.export_atlas_button.toolTip(),
-            "Run analysis before exporting atlas PDF.",
+            "Load activity layers before exporting atlas PDF.",
         )
 
     def test_progress_facts_explain_locked_page_prerequisites(self):
@@ -956,11 +980,11 @@ class WizardShellCompositionTest(unittest.TestCase):
         )
         self.assertEqual(
             assembled.atlas_content.status_label.text(),
-            "Analysis required before atlas export",
+            "Map layers required before atlas export",
         )
         self.assertEqual(
             assembled.atlas_content.input_summary_label.text(),
-            "Run analysis before exporting atlas PDF",
+            "Load activity layers before exporting atlas PDF",
         )
         self.assertIn(
             "Connect to Strava to enable synchronization",
@@ -1084,6 +1108,50 @@ class WizardShellCompositionTest(unittest.TestCase):
             "Refresh analysis",
         )
         self.assertTrue(assembled.analysis_content.run_analysis_button.isEnabled())
+
+    def test_atlas_page_is_available_after_map_without_analysis(self):
+        assembled = self.composition.build_placeholder_wizard_shell(
+            progress_facts=self.composition.WizardProgressFacts(
+                connection_configured=True,
+                activities_stored=True,
+                activity_layers_loaded=True,
+                preferred_current_key="atlas",
+            )
+        )
+
+        self.assertEqual(assembled.presenter.progress.current_key, "atlas")
+        self.assertEqual(
+            assembled.shell.stepper_bar.states(),
+            ("done", "done", "done", "upcoming", "current"),
+        )
+        self.assertEqual(
+            assembled.atlas_content.status_label.text(),
+            "Atlas PDF not exported yet",
+        )
+        self.assertEqual(
+            assembled.atlas_content.input_summary_label.text(),
+            "Activity layers ready for atlas export",
+        )
+        self.assertTrue(assembled.atlas_content.export_atlas_button.isEnabled())
+
+    def test_atlas_page_input_summary_describes_filtered_layers_without_analysis(self):
+        assembled = self.composition.build_placeholder_wizard_shell(
+            progress_facts=self.composition.WizardProgressFacts(
+                connection_configured=True,
+                activities_stored=True,
+                activity_layers_loaded=True,
+                filters_active=True,
+                filtered_activity_count=2,
+                filter_description="layer subset",
+                loaded_layer_count=4,
+                preferred_current_key="atlas",
+            )
+        )
+
+        self.assertEqual(
+            assembled.atlas_content.input_summary_label.text(),
+            "2 filtered activities ready for atlas export · layer subset · 4 qfit layers loaded",
+        )
 
     def test_atlas_page_input_summary_names_analysis_output(self):
         assembled = self.composition.build_placeholder_wizard_shell(
@@ -1469,7 +1537,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertEqual(assembled.shell.pages_stack.currentIndex(), 3)
         self.assertEqual(
             assembled.shell.stepper_bar.states(),
-            ("done", "done", "done", "current", "locked"),
+            ("done", "done", "done", "current", "upcoming"),
         )
         self.assertEqual(assembled.connection_content.status_label.text(), "Strava connected")
         self.assertEqual(assembled.sync_content.status_label.text(), "Activities stored")
@@ -1483,7 +1551,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertEqual(assembled.shell.footer_bar.layer_pill.text(), "1 layer")
         self.assertFalse(assembled.analysis_state.ready)
         self.assertTrue(assembled.analysis_content.run_analysis_button.isEnabled())
-        self.assertFalse(assembled.atlas_content.export_atlas_button.isEnabled())
+        self.assertTrue(assembled.atlas_content.export_atlas_button.isEnabled())
 
     def test_progress_facts_drive_explicit_footer_controls_on_build_and_refresh(self):
         assembled = self.composition.build_placeholder_wizard_shell(

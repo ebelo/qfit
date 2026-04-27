@@ -21,7 +21,7 @@ class WizardPageSpecsTests(unittest.TestCase):
                 ("connection", "Connection"),
                 ("sync", "Synchronization"),
                 ("map", "Map & filters"),
-                ("analysis", "Spatial analysis"),
+                ("analysis", "Spatial analysis (optional)"),
                 ("atlas", "Atlas PDF"),
             ],
         )

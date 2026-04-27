@@ -8,6 +8,8 @@ from qfit.ui.application.stepper_presenter import (
     STEPPER_STATE_DONE,
     STEPPER_STATE_LOCKED,
     STEPPER_STATE_UPCOMING,
+    step_index_for_key,
+    step_key_for_index,
 )
 from qfit.ui.tokens import COLOR_ACCENT, COLOR_HOVER, COLOR_MUTED, COLOR_SEPARATOR, COLOR_TEXT
 
@@ -197,7 +199,10 @@ def _button_tooltip(index: int, state: str) -> str:
     if state == "locked":
         if index == 0:
             return "This step is not yet available."
-        previous_label = STEPPER_LABELS[index - 1]
+        prerequisite_index = index - 1
+        if step_key_for_index(index) == "atlas":
+            prerequisite_index = step_index_for_key("map")
+        previous_label = STEPPER_LABELS[prerequisite_index]
         return f"Complete {previous_label} before opening {label}."
     return label
 

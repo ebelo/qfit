@@ -77,7 +77,7 @@ class AtlasPageContentTest(unittest.TestCase):
             content.export_atlas_button.property("wizardActionAvailability"),
             "blocked",
         )
-        self.assertIn("Run analysis", content.export_atlas_button.toolTip())
+        self.assertIn("Load activity layers", content.export_atlas_button.toolTip())
         self.assertEqual(content.action_row.objectName(), "qfitWizardAtlasActionRow")
         self.assertEqual(
             content.action_row.outer_layout().widgets,
