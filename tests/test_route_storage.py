@@ -9,7 +9,7 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 from tests import _path  # noqa: F401
 from tests.qgis_app import get_shared_qgis_app
-from qfit.routes.domain.models import Route, RoutePoint
+from qfit.providers.domain.routes import SavedRoute, RouteProfilePoint
 
 try:
     _REAL_QGIS_PRESENT = importlib.util.find_spec("qgis") is not None
@@ -43,15 +43,15 @@ class RouteStorageTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdir:
             path = os.path.join(tmpdir, "routes.gpkg")
             store = GeoPackageRouteStore(path)
-            route = Route(
+            route = SavedRoute(
                 source="strava",
                 source_route_id="733",
                 name="Saved route",
                 route_type="Ride",
-                geometry_source="gpx",
-                geometry_points=[
-                    RoutePoint(latitude=46.1, longitude=7.1, altitude_m=500.0, distance_m=0.0, point_index=0),
-                    RoutePoint(latitude=46.2, longitude=7.2, altitude_m=550.0, distance_m=1000.0, point_index=1),
+                geometry_source="export_gpx",
+                profile_points=[
+                    RouteProfilePoint(point_index=0, lat=46.1, lon=7.1, altitude_m=500.0, distance_m=0.0),
+                    RouteProfilePoint(point_index=1, lat=46.2, lon=7.2, altitude_m=550.0, distance_m=1000.0),
                 ],
             )
 

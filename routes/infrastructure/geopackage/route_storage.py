@@ -223,7 +223,7 @@ class GeoPackageRouteStore:
             "end_lon": record.get("end_lon"),
             "summary_polyline": record.get("summary_polyline"),
             "geometry_source": record.get("geometry_source"),
-            "geometry_points_json": json.dumps(record.get("geometry_points") or [], sort_keys=True),
+            "geometry_points_json": json.dumps(self._normalize_points(record.get("geometry_points") or []), sort_keys=True),
             "details_json": json.dumps(record.get("details_json") or {}, sort_keys=True),
             "summary_hash": summary_hash,
             "first_seen_at": first_seen_at,
@@ -251,7 +251,7 @@ class GeoPackageRouteStore:
         return hashlib.sha256(encoded.encode("utf-8")).hexdigest()
 
     def _stable_point(self, point):
-        value = point.to_record() if hasattr(point, "to_record") else dict(point)
+        value = self._normalize_point(point)
         return {
             "latitude": self._round_optional(value.get("latitude"), 7),
             "longitude": self._round_optional(value.get("longitude"), 7),
@@ -276,9 +276,34 @@ class GeoPackageRouteStore:
             connection.commit()
 
     def _normalize_record(self, route):
-        if hasattr(route, "to_record"):
-            return route.to_record()
-        return dict(route)
+        record = route.to_record() if hasattr(route, "to_record") else dict(route)
+        if record.get("total_elevation_gain_m") is None and record.get("elevation_gain_m") is not None:
+            record["total_elevation_gain_m"] = record.get("elevation_gain_m")
+        profile_points = record.pop("profile_points", None) or []
+        geometry_points = profile_points or record.get("geometry_points") or []
+        record["geometry_points"] = self._normalize_points(geometry_points)
+        return record
+
+    def _normalize_points(self, points):
+        return [self._normalize_point(point, index=index) for index, point in enumerate(points or [])]
+
+    def _normalize_point(self, point, index=0):
+        if hasattr(point, "to_record"):
+            value = point.to_record()
+        elif isinstance(point, dict):
+            value = dict(point)
+        elif isinstance(point, (list, tuple)) and len(point) >= 2:
+            value = {"latitude": point[0], "longitude": point[1]}
+            if len(point) >= 3:
+                value["altitude_m"] = point[2]
+        else:
+            value = {}
+        if "latitude" not in value and "lat" in value:
+            value["latitude"] = value.get("lat")
+        if "longitude" not in value and "lon" in value:
+            value["longitude"] = value.get("lon")
+        value.setdefault("point_index", index)
+        return value
 
     def _decode_json(self, value, default):
         if not value:

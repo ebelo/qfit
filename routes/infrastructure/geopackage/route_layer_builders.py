@@ -162,8 +162,18 @@ def _normalize_route_points(points):
     for index, point in enumerate(points):
         if hasattr(point, "to_record"):
             value = point.to_record()
-        else:
+        elif isinstance(point, dict):
             value = dict(point)
+        elif isinstance(point, (list, tuple)) and len(point) >= 2:
+            value = {"latitude": point[0], "longitude": point[1]}
+            if len(point) >= 3:
+                value["altitude_m"] = point[2]
+        else:
+            value = {}
+        if "latitude" not in value and "lat" in value:
+            value["latitude"] = value.get("lat")
+        if "longitude" not in value and "lon" in value:
+            value["longitude"] = value.get("lon")
         value.setdefault("point_index", index)
         normalized.append(value)
     return normalized
