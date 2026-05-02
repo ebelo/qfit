@@ -227,16 +227,26 @@ class QgisSmokeTests(unittest.TestCase):
             dock.close()
             dock.deleteLater()
 
-    def test_dock_widget_defaults_to_wizard_shell_live_path(self):
+    def test_dock_widget_defaults_to_local_first_live_path(self):
         dock = QfitDockWidget(self.iface)
         try:
-            self.assertTrue(dock._wizard_live_path_installed)
-            self.assertEqual(dock._wizard_live_shell.objectName(), "qfitWizardShell")
-            self.assertIs(dock._wizard_shell_composition.shell, dock._wizard_live_shell)
-            self.assertEqual(dock._wizard_live_shell.page_count(), 5)
+            self.assertTrue(dock._local_first_live_path_installed)
+            self.assertEqual(
+                dock._local_first_live_shell.objectName(),
+                "qfitLocalFirstDockShell",
+            )
+            self.assertIs(
+                dock._local_first_dock_composition.shell,
+                dock._local_first_live_shell,
+            )
+            self.assertEqual(dock._local_first_live_shell.page_count(), 5)
+            self.assertEqual(dock._local_first_live_shell.current_key(), "data")
             self.assertTrue(dock.scrollArea.isHidden())
             self.assertTrue(dock.summaryStatusLabel.isHidden())
-            self.assertGreaterEqual(dock.outerLayout.indexOf(dock._wizard_live_shell), 0)
+            self.assertGreaterEqual(
+                dock.outerLayout.indexOf(dock._local_first_live_shell),
+                0,
+            )
         finally:
             dock.close()
             dock.deleteLater()

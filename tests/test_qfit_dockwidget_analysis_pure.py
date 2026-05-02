@@ -670,10 +670,10 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.on_apply_filters_clicked.assert_called_once_with()
         dock.on_load_layers_clicked.assert_not_called()
 
-    def test_output_path_change_updates_wizard_runtime_state(self):
+    def test_output_path_change_updates_runtime_state_and_live_navigation(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._runtime_state_store = self.module.DockRuntimeStore()
-        dock._refresh_wizard_shell_from_runtime = MagicMock()
+        dock._refresh_live_dock_navigation_from_runtime = MagicMock()
 
         self.module.QfitDockWidget._on_output_path_changed(
             dock,
@@ -681,7 +681,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         )
 
         self.assertEqual(dock.runtime_state.output_path, "/tmp/local-qfit.gpkg")
-        dock._refresh_wizard_shell_from_runtime.assert_called_once_with()
+        dock._refresh_live_dock_navigation_from_runtime.assert_called_once_with()
 
     def test_output_path_change_clears_stale_loaded_dataset_state(self):
         dock = object.__new__(self.module.QfitDockWidget)
@@ -691,7 +691,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             stored_activity_count=3,
             activities_layer=object(),
         )
-        dock._refresh_wizard_shell_from_runtime = MagicMock()
+        dock._refresh_live_dock_navigation_from_runtime = MagicMock()
 
         self.module.QfitDockWidget._on_output_path_changed(
             dock,
@@ -701,7 +701,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertEqual(dock.runtime_state.output_path, "/tmp/new-qfit.gpkg")
         self.assertIsNone(dock.runtime_state.stored_activity_count)
         self.assertIsNone(dock.runtime_state.activities_layer)
-        dock._refresh_wizard_shell_from_runtime.assert_called_once_with()
+        dock._refresh_live_dock_navigation_from_runtime.assert_called_once_with()
 
     def test_wizard_progress_facts_reflect_existing_visible_geopackage_path(self):
         dock = object.__new__(self.module.QfitDockWidget)
@@ -1146,6 +1146,50 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.scrollArea.hide.assert_not_called()
         dock.summaryStatusLabel.hide.assert_not_called()
 
+    def test_install_live_local_first_dock_hides_long_scroll_path(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        shell = object()
+        composition = SimpleNamespace(shell=shell)
+        dock.dockWidgetContents = object()
+        dock.outerLayout = _FakeLayout()
+        dock.scrollArea = MagicMock()
+        dock.summaryStatusLabel = MagicMock()
+        dock._build_local_first_dock_from_runtime = MagicMock(return_value=composition)
+
+        self.module.QfitDockWidget._install_live_local_first_dock(dock)
+
+        dock._build_local_first_dock_from_runtime.assert_called_once_with(
+            parent=dock.dockWidgetContents,
+        )
+        dock.scrollArea.hide.assert_called_once_with()
+        dock.summaryStatusLabel.hide.assert_called_once_with()
+        self.assertEqual(dock.outerLayout.added, [shell])
+        self.assertIs(dock._local_first_live_shell, shell)
+        self.assertTrue(dock._local_first_live_path_installed)
+
+    def test_install_live_local_first_dock_is_idempotent(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._local_first_live_path_installed = True
+        dock._build_local_first_dock_from_runtime = MagicMock()
+
+        self.module.QfitDockWidget._install_live_local_first_dock(dock)
+
+        dock._build_local_first_dock_from_runtime.assert_not_called()
+
+    def test_install_live_local_first_dock_requires_base_outer_layout(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.dockWidgetContents = object()
+        dock.scrollArea = MagicMock()
+        dock.summaryStatusLabel = MagicMock()
+        dock._build_local_first_dock_from_runtime = MagicMock(
+            return_value=SimpleNamespace(shell=object()),
+        )
+
+        with self.assertRaisesRegex(RuntimeError, "base outer layout"):
+            self.module.QfitDockWidget._install_live_local_first_dock(dock)
+
+        dock.scrollArea.hide.assert_not_called()
+        dock.summaryStatusLabel.hide.assert_not_called()
 
     def test_refresh_wizard_shell_from_runtime_updates_optional_composition(self):
         dock = object.__new__(self.module.QfitDockWidget)
