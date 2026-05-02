@@ -7,6 +7,7 @@ from qfit.providers.domain import ProviderError
 from qfit.providers.infrastructure import StravaProvider
 from qfit.activities.application.sync_controller import (
     BuildFetchTaskRequest,
+    BuildRouteSyncTaskRequest,
     BuildStravaProviderRequest,
     ExchangeStravaCodeRequest,
     StravaAuthorizeRequest,
@@ -162,7 +163,71 @@ class BuildFetchTaskTests(unittest.TestCase):
             detailed_route_strategy="Recent fetch only",
             on_finished="callback",
         )
-        self.assertIs(task, fetch_task_class.return_value)
+
+
+class BuildRouteSyncTaskTests(unittest.TestCase):
+    def test_build_route_sync_task_request_returns_structured_request(self):
+        ctrl = SyncController()
+
+        request = ctrl.build_route_sync_task_request(
+            client_id="id",
+            client_secret="secret",
+            refresh_token="token",
+            cache="cache",
+            output_path="/tmp/routes.gpkg",
+            per_page=50,
+            max_pages=2,
+            use_gpx_geometry=False,
+            on_finished="callback",
+        )
+
+        self.assertIsInstance(request, BuildRouteSyncTaskRequest)
+        self.assertEqual(request.output_path, "/tmp/routes.gpkg")
+        self.assertEqual(request.per_page, 50)
+        self.assertFalse(request.use_gpx_geometry)
+
+    def test_build_route_sync_task_validates_provider_and_constructs_task(self):
+        ctrl = SyncController()
+        provider = MagicMock(name="provider")
+
+        with (
+            patch.object(ctrl, "build_strava_provider", return_value=provider) as build_provider,
+            patch("qfit.activities.application.sync_controller.RouteSyncTask") as task_class,
+        ):
+            task = ctrl.build_route_sync_task(
+                client_id="id",
+                client_secret="secret",
+                refresh_token="token",
+                cache="cache",
+                output_path="/tmp/routes.gpkg",
+                per_page=25,
+                max_pages=1,
+                use_gpx_geometry=True,
+                on_finished="callback",
+            )
+
+        build_provider.assert_called_once()
+        task_class.assert_called_once_with(
+            provider=provider,
+            output_path="/tmp/routes.gpkg",
+            per_page=25,
+            max_pages=1,
+            use_gpx_geometry=True,
+            on_finished="callback",
+        )
+        self.assertIs(task, task_class.return_value)
+
+    def test_build_route_sync_task_requires_output_path(self):
+        ctrl = SyncController()
+
+        with self.assertRaisesRegex(ProviderError, "GeoPackage output path"):
+            ctrl.build_route_sync_task(
+                client_id="id",
+                client_secret="secret",
+                refresh_token="token",
+                cache="cache",
+                output_path="",
+            )
 
     def test_build_fetch_task_supports_legacy_kwargs_without_strategy(self):
         ctrl = SyncController()

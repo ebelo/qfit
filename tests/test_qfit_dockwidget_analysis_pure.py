@@ -1695,6 +1695,98 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._update_stored_activities_summary.assert_called_once_with(12)
         dock._set_status.assert_called_once_with("Stored 12 activities")
 
+    def test_on_sync_routes_clicked_starts_background_route_task(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._route_sync_task = None
+        dock._save_settings = MagicMock()
+        dock.outputPathLineEdit = _FakeLineEdit("/tmp/qfit.gpkg")
+        dock.clientIdLineEdit = _FakeLineEdit("client-id")
+        dock.clientSecretLineEdit = _FakeLineEdit("client-secret")
+        dock.refreshTokenLineEdit = _FakeLineEdit("refresh-token")
+        dock.perPageSpinBox = _FakeSpinBox(100)
+        dock.maxPagesSpinBox = _FakeSpinBox(0)
+        dock.cache = "cache"
+        dock.syncRoutesButton = _FakeButton("Sync saved routes")
+        dock.exchangeCodeButton = _FakeButton("Exchange")
+        dock.openAuthorizeButton = _FakeButton("Authorize")
+        dock._set_status = MagicMock()
+        dock.sync_controller = MagicMock()
+        dock.sync_controller.build_route_sync_task_request.return_value = "route-request"
+        fake_task = object()
+        dock.sync_controller.build_route_sync_task.return_value = fake_task
+        fake_task_manager = SimpleNamespace(addTask=MagicMock())
+
+        with patch.object(
+            self.module.QgsApplication,
+            "taskManager",
+            return_value=fake_task_manager,
+        ):
+            self.module.QfitDockWidget.on_sync_routes_clicked(dock)
+
+        dock._save_settings.assert_called_once_with()
+        dock.sync_controller.build_route_sync_task_request.assert_called_once_with(
+            client_id="client-id",
+            client_secret="client-secret",
+            refresh_token="refresh-token",
+            cache="cache",
+            output_path="/tmp/qfit.gpkg",
+            per_page=100,
+            max_pages=0,
+            use_gpx_geometry=True,
+            on_finished=dock._handle_route_sync_task_finished,
+        )
+        dock.sync_controller.build_route_sync_task.assert_called_once_with("route-request")
+        self.assertIs(dock._route_sync_task, fake_task)
+        self.assertEqual(dock.syncRoutesButton.text(), "Cancel route sync")
+        self.assertFalse(dock.exchangeCodeButton.isEnabled())
+        self.assertFalse(dock.openAuthorizeButton.isEnabled())
+        dock._set_status.assert_called_once_with("Syncing saved Strava routes…")
+        fake_task_manager.addTask.assert_called_once_with(fake_task)
+
+    def test_handle_route_sync_task_finished_loads_route_layers(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._route_sync_task = object()
+        dock.syncRoutesButton = _FakeButton("Cancel route sync")
+        dock.exchangeCodeButton = _FakeButton("Exchange")
+        dock.exchangeCodeButton.setEnabled(False)
+        dock.openAuthorizeButton = _FakeButton("Authorize")
+        dock.openAuthorizeButton.setEnabled(False)
+        dock.layer_gateway = MagicMock()
+        route_layers = ("route-tracks", "route-points", "route-profile-samples")
+        dock.layer_gateway.load_route_layers.return_value = route_layers
+        dock.sync_controller = MagicMock()
+        dock.sync_controller._rate_limit_note.return_value = ""
+        dock._mark_atlas_export_stale = MagicMock()
+        dock._set_status = MagicMock()
+        result = {
+            "path": "/tmp/qfit.gpkg",
+            "fetched_count": 2,
+            "route_track_count": 2,
+            "route_point_count": 6,
+            "route_profile_sample_count": 10,
+            "sync": SimpleNamespace(inserted=1, updated=1, unchanged=0, total_count=2),
+        }
+        provider = SimpleNamespace(last_rate_limit=None)
+
+        self.module.QfitDockWidget._handle_route_sync_task_finished(
+            dock,
+            result,
+            None,
+            False,
+            provider,
+        )
+
+        self.assertIsNone(dock._route_sync_task)
+        self.assertEqual(dock.runtime_state.route_tracks_layer, route_layers[0])
+        self.assertEqual(dock.runtime_state.route_points_layer, route_layers[1])
+        self.assertEqual(dock.runtime_state.route_profile_samples_layer, route_layers[2])
+        self.assertEqual(dock.syncRoutesButton.text(), "Sync saved routes")
+        self.assertTrue(dock.exchangeCodeButton.isEnabled())
+        self.assertTrue(dock.openAuthorizeButton.isEnabled())
+        dock.layer_gateway.load_route_layers.assert_called_once_with("/tmp/qfit.gpkg")
+        dock._mark_atlas_export_stale.assert_called_once_with()
+        dock._set_status.assert_called_once()
+
     def test_on_refresh_clicked_cancels_existing_fetch_task(self):
         dock = object.__new__(self.module.QfitDockWidget)
         running_task = MagicMock()

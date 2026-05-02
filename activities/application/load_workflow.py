@@ -73,6 +73,9 @@ class LoadDatasetResult:
     starts_layer: object = None
     points_layer: object = None
     atlas_layer: object = None
+    route_tracks_layer: object = None
+    route_points_layer: object = None
+    route_profile_samples_layer: object = None
     total_stored: int = 0
     status: str = ""
 
@@ -86,6 +89,9 @@ class LoadResult:
     starts_layer: object = None
     points_layer: object = None
     atlas_layer: object = None
+    route_tracks_layer: object = None
+    route_points_layer: object = None
+    route_profile_samples_layer: object = None
     total_stored: int = 0
     status: str = ""
     sync: SyncStats | None = None
@@ -280,6 +286,9 @@ class LoadDatasetWorkflow:
         activities_layer, starts_layer, points_layer, atlas_layer = (
             self.layer_gateway.load_output_layers(request.output_path)
         )
+        route_tracks_layer, route_points_layer, route_profile_samples_layer = (
+            self.layer_gateway.load_route_layers(request.output_path)
+        )
         total = activities_layer.featureCount() if activities_layer else 0
 
         return LoadDatasetResult(
@@ -288,6 +297,9 @@ class LoadDatasetWorkflow:
             starts_layer=starts_layer,
             points_layer=points_layer,
             atlas_layer=atlas_layer,
+            route_tracks_layer=route_tracks_layer,
+            route_points_layer=route_points_layer,
+            route_profile_samples_layer=route_profile_samples_layer,
             total_stored=total,
             status="Layers loaded from {path}.".format(path=request.output_path),
         )
@@ -413,6 +425,9 @@ class LoadWorkflowService:
             starts_layer=result.starts_layer,
             points_layer=result.points_layer,
             atlas_layer=result.atlas_layer,
+            route_tracks_layer=result.route_tracks_layer,
+            route_points_layer=result.route_points_layer,
+            route_profile_samples_layer=result.route_profile_samples_layer,
             total_stored=result.total_stored,
             status=result.status,
         )

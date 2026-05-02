@@ -409,6 +409,16 @@
             </widget>
            </item>
            <item>
+            <widget class="QPushButton" name="syncRoutesButton">
+             <property name="text">
+              <string>Sync saved routes</string>
+             </property>
+             <property name="toolTip">
+              <string>Fetch saved/planned Strava routes, write route_catalog layers to the GeoPackage, and load them as dedicated route layers.</string>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QPushButton" name="loadLayersButton">
              <property name="text">
               <string>Load activity layers</string>
