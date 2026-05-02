@@ -298,6 +298,8 @@ class StravaClient:
 
     def fetch_authenticated_athlete_id(self, token=None):
         payload = self.fetch_authenticated_athlete(token=token)
+        if not isinstance(payload, dict):
+            raise StravaClientError("Fetching authenticated Strava athlete returned an unexpected response")
         athlete_id = (payload or {}).get("id")
         if athlete_id is None:
             raise StravaClientError("Strava did not return an authenticated athlete id")

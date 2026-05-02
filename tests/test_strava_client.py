@@ -418,6 +418,13 @@ class StravaClientTests(unittest.TestCase):
         with self.assertRaisesRegex(StravaClientError, "athlete id"):
             client.fetch_authenticated_athlete_id(token="fake_token")
 
+    def test_fetch_authenticated_athlete_id_rejects_unexpected_response(self):
+        client = StravaClient()
+        client._request_json = lambda *args, **kwargs: []
+
+        with self.assertRaisesRegex(StravaClientError, "unexpected response"):
+            client.fetch_authenticated_athlete_id(token="fake_token")
+
     def test_fetch_route_detail_normalizes_payload(self):
         client = StravaClient(client_id="123", client_secret="abc", refresh_token="tok")
         seen_urls = []
