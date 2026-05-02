@@ -141,6 +141,22 @@ class LocalFirstDockCompositionTests(unittest.TestCase):
         self.assertEqual(composition.map_content.status_label.text(), "Activity layers loaded")
         self.assertEqual(composition.connection_content.status_label.text(), "Strava connected")
 
+    def test_refresh_preserves_current_page_without_explicit_preference(self):
+        composition = self.module.build_local_first_dock_composition(
+            progress_facts=WizardProgressFacts(preferred_current_key="atlas"),
+        )
+
+        self.module.refresh_local_first_dock_composition(
+            composition,
+            progress_facts=WizardProgressFacts(activities_stored=True),
+        )
+
+        self.assertEqual(composition.shell.current_key(), "atlas")
+        self.assertTrue(composition.shell.button_for_key("atlas").property("current"))
+
+    def test_public_exports_include_action_callbacks(self):
+        self.assertIn("WizardActionCallbacks", self.module.__all__)
+
 
 if __name__ == "__main__":
     unittest.main()

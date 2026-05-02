@@ -14,7 +14,11 @@ from .connection_page import ConnectionPageContent, build_connection_page_conten
 from .local_first_shell import LocalFirstDockShell
 from .map_page import MapPageContent, build_map_page_content
 from .sync_page import SyncPageContent, build_sync_page_content
-from .wizard_composition import WizardActionCallbacks, build_wizard_page_states_from_facts
+from .wizard_composition import (
+    WizardActionCallbacks,
+    _connect_optional_signal,
+    build_wizard_page_states_from_facts,
+)
 
 _qtwidgets = import_qt_module(
     "qgis.PyQt.QtWidgets",
@@ -161,7 +165,13 @@ def refresh_local_first_dock_composition(
 
     facts = progress_facts or WizardProgressFacts()
     page_states = build_wizard_page_states_from_facts(_content_facts(facts))
-    composition.shell.set_navigation_state(build_local_first_dock_navigation_state(facts))
+    current_key = facts.preferred_current_key or composition.shell.current_key()
+    composition.shell.set_navigation_state(
+        build_local_first_dock_navigation_state(
+            facts,
+            preferred_current_key=current_key,
+        )
+    )
     composition.sync_content.set_state(page_states.sync_state)
     composition.map_content.set_state(page_states.map_state)
     composition.analysis_content.set_state(page_states.analysis_state)
@@ -174,12 +184,6 @@ def _content_facts(facts: WizardProgressFacts) -> WizardProgressFacts:
     """Adapt local-first page facts to legacy wizard content state helpers."""
 
     return replace(facts, preferred_current_key=None)
-
-
-def _connect_optional_signal(content, signal_name: str, callback) -> None:
-    if content is None or callback is None:
-        return
-    getattr(content, signal_name).connect(callback)
 
 
 def _install_local_first_pages(shell: LocalFirstDockShell) -> dict[str, QWidget]:
@@ -257,6 +261,7 @@ class _LocalFirstDockPage(QWidget):
 __all__ = [
     "LocalFirstDockComposition",
     "LocalFirstDockPageContent",
+    "WizardActionCallbacks",
     "build_local_first_dock_composition",
     "connect_local_first_action_callbacks",
     "refresh_local_first_dock_composition",
