@@ -1,4 +1,5 @@
 import importlib
+import math
 import sys
 import unittest
 from types import ModuleType
@@ -11,10 +12,14 @@ _BUILDER_MODULE = "qfit.activities.infrastructure.geopackage.gpkg_route_layer_bu
 
 
 class _FakePoint:
-    def __init__(self, lon, lat, z=None):
+    def __init__(self, lon, lat, z=None, **kwargs):
         self.lon = lon
         self.lat = lat
-        self.z = z
+        self.z = math.nan if z is None and kwargs.get("wkbType") else z
+
+
+class _FakeWkbTypes:
+    PointZ = 1001
 
 
 class _FakePointXY:
@@ -107,6 +112,7 @@ def _make_qgis_stubs():
     qgis_core.QgsPoint = _FakePoint
     qgis_core.QgsPointXY = _FakePointXY
     qgis_core.QgsVectorLayer = _FakeVectorLayer
+    qgis_core.QgsWkbTypes = _FakeWkbTypes
     qgis_mod.core = qgis_core
     return qgis_mod, qgis_core
 
@@ -163,7 +169,7 @@ def _load_builder_with_stubs(test_case):
 
 
 class RouteLayerBuilderPureTests(unittest.TestCase):
-    def test_route_track_layer_stays_2d_and_records_elevation_metadata(self):
+    def test_route_track_layer_uses_z_only_for_complete_altitude_samples(self):
         builders = _load_builder_with_stubs(self)
 
         layer = builders.build_route_track_layer(
@@ -188,13 +194,15 @@ class RouteLayerBuilderPureTests(unittest.TestCase):
         )
 
         features = {feature["source_route_id"]: feature for feature in layer.getFeatures()}
-        self.assertEqual(layer.uri, "LineString?crs=EPSG:4326")
-        self.assertEqual(features["complete"].geometry().kind, "xy")
+        self.assertEqual(layer.uri, "LineStringZ?crs=EPSG:4326")
+        self.assertEqual(features["complete"].geometry().kind, "z")
+        self.assertEqual(features["complete"].geometry().points[0].z, 500.0)
         self.assertEqual(features["complete"]["has_elevation"], 1)
-        self.assertEqual(features["partial"].geometry().kind, "xy")
+        self.assertEqual(features["partial"].geometry().kind, "z")
+        self.assertTrue(math.isnan(features["partial"].geometry().points[0].z))
         self.assertEqual(features["partial"]["has_elevation"], 0)
 
-    def test_geometry_point_fallback_stays_2d_when_catalog_has_elevation(self):
+    def test_geometry_point_fallback_is_padded_when_catalog_has_elevation(self):
         builders = _load_builder_with_stubs(self)
 
         layer = builders.build_route_track_layer(
@@ -216,8 +224,12 @@ class RouteLayerBuilderPureTests(unittest.TestCase):
         )
 
         features = {feature["source_route_id"]: feature for feature in layer.getFeatures()}
-        self.assertEqual(layer.uri, "LineString?crs=EPSG:4326")
-        self.assertEqual(features["polyline-only"].geometry().kind, "xy")
+        self.assertEqual(layer.uri, "LineStringZ?crs=EPSG:4326")
+        self.assertEqual(features["z-route"].geometry().kind, "z")
+        self.assertEqual(features["polyline-only"].geometry().kind, "z")
+        self.assertTrue(
+            math.isnan(features["polyline-only"].geometry().points[0].z)
+        )
         self.assertEqual(features["polyline-only"]["has_elevation"], 0)
 
     def test_route_profile_samples_use_stable_join_key_and_group_index(self):

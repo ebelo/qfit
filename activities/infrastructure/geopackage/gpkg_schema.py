@@ -295,6 +295,7 @@ GPKG_LAYER_SCHEMA = {
     },
     "route_tracks": {
         "geometry": "LINESTRING",
+        "geometry_variants": ("LINESTRING", "LINESTRINGZ"),
         "kind": "layer",
         "fields": [name for name, _ in ROUTE_TRACK_FIELDS],
     },
