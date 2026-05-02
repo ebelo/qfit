@@ -79,6 +79,7 @@ from ...detailed_route_strategy import (
     DEFAULT_DETAILED_ROUTE_STRATEGY,
     DETAILED_ROUTE_STRATEGY_RECENT,
 )
+from ..domain.routes import SavedRoute
 
 
 class StravaClientError(RuntimeError):
@@ -88,8 +89,11 @@ class StravaClientError(RuntimeError):
 class StravaClient:
     AUTHORIZE_URL = "https://www.strava.com/oauth/authorize"
     TOKEN_URL = "https://www.strava.com/oauth/token"
+    ATHLETE_URL = "https://www.strava.com/api/v3/athlete"
     ACTIVITIES_URL = "https://www.strava.com/api/v3/athlete/activities"
     STREAMS_URL_TEMPLATE = "https://www.strava.com/api/v3/activities/{activity_id}/streams"
+    ROUTES_URL_TEMPLATE = "https://www.strava.com/api/v3/athletes/{athlete_id}/routes"
+    ROUTE_DETAIL_URL_TEMPLATE = "https://www.strava.com/api/v3/routes/{route_id}"
     DEFAULT_NETWORK_RETRY_ATTEMPTS = 3
     MIN_ACTIVITY_PAGE_SIZE = 5
     FULL_SYNC_MIN_SHORT_REMAINING = 3
@@ -247,6 +251,73 @@ class StravaClient:
 
         return activities
 
+    def fetch_routes(self, athlete_id=None, per_page=200, max_pages=0):
+        """Fetch the authenticated athlete's saved Strava routes.
+
+        ``athlete_id`` may be supplied by callers that already know it.  When it
+        is omitted, qfit resolves the authenticated athlete via ``GET /athlete``
+        before paginating ``GET /athletes/{id}/routes``.
+        """
+        token = self.get_access_token()
+        route_athlete_id = athlete_id if athlete_id is not None else self.fetch_authenticated_athlete_id(token=token)
+        routes = []
+        current_per_page = max(1, int(per_page))
+        self.last_fetch_notice = None
+
+        page = 1
+        while not max_pages or page <= max_pages:
+            url = self._routes_page_url(route_athlete_id, page, current_per_page)
+            payload = self._request_json(
+                url,
+                headers=self._build_request_headers(token=token),
+                operation="Fetching Strava routes page {page}".format(page=page),
+            )
+            if not isinstance(payload, list):
+                raise StravaClientError(
+                    "Fetching Strava routes page {page} returned an unexpected response".format(page=page)
+                )
+
+            routes.extend(self.normalize_route(item) for item in payload)
+            if len(payload) < current_per_page:
+                break
+            if max_pages == 0 and self._should_pause_full_sync_for_rate_limit():
+                self.last_fetch_notice = self._rate_limit_pause_notice()
+                break
+            self._sleep_between_route_pages()
+            page += 1
+
+        return routes
+
+    def fetch_authenticated_athlete(self, token=None):
+        access_token = token or self.get_access_token()
+        return self._request_json(
+            self.ATHLETE_URL,
+            headers=self._build_request_headers(token=access_token),
+            operation="Fetching authenticated Strava athlete",
+        )
+
+    def fetch_authenticated_athlete_id(self, token=None):
+        payload = self.fetch_authenticated_athlete(token=token)
+        if not isinstance(payload, dict):
+            raise StravaClientError("Fetching authenticated Strava athlete returned an unexpected response")
+        athlete_id = (payload or {}).get("id")
+        if athlete_id is None:
+            raise StravaClientError("Strava did not return an authenticated athlete id")
+        return athlete_id
+
+    def fetch_route_detail(self, route_id):
+        token = self.get_access_token()
+        payload = self._request_json(
+            self.ROUTE_DETAIL_URL_TEMPLATE.format(route_id=route_id),
+            headers=self._build_request_headers(token=token),
+            operation="Fetching Strava route {route_id}".format(route_id=route_id),
+        )
+        if not isinstance(payload, dict):
+            raise StravaClientError(
+                "Fetching Strava route {route_id} returned an unexpected response".format(route_id=route_id)
+            )
+        return self.normalize_route(payload)
+
     def _fetch_activity_page(self, token, page, per_page, current_before, after, max_pages):
         while True:
             payload = None
@@ -272,6 +343,13 @@ class StravaClient:
         if after is not None:
             params["after"] = int(after)
         return "{base}?{query}".format(base=self.ACTIVITIES_URL, query=urlencode(params))
+
+    def _routes_page_url(self, athlete_id, page, per_page):
+        params = {"page": page, "per_page": per_page}
+        return "{base}?{query}".format(
+            base=self.ROUTES_URL_TEMPLATE.format(athlete_id=athlete_id),
+            query=urlencode(params),
+        )
 
     def _next_full_sync_before(self, current_before, batch, max_pages):
         if max_pages != 0:
@@ -519,6 +597,33 @@ class StravaClient:
             details_json=self._extract_details_json(payload),
         )
 
+    def normalize_route(self, payload):
+        if not isinstance(payload, dict):
+            raise StravaClientError("Strava route payload must be an object")
+        route_id = payload.get("id")
+        if route_id is None:
+            raise StravaClientError("Strava route payload did not include an id")
+        summary_polyline, geometry_source = self._extract_route_polyline(payload)
+        return SavedRoute(
+            source="strava",
+            source_route_id=str(route_id),
+            external_id=payload.get("id_str"),
+            name=payload.get("name"),
+            description=payload.get("description"),
+            private=payload.get("private"),
+            starred=payload.get("starred"),
+            distance_m=payload.get("distance"),
+            elevation_gain_m=payload.get("elevation_gain"),
+            estimated_moving_time_s=payload.get("estimated_moving_time"),
+            route_type=payload.get("type"),
+            sub_type=payload.get("sub_type"),
+            created_at=payload.get("created_at"),
+            updated_at=payload.get("updated_at"),
+            summary_polyline=summary_polyline,
+            geometry_source=geometry_source,
+            details_json=self._extract_route_details_json(payload),
+        )
+
     def _load_cached_stream_bundle(self, activity):
         if self.cache is None:
             return None
@@ -587,6 +692,14 @@ class StravaClient:
             return "start_end"
         return None
 
+    def _extract_route_polyline(self, payload):
+        route_map = (payload or {}).get("map") or {}
+        if route_map.get("polyline"):
+            return route_map.get("polyline"), "route_polyline"
+        if route_map.get("summary_polyline"):
+            return route_map.get("summary_polyline"), "summary_polyline"
+        return None, None
+
     def _extract_stream_bundle(self, payload):
         streams = {}
         if isinstance(payload, dict):
@@ -633,6 +746,28 @@ class StravaClient:
             "start_latlng",
             "end_latlng",
             "map",
+        }
+        filtered = {key: value for key, value in payload.items() if key not in excluded}
+        filtered["normalized_at"] = datetime.now(UTC).isoformat()
+        return filtered
+
+    def _extract_route_details_json(self, payload):
+        excluded = {
+            "id",
+            "id_str",
+            "name",
+            "description",
+            "private",
+            "starred",
+            "distance",
+            "elevation_gain",
+            "estimated_moving_time",
+            "type",
+            "sub_type",
+            "created_at",
+            "updated_at",
+            "map",
+            "athlete",
         }
         filtered = {key: value for key, value in payload.items() if key not in excluded}
         filtered["normalized_at"] = datetime.now(UTC).isoformat()
@@ -753,6 +888,11 @@ class StravaClient:
         delay = float(self.PAGE_REQUEST_DELAY_SECONDS)
         if delay > 0:
             time.sleep(delay)
+
+    def _sleep_between_route_pages(self):
+        # Route list pagination uses the same conservative pacing as activity
+        # pagination until route sync gets its own rate-limit tuning.
+        self._sleep_between_activity_pages()
 
     def _reduced_activity_page_size(self, current_per_page, exc, *, max_pages):
         if max_pages != 0:

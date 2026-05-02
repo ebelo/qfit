@@ -72,6 +72,29 @@ class StravaProvider:
         except StravaClientError as exc:
             raise ProviderError(str(exc)) from exc
 
+    def fetch_routes(self, athlete_id=None, per_page=200, max_pages=0):
+        """Fetch saved routes from Strava.
+
+        This is intentionally separate from :meth:`fetch_activities` so the UI
+        can later make route-catalog sync an explicit action with its own API
+        usage expectations.
+        """
+        try:
+            return self._client.fetch_routes(
+                athlete_id=athlete_id,
+                per_page=per_page,
+                max_pages=max_pages,
+            )
+        except StravaClientError as exc:
+            raise ProviderError(str(exc)) from exc
+
+    def fetch_route_detail(self, route_id):
+        """Fetch detailed metadata for one Strava route."""
+        try:
+            return self._client.fetch_route_detail(route_id)
+        except StravaClientError as exc:
+            raise ProviderError(str(exc)) from exc
+
     # ------------------------------------------------------------------
     # Strava-specific: OAuth authorisation helpers
     # ------------------------------------------------------------------
