@@ -70,3 +70,15 @@ class GeoPackageWriter:
             "toc_count": layers["atlas_toc_entries"].featureCount(),
             "sync": sync_result,
         }
+
+    def write_routes(self, routes):
+        if not self.output_path:
+            raise ValueError("output_path is required")
+        from ....routes.infrastructure.geopackage.route_storage import GeoPackageRouteStore
+
+        route_store = GeoPackageRouteStore(self.output_path)
+        result = route_store.write_routes(routes)
+        return {
+            "schema": self.schema(),
+            **result,
+        }

@@ -320,6 +320,7 @@ class DeprecatedCompatibilityShimTests(unittest.TestCase):
         "atlas",
         "configuration",
         "providers",
+        "routes",
         "ui",
         "validation",
         "visualization",

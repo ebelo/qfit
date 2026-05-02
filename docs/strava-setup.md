@@ -46,6 +46,12 @@ Once the refresh token is available:
 7. Click **Write + load layers**.
 8. Use **Apply current filters** only when you want the already loaded QGIS layers to match the current dock query.
 
+## Saved route catalog scope
+
+qfit's Strava authorization URL now requests `read_all` in addition to activity-read access. This is required for private saved/planned routes when using Strava route catalog endpoints such as route lists and GPX exports. Existing activity imports continue to use the same refresh-token flow; users who authorized qfit before route-catalog support may need to re-authorize to grant the extra route visibility.
+
+The first route-catalog implementation persists routes separately from completed activities as `route_registry`, `route_tracks`, and `route_points` GeoPackage objects. GPX exports with elevation are stored as true `LineStringZ` route tracks plus explicit ordered profile samples for future profiles and difficulty scoring.
+
 Tip:
 - Hover the most confusing controls or use the small `?` buttons in the dock for inline guidance about detailed-track limits, point sampling, basemap setup, temporal timestamps, and write/load vs filter behavior.
 

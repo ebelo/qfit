@@ -101,6 +101,14 @@ class QgisLayerGateway:
         )
         return activities_layer, starts_layer, points_layer, atlas_layer
 
+    def load_route_layers(self, gpkg_path):
+        canvas_service = self._get_canvas_service()
+        project_layer_loader = self._get_project_layer_loader()
+        canvas_service.ensure_working_crs(self.iface, preserve_extent=True)
+        route_layers = project_layer_loader.load_route_layers(gpkg_path)
+        self._move_background_layers_to_bottom()
+        return route_layers
+
     def remove_layers(self, layers):
         for layer in layers or []:
             if layer is None:

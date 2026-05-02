@@ -64,6 +64,25 @@ class TestStravaProviderFetchActivities(unittest.TestCase):
         except ProviderError as exc:
             self.assertIs(exc.__cause__, original)
 
+    def test_fetch_routes_delegates_to_client(self):
+        provider = self._make_provider()
+        provider._client.fetch_routes.return_value = []
+        result = provider.fetch_routes(per_page=25, max_pages=1, include_geometry=False)
+        provider._client.fetch_routes.assert_called_once_with(
+            per_page=25,
+            max_pages=1,
+            include_geometry=False,
+        )
+        self.assertEqual(result, [])
+
+    def test_fetch_routes_translates_strava_client_error(self):
+        from qfit.providers.infrastructure.strava_client import StravaClientError
+        provider = self._make_provider()
+        provider._client.fetch_routes.side_effect = StravaClientError("route API error")
+        with self.assertRaises(ProviderError) as ctx:
+            provider.fetch_routes()
+        self.assertIn("route API error", str(ctx.exception))
+
 
 class TestStravaProviderFetchRoutes(unittest.TestCase):
     """Route fetch helpers delegate to StravaClient and translate errors."""

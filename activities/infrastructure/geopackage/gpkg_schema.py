@@ -93,6 +93,47 @@ POINT_FIELDS = [
     ("last_synced_at", QVariant.String),
 ]
 
+ROUTE_TRACK_FIELDS = [
+    ("source", QVariant.String),
+    ("source_route_id", QVariant.String),
+    ("name", QVariant.String),
+    ("description", QVariant.String),
+    ("route_type", QVariant.String),
+    ("sub_type", QVariant.String),
+    ("distance_m", QVariant.Double),
+    ("estimated_moving_time_s", QVariant.Int),
+    ("total_elevation_gain_m", QVariant.Double),
+    ("created_at", QVariant.String),
+    ("updated_at", QVariant.String),
+    ("starred", QVariant.Int),
+    ("private", QVariant.Int),
+    ("start_lat", QVariant.Double),
+    ("start_lon", QVariant.Double),
+    ("end_lat", QVariant.Double),
+    ("end_lon", QVariant.Double),
+    ("summary_polyline", QVariant.String),
+    ("geometry_source", QVariant.String),
+    ("geometry_point_count", QVariant.Int),
+    ("details_json", QVariant.String),
+    ("summary_hash", QVariant.String),
+    ("first_seen_at", QVariant.String),
+    ("last_synced_at", QVariant.String),
+]
+
+ROUTE_POINT_FIELDS = [
+    ("route_fk", QVariant.Int),
+    ("source", QVariant.String),
+    ("source_route_id", QVariant.String),
+    ("name", QVariant.String),
+    ("route_type", QVariant.String),
+    ("point_index", QVariant.Int),
+    ("point_ratio", QVariant.Double),
+    ("distance_m", QVariant.Double),
+    ("altitude_m", QVariant.Double),
+    ("geometry_source", QVariant.String),
+    ("last_synced_at", QVariant.String),
+]
+
 ATLAS_FIELDS = [
     ("activity_fk", QVariant.Int),
     ("source", QVariant.String),
@@ -247,6 +288,21 @@ GPKG_LAYER_SCHEMA = {
         "geometry": "POINT",
         "kind": "layer",
         "fields": [name for name, _ in POINT_FIELDS],
+    },
+    "route_registry": {
+        "geometry": None,
+        "kind": "table",
+        "primary_key": ["source", "source_route_id"],
+    },
+    "route_tracks": {
+        "geometry": "LINESTRINGZ",
+        "kind": "layer",
+        "fields": [name for name, _ in ROUTE_TRACK_FIELDS],
+    },
+    "route_points": {
+        "geometry": "POINTZ",
+        "kind": "layer",
+        "fields": [name for name, _ in ROUTE_POINT_FIELDS],
     },
     "activity_atlas_pages": {
         "geometry": "POLYGON",

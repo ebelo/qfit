@@ -93,6 +93,31 @@ class LayerGatewayBoundaryTests(unittest.TestCase):
         modules["qgis.core"].QgsProject.instance.return_value.removeMapLayer.assert_any_call(layer_a)
         modules["qgis.core"].QgsProject.instance.return_value.removeMapLayer.assert_any_call(layer_b)
 
+    def test_qgis_gateway_load_route_layers_delegates_to_loader_without_zooming(self):
+        modules = self._qgis_gateway_modules()
+
+        with patch.dict(sys.modules, modules, clear=False):
+            self._reset_qgis_gateway_imports()
+            adapter_module = importlib.import_module(
+                "qfit.visualization.infrastructure.qgis_layer_gateway"
+            )
+
+            gateway = adapter_module.QgisLayerGateway(MagicMock(name="iface"))
+            gateway._canvas_service = MagicMock(name="canvas_service")
+            gateway._project_layer_loader = MagicMock(name="project_layer_loader")
+            gateway._project_layer_loader.load_route_layers.return_value = (
+                MagicMock(name="route_tracks"),
+                MagicMock(name="route_points"),
+            )
+            gateway._move_background_layers_to_bottom = MagicMock(name="move_background_layers_to_bottom")
+            result = gateway.load_route_layers("/tmp/out.gpkg")
+
+        self.assertEqual(result, gateway._project_layer_loader.load_route_layers.return_value)
+        gateway._canvas_service.ensure_working_crs.assert_called_once_with(gateway.iface, preserve_extent=True)
+        gateway._project_layer_loader.load_route_layers.assert_called_once_with("/tmp/out.gpkg")
+        gateway._canvas_service.zoom_to_layers.assert_not_called()
+        gateway._move_background_layers_to_bottom.assert_called_once_with()
+
     def test_qgis_gateway_has_features_handles_missing_feature_count(self):
         modules = self._qgis_gateway_modules()
 
@@ -258,6 +283,10 @@ class LayerGatewayBoundaryTests(unittest.TestCase):
             MagicMock(name="starts"),
             MagicMock(name="points"),
             MagicMock(name="atlas"),
+        )
+        project_layer_loader.load_route_layers.return_value = (
+            MagicMock(name="route_tracks"),
+            MagicMock(name="route_points"),
         )
 
         mapbox_config = ModuleType("qfit.mapbox_config")

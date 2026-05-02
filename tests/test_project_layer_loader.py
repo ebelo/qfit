@@ -171,6 +171,36 @@ class ProjectLayerLoaderRealTests(unittest.TestCase):
         new_layer.setCrs.assert_called_once_with("EPSG:3857")
         project.addMapLayer.assert_called_once_with(new_layer, False)
 
+    def test_load_route_layers_adds_saved_routes_to_dedicated_group(self):
+        loader = ProjectLayerLoader()
+
+        route_tracks = MagicMock()
+        route_tracks.isValid.return_value = True
+        route_points = MagicMock()
+        route_points.isValid.return_value = True
+        group = MagicMock()
+        root = MagicMock()
+        root.findGroup.return_value = group
+        project = MagicMock()
+        project.mapLayersByName.return_value = []
+        project.layerTreeRoot.return_value = root
+
+        with patch("qfit.visualization.infrastructure.project_layer_loader.QgsVectorLayer", side_effect=[route_tracks, route_points]) as vector_layer, \
+             patch("qfit.visualization.infrastructure.project_layer_loader.QgsProject") as qgs_project:
+            qgs_project.instance.return_value = project
+            layers = loader.load_route_layers("/tmp/out.gpkg")
+
+        self.assertEqual(layers, (route_tracks, route_points))
+        self.assertEqual(
+            vector_layer.call_args_list,
+            [
+                call("/tmp/out.gpkg|layername=route_tracks", "qfit saved routes", "ogr"),
+                call("/tmp/out.gpkg|layername=route_points", "qfit route profile samples", "ogr"),
+            ],
+        )
+        project.addMapLayer.assert_has_calls([call(route_tracks, False), call(route_points, False)])
+        group.addLayer.assert_has_calls([call(route_tracks), call(route_points)])
+
 
 @unittest.skipIf(QGIS_AVAILABLE, SKIP_MOCK)
 @unittest.skipIf(_def_loader_cls is None, SKIP_MOCK_LOAD)
@@ -257,3 +287,24 @@ class ProjectLayerLoaderMockTests(unittest.TestCase):
 
         new_layer.setCrs.assert_called_once_with("EPSG:3857")
         project.addMapLayer.assert_called_once_with(new_layer, False)
+
+    def test_load_route_layers_adds_saved_routes_to_dedicated_group(self):
+        route_tracks = MagicMock()
+        route_tracks.isValid.return_value = True
+        route_points = MagicMock()
+        route_points.isValid.return_value = True
+        group = MagicMock()
+        root = MagicMock()
+        root.findGroup.return_value = group
+        project = MagicMock()
+        project.mapLayersByName.return_value = []
+        project.layerTreeRoot.return_value = root
+
+        with patch.object(self.module, "QgsVectorLayer", side_effect=[route_tracks, route_points]), \
+             patch.object(self.module, "QgsProject") as qgs_project:
+            qgs_project.instance.return_value = project
+            layers = self.loader.load_route_layers("/tmp/out.gpkg")
+
+        self.assertEqual(layers, (route_tracks, route_points))
+        project.addMapLayer.assert_has_calls([call(route_tracks, False), call(route_points, False)])
+        group.addLayer.assert_has_calls([call(route_tracks), call(route_points)])
