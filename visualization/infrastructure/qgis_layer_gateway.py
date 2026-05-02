@@ -106,6 +106,7 @@ class QgisLayerGateway:
         project_layer_loader = self._get_project_layer_loader()
         canvas_service.ensure_working_crs(self.iface, preserve_extent=False)
         route_layers = project_layer_loader.load_route_layers(gpkg_path)
+        self._get_style_service().apply_route_style(*route_layers)
         self._move_background_layers_to_bottom()
         canvas_service.zoom_to_layers(self.iface, route_layers)
         return route_layers

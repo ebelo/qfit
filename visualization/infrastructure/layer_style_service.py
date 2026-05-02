@@ -45,6 +45,8 @@ OTHER_ACTIVITY_LABEL = "Other"
 HEATMAP_ANALYSIS_RADIUS_M = 750
 HEATMAP_VISUALIZE_RADIUS_M = 250
 HEATMAP_VISUALIZE_MAXIMUM = 25
+ROUTE_LINE_HEX = "#8e44ad"
+ROUTE_POINT_RGBA = "142,68,173,150"
 
 
 def _fixed_visualize_heatmap_maximum(layer):
@@ -140,6 +142,18 @@ class LayerStyleService:
 
         if atlas_layer is not None:
             self._apply_layer_render_plan(atlas_layer, render_plan.atlas, basemap_preset_name)
+
+    def apply_route_style(
+        self,
+        route_tracks_layer,
+        route_points_layer=None,
+        _route_profile_samples_layer=None,
+    ):
+        """Style saved-route catalog layers so they differ from activities."""
+        if route_tracks_layer is not None:
+            self._apply_route_track_style(route_tracks_layer)
+        if route_points_layer is not None:
+            self._apply_route_point_style(route_points_layer)
 
     def _apply_layer_render_plan(self, layer, layer_plan, basemap_preset_name):
         if layer is None or layer_plan is None:
@@ -341,4 +355,33 @@ class LayerStyleService:
         )
         layer.setRenderer(QgsSingleSymbolRenderer(symbol))
         layer.setOpacity(1.0)
+        layer.triggerRepaint()
+
+    def _apply_route_track_style(self, layer):
+        symbol = QgsLineSymbol()
+        symbol.deleteSymbolLayer(0)
+
+        line_layer = QgsSimpleLineSymbolLayer()
+        line_layer.setColor(QColor(ROUTE_LINE_HEX))
+        line_layer.setWidth(0.65)
+        line_layer.setPenCapStyle(Qt.RoundCap)
+        line_layer.setPenJoinStyle(Qt.RoundJoin)
+        line_layer.setPenStyle(Qt.DashLine)
+        symbol.appendSymbolLayer(line_layer)
+
+        layer.setRenderer(QgsSingleSymbolRenderer(symbol))
+        layer.setOpacity(0.85)
+        layer.triggerRepaint()
+
+    def _apply_route_point_style(self, layer):
+        symbol = QgsMarkerSymbol.createSimple(
+            {
+                "name": "circle",
+                "color": ROUTE_POINT_RGBA,
+                "size": "1.1",
+                "outline_style": "no",
+            }
+        )
+        layer.setRenderer(QgsSingleSymbolRenderer(symbol))
+        layer.setOpacity(0.45)
         layer.triggerRepaint()

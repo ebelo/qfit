@@ -194,6 +194,25 @@ class LayerStyleServiceTests(unittest.TestCase):
         self.assertIsInstance(self.style_service, LayerStyleService)
         self.assertIsNot(self.style_service, self.layer_manager)
 
+    def test_route_style_sets_dedicated_route_renderers(self):
+        route_tracks = MagicMock()
+        route_points = MagicMock()
+        profile_samples = MagicMock()
+
+        self.style_service.apply_route_style(
+            route_tracks,
+            route_points,
+            profile_samples,
+        )
+
+        route_tracks.setRenderer.assert_called_once()
+        route_tracks.setOpacity.assert_called_once_with(0.85)
+        route_tracks.triggerRepaint.assert_called_once()
+        route_points.setRenderer.assert_called_once()
+        route_points.setOpacity.assert_called_once_with(0.45)
+        route_points.triggerRepaint.assert_called_once()
+        profile_samples.setRenderer.assert_not_called()
+
     def test_simple_lines_applies_single_symbol_renderer(self):
         with tempfile.TemporaryDirectory() as tmp:
             activities_layer, starts_layer, points_layer, atlas_layer = self._write_and_load(tmp)
@@ -369,6 +388,23 @@ class LayerStyleServiceUnitTests(unittest.TestCase):
         self.service.apply_style(acts, starts, points, None, "Simple lines")
         acts.setRenderer.assert_called_once()
         acts.triggerRepaint.assert_called()
+
+    def test_route_style_sets_dedicated_route_renderers(self):
+        route_tracks = self._make_layer()
+        route_points = self._make_layer()
+        profile_samples = self._make_layer()
+
+        self.service.apply_route_style(
+            route_tracks,
+            route_points,
+            profile_samples,
+        )
+
+        route_tracks.setRenderer.assert_called_once()
+        route_tracks.setOpacity.assert_called_once_with(0.85)
+        route_points.setRenderer.assert_called_once()
+        route_points.setOpacity.assert_called_once_with(0.45)
+        profile_samples.setRenderer.assert_not_called()
 
     def test_by_activity_type_sets_renderer_on_tracks(self):
         acts = self._make_layer()
