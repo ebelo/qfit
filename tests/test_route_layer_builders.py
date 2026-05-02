@@ -79,6 +79,7 @@ class RouteLayerBuilderTests(unittest.TestCase):
 
         self.assertEqual(layer.featureCount(), 2)
         samples = sorted(layer.getFeatures(), key=lambda feature: feature["point_index"])
+        self.assertEqual(samples[0]["route_fk"], "strava:733")
         self.assertEqual([sample["point_index"] for sample in samples], [0, 1])
         self.assertEqual(samples[1]["point_ratio"], 1.0)
         self.assertTrue(QgsWkbTypes.hasZ(layer.wkbType()))

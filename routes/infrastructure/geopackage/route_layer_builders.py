@@ -47,10 +47,11 @@ def build_route_point_layer(records):
     layer.updateFields()
 
     features = []
-    for route_fk, record in enumerate(records, start=1):
+    for record in records:
         points = _normalize_route_points(record.get("geometry_points") or [])
         if not points:
             continue
+        route_fk = _stable_route_fk(record)
         max_distance = max((point.get("distance_m") or 0.0 for point in points), default=0.0)
         for point_index, point in enumerate(points):
             latitude = point.get("latitude")
@@ -182,3 +183,9 @@ def _point_ratio(distance_m, max_distance, index, count):
     if count <= 1:
         return 0.0
     return float(index) / float(count - 1)
+
+
+def _stable_route_fk(record):
+    source = record.get("source") or ""
+    route_id = record.get("source_route_id") or ""
+    return f"{source}:{route_id}"

@@ -121,7 +121,7 @@ ROUTE_TRACK_FIELDS = [
 ]
 
 ROUTE_POINT_FIELDS = [
-    ("route_fk", QVariant.Int),
+    ("route_fk", QVariant.String),
     ("source", QVariant.String),
     ("source_route_id", QVariant.String),
     ("name", QVariant.String),
