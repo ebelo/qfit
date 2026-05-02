@@ -74,33 +74,35 @@ def _route_geometry(record, force_z=False):
     route_points = _normalize_route_points(record.get("geometry_points") or [])
     geometry = _geometry_from_route_points(route_points, force_z=force_z)
     if geometry is not None:
-        return geometry, record.get("geometry_source") or "gpx", len(route_points)
+        return geometry, "gpx", len(route_points)
 
     polyline_points = decode_polyline(record.get("summary_polyline"))
     geometry = _geometry_from_latlon_pairs(polyline_points, force_z=force_z)
     if geometry is not None:
-        return geometry, record.get("geometry_source") or "summary_polyline", len(polyline_points)
+        return geometry, "summary_polyline", len(polyline_points)
 
     geometry = _fallback_geometry(record, force_z=force_z)
     if geometry is not None:
-        return geometry, record.get("geometry_source") or "start_end", 2
+        return geometry, "start_end", 2
 
     return None, None, 0
 
 
 def _geometry_from_route_points(points, force_z=False):
-    if len(points) < 2:
+    valid_points = [
+        point for point in points
+        if point.get("latitude") is not None and point.get("longitude") is not None
+    ]
+    if len(valid_points) < 2:
         return None
     if force_z:
         return QgsGeometry.fromPolyline([
             QgsPoint(float(point["longitude"]), float(point["latitude"]), _z_value(point.get("altitude_m")))
-            for point in points
-            if point.get("latitude") is not None and point.get("longitude") is not None
+            for point in valid_points
         ])
     return QgsGeometry.fromPolylineXY([
         QgsPointXY(float(point["longitude"]), float(point["latitude"]))
-        for point in points
-        if point.get("latitude") is not None and point.get("longitude") is not None
+        for point in valid_points
     ])
 
 

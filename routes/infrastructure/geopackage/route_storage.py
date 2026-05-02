@@ -203,9 +203,12 @@ class GeoPackageRouteStore:
         )
 
     def _prepare_registry_record(self, record, summary_hash, first_seen_at, last_synced_at):
+        source_route_id = record.get("source_route_id")
+        if source_route_id in (None, ""):
+            raise ValueError("source_route_id is required for route persistence")
         return {
             "source": record.get("source"),
-            "source_route_id": str(record.get("source_route_id")),
+            "source_route_id": str(source_route_id),
             "name": record.get("name"),
             "description": record.get("description"),
             "route_type": record.get("route_type"),
