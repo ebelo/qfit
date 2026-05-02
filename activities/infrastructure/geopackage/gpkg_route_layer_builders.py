@@ -15,6 +15,7 @@ from qgis.core import (
     QgsPoint,
     QgsPointXY,
     QgsVectorLayer,
+    QgsWkbTypes,
 )
 
 from .gpkg_schema import (
@@ -38,7 +39,14 @@ __all__ = [
 
 def build_route_track_layer(records):
     """Build the saved-route track layer."""
-    layer = QgsVectorLayer("LineString?crs=EPSG:4326", "route_tracks", "memory")
+    records = list(records or [])
+    has_z = route_tracks_have_elevation(records)
+    layer_uri = (
+        "LineStringZ?crs=EPSG:4326"
+        if has_z
+        else "LineString?crs=EPSG:4326"
+    )
+    layer = QgsVectorLayer(layer_uri, "route_tracks", "memory")
     provider = layer.dataProvider()
     provider.addAttributes(make_qgs_fields(ROUTE_TRACK_FIELDS))
     layer.updateFields()
@@ -55,7 +63,7 @@ def build_route_track_layer(records):
             point_count,
             profile_point_count,
             route_has_z,
-        ) = _route_geometry(record)
+        ) = _route_geometry(record, force_z=has_z)
         if geometry is None:
             continue
 
@@ -186,7 +194,7 @@ def route_feature_key(record):
 
 
 def route_tracks_have_elevation(records):
-    return any(_record_has_elevation(record) for record in records)
+    return any(_record_has_elevation(record) for record in records or [])
 
 
 def _route_geometry(record, force_z=False):
@@ -208,6 +216,7 @@ def _route_geometry(record, force_z=False):
         record.get("geometry_source") or "geometry_points",
         profile_point_count,
         route_has_z,
+        force_z,
     )
     if result[0] is not None:
         return result
@@ -217,13 +226,20 @@ def _route_geometry(record, force_z=False):
         record.get("geometry_source") or "summary_polyline",
         profile_point_count,
         route_has_z,
+        force_z,
     )
     if result[0] is not None:
         return result
 
-    geometry = _fallback_route_geometry(record)
+    geometry = _fallback_route_geometry(record, force_z)
     if geometry is not None:
-        return geometry, record.get("geometry_source") or "start_end", 2, 0, False
+        return (
+            geometry,
+            record.get("geometry_source") or "start_end",
+            2,
+            0,
+            False,
+        )
 
     return None, None, 0, profile_point_count, route_has_z
 
@@ -236,12 +252,11 @@ def _geometry_from_profile_points(record, points, route_has_z, force_z):
     if len(valid_points) < 2:
         return None, None, len(valid_points), len(points), route_has_z
 
-    if force_z and route_has_z:
+    if force_z:
         geometry = QgsGeometry.fromPolyline([
-            QgsPoint(
-                float(point.get("lon")),
-                float(point.get("lat")),
-                float(point.get("altitude_m")),
+            _elevation_point(point) if route_has_z else _padded_z_point(
+                point.get("lon"),
+                point.get("lat"),
             )
             for point in valid_points
         ])
@@ -265,16 +280,26 @@ def _geometry_from_lat_lon_pairs(
     geometry_source,
     profile_point_count,
     route_has_z,
+    force_z=False,
 ):
-    valid_points = [
-        QgsPointXY(float(lon), float(lat))
-        for lat, lon in points
-        if lat is not None and lon is not None
-    ]
+    if force_z:
+        valid_points = [
+            _padded_z_point(lon, lat)
+            for lat, lon in points
+            if lat is not None and lon is not None
+        ]
+    else:
+        valid_points = [
+            QgsPointXY(float(lon), float(lat))
+            for lat, lon in points
+            if lat is not None and lon is not None
+        ]
     if len(valid_points) < 2:
         return None, None, len(valid_points), profile_point_count, route_has_z
     return (
-        QgsGeometry.fromPolylineXY(valid_points),
+        QgsGeometry.fromPolyline(valid_points)
+        if force_z
+        else QgsGeometry.fromPolylineXY(valid_points),
         geometry_source,
         len(valid_points),
         profile_point_count,
@@ -282,17 +307,38 @@ def _geometry_from_lat_lon_pairs(
     )
 
 
-def _fallback_route_geometry(record):
+def _fallback_route_geometry(record, force_z=False):
     start_lat = record.get("start_lat")
     start_lon = record.get("start_lon")
     end_lat = record.get("end_lat")
     end_lon = record.get("end_lon")
     if None in (start_lat, start_lon, end_lat, end_lon):
         return None
+    if force_z:
+        return QgsGeometry.fromPolyline([
+            _padded_z_point(start_lon, start_lat),
+            _padded_z_point(end_lon, end_lat),
+        ])
     return QgsGeometry.fromPolylineXY([
         QgsPointXY(start_lon, start_lat),
         QgsPointXY(end_lon, end_lat),
     ])
+
+
+def _padded_z_point(lon, lat):
+    return QgsPoint(
+        float(lon),
+        float(lat),
+        wkbType=QgsWkbTypes.PointZ,
+    )
+
+
+def _elevation_point(point):
+    return QgsPoint(
+        float(point.get("lon")),
+        float(point.get("lat")),
+        float(point.get("altitude_m")),
+    )
 
 
 def _profile_points(record):

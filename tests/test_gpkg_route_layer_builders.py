@@ -1,4 +1,5 @@
 import importlib.util
+import math
 import os
 import sys
 import unittest
@@ -103,6 +104,10 @@ class RouteLayerSchemaTests(unittest.TestCase):
         self.assertEqual(
             GPKG_LAYER_SCHEMA["route_tracks"]["geometry"],
             "LINESTRING",
+        )
+        self.assertIn(
+            "LINESTRINGZ",
+            GPKG_LAYER_SCHEMA["route_tracks"]["geometry_variants"],
         )
         self.assertIn("route_fk", GPKG_LAYER_SCHEMA["route_tracks"]["fields"])
         self.assertEqual(
@@ -212,6 +217,95 @@ class BuildRouteTrackLayerTests(unittest.TestCase):
         self.assertEqual(feature["geometry_point_count"], 2)
         self.assertEqual(feature["profile_point_count"], 2)
         self.assertEqual(feature["details_json"], '{"estimated": false}')
+
+    def test_route_track_layer_creates_linestring_z_when_elevation_exists(self):
+        layer = build_route_track_layer(
+            [
+                {
+                    "source": "strava",
+                    "source_route_id": "42",
+                    "name": "Swiss gravel loop",
+                    "geometry_source": "export_gpx",
+                    "profile_points": [
+                        {
+                            "point_index": 0,
+                            "lat": 46.5,
+                            "lon": 6.6,
+                            "distance_m": 0.0,
+                            "altitude_m": 500.0,
+                        },
+                        {
+                            "point_index": 1,
+                            "lat": 46.501,
+                            "lon": 6.601,
+                            "distance_m": 135.4,
+                            "altitude_m": 507.5,
+                        },
+                    ],
+                }
+            ]
+        )
+
+        self.assertTrue(layer.isValid())
+        self.assertTrue(QgsWkbTypes.hasZ(layer.wkbType()))
+        self.assertEqual(layer.featureCount(), 1)
+        feature = next(layer.getFeatures())
+        self.assertEqual(feature["source_route_id"], "42")
+        self.assertEqual(feature["geometry_point_count"], 2)
+        self.assertEqual(feature["profile_point_count"], 2)
+        self.assertEqual(feature["has_elevation"], 1)
+        self.assertTrue(QgsWkbTypes.hasZ(feature.geometry().wkbType()))
+        first_vertex = next(feature.geometry().vertices())
+        self.assertAlmostEqual(first_vertex.z(), 500.0)
+
+    def test_route_track_layer_pads_mixed_catalog_geometries_when_z_exists(self):
+        layer = build_route_track_layer(
+            [
+                {
+                    "source": "strava",
+                    "source_route_id": "z-route",
+                    "profile_points": [
+                        {
+                            "point_index": 0,
+                            "lat": 46.5,
+                            "lon": 6.6,
+                            "altitude_m": 500.0,
+                        },
+                        {
+                            "point_index": 1,
+                            "lat": 46.501,
+                            "lon": 6.601,
+                            "altitude_m": 507.5,
+                        },
+                    ],
+                },
+                {
+                    "source": "strava",
+                    "source_route_id": "polyline-only",
+                    "geometry_points": [(46.7, 6.8), (46.8, 6.9)],
+                },
+            ]
+        )
+
+        features = {
+            feature["source_route_id"]: feature
+            for feature in layer.getFeatures()
+        }
+        self.assertTrue(QgsWkbTypes.hasZ(layer.wkbType()))
+        self.assertEqual(layer.featureCount(), 2)
+        self.assertTrue(
+            QgsWkbTypes.hasZ(features["z-route"].geometry().wkbType())
+        )
+        self.assertTrue(
+            QgsWkbTypes.hasZ(features["polyline-only"].geometry().wkbType())
+        )
+        first_z_vertex = next(features["z-route"].geometry().vertices())
+        first_padded_vertex = next(
+            features["polyline-only"].geometry().vertices()
+        )
+        self.assertAlmostEqual(first_z_vertex.z(), 500.0)
+        self.assertTrue(math.isnan(first_padded_vertex.z()))
+        self.assertEqual(features["polyline-only"]["has_elevation"], 0)
 
     def test_record_without_geometry_is_skipped(self):
         layer = build_route_track_layer([
