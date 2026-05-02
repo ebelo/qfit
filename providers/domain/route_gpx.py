@@ -13,20 +13,29 @@ def parse_route_gpx(gpx_text: str) -> list[RouteProfilePoint]:
     if not gpx_text:
         return []
 
-    raw_points: list[tuple[float, float, Optional[float]]] = []
+    raw_points: list[tuple[float, float, Optional[float], int]] = []
     current_point: dict[str, object] | None = None
+    current_segment_index = 0
+    seen_track_segment = False
     element_stack: list[str] = []
     elevation_chunks: list[str] = []
 
     def start_element(name, attrs):
-        nonlocal current_point, elevation_chunks
+        nonlocal current_point, current_segment_index, elevation_chunks
+        nonlocal seen_track_segment
         local_name = _local_name(name)
         element_stack.append(local_name)
-        if local_name in {"trkpt", "rtept"}:
+        if local_name == "trkseg":
+            if seen_track_segment:
+                current_segment_index += 1
+            else:
+                seen_track_segment = True
+        elif local_name in {"trkpt", "rtept"}:
             current_point = {
                 "lat": _parse_required_float(attrs.get("lat"), "lat"),
                 "lon": _parse_required_float(attrs.get("lon"), "lon"),
                 "ele": None,
+                "segment_index": current_segment_index,
             }
             elevation_chunks = []
         elif current_point is not None and local_name == "ele":
@@ -54,6 +63,7 @@ def parse_route_gpx(gpx_text: str) -> list[RouteProfilePoint]:
                     float(current_point["lat"]),
                     float(current_point["lon"]),
                     current_point["ele"],
+                    int(current_point["segment_index"]),
                 )
             )
             current_point = None
@@ -68,6 +78,8 @@ def parse_route_gpx(gpx_text: str) -> list[RouteProfilePoint]:
 
     try:
         parser.Parse(gpx_text, True)
+    except RouteGpxParseError:
+        raise
     except (expat.ExpatError, TypeError, ValueError) as exc:
         raise RouteGpxParseError("Invalid route GPX") from exc
 
@@ -75,14 +87,15 @@ def parse_route_gpx(gpx_text: str) -> list[RouteProfilePoint]:
 
 
 def _profile_points(
-    raw_points: list[tuple[float, float, Optional[float]]],
+    raw_points: list[tuple[float, float, Optional[float], int]],
 ) -> list[RouteProfilePoint]:
     profile_points: list[RouteProfilePoint] = []
     previous: tuple[float, float] | None = None
+    previous_segment_index: int | None = None
     cumulative_distance_m = 0.0
 
-    for index, (lat, lon, altitude_m) in enumerate(raw_points):
-        if previous is not None:
+    for index, (lat, lon, altitude_m, segment_index) in enumerate(raw_points):
+        if previous is not None and previous_segment_index == segment_index:
             cumulative_distance_m += _haversine_distance_m(
                 previous[0],
                 previous[1],
@@ -95,10 +108,12 @@ def _profile_points(
                 lat=lat,
                 lon=lon,
                 distance_m=cumulative_distance_m,
+                segment_index=segment_index,
                 altitude_m=altitude_m,
             )
         )
         previous = (lat, lon)
+        previous_segment_index = segment_index
 
     return profile_points
 

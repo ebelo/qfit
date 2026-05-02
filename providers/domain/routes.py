@@ -8,6 +8,7 @@ class RouteProfilePoint:
     lat: float
     lon: float
     distance_m: float
+    segment_index: int = 0
     altitude_m: Optional[float] = None
 
 

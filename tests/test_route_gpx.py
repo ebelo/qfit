@@ -22,10 +22,31 @@ class RouteGpxParserTests(unittest.TestCase):
         self.assertEqual(points[0].lat, 46.5)
         self.assertEqual(points[0].lon, 6.6)
         self.assertEqual(points[0].altitude_m, 400.5)
+        self.assertEqual(points[0].segment_index, 0)
         self.assertEqual(points[0].distance_m, 0.0)
         self.assertGreater(points[1].distance_m, 90.0)
         self.assertLess(points[1].distance_m, 110.0)
         self.assertEqual(points[1].altitude_m, 410.0)
+
+    def test_does_not_add_synthetic_distance_between_track_segments(self):
+        points = parse_route_gpx(
+            """
+            <gpx><trk>
+              <trkseg>
+                <trkpt lat="46.0" lon="6.0" />
+                <trkpt lat="46.001" lon="6.0" />
+              </trkseg>
+              <trkseg>
+                <trkpt lat="47.0" lon="7.0" />
+                <trkpt lat="47.001" lon="7.0" />
+              </trkseg>
+            </trk></gpx>
+            """
+        )
+
+        self.assertEqual([point.segment_index for point in points], [0, 0, 1, 1])
+        self.assertAlmostEqual(points[2].distance_m, points[1].distance_m)
+        self.assertGreater(points[3].distance_m, points[2].distance_m)
 
     def test_parses_route_points_without_namespace_or_elevation(self):
         points = parse_route_gpx(
@@ -51,6 +72,10 @@ class RouteGpxParserTests(unittest.TestCase):
     def test_invalid_gpx_raises_parse_error(self):
         with self.assertRaises(RouteGpxParseError):
             parse_route_gpx("<gpx><trkpt lat='bad' lon='6.6' /></gpx>")
+
+    def test_missing_coordinate_keeps_specific_parse_error(self):
+        with self.assertRaisesRegex(RouteGpxParseError, "missing lat"):
+            parse_route_gpx("<gpx><trkpt lon='6.6' /></gpx>")
 
 
 if __name__ == "__main__":
