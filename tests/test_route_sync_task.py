@@ -120,6 +120,41 @@ class RouteSyncTaskTests(unittest.TestCase):
         self.assertEqual(received["error"], "route scope missing")
         self.assertFalse(received["cancelled"])
 
+    def test_preserves_write_result_when_cancelled_after_persisting(self):
+        received = {}
+        route = SimpleNamespace(source_route_id="42", details_json={})
+        provider = MagicMock()
+        provider.source_name = "strava"
+        provider.last_fetch_notice = None
+        provider.last_rate_limit = None
+        provider.fetch_routes.return_value = [route]
+        writer = MagicMock()
+
+        task = RouteSyncTask(
+            provider=provider,
+            output_path="/tmp/routes.gpkg",
+            use_gpx_geometry=False,
+            writer_factory=MagicMock(return_value=writer),
+            on_finished=lambda result, error, cancelled, provider: received.update(
+                result=result,
+                error=error,
+                cancelled=cancelled,
+            ),
+        )
+
+        write_result = {"path": "/tmp/routes.gpkg", "sync": None}
+
+        def _write_routes(_routes, sync_metadata=None):
+            task.cancel()
+            return write_result
+
+        writer.write_routes.side_effect = _write_routes
+
+        self.assertTrue(_run_task(task))
+        self.assertEqual(received["result"], write_result)
+        self.assertIsNone(received["error"])
+        self.assertTrue(received["cancelled"])
+
     def test_can_skip_gpx_detail_fetch(self):
         route = SimpleNamespace(source_route_id="42", details_json={})
         provider = MagicMock()

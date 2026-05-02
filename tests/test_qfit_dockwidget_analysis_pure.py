@@ -1743,6 +1743,23 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._set_status.assert_called_once_with("Syncing saved Strava routes…")
         fake_task_manager.addTask.assert_called_once_with(fake_task)
 
+    def test_on_sync_routes_clicked_requests_cancel_without_clearing_running_task(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        running_task = MagicMock()
+        dock._route_sync_task = running_task
+        dock.syncRoutesButton = _FakeButton("Cancel route sync")
+        dock.exchangeCodeButton = _FakeButton("Exchange")
+        dock.openAuthorizeButton = _FakeButton("Authorize")
+        dock._set_status = MagicMock()
+
+        self.module.QfitDockWidget.on_sync_routes_clicked(dock)
+
+        running_task.cancel.assert_called_once_with()
+        self.assertIs(dock._route_sync_task, running_task)
+        self.assertEqual(dock.syncRoutesButton.text(), "Cancelling route sync…")
+        self.assertFalse(dock.syncRoutesButton.isEnabled())
+        dock._set_status.assert_called_once_with("Route sync cancellation requested…")
+
     def test_handle_route_sync_task_finished_loads_route_layers(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._route_sync_task = object()
@@ -1786,6 +1803,29 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.layer_gateway.load_route_layers.assert_called_once_with("/tmp/qfit.gpkg")
         dock._mark_atlas_export_stale.assert_called_once_with()
         dock._set_status.assert_called_once()
+
+    def test_handle_route_sync_task_finished_reports_missing_result_path(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._route_sync_task = object()
+        dock.syncRoutesButton = _FakeButton("Cancel route sync")
+        dock.exchangeCodeButton = _FakeButton("Exchange")
+        dock.openAuthorizeButton = _FakeButton("Authorize")
+        dock.layer_gateway = MagicMock()
+        dock._show_error = MagicMock()
+        dock._set_status = MagicMock()
+
+        self.module.QfitDockWidget._handle_route_sync_task_finished(
+            dock,
+            {},
+            None,
+            False,
+            SimpleNamespace(last_rate_limit=None),
+        )
+
+        self.assertIsNone(dock._route_sync_task)
+        dock.layer_gateway.load_route_layers.assert_not_called()
+        dock._show_error.assert_called_once()
+        dock._set_status.assert_called_once_with("Load route layers failed")
 
     def test_on_refresh_clicked_cancels_existing_fetch_task(self):
         dock = object.__new__(self.module.QfitDockWidget)

@@ -163,6 +163,7 @@ class BuildFetchTaskTests(unittest.TestCase):
             detailed_route_strategy="Recent fetch only",
             on_finished="callback",
         )
+        self.assertIs(task, fetch_task_class.return_value)
 
 
 class BuildRouteSyncTaskTests(unittest.TestCase):

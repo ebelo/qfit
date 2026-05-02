@@ -59,7 +59,7 @@ class RouteSyncTask(QgsTask):
                 routes,
                 sync_metadata=self._build_sync_metadata(routes),
             )
-            return not self.isCanceled()
+            return True
         except ProviderError as exc:
             self._error = str(exc)
             return False
@@ -69,10 +69,10 @@ class RouteSyncTask(QgsTask):
             return False
 
     def finished(self, result: bool) -> None:  # pragma: no cover - Qt callback shape
-        cancelled = self.isCanceled() and not result and self._error is None
+        cancelled = self.isCanceled() and self._error is None
         if self._on_finished is not None:
             self._on_finished(
-                self._result if result else None,
+                self._result if (result or self._result is not None) else None,
                 self._error,
                 cancelled,
                 self._provider,

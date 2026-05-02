@@ -1296,9 +1296,8 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
         if self._route_sync_task is not None:
             self._route_sync_task.cancel()
-            self._runtime_store().clear_route_sync()
-            self._set_route_sync_running(False)
-            self._set_status("Route sync cancelled.")
+            self._set_route_sync_cancelling()
+            self._set_status("Route sync cancellation requested…")
             return
 
         self._save_settings()
@@ -1339,11 +1338,20 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.exchangeCodeButton.setEnabled(not running)
         self.openAuthorizeButton.setEnabled(not running)
 
+    def _set_route_sync_cancelling(self):
+        button = getattr(self, "syncRoutesButton", None)
+        if button is None:
+            return
+        button.setText("Cancelling route sync…")
+        button.setEnabled(False)
+        self.exchangeCodeButton.setEnabled(False)
+        self.openAuthorizeButton.setEnabled(False)
+
     def _handle_route_sync_task_finished(self, result, error_message, cancelled, provider):
         self._runtime_store().clear_route_sync()
         self._set_route_sync_running(False)
 
-        if cancelled:
+        if cancelled and result is None:
             self._set_status("Route sync cancelled")
             return
         if error_message:
@@ -1355,8 +1363,11 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             return
 
         try:
+            output_path = result.get("path")
+            if not output_path:
+                raise RuntimeError("Route sync did not return a GeoPackage path.")
             route_tracks_layer, route_points_layer, route_profile_samples_layer = (
-                self.layer_gateway.load_route_layers(result["path"])
+                self.layer_gateway.load_route_layers(output_path)
             )
         except (RuntimeError, OSError) as exc:
             _msg = "Load route layers failed"
@@ -1390,6 +1401,8 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             points=result.get("route_point_count", 0),
             samples=result.get("route_profile_sample_count", 0),
         )
+        if cancelled:
+            status = "Route sync completed after cancellation was requested. " + status
         self._set_status(status + rate_limit_note)
 
     def on_load_layers_clicked(self):
