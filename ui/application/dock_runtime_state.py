@@ -12,6 +12,9 @@ class DockRuntimeLayers:
     starts: object = None
     points: object = None
     atlas: object = None
+    route_tracks: object = None
+    route_points: object = None
+    route_profile_samples: object = None
     background: object = None
     analysis: object = None
 
@@ -33,6 +36,23 @@ class DockRuntimeLayers:
 
     def clear_dataset(self) -> "DockRuntimeLayers":
         return self.with_dataset()
+
+    def with_routes(
+        self,
+        *,
+        route_tracks_layer=None,
+        route_points_layer=None,
+        route_profile_samples_layer=None,
+    ) -> "DockRuntimeLayers":
+        return replace(
+            self,
+            route_tracks=route_tracks_layer,
+            route_points=route_points_layer,
+            route_profile_samples=route_profile_samples_layer,
+        )
+
+    def clear_routes(self) -> "DockRuntimeLayers":
+        return self.with_routes()
 
     def with_background(self, layer) -> "DockRuntimeLayers":
         return replace(self, background=layer)
@@ -56,6 +76,7 @@ class DockRuntimeLayers:
 class DockRuntimeTasks:
     fetch: object = None
     store: object = None
+    route_sync: object = None
     atlas_export: object = None
 
     def with_fetch(self, task) -> "DockRuntimeTasks":
@@ -63,6 +84,9 @@ class DockRuntimeTasks:
 
     def with_store(self, task) -> "DockRuntimeTasks":
         return replace(self, store=task)
+
+    def with_route_sync(self, task) -> "DockRuntimeTasks":
+        return replace(self, route_sync=task)
 
     def with_atlas_export(self, task) -> "DockRuntimeTasks":
         return replace(self, atlas_export=task)
@@ -72,6 +96,9 @@ class DockRuntimeTasks:
 
     def clear_store(self) -> "DockRuntimeTasks":
         return self.with_store(None)
+
+    def clear_route_sync(self) -> "DockRuntimeTasks":
+        return self.with_route_sync(None)
 
     def clear_atlas_export(self) -> "DockRuntimeTasks":
         return self.with_atlas_export(None)
@@ -103,6 +130,18 @@ class DockRuntimeState:
         return self.layers.atlas
 
     @property
+    def route_tracks_layer(self):
+        return self.layers.route_tracks
+
+    @property
+    def route_points_layer(self):
+        return self.layers.route_points
+
+    @property
+    def route_profile_samples_layer(self):
+        return self.layers.route_profile_samples
+
+    @property
     def background_layer(self):
         return self.layers.background
 
@@ -117,6 +156,10 @@ class DockRuntimeState:
     @property
     def store_task(self):
         return self.tasks.store
+
+    @property
+    def route_sync_task(self):
+        return self.tasks.route_sync
 
     @property
     def atlas_export_task(self):
@@ -166,6 +209,21 @@ class DockRuntimeStore:
             )
         )
 
+    def set_route_layers(
+        self,
+        *,
+        route_tracks_layer=None,
+        route_points_layer=None,
+        route_profile_samples_layer=None,
+    ) -> DockRuntimeState:
+        return self._replace_state(
+            layers=self._state.layers.with_routes(
+                route_tracks_layer=route_tracks_layer,
+                route_points_layer=route_points_layer,
+                route_profile_samples_layer=route_profile_samples_layer,
+            )
+        )
+
     def set_background_layer(self, layer) -> DockRuntimeState:
         return self._replace_state(layers=self._state.layers.with_background(layer))
 
@@ -184,8 +242,14 @@ class DockRuntimeStore:
     def set_store_task(self, task) -> DockRuntimeState:
         return self._replace_state(tasks=self._state.tasks.with_store(task))
 
+    def set_route_sync_task(self, task) -> DockRuntimeState:
+        return self._replace_state(tasks=self._state.tasks.with_route_sync(task))
+
     def clear_store(self) -> DockRuntimeState:
         return self._replace_state(tasks=self._state.tasks.clear_store())
+
+    def clear_route_sync(self) -> DockRuntimeState:
+        return self._replace_state(tasks=self._state.tasks.clear_route_sync())
 
     def set_atlas_export_task(self, task) -> DockRuntimeState:
         return self._replace_state(tasks=self._state.tasks.with_atlas_export(task))
@@ -214,6 +278,9 @@ class DockRuntimeStore:
 
     def begin_store(self, task) -> DockRuntimeState:
         return self.set_store_task(task)
+
+    def begin_route_sync(self, task) -> DockRuntimeState:
+        return self.set_route_sync_task(task)
 
     def finish_store(
         self,
@@ -282,7 +349,7 @@ class DockRuntimeStore:
             output_path=None,
             stored_activity_count=None,
             last_fetch_context={},
-            layers=self._state.layers.clear_dataset(),
+            layers=self._state.layers.clear_dataset().clear_routes(),
         )
 
     def clear_loaded_dataset(self) -> DockRuntimeState:

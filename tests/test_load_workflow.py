@@ -75,12 +75,18 @@ class LoadDatasetWorkflowTests(unittest.TestCase):
         layer_gateway = MagicMock()
         activities_layer = MagicMock()
         activities_layer.featureCount.return_value = 42
+        route_layers = (
+            MagicMock(name="route_tracks"),
+            MagicMock(name="route_points"),
+            MagicMock(name="route_profile_samples"),
+        )
         layer_gateway.load_output_layers.return_value = (
             activities_layer,
             MagicMock(name="starts"),
             MagicMock(name="points"),
             MagicMock(name="atlas"),
         )
+        layer_gateway.load_route_layers.return_value = route_layers
         workflow = LoadDatasetWorkflow(layer_gateway, path_exists=lambda _path: True)
 
         result = workflow.load_existing_request(
@@ -89,6 +95,9 @@ class LoadDatasetWorkflowTests(unittest.TestCase):
 
         self.assertIsInstance(result, LoadDatasetResult)
         self.assertEqual(result.total_stored, 42)
+        self.assertEqual(result.route_tracks_layer, route_layers[0])
+        self.assertEqual(result.route_points_layer, route_layers[1])
+        self.assertEqual(result.route_profile_samples_layer, route_layers[2])
         self.assertIn("/tmp/existing.gpkg", result.status)
 
 
@@ -396,7 +405,13 @@ class LoadExistingSuccessTests(unittest.TestCase):
             MagicMock(name="points"),
             MagicMock(name="atlas"),
         )
+        route_layers = (
+            MagicMock(name="route_tracks"),
+            MagicMock(name="route_points"),
+            MagicMock(name="route_profile_samples"),
+        )
         self.layer_manager.load_output_layers.return_value = mock_layers
+        self.layer_manager.load_route_layers.return_value = route_layers
 
         result = self.service.load_existing("/tmp/existing.gpkg")
 
@@ -404,12 +419,15 @@ class LoadExistingSuccessTests(unittest.TestCase):
         self.assertEqual(result.output_path, "/tmp/existing.gpkg")
         self.assertEqual(result.total_stored, 42)
         self.assertEqual(result.activities_layer, mock_activities_layer)
+        self.assertEqual(result.route_tracks_layer, route_layers[0])
         self.assertIn("/tmp/existing.gpkg", result.status)
         self.layer_manager.load_output_layers.assert_called_once_with("/tmp/existing.gpkg")
+        self.layer_manager.load_route_layers.assert_called_once_with("/tmp/existing.gpkg")
 
     @patch("qfit.activities.application.load_workflow.os.path.exists", return_value=True)
     def test_handles_none_activities_layer(self, mock_exists):
         self.layer_manager.load_output_layers.return_value = (None, None, None, None)
+        self.layer_manager.load_route_layers.return_value = (None, None, None)
 
         result = self.service.load_existing("/tmp/empty.gpkg")
 
@@ -543,6 +561,7 @@ class LoadRequestContractTests(unittest.TestCase):
     def test_load_existing_request_matches_legacy_wrapper(self, _mock_exists):
         layer_manager = MagicMock()
         layer_manager.load_output_layers.return_value = (None, None, None, None)
+        layer_manager.load_route_layers.return_value = (None, None, None)
         service = LoadWorkflowService(layer_manager)
 
         request = service.build_load_existing_request("/tmp/existing.gpkg")

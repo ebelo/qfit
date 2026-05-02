@@ -5,6 +5,7 @@ from datetime import date
 from ...detailed_route_strategy import DEFAULT_DETAILED_ROUTE_STRATEGY
 from ...providers.application.provider_registry import build_default_provider_registry
 from .fetch_task import FetchTask
+from .route_sync_task import RouteSyncTask
 from ...providers.domain.provider import ProviderError
 
 logger = logging.getLogger(__name__)
@@ -35,6 +36,21 @@ class BuildFetchTaskRequest:
     use_detailed_streams: bool = False
     max_detailed_activities: int = 25
     detailed_route_strategy: str = DEFAULT_DETAILED_ROUTE_STRATEGY
+    on_finished: object = None
+
+
+@dataclass
+class BuildRouteSyncTaskRequest:
+    """Structured input for creating a saved-route sync task."""
+
+    client_id: str = ""
+    client_secret: str = ""
+    refresh_token: str = ""
+    cache: object = None
+    output_path: str = ""
+    per_page: int = 200
+    max_pages: int = 0
+    use_gpx_geometry: bool = True
     on_finished: object = None
 
 
@@ -160,6 +176,63 @@ class SyncController:
             use_detailed_streams=request.use_detailed_streams,
             max_detailed_activities=request.max_detailed_activities,
             detailed_route_strategy=request.detailed_route_strategy,
+            on_finished=request.on_finished,
+        )
+
+    @staticmethod
+    def build_route_sync_task_request(
+        client_id,
+        client_secret,
+        refresh_token,
+        cache,
+        output_path,
+        per_page=200,
+        max_pages=0,
+        use_gpx_geometry=True,
+        on_finished=None,
+    ) -> BuildRouteSyncTaskRequest:
+        """Build a structured request for syncing saved Strava routes."""
+
+        return BuildRouteSyncTaskRequest(
+            client_id=client_id,
+            client_secret=client_secret,
+            refresh_token=refresh_token,
+            cache=cache,
+            output_path=output_path,
+            per_page=per_page,
+            max_pages=max_pages,
+            use_gpx_geometry=use_gpx_geometry,
+            on_finished=on_finished,
+        )
+
+    def build_route_sync_task(
+        self,
+        request: BuildRouteSyncTaskRequest | None = None,
+        **legacy_kwargs,
+    ) -> RouteSyncTask:
+        """Create a validated :class:`RouteSyncTask` for route-catalog sync."""
+
+        if request is None:
+            request = self.build_route_sync_task_request(**legacy_kwargs)
+
+        if not request.output_path:
+            raise ProviderError("Choose a GeoPackage output path first.")
+
+        provider_request = self.build_provider_request(
+            client_id=request.client_id,
+            client_secret=request.client_secret,
+            refresh_token=request.refresh_token,
+            cache=request.cache,
+            require_refresh_token=True,
+        )
+        provider = self.build_strava_provider(provider_request)
+
+        return RouteSyncTask(
+            provider=provider,
+            output_path=request.output_path,
+            per_page=request.per_page,
+            max_pages=request.max_pages,
+            use_gpx_geometry=request.use_gpx_geometry,
             on_finished=request.on_finished,
         )
 

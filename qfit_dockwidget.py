@@ -739,6 +739,14 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._runtime_store().set_store_task(value)
 
     @property
+    def _route_sync_task(self):
+        return self.runtime_state.tasks.route_sync
+
+    @_route_sync_task.setter
+    def _route_sync_task(self, value):
+        self._runtime_store().set_route_sync_task(value)
+
+    @property
     def _atlas_export_task(self):
         return self.runtime_state.tasks.atlas_export
 
@@ -770,6 +778,8 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.refreshButton.clicked.connect(self.on_refresh_clicked)
         self.backfillMissingDetailedRoutesButton.clicked.connect(self.on_backfill_missing_detailed_routes_clicked)
         self.loadButton.clicked.connect(self.on_load_clicked)
+        if getattr(self, "syncRoutesButton", None) is not None:
+            self.syncRoutesButton.clicked.connect(self.on_sync_routes_clicked)
         self.loadLayersButton.clicked.connect(self.on_load_layers_clicked)
         self.clearDatabaseButton.clicked.connect(self.on_clear_database_clicked)
         self.applyFiltersButton.clicked.connect(self.on_apply_filters_clicked)
@@ -1281,6 +1291,120 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._update_stored_activities_summary(result.total_stored)
         self._set_status(result.status)
 
+    def on_sync_routes_clicked(self):
+        """Fetch saved Strava routes, persist them, and load route layers."""
+
+        if self._route_sync_task is not None:
+            self._route_sync_task.cancel()
+            self._set_route_sync_cancelling()
+            self._set_status("Route sync cancellation requested…")
+            return
+
+        self._save_settings()
+        output_path = self.outputPathLineEdit.text().strip()
+        if not output_path:
+            self._show_error(*build_missing_output_path_error())
+            return
+
+        try:
+            route_sync_request = self.sync_controller.build_route_sync_task_request(
+                client_id=self.clientIdLineEdit.text().strip(),
+                client_secret=self.clientSecretLineEdit.text().strip(),
+                refresh_token=self.refreshTokenLineEdit.text().strip(),
+                cache=self.cache,
+                output_path=output_path,
+                per_page=self.perPageSpinBox.value(),
+                max_pages=self.maxPagesSpinBox.value(),
+                use_gpx_geometry=True,
+                on_finished=self._handle_route_sync_task_finished,
+            )
+            route_sync_task = self.sync_controller.build_route_sync_task(route_sync_request)
+        except ProviderError as exc:
+            self._show_error("Route sync failed", str(exc))
+            self._set_status("Route sync failed")
+            return
+
+        self._runtime_store().begin_route_sync(route_sync_task)
+        self._set_route_sync_running(True)
+        self._set_status("Syncing saved Strava routes…")
+        QgsApplication.taskManager().addTask(route_sync_task)
+
+    def _set_route_sync_running(self, running):
+        button = getattr(self, "syncRoutesButton", None)
+        if button is None:
+            return
+        button.setText("Cancel route sync" if running else "Sync saved routes")
+        button.setEnabled(True)
+        self.exchangeCodeButton.setEnabled(not running)
+        self.openAuthorizeButton.setEnabled(not running)
+
+    def _set_route_sync_cancelling(self):
+        button = getattr(self, "syncRoutesButton", None)
+        if button is None:
+            return
+        button.setText("Cancelling route sync…")
+        button.setEnabled(False)
+        self.exchangeCodeButton.setEnabled(False)
+        self.openAuthorizeButton.setEnabled(False)
+
+    def _handle_route_sync_task_finished(self, result, error_message, cancelled, provider):
+        self._runtime_store().clear_route_sync()
+        self._set_route_sync_running(False)
+
+        if cancelled and result is None:
+            self._set_status("Route sync cancelled")
+            return
+        if error_message:
+            self._show_error("Route sync failed", error_message)
+            self._set_status("Route sync failed")
+            return
+        if result is None:
+            self._set_status("Route sync failed")
+            return
+
+        try:
+            output_path = result.get("path")
+            if not output_path:
+                raise RuntimeError("Route sync did not return a GeoPackage path.")
+            route_tracks_layer, route_points_layer, route_profile_samples_layer = (
+                self.layer_gateway.load_route_layers(output_path)
+            )
+        except (RuntimeError, OSError) as exc:
+            _msg = "Load route layers failed"
+            logger.exception(_msg)
+            self._show_error(_msg, str(exc))
+            self._set_status(_msg)
+            return
+
+        self._runtime_store().set_route_layers(
+            route_tracks_layer=route_tracks_layer,
+            route_points_layer=route_points_layer,
+            route_profile_samples_layer=route_profile_samples_layer,
+        )
+        self._mark_atlas_export_stale()
+
+        sync = result.get("sync")
+        rate_limit_note = self.sync_controller._rate_limit_note(
+            getattr(provider, "last_rate_limit", None)
+        )
+        status = (
+            "Synced {fetched} saved routes into GeoPackage: inserted {inserted}, "
+            "updated {updated}, unchanged {unchanged}, stored total {total}. "
+            "Loaded {tracks} route tracks, {points} route points, and {samples} profile samples."
+        ).format(
+            fetched=result.get("fetched_count", 0),
+            inserted=sync.inserted if sync else 0,
+            updated=sync.updated if sync else 0,
+            unchanged=sync.unchanged if sync else 0,
+            total=sync.total_count if sync else 0,
+            tracks=result.get("route_track_count", 0),
+            points=result.get("route_point_count", 0),
+            samples=result.get("route_profile_sample_count", 0),
+        )
+        if cancelled:
+            status = "Route sync completed after cancellation was requested. " + status
+        self._set_status(status + rate_limit_note)
+
     def on_load_layers_clicked(self):
         """Load an existing GeoPackage into QGIS without fetching from Strava."""
         self._save_settings()
@@ -1307,6 +1431,11 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             starts_layer=result.starts_layer,
             points_layer=result.points_layer,
             atlas_layer=result.atlas_layer,
+        )
+        self._runtime_store().set_route_layers(
+            route_tracks_layer=getattr(result, "route_tracks_layer", None),
+            route_points_layer=getattr(result, "route_points_layer", None),
+            route_profile_samples_layer=getattr(result, "route_profile_samples_layer", None),
         )
         self._mark_atlas_export_stale()
 
@@ -1345,6 +1474,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                     self.starts_layer,
                     self.points_layer,
                     self.atlas_layer,
+                    self.runtime_state.route_tracks_layer,
+                    self.runtime_state.route_points_layer,
+                    self.runtime_state.route_profile_samples_layer,
                 ],
             )
             result = workflow.clear_database_request(request)

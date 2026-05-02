@@ -16,11 +16,13 @@ __all__ = [
     "ActivitySelectionState",
     "ActivityTypeOptionsResult",
     "BuildStravaProviderRequest",
+    "BuildRouteSyncTaskRequest",
     "ClearDatabaseWorkflow",
     "FetchActivitiesRequest",
     "FetchResult",
     "FetchResultService",
     "FetchTask",
+    "RouteSyncTask",
     "LoadDatabaseRequest",
     "LoadDatasetRequest",
     "LoadDatasetResult",
@@ -44,6 +46,7 @@ __all__ = [
     "build_activity_type_options",
     "build_activity_type_options_from_activities",
     "build_activity_type_options_from_records",
+    "build_route_sync_task",
 ]
 
 _ACTIVITY_TYPE_OPTIONS_MODULE = ".activity_type_options"
@@ -56,11 +59,13 @@ _EXPORTS = {
     "ActivitySelectionState": (".activity_selection_state", "ActivitySelectionState"),
     "ActivityTypeOptionsResult": (_ACTIVITY_TYPE_OPTIONS_MODULE, "ActivityTypeOptionsResult"),
     "BuildStravaProviderRequest": (".sync_controller", "BuildStravaProviderRequest"),
+    "BuildRouteSyncTaskRequest": (".sync_controller", "BuildRouteSyncTaskRequest"),
     "ClearDatabaseWorkflow": (".load_workflow", "ClearDatabaseWorkflow"),
     "FetchActivitiesRequest": (".fetch_result_service", "FetchActivitiesRequest"),
     "FetchResult": (".fetch_result_service", "FetchResult"),
     "FetchResultService": (".fetch_result_service", "FetchResultService"),
     "FetchTask": (".fetch_task", "FetchTask"),
+    "RouteSyncTask": (".route_sync_task", "RouteSyncTask"),
     "LoadDatabaseRequest": (".load_workflow", "LoadDatabaseRequest"),
     "LoadDatasetRequest": (".load_workflow", "LoadDatasetRequest"),
     "LoadDatasetResult": (".load_workflow", "LoadDatasetResult"),
@@ -84,6 +89,7 @@ _EXPORTS = {
     "build_activity_type_options": (_ACTIVITY_TYPE_OPTIONS_MODULE, "build_activity_type_options"),
     "build_activity_type_options_from_activities": (_ACTIVITY_TYPE_OPTIONS_MODULE, "build_activity_type_options_from_activities"),
     "build_activity_type_options_from_records": (_ACTIVITY_TYPE_OPTIONS_MODULE, "build_activity_type_options_from_records"),
+    "build_route_sync_task": (".route_sync_task", "build_route_sync_task"),
 }
 
 
