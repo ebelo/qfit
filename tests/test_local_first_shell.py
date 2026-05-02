@@ -71,6 +71,39 @@ class LocalFirstDockShellTests(unittest.TestCase):
         self.assertEqual(analysis_button.property("navTone"), "available")
         self.assertTrue(analysis_button.isEnabled())
 
+    def test_navigation_state_refreshes_dynamic_qss_properties(self):
+        class FakeStyle:
+            def __init__(self):
+                self.calls = []
+
+            def unpolish(self, widget):
+                self.calls.append(("unpolish", widget.objectName()))
+
+            def polish(self, widget):
+                self.calls.append(("polish", widget.objectName()))
+
+        shell = self.shell_module.LocalFirstDockShell()
+        button = shell.button_for_key("atlas")
+        style = FakeStyle()
+        updates = []
+        button.style = lambda: style
+        button.update = lambda: updates.append(button.objectName())
+
+        shell.show_page_key("atlas")
+
+        self.assertIn(("unpolish", "qfitLocalFirstDockNav_atlas"), style.calls)
+        self.assertIn(("polish", "qfitLocalFirstDockNav_atlas"), style.calls)
+        self.assertIn("qfitLocalFirstDockNav_atlas", updates)
+
+    def test_unknown_navigation_key_raises_descriptive_error(self):
+        shell = self.shell_module.LocalFirstDockShell()
+
+        with self.assertRaisesRegex(
+            KeyError,
+            "No navigation button registered for key 'missing'",
+        ):
+            shell.button_for_key("missing")
+
     def test_clicking_navigation_button_shows_matching_page_and_emits_key(self):
         shell = self.shell_module.LocalFirstDockShell()
         calls = []

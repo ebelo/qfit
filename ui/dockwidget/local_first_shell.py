@@ -77,7 +77,14 @@ class LocalFirstDockShell(QWidget):
     def button_for_key(self, key: str):
         """Return the navigation button for tests and adapter wiring."""
 
-        return self._buttons_by_key[key]
+        try:
+            return self._buttons_by_key[key]
+        except KeyError:
+            msg = (
+                f"No navigation button registered for key {key!r}. "
+                f"Available keys: {list(self._buttons_by_key)}"
+            )
+            raise KeyError(msg) from None
 
     def current_key(self) -> str:
         """Return the currently selected local-first page key."""
@@ -151,6 +158,7 @@ class LocalFirstDockShell(QWidget):
         button.setProperty("navTone", _nav_tone(page_state))
         button.setToolTip(f"{page_state.title}: {page_state.status_text}")
         button.setCursor(Qt.PointingHandCursor if page_state.enabled else Qt.ForbiddenCursor)
+        _refresh_dynamic_qss(button)
 
     def _build_footer_bar(self, footer_text: str):
         return FooterStatusBar(self, footer_text=footer_text)
@@ -220,6 +228,18 @@ class LocalFirstDockShell(QWidget):
         index = self._page_indices_by_key.get(key)
         if index is not None:
             self.pages_stack.setCurrentIndex(index)
+
+
+def _refresh_dynamic_qss(widget) -> None:
+    style_getter = getattr(widget, "style", None)
+    style = style_getter() if callable(style_getter) else None
+    if style is not None:
+        if hasattr(style, "unpolish"):
+            style.unpolish(widget)
+        if hasattr(style, "polish"):
+            style.polish(widget)
+    if hasattr(widget, "update"):
+        widget.update()
 
 
 def _nav_tone(page_state: LocalFirstDockPageState) -> str:
