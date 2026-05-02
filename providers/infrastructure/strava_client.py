@@ -259,7 +259,7 @@ class StravaClient:
         before paginating ``GET /athletes/{id}/routes``.
         """
         token = self.get_access_token()
-        route_athlete_id = athlete_id or self.fetch_authenticated_athlete_id(token=token)
+        route_athlete_id = athlete_id if athlete_id is not None else self.fetch_authenticated_athlete_id(token=token)
         routes = []
         current_per_page = max(1, int(per_page))
         self.last_fetch_notice = None
@@ -283,7 +283,7 @@ class StravaClient:
             if max_pages == 0 and self._should_pause_full_sync_for_rate_limit():
                 self.last_fetch_notice = self._rate_limit_pause_notice()
                 break
-            self._sleep_between_activity_pages()
+            self._sleep_between_route_pages()
             page += 1
 
         return routes
@@ -310,6 +310,10 @@ class StravaClient:
             headers=self._build_request_headers(token=token),
             operation="Fetching Strava route {route_id}".format(route_id=route_id),
         )
+        if not isinstance(payload, dict):
+            raise StravaClientError(
+                "Fetching Strava route {route_id} returned an unexpected response".format(route_id=route_id)
+            )
         return self.normalize_route(payload)
 
     def _fetch_activity_page(self, token, page, per_page, current_before, after, max_pages):
@@ -592,10 +596,15 @@ class StravaClient:
         )
 
     def normalize_route(self, payload):
+        if not isinstance(payload, dict):
+            raise StravaClientError("Strava route payload must be an object")
+        route_id = payload.get("id")
+        if route_id is None:
+            raise StravaClientError("Strava route payload did not include an id")
         summary_polyline, geometry_source = self._extract_route_polyline(payload)
         return SavedRoute(
             source="strava",
-            source_route_id=str(payload.get("id")),
+            source_route_id=str(route_id),
             external_id=payload.get("id_str"),
             name=payload.get("name"),
             description=payload.get("description"),
@@ -877,6 +886,11 @@ class StravaClient:
         delay = float(self.PAGE_REQUEST_DELAY_SECONDS)
         if delay > 0:
             time.sleep(delay)
+
+    def _sleep_between_route_pages(self):
+        # Route list pagination uses the same conservative pacing as activity
+        # pagination until route sync gets its own rate-limit tuning.
+        self._sleep_between_activity_pages()
 
     def _reduced_activity_page_size(self, current_per_page, exc, *, max_pages):
         if max_pages != 0:

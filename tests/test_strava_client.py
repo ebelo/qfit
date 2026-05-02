@@ -100,6 +100,12 @@ class StravaClientTests(unittest.TestCase):
         self.assertEqual(route.summary_polyline, "summary")
         self.assertEqual(route.geometry_source, "summary_polyline")
 
+    def test_normalize_route_requires_route_id(self):
+        client = StravaClient()
+
+        with self.assertRaisesRegex(StravaClientError, "did not include an id"):
+            client.normalize_route({"name": "Missing id"})
+
     def test_extract_stream_bundle_supports_dict_and_list_payloads(self):
         client = StravaClient()
 
@@ -367,6 +373,26 @@ class StravaClientTests(unittest.TestCase):
         self.assertEqual(len(routes), 1)
         self.assertEqual(seen_urls, ["https://www.strava.com/api/v3/athletes/999/routes?page=1&per_page=10"])
 
+    def test_fetch_routes_does_not_resolve_falsy_known_athlete_id(self):
+        client = StravaClient(client_id="123", client_secret="abc", refresh_token="tok")
+        seen_urls = []
+        call_count = [0]
+
+        def fake_request_json(request, operation=None, **kwargs):
+            idx = call_count[0]
+            call_count[0] += 1
+            if idx == 0:
+                return {"access_token": "fake_token"}
+            seen_urls.append(request)
+            return [{"id": 7, "name": "Known athlete route"}]
+
+        client._request_json = fake_request_json
+
+        routes = client.fetch_routes(athlete_id=0, per_page=10, max_pages=1)
+
+        self.assertEqual(len(routes), 1)
+        self.assertEqual(seen_urls, ["https://www.strava.com/api/v3/athletes/0/routes?page=1&per_page=10"])
+
     def test_fetch_routes_rejects_unexpected_response(self):
         client = StravaClient(client_id="123", client_secret="abc", refresh_token="tok")
         call_count = [0]
@@ -412,6 +438,22 @@ class StravaClientTests(unittest.TestCase):
         self.assertEqual(route.source_route_id, "42")
         self.assertEqual(route.summary_polyline, "abc")
         self.assertEqual(seen_urls, ["https://www.strava.com/api/v3/routes/42"])
+
+    def test_fetch_route_detail_rejects_unexpected_response(self):
+        client = StravaClient(client_id="123", client_secret="abc", refresh_token="tok")
+        call_count = [0]
+
+        def fake_request_json(request, operation=None, **kwargs):
+            idx = call_count[0]
+            call_count[0] += 1
+            if idx == 0:
+                return {"access_token": "fake_token"}
+            return None
+
+        client._request_json = fake_request_json
+
+        with self.assertRaisesRegex(StravaClientError, "unexpected response"):
+            client.fetch_route_detail(42)
 
     def test_fetch_activities_full_sync_uses_before_cursor(self):
         client = StravaClient(client_id="123", client_secret="abc", refresh_token="tok")
