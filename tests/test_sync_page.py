@@ -76,10 +76,25 @@ class SyncPageContentTest(unittest.TestCase):
             content.load_button.toolTip(),
             "Select an existing GeoPackage before loading activities.",
         )
+        self.assertEqual(
+            content.routes_button.objectName(),
+            "qfitWizardSyncRoutesButton",
+        )
+        self.assertEqual(content.routes_button.text(), "Sync saved routes")
+        self.assertEqual(
+            content.routes_button.property("secondaryAction"),
+            "sync_saved_routes",
+        )
+        self.assertEqual(
+            content.routes_button.property("wizardActionRole"),
+            "secondary",
+        )
+        self.assertTrue(content.routes_button.isEnabled())
+        self.assertEqual(content.routes_button.toolTip(), "")
         self.assertEqual(content.action_row.objectName(), "qfitWizardSyncActionRow")
         self.assertEqual(
             content.action_row.outer_layout().widgets,
-            [content.load_button, content.sync_button],
+            [content.load_button, content.routes_button, content.sync_button],
         )
         self.assertEqual(
             content.outer_layout().widgets,
@@ -119,6 +134,30 @@ class SyncPageContentTest(unittest.TestCase):
         self.assertEqual(content.sync_button.text(), "Fetch latest activities")
         self.assertTrue(content.load_button.isEnabled())
         self.assertEqual(content.load_button.toolTip(), "")
+
+    def test_can_block_saved_routes_action_with_tooltip_copy(self):
+        content = self.sync_page.SyncPageContent(
+            self.sync_page.SyncPageState(
+                routes_action_enabled=False,
+                routes_action_blocked_tooltip="Configure Strava first.",
+            )
+        )
+
+        self.assertFalse(content.routes_button.isEnabled())
+        self.assertEqual(
+            content.routes_button.property("wizardActionAvailability"),
+            "blocked",
+        )
+        self.assertEqual(content.routes_button.toolTip(), "Configure Strava first.")
+
+        content.set_state(self.sync_page.SyncPageState())
+
+        self.assertTrue(content.routes_button.isEnabled())
+        self.assertEqual(
+            content.routes_button.property("wizardActionAvailability"),
+            "available",
+        )
+        self.assertEqual(content.routes_button.toolTip(), "")
 
     def test_can_block_sync_action_with_tooltip_copy(self):
         content = self.sync_page.SyncPageContent(
@@ -168,6 +207,15 @@ class SyncPageContentTest(unittest.TestCase):
         content.load_button.clicked.emit()
 
         self.assertEqual(calls, ["load"])
+
+    def test_saved_routes_button_emits_reusable_page_signal(self):
+        content = self.sync_page.SyncPageContent()
+        calls = []
+        content.syncRoutesRequested.connect(lambda: calls.append("routes"))
+
+        content.routes_button.clicked.emit()
+
+        self.assertEqual(calls, ["routes"])
 
     def test_installs_only_on_sync_wizard_page_body(self):
         sync_spec = next(

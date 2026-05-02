@@ -727,6 +727,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         expected_callbacks = {
             "configure_connection": "_show_connection_configuration_hint",
             "sync_activities": "_run_wizard_sync_step",
+            "sync_saved_routes": "on_sync_routes_clicked",
             "load_activity_layers": "on_load_layers_clicked",
             "edit_map_filters": "_update_status_for_filter_visibility",
             "apply_map_filters": "_run_wizard_map_step",

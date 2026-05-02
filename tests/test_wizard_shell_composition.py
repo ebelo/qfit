@@ -329,6 +329,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         callbacks = self.composition.WizardActionCallbacks(
             configure_connection=lambda: calls.append("configure"),
             sync_activities=lambda: calls.append("sync"),
+            sync_saved_routes=lambda: calls.append("routes"),
             load_activity_layers=lambda: calls.append("load"),
             edit_map_filters=lambda visible: calls.append(f"edit:{visible}"),
             apply_map_filters=lambda: calls.append("filter"),
@@ -347,6 +348,7 @@ class WizardShellCompositionTest(unittest.TestCase):
 
         assembled.connection_content.configure_button.clicked.emit()
         assembled.sync_content.sync_button.clicked.emit()
+        assembled.sync_content.routes_button.clicked.emit()
         assembled.sync_content.load_button.clicked.emit()
         assembled.map_content.load_layers_button.clicked.emit()
         assembled.map_content.edit_filters_button.clicked.emit()
@@ -362,6 +364,7 @@ class WizardShellCompositionTest(unittest.TestCase):
             [
                 "configure",
                 "sync",
+                "routes",
                 "load",
                 "load",
                 "edit:True",

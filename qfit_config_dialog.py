@@ -19,6 +19,7 @@ from qgis.PyQt.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QLineEdit,
+    QLayout,
     QMessageBox,
     QPushButton,
     QVBoxLayout,
@@ -81,10 +82,10 @@ class QfitConfigDialog(QDialog):
 
     def _build_ui(self) -> None:
         layout = QVBoxLayout(self)
+        layout.setSizeConstraint(QLayout.SetFixedSize)
 
         layout.addWidget(self._build_strava_group())
         layout.addWidget(self._build_mapbox_group())
-        layout.addStretch()
 
         self._button_box = QDialogButtonBox(
             QDialogButtonBox.Save | QDialogButtonBox.Close,
@@ -96,6 +97,7 @@ class QfitConfigDialog(QDialog):
     def _build_strava_group(self) -> QGroupBox:
         group = QGroupBox("Strava connection")
         form = QFormLayout(group)
+        form.setRowWrapPolicy(QFormLayout.WrapLongRows)
 
         self._strava_status_label = QLabel()
         self._strava_status_label.setObjectName("stravaStatusLabel")
@@ -123,7 +125,7 @@ class QfitConfigDialog(QDialog):
         self._oauth_help_label.setObjectName("stravaOAuthHelpLabel")
         self._oauth_help_label.setWordWrap(True)
         self._oauth_help_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
-        form.addRow("", self._oauth_help_label)
+        form.addRow(self._oauth_help_label)
 
         self._authorization_code_edit = QLineEdit()
         self._authorization_code_edit.setObjectName("cfgAuthorizationCodeEdit")
@@ -176,6 +178,7 @@ class QfitConfigDialog(QDialog):
     def _build_mapbox_group(self) -> QGroupBox:
         group = QGroupBox("Mapbox connection")
         form = QFormLayout(group)
+        form.setRowWrapPolicy(QFormLayout.WrapLongRows)
 
         self._mapbox_status_label = QLabel()
         self._mapbox_status_label.setObjectName("mapboxStatusLabel")

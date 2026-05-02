@@ -28,6 +28,7 @@ try:
     )
     from qgis.PyQt.QtCore import QDate, Qt
     from qgis.PyQt.QtGui import QImage
+    from qgis.PyQt.QtWidgets import QFormLayout, QLayout
 
     from qfit.activities.domain.activity_query import ActivityQuery, build_subset_string
     from qfit.analysis.infrastructure.frequent_start_points_layer import (
@@ -74,6 +75,8 @@ except Exception as exc:  # pragma: no cover - exercised only when QGIS is unava
     QgsVectorLayer = None
     QDate = None
     QImage = None
+    QFormLayout = None
+    QLayout = None
     Qt = None
     ActivityQuery = None
     build_subset_string = None
@@ -843,6 +846,25 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertEqual(dialog._exchange_code_button.objectName(), "cfgExchangeCodeButton")
             self.assertIn("Do not paste", dialog._oauth_help_label.text())
             self.assertEqual(dialog._strava_oauth_status_label.text(), "Not started")
+        finally:
+            dialog.close()
+            dialog.deleteLater()
+
+    def test_config_dialog_uses_compact_content_sized_layout(self):
+        dialog = QfitConfigDialog(
+            settings_service=SettingsService(
+                qsettings=_FakeQSettings(),
+                credential_store=InMemoryCredentialStore(),
+            )
+        )
+        try:
+            self.assertEqual(dialog.layout().sizeConstraint(), QLayout.SetFixedSize)
+            self.assertEqual(dialog.layout().count(), 3)
+
+            form = dialog._oauth_help_label.parentWidget().layout()
+            _row, role = form.getWidgetPosition(dialog._oauth_help_label)
+            self.assertEqual(role, QFormLayout.SpanningRole)
+            self.assertEqual(form.rowWrapPolicy(), QFormLayout.WrapLongRows)
         finally:
             dialog.close()
             dialog.deleteLater()

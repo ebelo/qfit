@@ -442,6 +442,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             WizardActionCallbacks(
                 configure_connection=self._show_connection_configuration_hint,
                 sync_activities=self._run_wizard_sync_step,
+                sync_saved_routes=self.on_sync_routes_clicked,
                 load_activity_layers=self.on_load_layers_clicked,
                 edit_map_filters=self._update_status_for_filter_visibility,
                 apply_map_filters=self._run_wizard_map_step,
