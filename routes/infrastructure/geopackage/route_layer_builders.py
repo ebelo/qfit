@@ -48,34 +48,7 @@ def build_route_point_layer(records):
 
     features = []
     for record in records:
-        points = _normalize_route_points(record.get("geometry_points") or [])
-        if not points:
-            continue
-        route_fk = _stable_route_fk(record)
-        max_distance = max((point.get("distance_m") or 0.0 for point in points), default=0.0)
-        for point_index, point in enumerate(points):
-            latitude = point.get("latitude")
-            longitude = point.get("longitude")
-            if latitude is None or longitude is None:
-                continue
-            altitude = point.get("altitude_m")
-            feature = QgsFeature(layer.fields())
-            if use_z:
-                feature.setGeometry(QgsGeometry(QgsPoint(float(longitude), float(latitude), _z_value(altitude))))
-            else:
-                feature.setGeometry(QgsGeometry.fromPointXY(QgsPointXY(float(longitude), float(latitude))))
-            feature["route_fk"] = route_fk
-            feature["source"] = record.get("source")
-            feature["source_route_id"] = record.get("source_route_id")
-            feature["name"] = record.get("name")
-            feature["route_type"] = record.get("route_type")
-            feature["point_index"] = int(point.get("point_index", point_index))
-            feature["point_ratio"] = _point_ratio(point.get("distance_m"), max_distance, point_index, len(points))
-            feature["distance_m"] = point.get("distance_m")
-            feature["altitude_m"] = altitude
-            feature["geometry_source"] = record.get("geometry_source")
-            feature["last_synced_at"] = record.get("last_synced_at")
-            features.append(feature)
+        features.extend(_route_point_features(layer, record, use_z))
 
     provider.addFeatures(features)
     layer.updateExtents()
@@ -157,26 +130,77 @@ def _fallback_geometry(record, force_z=False):
     ])
 
 
+def _route_point_features(layer, record, use_z):
+    points = _normalize_route_points(record.get("geometry_points") or [])
+    if not points:
+        return []
+    route_fk = _stable_route_fk(record)
+    max_distance = max((point.get("distance_m") or 0.0 for point in points), default=0.0)
+    return [
+        feature
+        for point_index, point in enumerate(points)
+        for feature in [_route_point_feature(layer, record, point, point_index, len(points), max_distance, route_fk, use_z)]
+        if feature is not None
+    ]
+
+
+def _route_point_feature(layer, record, point, point_index, point_count, max_distance, route_fk, use_z):
+    latitude = point.get("latitude")
+    longitude = point.get("longitude")
+    if latitude is None or longitude is None:
+        return None
+    altitude = point.get("altitude_m")
+    feature = QgsFeature(layer.fields())
+    feature.setGeometry(_point_geometry(latitude, longitude, altitude, use_z))
+    feature["route_fk"] = route_fk
+    feature["source"] = record.get("source")
+    feature["source_route_id"] = record.get("source_route_id")
+    feature["name"] = record.get("name")
+    feature["route_type"] = record.get("route_type")
+    feature["point_index"] = int(point.get("point_index", point_index))
+    feature["point_ratio"] = _point_ratio(point.get("distance_m"), max_distance, point_index, point_count)
+    feature["distance_m"] = point.get("distance_m")
+    feature["altitude_m"] = altitude
+    feature["geometry_source"] = record.get("geometry_source")
+    feature["last_synced_at"] = record.get("last_synced_at")
+    return feature
+
+
+def _point_geometry(latitude, longitude, altitude, use_z):
+    if use_z:
+        return QgsGeometry(QgsPoint(float(longitude), float(latitude), _z_value(altitude)))
+    return QgsGeometry.fromPointXY(QgsPointXY(float(longitude), float(latitude)))
+
+
 def _normalize_route_points(points):
-    normalized = []
-    for index, point in enumerate(points):
-        if hasattr(point, "to_record"):
-            value = point.to_record()
-        elif isinstance(point, dict):
-            value = dict(point)
-        elif isinstance(point, (list, tuple)) and len(point) >= 2:
-            value = {"latitude": point[0], "longitude": point[1]}
-            if len(point) >= 3:
-                value["altitude_m"] = point[2]
-        else:
-            value = {}
-        if "latitude" not in value and "lat" in value:
-            value["latitude"] = value.get("lat")
-        if "longitude" not in value and "lon" in value:
-            value["longitude"] = value.get("lon")
-        value.setdefault("point_index", index)
-        normalized.append(value)
-    return normalized
+    return [_normalize_route_point(point, index) for index, point in enumerate(points)]
+
+
+def _normalize_route_point(point, index):
+    value = _route_point_record(point)
+    if "latitude" not in value and "lat" in value:
+        value["latitude"] = value.get("lat")
+    if "longitude" not in value and "lon" in value:
+        value["longitude"] = value.get("lon")
+    value.setdefault("point_index", index)
+    return value
+
+
+def _route_point_record(point):
+    if hasattr(point, "to_record"):
+        return point.to_record()
+    if isinstance(point, dict):
+        return dict(point)
+    if isinstance(point, (list, tuple)) and len(point) >= 2:
+        return _tuple_route_point_record(point)
+    return {}
+
+
+def _tuple_route_point_record(point):
+    value = {"latitude": point[0], "longitude": point[1]}
+    if len(point) >= 3:
+        value["altitude_m"] = point[2]
+    return value
 
 
 def _record_has_altitude(record):
