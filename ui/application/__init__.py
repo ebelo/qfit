@@ -27,6 +27,14 @@ from .dock_runtime_state import (
     DockRuntimeTasks,
 )
 from .dock_summary_status import build_dock_summary_status
+from .local_first_navigation import (
+    LOCAL_FIRST_DOCK_PAGE_DEFINITIONS,
+    LocalFirstDockNavigationState,
+    LocalFirstDockPageDefinition,
+    LocalFirstDockPageState,
+    build_local_first_dock_navigation_state,
+    local_first_dock_page_keys,
+)
 from .dock_workflow_sections import (
     CURRENT_DOCK_SECTIONS,
     WIZARD_WORKFLOW_STEPS,
@@ -112,11 +120,15 @@ __all__ = [
     "DockWorkflowStepStatus",
     "CURRENT_DOCK_SECTIONS",
     "LAST_STEP_INDEX_KEY",
+    "LOCAL_FIRST_DOCK_PAGE_DEFINITIONS",
     "LAST_STEP_INDEX_USER_SELECTED_KEY",
     "WIZARD_WORKFLOW_STEPS",
     "WIZARD_STEP_COUNT",
     "WIZARD_VERSION",
     "WIZARD_VERSION_KEY",
+    "LocalFirstDockNavigationState",
+    "LocalFirstDockPageDefinition",
+    "LocalFirstDockPageState",
     "RunAnalysisAction",
     "STEPPER_STATE_CURRENT",
     "STEPPER_STATE_DONE",
@@ -132,6 +144,7 @@ __all__ = [
     "build_current_dock_workflow_label",
     "build_dock_summary_status",
     "build_initial_wizard_step_statuses",
+    "build_local_first_dock_navigation_state",
     "build_progress_wizard_step_statuses",
     "build_stepper_items",
     "build_stepper_states",
@@ -152,6 +165,7 @@ __all__ = [
     "ensure_wizard_settings",
     "get_workflow_section",
     "load_wizard_settings",
+    "local_first_dock_page_keys",
     "preferred_current_key_from_settings",
     "save_collapsed_groups",
     "save_last_step_index",
