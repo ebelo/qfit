@@ -16,6 +16,7 @@ exists* in the GeoPackage.
 from qgis.PyQt.QtCore import QVariant
 from qgis.core import QgsField, QgsFields
 
+from .route_storage import ROUTE_REGISTRY_TABLE
 from ....sync_repository import REGISTRY_TABLE, SYNC_STATE_TABLE
 
 # ---------------------------------------------------------------------------
@@ -113,7 +114,12 @@ ROUTE_TRACK_FIELDS = [
     ("summary_polyline", QVariant.String),
     ("geometry_source", QVariant.String),
     ("geometry_point_count", QVariant.Int),
+    ("profile_point_count", QVariant.Int),
+    ("has_elevation", QVariant.Int),
     ("details_json", QVariant.String),
+    ("summary_hash", QVariant.String),
+    ("first_seen_at", QVariant.String),
+    ("last_synced_at", QVariant.String),
 ]
 
 ROUTE_POINT_FIELDS = [
@@ -126,6 +132,20 @@ ROUTE_POINT_FIELDS = [
     ("distance_m", QVariant.Double),
     ("altitude_m", QVariant.Double),
     ("geometry_source", QVariant.String),
+]
+
+ROUTE_PROFILE_SAMPLE_FIELDS = [
+    ("sample_group_index", QVariant.Int),
+    ("source", QVariant.String),
+    ("source_route_id", QVariant.String),
+    ("name", QVariant.String),
+    ("point_index", QVariant.Int),
+    ("segment_index", QVariant.Int),
+    ("lat", QVariant.Double),
+    ("lon", QVariant.Double),
+    ("distance_m", QVariant.Double),
+    ("altitude_m", QVariant.Double),
+    ("last_synced_at", QVariant.String),
 ]
 
 ATLAS_FIELDS = [
@@ -268,6 +288,26 @@ GPKG_LAYER_SCHEMA = {
         "kind": "table",
         "primary_key": ["provider"],
     },
+    ROUTE_REGISTRY_TABLE: {
+        "geometry": None,
+        "kind": "table",
+        "primary_key": ["source", "source_route_id"],
+    },
+    "route_tracks": {
+        "geometry": "LINESTRING",
+        "kind": "layer",
+        "fields": [name for name, _ in ROUTE_TRACK_FIELDS],
+    },
+    "route_points": {
+        "geometry": "POINT",
+        "kind": "layer",
+        "fields": [name for name, _ in ROUTE_POINT_FIELDS],
+    },
+    "route_profile_samples": {
+        "geometry": None,
+        "kind": "table",
+        "fields": [name for name, _ in ROUTE_PROFILE_SAMPLE_FIELDS],
+    },
     "activity_tracks": {
         "geometry": "LINESTRING",
         "kind": "layer",
@@ -282,16 +322,6 @@ GPKG_LAYER_SCHEMA = {
         "geometry": "POINT",
         "kind": "layer",
         "fields": [name for name, _ in POINT_FIELDS],
-    },
-    "route_tracks": {
-        "geometry": "LINESTRING",
-        "kind": "layer",
-        "fields": [name for name, _ in ROUTE_TRACK_FIELDS],
-    },
-    "route_points": {
-        "geometry": "POINT",
-        "kind": "layer",
-        "fields": [name for name, _ in ROUTE_POINT_FIELDS],
     },
     "activity_atlas_pages": {
         "geometry": "POLYGON",

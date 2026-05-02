@@ -17,9 +17,10 @@ except ValueError:
     )
 
 try:
-    from qgis.core import QgsApplication
+    from qgis.core import QgsApplication, QgsWkbTypes
 except (ImportError, ModuleNotFoundError):  # pragma: no cover
     QgsApplication = None
+    QgsWkbTypes = None
 
 if QgsApplication is not None and _REAL_QGIS_PRESENT:
     from qfit.activities.infrastructure.geopackage import (  # noqa: E501
@@ -28,11 +29,15 @@ if QgsApplication is not None and _REAL_QGIS_PRESENT:
 
     _route_geometry = route_builders._route_geometry
     build_route_point_layer = route_builders.build_route_point_layer
+    build_route_profile_sample_layer = (
+        route_builders.build_route_profile_sample_layer
+    )
     build_route_track_layer = route_builders.build_route_track_layer
     route_feature_key = route_builders.route_feature_key
 else:  # pragma: no cover
     _route_geometry = None
     build_route_point_layer = None
+    build_route_profile_sample_layer = None
     build_route_track_layer = None
     route_feature_key = None
 
@@ -42,8 +47,10 @@ def _ensure_qgis_app():
         raise unittest.SkipTest("QGIS Python bindings are not available")
 
     global QgsApplication
+    global QgsWkbTypes
     global _route_geometry
     global build_route_point_layer
+    global build_route_profile_sample_layer
     global build_route_track_layer
     global route_feature_key
     if QgsApplication is None and _REAL_QGIS_PRESENT:
@@ -58,9 +65,11 @@ def _ensure_qgis_app():
             sys.modules.pop(module_name, None)
         from qgis.core import (  # type: ignore
             QgsApplication as RealQgsApplication,
+            QgsWkbTypes as RealQgsWkbTypes,
         )
 
         QgsApplication = RealQgsApplication
+        QgsWkbTypes = RealQgsWkbTypes
     if build_route_track_layer is None:
         sys.modules.pop(
             "qfit.activities.infrastructure.geopackage."
@@ -73,6 +82,9 @@ def _ensure_qgis_app():
 
         _route_geometry = real_route_builders._route_geometry
         build_route_point_layer = real_route_builders.build_route_point_layer
+        build_route_profile_sample_layer = (
+            real_route_builders.build_route_profile_sample_layer
+        )
         build_route_track_layer = real_route_builders.build_route_track_layer
         route_feature_key = real_route_builders.route_feature_key
     return get_shared_qgis_app(QgsApplication)
@@ -101,6 +113,7 @@ class RouteLayerSchemaTests(unittest.TestCase):
             "segment_index",
             GPKG_LAYER_SCHEMA["route_points"]["fields"],
         )
+        self.assertIsNone(GPKG_LAYER_SCHEMA["route_profile_samples"]["geometry"])
 
 
 @unittest.skipIf(
@@ -122,11 +135,15 @@ class RouteGeometryTests(unittest.TestCase):
             "geometry_points": [(47.0, 7.0), (47.1, 7.1)],
         }
 
-        geometry, source, count = _route_geometry(record)
+        geometry, source, count, profile_count, has_elevation = _route_geometry(
+            record
+        )
 
         self.assertIsNotNone(geometry)
         self.assertEqual(source, "profile")
         self.assertEqual(count, 2)
+        self.assertEqual(profile_count, 3)
+        self.assertTrue(has_elevation)
 
     def test_route_geometry_falls_back_to_start_end(self):
         record = {
@@ -136,18 +153,24 @@ class RouteGeometryTests(unittest.TestCase):
             "end_lon": 6.7,
         }
 
-        geometry, source, count = _route_geometry(record)
+        geometry, source, count, profile_count, has_elevation = _route_geometry(
+            record
+        )
 
         self.assertIsNotNone(geometry)
         self.assertEqual(source, "start_end")
         self.assertEqual(count, 2)
+        self.assertEqual(profile_count, 0)
+        self.assertFalse(has_elevation)
 
     def test_route_geometry_without_points_is_empty(self):
-        geometry, source, count = _route_geometry({})
+        geometry, source, count, profile_count, has_elevation = _route_geometry({})
 
         self.assertIsNone(geometry)
         self.assertIsNone(source)
         self.assertEqual(count, 0)
+        self.assertEqual(profile_count, 0)
+        self.assertFalse(has_elevation)
 
 
 @unittest.skipIf(
@@ -179,6 +202,7 @@ class BuildRouteTrackLayerTests(unittest.TestCase):
         layer = build_route_track_layer(records)
 
         self.assertEqual(layer.featureCount(), 1)
+        self.assertFalse(QgsWkbTypes.hasZ(layer.wkbType()))
         feature = next(layer.getFeatures())
         self.assertEqual(feature["route_fk"], '["strava","42"]')
         self.assertEqual(feature["name"], "Lake Loop")
@@ -186,6 +210,7 @@ class BuildRouteTrackLayerTests(unittest.TestCase):
         self.assertEqual(feature["private"], 0)
         self.assertEqual(feature["geometry_source"], "profile")
         self.assertEqual(feature["geometry_point_count"], 2)
+        self.assertEqual(feature["profile_point_count"], 2)
         self.assertEqual(feature["details_json"], '{"estimated": false}')
 
     def test_record_without_geometry_is_skipped(self):
@@ -266,9 +291,7 @@ class BuildRoutePointLayerTests(unittest.TestCase):
             {
                 "source": "strava",
                 "source_route_id": "42",
-                "profile_points": [
-                    RouteProfilePoint(0, 46.5, 6.6, 0.0),
-                ],
+                "profile_points": [RouteProfilePoint(0, 46.5, 6.6, 0.0)],
             }
         ]
 
@@ -290,6 +313,53 @@ class BuildRoutePointLayerTests(unittest.TestCase):
         layer = build_route_point_layer(records)
 
         self.assertEqual(layer.featureCount(), 0)
+
+
+@unittest.skipIf(
+    QgsApplication is None,
+    "QGIS Python bindings are not available",
+)
+class BuildRouteProfileSampleLayerTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        _ensure_qgis_app()
+
+    def test_route_profile_samples_include_join_key_distance_and_altitude(self):
+        layer = build_route_profile_sample_layer([
+            {
+                "source": "strava",
+                "source_route_id": "42",
+                "name": "Swiss gravel loop",
+                "profile_points": [
+                    {
+                        "point_index": 0,
+                        "segment_index": 0,
+                        "lat": 46.5,
+                        "lon": 6.6,
+                        "distance_m": 0.0,
+                        "altitude_m": 500.0,
+                    },
+                    {
+                        "point_index": 1,
+                        "segment_index": 0,
+                        "lat": 46.501,
+                        "lon": 6.601,
+                        "distance_m": 135.4,
+                        "altitude_m": 507.5,
+                    },
+                ],
+            }
+        ])
+
+        self.assertTrue(layer.isValid())
+        self.assertEqual(layer.featureCount(), 2)
+        samples = list(layer.getFeatures())
+        self.assertEqual(samples[1]["sample_group_index"], 1)
+        self.assertEqual(samples[1]["source"], "strava")
+        self.assertEqual(samples[1]["source_route_id"], "42")
+        self.assertEqual(samples[1]["point_index"], 1)
+        self.assertEqual(samples[1]["distance_m"], 135.4)
+        self.assertEqual(samples[1]["altitude_m"], 507.5)
 
 
 @unittest.skipIf(
