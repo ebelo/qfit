@@ -670,10 +670,10 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.on_apply_filters_clicked.assert_called_once_with()
         dock.on_load_layers_clicked.assert_not_called()
 
-    def test_output_path_change_updates_wizard_runtime_state(self):
+    def test_output_path_change_updates_runtime_state_and_live_navigation(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._runtime_state_store = self.module.DockRuntimeStore()
-        dock._refresh_wizard_shell_from_runtime = MagicMock()
+        dock._refresh_live_dock_navigation_from_runtime = MagicMock()
 
         self.module.QfitDockWidget._on_output_path_changed(
             dock,
@@ -681,7 +681,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         )
 
         self.assertEqual(dock.runtime_state.output_path, "/tmp/local-qfit.gpkg")
-        dock._refresh_wizard_shell_from_runtime.assert_called_once_with()
+        dock._refresh_live_dock_navigation_from_runtime.assert_called_once_with()
 
     def test_output_path_change_clears_stale_loaded_dataset_state(self):
         dock = object.__new__(self.module.QfitDockWidget)
@@ -691,7 +691,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             stored_activity_count=3,
             activities_layer=object(),
         )
-        dock._refresh_wizard_shell_from_runtime = MagicMock()
+        dock._refresh_live_dock_navigation_from_runtime = MagicMock()
 
         self.module.QfitDockWidget._on_output_path_changed(
             dock,
@@ -701,7 +701,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertEqual(dock.runtime_state.output_path, "/tmp/new-qfit.gpkg")
         self.assertIsNone(dock.runtime_state.stored_activity_count)
         self.assertIsNone(dock.runtime_state.activities_layer)
-        dock._refresh_wizard_shell_from_runtime.assert_called_once_with()
+        dock._refresh_live_dock_navigation_from_runtime.assert_called_once_with()
 
     def test_wizard_progress_facts_reflect_existing_visible_geopackage_path(self):
         dock = object.__new__(self.module.QfitDockWidget)
