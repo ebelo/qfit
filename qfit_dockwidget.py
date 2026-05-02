@@ -1,6 +1,7 @@
 import logging
 import os
 from collections.abc import Callable
+from dataclasses import replace
 from datetime import date
 
 logger = logging.getLogger(__name__)
@@ -235,7 +236,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def _current_wizard_progress_facts(self):
         """Return render-neutral #609 wizard facts from the live dock state."""
 
-        runtime_state = self.runtime_state
+        runtime_state = self._wizard_runtime_state_with_selected_output_path()
         atlas_exported = bool(getattr(self, "_atlas_export_completed", False))
         atlas_export_output_path = self._current_wizard_atlas_output_path(
             runtime_state=runtime_state,
@@ -277,6 +278,21 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         if not isinstance(value, str):
             return None
         return value.strip() or None
+
+    def _wizard_runtime_state_with_selected_output_path(self):
+        """Reflect the visible GeoPackage path in wizard availability facts."""
+
+        runtime_state = self.runtime_state
+        selected_output_path = self._widget_text("outputPathLineEdit").strip()
+        if not selected_output_path or selected_output_path == runtime_state.output_path:
+            return runtime_state
+        return replace(runtime_state, output_path=selected_output_path)
+
+    def _on_output_path_changed(self, value: str) -> None:
+        """Keep wizard local-load actions in sync with the selected GeoPackage path."""
+
+        self._runtime_store().select_output_path((value or "").strip() or None)
+        self._refresh_wizard_shell_from_runtime()
 
     def _current_wizard_activity_style_preset(self) -> str | None:
         """Return current activity style copy for the optional wizard map page."""
@@ -442,6 +458,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             WizardActionCallbacks(
                 configure_connection=self._show_connection_configuration_hint,
                 sync_activities=self._run_wizard_sync_step,
+                sync_saved_routes=self.on_sync_routes_clicked,
                 load_activity_layers=self.on_load_layers_clicked,
                 edit_map_filters=self._update_status_for_filter_visibility,
                 apply_map_filters=self._run_wizard_map_step,
@@ -794,6 +811,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.clientIdLineEdit.textChanged.connect(self._update_connection_status)
         self.clientSecretLineEdit.textChanged.connect(self._update_connection_status)
         self.refreshTokenLineEdit.textChanged.connect(self._update_connection_status)
+        self.outputPathLineEdit.textChanged.connect(self._on_output_path_changed)
 
         preview_inputs = [
             self.activityTypeComboBox.currentTextChanged,

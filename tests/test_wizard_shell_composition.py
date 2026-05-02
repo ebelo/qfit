@@ -329,6 +329,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         callbacks = self.composition.WizardActionCallbacks(
             configure_connection=lambda: calls.append("configure"),
             sync_activities=lambda: calls.append("sync"),
+            sync_saved_routes=lambda: calls.append("routes"),
             load_activity_layers=lambda: calls.append("load"),
             edit_map_filters=lambda visible: calls.append(f"edit:{visible}"),
             apply_map_filters=lambda: calls.append("filter"),
@@ -347,6 +348,7 @@ class WizardShellCompositionTest(unittest.TestCase):
 
         assembled.connection_content.configure_button.clicked.emit()
         assembled.sync_content.sync_button.clicked.emit()
+        assembled.sync_content.routes_button.clicked.emit()
         assembled.sync_content.load_button.clicked.emit()
         assembled.map_content.load_layers_button.clicked.emit()
         assembled.map_content.edit_filters_button.clicked.emit()
@@ -362,6 +364,7 @@ class WizardShellCompositionTest(unittest.TestCase):
             [
                 "configure",
                 "sync",
+                "routes",
                 "load",
                 "load",
                 "edit:True",
@@ -457,7 +460,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertEqual(assembled.sync_content.status_label.text(), "Activities stored")
         self.assertTrue(assembled.sync_content.sync_button.isEnabled())
         self.assertTrue(assembled.sync_content.load_button.isEnabled())
-        self.assertEqual(assembled.sync_content.load_button.text(), "Load activities")
+        self.assertEqual(assembled.sync_content.load_button.text(), "Load GeoPackage")
         self.assertEqual(
             assembled.map_content.status_label.text(),
             "Stored activities ready to load",
@@ -1046,6 +1049,20 @@ class WizardShellCompositionTest(unittest.TestCase):
             "Updating activities in qfit.gpkg",
         )
         self.assertIn("Updating activities in qfit.gpkg", assembled.shell.footer_bar.text())
+
+    def test_route_sync_in_progress_keeps_routes_action_cancellable(self):
+        assembled = self.composition.build_placeholder_wizard_shell(
+            progress_facts=self.composition.WizardProgressFacts(
+                connection_configured=True,
+                sync_in_progress=True,
+                route_sync_in_progress=True,
+            )
+        )
+
+        self.assertTrue(assembled.sync_content.routes_button.isEnabled())
+        self.assertEqual(assembled.sync_content.routes_button.text(), "Cancel route sync")
+        self.assertEqual(assembled.sync_content.routes_button.toolTip(), "")
+        self.assertFalse(assembled.sync_content.sync_button.isEnabled())
 
     def test_busy_sync_without_stored_activities_replaces_empty_summary(self):
         assembled = self.composition.build_placeholder_wizard_shell(

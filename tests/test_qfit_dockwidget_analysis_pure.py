@@ -1,5 +1,6 @@
 import importlib
 import sys
+import tempfile
 import unittest
 from types import ModuleType, SimpleNamespace
 from unittest.mock import MagicMock, patch
@@ -669,6 +670,71 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.on_apply_filters_clicked.assert_called_once_with()
         dock.on_load_layers_clicked.assert_not_called()
 
+    def test_output_path_change_updates_wizard_runtime_state(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._runtime_state_store = self.module.DockRuntimeStore()
+        dock._refresh_wizard_shell_from_runtime = MagicMock()
+
+        self.module.QfitDockWidget._on_output_path_changed(
+            dock,
+            "  /tmp/local-qfit.gpkg  ",
+        )
+
+        self.assertEqual(dock.runtime_state.output_path, "/tmp/local-qfit.gpkg")
+        dock._refresh_wizard_shell_from_runtime.assert_called_once_with()
+
+    def test_output_path_change_clears_stale_loaded_dataset_state(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._runtime_state_store = self.module.DockRuntimeStore()
+        dock._runtime_state_store.load_dataset(
+            output_path="/tmp/old-qfit.gpkg",
+            stored_activity_count=3,
+            activities_layer=object(),
+        )
+        dock._refresh_wizard_shell_from_runtime = MagicMock()
+
+        self.module.QfitDockWidget._on_output_path_changed(
+            dock,
+            "/tmp/new-qfit.gpkg",
+        )
+
+        self.assertEqual(dock.runtime_state.output_path, "/tmp/new-qfit.gpkg")
+        self.assertIsNone(dock.runtime_state.stored_activity_count)
+        self.assertIsNone(dock.runtime_state.activities_layer)
+        dock._refresh_wizard_shell_from_runtime.assert_called_once_with()
+
+    def test_wizard_progress_facts_reflect_existing_visible_geopackage_path(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._runtime_state_store = self.module.DockRuntimeStore()
+        dock.clientIdLineEdit = _FakeLineEdit("")
+        dock.clientSecretLineEdit = _FakeLineEdit("")
+        dock.refreshTokenLineEdit = _FakeLineEdit("")
+        dock._atlas_export_completed = False
+        dock.settings = _FakeSettings()
+
+        with tempfile.NamedTemporaryFile(suffix=".gpkg") as geopackage:
+            dock.outputPathLineEdit = _FakeLineEdit(geopackage.name)
+
+            facts = self.module.QfitDockWidget._current_wizard_progress_facts(dock)
+
+        self.assertTrue(facts.activities_stored)
+        self.assertEqual(facts.output_name, geopackage.name.rsplit("/", 1)[-1])
+
+    def test_wizard_progress_facts_do_not_treat_missing_visible_geopackage_as_stored(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._runtime_state_store = self.module.DockRuntimeStore()
+        dock.outputPathLineEdit = _FakeLineEdit("/tmp/qfit-definitely-missing.gpkg")
+        dock.clientIdLineEdit = _FakeLineEdit("")
+        dock.clientSecretLineEdit = _FakeLineEdit("")
+        dock.refreshTokenLineEdit = _FakeLineEdit("")
+        dock._atlas_export_completed = False
+        dock.settings = _FakeSettings()
+
+        facts = self.module.QfitDockWidget._current_wizard_progress_facts(dock)
+
+        self.assertFalse(facts.activities_stored)
+        self.assertEqual(facts.output_name, "qfit-definitely-missing.gpkg")
+
     def test_build_wizard_shell_from_runtime_wires_persistence_and_callbacks(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._runtime_state_store = self.module.DockRuntimeStore()
@@ -727,6 +793,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         expected_callbacks = {
             "configure_connection": "_show_connection_configuration_hint",
             "sync_activities": "_run_wizard_sync_step",
+            "sync_saved_routes": "on_sync_routes_clicked",
             "load_activity_layers": "on_load_layers_clicked",
             "edit_map_filters": "_update_status_for_filter_visibility",
             "apply_map_filters": "_run_wizard_map_step",

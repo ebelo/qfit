@@ -54,6 +54,7 @@ from .wizard_shell_presenter import WizardShellPresenter
 
 _StateT = TypeVar("_StateT")
 WizardCompositionPage = WizardPage | WizardStepPage
+_SYNC_IN_PROGRESS_TOOLTIP = "Wait for the current synchronization to finish."
 
 
 @dataclass(frozen=True)
@@ -67,6 +68,7 @@ class WizardActionCallbacks:
 
     configure_connection: Callable[[], None] | None = None
     sync_activities: Callable[[], None] | None = None
+    sync_saved_routes: Callable[[], None] | None = None
     load_activity_layers: Callable[[], None] | None = None
     edit_map_filters: Callable[[bool], None] | None = None
     apply_map_filters: Callable[[], None] | None = None
@@ -411,6 +413,11 @@ def _connect_action_callbacks(
     _connect_optional_signal(sync_content, "syncRequested", callbacks.sync_activities)
     _connect_optional_signal(
         sync_content,
+        "syncRoutesRequested",
+        callbacks.sync_saved_routes,
+    )
+    _connect_optional_signal(
+        sync_content,
         "loadActivitiesRequested",
         callbacks.load_activity_layers,
     )
@@ -482,6 +489,7 @@ def _completed_prefix_facts(facts: WizardProgressFacts) -> WizardProgressFacts:
         analysis_generated="analysis" in completed,
         atlas_exported="atlas" in completed,
         sync_in_progress=facts.sync_in_progress,
+        route_sync_in_progress=facts.route_sync_in_progress,
         atlas_export_in_progress=facts.atlas_export_in_progress,
         preferred_current_key=facts.preferred_current_key,
         fetched_activity_count=facts.fetched_activity_count,
@@ -567,15 +575,18 @@ def _sync_state_from_facts(facts: WizardProgressFacts) -> SyncPageState:
             "Store fetched activities in the GeoPackage to complete synchronization."
         )
     primary_action_label = default.primary_action_label
+    routes_action_label = default.routes_action_label
     if facts.activities_fetched and not facts.activities_stored:
         primary_action_label = "Store fetched activities"
+    if facts.route_sync_in_progress:
+        routes_action_label = "Cancel route sync"
     if facts.sync_in_progress:
         status_text = "Synchronization in progress"
         detail_text = (
             "Wait for the current synchronization to finish before starting another sync."
         )
         primary_action_label = "Sync in progress…"
-        sync_blocked_tooltip = "Wait for the current synchronization to finish."
+        sync_blocked_tooltip = _SYNC_IN_PROGRESS_TOOLTIP
     return SyncPageState(
         ready=facts.activities_stored,
         status_text=status_text,
@@ -586,6 +597,12 @@ def _sync_state_from_facts(facts: WizardProgressFacts) -> SyncPageState:
         primary_action_blocked_tooltip=sync_blocked_tooltip,
         local_action_enabled=facts.activities_stored and not facts.sync_in_progress,
         local_action_blocked_tooltip=_sync_local_action_blocked_tooltip(facts, default),
+        routes_action_label=routes_action_label,
+        routes_action_enabled=(
+            facts.route_sync_in_progress
+            or (facts.connection_configured and not facts.sync_in_progress)
+        ),
+        routes_action_blocked_tooltip=_sync_routes_action_blocked_tooltip(facts, default),
     )
 
 
@@ -594,9 +611,22 @@ def _sync_local_action_blocked_tooltip(
     default: SyncPageState,
 ) -> str:
     if facts.sync_in_progress:
-        return "Wait for the current synchronization to finish."
+        return _SYNC_IN_PROGRESS_TOOLTIP
     if not facts.activities_stored:
         return default.local_action_blocked_tooltip
+    return ""
+
+
+def _sync_routes_action_blocked_tooltip(
+    facts: WizardProgressFacts,
+    default: SyncPageState,
+) -> str:
+    if facts.route_sync_in_progress:
+        return ""
+    if facts.sync_in_progress:
+        return _SYNC_IN_PROGRESS_TOOLTIP
+    if not facts.connection_configured:
+        return default.routes_action_blocked_tooltip
     return ""
 
 

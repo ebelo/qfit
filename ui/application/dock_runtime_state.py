@@ -189,6 +189,18 @@ class DockRuntimeStore:
     def set_output_path(self, output_path: str | None) -> DockRuntimeState:
         return self._replace_state(output_path=output_path)
 
+    def select_output_path(self, output_path: str | None) -> DockRuntimeState:
+        """Select a GeoPackage path while clearing stale loaded-dataset state."""
+
+        selected_path = (output_path or "").strip() or None
+        if selected_path == self._state.output_path:
+            return self._replace_state(output_path=selected_path)
+        return self._replace_state(
+            output_path=selected_path,
+            stored_activity_count=None,
+            layers=self._state.layers.clear_dataset().clear_routes(),
+        )
+
     def set_last_fetch_context(self, last_fetch_context: dict[str, Any] | None) -> DockRuntimeState:
         return self._replace_state(last_fetch_context=dict(last_fetch_context or {}))
 

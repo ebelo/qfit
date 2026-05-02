@@ -27,6 +27,7 @@ class WizardProgressFacts:
     analysis_generated: bool = False
     atlas_exported: bool = False
     sync_in_progress: bool = False
+    route_sync_in_progress: bool = False
     atlas_export_in_progress: bool = False
     preferred_current_key: str | None = None
     fetched_activity_count: int | None = None
@@ -81,11 +82,12 @@ def build_wizard_progress_facts_from_runtime_state(
     return WizardProgressFacts(
         connection_configured=connection_configured,
         activities_fetched=bool(state.activities),
-        activities_stored=_has_output_path(state),
+        activities_stored=_has_stored_activities(state),
         activity_layers_loaded=state.activities_layer is not None,
         analysis_generated=state.analysis_layer is not None,
         atlas_exported=atlas_exported,
         sync_in_progress=_has_sync_task(state),
+        route_sync_in_progress=state.route_sync_task is not None,
         atlas_export_in_progress=state.atlas_export_task is not None,
         preferred_current_key=preferred_current_key,
         fetched_activity_count=len(state.activities) if state.activities else None,
@@ -185,6 +187,7 @@ def _wizard_progress_facts_with_preferred_current_key(
         analysis_generated=facts.analysis_generated,
         atlas_exported=facts.atlas_exported,
         sync_in_progress=facts.sync_in_progress,
+        route_sync_in_progress=facts.route_sync_in_progress,
         atlas_export_in_progress=facts.atlas_export_in_progress,
         preferred_current_key=preferred_current_key,
         fetched_activity_count=facts.fetched_activity_count,
@@ -268,12 +271,26 @@ def _workflow_keys() -> tuple[str, ...]:
     return tuple(section.key for section in WIZARD_WORKFLOW_STEPS)
 
 
-def _has_output_path(state: DockRuntimeState) -> bool:
-    return bool((state.output_path or "").strip())
+def _has_stored_activities(state: DockRuntimeState) -> bool:
+    if state.stored_activity_count is not None:
+        return True
+    if _loaded_dataset_layer_count(state) > 0:
+        return True
+    output_path = (state.output_path or "").strip()
+    if not output_path:
+        return False
+    try:
+        return Path(output_path).exists()
+    except OSError:
+        return False
 
 
 def _has_sync_task(state: DockRuntimeState) -> bool:
-    return state.fetch_task is not None or state.store_task is not None
+    return (
+        state.fetch_task is not None
+        or state.store_task is not None
+        or state.route_sync_task is not None
+    )
 
 
 def _stored_activity_count(state: DockRuntimeState) -> int | None:

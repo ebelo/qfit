@@ -45,9 +45,14 @@ class SyncPageState:
     primary_action_label: str = "Sync activities"
     primary_action_enabled: bool = True
     primary_action_blocked_tooltip: str = "Configure the Strava connection before syncing."
-    local_action_label: str = "Load activities"
+    local_action_label: str = "Load GeoPackage"
     local_action_enabled: bool = False
-    local_action_blocked_tooltip: str = "Select an existing GeoPackage before loading activities."
+    local_action_blocked_tooltip: str = "Select an existing GeoPackage before loading local data."
+    routes_action_label: str = "Sync saved routes"
+    routes_action_enabled: bool = True
+    routes_action_blocked_tooltip: str = (
+        "Configure the Strava connection before syncing saved routes."
+    )
 
 
 class SyncPageContent(QWidget):
@@ -55,6 +60,7 @@ class SyncPageContent(QWidget):
 
     syncRequested = pyqtSignal()
     loadActivitiesRequested = pyqtSignal()
+    syncRoutesRequested = pyqtSignal()
 
     def __init__(self, state: SyncPageState | None = None, parent=None) -> None:
         super().__init__(parent)
@@ -83,8 +89,16 @@ class SyncPageContent(QWidget):
             action_name="load_activities",
         )
         self.load_button.clicked.connect(self.loadActivitiesRequested.emit)
+        self.routes_button = QToolButton(self)
+        self.routes_button.setObjectName("qfitWizardSyncRoutesButton")
+        style_secondary_action_button(
+            self.routes_button,
+            action_name="sync_saved_routes",
+        )
+        self.routes_button.clicked.connect(self.syncRoutesRequested.emit)
         self.action_row = build_wizard_action_row(
             self.load_button,
+            self.routes_button,
             self.sync_button,
             parent=self,
             object_name="qfitWizardSyncActionRow",
@@ -113,6 +127,12 @@ class SyncPageContent(QWidget):
             self.load_button,
             enabled=state.local_action_enabled,
             tooltip=state.local_action_blocked_tooltip,
+        )
+        self.routes_button.setText(state.routes_action_label)
+        set_wizard_action_availability(
+            self.routes_button,
+            enabled=state.routes_action_enabled,
+            tooltip=state.routes_action_blocked_tooltip,
         )
 
     def outer_layout(self):

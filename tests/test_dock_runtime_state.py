@@ -92,6 +92,37 @@ class TestDockRuntimeStore(unittest.TestCase):
         self.assertIs(store.state.background_layer, background_layer)
         self.assertIs(store.state.analysis_layer, analysis_layer)
 
+    def test_select_output_path_clears_stale_loaded_dataset_state(self):
+        store = DockRuntimeStore()
+        store.finish_fetch(activities=["run"], metadata={"provider": "strava"})
+        store.load_dataset(
+            output_path="/tmp/old-qfit.gpkg",
+            stored_activity_count=2,
+            activities_layer=object(),
+            starts_layer=object(),
+            points_layer=object(),
+            atlas_layer=object(),
+        )
+        store.set_route_layers(
+            route_tracks_layer=object(),
+            route_points_layer=object(),
+            route_profile_samples_layer=object(),
+        )
+
+        store.select_output_path("  /tmp/new-qfit.gpkg  ")
+
+        self.assertEqual(store.state.output_path, "/tmp/new-qfit.gpkg")
+        self.assertEqual(store.state.activities, ("run",))
+        self.assertEqual(store.state.last_fetch_context, {"provider": "strava"})
+        self.assertIsNone(store.state.stored_activity_count)
+        self.assertIsNone(store.state.activities_layer)
+        self.assertIsNone(store.state.starts_layer)
+        self.assertIsNone(store.state.points_layer)
+        self.assertIsNone(store.state.atlas_layer)
+        self.assertIsNone(store.state.route_tracks_layer)
+        self.assertIsNone(store.state.route_points_layer)
+        self.assertIsNone(store.state.route_profile_samples_layer)
+
     def test_analysis_background_and_export_helpers_update_runtime(self):
         store = DockRuntimeStore()
         background_layer = object()
