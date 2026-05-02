@@ -24,6 +24,10 @@ from .gpkg_layer_builders import (
     build_track_layer,
 )
 from .gpkg_point_layer_builder import build_point_layer
+from .gpkg_route_layer_builders import (
+    build_route_point_layer,
+    build_route_track_layer,
+)
 from .gpkg_atlas_table_builders import (
     build_cover_highlight_layer,
     build_document_summary_layer,
@@ -109,6 +113,8 @@ def bootstrap_empty_gpkg(output_path, atlas_page_settings):
     write_layer_to_gpkg(build_track_layer([]), output_path, "activity_tracks", overwrite_file=True)
     write_layer_to_gpkg(build_start_layer([]), output_path, "activity_starts", overwrite_file=False)
     write_layer_to_gpkg(build_point_layer([]), output_path, "activity_points", overwrite_file=False)
+    write_layer_to_gpkg(build_route_track_layer([]), output_path, "route_tracks", overwrite_file=False)
+    write_layer_to_gpkg(build_route_point_layer([]), output_path, "route_points", overwrite_file=False)
     write_layer_to_gpkg(
         build_atlas_layer([], atlas_page_settings),
         output_path, "activity_atlas_pages", overwrite_file=False,
@@ -136,6 +142,8 @@ def build_and_write_all_layers(
         "activity_tracks": build_track_layer(records),
         "activity_starts": build_start_layer(records),
         "activity_points": build_point_layer(records, write_activity_points, point_stride),
+        "route_tracks": build_route_track_layer([]),
+        "route_points": build_route_point_layer([]),
         "activity_atlas_pages": build_atlas_layer(records, atlas_page_settings, plans=plans),
         "atlas_document_summary": build_document_summary_layer(plans=plans),
         "atlas_cover_highlights": build_cover_highlight_layer(plans=plans),

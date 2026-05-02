@@ -4,7 +4,8 @@ GeoPackage schema definitions for qfit.
 This module owns:
 
 - Field-definition constants for every layer and table written to the .gpkg
-- ``make_qgs_fields`` — converts a field-definition list to a ``QgsFields`` object
+- ``make_qgs_fields`` — converts a field-definition list to a ``QgsFields``
+  object
 - ``GPKG_LAYER_SCHEMA`` — the authoritative description of every layer/table in
   the file (geometry type, kind, field names, primary-key hints)
 
@@ -91,6 +92,40 @@ POINT_FIELDS = [
     ("distance_m", QVariant.Double),
     ("geometry_source", QVariant.String),
     ("last_synced_at", QVariant.String),
+]
+
+ROUTE_TRACK_FIELDS = [
+    ("route_fk", QVariant.String),
+    ("source", QVariant.String),
+    ("source_route_id", QVariant.String),
+    ("external_id", QVariant.String),
+    ("name", QVariant.String),
+    ("description", QVariant.String),
+    ("private", QVariant.Int),
+    ("starred", QVariant.Int),
+    ("distance_m", QVariant.Double),
+    ("elevation_gain_m", QVariant.Double),
+    ("estimated_moving_time_s", QVariant.Int),
+    ("route_type", QVariant.Int),
+    ("sub_type", QVariant.Int),
+    ("created_at", QVariant.String),
+    ("updated_at", QVariant.String),
+    ("summary_polyline", QVariant.String),
+    ("geometry_source", QVariant.String),
+    ("geometry_point_count", QVariant.Int),
+    ("details_json", QVariant.String),
+]
+
+ROUTE_POINT_FIELDS = [
+    ("route_fk", QVariant.String),
+    ("source", QVariant.String),
+    ("source_route_id", QVariant.String),
+    ("name", QVariant.String),
+    ("point_index", QVariant.Int),
+    ("segment_index", QVariant.Int),
+    ("distance_m", QVariant.Double),
+    ("altitude_m", QVariant.Double),
+    ("geometry_source", QVariant.String),
 ]
 
 ATLAS_FIELDS = [
@@ -247,6 +282,16 @@ GPKG_LAYER_SCHEMA = {
         "geometry": "POINT",
         "kind": "layer",
         "fields": [name for name, _ in POINT_FIELDS],
+    },
+    "route_tracks": {
+        "geometry": "LINESTRING",
+        "kind": "layer",
+        "fields": [name for name, _ in ROUTE_TRACK_FIELDS],
+    },
+    "route_points": {
+        "geometry": "POINT",
+        "kind": "layer",
+        "fields": [name for name, _ in ROUTE_POINT_FIELDS],
     },
     "activity_atlas_pages": {
         "geometry": "POLYGON",
