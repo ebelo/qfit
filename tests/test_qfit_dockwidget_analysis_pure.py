@@ -965,7 +965,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "connected-composition"
         )
 
-
     def test_install_wizard_filter_controls_moves_live_filter_group_into_map_panel(self):
         dock = object.__new__(self.module.QfitDockWidget)
         parent_layout = MagicMock()
@@ -992,12 +991,14 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         filter_group.show.assert_called_once_with()
         map_content.set_filter_controls_visible.assert_called_once_with(False)
         self.assertTrue(dock._wizard_filter_controls_installed)
+        self.assertEqual(dock._wizard_filter_controls_installed_target, id(map_content))
 
     def test_install_wizard_filter_controls_is_idempotent(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._wizard_filter_controls_installed = True
         dock.filterGroupBox = MagicMock()
         map_content = SimpleNamespace(filter_controls_layout=MagicMock())
+        dock._wizard_filter_controls_installed_target = id(map_content)
 
         self.module.QfitDockWidget._install_wizard_filter_controls(
             dock,
@@ -1005,6 +1006,30 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         )
 
         map_content.filter_controls_layout.assert_not_called()
+
+    def test_install_wizard_filter_controls_reparents_for_new_composition(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._wizard_filter_controls_installed = True
+        dock._wizard_filter_controls_installed_target = 12345
+        parent_layout = MagicMock()
+        parent_widget = SimpleNamespace(layout=lambda: parent_layout)
+        filter_group = MagicMock()
+        filter_group.parentWidget.return_value = parent_widget
+        dock.filterGroupBox = filter_group
+        filter_layout = MagicMock()
+        map_content = SimpleNamespace(
+            filter_controls_layout=MagicMock(return_value=filter_layout),
+            set_filter_controls_visible=MagicMock(),
+        )
+
+        self.module.QfitDockWidget._install_wizard_filter_controls(
+            dock,
+            SimpleNamespace(map_content=map_content),
+        )
+
+        parent_layout.removeWidget.assert_called_once_with(filter_group)
+        filter_layout.addWidget.assert_called_once_with(filter_group)
+        self.assertEqual(dock._wizard_filter_controls_installed_target, id(map_content))
 
     def test_update_status_for_filter_visibility_updates_status_copy(self):
         dock = object.__new__(self.module.QfitDockWidget)
@@ -1199,7 +1224,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._refresh_wizard_shell_from_runtime.assert_called_once_with()
         dock._refresh_local_first_dock_from_runtime.assert_called_once_with()
 
-    def test_refresh_summary_status_notifies_optional_wizard_shell_refresh(self):
+    def test_refresh_summary_status_notifies_live_dock_navigation_refresh(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock.summaryStatusLabel = _FakeLabel("")
         dock.connectionStatusLabel = _FakeLabel("Strava connection: ready")

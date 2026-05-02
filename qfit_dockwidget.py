@@ -522,12 +522,15 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def _install_wizard_filter_controls(self, composition) -> None:
         """Move the live map-filter controls into the wizard map page."""
 
-        if getattr(self, "_wizard_filter_controls_installed", False):
-            return
-
         map_content = getattr(composition, "map_content", None)
         filter_group = getattr(self, "filterGroupBox", None)
         if map_content is None or filter_group is None:
+            return
+        installed_target = getattr(self, "_wizard_filter_controls_installed_target", None)
+        current_target = id(map_content)
+        if getattr(self, "_wizard_filter_controls_installed", False) and (
+            installed_target == current_target
+        ):
             return
         filter_controls_layout = getattr(map_content, "filter_controls_layout", None)
         if not callable(filter_controls_layout):
@@ -544,6 +547,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             filter_group.setVisible(True)
         map_content.set_filter_controls_visible(False)
         self._wizard_filter_controls_installed = True
+        self._wizard_filter_controls_installed_target = current_target
 
     def _remove_widget_from_current_layout(self, widget) -> None:
         parent_widget = (
