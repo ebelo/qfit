@@ -65,6 +65,59 @@ class TestStravaProviderFetchActivities(unittest.TestCase):
             self.assertIs(exc.__cause__, original)
 
 
+class TestStravaProviderFetchRoutes(unittest.TestCase):
+    """Route fetch helpers delegate to StravaClient and translate errors."""
+
+    def _make_provider(self):
+        provider = StravaProvider(client_id="id", client_secret="secret", refresh_token="token")
+        provider._client = MagicMock()
+        return provider
+
+    def test_fetch_routes_delegates_to_client(self):
+        provider = self._make_provider()
+        provider._client.fetch_routes.return_value = []
+
+        result = provider.fetch_routes(athlete_id=123, per_page=50, max_pages=2)
+
+        provider._client.fetch_routes.assert_called_once_with(
+            athlete_id=123,
+            per_page=50,
+            max_pages=2,
+        )
+        self.assertEqual(result, [])
+
+    def test_fetch_routes_translates_strava_client_error(self):
+        from qfit.providers.infrastructure.strava_client import StravaClientError
+
+        provider = self._make_provider()
+        provider._client.fetch_routes.side_effect = StravaClientError("route API error")
+
+        with self.assertRaises(ProviderError) as ctx:
+            provider.fetch_routes()
+
+        self.assertIn("route API error", str(ctx.exception))
+
+    def test_fetch_route_detail_delegates_to_client(self):
+        provider = self._make_provider()
+        provider._client.fetch_route_detail.return_value = object()
+
+        result = provider.fetch_route_detail(42)
+
+        provider._client.fetch_route_detail.assert_called_once_with(42)
+        self.assertIs(result, provider._client.fetch_route_detail.return_value)
+
+    def test_fetch_route_detail_translates_strava_client_error(self):
+        from qfit.providers.infrastructure.strava_client import StravaClientError
+
+        provider = self._make_provider()
+        provider._client.fetch_route_detail.side_effect = StravaClientError("bad route")
+
+        with self.assertRaises(ProviderError) as ctx:
+            provider.fetch_route_detail(42)
+
+        self.assertIn("bad route", str(ctx.exception))
+
+
 class TestStravaProviderProperties(unittest.TestCase):
     """last_stream_enrichment_stats and last_rate_limit proxy to the client."""
 

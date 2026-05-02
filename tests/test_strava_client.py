@@ -53,6 +53,53 @@ class StravaClientTests(unittest.TestCase):
         self.assertEqual(activity.details_json["private_note"], "keep me in details")
         self.assertIn("normalized_at", activity.details_json)
 
+    def test_normalize_route_maps_core_fields(self):
+        client = StravaClient()
+        route = client.normalize_route(
+            {
+                "id": 123,
+                "id_str": "route-123",
+                "name": "Lake loop",
+                "description": "Planning ride",
+                "private": True,
+                "starred": False,
+                "distance": 45678.9,
+                "elevation_gain": 987.6,
+                "estimated_moving_time": 7200,
+                "type": 1,
+                "sub_type": 3,
+                "created_at": "2026-04-01T10:00:00Z",
+                "updated_at": "2026-04-02T10:00:00Z",
+                "map": {"polyline": "detailed", "summary_polyline": "summary"},
+                "segments": [{"id": 1}],
+                "athlete": {"id": 99},
+            }
+        )
+
+        self.assertEqual(route.source, "strava")
+        self.assertEqual(route.source_route_id, "123")
+        self.assertEqual(route.external_id, "route-123")
+        self.assertEqual(route.name, "Lake loop")
+        self.assertTrue(route.private)
+        self.assertEqual(route.distance_m, 45678.9)
+        self.assertEqual(route.elevation_gain_m, 987.6)
+        self.assertEqual(route.estimated_moving_time_s, 7200)
+        self.assertEqual(route.route_type, 1)
+        self.assertEqual(route.sub_type, 3)
+        self.assertEqual(route.summary_polyline, "detailed")
+        self.assertEqual(route.geometry_source, "route_polyline")
+        self.assertEqual(route.details_json["segments"], [{"id": 1}])
+        self.assertNotIn("athlete", route.details_json)
+        self.assertIn("normalized_at", route.details_json)
+        self.assertEqual(route.to_record()["source_route_id"], "123")
+
+    def test_normalize_route_falls_back_to_summary_polyline(self):
+        client = StravaClient()
+        route = client.normalize_route({"id": 123, "map": {"summary_polyline": "summary"}})
+
+        self.assertEqual(route.summary_polyline, "summary")
+        self.assertEqual(route.geometry_source, "summary_polyline")
+
     def test_extract_stream_bundle_supports_dict_and_list_payloads(self):
         client = StravaClient()
 
@@ -272,6 +319,99 @@ class StravaClientTests(unittest.TestCase):
 
         activities = client.fetch_activities(per_page=200, max_pages=0)
         self.assertEqual(len(activities), 203)
+
+    def test_fetch_routes_resolves_athlete_and_paginates_until_last_page(self):
+        client = StravaClient(client_id="123", client_secret="abc", refresh_token="tok")
+        seen_urls = []
+        call_count = [0]
+
+        def fake_request_json(request, operation=None, **kwargs):
+            idx = call_count[0]
+            call_count[0] += 1
+            if idx == 0:
+                return {"access_token": "fake_token"}
+            seen_urls.append(request)
+            if idx == 1:
+                return {"id": 999}
+            if idx == 2:
+                return [{"id": 1, "name": "Route 1"}, {"id": 2, "name": "Route 2"}]
+            return [{"id": 3, "name": "Route 3"}]
+
+        client._request_json = fake_request_json
+
+        with patch("qfit.providers.infrastructure.strava_client.time.sleep"):
+            routes = client.fetch_routes(per_page=2, max_pages=0)
+
+        self.assertEqual([route.source_route_id for route in routes], ["1", "2", "3"])
+        self.assertIn("/athlete", seen_urls[0])
+        self.assertIn("/athletes/999/routes?page=1&per_page=2", seen_urls[1])
+        self.assertIn("/athletes/999/routes?page=2&per_page=2", seen_urls[2])
+
+    def test_fetch_routes_accepts_known_athlete_id(self):
+        client = StravaClient(client_id="123", client_secret="abc", refresh_token="tok")
+        seen_urls = []
+        call_count = [0]
+
+        def fake_request_json(request, operation=None, **kwargs):
+            idx = call_count[0]
+            call_count[0] += 1
+            if idx == 0:
+                return {"access_token": "fake_token"}
+            seen_urls.append(request)
+            return [{"id": 7, "name": "Known athlete route"}]
+
+        client._request_json = fake_request_json
+
+        routes = client.fetch_routes(athlete_id=999, per_page=10, max_pages=1)
+
+        self.assertEqual(len(routes), 1)
+        self.assertEqual(seen_urls, ["https://www.strava.com/api/v3/athletes/999/routes?page=1&per_page=10"])
+
+    def test_fetch_routes_rejects_unexpected_response(self):
+        client = StravaClient(client_id="123", client_secret="abc", refresh_token="tok")
+        call_count = [0]
+
+        def fake_request_json(request, operation=None, **kwargs):
+            idx = call_count[0]
+            call_count[0] += 1
+            if idx == 0:
+                return {"access_token": "fake_token"}
+            if idx == 1:
+                return {"id": 999}
+            return {"not": "a list"}
+
+        client._request_json = fake_request_json
+
+        with self.assertRaisesRegex(StravaClientError, "unexpected response"):
+            client.fetch_routes(per_page=10, max_pages=1)
+
+    def test_fetch_authenticated_athlete_id_requires_id(self):
+        client = StravaClient()
+        client._request_json = lambda *args, **kwargs: {"username": "athlete"}
+
+        with self.assertRaisesRegex(StravaClientError, "athlete id"):
+            client.fetch_authenticated_athlete_id(token="fake_token")
+
+    def test_fetch_route_detail_normalizes_payload(self):
+        client = StravaClient(client_id="123", client_secret="abc", refresh_token="tok")
+        seen_urls = []
+        call_count = [0]
+
+        def fake_request_json(request, operation=None, **kwargs):
+            idx = call_count[0]
+            call_count[0] += 1
+            if idx == 0:
+                return {"access_token": "fake_token"}
+            seen_urls.append(request)
+            return {"id": 42, "name": "Detailed route", "map": {"polyline": "abc"}}
+
+        client._request_json = fake_request_json
+
+        route = client.fetch_route_detail(42)
+
+        self.assertEqual(route.source_route_id, "42")
+        self.assertEqual(route.summary_polyline, "abc")
+        self.assertEqual(seen_urls, ["https://www.strava.com/api/v3/routes/42"])
 
     def test_fetch_activities_full_sync_uses_before_cursor(self):
         client = StravaClient(client_id="123", client_secret="abc", refresh_token="tok")
