@@ -79,6 +79,7 @@ from ...detailed_route_strategy import (
     DEFAULT_DETAILED_ROUTE_STRATEGY,
     DETAILED_ROUTE_STRATEGY_RECENT,
 )
+from ..domain.route_gpx import RouteGpxParseError, parse_route_gpx
 from ..domain.routes import SavedRoute
 
 
@@ -94,6 +95,7 @@ class StravaClient:
     STREAMS_URL_TEMPLATE = "https://www.strava.com/api/v3/activities/{activity_id}/streams"
     ROUTES_URL_TEMPLATE = "https://www.strava.com/api/v3/athletes/{athlete_id}/routes"
     ROUTE_DETAIL_URL_TEMPLATE = "https://www.strava.com/api/v3/routes/{route_id}"
+    ROUTE_GPX_URL_TEMPLATE = "https://www.strava.com/api/v3/routes/{route_id}/export_gpx"
     DEFAULT_NETWORK_RETRY_ATTEMPTS = 3
     MIN_ACTIVITY_PAGE_SIZE = 5
     FULL_SYNC_MIN_SHORT_REMAINING = 3
@@ -305,7 +307,7 @@ class StravaClient:
             raise StravaClientError("Strava did not return an authenticated athlete id")
         return athlete_id
 
-    def fetch_route_detail(self, route_id):
+    def fetch_route_detail(self, route_id, use_gpx_geometry=False):
         token = self.get_access_token()
         payload = self._request_json(
             self.ROUTE_DETAIL_URL_TEMPLATE.format(route_id=route_id),
@@ -316,7 +318,25 @@ class StravaClient:
             raise StravaClientError(
                 "Fetching Strava route {route_id} returned an unexpected response".format(route_id=route_id)
             )
-        return self.normalize_route(payload)
+        route = self.normalize_route(payload)
+        if use_gpx_geometry:
+            self.enrich_route_with_gpx(route)
+        return route
+
+    def fetch_route_gpx(self, route_id):
+        token = self.get_access_token()
+        return self._request_text(
+            self.ROUTE_GPX_URL_TEMPLATE.format(route_id=route_id),
+            headers=self._build_request_headers(token=token, accept="application/gpx+xml, application/xml, text/xml"),
+            operation="Fetching Strava route {route_id} GPX".format(route_id=route_id),
+        )
+
+    def enrich_route_with_gpx(self, route):
+        gpx_text = self.fetch_route_gpx(route.source_route_id)
+        if self._apply_route_gpx_to_route(route, gpx_text):
+            return route
+        route.details_json["gpx_geometry_status"] = "empty"
+        return route
 
     def _fetch_activity_page(self, token, page, per_page, current_before, after, max_pages):
         while True:
@@ -546,9 +566,9 @@ class StravaClient:
         )
         return self._extract_stream_bundle(payload)
 
-    def _build_request_headers(self, token=None, content_type=None):
+    def _build_request_headers(self, token=None, content_type=None, accept="application/json"):
         headers = {
-            "Accept": "application/json",
+            "Accept": accept,
             "Connection": "close",
             "User-Agent": "qfit/{version}".format(version=self._plugin_version()),
         }
@@ -646,6 +666,29 @@ class StravaClient:
                 "distance_m": activity.distance_m,
             },
         )
+
+    def _apply_route_gpx_to_route(self, route, gpx_text):
+        try:
+            profile_points = parse_route_gpx(gpx_text)
+        except RouteGpxParseError as exc:
+            raise StravaClientError("Strava route GPX was invalid") from exc
+        if not profile_points:
+            return False
+
+        route.profile_points = profile_points
+        route.geometry_points = [(point.lat, point.lon) for point in profile_points]
+        route.geometry_source = "export_gpx"
+        route.details_json["gpx_geometry_status"] = "downloaded"
+        route.details_json["gpx_point_count"] = len(profile_points)
+        route.details_json["gpx_enriched_at"] = datetime.now(UTC).isoformat()
+        altitude_values = [point.altitude_m for point in profile_points if point.altitude_m is not None]
+        if altitude_values:
+            route.details_json["gpx_min_altitude_m"] = min(altitude_values)
+            route.details_json["gpx_max_altitude_m"] = max(altitude_values)
+        else:
+            route.details_json.pop("gpx_min_altitude_m", None)
+            route.details_json.pop("gpx_max_altitude_m", None)
+        return True
 
     def _apply_stream_bundle_to_activity(self, activity, stream_bundle):
         points = self._extract_stream_points(stream_bundle)
@@ -809,6 +852,31 @@ class StravaClient:
         return value[0], value[1]
 
     def _request_json(self, url, method="GET", data=None, headers=None, operation="Request to Strava"):
+        response = self._request_response(
+            url,
+            method=method,
+            data=data,
+            headers=headers,
+            operation=operation,
+        )
+        try:
+            return response.json()
+        except ValueError as exc:
+            raise StravaClientError(
+                "{operation} returned invalid JSON: {exc}".format(operation=operation, exc=exc)
+            ) from exc
+
+    def _request_text(self, url, method="GET", data=None, headers=None, operation="Request to Strava"):
+        response = self._request_response(
+            url,
+            method=method,
+            data=data,
+            headers=headers,
+            operation=operation,
+        )
+        return response.text
+
+    def _request_response(self, url, method="GET", data=None, headers=None, operation="Request to Strava"):
         attempts = max(1, int(self.DEFAULT_NETWORK_RETRY_ATTEMPTS))
         last_error = None
 
@@ -817,7 +885,7 @@ class StravaClient:
                 response = self.session.request(method=method, url=url, data=data, headers=headers, timeout=60)
                 self.last_rate_limit = self._extract_rate_limit(response.headers)
                 response.raise_for_status()
-                return response.json()
+                return response
             except requests.HTTPError as exc:
                 response = getattr(exc, "response", None)
                 status_code = response.status_code if response is not None else "unknown"
@@ -837,10 +905,6 @@ class StravaClient:
                     time.sleep(self._retry_delay_seconds(attempt))
                     continue
                 raise StravaClientError(self._format_network_error(operation, exc, attempts)) from exc
-            except ValueError as exc:
-                raise StravaClientError(
-                    "{operation} returned invalid JSON: {exc}".format(operation=operation, exc=exc)
-                ) from exc
 
         raise StravaClientError(self._format_network_error(operation, last_error, attempts))
 
