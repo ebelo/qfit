@@ -123,6 +123,11 @@ def connect_local_first_action_callbacks(
         callbacks.load_activity_layers,
     )
     _connect_optional_signal(
+        composition.sync_content,
+        "clearDatabaseRequested",
+        callbacks.clear_database,
+    )
+    _connect_optional_signal(
         composition.map_content,
         "loadLayersRequested",
         callbacks.load_activity_layers,
