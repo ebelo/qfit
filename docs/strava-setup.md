@@ -49,6 +49,37 @@ Once the refresh token is available:
 Tip:
 - Hover the most confusing controls or use the small `?` buttons in the dock for inline guidance about detailed-track limits, point sampling, basemap setup, temporal timestamps, and write/load vs filter behavior.
 
+## Saved route catalog access
+
+qfit also has route-catalog storage support for Strava saved/planned routes.
+Routes are intentionally kept separate from completed activities so planning
+data does not get mixed into activity history.
+
+Saved routes use Strava's route-list, route-detail, and GPX export endpoints
+through the same OAuth refresh-token flow as activity imports. Private routes
+may require Strava's `read_all` scope. If you authorized qfit before route
+catalog support and Strava later denies route access, re-authorize qfit with a
+token that includes the additional route visibility you need.
+
+When route records are written to a qfit GeoPackage, they use dedicated route
+objects:
+
+- `route_registry` stores the stable provider route id and route metadata.
+- `route_tracks` stores one 2D line feature per saved route.
+- `route_points` stores spatial route sample points when detailed geometry is
+  available.
+- `route_profile_samples` stores ordered distance/elevation samples for future
+  profile, filtering, and difficulty-scoring workflows.
+
+Activities and routes may live in the same `.gpkg`, but activity writes do not
+overwrite already-synced route layers. Route layers load through a dedicated
+route-layer path, separate from the existing completed-activity layers.
+
+Current limitation: route fetching and persistence are available as route
+catalog infrastructure, but the end-user import button/workflow for saved
+routes is still a follow-up slice. Until that UI is wired, normal activity
+imports continue to behave as before.
+
 ## Notes
 
 - Strava access tokens expire quickly; the refresh token is the important long-lived credential.
