@@ -209,7 +209,7 @@ class LayerStyleServiceTests(unittest.TestCase):
         route_tracks.setOpacity.assert_called_once_with(0.85)
         route_tracks.triggerRepaint.assert_called_once()
         route_points.setRenderer.assert_called_once()
-        route_points.setOpacity.assert_called_once_with(0.45)
+        route_points.setOpacity.assert_called_once_with(0.65)
         route_points.triggerRepaint.assert_called_once()
         profile_samples.setRenderer.assert_not_called()
 
@@ -403,7 +403,7 @@ class LayerStyleServiceUnitTests(unittest.TestCase):
         route_tracks.setRenderer.assert_called_once()
         route_tracks.setOpacity.assert_called_once_with(0.85)
         route_points.setRenderer.assert_called_once()
-        route_points.setOpacity.assert_called_once_with(0.45)
+        route_points.setOpacity.assert_called_once_with(0.65)
         profile_samples.setRenderer.assert_not_called()
 
     def test_by_activity_type_sets_renderer_on_tracks(self):
