@@ -75,6 +75,33 @@ class LayerGatewayBoundaryTests(unittest.TestCase):
         )
         gateway._move_background_layers_to_bottom.assert_called_once_with()
 
+    def test_qgis_gateway_load_route_layers_uses_dedicated_loader_path(self):
+        modules = self._qgis_gateway_modules()
+
+        with patch.dict(sys.modules, modules, clear=False):
+            self._reset_qgis_gateway_imports()
+            adapter_module = importlib.import_module(
+                "qfit.visualization.infrastructure.qgis_layer_gateway"
+            )
+
+            gateway = adapter_module.QgisLayerGateway(MagicMock(name="iface"))
+            gateway._canvas_service = MagicMock(name="canvas_service")
+            gateway._project_layer_loader = MagicMock(name="project_layer_loader")
+            gateway._project_layer_loader.load_route_layers.return_value = (
+                MagicMock(name="routes"),
+                MagicMock(name="profile_samples"),
+            )
+            gateway._move_background_layers_to_bottom = MagicMock(name="move_background_layers_to_bottom")
+            result = gateway.load_route_layers("/tmp/out.gpkg")
+
+        self.assertIsInstance(gateway, LayerGateway)
+        canvas = gateway._canvas_service
+        loader = gateway._project_layer_loader
+        canvas.ensure_working_crs.assert_called_once_with(gateway.iface, preserve_extent=False)
+        loader.load_route_layers.assert_called_once_with("/tmp/out.gpkg")
+        canvas.zoom_to_layers.assert_called_once_with(gateway.iface, result)
+        gateway._move_background_layers_to_bottom.assert_called_once_with()
+
     def test_qgis_gateway_remove_layers_delegates_to_qgsproject(self):
         modules = self._qgis_gateway_modules()
 

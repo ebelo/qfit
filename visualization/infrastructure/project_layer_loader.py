@@ -19,6 +19,11 @@ class ProjectLayerLoader:
         ("activity_points", "qfit activity points"),
         ("activity_atlas_pages", "qfit atlas pages"),
     ]
+    ROUTE_LAYERS = [
+        ("route_tracks", "qfit routes"),
+        ("route_points", "qfit route points"),
+        ("route_profile_samples", "qfit route profile samples"),
+    ]
 
     def load_output_layers(self, gpkg_path):
         activities_layer = self._load_first_available(gpkg_path, self.ACTIVITIES_CANDIDATES)
@@ -27,6 +32,12 @@ class ProjectLayerLoader:
             for layer_name, display_name in self.OPTIONAL_LAYERS
         ]
         return (activities_layer, *optional_layers)
+
+    def load_route_layers(self, gpkg_path):
+        return tuple(
+            self._load_optional_layer(gpkg_path, layer_name, display_name)
+            for layer_name, display_name in self.ROUTE_LAYERS
+        )
 
     def _load_first_available(self, gpkg_path, candidates):
         last_error = None

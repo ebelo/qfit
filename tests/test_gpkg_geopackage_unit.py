@@ -179,6 +179,9 @@ class GeoPackagePackageUnitTests(unittest.TestCase):
         build_route_point_layer = MagicMock(
             side_effect=lambda records: ("route_points", tuple(records))
         )
+        build_route_profile_sample_layer = MagicMock(
+            side_effect=lambda records: ("route_profile_samples", tuple(records))
+        )
         build_atlas_layer = MagicMock(
             side_effect=lambda records, settings, plans=None: (
                 "atlas",
@@ -233,6 +236,7 @@ class GeoPackagePackageUnitTests(unittest.TestCase):
                 "qfit.activities.infrastructure.geopackage.gpkg_route_layer_builders",
                 build_route_track_layer=build_route_track_layer,
                 build_route_point_layer=build_route_point_layer,
+                build_route_profile_sample_layer=build_route_profile_sample_layer,
             ),
             "qfit.activities.infrastructure.geopackage.gpkg_atlas_page_builder": self._module(
                 "qfit.activities.infrastructure.geopackage.gpkg_atlas_page_builder",
@@ -262,8 +266,15 @@ class GeoPackagePackageUnitTests(unittest.TestCase):
                 "qfit.activities.infrastructure.geopackage.gpkg_write_orchestration"
             )
 
+            with patch.object(moved, "_ensure_spatial_indexes") as ensure_spatial_indexes:
+                moved.ensure_route_spatial_indexes("/tmp/routes.gpkg")
+            ensure_spatial_indexes.assert_called_once_with(
+                "/tmp/routes.gpkg",
+                {"route_tracks": None, "route_points": None},
+            )
+
             moved.bootstrap_empty_gpkg("/tmp/bootstrap.gpkg", {"margin_percent": 8})
-            self.assertEqual(write_layer_to_gpkg.call_count, 11)
+            self.assertEqual(write_layer_to_gpkg.call_count, 12)
             self.assertEqual(
                 write_layer_to_gpkg.mock_calls[0],
                 call(("tracks", ()), "/tmp/bootstrap.gpkg", "activity_tracks", overwrite_file=True),
@@ -274,6 +285,15 @@ class GeoPackagePackageUnitTests(unittest.TestCase):
             )
             self.assertIn(
                 call(("route_points", ()), "/tmp/bootstrap.gpkg", "route_points", overwrite_file=False),
+                write_layer_to_gpkg.mock_calls,
+            )
+            self.assertIn(
+                call(
+                    ("route_profile_samples", ()),
+                    "/tmp/bootstrap.gpkg",
+                    "route_profile_samples",
+                    overwrite_file=False,
+                ),
                 write_layer_to_gpkg.mock_calls,
             )
             self.assertEqual(
@@ -353,13 +373,14 @@ class GeoPackagePackageUnitTests(unittest.TestCase):
                 build_atlas_page_plans.assert_called_once_with(
                     [{"name": "Evening Run"}], settings={"margin_percent": 10}
                 )
-                self.assertEqual(write_layer_to_gpkg.call_count, 11)
+                self.assertEqual(write_layer_to_gpkg.call_count, 9)
                 self.assertEqual(
                     layers["activity_points"],
                     ("points", ({"name": "Evening Run"},), True, 3),
                 )
-                self.assertEqual(layers["route_tracks"], ("route_tracks", ()))
-                self.assertEqual(layers["route_points"], ("route_points", ()))
+                self.assertNotIn("route_tracks", layers)
+                self.assertNotIn("route_points", layers)
+                self.assertNotIn("route_profile_samples", layers)
                 self.assertEqual(layers["atlas_toc_entries"], ("toc", ({"name": "Evening Run"},), {"margin_percent": 10}, [{"page": 1}]))
                 self.assertEqual(sqlite_connect.call_args, call("/tmp/full.gpkg"))
                 self.assertIn(

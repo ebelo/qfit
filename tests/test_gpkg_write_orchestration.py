@@ -17,12 +17,14 @@ except (ImportError, ModuleNotFoundError):  # pragma: no cover
 if QgsApplication is not None:
     from qfit.activities.infrastructure.geopackage.gpkg_write_orchestration import (
         bootstrap_empty_gpkg,
+        build_and_write_route_layers,
         build_and_write_all_layers,
         ensure_spatial_indexes,
     )
     from qfit.atlas.publish_atlas import normalize_atlas_page_settings
 else:  # pragma: no cover
     bootstrap_empty_gpkg = None
+    build_and_write_route_layers = None
     build_and_write_all_layers = None
     ensure_spatial_indexes = None
     normalize_atlas_page_settings = None
@@ -31,12 +33,25 @@ def _ensure_qgis_app():
     return get_shared_qgis_app(QgsApplication)
 
 
-_EXPECTED_LAYERS = [
+_BOOTSTRAP_EXPECTED_LAYERS = [
     "activity_tracks",
     "activity_starts",
     "activity_points",
     "route_tracks",
     "route_points",
+    "route_profile_samples",
+    "activity_atlas_pages",
+    "atlas_document_summary",
+    "atlas_cover_highlights",
+    "atlas_page_detail_items",
+    "atlas_profile_samples",
+    "atlas_toc_entries",
+]
+
+_ACTIVITY_WRITE_LAYERS = [
+    "activity_tracks",
+    "activity_starts",
+    "activity_points",
     "activity_atlas_pages",
     "atlas_document_summary",
     "atlas_cover_highlights",
@@ -64,7 +79,7 @@ class BootstrapEmptyGpkgTests(unittest.TestCase):
         try:
             bootstrap_empty_gpkg(path, self.settings)
             self.assertTrue(os.path.exists(path))
-            for layer_name in _EXPECTED_LAYERS:
+            for layer_name in _BOOTSTRAP_EXPECTED_LAYERS:
                 lyr = QgsVectorLayer(f"{path}|layername={layer_name}", layer_name, "ogr")
                 self.assertTrue(lyr.isValid(), f"layer {layer_name!r} should be valid")
                 self.assertEqual(lyr.featureCount(), 0, f"layer {layer_name!r} should be empty")
@@ -119,7 +134,7 @@ class BuildAndWriteAllLayersTests(unittest.TestCase):
             layers = build_and_write_all_layers(
                 self.records, path, self.settings,
             )
-            self.assertEqual(sorted(layers.keys()), sorted(_EXPECTED_LAYERS))
+            self.assertEqual(sorted(layers.keys()), sorted(_ACTIVITY_WRITE_LAYERS))
         finally:
             if os.path.exists(path):
                 os.unlink(path)
@@ -139,6 +154,59 @@ class BuildAndWriteAllLayersTests(unittest.TestCase):
                     mem_layer.featureCount(),
                     f"{layer_name!r} disk count should match memory count",
                 )
+        finally:
+            if os.path.exists(path):
+                os.unlink(path)
+
+    def test_activity_rebuild_preserves_existing_route_layers(self):
+        path = self._temp_gpkg()
+        routes = [
+            {
+                "source": "strava",
+                "source_route_id": "route-1",
+                "name": "Saved Route",
+                "profile_points": [
+                    {"point_index": 0, "lat": 46.52, "lon": 6.62},
+                    {"point_index": 1, "lat": 46.57, "lon": 6.74},
+                ],
+            }
+        ]
+        try:
+            bootstrap_empty_gpkg(path, self.settings)
+            build_and_write_route_layers(routes, path)
+
+            route_counts_before = {
+                layer_name: QgsVectorLayer(
+                    f"{path}|layername={layer_name}",
+                    layer_name,
+                    "ogr",
+                ).featureCount()
+                for layer_name in (
+                    "route_tracks",
+                    "route_points",
+                    "route_profile_samples",
+                )
+            }
+
+            build_and_write_all_layers(self.records, path, self.settings)
+
+            route_counts_after = {
+                layer_name: QgsVectorLayer(
+                    f"{path}|layername={layer_name}",
+                    layer_name,
+                    "ogr",
+                ).featureCount()
+                for layer_name in route_counts_before
+            }
+            self.assertEqual(route_counts_before, route_counts_after)
+            self.assertEqual(
+                route_counts_after,
+                {
+                    "route_tracks": 1,
+                    "route_points": 2,
+                    "route_profile_samples": 2,
+                },
+            )
         finally:
             if os.path.exists(path):
                 os.unlink(path)

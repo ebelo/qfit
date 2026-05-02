@@ -26,6 +26,7 @@ from .gpkg_layer_builders import (
 from .gpkg_point_layer_builder import build_point_layer
 from .gpkg_route_layer_builders import (
     build_route_point_layer,
+    build_route_profile_sample_layer,
     build_route_track_layer,
 )
 from .gpkg_atlas_table_builders import (
@@ -37,6 +38,24 @@ from .gpkg_atlas_table_builders import (
 )
 from ....atlas.publish_atlas import build_atlas_page_plans
 
+
+ROUTE_LAYER_ATTRIBUTE_INDEXES = {
+    "route_tracks": (
+        "CREATE INDEX IF NOT EXISTS idx_route_tracks_source_route_id ON route_tracks(source, source_route_id)",
+        "CREATE INDEX IF NOT EXISTS idx_route_tracks_updated_at ON route_tracks(updated_at)",
+        "CREATE INDEX IF NOT EXISTS idx_route_tracks_distance_m ON route_tracks(distance_m)",
+    ),
+    "route_points": (
+        "CREATE INDEX IF NOT EXISTS idx_route_points_source_route_id ON route_points(source, source_route_id)",
+        "CREATE INDEX IF NOT EXISTS idx_route_points_route_fk ON route_points(route_fk)",
+        "CREATE INDEX IF NOT EXISTS idx_route_points_distance_m ON route_points(distance_m)",
+    ),
+    "route_profile_samples": (
+        "CREATE INDEX IF NOT EXISTS idx_route_profile_samples_source_route_id ON route_profile_samples(source, source_route_id)",
+        "CREATE INDEX IF NOT EXISTS idx_route_profile_samples_point_index ON route_profile_samples(source, source_route_id, point_index)",
+        "CREATE INDEX IF NOT EXISTS idx_route_profile_samples_distance_m ON route_profile_samples(distance_m)",
+    ),
+}
 
 DERIVED_LAYER_ATTRIBUTE_INDEXES = {
     "activity_tracks": (
@@ -67,9 +86,18 @@ DERIVED_LAYER_ATTRIBUTE_INDEXES = {
 
 def ensure_attribute_indexes(output_path):
     """Create derived-layer attribute indexes inside *output_path* if missing."""
+    _ensure_attribute_indexes(output_path, DERIVED_LAYER_ATTRIBUTE_INDEXES)
+
+
+def ensure_route_attribute_indexes(output_path):
+    """Create route-layer attribute indexes inside *output_path* if missing."""
+    _ensure_attribute_indexes(output_path, ROUTE_LAYER_ATTRIBUTE_INDEXES)
+
+
+def _ensure_attribute_indexes(output_path, index_groups):
     with sqlite3.connect(output_path) as connection:
         cursor = connection.cursor()
-        for statements in DERIVED_LAYER_ATTRIBUTE_INDEXES.values():
+        for statements in index_groups.values():
             for statement in statements:
                 cursor.execute(statement)
         connection.commit()
@@ -86,9 +114,18 @@ def _import_qgis_spatial_index_api():
 
 def ensure_spatial_indexes(output_path):
     """Create derived-layer spatial indexes inside *output_path* if missing."""
+    _ensure_spatial_indexes(output_path, DERIVED_LAYER_ATTRIBUTE_INDEXES)
+
+
+def ensure_route_spatial_indexes(output_path):
+    """Create route-track spatial indexes inside *output_path* if missing."""
+    _ensure_spatial_indexes(output_path, {"route_tracks": None, "route_points": None})
+
+
+def _ensure_spatial_indexes(output_path, index_groups):
     qgs_feature_source, qgs_vector_data_provider, qgs_vector_layer = _import_qgis_spatial_index_api()
 
-    for layer_name in DERIVED_LAYER_ATTRIBUTE_INDEXES:
+    for layer_name in index_groups:
         layer = qgs_vector_layer(f"{output_path}|layername={layer_name}", layer_name, "ogr")
         if not layer.isValid():
             raise RuntimeError(f"Failed to load GeoPackage layer {layer_name!r} from {output_path}")
@@ -116,6 +153,12 @@ def bootstrap_empty_gpkg(output_path, atlas_page_settings):
     write_layer_to_gpkg(build_route_track_layer([]), output_path, "route_tracks", overwrite_file=False)
     write_layer_to_gpkg(build_route_point_layer([]), output_path, "route_points", overwrite_file=False)
     write_layer_to_gpkg(
+        build_route_profile_sample_layer([]),
+        output_path,
+        "route_profile_samples",
+        overwrite_file=False,
+    )
+    write_layer_to_gpkg(
         build_atlas_layer([], atlas_page_settings),
         output_path, "activity_atlas_pages", overwrite_file=False,
     )
@@ -124,6 +167,47 @@ def bootstrap_empty_gpkg(output_path, atlas_page_settings):
     write_layer_to_gpkg(build_page_detail_item_layer([]), output_path, "atlas_page_detail_items", overwrite_file=False)
     write_layer_to_gpkg(build_profile_sample_layer([]), output_path, "atlas_profile_samples", overwrite_file=False)
     write_layer_to_gpkg(build_toc_layer([]), output_path, "atlas_toc_entries", overwrite_file=False)
+
+
+def _import_route_layer_builders():
+    from .gpkg_route_layer_builders import (
+        build_route_point_layer,
+        build_route_profile_sample_layer,
+        build_route_track_layer,
+    )
+
+    return build_route_point_layer, build_route_profile_sample_layer, build_route_track_layer
+
+
+def bootstrap_empty_route_gpkg(output_path):
+    """Create a GeoPackage containing empty route-catalog layers."""
+    build_route_point_layer, build_route_profile_sample_layer, build_route_track_layer = _import_route_layer_builders()
+    write_layer_to_gpkg(build_route_track_layer([]), output_path, "route_tracks", overwrite_file=True)
+    write_layer_to_gpkg(build_route_point_layer([]), output_path, "route_points", overwrite_file=False)
+    write_layer_to_gpkg(
+        build_route_profile_sample_layer([]),
+        output_path,
+        "route_profile_samples",
+        overwrite_file=False,
+    )
+
+
+def build_and_write_route_layers(records, output_path):
+    """Build and persist route-catalog layers from *records*."""
+    build_route_point_layer, build_route_profile_sample_layer, build_route_track_layer = _import_route_layer_builders()
+    layers = {
+        "route_tracks": build_route_track_layer(records),
+        "route_points": build_route_point_layer(records),
+        "route_profile_samples": build_route_profile_sample_layer(records),
+    }
+
+    for layer_name, layer in layers.items():
+        write_layer_to_gpkg(layer, output_path, layer_name, overwrite_file=False)
+
+    ensure_route_attribute_indexes(output_path)
+    ensure_route_spatial_indexes(output_path)
+
+    return layers
 
 
 def build_and_write_all_layers(
@@ -142,8 +226,6 @@ def build_and_write_all_layers(
         "activity_tracks": build_track_layer(records),
         "activity_starts": build_start_layer(records),
         "activity_points": build_point_layer(records, write_activity_points, point_stride),
-        "route_tracks": build_route_track_layer([]),
-        "route_points": build_route_point_layer([]),
         "activity_atlas_pages": build_atlas_layer(records, atlas_page_settings, plans=plans),
         "atlas_document_summary": build_document_summary_layer(plans=plans),
         "atlas_cover_highlights": build_cover_highlight_layer(plans=plans),
