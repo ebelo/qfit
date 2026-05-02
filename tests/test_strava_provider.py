@@ -101,9 +101,9 @@ class TestStravaProviderFetchRoutes(unittest.TestCase):
         provider = self._make_provider()
         provider._client.fetch_route_detail.return_value = object()
 
-        result = provider.fetch_route_detail(42)
+        result = provider.fetch_route_detail(42, use_gpx_geometry=True)
 
-        provider._client.fetch_route_detail.assert_called_once_with(42)
+        provider._client.fetch_route_detail.assert_called_once_with(42, use_gpx_geometry=True)
         self.assertIs(result, provider._client.fetch_route_detail.return_value)
 
     def test_fetch_route_detail_translates_strava_client_error(self):

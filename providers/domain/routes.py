@@ -2,6 +2,15 @@ from dataclasses import asdict, dataclass, field
 from typing import Any, Dict, List, Optional, Tuple
 
 
+@dataclass(frozen=True)
+class RouteProfilePoint:
+    point_index: int
+    lat: float
+    lon: float
+    distance_m: float
+    altitude_m: Optional[float] = None
+
+
 @dataclass
 class SavedRoute:
     source: str
@@ -21,6 +30,7 @@ class SavedRoute:
     summary_polyline: Optional[str] = None
     geometry_source: Optional[str] = None
     geometry_points: List[Tuple[float, float]] = field(default_factory=list)
+    profile_points: List[RouteProfilePoint] = field(default_factory=list)
     details_json: Dict[str, Any] = field(default_factory=dict)
 
     def to_record(self) -> Dict[str, Any]:

@@ -298,9 +298,17 @@ class StravaClientTests(unittest.TestCase):
         headers = client._build_request_headers(token="abc", content_type="application/x-www-form-urlencoded")
 
         self.assertEqual(headers["Connection"], "close")
+        self.assertEqual(headers["Accept"], "application/json")
         self.assertEqual(headers["Authorization"], "Bearer abc")
         self.assertEqual(headers["Content-Type"], "application/x-www-form-urlencoded")
         self.assertIn("qfit/", headers["User-Agent"])
+
+    def test_build_request_headers_accepts_custom_accept_header(self):
+        client = StravaClient()
+
+        headers = client._build_request_headers(accept="application/gpx+xml")
+
+        self.assertEqual(headers["Accept"], "application/gpx+xml")
 
     def test_fetch_activities_paginates_until_last_page(self):
         """max_pages=0 should fetch all pages, stopping when a short page is received."""
@@ -461,6 +469,60 @@ class StravaClientTests(unittest.TestCase):
 
         with self.assertRaisesRegex(StravaClientError, "unexpected response"):
             client.fetch_route_detail(42)
+
+    def test_fetch_route_gpx_uses_export_endpoint(self):
+        client = StravaClient(client_id="123", client_secret="abc", refresh_token="tok")
+        seen = []
+
+        def fake_request_text(request, operation=None, headers=None, **kwargs):
+            seen.append((request, headers, operation))
+            return "<gpx />"
+
+        client.access_token = "fake_token"
+        client._request_text = fake_request_text
+
+        gpx = client.fetch_route_gpx(42)
+
+        self.assertEqual(gpx, "<gpx />")
+        self.assertEqual(seen[0][0], "https://www.strava.com/api/v3/routes/42/export_gpx")
+        self.assertIn("application/gpx+xml", seen[0][1]["Accept"])
+        self.assertEqual(seen[0][2], "Fetching Strava route 42 GPX")
+
+    def test_fetch_route_detail_can_enrich_with_gpx_geometry(self):
+        client = StravaClient(client_id="123", client_secret="abc", refresh_token="tok")
+        call_count = [0]
+
+        def fake_request_json(request, operation=None, **kwargs):
+            idx = call_count[0]
+            call_count[0] += 1
+            if idx == 0:
+                return {"access_token": "fake_token"}
+            return {"id": 42, "name": "Detailed route"}
+
+        client._request_json = fake_request_json
+        client._request_text = lambda *args, **kwargs: """
+            <gpx><trk><trkseg>
+              <trkpt lat="46.5" lon="6.6"><ele>400</ele></trkpt>
+              <trkpt lat="46.6" lon="6.7"><ele>450</ele></trkpt>
+            </trkseg></trk></gpx>
+        """
+
+        route = client.fetch_route_detail(42, use_gpx_geometry=True)
+
+        self.assertEqual(route.geometry_source, "export_gpx")
+        self.assertEqual(route.geometry_points, [(46.5, 6.6), (46.6, 6.7)])
+        self.assertEqual(len(route.profile_points), 2)
+        self.assertEqual(route.details_json["gpx_geometry_status"], "downloaded")
+        self.assertEqual(route.details_json["gpx_point_count"], 2)
+        self.assertEqual(route.details_json["gpx_min_altitude_m"], 400.0)
+        self.assertEqual(route.details_json["gpx_max_altitude_m"], 450.0)
+
+    def test_apply_route_gpx_reports_invalid_gpx_as_client_error(self):
+        client = StravaClient()
+        route = client.normalize_route({"id": 42, "name": "Detailed route"})
+
+        with self.assertRaisesRegex(StravaClientError, "GPX was invalid"):
+            client._apply_route_gpx_to_route(route, "<gpx><trkpt lat='bad' lon='6.6' /></gpx>")
 
     def test_fetch_activities_full_sync_uses_before_cursor(self):
         client = StravaClient(client_id="123", client_secret="abc", refresh_token="tok")

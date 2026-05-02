@@ -88,10 +88,10 @@ class StravaProvider:
         except StravaClientError as exc:
             raise ProviderError(str(exc)) from exc
 
-    def fetch_route_detail(self, route_id):
+    def fetch_route_detail(self, route_id, use_gpx_geometry=False):
         """Fetch detailed metadata for one Strava route."""
         try:
-            return self._client.fetch_route_detail(route_id)
+            return self._client.fetch_route_detail(route_id, use_gpx_geometry=use_gpx_geometry)
         except StravaClientError as exc:
             raise ProviderError(str(exc)) from exc
 
