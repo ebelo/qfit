@@ -89,8 +89,10 @@ class LayerGatewayBoundaryTests(unittest.TestCase):
             gateway._project_layer_loader = MagicMock(name="project_layer_loader")
             gateway._project_layer_loader.load_route_layers.return_value = (
                 MagicMock(name="routes"),
+                MagicMock(name="route_points"),
                 MagicMock(name="profile_samples"),
             )
+            gateway._style_service = MagicMock(name="style_service")
             gateway._move_background_layers_to_bottom = MagicMock(name="move_background_layers_to_bottom")
             result = gateway.load_route_layers("/tmp/out.gpkg")
 
@@ -99,6 +101,7 @@ class LayerGatewayBoundaryTests(unittest.TestCase):
         loader = gateway._project_layer_loader
         canvas.ensure_working_crs.assert_called_once_with(gateway.iface, preserve_extent=False)
         loader.load_route_layers.assert_called_once_with("/tmp/out.gpkg")
+        gateway._style_service.apply_route_style.assert_called_once_with(*result)
         canvas.zoom_to_layers.assert_called_once_with(gateway.iface, result)
         gateway._move_background_layers_to_bottom.assert_called_once_with()
 
