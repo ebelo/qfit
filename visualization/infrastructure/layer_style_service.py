@@ -46,7 +46,7 @@ HEATMAP_ANALYSIS_RADIUS_M = 750
 HEATMAP_VISUALIZE_RADIUS_M = 250
 HEATMAP_VISUALIZE_MAXIMUM = 25
 ROUTE_LINE_HEX = "#8e44ad"
-ROUTE_POINT_RGBA = "142,68,173,150"
+ROUTE_POINT_RGB = "142,68,173"
 
 
 def _fixed_visualize_heatmap_maximum(layer):
@@ -377,11 +377,11 @@ class LayerStyleService:
         symbol = QgsMarkerSymbol.createSimple(
             {
                 "name": "circle",
-                "color": ROUTE_POINT_RGBA,
+                "color": ROUTE_POINT_RGB,
                 "size": "1.1",
                 "outline_style": "no",
             }
         )
         layer.setRenderer(QgsSingleSymbolRenderer(symbol))
-        layer.setOpacity(0.45)
+        layer.setOpacity(0.65)
         layer.triggerRepaint()
