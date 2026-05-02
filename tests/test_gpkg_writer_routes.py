@@ -1,53 +1,63 @@
 import sys
 import types
 import unittest
+from contextlib import contextmanager
 from unittest.mock import patch
 
 from tests import _path  # noqa: F401
 
+_GPKG_WRITER_MODULE = "qfit.activities.infrastructure.geopackage.gpkg_writer"
 
-def _ensure_gpkg_schema_qgis_stubs():
-    """Provide the tiny QGIS surface needed to import gpkg_writer in pure unit tests."""
+
+@contextmanager
+def _patched_gpkg_writer_import(route_store_cls=None):
+    """Import gpkg_writer with GeoPackage/QGIS-heavy collaborators replaced."""
+    schema = types.ModuleType("qfit.activities.infrastructure.geopackage.gpkg_schema")
+    schema.GPKG_LAYER_SCHEMA = {"route_tracks": {"kind": "layer"}}
+
+    orchestration = types.ModuleType(
+        "qfit.activities.infrastructure.geopackage.gpkg_write_orchestration"
+    )
+    orchestration.bootstrap_empty_gpkg = lambda *args, **kwargs: None
+    orchestration.build_and_write_all_layers = lambda *args, **kwargs: {}
+
+    atlas = types.ModuleType("qfit.atlas.publish_atlas")
+    atlas.normalize_atlas_page_settings = lambda **kwargs: dict(kwargs)
+
+    modules = {
+        schema.__name__: schema,
+        orchestration.__name__: orchestration,
+        atlas.__name__: atlas,
+    }
+    if route_store_cls is not None:
+        route_storage = types.ModuleType("qfit.routes.infrastructure.geopackage.route_storage")
+        route_storage.GeoPackageRouteStore = route_store_cls
+        modules[route_storage.__name__] = route_storage
+
+    original_writer_module = sys.modules.get(_GPKG_WRITER_MODULE)
+    writer_was_loaded = _GPKG_WRITER_MODULE in sys.modules
+    sys.modules.pop(_GPKG_WRITER_MODULE, None)
     try:
-        from qgis.PyQt.QtCore import QVariant  # noqa: F401
-        from qgis.core import QgsField, QgsFields  # noqa: F401
-        return
-    except (ImportError, ModuleNotFoundError):
-        pass
+        with patch.dict(sys.modules, modules):
+            from qfit.activities.infrastructure.geopackage.gpkg_writer import GeoPackageWriter
 
-    qgis_module = sys.modules.setdefault("qgis", types.ModuleType("qgis"))
-    pyqt_module = sys.modules.setdefault("qgis.PyQt", types.ModuleType("qgis.PyQt"))
-    qtcore_module = sys.modules.setdefault("qgis.PyQt.QtCore", types.ModuleType("qgis.PyQt.QtCore"))
-    core_module = sys.modules.setdefault("qgis.core", types.ModuleType("qgis.core"))
-
-    qgis_module.PyQt = pyqt_module
-    pyqt_module.QtCore = qtcore_module
-    if not hasattr(qtcore_module, "QVariant"):
-        qtcore_module.QVariant = types.SimpleNamespace(String="string", Double="double", Int="int")
-    if not hasattr(core_module, "QgsField"):
-        core_module.QgsField = lambda name, field_type: (name, field_type)
-    if not hasattr(core_module, "QgsFields"):
-        core_module.QgsFields = list
-
-
-def _geo_package_writer_cls():
-    _ensure_gpkg_schema_qgis_stubs()
-    sys.modules.pop("qfit.activities.infrastructure.geopackage.gpkg_writer", None)
-    from qfit.activities.infrastructure.geopackage.gpkg_writer import GeoPackageWriter
-
-    return GeoPackageWriter
+            yield GeoPackageWriter
+    finally:
+        if writer_was_loaded:
+            sys.modules[_GPKG_WRITER_MODULE] = original_writer_module
+        else:
+            sys.modules.pop(_GPKG_WRITER_MODULE, None)
 
 
 class GeoPackageWriterRoutesTests(unittest.TestCase):
     def test_write_routes_requires_output_path(self):
-        writer = _geo_package_writer_cls()()
+        with _patched_gpkg_writer_import() as GeoPackageWriter:
+            writer = GeoPackageWriter()
 
-        with self.assertRaises(ValueError):
-            writer.write_routes([])
+            with self.assertRaises(ValueError):
+                writer.write_routes([])
 
     def test_write_routes_delegates_to_route_store(self):
-        module = types.ModuleType("qfit.routes.infrastructure.geopackage.route_storage")
-
         class FakeRouteStore:
             instances = []
 
@@ -60,11 +70,9 @@ class GeoPackageWriterRoutesTests(unittest.TestCase):
                 self.routes = routes
                 return {"path": self.output_path, "route_count": len(routes)}
 
-        module.GeoPackageRouteStore = FakeRouteStore
         routes = [object(), object()]
-        writer = _geo_package_writer_cls()(output_path="/tmp/routes.gpkg")
-
-        with patch.dict(sys.modules, {module.__name__: module}):
+        with _patched_gpkg_writer_import(FakeRouteStore) as GeoPackageWriter:
+            writer = GeoPackageWriter(output_path="/tmp/routes.gpkg")
             result = writer.write_routes(routes)
 
         self.assertEqual(FakeRouteStore.instances[0].output_path, "/tmp/routes.gpkg")

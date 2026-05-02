@@ -2,10 +2,6 @@ import os
 
 from .activity_storage import GeoPackageActivityStore
 from .gpkg_schema import GPKG_LAYER_SCHEMA
-from .gpkg_write_orchestration import (
-    bootstrap_empty_gpkg,
-    build_and_write_all_layers,
-)
 from ....atlas.publish_atlas import normalize_atlas_page_settings
 
 
@@ -38,6 +34,11 @@ class GeoPackageWriter:
     def write_activities(self, activities, sync_metadata=None):
         if not self.output_path:
             raise ValueError("output_path is required")
+        from .gpkg_write_orchestration import (
+            bootstrap_empty_gpkg,
+            build_and_write_all_layers,
+        )
+
         os.makedirs(os.path.dirname(self.output_path) or ".", exist_ok=True)
 
         activity_store = self.activity_store_factory(self.output_path)
