@@ -116,7 +116,7 @@ class StravaClient:
         "temp",
         "grade_smooth",
     ]
-    DEFAULT_SCOPE = "read,read_all,activity:read_all"
+    DEFAULT_SCOPE = "read,activity:read_all"
     DEFAULT_REDIRECT_URI = "http://localhost/exchange_token"
 
     def __init__(
@@ -253,14 +253,12 @@ class StravaClient:
 
         return activities
 
-    def fetch_routes(self, athlete_id=None, per_page=200, max_pages=0, include_geometry=True):
+    def fetch_routes(self, athlete_id=None, per_page=200, max_pages=0):
         """Fetch the authenticated athlete's saved Strava routes.
 
         ``athlete_id`` may be supplied by callers that already know it.  When it
         is omitted, qfit resolves the authenticated athlete via ``GET /athlete``
-        before paginating ``GET /athletes/{id}/routes``.  When
-        ``include_geometry`` is true, each route is enriched from Strava's GPX
-        export when that endpoint is available.
+        before paginating ``GET /athletes/{id}/routes``.
         """
         token = self.get_access_token()
         route_athlete_id = athlete_id if athlete_id is not None else self.fetch_authenticated_athlete_id(token=token)
@@ -289,18 +287,6 @@ class StravaClient:
                 break
             self._sleep_between_route_pages()
             page += 1
-
-        if include_geometry:
-            for index, route in enumerate(routes):
-                if self._approaching_rate_limit():
-                    route.details_json["gpx_skipped_reason"] = "rate_limit_guard"
-                    continue
-                try:
-                    self.enrich_route_with_gpx(route)
-                except StravaClientError as exc:
-                    route.details_json["gpx_error"] = str(exc)
-                if index < len(routes) - 1:
-                    self._sleep_between_route_exports()
 
         return routes
 
@@ -970,11 +956,6 @@ class StravaClient:
     def _sleep_between_route_pages(self):
         # Route list pagination uses the same conservative pacing as activity
         # pagination until route sync gets its own rate-limit tuning.
-        self._sleep_between_activity_pages()
-
-    def _sleep_between_route_exports(self):
-        # GPX export enrichment can issue one request per saved route; pace it
-        # like paginated list requests to avoid burning Strava's short bucket.
         self._sleep_between_activity_pages()
 
     def _reduced_activity_page_size(self, current_per_page, exc, *, max_pages):

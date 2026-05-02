@@ -48,7 +48,7 @@ Once the refresh token is available:
 
 ## Saved route catalog scope
 
-qfit's Strava authorization URL now requests `read_all` in addition to activity-read access. Saved/planned routes use Strava route-list, route-detail, and GPX export endpoints through the same refresh-token flow as activity imports. Users who authorized qfit before route-catalog support may need to re-authorize if Strava reports that their token does not have route visibility.
+Saved/planned routes use Strava route-list, route-detail, and GPX export endpoints through the same refresh-token flow as activity imports. Private routes may require Strava `read_all` visibility; users who authorized qfit before route-catalog support may need to re-authorize if Strava reports that their token cannot access routes.
 
 The route-catalog implementation persists routes separately from completed activities as `route_registry`, `route_tracks`, and `route_points` GeoPackage objects. GPX exports with elevation are stored as true `LineStringZ` route tracks plus explicit ordered profile samples for future profiles and difficulty scoring.
 
