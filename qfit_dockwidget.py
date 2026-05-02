@@ -168,7 +168,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._dock_visual_workflow = DockVisualWorkflowCoordinator(
             dispatcher=self._dock_action_dispatcher,
         )
-        self._install_live_wizard_shell()
+        self._install_live_local_first_dock()
 
     def _ensure_wizard_settings(self):
         """Persist first-launch wizard defaults for the #609 dock migration."""
@@ -635,6 +635,28 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
         self._wizard_live_shell = shell
         self._wizard_live_path_installed = True
+
+    def _install_live_local_first_dock(self) -> None:
+        """Make the #748 local-first navigation shell the visible dock path."""
+
+        if getattr(self, "_local_first_live_path_installed", False):
+            return
+
+        parent = getattr(self, "dockWidgetContents", self)
+        composition = self._build_local_first_dock_from_runtime(parent=parent)
+        shell = getattr(composition, "shell", None)
+        if shell is None:
+            raise RuntimeError("Local-first dock composition must expose a shell widget")
+
+        outer_layout = getattr(self, "outerLayout", None)
+        if outer_layout is None:
+            raise RuntimeError("Local-first dock requires the base outer layout")
+
+        self._hide_legacy_scroll_dock_content()
+        outer_layout.addWidget(shell)
+
+        self._local_first_live_shell = shell
+        self._local_first_live_path_installed = True
 
     def _hide_legacy_scroll_dock_content(self) -> None:
         """Hide the replaced long-scroll dock widgets without deleting them."""
