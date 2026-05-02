@@ -128,22 +128,43 @@ def _page_ready(key: str, facts: WizardProgressFacts) -> bool:
 
 
 def _status_text(key: str, facts: WizardProgressFacts) -> str:
-    if key == "data":
-        if facts.sync_in_progress:
-            return "Sync in progress"
-        if facts.activities_stored:
-            return "Activity data available"
-        if facts.activities_fetched:
-            return "Activities fetched; store them in a GeoPackage"
-        return "Choose a local GeoPackage or sync from Strava"
-    if key == "map":
-        return "Map layers loaded" if facts.activity_layers_loaded else "Map controls available"
-    if key == "analysis":
-        return "Analysis generated" if facts.analysis_generated else "Analysis is optional"
-    if key == "atlas":
-        return "Atlas exported" if facts.atlas_exported else "Atlas export available"
-    if key == "settings":
-        return "Strava configured" if facts.connection_configured else "Settings available"
+    status_builders = {
+        "data": _data_status_text,
+        "map": _map_status_text,
+        "analysis": _analysis_status_text,
+        "atlas": _atlas_status_text,
+        "settings": _settings_status_text,
+    }
+    return status_builders.get(key, _available_status_text)(facts)
+
+
+def _data_status_text(facts: WizardProgressFacts) -> str:
+    if facts.sync_in_progress:
+        return "Sync in progress"
+    if facts.activities_stored:
+        return "Activity data available"
+    if facts.activities_fetched:
+        return "Activities fetched; store them in a GeoPackage"
+    return "Choose a local GeoPackage or sync from Strava"
+
+
+def _map_status_text(facts: WizardProgressFacts) -> str:
+    return "Map layers loaded" if facts.activity_layers_loaded else "Map controls available"
+
+
+def _analysis_status_text(facts: WizardProgressFacts) -> str:
+    return "Analysis generated" if facts.analysis_generated else "Analysis is optional"
+
+
+def _atlas_status_text(facts: WizardProgressFacts) -> str:
+    return "Atlas exported" if facts.atlas_exported else "Atlas export available"
+
+
+def _settings_status_text(facts: WizardProgressFacts) -> str:
+    return "Strava configured" if facts.connection_configured else "Settings available"
+
+
+def _available_status_text(_facts: WizardProgressFacts) -> str:
     return "Available"
 
 
