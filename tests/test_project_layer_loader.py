@@ -108,6 +108,34 @@ class ProjectLayerLoaderRealTests(unittest.TestCase):
             ],
         )
 
+    def test_load_route_layers_loads_routes_separately_from_activity_layers(self):
+        loader = ProjectLayerLoader()
+
+        routes = MagicMock()
+        routes.isValid.return_value = True
+        points = MagicMock()
+        points.isValid.return_value = True
+        samples = MagicMock()
+        samples.isValid.return_value = True
+
+        project = MagicMock()
+        project.mapLayersByName.return_value = []
+
+        with patch("qfit.visualization.infrastructure.project_layer_loader.QgsVectorLayer", side_effect=[routes, points, samples]) as vector_layer, \
+             patch("qfit.visualization.infrastructure.project_layer_loader.QgsProject") as qgs_project:
+            qgs_project.instance.return_value = project
+            layers = loader.load_route_layers("/tmp/out.gpkg")
+
+        self.assertEqual(layers, (routes, points, samples))
+        self.assertEqual(
+            vector_layer.call_args_list,
+            [
+                call("/tmp/out.gpkg|layername=route_tracks", "qfit routes", "ogr"),
+                call("/tmp/out.gpkg|layername=route_points", "qfit route points", "ogr"),
+                call("/tmp/out.gpkg|layername=route_profile_samples", "qfit route profile samples", "ogr"),
+            ],
+        )
+
     def test_load_layer_replaces_existing_display_name(self):
         loader = ProjectLayerLoader()
 
@@ -198,6 +226,32 @@ class ProjectLayerLoaderMockTests(unittest.TestCase):
             layers = self.loader.load_output_layers("/tmp/out.gpkg")
 
         self.assertEqual(layers, (activities, None, points, None))
+
+    def test_load_route_layers_loads_routes_separately_from_activity_layers(self):
+        routes = MagicMock()
+        routes.isValid.return_value = True
+        points = MagicMock()
+        points.isValid.return_value = True
+        samples = MagicMock()
+        samples.isValid.return_value = False
+
+        project = MagicMock()
+        project.mapLayersByName.return_value = []
+
+        with patch.object(self.module, "QgsVectorLayer", side_effect=[routes, points, samples]) as vector_layer, \
+             patch.object(self.module, "QgsProject") as qgs_project:
+            qgs_project.instance.return_value = project
+            layers = self.loader.load_route_layers("/tmp/out.gpkg")
+
+        self.assertEqual(layers, (routes, points, None))
+        self.assertEqual(
+            vector_layer.call_args_list,
+            [
+                call("/tmp/out.gpkg|layername=route_tracks", "qfit routes", "ogr"),
+                call("/tmp/out.gpkg|layername=route_points", "qfit route points", "ogr"),
+                call("/tmp/out.gpkg|layername=route_profile_samples", "qfit route profile samples", "ogr"),
+            ],
+        )
 
     def test_load_output_layers_raises_last_error_when_no_activity_layer_can_be_loaded(self):
         invalid_primary = MagicMock()
