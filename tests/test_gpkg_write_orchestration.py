@@ -35,6 +35,8 @@ _EXPECTED_LAYERS = [
     "activity_tracks",
     "activity_starts",
     "activity_points",
+    "route_tracks",
+    "route_points",
     "activity_atlas_pages",
     "atlas_document_summary",
     "atlas_cover_highlights",
