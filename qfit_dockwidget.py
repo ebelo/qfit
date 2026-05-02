@@ -471,6 +471,43 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._bind_wizard_analysis_mode_controls(self._wizard_shell_composition)
         return self._wizard_shell_composition
 
+    def _build_local_first_dock_from_runtime(self, *, parent=None):
+        """Build the #748 local-first dock composition from live runtime facts.
+
+        This keeps the production swap small: the reusable local-first shell can
+        now be assembled with the same mature workflow callbacks as the wizard,
+        while keeping each action independent instead of routing through a
+        linear next-step helper.
+        """
+
+        from .ui.dockwidget.local_first_composition import (
+            WizardActionCallbacks,
+            build_local_first_dock_composition,
+            connect_local_first_action_callbacks,
+        )
+
+        composition = build_local_first_dock_composition(
+            parent=self if parent is None else parent,
+            progress_facts=self._current_wizard_progress_facts(),
+        )
+        self._local_first_dock_composition = connect_local_first_action_callbacks(
+            composition,
+            WizardActionCallbacks(
+                configure_connection=self._show_connection_configuration_hint,
+                sync_activities=self.on_refresh_clicked,
+                sync_saved_routes=self.on_sync_routes_clicked,
+                load_activity_layers=self.on_load_layers_clicked,
+                edit_map_filters=self._update_status_for_filter_visibility,
+                apply_map_filters=self.on_apply_filters_clicked,
+                run_analysis=self.on_run_analysis_clicked,
+                set_analysis_mode=self._set_wizard_analysis_mode,
+                export_atlas=self.on_generate_atlas_pdf_clicked,
+            ),
+        )
+        self._install_wizard_filter_controls(self._local_first_dock_composition)
+        self._bind_wizard_analysis_mode_controls(self._local_first_dock_composition)
+        return self._local_first_dock_composition
+
     def _persist_startup_wizard_step_if_needed(
         self,
         *,
@@ -619,6 +656,29 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             wizard_settings=load_wizard_settings(self.settings),
         )
         return self._wizard_shell_composition
+
+    def _refresh_local_first_dock_from_runtime(self):
+        """Refresh an optional #748 local-first dock composition from runtime facts."""
+
+        composition = getattr(self, "_local_first_dock_composition", None)
+        if composition is None:
+            return None
+
+        from .ui.dockwidget.local_first_composition import (
+            refresh_local_first_dock_composition,
+        )
+
+        self._local_first_dock_composition = refresh_local_first_dock_composition(
+            composition,
+            progress_facts=self._current_wizard_progress_facts(),
+        )
+        return self._local_first_dock_composition
+
+    def _refresh_live_dock_navigation_from_runtime(self) -> None:
+        """Refresh whichever dock navigation composition is installed."""
+
+        self._refresh_wizard_shell_from_runtime()
+        self._refresh_local_first_dock_from_runtime()
 
     def _has_configured_strava_connection(self) -> bool:
         return all(
@@ -1885,7 +1945,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                     workflow_status=self._label_text("statusLabel"),
                 )
             )
-        self._refresh_wizard_shell_from_runtime()
+        self._refresh_live_dock_navigation_from_runtime()
 
     def _label_text(self, name: str) -> str:
         return self._widget_text(name)

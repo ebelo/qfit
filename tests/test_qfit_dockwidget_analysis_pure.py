@@ -887,6 +887,84 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertEqual(dock.settings.get("ui/last_step_index"), 0)
         self.assertTrue(dock.settings.get("ui/last_step_index_user_selected"))
 
+    def test_build_local_first_dock_from_runtime_wires_independent_callbacks(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._runtime_state_store = self.module.DockRuntimeStore()
+        dock.clientIdLineEdit = _FakeLineEdit("client-id")
+        dock.clientSecretLineEdit = _FakeLineEdit("client-secret")
+        dock.refreshTokenLineEdit = _FakeLineEdit("refresh-token")
+        dock._atlas_export_completed = False
+        dock.settings = _FakeSettings()
+        dock._install_wizard_filter_controls = MagicMock()
+        dock._bind_wizard_analysis_mode_controls = MagicMock()
+        parent = object()
+
+        class FakeWizardActionCallbacks(SimpleNamespace):
+            pass
+
+        fake_local_first_composition = ModuleType(
+            "qfit.ui.dockwidget.local_first_composition"
+        )
+        fake_local_first_composition.WizardActionCallbacks = FakeWizardActionCallbacks
+        fake_local_first_composition.build_local_first_dock_composition = MagicMock(
+            return_value="composition"
+        )
+        fake_local_first_composition.connect_local_first_action_callbacks = MagicMock(
+            return_value="connected-composition"
+        )
+
+        with patch.dict(
+            sys.modules,
+            {
+                "qfit.ui.dockwidget.local_first_composition": (
+                    fake_local_first_composition
+                )
+            },
+        ):
+            composition = self.module.QfitDockWidget._build_local_first_dock_from_runtime(
+                dock,
+                parent=parent,
+            )
+
+        self.assertEqual(composition, "connected-composition")
+        self.assertEqual(dock._local_first_dock_composition, "connected-composition")
+        fake_local_first_composition.build_local_first_dock_composition.assert_called_once()
+        _args, kwargs = (
+            fake_local_first_composition.build_local_first_dock_composition.call_args
+        )
+        self.assertEqual(kwargs["parent"], parent)
+        self.assertTrue(kwargs["progress_facts"].connection_configured)
+        fake_local_first_composition.connect_local_first_action_callbacks.assert_called_once()
+        connect_args = (
+            fake_local_first_composition.connect_local_first_action_callbacks.call_args.args
+        )
+        self.assertEqual(connect_args[0], "composition")
+        callbacks = connect_args[1]
+        expected_callbacks = {
+            "configure_connection": "_show_connection_configuration_hint",
+            "sync_activities": "on_refresh_clicked",
+            "sync_saved_routes": "on_sync_routes_clicked",
+            "load_activity_layers": "on_load_layers_clicked",
+            "edit_map_filters": "_update_status_for_filter_visibility",
+            "apply_map_filters": "on_apply_filters_clicked",
+            "run_analysis": "on_run_analysis_clicked",
+            "set_analysis_mode": "_set_wizard_analysis_mode",
+            "export_atlas": "on_generate_atlas_pdf_clicked",
+        }
+        for callback_name, method_name in expected_callbacks.items():
+            callback = getattr(callbacks, callback_name)
+            self.assertIs(callback.__self__, dock)
+            self.assertIs(
+                callback.__func__,
+                getattr(self.module.QfitDockWidget, method_name),
+            )
+        dock._install_wizard_filter_controls.assert_called_once_with(
+            "connected-composition"
+        )
+        dock._bind_wizard_analysis_mode_controls.assert_called_once_with(
+            "connected-composition"
+        )
+
 
     def test_install_wizard_filter_controls_moves_live_filter_group_into_map_panel(self):
         dock = object.__new__(self.module.QfitDockWidget)
@@ -1078,6 +1156,49 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertEqual(kwargs["wizard_settings"].last_step_index, 1)
         self.assertFalse(kwargs["wizard_settings"].first_launch)
 
+    def test_refresh_local_first_dock_from_runtime_updates_optional_composition(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._runtime_state_store = self.module.DockRuntimeStore()
+        dock.clientIdLineEdit = _FakeLineEdit("client-id")
+        dock.clientSecretLineEdit = _FakeLineEdit("client-secret")
+        dock.refreshTokenLineEdit = _FakeLineEdit("refresh-token")
+        dock.settings = _FakeSettings()
+        composition = object()
+        dock._local_first_dock_composition = composition
+        fake_local_first_composition = ModuleType(
+            "qfit.ui.dockwidget.local_first_composition"
+        )
+        fake_local_first_composition.refresh_local_first_dock_composition = MagicMock(
+            return_value="refreshed"
+        )
+
+        with patch.dict(
+            sys.modules,
+            {"qfit.ui.dockwidget.local_first_composition": fake_local_first_composition},
+        ):
+            refreshed = self.module.QfitDockWidget._refresh_local_first_dock_from_runtime(
+                dock
+            )
+
+        self.assertEqual(refreshed, "refreshed")
+        self.assertEqual(dock._local_first_dock_composition, "refreshed")
+        fake_local_first_composition.refresh_local_first_dock_composition.assert_called_once()
+        args, kwargs = (
+            fake_local_first_composition.refresh_local_first_dock_composition.call_args
+        )
+        self.assertEqual(args, (composition,))
+        self.assertTrue(kwargs["progress_facts"].connection_configured)
+
+    def test_refresh_live_dock_navigation_refreshes_all_optional_compositions(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._refresh_wizard_shell_from_runtime = MagicMock()
+        dock._refresh_local_first_dock_from_runtime = MagicMock()
+
+        self.module.QfitDockWidget._refresh_live_dock_navigation_from_runtime(dock)
+
+        dock._refresh_wizard_shell_from_runtime.assert_called_once_with()
+        dock._refresh_local_first_dock_from_runtime.assert_called_once_with()
+
     def test_refresh_summary_status_notifies_optional_wizard_shell_refresh(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock.summaryStatusLabel = _FakeLabel("")
@@ -1085,7 +1206,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.countLabel = _FakeLabel("12 activities")
         dock.querySummaryLabel = _FakeLabel("filtered")
         dock.statusLabel = _FakeLabel("Ready")
-        dock._refresh_wizard_shell_from_runtime = MagicMock()
+        dock._refresh_live_dock_navigation_from_runtime = MagicMock()
 
         self.module.QfitDockWidget._refresh_summary_status(dock)
 
@@ -1093,7 +1214,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             dock.summaryStatusLabel.text(),
             "Strava connection: ready · 12 activities · filtered · Ready",
         )
-        dock._refresh_wizard_shell_from_runtime.assert_called_once_with()
+        dock._refresh_live_dock_navigation_from_runtime.assert_called_once_with()
 
     def test_on_apply_filters_clicked_dispatches_apply_visualization_action(self):
         dock = object.__new__(self.module.QfitDockWidget)
