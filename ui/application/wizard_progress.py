@@ -273,7 +273,11 @@ def _has_output_path(state: DockRuntimeState) -> bool:
 
 
 def _has_sync_task(state: DockRuntimeState) -> bool:
-    return state.fetch_task is not None or state.store_task is not None
+    return (
+        state.fetch_task is not None
+        or state.store_task is not None
+        or state.route_sync_task is not None
+    )
 
 
 def _stored_activity_count(state: DockRuntimeState) -> int | None:

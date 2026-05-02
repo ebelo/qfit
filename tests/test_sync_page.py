@@ -61,7 +61,7 @@ class SyncPageContentTest(unittest.TestCase):
         )
         self.assertEqual(content.sync_button.toolTip(), "")
         self.assertEqual(content.load_button.objectName(), "qfitWizardSyncLoadButton")
-        self.assertEqual(content.load_button.text(), "Load activities")
+        self.assertEqual(content.load_button.text(), "Load GeoPackage")
         self.assertEqual(
             content.load_button.property("secondaryAction"),
             "load_activities",
@@ -74,7 +74,7 @@ class SyncPageContentTest(unittest.TestCase):
         )
         self.assertEqual(
             content.load_button.toolTip(),
-            "Select an existing GeoPackage before loading activities.",
+            "Select an existing GeoPackage before loading local data.",
         )
         self.assertEqual(
             content.routes_button.objectName(),

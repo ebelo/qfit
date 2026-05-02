@@ -460,7 +460,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertEqual(assembled.sync_content.status_label.text(), "Activities stored")
         self.assertTrue(assembled.sync_content.sync_button.isEnabled())
         self.assertTrue(assembled.sync_content.load_button.isEnabled())
-        self.assertEqual(assembled.sync_content.load_button.text(), "Load activities")
+        self.assertEqual(assembled.sync_content.load_button.text(), "Load GeoPackage")
         self.assertEqual(
             assembled.map_content.status_label.text(),
             "Stored activities ready to load",

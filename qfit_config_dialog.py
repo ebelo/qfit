@@ -19,7 +19,6 @@ from qgis.PyQt.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QLineEdit,
-    QLayout,
     QMessageBox,
     QPushButton,
     QVBoxLayout,
@@ -49,6 +48,14 @@ logger = logging.getLogger(__name__)
 
 _NOT_TESTED_LABEL = "Not tested"
 _OAUTH_NOT_STARTED_LABEL = "Not started"
+
+
+def _configure_wrapping_status_label(label: QLabel) -> QLabel:
+    """Keep long connection/test messages inside the dialog content width."""
+
+    label.setWordWrap(True)
+    label.setTextInteractionFlags(Qt.TextSelectableByMouse)
+    return label
 
 
 class QfitConfigDialog(QDialog):
@@ -82,7 +89,6 @@ class QfitConfigDialog(QDialog):
 
     def _build_ui(self) -> None:
         layout = QVBoxLayout(self)
-        layout.setSizeConstraint(QLayout.SetFixedSize)
 
         layout.addWidget(self._build_strava_group())
         layout.addWidget(self._build_mapbox_group())
@@ -101,7 +107,7 @@ class QfitConfigDialog(QDialog):
 
         self._strava_status_label = QLabel()
         self._strava_status_label.setObjectName("stravaStatusLabel")
-        self._strava_status_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        _configure_wrapping_status_label(self._strava_status_label)
         form.addRow("Status:", self._strava_status_label)
 
         self._client_id_edit = QLineEdit()
@@ -153,8 +159,7 @@ class QfitConfigDialog(QDialog):
 
         self._strava_oauth_status_label = QLabel(_OAUTH_NOT_STARTED_LABEL)
         self._strava_oauth_status_label.setObjectName("stravaOAuthStatusLabel")
-        self._strava_oauth_status_label.setWordWrap(True)
-        self._strava_oauth_status_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        _configure_wrapping_status_label(self._strava_oauth_status_label)
         form.addRow("OAuth helper:", self._strava_oauth_status_label)
 
         self._refresh_token_edit = make_password_line_edit(
@@ -165,7 +170,7 @@ class QfitConfigDialog(QDialog):
 
         self._strava_test_status_label = QLabel(_NOT_TESTED_LABEL)
         self._strava_test_status_label.setObjectName("stravaTestStatusLabel")
-        self._strava_test_status_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        _configure_wrapping_status_label(self._strava_test_status_label)
         form.addRow("Last test:", self._strava_test_status_label)
 
         self._test_strava_button = QPushButton("Test connection")
@@ -182,7 +187,7 @@ class QfitConfigDialog(QDialog):
 
         self._mapbox_status_label = QLabel()
         self._mapbox_status_label.setObjectName("mapboxStatusLabel")
-        self._mapbox_status_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        _configure_wrapping_status_label(self._mapbox_status_label)
         form.addRow("Status:", self._mapbox_status_label)
 
         self._mapbox_token_edit = make_password_line_edit(
@@ -193,7 +198,7 @@ class QfitConfigDialog(QDialog):
 
         self._mapbox_test_status_label = QLabel(_NOT_TESTED_LABEL)
         self._mapbox_test_status_label.setObjectName("mapboxTestStatusLabel")
-        self._mapbox_test_status_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        _configure_wrapping_status_label(self._mapbox_test_status_label)
         form.addRow("Last test:", self._mapbox_test_status_label)
 
         self._test_mapbox_button = QPushButton("Test connection")
@@ -367,3 +372,4 @@ class QfitConfigDialog(QDialog):
         """Reload settings every time the dialog becomes visible."""
         super().showEvent(event)
         self._load()
+        self.adjustSize()

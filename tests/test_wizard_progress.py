@@ -102,6 +102,7 @@ class WizardProgressFactsTests(unittest.TestCase):
         cases = (
             DockRuntimeTasks(fetch="fetch"),
             DockRuntimeTasks(store="store"),
+            DockRuntimeTasks(route_sync="routes"),
             DockRuntimeTasks(fetch="fetch", store="store", atlas_export="atlas"),
         )
         for tasks in cases:

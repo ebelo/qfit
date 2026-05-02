@@ -28,7 +28,7 @@ try:
     )
     from qgis.PyQt.QtCore import QDate, Qt
     from qgis.PyQt.QtGui import QImage
-    from qgis.PyQt.QtWidgets import QFormLayout, QLayout
+    from qgis.PyQt.QtWidgets import QFormLayout
 
     from qfit.activities.domain.activity_query import ActivityQuery, build_subset_string
     from qfit.analysis.infrastructure.frequent_start_points_layer import (
@@ -76,7 +76,6 @@ except Exception as exc:  # pragma: no cover - exercised only when QGIS is unava
     QDate = None
     QImage = None
     QFormLayout = None
-    QLayout = None
     Qt = None
     ActivityQuery = None
     build_subset_string = None
@@ -858,8 +857,16 @@ class QgisSmokeTests(unittest.TestCase):
             )
         )
         try:
-            self.assertEqual(dialog.layout().sizeConstraint(), QLayout.SetFixedSize)
             self.assertEqual(dialog.layout().count(), 3)
+
+            for label in (
+                dialog._strava_status_label,
+                dialog._strava_oauth_status_label,
+                dialog._strava_test_status_label,
+                dialog._mapbox_status_label,
+                dialog._mapbox_test_status_label,
+            ):
+                self.assertTrue(label.wordWrap())
 
             form = dialog._oauth_help_label.parentWidget().layout()
             _row, role = form.getWidgetPosition(dialog._oauth_help_label)

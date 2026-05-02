@@ -45,9 +45,9 @@ class SyncPageState:
     primary_action_label: str = "Sync activities"
     primary_action_enabled: bool = True
     primary_action_blocked_tooltip: str = "Configure the Strava connection before syncing."
-    local_action_label: str = "Load activities"
+    local_action_label: str = "Load GeoPackage"
     local_action_enabled: bool = False
-    local_action_blocked_tooltip: str = "Select an existing GeoPackage before loading activities."
+    local_action_blocked_tooltip: str = "Select an existing GeoPackage before loading local data."
     routes_action_label: str = "Sync saved routes"
     routes_action_enabled: bool = True
     routes_action_blocked_tooltip: str = (
