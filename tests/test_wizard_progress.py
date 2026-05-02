@@ -1,4 +1,6 @@
+import tempfile
 import unittest
+from pathlib import Path
 
 from qfit.ui.application.dock_runtime_state import (
     DockRuntimeLayers,
@@ -124,6 +126,23 @@ class WizardProgressFactsTests(unittest.TestCase):
 
         self.assertFalse(facts.activities_stored)
 
+    def test_runtime_state_adapter_does_not_mark_missing_output_path_as_stored(self):
+        facts = build_wizard_progress_facts_from_runtime_state(
+            DockRuntimeState(output_path="/tmp/qfit-definitely-missing.gpkg")
+        )
+
+        self.assertFalse(facts.activities_stored)
+        self.assertEqual(facts.output_name, "qfit-definitely-missing.gpkg")
+
+    def test_runtime_state_adapter_marks_existing_output_path_as_stored(self):
+        with tempfile.NamedTemporaryFile(suffix=".gpkg") as geopackage:
+            facts = build_wizard_progress_facts_from_runtime_state(
+                DockRuntimeState(output_path=geopackage.name)
+            )
+
+        self.assertTrue(facts.activities_stored)
+        self.assertEqual(facts.output_name, Path(geopackage.name).name)
+
     def test_runtime_state_adapter_keeps_unknown_activity_count_for_loaded_file(self):
         facts = build_wizard_progress_facts_from_runtime_state(
             DockRuntimeState(output_path="/tmp/qfit.gpkg")
@@ -140,6 +159,7 @@ class WizardProgressFactsTests(unittest.TestCase):
             )
         )
 
+        self.assertTrue(facts.activities_stored)
         self.assertEqual(facts.activity_count, 12)
 
     def test_runtime_state_adapter_does_not_treat_fetch_count_as_stored_count(self):

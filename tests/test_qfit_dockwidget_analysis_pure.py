@@ -1,5 +1,6 @@
 import importlib
 import sys
+import tempfile
 import unittest
 from types import ModuleType, SimpleNamespace
 from unittest.mock import MagicMock, patch
@@ -682,10 +683,27 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertEqual(dock.runtime_state.output_path, "/tmp/local-qfit.gpkg")
         dock._refresh_wizard_shell_from_runtime.assert_called_once_with()
 
-    def test_wizard_progress_facts_reflect_visible_geopackage_path(self):
+    def test_wizard_progress_facts_reflect_existing_visible_geopackage_path(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._runtime_state_store = self.module.DockRuntimeStore()
-        dock.outputPathLineEdit = _FakeLineEdit("/tmp/local-qfit.gpkg")
+        dock.clientIdLineEdit = _FakeLineEdit("")
+        dock.clientSecretLineEdit = _FakeLineEdit("")
+        dock.refreshTokenLineEdit = _FakeLineEdit("")
+        dock._atlas_export_completed = False
+        dock.settings = _FakeSettings()
+
+        with tempfile.NamedTemporaryFile(suffix=".gpkg") as geopackage:
+            dock.outputPathLineEdit = _FakeLineEdit(geopackage.name)
+
+            facts = self.module.QfitDockWidget._current_wizard_progress_facts(dock)
+
+        self.assertTrue(facts.activities_stored)
+        self.assertEqual(facts.output_name, geopackage.name.rsplit("/", 1)[-1])
+
+    def test_wizard_progress_facts_do_not_treat_missing_visible_geopackage_as_stored(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._runtime_state_store = self.module.DockRuntimeStore()
+        dock.outputPathLineEdit = _FakeLineEdit("/tmp/qfit-definitely-missing.gpkg")
         dock.clientIdLineEdit = _FakeLineEdit("")
         dock.clientSecretLineEdit = _FakeLineEdit("")
         dock.refreshTokenLineEdit = _FakeLineEdit("")
@@ -694,8 +712,8 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
         facts = self.module.QfitDockWidget._current_wizard_progress_facts(dock)
 
-        self.assertTrue(facts.activities_stored)
-        self.assertEqual(facts.output_name, "local-qfit.gpkg")
+        self.assertFalse(facts.activities_stored)
+        self.assertEqual(facts.output_name, "qfit-definitely-missing.gpkg")
 
     def test_build_wizard_shell_from_runtime_wires_persistence_and_callbacks(self):
         dock = object.__new__(self.module.QfitDockWidget)

@@ -81,7 +81,7 @@ def build_wizard_progress_facts_from_runtime_state(
     return WizardProgressFacts(
         connection_configured=connection_configured,
         activities_fetched=bool(state.activities),
-        activities_stored=_has_output_path(state),
+        activities_stored=_has_stored_activities(state),
         activity_layers_loaded=state.activities_layer is not None,
         analysis_generated=state.analysis_layer is not None,
         atlas_exported=atlas_exported,
@@ -268,8 +268,18 @@ def _workflow_keys() -> tuple[str, ...]:
     return tuple(section.key for section in WIZARD_WORKFLOW_STEPS)
 
 
-def _has_output_path(state: DockRuntimeState) -> bool:
-    return bool((state.output_path or "").strip())
+def _has_stored_activities(state: DockRuntimeState) -> bool:
+    if state.stored_activity_count is not None:
+        return True
+    if _loaded_dataset_layer_count(state) > 0:
+        return True
+    output_path = (state.output_path or "").strip()
+    if not output_path:
+        return False
+    try:
+        return Path(output_path).exists()
+    except OSError:
+        return False
 
 
 def _has_sync_task(state: DockRuntimeState) -> bool:
