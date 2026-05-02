@@ -69,6 +69,7 @@ class WizardActionCallbacks:
     configure_connection: Callable[[], None] | None = None
     sync_activities: Callable[[], None] | None = None
     sync_saved_routes: Callable[[], None] | None = None
+    clear_database: Callable[[], None] | None = None
     load_activity_layers: Callable[[], None] | None = None
     edit_map_filters: Callable[[bool], None] | None = None
     apply_map_filters: Callable[[], None] | None = None
@@ -422,6 +423,11 @@ def _connect_action_callbacks(
         callbacks.load_activity_layers,
     )
     _connect_optional_signal(
+        sync_content,
+        "clearDatabaseRequested",
+        callbacks.clear_database,
+    )
+    _connect_optional_signal(
         map_content,
         "loadLayersRequested",
         callbacks.load_activity_layers,
@@ -603,6 +609,12 @@ def _sync_state_from_facts(facts: WizardProgressFacts) -> SyncPageState:
             or (facts.connection_configured and not facts.sync_in_progress)
         ),
         routes_action_blocked_tooltip=_sync_routes_action_blocked_tooltip(facts, default),
+        clear_action_enabled=(
+            bool(facts.output_name)
+            and not facts.sync_in_progress
+            and not facts.route_sync_in_progress
+        ),
+        clear_action_blocked_tooltip=_sync_clear_action_blocked_tooltip(facts, default),
     )
 
 
@@ -610,7 +622,7 @@ def _sync_local_action_blocked_tooltip(
     facts: WizardProgressFacts,
     default: SyncPageState,
 ) -> str:
-    if facts.sync_in_progress:
+    if facts.sync_in_progress or facts.route_sync_in_progress:
         return _SYNC_IN_PROGRESS_TOOLTIP
     if not facts.activities_stored:
         return default.local_action_blocked_tooltip
@@ -627,6 +639,17 @@ def _sync_routes_action_blocked_tooltip(
         return _SYNC_IN_PROGRESS_TOOLTIP
     if not facts.connection_configured:
         return default.routes_action_blocked_tooltip
+    return ""
+
+
+def _sync_clear_action_blocked_tooltip(
+    facts: WizardProgressFacts,
+    default: SyncPageState,
+) -> str:
+    if facts.sync_in_progress or facts.route_sync_in_progress:
+        return _SYNC_IN_PROGRESS_TOOLTIP
+    if not facts.output_name:
+        return default.clear_action_blocked_tooltip
     return ""
 
 

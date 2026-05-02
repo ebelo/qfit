@@ -53,6 +53,9 @@ class SyncPageState:
     routes_action_blocked_tooltip: str = (
         "Configure the Strava connection before syncing saved routes."
     )
+    clear_action_label: str = "Clear database…"
+    clear_action_enabled: bool = False
+    clear_action_blocked_tooltip: str = "Select a GeoPackage before clearing local data."
 
 
 class SyncPageContent(QWidget):
@@ -61,6 +64,7 @@ class SyncPageContent(QWidget):
     syncRequested = pyqtSignal()
     loadActivitiesRequested = pyqtSignal()
     syncRoutesRequested = pyqtSignal()
+    clearDatabaseRequested = pyqtSignal()
 
     def __init__(self, state: SyncPageState | None = None, parent=None) -> None:
         super().__init__(parent)
@@ -96,9 +100,17 @@ class SyncPageContent(QWidget):
             action_name="sync_saved_routes",
         )
         self.routes_button.clicked.connect(self.syncRoutesRequested.emit)
+        self.clear_button = QToolButton(self)
+        self.clear_button.setObjectName("qfitWizardSyncClearDatabaseButton")
+        style_secondary_action_button(
+            self.clear_button,
+            action_name="clear_database",
+        )
+        self.clear_button.clicked.connect(self.clearDatabaseRequested.emit)
         self.action_row = build_wizard_action_row(
             self.load_button,
             self.routes_button,
+            self.clear_button,
             self.sync_button,
             parent=self,
             object_name="qfitWizardSyncActionRow",
@@ -133,6 +145,12 @@ class SyncPageContent(QWidget):
             self.routes_button,
             enabled=state.routes_action_enabled,
             tooltip=state.routes_action_blocked_tooltip,
+        )
+        self.clear_button.setText(state.clear_action_label)
+        set_wizard_action_availability(
+            self.clear_button,
+            enabled=state.clear_action_enabled,
+            tooltip=state.clear_action_blocked_tooltip,
         )
 
     def outer_layout(self):

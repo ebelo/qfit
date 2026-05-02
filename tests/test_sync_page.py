@@ -91,10 +91,37 @@ class SyncPageContentTest(unittest.TestCase):
         )
         self.assertTrue(content.routes_button.isEnabled())
         self.assertEqual(content.routes_button.toolTip(), "")
+        self.assertEqual(
+            content.clear_button.objectName(),
+            "qfitWizardSyncClearDatabaseButton",
+        )
+        self.assertEqual(content.clear_button.text(), "Clear database…")
+        self.assertEqual(
+            content.clear_button.property("secondaryAction"),
+            "clear_database",
+        )
+        self.assertEqual(
+            content.clear_button.property("wizardActionRole"),
+            "secondary",
+        )
+        self.assertFalse(content.clear_button.isEnabled())
+        self.assertEqual(
+            content.clear_button.property("wizardActionAvailability"),
+            "blocked",
+        )
+        self.assertEqual(
+            content.clear_button.toolTip(),
+            "Select a GeoPackage before clearing local data.",
+        )
         self.assertEqual(content.action_row.objectName(), "qfitWizardSyncActionRow")
         self.assertEqual(
             content.action_row.outer_layout().widgets,
-            [content.load_button, content.routes_button, content.sync_button],
+            [
+                content.load_button,
+                content.routes_button,
+                content.clear_button,
+                content.sync_button,
+            ],
         )
         self.assertEqual(
             content.outer_layout().widgets,
@@ -115,6 +142,7 @@ class SyncPageContentTest(unittest.TestCase):
             activity_summary_text="42 activities stored · 40 detailed routes",
             primary_action_label="Fetch latest activities",
             local_action_enabled=True,
+            clear_action_enabled=True,
         )
 
         content.set_state(state)
@@ -134,6 +162,8 @@ class SyncPageContentTest(unittest.TestCase):
         self.assertEqual(content.sync_button.text(), "Fetch latest activities")
         self.assertTrue(content.load_button.isEnabled())
         self.assertEqual(content.load_button.toolTip(), "")
+        self.assertTrue(content.clear_button.isEnabled())
+        self.assertEqual(content.clear_button.toolTip(), "")
 
     def test_can_block_saved_routes_action_with_tooltip_copy(self):
         content = self.sync_page.SyncPageContent(
@@ -216,6 +246,17 @@ class SyncPageContentTest(unittest.TestCase):
         content.routes_button.clicked.emit()
 
         self.assertEqual(calls, ["routes"])
+
+    def test_clear_database_button_emits_reusable_page_signal(self):
+        content = self.sync_page.SyncPageContent(
+            self.sync_page.SyncPageState(clear_action_enabled=True)
+        )
+        calls = []
+        content.clearDatabaseRequested.connect(lambda: calls.append("clear"))
+
+        content.clear_button.clicked.emit()
+
+        self.assertEqual(calls, ["clear"])
 
     def test_installs_only_on_sync_wizard_page_body(self):
         sync_spec = next(

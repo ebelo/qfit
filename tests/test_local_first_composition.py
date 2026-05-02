@@ -85,6 +85,7 @@ class LocalFirstDockCompositionTests(unittest.TestCase):
             configure_connection=lambda: calls.append("settings"),
             sync_activities=lambda: calls.append("sync"),
             sync_saved_routes=lambda: calls.append("routes"),
+            clear_database=lambda: calls.append("clear"),
             load_activity_layers=lambda: calls.append("layers"),
             edit_map_filters=lambda visible: calls.append(f"filters:{visible}"),
             apply_map_filters=lambda: calls.append("apply"),
@@ -97,6 +98,7 @@ class LocalFirstDockCompositionTests(unittest.TestCase):
         composition.connection_content.configureRequested.emit()
         composition.sync_content.syncRequested.emit()
         composition.sync_content.syncRoutesRequested.emit()
+        composition.sync_content.clearDatabaseRequested.emit()
         composition.sync_content.loadActivitiesRequested.emit()
         composition.map_content.loadLayersRequested.emit()
         composition.map_content.editFiltersRequested.emit(True)
@@ -111,6 +113,7 @@ class LocalFirstDockCompositionTests(unittest.TestCase):
                 "settings",
                 "sync",
                 "routes",
+                "clear",
                 "layers",
                 "layers",
                 "filters:True",
