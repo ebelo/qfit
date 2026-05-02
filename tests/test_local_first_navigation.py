@@ -26,8 +26,7 @@ class LocalFirstDockNavigationTests(unittest.TestCase):
 
     def test_preferred_current_page_is_resolved_without_locking(self):
         navigation = build_local_first_dock_navigation_state(
-            WizardProgressFacts(),
-            preferred_current_key="atlas",
+            WizardProgressFacts(preferred_current_key="atlas"),
         )
 
         self.assertEqual(navigation.current_key, "atlas")
@@ -36,6 +35,18 @@ class LocalFirstDockNavigationTests(unittest.TestCase):
             ["atlas"],
         )
         self.assertTrue(all(page.enabled for page in navigation.pages))
+
+    def test_explicit_preferred_current_page_overrides_fact_preference(self):
+        navigation = build_local_first_dock_navigation_state(
+            WizardProgressFacts(preferred_current_key="settings"),
+            preferred_current_key="map",
+        )
+
+        self.assertEqual(navigation.current_key, "map")
+        self.assertEqual(
+            [page.key for page in navigation.pages if page.current],
+            ["map"],
+        )
 
     def test_unknown_preferred_current_page_falls_back_to_data(self):
         navigation = build_local_first_dock_navigation_state(

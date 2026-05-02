@@ -82,7 +82,9 @@ def build_local_first_dock_navigation_state(
     """
 
     resolved_facts = facts or WizardProgressFacts()
-    current_key = _resolve_current_key(preferred_current_key)
+    current_key = _resolve_current_key(
+        preferred_current_key or resolved_facts.preferred_current_key
+    )
     return LocalFirstDockNavigationState(
         current_key=current_key,
         pages=tuple(
@@ -109,7 +111,7 @@ def local_first_dock_page_keys(
 
 def _resolve_current_key(preferred_current_key: str | None) -> str:
     if preferred_current_key in local_first_dock_page_keys():
-        return str(preferred_current_key)
+        return preferred_current_key
     return _DEFAULT_CURRENT_PAGE_KEY
 
 
