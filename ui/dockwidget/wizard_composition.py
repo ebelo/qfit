@@ -54,6 +54,7 @@ from .wizard_shell_presenter import WizardShellPresenter
 
 _StateT = TypeVar("_StateT")
 WizardCompositionPage = WizardPage | WizardStepPage
+_SYNC_IN_PROGRESS_TOOLTIP = "Wait for the current synchronization to finish."
 
 
 @dataclass(frozen=True)
@@ -581,7 +582,7 @@ def _sync_state_from_facts(facts: WizardProgressFacts) -> SyncPageState:
             "Wait for the current synchronization to finish before starting another sync."
         )
         primary_action_label = "Sync in progress…"
-        sync_blocked_tooltip = "Wait for the current synchronization to finish."
+        sync_blocked_tooltip = _SYNC_IN_PROGRESS_TOOLTIP
     return SyncPageState(
         ready=facts.activities_stored,
         status_text=status_text,
@@ -602,7 +603,7 @@ def _sync_local_action_blocked_tooltip(
     default: SyncPageState,
 ) -> str:
     if facts.sync_in_progress:
-        return "Wait for the current synchronization to finish."
+        return _SYNC_IN_PROGRESS_TOOLTIP
     if not facts.activities_stored:
         return default.local_action_blocked_tooltip
     return ""
@@ -613,7 +614,7 @@ def _sync_routes_action_blocked_tooltip(
     default: SyncPageState,
 ) -> str:
     if facts.sync_in_progress:
-        return "Wait for the current synchronization to finish."
+        return _SYNC_IN_PROGRESS_TOOLTIP
     if not facts.connection_configured:
         return default.routes_action_blocked_tooltip
     return ""
