@@ -115,6 +115,10 @@ class WizardProgressFactsTests(unittest.TestCase):
 
                 self.assertTrue(facts.sync_in_progress)
                 self.assertEqual(
+                    facts.route_sync_in_progress,
+                    tasks.route_sync is not None,
+                )
+                self.assertEqual(
                     facts.atlas_export_in_progress,
                     tasks.atlas_export is not None,
                 )

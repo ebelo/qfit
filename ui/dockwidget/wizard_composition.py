@@ -489,6 +489,7 @@ def _completed_prefix_facts(facts: WizardProgressFacts) -> WizardProgressFacts:
         analysis_generated="analysis" in completed,
         atlas_exported="atlas" in completed,
         sync_in_progress=facts.sync_in_progress,
+        route_sync_in_progress=facts.route_sync_in_progress,
         atlas_export_in_progress=facts.atlas_export_in_progress,
         preferred_current_key=facts.preferred_current_key,
         fetched_activity_count=facts.fetched_activity_count,
@@ -574,8 +575,11 @@ def _sync_state_from_facts(facts: WizardProgressFacts) -> SyncPageState:
             "Store fetched activities in the GeoPackage to complete synchronization."
         )
     primary_action_label = default.primary_action_label
+    routes_action_label = default.routes_action_label
     if facts.activities_fetched and not facts.activities_stored:
         primary_action_label = "Store fetched activities"
+    if facts.route_sync_in_progress:
+        routes_action_label = "Cancel route sync"
     if facts.sync_in_progress:
         status_text = "Synchronization in progress"
         detail_text = (
@@ -593,7 +597,11 @@ def _sync_state_from_facts(facts: WizardProgressFacts) -> SyncPageState:
         primary_action_blocked_tooltip=sync_blocked_tooltip,
         local_action_enabled=facts.activities_stored and not facts.sync_in_progress,
         local_action_blocked_tooltip=_sync_local_action_blocked_tooltip(facts, default),
-        routes_action_enabled=facts.connection_configured and not facts.sync_in_progress,
+        routes_action_label=routes_action_label,
+        routes_action_enabled=(
+            facts.route_sync_in_progress
+            or (facts.connection_configured and not facts.sync_in_progress)
+        ),
         routes_action_blocked_tooltip=_sync_routes_action_blocked_tooltip(facts, default),
     )
 
@@ -613,6 +621,8 @@ def _sync_routes_action_blocked_tooltip(
     facts: WizardProgressFacts,
     default: SyncPageState,
 ) -> str:
+    if facts.route_sync_in_progress:
+        return ""
     if facts.sync_in_progress:
         return _SYNC_IN_PROGRESS_TOOLTIP
     if not facts.connection_configured:

@@ -291,7 +291,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def _on_output_path_changed(self, value: str) -> None:
         """Keep wizard local-load actions in sync with the selected GeoPackage path."""
 
-        self._runtime_store().set_output_path((value or "").strip() or None)
+        self._runtime_store().select_output_path((value or "").strip() or None)
         self._refresh_wizard_shell_from_runtime()
 
     def _current_wizard_activity_style_preset(self) -> str | None:

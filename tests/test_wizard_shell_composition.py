@@ -1050,6 +1050,20 @@ class WizardShellCompositionTest(unittest.TestCase):
         )
         self.assertIn("Updating activities in qfit.gpkg", assembled.shell.footer_bar.text())
 
+    def test_route_sync_in_progress_keeps_routes_action_cancellable(self):
+        assembled = self.composition.build_placeholder_wizard_shell(
+            progress_facts=self.composition.WizardProgressFacts(
+                connection_configured=True,
+                sync_in_progress=True,
+                route_sync_in_progress=True,
+            )
+        )
+
+        self.assertTrue(assembled.sync_content.routes_button.isEnabled())
+        self.assertEqual(assembled.sync_content.routes_button.text(), "Cancel route sync")
+        self.assertEqual(assembled.sync_content.routes_button.toolTip(), "")
+        self.assertFalse(assembled.sync_content.sync_button.isEnabled())
+
     def test_busy_sync_without_stored_activities_replaces_empty_summary(self):
         assembled = self.composition.build_placeholder_wizard_shell(
             progress_facts=self.composition.WizardProgressFacts(
