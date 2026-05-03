@@ -159,6 +159,42 @@ def _build_write_and_load_status(result: StoreActivitiesResult) -> str:
     )
 
 
+def _route_layer_load_status(
+    route_tracks_layer,
+    route_points_layer,
+    route_profile_samples_layer,
+) -> str:
+    if all(
+        layer is None
+        for layer in (
+            route_tracks_layer,
+            route_points_layer,
+            route_profile_samples_layer,
+        )
+    ):
+        return (
+            "No saved route layers found; use Data → Sync saved routes to GeoPackage "
+            "before loading planned routes."
+        )
+    tracks = _safe_feature_count(route_tracks_layer)
+    points = _safe_feature_count(route_points_layer)
+    samples = _safe_feature_count(route_profile_samples_layer)
+    return (
+        "Loaded saved route layers: {tracks} route tracks, {points} route points, "
+        "and {samples} profile samples."
+    ).format(tracks=tracks, points=points, samples=samples)
+
+
+def _safe_feature_count(layer) -> int:
+    if layer is None or not hasattr(layer, "featureCount"):
+        return 0
+    try:
+        return max(int(layer.featureCount()), 0)
+    except (TypeError, ValueError, RuntimeError):
+        logger.debug("Failed to read route layer feature count", exc_info=True)
+        return 0
+
+
 class StoreActivitiesWorkflow:
     """Write fetched activities into qfit's GeoPackage dataset."""
 
@@ -301,7 +337,14 @@ class LoadDatasetWorkflow:
             route_points_layer=route_points_layer,
             route_profile_samples_layer=route_profile_samples_layer,
             total_stored=total,
-            status="Layers loaded from {path}.".format(path=request.output_path),
+            status="Layers loaded from {path}. {route_status}".format(
+                path=request.output_path,
+                route_status=_route_layer_load_status(
+                    route_tracks_layer,
+                    route_points_layer,
+                    route_profile_samples_layer,
+                ),
+            ),
         )
 
     def load_existing_request(self, request: LoadDatasetRequest) -> LoadDatasetResult:
