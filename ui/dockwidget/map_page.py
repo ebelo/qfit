@@ -151,9 +151,9 @@ class MapPageContent(QWidget):
             enabled=state.edit_filters_action_enabled,
             tooltip=state.edit_filters_action_blocked_tooltip,
         )
-        if not state.edit_filters_action_enabled and self.filter_controls_panel.isVisible():
+        if not state.edit_filters_action_enabled and self._filter_controls_are_expanded():
             self.set_filter_controls_visible(False)
-        elif self.filter_controls_panel.isVisible():
+        elif self._filter_controls_are_expanded():
             self.edit_filters_button.setText("Hide filters")
         self.apply_filters_button.setText(state.primary_action_label)
         apply_action_enabled = (
@@ -183,9 +183,12 @@ class MapPageContent(QWidget):
         self.edit_filters_button.setText("Hide filters" if visible else "Edit filters")
 
     def _toggle_filter_controls(self) -> None:
-        next_visible = not self.filter_controls_panel.isVisible()
+        next_visible = not self._filter_controls_are_expanded()
         self.set_filter_controls_visible(next_visible)
         self.editFiltersRequested.emit(next_visible)
+
+    def _filter_controls_are_expanded(self) -> bool:
+        return self.filter_controls_panel.property("filterControlsState") == "expanded"
 
     def outer_layout(self):
         """Expose the layout for adapter wiring and pure tests."""
