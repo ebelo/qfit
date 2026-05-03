@@ -34,6 +34,8 @@ QToolButton = _qtwidgets.QToolButton
 QVBoxLayout = _qtwidgets.QVBoxLayout
 QWidget = _qtwidgets.QWidget
 
+_DEFAULT_ATLAS_TITLE = "qfit Activity Atlas"
+
 
 @dataclass(frozen=True)
 class AtlasPageState:
@@ -60,7 +62,7 @@ class AtlasPageContent(QWidget):
         state: AtlasPageState | None = None,
         parent=None,
         *,
-        atlas_title: str = "qfit Activity Atlas",
+        atlas_title: str = _DEFAULT_ATLAS_TITLE,
         atlas_subtitle: str = "",
     ) -> None:
         super().__init__(parent)
@@ -184,7 +186,7 @@ def build_atlas_page_content(
     *,
     parent=None,
     state: AtlasPageState | None = None,
-    atlas_title: str = "qfit Activity Atlas",
+    atlas_title: str = _DEFAULT_ATLAS_TITLE,
     atlas_subtitle: str = "",
 ) -> AtlasPageContent:
     """Build the reusable atlas-export-step content widget."""
@@ -201,7 +203,7 @@ def install_atlas_page_content(
     page,
     *,
     state: AtlasPageState | None = None,
-    atlas_title: str = "qfit Activity Atlas",
+    atlas_title: str = _DEFAULT_ATLAS_TITLE,
     atlas_subtitle: str = "",
 ) -> AtlasPageContent:
     """Append atlas-export content to the matching wizard page body layout."""
