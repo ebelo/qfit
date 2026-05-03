@@ -1,10 +1,12 @@
 import tempfile
 import unittest
+import sqlite3
 from pathlib import Path
+from unittest.mock import patch
 
 from tests import _path  # noqa: F401
 from qfit.activities.domain.models import Activity
-from qfit.sync_repository import SyncRepository
+from qfit.sync_repository import ActivitySyncState, SyncRepository
 
 
 class SyncRepositoryTests(unittest.TestCase):
@@ -87,6 +89,64 @@ class SyncRepositoryTests(unittest.TestCase):
             rows = repo._connect().execute("SELECT * FROM sync_state").fetchall()
             self.assertEqual(len(rows), 1)
             self.assertEqual(rows[0][0], "strava")
+
+    def test_load_activity_sync_state_returns_completed_metadata(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = SyncRepository(str(Path(tmpdir) / "qfit.sqlite"))
+            repo.ensure_schema()
+            repo.upsert_activities(
+                [
+                    self._activity(source_activity_id="old", start_date="2026-03-19T06:00:00Z"),
+                    self._activity(source_activity_id="new", start_date="2026-03-20T06:00:00Z"),
+                ],
+                sync_metadata={
+                    "provider": "strava",
+                    "is_full_sync": True,
+                    "before_epoch": 200,
+                    "after_epoch": 100,
+                },
+            )
+
+            state = repo.load_activity_sync_state(provider="strava")
+
+            self.assertIsInstance(state, ActivitySyncState)
+            self.assertTrue(state.has_completed_sync)
+            self.assertTrue(repo.has_completed_activity_sync(provider="strava"))
+            self.assertEqual(state.provider, "strava")
+            self.assertIsNotNone(state.last_full_sync_at)
+            self.assertEqual(state.last_before_epoch, 200)
+            self.assertEqual(state.last_after_epoch, 100)
+            self.assertEqual(state.stored_activity_count, 2)
+            self.assertEqual(state.latest_activity_start_date, "2026-03-20T06:00:00Z")
+
+    def test_load_activity_sync_state_returns_none_before_completed_sync(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = SyncRepository(str(Path(tmpdir) / "qfit.sqlite"))
+
+            self.assertIsNone(repo.load_activity_sync_state(provider="strava"))
+            self.assertFalse(repo.has_completed_activity_sync(provider="strava"))
+
+            repo.ensure_schema()
+            self.assertIsNone(repo.load_activity_sync_state(provider="strava"))
+
+    def test_load_activity_sync_state_only_suppresses_missing_schema_errors(self):
+        repo = SyncRepository(":memory:")
+
+        with patch.object(
+            repo,
+            "_connect",
+            side_effect=sqlite3.OperationalError("database is locked"),
+        ):
+            with self.assertRaises(sqlite3.OperationalError):
+                repo.load_activity_sync_state(provider="strava")
+
+    def test_load_activity_sync_state_returns_none_for_existing_uninitialized_database(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "empty.sqlite"
+            db_path.touch()
+            repo = SyncRepository(str(db_path))
+
+            self.assertIsNone(repo.load_activity_sync_state(provider="strava"))
 
     def test_ensure_schema_creates_activity_registry_indexes_idempotently(self):
         with tempfile.TemporaryDirectory() as tmpdir:
