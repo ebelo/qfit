@@ -1,4 +1,5 @@
 import importlib
+import sqlite3
 import sys
 import tempfile
 import unittest
@@ -7,6 +8,7 @@ from unittest.mock import MagicMock, patch
 
 from tests import _path  # noqa: F401
 from qfit.activities.domain.activity_query import DETAILED_ROUTE_FILTER_MISSING
+from qfit.sync_repository import ActivitySyncState
 
 
 class _AutoModule(ModuleType):
@@ -2157,6 +2159,88 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertIsNone(dock._fetch_task)
         dock._set_fetch_running.assert_called_once_with(False)
         dock._set_status.assert_called_once_with("Fetch cancelled.")
+
+    def test_start_fetch_uses_incremental_bounds_from_completed_geopackage_sync(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._save_settings = MagicMock()
+        dock.activity_workflow = MagicMock()
+        fetch_task = object()
+        dock.activity_workflow.build_fetch_task.return_value = fetch_task
+        dock._runtime_store = MagicMock(return_value=MagicMock())
+        dock._set_fetch_running = MagicMock()
+        dock._set_status = MagicMock()
+        dock.clientIdLineEdit = _FakeLineEdit("cid")
+        dock.clientSecretLineEdit = _FakeLineEdit("secret")
+        dock.refreshTokenLineEdit = _FakeLineEdit("token")
+        dock.outputPathLineEdit = _FakeLineEdit("/tmp/qfit.gpkg")
+        dock.cache = object()
+        dock.advancedFetchGroupBox = _FakeCheckBox(False)
+        dock.detailedStreamsCheckBox = _FakeCheckBox(True)
+        dock.perPageSpinBox = _FakeSpinBox(50)
+        dock.maxPagesSpinBox = _FakeSpinBox(2)
+        dock.maxDetailedActivitiesSpinBox = _FakeSpinBox(9)
+        task_manager = MagicMock()
+        sync_state = ActivitySyncState(
+            provider="strava",
+            last_success_status="ok",
+            updated_at="2026-05-03T20:00:00+00:00",
+            latest_activity_start_date="2026-05-03T12:00:00Z",
+        )
+
+        with (
+            patch.object(
+                self.module,
+                "SyncRepository",
+                return_value=SimpleNamespace(load_activity_sync_state=MagicMock(return_value=sync_state)),
+            ) as repository_cls,
+            patch.object(
+                self.module,
+                "QgsApplication",
+                SimpleNamespace(taskManager=MagicMock(return_value=task_manager)),
+            ),
+        ):
+            self.module.QfitDockWidget._start_fetch(
+                dock,
+                detailed_route_strategy="Recent fetch only",
+                status_text="Fetching activities from Strava…",
+            )
+
+        repository_cls.assert_called_once_with("/tmp/qfit.gpkg")
+        dock.activity_workflow.build_fetch_task.assert_called_once()
+        request = dock.activity_workflow.build_fetch_task.call_args.args[0]
+        self.assertEqual(request.after_epoch, 1777550400)
+        self.assertIsNone(request.before_epoch)
+        dock._set_status.assert_called_once_with(
+            "Fetching recent activities from Strava with GeoPackage sync overlap…"
+        )
+        task_manager.addTask.assert_called_once_with(fetch_task)
+
+    def test_current_activity_sync_plan_falls_back_when_geopackage_state_is_unreadable(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.outputPathLineEdit = _FakeLineEdit("/tmp/qfit.gpkg")
+        repository = SimpleNamespace(
+            load_activity_sync_state=MagicMock(side_effect=sqlite3.OperationalError("database is locked"))
+        )
+
+        with patch.object(self.module, "SyncRepository", return_value=repository):
+            plan = self.module.QfitDockWidget._current_activity_sync_plan(dock)
+
+        self.assertEqual(plan.mode.value, "initial_import")
+        self.assertIsNone(plan.after_epoch)
+
+    def test_backfill_missing_detailed_routes_skips_activity_sync_bounds(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._fetch_task = None
+        dock._start_fetch = MagicMock()
+
+        self.module.QfitDockWidget.on_backfill_missing_detailed_routes_clicked(dock)
+
+        dock._start_fetch.assert_called_once_with(
+            use_detailed_streams=True,
+            detailed_route_strategy=self.module.DETAILED_ROUTE_STRATEGY_MISSING,
+            status_text="Backfilling missing detailed routes from Strava…",
+            use_activity_sync_plan=False,
+        )
 
     def test_on_fetch_finished_updates_runtime_state_on_success(self):
         dock = object.__new__(self.module.QfitDockWidget)

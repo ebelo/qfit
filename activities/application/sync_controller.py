@@ -329,8 +329,8 @@ class SyncController:
         is_full_sync = is_unbounded_fetch and uses_default_bounds and not getattr(provider, "last_fetch_notice", None)
         return {
             "provider": provider.source_name,
-            "before_epoch": None,
-            "after_epoch": None,
+            "before_epoch": fetch_context.get("before"),
+            "after_epoch": fetch_context.get("after"),
             "fetched_count": len(activities),
             "detailed_count": detailed_count,
             "stream_stats": provider.last_stream_enrichment_stats,

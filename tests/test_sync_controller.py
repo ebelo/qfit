@@ -377,6 +377,22 @@ class BuildSyncMetadataTests(unittest.TestCase):
         self.assertTrue(meta["is_full_sync"])
         self.assertIn("today_str", meta)
 
+    def test_metadata_records_fetch_bounds(self):
+        ctrl = SyncController()
+        provider = SimpleNamespace(
+            source_name="strava",
+            last_stream_enrichment_stats=None,
+            last_rate_limit=None,
+            last_fetch_notice=None,
+            last_fetch_context={"max_pages": 0, "before": 200, "after": 100},
+        )
+
+        meta = ctrl.build_sync_metadata([], provider)
+
+        self.assertEqual(meta["before_epoch"], 200)
+        self.assertEqual(meta["after_epoch"], 100)
+        self.assertFalse(meta["is_full_sync"])
+
     def test_detailed_count_excludes_non_stream(self):
         ctrl = SyncController()
         activities = [

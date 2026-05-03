@@ -30,6 +30,8 @@ class DockFetchRequest:
     max_pages_value: int
     max_detailed_activities_value: int
     use_detailed_streams_override: bool | None = None
+    before_epoch: int | None = None
+    after_epoch: int | None = None
 
 
 @dataclass(frozen=True)
@@ -91,6 +93,8 @@ class DockActivityWorkflowCoordinator:
             ),
             detailed_route_strategy=request.detailed_route_strategy,
             on_finished=request.on_finished,
+            before=request.before_epoch,
+            after=request.after_epoch,
         )
         return self.sync_controller.build_fetch_task(fetch_request)
 

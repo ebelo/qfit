@@ -50,6 +50,8 @@ class DockActivityWorkflowCoordinatorTests(unittest.TestCase):
         self.assertEqual(kwargs["max_pages"], 0)
         self.assertFalse(kwargs["use_detailed_streams"])
         self.assertEqual(kwargs["max_detailed_activities"], 25)
+        self.assertIsNone(kwargs["before"])
+        self.assertIsNone(kwargs["after"])
         self.sync_controller.build_fetch_task.assert_called_once_with("fetch-request")
 
     def test_build_fetch_task_respects_advanced_fetch_values(self):
@@ -69,6 +71,8 @@ class DockActivityWorkflowCoordinatorTests(unittest.TestCase):
                 per_page_value=75,
                 max_pages_value=4,
                 max_detailed_activities_value=30,
+                before_epoch=200,
+                after_epoch=100,
             )
         )
 
@@ -77,6 +81,8 @@ class DockActivityWorkflowCoordinatorTests(unittest.TestCase):
         self.assertEqual(kwargs["max_pages"], 4)
         self.assertTrue(kwargs["use_detailed_streams"])
         self.assertEqual(kwargs["max_detailed_activities"], 30)
+        self.assertEqual(kwargs["before"], 200)
+        self.assertEqual(kwargs["after"], 100)
 
     def test_build_fetch_completion_result_returns_cancelled_status_without_preview(self):
         fetch_result = SimpleNamespace(cancelled=True, error=None, status_text="Fetch cancelled.")
