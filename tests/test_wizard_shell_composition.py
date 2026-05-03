@@ -665,6 +665,23 @@ class WizardShellCompositionTest(unittest.TestCase):
             assembled.shell.footer_bar.text(),
         )
 
+    def test_sync_page_prioritizes_pending_fetch_over_existing_stored_dataset(self):
+        facts = self.composition.WizardProgressFacts(
+            connection_configured=True,
+            activities_fetched=True,
+            activities_stored=True,
+            fetched_activity_count=2,
+            activity_count=10,
+        )
+
+        assembled = self.composition.build_placeholder_wizard_shell(progress_facts=facts)
+
+        self.assertEqual(assembled.sync_content.status_label.text(), "Activities fetched")
+        self.assertEqual(
+            assembled.sync_content.sync_button.text(),
+            "Store fetched activities",
+        )
+
     def test_map_page_summary_names_stored_output_before_layers_load(self):
         facts = self.composition.WizardProgressFacts(
             connection_configured=True,

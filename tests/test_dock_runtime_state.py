@@ -51,6 +51,15 @@ class TestDockRuntimeStore(unittest.TestCase):
         self.assertIs(store.state.atlas_layer, atlas_layer)
         self.assertEqual(store.state.stored_activity_count, 9)
 
+    def test_store_lifecycle_clears_pending_fetched_activities(self):
+        store = DockRuntimeStore()
+        store.finish_fetch(activities=["run", "ride"], metadata={"provider": "strava"})
+
+        store.finish_store(output_path="/tmp/qfit.gpkg", stored_activity_count=2)
+
+        self.assertEqual(store.state.activities, ())
+        self.assertEqual(store.state.stored_activity_count, 2)
+
     def test_store_and_load_lifecycle_clamps_negative_activity_counts(self):
         store = DockRuntimeStore()
 

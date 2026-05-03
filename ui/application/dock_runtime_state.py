@@ -300,7 +300,11 @@ class DockRuntimeStore:
         output_path: str | None = None,
         stored_activity_count: int | None = None,
     ) -> DockRuntimeState:
-        next_state = replace(self._state, tasks=self._state.tasks.clear_store())
+        next_state = replace(
+            self._state,
+            activities=(),
+            tasks=self._state.tasks.clear_store(),
+        )
         if output_path is not None:
             next_state = replace(next_state, output_path=output_path)
         if stored_activity_count is not None:

@@ -573,7 +573,12 @@ def _sync_state_from_facts(facts: WizardProgressFacts) -> SyncPageState:
     status_text = default.status_text
     detail_text = default.detail_text
     sync_blocked_tooltip = default.primary_action_blocked_tooltip
-    if facts.activities_stored:
+    if facts.activities_fetched:
+        status_text = "Activities fetched"
+        detail_text = (
+            "Store fetched activities in the GeoPackage to complete synchronization."
+        )
+    elif facts.activities_stored:
         status_text = "Activities stored"
         detail_text = (
             "Stored activities are ready to load from the existing GeoPackage."
@@ -581,14 +586,9 @@ def _sync_state_from_facts(facts: WizardProgressFacts) -> SyncPageState:
     elif not facts.connection_configured:
         status_text = "Connection required before sync"
         detail_text = "Configure Strava credentials before syncing activities."
-    elif facts.activities_fetched:
-        status_text = "Activities fetched"
-        detail_text = (
-            "Store fetched activities in the GeoPackage to complete synchronization."
-        )
     primary_action_label = default.primary_action_label
     routes_action_label = default.routes_action_label
-    if facts.activities_fetched and not facts.activities_stored:
+    if facts.activities_fetched:
         primary_action_label = "Store fetched activities"
     if facts.route_sync_in_progress:
         routes_action_label = "Cancel route sync"
