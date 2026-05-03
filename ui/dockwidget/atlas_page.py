@@ -201,6 +201,8 @@ def install_atlas_page_content(
     page,
     *,
     state: AtlasPageState | None = None,
+    atlas_title: str = "qfit Activity Atlas",
+    atlas_subtitle: str = "",
 ) -> AtlasPageContent:
     """Append atlas-export content to the matching wizard page body layout."""
 
@@ -208,7 +210,12 @@ def install_atlas_page_content(
         raise ValueError(
             "Atlas page content can only be installed on the atlas wizard page"
         )
-    content = build_atlas_page_content(parent=page, state=state)
+    content = build_atlas_page_content(
+        parent=page,
+        state=state,
+        atlas_title=atlas_title,
+        atlas_subtitle=atlas_subtitle,
+    )
     page.body_layout().addWidget(content)
     page.retire_primary_action_hint()
     return content

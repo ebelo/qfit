@@ -511,7 +511,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 update_atlas_document_settings=self._update_atlas_document_settings,
             ),
         )
-        self._sync_atlas_document_settings_controls(self._local_first_dock_composition)
         self._install_wizard_filter_controls(self._local_first_dock_composition)
         self._bind_wizard_analysis_mode_controls(self._local_first_dock_composition)
         return self._local_first_dock_composition

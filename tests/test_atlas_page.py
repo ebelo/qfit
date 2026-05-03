@@ -236,6 +236,21 @@ class AtlasPageContentTest(unittest.TestCase):
 
         self.assertIs(atlas_page.body_layout().widgets[-1], content)
 
+    def test_install_forwards_seeded_document_settings(self):
+        atlas_spec = next(
+            spec for spec in build_default_wizard_page_specs() if spec.key == "atlas"
+        )
+        atlas_page = self.wizard_page.WizardPage(atlas_spec)
+
+        content = self.atlas_page.install_atlas_page_content(
+            atlas_page,
+            atlas_title="Spring Atlas",
+            atlas_subtitle="Road and trail",
+        )
+
+        self.assertEqual(content.title_line_edit.text(), "Spring Atlas")
+        self.assertEqual(content.subtitle_line_edit.text(), "Road and trail")
+
     def test_rejects_installing_on_other_wizard_page(self):
         analysis_spec = next(
             spec for spec in build_default_wizard_page_specs() if spec.key == "analysis"
