@@ -80,7 +80,9 @@ class SyncPageContentTest(unittest.TestCase):
             content.routes_button.objectName(),
             "qfitWizardSyncRoutesButton",
         )
-        self.assertEqual(content.routes_button.text(), "Sync saved routes")
+        self.assertEqual(
+            content.routes_button.text(), "Sync saved routes to GeoPackage"
+        )
         self.assertEqual(
             content.routes_button.property("secondaryAction"),
             "sync_saved_routes",

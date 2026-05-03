@@ -647,6 +647,23 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.on_load_clicked.assert_called_once_with()
         dock.on_refresh_clicked.assert_not_called()
 
+    def test_run_wizard_sync_step_fetches_after_fetched_activities_are_stored(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._runtime_state_store = self.module.DockRuntimeStore()
+        dock._runtime_store().set_activities([object()])
+        dock._runtime_store().finish_store(
+            output_path="/tmp/qfit.gpkg",
+            stored_activity_count=1,
+        )
+        self.assertEqual(dock.runtime_state.activities, ())
+        dock.on_refresh_clicked = MagicMock()
+        dock.on_load_clicked = MagicMock()
+
+        self.module.QfitDockWidget._run_wizard_sync_step(dock)
+
+        dock.on_refresh_clicked.assert_called_once_with()
+        dock.on_load_clicked.assert_not_called()
+
     def test_run_wizard_map_step_loads_layers_before_filters_are_available(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._runtime_state_store = self.module.DockRuntimeStore()
@@ -947,7 +964,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         callbacks = connect_args[1]
         expected_callbacks = {
             "configure_connection": "_show_connection_configuration_hint",
-            "sync_activities": "on_refresh_clicked",
+            "sync_activities": "_run_wizard_sync_step",
             "sync_saved_routes": "on_sync_routes_clicked",
             "clear_database": "on_clear_database_clicked",
             "load_activity_layers": "on_load_layers_clicked",
@@ -2004,7 +2021,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.perPageSpinBox = _FakeSpinBox(100)
         dock.maxPagesSpinBox = _FakeSpinBox(0)
         dock.cache = "cache"
-        dock.syncRoutesButton = _FakeButton("Sync saved routes")
+        dock.syncRoutesButton = _FakeButton("Sync saved routes to GeoPackage")
         dock.exchangeCodeButton = _FakeButton("Exchange")
         dock.openAuthorizeButton = _FakeButton("Authorize")
         dock._set_status = MagicMock()
@@ -2095,7 +2112,9 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertEqual(dock.runtime_state.route_tracks_layer, route_layers[0])
         self.assertEqual(dock.runtime_state.route_points_layer, route_layers[1])
         self.assertEqual(dock.runtime_state.route_profile_samples_layer, route_layers[2])
-        self.assertEqual(dock.syncRoutesButton.text(), "Sync saved routes")
+        self.assertEqual(
+            dock.syncRoutesButton.text(), "Sync saved routes to GeoPackage"
+        )
         self.assertTrue(dock.exchangeCodeButton.isEnabled())
         self.assertTrue(dock.openAuthorizeButton.isEnabled())
         dock.layer_gateway.load_route_layers.assert_called_once_with("/tmp/qfit.gpkg")

@@ -499,7 +499,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             composition,
             WizardActionCallbacks(
                 configure_connection=self._show_connection_configuration_hint,
-                sync_activities=self.on_refresh_clicked,
+                sync_activities=self._run_wizard_sync_step,
                 sync_saved_routes=self.on_sync_routes_clicked,
                 clear_database=self.on_clear_database_clicked,
                 load_activity_layers=self.on_load_layers_clicked,
@@ -1472,7 +1472,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         button = getattr(self, "syncRoutesButton", None)
         if button is None:
             return
-        button.setText("Cancel route sync" if running else "Sync saved routes")
+        button.setText(
+            "Cancel route sync" if running else "Sync saved routes to GeoPackage"
+        )
         button.setEnabled(True)
         self.exchangeCodeButton.setEnabled(not running)
         self.openAuthorizeButton.setEnabled(not running)
