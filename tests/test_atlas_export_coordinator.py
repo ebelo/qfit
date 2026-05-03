@@ -1,9 +1,10 @@
 import unittest
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 from tests import _path  # noqa: F401
 
 from qfit.atlas.export_coordinator import AtlasExportCoordinator, AtlasExportExecutionResult
+from qfit.atlas.infrastructure import AtlasPdfAssemblyCancelled
 
 
 class AtlasExportCoordinatorTests(unittest.TestCase):
@@ -106,6 +107,56 @@ class AtlasExportCoordinatorTests(unittest.TestCase):
             ["/tmp/page-0.pdf"],
             cover_path="/tmp/cover.pdf",
             toc_path="/tmp/toc.pdf",
+        )
+
+    def test_execute_stops_before_layout_when_cancellation_is_already_requested(self):
+        parts = self._make_coordinator(canceled=True)
+
+        result = parts["coordinator"].execute()
+
+        self.assertEqual(result, AtlasExportExecutionResult(success=False, page_count=2))
+        parts["build_layout"].assert_not_called()
+
+    def test_execute_stops_between_front_matter_stages_when_cancelled(self):
+        parts = self._make_coordinator()
+        parts["coordinator"].is_canceled.side_effect = [False, False, False, True]
+
+        with patch("qfit.atlas.export_coordinator.os.remove") as remove:
+            result = parts["coordinator"].execute()
+
+        self.assertEqual(result, AtlasExportExecutionResult(success=False, page_count=2))
+        parts["export_cover_page"].assert_called_once()
+        parts["export_toc_page"].assert_not_called()
+        parts["assemble_output_pdf"].assert_not_called()
+        self.assertEqual(
+            [call.args[0] for call in remove.call_args_list],
+            ["/tmp/cover.pdf", "/tmp/page-0.pdf"],
+        )
+
+    def test_execute_discards_page_parts_when_cancelled_after_page_export(self):
+        parts = self._make_coordinator()
+        parts["coordinator"].is_canceled.side_effect = [False, False, True]
+
+        with patch("qfit.atlas.export_coordinator.os.remove") as remove:
+            result = parts["coordinator"].execute()
+
+        self.assertEqual(result, AtlasExportExecutionResult(success=False, page_count=2))
+        parts["export_cover_page"].assert_not_called()
+        parts["assemble_output_pdf"].assert_not_called()
+        remove.assert_called_once_with("/tmp/page-0.pdf")
+
+    def test_execute_treats_pdf_assembly_cancellation_as_cancelled(self):
+        parts = self._make_coordinator()
+        parts["assemble_output_pdf"].side_effect = AtlasPdfAssemblyCancelled()
+
+        with patch("qfit.atlas.export_coordinator.os.remove") as remove:
+            result = parts["coordinator"].execute()
+
+        self.assertEqual(result, AtlasExportExecutionResult(success=False, page_count=2))
+        parts["logger"].exception.assert_not_called()
+        self.assertEqual(
+            [call.args[0] for call in remove.call_args_list],
+            ["/tmp/cover.pdf", "/tmp/toc.pdf", "/tmp/page-0.pdf"],
         )
 
     def test_execute_returns_page_runner_error(self):

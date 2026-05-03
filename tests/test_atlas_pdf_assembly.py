@@ -5,7 +5,10 @@ from unittest.mock import MagicMock, mock_open, patch
 from tests import _path  # noqa: F401
 
 from qfit.atlas.infrastructure import pdf_assembly
-from qfit.atlas.infrastructure.pdf_assembly import AtlasPdfAssembler
+from qfit.atlas.infrastructure.pdf_assembly import (
+    AtlasPdfAssembler,
+    AtlasPdfAssemblyCancelled,
+)
 
 
 class AtlasPdfAssemblerTests(unittest.TestCase):
@@ -45,6 +48,21 @@ class AtlasPdfAssemblerTests(unittest.TestCase):
 
         assembler.merge.assert_not_called()
         self.assertEqual(replace_calls, [("/tmp/page-1.pdf", "/tmp/out.pdf")])
+
+    def test_assemble_stops_before_writing_when_cancelled(self):
+        remove_calls = []
+        replace_file = MagicMock()
+        assembler = AtlasPdfAssembler(
+            is_canceled=MagicMock(return_value=True),
+            replace_file=replace_file,
+            remove_file=lambda path: remove_calls.append(path),
+        )
+
+        with self.assertRaises(AtlasPdfAssemblyCancelled):
+            assembler.assemble(["/tmp/page-1.pdf"], "/tmp/out.pdf")
+
+        replace_file.assert_not_called()
+        self.assertEqual(remove_calls, ["/tmp/page-1.pdf"])
 
     def test_merge_uses_vendored_qfit_pypdf_when_top_level_module_missing(self):
         import builtins
@@ -145,6 +163,26 @@ class AtlasPdfAssemblerTests(unittest.TestCase):
 
         warn.assert_called_once()
         self.assertEqual(replace_calls, [("/tmp/one.pdf", "/tmp/out.pdf")])
+
+    def test_merge_checks_cancellation_between_appended_pages(self):
+        calls = []
+
+        class FakeWriter:
+            def append(self, path):
+                calls.append(("append", path))
+
+            def write(self, handle):
+                calls.append(("write", handle))
+
+        assembler = AtlasPdfAssembler(
+            load_pdf_writer_fn=MagicMock(return_value=FakeWriter),
+            is_canceled=MagicMock(side_effect=[False, True]),
+        )
+
+        with self.assertRaises(AtlasPdfAssemblyCancelled), patch("builtins.open", mock_open()):
+            assembler.merge(["/tmp/one.pdf", "/tmp/two.pdf"], "/tmp/out.pdf")
+
+        self.assertEqual(calls, [("append", "/tmp/one.pdf")])
 
 
 if __name__ == "__main__":
