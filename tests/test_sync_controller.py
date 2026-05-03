@@ -103,6 +103,8 @@ class BuildFetchTaskTests(unittest.TestCase):
             max_detailed_activities=9,
             detailed_route_strategy="Recent fetch only",
             on_finished="callback",
+            before=200,
+            after=100,
         )
 
         self.assertIsInstance(request, BuildFetchTaskRequest)
@@ -110,6 +112,8 @@ class BuildFetchTaskTests(unittest.TestCase):
         self.assertEqual(request.per_page, 123)
         self.assertTrue(request.use_detailed_streams)
         self.assertEqual(request.detailed_route_strategy, "Recent fetch only")
+        self.assertEqual(request.before, 200)
+        self.assertEqual(request.after, 100)
 
     def test_build_fetch_task_request_preserves_legacy_positional_callback_slot(self):
         ctrl = SyncController()
@@ -149,6 +153,8 @@ class BuildFetchTaskTests(unittest.TestCase):
                 max_detailed_activities=7,
                 detailed_route_strategy="Recent fetch only",
                 on_finished="callback",
+                before=200,
+                after=100,
             )
 
         build_provider.assert_called_once()
@@ -156,8 +162,8 @@ class BuildFetchTaskTests(unittest.TestCase):
             provider=provider,
             per_page=50,
             max_pages=2,
-            before=None,
-            after=None,
+            before=200,
+            after=100,
             use_detailed_streams=True,
             max_detailed_activities=7,
             detailed_route_strategy="Recent fetch only",
