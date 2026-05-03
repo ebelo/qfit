@@ -5,6 +5,14 @@ from qfit.ui.application.local_first_navigation import (
     LocalFirstDockPageState,
     build_local_first_dock_navigation_state,
 )
+from qfit.ui.tokens import (
+    COLOR_ACCENT,
+    COLOR_ACCENT_DARK,
+    COLOR_HOVER,
+    COLOR_MUTED,
+    COLOR_SEPARATOR,
+    COLOR_TEXT,
+)
 
 from ._qt_compat import import_qt_module
 from .footer_status_bar import FooterStatusBar
@@ -150,14 +158,19 @@ class LocalFirstDockShell(QWidget):
         return self._main_layout
 
     def _apply_button_state(self, button: QToolButton, page_state: LocalFirstDockPageState) -> None:
+        tone = _nav_tone(page_state)
         button.setText(page_state.title)
         button.setEnabled(page_state.enabled)
+        if hasattr(button, "setChecked"):
+            button.setChecked(page_state.current)
         button.setProperty("pageKey", page_state.key)
         button.setProperty("current", page_state.current)
         button.setProperty("ready", page_state.ready)
-        button.setProperty("navTone", _nav_tone(page_state))
+        button.setProperty("navTone", tone)
         button.setToolTip(f"{page_state.title}: {page_state.status_text}")
         button.setCursor(Qt.PointingHandCursor if page_state.enabled else Qt.ForbiddenCursor)
+        if hasattr(button, "setStyleSheet"):
+            button.setStyleSheet(_navigation_button_stylesheet(tone))
         _refresh_dynamic_qss(button)
 
     def _build_footer_bar(self, footer_text: str):
@@ -216,8 +229,14 @@ class LocalFirstDockShell(QWidget):
     def _new_navigation_button(self, page_state: LocalFirstDockPageState):
         button = QToolButton(self.navigation_container)
         button.setObjectName(f"qfitLocalFirstDockNav_{page_state.key}")
-        button.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        button.setToolButtonStyle(
+            getattr(Qt, "ToolButtonTextOnly", Qt.ToolButtonTextBesideIcon)
+        )
         button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        if hasattr(button, "setCheckable"):
+            button.setCheckable(True)
+        if hasattr(button, "setMinimumWidth"):
+            button.setMinimumWidth(88)
         button.clicked.connect(lambda _checked=False, key=page_state.key: self.show_page_key(key))
         return button
 
@@ -248,6 +267,39 @@ def _nav_tone(page_state: LocalFirstDockPageState) -> str:
     if page_state.ready:
         return "ready"
     return "available"
+
+
+def _navigation_button_stylesheet(tone: str) -> str:
+    if tone == "current":
+        background = COLOR_ACCENT
+        border = COLOR_ACCENT_DARK
+        color = "white"
+        font_weight = "700"
+    elif tone == "ready":
+        background = "transparent"
+        border = COLOR_ACCENT
+        color = COLOR_TEXT
+        font_weight = "600"
+    else:
+        background = "transparent"
+        border = COLOR_SEPARATOR
+        color = COLOR_MUTED
+        font_weight = "500"
+    return (
+        "QToolButton { "
+        f"background: {background}; "
+        f"border: 1px solid {border}; "
+        "border-radius: 8px; "
+        "padding: 4px 8px; "
+        f"color: {color}; "
+        f"font-weight: {font_weight}; "
+        "text-align: left; "
+        "} "
+        f"QToolButton:hover:enabled {{ background: {COLOR_HOVER}; color: {COLOR_TEXT}; }} "
+        f"QToolButton:checked {{ background: {COLOR_ACCENT}; color: white; }} "
+        f"QToolButton:checked:hover {{ background: {COLOR_ACCENT_DARK}; color: white; }} "
+        f"QToolButton:disabled {{ color: {COLOR_MUTED}; }}"
+    )
 
 
 __all__ = ["LocalFirstDockShell"]
