@@ -37,6 +37,8 @@ class BuildFetchTaskRequest:
     max_detailed_activities: int = 25
     detailed_route_strategy: str = DEFAULT_DETAILED_ROUTE_STRATEGY
     on_finished: object = None
+    before: int | None = None
+    after: int | None = None
 
 
 @dataclass
@@ -134,6 +136,8 @@ class SyncController:
         max_detailed_activities,
         on_finished=None,
         detailed_route_strategy=DEFAULT_DETAILED_ROUTE_STRATEGY,
+        before=None,
+        after=None,
     ) -> BuildFetchTaskRequest:
         """Build a structured request for creating a fetch task."""
         return BuildFetchTaskRequest(
@@ -147,6 +151,8 @@ class SyncController:
             max_detailed_activities=max_detailed_activities,
             detailed_route_strategy=detailed_route_strategy,
             on_finished=on_finished,
+            before=before,
+            after=after,
         )
 
     def build_fetch_task(
@@ -171,8 +177,8 @@ class SyncController:
             provider=provider,
             per_page=request.per_page,
             max_pages=request.max_pages,
-            before=None,
-            after=None,
+            before=request.before,
+            after=request.after,
             use_detailed_streams=request.use_detailed_streams,
             max_detailed_activities=request.max_detailed_activities,
             detailed_route_strategy=request.detailed_route_strategy,
