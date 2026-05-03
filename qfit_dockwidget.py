@@ -1,5 +1,6 @@
 import logging
 import os
+import sqlite3
 from collections.abc import Callable
 from dataclasses import replace
 from datetime import date
@@ -55,6 +56,7 @@ from .activities.application.layer_summary import (
     build_stored_activities_summary,
 )
 from .activities.application.load_workflow import LoadWorkflowError
+from .activities.application.sync_strategy import ActivitySyncMode, plan_activity_sync
 from .activities.application.store_task import build_store_task
 from .analysis.infrastructure.activity_heatmap_layer import (
     ACTIVITY_HEATMAP_LAYER_NAME,
@@ -119,10 +121,17 @@ from .ui.workflow_section_coordinator import WorkflowSectionCoordinator
 from .configuration.application.connection_status import build_strava_connection_status
 from .configuration.application.dock_settings_bindings import build_dock_settings_bindings
 from .configuration.application.ui_settings_binding import load_bindings, save_bindings
+from .sync_repository import SyncRepository
 
 FORM_CLASS, _ = uic.loadUiType(
     __import__("os").path.join(__import__("os").path.dirname(__file__), "qfit_dockwidget_base.ui")
 )
+
+
+def _fetch_status_for_sync_plan(status_text, sync_plan):
+    if sync_plan.mode != ActivitySyncMode.INCREMENTAL_UPDATE or sync_plan.after_epoch is None:
+        return status_text
+    return "Fetching recent activities from Strava with GeoPackage sync overlap…"
 
 
 class QfitDockWidget(QDockWidget, FORM_CLASS):
@@ -1291,10 +1300,22 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             use_detailed_streams=True,
             detailed_route_strategy=DETAILED_ROUTE_STRATEGY_MISSING,
             status_text="Backfilling missing detailed routes from Strava…",
+            use_activity_sync_plan=False,
         )
 
-    def _start_fetch(self, detailed_route_strategy, status_text, use_detailed_streams=None):
+    def _start_fetch(
+        self,
+        detailed_route_strategy,
+        status_text,
+        use_detailed_streams=None,
+        use_activity_sync_plan=True,
+    ):
         self._save_settings()
+        sync_plan = (
+            self._current_activity_sync_plan()
+            if use_activity_sync_plan
+            else plan_activity_sync(None)
+        )
         try:
             fetch_task = self.activity_workflow.build_fetch_task(
                 DockFetchRequest(
@@ -1310,6 +1331,8 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                     max_pages_value=self.maxPagesSpinBox.value(),
                     max_detailed_activities_value=self.maxDetailedActivitiesSpinBox.value(),
                     use_detailed_streams_override=use_detailed_streams,
+                    before_epoch=sync_plan.before_epoch,
+                    after_epoch=sync_plan.after_epoch,
                 )
             )
         except ProviderError as exc:
@@ -1319,8 +1342,21 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
         self._runtime_store().begin_fetch(fetch_task)
         self._set_fetch_running(True)
-        self._set_status(status_text)
+        self._set_status(_fetch_status_for_sync_plan(status_text, sync_plan))
         QgsApplication.taskManager().addTask(fetch_task)
+
+    def _current_activity_sync_plan(self):
+        output_path = self.outputPathLineEdit.text().strip()
+        sync_state = None
+        if output_path:
+            try:
+                sync_state = SyncRepository(output_path).load_activity_sync_state(provider="strava")
+            except (OSError, RuntimeError, sqlite3.Error):
+                logger.warning(
+                    "Could not read GeoPackage activity sync state; using unbounded fetch plan",
+                    exc_info=True,
+                )
+        return plan_activity_sync(sync_state)
 
     def _set_fetch_running(self, running):
         """Toggle UI state while a background fetch is in progress."""
