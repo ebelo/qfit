@@ -80,6 +80,8 @@ def build_local_first_dock_composition(
     parent=None,
     footer_text: str = "",
     progress_facts: WizardProgressFacts | None = None,
+    atlas_title: str = "qfit Activity Atlas",
+    atlas_subtitle: str = "",
 ) -> LocalFirstDockComposition:
     """Build the reusable local-first dock shell without swapping production UI."""
 
@@ -90,7 +92,12 @@ def build_local_first_dock_composition(
         footer_text=footer_text,
     )
     pages = _install_local_first_pages(shell)
-    page_content = _install_local_first_page_content(pages, facts=facts)
+    page_content = _install_local_first_page_content(
+        pages,
+        facts=facts,
+        atlas_title=atlas_title,
+        atlas_subtitle=atlas_subtitle,
+    )
     return LocalFirstDockComposition(
         shell=shell,
         pages=pages,
@@ -157,6 +164,11 @@ def connect_local_first_action_callbacks(
         "exportAtlasRequested",
         callbacks.export_atlas,
     )
+    _connect_optional_signal(
+        composition.atlas_content,
+        "atlasDocumentSettingsChanged",
+        callbacks.update_atlas_document_settings,
+    )
     composition.action_callbacks = callbacks
     return composition
 
@@ -205,6 +217,8 @@ def _install_local_first_page_content(
     pages: dict[str, QWidget],
     *,
     facts: WizardProgressFacts,
+    atlas_title: str,
+    atlas_subtitle: str,
 ) -> LocalFirstDockPageContent:
     page_states = build_wizard_page_states_from_facts(_content_facts(facts))
     data_content = build_sync_page_content(
@@ -222,6 +236,8 @@ def _install_local_first_page_content(
     atlas_content = build_atlas_page_content(
         parent=pages["atlas"],
         state=page_states.atlas_state,
+        atlas_title=atlas_title,
+        atlas_subtitle=atlas_subtitle,
     )
     settings_content = build_connection_page_content(
         parent=pages["settings"],

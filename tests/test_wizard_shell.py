@@ -226,6 +226,27 @@ class _FakeLabel(_FakeWidget):
         self.word_wrap = value
 
 
+class _FakeLineEdit(_FakeWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.textChanged = _FakeSignal()
+        self._text = ""
+        self._placeholder_text = ""
+
+    def setText(self, value):  # noqa: N802
+        self._text = value
+        self.textChanged.emit(value)
+
+    def text(self):
+        return self._text
+
+    def setPlaceholderText(self, value):  # noqa: N802
+        self._placeholder_text = value
+
+    def placeholderText(self):  # noqa: N802
+        return self._placeholder_text
+
+
 class _FakeScrollArea(_FakeWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -326,6 +347,7 @@ def _fake_qt_modules():
     qtwidgets.QFrame = _FakeFrame
     qtwidgets.QHBoxLayout = _FakeHBoxLayout
     qtwidgets.QLabel = _FakeLabel
+    qtwidgets.QLineEdit = _FakeLineEdit
     qtwidgets.QScrollArea = _FakeScrollArea
     qtwidgets.QSizePolicy = _FakeSizePolicy
     qtwidgets.QStackedWidget = _FakeStackedWidget

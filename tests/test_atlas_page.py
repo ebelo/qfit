@@ -59,6 +59,23 @@ class AtlasPageContentTest(unittest.TestCase):
             "PDF output path will be chosen before generation",
         )
         self.assertIn(COLOR_MUTED, content.output_summary_label.styleSheet())
+        self.assertEqual(content.title_label.objectName(), "qfitWizardAtlasTitleLabel")
+        self.assertEqual(content.title_label.text(), "Atlas title")
+        self.assertEqual(
+            content.title_line_edit.objectName(),
+            "qfitWizardAtlasTitleLineEdit",
+        )
+        self.assertEqual(content.title_line_edit.text(), "qfit Activity Atlas")
+        self.assertEqual(
+            content.subtitle_label.objectName(),
+            "qfitWizardAtlasSubtitleLabel",
+        )
+        self.assertEqual(content.subtitle_label.text(), "Atlas subtitle")
+        self.assertEqual(
+            content.subtitle_line_edit.objectName(),
+            "qfitWizardAtlasSubtitleLineEdit",
+        )
+        self.assertEqual(content.subtitle_line_edit.placeholderText(), "Optional subtitle…")
         self.assertEqual(
             content.export_atlas_button.objectName(),
             "qfitWizardAtlasExportButton",
@@ -88,11 +105,64 @@ class AtlasPageContentTest(unittest.TestCase):
             [
                 content.status_label,
                 content.detail_label,
+                content.title_label,
+                content.title_line_edit,
+                content.subtitle_label,
+                content.subtitle_line_edit,
                 content.input_summary_label,
                 content.output_summary_label,
                 content.action_row,
             ],
         )
+
+    def test_can_seed_and_update_visible_document_settings(self):
+        content = self.atlas_page.AtlasPageContent(
+            atlas_title="Spring Atlas",
+            atlas_subtitle="Road and trail",
+        )
+
+        self.assertEqual(content.title_line_edit.text(), "Spring Atlas")
+        self.assertEqual(content.subtitle_line_edit.text(), "Road and trail")
+
+        content.set_document_settings(
+            atlas_title="Summer Atlas",
+            atlas_subtitle="Gravel rides",
+        )
+
+        self.assertEqual(content.title_line_edit.text(), "Summer Atlas")
+        self.assertEqual(content.subtitle_line_edit.text(), "Gravel rides")
+
+    def test_document_settings_emit_when_user_edits_fields(self):
+        content = self.atlas_page.AtlasPageContent()
+        calls = []
+        content.atlasDocumentSettingsChanged.connect(
+            lambda title, subtitle: calls.append((title, subtitle))
+        )
+
+        content.title_line_edit.setText("Custom Atlas")
+        content.subtitle_line_edit.setText("April 2026")
+
+        self.assertEqual(
+            calls,
+            [
+                ("Custom Atlas", ""),
+                ("Custom Atlas", "April 2026"),
+            ],
+        )
+
+    def test_programmatic_document_settings_update_does_not_emit_user_change(self):
+        content = self.atlas_page.AtlasPageContent()
+        calls = []
+        content.atlasDocumentSettingsChanged.connect(
+            lambda title, subtitle: calls.append((title, subtitle))
+        )
+
+        content.set_document_settings(
+            atlas_title="Saved Atlas",
+            atlas_subtitle="Saved subtitle",
+        )
+
+        self.assertEqual(calls, [])
 
     def test_refreshes_ready_state_without_rebuilding(self):
         content = self.atlas_page.AtlasPageContent()

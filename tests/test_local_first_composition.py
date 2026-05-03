@@ -79,7 +79,10 @@ class LocalFirstDockCompositionTests(unittest.TestCase):
         )
 
     def test_connects_existing_page_action_callbacks(self):
-        composition = self.module.build_local_first_dock_composition()
+        composition = self.module.build_local_first_dock_composition(
+            atlas_title="Spring Atlas",
+            atlas_subtitle="Road and trail",
+        )
         calls = []
         callbacks = self.module.WizardActionCallbacks(
             configure_connection=lambda: calls.append("settings"),
@@ -92,6 +95,9 @@ class LocalFirstDockCompositionTests(unittest.TestCase):
             run_analysis=lambda: calls.append("analysis"),
             set_analysis_mode=lambda mode: calls.append(f"mode:{mode}"),
             export_atlas=lambda: calls.append("atlas"),
+            update_atlas_document_settings=lambda title, subtitle: calls.append(
+                f"atlas-settings:{title}:{subtitle}"
+            ),
         )
 
         self.module.connect_local_first_action_callbacks(composition, callbacks)
@@ -106,6 +112,8 @@ class LocalFirstDockCompositionTests(unittest.TestCase):
         composition.analysis_content.runAnalysisRequested.emit()
         composition.analysis_content.analysisModeChanged.emit("Heatmap")
         composition.atlas_content.exportAtlasRequested.emit()
+        composition.atlas_content.title_line_edit.setText("Summer Atlas")
+        composition.atlas_content.subtitle_line_edit.setText("April 2026")
 
         self.assertEqual(
             calls,
@@ -121,7 +129,21 @@ class LocalFirstDockCompositionTests(unittest.TestCase):
                 "analysis",
                 "mode:Heatmap",
                 "atlas",
+                "atlas-settings:Summer Atlas:Road and trail",
+                "atlas-settings:Summer Atlas:April 2026",
             ],
+        )
+
+    def test_seeds_atlas_document_settings_controls(self):
+        composition = self.module.build_local_first_dock_composition(
+            atlas_title="Spring Atlas",
+            atlas_subtitle="Road and trail",
+        )
+
+        self.assertEqual(composition.atlas_content.title_line_edit.text(), "Spring Atlas")
+        self.assertEqual(
+            composition.atlas_content.subtitle_line_edit.text(),
+            "Road and trail",
         )
 
     def test_refresh_updates_navigation_and_page_content_state(self):
