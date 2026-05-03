@@ -16,6 +16,36 @@ class SyncStats:
     total_count: int
 
 
+@dataclass(frozen=True)
+class ActivitySyncState:
+    """Completed activity-sync metadata persisted in the GeoPackage."""
+
+    provider: str
+    last_incremental_sync_at: str | None = None
+    last_full_sync_at: str | None = None
+    last_before_epoch: int | None = None
+    last_after_epoch: int | None = None
+    last_success_status: str | None = None
+    updated_at: str | None = None
+    stored_activity_count: int = 0
+    latest_activity_start_date: str | None = None
+
+    @property
+    def has_completed_sync(self) -> bool:
+        return self.last_success_status == "ok" and self.updated_at is not None
+
+
+SYNC_STATE_COLUMNS = [
+    "provider",
+    "last_incremental_sync_at",
+    "last_full_sync_at",
+    "last_before_epoch",
+    "last_after_epoch",
+    "last_success_status",
+    "updated_at",
+]
+
+
 REGISTRY_TABLE = "activity_registry"
 SYNC_STATE_TABLE = "sync_state"
 REGISTRY_COLUMNS = [
@@ -295,6 +325,46 @@ class SyncRepository:
             activities.append(Activity(**activity_kwargs))
         return activities
 
+    def load_activity_sync_state(self, provider="strava") -> ActivitySyncState | None:
+        """Return the latest completed sync metadata for *provider*, if present."""
+
+        if not self._database_exists():
+            return None
+        try:
+            with self._connect() as connection:
+                state_row = connection.execute(
+                    """
+                    SELECT {columns}
+                    FROM sync_state
+                    WHERE provider = ?
+                    """.format(columns=", ".join(SYNC_STATE_COLUMNS)),
+                    (provider,),
+                ).fetchone()
+                if state_row is None:
+                    return None
+                activity_row = connection.execute(
+                    """
+                    SELECT COUNT(*) AS stored_activity_count, MAX(start_date) AS latest_activity_start_date
+                    FROM activity_registry
+                    WHERE source = ?
+                    """,
+                    (provider,),
+                ).fetchone()
+        except sqlite3.OperationalError as exc:
+            if _is_missing_sync_schema_error(exc):
+                return None
+            raise
+
+        return ActivitySyncState(
+            **dict(zip(SYNC_STATE_COLUMNS, state_row)),
+            stored_activity_count=int(activity_row["stored_activity_count"]),
+            latest_activity_start_date=activity_row["latest_activity_start_date"],
+        )
+
+    def has_completed_activity_sync(self, provider="strava") -> bool:
+        state = self.load_activity_sync_state(provider=provider)
+        return bool(state and state.has_completed_sync)
+
     def _upsert_registry_row(self, cursor, record):
         placeholders = ", ".join("?" for _column in REGISTRY_COLUMNS)
         update_clause = ", ".join(
@@ -454,3 +524,14 @@ class SyncRepository:
         connection = sqlite3.connect(self.db_path)
         connection.row_factory = sqlite3.Row
         return connection
+
+    def _database_exists(self):
+        return self.db_path == ":memory:" or os.path.exists(self.db_path)
+
+
+def _is_missing_sync_schema_error(exc):
+    message = str(exc).lower()
+    return any(
+        f"no such table: {table}" in message
+        for table in (SYNC_STATE_TABLE, REGISTRY_TABLE)
+    )
