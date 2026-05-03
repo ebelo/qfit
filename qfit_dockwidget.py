@@ -541,6 +541,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             subtitle_line_edit.setText(atlas_subtitle)
         if title_changed or subtitle_changed:
             self._mark_atlas_export_stale()
+            self._refresh_summary_status()
 
     def _persist_startup_wizard_step_if_needed(
         self,
