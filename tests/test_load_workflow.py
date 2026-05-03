@@ -80,6 +80,9 @@ class LoadDatasetWorkflowTests(unittest.TestCase):
             MagicMock(name="route_points"),
             MagicMock(name="route_profile_samples"),
         )
+        route_layers[0].featureCount.return_value = 3
+        route_layers[1].featureCount.return_value = 24
+        route_layers[2].featureCount.return_value = 16
         layer_gateway.load_output_layers.return_value = (
             activities_layer,
             MagicMock(name="starts"),
@@ -99,6 +102,58 @@ class LoadDatasetWorkflowTests(unittest.TestCase):
         self.assertEqual(result.route_points_layer, route_layers[1])
         self.assertEqual(result.route_profile_samples_layer, route_layers[2])
         self.assertIn("/tmp/existing.gpkg", result.status)
+        self.assertIn(
+            "3 route tracks, 24 route points, and 16 profile samples",
+            result.status,
+        )
+
+    def test_load_existing_status_explains_when_route_layers_are_missing(self):
+        layer_gateway = MagicMock()
+        activities_layer = MagicMock()
+        activities_layer.featureCount.return_value = 42
+        layer_gateway.load_output_layers.return_value = (
+            activities_layer,
+            MagicMock(name="starts"),
+            MagicMock(name="points"),
+            MagicMock(name="atlas"),
+        )
+        layer_gateway.load_route_layers.return_value = (None, None, None)
+        workflow = LoadDatasetWorkflow(layer_gateway, path_exists=lambda _path: True)
+
+        result = workflow.load_existing_request(
+            workflow.build_load_existing_request("/tmp/existing.gpkg")
+        )
+
+        self.assertIn("No saved route layers found", result.status)
+        self.assertIn("Sync saved routes to GeoPackage", result.status)
+
+    def test_load_existing_route_status_tolerates_uncountable_route_layers(self):
+        class BrokenFeatureCountLayer:
+            def featureCount(self):  # noqa: N802
+                raise RuntimeError("provider unavailable")
+
+        layer_gateway = MagicMock()
+        activities_layer = MagicMock()
+        activities_layer.featureCount.return_value = 42
+        layer_gateway.load_output_layers.return_value = (
+            activities_layer,
+            MagicMock(name="starts"),
+            MagicMock(name="points"),
+            MagicMock(name="atlas"),
+        )
+        layer_gateway.load_route_layers.return_value = (
+            object(),
+            BrokenFeatureCountLayer(),
+            None,
+        )
+        workflow = LoadDatasetWorkflow(layer_gateway, path_exists=lambda _path: True)
+
+        result = workflow.load_existing_request(
+            workflow.build_load_existing_request("/tmp/existing.gpkg")
+        )
+
+        self.assertIn("Loaded saved route layers: 0 route tracks", result.status)
+        self.assertIn("0 route points", result.status)
 
 
 class ClearDatabaseWorkflowTests(unittest.TestCase):
