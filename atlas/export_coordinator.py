@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass
 from typing import Callable
+
+from .infrastructure.pdf_assembly import AtlasPdfAssemblyCancelled
 
 
 @dataclass(frozen=True)
@@ -63,6 +66,14 @@ class AtlasExportCoordinator:
             error=f"{user_label or stage.capitalize()} failed: {detail}",
         )
 
+    @staticmethod
+    def _discard_pdf_parts(page_paths: list[str], *front_paths: str | None) -> None:
+        for path in [path for path in front_paths if path] + page_paths:
+            try:
+                os.remove(path)
+            except OSError:
+                pass
+
     def execute(self) -> AtlasExportExecutionResult:
         try:
             feature_count = self.atlas_layer.featureCount() if self.atlas_layer else 0
@@ -78,6 +89,9 @@ class AtlasExportCoordinator:
                 success=False,
                 error="No atlas pages found. Store and load activity layers first.",
             )
+
+        if self.is_canceled():
+            return AtlasExportExecutionResult(success=False, page_count=feature_count)
 
         try:
             layout = self.build_layout(
@@ -114,6 +128,7 @@ class AtlasExportCoordinator:
         if page_error is not None:
             return AtlasExportExecutionResult(success=False, page_count=page_count, error=page_error)
         if self.is_canceled():
+            self._discard_pdf_parts(page_paths)
             return AtlasExportExecutionResult(success=False, page_count=page_count)
         if not page_paths:
             return AtlasExportExecutionResult(
@@ -128,12 +143,21 @@ class AtlasExportCoordinator:
                 self.output_path,
                 project=self.project,
             )
+            if self.is_canceled():
+                self._discard_pdf_parts(page_paths, cover_path)
+                return AtlasExportExecutionResult(success=False, page_count=page_count)
             toc_path = self.export_toc_page(
                 self.atlas_layer,
                 self.output_path,
                 project=self.project,
             )
+            if self.is_canceled():
+                self._discard_pdf_parts(page_paths, cover_path, toc_path)
+                return AtlasExportExecutionResult(success=False, page_count=page_count)
             self.assemble_output_pdf(page_paths, cover_path=cover_path, toc_path=toc_path)
+        except AtlasPdfAssemblyCancelled:
+            self._discard_pdf_parts(page_paths, cover_path, toc_path)
+            return AtlasExportExecutionResult(success=False, page_count=page_count)
         except (RuntimeError, OSError) as exc:
             return self._stage_failure(
                 "final PDF assembly",

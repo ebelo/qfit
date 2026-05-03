@@ -1901,11 +1901,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         # Cancel any running export
         if self._atlas_export_task is not None:
             self._atlas_export_task.cancel()
-            self._set_atlas_pdf_status("Atlas PDF export cancelled.")
-            self._set_atlas_export_running(False)
-            self._runtime_store().clear_atlas_export()
-            self._atlas_export_task_output_path = None
-            self._refresh_summary_status()
+            self._set_atlas_export_cancelling()
+            self._set_atlas_pdf_status("Atlas PDF export cancellation requested…")
+            self._set_status("Atlas PDF export cancellation requested…")
             return
 
         export_command = self._atlas_workflow_service().build_export_command(
@@ -1961,9 +1959,14 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.generateAtlasPdfButton.setText(
             "Cancel export" if running else "Generate atlas PDF"
         )
+        self.generateAtlasPdfButton.setEnabled(True)
         self.loadButton.setEnabled(not running)
         self.loadLayersButton.setEnabled(not running)
         self.refreshButton.setEnabled(not running)
+
+    def _set_atlas_export_cancelling(self) -> None:
+        self.generateAtlasPdfButton.setText("Cancelling…")
+        self.generateAtlasPdfButton.setEnabled(False)
 
     def _on_atlas_export_finished(
         self,

@@ -1234,6 +1234,7 @@ class AtlasExportTask(QgsTask):
 
     def _build_pdf_assembler(self) -> AtlasPdfAssembler:
         return AtlasPdfAssembler(
+            is_canceled=self.isCanceled,
             warn=logger.warning,
         )
 
