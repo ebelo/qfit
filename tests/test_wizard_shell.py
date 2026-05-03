@@ -53,6 +53,7 @@ class _FakeQt:
     Orientation = int
     PointingHandCursor = 11
     ToolButtonTextBesideIcon = 12
+    ToolButtonTextOnly = 15
     Vertical = 14
 
 
@@ -143,8 +144,22 @@ class _FakeToolButton(_FakeWidget):
         super().__init__(parent)
         self.clicked = _FakeSignal()
         self._text = ""
+        self._checkable = False
+        self._checked = False
         self.tool_button_style = None
         self.size_policy = None
+
+    def setCheckable(self, value):  # noqa: N802
+        self._checkable = value
+
+    def isCheckable(self):  # noqa: N802
+        return self._checkable
+
+    def setChecked(self, value):  # noqa: N802
+        self._checked = value
+
+    def isChecked(self):  # noqa: N802
+        return self._checked
 
     def setToolButtonStyle(self, value):  # noqa: N802
         self.tool_button_style = value

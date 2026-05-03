@@ -41,6 +41,13 @@ class LocalFirstDockShellTests(unittest.TestCase):
         )
         self.assertFalse(any("..." in button.text() for button in shell.navigation_buttons()))
         self.assertTrue(all(button.isEnabled() for button in shell.navigation_buttons()))
+        self.assertTrue(all(button.minimumWidth() == 88 for button in shell.navigation_buttons()))
+        self.assertTrue(
+            all(
+                button.tool_button_style == self.shell_module.Qt.ToolButtonTextOnly
+                for button in shell.navigation_buttons()
+            )
+        )
 
     def test_outer_layout_keeps_navigation_content_and_footer_separate(self):
         shell = self.shell_module.LocalFirstDockShell()
@@ -67,6 +74,11 @@ class LocalFirstDockShellTests(unittest.TestCase):
         self.assertEqual(data_button.property("navTone"), "ready")
         self.assertTrue(map_button.property("current"))
         self.assertEqual(map_button.property("navTone"), "current")
+        self.assertTrue(map_button.isCheckable())
+        self.assertTrue(map_button.isChecked())
+        self.assertFalse(data_button.isChecked())
+        self.assertIn("background: #589632", map_button.styleSheet())
+        self.assertIn("QToolButton:checked:hover", map_button.styleSheet())
         self.assertFalse(analysis_button.property("ready"))
         self.assertEqual(analysis_button.property("navTone"), "available")
         self.assertTrue(analysis_button.isEnabled())
