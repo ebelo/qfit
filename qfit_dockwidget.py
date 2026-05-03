@@ -466,8 +466,10 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 run_analysis=self.on_run_analysis_clicked,
                 set_analysis_mode=self._set_wizard_analysis_mode,
                 export_atlas=self.on_generate_atlas_pdf_clicked,
+                update_atlas_document_settings=self._update_atlas_document_settings,
             ),
         )
+        self._sync_atlas_document_settings_controls(self._wizard_shell_composition)
         self._install_wizard_filter_controls(self._wizard_shell_composition)
         self._bind_wizard_analysis_mode_controls(self._wizard_shell_composition)
         return self._wizard_shell_composition
@@ -490,6 +492,8 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         composition = build_local_first_dock_composition(
             parent=self if parent is None else parent,
             progress_facts=self._current_wizard_progress_facts(),
+            atlas_title=self.atlasTitleLineEdit.text(),
+            atlas_subtitle=self.atlasSubtitleLineEdit.text(),
         )
         self._local_first_dock_composition = connect_local_first_action_callbacks(
             composition,
@@ -504,11 +508,40 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 run_analysis=self.on_run_analysis_clicked,
                 set_analysis_mode=self._set_wizard_analysis_mode,
                 export_atlas=self.on_generate_atlas_pdf_clicked,
+                update_atlas_document_settings=self._update_atlas_document_settings,
             ),
         )
         self._install_wizard_filter_controls(self._local_first_dock_composition)
         self._bind_wizard_analysis_mode_controls(self._local_first_dock_composition)
         return self._local_first_dock_composition
+
+    def _sync_atlas_document_settings_controls(self, composition) -> None:
+        atlas_content = getattr(composition, "atlas_content", None)
+        set_document_settings = getattr(atlas_content, "set_document_settings", None)
+        if not callable(set_document_settings):
+            return
+        set_document_settings(
+            atlas_title=self.atlasTitleLineEdit.text(),
+            atlas_subtitle=self.atlasSubtitleLineEdit.text(),
+        )
+
+    def _update_atlas_document_settings(self, atlas_title: str, atlas_subtitle: str) -> None:
+        """Mirror visible atlas-page title fields into the export settings widgets."""
+
+        title_line_edit = getattr(self, "atlasTitleLineEdit", None)
+        subtitle_line_edit = getattr(self, "atlasSubtitleLineEdit", None)
+        title_changed = title_line_edit is not None and title_line_edit.text() != atlas_title
+        subtitle_changed = (
+            subtitle_line_edit is not None
+            and subtitle_line_edit.text() != atlas_subtitle
+        )
+        if title_line_edit is not None:
+            title_line_edit.setText(atlas_title)
+        if subtitle_line_edit is not None:
+            subtitle_line_edit.setText(atlas_subtitle)
+        if title_changed or subtitle_changed:
+            self._mark_atlas_export_stale()
+            self._refresh_summary_status()
 
     def _persist_startup_wizard_step_if_needed(
         self,

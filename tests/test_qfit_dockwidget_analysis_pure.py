@@ -894,6 +894,8 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.clientIdLineEdit = _FakeLineEdit("client-id")
         dock.clientSecretLineEdit = _FakeLineEdit("client-secret")
         dock.refreshTokenLineEdit = _FakeLineEdit("refresh-token")
+        dock.atlasTitleLineEdit = _FakeLineEdit("Spring Atlas")
+        dock.atlasSubtitleLineEdit = _FakeLineEdit("Road and trail")
         dock._atlas_export_completed = False
         dock.settings = _FakeSettings()
         dock._install_wizard_filter_controls = MagicMock()
@@ -935,6 +937,8 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         )
         self.assertEqual(kwargs["parent"], parent)
         self.assertTrue(kwargs["progress_facts"].connection_configured)
+        self.assertEqual(kwargs["atlas_title"], "Spring Atlas")
+        self.assertEqual(kwargs["atlas_subtitle"], "Road and trail")
         fake_local_first_composition.connect_local_first_action_callbacks.assert_called_once()
         connect_args = (
             fake_local_first_composition.connect_local_first_action_callbacks.call_args.args
@@ -952,6 +956,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "run_analysis": "on_run_analysis_clicked",
             "set_analysis_mode": "_set_wizard_analysis_mode",
             "export_atlas": "on_generate_atlas_pdf_clicked",
+            "update_atlas_document_settings": "_update_atlas_document_settings",
         }
         for callback_name, method_name in expected_callbacks.items():
             callback = getattr(callbacks, callback_name)
@@ -966,6 +971,40 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._bind_wizard_analysis_mode_controls.assert_called_once_with(
             "connected-composition"
         )
+
+    def test_update_atlas_document_settings_mirrors_visible_fields(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.atlasTitleLineEdit = _FakeLineEdit("Old Atlas")
+        dock.atlasSubtitleLineEdit = _FakeLineEdit("Old subtitle")
+        dock._mark_atlas_export_stale = MagicMock()
+        dock._refresh_summary_status = MagicMock()
+
+        self.module.QfitDockWidget._update_atlas_document_settings(
+            dock,
+            "Spring Atlas",
+            "Road and trail",
+        )
+
+        self.assertEqual(dock.atlasTitleLineEdit.text(), "Spring Atlas")
+        self.assertEqual(dock.atlasSubtitleLineEdit.text(), "Road and trail")
+        dock._mark_atlas_export_stale.assert_called_once_with()
+        dock._refresh_summary_status.assert_called_once_with()
+
+    def test_update_atlas_document_settings_keeps_current_export_when_unchanged(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.atlasTitleLineEdit = _FakeLineEdit("Spring Atlas")
+        dock.atlasSubtitleLineEdit = _FakeLineEdit("Road and trail")
+        dock._mark_atlas_export_stale = MagicMock()
+        dock._refresh_summary_status = MagicMock()
+
+        self.module.QfitDockWidget._update_atlas_document_settings(
+            dock,
+            "Spring Atlas",
+            "Road and trail",
+        )
+
+        dock._mark_atlas_export_stale.assert_not_called()
+        dock._refresh_summary_status.assert_not_called()
 
     def test_install_wizard_filter_controls_moves_live_filter_group_into_map_panel(self):
         dock = object.__new__(self.module.QfitDockWidget)

@@ -20,6 +20,7 @@ _qtwidgets = import_qt_module(
     "PyQt5.QtWidgets",
     (
         "QLabel",
+        "QLineEdit",
         "QToolButton",
         "QVBoxLayout",
         "QWidget",
@@ -28,9 +29,12 @@ _qtwidgets = import_qt_module(
 
 pyqtSignal = _qtcore.pyqtSignal
 QLabel = _qtwidgets.QLabel
+QLineEdit = _qtwidgets.QLineEdit
 QToolButton = _qtwidgets.QToolButton
 QVBoxLayout = _qtwidgets.QVBoxLayout
 QWidget = _qtwidgets.QWidget
+
+_DEFAULT_ATLAS_TITLE = "qfit Activity Atlas"
 
 
 @dataclass(frozen=True)
@@ -51,9 +55,18 @@ class AtlasPageContent(QWidget):
     """Reusable fifth-page content for the wizard atlas-export step."""
 
     exportAtlasRequested = pyqtSignal()
+    atlasDocumentSettingsChanged = pyqtSignal(str, str)
 
-    def __init__(self, state: AtlasPageState | None = None, parent=None) -> None:
+    def __init__(
+        self,
+        state: AtlasPageState | None = None,
+        parent=None,
+        *,
+        atlas_title: str = _DEFAULT_ATLAS_TITLE,
+        atlas_subtitle: str = "",
+    ) -> None:
         super().__init__(parent)
+        self._updating_document_settings = False
         self.setObjectName("qfitWizardAtlasPageContent")
         self.status_label = QLabel("", self)
         self.status_label.setObjectName("qfitWizardAtlasStatus")
@@ -68,6 +81,22 @@ class AtlasPageContent(QWidget):
         self.output_summary_label = QLabel("", self)
         self.output_summary_label.setObjectName("qfitWizardAtlasOutputSummary")
         style_summary_label(self.output_summary_label)
+        self.title_label = QLabel("Atlas title", self)
+        self.title_label.setObjectName("qfitWizardAtlasTitleLabel")
+        style_detail_label(self.title_label)
+        self.title_line_edit = QLineEdit(self)
+        self.title_line_edit.setObjectName("qfitWizardAtlasTitleLineEdit")
+        self.title_line_edit.setText(atlas_title)
+        self.subtitle_label = QLabel("Atlas subtitle", self)
+        self.subtitle_label.setObjectName("qfitWizardAtlasSubtitleLabel")
+        style_detail_label(self.subtitle_label)
+        self.subtitle_line_edit = QLineEdit(self)
+        self.subtitle_line_edit.setObjectName("qfitWizardAtlasSubtitleLineEdit")
+        if hasattr(self.subtitle_line_edit, "setPlaceholderText"):
+            self.subtitle_line_edit.setPlaceholderText("Optional subtitle…")
+        self.subtitle_line_edit.setText(atlas_subtitle)
+        self.title_line_edit.textChanged.connect(self._emit_document_settings_changed)
+        self.subtitle_line_edit.textChanged.connect(self._emit_document_settings_changed)
         self.export_atlas_button = QToolButton(self)
         self.export_atlas_button.setObjectName("qfitWizardAtlasExportButton")
         style_primary_action_button(
@@ -82,6 +111,26 @@ class AtlasPageContent(QWidget):
         )
         self._layout = self._build_layout()
         self.set_state(state or AtlasPageState())
+
+    def set_document_settings(self, *, atlas_title: str, atlas_subtitle: str) -> None:
+        """Refresh visible cover settings without emitting a user-change signal."""
+
+        self._updating_document_settings = True
+        try:
+            if self.title_line_edit.text() != atlas_title:
+                self.title_line_edit.setText(atlas_title)
+            if self.subtitle_line_edit.text() != atlas_subtitle:
+                self.subtitle_line_edit.setText(atlas_subtitle)
+        finally:
+            self._updating_document_settings = False
+
+    def _emit_document_settings_changed(self, *_args) -> None:
+        if self._updating_document_settings:
+            return
+        self.atlasDocumentSettingsChanged.emit(
+            self.title_line_edit.text(),
+            self.subtitle_line_edit.text(),
+        )
 
     def set_state(self, state: AtlasPageState) -> None:
         """Refresh copy and state properties without rebuilding the page."""
@@ -121,6 +170,10 @@ class AtlasPageContent(QWidget):
         for widget in (
             self.status_label,
             self.detail_label,
+            self.title_label,
+            self.title_line_edit,
+            self.subtitle_label,
+            self.subtitle_line_edit,
             self.input_summary_label,
             self.output_summary_label,
             self.action_row,
@@ -133,16 +186,25 @@ def build_atlas_page_content(
     *,
     parent=None,
     state: AtlasPageState | None = None,
+    atlas_title: str = _DEFAULT_ATLAS_TITLE,
+    atlas_subtitle: str = "",
 ) -> AtlasPageContent:
     """Build the reusable atlas-export-step content widget."""
 
-    return AtlasPageContent(state=state, parent=parent)
+    return AtlasPageContent(
+        state=state,
+        parent=parent,
+        atlas_title=atlas_title,
+        atlas_subtitle=atlas_subtitle,
+    )
 
 
 def install_atlas_page_content(
     page,
     *,
     state: AtlasPageState | None = None,
+    atlas_title: str = _DEFAULT_ATLAS_TITLE,
+    atlas_subtitle: str = "",
 ) -> AtlasPageContent:
     """Append atlas-export content to the matching wizard page body layout."""
 
@@ -150,7 +212,12 @@ def install_atlas_page_content(
         raise ValueError(
             "Atlas page content can only be installed on the atlas wizard page"
         )
-    content = build_atlas_page_content(parent=page, state=state)
+    content = build_atlas_page_content(
+        parent=page,
+        state=state,
+        atlas_title=atlas_title,
+        atlas_subtitle=atlas_subtitle,
+    )
     page.body_layout().addWidget(content)
     page.retire_primary_action_hint()
     return content

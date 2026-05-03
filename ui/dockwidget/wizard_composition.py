@@ -76,6 +76,7 @@ class WizardActionCallbacks:
     run_analysis: Callable[[], None] | None = None
     set_analysis_mode: Callable[[str], None] | None = None
     export_atlas: Callable[[], None] | None = None
+    update_atlas_document_settings: Callable[[str, str], None] | None = None
 
 
 @dataclass(frozen=True)
@@ -453,6 +454,11 @@ def _connect_action_callbacks(
         callbacks.set_analysis_mode,
     )
     _connect_optional_signal(atlas_content, "exportAtlasRequested", callbacks.export_atlas)
+    _connect_optional_signal(
+        atlas_content,
+        "atlasDocumentSettingsChanged",
+        callbacks.update_atlas_document_settings,
+    )
 
 
 def _connect_optional_signal(content, signal_name: str, callback) -> None:
