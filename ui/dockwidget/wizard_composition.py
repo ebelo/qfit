@@ -571,7 +571,7 @@ def _sync_state_from_facts(facts: WizardProgressFacts) -> SyncPageState:
     if facts.activities_fetched:
         status_text = "Activities fetched"
         detail_text = (
-            "Store fetched activities in the GeoPackage to complete synchronization."
+            "Finish synchronization to persist fetched activities in the GeoPackage."
         )
     elif facts.activities_stored:
         status_text = "Activities stored"
@@ -584,7 +584,7 @@ def _sync_state_from_facts(facts: WizardProgressFacts) -> SyncPageState:
     primary_action_label = default.primary_action_label
     routes_action_label = default.routes_action_label
     if facts.activities_fetched:
-        primary_action_label = "Store fetched activities"
+        primary_action_label = "Finish activity sync"
     if facts.route_sync_in_progress:
         routes_action_label = "Cancel route sync"
     if facts.sync_in_progress:
@@ -691,9 +691,9 @@ def _stored_activity_summary(facts: WizardProgressFacts) -> str:
 
 def _fetched_activity_summary(facts: WizardProgressFacts) -> str:
     if facts.fetched_activity_count is None:
-        return "Fetched activities ready to store"
+        return "Fetched activities ready to finish sync"
     noun = "activity" if facts.fetched_activity_count == 1 else "activities"
-    return f"{max(facts.fetched_activity_count, 0)} fetched {noun} ready to store"
+    return f"{max(facts.fetched_activity_count, 0)} fetched {noun} ready to finish sync"
 
 
 def _map_state_from_facts(facts: WizardProgressFacts) -> MapPageState:

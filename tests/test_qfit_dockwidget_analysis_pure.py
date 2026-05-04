@@ -2245,6 +2245,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.querySummaryLabel = SimpleNamespace(setText=MagicMock())
         dock.activityPreviewPlainTextEdit = SimpleNamespace(setPlainText=MagicMock())
         dock._set_status = MagicMock()
+        dock._start_store_activities = MagicMock(return_value=True)
         result = SimpleNamespace(
             cancelled=False,
             error_message=None,
@@ -2272,7 +2273,174 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertEqual(dock.countLabel.text(), "Activities fetched: 1")
         dock.querySummaryLabel.setText.assert_called_once_with("1 activity")
         dock.activityPreviewPlainTextEdit.setPlainText.assert_called_once_with("Morning Run")
+        dock._start_store_activities.assert_called_once_with(
+            status_text="Storing fetched activities…"
+        )
+        dock._set_status.assert_not_called()
+
+    def test_on_fetch_finished_reports_status_without_auto_store_when_no_activities(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._fetch_task = object()
+        dock._set_fetch_running = MagicMock()
+        dock.activityTypeComboBox = _FakeComboBox(current_text="All")
+        dock._current_activity_preview_request = MagicMock(return_value=None)
+        dock.activity_workflow = MagicMock()
+        dock.settings = _FakeSettings()
+        dock._apply_activity_type_options = MagicMock()
+        dock.countLabel = _FakeLabel("")
+        dock.querySummaryLabel = SimpleNamespace(setText=MagicMock())
+        dock.activityPreviewPlainTextEdit = SimpleNamespace(setPlainText=MagicMock())
+        dock._set_status = MagicMock()
+        dock._start_store_activities = MagicMock(return_value=True)
+        result = SimpleNamespace(
+            cancelled=False,
+            error_message=None,
+            activities=[],
+            metadata={"provider": "strava"},
+            today_str="2026-04-16",
+            activity_type_options=None,
+            count_label_text="Activities fetched: 0",
+            preview_result=None,
+            status_text="Fetched 0 activities",
+        )
+        dock.activity_workflow.build_fetch_completion_result.return_value = result
+
+        self.module.QfitDockWidget._on_fetch_finished(dock, [], None, False, object())
+
+        dock._start_store_activities.assert_not_called()
+        dock._set_status.assert_called_once_with("Fetched 0 activities")
+
+    def test_on_fetch_finished_reports_fetch_status_when_auto_store_cannot_start(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._fetch_task = object()
+        dock._set_fetch_running = MagicMock()
+        dock.activityTypeComboBox = _FakeComboBox(current_text="All")
+        dock._current_activity_preview_request = MagicMock(return_value=None)
+        dock.activity_workflow = MagicMock()
+        dock.settings = _FakeSettings()
+        dock._apply_activity_type_options = MagicMock()
+        dock.countLabel = _FakeLabel("")
+        dock.querySummaryLabel = SimpleNamespace(setText=MagicMock())
+        dock.activityPreviewPlainTextEdit = SimpleNamespace(setPlainText=MagicMock())
+        dock._set_status = MagicMock()
+        dock._start_store_activities = MagicMock(return_value=False)
+        result = SimpleNamespace(
+            cancelled=False,
+            error_message=None,
+            activities=[{"id": 1}],
+            metadata={"provider": "strava"},
+            today_str="2026-04-16",
+            activity_type_options=None,
+            count_label_text="Activities fetched: 1",
+            preview_result=None,
+            status_text="Fetched 1 activity",
+        )
+        dock.activity_workflow.build_fetch_completion_result.return_value = result
+
+        self.module.QfitDockWidget._on_fetch_finished(dock, [{"id": 1}], None, False, object())
+
+        dock._start_store_activities.assert_called_once_with(
+            status_text="Storing fetched activities…"
+        )
         dock._set_status.assert_called_once_with("Fetched 1 activity")
+
+    def test_on_fetch_finished_keeps_store_failure_status_when_auto_store_handles_error(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._fetch_task = object()
+        dock._set_fetch_running = MagicMock()
+        dock.activityTypeComboBox = _FakeComboBox(current_text="All")
+        dock._current_activity_preview_request = MagicMock(return_value=None)
+        dock.activity_workflow = MagicMock()
+        dock.settings = _FakeSettings()
+        dock._apply_activity_type_options = MagicMock()
+        dock.countLabel = _FakeLabel("")
+        dock.querySummaryLabel = SimpleNamespace(setText=MagicMock())
+        dock.activityPreviewPlainTextEdit = SimpleNamespace(setPlainText=MagicMock())
+        dock._set_status = MagicMock()
+        dock._start_store_activities = MagicMock(return_value=None)
+        result = SimpleNamespace(
+            cancelled=False,
+            error_message=None,
+            activities=[{"id": 1}],
+            metadata={"provider": "strava"},
+            today_str="2026-04-16",
+            activity_type_options=None,
+            count_label_text="Activities fetched: 1",
+            preview_result=None,
+            status_text="Fetched 1 activity",
+        )
+        dock.activity_workflow.build_fetch_completion_result.return_value = result
+
+        self.module.QfitDockWidget._on_fetch_finished(dock, [{"id": 1}], None, False, object())
+
+        dock._start_store_activities.assert_called_once_with(
+            status_text="Storing fetched activities…"
+        )
+        dock._set_status.assert_not_called()
+
+    def test_start_store_activities_reports_already_running_task(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._store_task = object()
+        dock._set_status = MagicMock()
+
+        started = self.module.QfitDockWidget._start_store_activities(
+            dock,
+            status_text="Storing fetched activities…",
+        )
+
+        self.assertIsNone(started)
+        dock._set_status.assert_called_once_with("Store already in progress...")
+
+    def test_start_store_activities_returns_false_for_missing_input(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._store_task = None
+        dock._save_settings = MagicMock()
+        dock.activities = []
+        dock.outputPathLineEdit = _FakeLineEdit("")
+        dock.writeActivityPointsCheckBox = _FakeCheckBox(True)
+        dock.pointSamplingStrideSpinBox = _FakeSpinBox(2)
+        dock.last_fetch_context = {"provider": "strava"}
+        dock.settings = _FakeSettings()
+        dock.load_workflow = MagicMock()
+        dock.load_workflow.build_write_request.side_effect = self.module.LoadWorkflowError(
+            "Choose a GeoPackage output path first."
+        )
+        dock._show_error = MagicMock()
+
+        started = self.module.QfitDockWidget._start_store_activities(
+            dock,
+            status_text="Storing fetched activities…",
+        )
+
+        self.assertFalse(started)
+        dock._show_error.assert_called_once_with(
+            "Missing input",
+            "Choose a GeoPackage output path first.",
+        )
+
+    def test_start_store_activities_returns_false_for_write_request_error(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._store_task = None
+        dock._save_settings = MagicMock()
+        dock.activities = [{"id": 1}]
+        dock.outputPathLineEdit = _FakeLineEdit("/tmp/qfit.gpkg")
+        dock.writeActivityPointsCheckBox = _FakeCheckBox(True)
+        dock.pointSamplingStrideSpinBox = _FakeSpinBox(2)
+        dock.last_fetch_context = {"provider": "strava"}
+        dock.settings = _FakeSettings()
+        dock.load_workflow = MagicMock()
+        dock.load_workflow.build_write_request.side_effect = RuntimeError("database locked")
+        dock._show_error = MagicMock()
+        dock._set_status = MagicMock()
+
+        started = self.module.QfitDockWidget._start_store_activities(
+            dock,
+            status_text="Storing fetched activities…",
+        )
+
+        self.assertIsNone(started)
+        dock._show_error.assert_called_once_with("GeoPackage export failed", "database locked")
+        dock._set_status.assert_called_once_with("GeoPackage export failed")
 
     def test_on_load_layers_clicked_updates_runtime_state_from_result(self):
         dock = object.__new__(self.module.QfitDockWidget)

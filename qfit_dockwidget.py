@@ -1392,12 +1392,23 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         if result.preview_result is not None:
             self.querySummaryLabel.setText(result.preview_result.query_summary_text)
             self.activityPreviewPlainTextEdit.setPlainText(result.preview_result.preview_text)
+        if result.activities:
+            store_started = self._start_store_activities(
+                status_text="Storing fetched activities…"
+            )
+            if store_started:
+                return
+            if store_started is None:
+                return
         self._set_status(result.status_text)
 
     def on_load_clicked(self):
+        self._start_store_activities(status_text="Store started...")
+
+    def _start_store_activities(self, *, status_text):
         if self._store_task is not None:
             self._set_status("Store already in progress...")
-            return
+            return None
 
         self._save_settings()
         workflow = self._store_activities_workflow()
@@ -1412,13 +1423,13 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             )
         except LoadWorkflowError as exc:
             self._show_error("Missing input", str(exc))
-            return
+            return False
         except (RuntimeError, OSError, ValueError) as exc:
             _msg = "GeoPackage export failed"
             logger.exception(_msg)
             self._show_error(_msg, str(exc))
             self._set_status(_msg)
-            return
+            return None
 
         store_task = build_store_task(
             workflow,
@@ -1428,8 +1439,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._runtime_store().begin_store(store_task)
         self.loadButton.setEnabled(False)
         self.loadButton.setText("Store in progress...")
-        self._set_status("Store started...")
+        self._set_status(status_text)
         QgsApplication.taskManager().addTask(store_task)
+        return True
 
     def _handle_store_task_finished(self, result, error_message, cancelled):
         self._runtime_store().clear_store()

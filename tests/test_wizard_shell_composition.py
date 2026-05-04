@@ -633,7 +633,7 @@ class WizardShellCompositionTest(unittest.TestCase):
             "Wait for the current synchronization to finish.",
         )
 
-    def test_sync_page_shows_fetched_activities_ready_to_store(self):
+    def test_sync_page_shows_fetched_activities_ready_to_finish_sync(self):
         facts = self.composition.WizardProgressFacts(
             connection_configured=True,
             activities_fetched=True,
@@ -646,20 +646,48 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertEqual(assembled.sync_content.status_label.text(), "Activities fetched")
         self.assertEqual(
             assembled.sync_content.detail_label.text(),
-            "Store fetched activities in the GeoPackage to complete synchronization.",
+            "Finish synchronization to persist fetched activities in the GeoPackage.",
         )
         self.assertEqual(
             assembled.sync_content.activity_summary_label.text(),
-            "3 fetched activities ready to store",
+            "3 fetched activities ready to finish sync",
         )
         self.assertEqual(
             assembled.sync_content.sync_button.text(),
-            "Store fetched activities",
+            "Finish activity sync",
         )
         self.assertTrue(assembled.sync_content.sync_button.isEnabled())
         self.assertIn(
-            "3 fetched activities ready to store",
+            "3 fetched activities ready to finish sync",
             assembled.shell.footer_bar.text(),
+        )
+
+    def test_sync_page_describes_unknown_fetched_activity_count(self):
+        facts = self.composition.WizardProgressFacts(
+            connection_configured=True,
+            activities_fetched=True,
+            fetched_activity_count=None,
+        )
+
+        assembled = self.composition.build_placeholder_wizard_shell(progress_facts=facts)
+
+        self.assertEqual(
+            assembled.sync_content.activity_summary_label.text(),
+            "Fetched activities ready to finish sync",
+        )
+
+    def test_sync_page_uses_singular_fetched_activity_summary(self):
+        facts = self.composition.WizardProgressFacts(
+            connection_configured=True,
+            activities_fetched=True,
+            fetched_activity_count=1,
+        )
+
+        assembled = self.composition.build_placeholder_wizard_shell(progress_facts=facts)
+
+        self.assertEqual(
+            assembled.sync_content.activity_summary_label.text(),
+            "1 fetched activity ready to finish sync",
         )
 
     def test_sync_page_prioritizes_pending_fetch_over_existing_stored_dataset(self):
@@ -676,7 +704,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertEqual(assembled.sync_content.status_label.text(), "Activities fetched")
         self.assertEqual(
             assembled.sync_content.sync_button.text(),
-            "Store fetched activities",
+            "Finish activity sync",
         )
 
     def test_map_page_summary_names_stored_output_before_layers_load(self):
