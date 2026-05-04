@@ -170,8 +170,8 @@ class SyncPageContent(QWidget):
         layout.setSpacing(8)
         layout.addWidget(self.status_label)
         layout.addWidget(self.detail_label)
-        layout.addWidget(self.activity_summary_label)
         layout.addWidget(self.action_row)
+        layout.addWidget(self.activity_summary_label)
         layout.addWidget(self.clear_action_row)
         return layout
 

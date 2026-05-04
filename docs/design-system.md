@@ -56,6 +56,14 @@ Best practices:
 - Button labels should be verbs plus objects: `Load stored map layers`, `Apply filters`, `Export atlas PDF`.
 - Avoid vague labels such as `Run`, `OK`, `Process`, or `Submit` unless the surrounding context makes the action unambiguous.
 
+Interactive state conventions:
+
+- Default secondary buttons use a light grey contour on a neutral/transparent background so they read as clickable without competing with the primary action.
+- Hover state should visibly confirm clickability with a subtle grey fill and a pointing-hand cursor.
+- Selected/current navigation items use a filled accent treatment; if neutral selection is needed inside a panel, prefer a darker grey fill plus clear text contrast.
+- The recommended next action in a panel is the primary action: filled qfit accent, stronger border, bold text, and placed last/rightmost in the action row.
+- Do not communicate recommendation, selection, hover, warning, or disabled state with color alone; pair state with placement, label, tooltip, icon, or nearby helper/status copy.
+
 ### 1.5 Prefer explicit state over surprise behavior
 
 QGIS workflows often involve external state: selected layers, stored GeoPackages, credentials, rendered outputs, and map canvas changes.
@@ -125,13 +133,13 @@ Use these page keys and titles as the baseline in docs, UI labels, and PR discus
 Each qfit panel or workflow page should use this order:
 
 1. Title or concise section heading.
-2. One-line status or summary.
-3. Helper copy only when it clarifies the next decision.
+2. One-line page readiness status.
+3. Helper or instruction copy that explains the next decision.
 4. Configuration fields.
 5. Action buttons.
-6. Result/status details, warnings, or follow-up hints.
+6. Result/status details, warnings, or follow-up hints produced by those actions.
 
-Do not place action buttons before the configuration fields they depend on.
+Do not place action buttons before the configuration fields they depend on. Instructional copy belongs above the relevant actions; action outcomes and contextual result summaries belong below the action row that produced them.
 
 ### 2.3 Field and form conventions
 
