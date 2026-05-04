@@ -125,7 +125,7 @@ class LoadDatasetWorkflowTests(unittest.TestCase):
         )
 
         self.assertIn("No saved route layers found", result.status)
-        self.assertIn("Sync saved routes to GeoPackage", result.status)
+        self.assertIn("Sync saved routes", result.status)
 
     def test_load_existing_route_status_tolerates_uncountable_route_layers(self):
         class BrokenFeatureCountLayer:

@@ -61,7 +61,7 @@ class SyncPageContentTest(unittest.TestCase):
         )
         self.assertEqual(content.sync_button.toolTip(), "")
         self.assertEqual(content.load_button.objectName(), "qfitWizardSyncLoadButton")
-        self.assertEqual(content.load_button.text(), "Load GeoPackage")
+        self.assertEqual(content.load_button.text(), "Load activity layers")
         self.assertEqual(
             content.load_button.property("secondaryAction"),
             "load_activities",
@@ -74,14 +74,14 @@ class SyncPageContentTest(unittest.TestCase):
         )
         self.assertEqual(
             content.load_button.toolTip(),
-            "Select an existing GeoPackage before loading local data.",
+            "Select an existing GeoPackage before loading activity layers.",
         )
         self.assertEqual(
             content.routes_button.objectName(),
             "qfitWizardSyncRoutesButton",
         )
         self.assertEqual(
-            content.routes_button.text(), "Sync saved routes to GeoPackage"
+            content.routes_button.text(), "Sync saved routes"
         )
         self.assertEqual(
             content.routes_button.property("secondaryAction"),
@@ -97,7 +97,7 @@ class SyncPageContentTest(unittest.TestCase):
             content.clear_button.objectName(),
             "qfitWizardSyncClearDatabaseButton",
         )
-        self.assertEqual(content.clear_button.text(), "Clear database…")
+        self.assertEqual(content.clear_button.text(), "Clear local database…")
         self.assertEqual(
             content.clear_button.property("secondaryAction"),
             "clear_database",

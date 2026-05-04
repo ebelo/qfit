@@ -1499,7 +1499,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         if button is None:
             return
         button.setText(
-            "Cancel route sync" if running else "Sync saved routes to GeoPackage"
+            "Cancel route sync" if running else "Sync saved routes"
         )
         button.setEnabled(True)
         self.exchangeCodeButton.setEnabled(not running)
