@@ -43,6 +43,7 @@ class ConnectionPageState:
     """
 
     connected: bool = False
+    connection_configured: bool = False
     status_text: str = "Strava not connected"
     detail_text: str = "Configure qfit once, then continue to synchronization."
     credential_summary_text: str = "No Strava credentials configured"

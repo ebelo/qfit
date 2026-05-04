@@ -10,7 +10,11 @@ from qfit.ui.application.wizard_progress import WizardProgressFacts
 from ._qt_compat import import_qt_module
 from .analysis_page import AnalysisPageContent, build_analysis_page_content
 from .atlas_page import AtlasPageContent, build_atlas_page_content
-from .connection_page import ConnectionPageContent, build_connection_page_content
+from .connection_page import (
+    ConnectionPageContent,
+    ConnectionPageState,
+    build_connection_page_content,
+)
 from .local_first_shell import LocalFirstDockShell
 from .map_page import MapPageContent, build_map_page_content
 from .sync_page import SyncPageContent, build_sync_page_content
@@ -188,7 +192,9 @@ def refresh_local_first_dock_composition(
     composition.map_content.set_state(page_states.map_state)
     composition.analysis_content.set_state(page_states.analysis_state)
     composition.atlas_content.set_state(page_states.atlas_state)
-    composition.connection_content.set_state(page_states.connection_state)
+    composition.connection_content.set_state(
+        _settings_state_from_connection_state(page_states.connection_state)
+    )
     return composition
 
 
@@ -236,7 +242,7 @@ def _install_local_first_page_content(
     )
     settings_content = build_connection_page_content(
         parent=pages["settings"],
-        state=page_states.connection_state,
+        state=_settings_state_from_connection_state(page_states.connection_state),
     )
     _page_layout(pages["data"]).addWidget(data_content)
     _page_layout(pages["map"]).addWidget(map_content)
@@ -249,6 +255,31 @@ def _install_local_first_page_content(
         analysis_content=analysis_content,
         atlas_content=atlas_content,
         settings_content=settings_content,
+    )
+
+
+def _settings_state_from_connection_state(
+    state: ConnectionPageState,
+) -> ConnectionPageState:
+    """Adapt reusable connection controls for the local-first Settings page."""
+
+    settings_action_label = (
+        "Review settings"
+        if state.connection_configured
+        else "Configure settings"
+    )
+    return ConnectionPageState(
+        connected=state.connected,
+        connection_configured=state.connection_configured,
+        status_text=state.status_text,
+        detail_text=(
+            "Review provider credentials and durable qfit preferences away from "
+            "daily workflow panels."
+        ),
+        credential_summary_text=state.credential_summary_text,
+        primary_action_label=settings_action_label,
+        primary_action_enabled=state.primary_action_enabled,
+        primary_action_blocked_tooltip=state.primary_action_blocked_tooltip,
     )
 
 
