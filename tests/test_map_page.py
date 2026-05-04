@@ -35,7 +35,7 @@ class MapPageContentTest(unittest.TestCase):
 
         self.assertEqual(content.objectName(), "qfitWizardMapPageContent")
         self.assertEqual(content.status_label.objectName(), "qfitWizardMapStatus")
-        self.assertEqual(content.status_label.text(), "Activity layers not loaded")
+        self.assertEqual(content.status_label.text(), "Stored map layers not loaded")
         self.assertEqual(content.status_label.property("mapState"), "not_loaded")
         self.assertEqual(content.status_label.property("tone"), "warn")
         self.assertEqual(content.detail_label.objectName(), "qfitWizardMapDetail")
@@ -47,7 +47,7 @@ class MapPageContentTest(unittest.TestCase):
         )
         self.assertEqual(
             content.layer_summary_label.text(),
-            "No activity layers on the map",
+            "No stored map layers on the map",
         )
         self.assertIn(COLOR_MUTED, content.layer_summary_label.styleSheet())
         self.assertEqual(
@@ -75,7 +75,7 @@ class MapPageContentTest(unittest.TestCase):
             content.load_layers_button.objectName(),
             "qfitWizardMapLoadLayersButton",
         )
-        self.assertEqual(content.load_layers_button.text(), "Load activity layers")
+        self.assertEqual(content.load_layers_button.text(), "Load stored map layers")
         self.assertEqual(
             content.load_layers_button.property("secondaryAction"),
             "load_activity_layers",
@@ -111,7 +111,7 @@ class MapPageContentTest(unittest.TestCase):
             content.apply_filters_button.property("wizardActionAvailability"),
             "blocked",
         )
-        self.assertIn("Load activity layers", content.apply_filters_button.toolTip())
+        self.assertIn("Load stored map layers", content.apply_filters_button.toolTip())
         self.assertEqual(content.action_row.objectName(), "qfitWizardMapActionRow")
         self.assertEqual(
             content.action_row.outer_layout().widgets,

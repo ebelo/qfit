@@ -39,18 +39,18 @@ class MapPageState:
     """Render facts for the #609 map-and-filters wizard page."""
 
     loaded: bool = False
-    status_text: str = "Activity layers not loaded"
-    detail_text: str = "Load stored activities, choose map context, then apply filters."
-    layer_summary_text: str = "No activity layers on the map"
+    status_text: str = "Stored map layers not loaded"
+    detail_text: str = "Load stored map layers, choose map context, then apply filters."
+    layer_summary_text: str = "No stored map layers on the map"
     background_summary_text: str = "Basemap disabled"
     style_summary_text: str = "Default activity styling"
     filter_summary_text: str = "All stored activities visible once layers are loaded"
-    load_action_label: str = "Load activity layers"
+    load_action_label: str = "Load stored map layers"
     load_action_enabled: bool = True
-    load_action_blocked_tooltip: str = "Sync activities before loading map layers."
+    load_action_blocked_tooltip: str = "Sync activities before loading stored map layers."
     primary_action_label: str = "Apply filters"
     apply_action_enabled: bool | None = None
-    apply_action_blocked_tooltip: str = "Load activity layers before applying filters."
+    apply_action_blocked_tooltip: str = "Load stored map layers before applying filters."
 
 
 class MapPageContent(QWidget):

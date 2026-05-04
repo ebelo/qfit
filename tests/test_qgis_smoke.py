@@ -285,7 +285,7 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertFalse(dock.mapboxAccessTokenLineEdit.isVisible())
             self.assertEqual(dock.refreshButton.text(), "Fetch activities")
             self.assertEqual(dock.loadButton.text(), "Store activities")
-            self.assertEqual(dock.loadLayersButton.text(), "Load activity layers")
+            self.assertEqual(dock.loadLayersButton.text(), "Load stored map layers")
             self.assertEqual(dock.clearDatabaseButton.text(), "Clear database…")
             self.assertEqual(dock.applyFiltersButton.text(), "Apply filters")
             self.assertTrue(dock.writeActivityPointsCheckBox.isChecked())

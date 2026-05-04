@@ -169,7 +169,7 @@ class LocalFirstDockCompositionTests(unittest.TestCase):
         self.assertEqual(composition.shell.current_key(), "map")
         self.assertTrue(composition.shell.button_for_key("map").property("current"))
         self.assertEqual(composition.sync_content.status_label.text(), "Activities stored")
-        self.assertEqual(composition.map_content.status_label.text(), "Activity layers loaded")
+        self.assertEqual(composition.map_content.status_label.text(), "Stored map layers loaded")
         self.assertEqual(composition.connection_content.status_label.text(), "Strava connected")
         self.assertEqual(
             composition.connection_content.detail_label.text(),

@@ -53,7 +53,7 @@ Best practices:
 - Each page or section should have at most one primary action.
 - Secondary actions should support the primary flow without competing with it.
 - Destructive actions must be visually and textually distinct, and should require confirmation when data loss is possible.
-- Button labels should be verbs plus objects: `Load activity layers`, `Apply filters`, `Export atlas PDF`.
+- Button labels should be verbs plus objects: `Load stored map layers`, `Apply filters`, `Export atlas PDF`.
 - Avoid vague labels such as `Run`, `OK`, `Process`, or `Submit` unless the surrounding context makes the action unambiguous.
 
 ### 1.5 Prefer explicit state over surprise behavior
@@ -156,7 +156,7 @@ Button rules:
 - Use one primary action per workflow section.
 - Use specific action labels:
   - `Sync activities`
-  - `Load activity layers`
+  - `Load stored map layers`
   - `Apply filters`
   - `Run analysis`
   - `Export atlas PDF`
@@ -173,7 +173,7 @@ Rules:
 - Do not add a show/hide filters control.
 - Filter fields appear before filter actions.
 - The Map panel action row appears below the filter fields.
-- `Load activity layers` is a preparation action.
+- `Load stored map layers` is a preparation action.
 - `Apply filters` is the primary filter action.
 - Basemap and style configuration should stay visually distinct from activity filters.
 - Filter summaries should describe the active subset, not replace the fields.
@@ -184,7 +184,7 @@ Recommended Map panel order:
 2. Basemap configuration.
 3. Style configuration.
 4. Filter configuration.
-5. `Load activity layers` / `Apply filters` actions.
+5. `Load stored map layers` / `Apply filters` actions.
 6. Filter or layer result status.
 
 ### 2.6 Data panel rules
@@ -259,7 +259,7 @@ Examples:
 
 - No credentials: prompt users to configure Strava in Settings.
 - No stored activities: prompt users to sync or import data.
-- No loaded layers: prompt users to load activity layers before filtering.
+- No loaded layers: prompt users to load stored map layers before filtering.
 - No atlas pages: explain which data or configuration is required before export.
 
 Disabled actions should not feel broken. Pair disabled state with tooltip or nearby helper text that names the prerequisite.

@@ -40,14 +40,14 @@ class SyncPageState:
 
     ready: bool = False
     status_text: str = "Activities not synced yet"
-    detail_text: str = "Sync Strava activities or load activity layers from an existing GeoPackage."
+    detail_text: str = "Sync Strava activities or load stored map layers from an existing GeoPackage."
     activity_summary_text: str = "No activities stored"
     primary_action_label: str = "Sync activities"
     primary_action_enabled: bool = True
     primary_action_blocked_tooltip: str = "Configure the Strava connection before syncing activities."
-    local_action_label: str = "Load activity layers"
+    local_action_label: str = "Load stored map layers"
     local_action_enabled: bool = False
-    local_action_blocked_tooltip: str = "Select an existing GeoPackage before loading activity layers."
+    local_action_blocked_tooltip: str = "Select an existing GeoPackage before loading stored map layers."
     routes_action_label: str = "Sync saved routes"
     routes_action_enabled: bool = True
     routes_action_blocked_tooltip: str = (

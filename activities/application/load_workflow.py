@@ -129,7 +129,7 @@ def _build_store_database_status(result: StoreActivitiesResult) -> str:
         "Synced {fetched} fetched activities into GeoPackage: "
         "inserted {inserted}, updated {updated}, unchanged {unchanged}, "
         "stored total {total}. GeoPackage updated at {path}. "
-        "Use Load activity layers in Visualize when you want the stored data in QGIS."
+        "Use Load stored map layers in Visualize when you want the stored data in QGIS."
     ).format(
         fetched=result.fetched_count,
         inserted=result.sync.inserted if result.sync else 0,

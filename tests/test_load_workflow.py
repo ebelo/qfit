@@ -67,7 +67,7 @@ class StoreActivitiesWorkflowTests(unittest.TestCase):
         self.assertIsInstance(result, StoreActivitiesResult)
         self.assertEqual(result.output_path, "/tmp/out.gpkg")
         self.assertEqual(result.total_stored, 7)
-        self.assertIn("Use Load activity layers in Visualize", result.status)
+        self.assertIn("Use Load stored map layers in Visualize", result.status)
 
 
 class LoadDatasetWorkflowTests(unittest.TestCase):
@@ -419,7 +419,7 @@ class WriteDatabaseSuccessTests(unittest.TestCase):
         self.assertEqual(result.output_path, "/tmp/out.gpkg")
         self.assertEqual(result.total_stored, 8)
         self.assertIsNone(result.activities_layer)
-        self.assertIn("Use Load activity layers in Visualize", result.status)
+        self.assertIn("Use Load stored map layers in Visualize", result.status)
 
 
 class LoadExistingValidationTests(unittest.TestCase):

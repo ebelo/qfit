@@ -708,22 +708,22 @@ def _map_state_from_facts(facts: WizardProgressFacts) -> MapPageState:
         style_summary_text=_map_style_summary(facts, default),
         filter_summary_text=_map_filter_summary(facts, default),
         load_action_label=(
-            "Reload activity layers" if activity_layers_loaded else default.load_action_label
+            "Reload stored map layers" if activity_layers_loaded else default.load_action_label
         ),
         load_action_enabled=activity_layers_loaded,
         load_action_blocked_tooltip=(
-            "Use the primary action to load activity layers."
+            "Use the primary action to load stored map layers."
             if stored_without_loaded_layers
             else default.load_action_blocked_tooltip
         ),
         primary_action_label=(
-            "Load activity layers"
+            "Load stored map layers"
             if stored_without_loaded_layers
             else default.primary_action_label
         ),
         apply_action_enabled=facts.activities_stored,
         apply_action_blocked_tooltip=(
-            "Sync activities before loading map layers."
+            "Sync activities before loading stored map layers."
             if not facts.activities_stored
             else default.apply_action_blocked_tooltip
         ),
@@ -732,22 +732,22 @@ def _map_state_from_facts(facts: WizardProgressFacts) -> MapPageState:
 
 def _map_status_text(facts: WizardProgressFacts) -> str:
     if facts.activity_layers_loaded:
-        return "Activity layers loaded"
+        return "Stored map layers loaded"
     if facts.activities_stored:
-        return "Stored activities ready to load"
+        return "Stored map layers ready to load"
     return "Sync required before map loading"
 
 
 def _map_layer_summary(facts: WizardProgressFacts) -> str:
     if facts.activity_layers_loaded:
         if facts.output_name is not None:
-            return f"Activity layers from {facts.output_name} are loaded on the map"
-        return "Activity layers are loaded on the map"
+            return f"Stored map layers from {facts.output_name} are loaded on the map"
+        return "Stored map layers are loaded on the map"
     if facts.activities_stored:
         if facts.output_name is not None:
-            return f"Stored activities in {facts.output_name} are ready to load"
-        return "Stored activities are ready to load"
-    return "Sync activities before loading map layers"
+            return f"Stored map layers in {facts.output_name} are ready to load"
+        return "Stored map layers are ready to load"
+    return "Sync activities before loading stored map layers"
 
 
 def _map_background_summary(facts: WizardProgressFacts, default: MapPageState) -> str:

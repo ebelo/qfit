@@ -51,7 +51,7 @@ _PAGE_COPY_BY_KEY = {
         "Primary action: sync activities; secondary action: load activities",
     ),
     "map": (
-        "Load activity layers, choose a background map, and refine filters.",
+        "Load stored map layers, choose a background map, and refine filters.",
         "Primary action: apply map filters",
     ),
     "analysis": (
