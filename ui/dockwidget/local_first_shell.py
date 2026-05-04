@@ -6,12 +6,11 @@ from qfit.ui.application.local_first_navigation import (
     build_local_first_dock_navigation_state,
 )
 from qfit.ui.tokens import (
-    COLOR_ACCENT,
-    COLOR_ACCENT_DARK,
+    COLOR_GROUP_BORDER,
     COLOR_HOVER,
     COLOR_MUTED,
-    COLOR_SEPARATOR,
     COLOR_TEXT,
+    COLOR_TITLE_BAR,
 )
 
 from ._qt_compat import import_qt_module
@@ -271,33 +270,30 @@ def _nav_tone(page_state: LocalFirstDockPageState) -> str:
 
 def _navigation_button_stylesheet(tone: str) -> str:
     if tone == "current":
-        background = COLOR_ACCENT
-        border = COLOR_ACCENT_DARK
-        color = "white"
+        background = COLOR_TITLE_BAR
+        color = COLOR_TEXT
         font_weight = "700"
     elif tone == "ready":
         background = "transparent"
-        border = COLOR_ACCENT
         color = COLOR_TEXT
         font_weight = "600"
     else:
         background = "transparent"
-        border = COLOR_SEPARATOR
         color = COLOR_MUTED
         font_weight = "500"
     return (
         "QToolButton { "
         f"background: {background}; "
-        f"border: 1px solid {border}; "
-        "border-radius: 8px; "
+        "border: none; "
+        "border-radius: 0px; "
         "padding: 4px 8px; "
         f"color: {color}; "
         f"font-weight: {font_weight}; "
         "text-align: left; "
         "} "
         f"QToolButton:hover:enabled {{ background: {COLOR_HOVER}; color: {COLOR_TEXT}; }} "
-        f"QToolButton:checked {{ background: {COLOR_ACCENT}; color: white; }} "
-        f"QToolButton:checked:hover {{ background: {COLOR_ACCENT_DARK}; color: white; }} "
+        f"QToolButton:checked {{ background: {COLOR_TITLE_BAR}; color: {COLOR_TEXT}; font-weight: 700; }} "
+        f"QToolButton:checked:hover {{ background: {COLOR_GROUP_BORDER}; color: {COLOR_TEXT}; }} "
         f"QToolButton:disabled {{ color: {COLOR_MUTED}; }}"
     )
 
