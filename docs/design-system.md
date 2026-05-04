@@ -115,7 +115,7 @@ qfit's current workflow model follows the stable wizard sections defined in `ui/
 1. **Connection** (`connection`, current dock title `Strava connection`) — configure provider access and connection readiness.
 2. **Synchronization** (`sync`, current dock title `Fetch and store`) — fetch, store, and load activity data.
 3. **Map & filters** (`map`, current dock title `Visualize`) — configure layers, basemap, styles, and filters.
-4. **Spatial analysis** (`analysis`, current dock title `Analyze`) — choose analysis mode and run analysis.
+4. **Spatial analysis (optional)** (`analysis`, current dock title `Analyze`) — choose analysis mode and run analysis when needed.
 5. **Atlas PDF** (`atlas`, current dock title `Publish / atlas`) — configure document output and export the PDF atlas.
 
 Use these existing workflow keys and titles as the baseline in docs, UI labels, and PR discussion. Higher-level language such as Import, Visualize, Analyze, and Publish is fine for product summaries, but implementation guidance should map back to the concrete workflow sections above.
@@ -284,7 +284,7 @@ Rules:
 
 Use this checklist during review:
 
-- Does the change follow Import, Visualize, Analyze, Publish, Settings ownership?
+- Does the change follow the current workflow sections: Connection, Synchronization, Map & filters, Spatial analysis (optional), and Atlas PDF?
 - Are configuration fields shown before the actions that use them?
 - Is there only one primary action per section?
 - Are button labels specific verb-object phrases?
