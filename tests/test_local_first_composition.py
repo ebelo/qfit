@@ -61,6 +61,15 @@ class LocalFirstDockCompositionTests(unittest.TestCase):
             composition.connection_content,
             composition.page_content.settings_content,
         )
+        self.assertEqual(
+            composition.connection_content.detail_label.text(),
+            "Review provider credentials and durable qfit preferences away from "
+            "daily workflow panels.",
+        )
+        self.assertEqual(
+            composition.connection_content.configure_button.text(),
+            "Configure settings",
+        )
 
     def test_data_page_is_local_first_and_navigation_is_not_step_locked(self):
         composition = self.module.build_local_first_dock_composition(
@@ -162,6 +171,15 @@ class LocalFirstDockCompositionTests(unittest.TestCase):
         self.assertEqual(composition.sync_content.status_label.text(), "Activities stored")
         self.assertEqual(composition.map_content.status_label.text(), "Activity layers loaded")
         self.assertEqual(composition.connection_content.status_label.text(), "Strava connected")
+        self.assertEqual(
+            composition.connection_content.detail_label.text(),
+            "Review provider credentials and durable qfit preferences away from "
+            "daily workflow panels.",
+        )
+        self.assertEqual(
+            composition.connection_content.configure_button.text(),
+            "Review settings",
+        )
 
     def test_refresh_preserves_current_page_without_explicit_preference(self):
         composition = self.module.build_local_first_dock_composition(
