@@ -805,8 +805,10 @@ class StravaClientTests(unittest.TestCase):
         http_error = requests.HTTPError(response=response)
 
         with patch.object(client.session, "request", side_effect=http_error):
-            with self.assertRaisesRegex(StravaClientError, "Strava rate limit"):
+            with self.assertRaisesRegex(StravaClientError, "Strava rate limit") as ctx:
                 client._request_json("https://example.test", operation="Fetching Strava activities page 62")
+
+        self.assertTrue(ctx.exception.is_rate_limit)
 
 
 if __name__ == "__main__":

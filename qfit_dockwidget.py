@@ -1554,6 +1554,8 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         rate_limit_note = self.sync_controller._rate_limit_note(
             getattr(provider, "last_rate_limit", None)
         )
+        fetch_notice = result.get("fetch_notice") or getattr(provider, "last_fetch_notice", None)
+        fetch_notice_note = " {notice}".format(notice=fetch_notice) if fetch_notice else ""
         status = (
             "Synced {fetched} saved routes into GeoPackage: inserted {inserted}, "
             "updated {updated}, unchanged {unchanged}, stored total {total}. "
@@ -1570,7 +1572,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         )
         if cancelled:
             status = "Route sync completed after cancellation was requested. " + status
-        self._set_status(status + rate_limit_note)
+        self._set_status(status + rate_limit_note + fetch_notice_note)
 
     def on_load_layers_clicked(self):
         """Load an existing GeoPackage into QGIS without fetching from Strava."""

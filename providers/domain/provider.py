@@ -13,6 +13,10 @@ from ...detailed_route_strategy import DEFAULT_DETAILED_ROUTE_STRATEGY
 class ProviderError(RuntimeError):
     """Raised by an :class:`ActivityProvider` when a fetch or auth operation fails."""
 
+    def __init__(self, *args, is_rate_limit: bool = False):
+        super().__init__(*args)
+        self.is_rate_limit = bool(is_rate_limit)
+
 
 @runtime_checkable
 class ActivityProvider(Protocol):

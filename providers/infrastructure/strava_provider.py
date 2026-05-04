@@ -70,7 +70,7 @@ class StravaProvider:
                 detailed_route_strategy=detailed_route_strategy,
             )
         except StravaClientError as exc:
-            raise ProviderError(str(exc)) from exc
+            raise ProviderError(str(exc), is_rate_limit=exc.is_rate_limit) from exc
 
     def fetch_routes(self, athlete_id=None, per_page=200, max_pages=0):
         """Fetch saved routes from Strava.
@@ -86,14 +86,14 @@ class StravaProvider:
                 max_pages=max_pages,
             )
         except StravaClientError as exc:
-            raise ProviderError(str(exc)) from exc
+            raise ProviderError(str(exc), is_rate_limit=exc.is_rate_limit) from exc
 
     def fetch_route_detail(self, route_id, use_gpx_geometry=False):
         """Fetch detailed metadata for one Strava route."""
         try:
             return self._client.fetch_route_detail(route_id, use_gpx_geometry=use_gpx_geometry)
         except StravaClientError as exc:
-            raise ProviderError(str(exc)) from exc
+            raise ProviderError(str(exc), is_rate_limit=exc.is_rate_limit) from exc
 
     # ------------------------------------------------------------------
     # Strava-specific: OAuth authorisation helpers
@@ -112,7 +112,7 @@ class StravaProvider:
         try:
             return self._client.build_authorize_url(redirect_uri=redirect_uri)
         except StravaClientError as exc:
-            raise ProviderError(str(exc)) from exc
+            raise ProviderError(str(exc), is_rate_limit=exc.is_rate_limit) from exc
 
     def exchange_code_for_tokens(self, authorization_code, redirect_uri=None):
         """Exchange an authorisation code for access and refresh tokens."""
@@ -122,4 +122,4 @@ class StravaProvider:
                 redirect_uri=redirect_uri,
             )
         except StravaClientError as exc:
-            raise ProviderError(str(exc)) from exc
+            raise ProviderError(str(exc), is_rate_limit=exc.is_rate_limit) from exc

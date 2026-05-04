@@ -1,6 +1,7 @@
 import importlib
 import sys
 import unittest
+from dataclasses import dataclass
 from types import ModuleType, SimpleNamespace
 from unittest.mock import MagicMock
 
@@ -34,6 +35,12 @@ from qfit.providers.domain import ProviderError  # noqa: E402
 
 route_sync_task_module = importlib.reload(route_sync_task_module)
 RouteSyncTask = route_sync_task_module.RouteSyncTask
+
+
+@dataclass(frozen=True)
+class _FrozenRoute:
+    source_route_id: str
+    details_json: object | None = None
 
 if _ORIGINAL_QGIS is not None:
     sys.modules["qgis"] = _ORIGINAL_QGIS
@@ -175,6 +182,138 @@ class RouteSyncTaskTests(unittest.TestCase):
         self.assertTrue(task.run())
         provider.fetch_route_detail.assert_not_called()
         self.assertEqual(writer.write_routes.call_args.args[0], [route])
+
+    def test_pauses_gpx_enrichment_when_rate_limit_headroom_is_low(self):
+        routes = [
+            SimpleNamespace(source_route_id="42", details_json={}),
+            SimpleNamespace(source_route_id="43", details_json={}),
+        ]
+        provider = MagicMock()
+        provider.source_name = "strava"
+        provider.last_fetch_notice = None
+        provider.last_rate_limit = {
+            "short_limit": 200,
+            "short_remaining": 99,
+            "long_limit": 2000,
+            "long_remaining": 1797,
+        }
+        provider.fetch_routes.return_value = routes
+        writer = MagicMock()
+        writer.write_routes.return_value = {"path": "/tmp/routes.gpkg", "sync": None}
+
+        task = RouteSyncTask(
+            provider=provider,
+            output_path="/tmp/routes.gpkg",
+            writer_factory=MagicMock(return_value=writer),
+        )
+
+        self.assertTrue(task.run())
+        provider.fetch_route_detail.assert_not_called()
+        written_routes = writer.write_routes.call_args.args[0]
+        metadata = writer.write_routes.call_args.kwargs["sync_metadata"]
+        self.assertEqual(written_routes, routes)
+        self.assertEqual(
+            [route.details_json["gpx_geometry_status"] for route in written_routes],
+            ["skipped_rate_limit", "skipped_rate_limit"],
+        )
+        self.assertFalse(metadata["is_full_sync"])
+        self.assertIn("preserve Strava API headroom", metadata["fetch_notice"])
+        self.assertIn("fetch_notice", task._result)
+
+    def test_combines_route_list_and_gpx_rate_limit_notices(self):
+        route = SimpleNamespace(source_route_id="42", details_json={})
+        provider = MagicMock()
+        provider.source_name = "strava"
+        provider.last_fetch_notice = "Stopped early while fetching Strava routes."
+        provider.last_rate_limit = {
+            "short_limit": 200,
+            "short_remaining": 99,
+            "long_limit": 2000,
+            "long_remaining": 1797,
+        }
+        provider.fetch_routes.return_value = [route]
+        writer = MagicMock()
+        writer.write_routes.return_value = {"path": "/tmp/routes.gpkg", "sync": None}
+
+        task = RouteSyncTask(
+            provider=provider,
+            output_path="/tmp/routes.gpkg",
+            writer_factory=MagicMock(return_value=writer),
+        )
+
+        self.assertTrue(task.run())
+        metadata = writer.write_routes.call_args.kwargs["sync_metadata"]
+        self.assertIn("Stopped early while fetching Strava routes", metadata["fetch_notice"])
+        self.assertIn("preserve Strava API headroom", metadata["fetch_notice"])
+
+    def test_rate_limit_during_gpx_enrichment_writes_partial_routes(self):
+        first_route = SimpleNamespace(source_route_id="42", details_json={})
+        second_route = SimpleNamespace(source_route_id="43", details_json={})
+        detailed_route = SimpleNamespace(
+            source_route_id="42",
+            details_json={"gpx_geometry_status": "downloaded"},
+        )
+        provider = MagicMock()
+        provider.source_name = "strava"
+        provider.last_fetch_notice = None
+        provider.last_rate_limit = {
+            "short_limit": 200,
+            "short_remaining": 150,
+            "long_limit": 2000,
+            "long_remaining": 1800,
+        }
+        provider.fetch_routes.return_value = [first_route, second_route]
+        provider.fetch_route_detail.side_effect = [
+            detailed_route,
+            ProviderError(
+                "Fetching Strava route 43 GPX hit the Strava rate limit",
+                is_rate_limit=True,
+            ),
+        ]
+        writer = MagicMock()
+        writer.write_routes.return_value = {"path": "/tmp/routes.gpkg", "sync": None}
+
+        task = RouteSyncTask(
+            provider=provider,
+            output_path="/tmp/routes.gpkg",
+            writer_factory=MagicMock(return_value=writer),
+        )
+
+        self.assertTrue(task.run())
+        self.assertEqual(provider.fetch_route_detail.call_count, 2)
+        written_routes = writer.write_routes.call_args.args[0]
+        metadata = writer.write_routes.call_args.kwargs["sync_metadata"]
+        self.assertEqual(written_routes[0], detailed_route)
+        self.assertEqual(written_routes[1], second_route)
+        self.assertEqual(second_route.details_json["gpx_geometry_status"], "skipped_rate_limit")
+        self.assertFalse(metadata["is_full_sync"])
+        self.assertIn("Last Strava response", metadata["fetch_notice"])
+
+    def test_rate_limit_skip_marks_frozen_route_replacement(self):
+        route = _FrozenRoute(source_route_id="42", details_json=None)
+        provider = MagicMock()
+        provider.source_name = "strava"
+        provider.last_fetch_notice = None
+        provider.last_rate_limit = {
+            "short_limit": 200,
+            "short_remaining": 99,
+            "long_limit": 2000,
+            "long_remaining": 1797,
+        }
+        provider.fetch_routes.return_value = [route]
+        writer = MagicMock()
+        writer.write_routes.return_value = {"path": "/tmp/routes.gpkg", "sync": None}
+
+        task = RouteSyncTask(
+            provider=provider,
+            output_path="/tmp/routes.gpkg",
+            writer_factory=MagicMock(return_value=writer),
+        )
+
+        self.assertTrue(task.run())
+        written_route = writer.write_routes.call_args.args[0][0]
+        self.assertIsNot(written_route, route)
+        self.assertEqual(written_route.details_json["gpx_geometry_status"], "skipped_rate_limit")
 
 
 if __name__ == "__main__":
