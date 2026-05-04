@@ -815,7 +815,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "sync_saved_routes": "on_sync_routes_clicked",
             "clear_database": "on_clear_database_clicked",
             "load_activity_layers": "on_load_layers_clicked",
-            "edit_map_filters": "_update_status_for_filter_visibility",
             "apply_map_filters": "_run_wizard_map_step",
             "run_analysis": "on_run_analysis_clicked",
             "set_analysis_mode": "_set_wizard_analysis_mode",
@@ -970,7 +969,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "sync_saved_routes": "on_sync_routes_clicked",
             "clear_database": "on_clear_database_clicked",
             "load_activity_layers": "on_load_layers_clicked",
-            "edit_map_filters": "_update_status_for_filter_visibility",
             "apply_map_filters": "on_apply_filters_clicked",
             "run_analysis": "on_run_analysis_clicked",
             "set_analysis_mode": "_set_wizard_analysis_mode",
@@ -1049,7 +1047,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         filter_group.setParent.assert_called_once_with(panel)
         filter_layout.addWidget.assert_called_once_with(filter_group)
         filter_group.show.assert_called_once_with()
-        map_content.set_filter_controls_visible.assert_called_once_with(False)
+        map_content.set_filter_controls_visible.assert_called_once_with()
         self.assertTrue(dock._wizard_filter_controls_installed)
         self.assertEqual(dock._wizard_filter_controls_installed_target, id(map_content))
 
@@ -1090,19 +1088,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         parent_layout.removeWidget.assert_called_once_with(filter_group)
         filter_layout.addWidget.assert_called_once_with(filter_group)
         self.assertEqual(dock._wizard_filter_controls_installed_target, id(map_content))
-
-    def test_update_status_for_filter_visibility_updates_status_copy(self):
-        dock = object.__new__(self.module.QfitDockWidget)
-        dock._set_status = MagicMock()
-
-        self.module.QfitDockWidget._update_status_for_filter_visibility(dock, True)
-        self.module.QfitDockWidget._update_status_for_filter_visibility(dock, False)
-
-        dock._set_status.assert_any_call(
-            "Edit map filters, then apply filters when ready."
-        )
-        dock._set_status.assert_any_call("Map filter controls hidden.")
-
 
     def test_bind_wizard_analysis_mode_controls_exposes_non_none_modes(self):
         dock = object.__new__(self.module.QfitDockWidget)

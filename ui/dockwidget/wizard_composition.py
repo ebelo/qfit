@@ -71,7 +71,6 @@ class WizardActionCallbacks:
     sync_saved_routes: Callable[[], None] | None = None
     clear_database: Callable[[], None] | None = None
     load_activity_layers: Callable[[], None] | None = None
-    edit_map_filters: Callable[[bool], None] | None = None
     apply_map_filters: Callable[[], None] | None = None
     run_analysis: Callable[[], None] | None = None
     set_analysis_mode: Callable[[str], None] | None = None
@@ -435,11 +434,6 @@ def _connect_action_callbacks(
     )
     _connect_optional_signal(
         map_content,
-        "editFiltersRequested",
-        callbacks.edit_map_filters,
-    )
-    _connect_optional_signal(
-        map_content,
         "applyFiltersRequested",
         callbacks.apply_map_filters,
     )
@@ -726,7 +720,6 @@ def _map_state_from_facts(facts: WizardProgressFacts) -> MapPageState:
             if stored_without_loaded_layers
             else default.primary_action_label
         ),
-        edit_filters_action_enabled=facts.activities_stored,
         apply_action_enabled=facts.activities_stored,
         apply_action_blocked_tooltip=(
             "Sync activities before loading map layers."
