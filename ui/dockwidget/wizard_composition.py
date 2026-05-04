@@ -918,15 +918,27 @@ def _atlas_input_summary(facts: WizardProgressFacts) -> str:
     if not facts.activity_layers_loaded:
         return "Load activity layers before exporting atlas PDF"
     if facts.analysis_output_name is not None:
-        return f"Analysis output {facts.analysis_output_name} ready for atlas export"
+        return _with_atlas_selection_context(
+            f"Analysis output {facts.analysis_output_name} ready for atlas export",
+            facts=facts,
+        )
     if facts.analysis_generated:
-        return "Analysis outputs ready for atlas export"
+        return _with_atlas_selection_context(
+            "Analysis outputs ready for atlas export",
+            facts=facts,
+        )
     return _atlas_activity_layer_input_summary(facts)
 
 
 def _atlas_activity_layer_input_summary(facts: WizardProgressFacts) -> str:
-    if facts.filters_active:
-        summary = _atlas_filtered_activity_layer_summary(facts)
+    selected_activity_count = _atlas_selected_activity_count(facts)
+    if selected_activity_count is not None:
+        summary = _atlas_selected_activity_input_summary(
+            facts,
+            selected_activity_count=selected_activity_count,
+        )
+    elif facts.filters_active:
+        summary = "Filtered activity subset ready for atlas export"
     elif facts.output_name is not None:
         summary = f"Activity layers from {facts.output_name} ready for atlas export"
     else:
@@ -936,6 +948,7 @@ def _atlas_activity_layer_input_summary(facts: WizardProgressFacts) -> str:
         for detail in (
             _analysis_filter_description(facts),
             _analysis_loaded_layer_count_summary(facts),
+            _atlas_page_count_summary(selected_activity_count),
         )
         if detail
     )
@@ -944,11 +957,62 @@ def _atlas_activity_layer_input_summary(facts: WizardProgressFacts) -> str:
     return f"{summary} · {' · '.join(details)}"
 
 
-def _atlas_filtered_activity_layer_summary(facts: WizardProgressFacts) -> str:
-    if facts.filtered_activity_count is None:
-        return "Filtered activity subset ready for atlas export"
-    noun = "activity" if facts.filtered_activity_count == 1 else "activities"
-    return f"{max(facts.filtered_activity_count, 0)} filtered {noun} ready for atlas export"
+def _with_atlas_selection_context(summary: str, *, facts: WizardProgressFacts) -> str:
+    selected_activity_count = _atlas_selected_activity_count(facts)
+    details = tuple(
+        detail
+        for detail in (
+            _atlas_selected_activity_count_summary(selected_activity_count),
+            _atlas_page_count_summary(selected_activity_count),
+        )
+        if detail
+    )
+    if not details:
+        return summary
+    return f"{summary} · {' · '.join(details)}"
+
+
+def _atlas_selected_activity_count(facts: WizardProgressFacts) -> int | None:
+    if facts.filters_active:
+        if facts.filtered_activity_count is not None:
+            return max(facts.filtered_activity_count, 0)
+        return None
+    if facts.activity_count is not None:
+        return max(facts.activity_count, 0)
+    return None
+
+
+def _atlas_selected_activity_count_summary(
+    selected_activity_count: int | None,
+) -> str | None:
+    if selected_activity_count is None:
+        return None
+    noun = "activity" if selected_activity_count == 1 else "activities"
+    return f"{selected_activity_count} selected {noun}"
+
+
+def _atlas_selected_activity_input_summary(
+    facts: WizardProgressFacts,
+    *,
+    selected_activity_count: int,
+) -> str:
+    noun = "activity" if selected_activity_count == 1 else "activities"
+    prefix = f"{selected_activity_count} selected {noun}"
+    if facts.filters_active:
+        return f"{prefix} ready for atlas export"
+    if facts.output_name is not None:
+        return f"{prefix} from {facts.output_name} ready for atlas export"
+    return f"{prefix} ready for atlas export"
+
+
+def _atlas_page_count_summary(selected_activity_count: int | None) -> str | None:
+    if selected_activity_count is None:
+        return None
+    page_noun = "page" if selected_activity_count == 1 else "pages"
+    return (
+        f"Atlas exports {selected_activity_count} PDF {page_noun}, "
+        "one per selected activity"
+    )
 
 
 def _atlas_output_summary(
