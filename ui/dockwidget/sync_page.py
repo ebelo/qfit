@@ -110,10 +110,14 @@ class SyncPageContent(QWidget):
         self.action_row = build_wizard_action_row(
             self.load_button,
             self.routes_button,
-            self.clear_button,
             self.sync_button,
             parent=self,
             object_name="qfitWizardSyncActionRow",
+        )
+        self.clear_action_row = build_wizard_action_row(
+            self.clear_button,
+            parent=self,
+            object_name="qfitWizardSyncDestructiveActionRow",
         )
         self._layout = self._build_layout()
         self.set_state(state or SyncPageState())
@@ -168,6 +172,7 @@ class SyncPageContent(QWidget):
         layout.addWidget(self.detail_label)
         layout.addWidget(self.activity_summary_label)
         layout.addWidget(self.action_row)
+        layout.addWidget(self.clear_action_row)
         return layout
 
 

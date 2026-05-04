@@ -121,9 +121,16 @@ class SyncPageContentTest(unittest.TestCase):
             [
                 content.load_button,
                 content.routes_button,
-                content.clear_button,
                 content.sync_button,
             ],
+        )
+        self.assertEqual(
+            content.clear_action_row.objectName(),
+            "qfitWizardSyncDestructiveActionRow",
+        )
+        self.assertEqual(
+            content.clear_action_row.outer_layout().widgets,
+            [content.clear_button],
         )
         self.assertEqual(
             content.outer_layout().widgets,
@@ -132,6 +139,7 @@ class SyncPageContentTest(unittest.TestCase):
                 content.detail_label,
                 content.activity_summary_label,
                 content.action_row,
+                content.clear_action_row,
             ],
         )
 
