@@ -1237,7 +1237,81 @@ class WizardShellCompositionTest(unittest.TestCase):
 
         self.assertEqual(
             assembled.atlas_content.input_summary_label.text(),
-            "2 filtered activities ready for atlas export · layer subset · 4 qfit layers loaded",
+            "2 selected activities ready for atlas export · layer subset · "
+            "4 qfit layers loaded · "
+            "Atlas exports 2 PDF pages, one per selected activity",
+        )
+
+    def test_atlas_page_input_summary_reports_selected_activity_count(self):
+        assembled = self.composition.build_placeholder_wizard_shell(
+            progress_facts=self.composition.WizardProgressFacts(
+                connection_configured=True,
+                activities_stored=True,
+                activity_layers_loaded=True,
+                activity_count=3,
+                preferred_current_key="atlas",
+            )
+        )
+
+        self.assertEqual(
+            assembled.atlas_content.input_summary_label.text(),
+            "3 selected activities ready for atlas export · "
+            "Atlas exports 3 PDF pages, one per selected activity",
+        )
+
+    def test_atlas_page_input_summary_reports_singular_selected_activity_count(self):
+        assembled = self.composition.build_placeholder_wizard_shell(
+            progress_facts=self.composition.WizardProgressFacts(
+                connection_configured=True,
+                activities_stored=True,
+                activity_layers_loaded=True,
+                activity_count=1,
+                output_name="qfit.gpkg",
+                preferred_current_key="atlas",
+            )
+        )
+
+        self.assertEqual(
+            assembled.atlas_content.input_summary_label.text(),
+            "1 selected activity from qfit.gpkg ready for atlas export · "
+            "Atlas exports 1 PDF page, one per selected activity",
+        )
+
+    def test_atlas_page_input_summary_reports_zero_selected_activity_count(self):
+        assembled = self.composition.build_placeholder_wizard_shell(
+            progress_facts=self.composition.WizardProgressFacts(
+                connection_configured=True,
+                activities_stored=True,
+                activity_layers_loaded=True,
+                activity_count=8,
+                filters_active=True,
+                filtered_activity_count=0,
+                preferred_current_key="atlas",
+            )
+        )
+
+        self.assertEqual(
+            assembled.atlas_content.input_summary_label.text(),
+            "0 selected activities ready for atlas export · "
+            "Atlas exports 0 PDF pages, one per selected activity",
+        )
+
+    def test_atlas_page_input_summary_uses_subset_copy_when_filter_count_unknown(self):
+        assembled = self.composition.build_placeholder_wizard_shell(
+            progress_facts=self.composition.WizardProgressFacts(
+                connection_configured=True,
+                activities_stored=True,
+                activity_layers_loaded=True,
+                activity_count=8,
+                filters_active=True,
+                filtered_activity_count=None,
+                preferred_current_key="atlas",
+            )
+        )
+
+        self.assertEqual(
+            assembled.atlas_content.input_summary_label.text(),
+            "Filtered activity subset ready for atlas export",
         )
 
     def test_atlas_page_input_summary_names_analysis_output(self):
