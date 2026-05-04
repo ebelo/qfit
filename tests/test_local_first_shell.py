@@ -8,6 +8,7 @@ from tests.test_wizard_shell import _fake_qt_modules
 
 from qfit.ui.application.local_first_navigation import build_local_first_dock_navigation_state
 from qfit.ui.application.wizard_progress import WizardProgressFacts
+from qfit.ui.tokens import COLOR_GROUP_BORDER, COLOR_TITLE_BAR
 
 
 def _load_local_first_shell_module():
@@ -77,8 +78,13 @@ class LocalFirstDockShellTests(unittest.TestCase):
         self.assertTrue(map_button.isCheckable())
         self.assertTrue(map_button.isChecked())
         self.assertFalse(data_button.isChecked())
-        self.assertIn("background: #589632", map_button.styleSheet())
-        self.assertIn("QToolButton:checked:hover", map_button.styleSheet())
+        self.assertIn(f"background: {COLOR_TITLE_BAR}", map_button.styleSheet())
+        self.assertIn("border: none", map_button.styleSheet())
+        self.assertIn(
+            f"QToolButton:checked:hover {{ background: {COLOR_GROUP_BORDER}",
+            map_button.styleSheet(),
+        )
+        self.assertNotIn("background: #589632", map_button.styleSheet())
         self.assertFalse(analysis_button.property("ready"))
         self.assertEqual(analysis_button.property("navTone"), "available")
         self.assertTrue(analysis_button.isEnabled())

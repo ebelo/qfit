@@ -4,6 +4,182 @@ This document defines qfit's UI design system for QGIS dock panels, dialogs, and
 
 It is intentionally practical: use it during UI implementation and PR review to keep the plugin coherent without turning qfit into a custom UI framework.
 
+
+## UI contract (must be respected)
+
+Any qfit UI change must:
+
+- follow the button system defined below, with at most one primary action per section
+- clearly separate navigation, actions, and status/result feedback
+- be understandable without relying on color alone
+- pass the mandatory review checklist in this document before merge
+
+PRs that violate these rules must be rejected or revised before merge. Existing UI that does not yet satisfy the contract should be corrected in small, focused slices rather than normalized as a precedent.
+
+## Design tokens
+
+Use shared tokens instead of one-off visual values. Prefer the constants in `ui/tokens.py` when implementing reusable UI helpers.
+
+### Spacing scale
+
+| Token | Value | Use |
+| --- | ---: | --- |
+| XS | 4 px | Tight label/control gaps, compact icon spacing |
+| S | 8 px | Field spacing and action-row gaps |
+| M | 12 px | Internal spacing inside a section |
+| L | 16 px | Separation between related sections |
+| XL | 24 px | Separation between major workflow groups |
+
+Rules:
+
+- Field spacing = S.
+- Section internal spacing = M.
+- Section spacing = L or XL.
+- Avoid arbitrary spacing values unless a native Qt/QGIS control requires a specific margin.
+
+### Typography
+
+- Use the QGIS / Qt default font.
+- Title text: bold.
+- Section heading: bold.
+- Field label: default weight.
+- Helper and status text: default or slightly smaller, with muted color only as supporting emphasis.
+- No all-caps labels.
+
+### Status categories
+
+Use these categories consistently in state names, tests, and copy:
+
+- empty
+- ready
+- running
+- success
+- warning
+- error
+
+Rules:
+
+- Always pair status color with text.
+- Status copy must name the state or next step; color alone is not enough.
+- Use inline status for normal workflow feedback and reserve dialogs/message bars for blocking errors or destructive confirmations.
+
+## Button system
+
+qfit has exactly four button types:
+
+| Type | Style | Meaning |
+| --- | --- | --- |
+| Primary | Filled qfit accent color | Main recommended action for the section |
+| Secondary | Default/neutral Qt button | Standard actions that support the section |
+| Tertiary | Subtle/text treatment, optional | Low-priority or supplemental actions |
+| Destructive | Explicit danger treatment | Risky or data-loss actions |
+
+Hard rules:
+
+- R1 — One primary button per section: at most one primary button may be visible in a section at a time.
+- R2 — Primary is only for actions: it must not be used for navigation, selection, or state indication.
+- R3 — Navigation is not buttons: Data / Map / Analysis / Atlas / Settings must use a list or tab selection pattern and must not use button styling.
+- R4 — No color-only meaning: the UI must remain understandable without color.
+- R5 — No outline-based semantics: do not encode meaning only through border color, width, or outline style.
+- R6 — Destructive is never primary: destructive actions must be visually distinct, explicitly worded, and separated from normal workflow actions.
+
+Action layout inside each section:
+
+1. Secondary actions.
+2. Primary action last/rightmost in horizontal rows or last/bottom in vertical stacks.
+3. Destructive action in a visually separated row or group.
+
+## Navigation pattern
+
+The left local-first navigation is selection, not an action row.
+
+Navigation must:
+
+- render selected/current page with highlighted neutral background and bold text
+- render unselected pages neutrally
+- avoid the filled qfit accent treatment reserved for primary actions
+- avoid button borders, raised-button chrome, and outline semantics
+- expose page status in text or tooltip, not only in color
+
+## Reusable UI components
+
+### Workflow section
+
+Structure:
+
+1. Title.
+2. Optional readiness/status summary.
+3. Optional helper text explaining the next decision.
+4. Content fields or controls.
+5. Actions.
+6. Result/status feedback from those actions.
+
+Usage rules:
+
+- Keep instructions above the actions they explain.
+- Keep action results below the action row that produced them.
+- Do not hide essential workflow controls in advanced sections.
+
+### Action row
+
+Structure:
+
+- Related actions in one row or stacked group.
+- Secondary actions first.
+- Primary action last.
+- Destructive action separated from the normal row.
+
+Usage rules:
+
+- Use one action row per coherent decision point.
+- Do not mix navigation controls into an action row.
+- Tooltips on disabled buttons must name the missing prerequisite.
+
+### Inline status block
+
+Structure:
+
+- Short status title or sentence.
+- Optional follow-up detail.
+
+Usage rules:
+
+- Keep it close to the UI it describes.
+- Use concrete copy: what happened, what is missing, or what to do next.
+- Do not use color or icon alone as the status.
+
+### Advanced section
+
+Structure:
+
+- Collapsible section with a clear title.
+- Closed by default unless it contains required fields.
+- Summary shown when advanced settings are modified.
+
+Usage rules:
+
+- Advanced settings must not interrupt the default workflow.
+- If an advanced setting changes output materially, summarize its active state near the workflow result.
+
+## Example — Correct action hierarchy
+
+Data page action hierarchy:
+
+- Secondary: `Load stored map layers`
+- Secondary: `Sync saved routes`
+- Primary: `Sync activities`
+- Destructive: `Clear local database…` in a separated destructive row
+
+## Rendering validation
+
+Any PR affecting map rendering, heatmaps, atlas layout, or exports must include the relevant validation evidence:
+
+- screenshot of the changed UI
+- screenshot of the rendered map, if map output changes
+- exported PDF sample or inspection note, if atlas/export output changes
+
+Green CI is required, but rendering/export-sensitive work is not done until the output has been self-validated.
+
 ## 1. Field study: QGIS and Qt UI/UX best practices
 
 ### 1.1 Design for QGIS as the host application
@@ -58,10 +234,10 @@ Best practices:
 
 Interactive state conventions:
 
-- Default secondary buttons use a light grey contour on a neutral/transparent background so they read as clickable without competing with the primary action.
-- Hover state should visibly confirm clickability with a subtle grey fill and a pointing-hand cursor.
-- Selected/current navigation items use a filled accent treatment; if neutral selection is needed inside a panel, prefer a darker grey fill plus clear text contrast.
-- The recommended next action in a panel is the primary action: filled qfit accent, stronger border, bold text, and placed last/rightmost in the action row.
+- Default secondary buttons use the native/default neutral treatment so they read as actions without competing with the primary action.
+- Hover state should visibly confirm clickability with a subtle neutral fill and a pointing-hand cursor.
+- Selected/current navigation items use neutral selection styling, not the filled qfit accent treatment reserved for primary actions.
+- The recommended next action in a panel is the primary action: filled qfit accent, clear label, bold text, and placed last/rightmost in the action row.
 - Do not communicate recommendation, selection, hover, warning, or disabled state with color alone; pair state with placement, label, tooltip, icon, or nearby helper/status copy.
 
 ### 1.5 Prefer explicit state over surprise behavior
@@ -285,18 +461,45 @@ Rules:
 
 ### 2.13 Review checklist for qfit UI PRs
 
-Use this checklist during review:
+This checklist is mandatory for UI PRs.
 
-- Does the change follow the live local-first pages: Data, Map, Analysis, Atlas, and Settings?
-- Are configuration fields shown before the actions that use them?
-- Is there only one primary action per section?
-- Are button labels specific verb-object phrases?
-- Are disabled states explained?
-- Is status copy concrete and close to the relevant workflow?
-- Does the layout stay usable in a narrow QGIS dock?
-- Does focus/reading order match the visual order?
-- Are essential controls always visible?
-- Are rendering/export-sensitive changes validated with real output when relevant?
+Buttons:
+
+- [ ] Is there at most one primary button per section?
+- [ ] Is the primary clearly the main recommended action?
+- [ ] Are secondary buttons neutral/default rather than competing with the primary?
+- [ ] Is any navigation styled as a button? If yes, reject or revise.
+- [ ] Are destructive actions visually separated and explicitly worded?
+
+Semantics:
+
+- [ ] Can the UI be understood without color?
+- [ ] Is any meaning encoded only via borders or outlines? If yes, reject or revise.
+- [ ] Are disabled states explained by tooltip or nearby text?
+
+Layout:
+
+- [ ] Does the change follow the live local-first pages: Data, Map, Analysis, Atlas, and Settings?
+- [ ] Are configuration fields shown before the actions that use them?
+- [ ] Are actions ordered secondary → primary, with destructive actions separated?
+- [ ] Are unrelated actions separated?
+- [ ] Does focus/reading order match the visual order?
+- [ ] Does the layout stay usable in a narrow QGIS dock?
+
+Navigation:
+
+- [ ] Is selection visually distinct from actions?
+- [ ] Does navigation avoid filled primary-action styling and button chrome?
+
+Rendering/export:
+
+- [ ] Are rendering/export-sensitive changes validated with screenshots, map output, or exported artifacts when relevant?
+
+Mechanical rejection rules:
+
+- Reject if removing colors makes the UI ambiguous.
+- Reject if more than one primary action is visible in a section.
+- Reject if navigation elements look like primary or secondary action buttons.
 
 ## 3. Implementation notes
 
