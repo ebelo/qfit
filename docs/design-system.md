@@ -89,6 +89,12 @@ Action layout inside each section:
 2. Primary action last/rightmost in horizontal rows or last/bottom in vertical stacks.
 3. Destructive action in a visually separated row or group.
 
+Wizard-page buttons must go through the shared helpers in
+`ui/dockwidget/action_row.py`: `style_primary_action_button`,
+`style_secondary_action_button`, and `style_destructive_action_button`.
+Secondary buttons intentionally keep the native Qt button treatment; only
+primary and destructive actions receive qfit-specific chrome.
+
 ## Navigation pattern
 
 The left local-first navigation is selection, not an action row.

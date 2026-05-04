@@ -6,6 +6,7 @@ from ._qt_compat import import_qt_module
 from .action_row import (
     build_wizard_action_row,
     set_wizard_action_availability,
+    style_destructive_action_button,
     style_primary_action_button,
     style_secondary_action_button,
 )
@@ -102,7 +103,7 @@ class SyncPageContent(QWidget):
         self.routes_button.clicked.connect(self.syncRoutesRequested.emit)
         self.clear_button = QToolButton(self)
         self.clear_button.setObjectName("qfitWizardSyncClearDatabaseButton")
-        style_secondary_action_button(
+        style_destructive_action_button(
             self.clear_button,
             action_name="clear_database",
         )
