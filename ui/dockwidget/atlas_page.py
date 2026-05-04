@@ -175,8 +175,8 @@ class AtlasPageContent(QWidget):
             self.subtitle_label,
             self.subtitle_line_edit,
             self.input_summary_label,
-            self.output_summary_label,
             self.action_row,
+            self.output_summary_label,
         ):
             layout.addWidget(widget)
         return layout

@@ -110,8 +110,8 @@ class AtlasPageContentTest(unittest.TestCase):
                 content.subtitle_label,
                 content.subtitle_line_edit,
                 content.input_summary_label,
-                content.output_summary_label,
                 content.action_row,
+                content.output_summary_label,
             ],
         )
 
