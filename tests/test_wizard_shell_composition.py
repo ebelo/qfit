@@ -332,7 +332,6 @@ class WizardShellCompositionTest(unittest.TestCase):
             sync_saved_routes=lambda: calls.append("routes"),
             clear_database=lambda: calls.append("clear"),
             load_activity_layers=lambda: calls.append("load"),
-            edit_map_filters=lambda visible: calls.append(f"edit:{visible}"),
             apply_map_filters=lambda: calls.append("filter"),
             run_analysis=lambda: calls.append("analysis"),
             set_analysis_mode=lambda mode: calls.append(f"mode:{mode}"),
@@ -353,7 +352,6 @@ class WizardShellCompositionTest(unittest.TestCase):
         assembled.sync_content.clear_button.clicked.emit()
         assembled.sync_content.load_button.clicked.emit()
         assembled.map_content.load_layers_button.clicked.emit()
-        assembled.map_content.edit_filters_button.clicked.emit()
         assembled.map_content.apply_filters_button.clicked.emit()
         assembled.analysis_content.run_analysis_button.clicked.emit()
         assembled.analysis_content.analysis_mode_combo.setCurrentText("Heatmap")
@@ -370,7 +368,6 @@ class WizardShellCompositionTest(unittest.TestCase):
                 "clear",
                 "load",
                 "load",
-                "edit:True",
                 "filter",
                 "analysis",
                 "mode:Heatmap",
@@ -474,7 +471,7 @@ class WizardShellCompositionTest(unittest.TestCase):
             "Use the primary action to load activity layers.",
         )
         self.assertEqual(assembled.map_content.apply_filters_button.text(), "Load activity layers")
-        self.assertTrue(assembled.map_content.edit_filters_button.isEnabled())
+        self.assertTrue(assembled.map_content.filter_controls_panel.isVisible())
         self.assertTrue(assembled.map_content.apply_filters_button.isEnabled())
         self.assertEqual(
             assembled.map_content.apply_filters_button.property("wizardActionAvailability"),
@@ -1328,7 +1325,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertFalse(assembled.sync_content.sync_button.isEnabled())
         self.assertFalse(assembled.map_state.loaded)
         self.assertFalse(assembled.map_content.load_layers_button.isEnabled())
-        self.assertFalse(assembled.map_content.edit_filters_button.isEnabled())
+        self.assertTrue(assembled.map_content.filter_controls_panel.isVisible())
         self.assertFalse(assembled.map_content.apply_filters_button.isEnabled())
         self.assertEqual(assembled.shell.footer_bar.activity_pill.text(), "— activities")
         self.assertEqual(assembled.shell.footer_bar.layer_pill.text(), "0 layers")

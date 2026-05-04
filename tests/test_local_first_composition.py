@@ -90,7 +90,6 @@ class LocalFirstDockCompositionTests(unittest.TestCase):
             sync_saved_routes=lambda: calls.append("routes"),
             clear_database=lambda: calls.append("clear"),
             load_activity_layers=lambda: calls.append("layers"),
-            edit_map_filters=lambda visible: calls.append(f"filters:{visible}"),
             apply_map_filters=lambda: calls.append("apply"),
             run_analysis=lambda: calls.append("analysis"),
             set_analysis_mode=lambda mode: calls.append(f"mode:{mode}"),
@@ -107,7 +106,6 @@ class LocalFirstDockCompositionTests(unittest.TestCase):
         composition.sync_content.clearDatabaseRequested.emit()
         composition.sync_content.loadActivitiesRequested.emit()
         composition.map_content.loadLayersRequested.emit()
-        composition.map_content.editFiltersRequested.emit(True)
         composition.map_content.applyFiltersRequested.emit()
         composition.analysis_content.runAnalysisRequested.emit()
         composition.analysis_content.analysisModeChanged.emit("Heatmap")
@@ -124,7 +122,6 @@ class LocalFirstDockCompositionTests(unittest.TestCase):
                 "clear",
                 "layers",
                 "layers",
-                "filters:True",
                 "apply",
                 "analysis",
                 "mode:Heatmap",

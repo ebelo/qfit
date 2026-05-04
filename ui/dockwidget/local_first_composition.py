@@ -141,11 +141,6 @@ def connect_local_first_action_callbacks(
     )
     _connect_optional_signal(
         composition.map_content,
-        "editFiltersRequested",
-        callbacks.edit_map_filters,
-    )
-    _connect_optional_signal(
-        composition.map_content,
         "applyFiltersRequested",
         callbacks.apply_map_filters,
     )

@@ -470,7 +470,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 sync_saved_routes=self.on_sync_routes_clicked,
                 clear_database=self.on_clear_database_clicked,
                 load_activity_layers=self.on_load_layers_clicked,
-                edit_map_filters=self._update_status_for_filter_visibility,
                 apply_map_filters=self._run_wizard_map_step,
                 run_analysis=self.on_run_analysis_clicked,
                 set_analysis_mode=self._set_wizard_analysis_mode,
@@ -512,7 +511,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 sync_saved_routes=self.on_sync_routes_clicked,
                 clear_database=self.on_clear_database_clicked,
                 load_activity_layers=self.on_load_layers_clicked,
-                edit_map_filters=self._update_status_for_filter_visibility,
                 apply_map_filters=self.on_apply_filters_clicked,
                 run_analysis=self.on_run_analysis_clicked,
                 set_analysis_mode=self._set_wizard_analysis_mode,
@@ -589,7 +587,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             filter_group.show()
         elif hasattr(filter_group, "setVisible"):
             filter_group.setVisible(True)
-        map_content.set_filter_controls_visible(False)
+        map_content.set_filter_controls_visible()
         self._wizard_filter_controls_installed = True
         self._wizard_filter_controls_installed_target = current_target
 
@@ -600,14 +598,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         parent_layout = parent_widget.layout() if parent_widget is not None else None
         if parent_layout is not None and hasattr(parent_layout, "removeWidget"):
             parent_layout.removeWidget(widget)
-
-    def _update_status_for_filter_visibility(self, visible: bool) -> None:
-        """Reflect wizard filter-panel visibility in concise dock status copy."""
-
-        if visible:
-            self._set_status("Edit map filters, then apply filters when ready.")
-        else:
-            self._set_status("Map filter controls hidden.")
 
     def _bind_wizard_analysis_mode_controls(self, composition) -> None:
         """Expose the hidden backing analysis selector in the live wizard path."""
