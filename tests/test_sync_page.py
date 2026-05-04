@@ -137,8 +137,8 @@ class SyncPageContentTest(unittest.TestCase):
             [
                 content.status_label,
                 content.detail_label,
-                content.activity_summary_label,
                 content.action_row,
+                content.activity_summary_label,
                 content.clear_action_row,
             ],
         )
