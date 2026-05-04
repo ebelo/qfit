@@ -2603,7 +2603,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock = object.__new__(self.module.QfitDockWidget)
         dock.generateAtlasPdfButton = _FakeButton("Generate atlas PDF")
         dock.loadButton = _FakeButton("Store activities")
-        dock.loadLayersButton = _FakeButton("Load activity layers")
+        dock.loadLayersButton = _FakeButton("Load stored map layers")
         dock.refreshButton = _FakeButton("Fetch activities")
 
         self.module.QfitDockWidget._set_atlas_export_running(dock, True)

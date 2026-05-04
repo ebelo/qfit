@@ -1599,7 +1599,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._show_error("GeoPackage not found", str(exc))
             return
         except (RuntimeError, OSError) as exc:
-            _msg = "Load activity layers failed"
+            _msg = "Load stored map layers failed"
             logger.exception(_msg)
             self._show_error(_msg, str(exc))
             self._set_status(_msg)

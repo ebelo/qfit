@@ -88,7 +88,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         )
         self.assertEqual(
             assembled.map_content.status_label.text(),
-            "Activity layers not loaded",
+            "Stored map layers not loaded",
         )
         self.assertIsNotNone(assembled.analysis_content)
         self.assertIs(
@@ -460,17 +460,17 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertEqual(assembled.sync_content.status_label.text(), "Activities stored")
         self.assertTrue(assembled.sync_content.sync_button.isEnabled())
         self.assertTrue(assembled.sync_content.load_button.isEnabled())
-        self.assertEqual(assembled.sync_content.load_button.text(), "Load activity layers")
+        self.assertEqual(assembled.sync_content.load_button.text(), "Load stored map layers")
         self.assertEqual(
             assembled.map_content.status_label.text(),
-            "Stored activities ready to load",
+            "Stored map layers ready to load",
         )
         self.assertFalse(assembled.map_content.load_layers_button.isEnabled())
         self.assertEqual(
             assembled.map_content.load_layers_button.toolTip(),
-            "Use the primary action to load activity layers.",
+            "Use the primary action to load stored map layers.",
         )
-        self.assertEqual(assembled.map_content.apply_filters_button.text(), "Load activity layers")
+        self.assertEqual(assembled.map_content.apply_filters_button.text(), "Load stored map layers")
         self.assertTrue(assembled.map_content.filter_controls_panel.isVisible())
         self.assertTrue(assembled.map_content.apply_filters_button.isEnabled())
         self.assertEqual(
@@ -503,7 +503,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertTrue(assembled.sync_content.clear_button.isEnabled())
         self.assertEqual(
             assembled.map_content.status_label.text(),
-            "Stored activities ready to load",
+            "Stored map layers ready to load",
         )
         self.assertTrue(assembled.map_content.apply_filters_button.isEnabled())
 
@@ -718,14 +718,14 @@ class WizardShellCompositionTest(unittest.TestCase):
 
         self.assertEqual(
             assembled.map_content.status_label.text(),
-            "Stored activities ready to load",
+            "Stored map layers ready to load",
         )
         self.assertEqual(
             assembled.map_content.layer_summary_label.text(),
-            "Stored activities in qfit.gpkg are ready to load",
+            "Stored map layers in qfit.gpkg are ready to load",
         )
         self.assertIn(
-            "Stored activities in qfit.gpkg are ready to load",
+            "Stored map layers in qfit.gpkg are ready to load",
             assembled.shell.footer_bar.text(),
         )
 
@@ -741,10 +741,10 @@ class WizardShellCompositionTest(unittest.TestCase):
 
         self.assertEqual(
             assembled.map_content.layer_summary_label.text(),
-            "Activity layers from qfit.gpkg are loaded on the map",
+            "Stored map layers from qfit.gpkg are loaded on the map",
         )
         self.assertIn(
-            "Activity layers from qfit.gpkg are loaded on the map",
+            "Stored map layers from qfit.gpkg are loaded on the map",
             assembled.shell.footer_bar.text(),
         )
 
@@ -1009,7 +1009,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertFalse(assembled.map_content.load_layers_button.isEnabled())
         self.assertEqual(
             assembled.map_content.load_layers_button.toolTip(),
-            "Sync activities before loading map layers.",
+            "Sync activities before loading stored map layers.",
         )
         self.assertFalse(assembled.analysis_content.run_analysis_button.isEnabled())
         self.assertFalse(assembled.atlas_content.export_atlas_button.isEnabled())
@@ -1041,7 +1041,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         )
         self.assertEqual(
             assembled.map_content.layer_summary_label.text(),
-            "Sync activities before loading map layers",
+            "Sync activities before loading stored map layers",
         )
         self.assertEqual(
             assembled.analysis_content.status_label.text(),
@@ -1375,7 +1375,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertEqual(
             assembled.shell.footer_bar.text(),
             "Strava not connected · No activities stored · "
-            "No activity layers on the map · Analysis not run yet · "
+            "No stored map layers on the map · Analysis not run yet · "
             "Atlas PDF not exported yet",
         )
 
@@ -1537,7 +1537,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertEqual(
             assembled.shell.footer_bar.text(),
             "Strava connected · 12 activities stored · "
-            "No activity layers on the map · Analysis not run yet · "
+            "No stored map layers on the map · Analysis not run yet · "
             "Atlas PDF not exported yet",
         )
 
@@ -1628,8 +1628,8 @@ class WizardShellCompositionTest(unittest.TestCase):
         )
         self.assertEqual(assembled.connection_content.status_label.text(), "Strava connected")
         self.assertEqual(assembled.sync_content.status_label.text(), "Activities stored")
-        self.assertEqual(assembled.map_content.status_label.text(), "Activity layers loaded")
-        self.assertEqual(assembled.map_content.load_layers_button.text(), "Reload activity layers")
+        self.assertEqual(assembled.map_content.status_label.text(), "Stored map layers loaded")
+        self.assertEqual(assembled.map_content.load_layers_button.text(), "Reload stored map layers")
         self.assertTrue(assembled.map_content.load_layers_button.isEnabled())
         self.assertEqual(assembled.map_content.apply_filters_button.text(), "Apply filters")
         self.assertTrue(assembled.map_content.apply_filters_button.isEnabled())
@@ -1746,7 +1746,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertEqual(
             assembled.shell.footer_bar.text(),
             "Strava not connected · No activities stored · "
-            "No activity layers on the map · Analysis not run yet · "
+            "No stored map layers on the map · Analysis not run yet · "
             "Atlas PDF not exported yet",
         )
         self.assertEqual(assembled.presenter.progress.current_key, "connection")
