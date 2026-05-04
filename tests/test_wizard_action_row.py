@@ -107,8 +107,27 @@ class WizardActionRowTest(unittest.TestCase):
         self.assertIs(returned, button)
         self.assertEqual(button.property("secondaryAction"), "load_activity_layers")
         self.assertEqual(button.property("wizardActionRole"), "secondary")
-        self.assertIn("font-weight: 500", button.styleSheet())
+        self.assertEqual(button.styleSheet(), "")
         self.assertIsNotNone(button.cursor().shape())
+
+    def test_destructive_action_button_gets_danger_role_and_chrome(self):
+        button = self.action_row.QToolButton()
+
+        returned = self.action_row.style_destructive_action_button(
+            button,
+            action_name="clear_database",
+        )
+
+        self.assertIs(returned, button)
+        self.assertEqual(button.property("destructiveAction"), "clear_database")
+        self.assertEqual(button.property("wizardActionRole"), "destructive")
+        self.assertIn("#c01c28", button.styleSheet())
+        self.assertNotIn("#589632", button.styleSheet())
+        self.assertIsNotNone(button.cursor().shape())
+
+    def test_unknown_action_role_is_rejected(self):
+        with self.assertRaisesRegex(ValueError, "Unknown wizard action button role"):
+            self.action_row._button_stylesheet(role="primray")
 
     def test_action_availability_marks_blocked_and_available_buttons(self):
         button = self.action_row.QToolButton()

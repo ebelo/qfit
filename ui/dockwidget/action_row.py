@@ -5,10 +5,10 @@ from collections.abc import Iterable
 from qfit.ui.tokens import (
     COLOR_ACCENT,
     COLOR_ACCENT_DARK,
-    COLOR_HOVER,
+    COLOR_DANGER,
     COLOR_MUTED,
     COLOR_SEPARATOR,
-    COLOR_TEXT,
+    pill_tone_palette,
 )
 
 from ._qt_compat import import_qt_module
@@ -28,6 +28,7 @@ QToolButton = _qtwidgets.QToolButton
 QWidget = _qtwidgets.QWidget
 
 ACTION_ROW_NARROW_WIDTH = 360
+COLOR_DANGER_BG = pill_tone_palette("danger")[0]
 
 
 class WizardActionRow(QWidget):
@@ -110,7 +111,7 @@ def style_primary_action_button(
 
     button.setProperty("primaryAction", action_name)
     button.setProperty("wizardActionRole", "primary")
-    _apply_button_chrome(button, primary=True)
+    _apply_button_chrome(button, role="primary")
     return button
 
 
@@ -123,7 +124,20 @@ def style_secondary_action_button(
 
     button.setProperty("secondaryAction", action_name)
     button.setProperty("wizardActionRole", "secondary")
-    _apply_button_chrome(button, primary=False)
+    _apply_button_chrome(button, role="secondary")
+    return button
+
+
+def style_destructive_action_button(
+    button: QToolButton,
+    *,
+    action_name: str,
+) -> QToolButton:
+    """Mark a wizard button as a destructive page action."""
+
+    button.setProperty("destructiveAction", action_name)
+    button.setProperty("wizardActionRole", "destructive")
+    _apply_button_chrome(button, role="destructive")
     return button
 
 
@@ -153,18 +167,18 @@ def _allow_button_shrink(button: QToolButton) -> None:
         button.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Fixed)
 
 
-def _apply_button_chrome(button: QToolButton, *, primary: bool) -> None:
+def _apply_button_chrome(button: QToolButton, *, role: str = "primary") -> None:
     if hasattr(button, "setToolButtonStyle"):
         button.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
     _allow_button_shrink(button)
     if hasattr(button, "setCursor"):
         button.setCursor(Qt.PointingHandCursor)
     if hasattr(button, "setStyleSheet"):
-        button.setStyleSheet(_button_stylesheet(primary=primary))
+        button.setStyleSheet(_button_stylesheet(role=role))
 
 
-def _button_stylesheet(*, primary: bool) -> str:
-    if primary:
+def _button_stylesheet(*, role: str) -> str:
+    if role == "primary":
         return (
             "QToolButton { "
             f"background: {COLOR_ACCENT}; "
@@ -181,24 +195,29 @@ def _button_stylesheet(*, primary: bool) -> str:
             f"color: {COLOR_MUTED}; "
             "}"
         )
-    return (
-        "QToolButton { "
-        "background: transparent; "
-        f"color: {COLOR_TEXT}; "
-        f"border: 1px solid {COLOR_SEPARATOR}; "
-        "border-radius: 6px; "
-        "padding: 5px 10px; "
-        "font-weight: 500; "
-        "} "
-        f"QToolButton:hover:enabled {{ background: {COLOR_HOVER}; }} "
-        f"QToolButton:disabled {{ color: {COLOR_MUTED}; }}"
-    )
+    if role == "destructive":
+        return (
+            "QToolButton { "
+            "background: transparent; "
+            f"color: {COLOR_DANGER}; "
+            "border: 1px solid transparent; "
+            "border-radius: 6px; "
+            "padding: 5px 10px; "
+            "font-weight: 700; "
+            "} "
+            f"QToolButton:hover:enabled {{ background: {COLOR_DANGER_BG}; }} "
+            f"QToolButton:disabled {{ color: {COLOR_MUTED}; }}"
+        )
+    if role == "secondary":
+        return ""
+    raise ValueError(f"Unknown wizard action button role: {role!r}")
 
 
 __all__ = [
     "WizardActionRow",
     "build_wizard_action_row",
     "set_wizard_action_availability",
+    "style_destructive_action_button",
     "style_primary_action_button",
     "style_secondary_action_button",
 ]

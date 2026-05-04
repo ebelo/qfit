@@ -99,13 +99,18 @@ class SyncPageContentTest(unittest.TestCase):
         )
         self.assertEqual(content.clear_button.text(), "Clear local database…")
         self.assertEqual(
-            content.clear_button.property("secondaryAction"),
+            content.clear_button.property("destructiveAction"),
             "clear_database",
         )
         self.assertEqual(
             content.clear_button.property("wizardActionRole"),
-            "secondary",
+            "destructive",
         )
+        self.assertNotEqual(
+            content.clear_button.styleSheet(),
+            content.sync_button.styleSheet(),
+        )
+        self.assertNotIn("#589632", content.clear_button.styleSheet())
         self.assertFalse(content.clear_button.isEnabled())
         self.assertEqual(
             content.clear_button.property("wizardActionAvailability"),
