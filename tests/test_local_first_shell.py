@@ -11,6 +11,39 @@ from qfit.ui.application.wizard_progress import WizardProgressFacts
 from qfit.ui.tokens import COLOR_GROUP_BORDER, COLOR_TITLE_BAR
 
 
+class _FakeMouseEvent:
+    def __init__(self, button, pos="inside"):
+        self._button = button
+        self._pos = pos
+
+    def button(self):
+        return self._button
+
+    def pos(self):
+        return self._pos
+
+
+class _FakeKeyEvent:
+    def __init__(self, key, *, auto_repeat=False):
+        self._auto_repeat = auto_repeat
+        self._key = key
+        self.accepted = False
+
+    def isAutoRepeat(self):  # noqa: N802
+        return self._auto_repeat
+
+    def key(self):
+        return self._key
+
+    def accept(self):
+        self.accepted = True
+
+
+class _FakeRect:
+    def contains(self, pos):
+        return pos == "inside"
+
+
 def _load_local_first_shell_module():
     for name in (
         "qfit.ui.dockwidget.local_first_shell",
@@ -37,16 +70,22 @@ class LocalFirstDockShellTests(unittest.TestCase):
         self.assertEqual(shell.pages_stack.objectName(), "qfitLocalFirstDockPagesStack")
         self.assertEqual(shell.footer_bar.text(), "Ready")
         self.assertEqual(
-            [button.text() for button in shell.navigation_buttons()],
+            [item.text() for item in shell.navigation_items()],
             ["Data", "Map", "Analysis", "Atlas", "Settings"],
         )
-        self.assertFalse(any("..." in button.text() for button in shell.navigation_buttons()))
-        self.assertTrue(all(button.isEnabled() for button in shell.navigation_buttons()))
-        self.assertTrue(all(button.minimumWidth() == 88 for button in shell.navigation_buttons()))
+        self.assertFalse(any("..." in item.text() for item in shell.navigation_items()))
+        self.assertTrue(all(item.isEnabled() for item in shell.navigation_items()))
+        self.assertTrue(all(item.minimumWidth() == 88 for item in shell.navigation_items()))
         self.assertTrue(
             all(
-                button.tool_button_style == self.shell_module.Qt.ToolButtonTextOnly
-                for button in shell.navigation_buttons()
+                item.focusPolicy() == self.shell_module.Qt.StrongFocus
+                for item in shell.navigation_items()
+            )
+        )
+        self.assertTrue(
+            all(
+                isinstance(item, self.shell_module.LocalFirstNavigationItem)
+                for item in shell.navigation_items()
             )
         )
 
@@ -60,34 +99,36 @@ class LocalFirstDockShellTests(unittest.TestCase):
             [shell.navigation_container, shell.separator, shell.pages_stack],
         )
 
-    def test_navigation_state_sets_button_metadata_without_step_locking(self):
+    def test_navigation_state_sets_selection_metadata_without_step_locking(self):
         navigation = build_local_first_dock_navigation_state(
             WizardProgressFacts(activities_stored=True, activity_layers_loaded=True),
             preferred_current_key="map",
         )
         shell = self.shell_module.LocalFirstDockShell(navigation_state=navigation)
 
-        data_button = shell.button_for_key("data")
-        map_button = shell.button_for_key("map")
-        analysis_button = shell.button_for_key("analysis")
+        data_item = shell.navigation_item_for_key("data")
+        map_item = shell.navigation_item_for_key("map")
+        analysis_item = shell.navigation_item_for_key("analysis")
 
-        self.assertTrue(data_button.property("ready"))
-        self.assertEqual(data_button.property("navTone"), "ready")
-        self.assertTrue(map_button.property("current"))
-        self.assertEqual(map_button.property("navTone"), "current")
-        self.assertTrue(map_button.isCheckable())
-        self.assertTrue(map_button.isChecked())
-        self.assertFalse(data_button.isChecked())
-        self.assertIn(f"background: {COLOR_TITLE_BAR}", map_button.styleSheet())
-        self.assertIn("border: none", map_button.styleSheet())
+        self.assertTrue(data_item.property("ready"))
+        self.assertEqual(data_item.property("navTone"), "ready")
+        self.assertTrue(map_item.property("current"))
+        self.assertEqual(map_item.property("navTone"), "current")
+        self.assertTrue(map_item.isChecked())
+        self.assertFalse(data_item.isChecked())
+        self.assertIn(f"background-color: {COLOR_TITLE_BAR}", map_item.styleSheet())
+        self.assertIn("border: none", map_item.styleSheet())
         self.assertIn(
-            f"QToolButton:checked:hover {{ background: {COLOR_GROUP_BORDER}",
-            map_button.styleSheet(),
+            "#qfitLocalFirstDockNav_map[navTone='current']:hover:enabled "
+            f"{{ background-color: {COLOR_GROUP_BORDER}",
+            map_item.styleSheet(),
         )
-        self.assertNotIn("background: #589632", map_button.styleSheet())
-        self.assertFalse(analysis_button.property("ready"))
-        self.assertEqual(analysis_button.property("navTone"), "available")
-        self.assertTrue(analysis_button.isEnabled())
+        self.assertNotIn("QWidget {", map_item.styleSheet())
+        self.assertNotIn("QToolButton", map_item.styleSheet())
+        self.assertNotIn("background: #589632", map_item.styleSheet())
+        self.assertFalse(analysis_item.property("ready"))
+        self.assertEqual(analysis_item.property("navTone"), "available")
+        self.assertTrue(analysis_item.isEnabled())
 
     def test_navigation_state_refreshes_dynamic_qss_properties(self):
         class FakeStyle:
@@ -101,7 +142,7 @@ class LocalFirstDockShellTests(unittest.TestCase):
                 self.calls.append(("polish", widget.objectName()))
 
         shell = self.shell_module.LocalFirstDockShell()
-        button = shell.button_for_key("atlas")
+        button = shell.navigation_item_for_key("atlas")
         style = FakeStyle()
         updates = []
         button.style = lambda: style
@@ -118,11 +159,46 @@ class LocalFirstDockShellTests(unittest.TestCase):
 
         with self.assertRaisesRegex(
             KeyError,
-            "No navigation button registered for key 'missing'",
+            "No navigation item registered for key 'missing'",
         ):
-            shell.button_for_key("missing")
+            shell.navigation_item_for_key("missing")
 
-    def test_clicking_navigation_button_shows_matching_page_and_emits_key(self):
+    def test_navigation_item_mouse_activation_matches_button_safety(self):
+        item = self.shell_module.LocalFirstNavigationItem()
+        item.rect = lambda: _FakeRect()
+        calls = []
+        item.clicked.connect(lambda: calls.append("clicked"))
+
+        item.mousePressEvent(_FakeMouseEvent(self.shell_module.Qt.LeftButton))
+        item.mouseReleaseEvent(_FakeMouseEvent(self.shell_module.Qt.LeftButton, pos="outside"))
+        item.mousePressEvent(_FakeMouseEvent(button=999))
+        item.mouseReleaseEvent(_FakeMouseEvent(button=999))
+
+        self.assertEqual(calls, [])
+
+        item.mousePressEvent(_FakeMouseEvent(self.shell_module.Qt.LeftButton))
+        item.mouseReleaseEvent(_FakeMouseEvent(self.shell_module.Qt.LeftButton))
+
+        self.assertEqual(calls, ["clicked"])
+
+    def test_navigation_item_keyboard_activation_preserves_accessibility(self):
+        item = self.shell_module.LocalFirstNavigationItem()
+        calls = []
+        item.clicked.connect(lambda: calls.append("clicked"))
+
+        return_press = _FakeKeyEvent(self.shell_module.Qt.Key_Return)
+        return_release = _FakeKeyEvent(self.shell_module.Qt.Key_Return)
+        item.keyPressEvent(return_press)
+        item.keyPressEvent(_FakeKeyEvent(self.shell_module.Qt.Key_Return, auto_repeat=True))
+        item.keyReleaseEvent(_FakeKeyEvent(self.shell_module.Qt.Key_Return, auto_repeat=True))
+        item.keyReleaseEvent(return_release)
+        item.keyPressEvent(_FakeKeyEvent(key=999))
+
+        self.assertEqual(calls, ["clicked"])
+        self.assertTrue(return_press.accepted)
+        self.assertTrue(return_release.accepted)
+
+    def test_clicking_navigation_item_shows_matching_page_and_emits_key(self):
         shell = self.shell_module.LocalFirstDockShell()
         calls = []
         data_page = self.shell_module.QWidget()
@@ -131,13 +207,13 @@ class LocalFirstDockShellTests(unittest.TestCase):
         shell.add_page("atlas", atlas_page)
         shell.pageRequested.connect(lambda key: calls.append(key))
 
-        shell.button_for_key("atlas").clicked.emit()
+        shell.navigation_item_for_key("atlas").clicked.emit()
 
         self.assertEqual(shell.current_key(), "atlas")
         self.assertEqual(shell.pages_stack.currentIndex(), 1)
         self.assertEqual(calls, ["atlas"])
-        self.assertTrue(shell.button_for_key("atlas").property("current"))
-        self.assertFalse(shell.button_for_key("data").property("current"))
+        self.assertTrue(shell.navigation_item_for_key("atlas").property("current"))
+        self.assertFalse(shell.navigation_item_for_key("data").property("current"))
 
     def test_new_current_page_selects_installed_page(self):
         shell = self.shell_module.LocalFirstDockShell(

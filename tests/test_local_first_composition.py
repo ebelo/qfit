@@ -80,8 +80,8 @@ class LocalFirstDockCompositionTests(unittest.TestCase):
         )
 
         self.assertEqual(composition.shell.current_key(), "settings")
-        self.assertTrue(composition.shell.button_for_key("data").isEnabled())
-        self.assertTrue(composition.shell.button_for_key("atlas").isEnabled())
+        self.assertTrue(composition.shell.navigation_item_for_key("data").isEnabled())
+        self.assertTrue(composition.shell.navigation_item_for_key("atlas").isEnabled())
         self.assertEqual(
             composition.sync_content.detail_label.text(),
             "Stored activities are ready to load from the existing GeoPackage.",
@@ -167,7 +167,7 @@ class LocalFirstDockCompositionTests(unittest.TestCase):
         )
 
         self.assertEqual(composition.shell.current_key(), "map")
-        self.assertTrue(composition.shell.button_for_key("map").property("current"))
+        self.assertTrue(composition.shell.navigation_item_for_key("map").property("current"))
         self.assertEqual(composition.sync_content.status_label.text(), "Activities stored")
         self.assertEqual(composition.map_content.status_label.text(), "Stored map layers loaded")
         self.assertEqual(composition.connection_content.status_label.text(), "Strava connected")
@@ -192,7 +192,7 @@ class LocalFirstDockCompositionTests(unittest.TestCase):
         )
 
         self.assertEqual(composition.shell.current_key(), "atlas")
-        self.assertTrue(composition.shell.button_for_key("atlas").property("current"))
+        self.assertTrue(composition.shell.navigation_item_for_key("atlas").property("current"))
 
     def test_public_exports_include_action_callbacks(self):
         self.assertIn("WizardActionCallbacks", self.module.__all__)

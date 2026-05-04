@@ -50,8 +50,13 @@ class _FakeQt:
     AlignCenter = 9
     ForbiddenCursor = 10
     Horizontal = 13
+    Key_Enter = 16
+    Key_Return = 17
+    Key_Space = 18
+    LeftButton = 19
     Orientation = int
     PointingHandCursor = 11
+    StrongFocus = 20
     ToolButtonTextBesideIcon = 12
     ToolButtonTextOnly = 15
     Vertical = 14
@@ -70,6 +75,7 @@ class _FakeWidget:
         self._tooltip = ""
         self._stylesheet = ""
         self._alignment = None
+        self._focus_policy = None
         self._visible = True
 
     def setVisible(self, value):  # noqa: N802
@@ -131,6 +137,12 @@ class _FakeWidget:
 
     def alignment(self):
         return self._alignment
+
+    def setFocusPolicy(self, value):  # noqa: N802
+        self._focus_policy = value
+
+    def focusPolicy(self):  # noqa: N802
+        return self._focus_policy
 
     def setStyleSheet(self, value):  # noqa: N802
         self._stylesheet = value
