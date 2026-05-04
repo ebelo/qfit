@@ -110,15 +110,15 @@ Best practices:
 
 ### 2.1 Product workflow model
 
-qfit's UI should follow the core lanes:
+qfit's current workflow model follows the stable wizard sections defined in `ui/application/dock_workflow_sections.py`:
 
-1. **Import / Data** — connect, fetch, store, and load activity data.
-2. **Visualize / Map** — configure layers, basemap, styles, and filters.
-3. **Analyze** — choose analysis mode and run analysis.
-4. **Publish / Atlas** — configure document output and export PDF atlas.
-5. **Settings** — credentials, provider configuration, and durable preferences.
+1. **Connection** (`connection`, current dock title `Strava connection`) — configure provider access and connection readiness.
+2. **Synchronization** (`sync`, current dock title `Fetch and store`) — fetch, store, and load activity data.
+3. **Map & filters** (`map`, current dock title `Visualize`) — configure layers, basemap, styles, and filters.
+4. **Spatial analysis** (`analysis`, current dock title `Analyze`) — choose analysis mode and run analysis.
+5. **Atlas PDF** (`atlas`, current dock title `Publish / atlas`) — configure document output and export the PDF atlas.
 
-Use these lane names consistently in docs, UI labels, and PR discussion.
+Use these existing workflow keys and titles as the baseline in docs, UI labels, and PR discussion. Higher-level language such as Import, Visualize, Analyze, and Publish is fine for product summaries, but implementation guidance should map back to the concrete workflow sections above.
 
 ### 2.2 Standard panel structure
 
@@ -187,22 +187,34 @@ Recommended Map panel order:
 5. `Load activity layers` / `Apply filters` actions.
 6. Filter or layer result status.
 
-### 2.6 Data / Import panel rules
+### 2.6 Connection panel rules
+
+The current wizard treats provider connection as a first-class workflow step. Do not hide or rename it as a generic settings page without a separate product decision.
+
+Rules:
+
+- Keep provider credentials and connection status in the `Connection` / `Strava connection` workflow section.
+- Show connection readiness before users reach sync actions that require credentials.
+- Keep secret fields protected by default.
+- Use provider-specific names only where the setting is truly provider-specific.
+- Explain missing or invalid credentials with concrete recovery copy.
+
+### 2.7 Synchronization / Data panel rules
 
 - Make the difference between fetching, storing, and loading explicit.
-- Treat credentials and provider setup as prerequisites, not part of the daily import flow.
+- Treat connection readiness as the prerequisite for provider sync actions, while keeping the connection step visible and reviewable.
 - Show stored-data state before asking users to load or visualize it.
 - Keep destructive database actions grouped separately from sync/load actions.
 - Explain disabled sync/load actions with prerequisite copy.
 
-### 2.7 Analysis panel rules
+### 2.8 Analysis panel rules
 
 - Put analysis mode and parameters before `Run analysis`.
 - Keep generated-result status visible after running analysis.
 - If a mode requires loaded layers or filtered activities, disable the action until prerequisites are met.
 - Prefer small mode-specific helper text over long generic instructions.
 
-### 2.8 Atlas / Publish panel rules
+### 2.9 Atlas / Publish panel rules
 
 - Put document settings before export actions.
 - Keep title, subtitle, page size/orientation, and output path grouped as publication settings.
@@ -210,24 +222,30 @@ Recommended Map panel order:
 - Show export readiness and last-export status close to the action.
 - For export-sensitive changes, validate the exported artifact, not only widget state.
 
-### 2.9 Settings panel rules
+### 2.10 Durable configuration rules
+
+qfit does not currently have a dedicated `settings` wizard page. Durable configuration is handled through the connection workflow, configuration dialog, QGIS settings, and feature-specific fields. If a future Settings panel is added, it should become an explicit workflow section before this document treats it as one.
+
+Rules:
 
 - Keep durable configuration out of day-to-day workflow panels when possible.
 - Group credentials, provider settings, basemap tokens, and advanced runtime preferences separately.
 - Avoid exposing internal implementation names unless they are useful to users.
 - Never show secrets in plain text unless the user explicitly reveals them through a standard password-field affordance.
 
-### 2.10 Status and message language
+### 2.11 Status and message language
 
 Use short, concrete status copy.
 
-Good examples:
+Good target examples for new or revised copy:
 
 - `Activities stored`
 - `No activity layers on the map`
 - `Basemap loaded: Outdoors`
 - `42 activities match the current filters`
 - `Exported atlas PDF`
+
+Existing UI strings may be longer where they double as guidance, such as first-run wizard summaries. When changing existing copy, prefer incremental alignment with this shorter status style rather than renaming unrelated workflow sections in the same PR.
 
 Avoid vague copy:
 
@@ -238,20 +256,20 @@ Avoid vague copy:
 
 When something fails, include the next useful step when possible.
 
-### 2.11 Empty states and disabled states
+### 2.12 Empty states and disabled states
 
 Empty states should explain what is missing and how to proceed.
 
 Examples:
 
-- No credentials: prompt users to configure Strava in Settings.
+- No credentials: prompt users to configure Strava in the Connection step or current configuration dialog.
 - No stored activities: prompt users to sync or import data.
 - No loaded layers: prompt users to load activity layers before filtering.
 - No atlas pages: explain which data or configuration is required before export.
 
 Disabled actions should not feel broken. Pair disabled state with tooltip or nearby helper text that names the prerequisite.
 
-### 2.12 Advanced options
+### 2.13 Advanced options
 
 Advanced options are acceptable when they protect the common path.
 
@@ -262,7 +280,7 @@ Rules:
 - If an advanced setting materially changes output, summarize its active state near the workflow result.
 - Do not hide essential primary controls inside advanced sections.
 
-### 2.13 Review checklist for qfit UI PRs
+### 2.14 Review checklist for qfit UI PRs
 
 Use this checklist during review:
 
