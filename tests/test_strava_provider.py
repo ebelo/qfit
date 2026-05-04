@@ -117,6 +117,20 @@ class TestStravaProviderFetchRoutes(unittest.TestCase):
 
         self.assertIn("bad route", str(ctx.exception))
 
+    def test_fetch_route_detail_preserves_rate_limit_error_flag(self):
+        from qfit.providers.infrastructure.strava_client import StravaClientError
+
+        provider = self._make_provider()
+        provider._client.fetch_route_detail.side_effect = StravaClientError(
+            "too many requests",
+            is_rate_limit=True,
+        )
+
+        with self.assertRaises(ProviderError) as ctx:
+            provider.fetch_route_detail(42)
+
+        self.assertTrue(ctx.exception.is_rate_limit)
+
 
 class TestStravaProviderProperties(unittest.TestCase):
     """last_stream_enrichment_stats and last_rate_limit proxy to the client."""

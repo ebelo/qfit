@@ -84,7 +84,9 @@ from ..domain.routes import SavedRoute
 
 
 class StravaClientError(RuntimeError):
-    pass
+    def __init__(self, *args, is_rate_limit=False):
+        super().__init__(*args)
+        self.is_rate_limit = bool(is_rate_limit)
 
 
 class StravaClient:
@@ -891,7 +893,10 @@ class StravaClient:
                 status_code = response.status_code if response is not None else "unknown"
                 body = response.text if response is not None else str(exc)
                 if response is not None and int(status_code) == 429:
-                    raise StravaClientError(self._format_rate_limit_error(operation, response)) from exc
+                    raise StravaClientError(
+                        self._format_rate_limit_error(operation, response),
+                        is_rate_limit=True,
+                    ) from exc
                 raise StravaClientError(
                     "{operation} failed with Strava API error {code}: {body}".format(
                         operation=operation,
