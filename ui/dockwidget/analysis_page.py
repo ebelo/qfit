@@ -157,10 +157,10 @@ class AnalysisPageContent(QWidget):
             self.status_label,
             self.detail_label,
             self.input_summary_label,
-            self.result_summary_label,
             self.analysis_mode_label,
             self.analysis_mode_combo,
             self.action_row,
+            self.result_summary_label,
         ):
             layout.addWidget(widget)
         return layout
