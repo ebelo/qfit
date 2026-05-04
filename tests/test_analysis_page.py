@@ -103,10 +103,10 @@ class AnalysisPageContentTest(unittest.TestCase):
                 content.status_label,
                 content.detail_label,
                 content.input_summary_label,
-                content.result_summary_label,
                 content.analysis_mode_label,
                 content.analysis_mode_combo,
                 content.action_row,
+                content.result_summary_label,
             ],
         )
 
