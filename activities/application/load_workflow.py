@@ -173,7 +173,7 @@ def _route_layer_load_status(
         )
     ):
         return (
-            "No saved route layers found; use Data → Sync saved routes to GeoPackage "
+            "No saved route layers found; use Data → Sync saved routes "
             "before loading planned routes."
         )
     tracks = _safe_feature_count(route_tracks_layer)

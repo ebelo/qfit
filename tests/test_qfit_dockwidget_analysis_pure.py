@@ -2008,7 +2008,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.perPageSpinBox = _FakeSpinBox(100)
         dock.maxPagesSpinBox = _FakeSpinBox(0)
         dock.cache = "cache"
-        dock.syncRoutesButton = _FakeButton("Sync saved routes to GeoPackage")
+        dock.syncRoutesButton = _FakeButton("Sync saved routes")
         dock.exchangeCodeButton = _FakeButton("Exchange")
         dock.openAuthorizeButton = _FakeButton("Authorize")
         dock._set_status = MagicMock()
@@ -2101,7 +2101,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertEqual(dock.runtime_state.route_points_layer, route_layers[1])
         self.assertEqual(dock.runtime_state.route_profile_samples_layer, route_layers[2])
         self.assertEqual(
-            dock.syncRoutesButton.text(), "Sync saved routes to GeoPackage"
+            dock.syncRoutesButton.text(), "Sync saved routes"
         )
         self.assertTrue(dock.exchangeCodeButton.isEnabled())
         self.assertTrue(dock.openAuthorizeButton.isEnabled())

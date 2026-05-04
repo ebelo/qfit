@@ -243,7 +243,7 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertEqual(dock._local_first_live_shell.current_key(), "data")
             self.assertEqual(
                 dock._local_first_dock_composition.sync_content.clear_button.text(),
-                "Clear database…",
+                "Clear local database…",
             )
             self.assertTrue(dock.scrollArea.isHidden())
             self.assertTrue(dock.summaryStatusLabel.isHidden())
