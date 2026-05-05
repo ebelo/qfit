@@ -112,8 +112,10 @@ class LocalFirstDockShellTests(unittest.TestCase):
 
         self.assertTrue(data_item.property("ready"))
         self.assertEqual(data_item.property("navTone"), "ready")
+        self.assertIn("font-weight: 500", data_item.styleSheet())
         self.assertTrue(map_item.property("current"))
         self.assertEqual(map_item.property("navTone"), "current")
+        self.assertIn("font-weight: 700", map_item.styleSheet())
         self.assertTrue(map_item.isChecked())
         self.assertFalse(data_item.isChecked())
         self.assertIn(f"background-color: {COLOR_TITLE_BAR}", map_item.styleSheet())
