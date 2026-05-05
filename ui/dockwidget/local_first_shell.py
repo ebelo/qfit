@@ -405,7 +405,7 @@ def _navigation_item_stylesheet(tone: str, object_name: str) -> str:
     elif tone == "ready":
         background = "transparent"
         color = COLOR_TEXT
-        font_weight = "600"
+        font_weight = "500"
     else:
         background = "transparent"
         color = COLOR_MUTED
