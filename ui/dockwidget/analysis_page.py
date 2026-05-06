@@ -7,6 +7,7 @@ from .action_row import (
     build_wizard_action_row,
     set_wizard_action_availability,
     style_primary_action_button,
+    style_secondary_action_button,
 )
 from .page_content_style import (
     configure_fluid_text_label,
@@ -46,16 +47,19 @@ class AnalysisPageState:
         "Optional: calculate heatmaps, corridors, and start points from loaded data."
     )
     input_summary_text: str = "No loaded activity layers available for analysis"
-    result_summary_text: str = "Analysis outputs will appear in the project once generated"
+    result_summary_text: str = "No analysis displayed"
     primary_action_label: str = "Run analysis"
     primary_action_enabled: bool | None = None
     primary_action_blocked_tooltip: str = "Load activity layers before running analysis."
+    clear_action_label: str = "Clear analysis"
+    clear_action_enabled: bool = True
 
 
 class AnalysisPageContent(QWidget):
     """Reusable fourth-page content for the wizard spatial-analysis step."""
 
     runAnalysisRequested = pyqtSignal()
+    clearAnalysisRequested = pyqtSignal()
     analysisModeChanged = pyqtSignal(str)
 
     def __init__(self, state: AnalysisPageState | None = None, parent=None) -> None:
@@ -92,8 +96,16 @@ class AnalysisPageContent(QWidget):
             action_name="run_analysis",
         )
         self.run_analysis_button.clicked.connect(self.runAnalysisRequested.emit)
+        self.clear_analysis_button = QToolButton(self)
+        self.clear_analysis_button.setObjectName("qfitWizardAnalysisClearButton")
+        style_secondary_action_button(
+            self.clear_analysis_button,
+            action_name="clear_analysis",
+        )
+        self.clear_analysis_button.clicked.connect(self.clearAnalysisRequested.emit)
         self.action_row = build_wizard_action_row(
             self.run_analysis_button,
+            self.clear_analysis_button,
             parent=self,
             object_name="qfitWizardAnalysisActionRow",
         )
@@ -142,6 +154,11 @@ class AnalysisPageContent(QWidget):
             self.run_analysis_button,
             enabled=primary_action_enabled,
             tooltip=state.primary_action_blocked_tooltip,
+        )
+        self.clear_analysis_button.setText(state.clear_action_label)
+        set_wizard_action_availability(
+            self.clear_analysis_button,
+            enabled=state.clear_action_enabled,
         )
 
     def outer_layout(self):

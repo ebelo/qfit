@@ -56,7 +56,7 @@ class AnalysisPageContentTest(unittest.TestCase):
         )
         self.assertEqual(
             content.result_summary_label.text(),
-            "Analysis outputs will appear in the project once generated",
+            "No analysis displayed",
         )
         self.assertIn(COLOR_MUTED, content.result_summary_label.styleSheet())
         self.assertEqual(
@@ -92,10 +92,24 @@ class AnalysisPageContentTest(unittest.TestCase):
             "blocked",
         )
         self.assertIn("Load activity layers", content.run_analysis_button.toolTip())
+        self.assertEqual(
+            content.clear_analysis_button.objectName(),
+            "qfitWizardAnalysisClearButton",
+        )
+        self.assertEqual(content.clear_analysis_button.text(), "Clear analysis")
+        self.assertEqual(
+            content.clear_analysis_button.property("secondaryAction"),
+            "clear_analysis",
+        )
+        self.assertEqual(
+            content.clear_analysis_button.property("wizardActionRole"),
+            "secondary",
+        )
+        self.assertTrue(content.clear_analysis_button.isEnabled())
         self.assertEqual(content.action_row.objectName(), "qfitWizardAnalysisActionRow")
         self.assertEqual(
             content.action_row.outer_layout().widgets,
-            [content.run_analysis_button],
+            [content.run_analysis_button, content.clear_analysis_button],
         )
         self.assertEqual(
             content.outer_layout().widgets,
@@ -195,14 +209,16 @@ class AnalysisPageContentTest(unittest.TestCase):
             "Choose an analysis input layer.",
         )
 
-    def test_button_emits_reusable_page_signal(self):
+    def test_buttons_emit_reusable_page_signals(self):
         content = self.analysis_page.AnalysisPageContent()
         calls = []
         content.runAnalysisRequested.connect(lambda: calls.append("run"))
+        content.clearAnalysisRequested.connect(lambda: calls.append("clear"))
 
         content.run_analysis_button.clicked.emit()
+        content.clear_analysis_button.clicked.emit()
 
-        self.assertEqual(calls, ["run"])
+        self.assertEqual(calls, ["run", "clear"])
 
     def test_installs_only_on_analysis_wizard_page_body(self):
         analysis_spec = next(

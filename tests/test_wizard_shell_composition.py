@@ -334,6 +334,7 @@ class WizardShellCompositionTest(unittest.TestCase):
             load_activity_layers=lambda: calls.append("load"),
             apply_map_filters=lambda: calls.append("filter"),
             run_analysis=lambda: calls.append("analysis"),
+            clear_analysis=lambda: calls.append("clear-analysis"),
             set_analysis_mode=lambda mode: calls.append(f"mode:{mode}"),
             export_atlas=lambda: calls.append("atlas"),
         )
@@ -354,6 +355,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         assembled.map_content.load_layers_button.clicked.emit()
         assembled.map_content.apply_filters_button.clicked.emit()
         assembled.analysis_content.run_analysis_button.clicked.emit()
+        assembled.analysis_content.clear_analysis_button.clicked.emit()
         assembled.analysis_content.analysis_mode_combo.setCurrentText("Heatmap")
         assembled.atlas_content.export_atlas_button.clicked.emit()
 
@@ -370,6 +372,7 @@ class WizardShellCompositionTest(unittest.TestCase):
                 "load",
                 "filter",
                 "analysis",
+                "clear-analysis",
                 "mode:Heatmap",
                 "atlas",
             ],
