@@ -303,6 +303,16 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertEqual(dock.outputGroupBox.parent(), dock.activitiesSectionContentWidget)
             self.assertGreater(dock.activitiesSectionContentWidget.layout().indexOf(dock.outputGroupBox), dock.activitiesSectionContentWidget.layout().indexOf(dock.previewGroupBox))
             self.assertEqual(dock.styleGroupBox.title(), "")
+            self.assertEqual(
+                dock.stylePresetComboBox.parentWidget(),
+                dock._local_first_dock_composition.map_content.style_controls_panel,
+            )
+            self.assertGreaterEqual(
+                dock._local_first_dock_composition.map_content.style_controls_layout().indexOf(
+                    dock.stylePresetComboBox,
+                ),
+                0,
+            )
             self.assertEqual(dock.styleSectionToggleButton.text(), "Visualize")
             self.assertEqual(dock.styleSectionToggleButton.arrowType(), Qt.DownArrow)
             self.assertFalse(dock.styleSectionContentWidget.isHidden())

@@ -63,6 +63,15 @@ class MapPageContentTest(unittest.TestCase):
         self.assertEqual(content.style_summary_label.text(), "Default activity styling")
         self.assertIn(COLOR_MUTED, content.style_summary_label.styleSheet())
         self.assertEqual(
+            content.style_controls_panel.objectName(),
+            "qfitWizardMapStyleControlsPanel",
+        )
+        self.assertTrue(content.style_controls_panel.isVisible())
+        self.assertEqual(
+            content.style_controls_panel.property("styleControlsState"),
+            "expanded",
+        )
+        self.assertEqual(
             content.filter_summary_label.objectName(),
             "qfitWizardMapFilterSummary",
         )
@@ -128,6 +137,7 @@ class MapPageContentTest(unittest.TestCase):
                 content.layer_summary_label,
                 content.background_summary_label,
                 content.style_summary_label,
+                content.style_controls_panel,
                 content.filter_summary_label,
                 content.filter_controls_panel,
                 content.action_row,
@@ -245,6 +255,15 @@ class MapPageContentTest(unittest.TestCase):
             "expanded",
         )
 
+    def test_default_state_keeps_style_controls_visible(self):
+        content = self.map_page.MapPageContent(self.map_page.MapPageState())
+
+        self.assertTrue(content.style_controls_panel.isVisible())
+        self.assertEqual(
+            content.style_controls_panel.property("styleControlsState"),
+            "expanded",
+        )
+
     def test_set_filter_controls_visible_keeps_filters_expanded(self):
         content = self.map_page.MapPageContent(
             self.map_page.MapPageState()
@@ -255,6 +274,19 @@ class MapPageContentTest(unittest.TestCase):
         self.assertTrue(content.filter_controls_panel.isVisible())
         self.assertEqual(
             content.filter_controls_panel.property("filterControlsState"),
+            "expanded",
+        )
+
+    def test_set_style_controls_visible_keeps_style_controls_expanded(self):
+        content = self.map_page.MapPageContent(
+            self.map_page.MapPageState()
+        )
+
+        content.set_style_controls_visible()
+
+        self.assertTrue(content.style_controls_panel.isVisible())
+        self.assertEqual(
+            content.style_controls_panel.property("styleControlsState"),
             "expanded",
         )
 
@@ -274,6 +306,11 @@ class MapPageContentTest(unittest.TestCase):
             "expanded",
         )
         self.assertTrue(content.filter_controls_panel.isVisible())
+        self.assertEqual(
+            content.style_controls_panel.property("styleControlsState"),
+            "expanded",
+        )
+        self.assertTrue(content.style_controls_panel.isVisible())
 
     def test_buttons_emit_reusable_page_signals(self):
         content = self.map_page.MapPageContent()

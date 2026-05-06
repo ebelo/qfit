@@ -479,6 +479,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             ),
         )
         self._sync_atlas_document_settings_controls(self._wizard_shell_composition)
+        self._install_wizard_style_controls(self._wizard_shell_composition)
         self._install_wizard_filter_controls(self._wizard_shell_composition)
         self._bind_wizard_analysis_mode_controls(self._wizard_shell_composition)
         return self._wizard_shell_composition
@@ -520,6 +521,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 update_atlas_document_settings=self._update_atlas_document_settings,
             ),
         )
+        self._install_wizard_style_controls(self._local_first_dock_composition)
         self._install_wizard_filter_controls(self._local_first_dock_composition)
         self._install_local_first_basemap_controls(self._local_first_dock_composition)
         self._bind_wizard_analysis_mode_controls(self._local_first_dock_composition)
@@ -593,6 +595,41 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         map_content.set_filter_controls_visible()
         self._wizard_filter_controls_installed = True
         self._wizard_filter_controls_installed_target = current_target
+
+    def _install_wizard_style_controls(self, composition) -> None:
+        """Move the live activity-style selector into the wizard map page."""
+
+        map_content = getattr(composition, "map_content", None)
+        style_label = getattr(self, "stylePresetLabel", None)
+        style_combo = getattr(self, "stylePresetComboBox", None)
+        if map_content is None or style_label is None or style_combo is None:
+            return
+        installed_target = getattr(self, "_wizard_style_controls_installed_target", None)
+        current_target = id(map_content)
+        if getattr(self, "_wizard_style_controls_installed", False) and (
+            installed_target == current_target
+        ):
+            return
+        style_controls_layout = getattr(map_content, "style_controls_layout", None)
+        if not callable(style_controls_layout):
+            return
+
+        target_layout = style_controls_layout()
+        parent_panel = getattr(map_content, "style_controls_panel", map_content)
+        for widget in (style_label, style_combo):
+            self._remove_widget_from_current_layout(widget)
+            if hasattr(widget, "setParent"):
+                widget.setParent(parent_panel)
+            target_layout.addWidget(widget)
+            if hasattr(widget, "show"):
+                widget.show()
+            elif hasattr(widget, "setVisible"):
+                widget.setVisible(True)
+        set_visible = getattr(map_content, "set_style_controls_visible", None)
+        if callable(set_visible):
+            set_visible()
+        self._wizard_style_controls_installed = True
+        self._wizard_style_controls_installed_target = current_target
 
     def _remove_widget_from_current_layout(self, widget) -> None:
         parent_widget = (
