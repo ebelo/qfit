@@ -9,6 +9,7 @@ from .action_row import (
     style_primary_action_button,
 )
 from .page_content_style import (
+    configure_fluid_text_label,
     style_detail_label,
     style_status_pill,
     style_summary_label,
@@ -64,14 +65,15 @@ class AnalysisPageContent(QWidget):
         self.status_label.setObjectName("qfitWizardAnalysisStatus")
         self.detail_label = QLabel("", self)
         self.detail_label.setObjectName("qfitWizardAnalysisDetail")
-        if hasattr(self.detail_label, "setWordWrap"):
-            self.detail_label.setWordWrap(True)
+        configure_fluid_text_label(self.detail_label)
         style_detail_label(self.detail_label)
         self.input_summary_label = QLabel("", self)
         self.input_summary_label.setObjectName("qfitWizardAnalysisInputSummary")
+        configure_fluid_text_label(self.input_summary_label)
         style_summary_label(self.input_summary_label)
         self.result_summary_label = QLabel("", self)
         self.result_summary_label.setObjectName("qfitWizardAnalysisResultSummary")
+        configure_fluid_text_label(self.result_summary_label)
         style_summary_label(self.result_summary_label)
         self.analysis_mode_label = QLabel("Analysis mode", self)
         self.analysis_mode_label.setObjectName("qfitWizardAnalysisModeLabel")

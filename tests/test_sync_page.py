@@ -180,6 +180,16 @@ class SyncPageContentTest(unittest.TestCase):
         self.assertTrue(content.clear_button.isEnabled())
         self.assertEqual(content.clear_button.toolTip(), "")
 
+    def test_presentation_copy_wraps_without_forcing_panel_width(self):
+        content = self.sync_page.SyncPageContent()
+
+        self.assertTrue(content.detail_label.word_wrap)
+        self.assertEqual(content.detail_label.minimumWidth(), 0)
+        self.assertEqual(content.detail_label.size_policy, (3, 4))
+        self.assertTrue(content.activity_summary_label.word_wrap)
+        self.assertEqual(content.activity_summary_label.minimumWidth(), 0)
+        self.assertEqual(content.activity_summary_label.size_policy, (3, 4))
+
     def test_can_block_saved_routes_action_with_tooltip_copy(self):
         content = self.sync_page.SyncPageContent(
             self.sync_page.SyncPageState(

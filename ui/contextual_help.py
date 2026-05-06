@@ -301,6 +301,13 @@ class ContextualHelpBinder:
         helper = qtwidgets.QLabel(text, helper_parent)
         helper.setObjectName(helper_name)
         helper.setWordWrap(True)
+        if hasattr(helper, "setMinimumWidth"):
+            helper.setMinimumWidth(0)
+        if hasattr(helper, "setSizePolicy"):
+            helper.setSizePolicy(
+                qtwidgets.QSizePolicy.Ignored,
+                qtwidgets.QSizePolicy.Preferred,
+            )
         helper.setTextInteractionFlags(self._qtcore().Qt.TextSelectableByMouse)
         helper.setStyleSheet("color: palette(mid); margin-top: 2px; margin-bottom: 4px;")
         self._insert_after_anchor(anchor, helper)

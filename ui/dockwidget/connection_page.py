@@ -9,6 +9,7 @@ from .action_row import (
     style_primary_action_button,
 )
 from .page_content_style import (
+    configure_fluid_text_label,
     style_detail_label,
     style_status_pill,
     style_summary_label,
@@ -66,11 +67,11 @@ class ConnectionPageContent(QWidget):
         self.status_label.setObjectName("qfitWizardConnectionStatus")
         self.detail_label = QLabel("", self)
         self.detail_label.setObjectName("qfitWizardConnectionDetail")
-        if hasattr(self.detail_label, "setWordWrap"):
-            self.detail_label.setWordWrap(True)
+        configure_fluid_text_label(self.detail_label)
         style_detail_label(self.detail_label)
         self.credential_summary_label = QLabel("", self)
         self.credential_summary_label.setObjectName("qfitWizardConnectionCredentialSummary")
+        configure_fluid_text_label(self.credential_summary_label)
         style_summary_label(self.credential_summary_label)
         self.configure_button = QToolButton(self)
         self.configure_button.setObjectName("qfitWizardConnectionConfigureButton")

@@ -115,6 +115,19 @@ class AtlasPageContentTest(unittest.TestCase):
             ],
         )
 
+    def test_summary_copy_wraps_without_forcing_panel_width(self):
+        content = self.atlas_page.AtlasPageContent()
+
+        self.assertTrue(content.detail_label.word_wrap)
+        self.assertEqual(content.detail_label.minimumWidth(), 0)
+        self.assertEqual(content.detail_label.size_policy, (3, 4))
+        self.assertTrue(content.input_summary_label.word_wrap)
+        self.assertEqual(content.input_summary_label.minimumWidth(), 0)
+        self.assertEqual(content.input_summary_label.size_policy, (3, 4))
+        self.assertTrue(content.output_summary_label.word_wrap)
+        self.assertEqual(content.output_summary_label.minimumWidth(), 0)
+        self.assertEqual(content.output_summary_label.size_policy, (3, 4))
+
     def test_can_seed_and_update_visible_document_settings(self):
         content = self.atlas_page.AtlasPageContent(
             atlas_title="Spring Atlas",

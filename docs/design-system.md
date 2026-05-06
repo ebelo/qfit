@@ -11,6 +11,7 @@ Any qfit UI change must:
 
 - follow the button system defined below, with at most one primary action per section
 - clearly separate navigation, actions, and status/result feedback
+- keep presentation/free text fluid at narrow dock widths instead of widening the panel
 - be understandable without relying on color alone
 - pass the mandatory review checklist in this document before merge
 
@@ -154,6 +155,18 @@ Usage rules:
 - Use concrete copy: what happened, what is missing, or what to do next.
 - Do not use color or icon alone as the status.
 
+### Presentation/free-text labels
+
+Presentation text includes helper copy, summaries, inline status detail, and generated facts such as atlas selection/page-count text.
+
+Usage rules:
+
+- Treat presentation text as fluid copy, not as a fixed-width control.
+- Enable word wrapping for labels whose content can vary or become long.
+- Allow the label to shrink with the dock by clearing artificial minimum widths; in Qt this usually means `setMinimumWidth(0)` plus a horizontal size policy that does not force the `sizeHint()` width.
+- Prefer wrapping over truncation when the full sentence explains state, prerequisites, or export consequences.
+- Keep compact single-line text only for stable labels, short field names, buttons, and intentionally terse badges/pills.
+
 ### Advanced section
 
 Structure:
@@ -210,7 +223,8 @@ Best practices:
 - Use form layouts for label-field pairs.
 - Use horizontal layouts only for short, related action rows or compact paired controls.
 - Avoid fixed widths except where a widget truly needs a stable minimum.
-- Let labels wrap when helper text can become long.
+- Let labels wrap when helper, summary, status, or other presentation text can become long.
+- Do not let long free-text labels dictate the dock width; make them shrinkable and wrap within the available layout width.
 - Keep margins and spacing consistent inside a section; use larger separation between sections than between fields in the same section.
 - Keep tab order aligned with visual reading order.
 

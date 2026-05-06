@@ -115,6 +115,16 @@ class ConnectionPageContentTest(unittest.TestCase):
         )
         self.assertEqual(content.configure_button.text(), "Review connection")
 
+    def test_presentation_copy_wraps_without_forcing_panel_width(self):
+        content = self.connection_page.ConnectionPageContent()
+
+        self.assertTrue(content.detail_label.word_wrap)
+        self.assertEqual(content.detail_label.minimumWidth(), 0)
+        self.assertEqual(content.detail_label.size_policy, (3, 4))
+        self.assertTrue(content.credential_summary_label.word_wrap)
+        self.assertEqual(content.credential_summary_label.minimumWidth(), 0)
+        self.assertEqual(content.credential_summary_label.size_policy, (3, 4))
+
     def test_can_block_configure_action_with_tooltip_copy(self):
         content = self.connection_page.ConnectionPageContent(
             self.connection_page.ConnectionPageState(

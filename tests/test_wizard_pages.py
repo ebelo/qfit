@@ -72,6 +72,10 @@ class WizardPageTest(unittest.TestCase):
         self.assertIn(COLOR_MUTED, page.summary_label.styleSheet())
         self.assertIn(COLOR_MUTED, page.primary_hint_label.styleSheet())
         self.assertIn("font-style: italic", page.primary_hint_label.styleSheet())
+        for label in (page.title_label, page.summary_label, page.primary_hint_label):
+            self.assertTrue(label.word_wrap)
+            self.assertEqual(label.minimumWidth(), 0)
+            self.assertEqual(label.size_policy, (3, 4))
         self.assertEqual(page.body_container.objectName(), "qfitWizardMapPageBody")
         self.assertEqual(page.body_layout().contents_margins, (0, 0, 0, 0))
         self.assertEqual(page.primary_hint_label.objectName(), "qfitWizardMapPagePrimaryHint")

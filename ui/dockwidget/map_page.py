@@ -10,6 +10,7 @@ from .action_row import (
     style_secondary_action_button,
 )
 from .page_content_style import (
+    configure_fluid_text_label,
     style_detail_label,
     style_status_pill,
     style_summary_label,
@@ -66,20 +67,23 @@ class MapPageContent(QWidget):
         self.status_label.setObjectName("qfitWizardMapStatus")
         self.detail_label = QLabel("", self)
         self.detail_label.setObjectName("qfitWizardMapDetail")
-        if hasattr(self.detail_label, "setWordWrap"):
-            self.detail_label.setWordWrap(True)
+        configure_fluid_text_label(self.detail_label)
         style_detail_label(self.detail_label)
         self.layer_summary_label = QLabel("", self)
         self.layer_summary_label.setObjectName("qfitWizardMapLayerSummary")
+        configure_fluid_text_label(self.layer_summary_label)
         style_summary_label(self.layer_summary_label)
         self.background_summary_label = QLabel("", self)
         self.background_summary_label.setObjectName("qfitWizardMapBackgroundSummary")
+        configure_fluid_text_label(self.background_summary_label)
         style_summary_label(self.background_summary_label)
         self.style_summary_label = QLabel("", self)
         self.style_summary_label.setObjectName("qfitWizardMapStyleSummary")
+        configure_fluid_text_label(self.style_summary_label)
         style_summary_label(self.style_summary_label)
         self.filter_summary_label = QLabel("", self)
         self.filter_summary_label.setObjectName("qfitWizardMapFilterSummary")
+        configure_fluid_text_label(self.filter_summary_label)
         style_summary_label(self.filter_summary_label)
         self.load_layers_button = QToolButton(self)
         self.load_layers_button.setObjectName("qfitWizardMapLoadLayersButton")
