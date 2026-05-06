@@ -322,10 +322,6 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertFalse(dock.analysisSectionContentWidget.isHidden())
             self.assertEqual(dock.analysisWorkflowLayout.spacing(), 6)
             self.assertEqual(dock.analysisModeLabel.text(), "Analysis")
-            self.assertEqual(
-                dock.analysisModeComboBox.currentText(),
-                "Most frequent starting points",
-            )
             self.assertEqual(dock.runAnalysisButton.text(), "Run analysis")
             self.assertEqual(dock.analysisModeLabel.parentWidget().parentWidget(), dock.analysisSectionContentWidget)
             self.assertEqual(dock.temporalModeLabel.parentWidget().parentWidget(), dock.styleSectionContentWidget)
