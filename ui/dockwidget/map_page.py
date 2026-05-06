@@ -81,6 +81,11 @@ class MapPageContent(QWidget):
         self.style_summary_label.setObjectName("qfitWizardMapStyleSummary")
         configure_fluid_text_label(self.style_summary_label)
         style_summary_label(self.style_summary_label)
+        self.style_controls_panel = QWidget(self)
+        self.style_controls_panel.setObjectName("qfitWizardMapStyleControlsPanel")
+        self.style_controls_panel.setVisible(True)
+        self.style_controls_panel.setProperty("styleControlsState", "expanded")
+        self._style_controls_layout = self._build_style_controls_layout()
         self.filter_summary_label = QLabel("", self)
         self.filter_summary_label.setObjectName("qfitWizardMapFilterSummary")
         configure_fluid_text_label(self.filter_summary_label)
@@ -127,6 +132,7 @@ class MapPageContent(QWidget):
         self.background_summary_label.setProperty("mapState", map_state)
         self.style_summary_label.setText(state.style_summary_text)
         self.style_summary_label.setProperty("mapState", map_state)
+        self.set_style_controls_visible()
         self.filter_summary_label.setText(state.filter_summary_text)
         self.filter_summary_label.setProperty("mapState", map_state)
         self.load_layers_button.setText(state.load_action_label)
@@ -153,6 +159,17 @@ class MapPageContent(QWidget):
 
         return self._filter_controls_layout
 
+    def style_controls_layout(self):
+        """Expose the wizard panel slot for live style controls."""
+
+        return self._style_controls_layout
+
+    def set_style_controls_visible(self) -> None:
+        """Keep embedded style controls visible without rebuilding the page."""
+
+        self.style_controls_panel.setVisible(True)
+        self.style_controls_panel.setProperty("styleControlsState", "expanded")
+
     def set_filter_controls_visible(self) -> None:
         """Keep embedded filter controls visible without rebuilding the page."""
 
@@ -172,6 +189,14 @@ class MapPageContent(QWidget):
         layout.setSpacing(6)
         return layout
 
+    def _build_style_controls_layout(self):
+        layout = QVBoxLayout(self.style_controls_panel)
+        if hasattr(layout, "setObjectName"):
+            layout.setObjectName("qfitWizardMapStyleControlsLayout")
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(6)
+        return layout
+
     def _build_layout(self):
         layout = QVBoxLayout(self)
         if hasattr(layout, "setObjectName"):
@@ -183,6 +208,7 @@ class MapPageContent(QWidget):
         layout.addWidget(self.layer_summary_label)
         layout.addWidget(self.background_summary_label)
         layout.addWidget(self.style_summary_label)
+        layout.addWidget(self.style_controls_panel)
         layout.addWidget(self.filter_summary_label)
         layout.addWidget(self.filter_controls_panel)
         layout.addWidget(self.action_row)

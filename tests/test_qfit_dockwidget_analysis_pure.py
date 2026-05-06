@@ -4,7 +4,7 @@ import sys
 import tempfile
 import unittest
 from types import ModuleType, SimpleNamespace
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, call, patch
 
 from tests import _path  # noqa: F401
 from qfit.activities.domain.activity_query import DETAILED_ROUTE_FILTER_MISSING
@@ -918,6 +918,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._atlas_export_completed = False
         dock.settings = _FakeSettings()
         dock._install_wizard_filter_controls = MagicMock()
+        dock._install_wizard_style_controls = MagicMock()
         dock._bind_wizard_analysis_mode_controls = MagicMock()
         parent = object()
 
@@ -984,6 +985,9 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
                 callback.__func__,
                 getattr(self.module.QfitDockWidget, method_name),
             )
+        dock._install_wizard_style_controls.assert_called_once_with(
+            "connected-composition"
+        )
         dock._install_wizard_filter_controls.assert_called_once_with(
             "connected-composition"
         )
@@ -1090,6 +1094,60 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         parent_layout.removeWidget.assert_called_once_with(filter_group)
         filter_layout.addWidget.assert_called_once_with(filter_group)
         self.assertEqual(dock._wizard_filter_controls_installed_target, id(map_content))
+
+    def test_install_wizard_style_controls_moves_live_style_selector_into_map_panel(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        parent_layout = MagicMock()
+        parent_widget = SimpleNamespace(layout=lambda: parent_layout)
+        style_label = MagicMock()
+        style_combo = MagicMock()
+        style_label.parentWidget.return_value = parent_widget
+        style_combo.parentWidget.return_value = parent_widget
+        dock.stylePresetLabel = style_label
+        dock.stylePresetComboBox = style_combo
+        panel = object()
+        style_layout = MagicMock()
+        map_content = SimpleNamespace(
+            style_controls_panel=panel,
+            style_controls_layout=MagicMock(return_value=style_layout),
+            set_style_controls_visible=MagicMock(),
+        )
+
+        self.module.QfitDockWidget._install_wizard_style_controls(
+            dock,
+            SimpleNamespace(map_content=map_content),
+        )
+
+        self.assertEqual(
+            parent_layout.removeWidget.call_args_list,
+            [call(style_label), call(style_combo)],
+        )
+        style_label.setParent.assert_called_once_with(panel)
+        style_combo.setParent.assert_called_once_with(panel)
+        self.assertEqual(
+            style_layout.addWidget.call_args_list,
+            [call(style_label), call(style_combo)],
+        )
+        style_label.show.assert_called_once_with()
+        style_combo.show.assert_called_once_with()
+        map_content.set_style_controls_visible.assert_called_once_with()
+        self.assertTrue(dock._wizard_style_controls_installed)
+        self.assertEqual(dock._wizard_style_controls_installed_target, id(map_content))
+
+    def test_install_wizard_style_controls_is_idempotent(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._wizard_style_controls_installed = True
+        dock.stylePresetLabel = MagicMock()
+        dock.stylePresetComboBox = MagicMock()
+        map_content = SimpleNamespace(style_controls_layout=MagicMock())
+        dock._wizard_style_controls_installed_target = id(map_content)
+
+        self.module.QfitDockWidget._install_wizard_style_controls(
+            dock,
+            SimpleNamespace(map_content=map_content),
+        )
+
+        map_content.style_controls_layout.assert_not_called()
 
     def test_bind_wizard_analysis_mode_controls_exposes_non_none_modes(self):
         dock = object.__new__(self.module.QfitDockWidget)
