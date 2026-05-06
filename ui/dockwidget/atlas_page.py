@@ -21,6 +21,7 @@ _qtwidgets = import_qt_module(
     (
         "QLabel",
         "QLineEdit",
+        "QSizePolicy",
         "QToolButton",
         "QVBoxLayout",
         "QWidget",
@@ -30,11 +31,23 @@ _qtwidgets = import_qt_module(
 pyqtSignal = _qtcore.pyqtSignal
 QLabel = _qtwidgets.QLabel
 QLineEdit = _qtwidgets.QLineEdit
+QSizePolicy = _qtwidgets.QSizePolicy
 QToolButton = _qtwidgets.QToolButton
 QVBoxLayout = _qtwidgets.QVBoxLayout
 QWidget = _qtwidgets.QWidget
 
 _DEFAULT_ATLAS_TITLE = "qfit Activity Atlas"
+
+
+def _configure_fluid_text_label(label) -> None:
+    """Allow longer free-text labels to wrap instead of widening the dock."""
+
+    if hasattr(label, "setWordWrap"):
+        label.setWordWrap(True)
+    if hasattr(label, "setMinimumWidth"):
+        label.setMinimumWidth(0)
+    if hasattr(label, "setSizePolicy"):
+        label.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)
 
 
 @dataclass(frozen=True)
@@ -72,14 +85,15 @@ class AtlasPageContent(QWidget):
         self.status_label.setObjectName("qfitWizardAtlasStatus")
         self.detail_label = QLabel("", self)
         self.detail_label.setObjectName("qfitWizardAtlasDetail")
-        if hasattr(self.detail_label, "setWordWrap"):
-            self.detail_label.setWordWrap(True)
+        _configure_fluid_text_label(self.detail_label)
         style_detail_label(self.detail_label)
         self.input_summary_label = QLabel("", self)
         self.input_summary_label.setObjectName("qfitWizardAtlasInputSummary")
+        _configure_fluid_text_label(self.input_summary_label)
         style_summary_label(self.input_summary_label)
         self.output_summary_label = QLabel("", self)
         self.output_summary_label.setObjectName("qfitWizardAtlasOutputSummary")
+        _configure_fluid_text_label(self.output_summary_label)
         style_summary_label(self.output_summary_label)
         self.title_label = QLabel("Atlas title", self)
         self.title_label.setObjectName("qfitWizardAtlasTitleLabel")
