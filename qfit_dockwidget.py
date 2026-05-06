@@ -472,6 +472,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 load_activity_layers=self.on_load_layers_clicked,
                 apply_map_filters=self._run_wizard_map_step,
                 run_analysis=self.on_run_analysis_clicked,
+                clear_analysis=self.on_clear_analysis_clicked,
                 set_analysis_mode=self._set_wizard_analysis_mode,
                 export_atlas=self.on_generate_atlas_pdf_clicked,
                 update_atlas_document_settings=self._update_atlas_document_settings,
@@ -513,6 +514,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 load_activity_layers=self.on_load_layers_clicked,
                 apply_map_filters=self.on_apply_filters_clicked,
                 run_analysis=self.on_run_analysis_clicked,
+                clear_analysis=self.on_clear_analysis_clicked,
                 set_analysis_mode=self._set_wizard_analysis_mode,
                 export_atlas=self.on_generate_atlas_pdf_clicked,
                 update_atlas_document_settings=self._update_atlas_document_settings,
@@ -1715,6 +1717,11 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
     def on_run_analysis_clicked(self):
         self._dispatch_dock_action(RunAnalysisAction)
+
+    def on_clear_analysis_clicked(self):
+        self._clear_analysis_layer()
+        self._set_status("No analysis displayed")
+        self._refresh_live_dock_navigation_from_runtime()
 
     def _dispatch_dock_action(self, action_type):
         result = self._dock_visual_workflow.dispatch_action(

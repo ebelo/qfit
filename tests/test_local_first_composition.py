@@ -101,6 +101,7 @@ class LocalFirstDockCompositionTests(unittest.TestCase):
             load_activity_layers=lambda: calls.append("layers"),
             apply_map_filters=lambda: calls.append("apply"),
             run_analysis=lambda: calls.append("analysis"),
+            clear_analysis=lambda: calls.append("clear-analysis"),
             set_analysis_mode=lambda mode: calls.append(f"mode:{mode}"),
             export_atlas=lambda: calls.append("atlas"),
             update_atlas_document_settings=lambda title, subtitle: calls.append(
@@ -117,6 +118,7 @@ class LocalFirstDockCompositionTests(unittest.TestCase):
         composition.map_content.loadLayersRequested.emit()
         composition.map_content.applyFiltersRequested.emit()
         composition.analysis_content.runAnalysisRequested.emit()
+        composition.analysis_content.clearAnalysisRequested.emit()
         composition.analysis_content.analysisModeChanged.emit("Heatmap")
         composition.atlas_content.exportAtlasRequested.emit()
         composition.atlas_content.title_line_edit.setText("Summer Atlas")
@@ -133,6 +135,7 @@ class LocalFirstDockCompositionTests(unittest.TestCase):
                 "layers",
                 "apply",
                 "analysis",
+                "clear-analysis",
                 "mode:Heatmap",
                 "atlas",
                 "atlas-settings:Summer Atlas:Road and trail",

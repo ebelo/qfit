@@ -817,6 +817,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "load_activity_layers": "on_load_layers_clicked",
             "apply_map_filters": "_run_wizard_map_step",
             "run_analysis": "on_run_analysis_clicked",
+            "clear_analysis": "on_clear_analysis_clicked",
             "set_analysis_mode": "_set_wizard_analysis_mode",
             "export_atlas": "on_generate_atlas_pdf_clicked",
         }
@@ -971,6 +972,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "load_activity_layers": "on_load_layers_clicked",
             "apply_map_filters": "on_apply_filters_clicked",
             "run_analysis": "on_run_analysis_clicked",
+            "clear_analysis": "on_clear_analysis_clicked",
             "set_analysis_mode": "_set_wizard_analysis_mode",
             "export_atlas": "on_generate_atlas_pdf_clicked",
             "update_atlas_document_settings": "_update_atlas_document_settings",
@@ -1407,6 +1409,18 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._dispatch_dock_action.assert_called_once_with(
             self.module.RunAnalysisAction
         )
+
+    def test_on_clear_analysis_clicked_removes_analysis_and_refreshes_state(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._clear_analysis_layer = MagicMock()
+        dock._set_status = MagicMock()
+        dock._refresh_live_dock_navigation_from_runtime = MagicMock()
+
+        self.module.QfitDockWidget.on_clear_analysis_clicked(dock)
+
+        dock._clear_analysis_layer.assert_called_once_with()
+        dock._set_status.assert_called_once_with("No analysis displayed")
+        dock._refresh_live_dock_navigation_from_runtime.assert_called_once_with()
 
     def test_dispatch_dock_action_returns_early_without_layers(self):
         dock = object.__new__(self.module.QfitDockWidget)

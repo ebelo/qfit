@@ -73,6 +73,7 @@ class WizardActionCallbacks:
     load_activity_layers: Callable[[], None] | None = None
     apply_map_filters: Callable[[], None] | None = None
     run_analysis: Callable[[], None] | None = None
+    clear_analysis: Callable[[], None] | None = None
     set_analysis_mode: Callable[[str], None] | None = None
     export_atlas: Callable[[], None] | None = None
     update_atlas_document_settings: Callable[[str, str], None] | None = None
@@ -441,6 +442,11 @@ def _connect_action_callbacks(
         analysis_content,
         "runAnalysisRequested",
         callbacks.run_analysis,
+    )
+    _connect_optional_signal(
+        analysis_content,
+        "clearAnalysisRequested",
+        callbacks.clear_analysis,
     )
     _connect_optional_signal(
         analysis_content,

@@ -155,6 +155,11 @@ def connect_local_first_action_callbacks(
     )
     _connect_optional_signal(
         composition.analysis_content,
+        "clearAnalysisRequested",
+        callbacks.clear_analysis,
+    )
+    _connect_optional_signal(
+        composition.analysis_content,
         "analysisModeChanged",
         callbacks.set_analysis_mode,
     )
