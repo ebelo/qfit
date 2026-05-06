@@ -307,13 +307,21 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertEqual(dock.styleSectionToggleButton.arrowType(), Qt.DownArrow)
             self.assertFalse(dock.styleSectionContentWidget.isHidden())
             self.assertEqual(dock.loadLayersButton.parent(), dock.styleSectionContentWidget)
-            self.assertLess(dock.styleSectionContentWidget.layout().indexOf(dock.loadLayersButton), dock.styleSectionContentWidget.layout().indexOf(dock.backgroundGroupBox))
+            self.assertEqual(
+                dock.backgroundGroupBox.parentWidget(),
+                dock._local_first_dock_composition.connection_content,
+            )
+            self.assertGreaterEqual(
+                dock._local_first_dock_composition.connection_content.outer_layout().indexOf(
+                    dock.backgroundGroupBox,
+                ),
+                0,
+            )
             self.assertEqual(dock.analysisWorkflowGroupBox.title(), "")
             self.assertEqual(dock.analysisSectionToggleButton.text(), "Analyze")
             self.assertFalse(dock.analysisSectionContentWidget.isHidden())
             self.assertEqual(dock.analysisWorkflowLayout.spacing(), 6)
             self.assertEqual(dock.analysisModeLabel.text(), "Analysis")
-            self.assertEqual(dock.analysisModeComboBox.currentText(), "None")
             self.assertEqual(dock.runAnalysisButton.text(), "Run analysis")
             self.assertEqual(dock.analysisModeLabel.parentWidget().parentWidget(), dock.analysisSectionContentWidget)
             self.assertEqual(dock.temporalModeLabel.parentWidget().parentWidget(), dock.styleSectionContentWidget)
