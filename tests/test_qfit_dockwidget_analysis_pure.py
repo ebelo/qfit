@@ -2003,6 +2003,18 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             [current_layer.id(), stale_layer.id(), stale_heatmap_layer.id()],
         )
 
+    def test_clear_analysis_layer_is_noop_when_no_analysis_is_displayed(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        project = _FakeProject({"other": _FakeLayer("other")})
+        dock._atlas_export_completed = True
+
+        with patch.object(self.module.QgsProject, "instance", return_value=project):
+            removed = self.module.QfitDockWidget._clear_analysis_layer(dock)
+
+        self.assertFalse(removed)
+        self.assertTrue(dock._atlas_export_completed)
+        self.assertEqual(project.removed, [])
+
     def test_on_load_clicked_starts_background_store_task(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._store_task = None

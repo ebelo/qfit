@@ -1835,9 +1835,10 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         )
 
     def _clear_analysis_layer(self):
-        self._mark_atlas_export_stale()
         project = QgsProject.instance()
+        analysis_removed = False
         if self.analysis_layer is not None:
+            analysis_removed = True
             try:
                 project.removeMapLayer(self.analysis_layer.id())
             except RuntimeError:
@@ -1851,10 +1852,14 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         for layer in tuple(project.mapLayers().values()):
             if layer.name() not in analysis_layer_names:
                 continue
+            analysis_removed = True
             try:
                 project.removeMapLayer(layer.id())
             except RuntimeError:
                 logger.debug("Failed to remove stale analysis layer", exc_info=True)
+        if analysis_removed:
+            self._mark_atlas_export_stale()
+        return analysis_removed
 
     def _current_activity_preview_request(self):
         return build_activity_preview_request(
