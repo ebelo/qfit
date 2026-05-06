@@ -51,12 +51,30 @@ class PageContentStyleTest(unittest.TestCase):
         self.assertEqual(label.property("tone"), "ok")
         self.assertIn("#dcefd0", label.styleSheet())
 
+    def test_configures_fluid_text_labels_for_wrapping_and_shrink(self):
+        label = _FakeLabel(object_name="summaryLabel")
+
+        self.page_content_style.configure_fluid_text_label(label)
+
+        self.assertTrue(label.word_wrap)
+        self.assertEqual(label.minimumWidth(), 0)
+        self.assertEqual(
+            label.size_policy,
+            (
+                self.page_content_style.QSizePolicy.Ignored,
+                self.page_content_style.QSizePolicy.Preferred,
+            ),
+        )
+
 
 class _FakeLabel:
     def __init__(self, *, object_name=""):
         self._object_name = object_name
         self._properties = {}
         self._stylesheet = ""
+        self._minimum_width = None
+        self.word_wrap = False
+        self.size_policy = None
 
     def setObjectName(self, object_name):  # noqa: N802
         self._object_name = object_name
@@ -75,6 +93,18 @@ class _FakeLabel:
 
     def styleSheet(self):  # noqa: N802
         return self._stylesheet
+
+    def setWordWrap(self, value):  # noqa: N802
+        self.word_wrap = value
+
+    def setMinimumWidth(self, value):  # noqa: N802
+        self._minimum_width = value
+
+    def minimumWidth(self):  # noqa: N802
+        return self._minimum_width
+
+    def setSizePolicy(self, horizontal, vertical):  # noqa: N802
+        self.size_policy = (horizontal, vertical)
 
 
 if __name__ == "__main__":

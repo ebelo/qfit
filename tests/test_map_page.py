@@ -189,6 +189,20 @@ class MapPageContentTest(unittest.TestCase):
         )
         self.assertEqual(content.apply_filters_button.toolTip(), "")
 
+    def test_presentation_copy_wraps_without_forcing_panel_width(self):
+        content = self.map_page.MapPageContent()
+
+        for label in (
+            content.detail_label,
+            content.layer_summary_label,
+            content.background_summary_label,
+            content.style_summary_label,
+            content.filter_summary_label,
+        ):
+            self.assertTrue(label.word_wrap)
+            self.assertEqual(label.minimumWidth(), 0)
+            self.assertEqual(label.size_policy, (3, 4))
+
     def test_can_block_load_layers_until_sync_prerequisite_is_ready(self):
         content = self.map_page.MapPageContent(
             self.map_page.MapPageState(

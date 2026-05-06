@@ -9,6 +9,7 @@ from qfit.ui.application.wizard_page_specs import (
 from qfit.ui.tokens import COLOR_MUTED, COLOR_TEXT
 
 from ._qt_compat import import_qt_module
+from .page_content_style import configure_fluid_text_label
 
 _qtwidgets = import_qt_module(
     "qgis.PyQt.QtWidgets",
@@ -97,8 +98,7 @@ class WizardPage(QWidget):
     def _build_label(self, text: str, object_name: str, *, style: str = ""):
         label = QLabel(text, self)
         label.setObjectName(object_name)
-        if hasattr(label, "setWordWrap"):
-            label.setWordWrap(True)
+        configure_fluid_text_label(label)
         if style:
             label.setStyleSheet(style)
         return label

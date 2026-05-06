@@ -141,6 +141,8 @@ class _FakeWidget:
         self.visible = False
         self.cursor = None
         self.focus_policy = None
+        self._minimum_width = None
+        self.size_policy = None
         self.auto_raise = False
         self.layout_obj = None
         self._children = []
@@ -170,6 +172,15 @@ class _FakeWidget:
 
     def setWordWrap(self, value):
         self.word_wrap = value
+
+    def setMinimumWidth(self, value):
+        self._minimum_width = value
+
+    def minimumWidth(self):
+        return self._minimum_width
+
+    def setSizePolicy(self, horizontal, vertical):
+        self.size_policy = (horizontal, vertical)
 
     def setTextInteractionFlags(self, value):
         self.interaction_flags = value
@@ -235,6 +246,10 @@ class _FakeRoot(_FakeWidget):
 
 
 class _FakeQtWidgetsModule:
+    class QSizePolicy:
+        Ignored = 3
+        Preferred = 4
+
     QWidget = _FakeWidget
     QLabel = _FakeLabel
     QToolButton = _FakeQToolButton
@@ -343,6 +358,8 @@ class ContextualHelpTests(unittest.TestCase):
         helper = getattr(root, "speedSpinBoxContextHelpLabel")
         self.assertEqual(helper.text(), "Inline helper copy")
         self.assertTrue(helper.word_wrap)
+        self.assertEqual(helper.minimumWidth(), 0)
+        self.assertEqual(helper.size_policy, (3, 4))
         self.assertEqual(helper.interaction_flags, _FakeQt.TextSelectableByMouse)
         self.assertIn("palette(mid)", helper.style_sheet)
 

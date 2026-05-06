@@ -77,6 +77,7 @@ class _FakeWidget:
         self._alignment = None
         self._focus_policy = None
         self._visible = True
+        self.size_policy = None
 
     def setVisible(self, value):  # noqa: N802
         self._visible = value
@@ -150,6 +151,9 @@ class _FakeWidget:
     def styleSheet(self):  # noqa: N802
         return self._stylesheet
 
+    def setSizePolicy(self, horizontal, vertical):  # noqa: N802
+        self.size_policy = (horizontal, vertical)
+
 
 class _FakeToolButton(_FakeWidget):
     def __init__(self, parent=None):
@@ -159,7 +163,6 @@ class _FakeToolButton(_FakeWidget):
         self._checkable = False
         self._checked = False
         self.tool_button_style = None
-        self.size_policy = None
 
     def setCheckable(self, value):  # noqa: N802
         self._checkable = value

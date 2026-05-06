@@ -148,6 +148,18 @@ class AnalysisPageContentTest(unittest.TestCase):
         )
         self.assertEqual(content.run_analysis_button.toolTip(), "")
 
+    def test_presentation_copy_wraps_without_forcing_panel_width(self):
+        content = self.analysis_page.AnalysisPageContent()
+
+        for label in (
+            content.detail_label,
+            content.input_summary_label,
+            content.result_summary_label,
+        ):
+            self.assertTrue(label.word_wrap)
+            self.assertEqual(label.minimumWidth(), 0)
+            self.assertEqual(label.size_policy, (3, 4))
+
     def test_can_refresh_selectable_analysis_modes(self):
         content = self.analysis_page.AnalysisPageContent()
         calls = []
