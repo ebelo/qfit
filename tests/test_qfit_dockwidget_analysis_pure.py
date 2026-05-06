@@ -1236,6 +1236,64 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.scrollArea.hide.assert_not_called()
         dock.summaryStatusLabel.hide.assert_not_called()
 
+    def test_local_first_basemap_controls_move_to_settings_page(self):
+        class _SourceLayout:
+            def __init__(self):
+                self.removed = []
+
+            def removeWidget(self, widget):
+                self.removed.append(widget)
+
+        class _SourceParent:
+            def __init__(self, layout):
+                self._layout = layout
+
+            def layout(self):
+                return self._layout
+
+        class _BasemapGroup:
+            def __init__(self, parent):
+                self._parent = parent
+                self.title = None
+                self.shown = False
+
+            def parentWidget(self):
+                return self._parent
+
+            def setParent(self, parent):
+                self._parent = parent
+
+            def setTitle(self, title):
+                self.title = title
+
+            def show(self):
+                self.shown = True
+
+        dock = object.__new__(self.module.QfitDockWidget)
+        source_layout = _SourceLayout()
+        source_parent = _SourceParent(source_layout)
+        basemap_group = _BasemapGroup(source_parent)
+        settings_layout = _FakeLayout()
+        settings_content = SimpleNamespace(outer_layout=lambda: settings_layout)
+        composition = SimpleNamespace(connection_content=settings_content)
+        dock.backgroundGroupBox = basemap_group
+
+        self.module.QfitDockWidget._install_local_first_basemap_controls(
+            dock,
+            composition,
+        )
+        self.module.QfitDockWidget._install_local_first_basemap_controls(
+            dock,
+            composition,
+        )
+
+        self.assertEqual(source_layout.removed, [basemap_group])
+        self.assertIs(basemap_group.parentWidget(), settings_content)
+        self.assertEqual(basemap_group.title, "Mapbox basemap")
+        self.assertTrue(basemap_group.shown)
+        self.assertEqual(settings_layout.added, [basemap_group])
+        self.assertTrue(dock._local_first_basemap_controls_installed)
+
     def test_refresh_wizard_shell_from_runtime_updates_optional_composition(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._runtime_state_store = self.module.DockRuntimeStore()

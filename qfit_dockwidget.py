@@ -519,6 +519,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             ),
         )
         self._install_wizard_filter_controls(self._local_first_dock_composition)
+        self._install_local_first_basemap_controls(self._local_first_dock_composition)
         self._bind_wizard_analysis_mode_controls(self._local_first_dock_composition)
         return self._local_first_dock_composition
 
@@ -598,6 +599,39 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         parent_layout = parent_widget.layout() if parent_widget is not None else None
         if parent_layout is not None and hasattr(parent_layout, "removeWidget"):
             parent_layout.removeWidget(widget)
+
+    def _install_local_first_basemap_controls(self, composition) -> None:
+        """Expose the backing Mapbox basemap controls in the Settings tab."""
+
+        settings_content = getattr(composition, "connection_content", None)
+        background_group = getattr(self, "backgroundGroupBox", None)
+        if settings_content is None or background_group is None:
+            return
+        installed_target = getattr(self, "_local_first_basemap_controls_installed_target", None)
+        current_target = id(settings_content)
+        if getattr(self, "_local_first_basemap_controls_installed", False) and (
+            installed_target == current_target
+        ):
+            return
+
+        layout_getter = getattr(settings_content, "outer_layout", None)
+        layout = layout_getter() if callable(layout_getter) else None
+        if layout is None or not hasattr(layout, "addWidget"):
+            return
+
+        self._remove_widget_from_current_layout(background_group)
+        if hasattr(background_group, "setParent"):
+            background_group.setParent(settings_content)
+        if hasattr(background_group, "setTitle"):
+            background_group.setTitle("Mapbox basemap")
+        layout.addWidget(background_group)
+        if hasattr(background_group, "show"):
+            background_group.show()
+        elif hasattr(background_group, "setVisible"):
+            background_group.setVisible(True)
+
+        self._local_first_basemap_controls_installed = True
+        self._local_first_basemap_controls_installed_target = current_target
 
     def _bind_wizard_analysis_mode_controls(self, composition) -> None:
         """Expose the hidden backing analysis selector in the live wizard path."""
