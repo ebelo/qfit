@@ -1934,7 +1934,22 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 logger.debug("Failed to remove stale analysis layer", exc_info=True)
         if analysis_removed:
             self._mark_atlas_export_stale()
+            self._refresh_map_canvas()
         return analysis_removed
+
+    def _refresh_map_canvas(self) -> None:
+        """Force QGIS to repaint the map canvas after direct layer mutations."""
+
+        iface = getattr(self, "iface", None)
+        canvas_getter = getattr(iface, "mapCanvas", None)
+        canvas = canvas_getter() if callable(canvas_getter) else None
+        refresh = getattr(canvas, "refresh", None)
+        if not callable(refresh):
+            return
+        try:
+            refresh()
+        except RuntimeError:
+            logger.debug("Failed to refresh map canvas", exc_info=True)
 
     def _current_activity_preview_request(self):
         return build_activity_preview_request(
