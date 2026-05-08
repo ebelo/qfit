@@ -16,6 +16,12 @@ COLOR_SEPARATOR = "#dcdcdc"
 COLOR_HOVER = "#e8e8e8"
 COLOR_TITLE_BAR = "#e4e4e7"
 
+SPACING_XS = 4
+SPACING_S = 8
+SPACING_M = 12
+SPACING_L = 16
+SPACING_XL = 24
+
 PILL_TONES: dict[str, tuple[str, str]] = {
     "ok": ("#dcefd0", "#2e6318"),
     "info": ("#d6e7f7", "#124c8c"),
@@ -67,5 +73,10 @@ __all__ = [
     "COLOR_WARN",
     "PILL_TONES",
     "PRIMARY_BTN_QSS",
+    "SPACING_L",
+    "SPACING_M",
+    "SPACING_S",
+    "SPACING_XL",
+    "SPACING_XS",
     "pill_tone_palette",
 ]

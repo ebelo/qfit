@@ -11,6 +11,7 @@ from .action_row import (
 )
 from .page_content_style import (
     configure_fluid_text_label,
+    configure_top_aligned_panel_layout,
     style_detail_label,
     style_status_pill,
     style_summary_label,
@@ -170,8 +171,7 @@ class AnalysisPageContent(QWidget):
         layout = QVBoxLayout(self)
         if hasattr(layout, "setObjectName"):
             layout.setObjectName("qfitWizardAnalysisPageContentLayout")
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(8)
+        configure_top_aligned_panel_layout(layout)
         for widget in (
             self.status_label,
             self.detail_label,

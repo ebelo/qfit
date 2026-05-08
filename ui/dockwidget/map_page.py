@@ -11,6 +11,7 @@ from .action_row import (
 )
 from .page_content_style import (
     configure_fluid_text_label,
+    configure_top_aligned_panel_layout,
     style_detail_label,
     style_status_pill,
     style_summary_label,
@@ -185,24 +186,21 @@ class MapPageContent(QWidget):
         layout = QVBoxLayout(self.filter_controls_panel)
         if hasattr(layout, "setObjectName"):
             layout.setObjectName("qfitWizardMapFilterControlsLayout")
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(6)
+        configure_top_aligned_panel_layout(layout)
         return layout
 
     def _build_style_controls_layout(self):
         layout = QVBoxLayout(self.style_controls_panel)
         if hasattr(layout, "setObjectName"):
             layout.setObjectName("qfitWizardMapStyleControlsLayout")
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(6)
+        configure_top_aligned_panel_layout(layout)
         return layout
 
     def _build_layout(self):
         layout = QVBoxLayout(self)
         if hasattr(layout, "setObjectName"):
             layout.setObjectName("qfitWizardMapPageContentLayout")
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(8)
+        configure_top_aligned_panel_layout(layout)
         layout.addWidget(self.status_label)
         layout.addWidget(self.detail_label)
         layout.addWidget(self.layer_summary_label)

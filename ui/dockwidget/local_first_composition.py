@@ -17,6 +17,11 @@ from .connection_page import (
 )
 from .local_first_shell import LocalFirstDockShell
 from .map_page import MapPageContent, build_map_page_content
+from .page_content_style import (
+    LOCAL_FIRST_PAGE_MARGINS,
+    LOCAL_FIRST_PAGE_SPACING,
+    configure_top_aligned_panel_layout,
+)
 from .sync_page import SyncPageContent, build_sync_page_content
 from .wizard_composition import (
     WizardActionCallbacks,
@@ -303,8 +308,11 @@ class _LocalFirstDockPage(QWidget):
         self._layout = QVBoxLayout(self)
         if hasattr(self._layout, "setObjectName"):
             self._layout.setObjectName(f"qfitLocalFirstDockPageLayout_{key}")
-        self._layout.setContentsMargins(12, 8, 12, 8)
-        self._layout.setSpacing(8)
+        configure_top_aligned_panel_layout(
+            self._layout,
+            margins=LOCAL_FIRST_PAGE_MARGINS,
+            spacing=LOCAL_FIRST_PAGE_SPACING,
+        )
 
     def body_layout(self):
         return self._layout

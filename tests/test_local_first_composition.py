@@ -4,7 +4,7 @@ import unittest
 from unittest.mock import patch
 
 from tests import _path  # noqa: F401
-from tests.test_wizard_shell import _fake_qt_modules
+from tests.test_wizard_shell import _FakeQt, _fake_qt_modules
 
 from qfit.ui.application.wizard_progress import WizardProgressFacts
 
@@ -86,6 +86,30 @@ class LocalFirstDockCompositionTests(unittest.TestCase):
             composition.sync_content.detail_label.text(),
             "Stored activities are ready to load from the existing GeoPackage.",
         )
+
+    def test_local_first_pages_use_fixed_top_aligned_spacing(self):
+        composition = self.module.build_local_first_dock_composition()
+
+        for page in composition.pages.values():
+            layout = page.body_layout()
+            self.assertEqual(layout.contents_margins, (12, 12, 12, 12))
+            self.assertEqual(layout.spacing, 12)
+            self.assertEqual(layout.alignment, _FakeQt.AlignTop)
+
+        for content in (
+            composition.sync_content,
+            composition.map_content,
+            composition.analysis_content,
+            composition.atlas_content,
+            composition.connection_content,
+        ):
+            layout = content.outer_layout()
+            self.assertEqual(layout.contents_margins, (0, 0, 0, 0))
+            self.assertEqual(layout.spacing, 8)
+            self.assertEqual(layout.alignment, _FakeQt.AlignTop)
+
+        self.assertEqual(composition.map_content.filter_controls_layout().spacing, 8)
+        self.assertEqual(composition.map_content.style_controls_layout().spacing, 8)
 
     def test_connects_existing_page_action_callbacks(self):
         composition = self.module.build_local_first_dock_composition(
