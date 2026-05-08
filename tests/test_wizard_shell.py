@@ -47,6 +47,7 @@ class _FakeCursor:
 
 
 class _FakeQt:
+    AlignTop = 8
     AlignCenter = 9
     ForbiddenCursor = 10
     Horizontal = 13
@@ -325,6 +326,7 @@ class _FakeVBoxLayout:
         self.object_name = ""
         self.contents_margins = None
         self.spacing = None
+        self.alignment = None
         self.direction = None
         self.widgets = []
         self.stretches = []
@@ -337,6 +339,9 @@ class _FakeVBoxLayout:
 
     def setSpacing(self, value):  # noqa: N802
         self.spacing = value
+
+    def setAlignment(self, value):  # noqa: N802
+        self.alignment = value
 
     def setDirection(self, value):  # noqa: N802
         self.direction = value

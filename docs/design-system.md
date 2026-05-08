@@ -37,6 +37,8 @@ Rules:
 - Section internal spacing = M.
 - Section spacing = L or XL.
 - Avoid arbitrary spacing values unless a native Qt/QGIS control requires a specific margin.
+- Local-first right-panel pages use M page margins, M spacing between top-level page content blocks, and S spacing inside each page-content layout.
+- Local-first right-panel content is top-aligned. Do not distribute controls vertically to fill the available dock height; leaving empty space at the bottom is preferred to tab-to-tab spacing drift.
 
 ### Typography
 
