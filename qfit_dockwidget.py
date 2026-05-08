@@ -526,6 +526,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._install_local_first_advanced_fetch_controls(
             self._local_first_dock_composition
         )
+        self._install_local_first_atlas_pdf_controls(self._local_first_dock_composition)
         self._install_local_first_basemap_controls(self._local_first_dock_composition)
         self._install_local_first_storage_controls(self._local_first_dock_composition)
         self._bind_wizard_analysis_mode_controls(self._local_first_dock_composition)
@@ -652,21 +653,21 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         installed_attr: str,
         installed_target_attr: str,
         title: str | None = None,
-    ) -> None:
+    ) -> bool:
         content = getattr(composition, content_attr, None)
         group = getattr(self, group_attr, None)
         if content is None or group is None:
-            return
+            return False
         current_target = id(content)
         if getattr(self, installed_attr, False) and (
             getattr(self, installed_target_attr, None) == current_target
         ):
-            return
+            return True
 
         layout_getter = getattr(content, "outer_layout", None)
         layout = layout_getter() if callable(layout_getter) else None
         if layout is None or not hasattr(layout, "addWidget"):
-            return
+            return False
 
         self._remove_widget_from_current_layout(group)
         if hasattr(group, "setParent"):
@@ -681,6 +682,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
         setattr(self, installed_attr, True)
         setattr(self, installed_target_attr, current_target)
+        return True
 
     def _install_local_first_advanced_fetch_controls(self, composition) -> None:
         """Expose backing Strava fetch limits in the Data tab."""
@@ -692,6 +694,25 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             installed_attr="_local_first_advanced_fetch_controls_installed",
             installed_target_attr="_local_first_advanced_fetch_controls_installed_target",
         )
+
+    def _install_local_first_atlas_pdf_controls(self, composition) -> None:
+        """Expose backing PDF output controls in the Atlas tab."""
+
+        installed = self._install_local_first_group_controls(
+            composition,
+            content_attr="atlas_content",
+            group_attr="atlasPdfGroupBox",
+            installed_attr="_local_first_atlas_pdf_controls_installed",
+            installed_target_attr="_local_first_atlas_pdf_controls_installed_target",
+            title="PDF output",
+        )
+        legacy_export_button = getattr(self, "generateAtlasPdfButton", None)
+        if (
+            installed
+            and legacy_export_button is not None
+            and hasattr(legacy_export_button, "hide")
+        ):
+            legacy_export_button.hide()
 
     def _install_local_first_basemap_controls(self, composition) -> None:
         """Expose the backing Mapbox basemap controls in the Settings tab."""
@@ -1045,6 +1066,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.writeActivityPointsCheckBox.toggled.connect(self._workflow_section_coordinator.update_point_sampling_visibility)
         self.advancedFetchGroupBox.toggled.connect(self._workflow_section_coordinator.update_advanced_fetch_visibility)
         self.atlasPdfBrowseButton.clicked.connect(self.on_atlas_pdf_browse_clicked)
+        self.atlasPdfPathLineEdit.textChanged.connect(self._on_atlas_pdf_path_changed)
         self.generateAtlasPdfButton.clicked.connect(self.on_generate_atlas_pdf_clicked)
         self.clientIdLineEdit.textChanged.connect(self._update_connection_status)
         self.clientSecretLineEdit.textChanged.connect(self._update_connection_status)
@@ -2082,6 +2104,12 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._mark_atlas_export_stale()
             self._refresh_summary_status()
 
+    def _on_atlas_pdf_path_changed(self) -> None:
+        """Refresh atlas export state when the visible PDF destination changes."""
+
+        self._mark_atlas_export_stale()
+        self._refresh_summary_status()
+
     def on_generate_atlas_pdf_clicked(self):
         # Cancel any running export
         if self._atlas_export_task is not None:
@@ -2165,12 +2193,37 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._set_atlas_export_running(False)
 
         result = self.atlas_export_use_case.finish_export(output_path, error, cancelled, page_count)
-        if not result.cancelled and result.error is None and result.output_path:
+        output_path_widget = getattr(self, "atlasPdfPathLineEdit", None)
+        current_output_path = self._widget_text("atlasPdfPathLineEdit").strip()
+        output_matches_current_path = (
+            output_path_widget is None or result.output_path == current_output_path
+        )
+        completed_export_is_current = (
+            not result.cancelled
+            and result.error is None
+            and result.output_path
+            and output_matches_current_path
+        )
+        stale_successful_export = (
+            not result.cancelled
+            and result.error is None
+            and result.output_path
+            and not output_matches_current_path
+        )
+        if completed_export_is_current:
             self._atlas_export_completed = True
             self._atlas_export_output_path = result.output_path
         self._atlas_export_task_output_path = None
-        self._set_atlas_pdf_status(result.pdf_status)
-        self._set_status(result.main_status)
+        if stale_successful_export:
+            stale_pdf_status = (
+                "Atlas PDF export finished for a previous destination. "
+                "Generate again for the current path."
+            )
+            self._set_atlas_pdf_status(stale_pdf_status)
+            self._set_status("Atlas PDF export finished for a previous destination")
+        else:
+            self._set_atlas_pdf_status(result.pdf_status)
+            self._set_status(result.main_status)
         if result.error is not None and not result.cancelled:
             self._show_error("Atlas PDF export failed", result.error)
 

@@ -1098,13 +1098,13 @@ class WizardShellCompositionTest(unittest.TestCase):
             assembled.atlas_content.status_label.text(),
             "Atlas export in progress",
         )
-        self.assertFalse(assembled.atlas_content.export_atlas_button.isEnabled())
+        self.assertTrue(assembled.atlas_content.export_atlas_button.isEnabled())
         self.assertEqual(
-            assembled.atlas_content.export_atlas_button.text(), "Export in progress…"
+            assembled.atlas_content.export_atlas_button.text(), "Cancel export"
         )
         self.assertEqual(
             assembled.atlas_content.export_atlas_button.toolTip(),
-            "Wait for the current atlas export to finish.",
+            "",
         )
 
     def test_busy_sync_summary_uses_output_name_when_available(self):
