@@ -602,7 +602,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._wizard_filter_controls_installed_target = current_target
 
     def _install_wizard_style_controls(self, composition) -> None:
-        """Move the live activity-style selector into the wizard map page."""
+        """Move live activity visualization controls into the wizard map page."""
 
         map_content = getattr(composition, "map_content", None)
         style_label = getattr(self, "stylePresetLabel", None)
@@ -621,7 +621,12 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
         target_layout = style_controls_layout()
         parent_panel = getattr(map_content, "style_controls_panel", map_content)
-        for widget in (style_label, style_combo):
+        controls = [style_label, style_combo]
+        preview_sort_label = getattr(self, "previewSortLabel", None)
+        preview_sort_combo = getattr(self, "previewSortComboBox", None)
+        if preview_sort_label is not None and preview_sort_combo is not None:
+            controls.extend((preview_sort_label, preview_sort_combo))
+        for widget in controls:
             self._remove_widget_from_current_layout(widget)
             if hasattr(widget, "setParent"):
                 widget.setParent(parent_panel)

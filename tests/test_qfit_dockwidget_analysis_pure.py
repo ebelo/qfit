@@ -1126,16 +1126,22 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         filter_layout.addWidget.assert_called_once_with(filter_group)
         self.assertEqual(dock._wizard_filter_controls_installed_target, id(map_content))
 
-    def test_install_wizard_style_controls_moves_live_style_selector_into_map_panel(self):
+    def test_install_wizard_style_controls_moves_live_visualization_controls_into_map_panel(self):
         dock = object.__new__(self.module.QfitDockWidget)
         parent_layout = MagicMock()
         parent_widget = SimpleNamespace(layout=lambda: parent_layout)
         style_label = MagicMock()
         style_combo = MagicMock()
+        preview_sort_label = MagicMock()
+        preview_sort_combo = MagicMock()
         style_label.parentWidget.return_value = parent_widget
         style_combo.parentWidget.return_value = parent_widget
+        preview_sort_label.parentWidget.return_value = parent_widget
+        preview_sort_combo.parentWidget.return_value = parent_widget
         dock.stylePresetLabel = style_label
         dock.stylePresetComboBox = style_combo
+        dock.previewSortLabel = preview_sort_label
+        dock.previewSortComboBox = preview_sort_combo
         panel = object()
         style_layout = MagicMock()
         map_content = SimpleNamespace(
@@ -1151,19 +1157,56 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
         self.assertEqual(
             parent_layout.removeWidget.call_args_list,
-            [call(style_label), call(style_combo)],
+            [
+                call(style_label),
+                call(style_combo),
+                call(preview_sort_label),
+                call(preview_sort_combo),
+            ],
         )
         style_label.setParent.assert_called_once_with(panel)
         style_combo.setParent.assert_called_once_with(panel)
+        preview_sort_label.setParent.assert_called_once_with(panel)
+        preview_sort_combo.setParent.assert_called_once_with(panel)
+        self.assertEqual(
+            style_layout.addWidget.call_args_list,
+            [
+                call(style_label),
+                call(style_combo),
+                call(preview_sort_label),
+                call(preview_sort_combo),
+            ],
+        )
+        style_label.show.assert_called_once_with()
+        style_combo.show.assert_called_once_with()
+        preview_sort_label.show.assert_called_once_with()
+        preview_sort_combo.show.assert_called_once_with()
+        map_content.set_style_controls_visible.assert_called_once_with()
+        self.assertTrue(dock._wizard_style_controls_installed)
+        self.assertEqual(dock._wizard_style_controls_installed_target, id(map_content))
+
+    def test_install_wizard_style_controls_keeps_preview_sort_optional(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        style_label = MagicMock()
+        style_combo = MagicMock()
+        dock.stylePresetLabel = style_label
+        dock.stylePresetComboBox = style_combo
+        style_layout = MagicMock()
+        map_content = SimpleNamespace(
+            style_controls_layout=MagicMock(return_value=style_layout),
+            set_style_controls_visible=MagicMock(),
+        )
+
+        self.module.QfitDockWidget._install_wizard_style_controls(
+            dock,
+            SimpleNamespace(map_content=map_content),
+        )
+
         self.assertEqual(
             style_layout.addWidget.call_args_list,
             [call(style_label), call(style_combo)],
         )
-        style_label.show.assert_called_once_with()
-        style_combo.show.assert_called_once_with()
         map_content.set_style_controls_visible.assert_called_once_with()
-        self.assertTrue(dock._wizard_style_controls_installed)
-        self.assertEqual(dock._wizard_style_controls_installed_target, id(map_content))
 
     def test_install_wizard_style_controls_is_idempotent(self):
         dock = object.__new__(self.module.QfitDockWidget)
