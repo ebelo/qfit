@@ -524,6 +524,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._install_wizard_style_controls(self._local_first_dock_composition)
         self._install_wizard_filter_controls(self._local_first_dock_composition)
         self._install_local_first_basemap_controls(self._local_first_dock_composition)
+        self._install_local_first_storage_controls(self._local_first_dock_composition)
         self._bind_wizard_analysis_mode_controls(self._local_first_dock_composition)
         return self._local_first_dock_composition
 
@@ -671,6 +672,43 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
         self._local_first_basemap_controls_installed = True
         self._local_first_basemap_controls_installed_target = current_target
+
+    def _install_local_first_storage_controls(self, composition) -> None:
+        """Expose the backing GeoPackage storage controls in the Settings tab."""
+
+        settings_content = getattr(composition, "connection_content", None)
+        storage_group = getattr(self, "outputGroupBox", None)
+        if settings_content is None or storage_group is None:
+            return
+        installed_target = getattr(
+            self,
+            "_local_first_storage_controls_installed_target",
+            None,
+        )
+        current_target = id(settings_content)
+        if getattr(self, "_local_first_storage_controls_installed", False) and (
+            installed_target == current_target
+        ):
+            return
+
+        layout_getter = getattr(settings_content, "outer_layout", None)
+        layout = layout_getter() if callable(layout_getter) else None
+        if layout is None or not hasattr(layout, "addWidget"):
+            return
+
+        self._remove_widget_from_current_layout(storage_group)
+        if hasattr(storage_group, "setParent"):
+            storage_group.setParent(settings_content)
+        if hasattr(storage_group, "setTitle"):
+            storage_group.setTitle("Data storage")
+        layout.addWidget(storage_group)
+        if hasattr(storage_group, "show"):
+            storage_group.show()
+        elif hasattr(storage_group, "setVisible"):
+            storage_group.setVisible(True)
+
+        self._local_first_storage_controls_installed = True
+        self._local_first_storage_controls_installed_target = current_target
 
     def _bind_wizard_analysis_mode_controls(self, composition) -> None:
         """Expose the hidden backing analysis selector in the live wizard path."""
