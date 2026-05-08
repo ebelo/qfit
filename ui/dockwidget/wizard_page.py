@@ -33,12 +33,7 @@ _TITLE_LABEL_QSS = (
     "}"
 )
 _SUMMARY_LABEL_QSS = f"QLabel {{ color: {COLOR_MUTED}; }}"
-_PRIMARY_HINT_LABEL_QSS = (
-    "QLabel { "
-    f"color: {COLOR_MUTED}; "
-    "font-style: italic; "
-    "}"
-)
+_PRIMARY_HINT_LABEL_QSS = f"QLabel {{ color: {COLOR_MUTED}; }}"
 
 
 class WizardPage(QWidget):

@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from qgis.PyQt.QtCore import Qt
 
+from qfit.ui.tokens import COLOR_MUTED
+
 from ..mapbox_config import preset_requires_custom_style
 from .application.dock_workflow_sections import (
     CURRENT_DOCK_SECTIONS,
@@ -37,6 +39,7 @@ class WorkflowSectionCoordinator:
         dock.publishSettingsWidget.setVisible(True)
         self._pin_summary_status_footer()
         self._hide_redundant_status_labels()
+        self._style_legacy_feedback_labels()
         section_widgets = {
             "sync": (dock.activitiesGroupBox, "activitiesGroupLayout", "activities"),
             "map": (dock.styleGroupBox, "styleGroupLayout", "style"),
@@ -93,6 +96,7 @@ class WorkflowSectionCoordinator:
             label.setStyleSheet(
                 "QLabel#summaryStatusLabel { "
                 "border-top: 1px solid palette(mid); "
+                "font-style: italic; "
                 "padding: 4px 8px; "
                 "}"
             )
@@ -105,6 +109,23 @@ class WorkflowSectionCoordinator:
             label = getattr(self.dock_widget, name, None)
             if label is not None and hasattr(label, "hide"):
                 label.hide()
+
+    def _style_legacy_feedback_labels(self) -> None:
+        for name in (
+            "connectionStatusLabel",
+            "querySummaryLabel",
+            "atlasPdfStatusLabel",
+        ):
+            label = getattr(self.dock_widget, name, None)
+            if label is None or not hasattr(label, "setStyleSheet"):
+                continue
+            label.setStyleSheet(
+                f"QLabel#{name} {{ "
+                f"color: {COLOR_MUTED}; "
+                "font-style: italic; "
+                "padding: 1px 0; "
+                "}"
+            )
 
     def configure_spinbox_unit_copy(self) -> None:
         """Keep units in spin boxes instead of repeating them in form labels."""

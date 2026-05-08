@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 from qfit.ui.tokens import (
+    COLOR_DANGER,
     COLOR_MUTED,
+    COLOR_WARN,
     SPACING_M,
     SPACING_S,
     pill_tone_palette,
@@ -28,25 +30,49 @@ LOCAL_FIRST_PAGE_MARGINS = (SPACING_M, SPACING_M, SPACING_M, SPACING_M)
 LOCAL_FIRST_PAGE_SPACING = SPACING_M
 PANEL_CONTENT_SPACING = SPACING_S
 
-_DETAIL_LABEL_QSS = f"QLabel {{ color: {COLOR_MUTED}; }}"
-_SUMMARY_LABEL_QSS = (
+_INSTRUCTION_LABEL_QSS = f"QLabel {{ color: {COLOR_MUTED}; }}"
+_FEEDBACK_LABEL_QSS = (
     "QLabel { "
     f"color: {COLOR_MUTED}; "
+    "font-style: italic; "
     "padding: 1px 0; "
     "}"
 )
+_WARNING_LABEL_QSS = f"QLabel {{ color: {COLOR_WARN}; }}"
+_ERROR_LABEL_QSS = f"QLabel {{ color: {COLOR_DANGER}; }}"
 
 
 def style_detail_label(label) -> None:
-    """Apply muted explanatory text styling to a wizard page detail label."""
+    """Apply muted regular styling to instruction or helper text."""
 
-    label.setStyleSheet(_DETAIL_LABEL_QSS)
+    label.setStyleSheet(_INSTRUCTION_LABEL_QSS)
+
+
+def style_feedback_label(label) -> None:
+    """Apply muted italic styling to generated tool feedback text."""
+
+    label.setStyleSheet(_FEEDBACK_LABEL_QSS)
+
+
+def style_warning_label(label) -> None:
+    """Apply regular warning styling to inline non-blocking problem text."""
+
+    label.setStyleSheet(_WARNING_LABEL_QSS)
+
+
+def style_error_label(label) -> None:
+    """Apply regular error styling to inline blocking problem text."""
+
+    label.setStyleSheet(_ERROR_LABEL_QSS)
 
 
 def style_summary_label(label) -> None:
-    """Apply consistent compact summary styling for wizard page status facts."""
+    """Compatibility wrapper for existing summary labels that are feedback.
 
-    label.setStyleSheet(_SUMMARY_LABEL_QSS)
+    Deprecated: prefer ``style_feedback_label`` for new code.
+    """
+
+    style_feedback_label(label)
 
 
 def configure_fluid_text_label(label) -> None:
@@ -101,6 +127,9 @@ def _status_pill_stylesheet(tone: str, *, object_name: str) -> str:
 
 __all__ = [
     "style_detail_label",
+    "style_feedback_label",
+    "style_warning_label",
+    "style_error_label",
     "configure_top_aligned_panel_layout",
     "configure_fluid_text_label",
     "LOCAL_FIRST_PAGE_MARGINS",

@@ -13,7 +13,7 @@ from .page_content_style import (
     configure_top_aligned_panel_layout,
     style_detail_label,
     style_status_pill,
-    style_summary_label,
+    style_feedback_label,
 )
 
 _qtcore = import_qt_module("qgis.PyQt.QtCore", "PyQt5.QtCore", ("pyqtSignal",))
@@ -73,7 +73,7 @@ class ConnectionPageContent(QWidget):
         self.credential_summary_label = QLabel("", self)
         self.credential_summary_label.setObjectName("qfitWizardConnectionCredentialSummary")
         configure_fluid_text_label(self.credential_summary_label)
-        style_summary_label(self.credential_summary_label)
+        style_feedback_label(self.credential_summary_label)
         self.configure_button = QToolButton(self)
         self.configure_button.setObjectName("qfitWizardConnectionConfigureButton")
         style_primary_action_button(

@@ -46,8 +46,24 @@ Rules:
 - Title text: bold.
 - Section heading: bold.
 - Field label: default weight.
-- Helper and status text: default or slightly smaller, with muted color only as supporting emphasis.
+- Instruction/helper text: regular style, default or slightly smaller, with muted color only as supporting emphasis.
+- Tool feedback text: italic and muted when it reports generated facts, workflow results, empty states, or non-blocking status detail.
+- Semantic badges/pills may remain regular/bold because their component shape and text already communicate status.
+- Warnings and errors should stay regular by default for readability and urgency; use semantic color, status copy, a pill/badge, or a dialog/message bar depending on severity.
 - No all-caps labels.
+
+Instruction text tells the user what to do next; keep it visually stable and regular. Tool feedback tells the user what qfit observed, computed, loaded, cleared, or exported; render it quieter in italic. Do not rely on italic alone for meaning: pair feedback with placement, copy, color, or a status component.
+
+Use this text-voice split for normal inline copy:
+
+| Voice | Example use | Treatment |
+| --- | --- | --- |
+| Instruction/helper | What to do next, field guidance, prerequisites | Regular, muted if secondary |
+| Informational feedback | Loaded counts, active filters, empty states, export summaries | Italic, muted |
+| Warning | Recoverable problem or degraded output | Regular, warning token/pill and explicit warning copy |
+| Error | Blocking failure or action that could not complete | Regular, danger token or blocking dialog/message bar |
+
+So regular text is not the only distinction between information and errors: warnings/errors must carry semantic warning/error treatment in addition to position and wording.
 
 ### Status categories
 
@@ -155,6 +171,8 @@ Usage rules:
 
 - Keep it close to the UI it describes.
 - Use concrete copy: what happened, what is missing, or what to do next.
+- Render status detail and generated-result feedback in muted italic text unless the text is inside a semantic pill/badge.
+- Do not italicize warning or error messages by default; preserve a direct regular style and pair it with warning/error semantics.
 - Do not use color or icon alone as the status.
 
 ### Presentation/free-text labels
