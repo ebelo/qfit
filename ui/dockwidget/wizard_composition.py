@@ -895,19 +895,19 @@ def _atlas_state_from_facts(facts: WizardProgressFacts) -> AtlasPageState:
     primary_action_label = (
         "Refresh atlas PDF" if facts.atlas_exported else default.primary_action_label
     )
+    primary_action_enabled = facts.activity_layers_loaded
     if facts.atlas_export_in_progress:
         status_text = "Atlas export in progress"
-        primary_action_label = "Export in progress…"
-        atlas_blocked_tooltip = "Wait for the current atlas export to finish."
+        primary_action_label = "Cancel export"
+        primary_action_enabled = True
+        atlas_blocked_tooltip = "Cancel the current atlas PDF export."
     return AtlasPageState(
         ready=facts.atlas_exported,
         status_text=status_text,
         input_summary_text=_atlas_input_summary(facts),
         output_summary_text=output_summary_text,
         primary_action_label=primary_action_label,
-        primary_action_enabled=(
-            facts.activity_layers_loaded and not facts.atlas_export_in_progress
-        ),
+        primary_action_enabled=primary_action_enabled,
         primary_action_blocked_tooltip=atlas_blocked_tooltip,
     )
 

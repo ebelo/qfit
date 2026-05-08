@@ -504,6 +504,21 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertTrue(facts.atlas_export_in_progress)
         self.assertEqual(facts.atlas_output_name, "running-atlas.pdf")
 
+    def test_atlas_pdf_path_change_marks_export_stale(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._runtime_state_store = self.module.DockRuntimeStore()
+        dock._atlas_export_completed = True
+        dock._atlas_export_output_path = "/tmp/old-atlas.pdf"
+        dock._atlas_export_task_output_path = "/tmp/old-atlas.pdf"
+        dock._refresh_summary_status = MagicMock()
+
+        self.module.QfitDockWidget._on_atlas_pdf_path_changed(dock)
+
+        self.assertFalse(dock._atlas_export_completed)
+        self.assertIsNone(dock._atlas_export_output_path)
+        self.assertIsNone(dock._atlas_export_task_output_path)
+        dock._refresh_summary_status.assert_called_once_with()
+
     def test_current_wizard_filter_facts_prefers_loaded_layer_subset(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._runtime_state_store = self.module.DockRuntimeStore()
@@ -920,6 +935,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._install_wizard_filter_controls = MagicMock()
         dock._install_wizard_style_controls = MagicMock()
         dock._install_local_first_advanced_fetch_controls = MagicMock()
+        dock._install_local_first_atlas_pdf_controls = MagicMock()
         dock._install_local_first_basemap_controls = MagicMock()
         dock._install_local_first_storage_controls = MagicMock()
         dock._bind_wizard_analysis_mode_controls = MagicMock()
@@ -995,6 +1011,9 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "connected-composition"
         )
         dock._install_local_first_advanced_fetch_controls.assert_called_once_with(
+            "connected-composition"
+        )
+        dock._install_local_first_atlas_pdf_controls.assert_called_once_with(
             "connected-composition"
         )
         dock._install_local_first_basemap_controls.assert_called_once_with(
@@ -1476,6 +1495,84 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertTrue(advanced_fetch_group.shown)
         self.assertEqual(data_layout.added, [advanced_fetch_group])
         self.assertTrue(dock._local_first_advanced_fetch_controls_installed)
+
+    def test_local_first_atlas_pdf_controls_move_to_atlas_page(self):
+        class _SourceLayout:
+            def __init__(self):
+                self.removed = []
+
+            def removeWidget(self, widget):
+                self.removed.append(widget)
+
+        class _SourceParent:
+            def __init__(self, layout):
+                self._layout = layout
+
+            def layout(self):
+                return self._layout
+
+        class _AtlasPdfGroup:
+            def __init__(self, parent):
+                self._parent = parent
+                self.title = None
+                self.shown = False
+
+            def parentWidget(self):
+                return self._parent
+
+            def setParent(self, parent):
+                self._parent = parent
+
+            def setTitle(self, title):
+                self.title = title
+
+            def show(self):
+                self.shown = True
+
+        dock = object.__new__(self.module.QfitDockWidget)
+        source_layout = _SourceLayout()
+        source_parent = _SourceParent(source_layout)
+        atlas_pdf_group = _AtlasPdfGroup(source_parent)
+        atlas_layout = _FakeLayout()
+        atlas_content = SimpleNamespace(outer_layout=lambda: atlas_layout)
+        composition = SimpleNamespace(atlas_content=atlas_content)
+        dock.atlasPdfGroupBox = atlas_pdf_group
+        dock.generateAtlasPdfButton = MagicMock()
+
+        self.module.QfitDockWidget._install_local_first_atlas_pdf_controls(
+            dock,
+            composition,
+        )
+        self.module.QfitDockWidget._install_local_first_atlas_pdf_controls(
+            dock,
+            composition,
+        )
+
+        self.assertEqual(source_layout.removed, [atlas_pdf_group])
+        self.assertIs(atlas_pdf_group.parentWidget(), atlas_content)
+        self.assertEqual(atlas_pdf_group.title, "PDF output")
+        self.assertTrue(atlas_pdf_group.shown)
+        self.assertEqual(atlas_layout.added, [atlas_pdf_group])
+        self.assertEqual(dock.generateAtlasPdfButton.hide.call_count, 2)
+        self.assertTrue(dock._local_first_atlas_pdf_controls_installed)
+
+    def test_local_first_atlas_pdf_controls_keep_export_button_when_move_fails(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        atlas_layout = _FakeLayout()
+        atlas_content = SimpleNamespace(outer_layout=lambda: atlas_layout)
+        composition = SimpleNamespace(atlas_content=atlas_content)
+        dock.generateAtlasPdfButton = MagicMock()
+
+        self.module.QfitDockWidget._install_local_first_atlas_pdf_controls(
+            dock,
+            composition,
+        )
+
+        self.assertEqual(atlas_layout.added, [])
+        dock.generateAtlasPdfButton.hide.assert_not_called()
+        self.assertFalse(
+            getattr(dock, "_local_first_atlas_pdf_controls_installed", False)
+        )
 
     def test_refresh_wizard_shell_from_runtime_updates_optional_composition(self):
         dock = object.__new__(self.module.QfitDockWidget)
@@ -2908,6 +3005,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._set_atlas_pdf_status = MagicMock()
         dock._set_status = MagicMock()
         dock._show_error = MagicMock()
+        dock.atlasPdfPathLineEdit = _FakeLineEdit("/tmp/qfit-atlas.pdf")
         dock.atlas_export_use_case = MagicMock()
         dock.atlas_export_use_case.finish_export.return_value = SimpleNamespace(
             output_path="/tmp/qfit-atlas.pdf",
@@ -2932,6 +3030,90 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._set_atlas_export_running.assert_called_once_with(False)
         dock._set_atlas_pdf_status.assert_called_once_with("Atlas PDF ready")
         dock._set_status.assert_called_once_with("Atlas created")
+        dock._show_error.assert_not_called()
+
+    def test_on_atlas_export_finished_keeps_path_edit_during_export_stale(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._atlas_export_task = object()
+        dock._atlas_export_completed = False
+        dock._atlas_export_output_path = None
+        dock._atlas_export_task_output_path = "/tmp/old-atlas.pdf"
+        dock.atlasPdfPathLineEdit = _FakeLineEdit("/tmp/new-atlas.pdf")
+        dock._set_atlas_export_running = MagicMock()
+        dock._set_atlas_pdf_status = MagicMock()
+        dock._set_status = MagicMock()
+        dock._show_error = MagicMock()
+        dock.atlas_export_use_case = MagicMock()
+        dock.atlas_export_use_case.finish_export.return_value = SimpleNamespace(
+            output_path="/tmp/old-atlas.pdf",
+            pdf_status="Atlas PDF ready",
+            main_status="Atlas created",
+            error=None,
+            cancelled=False,
+        )
+
+        self.module.QfitDockWidget._on_atlas_export_finished(
+            dock,
+            "/tmp/old-atlas.pdf",
+            None,
+            False,
+            3,
+        )
+
+        self.assertIsNone(dock._atlas_export_task)
+        self.assertFalse(dock._atlas_export_completed)
+        self.assertIsNone(dock._atlas_export_output_path)
+        self.assertIsNone(dock._atlas_export_task_output_path)
+        dock._set_atlas_export_running.assert_called_once_with(False)
+        dock._set_atlas_pdf_status.assert_called_once_with(
+            "Atlas PDF export finished for a previous destination. "
+            "Generate again for the current path."
+        )
+        dock._set_status.assert_called_once_with(
+            "Atlas PDF export finished for a previous destination"
+        )
+        dock._show_error.assert_not_called()
+
+    def test_on_atlas_export_finished_keeps_cleared_path_during_export_stale(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._atlas_export_task = object()
+        dock._atlas_export_completed = False
+        dock._atlas_export_output_path = None
+        dock._atlas_export_task_output_path = "/tmp/old-atlas.pdf"
+        dock.atlasPdfPathLineEdit = _FakeLineEdit("")
+        dock._set_atlas_export_running = MagicMock()
+        dock._set_atlas_pdf_status = MagicMock()
+        dock._set_status = MagicMock()
+        dock._show_error = MagicMock()
+        dock.atlas_export_use_case = MagicMock()
+        dock.atlas_export_use_case.finish_export.return_value = SimpleNamespace(
+            output_path="/tmp/old-atlas.pdf",
+            pdf_status="Atlas PDF ready",
+            main_status="Atlas created",
+            error=None,
+            cancelled=False,
+        )
+
+        self.module.QfitDockWidget._on_atlas_export_finished(
+            dock,
+            "/tmp/old-atlas.pdf",
+            None,
+            False,
+            3,
+        )
+
+        self.assertIsNone(dock._atlas_export_task)
+        self.assertFalse(dock._atlas_export_completed)
+        self.assertIsNone(dock._atlas_export_output_path)
+        self.assertIsNone(dock._atlas_export_task_output_path)
+        dock._set_atlas_export_running.assert_called_once_with(False)
+        dock._set_atlas_pdf_status.assert_called_once_with(
+            "Atlas PDF export finished for a previous destination. "
+            "Generate again for the current path."
+        )
+        dock._set_status.assert_called_once_with(
+            "Atlas PDF export finished for a previous destination"
+        )
         dock._show_error.assert_not_called()
 
     def test_on_atlas_pdf_browse_marks_export_stale_and_refreshes_wizard(self):
