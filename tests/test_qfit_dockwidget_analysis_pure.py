@@ -919,6 +919,8 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.settings = _FakeSettings()
         dock._install_wizard_filter_controls = MagicMock()
         dock._install_wizard_style_controls = MagicMock()
+        dock._install_local_first_basemap_controls = MagicMock()
+        dock._install_local_first_storage_controls = MagicMock()
         dock._bind_wizard_analysis_mode_controls = MagicMock()
         parent = object()
 
@@ -989,6 +991,12 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "connected-composition"
         )
         dock._install_wizard_filter_controls.assert_called_once_with(
+            "connected-composition"
+        )
+        dock._install_local_first_basemap_controls.assert_called_once_with(
+            "connected-composition"
+        )
+        dock._install_local_first_storage_controls.assert_called_once_with(
             "connected-composition"
         )
         dock._bind_wizard_analysis_mode_controls.assert_called_once_with(
@@ -1353,6 +1361,64 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertTrue(basemap_group.shown)
         self.assertEqual(settings_layout.added, [basemap_group])
         self.assertTrue(dock._local_first_basemap_controls_installed)
+
+    def test_local_first_storage_controls_move_to_settings_page(self):
+        class _SourceLayout:
+            def __init__(self):
+                self.removed = []
+
+            def removeWidget(self, widget):
+                self.removed.append(widget)
+
+        class _SourceParent:
+            def __init__(self, layout):
+                self._layout = layout
+
+            def layout(self):
+                return self._layout
+
+        class _StorageGroup:
+            def __init__(self, parent):
+                self._parent = parent
+                self.title = None
+                self.shown = False
+
+            def parentWidget(self):
+                return self._parent
+
+            def setParent(self, parent):
+                self._parent = parent
+
+            def setTitle(self, title):
+                self.title = title
+
+            def show(self):
+                self.shown = True
+
+        dock = object.__new__(self.module.QfitDockWidget)
+        source_layout = _SourceLayout()
+        source_parent = _SourceParent(source_layout)
+        storage_group = _StorageGroup(source_parent)
+        settings_layout = _FakeLayout()
+        settings_content = SimpleNamespace(outer_layout=lambda: settings_layout)
+        composition = SimpleNamespace(connection_content=settings_content)
+        dock.outputGroupBox = storage_group
+
+        self.module.QfitDockWidget._install_local_first_storage_controls(
+            dock,
+            composition,
+        )
+        self.module.QfitDockWidget._install_local_first_storage_controls(
+            dock,
+            composition,
+        )
+
+        self.assertEqual(source_layout.removed, [storage_group])
+        self.assertIs(storage_group.parentWidget(), settings_content)
+        self.assertEqual(storage_group.title, "Data storage")
+        self.assertTrue(storage_group.shown)
+        self.assertEqual(settings_layout.added, [storage_group])
+        self.assertTrue(dock._local_first_storage_controls_installed)
 
     def test_refresh_wizard_shell_from_runtime_updates_optional_composition(self):
         dock = object.__new__(self.module.QfitDockWidget)
