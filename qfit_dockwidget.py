@@ -523,6 +523,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         )
         self._install_wizard_style_controls(self._local_first_dock_composition)
         self._install_wizard_filter_controls(self._local_first_dock_composition)
+        self._install_local_first_advanced_fetch_controls(
+            self._local_first_dock_composition
+        )
         self._install_local_first_basemap_controls(self._local_first_dock_composition)
         self._install_local_first_storage_controls(self._local_first_dock_composition)
         self._bind_wizard_analysis_mode_controls(self._local_first_dock_composition)
@@ -640,75 +643,79 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         if parent_layout is not None and hasattr(parent_layout, "removeWidget"):
             parent_layout.removeWidget(widget)
 
-    def _install_local_first_basemap_controls(self, composition) -> None:
-        """Expose the backing Mapbox basemap controls in the Settings tab."""
-
-        settings_content = getattr(composition, "connection_content", None)
-        background_group = getattr(self, "backgroundGroupBox", None)
-        if settings_content is None or background_group is None:
+    def _install_local_first_group_controls(
+        self,
+        composition,
+        *,
+        content_attr: str,
+        group_attr: str,
+        installed_attr: str,
+        installed_target_attr: str,
+        title: str | None = None,
+    ) -> None:
+        content = getattr(composition, content_attr, None)
+        group = getattr(self, group_attr, None)
+        if content is None or group is None:
             return
-        installed_target = getattr(self, "_local_first_basemap_controls_installed_target", None)
-        current_target = id(settings_content)
-        if getattr(self, "_local_first_basemap_controls_installed", False) and (
-            installed_target == current_target
+        current_target = id(content)
+        if getattr(self, installed_attr, False) and (
+            getattr(self, installed_target_attr, None) == current_target
         ):
             return
 
-        layout_getter = getattr(settings_content, "outer_layout", None)
+        layout_getter = getattr(content, "outer_layout", None)
         layout = layout_getter() if callable(layout_getter) else None
         if layout is None or not hasattr(layout, "addWidget"):
             return
 
-        self._remove_widget_from_current_layout(background_group)
-        if hasattr(background_group, "setParent"):
-            background_group.setParent(settings_content)
-        if hasattr(background_group, "setTitle"):
-            background_group.setTitle("Mapbox basemap")
-        layout.addWidget(background_group)
-        if hasattr(background_group, "show"):
-            background_group.show()
-        elif hasattr(background_group, "setVisible"):
-            background_group.setVisible(True)
+        self._remove_widget_from_current_layout(group)
+        if hasattr(group, "setParent"):
+            group.setParent(content)
+        if title is not None and hasattr(group, "setTitle"):
+            group.setTitle(title)
+        layout.addWidget(group)
+        if hasattr(group, "show"):
+            group.show()
+        elif hasattr(group, "setVisible"):
+            group.setVisible(True)
 
-        self._local_first_basemap_controls_installed = True
-        self._local_first_basemap_controls_installed_target = current_target
+        setattr(self, installed_attr, True)
+        setattr(self, installed_target_attr, current_target)
+
+    def _install_local_first_advanced_fetch_controls(self, composition) -> None:
+        """Expose backing Strava fetch limits in the Data tab."""
+
+        self._install_local_first_group_controls(
+            composition,
+            content_attr="sync_content",
+            group_attr="advancedFetchGroupBox",
+            installed_attr="_local_first_advanced_fetch_controls_installed",
+            installed_target_attr="_local_first_advanced_fetch_controls_installed_target",
+        )
+
+    def _install_local_first_basemap_controls(self, composition) -> None:
+        """Expose the backing Mapbox basemap controls in the Settings tab."""
+
+        self._install_local_first_group_controls(
+            composition,
+            content_attr="connection_content",
+            group_attr="backgroundGroupBox",
+            installed_attr="_local_first_basemap_controls_installed",
+            installed_target_attr="_local_first_basemap_controls_installed_target",
+            title="Mapbox basemap",
+        )
 
     def _install_local_first_storage_controls(self, composition) -> None:
         """Expose the backing GeoPackage storage controls in the Settings tab."""
 
-        settings_content = getattr(composition, "connection_content", None)
-        storage_group = getattr(self, "outputGroupBox", None)
-        if settings_content is None or storage_group is None:
-            return
-        installed_target = getattr(
-            self,
-            "_local_first_storage_controls_installed_target",
-            None,
+        self._install_local_first_group_controls(
+            composition,
+            content_attr="connection_content",
+            group_attr="outputGroupBox",
+            installed_attr="_local_first_storage_controls_installed",
+            installed_target_attr="_local_first_storage_controls_installed_target",
+            title="Data storage",
         )
-        current_target = id(settings_content)
-        if getattr(self, "_local_first_storage_controls_installed", False) and (
-            installed_target == current_target
-        ):
-            return
-
-        layout_getter = getattr(settings_content, "outer_layout", None)
-        layout = layout_getter() if callable(layout_getter) else None
-        if layout is None or not hasattr(layout, "addWidget"):
-            return
-
-        self._remove_widget_from_current_layout(storage_group)
-        if hasattr(storage_group, "setParent"):
-            storage_group.setParent(settings_content)
-        if hasattr(storage_group, "setTitle"):
-            storage_group.setTitle("Data storage")
-        layout.addWidget(storage_group)
-        if hasattr(storage_group, "show"):
-            storage_group.show()
-        elif hasattr(storage_group, "setVisible"):
-            storage_group.setVisible(True)
-
-        self._local_first_storage_controls_installed = True
-        self._local_first_storage_controls_installed_target = current_target
 
     def _bind_wizard_analysis_mode_controls(self, composition) -> None:
         """Expose the hidden backing analysis selector in the live wizard path."""
