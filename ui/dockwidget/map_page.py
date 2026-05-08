@@ -14,7 +14,7 @@ from .page_content_style import (
     configure_top_aligned_panel_layout,
     style_detail_label,
     style_status_pill,
-    style_summary_label,
+    style_feedback_label,
 )
 
 _qtcore = import_qt_module("qgis.PyQt.QtCore", "PyQt5.QtCore", ("pyqtSignal",))
@@ -73,15 +73,15 @@ class MapPageContent(QWidget):
         self.layer_summary_label = QLabel("", self)
         self.layer_summary_label.setObjectName("qfitWizardMapLayerSummary")
         configure_fluid_text_label(self.layer_summary_label)
-        style_summary_label(self.layer_summary_label)
+        style_feedback_label(self.layer_summary_label)
         self.background_summary_label = QLabel("", self)
         self.background_summary_label.setObjectName("qfitWizardMapBackgroundSummary")
         configure_fluid_text_label(self.background_summary_label)
-        style_summary_label(self.background_summary_label)
+        style_feedback_label(self.background_summary_label)
         self.style_summary_label = QLabel("", self)
         self.style_summary_label.setObjectName("qfitWizardMapStyleSummary")
         configure_fluid_text_label(self.style_summary_label)
-        style_summary_label(self.style_summary_label)
+        style_feedback_label(self.style_summary_label)
         self.style_controls_panel = QWidget(self)
         self.style_controls_panel.setObjectName("qfitWizardMapStyleControlsPanel")
         self.style_controls_panel.setVisible(True)
@@ -90,7 +90,7 @@ class MapPageContent(QWidget):
         self.filter_summary_label = QLabel("", self)
         self.filter_summary_label.setObjectName("qfitWizardMapFilterSummary")
         configure_fluid_text_label(self.filter_summary_label)
-        style_summary_label(self.filter_summary_label)
+        style_feedback_label(self.filter_summary_label)
         self.load_layers_button = QToolButton(self)
         self.load_layers_button.setObjectName("qfitWizardMapLoadLayersButton")
         style_secondary_action_button(

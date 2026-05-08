@@ -15,7 +15,7 @@ from .page_content_style import (
     configure_top_aligned_panel_layout,
     style_detail_label,
     style_status_pill,
-    style_summary_label,
+    style_feedback_label,
 )
 
 _qtcore = import_qt_module("qgis.PyQt.QtCore", "PyQt5.QtCore", ("pyqtSignal",))
@@ -81,7 +81,7 @@ class SyncPageContent(QWidget):
         self.activity_summary_label = QLabel("", self)
         self.activity_summary_label.setObjectName("qfitWizardSyncActivitySummary")
         configure_fluid_text_label(self.activity_summary_label)
-        style_summary_label(self.activity_summary_label)
+        style_feedback_label(self.activity_summary_label)
         self.sync_button = QToolButton(self)
         self.sync_button.setObjectName("qfitWizardSyncButton")
         style_primary_action_button(

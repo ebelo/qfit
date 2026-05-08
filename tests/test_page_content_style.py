@@ -6,7 +6,7 @@ from unittest.mock import patch
 from tests import _path  # noqa: F401
 from tests.test_wizard_shell import _fake_qt_modules
 
-from qfit.ui.tokens import COLOR_MUTED
+from qfit.ui.tokens import COLOR_DANGER, COLOR_MUTED, COLOR_WARN
 
 
 def _load_page_content_style_module():
@@ -25,16 +25,38 @@ class PageContentStyleTest(unittest.TestCase):
     def setUpClass(cls):
         cls.page_content_style = _load_page_content_style_module()
 
-    def test_styles_detail_and_summary_labels_with_muted_tokens(self):
+    def test_styles_instruction_and_feedback_labels_by_voice(self):
         detail = _FakeLabel(object_name="detailLabel")
-        summary = _FakeLabel(object_name="summaryLabel")
+        feedback = _FakeLabel(object_name="feedbackLabel")
 
         self.page_content_style.style_detail_label(detail)
-        self.page_content_style.style_summary_label(summary)
+        self.page_content_style.style_feedback_label(feedback)
 
         self.assertIn(COLOR_MUTED, detail.styleSheet())
+        self.assertNotIn("font-style: italic", detail.styleSheet())
+        self.assertIn(COLOR_MUTED, feedback.styleSheet())
+        self.assertIn("font-style: italic", feedback.styleSheet())
+        self.assertIn("padding: 1px 0", feedback.styleSheet())
+
+    def test_summary_label_style_remains_feedback_compatible(self):
+        summary = _FakeLabel(object_name="summaryLabel")
+
+        self.page_content_style.style_summary_label(summary)
+
         self.assertIn(COLOR_MUTED, summary.styleSheet())
-        self.assertIn("padding: 1px 0", summary.styleSheet())
+        self.assertIn("font-style: italic", summary.styleSheet())
+
+    def test_styles_problem_labels_with_semantic_color_without_italic(self):
+        warning = _FakeLabel(object_name="warningLabel")
+        error = _FakeLabel(object_name="errorLabel")
+
+        self.page_content_style.style_warning_label(warning)
+        self.page_content_style.style_error_label(error)
+
+        self.assertIn(COLOR_WARN, warning.styleSheet())
+        self.assertNotIn("font-style: italic", warning.styleSheet())
+        self.assertIn(COLOR_DANGER, error.styleSheet())
+        self.assertNotIn("font-style: italic", error.styleSheet())
 
     def test_styles_status_labels_as_scoped_token_pills(self):
         label = _FakeLabel(object_name="statusLabel")

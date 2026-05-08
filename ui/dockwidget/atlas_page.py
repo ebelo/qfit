@@ -13,7 +13,7 @@ from .page_content_style import (
     configure_top_aligned_panel_layout,
     style_detail_label,
     style_status_pill,
-    style_summary_label,
+    style_feedback_label,
 )
 
 _qtcore = import_qt_module("qgis.PyQt.QtCore", "PyQt5.QtCore", ("pyqtSignal",))
@@ -79,11 +79,11 @@ class AtlasPageContent(QWidget):
         self.input_summary_label = QLabel("", self)
         self.input_summary_label.setObjectName("qfitWizardAtlasInputSummary")
         configure_fluid_text_label(self.input_summary_label)
-        style_summary_label(self.input_summary_label)
+        style_feedback_label(self.input_summary_label)
         self.output_summary_label = QLabel("", self)
         self.output_summary_label.setObjectName("qfitWizardAtlasOutputSummary")
         configure_fluid_text_label(self.output_summary_label)
-        style_summary_label(self.output_summary_label)
+        style_feedback_label(self.output_summary_label)
         self.title_label = QLabel("Atlas title", self)
         self.title_label.setObjectName("qfitWizardAtlasTitleLabel")
         style_detail_label(self.title_label)
