@@ -2116,12 +2116,15 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         )
         dock.analysis_layer = current_layer
         dock._atlas_export_completed = True
+        canvas = SimpleNamespace(refresh=MagicMock())
+        dock.iface = SimpleNamespace(mapCanvas=lambda: canvas)
 
         with patch.object(self.module.QgsProject, "instance", return_value=project):
             self.module.QfitDockWidget._clear_analysis_layer(dock)
 
         self.assertIsNone(dock.analysis_layer)
         self.assertFalse(dock._atlas_export_completed)
+        canvas.refresh.assert_called_once_with()
         self.assertEqual(
             project.removed,
             [current_layer.id(), stale_layer.id(), stale_heatmap_layer.id()],
@@ -2131,12 +2134,15 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock = object.__new__(self.module.QfitDockWidget)
         project = _FakeProject({"other": _FakeLayer("other")})
         dock._atlas_export_completed = True
+        canvas = SimpleNamespace(refresh=MagicMock())
+        dock.iface = SimpleNamespace(mapCanvas=lambda: canvas)
 
         with patch.object(self.module.QgsProject, "instance", return_value=project):
             removed = self.module.QfitDockWidget._clear_analysis_layer(dock)
 
         self.assertFalse(removed)
         self.assertTrue(dock._atlas_export_completed)
+        canvas.refresh.assert_not_called()
         self.assertEqual(project.removed, [])
 
     def test_on_load_clicked_starts_background_store_task(self):
