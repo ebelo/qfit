@@ -9,6 +9,9 @@ from .application.local_first_backing_controls import (
 from .application.local_first_analysis_controls import (
     configure_local_first_analysis_mode_backing_controls,
 )
+from .application.local_first_basemap_controls import (
+    configure_local_first_basemap_options,
+)
 from .application.local_first_control_visibility import (
     refresh_local_first_conditional_control_visibility,
 )
@@ -50,8 +53,8 @@ class DockStartupCoordinator:
         configure_local_first_spinbox_unit_copy(dock)
         performed_steps.append("configure_local_first_spinbox_unit_copy")
 
-        dock._configure_background_preset_options()
-        performed_steps.append("configure_background_preset_options")
+        configure_local_first_basemap_options(dock)
+        performed_steps.append("configure_local_first_basemap_options")
 
         dock._configure_detailed_route_filter_options()
         performed_steps.append("configure_detailed_route_filter_options")

@@ -77,6 +77,7 @@ from .ui.application import (
     DockVisualWorkflowCoordinator,
     DockVisualWorkflowRequest,
     bind_local_first_analysis_mode_controls,
+    bind_local_first_basemap_preset_controls,
     bind_local_first_conditional_visibility_controls,
     RunAnalysisAction,
     build_dock_summary_status,
@@ -87,7 +88,7 @@ from .ui.application import (
     build_wizard_progress_facts_from_runtime_state,
     ensure_wizard_settings,
     install_local_first_audited_controls,
-    update_local_first_mapbox_custom_style_visibility,
+    sync_local_first_basemap_style_fields,
     build_visual_workflow_background_inputs,
     build_visual_workflow_selection_state_handoff,
     build_visual_workflow_settings_snapshot,
@@ -97,11 +98,7 @@ from .detailed_route_strategy import (
     DETAILED_ROUTE_STRATEGY_MISSING,
     detailed_route_strategy_labels,
 )
-from .mapbox_config import (
-    TILE_MODES,
-    MapboxConfigError,
-    background_preset_names,
-)
+from .mapbox_config import MapboxConfigError
 from .visualization.application import (
     LayerRefs,
     build_background_map_failure_status,
@@ -689,7 +686,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.applyFiltersButton.clicked.connect(self.on_apply_filters_clicked)
         self.runAnalysisButton.clicked.connect(self.on_run_analysis_clicked)
         self.loadBackgroundButton.clicked.connect(self.on_load_background_clicked)
-        self.backgroundPresetComboBox.currentTextChanged.connect(self.on_background_preset_changed)
+        bind_local_first_basemap_preset_controls(self)
         bind_local_first_conditional_visibility_controls(self)
         self.atlasPdfBrowseButton.clicked.connect(self.on_atlas_pdf_browse_clicked)
         self.atlasPdfPathLineEdit.textChanged.connect(self._on_atlas_pdf_path_changed)
@@ -712,11 +709,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         for signal in preview_inputs:
             signal.connect(self._refresh_activity_preview)
 
-    def _configure_background_preset_options(self):
-        self.backgroundPresetComboBox.clear()
-        for preset_name in background_preset_names():
-            self.backgroundPresetComboBox.addItem(preset_name)
-
     def _configure_detailed_route_filter_options(self):
         legacy_checkbox = getattr(self, "detailedOnlyCheckBox", None)
         combo = getattr(self, "detailedRouteStatusComboBox", None)
@@ -733,9 +725,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         combo.addItem("Detailed routes only", DETAILED_ROUTE_FILTER_PRESENT)
         combo.addItem("Missing detailed routes", DETAILED_ROUTE_FILTER_MISSING)
         combo.setToolTip("Filter activities by detailed-route availability")
-        self.tileModeComboBox.clear()
-        for mode in TILE_MODES:
-            self.tileModeComboBox.addItem(mode)
 
     def _configure_detailed_route_strategy_options(self):
         combo = getattr(self, "detailedRouteStrategyComboBox", None)
@@ -869,7 +858,11 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def _load_settings(self):
         load_bindings(build_dock_settings_bindings(self), self.settings)
         self.authCodeLineEdit.setText("")
-        self._sync_background_style_fields(self.backgroundPresetComboBox.currentText(), force=False)
+        sync_local_first_basemap_style_fields(
+            self,
+            self.backgroundPresetComboBox.currentText(),
+            force=False,
+        )
 
         self._update_last_sync_summary()
 
@@ -881,10 +874,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         today = QDate.currentDate()
         self.dateFromEdit.setDate(today.addYears(-1))
         self.dateToEdit.setDate(today)
-
-    def on_background_preset_changed(self, preset_name):
-        self._sync_background_style_fields(preset_name, force=True)
-        update_local_first_mapbox_custom_style_visibility(self, preset_name)
 
     def on_load_background_clicked(self):
         self._save_settings()
@@ -905,18 +894,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             return
 
         self._set_status(result.status)
-
-    def _sync_background_style_fields(self, preset_name, force=False):
-        result = self.background_controller.resolve_style_defaults(
-            preset_name,
-            current_owner=self.mapboxStyleOwnerLineEdit.text().strip(),
-            current_style_id=self.mapboxStyleIdLineEdit.text().strip(),
-            force=force,
-        )
-        if result is not None:
-            style_owner, style_id = result
-            self.mapboxStyleOwnerLineEdit.setText(style_owner)
-            self.mapboxStyleIdLineEdit.setText(style_id)
 
     def on_open_authorize_clicked(self):
         self._save_settings()
