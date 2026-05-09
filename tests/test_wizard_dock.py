@@ -64,19 +64,34 @@ class WizardDockWidgetTest(unittest.TestCase):
     def setUpClass(cls):
         cls.wizard_dock = _load_wizard_dock_module()
 
+    def test_workflow_dock_is_canonical_export_with_wizard_aliases(self):
+        self.assertIs(self.wizard_dock.WizardDockWidget, self.wizard_dock.WorkflowDockWidget)
+        self.assertIs(
+            self.wizard_dock.WizardShellCompositionLike,
+            self.wizard_dock.WorkflowShellCompositionLike,
+        )
+        self.assertIs(
+            self.wizard_dock.build_wizard_dock_widget,
+            self.wizard_dock.build_workflow_dock_widget,
+        )
+        self.assertEqual(
+            self.wizard_dock.WIZARD_DOCK_OBJECT_NAME,
+            self.wizard_dock.WORKFLOW_DOCK_OBJECT_NAME,
+        )
+
     def test_builds_qgis_dock_container_for_wizard_shell_composition(self):
         shell = _FakeWidget()
         parent = _FakeWidget()
         composition = SimpleNamespace(shell=shell)
 
-        dock = self.wizard_dock.build_wizard_dock_widget(
+        dock = self.wizard_dock.build_workflow_dock_widget(
             composition,
             parent=parent,
-            title="qfit wizard",
+            title="qfit workflow",
         )
 
         self.assertEqual(dock.objectName(), "qfitWizardDockWidget")
-        self.assertEqual(dock.windowTitle(), "qfit wizard")
+        self.assertEqual(dock.windowTitle(), "qfit workflow")
         self.assertIs(dock.parent, parent)
         self.assertIs(dock.composition, composition)
         self.assertIs(dock.widget(), shell)
@@ -87,6 +102,7 @@ class WizardDockWidgetTest(unittest.TestCase):
             | _FakeDockWidget.DockWidgetFloatable,
         )
         self.assertEqual(dock.allowedAreas(), 8 | 16)
+        self.assertIsInstance(dock, self.wizard_dock.WizardDockWidget)
 
     def test_can_replace_hosted_wizard_composition_without_recreating_dock(self):
         first = SimpleNamespace(shell=_FakeWidget())

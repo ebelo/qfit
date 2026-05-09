@@ -43,9 +43,9 @@ from .connection_page import (
 from .map_page import MapPageContent, MapPageState, install_map_page_content
 from .sync_page import SyncPageContent, SyncPageState, install_sync_page_content
 from .step_page import (
-    WizardStepPage,
-    apply_wizard_step_page_statuses,
-    install_wizard_step_pages,
+    WorkflowStepPage,
+    apply_workflow_step_page_statuses,
+    install_workflow_step_pages,
 )
 from .wizard_page import WizardPage, install_wizard_pages
 from .wizard_shell import WizardShell
@@ -65,7 +65,7 @@ DockWizardPageSpec = DockWorkflowPageSpec
 build_default_wizard_page_specs = build_default_workflow_page_specs
 """Compatibility alias for pre-#805 wizard composition builder callers."""
 _StateT = TypeVar("_StateT")
-WizardCompositionPage = WizardPage | WizardStepPage
+WizardCompositionPage = WizardPage | WorkflowStepPage
 WizardProgressFacts = WorkflowProgressFacts
 """Compatibility alias for wizard shell composition callers during #805."""
 DockWizardProgress = DockWorkflowProgress
@@ -545,7 +545,7 @@ def _install_shell_pages(
     use_step_pages: bool,
 ) -> tuple[WizardCompositionPage, ...]:
     if use_step_pages:
-        return install_wizard_step_pages(shell, specs=specs)
+        return install_workflow_step_pages(shell, specs=specs)
     return install_wizard_pages(shell, specs=specs)
 
 
@@ -557,7 +557,7 @@ def _connect_step_page_navigation(
     step_pages = tuple(
         (index, page)
         for index, page in enumerate(pages)
-        if isinstance(page, WizardStepPage)
+        if isinstance(page, WorkflowStepPage)
     )
     if not step_pages:
         return
@@ -608,7 +608,7 @@ def _sync_step_page_navigation_buttons(
     last_index = len(statuses) - 1
     page_titles_by_index = _step_page_titles_by_workflow_index(pages)
     for installed_index, page in enumerate(pages):
-        if not isinstance(page, WizardStepPage):
+        if not isinstance(page, WorkflowStepPage):
             continue
         previous_index, next_index = _step_page_navigation_targets(
             pages,
@@ -663,7 +663,7 @@ def _step_page_titles_by_workflow_index(
     return {
         step_index_for_key(page.spec.key): page.spec.title
         for page in pages
-        if isinstance(page, WizardStepPage)
+        if isinstance(page, WorkflowStepPage)
     }
 
 
@@ -671,10 +671,10 @@ def _sync_step_page_status_pills(
     pages: Sequence[WizardCompositionPage],
     presenter: WorkflowShellPresenter,
 ) -> None:
-    step_pages = tuple(page for page in pages if isinstance(page, WizardStepPage))
+    step_pages = tuple(page for page in pages if isinstance(page, WorkflowStepPage))
     if not step_pages:
         return
-    apply_wizard_step_page_statuses(
+    apply_workflow_step_page_statuses(
         step_pages,
         build_progress_workflow_step_statuses(presenter.progress),
     )
