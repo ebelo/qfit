@@ -834,14 +834,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
     def test_after_local_first_control_move_installed_applies_required_hooks(self):
         dock = object.__new__(self.module.QfitDockWidget)
-        dock.advancedFetchGroupBox = SimpleNamespace(isChecked=lambda: False)
-        dock.detailedStreamsCheckBox = SimpleNamespace(isChecked=lambda: True)
-        dock.backgroundPresetComboBox = SimpleNamespace(currentText=lambda: "Custom")
-        dock.writeActivityPointsCheckBox = SimpleNamespace(isChecked=lambda: True)
-        dock._update_advanced_fetch_visibility = MagicMock()
-        dock._update_detailed_fetch_visibility = MagicMock()
-        dock._update_mapbox_advanced_visibility = MagicMock()
-        dock._update_point_sampling_visibility = MagicMock()
+        dock._refresh_conditional_control_visibility = MagicMock()
         dock.generateAtlasPdfButton = MagicMock()
 
         for key in (
@@ -862,10 +855,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             installed=False,
         )
 
-        dock._update_advanced_fetch_visibility.assert_called_once_with(False)
-        dock._update_detailed_fetch_visibility.assert_called_once_with(True)
-        dock._update_mapbox_advanced_visibility.assert_called_once_with("Custom")
-        dock._update_point_sampling_visibility.assert_called_once_with(True)
+        self.assertEqual(dock._refresh_conditional_control_visibility.call_count, 4)
         dock.generateAtlasPdfButton.hide.assert_called_once_with()
 
     def test_after_local_first_control_move_installed_raises_for_missing_hook(self):
@@ -883,19 +873,16 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
                     installed=True,
                 )
 
-    def test_refresh_conditional_control_visibility_uses_local_first_handlers(self):
+    def test_refresh_conditional_control_visibility_uses_application_refresh(self):
         dock = object.__new__(self.module.QfitDockWidget)
-        dock._refresh_local_first_advanced_fetch_visibility = MagicMock()
-        dock._refresh_local_first_detailed_fetch_visibility = MagicMock()
-        dock._refresh_local_first_mapbox_visibility = MagicMock()
-        dock._refresh_local_first_point_sampling_visibility = MagicMock()
 
-        self.module.QfitDockWidget._refresh_conditional_control_visibility(dock)
+        with patch.object(
+            self.module,
+            "refresh_local_first_conditional_control_visibility",
+        ) as refresh:
+            self.module.QfitDockWidget._refresh_conditional_control_visibility(dock)
 
-        dock._refresh_local_first_advanced_fetch_visibility.assert_called_once_with()
-        dock._refresh_local_first_detailed_fetch_visibility.assert_called_once_with()
-        dock._refresh_local_first_mapbox_visibility.assert_called_once_with()
-        dock._refresh_local_first_point_sampling_visibility.assert_called_once_with()
+        refresh.assert_called_once_with(dock)
 
     def test_dock_widget_does_not_reintroduce_per_move_local_first_installers(self):
         self.assertFalse(

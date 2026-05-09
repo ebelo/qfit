@@ -126,12 +126,12 @@ class LocalFirstControlInstallerTests(unittest.TestCase):
         self.assertTrue(dock._local_first_activity_style_controls_installed)
 
     def test_after_control_move_installed_runs_hook_only_after_successful_move(self):
-        dock = SimpleNamespace(_refresh_local_first_mapbox_visibility=MagicMock())
+        dock = SimpleNamespace(_refresh_conditional_control_visibility=MagicMock())
 
         after_local_first_control_move_installed(dock, "basemap", installed=False)
         after_local_first_control_move_installed(dock, "basemap", installed=True)
 
-        dock._refresh_local_first_mapbox_visibility.assert_called_once_with()
+        dock._refresh_conditional_control_visibility.assert_called_once_with()
 
     def test_installs_group_move_from_audited_inventory(self):
         source_layout = MagicMock()
