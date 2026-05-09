@@ -932,7 +932,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.atlasSubtitleLineEdit = _FakeLineEdit("Road and trail")
         dock._atlas_export_completed = False
         dock.settings = _FakeSettings()
-        dock._install_wizard_style_controls = MagicMock()
+        dock._install_local_first_activity_style_controls = MagicMock()
         dock._install_local_first_filter_controls = MagicMock()
         dock._install_local_first_advanced_fetch_controls = MagicMock()
         dock._install_local_first_activity_preview_controls = MagicMock()
@@ -1007,7 +1007,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
                 callback.__func__,
                 getattr(self.module.QfitDockWidget, method_name),
             )
-        dock._install_wizard_style_controls.assert_called_once_with(
+        dock._install_local_first_activity_style_controls.assert_called_once_with(
             "connected-composition"
         )
         dock._install_local_first_filter_controls.assert_called_once_with(
@@ -1286,6 +1286,106 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         )
 
         map_content.style_controls_layout.assert_not_called()
+
+    def test_install_local_first_activity_style_controls_uses_audited_widget_move(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        parent_layout = MagicMock()
+        parent_widget = SimpleNamespace(layout=lambda: parent_layout)
+        style_label = MagicMock()
+        style_combo = MagicMock()
+        preview_sort_label = MagicMock()
+        preview_sort_combo = MagicMock()
+        temporal_row = MagicMock()
+        temporal_label = MagicMock()
+        temporal_combo = MagicMock()
+        temporal_help = MagicMock()
+        for widget in (
+            style_label,
+            style_combo,
+            preview_sort_label,
+            preview_sort_combo,
+            temporal_row,
+            temporal_help,
+        ):
+            widget.parentWidget.return_value = parent_widget
+        dock.stylePresetLabel = style_label
+        dock.stylePresetComboBox = style_combo
+        dock.previewSortLabel = preview_sort_label
+        dock.previewSortComboBox = preview_sort_combo
+        dock.analysisTemporalModeRow = temporal_row
+        dock.temporalModeLabel = temporal_label
+        dock.temporalModeComboBox = temporal_combo
+        dock.temporalHelpLabel = temporal_help
+        panel = object()
+        style_layout = MagicMock()
+        map_content = SimpleNamespace(
+            style_controls_panel=panel,
+            style_controls_layout=MagicMock(return_value=style_layout),
+            set_style_controls_visible=MagicMock(),
+        )
+
+        self.module.QfitDockWidget._install_local_first_activity_style_controls(
+            dock,
+            SimpleNamespace(map_content=map_content),
+        )
+
+        self.assertEqual(
+            parent_layout.removeWidget.call_args_list,
+            [
+                call(style_label),
+                call(style_combo),
+                call(preview_sort_label),
+                call(preview_sort_combo),
+                call(temporal_row),
+                call(temporal_help),
+            ],
+        )
+        self.assertEqual(
+            style_layout.addWidget.call_args_list,
+            [
+                call(style_label),
+                call(style_combo),
+                call(preview_sort_label),
+                call(preview_sort_combo),
+                call(temporal_row),
+                call(temporal_help),
+            ],
+        )
+        for widget in (
+            style_label,
+            style_combo,
+            preview_sort_label,
+            preview_sort_combo,
+            temporal_row,
+            temporal_label,
+            temporal_combo,
+            temporal_help,
+        ):
+            widget.show.assert_called_once_with()
+        map_content.set_style_controls_visible.assert_called_once_with()
+        self.assertTrue(dock._local_first_activity_style_controls_installed)
+        self.assertEqual(
+            dock._local_first_activity_style_controls_installed_target,
+            id(map_content),
+        )
+
+    def test_install_local_first_activity_style_controls_requires_style_pair(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.stylePresetLabel = MagicMock()
+        style_layout = MagicMock()
+        map_content = SimpleNamespace(
+            style_controls_layout=MagicMock(return_value=style_layout),
+        )
+
+        self.module.QfitDockWidget._install_local_first_activity_style_controls(
+            dock,
+            SimpleNamespace(map_content=map_content),
+        )
+
+        self.assertEqual(style_layout.addWidget.call_args_list, [])
+        self.assertFalse(
+            getattr(dock, "_local_first_activity_style_controls_installed", False)
+        )
 
     def test_bind_wizard_analysis_mode_controls_exposes_non_none_modes(self):
         dock = object.__new__(self.module.QfitDockWidget)

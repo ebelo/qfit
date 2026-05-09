@@ -37,9 +37,13 @@ from .local_first_navigation import (
 )
 from .local_first_control_moves import (
     LOCAL_FIRST_CONTROL_MOVES,
+    LOCAL_FIRST_WIDGET_MOVES,
     LocalFirstControlMove,
+    LocalFirstWidgetMove,
     local_first_control_move_for_key,
     local_first_control_move_keys,
+    local_first_widget_move_for_key,
+    local_first_widget_move_keys,
 )
 from .dock_workflow_sections import (
     CURRENT_DOCK_SECTIONS,
@@ -129,10 +133,12 @@ __all__ = [
     "LAST_STEP_INDEX_USER_SELECTED_KEY",
     "LOCAL_FIRST_CONTROL_MOVES",
     "LOCAL_FIRST_DOCK_PAGE_DEFINITIONS",
+    "LOCAL_FIRST_WIDGET_MOVES",
     "LocalFirstControlMove",
     "LocalFirstDockNavigationState",
     "LocalFirstDockPageDefinition",
     "LocalFirstDockPageState",
+    "LocalFirstWidgetMove",
     "WIZARD_WORKFLOW_STEPS",
     "WIZARD_STEP_COUNT",
     "WIZARD_VERSION",
@@ -176,6 +182,8 @@ __all__ = [
     "local_first_control_move_for_key",
     "local_first_control_move_keys",
     "local_first_dock_page_keys",
+    "local_first_widget_move_for_key",
+    "local_first_widget_move_keys",
     "preferred_current_key_from_settings",
     "save_collapsed_groups",
     "save_last_step_index",
