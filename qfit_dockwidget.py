@@ -82,6 +82,7 @@ from .ui.application import (
     DockRuntimeStore,
     DockVisualWorkflowCoordinator,
     DockVisualWorkflowRequest,
+    LocalFirstControlVisibilityUpdate,
     apply_local_first_visibility_update,
     RunAnalysisAction,
     build_advanced_fetch_visibility_update,
@@ -497,7 +498,10 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             build_mapbox_custom_style_visibility_update(preset_name)
         )
 
-    def _apply_local_first_visibility_update(self, update) -> None:
+    def _apply_local_first_visibility_update(
+        self,
+        update: LocalFirstControlVisibilityUpdate,
+    ) -> None:
         apply_local_first_visibility_update(self, update)
 
     def _hide_legacy_atlas_export_button(self) -> None:

@@ -40,7 +40,6 @@ from .local_first_control_moves import (
     LOCAL_FIRST_WIDGET_MOVES,
     LocalFirstControlMove,
     LocalFirstWidgetMove,
-    REFRESH_CONDITIONAL_VISIBILITY_HOOK,
     local_first_control_move_for_key,
     local_first_control_move_keys,
     local_first_widget_move_for_key,
@@ -75,7 +74,6 @@ from .local_first_control_visibility import (
     build_mapbox_custom_style_visibility_update,
     build_point_sampling_visibility_update,
     refresh_local_first_conditional_control_visibility,
-    set_named_widgets_visible,
 )
 from .dock_workflow_sections import (
     CURRENT_DOCK_SECTIONS,
@@ -182,7 +180,6 @@ __all__ = [
     "WIZARD_VERSION",
     "WIZARD_VERSION_KEY",
     "RunAnalysisAction",
-    "REFRESH_CONDITIONAL_VISIBILITY_HOOK",
     "STEPPER_STATE_CURRENT",
     "STEPPER_STATE_DONE",
     "STEPPER_STATE_LOCKED",
@@ -248,6 +245,5 @@ __all__ = [
     "show_widget",
     "step_index_for_key",
     "step_key_for_index",
-    "set_named_widgets_visible",
     "wizard_step_key_for_index",
 ]
