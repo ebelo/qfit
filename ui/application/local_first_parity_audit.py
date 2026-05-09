@@ -106,7 +106,11 @@ def build_issue805_local_first_parity_surfaces() -> tuple[LocalFirstParitySurfac
         surfaces.append(
             LocalFirstParitySurface(
                 key=move.key,
-                issue_area=_WIDGET_MOVE_AREAS[move.key],
+                issue_area=_issue_area_for_move(
+                    _WIDGET_MOVE_AREAS,
+                    move.key,
+                    "LOCAL_FIRST_WIDGET_MOVES",
+                ),
                 local_first_page=_content_attr_page(move.content_attr),
                 surface_type="widget_move",
                 required_widget_attrs=move.required_widget_attrs,
@@ -117,7 +121,11 @@ def build_issue805_local_first_parity_surfaces() -> tuple[LocalFirstParitySurfac
         surfaces.append(
             LocalFirstParitySurface(
                 key=move.key,
-                issue_area=_CONTROL_MOVE_AREAS[move.key],
+                issue_area=_issue_area_for_move(
+                    _CONTROL_MOVE_AREAS,
+                    move.key,
+                    "LOCAL_FIRST_CONTROL_MOVES",
+                ),
                 local_first_page=_content_attr_page(move.content_attr),
                 surface_type="control_move",
                 required_widget_attrs=move.required_widget_attrs,
@@ -136,7 +144,6 @@ def issue805_local_first_coverage_by_area() -> dict[str, tuple[str, ...]]:
     return {
         area: tuple(coverage[area])
         for area in ISSUE_805_REQUIRED_AREAS
-        if area in coverage
     }
 
 
@@ -144,17 +151,36 @@ def missing_issue805_local_first_areas() -> tuple[str, ...]:
     """Return #805 areas that still lack an audited local-first surface."""
 
     coverage = issue805_local_first_coverage_by_area()
-    return tuple(area for area in ISSUE_805_REQUIRED_AREAS if area not in coverage)
+    return tuple(area for area in ISSUE_805_REQUIRED_AREAS if not coverage[area])
+
+
+def _issue_area_for_move(
+    area_map: dict[str, str],
+    key: str,
+    inventory_name: str,
+) -> str:
+    try:
+        return area_map[key]
+    except KeyError as exc:
+        raise ValueError(
+            f"No #805 parity area mapping for {inventory_name} key {key!r}"
+        ) from exc
 
 
 def _content_attr_page(content_attr: str) -> str:
-    return {
+    pages = {
         "sync_content": "data",
         "map_content": "map",
         "analysis_content": "analysis",
         "atlas_content": "atlas",
         "settings_content": "settings",
-    }[content_attr]
+    }
+    try:
+        return pages[content_attr]
+    except KeyError as exc:
+        raise ValueError(
+            f"No local-first page mapping for content_attr {content_attr!r}"
+        ) from exc
 
 
 def _flatten_optional_widgets(move) -> tuple[str, ...]:

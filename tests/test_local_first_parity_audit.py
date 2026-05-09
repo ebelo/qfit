@@ -1,4 +1,6 @@
 import unittest
+from types import SimpleNamespace
+from unittest.mock import patch
 
 from tests import _path  # noqa: F401
 
@@ -6,6 +8,7 @@ from qfit.ui.application.local_first_control_moves import (
     local_first_control_move_for_key,
     local_first_widget_move_for_key,
 )
+from qfit.ui.application import local_first_parity_audit as audit
 from qfit.ui.application.local_first_parity_audit import (
     ISSUE_805_REQUIRED_AREAS,
     build_issue805_local_first_parity_surfaces,
@@ -101,6 +104,53 @@ class LocalFirstParityAuditTests(unittest.TestCase):
             surfaces["settings_configuration_action"].action_names,
             ("configureRequested",),
         )
+
+    def test_coverage_by_area_keeps_empty_required_areas_visible(self):
+        with patch.object(
+            audit,
+            "build_issue805_local_first_parity_surfaces",
+            return_value=(),
+        ):
+            coverage = issue805_local_first_coverage_by_area()
+
+        self.assertEqual(tuple(coverage), ISSUE_805_REQUIRED_AREAS)
+        self.assertTrue(all(keys == () for keys in coverage.values()))
+
+    def test_audit_rejects_unmapped_move_keys_with_context(self):
+        move = SimpleNamespace(
+            key="new_control",
+            content_attr="sync_content",
+            required_widget_attrs=(),
+        )
+
+        with patch.object(audit, "LOCAL_FIRST_WIDGET_MOVES", ()), patch.object(
+            audit,
+            "LOCAL_FIRST_CONTROL_MOVES",
+            (move,),
+        ):
+            with self.assertRaisesRegex(
+                ValueError,
+                "LOCAL_FIRST_CONTROL_MOVES key 'new_control'",
+            ):
+                build_issue805_local_first_parity_surfaces()
+
+    def test_audit_rejects_unknown_content_attrs_with_context(self):
+        move = SimpleNamespace(
+            key="advanced_fetch",
+            content_attr="onboarding_content",
+            required_widget_attrs=(),
+        )
+
+        with patch.object(audit, "LOCAL_FIRST_WIDGET_MOVES", ()), patch.object(
+            audit,
+            "LOCAL_FIRST_CONTROL_MOVES",
+            (move,),
+        ):
+            with self.assertRaisesRegex(
+                ValueError,
+                "content_attr 'onboarding_content'",
+            ):
+                build_issue805_local_first_parity_surfaces()
 
     def test_application_package_reexports_parity_audit_helpers(self):
         from qfit import ui
