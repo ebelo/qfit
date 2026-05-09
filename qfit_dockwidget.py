@@ -82,8 +82,6 @@ from .ui.application import (
     DockRuntimeStore,
     DockVisualWorkflowCoordinator,
     DockVisualWorkflowRequest,
-    LocalFirstControlMove,
-    LocalFirstWidgetMove,
     RunAnalysisAction,
     build_dock_summary_status,
     build_visual_layer_refs,
@@ -96,14 +94,6 @@ from .ui.application import (
     local_first_widget_move_for_key,
     install_local_first_group_controls,
     install_local_first_widget_controls,
-    local_first_control_move_layout,
-    local_first_control_move_parent_panel,
-    local_first_control_move_required_widgets_available,
-    local_first_widget_move_widgets,
-    refresh_local_first_control_visibility,
-    remove_widget_from_current_layout,
-    show_local_first_control_group,
-    show_widget,
     build_visual_workflow_background_inputs,
     build_visual_workflow_selection_state_handoff,
     build_visual_workflow_settings_snapshot,
@@ -482,73 +472,17 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._mark_atlas_export_stale()
             self._refresh_summary_status()
 
-    def _show_widget(self, widget) -> None:
-        show_widget(widget)
-
-    def _remove_widget_from_current_layout(self, widget) -> None:
-        remove_widget_from_current_layout(widget)
-
-    def _install_local_first_group_controls(
-        self,
-        composition,
-        move: LocalFirstControlMove,
-    ) -> bool:
-        return install_local_first_group_controls(self, composition, move)
-
-    def _local_first_control_move_required_widgets_available(
-        self,
-        move: LocalFirstControlMove,
-    ) -> bool:
-        return local_first_control_move_required_widgets_available(self, move)
-
-    def _local_first_control_move_layout(
-        self,
-        content,
-        move: LocalFirstControlMove | LocalFirstWidgetMove,
-    ):
-        return local_first_control_move_layout(content, move)
-
-    def _local_first_control_move_parent_panel(
-        self,
-        content,
-        move: LocalFirstControlMove | LocalFirstWidgetMove,
-    ):
-        return local_first_control_move_parent_panel(content, move)
-
-    def _show_local_first_control_group(self, group, move: LocalFirstControlMove) -> None:
-        show_local_first_control_group(group, move)
-
-    def _refresh_local_first_control_visibility(
-        self,
-        content,
-        move: LocalFirstControlMove | LocalFirstWidgetMove,
-    ) -> None:
-        refresh_local_first_control_visibility(content, move)
-
     def _install_local_first_control_move(self, composition, key: str) -> bool:
         """Install one audited legacy-backed control area into local-first UI."""
 
         move = local_first_control_move_for_key(key)
-        return self._install_local_first_group_controls(composition, move=move)
-
-    def _install_local_first_widget_controls(
-        self,
-        composition,
-        move: LocalFirstWidgetMove,
-    ) -> bool:
-        return install_local_first_widget_controls(self, composition, move)
-
-    def _local_first_widget_move_widgets(
-        self,
-        move: LocalFirstWidgetMove,
-    ):
-        return local_first_widget_move_widgets(self, move)
+        return install_local_first_group_controls(self, composition, move)
 
     def _install_local_first_widget_move(self, composition, key: str) -> bool:
         """Install one audited loose-widget area into local-first UI."""
 
         move = local_first_widget_move_for_key(key)
-        return self._install_local_first_widget_controls(composition, move=move)
+        return install_local_first_widget_controls(self, composition, move)
 
     def _after_local_first_control_move_installed(
         self,
