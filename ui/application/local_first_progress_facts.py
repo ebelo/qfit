@@ -63,6 +63,23 @@ def current_local_first_background_facts(dock, runtime_state) -> tuple[bool, boo
     return True, False, _current_local_first_background_name(dock)
 
 
+def current_local_first_atlas_output_path(
+    *,
+    runtime_state,
+    atlas_pdf_path: str,
+    atlas_exported: bool,
+    completed_output_path: str | None = None,
+    task_output_path: str | None = None,
+) -> str:
+    """Return the atlas output path local-first progress should describe."""
+
+    if runtime_state.atlas_export_task is not None:
+        return task_output_path or atlas_pdf_path
+    if atlas_exported and completed_output_path:
+        return completed_output_path
+    return atlas_pdf_path
+
+
 def current_local_first_filter_facts(dock, runtime_state) -> tuple[bool, int | None, str | None]:
     """Return current map-filter facts for local-first progress summaries."""
 
@@ -148,6 +165,7 @@ def _current_local_first_background_name(dock) -> str | None:
 
 __all__ = [
     "current_local_first_activity_style_preset",
+    "current_local_first_atlas_output_path",
     "current_local_first_background_facts",
     "current_local_first_filter_facts",
     "current_local_first_visual_temporal_mode",
