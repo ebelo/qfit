@@ -6,11 +6,15 @@ from qfit.ui.application.dock_workflow_sections import (
     CURRENT_DOCK_SECTIONS,
     WIZARD_WORKFLOW_STEPS,
     DockWizardProgress,
+    DockWorkflowProgress,
     DockWorkflowStepState,
     build_current_dock_workflow_label,
     build_initial_wizard_step_statuses,
+    build_initial_workflow_step_statuses,
     build_progress_wizard_step_statuses,
+    build_progress_workflow_step_statuses,
     build_wizard_step_statuses,
+    build_workflow_step_statuses,
     get_workflow_section,
 )
 
@@ -48,6 +52,27 @@ class DockWorkflowSectionsTests(unittest.TestCase):
         self.assertEqual(
             [status.state for status in statuses[1:]],
             [DockWorkflowStepState.LOCKED] * 4,
+        )
+
+    def test_workflow_named_progress_and_status_builders_are_canonical(self):
+        progress = DockWorkflowProgress(
+            current_key="map",
+            completed_keys=frozenset({"connection", "sync"}),
+        )
+
+        self.assertIs(DockWizardProgress, DockWorkflowProgress)
+        self.assertIs(
+            build_initial_wizard_step_statuses,
+            build_initial_workflow_step_statuses,
+        )
+        self.assertIs(build_wizard_step_statuses, build_workflow_step_statuses)
+        self.assertIs(
+            build_progress_wizard_step_statuses,
+            build_progress_workflow_step_statuses,
+        )
+        self.assertEqual(
+            build_progress_workflow_step_statuses(progress),
+            build_progress_wizard_step_statuses(progress),
         )
 
     def test_wizard_step_statuses_distinguish_unlocked_from_done(self):

@@ -5,9 +5,9 @@ from dataclasses import dataclass
 from typing import TypeVar
 
 from qfit.ui.application.dock_workflow_sections import (
-    DockWizardProgress,
+    DockWorkflowProgress,
     DockWorkflowStepStatus,
-    build_progress_wizard_step_statuses,
+    build_progress_workflow_step_statuses,
 )
 from qfit.ui.application.stepper_presenter import (
     can_request_step,
@@ -64,6 +64,8 @@ _StateT = TypeVar("_StateT")
 WizardCompositionPage = WizardPage | WizardStepPage
 WizardProgressFacts = WorkflowProgressFacts
 """Compatibility alias for wizard shell composition callers during #805."""
+DockWizardProgress = DockWorkflowProgress
+"""Compatibility alias for pre-#805 wizard shell composition callers."""
 
 
 @dataclass
@@ -97,7 +99,7 @@ def build_placeholder_wizard_shell(
     *,
     parent=None,
     footer_text: str = "",
-    progress: DockWizardProgress | None = None,
+    progress: DockWorkflowProgress | None = None,
     progress_facts: WorkflowProgressFacts | None = None,
     wizard_settings: WizardSettingsSnapshot | None = None,
     specs: Sequence[DockWizardPageSpec] | None = None,
@@ -215,7 +217,7 @@ def refresh_wizard_shell_composition(
     analysis_state: AnalysisPageState | None = None,
     atlas_state: AtlasPageState | None = None,
     footer_text: str | None = None,
-    progress: DockWizardProgress | None = None,
+    progress: DockWorkflowProgress | None = None,
     progress_facts: WorkflowProgressFacts | None = None,
     wizard_settings: WizardSettingsSnapshot | None = None,
 ) -> WizardShellComposition:
@@ -423,10 +425,10 @@ def _connect_action_callbacks(
 
 def _resolve_progress(
     *,
-    progress: DockWizardProgress | None,
+    progress: DockWorkflowProgress | None,
     progress_facts: WorkflowProgressFacts | None,
     wizard_settings: WizardSettingsSnapshot | None,
-) -> DockWizardProgress | None:
+) -> DockWorkflowProgress | None:
     if progress is not None and (progress_facts is not None or wizard_settings is not None):
         raise ValueError("Pass progress or progress_facts/wizard_settings, not both")
     if progress_facts is None and wizard_settings is None:
@@ -468,12 +470,12 @@ def _apply_footer_facts(footer_bar, footer_facts: WorkflowFooterFacts | None) ->
 
 
 def _validate_progress_targets_installed_page(
-    progress: DockWizardProgress | None,
+    progress: DockWorkflowProgress | None,
     pages: Sequence[WizardCompositionPage],
 ) -> None:
     if progress is None:
         return
-    build_progress_wizard_step_statuses(progress)
+    build_progress_workflow_step_statuses(progress)
     if progress.current_key not in {page.spec.key for page in pages}:
         raise ValueError(f"No installed wizard page for {progress.current_key!r}")
 
@@ -563,7 +565,7 @@ def _connect_step_page_navigation(
         previous_index, next_index = _step_page_navigation_targets(
             pages,
             installed_index=installed_index,
-            statuses=build_progress_wizard_step_statuses(presenter.progress),
+            statuses=build_progress_workflow_step_statuses(presenter.progress),
         )
         return previous_index if direction == "previous" else next_index
 
@@ -596,7 +598,7 @@ def _sync_step_page_navigation_buttons(
     pages: Sequence[WizardCompositionPage],
     presenter: WizardShellPresenter,
 ) -> None:
-    statuses = build_progress_wizard_step_statuses(presenter.progress)
+    statuses = build_progress_workflow_step_statuses(presenter.progress)
     last_index = len(statuses) - 1
     page_titles_by_index = _step_page_titles_by_workflow_index(pages)
     for installed_index, page in enumerate(pages):
@@ -668,7 +670,7 @@ def _sync_step_page_status_pills(
         return
     apply_wizard_step_page_statuses(
         step_pages,
-        build_progress_wizard_step_statuses(presenter.progress),
+        build_progress_workflow_step_statuses(presenter.progress),
     )
 
 
@@ -780,6 +782,8 @@ def _install_atlas_content(
 
 
 __all__ = [
+    "DockWorkflowProgress",
+    "DockWizardProgress",
     "WizardActionCallbacks",
     "WizardPageStateSnapshots",
     "WizardProgressFacts",
