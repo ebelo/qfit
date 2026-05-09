@@ -23,6 +23,7 @@ from qfit.ui.application.local_first_control_visibility import (
     update_local_first_point_sampling_visibility,
 )
 from qfit.ui.application.local_first_progress_facts import (
+    build_current_local_first_progress_facts,
     current_local_first_activity_style_preset,
     current_local_first_background_facts,
     current_local_first_filter_facts,
@@ -377,7 +378,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
         dock.project_hygiene_service.remove_stale_qfit_layers.assert_called_once_with()
 
-    def test_current_wizard_progress_facts_reads_live_dock_runtime(self):
+    def test_local_first_progress_facts_reads_live_dock_runtime(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._runtime_state_store = self.module.DockRuntimeStore()
         dock.clientIdLineEdit = _FakeLineEdit("client-id")
@@ -402,7 +403,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._runtime_store().set_analysis_layer(object())
         dock._runtime_store().set_background_layer(_FakeLayer("Outdoors"))
 
-        facts = self.module.QfitDockWidget._current_wizard_progress_facts(dock)
+        facts = build_current_local_first_progress_facts(dock)
 
         self.assertTrue(facts.connection_configured)
         self.assertTrue(facts.activities_stored)
@@ -479,7 +480,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
         self.assertEqual(facts, (True, False, "Satellite"))
 
-    def test_current_wizard_progress_facts_uses_frozen_atlas_path_during_export(self):
+    def test_local_first_progress_facts_use_frozen_atlas_path_during_export(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._runtime_state_store = self.module.DockRuntimeStore()
         dock.clientIdLineEdit = _FakeLineEdit("client-id")
@@ -491,7 +492,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._atlas_export_task_output_path = "/tmp/running-atlas.pdf"
         dock._runtime_store().set_atlas_export_task(object())
 
-        facts = self.module.QfitDockWidget._current_wizard_progress_facts(dock)
+        facts = build_current_local_first_progress_facts(dock)
 
         self.assertTrue(facts.atlas_exported)
         self.assertTrue(facts.atlas_export_in_progress)
@@ -748,7 +749,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertIsNone(dock.runtime_state.activities_layer)
         dock._refresh_live_dock_navigation_from_runtime.assert_called_once_with()
 
-    def test_wizard_progress_facts_reflect_existing_visible_geopackage_path(self):
+    def test_local_first_progress_facts_reflect_existing_visible_geopackage_path(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._runtime_state_store = self.module.DockRuntimeStore()
         dock.clientIdLineEdit = _FakeLineEdit("")
@@ -760,12 +761,12 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         with tempfile.NamedTemporaryFile(suffix=".gpkg") as geopackage:
             dock.outputPathLineEdit = _FakeLineEdit(geopackage.name)
 
-            facts = self.module.QfitDockWidget._current_wizard_progress_facts(dock)
+            facts = build_current_local_first_progress_facts(dock)
 
         self.assertTrue(facts.activities_stored)
         self.assertEqual(facts.output_name, geopackage.name.rsplit("/", 1)[-1])
 
-    def test_wizard_progress_facts_do_not_treat_missing_visible_geopackage_as_stored(self):
+    def test_local_first_progress_facts_do_not_treat_missing_visible_geopackage_as_stored(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._runtime_state_store = self.module.DockRuntimeStore()
         dock.outputPathLineEdit = _FakeLineEdit("/tmp/qfit-definitely-missing.gpkg")
@@ -775,7 +776,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._atlas_export_completed = False
         dock.settings = _FakeSettings()
 
-        facts = self.module.QfitDockWidget._current_wizard_progress_facts(dock)
+        facts = build_current_local_first_progress_facts(dock)
 
         self.assertFalse(facts.activities_stored)
         self.assertEqual(facts.output_name, "qfit-definitely-missing.gpkg")
@@ -953,6 +954,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "_configure_detailed_route_strategy_options",
             "_configure_preview_sort_options",
             "_current_wizard_atlas_output_path",
+            "_current_wizard_progress_facts",
             "_current_wizard_filter_facts",
             "_current_wizard_layer_feature_count",
             "_current_wizard_layer_filter_facts",
