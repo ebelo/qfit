@@ -4,17 +4,16 @@ from qgis.PyQt.QtCore import Qt
 
 from qfit.ui.tokens import COLOR_MUTED
 
-from .application.dock_workflow_sections import (
-    CURRENT_DOCK_SECTIONS,
-    build_current_dock_workflow_label,
-)
+from .application.dock_workflow_sections import build_current_dock_workflow_label
 
 
 class WorkflowSectionCoordinator:
-    """Coordinate dock-widget workflow sections and conditional field visibility.
+    """Prepare the legacy dock controls that still back local-first pages.
 
-    This keeps section layout/visibility rules out of ``QfitDockWidget`` so the
-    dock widget can focus more on wiring signals and rendering user feedback.
+    The live dock now uses the local-first shell, so this coordinator only keeps
+    shared copy, tooltips, and legacy backing controls coherent before audited
+    controls are moved into local-first pages. It intentionally no longer
+    installs the hidden long-scroll collapsible section surface.
     """
 
     def __init__(self, dock_widget):
@@ -39,27 +38,8 @@ class WorkflowSectionCoordinator:
         self._pin_summary_status_footer()
         self._hide_redundant_status_labels()
         self._style_legacy_feedback_labels()
-        section_widgets = {
-            "sync": (dock.activitiesGroupBox, "activitiesGroupLayout", "activities"),
-            "map": (dock.styleGroupBox, "styleGroupLayout", "style"),
-            "analysis": (dock.analysisWorkflowGroupBox, "analysisWorkflowLayout", "analysis"),
-            "atlas": (dock.publishGroupBox, "publishGroupLayout", "publish"),
-        }
-        section_keys = {section.key for section in CURRENT_DOCK_SECTIONS}
-        if set(section_widgets) != section_keys:
-            raise RuntimeError("Current dock workflow bindings must match shared section metadata")
-
-        for section in CURRENT_DOCK_SECTIONS:
-            group_box, layout_attr, toggle_key = section_widgets[section.key]
-            self.install_collapsible_section(
-                group_box,
-                layout_attr,
-                section.current_dock_title,
-                toggle_key,
-            )
         self._move_help_label_to_tooltip(
             dock.activitiesIntroLabel,
-            getattr(dock, "activitiesSectionToggleButton", None),
             dock.activitiesGroupBox,
         )
         self._move_help_label_to_tooltip(dock.outputIntroLabel, dock.outputGroupBox)
@@ -196,60 +176,6 @@ class WorkflowSectionCoordinator:
         dock.databaseActionsMenu = menu
         dock.databaseActionsButton = menu_button
         dock.clearDatabaseAction = clear_action
-
-    def install_collapsible_section(self, group_box, layout_attr: str, title: str, key: str) -> None:
-        dock = self.dock_widget
-        layout = getattr(dock, layout_attr, None)
-        toggle_attr = f"{key}SectionToggleButton"
-        content_attr = f"{key}SectionContentWidget"
-        if layout is None or hasattr(dock, toggle_attr):
-            return
-
-        group_box.setTitle("")
-
-        from qgis.PyQt.QtWidgets import QToolButton, QVBoxLayout, QWidget
-
-        content_widget = QWidget(group_box)
-        content_widget.setObjectName(f"{key}SectionContentWidget")
-        content_layout = QVBoxLayout(content_widget)
-        content_layout.setContentsMargins(0, 0, 0, 0)
-        content_layout.setSpacing(layout.spacing())
-
-        while layout.count():
-            item = layout.takeAt(0)
-            widget = item.widget()
-            child_layout = item.layout()
-            spacer = item.spacerItem()
-            if widget is not None:
-                content_layout.addWidget(widget)
-            elif child_layout is not None:
-                content_layout.addLayout(child_layout)
-            elif spacer is not None:
-                content_layout.addItem(spacer)
-
-        toggle = QToolButton(group_box)
-        toggle.setObjectName(f"{key}SectionToggleButton")
-        toggle.setText(title)
-        toggle.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
-        toggle.setArrowType(Qt.DownArrow)
-        toggle.setCheckable(True)
-        toggle.setChecked(True)
-        toggle.setStyleSheet("QToolButton { border: none; font-weight: bold; }")
-        toggle.toggled.connect(lambda expanded, section_key=key: self.set_section_expanded(section_key, expanded))
-
-        setattr(dock, toggle_attr, toggle)
-        setattr(dock, content_attr, content_widget)
-        layout.addWidget(toggle)
-        layout.addWidget(content_widget)
-
-    def set_section_expanded(self, key: str, expanded: bool) -> None:
-        dock = self.dock_widget
-        toggle = getattr(dock, f"{key}SectionToggleButton", None)
-        content = getattr(dock, f"{key}SectionContentWidget", None)
-        if toggle is not None:
-            toggle.setArrowType(Qt.DownArrow if expanded else Qt.RightArrow)
-        if content is not None:
-            content.setVisible(expanded)
 
     def _move_help_label_to_tooltip(self, label, *widgets) -> None:
         if label is None:

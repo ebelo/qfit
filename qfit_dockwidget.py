@@ -865,10 +865,10 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             temporal_row.hide()
 
     def _configure_analysis_mode_options(self):
-        content_widget = getattr(self, "analysisSectionContentWidget", self.analysisWorkflowGroupBox)
-        content_layout = content_widget.layout() if content_widget is not None else None
+        content_widget = self.analysisWorkflowGroupBox
+        content_layout = content_widget.layout()
 
-        row = QWidget(content_widget or self.analysisWorkflowGroupBox)
+        row = QWidget(content_widget)
         row.setObjectName("analysisModeRow")
         layout = QHBoxLayout(row)
         layout.setContentsMargins(0, 0, 0, 0)
