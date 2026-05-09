@@ -4,8 +4,8 @@ from dataclasses import dataclass
 
 from ._qt_compat import import_qt_module
 from .action_row import (
-    build_wizard_action_row,
-    set_wizard_action_availability,
+    build_workflow_action_row,
+    set_workflow_action_availability,
     style_primary_action_button,
     style_secondary_action_button,
 )
@@ -111,7 +111,7 @@ class AnalysisPageContent(QWidget):
             action_name="clear_analysis",
         )
         self.clear_analysis_button.clicked.connect(self.clearAnalysisRequested.emit)
-        self.action_row = build_wizard_action_row(
+        self.action_row = build_workflow_action_row(
             self.run_analysis_button,
             self.clear_analysis_button,
             parent=self,
@@ -159,13 +159,13 @@ class AnalysisPageContent(QWidget):
             if state.primary_action_enabled is None
             else state.primary_action_enabled
         )
-        set_wizard_action_availability(
+        set_workflow_action_availability(
             self.run_analysis_button,
             enabled=primary_action_enabled,
             tooltip=state.primary_action_blocked_tooltip,
         )
         self.clear_analysis_button.setText(state.clear_action_label)
-        set_wizard_action_availability(
+        set_workflow_action_availability(
             self.clear_analysis_button,
             enabled=state.clear_action_enabled,
         )

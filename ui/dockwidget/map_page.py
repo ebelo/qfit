@@ -4,8 +4,8 @@ from dataclasses import dataclass
 
 from ._qt_compat import import_qt_module
 from .action_row import (
-    build_wizard_action_row,
-    set_wizard_action_availability,
+    build_workflow_action_row,
+    set_workflow_action_availability,
     style_primary_action_button,
     style_secondary_action_button,
 )
@@ -105,7 +105,7 @@ class MapPageContent(QWidget):
             action_name="apply_map_filters",
         )
         self.apply_filters_button.clicked.connect(self.applyFiltersRequested.emit)
-        self.action_row = build_wizard_action_row(
+        self.action_row = build_workflow_action_row(
             self.load_layers_button,
             self.apply_filters_button,
             parent=self,
@@ -137,7 +137,7 @@ class MapPageContent(QWidget):
         self.filter_summary_label.setText(state.filter_summary_text)
         self.filter_summary_label.setProperty("mapState", map_state)
         self.load_layers_button.setText(state.load_action_label)
-        set_wizard_action_availability(
+        set_workflow_action_availability(
             self.load_layers_button,
             enabled=state.load_action_enabled,
             tooltip=state.load_action_blocked_tooltip,
@@ -149,7 +149,7 @@ class MapPageContent(QWidget):
             if state.apply_action_enabled is None
             else state.apply_action_enabled
         )
-        set_wizard_action_availability(
+        set_workflow_action_availability(
             self.apply_filters_button,
             enabled=apply_action_enabled,
             tooltip=state.apply_action_blocked_tooltip,

@@ -4,8 +4,8 @@ from dataclasses import dataclass
 
 from ._qt_compat import import_qt_module
 from .action_row import (
-    build_wizard_action_row,
-    set_wizard_action_availability,
+    build_workflow_action_row,
+    set_workflow_action_availability,
     style_primary_action_button,
 )
 from .page_content_style import (
@@ -81,7 +81,7 @@ class ConnectionPageContent(QWidget):
             action_name="configure_connection",
         )
         self.configure_button.clicked.connect(self.configureRequested.emit)
-        self.action_row = build_wizard_action_row(
+        self.action_row = build_workflow_action_row(
             self.configure_button,
             parent=self,
             object_name="qfitWizardConnectionActionRow",
@@ -105,7 +105,7 @@ class ConnectionPageContent(QWidget):
             "connected" if state.connected else "not_connected",
         )
         self.configure_button.setText(state.primary_action_label)
-        set_wizard_action_availability(
+        set_workflow_action_availability(
             self.configure_button,
             enabled=state.primary_action_enabled,
             tooltip=state.primary_action_blocked_tooltip,
