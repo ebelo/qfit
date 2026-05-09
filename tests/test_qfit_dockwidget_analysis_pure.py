@@ -16,6 +16,12 @@ from qfit.ui.application.local_first_control_installer import (
 from qfit.ui.application.local_first_control_moves import (
     local_first_control_move_for_key,
 )
+from qfit.ui.application.local_first_control_visibility import (
+    update_local_first_advanced_fetch_visibility,
+    update_local_first_detailed_fetch_visibility,
+    update_local_first_mapbox_custom_style_visibility,
+    update_local_first_point_sampling_visibility,
+)
 from qfit.activities.domain.activity_query import DETAILED_ROUTE_FILTER_MISSING
 from qfit.sync_repository import ActivitySyncState
 
@@ -898,10 +904,10 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         for name, widget in widgets.items():
             setattr(dock, name, widget)
 
-        self.module.QfitDockWidget._update_advanced_fetch_visibility(dock, True)
-        self.module.QfitDockWidget._update_detailed_fetch_visibility(dock, False)
-        self.module.QfitDockWidget._update_point_sampling_visibility(dock, True)
-        self.module.QfitDockWidget._update_mapbox_advanced_visibility(dock, "Custom")
+        update_local_first_advanced_fetch_visibility(dock, True)
+        update_local_first_detailed_fetch_visibility(dock, False)
+        update_local_first_point_sampling_visibility(dock, True)
+        update_local_first_mapbox_custom_style_visibility(dock, "Custom")
 
         widgets["advancedFetchSettingsWidget"].setVisible.assert_called_once_with(
             True
@@ -921,7 +927,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.mapboxStyleIdLabel = MagicMock()
         dock.mapboxStyleIdLineEdit = MagicMock()
 
-        self.module.QfitDockWidget._update_mapbox_advanced_visibility(dock, "Outdoor")
+        update_local_first_mapbox_custom_style_visibility(dock, "Outdoor")
 
         dock.mapboxStyleOwnerLabel.setVisible.assert_called_once_with(False)
         dock.mapboxStyleOwnerLineEdit.setVisible.assert_called_once_with(False)
@@ -987,25 +993,22 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "_update_connection_status",
             "_on_output_path_changed",
             "_refresh_activity_preview",
-            "_update_detailed_fetch_visibility",
-            "_update_point_sampling_visibility",
-            "_update_advanced_fetch_visibility",
         ):
             setattr(dock, name, MagicMock(name=name))
 
         self.module.QfitDockWidget._wire_events(dock)
 
-        self.assertEqual(
-            dock.detailedStreamsCheckBox.toggled.connected,
-            [dock._update_detailed_fetch_visibility],
+        self.assertEqual(len(dock.detailedStreamsCheckBox.toggled.connected), 1)
+        self.assertEqual(len(dock.writeActivityPointsCheckBox.toggled.connected), 1)
+        self.assertEqual(len(dock.advancedFetchGroupBox.toggled.connected), 1)
+        self.assertFalse(
+            hasattr(self.module.QfitDockWidget, "_update_detailed_fetch_visibility")
         )
-        self.assertEqual(
-            dock.writeActivityPointsCheckBox.toggled.connected,
-            [dock._update_point_sampling_visibility],
+        self.assertFalse(
+            hasattr(self.module.QfitDockWidget, "_update_point_sampling_visibility")
         )
-        self.assertEqual(
-            dock.advancedFetchGroupBox.toggled.connected,
-            [dock._update_advanced_fetch_visibility],
+        self.assertFalse(
+            hasattr(self.module.QfitDockWidget, "_update_advanced_fetch_visibility")
         )
 
     def test_install_local_first_control_move_handles_map_filters(self):

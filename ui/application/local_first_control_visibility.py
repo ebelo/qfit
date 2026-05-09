@@ -100,6 +100,68 @@ def apply_local_first_visibility_update(
     set_named_widgets_visible(dock, update.widget_attrs, update.visible)
 
 
+def update_local_first_advanced_fetch_visibility(dock, expanded: bool) -> None:
+    """Apply the advanced-fetch visibility rule to a local-first dock."""
+
+    apply_local_first_visibility_update(
+        dock,
+        build_advanced_fetch_visibility_update(expanded),
+    )
+
+
+def update_local_first_detailed_fetch_visibility(dock, enabled: bool) -> None:
+    """Apply the detailed-fetch visibility rule to a local-first dock."""
+
+    apply_local_first_visibility_update(
+        dock,
+        build_detailed_fetch_visibility_update(enabled),
+    )
+
+
+def update_local_first_mapbox_custom_style_visibility(
+    dock,
+    preset_name: str | None,
+) -> None:
+    """Apply the Mapbox custom-style visibility rule to a local-first dock."""
+
+    apply_local_first_visibility_update(
+        dock,
+        build_mapbox_custom_style_visibility_update(preset_name),
+    )
+
+
+def update_local_first_point_sampling_visibility(dock, enabled: bool) -> None:
+    """Apply the point-sampling visibility rule to a local-first dock."""
+
+    apply_local_first_visibility_update(
+        dock,
+        build_point_sampling_visibility_update(enabled),
+    )
+
+
+def bind_local_first_conditional_visibility_controls(dock) -> None:
+    """Bind local-first conditional-control signals to application visibility rules."""
+
+    _connect_widget_signal(
+        dock,
+        "detailedStreamsCheckBox",
+        "toggled",
+        lambda enabled: update_local_first_detailed_fetch_visibility(dock, enabled),
+    )
+    _connect_widget_signal(
+        dock,
+        "writeActivityPointsCheckBox",
+        "toggled",
+        lambda enabled: update_local_first_point_sampling_visibility(dock, enabled),
+    )
+    _connect_widget_signal(
+        dock,
+        "advancedFetchGroupBox",
+        "toggled",
+        lambda expanded: update_local_first_advanced_fetch_visibility(dock, expanded),
+    )
+
+
 def refresh_local_first_conditional_control_visibility(dock) -> None:
     """Refresh all conditional local-first backing controls from live widget state."""
 
@@ -141,6 +203,14 @@ def set_named_widgets_visible(
             widget.setVisible(visible)
 
 
+def _connect_widget_signal(dock, widget_attr: str, signal_attr: str, callback) -> None:
+    widget = getattr(dock, widget_attr, None)
+    signal = getattr(widget, signal_attr, None)
+    connect = getattr(signal, "connect", None)
+    if callable(connect):
+        connect(callback)
+
+
 def _checked(widget) -> bool:
     is_checked = getattr(widget, "isChecked", None)
     if not callable(is_checked):
@@ -169,6 +239,7 @@ __all__ = [
     "POINT_SAMPLING_VISIBILITY_WIDGETS",
     "LocalFirstControlVisibilityUpdate",
     "apply_local_first_visibility_update",
+    "bind_local_first_conditional_visibility_controls",
     "build_advanced_fetch_visibility_update",
     "build_detailed_fetch_visibility_update",
     "build_local_first_conditional_visibility_updates",
@@ -176,4 +247,8 @@ __all__ = [
     "build_point_sampling_visibility_update",
     "refresh_local_first_conditional_control_visibility",
     "set_named_widgets_visible",
+    "update_local_first_advanced_fetch_visibility",
+    "update_local_first_detailed_fetch_visibility",
+    "update_local_first_mapbox_custom_style_visibility",
+    "update_local_first_point_sampling_visibility",
 ]
