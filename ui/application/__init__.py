@@ -44,6 +44,11 @@ from .local_first_analysis_controls import (
     set_local_first_analysis_mode,
 )
 from .local_first_atlas_controls import update_local_first_atlas_document_settings
+from .local_first_basemap_controls import (
+    bind_local_first_basemap_preset_controls,
+    configure_local_first_basemap_options,
+    sync_local_first_basemap_style_fields,
+)
 from .local_first_control_moves import (
     LOCAL_FIRST_CONTROL_MOVES,
     LOCAL_FIRST_WIDGET_MOVES,
@@ -207,8 +212,10 @@ __all__ = [
     "build_advanced_fetch_visibility_update",
     "apply_local_first_visibility_update",
     "bind_local_first_analysis_mode_controls",
+    "bind_local_first_basemap_preset_controls",
     "bind_local_first_conditional_visibility_controls",
     "configure_local_first_analysis_mode_backing_controls",
+    "configure_local_first_basemap_options",
     "build_current_dock_workflow_label",
     "build_detailed_fetch_visibility_update",
     "build_dock_summary_status",
@@ -260,6 +267,7 @@ __all__ = [
     "save_last_step_index",
     "set_local_first_analysis_mode",
     "show_local_first_control_group",
+    "sync_local_first_basemap_style_fields",
     "update_local_first_mapbox_custom_style_visibility",
     "show_widget",
     "step_index_for_key",

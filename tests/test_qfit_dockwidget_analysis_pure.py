@@ -973,7 +973,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "on_apply_filters_clicked",
             "on_run_analysis_clicked",
             "on_load_background_clicked",
-            "on_background_preset_changed",
             "on_atlas_pdf_browse_clicked",
             "_on_atlas_pdf_path_changed",
             "on_generate_atlas_pdf_clicked",
@@ -996,6 +995,13 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         )
         self.assertFalse(
             hasattr(self.module.QfitDockWidget, "_update_advanced_fetch_visibility")
+        )
+        self.assertFalse(
+            hasattr(self.module.QfitDockWidget, "on_background_preset_changed")
+        )
+        self.assertEqual(
+            len(dock.backgroundPresetComboBox.currentTextChanged.connected),
+            1,
         )
 
     def test_install_local_first_control_move_handles_map_filters(self):
