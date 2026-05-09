@@ -114,6 +114,7 @@ from .local_first_progress_facts import (
     runtime_state_with_local_first_output_path,
 )
 from .workflow_progress import (
+    build_startup_workflow_progress_facts,
     build_workflow_progress_from_facts,
     build_workflow_progress_from_facts_and_settings,
 )
@@ -271,6 +272,7 @@ __all__ = [
     "build_stepper_items",
     "build_stepper_states",
     "build_startup_wizard_progress_facts",
+    "build_startup_workflow_progress_facts",
     "current_local_first_last_sync_date",
     "build_wizard_filter_description",
     "build_workflow_progress_facts_from_runtime_state",

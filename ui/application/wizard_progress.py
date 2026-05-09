@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-from dataclasses import replace
-
 from .dock_workflow_sections import DockWizardProgress
 from .workflow_progress import (
+    build_startup_workflow_progress_facts,
     build_workflow_progress_from_facts,
     build_workflow_progress_from_facts_and_settings,
 )
@@ -11,10 +10,7 @@ from .workflow_progress_facts import (
     WorkflowProgressFacts,
     build_workflow_progress_facts_from_runtime_state,
 )
-from .wizard_settings import (
-    WizardSettingsSnapshot,
-    preferred_current_key_from_settings,
-)
+from .wizard_settings import WizardSettingsSnapshot
 
 
 WizardProgressFacts = WorkflowProgressFacts
@@ -53,26 +49,7 @@ def build_startup_wizard_progress_facts(
     users reconfirm an already-completed prerequisite before continuing.
     """
 
-    preferred_current_key = preferred_current_key_from_settings(settings)
-    if (
-        preferred_current_key == "connection"
-        and facts.connection_configured
-        and not settings.last_step_index_user_selected
-    ):
-        progress = build_wizard_progress_from_facts(facts)
-        return _wizard_progress_facts_with_preferred_current_key(
-            facts,
-            preferred_current_key=progress.current_key,
-        )
-    return facts
-
-
-def _wizard_progress_facts_with_preferred_current_key(
-    facts: WizardProgressFacts,
-    *,
-    preferred_current_key: str | None,
-) -> WizardProgressFacts:
-    return replace(facts, preferred_current_key=preferred_current_key)
+    return build_startup_workflow_progress_facts(facts, settings)
 
 
 __all__ = [
