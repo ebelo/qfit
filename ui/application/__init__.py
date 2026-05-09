@@ -160,6 +160,10 @@ from .stepper_presenter import (
     step_key_for_index,
 )
 from .wizard_filter_summary import build_wizard_filter_description
+from .workflow_page_specs import (
+    DockWorkflowPageSpec,
+    build_default_workflow_page_specs,
+)
 from .workflow_settings import (
     COLLAPSED_GROUPS_KEY,
     DEFAULT_COLLAPSED_GROUP_OBJECT_NAMES,
@@ -238,6 +242,7 @@ __all__ = [
     "DockVisualWorkflowCoordinator",
     "DockVisualWorkflowRequest",
     "DockWizardProgress",
+    "DockWorkflowPageSpec",
     "DockWorkflowProgress",
     "DockWorkflowSection",
     "DockWorkflowStepState",
@@ -320,6 +325,7 @@ __all__ = [
     "build_wizard_filter_description",
     "build_workflow_footer_facts_from_progress_facts",
     "build_workflow_footer_status",
+    "build_default_workflow_page_specs",
     "build_workflow_progress_facts_from_runtime_state",
     "build_workflow_progress_from_facts",
     "build_workflow_progress_from_facts_and_settings",

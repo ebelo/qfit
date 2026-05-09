@@ -6,7 +6,7 @@ from unittest.mock import patch
 from tests import _path  # noqa: F401
 from tests.test_wizard_shell import _fake_qt_modules
 
-from qfit.ui.application.wizard_page_specs import build_default_wizard_page_specs
+from qfit.ui.application.workflow_page_specs import build_default_workflow_page_specs
 from qfit.ui.tokens import COLOR_MUTED
 
 
@@ -167,7 +167,7 @@ class ConnectionPageContentTest(unittest.TestCase):
         self.assertEqual(calls, ["configure"])
 
     def test_installs_only_on_connection_wizard_page_body(self):
-        connection_spec = build_default_wizard_page_specs()[0]
+        connection_spec = build_default_workflow_page_specs()[0]
         connection_page = self.wizard_page.WizardPage(connection_spec)
 
         content = self.connection_page.install_connection_page_content(connection_page)
@@ -175,7 +175,7 @@ class ConnectionPageContentTest(unittest.TestCase):
         self.assertIs(connection_page.body_layout().widgets[-1], content)
 
     def test_rejects_installing_on_other_wizard_page(self):
-        map_spec = build_default_wizard_page_specs()[2]
+        map_spec = build_default_workflow_page_specs()[2]
         map_page = self.wizard_page.WizardPage(map_spec)
 
         with self.assertRaisesRegex(ValueError, "connection wizard page"):

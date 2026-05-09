@@ -6,14 +6,22 @@ from unittest.mock import patch
 from tests import _path  # noqa: F401
 from tests.test_wizard_shell import _fake_qt_modules
 
-from qfit.ui.application import wizard_page_specs
-from qfit.ui.application.wizard_page_specs import build_default_wizard_page_specs
+from qfit.ui import application
+from qfit.ui.application import workflow_page_specs
+from qfit.ui.application.wizard_page_specs import (
+    DockWizardPageSpec,
+    build_default_wizard_page_specs,
+)
+from qfit.ui.application.workflow_page_specs import (
+    DockWorkflowPageSpec,
+    build_default_workflow_page_specs,
+)
 from qfit.ui.tokens import COLOR_MUTED, COLOR_TEXT
 
 
-class WizardPageSpecsTests(unittest.TestCase):
-    def test_default_specs_follow_stable_wizard_order(self):
-        specs = build_default_wizard_page_specs()
+class WorkflowPageSpecsTests(unittest.TestCase):
+    def test_default_specs_follow_stable_workflow_order(self):
+        specs = build_default_workflow_page_specs()
 
         self.assertEqual(
             [(spec.key, spec.title) for spec in specs],
@@ -32,9 +40,26 @@ class WizardPageSpecsTests(unittest.TestCase):
     def test_default_specs_reject_missing_page_copy_with_clear_message(self):
         unknown_step = type("UnknownStep", (), {"key": "review", "title": "Review"})()
 
-        with patch.object(wizard_page_specs, "WIZARD_WORKFLOW_STEPS", (unknown_step,)):
-            with self.assertRaisesRegex(KeyError, "No page copy found for wizard step 'review'"):
-                build_default_wizard_page_specs()
+        with patch.object(workflow_page_specs, "WIZARD_WORKFLOW_STEPS", (unknown_step,)):
+            with self.assertRaisesRegex(
+                KeyError,
+                "No page copy found for workflow step 'review'",
+            ):
+                build_default_workflow_page_specs()
+
+    def test_application_package_exports_workflow_page_api(self):
+        self.assertIs(application.DockWorkflowPageSpec, DockWorkflowPageSpec)
+        self.assertEqual(
+            application.build_default_workflow_page_specs(),
+            build_default_workflow_page_specs(),
+        )
+
+    def test_wizard_named_api_remains_compatibility_alias(self):
+        self.assertIs(DockWizardPageSpec, DockWorkflowPageSpec)
+        self.assertEqual(
+            build_default_wizard_page_specs(),
+            build_default_workflow_page_specs(),
+        )
 
 
 def _load_wizard_modules():
@@ -58,7 +83,7 @@ class WizardPageTest(unittest.TestCase):
         cls.wizard_page, cls.wizard_shell = _load_wizard_modules()
 
     def test_page_container_builds_visible_placeholder_chrome(self):
-        spec = build_default_wizard_page_specs()[2]
+        spec = build_default_workflow_page_specs()[2]
 
         page = self.wizard_page.WizardPage(spec)
 
@@ -86,7 +111,7 @@ class WizardPageTest(unittest.TestCase):
         )
 
     def test_retiring_primary_hint_removes_placeholder_copy(self):
-        spec = build_default_wizard_page_specs()[1]
+        spec = build_default_workflow_page_specs()[1]
         page = self.wizard_page.WizardPage(spec)
 
         page.retire_primary_action_hint()

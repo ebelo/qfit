@@ -6,9 +6,9 @@ from qfit.ui.application.dock_workflow_sections import (
     DockWorkflowStepState,
     DockWorkflowStepStatus,
 )
-from qfit.ui.application.wizard_page_specs import (
-    DockWizardPageSpec,
-    build_default_wizard_page_specs,
+from qfit.ui.application.workflow_page_specs import (
+    DockWorkflowPageSpec,
+    build_default_workflow_page_specs,
 )
 from ._qt_compat import import_qt_module
 from qfit.ui.widgets.pill import set_pill_tone
@@ -47,6 +47,10 @@ QVBoxLayout = _qtwidgets.QVBoxLayout
 QWidget = _qtwidgets.QWidget
 
 STEP_PAGE_NARROW_WIDTH = 360
+DockWizardPageSpec = DockWorkflowPageSpec
+"""Compatibility alias for pre-#805 wizard step page callers."""
+build_default_wizard_page_specs = build_default_workflow_page_specs
+"""Compatibility alias for pre-#805 wizard step page builders."""
 
 
 class StepPage(QWidget):
@@ -320,7 +324,7 @@ class WizardStepPage(StepPage):
 
     def __init__(
         self,
-        spec: DockWizardPageSpec,
+        spec: DockWorkflowPageSpec,
         *,
         step_num: int,
         step_total: int,
@@ -371,11 +375,11 @@ class WizardStepPage(StepPage):
 def build_wizard_step_pages(
     *,
     parent=None,
-    specs: Sequence[DockWizardPageSpec] | None = None,
+    specs: Sequence[DockWorkflowPageSpec] | None = None,
 ) -> tuple[WizardStepPage, ...]:
     """Build StepPage-backed pages in stable #609 wizard order."""
 
-    page_specs = build_default_wizard_page_specs() if specs is None else tuple(specs)
+    page_specs = build_default_workflow_page_specs() if specs is None else tuple(specs)
     step_total = len(page_specs)
     return tuple(
         WizardStepPage(
@@ -390,7 +394,7 @@ def build_wizard_step_pages(
 
 def install_wizard_step_pages(
     shell,
-    specs: Sequence[DockWizardPageSpec] | None = None,
+    specs: Sequence[DockWorkflowPageSpec] | None = None,
 ) -> tuple[WizardStepPage, ...]:
     """Create StepPage-backed wizard pages and append them to a shell."""
 
@@ -527,9 +531,13 @@ def _ghost_button_stylesheet() -> str:
 
 
 __all__ = [
+    "DockWorkflowPageSpec",
+    "DockWizardPageSpec",
     "StepPage",
     "WizardStepPage",
     "apply_wizard_step_page_statuses",
+    "build_default_workflow_page_specs",
+    "build_default_wizard_page_specs",
     "build_wizard_step_pages",
     "install_wizard_step_pages",
 ]

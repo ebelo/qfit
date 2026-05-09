@@ -7,7 +7,7 @@ from tests import _path  # noqa: F401
 from tests.test_wizard_shell import _fake_qt_modules
 
 from qfit.ui.application.dock_workflow_sections import build_wizard_step_statuses
-from qfit.ui.application.wizard_page_specs import build_default_wizard_page_specs
+from qfit.ui.application.workflow_page_specs import build_default_workflow_page_specs
 
 
 def _load_step_page_module():
@@ -189,7 +189,7 @@ class StepPageTest(unittest.TestCase):
             page.add_extra_button(self.step_page.QToolButton(page), align="center")
 
     def test_wizard_step_page_adapts_canonical_spec_to_step_chrome(self):
-        spec = build_default_wizard_page_specs()[2]
+        spec = build_default_workflow_page_specs()[2]
 
         page = self.step_page.WizardStepPage(spec, step_num=3, step_total=5)
 
@@ -214,7 +214,7 @@ class StepPageTest(unittest.TestCase):
         self.assertFalse(page.primary_hint_label.isVisible())
 
     def test_wizard_step_page_retire_primary_hint_is_installer_compatible(self):
-        spec = build_default_wizard_page_specs()[0]
+        spec = build_default_workflow_page_specs()[0]
         page = self.step_page.WizardStepPage(spec, step_num=1, step_total=5)
 
         page.primary_hint_label.setVisible(True)

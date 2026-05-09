@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
-from qfit.ui.application.wizard_page_specs import (
-    DockWizardPageSpec,
-    build_default_wizard_page_specs,
+from qfit.ui.application.workflow_page_specs import (
+    DockWorkflowPageSpec,
+    build_default_workflow_page_specs,
 )
 from qfit.ui.tokens import COLOR_MUTED, COLOR_TEXT
 
@@ -36,6 +36,12 @@ _SUMMARY_LABEL_QSS = f"QLabel {{ color: {COLOR_MUTED}; }}"
 _PRIMARY_HINT_LABEL_QSS = f"QLabel {{ color: {COLOR_MUTED}; }}"
 
 
+DockWizardPageSpec = DockWorkflowPageSpec
+"""Compatibility alias for pre-#805 wizard page callers."""
+build_default_wizard_page_specs = build_default_workflow_page_specs
+"""Compatibility alias for pre-#805 wizard page builders."""
+
+
 class WizardPage(QWidget):
     """Reusable visible page container for the #609 wizard shell.
 
@@ -45,7 +51,7 @@ class WizardPage(QWidget):
     structure without locking in the old scroll layout.
     """
 
-    def __init__(self, spec: DockWizardPageSpec, parent=None) -> None:
+    def __init__(self, spec: DockWorkflowPageSpec, parent=None) -> None:
         super().__init__(parent)
         self.spec = spec
         self.setObjectName(spec.page_object_name)
@@ -122,15 +128,18 @@ class WizardPage(QWidget):
 def build_wizard_pages(
     *,
     parent=None,
-    specs: Sequence[DockWizardPageSpec] | None = None,
+    specs: Sequence[DockWorkflowPageSpec] | None = None,
 ) -> tuple[WizardPage, ...]:
     """Build visible wizard page containers from render-neutral specs."""
 
-    page_specs = build_default_wizard_page_specs() if specs is None else tuple(specs)
+    page_specs = build_default_workflow_page_specs() if specs is None else tuple(specs)
     return tuple(WizardPage(spec, parent) for spec in page_specs)
 
 
-def install_wizard_pages(shell, specs: Sequence[DockWizardPageSpec] | None = None) -> tuple[WizardPage, ...]:
+def install_wizard_pages(
+    shell,
+    specs: Sequence[DockWorkflowPageSpec] | None = None,
+) -> tuple[WizardPage, ...]:
     """Create default wizard pages and append them to a :class:`WizardShell`."""
 
     pages = build_wizard_pages(parent=shell, specs=specs)
@@ -139,4 +148,12 @@ def install_wizard_pages(shell, specs: Sequence[DockWizardPageSpec] | None = Non
     return pages
 
 
-__all__ = ["WizardPage", "build_wizard_pages", "install_wizard_pages"]
+__all__ = [
+    "DockWorkflowPageSpec",
+    "DockWizardPageSpec",
+    "WizardPage",
+    "build_default_workflow_page_specs",
+    "build_default_wizard_page_specs",
+    "build_wizard_pages",
+    "install_wizard_pages",
+]

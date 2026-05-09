@@ -6,7 +6,7 @@ from unittest.mock import patch
 from tests import _path  # noqa: F401
 from tests.test_wizard_shell import _fake_qt_modules
 
-from qfit.ui.application.wizard_page_specs import build_default_wizard_page_specs
+from qfit.ui.application.workflow_page_specs import build_default_workflow_page_specs
 from qfit.ui.tokens import COLOR_MUTED
 
 
@@ -236,7 +236,7 @@ class AnalysisPageContentTest(unittest.TestCase):
 
     def test_installs_only_on_analysis_wizard_page_body(self):
         analysis_spec = next(
-            spec for spec in build_default_wizard_page_specs() if spec.key == "analysis"
+            spec for spec in build_default_workflow_page_specs() if spec.key == "analysis"
         )
         analysis_page = self.wizard_page.WizardPage(analysis_spec)
 
@@ -246,7 +246,7 @@ class AnalysisPageContentTest(unittest.TestCase):
 
     def test_rejects_installing_on_other_wizard_page(self):
         map_spec = next(
-            spec for spec in build_default_wizard_page_specs() if spec.key == "map"
+            spec for spec in build_default_workflow_page_specs() if spec.key == "map"
         )
         map_page = self.wizard_page.WizardPage(map_spec)
 

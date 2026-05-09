@@ -6,7 +6,7 @@ from unittest.mock import patch
 from tests import _path  # noqa: F401
 from tests.test_wizard_shell import _fake_qt_modules
 
-from qfit.ui.application.wizard_page_specs import build_default_wizard_page_specs
+from qfit.ui.application.workflow_page_specs import build_default_workflow_page_specs
 from qfit.ui.tokens import COLOR_MUTED
 
 
@@ -241,7 +241,7 @@ class AtlasPageContentTest(unittest.TestCase):
 
     def test_installs_only_on_atlas_wizard_page_body(self):
         atlas_spec = next(
-            spec for spec in build_default_wizard_page_specs() if spec.key == "atlas"
+            spec for spec in build_default_workflow_page_specs() if spec.key == "atlas"
         )
         atlas_page = self.wizard_page.WizardPage(atlas_spec)
 
@@ -251,7 +251,7 @@ class AtlasPageContentTest(unittest.TestCase):
 
     def test_install_forwards_seeded_document_settings(self):
         atlas_spec = next(
-            spec for spec in build_default_wizard_page_specs() if spec.key == "atlas"
+            spec for spec in build_default_workflow_page_specs() if spec.key == "atlas"
         )
         atlas_page = self.wizard_page.WizardPage(atlas_spec)
 
@@ -266,7 +266,7 @@ class AtlasPageContentTest(unittest.TestCase):
 
     def test_rejects_installing_on_other_wizard_page(self):
         analysis_spec = next(
-            spec for spec in build_default_wizard_page_specs() if spec.key == "analysis"
+            spec for spec in build_default_workflow_page_specs() if spec.key == "analysis"
         )
         analysis_page = self.wizard_page.WizardPage(analysis_spec)
 

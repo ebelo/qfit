@@ -6,7 +6,7 @@ from unittest.mock import patch
 from tests import _path  # noqa: F401
 from tests.test_wizard_shell import _fake_qt_modules
 
-from qfit.ui.application.wizard_page_specs import build_default_wizard_page_specs
+from qfit.ui.application.workflow_page_specs import build_default_workflow_page_specs
 from qfit.ui.tokens import COLOR_MUTED
 
 
@@ -324,7 +324,9 @@ class MapPageContentTest(unittest.TestCase):
         self.assertEqual(calls, ["load", "filter"])
 
     def test_installs_only_on_map_wizard_page_body(self):
-        map_spec = next(spec for spec in build_default_wizard_page_specs() if spec.key == "map")
+        map_spec = next(
+            spec for spec in build_default_workflow_page_specs() if spec.key == "map"
+        )
         map_page = self.wizard_page.WizardPage(map_spec)
 
         content = self.map_page.install_map_page_content(map_page)
@@ -332,7 +334,9 @@ class MapPageContentTest(unittest.TestCase):
         self.assertIs(map_page.body_layout().widgets[-1], content)
 
     def test_rejects_installing_on_other_wizard_page(self):
-        sync_spec = next(spec for spec in build_default_wizard_page_specs() if spec.key == "sync")
+        sync_spec = next(
+            spec for spec in build_default_workflow_page_specs() if spec.key == "sync"
+        )
         sync_page = self.wizard_page.WizardPage(sync_spec)
 
         with self.assertRaisesRegex(ValueError, "map wizard page"):
