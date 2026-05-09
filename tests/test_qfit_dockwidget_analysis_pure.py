@@ -1168,7 +1168,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         widgets["detailedRouteStrategyLabel"].setVisible.assert_called_once_with(False)
         widgets["pointSamplingStrideLabel"].setVisible.assert_called_once_with(True)
         widgets["mapboxStyleOwnerLabel"].setVisible.assert_called_once_with(True)
-        dock._workflow_section_coordinator.assert_not_called()
+        self.assertEqual(dock._workflow_section_coordinator.method_calls, [])
 
     def test_local_first_mapbox_visibility_hides_builtin_preset_fields(self):
         dock = object.__new__(self.module.QfitDockWidget)
