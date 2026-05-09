@@ -1,12 +1,16 @@
 import unittest
 from types import SimpleNamespace
-from unittest.mock import MagicMock, call
+from unittest.mock import MagicMock, call, patch
 
 from tests import _path  # noqa: F401
 
 from qfit.ui.application.local_first_control_installer import (
+    after_local_first_control_move_installed,
+    install_local_first_audited_controls,
     install_local_first_group_controls,
+    install_local_first_control_move,
     install_local_first_widget_controls,
+    install_local_first_widget_move,
 )
 from qfit.ui.application.local_first_control_moves import (
     local_first_control_move_for_key,
@@ -15,6 +19,120 @@ from qfit.ui.application.local_first_control_moves import (
 
 
 class LocalFirstControlInstallerTests(unittest.TestCase):
+    def test_installs_audited_controls_in_inventory_order(self):
+        dock = object()
+        composition = object()
+
+        with patch(
+            "qfit.ui.application.local_first_control_installer.install_local_first_widget_move",
+            return_value=True,
+        ) as install_widget_move, patch(
+            "qfit.ui.application.local_first_control_installer.install_local_first_control_move",
+            return_value=True,
+        ) as install_control_move, patch(
+            "qfit.ui.application.local_first_control_installer.after_local_first_control_move_installed",
+        ) as after_control_move:
+            install_local_first_audited_controls(dock, composition)
+
+        self.assertEqual(
+            install_widget_move.call_args_list,
+            [
+                call(dock, composition, "activity_style"),
+                call(dock, composition, "analysis_temporal"),
+            ],
+        )
+        self.assertEqual(
+            install_control_move.call_args_list,
+            [
+                call(dock, composition, "advanced_fetch"),
+                call(dock, composition, "activity_preview"),
+                call(dock, composition, "backfill_routes"),
+                call(dock, composition, "map_filters"),
+                call(dock, composition, "atlas_pdf"),
+                call(dock, composition, "strava_credentials"),
+                call(dock, composition, "basemap"),
+                call(dock, composition, "storage"),
+            ],
+        )
+        self.assertEqual(
+            after_control_move.call_args_list,
+            [
+                call(dock, "advanced_fetch", installed=True),
+                call(dock, "activity_preview", installed=True),
+                call(dock, "backfill_routes", installed=True),
+                call(dock, "map_filters", installed=True),
+                call(dock, "atlas_pdf", installed=True),
+                call(dock, "strava_credentials", installed=True),
+                call(dock, "basemap", installed=True),
+                call(dock, "storage", installed=True),
+            ],
+        )
+
+    def test_control_move_lookup_installs_matching_group(self):
+        source_layout = MagicMock()
+        source_parent = SimpleNamespace(layout=lambda: source_layout)
+        group = MagicMock()
+        group.parentWidget.return_value = source_parent
+        dock = SimpleNamespace(
+            filterGroupBox=group,
+            activityTypeComboBox=object(),
+            activitySearchLineEdit=object(),
+            dateFromEdit=object(),
+            dateToEdit=object(),
+            minDistanceSpinBox=object(),
+            maxDistanceSpinBox=object(),
+            detailedRouteStatusComboBox=object(),
+        )
+        target_layout = MagicMock()
+        map_content = SimpleNamespace(
+            filter_controls_layout=MagicMock(return_value=target_layout),
+            set_filter_controls_visible=MagicMock(),
+        )
+
+        installed = install_local_first_control_move(
+            dock,
+            SimpleNamespace(map_content=map_content),
+            "map_filters",
+        )
+
+        self.assertTrue(installed)
+        target_layout.addWidget.assert_called_once_with(group)
+        self.assertTrue(dock._local_first_filter_controls_installed)
+
+    def test_widget_move_lookup_installs_matching_widgets(self):
+        style_label = MagicMock()
+        style_combo = MagicMock()
+        dock = SimpleNamespace(
+            stylePresetLabel=style_label,
+            stylePresetComboBox=style_combo,
+        )
+        target_layout = MagicMock()
+        map_content = SimpleNamespace(
+            style_controls_layout=MagicMock(return_value=target_layout),
+            set_style_controls_visible=MagicMock(),
+        )
+
+        installed = install_local_first_widget_move(
+            dock,
+            SimpleNamespace(map_content=map_content),
+            "activity_style",
+        )
+
+        self.assertTrue(installed)
+        self.assertEqual(
+            target_layout.addWidget.call_args_list,
+            [call(style_label), call(style_combo)],
+        )
+        self.assertTrue(dock._local_first_activity_style_controls_installed)
+
+    def test_after_control_move_installed_runs_hook_only_after_successful_move(self):
+        dock = SimpleNamespace(_refresh_local_first_mapbox_visibility=MagicMock())
+
+        after_local_first_control_move_installed(dock, "basemap", installed=False)
+        after_local_first_control_move_installed(dock, "basemap", installed=True)
+
+        dock._refresh_local_first_mapbox_visibility.assert_called_once_with()
+
     def test_installs_group_move_from_audited_inventory(self):
         source_layout = MagicMock()
         source_parent = SimpleNamespace(layout=lambda: source_layout)

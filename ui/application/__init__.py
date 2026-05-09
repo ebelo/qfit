@@ -46,7 +46,11 @@ from .local_first_control_moves import (
     local_first_widget_move_keys,
 )
 from .local_first_control_installer import (
+    after_local_first_control_move_installed,
+    install_local_first_audited_controls,
+    install_local_first_control_move,
     install_local_first_group_controls,
+    install_local_first_widget_move,
     install_local_first_widget_controls,
     local_first_control_move_layout,
     local_first_control_move_parent_panel,
@@ -120,6 +124,7 @@ from .visual_workflow_action_builder import build_visual_workflow_settings_snaps
 
 __all__ = [
     "ApplyVisualizationAction",
+    "after_local_first_control_move_installed",
     "COLLAPSED_GROUPS_KEY",
     "DEFAULT_COLLAPSED_GROUP_OBJECT_NAMES",
     "DockActionDispatcher",
@@ -190,7 +195,10 @@ __all__ = [
     "clamp_wizard_step_index",
     "ensure_wizard_settings",
     "get_workflow_section",
+    "install_local_first_audited_controls",
+    "install_local_first_control_move",
     "install_local_first_group_controls",
+    "install_local_first_widget_move",
     "install_local_first_widget_controls",
     "load_wizard_settings",
     "local_first_control_move_layout",
