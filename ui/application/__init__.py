@@ -66,6 +66,7 @@ from .local_first_control_moves import (
     local_first_widget_move_for_key,
     local_first_widget_move_keys,
 )
+from .local_first_connection_controls import request_local_first_connection_configuration
 from .local_first_control_installer import (
     after_local_first_control_move_installed,
     install_local_first_audited_controls,
@@ -208,6 +209,7 @@ __all__ = [
     "WIZARD_STEP_COUNT",
     "WIZARD_VERSION",
     "WIZARD_VERSION_KEY",
+    "request_local_first_connection_configuration",
     "RunAnalysisAction",
     "STEPPER_STATE_CURRENT",
     "STEPPER_STATE_DONE",

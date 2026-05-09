@@ -670,36 +670,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
                 self.assertIsNone(filtered_count)
                 self.assertEqual(filter_description, "layer subset")
 
-    def test_show_connection_configuration_hint_opens_config_when_available(self):
-        dock = object.__new__(self.module.QfitDockWidget)
-        dock._open_configuration = MagicMock()
-        dock._show_info = MagicMock()
-        dock._set_status = MagicMock()
-
-        self.module.QfitDockWidget._show_connection_configuration_hint(dock)
-
-        dock._open_configuration.assert_called_once_with()
-        dock._show_info.assert_not_called()
-        dock._set_status.assert_called_once_with(
-            "qfit configuration opened; save credentials to continue."
-        )
-
-    def test_show_connection_configuration_hint_reports_menu_path_without_opener(self):
-        dock = object.__new__(self.module.QfitDockWidget)
-        dock._show_info = MagicMock()
-        dock._set_status = MagicMock()
-
-        self.module.QfitDockWidget._show_connection_configuration_hint(dock)
-
-        dock._show_info.assert_called_once_with(
-            "Configure qfit connection",
-            "Open qfit → Configuration from the QGIS plugin menu to edit Strava "
-            "credentials, then return to the dock to continue the workflow.",
-        )
-        dock._set_status.assert_called_once_with(
-            "Open qfit → Configuration to edit Strava credentials."
-        )
-
     def test_refresh_configuration_from_settings_updates_live_connection_state(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._load_settings = MagicMock()
@@ -790,6 +760,9 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.atlasTitleLineEdit = _FakeLineEdit("Spring Atlas")
         dock.atlasSubtitleLineEdit = _FakeLineEdit("Road and trail")
         dock._atlas_export_completed = False
+        dock._open_configuration = MagicMock()
+        dock._set_status = MagicMock()
+        dock._show_info = MagicMock()
         dock.settings = _FakeSettings()
         parent = object()
 
@@ -843,7 +816,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertEqual(connect_args[0], "composition")
         callbacks = connect_args[1]
         expected_callbacks = {
-            "configure_connection": "_show_connection_configuration_hint",
             "sync_activities": "on_refresh_clicked",
             "store_activities": "on_load_clicked",
             "sync_saved_routes": "on_sync_routes_clicked",
@@ -861,6 +833,12 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
                 callback.__func__,
                 getattr(self.module.QfitDockWidget, method_name),
             )
+        callbacks.configure_connection()
+        dock._open_configuration.assert_called_once_with()
+        dock._show_info.assert_not_called()
+        dock._set_status.assert_called_once_with(
+            "qfit configuration opened; save credentials to continue."
+        )
         with patch.object(
             self.module,
             "set_local_first_analysis_mode",
@@ -950,6 +928,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "_bind_local_first_analysis_mode_controls",
             "_set_local_first_analysis_mode",
             "_update_atlas_document_settings",
+            "_show_connection_configuration_hint",
             "_configure_detailed_route_filter_options",
             "_configure_detailed_route_strategy_options",
             "_configure_preview_sort_options",
