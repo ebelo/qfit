@@ -14,6 +14,7 @@ from qfit.activities.domain.activity_query import (
 )
 from qfit.detailed_route_strategy import detailed_route_strategy_labels
 from qfit.ui.application.local_first_activity_controls import (
+    build_current_activity_preview_request,
     configure_detailed_route_filter_options,
     configure_detailed_route_strategy_options,
     configure_local_first_activity_preview_options,
@@ -44,6 +45,53 @@ class FakeComboBox:
 
     def parentWidget(self):
         return self._parent
+
+    def currentText(self):
+        if not self.items:
+            return ""
+        return self.items[0][0]
+
+    def currentData(self):
+        if not self.items:
+            return None
+        return self.items[0][1]
+
+
+class FakeDate:
+    def __init__(self, value, valid=True):
+        self.value = value
+        self.valid = valid
+
+    def isValid(self):
+        return self.valid
+
+    def toString(self, format_string):
+        self.format_string = format_string
+        return self.value
+
+
+class FakeDateEdit:
+    def __init__(self, date):
+        self._date = date
+
+    def date(self):
+        return self._date
+
+
+class FakeLineEdit:
+    def __init__(self, text):
+        self._text = text
+
+    def text(self):
+        return self._text
+
+
+class FakeSpinBox:
+    def __init__(self, value):
+        self._value = value
+
+    def value(self):
+        return self._value
 
 
 class FakeLayout:
@@ -186,6 +234,65 @@ class LocalFirstActivityControlsTests(unittest.TestCase):
             sort_combo.items,
             [(label, None) for label in SORT_OPTIONS],
         )
+
+    def test_build_current_activity_preview_request_reads_local_first_backing_controls(self):
+        activities = [SimpleNamespace(name="Morning Ride")]
+        activity_type_combo = FakeComboBox()
+        activity_type_combo.addItem("Ride", "ride")
+        detailed_route_status_combo = FakeComboBox()
+        detailed_route_status_combo.addItem(
+            "Detailed routes only",
+            DETAILED_ROUTE_FILTER_PRESENT,
+        )
+        preview_sort_combo = FakeComboBox()
+        preview_sort_combo.addItem("Newest first")
+        dock = SimpleNamespace(
+            runtime_state=SimpleNamespace(activities=activities),
+            activityTypeComboBox=activity_type_combo,
+            dateFromEdit=FakeDateEdit(FakeDate("2026-05-01")),
+            dateToEdit=FakeDateEdit(FakeDate("", valid=False)),
+            minDistanceSpinBox=FakeSpinBox(12),
+            maxDistanceSpinBox=FakeSpinBox(120),
+            activitySearchLineEdit=FakeLineEdit("  gravel  "),
+            detailedRouteStatusComboBox=detailed_route_status_combo,
+            previewSortComboBox=preview_sort_combo,
+        )
+
+        request = build_current_activity_preview_request(dock)
+
+        self.assertIs(request.activities, activities)
+        self.assertEqual(request.activity_type, "Ride")
+        self.assertEqual(request.date_from, "2026-05-01")
+        self.assertIsNone(request.date_to)
+        self.assertEqual(request.min_distance_km, 12)
+        self.assertEqual(request.max_distance_km, 120)
+        self.assertEqual(request.search_text, "gravel")
+        self.assertEqual(request.detailed_route_filter, DETAILED_ROUTE_FILTER_PRESENT)
+        self.assertEqual(request.sort_label, "Newest first")
+
+    def test_build_current_activity_preview_request_uses_safe_defaults(self):
+        activity_type_combo = FakeComboBox()
+        detailed_route_status_combo = FakeComboBox()
+        detailed_route_status_combo.addItem("Any routes", DETAILED_ROUTE_FILTER_ANY)
+        preview_sort_combo = FakeComboBox()
+        dock = SimpleNamespace(
+            runtime_state=SimpleNamespace(activities=[]),
+            activityTypeComboBox=activity_type_combo,
+            dateFromEdit=FakeDateEdit(FakeDate("", valid=False)),
+            dateToEdit=FakeDateEdit(FakeDate("", valid=False)),
+            minDistanceSpinBox=FakeSpinBox(0),
+            maxDistanceSpinBox=FakeSpinBox(0),
+            activitySearchLineEdit=FakeLineEdit(""),
+            detailedRouteStatusComboBox=detailed_route_status_combo,
+            previewSortComboBox=preview_sort_combo,
+        )
+
+        request = build_current_activity_preview_request(dock)
+
+        self.assertEqual(request.activity_type, "All")
+        self.assertIsNone(request.date_from)
+        self.assertIsNone(request.date_to)
+        self.assertEqual(request.sort_label, DEFAULT_SORT_LABEL)
 
 
 if __name__ == "__main__":

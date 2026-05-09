@@ -2194,39 +2194,19 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertIs(build_options.call_args.args[0], dock.runtime_state.activities)
         dock._apply_activity_type_options.assert_called_once_with(result)
 
-    def test_current_activity_preview_request_reads_current_ui_filters(self):
+    def test_current_activity_preview_request_delegates_to_local_first_policy(self):
         dock = object.__new__(self.module.QfitDockWidget)
-        dock.activities = ["a1", "a2"]
-        dock.activityTypeComboBox = _FakeComboBox(current_text="Run")
-        dock.dateFromEdit = _FakeDateEdit("2026-04-01")
-        dock.dateToEdit = _FakeDateEdit("2026-04-30")
-        dock.minDistanceSpinBox = _FakeSpinBox(5)
-        dock.maxDistanceSpinBox = _FakeSpinBox(42)
-        dock.activitySearchLineEdit = _FakeLineEdit(" lunch ")
-        dock.detailedRouteStatusComboBox = SimpleNamespace(currentData=lambda: "missing")
-        dock.previewSortComboBox = _FakeComboBox(current_text="Name (A–Z)")
         preview_request = SimpleNamespace()
 
         with patch.object(
             self.module,
-            "build_activity_preview_request",
+            "build_current_activity_preview_request",
             return_value=preview_request,
         ) as build_request:
             request = self.module.QfitDockWidget._current_activity_preview_request(dock)
 
         self.assertIs(request, preview_request)
-        build_request.assert_called_once_with(
-            activities=("a1", "a2"),
-            activity_type="Run",
-            date_from="2026-04-01",
-            date_to="2026-04-30",
-            min_distance_km=5,
-            max_distance_km=42,
-            search_text="lunch",
-            detailed_route_filter="missing",
-            sort_label="Name (A–Z)",
-        )
-        self.assertIs(build_request.call_args.kwargs["activities"], dock.runtime_state.activities)
+        build_request.assert_called_once_with(dock)
 
     def test_refresh_activity_preview_delegates_and_updates_widgets(self):
         dock = object.__new__(self.module.QfitDockWidget)

@@ -36,6 +36,7 @@ from .local_first_navigation import (
     local_first_dock_page_keys,
 )
 from .local_first_activity_controls import (
+    build_current_activity_preview_request,
     configure_detailed_route_filter_options,
     configure_detailed_route_strategy_options,
     configure_local_first_activity_preview_options,
@@ -235,6 +236,7 @@ __all__ = [
     "configure_local_first_basemap_options",
     "configure_preview_sort_options",
     "build_current_dock_workflow_label",
+    "build_current_activity_preview_request",
     "build_detailed_fetch_visibility_update",
     "build_dock_summary_status",
     "build_initial_wizard_step_statuses",
