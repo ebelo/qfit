@@ -69,6 +69,14 @@ LOCAL_FIRST_CONTROL_MOVES: tuple[LocalFirstControlMove, ...] = (
         title="PDF output",
     ),
     LocalFirstControlMove(
+        key="strava_credentials",
+        content_attr="connection_content",
+        group_attr="credentialsGroupBox",
+        installed_attr="_local_first_strava_credentials_controls_installed",
+        installed_target_attr="_local_first_strava_credentials_controls_installed_target",
+        title="Strava connection",
+    ),
+    LocalFirstControlMove(
         key="basemap",
         content_attr="connection_content",
         group_attr="backgroundGroupBox",

@@ -270,7 +270,17 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertEqual(dock.maxDetailedActivitiesLabel.text(), "Max new detailed routes this run")
             self.assertEqual(dock.pointSamplingStrideLabel.text(), "Keep every Nth point")
             self.assertEqual(dock.workflowLabel.text(), "Sections: Fetch & store · Visualize · Analyze · Publish")
-            self.assertFalse(dock.credentialsGroupBox.isVisible())
+            self.assertEqual(dock.credentialsGroupBox.title(), "Strava connection")
+            self.assertEqual(
+                dock.credentialsGroupBox.parentWidget(),
+                dock._local_first_dock_composition.connection_content,
+            )
+            self.assertGreaterEqual(
+                dock._local_first_dock_composition.connection_content.outer_layout().indexOf(
+                    dock.credentialsGroupBox,
+                ),
+                0,
+            )
             self.assertTrue(bool(dock.features() & dock.DockWidgetMovable))
             self.assertTrue(bool(dock.features() & dock.DockWidgetFloatable))
             self.assertEqual(dock.activitiesGroupBox.title(), "")

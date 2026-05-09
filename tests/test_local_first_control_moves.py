@@ -19,6 +19,7 @@ class LocalFirstControlMoveTests(unittest.TestCase):
                 "backfill_routes",
                 "map_filters",
                 "atlas_pdf",
+                "strava_credentials",
                 "basemap",
                 "storage",
             ),
@@ -31,6 +32,7 @@ class LocalFirstControlMoveTests(unittest.TestCase):
                 "backfillMissingDetailedRoutesButton",
                 "filterGroupBox",
                 "atlasPdfGroupBox",
+                "credentialsGroupBox",
                 "backgroundGroupBox",
                 "outputGroupBox",
             ],
@@ -49,6 +51,7 @@ class LocalFirstControlMoveTests(unittest.TestCase):
                 "backfill_routes": "sync_content",
                 "map_filters": "map_content",
                 "atlas_pdf": "atlas_content",
+                "strava_credentials": "connection_content",
                 "basemap": "connection_content",
                 "storage": "connection_content",
             },
@@ -69,6 +72,11 @@ class LocalFirstControlMoveTests(unittest.TestCase):
         self.assertEqual(filters.layout_getter_attr, "filter_controls_layout")
         self.assertEqual(filters.parent_panel_attr, "filter_controls_panel")
         self.assertEqual(filters.post_install_visible_attr, "set_filter_controls_visible")
+
+        credentials = local_first_control_move_for_key("strava_credentials")
+        self.assertEqual(credentials.content_attr, "connection_content")
+        self.assertEqual(credentials.group_attr, "credentialsGroupBox")
+        self.assertEqual(credentials.title, "Strava connection")
 
     def test_lookup_rejects_unknown_control_area(self):
         with self.assertRaises(KeyError):
