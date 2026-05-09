@@ -23,7 +23,13 @@ class WorkflowSectionCoordinator:
         dock = self.dock_widget
         dock.workflowLabel.setText(build_current_dock_workflow_label())
         dock.credentialsGroupBox.hide()
-        dock.activitiesGroupBox.setTitle("")
+        for group_box in (
+            dock.activitiesGroupBox,
+            dock.styleGroupBox,
+            dock.analysisWorkflowGroupBox,
+            dock.publishGroupBox,
+        ):
+            group_box.setTitle("")
         dock.activitiesIntroLabel.setText(
             "Fetch your activities from Strava using the credentials saved in qfit → Configuration. "
             "Store or clear the local GeoPackage here too. Filters are applied later in the Visualize step — no re-fetch needed."
