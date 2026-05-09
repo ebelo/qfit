@@ -23,11 +23,13 @@ from .page_content_style import (
     configure_top_aligned_panel_layout,
 )
 from .sync_page import SyncPageContent, build_sync_page_content
-from .wizard_composition import (
-    WizardActionCallbacks,
-    _connect_optional_signal,
-    build_wizard_page_states_from_facts,
+from .workflow_page_state import (
+    DockWorkflowActionCallbacks,
+    build_workflow_page_states_from_facts,
+    connect_optional_signal,
 )
+
+WizardActionCallbacks = DockWorkflowActionCallbacks
 
 _qtwidgets = import_qt_module(
     "qgis.PyQt.QtWidgets",
@@ -128,63 +130,63 @@ def connect_local_first_action_callbacks(
 
     if composition.action_callbacks is not None:
         return composition
-    _connect_optional_signal(
+    connect_optional_signal(
         composition.settings_content,
         "configureRequested",
         callbacks.configure_connection,
     )
-    _connect_optional_signal(composition.sync_content, "syncRequested", callbacks.sync_activities)
-    _connect_optional_signal(
+    connect_optional_signal(composition.sync_content, "syncRequested", callbacks.sync_activities)
+    connect_optional_signal(
         composition.sync_content,
         "storeRequested",
         callbacks.store_activities,
     )
-    _connect_optional_signal(
+    connect_optional_signal(
         composition.sync_content,
         "syncRoutesRequested",
         callbacks.sync_saved_routes,
     )
-    _connect_optional_signal(
+    connect_optional_signal(
         composition.sync_content,
         "loadActivitiesRequested",
         callbacks.load_activity_layers,
     )
-    _connect_optional_signal(
+    connect_optional_signal(
         composition.sync_content,
         "clearDatabaseRequested",
         callbacks.clear_database,
     )
-    _connect_optional_signal(
+    connect_optional_signal(
         composition.map_content,
         "loadLayersRequested",
         callbacks.load_activity_layers,
     )
-    _connect_optional_signal(
+    connect_optional_signal(
         composition.map_content,
         "applyFiltersRequested",
         callbacks.apply_map_filters,
     )
-    _connect_optional_signal(
+    connect_optional_signal(
         composition.analysis_content,
         "runAnalysisRequested",
         callbacks.run_analysis,
     )
-    _connect_optional_signal(
+    connect_optional_signal(
         composition.analysis_content,
         "clearAnalysisRequested",
         callbacks.clear_analysis,
     )
-    _connect_optional_signal(
+    connect_optional_signal(
         composition.analysis_content,
         "analysisModeChanged",
         callbacks.set_analysis_mode,
     )
-    _connect_optional_signal(
+    connect_optional_signal(
         composition.atlas_content,
         "exportAtlasRequested",
         callbacks.export_atlas,
     )
-    _connect_optional_signal(
+    connect_optional_signal(
         composition.atlas_content,
         "atlasDocumentSettingsChanged",
         callbacks.update_atlas_document_settings,
@@ -201,7 +203,7 @@ def refresh_local_first_dock_composition(
     """Refresh navigation and page status from render-neutral workflow facts."""
 
     facts = progress_facts or WizardProgressFacts()
-    page_states = build_wizard_page_states_from_facts(_content_facts(facts))
+    page_states = build_workflow_page_states_from_facts(_content_facts(facts))
     current_key = facts.preferred_current_key or composition.shell.current_key()
     composition.shell.set_navigation_state(
         build_local_first_dock_navigation_state(
@@ -242,7 +244,7 @@ def _install_local_first_page_content(
     atlas_title: str,
     atlas_subtitle: str,
 ) -> LocalFirstDockPageContent:
-    page_states = build_wizard_page_states_from_facts(_content_facts(facts))
+    page_states = build_workflow_page_states_from_facts(_content_facts(facts))
     data_content = build_sync_page_content(
         parent=pages["data"],
         state=page_states.sync_state,

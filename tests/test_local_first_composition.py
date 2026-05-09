@@ -14,6 +14,7 @@ def _load_local_first_composition_module():
         "qfit.ui.dockwidget.local_first_composition",
         "qfit.ui.dockwidget.local_first_shell",
         "qfit.ui.dockwidget.wizard_composition",
+        "qfit.ui.dockwidget.workflow_page_state",
         "qfit.ui.dockwidget.analysis_page",
         "qfit.ui.dockwidget.atlas_page",
         "qfit.ui.dockwidget.connection_page",
@@ -230,6 +231,9 @@ class LocalFirstDockCompositionTests(unittest.TestCase):
 
     def test_public_exports_include_action_callbacks(self):
         self.assertIn("WizardActionCallbacks", self.module.__all__)
+
+    def test_local_first_composition_does_not_import_wizard_composition(self):
+        self.assertNotIn("qfit.ui.dockwidget.wizard_composition", sys.modules)
 
 
 if __name__ == "__main__":
