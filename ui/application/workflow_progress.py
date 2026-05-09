@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import replace
+from typing import cast
 
 from .dock_workflow_sections import DockWizardProgress, WIZARD_WORKFLOW_STEPS
 from .workflow_progress_facts import WorkflowProgressFacts
@@ -46,11 +47,15 @@ def build_workflow_progress_from_facts_and_settings(
 
     if facts.preferred_current_key is not None:
         return build_workflow_progress_from_facts(facts)
-    facts_with_preference: WorkflowProgressFacts = replace(
-        facts,
-        preferred_current_key=preferred_current_key_from_settings(settings),
+    return build_workflow_progress_from_facts(
+        cast(
+            WorkflowProgressFacts,
+            replace(
+                facts,
+                preferred_current_key=preferred_current_key_from_settings(settings),
+            ),
+        )
     )
-    return build_workflow_progress_from_facts(facts_with_preference)
 
 
 def _completed_keys_from_facts(facts: WorkflowProgressFacts) -> tuple[str, ...]:

@@ -27,6 +27,7 @@ from qfit.ui.application.workflow_progress import (
     build_workflow_progress_from_facts_and_settings,
 )
 from qfit.ui.application.workflow_progress_facts import WorkflowProgressFacts
+from qfit.ui.application.wizard_progress import WizardProgressFacts
 from qfit.ui.application.wizard_settings import WizardSettingsSnapshot
 
 from .analysis_page import (
@@ -61,8 +62,6 @@ from .workflow_page_state import (
 
 _StateT = TypeVar("_StateT")
 WizardCompositionPage = WizardPage | WizardStepPage
-WizardProgressFacts = WorkflowProgressFacts
-"""Compatibility alias for wizard composition callers during the #805 migration."""
 
 
 @dataclass
