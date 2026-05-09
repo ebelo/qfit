@@ -232,14 +232,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._update_connection_status()
         self._set_status("Configuration saved; qfit dock connection state refreshed.")
 
-    def _run_wizard_sync_step(self) -> None:
-        """Run the next concrete action for the wizard synchronization step."""
-
-        if self.runtime_state.activities:
-            self.on_load_clicked()
-            return
-        self.on_refresh_clicked()
-
     def _run_wizard_map_step(self) -> None:
         """Run the next concrete action for the wizard map-and-filters step."""
 

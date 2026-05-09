@@ -646,46 +646,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "Configuration saved; qfit dock connection state refreshed."
         )
 
-    def test_run_wizard_sync_step_fetches_when_no_activities_are_ready(self):
-        dock = object.__new__(self.module.QfitDockWidget)
-        dock._runtime_state_store = self.module.DockRuntimeStore()
-        dock.on_refresh_clicked = MagicMock()
-        dock.on_load_clicked = MagicMock()
-
-        self.module.QfitDockWidget._run_wizard_sync_step(dock)
-
-        dock.on_refresh_clicked.assert_called_once_with()
-        dock.on_load_clicked.assert_not_called()
-
-    def test_run_wizard_sync_step_stores_fetched_activities(self):
-        dock = object.__new__(self.module.QfitDockWidget)
-        dock._runtime_state_store = self.module.DockRuntimeStore()
-        dock._runtime_store().set_activities([object()])
-        dock.on_refresh_clicked = MagicMock()
-        dock.on_load_clicked = MagicMock()
-
-        self.module.QfitDockWidget._run_wizard_sync_step(dock)
-
-        dock.on_load_clicked.assert_called_once_with()
-        dock.on_refresh_clicked.assert_not_called()
-
-    def test_run_wizard_sync_step_fetches_after_fetched_activities_are_stored(self):
-        dock = object.__new__(self.module.QfitDockWidget)
-        dock._runtime_state_store = self.module.DockRuntimeStore()
-        dock._runtime_store().set_activities([object()])
-        dock._runtime_store().finish_store(
-            output_path="/tmp/qfit.gpkg",
-            stored_activity_count=1,
-        )
-        self.assertEqual(dock.runtime_state.activities, ())
-        dock.on_refresh_clicked = MagicMock()
-        dock.on_load_clicked = MagicMock()
-
-        self.module.QfitDockWidget._run_wizard_sync_step(dock)
-
-        dock.on_refresh_clicked.assert_called_once_with()
-        dock.on_load_clicked.assert_not_called()
-
     def test_run_wizard_map_step_loads_layers_before_filters_are_available(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._runtime_state_store = self.module.DockRuntimeStore()
