@@ -22,6 +22,9 @@ from qfit.ui.application.local_first_control_visibility import (
     update_local_first_mapbox_custom_style_visibility,
     update_local_first_point_sampling_visibility,
 )
+from qfit.ui.application.local_first_connection_controls import (
+    CONFIGURATION_OPENED_STATUS,
+)
 from qfit.ui.application.local_first_progress_facts import (
     build_current_local_first_progress_facts,
     current_local_first_activity_style_preset,
@@ -836,9 +839,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         callbacks.configure_connection()
         dock._open_configuration.assert_called_once_with()
         dock._show_info.assert_not_called()
-        dock._set_status.assert_called_once_with(
-            "qfit configuration opened; save credentials to continue."
-        )
+        dock._set_status.assert_called_once_with(CONFIGURATION_OPENED_STATUS)
         with patch.object(
             self.module,
             "set_local_first_analysis_mode",
