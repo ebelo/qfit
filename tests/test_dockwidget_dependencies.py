@@ -513,9 +513,10 @@ class LocalFirstBackingControlsTests(unittest.TestCase):
         self.assertEqual(dock.pointSamplingStrideSpinBox.suffix, " points")
 
     def test_workflow_section_coordinator_compatibility_module_is_retired(self):
-        self.assertIsNone(
-            importlib.util.find_spec("qfit.ui.workflow_section_coordinator")
-        )
+        module_name = "qfit.ui.workflow_section_coordinator"
+
+        self.assertNotIn(module_name, sys.modules)
+        self.assertIsNone(importlib.util.find_spec(module_name))
 
 
 class DockStartupCoordinatorTests(unittest.TestCase):
