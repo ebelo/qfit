@@ -22,11 +22,11 @@ from qfit.ui.application.wizard_page_specs import (
     DockWizardPageSpec,
     build_default_wizard_page_specs,
 )
+from qfit.ui.application.workflow_progress import build_workflow_progress_from_facts
 from qfit.ui.application.workflow_progress_facts import WorkflowProgressFacts
 from qfit.ui.application.wizard_progress import (
     WizardProgressFacts,
     build_wizard_progress_from_facts_and_settings,
-    build_wizard_progress_from_facts,
 )
 from qfit.ui.application.wizard_settings import WizardSettingsSnapshot
 
@@ -432,7 +432,7 @@ def _resolve_progress(
     facts = progress_facts or WorkflowProgressFacts()
     if wizard_settings is not None:
         return build_wizard_progress_from_facts_and_settings(facts, wizard_settings)
-    return build_wizard_progress_from_facts(facts)
+    return build_workflow_progress_from_facts(facts)
 
 
 def _page_state_defaults_from_progress_facts(
