@@ -319,6 +319,21 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         stripped = preset_name.strip()
         return stripped or None
 
+    def _current_visual_temporal_mode(self) -> str:
+        """Return the visible temporal playback setting for visual workflow actions."""
+
+        combo = getattr(self, "temporalModeComboBox", None)
+        if combo is None or not hasattr(combo, "currentText"):
+            return DEFAULT_TEMPORAL_MODE_LABEL
+        try:
+            mode_label = combo.currentText()
+        except RuntimeError:
+            logger.debug("Failed to read temporal playback mode", exc_info=True)
+            return DEFAULT_TEMPORAL_MODE_LABEL
+        if not isinstance(mode_label, str):
+            return DEFAULT_TEMPORAL_MODE_LABEL
+        return mode_label.strip() or DEFAULT_TEMPORAL_MODE_LABEL
+
     def _current_wizard_background_facts(self, runtime_state) -> tuple[bool, bool, str | None]:
         """Return current basemap facts for the optional wizard map page."""
 
@@ -623,24 +638,44 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         target_layout = style_controls_layout()
         parent_panel = getattr(map_content, "style_controls_panel", map_content)
         controls = [style_label, style_combo]
+        show_after_move = []
         preview_sort_label = getattr(self, "previewSortLabel", None)
         preview_sort_combo = getattr(self, "previewSortComboBox", None)
         if preview_sort_label is not None and preview_sort_combo is not None:
             controls.extend((preview_sort_label, preview_sort_combo))
+        temporal_row = getattr(self, "analysisTemporalModeRow", None)
+        if temporal_row is not None:
+            controls.append(temporal_row)
+            temporal_help = getattr(self, "temporalHelpLabel", None)
+            if temporal_help is not None:
+                controls.append(temporal_help)
+            show_after_move.extend(
+                widget
+                for widget in (
+                    getattr(self, "temporalModeLabel", None),
+                    getattr(self, "temporalModeComboBox", None),
+                )
+                if widget is not None
+            )
         for widget in controls:
             self._remove_widget_from_current_layout(widget)
             if hasattr(widget, "setParent"):
                 widget.setParent(parent_panel)
             target_layout.addWidget(widget)
-            if hasattr(widget, "show"):
-                widget.show()
-            elif hasattr(widget, "setVisible"):
-                widget.setVisible(True)
+            self._show_widget(widget)
+        for widget in show_after_move:
+            self._show_widget(widget)
         set_visible = getattr(map_content, "set_style_controls_visible", None)
         if callable(set_visible):
             set_visible()
         self._wizard_style_controls_installed = True
         self._wizard_style_controls_installed_target = current_target
+
+    def _show_widget(self, widget) -> None:
+        if hasattr(widget, "show"):
+            widget.show()
+        elif hasattr(widget, "setVisible"):
+            widget.setVisible(True)
 
     def _remove_widget_from_current_layout(self, widget) -> None:
         parent_widget = (
@@ -1894,7 +1929,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             ),
             settings=build_visual_workflow_settings_snapshot(
                 style_preset=self.stylePresetComboBox.currentText(),
-                temporal_mode=DEFAULT_TEMPORAL_MODE_LABEL,
+                temporal_mode=self._current_visual_temporal_mode(),
                 analysis_mode=self.analysisModeComboBox.currentText(),
             ),
             background=build_visual_workflow_background_inputs(

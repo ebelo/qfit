@@ -1138,14 +1138,24 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         style_combo = MagicMock()
         preview_sort_label = MagicMock()
         preview_sort_combo = MagicMock()
+        temporal_row = MagicMock()
+        temporal_label = MagicMock()
+        temporal_combo = MagicMock()
+        temporal_help = MagicMock()
         style_label.parentWidget.return_value = parent_widget
         style_combo.parentWidget.return_value = parent_widget
         preview_sort_label.parentWidget.return_value = parent_widget
         preview_sort_combo.parentWidget.return_value = parent_widget
+        temporal_row.parentWidget.return_value = parent_widget
+        temporal_help.parentWidget.return_value = parent_widget
         dock.stylePresetLabel = style_label
         dock.stylePresetComboBox = style_combo
         dock.previewSortLabel = preview_sort_label
         dock.previewSortComboBox = preview_sort_combo
+        dock.analysisTemporalModeRow = temporal_row
+        dock.temporalModeLabel = temporal_label
+        dock.temporalModeComboBox = temporal_combo
+        dock.temporalHelpLabel = temporal_help
         panel = object()
         style_layout = MagicMock()
         map_content = SimpleNamespace(
@@ -1166,12 +1176,16 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
                 call(style_combo),
                 call(preview_sort_label),
                 call(preview_sort_combo),
+                call(temporal_row),
+                call(temporal_help),
             ],
         )
         style_label.setParent.assert_called_once_with(panel)
         style_combo.setParent.assert_called_once_with(panel)
         preview_sort_label.setParent.assert_called_once_with(panel)
         preview_sort_combo.setParent.assert_called_once_with(panel)
+        temporal_row.setParent.assert_called_once_with(panel)
+        temporal_help.setParent.assert_called_once_with(panel)
         self.assertEqual(
             style_layout.addWidget.call_args_list,
             [
@@ -1179,12 +1193,18 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
                 call(style_combo),
                 call(preview_sort_label),
                 call(preview_sort_combo),
+                call(temporal_row),
+                call(temporal_help),
             ],
         )
         style_label.show.assert_called_once_with()
         style_combo.show.assert_called_once_with()
         preview_sort_label.show.assert_called_once_with()
         preview_sort_combo.show.assert_called_once_with()
+        temporal_row.show.assert_called_once_with()
+        temporal_label.show.assert_called_once_with()
+        temporal_combo.show.assert_called_once_with()
+        temporal_help.show.assert_called_once_with()
         map_content.set_style_controls_visible.assert_called_once_with()
         self.assertTrue(dock._wizard_style_controls_installed)
         self.assertEqual(dock._wizard_style_controls_installed_target, id(map_content))
@@ -1964,7 +1984,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         build_selection_handoff.assert_called_once_with(selection_state)
         build_settings.assert_called_once_with(
             style_preset="By activity type",
-            temporal_mode=self.module.DEFAULT_TEMPORAL_MODE_LABEL,
+            temporal_mode="By month",
             analysis_mode="Most frequent starting points",
         )
         build_background.assert_called_once_with(

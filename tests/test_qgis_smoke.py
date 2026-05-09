@@ -334,14 +334,23 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertEqual(dock.analysisModeLabel.text(), "Analysis")
             self.assertEqual(dock.runAnalysisButton.text(), "Run analysis")
             self.assertEqual(dock.analysisModeLabel.parentWidget().parentWidget(), dock.analysisSectionContentWidget)
-            self.assertEqual(dock.temporalModeLabel.parentWidget().parentWidget(), dock.styleSectionContentWidget)
+            self.assertEqual(
+                dock.temporalModeLabel.parentWidget().parentWidget(),
+                dock._local_first_dock_composition.map_content.style_controls_panel,
+            )
+            self.assertGreaterEqual(
+                dock._local_first_dock_composition.map_content.style_controls_layout().indexOf(
+                    dock.analysisTemporalModeRow,
+                ),
+                0,
+            )
             temporal_mode_layout = dock.temporalModeLabel.parentWidget().layout()
             self.assertEqual(temporal_mode_layout.spacing(), 6)
             self.assertGreaterEqual(dock.temporalModeComboBox.minimumContentsLength(), 10)
             self.assertGreaterEqual(dock.temporalHelpLabel.margin(), 2)
-            self.assertTrue(dock.temporalModeLabel.isHidden())
-            self.assertTrue(dock.temporalModeComboBox.isHidden())
-            self.assertTrue(dock.temporalHelpLabel.isHidden())
+            self.assertFalse(dock.temporalModeLabel.isHidden())
+            self.assertFalse(dock.temporalModeComboBox.isHidden())
+            self.assertFalse(dock.temporalHelpLabel.isHidden())
             self.assertEqual(dock.publishGroupBox.title(), "")
             self.assertEqual(dock.publishSectionToggleButton.text(), "Publish / atlas")
             self.assertFalse(dock.publishSectionContentWidget.isHidden())
