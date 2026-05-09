@@ -232,14 +232,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._update_connection_status()
         self._set_status("Configuration saved; qfit dock connection state refreshed.")
 
-    def _run_wizard_sync_step(self) -> None:
-        """Run the next concrete action for the wizard synchronization step."""
-
-        if self.runtime_state.activities:
-            self.on_load_clicked()
-            return
-        self.on_refresh_clicked()
-
     def _run_wizard_map_step(self) -> None:
         """Run the next concrete action for the wizard map-and-filters step."""
 
@@ -487,7 +479,8 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             composition,
             WizardActionCallbacks(
                 configure_connection=self._show_connection_configuration_hint,
-                sync_activities=self._run_wizard_sync_step,
+                sync_activities=self.on_refresh_clicked,
+                store_activities=self.on_load_clicked,
                 sync_saved_routes=self.on_sync_routes_clicked,
                 clear_database=self.on_clear_database_clicked,
                 load_activity_layers=self.on_load_layers_clicked,
@@ -530,7 +523,8 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             composition,
             WizardActionCallbacks(
                 configure_connection=self._show_connection_configuration_hint,
-                sync_activities=self._run_wizard_sync_step,
+                sync_activities=self.on_refresh_clicked,
+                store_activities=self.on_load_clicked,
                 sync_saved_routes=self.on_sync_routes_clicked,
                 clear_database=self.on_clear_database_clicked,
                 load_activity_layers=self.on_load_layers_clicked,
