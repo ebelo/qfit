@@ -548,6 +548,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         )
         self._install_local_first_backfill_controls(self._local_first_dock_composition)
         self._install_local_first_atlas_pdf_controls(self._local_first_dock_composition)
+        self._install_local_first_strava_credentials_controls(
+            self._local_first_dock_composition
+        )
         self._install_local_first_basemap_controls(self._local_first_dock_composition)
         self._install_local_first_storage_controls(self._local_first_dock_composition)
         self._bind_wizard_analysis_mode_controls(self._local_first_dock_composition)
@@ -789,6 +792,11 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             and hasattr(legacy_export_button, "hide")
         ):
             legacy_export_button.hide()
+
+    def _install_local_first_strava_credentials_controls(self, composition) -> None:
+        """Expose the backing Strava OAuth controls in the Settings tab."""
+
+        self._install_local_first_control_move(composition, "strava_credentials")
 
     def _install_local_first_basemap_controls(self, composition) -> None:
         """Expose the backing Mapbox basemap controls in the Settings tab."""
