@@ -76,7 +76,6 @@ from .ui.application import (
     RunAnalysisAction,
     build_dock_summary_status,
     build_visual_layer_refs,
-    build_wizard_filter_description,
     set_local_first_analysis_mode,
     update_local_first_atlas_document_settings,
     build_wizard_progress_facts_from_runtime_state,
@@ -90,6 +89,7 @@ from .ui.application import (
 from .ui.application.local_first_progress_facts import (
     current_local_first_activity_style_preset,
     current_local_first_background_facts,
+    current_local_first_filter_facts,
     current_local_first_visual_temporal_mode,
 )
 from .ui.contextual_help import ContextualHelpBinder, build_dock_help_entries
@@ -207,7 +207,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             filters_active,
             filtered_activity_count,
             filter_description,
-        ) = self._current_wizard_filter_facts()
+        ) = current_local_first_filter_facts(self, runtime_state)
         return build_wizard_progress_facts_from_runtime_state(
             runtime_state,
             connection_configured=self._has_configured_strava_connection(),
@@ -249,54 +249,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
         self._runtime_store().select_output_path((value or "").strip() or None)
         self._refresh_live_dock_navigation_from_runtime()
-
-    def _current_wizard_filter_facts(self) -> tuple[bool, int | None, str | None]:
-        """Return the current map-filter facts the optional wizard can summarize."""
-
-        layer_filter_facts = self._current_wizard_layer_filter_facts()
-        if layer_filter_facts is not None:
-            filters_active, filtered_activity_count = layer_filter_facts
-            filter_description = "layer subset" if filters_active else None
-            return filters_active, filtered_activity_count, filter_description
-
-        activities = tuple(self.runtime_state.activities)
-        if not activities:
-            return False, None, None
-        preview_request = self._current_activity_preview_request()
-        selection_state = build_activity_preview_selection_state(preview_request)
-        filters_active = selection_state.filtered_count != len(activities)
-        if not filters_active:
-            return False, None, None
-        return (
-            True,
-            selection_state.filtered_count,
-            build_wizard_filter_description(preview_request),
-        )
-
-    def _current_wizard_layer_filter_facts(self) -> tuple[bool, int | None] | None:
-        layer = self.runtime_state.activities_layer
-        if layer is None or not hasattr(layer, "subsetString"):
-            return None
-        try:
-            subset = (layer.subsetString() or "").strip()
-        except RuntimeError:
-            logger.debug("Failed to read activity layer subset", exc_info=True)
-            return None
-        if not subset:
-            return False, None
-        return True, self._current_wizard_layer_feature_count(layer)
-
-    def _current_wizard_layer_feature_count(self, layer) -> int | None:
-        if not hasattr(layer, "featureCount"):
-            return None
-        try:
-            count = layer.featureCount()
-        except RuntimeError:
-            logger.debug("Failed to read activity layer feature count", exc_info=True)
-            return None
-        if not isinstance(count, int):
-            return None
-        return max(count, 0)
 
     def _current_wizard_atlas_output_path(self, *, runtime_state, atlas_exported: bool):
         """Return the atlas output path the optional wizard should describe."""

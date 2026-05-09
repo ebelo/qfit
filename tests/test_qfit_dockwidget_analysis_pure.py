@@ -25,6 +25,7 @@ from qfit.ui.application.local_first_control_visibility import (
 from qfit.ui.application.local_first_progress_facts import (
     current_local_first_activity_style_preset,
     current_local_first_background_facts,
+    current_local_first_filter_facts,
 )
 from qfit.activities.domain.activity_query import DETAILED_ROUTE_FILTER_MISSING
 from qfit.sync_repository import ActivitySyncState
@@ -520,8 +521,9 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             activities_layer=_FakeSubsetLayer('"activity_type" = \'Run\'', 2),
         )
 
-        filters_active, filtered_count, filter_description = (
-            self.module.QfitDockWidget._current_wizard_filter_facts(dock)
+        filters_active, filtered_count, filter_description = current_local_first_filter_facts(
+            dock,
+            dock.runtime_state,
         )
 
         self.assertTrue(filters_active)
@@ -537,8 +539,9 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             activities_layer=_FakeSubsetLayer("", 3),
         )
 
-        filters_active, filtered_count, filter_description = (
-            self.module.QfitDockWidget._current_wizard_filter_facts(dock)
+        filters_active, filtered_count, filter_description = current_local_first_filter_facts(
+            dock,
+            dock.runtime_state,
         )
 
         self.assertFalse(filters_active)
@@ -560,13 +563,14 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         )
         dock._current_activity_preview_request = MagicMock(return_value=preview_request)
 
-        with patch.object(
-            self.module,
+        with patch(
+            "qfit.ui.application.local_first_progress_facts."
             "build_activity_preview_selection_state",
             return_value=SimpleNamespace(filtered_count=1),
         ):
-            filters_active, filtered_count, filter_description = (
-                self.module.QfitDockWidget._current_wizard_filter_facts(dock)
+            filters_active, filtered_count, filter_description = current_local_first_filter_facts(
+                dock,
+                dock.runtime_state,
             )
 
         self.assertTrue(filters_active)
@@ -576,6 +580,94 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "type: Run · search: “alps” · dates: from 2026-04-01 · "
             "distance: ≥ 10 km · routes: missing details",
         )
+
+    def test_current_wizard_filter_facts_reports_unfiltered_preview_request(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._runtime_state_store = self.module.DockRuntimeStore()
+        dock._runtime_store().set_activities([object(), object(), object()])
+        preview_request = SimpleNamespace(activity_type=None)
+        dock._current_activity_preview_request = MagicMock(return_value=preview_request)
+
+        with patch(
+            "qfit.ui.application.local_first_progress_facts."
+            "build_activity_preview_selection_state",
+            return_value=SimpleNamespace(filtered_count=3),
+        ):
+            filters_active, filtered_count, filter_description = current_local_first_filter_facts(
+                dock,
+                dock.runtime_state,
+            )
+
+        self.assertFalse(filters_active)
+        self.assertIsNone(filtered_count)
+        self.assertIsNone(filter_description)
+
+    def test_current_wizard_filter_facts_ignores_unreadable_layer_subset(self):
+        class UnreadableSubsetLayer:
+            def subsetString(self):
+                raise RuntimeError("layer deleted")
+
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._runtime_state_store = self.module.DockRuntimeStore()
+        dock._runtime_store().load_dataset(
+            output_path="/tmp/qfit.gpkg",
+            activities_layer=UnreadableSubsetLayer(),
+        )
+
+        filters_active, filtered_count, filter_description = current_local_first_filter_facts(
+            dock,
+            dock.runtime_state,
+        )
+
+        self.assertFalse(filters_active)
+        self.assertIsNone(filtered_count)
+        self.assertIsNone(filter_description)
+
+    def test_current_wizard_filter_facts_allows_unknown_layer_feature_count(self):
+        class NoFeatureCountLayer:
+            def subsetString(self):
+                return '"activity_type" = \'Ride\''
+
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._runtime_state_store = self.module.DockRuntimeStore()
+        dock._runtime_store().load_dataset(
+            output_path="/tmp/qfit.gpkg",
+            activities_layer=NoFeatureCountLayer(),
+        )
+
+        filters_active, filtered_count, filter_description = current_local_first_filter_facts(
+            dock,
+            dock.runtime_state,
+        )
+
+        self.assertTrue(filters_active)
+        self.assertIsNone(filtered_count)
+        self.assertEqual(filter_description, "layer subset")
+
+    def test_current_wizard_filter_facts_ignores_invalid_layer_feature_count(self):
+        for feature_count in ("two", RuntimeError("layer deleted")):
+            with self.subTest(feature_count=feature_count):
+                layer = _FakeSubsetLayer('"activity_type" = \'Run\'', feature_count)
+                if isinstance(feature_count, RuntimeError):
+                    layer.featureCount = MagicMock(side_effect=feature_count)
+
+                dock = object.__new__(self.module.QfitDockWidget)
+                dock._runtime_state_store = self.module.DockRuntimeStore()
+                dock._runtime_store().load_dataset(
+                    output_path="/tmp/qfit.gpkg",
+                    activities_layer=layer,
+                )
+
+                filters_active, filtered_count, filter_description = (
+                    current_local_first_filter_facts(
+                        dock,
+                        dock.runtime_state,
+                    )
+                )
+
+                self.assertTrue(filters_active)
+                self.assertIsNone(filtered_count)
+                self.assertEqual(filter_description, "layer subset")
 
     def test_show_connection_configuration_hint_opens_config_when_available(self):
         dock = object.__new__(self.module.QfitDockWidget)
@@ -860,6 +952,9 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "_configure_detailed_route_filter_options",
             "_configure_detailed_route_strategy_options",
             "_configure_preview_sort_options",
+            "_current_wizard_filter_facts",
+            "_current_wizard_layer_feature_count",
+            "_current_wizard_layer_filter_facts",
         )
 
         for method_name in retired_methods:
