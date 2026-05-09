@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Iterable
 
-from .wizard_progress import WizardProgressFacts
+from .workflow_progress_facts import WorkflowProgressFacts
 
 
 @dataclass(frozen=True)
@@ -69,7 +69,7 @@ _DEFAULT_CURRENT_PAGE_KEY = "data"
 
 
 def build_local_first_dock_navigation_state(
-    facts: WizardProgressFacts | None = None,
+    facts: WorkflowProgressFacts | None = None,
     *,
     preferred_current_key: str | None = None,
 ) -> LocalFirstDockNavigationState:
@@ -81,7 +81,7 @@ def build_local_first_dock_navigation_state(
     export are not a strictly linear workflow.
     """
 
-    resolved_facts = facts or WizardProgressFacts()
+    resolved_facts = facts or WorkflowProgressFacts()
     current_key = _resolve_current_key(
         preferred_current_key or resolved_facts.preferred_current_key
     )
@@ -115,7 +115,7 @@ def _resolve_current_key(preferred_current_key: str | None) -> str:
     return _DEFAULT_CURRENT_PAGE_KEY
 
 
-def _page_ready(key: str, facts: WizardProgressFacts) -> bool:
+def _page_ready(key: str, facts: WorkflowProgressFacts) -> bool:
     if key == "data":
         return facts.activities_stored or facts.activities_fetched
     if key == "map":
@@ -129,7 +129,7 @@ def _page_ready(key: str, facts: WizardProgressFacts) -> bool:
     return False
 
 
-def _status_text(key: str, facts: WizardProgressFacts) -> str:
+def _status_text(key: str, facts: WorkflowProgressFacts) -> str:
     status_builders = {
         "data": _data_status_text,
         "map": _map_status_text,
@@ -140,7 +140,7 @@ def _status_text(key: str, facts: WizardProgressFacts) -> str:
     return status_builders.get(key, _available_status_text)(facts)
 
 
-def _data_status_text(facts: WizardProgressFacts) -> str:
+def _data_status_text(facts: WorkflowProgressFacts) -> str:
     if facts.sync_in_progress:
         return "Sync in progress"
     if facts.activities_stored:
@@ -150,23 +150,23 @@ def _data_status_text(facts: WizardProgressFacts) -> str:
     return "Choose a local GeoPackage or sync from Strava"
 
 
-def _map_status_text(facts: WizardProgressFacts) -> str:
+def _map_status_text(facts: WorkflowProgressFacts) -> str:
     return "Map layers loaded" if facts.activity_layers_loaded else "Map controls available"
 
 
-def _analysis_status_text(facts: WizardProgressFacts) -> str:
+def _analysis_status_text(facts: WorkflowProgressFacts) -> str:
     return "Analysis generated" if facts.analysis_generated else "Analysis is optional"
 
 
-def _atlas_status_text(facts: WizardProgressFacts) -> str:
+def _atlas_status_text(facts: WorkflowProgressFacts) -> str:
     return "Atlas exported" if facts.atlas_exported else "Atlas export available"
 
 
-def _settings_status_text(facts: WizardProgressFacts) -> str:
+def _settings_status_text(facts: WorkflowProgressFacts) -> str:
     return "Strava configured" if facts.connection_configured else "Settings available"
 
 
-def _available_status_text(_facts: WizardProgressFacts) -> str:
+def _available_status_text(_facts: WorkflowProgressFacts) -> str:
     return "Available"
 
 

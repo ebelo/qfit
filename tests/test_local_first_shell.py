@@ -7,7 +7,7 @@ from tests import _path  # noqa: F401
 from tests.test_wizard_shell import _fake_qt_modules
 
 from qfit.ui.application.local_first_navigation import build_local_first_dock_navigation_state
-from qfit.ui.application.wizard_progress import WizardProgressFacts
+from qfit.ui.application.workflow_progress_facts import WorkflowProgressFacts
 from qfit.ui.tokens import COLOR_GROUP_BORDER, COLOR_TITLE_BAR
 
 
@@ -101,7 +101,7 @@ class LocalFirstDockShellTests(unittest.TestCase):
 
     def test_navigation_state_sets_selection_metadata_without_step_locking(self):
         navigation = build_local_first_dock_navigation_state(
-            WizardProgressFacts(activities_stored=True, activity_layers_loaded=True),
+            WorkflowProgressFacts(activities_stored=True, activity_layers_loaded=True),
             preferred_current_key="map",
         )
         shell = self.shell_module.LocalFirstDockShell(navigation_state=navigation)

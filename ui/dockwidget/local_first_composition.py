@@ -5,7 +5,7 @@ from dataclasses import dataclass, replace
 from qfit.ui.application.local_first_navigation import (
     build_local_first_dock_navigation_state,
 )
-from qfit.ui.application.wizard_progress import WizardProgressFacts
+from qfit.ui.application.local_first_progress_facts import LocalFirstProgressFacts
 
 from ._qt_compat import import_qt_module
 from .analysis_page import AnalysisPageContent, build_analysis_page_content
@@ -96,13 +96,13 @@ def build_local_first_dock_composition(
     *,
     parent=None,
     footer_text: str = "",
-    progress_facts: WizardProgressFacts | None = None,
+    progress_facts: LocalFirstProgressFacts | None = None,
     atlas_title: str = "qfit Activity Atlas",
     atlas_subtitle: str = "",
 ) -> LocalFirstDockComposition:
     """Build the reusable local-first dock shell without swapping production UI."""
 
-    facts = progress_facts or WizardProgressFacts()
+    facts = progress_facts or LocalFirstProgressFacts()
     shell = LocalFirstDockShell(
         parent=parent,
         navigation_state=build_local_first_dock_navigation_state(facts),
@@ -198,11 +198,11 @@ def connect_local_first_action_callbacks(
 def refresh_local_first_dock_composition(
     composition: LocalFirstDockComposition,
     *,
-    progress_facts: WizardProgressFacts | None = None,
+    progress_facts: LocalFirstProgressFacts | None = None,
 ) -> LocalFirstDockComposition:
     """Refresh navigation and page status from render-neutral workflow facts."""
 
-    facts = progress_facts or WizardProgressFacts()
+    facts = progress_facts or LocalFirstProgressFacts()
     page_states = build_workflow_page_states_from_facts(_content_facts(facts))
     current_key = facts.preferred_current_key or composition.shell.current_key()
     composition.shell.set_navigation_state(
@@ -221,7 +221,7 @@ def refresh_local_first_dock_composition(
     return composition
 
 
-def _content_facts(facts: WizardProgressFacts) -> WizardProgressFacts:
+def _content_facts(facts: LocalFirstProgressFacts) -> LocalFirstProgressFacts:
     """Adapt local-first page facts to legacy wizard content state helpers."""
 
     return replace(facts, preferred_current_key=None)
@@ -240,7 +240,7 @@ def _install_local_first_pages(shell: LocalFirstDockShell) -> dict[str, QWidget]
 def _install_local_first_page_content(
     pages: dict[str, QWidget],
     *,
-    facts: WizardProgressFacts,
+    facts: LocalFirstProgressFacts,
     atlas_title: str,
     atlas_subtitle: str,
 ) -> LocalFirstDockPageContent:

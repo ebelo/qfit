@@ -7,7 +7,13 @@ from ...activities.application import build_activity_preview_selection_state
 from .local_first_activity_controls import build_current_activity_preview_request
 from ...visualization.application import DEFAULT_TEMPORAL_MODE_LABEL
 from .local_first_filter_summary import build_local_first_filter_description
-from .wizard_progress import build_wizard_progress_facts_from_runtime_state
+from .workflow_progress_facts import (
+    WorkflowProgressFacts,
+    build_workflow_progress_facts_from_runtime_state,
+)
+
+LocalFirstProgressFacts = WorkflowProgressFacts
+"""Local-first name for shared render-neutral workflow progress facts."""
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +43,7 @@ def build_current_local_first_progress_facts(dock):
         filtered_activity_count,
         filter_description,
     ) = current_local_first_filter_facts(dock, runtime_state)
-    return build_wizard_progress_facts_from_runtime_state(
+    return build_workflow_progress_facts_from_runtime_state(
         runtime_state,
         connection_configured=current_local_first_connection_configured(dock),
         atlas_exported=atlas_exported,
@@ -266,6 +272,7 @@ def _current_local_first_background_name(dock) -> str | None:
 
 
 __all__ = [
+    "LocalFirstProgressFacts",
     "build_current_local_first_progress_facts",
     "current_local_first_activity_style_preset",
     "current_local_first_atlas_output_path",

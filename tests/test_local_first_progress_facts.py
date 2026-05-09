@@ -6,6 +6,7 @@ from tests import _path  # noqa: F401
 
 from qfit.ui.application.dock_runtime_state import DockRuntimeState
 from qfit.ui.application.local_first_progress_facts import (
+    LocalFirstProgressFacts,
     build_current_local_first_progress_facts,
     current_local_first_activity_style_preset,
     current_local_first_atlas_output_path,
@@ -92,6 +93,7 @@ class TestLocalFirstProgressFacts(unittest.TestCase):
         self.assertEqual(facts.atlas_output_name, "exported.pdf")
         self.assertFalse(facts.background_enabled)
         self.assertEqual(facts.activity_style_preset, "Simple lines")
+        self.assertIsInstance(facts, LocalFirstProgressFacts)
         self.assertEqual(facts.last_sync_date, "2026-05-09")
 
     def test_connection_configured_requires_visible_credential_text(self):
