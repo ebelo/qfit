@@ -87,6 +87,11 @@ from .ui.application import (
     build_visual_workflow_selection_state_handoff,
     build_visual_workflow_settings_snapshot,
 )
+from .ui.application.local_first_progress_facts import (
+    current_local_first_activity_style_preset,
+    current_local_first_background_facts,
+    current_local_first_visual_temporal_mode,
+)
 from .ui.contextual_help import ContextualHelpBinder, build_dock_help_entries
 from .detailed_route_strategy import DETAILED_ROUTE_STRATEGY_MISSING
 from .mapbox_config import MapboxConfigError
@@ -97,7 +102,6 @@ from .visualization.application import (
 )
 from .providers.domain.provider import ProviderError
 from .providers.infrastructure.strava_provider import StravaProvider
-from .visualization.application import DEFAULT_TEMPORAL_MODE_LABEL
 from .ui.dockwidget_dependencies import DockWidgetDependencies, build_dockwidget_dependencies
 from .ui.dock_startup_coordinator import DockStartupCoordinator
 from .configuration.application.connection_status import build_strava_connection_status
@@ -198,7 +202,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             background_enabled,
             background_layer_loaded,
             background_name,
-        ) = self._current_wizard_background_facts(runtime_state)
+        ) = current_local_first_background_facts(self, runtime_state)
         (
             filters_active,
             filtered_activity_count,
@@ -215,7 +219,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             filters_active=filters_active,
             filtered_activity_count=filtered_activity_count,
             filter_description=filter_description,
-            activity_style_preset=self._current_wizard_activity_style_preset(),
+            activity_style_preset=current_local_first_activity_style_preset(self),
             last_sync_date=self._current_wizard_last_sync_date(),
         )
 
@@ -245,87 +249,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
         self._runtime_store().select_output_path((value or "").strip() or None)
         self._refresh_live_dock_navigation_from_runtime()
-
-    def _current_wizard_activity_style_preset(self) -> str | None:
-        """Return current activity style copy for the optional wizard map page."""
-
-        preset_combo = getattr(self, "stylePresetComboBox", None)
-        if preset_combo is None or not hasattr(preset_combo, "currentText"):
-            return None
-        try:
-            preset_name = preset_combo.currentText()
-        except RuntimeError:
-            logger.debug("Failed to read wizard activity style preset", exc_info=True)
-            return None
-        if not isinstance(preset_name, str):
-            return None
-        stripped = preset_name.strip()
-        return stripped or None
-
-    def _current_visual_temporal_mode(self) -> str:
-        """Return the visible temporal playback setting for visual workflow actions."""
-
-        combo = getattr(self, "temporalModeComboBox", None)
-        if combo is None or not hasattr(combo, "currentText"):
-            return DEFAULT_TEMPORAL_MODE_LABEL
-        try:
-            mode_label = combo.currentText()
-        except RuntimeError:
-            logger.debug("Failed to read temporal playback mode", exc_info=True)
-            return DEFAULT_TEMPORAL_MODE_LABEL
-        if not isinstance(mode_label, str):
-            return DEFAULT_TEMPORAL_MODE_LABEL
-        return mode_label.strip() or DEFAULT_TEMPORAL_MODE_LABEL
-
-    def _current_wizard_background_facts(self, runtime_state) -> tuple[bool, bool, str | None]:
-        """Return current basemap facts for the optional wizard map page."""
-
-        background_layer_loaded = runtime_state.background_layer is not None
-        if background_layer_loaded:
-            return True, True, self._current_wizard_layer_name(
-                runtime_state.background_layer,
-                log_message="Failed to read wizard background layer name",
-            )
-
-        checkbox = getattr(self, "backgroundMapCheckBox", None)
-        background_enabled = bool(
-            checkbox is not None
-            and hasattr(checkbox, "isChecked")
-            and checkbox.isChecked()
-        )
-        if not background_enabled:
-            return False, False, None
-        return True, False, self._current_wizard_background_name()
-
-    def _current_wizard_layer_name(self, layer, *, log_message: str) -> str | None:
-        if layer is None:
-            return None
-        name_method = getattr(layer, "name", None)
-        if not callable(name_method):
-            return None
-        try:
-            layer_name = name_method()
-        except RuntimeError:
-            logger.debug(log_message, exc_info=True)
-            return None
-        if not isinstance(layer_name, str):
-            return None
-        stripped = layer_name.strip()
-        return stripped or None
-
-    def _current_wizard_background_name(self) -> str | None:
-        preset_combo = getattr(self, "backgroundPresetComboBox", None)
-        if preset_combo is None or not hasattr(preset_combo, "currentText"):
-            return None
-        try:
-            preset_name = preset_combo.currentText()
-        except RuntimeError:
-            logger.debug("Failed to read wizard background preset", exc_info=True)
-            return None
-        if not isinstance(preset_name, str):
-            return None
-        stripped = preset_name.strip()
-        return stripped or None
 
     def _current_wizard_filter_facts(self) -> tuple[bool, int | None, str | None]:
         """Return the current map-filter facts the optional wizard can summarize."""
@@ -1376,7 +1299,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             ),
             settings=build_visual_workflow_settings_snapshot(
                 style_preset=self.stylePresetComboBox.currentText(),
-                temporal_mode=self._current_visual_temporal_mode(),
+                temporal_mode=current_local_first_visual_temporal_mode(self),
                 analysis_mode=self.analysisModeComboBox.currentText(),
             ),
             background=build_visual_workflow_background_inputs(

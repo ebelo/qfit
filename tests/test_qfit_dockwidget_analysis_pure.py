@@ -22,6 +22,10 @@ from qfit.ui.application.local_first_control_visibility import (
     update_local_first_mapbox_custom_style_visibility,
     update_local_first_point_sampling_visibility,
 )
+from qfit.ui.application.local_first_progress_facts import (
+    current_local_first_activity_style_preset,
+    current_local_first_background_facts,
+)
 from qfit.activities.domain.activity_query import DETAILED_ROUTE_FILTER_MISSING
 from qfit.sync_repository import ActivitySyncState
 
@@ -416,9 +420,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock = object.__new__(self.module.QfitDockWidget)
         dock.stylePresetComboBox = _FakeComboBox(current_text=" Simple lines ")
 
-        style_preset = (
-            self.module.QfitDockWidget._current_wizard_activity_style_preset(dock)
-        )
+        style_preset = current_local_first_activity_style_preset(dock)
 
         self.assertEqual(style_preset, "Simple lines")
 
@@ -428,7 +430,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.backgroundMapCheckBox = _FakeCheckBox(False)
         dock.backgroundPresetComboBox = _FakeComboBox(current_text="Outdoors")
 
-        facts = self.module.QfitDockWidget._current_wizard_background_facts(
+        facts = current_local_first_background_facts(
             dock,
             dock.runtime_state,
         )
@@ -442,7 +444,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.backgroundPresetComboBox = _FakeComboBox(current_text="Outdoors")
         dock._runtime_store().set_background_layer(_FakeLayer("Satellite"))
 
-        facts = self.module.QfitDockWidget._current_wizard_background_facts(
+        facts = current_local_first_background_facts(
             dock,
             dock.runtime_state,
         )
@@ -456,7 +458,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.backgroundPresetComboBox = _FakeComboBox(current_text="Outdoors")
         dock._runtime_store().set_background_layer(_FakeLayer("   "))
 
-        facts = self.module.QfitDockWidget._current_wizard_background_facts(
+        facts = current_local_first_background_facts(
             dock,
             dock.runtime_state,
         )
@@ -469,7 +471,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.backgroundMapCheckBox = _FakeCheckBox(True)
         dock.backgroundPresetComboBox = _FakeComboBox(current_text=" Satellite ")
 
-        facts = self.module.QfitDockWidget._current_wizard_background_facts(
+        facts = current_local_first_background_facts(
             dock,
             dock.runtime_state,
         )
