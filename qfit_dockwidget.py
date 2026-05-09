@@ -298,16 +298,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
         self._refresh_local_first_dock_from_runtime()
 
-    def _has_configured_strava_connection(self) -> bool:
-        return all(
-            self._widget_text(name).strip()
-            for name in (
-                "clientIdLineEdit",
-                "clientSecretLineEdit",
-                "refreshTokenLineEdit",
-            )
-        )
-
     def _mark_atlas_export_stale(self) -> None:
         self._atlas_export_completed = False
         self._atlas_export_output_path = None
