@@ -88,12 +88,7 @@ from .ui.application import (
     build_wizard_filter_description,
     build_wizard_progress_facts_from_runtime_state,
     ensure_wizard_settings,
-    after_local_first_control_move_installed,
     install_local_first_audited_controls,
-    local_first_control_move_for_key,
-    local_first_widget_move_for_key,
-    install_local_first_group_controls,
-    install_local_first_widget_controls,
     build_visual_workflow_background_inputs,
     build_visual_workflow_selection_state_handoff,
     build_visual_workflow_settings_snapshot,
@@ -471,26 +466,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         if title_changed or subtitle_changed:
             self._mark_atlas_export_stale()
             self._refresh_summary_status()
-
-    def _install_local_first_control_move(self, composition, key: str) -> bool:
-        """Install one audited legacy-backed control area into local-first UI."""
-
-        move = local_first_control_move_for_key(key)
-        return install_local_first_group_controls(self, composition, move)
-
-    def _install_local_first_widget_move(self, composition, key: str) -> bool:
-        """Install one audited loose-widget area into local-first UI."""
-
-        move = local_first_widget_move_for_key(key)
-        return install_local_first_widget_controls(self, composition, move)
-
-    def _after_local_first_control_move_installed(
-        self,
-        key: str,
-        *,
-        installed: bool,
-    ) -> None:
-        after_local_first_control_move_installed(self, key, installed=installed)
 
     def _refresh_local_first_advanced_fetch_visibility(self) -> None:
         advanced_fetch_group = getattr(self, "advancedFetchGroupBox", None)
