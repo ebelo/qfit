@@ -5,6 +5,7 @@ from unittest.mock import MagicMock
 from tests import _path  # noqa: F401
 
 from qfit.ui.application.local_first_analysis_controls import (
+    NONE_ANALYSIS_MODE_LABEL,
     bind_local_first_analysis_mode_controls,
     local_first_analysis_mode_options,
     set_local_first_analysis_mode,
@@ -90,14 +91,28 @@ class LocalFirstAnalysisControlsTests(unittest.TestCase):
         self.assertEqual(combo.currentText(), "Most frequent starting points")
 
     def test_bind_skips_missing_analysis_content(self):
-        combo = FakeComboBox(current_text="None")
-        combo.addItem("None")
+        combo = FakeComboBox(current_text=NONE_ANALYSIS_MODE_LABEL)
+        combo.addItem(NONE_ANALYSIS_MODE_LABEL)
         combo.addItem("Heatmap")
         dock = SimpleNamespace(analysisModeComboBox=combo)
 
         bind_local_first_analysis_mode_controls(dock, SimpleNamespace())
 
-        self.assertEqual(combo.currentText(), "None")
+        self.assertEqual(combo.currentText(), NONE_ANALYSIS_MODE_LABEL)
+
+    def test_bind_skips_empty_user_facing_mode_options(self):
+        combo = FakeComboBox(current_text=NONE_ANALYSIS_MODE_LABEL)
+        combo.addItem(NONE_ANALYSIS_MODE_LABEL)
+        dock = SimpleNamespace(analysisModeComboBox=combo)
+        analysis_content = SimpleNamespace(set_analysis_mode_options=MagicMock())
+
+        bind_local_first_analysis_mode_controls(
+            dock,
+            SimpleNamespace(analysis_content=analysis_content),
+        )
+
+        analysis_content.set_analysis_mode_options.assert_not_called()
+        self.assertEqual(combo.currentText(), NONE_ANALYSIS_MODE_LABEL)
 
 
 if __name__ == "__main__":
