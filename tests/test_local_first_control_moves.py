@@ -54,9 +54,9 @@ class LocalFirstControlMoveTests(unittest.TestCase):
                 "backfill_routes": "sync_content",
                 "map_filters": "map_content",
                 "atlas_pdf": "atlas_content",
-                "strava_credentials": "connection_content",
-                "basemap": "connection_content",
-                "storage": "connection_content",
+                "strava_credentials": "settings_content",
+                "basemap": "settings_content",
+                "storage": "settings_content",
             },
         )
 
@@ -138,7 +138,7 @@ class LocalFirstControlMoveTests(unittest.TestCase):
         self.assertEqual(filters.post_install_visible_attr, "set_filter_controls_visible")
 
         credentials = local_first_control_move_for_key("strava_credentials")
-        self.assertEqual(credentials.content_attr, "connection_content")
+        self.assertEqual(credentials.content_attr, "settings_content")
         self.assertEqual(credentials.group_attr, "credentialsGroupBox")
         self.assertEqual(credentials.title, "Strava connection")
 

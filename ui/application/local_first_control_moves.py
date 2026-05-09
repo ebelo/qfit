@@ -129,7 +129,7 @@ LOCAL_FIRST_CONTROL_MOVES: tuple[LocalFirstControlMove, ...] = (
     ),
     LocalFirstControlMove(
         key="strava_credentials",
-        content_attr="connection_content",
+        content_attr="settings_content",
         group_attr="credentialsGroupBox",
         required_widget_attrs=(
             "clientIdLineEdit",
@@ -146,7 +146,7 @@ LOCAL_FIRST_CONTROL_MOVES: tuple[LocalFirstControlMove, ...] = (
     ),
     LocalFirstControlMove(
         key="basemap",
-        content_attr="connection_content",
+        content_attr="settings_content",
         group_attr="backgroundGroupBox",
         required_widget_attrs=(
             "backgroundMapCheckBox",
@@ -162,7 +162,7 @@ LOCAL_FIRST_CONTROL_MOVES: tuple[LocalFirstControlMove, ...] = (
     ),
     LocalFirstControlMove(
         key="storage",
-        content_attr="connection_content",
+        content_attr="settings_content",
         group_attr="outputGroupBox",
         required_widget_attrs=(
             "outputPathLineEdit",

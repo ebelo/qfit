@@ -78,10 +78,16 @@ class LocalFirstDockComposition:
         return self.page_content.atlas_content
 
     @property
+    def settings_content(self) -> ConnectionPageContent:
+        """Local-first Settings page content."""
+
+        return self.page_content.settings_content
+
+    @property
     def connection_content(self) -> ConnectionPageContent:
         """Settings page uses the existing connection/configuration content."""
 
-        return self.page_content.settings_content
+        return self.settings_content
 
 
 def build_local_first_dock_composition(
@@ -123,7 +129,7 @@ def connect_local_first_action_callbacks(
     if composition.action_callbacks is not None:
         return composition
     _connect_optional_signal(
-        composition.connection_content,
+        composition.settings_content,
         "configureRequested",
         callbacks.configure_connection,
     )
@@ -202,7 +208,7 @@ def refresh_local_first_dock_composition(
     composition.map_content.set_state(page_states.map_state)
     composition.analysis_content.set_state(page_states.analysis_state)
     composition.atlas_content.set_state(page_states.atlas_state)
-    composition.connection_content.set_state(
+    composition.settings_content.set_state(
         _settings_state_from_connection_state(page_states.connection_state)
     )
     return composition
