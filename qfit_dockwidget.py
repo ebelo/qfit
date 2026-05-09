@@ -82,6 +82,7 @@ from .ui.application import (
     DockRuntimeStore,
     DockVisualWorkflowCoordinator,
     DockVisualWorkflowRequest,
+    LocalFirstControlVisibilityUpdate,
     RunAnalysisAction,
     build_advanced_fetch_visibility_update,
     build_detailed_fetch_visibility_update,
@@ -526,7 +527,10 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             build_mapbox_custom_style_visibility_update(preset_name)
         )
 
-    def _apply_local_first_visibility_update(self, update) -> None:
+    def _apply_local_first_visibility_update(
+        self,
+        update: LocalFirstControlVisibilityUpdate,
+    ) -> None:
         self._set_named_widgets_visible(update.widget_attrs, update.visible)
 
     def _set_named_widgets_visible(
