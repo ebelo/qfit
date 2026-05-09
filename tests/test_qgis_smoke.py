@@ -365,10 +365,10 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertEqual(dock.analysisModeLabel.parentWidget().parentWidget(), dock.analysisSectionContentWidget)
             self.assertEqual(
                 dock.temporalModeLabel.parentWidget().parentWidget(),
-                dock._local_first_dock_composition.map_content.style_controls_panel,
+                dock._local_first_dock_composition.analysis_content.temporal_controls_panel,
             )
             self.assertGreaterEqual(
-                dock._local_first_dock_composition.map_content.style_controls_layout().indexOf(
+                dock._local_first_dock_composition.analysis_content.temporal_controls_layout().indexOf(
                     dock.analysisTemporalModeRow,
                 ),
                 0,

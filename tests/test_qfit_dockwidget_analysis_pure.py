@@ -1057,9 +1057,12 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             composition,
         )
 
-        dock._install_local_first_widget_move.assert_called_once_with(
-            composition,
-            "activity_style",
+        self.assertEqual(
+            dock._install_local_first_widget_move.call_args_list,
+            [
+                call(composition, "activity_style"),
+                call(composition, "analysis_temporal"),
+            ],
         )
         self.assertEqual(
             dock._install_local_first_control_move.call_args_list,
@@ -1489,27 +1492,17 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         style_combo = MagicMock()
         preview_sort_label = MagicMock()
         preview_sort_combo = MagicMock()
-        temporal_row = MagicMock()
-        temporal_label = MagicMock()
-        temporal_combo = MagicMock()
-        temporal_help = MagicMock()
         for widget in (
             style_label,
             style_combo,
             preview_sort_label,
             preview_sort_combo,
-            temporal_row,
-            temporal_help,
         ):
             widget.parentWidget.return_value = parent_widget
         dock.stylePresetLabel = style_label
         dock.stylePresetComboBox = style_combo
         dock.previewSortLabel = preview_sort_label
         dock.previewSortComboBox = preview_sort_combo
-        dock.analysisTemporalModeRow = temporal_row
-        dock.temporalModeLabel = temporal_label
-        dock.temporalModeComboBox = temporal_combo
-        dock.temporalHelpLabel = temporal_help
         panel = object()
         style_layout = MagicMock()
         map_content = SimpleNamespace(
@@ -1531,8 +1524,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
                 call(style_combo),
                 call(preview_sort_label),
                 call(preview_sort_combo),
-                call(temporal_row),
-                call(temporal_help),
             ],
         )
         self.assertEqual(
@@ -1542,8 +1533,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
                 call(style_combo),
                 call(preview_sort_label),
                 call(preview_sort_combo),
-                call(temporal_row),
-                call(temporal_help),
             ],
         )
         for widget in (
@@ -1551,10 +1540,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             style_combo,
             preview_sort_label,
             preview_sort_combo,
-            temporal_row,
-            temporal_label,
-            temporal_combo,
-            temporal_help,
         ):
             widget.show.assert_called_once_with()
         map_content.set_style_controls_visible.assert_called_once_with()
@@ -1562,6 +1547,51 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertEqual(
             dock._local_first_activity_style_controls_installed_target,
             id(map_content),
+        )
+
+    def test_install_local_first_widget_move_handles_analysis_temporal_controls(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        parent_layout = MagicMock()
+        parent_widget = SimpleNamespace(layout=lambda: parent_layout)
+        temporal_row = MagicMock()
+        temporal_label = MagicMock()
+        temporal_combo = MagicMock()
+        temporal_help = MagicMock()
+        for widget in (temporal_row, temporal_help):
+            widget.parentWidget.return_value = parent_widget
+        dock.analysisTemporalModeRow = temporal_row
+        dock.temporalModeLabel = temporal_label
+        dock.temporalModeComboBox = temporal_combo
+        dock.temporalHelpLabel = temporal_help
+        panel = object()
+        temporal_layout = MagicMock()
+        analysis_content = SimpleNamespace(
+            temporal_controls_panel=panel,
+            temporal_controls_layout=MagicMock(return_value=temporal_layout),
+            set_temporal_controls_visible=MagicMock(),
+        )
+
+        self.module.QfitDockWidget._install_local_first_widget_move(
+            dock,
+            SimpleNamespace(analysis_content=analysis_content),
+            "analysis_temporal",
+        )
+
+        self.assertEqual(
+            parent_layout.removeWidget.call_args_list,
+            [call(temporal_row), call(temporal_help)],
+        )
+        self.assertEqual(
+            temporal_layout.addWidget.call_args_list,
+            [call(temporal_row), call(temporal_help)],
+        )
+        for widget in (temporal_row, temporal_label, temporal_combo, temporal_help):
+            widget.show.assert_called_once_with()
+        analysis_content.set_temporal_controls_visible.assert_called_once_with()
+        self.assertTrue(dock._local_first_analysis_temporal_controls_installed)
+        self.assertEqual(
+            dock._local_first_analysis_temporal_controls_installed_target,
+            id(analysis_content),
         )
 
     def test_install_local_first_widget_move_requires_activity_style_pair(self):
