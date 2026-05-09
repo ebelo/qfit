@@ -13,10 +13,10 @@ from qfit.ui.application.stepper_presenter import (
     can_request_step,
     step_index_for_key,
 )
-from qfit.ui.application.wizard_footer_status import (
-    WizardFooterFacts,
-    build_wizard_footer_facts_from_progress_facts,
-    build_wizard_footer_status,
+from qfit.ui.application.workflow_footer_status import (
+    WorkflowFooterFacts,
+    build_workflow_footer_facts_from_progress_facts,
+    build_workflow_footer_status,
 )
 from qfit.ui.application.wizard_page_specs import (
     DockWizardPageSpec,
@@ -448,15 +448,15 @@ def _page_state_defaults_from_progress_facts(
 
 def _footer_facts_from_progress_facts(
     progress_facts: WorkflowProgressFacts | None,
-) -> WizardFooterFacts | None:
+) -> WorkflowFooterFacts | None:
     if progress_facts is None:
         return None
-    return build_wizard_footer_facts_from_progress_facts(
+    return build_workflow_footer_facts_from_progress_facts(
         completed_prefix_facts(progress_facts)
     )
 
 
-def _apply_footer_facts(footer_bar, footer_facts: WizardFooterFacts | None) -> None:
+def _apply_footer_facts(footer_bar, footer_facts: WorkflowFooterFacts | None) -> None:
     if footer_facts is None:
         return
     footer_bar.set_strava(footer_facts.strava_connected)
@@ -512,7 +512,7 @@ def _build_default_footer_text(
     analysis_state: AnalysisPageState,
     atlas_state: AtlasPageState,
 ) -> str:
-    return build_wizard_footer_status(
+    return build_workflow_footer_status(
         connection_status=(
             connection_state.status_text if "connection" in installed_keys else None
         ),
