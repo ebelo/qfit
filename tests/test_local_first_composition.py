@@ -122,7 +122,7 @@ class LocalFirstDockCompositionTests(unittest.TestCase):
             atlas_subtitle="Road and trail",
         )
         calls = []
-        callbacks = self.module.WizardActionCallbacks(
+        callbacks = self.module.DockWorkflowActionCallbacks(
             configure_connection=lambda: calls.append("settings"),
             sync_activities=lambda: calls.append("sync"),
             store_activities=lambda: calls.append("store"),
@@ -229,8 +229,9 @@ class LocalFirstDockCompositionTests(unittest.TestCase):
         self.assertEqual(composition.shell.current_key(), "atlas")
         self.assertTrue(composition.shell.navigation_item_for_key("atlas").property("current"))
 
-    def test_public_exports_include_action_callbacks(self):
-        self.assertIn("WizardActionCallbacks", self.module.__all__)
+    def test_public_exports_include_canonical_workflow_action_callbacks(self):
+        self.assertIn("DockWorkflowActionCallbacks", self.module.__all__)
+        self.assertNotIn("WizardActionCallbacks", self.module.__all__)
 
     def test_local_first_composition_does_not_import_wizard_composition(self):
         self.assertNotIn("qfit.ui.dockwidget.wizard_composition", sys.modules)

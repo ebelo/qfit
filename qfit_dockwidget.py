@@ -183,7 +183,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         """
 
         from .ui.dockwidget.local_first_composition import (
-            WizardActionCallbacks,
+            DockWorkflowActionCallbacks,
             build_local_first_dock_composition,
             connect_local_first_action_callbacks,
         )
@@ -196,7 +196,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         )
         self._local_first_dock_composition = connect_local_first_action_callbacks(
             composition,
-            WizardActionCallbacks(
+            DockWorkflowActionCallbacks(
                 configure_connection=(
                     lambda: request_local_first_connection_configuration(
                         open_configuration=getattr(
