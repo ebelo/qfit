@@ -857,19 +857,52 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
         if not installed:
             return
-        if key == "backfill_routes":
-            detailed_streams_checkbox = getattr(self, "detailedStreamsCheckBox", None)
-            if hasattr(detailed_streams_checkbox, "isChecked"):
-                self._workflow_section_coordinator.update_detailed_fetch_visibility(
-                    detailed_streams_checkbox.isChecked()
-                )
-        elif key == "atlas_pdf":
-            legacy_export_button = getattr(self, "generateAtlasPdfButton", None)
-            if legacy_export_button is not None and hasattr(
-                legacy_export_button,
-                "hide",
-            ):
-                legacy_export_button.hide()
+        hook = {
+            "advanced_fetch": self._refresh_local_first_advanced_fetch_visibility,
+            "backfill_routes": self._refresh_local_first_detailed_fetch_visibility,
+            "basemap": self._refresh_local_first_mapbox_visibility,
+            "storage": self._refresh_local_first_point_sampling_visibility,
+            "atlas_pdf": self._hide_legacy_atlas_export_button,
+        }.get(key)
+        if hook is not None:
+            hook()
+
+    def _refresh_local_first_advanced_fetch_visibility(self) -> None:
+        advanced_fetch_group = getattr(self, "advancedFetchGroupBox", None)
+        if hasattr(advanced_fetch_group, "isChecked"):
+            self._workflow_section_coordinator.update_advanced_fetch_visibility(
+                advanced_fetch_group.isChecked()
+            )
+
+    def _refresh_local_first_detailed_fetch_visibility(self) -> None:
+        detailed_streams_checkbox = getattr(self, "detailedStreamsCheckBox", None)
+        if hasattr(detailed_streams_checkbox, "isChecked"):
+            self._workflow_section_coordinator.update_detailed_fetch_visibility(
+                detailed_streams_checkbox.isChecked()
+            )
+
+    def _refresh_local_first_mapbox_visibility(self) -> None:
+        background_preset_combo = getattr(self, "backgroundPresetComboBox", None)
+        if hasattr(background_preset_combo, "currentText"):
+            self._workflow_section_coordinator.update_mapbox_advanced_visibility(
+                background_preset_combo.currentText()
+            )
+
+    def _refresh_local_first_point_sampling_visibility(self) -> None:
+        write_activity_points_checkbox = getattr(
+            self,
+            "writeActivityPointsCheckBox",
+            None,
+        )
+        if hasattr(write_activity_points_checkbox, "isChecked"):
+            self._workflow_section_coordinator.update_point_sampling_visibility(
+                write_activity_points_checkbox.isChecked()
+            )
+
+    def _hide_legacy_atlas_export_button(self) -> None:
+        legacy_export_button = getattr(self, "generateAtlasPdfButton", None)
+        if legacy_export_button is not None and hasattr(legacy_export_button, "hide"):
+            legacy_export_button.hide()
 
     def _bind_wizard_analysis_mode_controls(self, composition) -> None:
         """Expose the hidden backing analysis selector in the live wizard path."""
