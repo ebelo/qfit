@@ -7,6 +7,7 @@ from tests import _path  # noqa: F401
 from tests.test_wizard_shell import _fake_qt_modules
 
 from qfit.ui.application.dock_workflow_sections import DockWizardProgress
+from qfit.ui.application.workflow_progress_facts import WorkflowProgressFacts
 
 
 def _load_wizard_composition_module():
@@ -34,6 +35,9 @@ class WizardShellCompositionTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.composition = _load_wizard_composition_module()
+
+    def test_keeps_wizard_progress_facts_as_compatibility_alias(self):
+        self.assertIs(self.composition.WizardProgressFacts, WorkflowProgressFacts)
 
     def test_builds_placeholder_shell_with_pages_before_presenter_renders(self):
         assembled = self.composition.build_placeholder_wizard_shell(footer_text="Ready")
