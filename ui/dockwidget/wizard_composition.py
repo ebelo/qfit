@@ -29,8 +29,6 @@ from qfit.ui.application.workflow_progress import (
 from qfit.ui.application.workflow_progress_facts import WorkflowProgressFacts
 from qfit.ui.application.workflow_settings import WorkflowSettingsSnapshot
 
-WizardSettingsSnapshot = WorkflowSettingsSnapshot
-
 from .analysis_page import (
     AnalysisPageContent,
     AnalysisPageState,
@@ -61,6 +59,7 @@ from .workflow_page_state import (
 )
 
 
+WizardSettingsSnapshot = WorkflowSettingsSnapshot
 _StateT = TypeVar("_StateT")
 WizardCompositionPage = WizardPage | WizardStepPage
 WizardProgressFacts = WorkflowProgressFacts
