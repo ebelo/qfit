@@ -4,7 +4,6 @@ from qgis.PyQt.QtCore import Qt
 
 from qfit.ui.tokens import COLOR_MUTED
 
-from ..mapbox_config import preset_requires_custom_style
 from .application.dock_workflow_sections import (
     CURRENT_DOCK_SECTIONS,
     build_current_dock_workflow_label,
@@ -268,68 +267,6 @@ class WorkflowSectionCoordinator:
 
         if hasattr(label, "hide"):
             label.hide()
-
-    def configure_workflow_sections(self) -> None:
-        dock = self.dock_widget
-        self.update_detailed_fetch_visibility(dock.detailedStreamsCheckBox.isChecked())
-        self.update_point_sampling_visibility(dock.writeActivityPointsCheckBox.isChecked())
-        self.update_advanced_fetch_visibility(dock.advancedFetchGroupBox.isChecked())
-        self.update_mapbox_advanced_visibility(dock.backgroundPresetComboBox.currentText())
-
-    def update_detailed_fetch_visibility(self, enabled: bool) -> None:
-        dock = self.dock_widget
-        backfill_button = getattr(dock, "backfillMissingDetailedRoutesButton", None)
-        if backfill_button is not None:
-            backfill_button.setVisible(enabled)
-        dock.detailedRouteStrategyLabel.setVisible(enabled)
-        dock.detailedRouteStrategyComboBox.setVisible(enabled)
-        strategy_helper = getattr(dock, "detailedRouteStrategyComboBoxContextHelpLabel", None)
-        if strategy_helper is not None:
-            strategy_helper.setVisible(enabled)
-        strategy_wrapper = getattr(dock, "detailedRouteStrategyComboBoxHelpField", None)
-        if strategy_wrapper is not None:
-            strategy_wrapper.setVisible(enabled)
-        dock.maxDetailedActivitiesLabel.setVisible(enabled)
-        dock.maxDetailedActivitiesSpinBox.setVisible(enabled)
-        helper = getattr(dock, "maxDetailedActivitiesSpinBoxContextHelpLabel", None)
-        if helper is not None:
-            helper.setVisible(enabled)
-        wrapper = getattr(dock, "maxDetailedActivitiesSpinBoxHelpField", None)
-        if wrapper is not None:
-            wrapper.setVisible(enabled)
-
-    def update_point_sampling_visibility(self, enabled: bool) -> None:
-        dock = self.dock_widget
-        dock.pointSamplingStrideLabel.setVisible(enabled)
-        dock.pointSamplingStrideSpinBox.setVisible(enabled)
-        helper = getattr(dock, "pointSamplingStrideSpinBoxContextHelpLabel", None)
-        if helper is not None:
-            helper.setVisible(enabled)
-        wrapper = getattr(dock, "pointSamplingStrideSpinBoxHelpField", None)
-        if wrapper is not None:
-            wrapper.setVisible(enabled)
-
-    def update_advanced_fetch_visibility(self, expanded: bool) -> None:
-        widget = getattr(self.dock_widget, "advancedFetchSettingsWidget", None)
-        if widget is not None:
-            widget.setVisible(expanded)
-
-    def update_mapbox_advanced_visibility(self, preset_name: str) -> None:
-        dock = self.dock_widget
-        show_advanced = preset_requires_custom_style(preset_name)
-        dock.mapboxStyleOwnerLabel.setVisible(show_advanced)
-        dock.mapboxStyleOwnerLineEdit.setVisible(show_advanced)
-        dock.mapboxStyleIdLabel.setVisible(show_advanced)
-        dock.mapboxStyleIdLineEdit.setVisible(show_advanced)
-        owner_helper = getattr(dock, "mapboxStyleOwnerLineEditContextHelpLabel", None)
-        if owner_helper is not None:
-            owner_helper.setVisible(show_advanced)
-        style_helper = getattr(dock, "mapboxStyleIdLineEditContextHelpLabel", None)
-        if style_helper is not None:
-            style_helper.setVisible(show_advanced)
-        style_wrapper = getattr(dock, "mapboxStyleIdLineEditHelpField", None)
-        if style_wrapper is not None:
-            style_wrapper.setVisible(show_advanced)
 
     def _move_store_section_under_fetch(self) -> None:
         dock = self.dock_widget

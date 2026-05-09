@@ -883,6 +883,20 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
                     installed=True,
                 )
 
+    def test_refresh_conditional_control_visibility_uses_local_first_handlers(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._refresh_local_first_advanced_fetch_visibility = MagicMock()
+        dock._refresh_local_first_detailed_fetch_visibility = MagicMock()
+        dock._refresh_local_first_mapbox_visibility = MagicMock()
+        dock._refresh_local_first_point_sampling_visibility = MagicMock()
+
+        self.module.QfitDockWidget._refresh_conditional_control_visibility(dock)
+
+        dock._refresh_local_first_advanced_fetch_visibility.assert_called_once_with()
+        dock._refresh_local_first_detailed_fetch_visibility.assert_called_once_with()
+        dock._refresh_local_first_mapbox_visibility.assert_called_once_with()
+        dock._refresh_local_first_point_sampling_visibility.assert_called_once_with()
+
     def test_dock_widget_does_not_reintroduce_per_move_local_first_installers(self):
         self.assertFalse(
             hasattr(self.module.QfitDockWidget, "_install_local_first_control_move")
