@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from dataclasses import replace
 
 from ...activities.application import build_activity_preview_selection_state
 from ...visualization.application import DEFAULT_TEMPORAL_MODE_LABEL
@@ -78,6 +79,27 @@ def current_local_first_atlas_output_path(
     if atlas_exported and completed_output_path:
         return completed_output_path
     return atlas_pdf_path
+
+
+def current_local_first_last_sync_date(settings) -> str | None:
+    """Return the persisted last sync date for local-first progress summaries."""
+
+    get_value = getattr(settings, "get", None)
+    if not callable(get_value):
+        return None
+    value = get_value("last_sync_date", None)
+    if not isinstance(value, str):
+        return None
+    return value.strip() or None
+
+
+def runtime_state_with_local_first_output_path(runtime_state, selected_output_path: str):
+    """Return runtime facts that reflect the visible local-first GeoPackage path."""
+
+    selected_output_path = (selected_output_path or "").strip()
+    if not selected_output_path or selected_output_path == runtime_state.output_path:
+        return runtime_state
+    return replace(runtime_state, output_path=selected_output_path)
 
 
 def current_local_first_filter_facts(dock, runtime_state) -> tuple[bool, int | None, str | None]:
@@ -168,5 +190,7 @@ __all__ = [
     "current_local_first_atlas_output_path",
     "current_local_first_background_facts",
     "current_local_first_filter_facts",
+    "current_local_first_last_sync_date",
     "current_local_first_visual_temporal_mode",
+    "runtime_state_with_local_first_output_path",
 ]

@@ -2,7 +2,6 @@ import logging
 import os
 import sqlite3
 from collections.abc import Callable
-from dataclasses import replace
 from datetime import date
 
 logger = logging.getLogger(__name__)
@@ -91,7 +90,9 @@ from .ui.application.local_first_progress_facts import (
     current_local_first_atlas_output_path,
     current_local_first_background_facts,
     current_local_first_filter_facts,
+    current_local_first_last_sync_date,
     current_local_first_visual_temporal_mode,
+    runtime_state_with_local_first_output_path,
 )
 from .ui.contextual_help import ContextualHelpBinder, build_dock_help_entries
 from .detailed_route_strategy import DETAILED_ROUTE_STRATEGY_MISSING
@@ -193,7 +194,10 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def _current_wizard_progress_facts(self):
         """Return render-neutral #609 wizard facts from the live dock state."""
 
-        runtime_state = self._wizard_runtime_state_with_selected_output_path()
+        runtime_state = runtime_state_with_local_first_output_path(
+            self.runtime_state,
+            self._widget_text("outputPathLineEdit"),
+        )
         atlas_exported = bool(getattr(self, "_atlas_export_completed", False))
         atlas_export_output_path = current_local_first_atlas_output_path(
             runtime_state=runtime_state,
@@ -224,29 +228,10 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             filtered_activity_count=filtered_activity_count,
             filter_description=filter_description,
             activity_style_preset=current_local_first_activity_style_preset(self),
-            last_sync_date=self._current_wizard_last_sync_date(),
+            last_sync_date=current_local_first_last_sync_date(
+                getattr(self, "settings", None)
+            ),
         )
-
-    def _current_wizard_last_sync_date(self) -> str | None:
-        """Return the persisted last sync date for wizard status summaries."""
-
-        settings = getattr(self, "settings", None)
-        get_value = getattr(settings, "get", None)
-        if not callable(get_value):
-            return None
-        value = get_value("last_sync_date", None)
-        if not isinstance(value, str):
-            return None
-        return value.strip() or None
-
-    def _wizard_runtime_state_with_selected_output_path(self):
-        """Reflect the visible GeoPackage path in wizard availability facts."""
-
-        runtime_state = self.runtime_state
-        selected_output_path = self._widget_text("outputPathLineEdit").strip()
-        if not selected_output_path or selected_output_path == runtime_state.output_path:
-            return runtime_state
-        return replace(runtime_state, output_path=selected_output_path)
 
     def _on_output_path_changed(self, value: str) -> None:
         """Keep live local-load actions in sync with the selected GeoPackage path."""

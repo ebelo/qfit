@@ -1,4 +1,5 @@
 import unittest
+from dataclasses import dataclass
 from types import SimpleNamespace
 
 from tests import _path  # noqa: F401
@@ -7,7 +8,9 @@ from qfit.ui.application.local_first_progress_facts import (
     current_local_first_activity_style_preset,
     current_local_first_atlas_output_path,
     current_local_first_background_facts,
+    current_local_first_last_sync_date,
     current_local_first_visual_temporal_mode,
+    runtime_state_with_local_first_output_path,
 )
 from qfit.visualization.application import DEFAULT_TEMPORAL_MODE_LABEL
 
@@ -39,6 +42,11 @@ class _FakeLayer:
 
     def name(self):
         return self._name
+
+
+@dataclass(frozen=True)
+class _FakeRuntimeState:
+    output_path: str | None = None
 
 
 class TestLocalFirstProgressFacts(unittest.TestCase):
@@ -146,6 +154,40 @@ class TestLocalFirstProgressFacts(unittest.TestCase):
             ),
             "changed.pdf",
         )
+
+    def test_last_sync_date_reads_trimmed_settings_value(self):
+        settings = {"last_sync_date": " 2026-05-09 "}
+
+        self.assertEqual(current_local_first_last_sync_date(settings), "2026-05-09")
+
+    def test_last_sync_date_ignores_missing_or_non_string_settings_value(self):
+        self.assertIsNone(current_local_first_last_sync_date(object()))
+        self.assertIsNone(current_local_first_last_sync_date({"last_sync_date": None}))
+        self.assertIsNone(current_local_first_last_sync_date({"last_sync_date": "   "}))
+
+    def test_runtime_state_with_output_path_preserves_matching_or_blank_path(self):
+        runtime_state = _FakeRuntimeState(output_path="stored.gpkg")
+
+        self.assertIs(
+            runtime_state_with_local_first_output_path(runtime_state, "stored.gpkg"),
+            runtime_state,
+        )
+        self.assertIs(
+            runtime_state_with_local_first_output_path(runtime_state, "   "),
+            runtime_state,
+        )
+
+    def test_runtime_state_with_output_path_reflects_visible_selection(self):
+        runtime_state = _FakeRuntimeState(output_path="stored.gpkg")
+
+        updated = runtime_state_with_local_first_output_path(
+            runtime_state,
+            " selected.gpkg ",
+        )
+
+        self.assertEqual(updated.output_path, "selected.gpkg")
+        self.assertEqual(runtime_state.output_path, "stored.gpkg")
+        self.assertIsNot(updated, runtime_state)
 
     def test_visual_temporal_mode_reads_trimmed_combo_text(self):
         dock = SimpleNamespace(temporalModeComboBox=_FakeComboBox(" Activity time "))
