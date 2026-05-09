@@ -871,56 +871,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             ):
                 legacy_export_button.hide()
 
-    def _install_local_first_activity_style_controls(self, composition) -> None:
-        """Deprecated wrapper for activity visualization local-first controls."""
-
-        self._install_local_first_widget_move(composition, "activity_style")
-
-    def _install_local_first_filter_controls(self, composition) -> None:
-        """Deprecated wrapper for map-filter local-first controls."""
-
-        self._install_local_first_control_move(composition, "map_filters")
-
-    def _install_local_first_advanced_fetch_controls(self, composition) -> None:
-        """Deprecated wrapper for Strava fetch-limit local-first controls."""
-
-        self._install_local_first_control_move(composition, "advanced_fetch")
-
-    def _install_local_first_activity_preview_controls(self, composition) -> None:
-        """Deprecated wrapper for activity-preview local-first controls."""
-
-        self._install_local_first_control_move(composition, "activity_preview")
-
-    def _install_local_first_backfill_controls(self, composition) -> None:
-        """Deprecated wrapper for detailed-route backfill local-first controls."""
-
-        installed = self._install_local_first_control_move(composition, "backfill_routes")
-        self._after_local_first_control_move_installed(
-            "backfill_routes",
-            installed=installed,
-        )
-
-    def _install_local_first_atlas_pdf_controls(self, composition) -> None:
-        """Deprecated wrapper for PDF output local-first controls."""
-
-        installed = self._install_local_first_control_move(composition, "atlas_pdf")
-        self._after_local_first_control_move_installed("atlas_pdf", installed=installed)
-
-    def _install_local_first_strava_credentials_controls(self, composition) -> None:
-        """Deprecated wrapper for Strava OAuth local-first controls."""
-
-        self._install_local_first_control_move(composition, "strava_credentials")
-
-    def _install_local_first_basemap_controls(self, composition) -> None:
-        """Deprecated wrapper for Mapbox basemap local-first controls."""
-
-        self._install_local_first_control_move(composition, "basemap")
-
-    def _install_local_first_storage_controls(self, composition) -> None:
-        """Deprecated wrapper for GeoPackage storage local-first controls."""
-
-        self._install_local_first_control_move(composition, "storage")
-
     def _bind_wizard_analysis_mode_controls(self, composition) -> None:
         """Expose the hidden backing analysis selector in the live wizard path."""
 
