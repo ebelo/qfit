@@ -29,8 +29,6 @@ from .workflow_page_state import (
     connect_optional_signal,
 )
 
-WizardActionCallbacks = DockWorkflowActionCallbacks
-
 _qtwidgets = import_qt_module(
     "qgis.PyQt.QtWidgets",
     "PyQt5.QtWidgets",
@@ -59,7 +57,7 @@ class LocalFirstDockComposition:
     shell: LocalFirstDockShell
     pages: dict[str, QWidget]
     page_content: LocalFirstDockPageContent
-    action_callbacks: WizardActionCallbacks | None = None
+    action_callbacks: DockWorkflowActionCallbacks | None = None
 
     @property
     def sync_content(self) -> SyncPageContent:
@@ -124,7 +122,7 @@ def build_local_first_dock_composition(
 
 def connect_local_first_action_callbacks(
     composition: LocalFirstDockComposition,
-    callbacks: WizardActionCallbacks,
+    callbacks: DockWorkflowActionCallbacks,
 ) -> LocalFirstDockComposition:
     """Connect concrete dock callbacks to local-first page content actions."""
 
@@ -333,8 +331,8 @@ class _LocalFirstDockPage(QWidget):
 
 __all__ = [
     "LocalFirstDockComposition",
+    "DockWorkflowActionCallbacks",
     "LocalFirstDockPageContent",
-    "WizardActionCallbacks",
     "build_local_first_dock_composition",
     "connect_local_first_action_callbacks",
     "refresh_local_first_dock_composition",

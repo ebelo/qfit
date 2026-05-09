@@ -778,13 +778,15 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.settings = _FakeSettings()
         parent = object()
 
-        class FakeWizardActionCallbacks(SimpleNamespace):
+        class FakeDockWorkflowActionCallbacks(SimpleNamespace):
             pass
 
         fake_local_first_composition = ModuleType(
             "qfit.ui.dockwidget.local_first_composition"
         )
-        fake_local_first_composition.WizardActionCallbacks = FakeWizardActionCallbacks
+        fake_local_first_composition.DockWorkflowActionCallbacks = (
+            FakeDockWorkflowActionCallbacks
+        )
         fake_local_first_composition.build_local_first_dock_composition = MagicMock(
             return_value="composition"
         )
