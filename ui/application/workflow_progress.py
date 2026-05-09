@@ -5,9 +5,9 @@ from typing import cast
 
 from .dock_workflow_sections import DockWizardProgress, WIZARD_WORKFLOW_STEPS
 from .workflow_progress_facts import WorkflowProgressFacts
-from .wizard_settings import (
-    WizardSettingsSnapshot,
-    preferred_current_key_from_settings,
+from .workflow_settings import (
+    WorkflowSettingsSnapshot,
+    preferred_current_key_from_workflow_settings,
 )
 
 
@@ -36,7 +36,7 @@ def build_workflow_progress_from_facts(
 
 def build_workflow_progress_from_facts_and_settings(
     facts: WorkflowProgressFacts,
-    settings: WizardSettingsSnapshot,
+    settings: WorkflowSettingsSnapshot,
 ) -> DockWizardProgress:
     """Build workflow progress while honoring a persisted step preference.
 
@@ -50,14 +50,16 @@ def build_workflow_progress_from_facts_and_settings(
     return build_workflow_progress_from_facts(
         _workflow_progress_facts_with_preferred_current_key(
             facts,
-            preferred_current_key=preferred_current_key_from_settings(settings),
+            preferred_current_key=preferred_current_key_from_workflow_settings(
+                settings
+            ),
         )
     )
 
 
 def build_startup_workflow_progress_facts(
     facts: WorkflowProgressFacts,
-    settings: WizardSettingsSnapshot,
+    settings: WorkflowSettingsSnapshot,
 ) -> WorkflowProgressFacts:
     """Return startup-only facts for the first visible workflow page.
 
@@ -66,7 +68,7 @@ def build_startup_workflow_progress_facts(
     users reconfirm an already-completed prerequisite before continuing.
     """
 
-    preferred_current_key = preferred_current_key_from_settings(settings)
+    preferred_current_key = preferred_current_key_from_workflow_settings(settings)
     if (
         preferred_current_key == "connection"
         and facts.connection_configured
