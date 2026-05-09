@@ -935,6 +935,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._install_wizard_filter_controls = MagicMock()
         dock._install_wizard_style_controls = MagicMock()
         dock._install_local_first_advanced_fetch_controls = MagicMock()
+        dock._install_local_first_backfill_controls = MagicMock()
         dock._install_local_first_atlas_pdf_controls = MagicMock()
         dock._install_local_first_basemap_controls = MagicMock()
         dock._install_local_first_storage_controls = MagicMock()
@@ -1011,6 +1012,9 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "connected-composition"
         )
         dock._install_local_first_advanced_fetch_controls.assert_called_once_with(
+            "connected-composition"
+        )
+        dock._install_local_first_backfill_controls.assert_called_once_with(
             "connected-composition"
         )
         dock._install_local_first_atlas_pdf_controls.assert_called_once_with(
@@ -1538,6 +1542,64 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertTrue(advanced_fetch_group.shown)
         self.assertEqual(data_layout.added, [advanced_fetch_group])
         self.assertTrue(dock._local_first_advanced_fetch_controls_installed)
+
+    def test_local_first_backfill_action_moves_to_data_page_with_existing_visibility_rule(self):
+        class _SourceLayout:
+            def __init__(self):
+                self.removed = []
+
+            def removeWidget(self, widget):
+                self.removed.append(widget)
+
+        class _SourceParent:
+            def __init__(self, layout):
+                self._layout = layout
+
+            def layout(self):
+                return self._layout
+
+        class _BackfillButton:
+            def __init__(self, parent):
+                self._parent = parent
+                self.shown = False
+
+            def parentWidget(self):
+                return self._parent
+
+            def setParent(self, parent):
+                self._parent = parent
+
+            def show(self):
+                self.shown = True
+
+        dock = object.__new__(self.module.QfitDockWidget)
+        source_layout = _SourceLayout()
+        source_parent = _SourceParent(source_layout)
+        backfill_button = _BackfillButton(source_parent)
+        data_layout = _FakeLayout()
+        data_content = SimpleNamespace(outer_layout=lambda: data_layout)
+        composition = SimpleNamespace(sync_content=data_content)
+        dock.backfillMissingDetailedRoutesButton = backfill_button
+        dock.detailedStreamsCheckBox = SimpleNamespace(isChecked=lambda: False)
+        dock._workflow_section_coordinator = MagicMock()
+
+        self.module.QfitDockWidget._install_local_first_backfill_controls(
+            dock,
+            composition,
+        )
+        self.module.QfitDockWidget._install_local_first_backfill_controls(
+            dock,
+            composition,
+        )
+
+        self.assertEqual(source_layout.removed, [backfill_button])
+        self.assertIs(backfill_button.parentWidget(), data_content)
+        self.assertFalse(backfill_button.shown)
+        self.assertEqual(data_layout.added, [backfill_button])
+        self.assertTrue(dock._local_first_backfill_controls_installed)
+        dock._workflow_section_coordinator.update_detailed_fetch_visibility.assert_has_calls(
+            [call(False), call(False)]
+        )
 
     def test_local_first_atlas_pdf_controls_move_to_atlas_page(self):
         class _SourceLayout:

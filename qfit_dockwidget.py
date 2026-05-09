@@ -526,6 +526,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._install_local_first_advanced_fetch_controls(
             self._local_first_dock_composition
         )
+        self._install_local_first_backfill_controls(self._local_first_dock_composition)
         self._install_local_first_atlas_pdf_controls(self._local_first_dock_composition)
         self._install_local_first_basemap_controls(self._local_first_dock_composition)
         self._install_local_first_storage_controls(self._local_first_dock_composition)
@@ -658,6 +659,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         installed_attr: str,
         installed_target_attr: str,
         title: str | None = None,
+        show_after_move: bool = True,
     ) -> bool:
         content = getattr(composition, content_attr, None)
         group = getattr(self, group_attr, None)
@@ -680,10 +682,11 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         if title is not None and hasattr(group, "setTitle"):
             group.setTitle(title)
         layout.addWidget(group)
-        if hasattr(group, "show"):
-            group.show()
-        elif hasattr(group, "setVisible"):
-            group.setVisible(True)
+        if show_after_move:
+            if hasattr(group, "show"):
+                group.show()
+            elif hasattr(group, "setVisible"):
+                group.setVisible(True)
 
         setattr(self, installed_attr, True)
         setattr(self, installed_target_attr, current_target)
@@ -699,6 +702,23 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             installed_attr="_local_first_advanced_fetch_controls_installed",
             installed_target_attr="_local_first_advanced_fetch_controls_installed_target",
         )
+
+    def _install_local_first_backfill_controls(self, composition) -> None:
+        """Expose the detailed-route backfill action in the Data tab."""
+
+        installed = self._install_local_first_group_controls(
+            composition,
+            content_attr="sync_content",
+            group_attr="backfillMissingDetailedRoutesButton",
+            installed_attr="_local_first_backfill_controls_installed",
+            installed_target_attr="_local_first_backfill_controls_installed_target",
+            show_after_move=False,
+        )
+        detailed_streams_checkbox = getattr(self, "detailedStreamsCheckBox", None)
+        if installed and hasattr(detailed_streams_checkbox, "isChecked"):
+            self._workflow_section_coordinator.update_detailed_fetch_visibility(
+                detailed_streams_checkbox.isChecked()
+            )
 
     def _install_local_first_atlas_pdf_controls(self, composition) -> None:
         """Expose backing PDF output controls in the Atlas tab."""
