@@ -851,15 +851,15 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
         if not installed:
             return
-        hook = {
-            "advanced_fetch": self._refresh_local_first_advanced_fetch_visibility,
-            "backfill_routes": self._refresh_local_first_detailed_fetch_visibility,
-            "basemap": self._refresh_local_first_mapbox_visibility,
-            "storage": self._refresh_local_first_point_sampling_visibility,
-            "atlas_pdf": self._hide_legacy_atlas_export_button,
-        }.get(key)
-        if hook is not None:
-            hook()
+        try:
+            move = local_first_control_move_for_key(key)
+        except KeyError:
+            return
+        hook_attr = move.after_install_hook_attr
+        if hook_attr is None:
+            return
+        hook = getattr(self, hook_attr)
+        hook()
 
     def _refresh_local_first_advanced_fetch_visibility(self) -> None:
         advanced_fetch_group = getattr(self, "advancedFetchGroupBox", None)
