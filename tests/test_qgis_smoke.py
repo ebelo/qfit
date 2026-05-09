@@ -299,9 +299,28 @@ class QgisSmokeTests(unittest.TestCase):
                 dock.outputGroupBox.toolTip(),
                 "Pick where qfit should store the synced GeoPackage. Tracks and start points are always written; sampled point analysis is optional.",
             )
-            self.assertEqual(dock.outputGroupBox.title(), "Store / database")
-            self.assertEqual(dock.outputGroupBox.parent(), dock.activitiesSectionContentWidget)
-            self.assertGreater(dock.activitiesSectionContentWidget.layout().indexOf(dock.outputGroupBox), dock.activitiesSectionContentWidget.layout().indexOf(dock.previewGroupBox))
+            self.assertEqual(dock.outputGroupBox.title(), "Data storage")
+            self.assertEqual(
+                dock.outputGroupBox.parentWidget(),
+                dock._local_first_dock_composition.connection_content,
+            )
+            self.assertGreaterEqual(
+                dock._local_first_dock_composition.connection_content.outer_layout().indexOf(
+                    dock.outputGroupBox,
+                ),
+                0,
+            )
+            self.assertEqual(dock.previewGroupBox.title(), "Fetched activity preview")
+            self.assertEqual(
+                dock.previewGroupBox.parentWidget(),
+                dock._local_first_dock_composition.sync_content,
+            )
+            self.assertGreaterEqual(
+                dock._local_first_dock_composition.sync_content.outer_layout().indexOf(
+                    dock.previewGroupBox,
+                ),
+                0,
+            )
             self.assertEqual(dock.styleGroupBox.title(), "")
             self.assertEqual(
                 dock.stylePresetComboBox.parentWidget(),
