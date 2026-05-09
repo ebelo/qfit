@@ -72,10 +72,12 @@ def build_workflow_page_states_from_facts(
         atlas_state=_atlas_state_from_facts(facts),
     )
 
+
 def connect_optional_signal(content, signal_name: str, callback) -> None:
     if content is None or callback is None:
         return
     getattr(content, signal_name).connect(callback)
+
 
 def completed_prefix_facts(facts: WizardProgressFacts) -> WizardProgressFacts:
     completed = build_wizard_progress_from_facts(facts).completed_keys
