@@ -6,7 +6,10 @@ from unittest.mock import patch
 from tests import _path  # noqa: F401
 from tests.test_wizard_shell import _fake_qt_modules
 
-from qfit.ui.application.dock_workflow_sections import DockWizardProgress
+from qfit.ui.application.dock_workflow_sections import (
+    DockWizardProgress,
+    DockWorkflowProgress,
+)
 from qfit.ui.application.workflow_progress_facts import WorkflowProgressFacts
 
 
@@ -39,6 +42,12 @@ class WizardShellCompositionTest(unittest.TestCase):
     def test_exports_workflow_progress_facts_for_internal_callers(self):
         self.assertIs(self.composition.WorkflowProgressFacts, WorkflowProgressFacts)
         self.assertIn("WorkflowProgressFacts", self.composition.__all__)
+
+    def test_exports_workflow_progress_as_canonical_internal_progress(self):
+        self.assertIs(self.composition.DockWorkflowProgress, DockWorkflowProgress)
+        self.assertIs(self.composition.DockWizardProgress, DockWorkflowProgress)
+        self.assertIn("DockWorkflowProgress", self.composition.__all__)
+        self.assertIn("DockWizardProgress", self.composition.__all__)
 
     def test_keeps_wizard_progress_facts_as_compatibility_alias(self):
         self.assertIs(self.composition.WizardProgressFacts, WorkflowProgressFacts)

@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import replace
 from typing import cast
 
-from .dock_workflow_sections import DockWizardProgress, WIZARD_WORKFLOW_STEPS
+from .dock_workflow_sections import DockWorkflowProgress, WIZARD_WORKFLOW_STEPS
 from .workflow_progress_facts import WorkflowProgressFacts
 from .workflow_settings import (
     WorkflowSettingsSnapshot,
@@ -13,7 +13,7 @@ from .workflow_settings import (
 
 def build_workflow_progress_from_facts(
     facts: WorkflowProgressFacts,
-) -> DockWizardProgress:
+) -> DockWorkflowProgress:
     """Build a safe workflow progress snapshot from current workflow facts.
 
     Completed steps are prefix-gated so a later fact cannot make the stepper
@@ -27,7 +27,7 @@ def build_workflow_progress_from_facts(
         completed_keys=completed_keys,
         preferred_current_key=facts.preferred_current_key,
     )
-    return DockWizardProgress(
+    return DockWorkflowProgress(
         current_key=current_key,
         completed_keys=frozenset(completed_keys),
         visited_keys=frozenset({current_key}),
@@ -37,7 +37,7 @@ def build_workflow_progress_from_facts(
 def build_workflow_progress_from_facts_and_settings(
     facts: WorkflowProgressFacts,
     settings: WorkflowSettingsSnapshot,
-) -> DockWizardProgress:
+) -> DockWorkflowProgress:
     """Build workflow progress while honoring a persisted step preference.
 
     The persisted step is a preference, not an unlock rule. The normal progress

@@ -1,5 +1,9 @@
 import unittest
 
+from qfit.ui.application import DockWorkflowProgress as exported_progress
+from qfit.ui.application import (
+    build_progress_workflow_step_statuses as exported_status_builder,
+)
 from qfit.ui.application import build_workflow_progress_from_facts as exported_builder
 from qfit.ui.application import (
     build_startup_workflow_progress_facts as exported_startup_facts_builder,
@@ -11,6 +15,10 @@ from qfit.ui.application.workflow_progress import (
     build_startup_workflow_progress_facts,
     build_workflow_progress_from_facts,
     build_workflow_progress_from_facts_and_settings,
+)
+from qfit.ui.application.dock_workflow_sections import (
+    DockWorkflowProgress,
+    build_progress_workflow_step_statuses,
 )
 from qfit.ui.application.workflow_progress_facts import WorkflowProgressFacts
 from qfit.ui.application.workflow_settings import WorkflowSettingsSnapshot
@@ -156,6 +164,11 @@ class WorkflowProgressTests(unittest.TestCase):
         )
 
     def test_application_package_exports_neutral_workflow_builder(self):
+        self.assertIs(exported_progress, DockWorkflowProgress)
+        self.assertIs(
+            exported_status_builder,
+            build_progress_workflow_step_statuses,
+        )
         self.assertIs(exported_builder, build_workflow_progress_from_facts)
         self.assertIs(
             exported_settings_builder,

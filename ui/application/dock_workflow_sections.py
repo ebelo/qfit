@@ -6,7 +6,7 @@ from enum import Enum
 
 
 class DockWorkflowStepState(str, Enum):
-    """Wizard step states shared by stepper UI implementations."""
+    """Workflow step states shared by stepper UI implementations."""
 
     LOCKED = "locked"
     UNLOCKED = "unlocked"
@@ -30,7 +30,7 @@ class DockWorkflowSection:
 
 @dataclass(frozen=True)
 class DockWorkflowStepStatus:
-    """Render-neutral status for one wizard stepper item."""
+    """Render-neutral status for one workflow stepper item."""
 
     key: str
     index: int
@@ -39,8 +39,8 @@ class DockWorkflowStepStatus:
 
 
 @dataclass(frozen=True)
-class DockWizardProgress:
-    """Render-neutral wizard progression inputs from the dock state store.
+class DockWorkflowProgress:
+    """Render-neutral workflow progression inputs from the dock state store.
 
     ``completed_keys`` represent real workflow completion. ``visited_keys``
     represent pages the user has already opened in the current session; visited
@@ -50,6 +50,10 @@ class DockWizardProgress:
     current_key: str = "connection"
     completed_keys: frozenset[str] = frozenset()
     visited_keys: frozenset[str] = frozenset()
+
+
+DockWizardProgress = DockWorkflowProgress
+"""Compatibility alias for pre-#805 wizard-named progress callers."""
 
 
 WIZARD_WORKFLOW_STEPS: tuple[DockWorkflowSection, ...] = (
@@ -104,39 +108,39 @@ def get_workflow_section(key: str) -> DockWorkflowSection:
     raise KeyError(key)
 
 
-def build_initial_wizard_step_statuses() -> tuple[DockWorkflowStepStatus, ...]:
-    """Return the first-launch wizard stepper state from the redesign spec."""
+def build_initial_workflow_step_statuses() -> tuple[DockWorkflowStepStatus, ...]:
+    """Return the first-launch workflow stepper state from the redesign spec."""
 
-    return build_wizard_step_statuses(current_key="connection")
+    return build_workflow_step_statuses(current_key="connection")
 
 
-def build_wizard_step_statuses(
+def build_workflow_step_statuses(
     *,
     current_key: str,
     completed_keys: Collection[str] = frozenset(),
     unlocked_keys: Collection[str] = frozenset(),
 ) -> tuple[DockWorkflowStepStatus, ...]:
-    """Build render-neutral wizard step statuses.
+    """Build render-neutral workflow step statuses.
 
     ``unlocked`` means the user may visit a step; it intentionally does not
-    imply ``done`` so wizard pages can expose future steps without marking their
-    workflow work complete.
+    imply ``done`` so workflow pages can expose future steps without marking
+    their workflow work complete.
     """
 
     _validate_workflow_keys(current_key, completed_keys, unlocked_keys)
     completed = set(completed_keys)
     unlocked = set(unlocked_keys)
-    return _build_wizard_step_status_tuple(
+    return _build_workflow_step_status_tuple(
         current_key=current_key,
         completed_keys=completed,
         unlocked_keys=unlocked,
     )
 
 
-def build_progress_wizard_step_statuses(
-    progress: DockWizardProgress,
+def build_progress_workflow_step_statuses(
+    progress: DockWorkflowProgress,
 ) -> tuple[DockWorkflowStepStatus, ...]:
-    """Build wizard step statuses from progress facts.
+    """Build workflow step statuses from progress facts.
 
     This encodes the #609 progression rule without depending on concrete Qt
     widgets: a step is unlocked when its previous step is done or when the user
@@ -148,14 +152,27 @@ def build_progress_wizard_step_statuses(
     completed = set(progress.completed_keys)
     visited = set(progress.visited_keys) | {progress.current_key}
     _validate_workflow_keys(progress.current_key, completed, visited)
-    return _build_wizard_step_status_tuple(
+    return _build_workflow_step_status_tuple(
         current_key=progress.current_key,
         completed_keys=completed,
-        unlocked_keys=_derive_unlocked_step_keys(completed_keys=completed, visited_keys=visited),
+        unlocked_keys=_derive_unlocked_step_keys(
+            completed_keys=completed,
+            visited_keys=visited,
+        ),
     )
 
 
-def _build_wizard_step_status_tuple(
+build_initial_wizard_step_statuses = build_initial_workflow_step_statuses
+"""Compatibility alias for pre-#805 wizard-named step status callers."""
+
+build_wizard_step_statuses = build_workflow_step_statuses
+"""Compatibility alias for pre-#805 wizard-named step status callers."""
+
+build_progress_wizard_step_statuses = build_progress_workflow_step_statuses
+"""Compatibility alias for pre-#805 wizard-named progress status callers."""
+
+
+def _build_workflow_step_status_tuple(
     *,
     current_key: str,
     completed_keys: set[str],

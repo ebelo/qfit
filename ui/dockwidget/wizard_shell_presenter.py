@@ -4,8 +4,8 @@ from collections.abc import Callable
 from inspect import Parameter, signature
 
 from qfit.ui.application.dock_workflow_sections import (
-    DockWizardProgress,
-    build_progress_wizard_step_statuses,
+    DockWorkflowProgress,
+    build_progress_workflow_step_statuses,
 )
 from qfit.ui.application.stepper_presenter import (
     build_stepper_states,
@@ -27,7 +27,7 @@ class WizardShellPresenter:
     def __init__(
         self,
         shell,
-        progress: DockWizardProgress | None = None,
+        progress: DockWorkflowProgress | None = None,
         *,
         page_indices_by_key: dict[str, int] | None = None,
         on_current_step_changed: Callable[..., None] | None = None,
@@ -35,17 +35,17 @@ class WizardShellPresenter:
         self._shell = shell
         self._page_indices_by_key = page_indices_by_key
         self._on_current_step_changed = on_current_step_changed
-        self._progress = progress or DockWizardProgress()
+        self._progress = progress or DockWorkflowProgress()
         self._render()
         self._shell.stepper_bar.stepRequested.connect(self.request_step)
 
     @property
-    def progress(self) -> DockWizardProgress:
-        """Return the current render-neutral wizard progress snapshot."""
+    def progress(self) -> DockWorkflowProgress:
+        """Return the current render-neutral workflow progress snapshot."""
 
         return self._progress
 
-    def set_progress(self, progress: DockWizardProgress) -> None:
+    def set_progress(self, progress: DockWorkflowProgress) -> None:
         """Replace the current progress snapshot and refresh the shell.
 
         The optional step-change callback is notified only when the current
@@ -56,7 +56,7 @@ class WizardShellPresenter:
 
         # Reuse the render path for validation so invalid workflow keys fail
         # before the shell state is mutated.
-        build_progress_wizard_step_statuses(progress)
+        build_progress_workflow_step_statuses(progress)
         if self._page_index_for_key(progress.current_key) is None:
             raise ValueError(f"No installed wizard page for {progress.current_key!r}")
         previous_key = self._progress.current_key
@@ -77,7 +77,7 @@ class WizardShellPresenter:
         if self._page_index_for_key(key) is None:
             return False
         previous_key = self._progress.current_key
-        self._progress = DockWizardProgress(
+        self._progress = DockWorkflowProgress(
             current_key=key,
             completed_keys=self._progress.completed_keys,
             visited_keys=self._progress.visited_keys | {key},
@@ -103,7 +103,7 @@ class WizardShellPresenter:
         if missing_prerequisites:
             missing = ", ".join(missing_prerequisites)
             raise ValueError(f"Cannot mark {key!r} done before {missing}")
-        self._progress = DockWizardProgress(
+        self._progress = DockWorkflowProgress(
             current_key=self._progress.current_key,
             completed_keys=self._progress.completed_keys | {key},
             visited_keys=self._progress.visited_keys,
@@ -111,7 +111,7 @@ class WizardShellPresenter:
         self._render()
 
     def _statuses(self):
-        return build_progress_wizard_step_statuses(self._progress)
+        return build_progress_workflow_step_statuses(self._progress)
 
     def _render(self) -> None:
         statuses = self._statuses()
@@ -178,4 +178,8 @@ def _missing_completion_prerequisites(
     )
 
 
-__all__ = ["WizardShellPresenter"]
+DockWizardProgress = DockWorkflowProgress
+"""Compatibility alias for pre-#805 wizard shell presenter tests/callers."""
+
+
+__all__ = ["DockWorkflowProgress", "DockWizardProgress", "WizardShellPresenter"]
