@@ -541,6 +541,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._install_local_first_advanced_fetch_controls(
             self._local_first_dock_composition
         )
+        self._install_local_first_activity_preview_controls(
+            self._local_first_dock_composition
+        )
         self._install_local_first_backfill_controls(self._local_first_dock_composition)
         self._install_local_first_atlas_pdf_controls(self._local_first_dock_composition)
         self._install_local_first_basemap_controls(self._local_first_dock_composition)
@@ -736,6 +739,18 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             group_attr="advancedFetchGroupBox",
             installed_attr="_local_first_advanced_fetch_controls_installed",
             installed_target_attr="_local_first_advanced_fetch_controls_installed_target",
+        )
+
+    def _install_local_first_activity_preview_controls(self, composition) -> None:
+        """Expose fetched activity query details in the Data tab."""
+
+        self._install_local_first_group_controls(
+            composition,
+            content_attr="sync_content",
+            group_attr="previewGroupBox",
+            installed_attr="_local_first_activity_preview_controls_installed",
+            installed_target_attr="_local_first_activity_preview_controls_installed_target",
+            title="Fetched activity preview",
         )
 
     def _install_local_first_backfill_controls(self, composition) -> None:
