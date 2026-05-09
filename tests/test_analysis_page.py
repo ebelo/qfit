@@ -74,6 +74,19 @@ class AnalysisPageContentTest(unittest.TestCase):
         )
         self.assertEqual(content.current_analysis_mode(), "Heatmap")
         self.assertEqual(
+            content.temporal_controls_panel.objectName(),
+            "qfitWizardAnalysisTemporalControlsPanel",
+        )
+        self.assertTrue(content.temporal_controls_panel.isVisible())
+        self.assertEqual(
+            content.temporal_controls_panel.property("temporalControlsState"),
+            "expanded",
+        )
+        self.assertEqual(
+            content.temporal_controls_layout().object_name,
+            "qfitWizardAnalysisTemporalControlsLayout",
+        )
+        self.assertEqual(
             content.run_analysis_button.objectName(),
             "qfitWizardAnalysisRunButton",
         )
@@ -119,6 +132,7 @@ class AnalysisPageContentTest(unittest.TestCase):
                 content.input_summary_label,
                 content.analysis_mode_label,
                 content.analysis_mode_combo,
+                content.temporal_controls_panel,
                 content.action_row,
                 content.result_summary_label,
             ],
