@@ -890,10 +890,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         layout.addWidget(button)
         layout.addStretch(1)
 
-        if content_layout is not None:
-            content_layout.insertWidget(0, row)
-        else:
-            self.analysisWorkflowLayout.insertWidget(0, row)
+        content_layout.insertWidget(0, row)
         self.analysisModeLabel = label
         self.analysisModeComboBox = combo
         self.runAnalysisButton = button
