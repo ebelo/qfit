@@ -391,7 +391,7 @@ class WorkflowSectionCoordinatorTests(unittest.TestCase):
         dock.statusLabel = _FakeWidget()
         return dock
 
-    def test_configure_starting_sections_moves_widgets_and_installs_collapsibles(self):
+    def test_configure_starting_sections_prepares_local_first_backing_controls(self):
         import qfit.ui.workflow_section_coordinator as workflow_section_coordinator
 
         class _FakeSignal:
@@ -423,9 +423,6 @@ class WorkflowSectionCoordinatorTests(unittest.TestCase):
         class _FakeToolButton(_FakeWidget):
             def __init__(self, _parent=None):
                 super().__init__()
-                self.toggled = _FakeSignal()
-                self.arrow_type = None
-                self.checked = None
                 self.object_name = None
                 self.text = None
                 self.menu = None
@@ -440,55 +437,29 @@ class WorkflowSectionCoordinatorTests(unittest.TestCase):
             def setToolButtonStyle(self, _style):
                 pass
 
-            def setArrowType(self, arrow_type):
-                self.arrow_type = arrow_type
-
-            def setChecked(self, checked):
-                self.checked = checked
-
             def setPopupMode(self, mode):
                 self.popup_mode = mode
 
             def setMenu(self, menu):
                 self.menu = menu
 
-            def setStyleSheet(self, _style):
-                pass
-
-        class _FakeVBoxLayout:
-            def __init__(self, _parent=None):
-                self.items = []
-                self._spacing = 0
-
-            def setContentsMargins(self, *_args):
-                pass
-
-            def setSpacing(self, spacing):
-                self._spacing = spacing
-
-            def addWidget(self, widget):
-                self.items.append(("widget", widget))
-
-            def addLayout(self, layout):
-                self.items.append(("layout", layout))
-
-            def addItem(self, item):
-                self.items.append(("item", item))
-
         _FakeToolButton.InstantPopup = "instant-popup"
 
         qtwidgets = ModuleType("qgis.PyQt.QtWidgets")
         qtwidgets.QMenu = _FakeMenu
         qtwidgets.QToolButton = _FakeToolButton
-        qtwidgets.QVBoxLayout = _FakeVBoxLayout
-        qtwidgets.QWidget = _FakeWidget
 
-        coordinator = workflow_section_coordinator.WorkflowSectionCoordinator(self._make_section_dock())
+        coordinator = workflow_section_coordinator.WorkflowSectionCoordinator(
+            self._make_section_dock()
+        )
         with patch.dict(sys.modules, {"qgis.PyQt.QtWidgets": qtwidgets}):
             coordinator.configure_starting_sections()
         dock = coordinator.dock_widget
 
-        self.assertEqual(dock.workflowLabel.text, "Sections: Fetch & store · Visualize · Analyze · Publish")
+        self.assertEqual(
+            dock.workflowLabel.text,
+            "Sections: Fetch & store · Visualize · Analyze · Publish",
+        )
         self.assertFalse(dock.credentialsGroupBox.visible)
         self.assertEqual(dock.outputGroupBox.parent(), dock.activitiesGroupBox)
         self.assertEqual(dock.loadLayersButton.parent(), dock.styleGroupBox)
@@ -508,12 +479,11 @@ class WorkflowSectionCoordinatorTests(unittest.TestCase):
         self.assertFalse(dock.countLabel.visible)
         self.assertFalse(dock.statusLabel.visible)
         self.assertEqual(dock.outputGroupBox.visible, None)
-        self.assertTrue(hasattr(dock, "activitiesSectionToggleButton"))
-        self.assertTrue(hasattr(dock, "activitiesSectionContentWidget"))
-        self.assertTrue(hasattr(dock, "styleSectionToggleButton"))
+        self.assertFalse(hasattr(dock, "activitiesSectionToggleButton"))
+        self.assertFalse(hasattr(dock, "activitiesSectionContentWidget"))
+        self.assertFalse(hasattr(dock, "styleSectionToggleButton"))
         self.assertFalse(dock.activitiesIntroLabel.visible)
-        self.assertIn("saved in qfit → Configuration", dock.activitiesSectionToggleButton.tooltip)
-        self.assertEqual(dock.activitiesGroupBox.tooltip, dock.activitiesSectionToggleButton.tooltip)
+        self.assertIn("saved in qfit → Configuration", dock.activitiesGroupBox.tooltip)
         self.assertFalse(dock.outputIntroLabel.visible)
         self.assertEqual(dock.outputGroupBox.tooltip, dock.outputIntroLabel.text)
         self.assertFalse(dock.atlasPdfHelpLabel.visible)
@@ -541,21 +511,21 @@ class WorkflowSectionCoordinatorTests(unittest.TestCase):
         self.assertEqual(dock.pointSamplingStrideLabel.text, "Keep every Nth point")
         self.assertEqual(dock.pointSamplingStrideSpinBox.suffix, " points")
 
-    def test_set_section_expanded_updates_toggle_arrow_and_content_visibility(self):
+    def test_no_hidden_collapsible_section_api_remains(self):
         import qfit.ui.workflow_section_coordinator as workflow_section_coordinator
 
-        dock = type("Dock", (), {})()
-        dock.activitiesSectionToggleButton = type("Toggle", (), {"arrow": None, "setArrowType": lambda self, val: setattr(self, "arrow", val)})()
-        dock.activitiesSectionContentWidget = _FakeWidget()
-        coordinator = workflow_section_coordinator.WorkflowSectionCoordinator(dock)
-
-        coordinator.set_section_expanded("activities", False)
-        self.assertEqual(dock.activitiesSectionToggleButton.arrow, workflow_section_coordinator.Qt.RightArrow)
-        self.assertFalse(dock.activitiesSectionContentWidget.visible)
-
-        coordinator.set_section_expanded("activities", True)
-        self.assertEqual(dock.activitiesSectionToggleButton.arrow, workflow_section_coordinator.Qt.DownArrow)
-        self.assertTrue(dock.activitiesSectionContentWidget.visible)
+        self.assertFalse(
+            hasattr(
+                workflow_section_coordinator.WorkflowSectionCoordinator,
+                "install_collapsible_section",
+            )
+        )
+        self.assertFalse(
+            hasattr(
+                workflow_section_coordinator.WorkflowSectionCoordinator,
+                "set_section_expanded",
+            )
+        )
 
 class DockStartupCoordinatorTests(unittest.TestCase):
     def test_run_orchestrates_startup_in_constructor_order(self):

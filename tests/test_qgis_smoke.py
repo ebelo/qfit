@@ -283,13 +283,10 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertTrue(bool(dock.features() & dock.DockWidgetMovable))
             self.assertTrue(bool(dock.features() & dock.DockWidgetFloatable))
             self.assertEqual(dock.activitiesGroupBox.title(), "")
-            self.assertEqual(dock.activitiesSectionToggleButton.text(), "Fetch and store")
-            self.assertTrue(dock.activitiesSectionToggleButton.isChecked())
-            self.assertEqual(dock.activitiesSectionToggleButton.arrowType(), Qt.DownArrow)
-            self.assertFalse(dock.activitiesSectionContentWidget.isHidden())
+            self.assertFalse(hasattr(dock, "activitiesSectionToggleButton"))
+            self.assertFalse(hasattr(dock, "activitiesSectionContentWidget"))
             self.assertTrue(dock.activitiesIntroLabel.isHidden())
-            self.assertIn("saved in qfit → Configuration", dock.activitiesSectionToggleButton.toolTip())
-            self.assertEqual(dock.activitiesGroupBox.toolTip(), dock.activitiesSectionToggleButton.toolTip())
+            self.assertIn("saved in qfit → Configuration", dock.activitiesGroupBox.toolTip())
             self.assertFalse(dock.mapboxAccessTokenLabel.isVisible())
             self.assertFalse(dock.mapboxAccessTokenLineEdit.isVisible())
             self.assertEqual(dock.refreshButton.text(), "Fetch activities")
@@ -341,10 +338,9 @@ class QgisSmokeTests(unittest.TestCase):
                 ),
                 0,
             )
-            self.assertEqual(dock.styleSectionToggleButton.text(), "Visualize")
-            self.assertEqual(dock.styleSectionToggleButton.arrowType(), Qt.DownArrow)
-            self.assertFalse(dock.styleSectionContentWidget.isHidden())
-            self.assertEqual(dock.loadLayersButton.parent(), dock.styleSectionContentWidget)
+            self.assertFalse(hasattr(dock, "styleSectionToggleButton"))
+            self.assertFalse(hasattr(dock, "styleSectionContentWidget"))
+            self.assertEqual(dock.loadLayersButton.parent(), dock.styleGroupBox)
             self.assertEqual(
                 dock.backgroundGroupBox.parentWidget(),
                 dock._local_first_dock_composition.connection_content,
@@ -356,12 +352,15 @@ class QgisSmokeTests(unittest.TestCase):
                 0,
             )
             self.assertEqual(dock.analysisWorkflowGroupBox.title(), "")
-            self.assertEqual(dock.analysisSectionToggleButton.text(), "Analyze")
-            self.assertFalse(dock.analysisSectionContentWidget.isHidden())
+            self.assertFalse(hasattr(dock, "analysisSectionToggleButton"))
+            self.assertFalse(hasattr(dock, "analysisSectionContentWidget"))
             self.assertEqual(dock.analysisWorkflowLayout.spacing(), 6)
             self.assertEqual(dock.analysisModeLabel.text(), "Analysis")
             self.assertEqual(dock.runAnalysisButton.text(), "Run analysis")
-            self.assertEqual(dock.analysisModeLabel.parentWidget().parentWidget(), dock.analysisSectionContentWidget)
+            self.assertEqual(
+                dock.analysisModeLabel.parentWidget().parentWidget(),
+                dock.analysisWorkflowGroupBox,
+            )
             self.assertEqual(
                 dock.temporalModeLabel.parentWidget().parentWidget(),
                 dock._local_first_dock_composition.analysis_content.temporal_controls_panel,
@@ -380,9 +379,12 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertFalse(dock.temporalModeComboBox.isHidden())
             self.assertFalse(dock.temporalHelpLabel.isHidden())
             self.assertEqual(dock.publishGroupBox.title(), "")
-            self.assertEqual(dock.publishSectionToggleButton.text(), "Publish / atlas")
-            self.assertFalse(dock.publishSectionContentWidget.isHidden())
-            self.assertTrue(dock.publishSettingsWidget.parent() is dock.publishSectionContentWidget or dock.publishSettingsWidget.isVisible())
+            self.assertFalse(hasattr(dock, "publishSectionToggleButton"))
+            self.assertFalse(hasattr(dock, "publishSectionContentWidget"))
+            self.assertTrue(
+                dock.publishSettingsWidget.parent() is dock.publishGroupBox
+                or dock.publishSettingsWidget.isVisible()
+            )
             self.assertTrue(dock.atlasPdfHelpLabel.isHidden())
             self.assertIn("per-activity PDF atlas", dock.atlasPdfGroupBox.toolTip())
             self.assertEqual(dock.generateAtlasPdfButton.toolTip(), dock.atlasPdfGroupBox.toolTip())
@@ -406,17 +408,6 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertIsNotNone(dock.findChild(QWidget, "maxDetailedActivitiesSpinBoxHelpField"))
             temporal_helper = dock.findChild(QLabel, "temporalModeComboBoxContextHelpLabel")
             self.assertIsNone(temporal_helper)
-            dock.activitiesSectionToggleButton.click()
-            self.assertFalse(dock.activitiesSectionToggleButton.isChecked())
-            self.assertEqual(dock.activitiesSectionToggleButton.arrowType(), Qt.RightArrow)
-            self.assertTrue(dock.activitiesSectionContentWidget.isHidden())
-            dock.styleSectionToggleButton.click()
-            self.assertTrue(dock.styleSectionContentWidget.isHidden())
-            dock.analysisSectionToggleButton.click()
-            self.assertTrue(dock.analysisSectionContentWidget.isHidden())
-            self.assertFalse(dock.analysisModeLabel.parentWidget().isVisible())
-            dock.publishSectionToggleButton.click()
-            self.assertTrue(dock.publishSectionContentWidget.isHidden())
         finally:
             dock.close()
             dock.deleteLater()

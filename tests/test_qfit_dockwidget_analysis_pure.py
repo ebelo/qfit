@@ -343,13 +343,11 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             sys.modules.pop("qfit.qfit_dockwidget", None)
             return importlib.import_module("qfit.qfit_dockwidget")
 
-    def test_configure_analysis_mode_options_inserts_row_into_section_content(self):
+    def test_configure_analysis_mode_options_inserts_row_into_analysis_group(self):
         dock = object.__new__(self.module.QfitDockWidget)
-        section_content = _FakeWidget()
         content_layout = _FakeLayout()
-        section_content.setLayout(content_layout)
-        dock.analysisSectionContentWidget = section_content
         dock.analysisWorkflowGroupBox = _FakeWidget()
+        dock.analysisWorkflowGroupBox.setLayout(content_layout)
         dock.analysisWorkflowLayout = _FakeLayout()
 
         with patch.multiple(
@@ -366,6 +364,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         index, row = content_layout.inserted[0]
         self.assertEqual(index, 0)
         self.assertEqual(row.objectName(), "analysisModeRow")
+        self.assertIs(row.parentWidget(), dock.analysisWorkflowGroupBox)
         self.assertEqual(dock.analysisModeLabel.text(), "Analysis")
         self.assertEqual(
             dock.analysisModeComboBox.items,
