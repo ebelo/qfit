@@ -24,6 +24,7 @@ class LocalFirstControlMove:
     layout_getter_attr: str = "outer_layout"
     parent_panel_attr: str | None = None
     post_install_visible_attr: str | None = None
+    after_install_hook_attr: str | None = None
 
 
 @dataclass(frozen=True)
@@ -89,6 +90,7 @@ LOCAL_FIRST_CONTROL_MOVES: tuple[LocalFirstControlMove, ...] = (
         ),
         installed_attr="_local_first_advanced_fetch_controls_installed",
         installed_target_attr="_local_first_advanced_fetch_controls_installed_target",
+        after_install_hook_attr="_refresh_local_first_advanced_fetch_visibility",
     ),
     LocalFirstControlMove(
         key="activity_preview",
@@ -106,6 +108,7 @@ LOCAL_FIRST_CONTROL_MOVES: tuple[LocalFirstControlMove, ...] = (
         installed_attr="_local_first_backfill_controls_installed",
         installed_target_attr="_local_first_backfill_controls_installed_target",
         show_after_move=False,
+        after_install_hook_attr="_refresh_local_first_detailed_fetch_visibility",
     ),
     LocalFirstControlMove(
         key="map_filters",
@@ -135,6 +138,7 @@ LOCAL_FIRST_CONTROL_MOVES: tuple[LocalFirstControlMove, ...] = (
         installed_attr="_local_first_atlas_pdf_controls_installed",
         installed_target_attr="_local_first_atlas_pdf_controls_installed_target",
         title="PDF output",
+        after_install_hook_attr="_hide_legacy_atlas_export_button",
     ),
     LocalFirstControlMove(
         key="strava_credentials",
@@ -168,6 +172,7 @@ LOCAL_FIRST_CONTROL_MOVES: tuple[LocalFirstControlMove, ...] = (
         installed_attr="_local_first_basemap_controls_installed",
         installed_target_attr="_local_first_basemap_controls_installed_target",
         title="Mapbox basemap",
+        after_install_hook_attr="_refresh_local_first_mapbox_visibility",
     ),
     LocalFirstControlMove(
         key="storage",
@@ -182,6 +187,7 @@ LOCAL_FIRST_CONTROL_MOVES: tuple[LocalFirstControlMove, ...] = (
         installed_attr="_local_first_storage_controls_installed",
         installed_target_attr="_local_first_storage_controls_installed_target",
         title="Data storage",
+        after_install_hook_attr="_refresh_local_first_point_sampling_visibility",
     ),
 )
 

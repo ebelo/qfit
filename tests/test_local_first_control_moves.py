@@ -128,19 +128,47 @@ class LocalFirstControlMoveTests(unittest.TestCase):
         )
         self.assertEqual(move.title, "PDF output")
         self.assertTrue(move.show_after_move)
+        self.assertEqual(
+            move.after_install_hook_attr,
+            "_hide_legacy_atlas_export_button",
+        )
 
         backfill = local_first_control_move_for_key("backfill_routes")
         self.assertFalse(backfill.show_after_move)
+        self.assertEqual(
+            backfill.after_install_hook_attr,
+            "_refresh_local_first_detailed_fetch_visibility",
+        )
 
         filters = local_first_control_move_for_key("map_filters")
         self.assertEqual(filters.layout_getter_attr, "filter_controls_layout")
         self.assertEqual(filters.parent_panel_attr, "filter_controls_panel")
         self.assertEqual(filters.post_install_visible_attr, "set_filter_controls_visible")
+        self.assertIsNone(filters.after_install_hook_attr)
 
         credentials = local_first_control_move_for_key("strava_credentials")
         self.assertEqual(credentials.content_attr, "settings_content")
         self.assertEqual(credentials.group_attr, "credentialsGroupBox")
         self.assertEqual(credentials.title, "Strava connection")
+
+    def test_control_moves_document_post_install_hooks(self):
+        hooks = {
+            move.key: move.after_install_hook_attr for move in LOCAL_FIRST_CONTROL_MOVES
+        }
+
+        self.assertEqual(
+            hooks,
+            {
+                "advanced_fetch": "_refresh_local_first_advanced_fetch_visibility",
+                "activity_preview": None,
+                "backfill_routes": "_refresh_local_first_detailed_fetch_visibility",
+                "map_filters": None,
+                "atlas_pdf": "_hide_legacy_atlas_export_button",
+                "strava_credentials": None,
+                "basemap": "_refresh_local_first_mapbox_visibility",
+                "storage": "_refresh_local_first_point_sampling_visibility",
+            },
+        )
 
     def test_widget_move_inventory_covers_loose_visualization_controls(self):
         self.assertEqual(
