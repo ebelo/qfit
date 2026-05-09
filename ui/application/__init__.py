@@ -35,6 +35,13 @@ from .local_first_navigation import (
     build_local_first_dock_navigation_state,
     local_first_dock_page_keys,
 )
+from .local_first_parity_audit import (
+    ISSUE_805_REQUIRED_AREAS,
+    LocalFirstParitySurface,
+    build_issue805_local_first_parity_surfaces,
+    issue805_local_first_coverage_by_area,
+    missing_issue805_local_first_areas,
+)
 from .local_first_activity_controls import (
     build_current_activity_preview_request,
     configure_detailed_route_filter_options,
@@ -191,6 +198,7 @@ __all__ = [
     "CURRENT_DOCK_SECTIONS",
     "LAST_STEP_INDEX_KEY",
     "LAST_STEP_INDEX_USER_SELECTED_KEY",
+    "ISSUE_805_REQUIRED_AREAS",
     "LOCAL_FIRST_CONTROL_MOVES",
     "LOCAL_FIRST_DOCK_PAGE_DEFINITIONS",
     "LOCAL_FIRST_WIDGET_MOVES",
@@ -205,6 +213,7 @@ __all__ = [
     "LocalFirstDockNavigationState",
     "LocalFirstDockPageDefinition",
     "LocalFirstDockPageState",
+    "LocalFirstParitySurface",
     "LocalFirstWidgetMove",
     "WIZARD_WORKFLOW_STEPS",
     "WIZARD_STEP_COUNT",
@@ -240,6 +249,7 @@ __all__ = [
     "build_detailed_fetch_visibility_update",
     "build_dock_summary_status",
     "build_initial_wizard_step_statuses",
+    "build_issue805_local_first_parity_surfaces",
     "build_local_first_dock_navigation_state",
     "build_local_first_conditional_visibility_updates",
     "build_mapbox_custom_style_visibility_update",
@@ -269,6 +279,7 @@ __all__ = [
     "install_local_first_group_controls",
     "install_local_first_widget_move",
     "install_local_first_widget_controls",
+    "issue805_local_first_coverage_by_area",
     "load_wizard_settings",
     "local_first_analysis_mode_options",
     "local_first_control_move_layout",
@@ -281,6 +292,7 @@ __all__ = [
     "local_first_widget_move_for_key",
     "local_first_widget_move_keys",
     "preferred_current_key_from_settings",
+    "missing_issue805_local_first_areas",
     "refresh_local_first_conditional_control_visibility",
     "refresh_local_first_control_visibility",
     "remove_widget_from_current_layout",
