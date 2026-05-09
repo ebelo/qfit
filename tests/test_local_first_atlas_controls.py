@@ -5,6 +5,7 @@ from unittest.mock import MagicMock
 from tests import _path  # noqa: F401
 
 from qfit.ui.application.local_first_atlas_controls import (
+    hide_legacy_atlas_export_button,
     update_local_first_atlas_document_settings,
 )
 
@@ -73,6 +74,16 @@ class LocalFirstAtlasControlsTests(unittest.TestCase):
         self.assertEqual(dock.atlasTitleLineEdit.text(), "Spring Atlas")
         dock._mark_atlas_export_stale.assert_called_once_with()
         dock._refresh_summary_status.assert_called_once_with()
+
+    def test_hides_legacy_export_button_when_present(self):
+        dock = SimpleNamespace(generateAtlasPdfButton=MagicMock())
+
+        hide_legacy_atlas_export_button(dock)
+
+        dock.generateAtlasPdfButton.hide.assert_called_once_with()
+
+    def test_hiding_legacy_export_button_tolerates_missing_button(self):
+        hide_legacy_atlas_export_button(SimpleNamespace())
 
 
 if __name__ == "__main__":

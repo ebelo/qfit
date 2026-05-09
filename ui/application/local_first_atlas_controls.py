@@ -32,4 +32,15 @@ def update_local_first_atlas_document_settings(
         dock._refresh_summary_status()
 
 
-__all__ = ["update_local_first_atlas_document_settings"]
+def hide_legacy_atlas_export_button(dock) -> None:
+    """Hide the legacy export button after moving PDF controls local-first."""
+
+    legacy_export_button = getattr(dock, "generateAtlasPdfButton", None)
+    if legacy_export_button is not None and hasattr(legacy_export_button, "hide"):
+        legacy_export_button.hide()
+
+
+__all__ = [
+    "hide_legacy_atlas_export_button",
+    "update_local_first_atlas_document_settings",
+]

@@ -9,6 +9,9 @@ from .application.local_first_backing_controls import (
 from .application.local_first_analysis_controls import (
     configure_local_first_analysis_mode_backing_controls,
 )
+from .application.local_first_control_visibility import (
+    refresh_local_first_conditional_control_visibility,
+)
 
 
 @dataclass(frozen=True)
@@ -74,7 +77,7 @@ class DockStartupCoordinator:
         dock._wire_events()
         performed_steps.append("wire_events")
 
-        dock._refresh_conditional_control_visibility()
+        refresh_local_first_conditional_control_visibility(dock)
         performed_steps.append("refresh_conditional_control_visibility")
 
         dock._refresh_activity_preview()

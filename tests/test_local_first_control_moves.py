@@ -3,6 +3,7 @@ import unittest
 from tests import _path  # noqa: F401
 
 from qfit.ui.application.local_first_control_moves import (
+    HIDE_LEGACY_ATLAS_EXPORT_BUTTON_HOOK,
     LOCAL_FIRST_CONTROL_MOVES,
     LOCAL_FIRST_WIDGET_MOVES,
     REFRESH_CONDITIONAL_VISIBILITY_HOOK,
@@ -130,14 +131,14 @@ class LocalFirstControlMoveTests(unittest.TestCase):
         self.assertEqual(move.title, "PDF output")
         self.assertTrue(move.show_after_move)
         self.assertEqual(
-            move.after_install_hook_attr,
-            "_hide_legacy_atlas_export_button",
+            move.after_install_hook_key,
+            HIDE_LEGACY_ATLAS_EXPORT_BUTTON_HOOK,
         )
 
         backfill = local_first_control_move_for_key("backfill_routes")
         self.assertFalse(backfill.show_after_move)
         self.assertEqual(
-            backfill.after_install_hook_attr,
+            backfill.after_install_hook_key,
             REFRESH_CONDITIONAL_VISIBILITY_HOOK,
         )
 
@@ -145,7 +146,7 @@ class LocalFirstControlMoveTests(unittest.TestCase):
         self.assertEqual(filters.layout_getter_attr, "filter_controls_layout")
         self.assertEqual(filters.parent_panel_attr, "filter_controls_panel")
         self.assertEqual(filters.post_install_visible_attr, "set_filter_controls_visible")
-        self.assertIsNone(filters.after_install_hook_attr)
+        self.assertIsNone(filters.after_install_hook_key)
 
         credentials = local_first_control_move_for_key("strava_credentials")
         self.assertEqual(credentials.content_attr, "settings_content")
@@ -154,7 +155,7 @@ class LocalFirstControlMoveTests(unittest.TestCase):
 
     def test_control_moves_document_post_install_hooks(self):
         hooks = {
-            move.key: move.after_install_hook_attr for move in LOCAL_FIRST_CONTROL_MOVES
+            move.key: move.after_install_hook_key for move in LOCAL_FIRST_CONTROL_MOVES
         }
 
         self.assertEqual(
@@ -164,7 +165,7 @@ class LocalFirstControlMoveTests(unittest.TestCase):
                 "activity_preview": None,
                 "backfill_routes": REFRESH_CONDITIONAL_VISIBILITY_HOOK,
                 "map_filters": None,
-                "atlas_pdf": "_hide_legacy_atlas_export_button",
+                "atlas_pdf": HIDE_LEGACY_ATLAS_EXPORT_BUTTON_HOOK,
                 "strava_credentials": None,
                 "basemap": REFRESH_CONDITIONAL_VISIBILITY_HOOK,
                 "storage": REFRESH_CONDITIONAL_VISIBILITY_HOOK,

@@ -3,7 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 
-REFRESH_CONDITIONAL_VISIBILITY_HOOK = "_refresh_conditional_control_visibility"
+REFRESH_CONDITIONAL_VISIBILITY_HOOK = "refresh_conditional_visibility"
+HIDE_LEGACY_ATLAS_EXPORT_BUTTON_HOOK = "hide_legacy_atlas_export_button"
 
 
 @dataclass(frozen=True)
@@ -27,7 +28,7 @@ class LocalFirstControlMove:
     layout_getter_attr: str = "outer_layout"
     parent_panel_attr: str | None = None
     post_install_visible_attr: str | None = None
-    after_install_hook_attr: str | None = None
+    after_install_hook_key: str | None = None
 
 
 @dataclass(frozen=True)
@@ -93,7 +94,7 @@ LOCAL_FIRST_CONTROL_MOVES: tuple[LocalFirstControlMove, ...] = (
         ),
         installed_attr="_local_first_advanced_fetch_controls_installed",
         installed_target_attr="_local_first_advanced_fetch_controls_installed_target",
-        after_install_hook_attr=REFRESH_CONDITIONAL_VISIBILITY_HOOK,
+        after_install_hook_key=REFRESH_CONDITIONAL_VISIBILITY_HOOK,
     ),
     LocalFirstControlMove(
         key="activity_preview",
@@ -111,7 +112,7 @@ LOCAL_FIRST_CONTROL_MOVES: tuple[LocalFirstControlMove, ...] = (
         installed_attr="_local_first_backfill_controls_installed",
         installed_target_attr="_local_first_backfill_controls_installed_target",
         show_after_move=False,
-        after_install_hook_attr=REFRESH_CONDITIONAL_VISIBILITY_HOOK,
+        after_install_hook_key=REFRESH_CONDITIONAL_VISIBILITY_HOOK,
     ),
     LocalFirstControlMove(
         key="map_filters",
@@ -141,7 +142,7 @@ LOCAL_FIRST_CONTROL_MOVES: tuple[LocalFirstControlMove, ...] = (
         installed_attr="_local_first_atlas_pdf_controls_installed",
         installed_target_attr="_local_first_atlas_pdf_controls_installed_target",
         title="PDF output",
-        after_install_hook_attr="_hide_legacy_atlas_export_button",
+        after_install_hook_key=HIDE_LEGACY_ATLAS_EXPORT_BUTTON_HOOK,
     ),
     LocalFirstControlMove(
         key="strava_credentials",
@@ -175,7 +176,7 @@ LOCAL_FIRST_CONTROL_MOVES: tuple[LocalFirstControlMove, ...] = (
         installed_attr="_local_first_basemap_controls_installed",
         installed_target_attr="_local_first_basemap_controls_installed_target",
         title="Mapbox basemap",
-        after_install_hook_attr=REFRESH_CONDITIONAL_VISIBILITY_HOOK,
+        after_install_hook_key=REFRESH_CONDITIONAL_VISIBILITY_HOOK,
     ),
     LocalFirstControlMove(
         key="storage",
@@ -190,7 +191,7 @@ LOCAL_FIRST_CONTROL_MOVES: tuple[LocalFirstControlMove, ...] = (
         installed_attr="_local_first_storage_controls_installed",
         installed_target_attr="_local_first_storage_controls_installed_target",
         title="Data storage",
-        after_install_hook_attr=REFRESH_CONDITIONAL_VISIBILITY_HOOK,
+        after_install_hook_key=REFRESH_CONDITIONAL_VISIBILITY_HOOK,
     ),
 )
 
@@ -228,6 +229,7 @@ def local_first_widget_move_keys() -> tuple[str, ...]:
 __all__ = [
     "LOCAL_FIRST_CONTROL_MOVES",
     "LOCAL_FIRST_WIDGET_MOVES",
+    "HIDE_LEGACY_ATLAS_EXPORT_BUTTON_HOOK",
     "LocalFirstControlMove",
     "LocalFirstWidgetMove",
     "REFRESH_CONDITIONAL_VISIBILITY_HOOK",

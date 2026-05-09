@@ -537,6 +537,10 @@ class DockStartupCoordinatorTests(unittest.TestCase):
                 "qfit.ui.dock_startup_coordinator."
                 "configure_local_first_analysis_mode_backing_controls"
             ) as configure_local_first_analysis_mode_backing_controls,
+            patch(
+                "qfit.ui.dock_startup_coordinator."
+                "refresh_local_first_conditional_control_visibility"
+            ) as refresh_local_first_conditional_control_visibility,
         ):
             coordinator = DockStartupCoordinator(dock)
             result = coordinator.run()
@@ -583,7 +587,6 @@ class DockStartupCoordinatorTests(unittest.TestCase):
                 call._load_settings(),
                 call._set_default_dates(),
                 call._wire_events(),
-                call._refresh_conditional_control_visibility(),
                 call._refresh_activity_preview(),
                 call._update_connection_status(),
             ],
@@ -593,3 +596,4 @@ class DockStartupCoordinatorTests(unittest.TestCase):
         configure_local_first_analysis_mode_backing_controls.assert_called_once_with(
             dock
         )
+        refresh_local_first_conditional_control_visibility.assert_called_once_with(dock)
