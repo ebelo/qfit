@@ -16,7 +16,6 @@ from qgis.PyQt.QtWidgets import (
     QComboBox,
     QFileDialog,
     QDockWidget,
-    QGridLayout,
     QMessageBox,
 )
 
@@ -106,7 +105,7 @@ from .visualization.application import (
 )
 from .providers.domain.provider import ProviderError
 from .providers.infrastructure.strava_provider import StravaProvider
-from .visualization.application import DEFAULT_TEMPORAL_MODE_LABEL, temporal_mode_labels
+from .visualization.application import DEFAULT_TEMPORAL_MODE_LABEL
 from .ui.dockwidget_dependencies import DockWidgetDependencies, build_dockwidget_dependencies
 from .ui.dock_startup_coordinator import DockStartupCoordinator
 from .configuration.application.connection_status import build_strava_connection_status
@@ -738,29 +737,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.previewSortComboBox.clear()
         for label in SORT_OPTIONS:
             self.previewSortComboBox.addItem(label)
-
-    def _configure_temporal_mode_options(self):
-        outer_layout = self.temporalModeLabel.parentWidget().layout()
-        if hasattr(outer_layout, "setSpacing"):
-            outer_layout.setSpacing(6)
-        if isinstance(outer_layout, QGridLayout):
-            outer_layout.setSpacing(6)
-        self.temporalModeComboBox.setSizeAdjustPolicy(
-            QComboBox.AdjustToMinimumContentsLengthWithIcon
-        )
-        self.temporalModeComboBox.setMinimumContentsLength(10)
-        self.temporalHelpLabel.setMargin(2)
-        self.temporalModeComboBox.clear()
-        for label in temporal_mode_labels():
-            self.temporalModeComboBox.addItem(label)
-        self.temporalModeComboBox.setCurrentText(DEFAULT_TEMPORAL_MODE_LABEL)
-        self.temporalModeComboBox.setMinimumContentsLength(10)
-        self.temporalModeComboBox.hide()
-        self.temporalModeLabel.hide()
-        self.temporalHelpLabel.hide()
-        temporal_row = getattr(self, "analysisTemporalModeRow", None)
-        if temporal_row is not None:
-            temporal_row.hide()
 
     def _bind_dependencies(self, dependencies: DockWidgetDependencies) -> None:
         self.settings = dependencies.settings

@@ -10,20 +10,29 @@ from qfit.ui.application.local_first_analysis_controls import (
     NONE_ANALYSIS_MODE_LABEL,
     bind_local_first_analysis_mode_controls,
     configure_local_first_analysis_mode_backing_controls,
+    configure_local_first_temporal_mode_backing_controls,
     local_first_analysis_mode_options,
     set_local_first_analysis_mode,
 )
 
 
 class FakeComboBox:
+    AdjustToMinimumContentsLengthWithIcon = "adjust-minimum"
+
     def __init__(self, current_text=""):
         self.items = []
         self.current_text = current_text
+        self.size_policy = None
+        self.minimum_contents_lengths = []
+        self.hidden = False
 
     def addItem(self, item):
         self.items.append(item)
         if not self.current_text:
             self.current_text = item
+
+    def clear(self):
+        self.items.clear()
 
     def count(self):
         return len(self.items)
@@ -36,6 +45,15 @@ class FakeComboBox:
 
     def setCurrentText(self, text):
         self.current_text = text
+
+    def setSizeAdjustPolicy(self, policy):
+        self.size_policy = policy
+
+    def setMinimumContentsLength(self, length):
+        self.minimum_contents_lengths.append(length)
+
+    def hide(self):
+        self.hidden = True
 
 
 class FakeLayout:
@@ -82,6 +100,9 @@ class FakeWidget:
     def layout(self):
         return self._layout
 
+    def hide(self):
+        self.hidden = True
+
 
 class FakeHBoxLayout(FakeLayout):
     def __init__(self, widget):
@@ -96,6 +117,9 @@ class FakeLabel(FakeWidget):
 
     def text(self):
         return self._text
+
+    def setMargin(self, margin):
+        self.margin = margin
 
 
 class FakeQtComboBox(FakeWidget):
@@ -151,6 +175,36 @@ class LocalFirstAnalysisControlsTests(unittest.TestCase):
         self.assertEqual(dock.analysisModeLabel.text(), "Analysis")
         self.assertEqual(dock.analysisModeComboBox.items, list(ANALYSIS_MODE_LABELS))
         self.assertEqual(dock.runAnalysisButton.text(), "Run analysis")
+
+    def test_configure_temporal_mode_backing_controls_populates_hidden_bridge(self):
+        temporal_layout = FakeLayout()
+        temporal_parent = FakeWidget()
+        temporal_parent.setLayout(temporal_layout)
+        temporal_label = FakeLabel("Temporal", temporal_parent)
+        temporal_help = FakeLabel("Help")
+        temporal_row = FakeWidget()
+        dock = SimpleNamespace(
+            temporalModeLabel=temporal_label,
+            temporalModeComboBox=FakeComboBox(),
+            temporalHelpLabel=temporal_help,
+            analysisTemporalModeRow=temporal_row,
+        )
+
+        configure_local_first_temporal_mode_backing_controls(dock)
+
+        self.assertEqual(temporal_layout.spacing, 6)
+        self.assertEqual(
+            dock.temporalModeComboBox.size_policy,
+            FakeComboBox.AdjustToMinimumContentsLengthWithIcon,
+        )
+        self.assertEqual(dock.temporalModeComboBox.minimum_contents_lengths, [10, 10])
+        self.assertEqual(dock.temporalModeComboBox.items, ["Local activity time"])
+        self.assertEqual(dock.temporalModeComboBox.currentText(), "Local activity time")
+        self.assertEqual(temporal_help.margin, 2)
+        self.assertTrue(dock.temporalModeComboBox.hidden)
+        self.assertTrue(temporal_label.hidden)
+        self.assertTrue(temporal_help.hidden)
+        self.assertTrue(temporal_row.hidden)
 
     def test_mode_options_exclude_legacy_none_sentinel(self):
         combo = FakeComboBox()
