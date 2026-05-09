@@ -76,15 +76,10 @@ from .ui.application import (
     DockRuntimeStore,
     DockVisualWorkflowCoordinator,
     DockVisualWorkflowRequest,
-    LocalFirstControlVisibilityUpdate,
-    apply_local_first_visibility_update,
     bind_local_first_analysis_mode_controls,
+    bind_local_first_conditional_visibility_controls,
     RunAnalysisAction,
-    build_advanced_fetch_visibility_update,
-    build_detailed_fetch_visibility_update,
     build_dock_summary_status,
-    build_mapbox_custom_style_visibility_update,
-    build_point_sampling_visibility_update,
     build_visual_layer_refs,
     build_wizard_filter_description,
     set_local_first_analysis_mode,
@@ -93,6 +88,7 @@ from .ui.application import (
     ensure_wizard_settings,
     install_local_first_audited_controls,
     refresh_local_first_conditional_control_visibility,
+    update_local_first_mapbox_custom_style_visibility,
     build_visual_workflow_background_inputs,
     build_visual_workflow_selection_state_handoff,
     build_visual_workflow_settings_snapshot,
@@ -459,32 +455,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
         refresh_local_first_conditional_control_visibility(self)
 
-    def _update_advanced_fetch_visibility(self, expanded: bool) -> None:
-        self._apply_local_first_visibility_update(
-            build_advanced_fetch_visibility_update(expanded)
-        )
-
-    def _update_detailed_fetch_visibility(self, enabled: bool) -> None:
-        self._apply_local_first_visibility_update(
-            build_detailed_fetch_visibility_update(enabled)
-        )
-
-    def _update_point_sampling_visibility(self, enabled: bool) -> None:
-        self._apply_local_first_visibility_update(
-            build_point_sampling_visibility_update(enabled)
-        )
-
-    def _update_mapbox_advanced_visibility(self, preset_name: str | None) -> None:
-        self._apply_local_first_visibility_update(
-            build_mapbox_custom_style_visibility_update(preset_name)
-        )
-
-    def _apply_local_first_visibility_update(
-        self,
-        update: LocalFirstControlVisibilityUpdate,
-    ) -> None:
-        apply_local_first_visibility_update(self, update)
-
     def _hide_legacy_atlas_export_button(self) -> None:
         legacy_export_button = getattr(self, "generateAtlasPdfButton", None)
         if legacy_export_button is not None and hasattr(legacy_export_button, "hide"):
@@ -736,15 +706,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.runAnalysisButton.clicked.connect(self.on_run_analysis_clicked)
         self.loadBackgroundButton.clicked.connect(self.on_load_background_clicked)
         self.backgroundPresetComboBox.currentTextChanged.connect(self.on_background_preset_changed)
-        self.detailedStreamsCheckBox.toggled.connect(
-            self._update_detailed_fetch_visibility
-        )
-        self.writeActivityPointsCheckBox.toggled.connect(
-            self._update_point_sampling_visibility
-        )
-        self.advancedFetchGroupBox.toggled.connect(
-            self._update_advanced_fetch_visibility
-        )
+        bind_local_first_conditional_visibility_controls(self)
         self.atlasPdfBrowseButton.clicked.connect(self.on_atlas_pdf_browse_clicked)
         self.atlasPdfPathLineEdit.textChanged.connect(self._on_atlas_pdf_path_changed)
         self.generateAtlasPdfButton.clicked.connect(self.on_generate_atlas_pdf_clicked)
@@ -938,7 +900,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
     def on_background_preset_changed(self, preset_name):
         self._sync_background_style_fields(preset_name, force=True)
-        self._update_mapbox_advanced_visibility(preset_name)
+        update_local_first_mapbox_custom_style_visibility(self, preset_name)
 
     def on_load_background_clicked(self):
         self._save_settings()

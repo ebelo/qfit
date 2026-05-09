@@ -9,6 +9,7 @@ from qfit.ui.application.local_first_control_visibility import (
     DETAILED_FETCH_VISIBILITY_WIDGETS,
     MAPBOX_CUSTOM_STYLE_VISIBILITY_WIDGETS,
     POINT_SAMPLING_VISIBILITY_WIDGETS,
+    bind_local_first_conditional_visibility_controls,
     build_advanced_fetch_visibility_update,
     build_detailed_fetch_visibility_update,
     build_local_first_conditional_visibility_updates,
@@ -16,7 +17,23 @@ from qfit.ui.application.local_first_control_visibility import (
     build_point_sampling_visibility_update,
     refresh_local_first_conditional_control_visibility,
     set_named_widgets_visible,
+    update_local_first_advanced_fetch_visibility,
+    update_local_first_detailed_fetch_visibility,
+    update_local_first_mapbox_custom_style_visibility,
+    update_local_first_point_sampling_visibility,
 )
+
+
+class _FakeSignal:
+    def __init__(self):
+        self.connected = []
+
+    def connect(self, callback):
+        self.connected.append(callback)
+
+    def emit(self, value):
+        for callback in list(self.connected):
+            callback(value)
 
 
 class LocalFirstControlVisibilityTests(unittest.TestCase):
@@ -132,6 +149,46 @@ class LocalFirstControlVisibilityTests(unittest.TestCase):
         dock.backfillMissingDetailedRoutesButton.setVisible.assert_called_once_with(False)
         dock.mapboxStyleOwnerLabel.setVisible.assert_called_once_with(True)
         dock.pointSamplingStrideLabel.setVisible.assert_called_once_with(False)
+
+    def test_update_helpers_apply_named_visibility_groups(self):
+        dock = SimpleNamespace(
+            advancedFetchSettingsWidget=MagicMock(),
+            backfillMissingDetailedRoutesButton=MagicMock(),
+            pointSamplingStrideLabel=MagicMock(),
+            mapboxStyleOwnerLabel=MagicMock(),
+        )
+
+        update_local_first_advanced_fetch_visibility(dock, True)
+        update_local_first_detailed_fetch_visibility(dock, False)
+        update_local_first_point_sampling_visibility(dock, True)
+        update_local_first_mapbox_custom_style_visibility(dock, "Custom")
+
+        dock.advancedFetchSettingsWidget.setVisible.assert_called_once_with(True)
+        dock.backfillMissingDetailedRoutesButton.setVisible.assert_called_once_with(False)
+        dock.pointSamplingStrideLabel.setVisible.assert_called_once_with(True)
+        dock.mapboxStyleOwnerLabel.setVisible.assert_called_once_with(True)
+
+    def test_bind_conditional_visibility_controls_routes_signals_to_application_rules(self):
+        detailed_signal = _FakeSignal()
+        point_signal = _FakeSignal()
+        advanced_signal = _FakeSignal()
+        dock = SimpleNamespace(
+            detailedStreamsCheckBox=SimpleNamespace(toggled=detailed_signal),
+            writeActivityPointsCheckBox=SimpleNamespace(toggled=point_signal),
+            advancedFetchGroupBox=SimpleNamespace(toggled=advanced_signal),
+            backfillMissingDetailedRoutesButton=MagicMock(),
+            pointSamplingStrideLabel=MagicMock(),
+            advancedFetchSettingsWidget=MagicMock(),
+        )
+
+        bind_local_first_conditional_visibility_controls(dock)
+        detailed_signal.emit(False)
+        point_signal.emit(True)
+        advanced_signal.emit(True)
+
+        dock.backfillMissingDetailedRoutesButton.setVisible.assert_called_once_with(False)
+        dock.pointSamplingStrideLabel.setVisible.assert_called_once_with(True)
+        dock.advancedFetchSettingsWidget.setVisible.assert_called_once_with(True)
 
 
 if __name__ == "__main__":
