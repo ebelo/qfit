@@ -1090,35 +1090,36 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
     def test_after_local_first_control_move_installed_applies_required_hooks(self):
         dock = object.__new__(self.module.QfitDockWidget)
+        dock.advancedFetchGroupBox = SimpleNamespace(isChecked=lambda: False)
         dock.detailedStreamsCheckBox = SimpleNamespace(isChecked=lambda: True)
+        dock.backgroundPresetComboBox = SimpleNamespace(currentText=lambda: "Custom")
+        dock.writeActivityPointsCheckBox = SimpleNamespace(isChecked=lambda: True)
         dock._workflow_section_coordinator = MagicMock()
         dock.generateAtlasPdfButton = MagicMock()
 
-        self.module.QfitDockWidget._after_local_first_control_move_installed(
-            dock,
+        for key in (
+            "advanced_fetch",
             "backfill_routes",
-            installed=True,
-        )
-        self.module.QfitDockWidget._after_local_first_control_move_installed(
-            dock,
-            "atlas_pdf",
-            installed=True,
-        )
-        self.module.QfitDockWidget._after_local_first_control_move_installed(
-            dock,
+            "basemap",
             "storage",
-            installed=True,
-        )
+            "atlas_pdf",
+        ):
+            self.module.QfitDockWidget._after_local_first_control_move_installed(
+                dock,
+                key,
+                installed=True,
+            )
         self.module.QfitDockWidget._after_local_first_control_move_installed(
             dock,
             "atlas_pdf",
             installed=False,
         )
 
-        update_visibility = (
-            dock._workflow_section_coordinator.update_detailed_fetch_visibility
-        )
-        update_visibility.assert_called_once_with(True)
+        coordinator = dock._workflow_section_coordinator
+        coordinator.update_advanced_fetch_visibility.assert_called_once_with(False)
+        coordinator.update_detailed_fetch_visibility.assert_called_once_with(True)
+        coordinator.update_mapbox_advanced_visibility.assert_called_once_with("Custom")
+        coordinator.update_point_sampling_visibility.assert_called_once_with(True)
         dock.generateAtlasPdfButton.hide.assert_called_once_with()
 
     def test_install_wizard_filter_controls_moves_live_filter_group_into_map_panel(self):
