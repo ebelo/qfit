@@ -719,7 +719,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.atlasSubtitleLineEdit = _FakeLineEdit("Road and trail")
         dock._atlas_export_completed = False
         dock.settings = _FakeSettings()
-        dock._bind_wizard_analysis_mode_controls = MagicMock()
+        dock._bind_local_first_analysis_mode_controls = MagicMock()
         parent = object()
 
         class FakeWizardActionCallbacks(SimpleNamespace):
@@ -778,7 +778,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "apply_map_filters": "on_apply_filters_clicked",
             "run_analysis": "on_run_analysis_clicked",
             "clear_analysis": "on_clear_analysis_clicked",
-            "set_analysis_mode": "_set_wizard_analysis_mode",
+            "set_analysis_mode": "_set_local_first_analysis_mode",
             "export_atlas": "on_generate_atlas_pdf_clicked",
             "update_atlas_document_settings": "_update_atlas_document_settings",
         }
@@ -793,7 +793,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             dock,
             "connected-composition"
         )
-        dock._bind_wizard_analysis_mode_controls.assert_called_once_with(
+        dock._bind_local_first_analysis_mode_controls.assert_called_once_with(
             "connected-composition"
         )
 
@@ -1200,38 +1200,38 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             getattr(dock, "_local_first_activity_style_controls_installed", False)
         )
 
-    def test_bind_wizard_analysis_mode_controls_exposes_non_none_modes(self):
+    def test_bind_local_first_analysis_mode_controls_delegates_to_application_policy(self):
         dock = object.__new__(self.module.QfitDockWidget)
-        dock.analysisModeComboBox = _FakeComboBox()
-        for mode in ("None", "Heatmap", "Most frequent starting points"):
-            dock.analysisModeComboBox.addItem(mode)
-        dock.analysisModeComboBox.setCurrentText("None")
-        analysis_content = SimpleNamespace(set_analysis_mode_options=MagicMock())
+        composition = object()
 
-        self.module.QfitDockWidget._bind_wizard_analysis_mode_controls(
+        with patch.object(
+            self.module,
+            "bind_local_first_analysis_mode_controls",
+        ) as bind_local_first_analysis_mode_controls:
+            self.module.QfitDockWidget._bind_local_first_analysis_mode_controls(
+                dock,
+                composition,
+            )
+
+        bind_local_first_analysis_mode_controls.assert_called_once_with(
             dock,
-            SimpleNamespace(analysis_content=analysis_content),
+            composition,
         )
 
-        analysis_content.set_analysis_mode_options.assert_called_once_with(
-            ("Heatmap", "Most frequent starting points"),
-            selected="Heatmap",
-        )
-        self.assertEqual(dock.analysisModeComboBox.currentText(), "Heatmap")
-
-    def test_set_wizard_analysis_mode_updates_backing_combo(self):
+    def test_set_local_first_analysis_mode_delegates_to_application_policy(self):
         dock = object.__new__(self.module.QfitDockWidget)
-        dock.analysisModeComboBox = _FakeComboBox()
-        for mode in ("None", "Heatmap", "Most frequent starting points"):
-            dock.analysisModeComboBox.addItem(mode)
 
-        self.module.QfitDockWidget._set_wizard_analysis_mode(
+        with patch.object(
+            self.module,
+            "set_local_first_analysis_mode",
+        ) as set_local_first_analysis_mode:
+            self.module.QfitDockWidget._set_local_first_analysis_mode(
+                dock,
+                "Most frequent starting points",
+            )
+
+        set_local_first_analysis_mode.assert_called_once_with(
             dock,
-            "Most frequent starting points",
-        )
-
-        self.assertEqual(
-            dock.analysisModeComboBox.currentText(),
             "Most frequent starting points",
         )
 

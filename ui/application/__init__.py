@@ -35,6 +35,12 @@ from .local_first_navigation import (
     build_local_first_dock_navigation_state,
     local_first_dock_page_keys,
 )
+from .local_first_analysis_controls import (
+    NONE_ANALYSIS_MODE_LABEL,
+    bind_local_first_analysis_mode_controls,
+    local_first_analysis_mode_options,
+    set_local_first_analysis_mode,
+)
 from .local_first_control_moves import (
     LOCAL_FIRST_CONTROL_MOVES,
     LOCAL_FIRST_WIDGET_MOVES,
@@ -165,6 +171,7 @@ __all__ = [
     "LOCAL_FIRST_CONTROL_MOVES",
     "LOCAL_FIRST_DOCK_PAGE_DEFINITIONS",
     "LOCAL_FIRST_WIDGET_MOVES",
+    "NONE_ANALYSIS_MODE_LABEL",
     "ADVANCED_FETCH_VISIBILITY_WIDGETS",
     "DETAILED_FETCH_VISIBILITY_WIDGETS",
     "MAPBOX_CUSTOM_STYLE_VISIBILITY_WIDGETS",
@@ -193,6 +200,7 @@ __all__ = [
     "WizardSettingsSnapshot",
     "build_advanced_fetch_visibility_update",
     "apply_local_first_visibility_update",
+    "bind_local_first_analysis_mode_controls",
     "build_current_dock_workflow_label",
     "build_detailed_fetch_visibility_update",
     "build_dock_summary_status",
@@ -226,6 +234,7 @@ __all__ = [
     "install_local_first_widget_move",
     "install_local_first_widget_controls",
     "load_wizard_settings",
+    "local_first_analysis_mode_options",
     "local_first_control_move_layout",
     "local_first_control_move_parent_panel",
     "local_first_control_move_for_key",
@@ -241,6 +250,7 @@ __all__ = [
     "remove_widget_from_current_layout",
     "save_collapsed_groups",
     "save_last_step_index",
+    "set_local_first_analysis_mode",
     "show_local_first_control_group",
     "show_widget",
     "step_index_for_key",

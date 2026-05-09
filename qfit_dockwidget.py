@@ -84,6 +84,7 @@ from .ui.application import (
     DockVisualWorkflowRequest,
     LocalFirstControlVisibilityUpdate,
     apply_local_first_visibility_update,
+    bind_local_first_analysis_mode_controls,
     RunAnalysisAction,
     build_advanced_fetch_visibility_update,
     build_detailed_fetch_visibility_update,
@@ -92,6 +93,7 @@ from .ui.application import (
     build_point_sampling_visibility_update,
     build_visual_layer_refs,
     build_wizard_filter_description,
+    set_local_first_analysis_mode,
     build_wizard_progress_facts_from_runtime_state,
     ensure_wizard_settings,
     install_local_first_audited_controls,
@@ -441,13 +443,15 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 apply_map_filters=self.on_apply_filters_clicked,
                 run_analysis=self.on_run_analysis_clicked,
                 clear_analysis=self.on_clear_analysis_clicked,
-                set_analysis_mode=self._set_wizard_analysis_mode,
+                set_analysis_mode=self._set_local_first_analysis_mode,
                 export_atlas=self.on_generate_atlas_pdf_clicked,
                 update_atlas_document_settings=self._update_atlas_document_settings,
             ),
         )
         install_local_first_audited_controls(self, self._local_first_dock_composition)
-        self._bind_wizard_analysis_mode_controls(self._local_first_dock_composition)
+        self._bind_local_first_analysis_mode_controls(
+            self._local_first_dock_composition
+        )
         return self._local_first_dock_composition
 
     def _update_atlas_document_settings(self, atlas_title: str, atlas_subtitle: str) -> None:
@@ -504,33 +508,15 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         if legacy_export_button is not None and hasattr(legacy_export_button, "hide"):
             legacy_export_button.hide()
 
-    def _bind_wizard_analysis_mode_controls(self, composition) -> None:
-        """Expose the hidden backing analysis selector in the live wizard path."""
+    def _bind_local_first_analysis_mode_controls(self, composition) -> None:
+        """Delegate local-first analysis selector binding to application policy."""
 
-        analysis_content = getattr(composition, "analysis_content", None)
-        mode_combo = getattr(self, "analysisModeComboBox", None)
-        if analysis_content is None or mode_combo is None:
-            return
-        options = tuple(
-            mode_combo.itemText(index)
-            for index in range(mode_combo.count())
-            if mode_combo.itemText(index) != "None"
-        )
-        if not options:
-            return
-        selected_mode = mode_combo.currentText()
-        if selected_mode == "None" or selected_mode not in options:
-            selected_mode = options[0]
-        analysis_content.set_analysis_mode_options(options, selected=selected_mode)
-        self._set_wizard_analysis_mode(selected_mode)
+        bind_local_first_analysis_mode_controls(self, composition)
 
-    def _set_wizard_analysis_mode(self, mode: str) -> None:
-        """Mirror the wizard analysis mode selector into the backing dock combo."""
+    def _set_local_first_analysis_mode(self, mode: str) -> None:
+        """Mirror the local-first analysis mode selector into dock backing state."""
 
-        mode_combo = getattr(self, "analysisModeComboBox", None)
-        if mode_combo is None or not mode:
-            return
-        mode_combo.setCurrentText(mode)
+        set_local_first_analysis_mode(self, mode)
 
     def _install_live_local_first_dock(self) -> None:
         """Make the #748 local-first navigation shell the visible dock path."""
