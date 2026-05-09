@@ -590,16 +590,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "distance: ≥ 10 km · routes: missing details",
         )
 
-    def test_persist_wizard_step_index_clamps_and_saves_setting(self):
-        dock = object.__new__(self.module.QfitDockWidget)
-        dock.settings = _FakeSettings()
-
-        saved_index = self.module.QfitDockWidget._persist_wizard_step_index(dock, 99)
-
-        self.assertEqual(saved_index, 4)
-        self.assertEqual(dock.settings.get("ui/last_step_index"), 4)
-        self.assertTrue(dock.settings.get("ui/last_step_index_user_selected"))
-
     def test_show_connection_configuration_hint_opens_config_when_available(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._open_configuration = MagicMock()
@@ -645,29 +635,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._set_status.assert_called_once_with(
             "Configuration saved; qfit dock connection state refreshed."
         )
-
-    def test_run_wizard_map_step_loads_layers_before_filters_are_available(self):
-        dock = object.__new__(self.module.QfitDockWidget)
-        dock._runtime_state_store = self.module.DockRuntimeStore()
-        dock.on_load_layers_clicked = MagicMock()
-        dock.on_apply_filters_clicked = MagicMock()
-
-        self.module.QfitDockWidget._run_wizard_map_step(dock)
-
-        dock.on_load_layers_clicked.assert_called_once_with()
-        dock.on_apply_filters_clicked.assert_not_called()
-
-    def test_run_wizard_map_step_applies_filters_after_layers_are_loaded(self):
-        dock = object.__new__(self.module.QfitDockWidget)
-        dock._runtime_state_store = self.module.DockRuntimeStore()
-        dock._runtime_store().set_dataset_layers(activities_layer=object())
-        dock.on_load_layers_clicked = MagicMock()
-        dock.on_apply_filters_clicked = MagicMock()
-
-        self.module.QfitDockWidget._run_wizard_map_step(dock)
-
-        dock.on_apply_filters_clicked.assert_called_once_with()
-        dock.on_load_layers_clicked.assert_not_called()
 
     def test_output_path_change_updates_runtime_state_and_live_navigation(self):
         dock = object.__new__(self.module.QfitDockWidget)
@@ -733,160 +700,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
         self.assertFalse(facts.activities_stored)
         self.assertEqual(facts.output_name, "qfit-definitely-missing.gpkg")
-
-    def test_build_wizard_shell_from_runtime_wires_persistence_and_callbacks(self):
-        dock = object.__new__(self.module.QfitDockWidget)
-        dock._runtime_state_store = self.module.DockRuntimeStore()
-        dock.clientIdLineEdit = _FakeLineEdit("client-id")
-        dock.clientSecretLineEdit = _FakeLineEdit("client-secret")
-        dock.refreshTokenLineEdit = _FakeLineEdit("refresh-token")
-        dock._atlas_export_completed = False
-        dock.settings = _FakeSettings(
-            {
-                "ui/wizard_version": 1,
-                "ui/last_step_index": 1,
-            }
-        )
-        parent = object()
-
-        class FakeWizardActionCallbacks(SimpleNamespace):
-            pass
-
-        fake_wizard_composition = ModuleType("qfit.ui.dockwidget.wizard_composition")
-        fake_wizard_composition.WizardActionCallbacks = FakeWizardActionCallbacks
-        fake_wizard_composition.build_placeholder_wizard_shell = MagicMock(
-            return_value="composition"
-        )
-        fake_wizard_composition.connect_wizard_action_callbacks = MagicMock(
-            return_value="connected-composition"
-        )
-
-        with patch.dict(
-            sys.modules,
-            {"qfit.ui.dockwidget.wizard_composition": fake_wizard_composition},
-        ):
-            composition = self.module.QfitDockWidget._build_wizard_shell_from_runtime(
-                dock,
-                parent=parent,
-            )
-
-        self.assertEqual(composition, "connected-composition")
-        self.assertEqual(dock._wizard_shell_composition, "connected-composition")
-        fake_wizard_composition.build_placeholder_wizard_shell.assert_called_once()
-        _args, kwargs = fake_wizard_composition.build_placeholder_wizard_shell.call_args
-        self.assertEqual(kwargs["parent"], parent)
-        self.assertTrue(kwargs["progress_facts"].connection_configured)
-        self.assertEqual(kwargs["wizard_settings"].last_step_index, 1)
-        self.assertFalse(kwargs["wizard_settings"].first_launch)
-        self.assertTrue(kwargs["use_step_pages"])
-        self.assertIs(kwargs["on_current_step_changed"].__self__, dock)
-        self.assertIs(
-            kwargs["on_current_step_changed"].__func__,
-            self.module.QfitDockWidget._persist_wizard_step_index,
-        )
-
-        fake_wizard_composition.connect_wizard_action_callbacks.assert_called_once()
-        connect_args = fake_wizard_composition.connect_wizard_action_callbacks.call_args.args
-        self.assertEqual(connect_args[0], "composition")
-        callbacks = connect_args[1]
-        expected_callbacks = {
-            "configure_connection": "_show_connection_configuration_hint",
-            "sync_activities": "on_refresh_clicked",
-            "store_activities": "on_load_clicked",
-            "sync_saved_routes": "on_sync_routes_clicked",
-            "clear_database": "on_clear_database_clicked",
-            "load_activity_layers": "on_load_layers_clicked",
-            "apply_map_filters": "_run_wizard_map_step",
-            "run_analysis": "on_run_analysis_clicked",
-            "clear_analysis": "on_clear_analysis_clicked",
-            "set_analysis_mode": "_set_wizard_analysis_mode",
-            "export_atlas": "on_generate_atlas_pdf_clicked",
-        }
-        for callback_name, method_name in expected_callbacks.items():
-            callback = getattr(callbacks, callback_name)
-            self.assertIs(callback.__self__, dock)
-            self.assertIs(
-                callback.__func__,
-                getattr(self.module.QfitDockWidget, method_name),
-            )
-
-    def test_build_wizard_shell_from_runtime_skips_configured_startup_connection(self):
-        dock = object.__new__(self.module.QfitDockWidget)
-        dock._runtime_state_store = self.module.DockRuntimeStore()
-        dock.clientIdLineEdit = _FakeLineEdit("client-id")
-        dock.clientSecretLineEdit = _FakeLineEdit("client-secret")
-        dock.refreshTokenLineEdit = _FakeLineEdit("refresh-token")
-        dock._atlas_export_completed = False
-        dock.settings = _FakeSettings(
-            {
-                "ui/wizard_version": 1,
-                "ui/last_step_index": 0,
-            }
-        )
-
-        class FakeWizardActionCallbacks(SimpleNamespace):
-            pass
-
-        fake_wizard_composition = ModuleType("qfit.ui.dockwidget.wizard_composition")
-        fake_wizard_composition.WizardActionCallbacks = FakeWizardActionCallbacks
-        fake_wizard_composition.build_placeholder_wizard_shell = MagicMock(
-            return_value="composition"
-        )
-        fake_wizard_composition.connect_wizard_action_callbacks = MagicMock(
-            return_value="connected-composition"
-        )
-
-        with patch.dict(
-            sys.modules,
-            {"qfit.ui.dockwidget.wizard_composition": fake_wizard_composition},
-        ):
-            composition = self.module.QfitDockWidget._build_wizard_shell_from_runtime(
-                dock,
-            )
-
-        self.assertEqual(composition, "connected-composition")
-        _args, kwargs = fake_wizard_composition.build_placeholder_wizard_shell.call_args
-        self.assertEqual(kwargs["progress_facts"].preferred_current_key, "sync")
-        self.assertEqual(dock.settings.get("ui/last_step_index"), 1)
-        self.assertFalse(dock.settings.get("ui/last_step_index_user_selected"))
-
-    def test_build_wizard_shell_from_runtime_preserves_user_selected_connection(self):
-        dock = object.__new__(self.module.QfitDockWidget)
-        dock._runtime_state_store = self.module.DockRuntimeStore()
-        dock.clientIdLineEdit = _FakeLineEdit("client-id")
-        dock.clientSecretLineEdit = _FakeLineEdit("client-secret")
-        dock.refreshTokenLineEdit = _FakeLineEdit("refresh-token")
-        dock._atlas_export_completed = False
-        dock.settings = _FakeSettings(
-            {
-                "ui/wizard_version": 1,
-                "ui/last_step_index": 0,
-                "ui/last_step_index_user_selected": True,
-            }
-        )
-
-        class FakeWizardActionCallbacks(SimpleNamespace):
-            pass
-
-        fake_wizard_composition = ModuleType("qfit.ui.dockwidget.wizard_composition")
-        fake_wizard_composition.WizardActionCallbacks = FakeWizardActionCallbacks
-        fake_wizard_composition.build_placeholder_wizard_shell = MagicMock(
-            return_value="composition"
-        )
-        fake_wizard_composition.connect_wizard_action_callbacks = MagicMock(
-            return_value="connected-composition"
-        )
-
-        with patch.dict(
-            sys.modules,
-            {"qfit.ui.dockwidget.wizard_composition": fake_wizard_composition},
-        ):
-            self.module.QfitDockWidget._build_wizard_shell_from_runtime(dock)
-
-        _args, kwargs = fake_wizard_composition.build_placeholder_wizard_shell.call_args
-        self.assertIsNone(kwargs["progress_facts"].preferred_current_key)
-        self.assertEqual(dock.settings.get("ui/last_step_index"), 0)
-        self.assertTrue(dock.settings.get("ui/last_step_index_user_selected"))
 
     def test_build_local_first_dock_from_runtime_wires_independent_callbacks(self):
         dock = object.__new__(self.module.QfitDockWidget)
@@ -1050,9 +863,9 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock = object.__new__(self.module.QfitDockWidget)
         move = SimpleNamespace(after_install_hook_attr="_missing_local_first_hook")
 
-        with patch(
-            "qfit.ui.application.local_first_control_installer.local_first_control_move_for_key",
-            return_value=move,
+        with patch.dict(
+            self.module.after_local_first_control_move_installed.__globals__,
+            {"local_first_control_move_for_key": MagicMock(return_value=move)},
         ):
             with self.assertRaises(AttributeError):
                 self.module.QfitDockWidget._after_local_first_control_move_installed(
@@ -1201,34 +1014,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             [dock._update_advanced_fetch_visibility],
         )
 
-    def test_install_wizard_filter_controls_moves_live_filter_group_into_map_panel(self):
-        dock = object.__new__(self.module.QfitDockWidget)
-        parent_layout = MagicMock()
-        parent_widget = SimpleNamespace(layout=lambda: parent_layout)
-        filter_group = MagicMock()
-        filter_group.parentWidget.return_value = parent_widget
-        dock.filterGroupBox = filter_group
-        panel = object()
-        filter_layout = MagicMock()
-        map_content = SimpleNamespace(
-            filter_controls_panel=panel,
-            filter_controls_layout=MagicMock(return_value=filter_layout),
-            set_filter_controls_visible=MagicMock(),
-        )
-
-        self.module.QfitDockWidget._install_wizard_filter_controls(
-            dock,
-            SimpleNamespace(map_content=map_content),
-        )
-
-        parent_layout.removeWidget.assert_called_once_with(filter_group)
-        filter_group.setParent.assert_called_once_with(panel)
-        filter_layout.addWidget.assert_called_once_with(filter_group)
-        filter_group.show.assert_called_once_with()
-        map_content.set_filter_controls_visible.assert_called_once_with()
-        self.assertTrue(dock._wizard_filter_controls_installed)
-        self.assertEqual(dock._wizard_filter_controls_installed_target, id(map_content))
-
     def test_install_local_first_control_move_handles_map_filters(self):
         dock = object.__new__(self.module.QfitDockWidget)
         parent_layout = MagicMock()
@@ -1262,161 +1047,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             dock._local_first_filter_controls_installed_target,
             id(map_content),
         )
-
-    def test_install_wizard_filter_controls_is_idempotent(self):
-        dock = object.__new__(self.module.QfitDockWidget)
-        dock._wizard_filter_controls_installed = True
-        dock.filterGroupBox = MagicMock()
-        map_content = SimpleNamespace(filter_controls_layout=MagicMock())
-        dock._wizard_filter_controls_installed_target = id(map_content)
-
-        self.module.QfitDockWidget._install_wizard_filter_controls(
-            dock,
-            SimpleNamespace(map_content=map_content),
-        )
-
-        map_content.filter_controls_layout.assert_not_called()
-
-    def test_install_wizard_filter_controls_reparents_for_new_composition(self):
-        dock = object.__new__(self.module.QfitDockWidget)
-        dock._wizard_filter_controls_installed = True
-        dock._wizard_filter_controls_installed_target = 12345
-        parent_layout = MagicMock()
-        parent_widget = SimpleNamespace(layout=lambda: parent_layout)
-        filter_group = MagicMock()
-        filter_group.parentWidget.return_value = parent_widget
-        dock.filterGroupBox = filter_group
-        filter_layout = MagicMock()
-        map_content = SimpleNamespace(
-            filter_controls_layout=MagicMock(return_value=filter_layout),
-            set_filter_controls_visible=MagicMock(),
-        )
-
-        self.module.QfitDockWidget._install_wizard_filter_controls(
-            dock,
-            SimpleNamespace(map_content=map_content),
-        )
-
-        parent_layout.removeWidget.assert_called_once_with(filter_group)
-        filter_layout.addWidget.assert_called_once_with(filter_group)
-        self.assertEqual(dock._wizard_filter_controls_installed_target, id(map_content))
-
-    def test_install_wizard_style_controls_moves_live_visualization_controls_into_map_panel(self):
-        dock = object.__new__(self.module.QfitDockWidget)
-        parent_layout = MagicMock()
-        parent_widget = SimpleNamespace(layout=lambda: parent_layout)
-        style_label = MagicMock()
-        style_combo = MagicMock()
-        preview_sort_label = MagicMock()
-        preview_sort_combo = MagicMock()
-        temporal_row = MagicMock()
-        temporal_label = MagicMock()
-        temporal_combo = MagicMock()
-        temporal_help = MagicMock()
-        style_label.parentWidget.return_value = parent_widget
-        style_combo.parentWidget.return_value = parent_widget
-        preview_sort_label.parentWidget.return_value = parent_widget
-        preview_sort_combo.parentWidget.return_value = parent_widget
-        temporal_row.parentWidget.return_value = parent_widget
-        temporal_help.parentWidget.return_value = parent_widget
-        dock.stylePresetLabel = style_label
-        dock.stylePresetComboBox = style_combo
-        dock.previewSortLabel = preview_sort_label
-        dock.previewSortComboBox = preview_sort_combo
-        dock.analysisTemporalModeRow = temporal_row
-        dock.temporalModeLabel = temporal_label
-        dock.temporalModeComboBox = temporal_combo
-        dock.temporalHelpLabel = temporal_help
-        panel = object()
-        style_layout = MagicMock()
-        map_content = SimpleNamespace(
-            style_controls_panel=panel,
-            style_controls_layout=MagicMock(return_value=style_layout),
-            set_style_controls_visible=MagicMock(),
-        )
-
-        self.module.QfitDockWidget._install_wizard_style_controls(
-            dock,
-            SimpleNamespace(map_content=map_content),
-        )
-
-        self.assertEqual(
-            parent_layout.removeWidget.call_args_list,
-            [
-                call(style_label),
-                call(style_combo),
-                call(preview_sort_label),
-                call(preview_sort_combo),
-                call(temporal_row),
-                call(temporal_help),
-            ],
-        )
-        style_label.setParent.assert_called_once_with(panel)
-        style_combo.setParent.assert_called_once_with(panel)
-        preview_sort_label.setParent.assert_called_once_with(panel)
-        preview_sort_combo.setParent.assert_called_once_with(panel)
-        temporal_row.setParent.assert_called_once_with(panel)
-        temporal_help.setParent.assert_called_once_with(panel)
-        self.assertEqual(
-            style_layout.addWidget.call_args_list,
-            [
-                call(style_label),
-                call(style_combo),
-                call(preview_sort_label),
-                call(preview_sort_combo),
-                call(temporal_row),
-                call(temporal_help),
-            ],
-        )
-        style_label.show.assert_called_once_with()
-        style_combo.show.assert_called_once_with()
-        preview_sort_label.show.assert_called_once_with()
-        preview_sort_combo.show.assert_called_once_with()
-        temporal_row.show.assert_called_once_with()
-        temporal_label.show.assert_called_once_with()
-        temporal_combo.show.assert_called_once_with()
-        temporal_help.show.assert_called_once_with()
-        map_content.set_style_controls_visible.assert_called_once_with()
-        self.assertTrue(dock._wizard_style_controls_installed)
-        self.assertEqual(dock._wizard_style_controls_installed_target, id(map_content))
-
-    def test_install_wizard_style_controls_keeps_preview_sort_optional(self):
-        dock = object.__new__(self.module.QfitDockWidget)
-        style_label = MagicMock()
-        style_combo = MagicMock()
-        dock.stylePresetLabel = style_label
-        dock.stylePresetComboBox = style_combo
-        style_layout = MagicMock()
-        map_content = SimpleNamespace(
-            style_controls_layout=MagicMock(return_value=style_layout),
-            set_style_controls_visible=MagicMock(),
-        )
-
-        self.module.QfitDockWidget._install_wizard_style_controls(
-            dock,
-            SimpleNamespace(map_content=map_content),
-        )
-
-        self.assertEqual(
-            style_layout.addWidget.call_args_list,
-            [call(style_label), call(style_combo)],
-        )
-        map_content.set_style_controls_visible.assert_called_once_with()
-
-    def test_install_wizard_style_controls_is_idempotent(self):
-        dock = object.__new__(self.module.QfitDockWidget)
-        dock._wizard_style_controls_installed = True
-        dock.stylePresetLabel = MagicMock()
-        dock.stylePresetComboBox = MagicMock()
-        map_content = SimpleNamespace(style_controls_layout=MagicMock())
-        dock._wizard_style_controls_installed_target = id(map_content)
-
-        self.module.QfitDockWidget._install_wizard_style_controls(
-            dock,
-            SimpleNamespace(map_content=map_content),
-        )
-
-        map_content.style_controls_layout.assert_not_called()
 
     def test_install_local_first_widget_move_handles_activity_style_controls(self):
         dock = object.__new__(self.module.QfitDockWidget)
@@ -1581,73 +1211,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             dock.analysisModeComboBox.currentText(),
             "Most frequent starting points",
         )
-
-    def test_build_wizard_dock_from_runtime_wraps_live_composition(self):
-        dock = object.__new__(self.module.QfitDockWidget)
-        dock._build_wizard_shell_from_runtime = MagicMock(return_value="composition")
-        parent = object()
-        fake_wizard_dock = ModuleType("qfit.ui.dockwidget.wizard_dock")
-        fake_wizard_dock.build_wizard_dock_widget = MagicMock(
-            return_value="wizard-dock"
-        )
-
-        with patch.dict(sys.modules, {"qfit.ui.dockwidget.wizard_dock": fake_wizard_dock}):
-            result = self.module.QfitDockWidget._build_wizard_dock_from_runtime(
-                dock,
-                parent=parent,
-            )
-
-        self.assertEqual(result, "wizard-dock")
-        dock._build_wizard_shell_from_runtime.assert_called_once_with(parent=parent)
-        fake_wizard_dock.build_wizard_dock_widget.assert_called_once_with(
-            "composition",
-            parent=parent,
-        )
-
-    def test_install_live_wizard_shell_hides_long_scroll_path(self):
-        dock = object.__new__(self.module.QfitDockWidget)
-        shell = object()
-        composition = SimpleNamespace(shell=shell)
-        dock.dockWidgetContents = object()
-        dock.outerLayout = _FakeLayout()
-        dock.scrollArea = MagicMock()
-        dock.summaryStatusLabel = MagicMock()
-        dock._build_wizard_shell_from_runtime = MagicMock(return_value=composition)
-
-        self.module.QfitDockWidget._install_live_wizard_shell(dock)
-
-        dock._build_wizard_shell_from_runtime.assert_called_once_with(
-            parent=dock.dockWidgetContents,
-        )
-        dock.scrollArea.hide.assert_called_once_with()
-        dock.summaryStatusLabel.hide.assert_called_once_with()
-        self.assertEqual(dock.outerLayout.added, [shell])
-        self.assertIs(dock._wizard_live_shell, shell)
-        self.assertTrue(dock._wizard_live_path_installed)
-
-    def test_install_live_wizard_shell_is_idempotent(self):
-        dock = object.__new__(self.module.QfitDockWidget)
-        dock._wizard_live_path_installed = True
-        dock._build_wizard_shell_from_runtime = MagicMock()
-
-        self.module.QfitDockWidget._install_live_wizard_shell(dock)
-
-        dock._build_wizard_shell_from_runtime.assert_not_called()
-
-    def test_install_live_wizard_shell_does_not_hide_legacy_path_without_layout(self):
-        dock = object.__new__(self.module.QfitDockWidget)
-        dock.dockWidgetContents = object()
-        dock.scrollArea = MagicMock()
-        dock.summaryStatusLabel = MagicMock()
-        dock._build_wizard_shell_from_runtime = MagicMock(
-            return_value=SimpleNamespace(shell=object()),
-        )
-
-        with self.assertRaisesRegex(RuntimeError, "base outer layout"):
-            self.module.QfitDockWidget._install_live_wizard_shell(dock)
-
-        dock.scrollArea.hide.assert_not_called()
-        dock.summaryStatusLabel.hide.assert_not_called()
 
     def test_install_live_local_first_dock_hides_long_scroll_path(self):
         dock = object.__new__(self.module.QfitDockWidget)
@@ -2203,40 +1766,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertTrue(installed)
         self.assertEqual(atlas_layout.added, [])
 
-    def test_refresh_wizard_shell_from_runtime_updates_optional_composition(self):
-        dock = object.__new__(self.module.QfitDockWidget)
-        dock._runtime_state_store = self.module.DockRuntimeStore()
-        dock.clientIdLineEdit = _FakeLineEdit("client-id")
-        dock.clientSecretLineEdit = _FakeLineEdit("client-secret")
-        dock.refreshTokenLineEdit = _FakeLineEdit("refresh-token")
-        dock.settings = _FakeSettings(
-            {
-                "ui/wizard_version": 1,
-                "ui/last_step_index": 1,
-            }
-        )
-        composition = object()
-        dock._wizard_shell_composition = composition
-        fake_wizard_composition = ModuleType("qfit.ui.dockwidget.wizard_composition")
-        fake_wizard_composition.refresh_wizard_shell_composition = MagicMock(
-            return_value="refreshed"
-        )
-
-        with patch.dict(
-            sys.modules,
-            {"qfit.ui.dockwidget.wizard_composition": fake_wizard_composition},
-        ):
-            refreshed = self.module.QfitDockWidget._refresh_wizard_shell_from_runtime(dock)
-
-        self.assertEqual(refreshed, "refreshed")
-        self.assertEqual(dock._wizard_shell_composition, "refreshed")
-        fake_wizard_composition.refresh_wizard_shell_composition.assert_called_once()
-        args, kwargs = fake_wizard_composition.refresh_wizard_shell_composition.call_args
-        self.assertEqual(args, (composition,))
-        self.assertTrue(kwargs["progress_facts"].connection_configured)
-        self.assertEqual(kwargs["wizard_settings"].last_step_index, 1)
-        self.assertFalse(kwargs["wizard_settings"].first_launch)
-
     def test_refresh_local_first_dock_from_runtime_updates_optional_composition(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._runtime_state_store = self.module.DockRuntimeStore()
@@ -2270,14 +1799,12 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertEqual(args, (composition,))
         self.assertTrue(kwargs["progress_facts"].connection_configured)
 
-    def test_refresh_live_dock_navigation_refreshes_all_optional_compositions(self):
+    def test_refresh_live_dock_navigation_refreshes_local_first_composition(self):
         dock = object.__new__(self.module.QfitDockWidget)
-        dock._refresh_wizard_shell_from_runtime = MagicMock()
         dock._refresh_local_first_dock_from_runtime = MagicMock()
 
         self.module.QfitDockWidget._refresh_live_dock_navigation_from_runtime(dock)
 
-        dock._refresh_wizard_shell_from_runtime.assert_called_once_with()
         dock._refresh_local_first_dock_from_runtime.assert_called_once_with()
 
     def test_refresh_summary_status_notifies_live_dock_navigation_refresh(self):

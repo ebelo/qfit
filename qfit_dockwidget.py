@@ -86,14 +86,12 @@ from .ui.application import (
     LocalFirstWidgetMove,
     RunAnalysisAction,
     build_dock_summary_status,
-    build_startup_wizard_progress_facts,
     build_visual_layer_refs,
     build_wizard_filter_description,
     build_wizard_progress_facts_from_runtime_state,
     ensure_wizard_settings,
     after_local_first_control_move_installed,
     install_local_first_audited_controls,
-    load_wizard_settings,
     local_first_control_move_for_key,
     local_first_widget_move_for_key,
     install_local_first_group_controls,
@@ -106,8 +104,6 @@ from .ui.application import (
     remove_widget_from_current_layout,
     show_local_first_control_group,
     show_widget,
-    save_last_step_index,
-    step_index_for_key,
     build_visual_workflow_background_inputs,
     build_visual_workflow_selection_state_handoff,
     build_visual_workflow_settings_snapshot,
@@ -200,25 +196,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
         return ensure_wizard_settings(self.settings)
 
-    def _persist_wizard_step_index(
-        self,
-        index: int,
-        *,
-        user_selected: bool = True,
-    ) -> int:
-        """Persist the optional #609 wizard shell's current step."""
-
-        return save_last_step_index(
-            self.settings,
-            index,
-            user_selected=user_selected,
-        )
-
-    def _persist_wizard_startup_step_index(self, index: int) -> int:
-        """Persist a startup-derived wizard step without marking it user-chosen."""
-
-        return save_last_step_index(self.settings, index, user_selected=False)
-
     def _show_connection_configuration_hint(self) -> None:
         """Open or describe the dedicated qfit configuration dialog for wizard users."""
 
@@ -241,14 +218,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._load_settings()
         self._update_connection_status()
         self._set_status("Configuration saved; qfit dock connection state refreshed.")
-
-    def _run_wizard_map_step(self) -> None:
-        """Run the next concrete action for the wizard map-and-filters step."""
-
-        if self.runtime_state.activities_layer is None:
-            self.on_load_layers_clicked()
-            return
-        self.on_apply_filters_clicked()
 
     def _current_wizard_progress_facts(self):
         """Return render-neutral #609 wizard facts from the live dock state."""
@@ -453,61 +422,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             return completed_output_path
         return self._widget_text("atlasPdfPathLineEdit")
 
-    def _build_wizard_shell_from_runtime(self, *, parent=None):
-        """Build the optional #609 wizard shell from current dock runtime facts.
-
-        The shell is not installed into the production dock yet; this seam lets
-        the eventual wizard-style dock swap create a live composition with
-        persisted navigation and concrete CTA callbacks without coupling the
-        reusable wizard widgets to ``QfitDockWidget``.
-        """
-
-        from .ui.dockwidget.wizard_composition import (
-            WizardActionCallbacks,
-            build_placeholder_wizard_shell,
-            connect_wizard_action_callbacks,
-        )
-
-        progress_facts = self._current_wizard_progress_facts()
-        wizard_settings = load_wizard_settings(self.settings)
-        startup_progress_facts = build_startup_wizard_progress_facts(
-            progress_facts,
-            wizard_settings,
-        )
-        self._persist_startup_wizard_step_if_needed(
-            progress_facts=progress_facts,
-            startup_progress_facts=startup_progress_facts,
-        )
-        composition = build_placeholder_wizard_shell(
-            parent=self if parent is None else parent,
-            progress_facts=startup_progress_facts,
-            wizard_settings=wizard_settings,
-            use_step_pages=True,
-            on_current_step_changed=self._persist_wizard_step_index,
-        )
-        self._wizard_shell_composition = connect_wizard_action_callbacks(
-            composition,
-            WizardActionCallbacks(
-                configure_connection=self._show_connection_configuration_hint,
-                sync_activities=self.on_refresh_clicked,
-                store_activities=self.on_load_clicked,
-                sync_saved_routes=self.on_sync_routes_clicked,
-                clear_database=self.on_clear_database_clicked,
-                load_activity_layers=self.on_load_layers_clicked,
-                apply_map_filters=self._run_wizard_map_step,
-                run_analysis=self.on_run_analysis_clicked,
-                clear_analysis=self.on_clear_analysis_clicked,
-                set_analysis_mode=self._set_wizard_analysis_mode,
-                export_atlas=self.on_generate_atlas_pdf_clicked,
-                update_atlas_document_settings=self._update_atlas_document_settings,
-            ),
-        )
-        self._sync_atlas_document_settings_controls(self._wizard_shell_composition)
-        self._install_wizard_style_controls(self._wizard_shell_composition)
-        self._install_wizard_filter_controls(self._wizard_shell_composition)
-        self._bind_wizard_analysis_mode_controls(self._wizard_shell_composition)
-        return self._wizard_shell_composition
-
     def _build_local_first_dock_from_runtime(self, *, parent=None):
         """Build the #748 local-first dock composition from live runtime facts.
 
@@ -550,16 +464,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._bind_wizard_analysis_mode_controls(self._local_first_dock_composition)
         return self._local_first_dock_composition
 
-    def _sync_atlas_document_settings_controls(self, composition) -> None:
-        atlas_content = getattr(composition, "atlas_content", None)
-        set_document_settings = getattr(atlas_content, "set_document_settings", None)
-        if not callable(set_document_settings):
-            return
-        set_document_settings(
-            atlas_title=self.atlasTitleLineEdit.text(),
-            atlas_subtitle=self.atlasSubtitleLineEdit.text(),
-        )
-
     def _update_atlas_document_settings(self, atlas_title: str, atlas_subtitle: str) -> None:
         """Mirror visible atlas-page title fields into the export settings widgets."""
 
@@ -577,101 +481,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         if title_changed or subtitle_changed:
             self._mark_atlas_export_stale()
             self._refresh_summary_status()
-
-    def _persist_startup_wizard_step_if_needed(
-        self,
-        *,
-        progress_facts,
-        startup_progress_facts,
-    ) -> None:
-        startup_key = startup_progress_facts.preferred_current_key
-        if startup_key is None or startup_key == progress_facts.preferred_current_key:
-            return
-        self._persist_wizard_startup_step_index(step_index_for_key(startup_key))
-
-    def _install_wizard_filter_controls(self, composition) -> None:
-        """Move the live map-filter controls into the wizard map page."""
-
-        map_content = getattr(composition, "map_content", None)
-        filter_group = getattr(self, "filterGroupBox", None)
-        if map_content is None or filter_group is None:
-            return
-        installed_target = getattr(self, "_wizard_filter_controls_installed_target", None)
-        current_target = id(map_content)
-        if getattr(self, "_wizard_filter_controls_installed", False) and (
-            installed_target == current_target
-        ):
-            return
-        filter_controls_layout = getattr(map_content, "filter_controls_layout", None)
-        if not callable(filter_controls_layout):
-            return
-
-        self._remove_widget_from_current_layout(filter_group)
-        parent_panel = getattr(map_content, "filter_controls_panel", map_content)
-        if hasattr(filter_group, "setParent"):
-            filter_group.setParent(parent_panel)
-        filter_controls_layout().addWidget(filter_group)
-        if hasattr(filter_group, "show"):
-            filter_group.show()
-        elif hasattr(filter_group, "setVisible"):
-            filter_group.setVisible(True)
-        map_content.set_filter_controls_visible()
-        self._wizard_filter_controls_installed = True
-        self._wizard_filter_controls_installed_target = current_target
-
-    def _install_wizard_style_controls(self, composition) -> None:
-        """Move live activity visualization controls into the wizard map page."""
-
-        map_content = getattr(composition, "map_content", None)
-        style_label = getattr(self, "stylePresetLabel", None)
-        style_combo = getattr(self, "stylePresetComboBox", None)
-        if map_content is None or style_label is None or style_combo is None:
-            return
-        installed_target = getattr(self, "_wizard_style_controls_installed_target", None)
-        current_target = id(map_content)
-        if getattr(self, "_wizard_style_controls_installed", False) and (
-            installed_target == current_target
-        ):
-            return
-        style_controls_layout = getattr(map_content, "style_controls_layout", None)
-        if not callable(style_controls_layout):
-            return
-
-        target_layout = style_controls_layout()
-        parent_panel = getattr(map_content, "style_controls_panel", map_content)
-        controls = [style_label, style_combo]
-        show_after_move = []
-        preview_sort_label = getattr(self, "previewSortLabel", None)
-        preview_sort_combo = getattr(self, "previewSortComboBox", None)
-        if preview_sort_label is not None and preview_sort_combo is not None:
-            controls.extend((preview_sort_label, preview_sort_combo))
-        temporal_row = getattr(self, "analysisTemporalModeRow", None)
-        if temporal_row is not None:
-            controls.append(temporal_row)
-            temporal_help = getattr(self, "temporalHelpLabel", None)
-            if temporal_help is not None:
-                controls.append(temporal_help)
-            show_after_move.extend(
-                widget
-                for widget in (
-                    getattr(self, "temporalModeLabel", None),
-                    getattr(self, "temporalModeComboBox", None),
-                )
-                if widget is not None
-            )
-        for widget in controls:
-            self._remove_widget_from_current_layout(widget)
-            if hasattr(widget, "setParent"):
-                widget.setParent(parent_panel)
-            target_layout.addWidget(widget)
-            self._show_widget(widget)
-        for widget in show_after_move:
-            self._show_widget(widget)
-        set_visible = getattr(map_content, "set_style_controls_visible", None)
-        if callable(set_visible):
-            set_visible()
-        self._wizard_style_controls_installed = True
-        self._wizard_style_controls_installed_target = current_target
 
     def _show_widget(self, widget) -> None:
         show_widget(widget)
@@ -868,49 +677,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             return
         mode_combo.setCurrentText(mode)
 
-    def _build_wizard_dock_from_runtime(self, *, parent=None):
-        """Build the optional #609 QDockWidget container from runtime facts.
-
-        This is the dock-level seam for the eventual wizard swap: the reusable
-        shell composition remains independent, while this helper wraps it in the
-        real QDockWidget shape required by the Option B spec.
-        """
-
-        from .ui.dockwidget.wizard_dock import build_wizard_dock_widget
-
-        return build_wizard_dock_widget(
-            self._build_wizard_shell_from_runtime(parent=parent),
-            parent=parent,
-        )
-
-    def _install_live_wizard_shell(self) -> None:
-        """Make the #609 wizard shell the visible dock path.
-
-        The legacy ``.ui`` controls still back settings and workflow actions, but
-        they are no longer the user's default dock surface. Keeping them hidden in
-        the existing dock content lets the wizard CTAs reuse the mature workflow
-        code while closing the long-scroll UX path from #608.
-        """
-
-        if getattr(self, "_wizard_live_path_installed", False):
-            return
-
-        parent = getattr(self, "dockWidgetContents", self)
-        composition = self._build_wizard_shell_from_runtime(parent=parent)
-        shell = getattr(composition, "shell", None)
-        if shell is None:
-            raise RuntimeError("Wizard shell composition must expose a shell widget")
-
-        outer_layout = getattr(self, "outerLayout", None)
-        if outer_layout is None:
-            raise RuntimeError("Wizard dock requires the base outer layout")
-
-        self._hide_legacy_scroll_dock_content()
-        outer_layout.addWidget(shell)
-
-        self._wizard_live_shell = shell
-        self._wizard_live_path_installed = True
-
     def _install_live_local_first_dock(self) -> None:
         """Make the #748 local-first navigation shell the visible dock path."""
 
@@ -942,22 +708,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 widget.hide()
 
 
-    def _refresh_wizard_shell_from_runtime(self):
-        """Refresh an optional #609 wizard shell composition from dock runtime facts."""
-
-        composition = getattr(self, "_wizard_shell_composition", None)
-        if composition is None:
-            return None
-
-        from .ui.dockwidget.wizard_composition import refresh_wizard_shell_composition
-
-        self._wizard_shell_composition = refresh_wizard_shell_composition(
-            composition,
-            progress_facts=self._current_wizard_progress_facts(),
-            wizard_settings=load_wizard_settings(self.settings),
-        )
-        return self._wizard_shell_composition
-
     def _refresh_local_first_dock_from_runtime(self):
         """Refresh an optional #748 local-first dock composition from runtime facts."""
 
@@ -976,9 +726,8 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         return self._local_first_dock_composition
 
     def _refresh_live_dock_navigation_from_runtime(self) -> None:
-        """Refresh whichever dock navigation composition is installed."""
+        """Refresh the installed local-first dock navigation composition."""
 
-        self._refresh_wizard_shell_from_runtime()
         self._refresh_local_first_dock_from_runtime()
 
     def _has_configured_strava_connection(self) -> bool:
