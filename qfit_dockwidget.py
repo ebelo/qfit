@@ -870,23 +870,19 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def _refresh_local_first_advanced_fetch_visibility(self) -> None:
         advanced_fetch_group = getattr(self, "advancedFetchGroupBox", None)
         if hasattr(advanced_fetch_group, "isChecked"):
-            self._workflow_section_coordinator.update_advanced_fetch_visibility(
-                advanced_fetch_group.isChecked()
-            )
+            self._update_advanced_fetch_visibility(advanced_fetch_group.isChecked())
 
     def _refresh_local_first_detailed_fetch_visibility(self) -> None:
         detailed_streams_checkbox = getattr(self, "detailedStreamsCheckBox", None)
         if hasattr(detailed_streams_checkbox, "isChecked"):
-            self._workflow_section_coordinator.update_detailed_fetch_visibility(
+            self._update_detailed_fetch_visibility(
                 detailed_streams_checkbox.isChecked()
             )
 
     def _refresh_local_first_mapbox_visibility(self) -> None:
         background_preset_combo = getattr(self, "backgroundPresetComboBox", None)
         if hasattr(background_preset_combo, "currentText"):
-            self._workflow_section_coordinator.update_mapbox_advanced_visibility(
-                background_preset_combo.currentText()
-            )
+            self._update_mapbox_advanced_visibility(background_preset_combo.currentText())
 
     def _refresh_local_first_point_sampling_visibility(self) -> None:
         write_activity_points_checkbox = getattr(
@@ -895,9 +891,67 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             None,
         )
         if hasattr(write_activity_points_checkbox, "isChecked"):
-            self._workflow_section_coordinator.update_point_sampling_visibility(
+            self._update_point_sampling_visibility(
                 write_activity_points_checkbox.isChecked()
             )
+
+    def _update_advanced_fetch_visibility(self, expanded: bool) -> None:
+        self._set_named_widgets_visible(
+            ("advancedFetchSettingsWidget",),
+            expanded,
+        )
+
+    def _update_detailed_fetch_visibility(self, enabled: bool) -> None:
+        self._set_named_widgets_visible(
+            (
+                "backfillMissingDetailedRoutesButton",
+                "detailedRouteStrategyLabel",
+                "detailedRouteStrategyComboBox",
+                "detailedRouteStrategyComboBoxContextHelpLabel",
+                "detailedRouteStrategyComboBoxHelpField",
+                "maxDetailedActivitiesLabel",
+                "maxDetailedActivitiesSpinBox",
+                "maxDetailedActivitiesSpinBoxContextHelpLabel",
+                "maxDetailedActivitiesSpinBoxHelpField",
+            ),
+            enabled,
+        )
+
+    def _update_point_sampling_visibility(self, enabled: bool) -> None:
+        self._set_named_widgets_visible(
+            (
+                "pointSamplingStrideLabel",
+                "pointSamplingStrideSpinBox",
+                "pointSamplingStrideSpinBoxContextHelpLabel",
+                "pointSamplingStrideSpinBoxHelpField",
+            ),
+            enabled,
+        )
+
+    def _update_mapbox_advanced_visibility(self, preset_name: str | None) -> None:
+        show_advanced = preset_requires_custom_style(preset_name)
+        self._set_named_widgets_visible(
+            (
+                "mapboxStyleOwnerLabel",
+                "mapboxStyleOwnerLineEdit",
+                "mapboxStyleIdLabel",
+                "mapboxStyleIdLineEdit",
+                "mapboxStyleOwnerLineEditContextHelpLabel",
+                "mapboxStyleIdLineEditContextHelpLabel",
+                "mapboxStyleIdLineEditHelpField",
+            ),
+            show_advanced,
+        )
+
+    def _set_named_widgets_visible(
+        self,
+        widget_attrs: tuple[str, ...],
+        visible: bool,
+    ) -> None:
+        for widget_attr in widget_attrs:
+            widget = getattr(self, widget_attr, None)
+            if widget is not None and hasattr(widget, "setVisible"):
+                widget.setVisible(visible)
 
     def _hide_legacy_atlas_export_button(self) -> None:
         legacy_export_button = getattr(self, "generateAtlasPdfButton", None)
@@ -1228,9 +1282,15 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.runAnalysisButton.clicked.connect(self.on_run_analysis_clicked)
         self.loadBackgroundButton.clicked.connect(self.on_load_background_clicked)
         self.backgroundPresetComboBox.currentTextChanged.connect(self.on_background_preset_changed)
-        self.detailedStreamsCheckBox.toggled.connect(self._workflow_section_coordinator.update_detailed_fetch_visibility)
-        self.writeActivityPointsCheckBox.toggled.connect(self._workflow_section_coordinator.update_point_sampling_visibility)
-        self.advancedFetchGroupBox.toggled.connect(self._workflow_section_coordinator.update_advanced_fetch_visibility)
+        self.detailedStreamsCheckBox.toggled.connect(
+            self._update_detailed_fetch_visibility
+        )
+        self.writeActivityPointsCheckBox.toggled.connect(
+            self._update_point_sampling_visibility
+        )
+        self.advancedFetchGroupBox.toggled.connect(
+            self._update_advanced_fetch_visibility
+        )
         self.atlasPdfBrowseButton.clicked.connect(self.on_atlas_pdf_browse_clicked)
         self.atlasPdfPathLineEdit.textChanged.connect(self._on_atlas_pdf_path_changed)
         self.generateAtlasPdfButton.clicked.connect(self.on_generate_atlas_pdf_clicked)
@@ -1458,7 +1518,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
     def on_background_preset_changed(self, preset_name):
         self._sync_background_style_fields(preset_name, force=True)
-        self._workflow_section_coordinator.update_mapbox_advanced_visibility(preset_name)
+        self._update_mapbox_advanced_visibility(preset_name)
 
     def on_load_background_clicked(self):
         self._save_settings()
