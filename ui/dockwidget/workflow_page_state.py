@@ -108,6 +108,7 @@ def completed_prefix_facts(facts: WizardProgressFacts) -> WizardProgressFacts:
         last_sync_date=facts.last_sync_date,
     )
 
+
 def _connection_state_from_facts(facts: WizardProgressFacts) -> ConnectionPageState:
     default = ConnectionPageState()
     if facts.connection_configured:
