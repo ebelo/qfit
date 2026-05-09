@@ -215,11 +215,9 @@ class QgisSmokeTests(unittest.TestCase):
             startup_coordinator.return_value.run.return_value = MagicMock()
             dock = QfitDockWidget(self.iface, dependencies=dependencies)
         try:
-            startup_coordinator.assert_called_once_with(
-                dock,
-                workflow_section_coordinator=dock._workflow_section_coordinator,
-            )
+            startup_coordinator.assert_called_once_with(dock)
             startup_coordinator.return_value.run.assert_called_once_with()
+            self.assertFalse(hasattr(dock, "_workflow_section_coordinator"))
             self.assertIs(dock._dock_startup_coordinator, startup_coordinator.return_value)
             self.assertIs(dock._startup_result, startup_coordinator.return_value.run.return_value)
         finally:

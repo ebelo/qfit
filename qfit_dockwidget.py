@@ -120,7 +120,6 @@ from .providers.infrastructure.strava_provider import StravaProvider
 from .visualization.application import DEFAULT_TEMPORAL_MODE_LABEL, temporal_mode_labels
 from .ui.dockwidget_dependencies import DockWidgetDependencies, build_dockwidget_dependencies
 from .ui.dock_startup_coordinator import DockStartupCoordinator
-from .ui.workflow_section_coordinator import WorkflowSectionCoordinator
 from .configuration.application.connection_status import build_strava_connection_status
 from .configuration.application.dock_settings_bindings import build_dock_settings_bindings
 from .configuration.application.ui_settings_binding import load_bindings, save_bindings
@@ -166,11 +165,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._dependencies = dependencies or build_dockwidget_dependencies(iface)
         self._bind_dependencies(self._dependencies)
         self.setupUi(self)
-        self._workflow_section_coordinator = WorkflowSectionCoordinator(self)
-        self._dock_startup_coordinator = DockStartupCoordinator(
-            self,
-            workflow_section_coordinator=self._workflow_section_coordinator,
-        )
+        self._dock_startup_coordinator = DockStartupCoordinator(self)
         self._startup_result = self._dock_startup_coordinator.run()
         self._dock_action_dispatcher = DockActionDispatcher(
             visual_apply=self.visual_apply,

@@ -348,7 +348,7 @@ class _FakeGroupBox:
         self.tooltip = text
 
 
-class WorkflowSectionCoordinatorTests(unittest.TestCase):
+class LocalFirstBackingControlsTests(unittest.TestCase):
     def _make_section_dock(self):
         dock = type("Dock", (), {})()
         dock.activitiesGroupLayout = _FakeLayoutContainer([_FakeItem(widget=object())])
@@ -392,7 +392,9 @@ class WorkflowSectionCoordinatorTests(unittest.TestCase):
         return dock
 
     def test_configure_starting_sections_prepares_local_first_backing_controls(self):
-        import qfit.ui.workflow_section_coordinator as workflow_section_coordinator
+        from qfit.ui.application.local_first_backing_controls import (
+            configure_local_first_backing_controls,
+        )
 
         class _FakeSignal:
             def __init__(self):
@@ -449,12 +451,9 @@ class WorkflowSectionCoordinatorTests(unittest.TestCase):
         qtwidgets.QMenu = _FakeMenu
         qtwidgets.QToolButton = _FakeToolButton
 
-        coordinator = workflow_section_coordinator.WorkflowSectionCoordinator(
-            self._make_section_dock()
-        )
+        dock = self._make_section_dock()
         with patch.dict(sys.modules, {"qgis.PyQt.QtWidgets": qtwidgets}):
-            coordinator.configure_starting_sections()
-        dock = coordinator.dock_widget
+            configure_local_first_backing_controls(dock)
 
         self.assertEqual(
             dock.workflowLabel.text,
@@ -493,11 +492,12 @@ class WorkflowSectionCoordinatorTests(unittest.TestCase):
         self.assertFalse(dock.mapboxAccessTokenLineEdit.visible)
 
     def test_configure_spinbox_unit_copy_moves_units_to_spinbox_suffixes(self):
-        import qfit.ui.workflow_section_coordinator as workflow_section_coordinator
+        from qfit.ui.application.local_first_backing_controls import (
+            configure_local_first_spinbox_unit_copy,
+        )
 
-        coordinator = workflow_section_coordinator.WorkflowSectionCoordinator(self._make_section_dock())
-        coordinator.configure_spinbox_unit_copy()
-        dock = coordinator.dock_widget
+        dock = self._make_section_dock()
+        configure_local_first_spinbox_unit_copy(dock)
 
         self.assertEqual(dock.perPageLabel.text, "Page size")
         self.assertEqual(dock.perPageSpinBox.suffix, " activities")
@@ -527,19 +527,46 @@ class WorkflowSectionCoordinatorTests(unittest.TestCase):
             )
         )
 
+    def test_workflow_section_coordinator_is_only_compatibility_shim(self):
+        import qfit.ui.workflow_section_coordinator as workflow_section_coordinator
+
+        dock = object()
+        coordinator = workflow_section_coordinator.WorkflowSectionCoordinator(dock)
+
+        with (
+            patch.object(
+                workflow_section_coordinator,
+                "configure_local_first_backing_controls",
+            ) as configure_local_first_backing_controls,
+            patch.object(
+                workflow_section_coordinator,
+                "configure_local_first_spinbox_unit_copy",
+            ) as configure_local_first_spinbox_unit_copy,
+        ):
+            coordinator.configure_starting_sections()
+            coordinator.configure_spinbox_unit_copy()
+
+        configure_local_first_backing_controls.assert_called_once_with(dock)
+        configure_local_first_spinbox_unit_copy.assert_called_once_with(dock)
+
+
 class DockStartupCoordinatorTests(unittest.TestCase):
     def test_run_orchestrates_startup_in_constructor_order(self):
         dock = MagicMock()
         dock.DEFAULT_DOCK_FEATURES = sentinel.features
         dock.STARTUP_ALLOWED_AREAS = sentinel.allowed_areas
-        workflow_section_coordinator = MagicMock()
-
-        coordinator = DockStartupCoordinator(
-            dock,
-            workflow_section_coordinator=workflow_section_coordinator,
-        )
-
-        result = coordinator.run()
+        with (
+            patch(
+                "qfit.ui.dock_startup_coordinator."
+                "configure_local_first_backing_controls"
+            ) as configure_local_first_backing_controls,
+            patch(
+                "qfit.ui.dock_startup_coordinator."
+                "configure_local_first_spinbox_unit_copy"
+            ) as configure_local_first_spinbox_unit_copy,
+        ):
+            coordinator = DockStartupCoordinator(dock)
+            result = coordinator.run()
 
         self.assertEqual(
             result,
@@ -548,10 +575,10 @@ class DockStartupCoordinatorTests(unittest.TestCase):
                     "set_features",
                     "set_allowed_areas",
                     "ensure_wizard_settings",
-                    "configure_starting_sections",
+                    "configure_local_first_backing_controls",
                     "remove_stale_qfit_layers",
                     "apply_contextual_help",
-                    "configure_spinbox_unit_copy",
+                    "configure_local_first_spinbox_unit_copy",
                     "configure_background_preset_options",
                     "configure_detailed_route_filter_options",
                     "configure_detailed_route_strategy_options",
@@ -589,10 +616,5 @@ class DockStartupCoordinatorTests(unittest.TestCase):
                 call._update_connection_status(),
             ],
         )
-        self.assertEqual(
-            workflow_section_coordinator.mock_calls,
-            [
-                call.configure_starting_sections(),
-                call.configure_spinbox_unit_copy(),
-            ],
-        )
+        configure_local_first_backing_controls.assert_called_once_with(dock)
+        configure_local_first_spinbox_unit_copy.assert_called_once_with(dock)

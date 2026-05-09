@@ -2,6 +2,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from .application.local_first_backing_controls import (
+    configure_local_first_backing_controls,
+    configure_local_first_spinbox_unit_copy,
+)
+
 
 @dataclass(frozen=True)
 class DockStartupResult:
@@ -9,11 +14,10 @@ class DockStartupResult:
 
 
 class DockStartupCoordinator:
-    """Coordinate top-level dock-widget startup without moving lower-level UI methods."""
+    """Coordinate top-level dock-widget startup without owning page policy."""
 
-    def __init__(self, dock_widget, *, workflow_section_coordinator):
+    def __init__(self, dock_widget):
         self.dock_widget = dock_widget
-        self.workflow_section_coordinator = workflow_section_coordinator
 
     def run(self) -> DockStartupResult:
         dock = self.dock_widget
@@ -28,8 +32,8 @@ class DockStartupCoordinator:
         dock._ensure_wizard_settings()
         performed_steps.append("ensure_wizard_settings")
 
-        self.workflow_section_coordinator.configure_starting_sections()
-        performed_steps.append("configure_starting_sections")
+        configure_local_first_backing_controls(dock)
+        performed_steps.append("configure_local_first_backing_controls")
 
         dock._remove_stale_qfit_layers()
         performed_steps.append("remove_stale_qfit_layers")
@@ -37,8 +41,8 @@ class DockStartupCoordinator:
         dock._apply_contextual_help()
         performed_steps.append("apply_contextual_help")
 
-        self.workflow_section_coordinator.configure_spinbox_unit_copy()
-        performed_steps.append("configure_spinbox_unit_copy")
+        configure_local_first_spinbox_unit_copy(dock)
+        performed_steps.append("configure_local_first_spinbox_unit_copy")
 
         dock._configure_background_preset_options()
         performed_steps.append("configure_background_preset_options")
