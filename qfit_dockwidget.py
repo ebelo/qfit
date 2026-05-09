@@ -730,11 +730,19 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         setattr(self, move.installed_target_attr, current_target)
         return True
 
-    def _local_first_control_move_layout(self, content, move: LocalFirstControlMove):
+    def _local_first_control_move_layout(
+        self,
+        content,
+        move: LocalFirstControlMove | LocalFirstWidgetMove,
+    ):
         layout_getter = getattr(content, move.layout_getter_attr, None)
         return layout_getter() if callable(layout_getter) else None
 
-    def _local_first_control_move_parent_panel(self, content, move: LocalFirstControlMove):
+    def _local_first_control_move_parent_panel(
+        self,
+        content,
+        move: LocalFirstControlMove | LocalFirstWidgetMove,
+    ):
         if move.parent_panel_attr is None:
             return content
         return getattr(content, move.parent_panel_attr, content)
@@ -747,7 +755,11 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         elif hasattr(group, "setVisible"):
             group.setVisible(True)
 
-    def _refresh_local_first_control_visibility(self, content, move: LocalFirstControlMove) -> None:
+    def _refresh_local_first_control_visibility(
+        self,
+        content,
+        move: LocalFirstControlMove | LocalFirstWidgetMove,
+    ) -> None:
         if move.post_install_visible_attr is None:
             return
         set_visible = getattr(content, move.post_install_visible_attr, None)
