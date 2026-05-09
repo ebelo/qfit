@@ -93,7 +93,9 @@ from .ui.application import (
     ensure_wizard_settings,
     load_wizard_settings,
     local_first_control_move_for_key,
+    local_first_control_move_keys,
     local_first_widget_move_for_key,
+    local_first_widget_move_keys,
     save_last_step_index,
     step_index_for_key,
     build_visual_workflow_background_inputs,
@@ -540,23 +542,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 update_atlas_document_settings=self._update_atlas_document_settings,
             ),
         )
-        self._install_local_first_activity_style_controls(
-            self._local_first_dock_composition
-        )
-        self._install_local_first_filter_controls(self._local_first_dock_composition)
-        self._install_local_first_advanced_fetch_controls(
-            self._local_first_dock_composition
-        )
-        self._install_local_first_activity_preview_controls(
-            self._local_first_dock_composition
-        )
-        self._install_local_first_backfill_controls(self._local_first_dock_composition)
-        self._install_local_first_atlas_pdf_controls(self._local_first_dock_composition)
-        self._install_local_first_strava_credentials_controls(
-            self._local_first_dock_composition
-        )
-        self._install_local_first_basemap_controls(self._local_first_dock_composition)
-        self._install_local_first_storage_controls(self._local_first_dock_composition)
+        self._install_local_first_audited_controls(self._local_first_dock_composition)
         self._bind_wizard_analysis_mode_controls(self._local_first_dock_composition)
         return self._local_first_dock_composition
 
@@ -842,11 +828,49 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 widgets.append(widget)
         return widgets
 
+    def _install_local_first_widget_move(self, composition, key: str) -> bool:
+        """Install one audited loose-widget area into local-first UI."""
+
+        move = local_first_widget_move_for_key(key)
+        return self._install_local_first_widget_controls(composition, move=move)
+
+    def _install_local_first_audited_controls(self, composition) -> None:
+        """Install all audited legacy-backed controls into local-first pages."""
+
+        for key in local_first_widget_move_keys():
+            self._install_local_first_widget_move(composition, key)
+        for key in local_first_control_move_keys():
+            installed = self._install_local_first_control_move(composition, key)
+            self._after_local_first_control_move_installed(key, installed=installed)
+
+    def _after_local_first_control_move_installed(
+        self,
+        key: str,
+        *,
+        installed: bool,
+    ) -> None:
+        """Apply per-control side effects after an audited local-first move."""
+
+        if not installed:
+            return
+        if key == "backfill_routes":
+            detailed_streams_checkbox = getattr(self, "detailedStreamsCheckBox", None)
+            if hasattr(detailed_streams_checkbox, "isChecked"):
+                self._workflow_section_coordinator.update_detailed_fetch_visibility(
+                    detailed_streams_checkbox.isChecked()
+                )
+        elif key == "atlas_pdf":
+            legacy_export_button = getattr(self, "generateAtlasPdfButton", None)
+            if legacy_export_button is not None and hasattr(
+                legacy_export_button,
+                "hide",
+            ):
+                legacy_export_button.hide()
+
     def _install_local_first_activity_style_controls(self, composition) -> None:
         """Expose activity visualization controls in the local-first Map tab."""
 
-        move = local_first_widget_move_for_key("activity_style")
-        self._install_local_first_widget_controls(composition, move=move)
+        self._install_local_first_widget_move(composition, "activity_style")
 
     def _install_local_first_filter_controls(self, composition) -> None:
         """Expose the backing map filters in the local-first Map tab."""
@@ -867,23 +891,16 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         """Expose the detailed-route backfill action in the Data tab."""
 
         installed = self._install_local_first_control_move(composition, "backfill_routes")
-        detailed_streams_checkbox = getattr(self, "detailedStreamsCheckBox", None)
-        if installed and hasattr(detailed_streams_checkbox, "isChecked"):
-            self._workflow_section_coordinator.update_detailed_fetch_visibility(
-                detailed_streams_checkbox.isChecked()
-            )
+        self._after_local_first_control_move_installed(
+            "backfill_routes",
+            installed=installed,
+        )
 
     def _install_local_first_atlas_pdf_controls(self, composition) -> None:
         """Expose backing PDF output controls in the Atlas tab."""
 
         installed = self._install_local_first_control_move(composition, "atlas_pdf")
-        legacy_export_button = getattr(self, "generateAtlasPdfButton", None)
-        if (
-            installed
-            and legacy_export_button is not None
-            and hasattr(legacy_export_button, "hide")
-        ):
-            legacy_export_button.hide()
+        self._after_local_first_control_move_installed("atlas_pdf", installed=installed)
 
     def _install_local_first_strava_credentials_controls(self, composition) -> None:
         """Expose the backing Strava OAuth controls in the Settings tab."""
