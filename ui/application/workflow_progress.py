@@ -46,12 +46,11 @@ def build_workflow_progress_from_facts_and_settings(
 
     if facts.preferred_current_key is not None:
         return build_workflow_progress_from_facts(facts)
-    return build_workflow_progress_from_facts(
-        replace(
-            facts,
-            preferred_current_key=preferred_current_key_from_settings(settings),
-        )
+    facts_with_preference: WorkflowProgressFacts = replace(
+        facts,
+        preferred_current_key=preferred_current_key_from_settings(settings),
     )
+    return build_workflow_progress_from_facts(facts_with_preference)
 
 
 def _completed_keys_from_facts(facts: WorkflowProgressFacts) -> tuple[str, ...]:
