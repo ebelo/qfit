@@ -319,7 +319,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertFalse(assembled.pages[2].next_button.isEnabled())
 
     def test_step_page_navigation_uses_installed_page_keys(self):
-        specs = self.composition.build_default_wizard_page_specs()
+        specs = self.composition.build_default_workflow_page_specs()
         assembled = self.composition.build_placeholder_wizard_shell(
             specs=(specs[0], specs[4]),
             progress_facts=WorkflowProgressFacts(

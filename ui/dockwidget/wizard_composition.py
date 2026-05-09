@@ -18,9 +18,9 @@ from qfit.ui.application.workflow_footer_status import (
     build_workflow_footer_facts_from_progress_facts,
     build_workflow_footer_status,
 )
-from qfit.ui.application.wizard_page_specs import (
-    DockWizardPageSpec,
-    build_default_wizard_page_specs,
+from qfit.ui.application.workflow_page_specs import (
+    DockWorkflowPageSpec,
+    build_default_workflow_page_specs,
 )
 from qfit.ui.application.workflow_progress import (
     build_workflow_progress_from_facts,
@@ -60,6 +60,10 @@ from .workflow_page_state import (
 
 
 WizardSettingsSnapshot = WorkflowSettingsSnapshot
+DockWizardPageSpec = DockWorkflowPageSpec
+"""Compatibility alias for pre-#805 wizard composition page spec callers."""
+build_default_wizard_page_specs = build_default_workflow_page_specs
+"""Compatibility alias for pre-#805 wizard composition builder callers."""
 _StateT = TypeVar("_StateT")
 WizardCompositionPage = WizardPage | WizardStepPage
 WizardProgressFacts = WorkflowProgressFacts
@@ -102,7 +106,7 @@ def build_placeholder_wizard_shell(
     progress: DockWorkflowProgress | None = None,
     progress_facts: WorkflowProgressFacts | None = None,
     wizard_settings: WizardSettingsSnapshot | None = None,
-    specs: Sequence[DockWizardPageSpec] | None = None,
+    specs: Sequence[DockWorkflowPageSpec] | None = None,
     use_step_pages: bool = True,
     connection_state: ConnectionPageState | None = None,
     sync_state: SyncPageState | None = None,
@@ -499,10 +503,10 @@ def _resolve_state(
 
 
 def _resolve_page_specs(
-    specs: Sequence[DockWizardPageSpec] | None,
-) -> tuple[DockWizardPageSpec, ...]:
+    specs: Sequence[DockWorkflowPageSpec] | None,
+) -> tuple[DockWorkflowPageSpec, ...]:
     if specs is None:
-        return build_default_wizard_page_specs()
+        return build_default_workflow_page_specs()
     return tuple(specs)
 
 
@@ -535,7 +539,7 @@ def _build_default_footer_text(
 def _install_shell_pages(
     shell: WizardShell,
     *,
-    specs: Sequence[DockWizardPageSpec],
+    specs: Sequence[DockWorkflowPageSpec],
     use_step_pages: bool,
 ) -> tuple[WizardCompositionPage, ...]:
     if use_step_pages:
@@ -782,7 +786,9 @@ def _install_atlas_content(
 
 
 __all__ = [
+    "DockWorkflowPageSpec",
     "DockWorkflowProgress",
+    "DockWizardPageSpec",
     "DockWizardProgress",
     "WizardActionCallbacks",
     "WizardPageStateSnapshots",
@@ -790,6 +796,8 @@ __all__ = [
     "WizardSettingsSnapshot",
     "WizardShellComposition",
     "WorkflowProgressFacts",
+    "build_default_workflow_page_specs",
+    "build_default_wizard_page_specs",
     "build_placeholder_wizard_shell",
     "build_wizard_page_states_from_facts",
     "connect_wizard_action_callbacks",

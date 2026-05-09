@@ -6,7 +6,7 @@ from unittest.mock import patch
 from tests import _path  # noqa: F401
 from tests.test_wizard_shell import _fake_qt_modules
 
-from qfit.ui.application.wizard_page_specs import build_default_wizard_page_specs
+from qfit.ui.application.workflow_page_specs import build_default_workflow_page_specs
 from qfit.ui.tokens import COLOR_MUTED
 
 
@@ -285,7 +285,7 @@ class SyncPageContentTest(unittest.TestCase):
 
     def test_installs_only_on_sync_wizard_page_body(self):
         sync_spec = next(
-            spec for spec in build_default_wizard_page_specs() if spec.key == "sync"
+            spec for spec in build_default_workflow_page_specs() if spec.key == "sync"
         )
         sync_page = self.wizard_page.WizardPage(sync_spec)
 
@@ -295,7 +295,7 @@ class SyncPageContentTest(unittest.TestCase):
 
     def test_rejects_installing_on_other_wizard_page(self):
         connection_spec = next(
-            spec for spec in build_default_wizard_page_specs() if spec.key == "connection"
+            spec for spec in build_default_workflow_page_specs() if spec.key == "connection"
         )
         connection_page = self.wizard_page.WizardPage(connection_spec)
 
