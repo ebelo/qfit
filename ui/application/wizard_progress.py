@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from dataclasses import replace
+
 from .dock_workflow_sections import DockWizardProgress, WIZARD_WORKFLOW_STEPS
 from .workflow_progress_facts import (
     WorkflowProgressFacts,
@@ -93,32 +95,7 @@ def _wizard_progress_facts_with_preferred_current_key(
     *,
     preferred_current_key: str | None,
 ) -> WizardProgressFacts:
-    return WizardProgressFacts(
-        connection_configured=facts.connection_configured,
-        activities_fetched=facts.activities_fetched,
-        activities_stored=facts.activities_stored,
-        activity_layers_loaded=facts.activity_layers_loaded,
-        analysis_generated=facts.analysis_generated,
-        atlas_exported=facts.atlas_exported,
-        sync_in_progress=facts.sync_in_progress,
-        route_sync_in_progress=facts.route_sync_in_progress,
-        atlas_export_in_progress=facts.atlas_export_in_progress,
-        preferred_current_key=preferred_current_key,
-        fetched_activity_count=facts.fetched_activity_count,
-        activity_count=facts.activity_count,
-        output_name=facts.output_name,
-        analysis_output_name=facts.analysis_output_name,
-        atlas_output_name=facts.atlas_output_name,
-        background_enabled=facts.background_enabled,
-        background_layer_loaded=facts.background_layer_loaded,
-        background_name=facts.background_name,
-        filters_active=facts.filters_active,
-        filtered_activity_count=facts.filtered_activity_count,
-        filter_description=facts.filter_description,
-        activity_style_preset=facts.activity_style_preset,
-        loaded_layer_count=facts.loaded_layer_count,
-        last_sync_date=facts.last_sync_date,
-    )
+    return replace(facts, preferred_current_key=preferred_current_key)
 
 
 def _completed_keys_from_facts(facts: WizardProgressFacts) -> tuple[str, ...]:

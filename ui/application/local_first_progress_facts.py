@@ -272,6 +272,7 @@ def _current_local_first_background_name(dock) -> str | None:
 
 
 __all__ = [
+    "LocalFirstProgressFacts",
     "build_current_local_first_progress_facts",
     "current_local_first_activity_style_preset",
     "current_local_first_atlas_output_path",
