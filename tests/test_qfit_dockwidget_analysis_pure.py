@@ -565,9 +565,11 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             max_distance_km=None,
             detailed_route_filter=DETAILED_ROUTE_FILTER_MISSING,
         )
-        dock._current_activity_preview_request = MagicMock(return_value=preview_request)
-
         with patch(
+            "qfit.ui.application.local_first_progress_facts."
+            "build_current_activity_preview_request",
+            return_value=preview_request,
+        ) as build_preview_request, patch(
             "qfit.ui.application.local_first_progress_facts."
             "build_activity_preview_selection_state",
             return_value=SimpleNamespace(filtered_count=1),
@@ -576,6 +578,8 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
                 dock,
                 dock.runtime_state,
             )
+
+        build_preview_request.assert_called_once_with(dock)
 
         self.assertTrue(filters_active)
         self.assertEqual(filtered_count, 1)
@@ -590,9 +594,12 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._runtime_state_store = self.module.DockRuntimeStore()
         dock._runtime_store().set_activities([object(), object(), object()])
         preview_request = SimpleNamespace(activity_type=None)
-        dock._current_activity_preview_request = MagicMock(return_value=preview_request)
 
         with patch(
+            "qfit.ui.application.local_first_progress_facts."
+            "build_current_activity_preview_request",
+            return_value=preview_request,
+        ) as build_preview_request, patch(
             "qfit.ui.application.local_first_progress_facts."
             "build_activity_preview_selection_state",
             return_value=SimpleNamespace(filtered_count=3),
@@ -601,6 +608,8 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
                 dock,
                 dock.runtime_state,
             )
+
+        build_preview_request.assert_called_once_with(dock)
 
         self.assertFalse(filters_active)
         self.assertIsNone(filtered_count)
@@ -2000,7 +2009,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.starts_layer = "starts"
         dock.points_layer = "points"
         dock.atlas_layer = "atlas"
-        dock._current_activity_preview_request = MagicMock(return_value="preview-request")
         selection_state = self.module.ActivitySelectionState(query=object(), filtered_count=3)
         dock.stylePresetComboBox = _FakeComboBox(current_text="By activity type")
         dock.temporalModeComboBox = _FakeComboBox(current_text="By month")
@@ -2032,7 +2040,11 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             self.module,
             "build_visual_workflow_background_inputs",
             return_value="background",
-        ) as build_background:
+        ) as build_background, patch.object(
+            self.module,
+            "build_current_activity_preview_request",
+            return_value="preview-request",
+        ) as build_preview_request:
             request = self.module.QfitDockWidget._current_visual_workflow_request(
                 dock,
                 apply_subset_filters=False,
@@ -2049,6 +2061,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             points_layer="points",
             atlas_layer="atlas",
         )
+        build_preview_request.assert_called_once_with(dock)
         build_selection.assert_called_once_with("preview-request")
         build_selection_handoff.assert_called_once_with(selection_state)
         build_settings.assert_called_once_with(
@@ -2194,23 +2207,13 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertIs(build_options.call_args.args[0], dock.runtime_state.activities)
         dock._apply_activity_type_options.assert_called_once_with(result)
 
-    def test_current_activity_preview_request_delegates_to_local_first_policy(self):
+    def test_qfit_dock_widget_retired_activity_preview_request_delegate(self):
+        self.assertFalse(
+            hasattr(self.module.QfitDockWidget, "_current_activity_preview_request")
+        )
+
+    def test_refresh_activity_preview_uses_local_first_policy_and_updates_widgets(self):
         dock = object.__new__(self.module.QfitDockWidget)
-        preview_request = SimpleNamespace()
-
-        with patch.object(
-            self.module,
-            "build_current_activity_preview_request",
-            return_value=preview_request,
-        ) as build_request:
-            request = self.module.QfitDockWidget._current_activity_preview_request(dock)
-
-        self.assertIs(request, preview_request)
-        build_request.assert_called_once_with(dock)
-
-    def test_refresh_activity_preview_delegates_and_updates_widgets(self):
-        dock = object.__new__(self.module.QfitDockWidget)
-        dock._current_activity_preview_request = MagicMock(return_value="preview-request")
         dock.activity_workflow = SimpleNamespace(build_preview_result=MagicMock())
         dock.querySummaryLabel = SimpleNamespace(setText=MagicMock())
         dock.activityPreviewPlainTextEdit = SimpleNamespace(setPlainText=MagicMock())
@@ -2221,9 +2224,15 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         )
         dock.activity_workflow.build_preview_result.return_value = preview_result
 
-        result = self.module.QfitDockWidget._refresh_activity_preview(dock)
+        with patch.object(
+            self.module,
+            "build_current_activity_preview_request",
+            return_value="preview-request",
+        ) as build_preview_request:
+            result = self.module.QfitDockWidget._refresh_activity_preview(dock)
 
         self.assertEqual(result, ["first", "second"])
+        build_preview_request.assert_called_once_with(dock)
         dock.activity_workflow.build_preview_result.assert_called_once_with("preview-request")
         dock.querySummaryLabel.setText.assert_called_once_with("2 activities")
         dock.activityPreviewPlainTextEdit.setPlainText.assert_called_once_with("first\nsecond")
@@ -2367,7 +2376,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.starts_layer = "starts-layer"
         dock._clear_analysis_layer = MagicMock()
         dock._run_selected_analysis = MagicMock(return_value="status")
-        dock._current_activity_preview_request = MagicMock(return_value="preview-request")
         selection_state = self.module.ActivitySelectionState(query=object(), filtered_count=2)
         inputs = SimpleNamespace(
             analysis_mode="Most frequent starting points",
@@ -2383,11 +2391,16 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             self.module,
             "build_activity_preview_selection_state",
             return_value=selection_state,
-        ) as build_selection_state:
+        ) as build_selection_state, patch.object(
+            self.module,
+            "build_current_activity_preview_request",
+            return_value="preview-request",
+        ) as build_preview_request:
             status = self.module.QfitDockWidget._apply_analysis_configuration(dock)
 
         self.assertEqual(status, "status")
         dock._clear_analysis_layer.assert_called_once_with()
+        build_preview_request.assert_called_once_with(dock)
         build_selection_state.assert_called_once_with("preview-request")
         build_inputs.assert_called_once_with(
             current_mode="Most frequent starting points",
@@ -2408,7 +2421,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.analysisModeComboBox = _FakeComboBox(current_text="Most frequent starting points")
         dock._clear_analysis_layer = MagicMock()
         dock._run_selected_analysis = MagicMock(return_value="")
-        dock._current_activity_preview_request = MagicMock(return_value="preview-request")
         selection_state = self.module.ActivitySelectionState(query=object(), filtered_count=0)
         inputs = SimpleNamespace(
             analysis_mode="Most frequent starting points",
@@ -2424,10 +2436,15 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             self.module,
             "build_activity_preview_selection_state",
             return_value=selection_state,
-        ):
+        ), patch.object(
+            self.module,
+            "build_current_activity_preview_request",
+            return_value="preview-request",
+        ) as build_preview_request:
             status = self.module.QfitDockWidget._apply_analysis_configuration(dock)
 
         self.assertEqual(status, "")
+        build_preview_request.assert_called_once_with(dock)
         dock._run_selected_analysis.assert_called_once_with(
             "Most frequent starting points",
             None,
@@ -2779,7 +2796,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._fetch_task = object()
         dock._set_fetch_running = MagicMock()
         dock.activityTypeComboBox = _FakeComboBox(current_text="All")
-        dock._current_activity_preview_request = MagicMock(return_value="preview-request")
         dock.activity_workflow = MagicMock()
         dock.settings = _FakeSettings()
         dock._apply_activity_type_options = MagicMock()
@@ -2804,8 +2820,16 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         )
         dock.activity_workflow.build_fetch_completion_result.return_value = result
 
-        self.module.QfitDockWidget._on_fetch_finished(dock, [{"id": 1}], None, False, object())
+        with patch.object(
+            self.module,
+            "build_current_activity_preview_request",
+            return_value="preview-request",
+        ) as build_preview_request:
+            self.module.QfitDockWidget._on_fetch_finished(
+                dock, [{"id": 1}], None, False, object()
+            )
 
+        build_preview_request.assert_called_once_with(dock)
         self.assertIsNone(dock._fetch_task)
         self.assertEqual(dock.activities, [{"id": 1}])
         self.assertEqual(dock.last_fetch_context, {"provider": "strava"})
@@ -2825,7 +2849,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._fetch_task = object()
         dock._set_fetch_running = MagicMock()
         dock.activityTypeComboBox = _FakeComboBox(current_text="All")
-        dock._current_activity_preview_request = MagicMock(return_value=None)
         dock.activity_workflow = MagicMock()
         dock.settings = _FakeSettings()
         dock._apply_activity_type_options = MagicMock()
@@ -2847,8 +2870,14 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         )
         dock.activity_workflow.build_fetch_completion_result.return_value = result
 
-        self.module.QfitDockWidget._on_fetch_finished(dock, [], None, False, object())
+        with patch.object(
+            self.module,
+            "build_current_activity_preview_request",
+            return_value=None,
+        ) as build_preview_request:
+            self.module.QfitDockWidget._on_fetch_finished(dock, [], None, False, object())
 
+        build_preview_request.assert_called_once_with(dock)
         dock._start_store_activities.assert_not_called()
         dock._set_status.assert_called_once_with("Fetched 0 activities")
 
@@ -2857,7 +2886,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._fetch_task = object()
         dock._set_fetch_running = MagicMock()
         dock.activityTypeComboBox = _FakeComboBox(current_text="All")
-        dock._current_activity_preview_request = MagicMock(return_value=None)
         dock.activity_workflow = MagicMock()
         dock.settings = _FakeSettings()
         dock._apply_activity_type_options = MagicMock()
@@ -2879,8 +2907,16 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         )
         dock.activity_workflow.build_fetch_completion_result.return_value = result
 
-        self.module.QfitDockWidget._on_fetch_finished(dock, [{"id": 1}], None, False, object())
+        with patch.object(
+            self.module,
+            "build_current_activity_preview_request",
+            return_value=None,
+        ) as build_preview_request:
+            self.module.QfitDockWidget._on_fetch_finished(
+                dock, [{"id": 1}], None, False, object()
+            )
 
+        build_preview_request.assert_called_once_with(dock)
         dock._start_store_activities.assert_called_once_with(
             status_text="Storing fetched activities…"
         )
@@ -2891,7 +2927,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._fetch_task = object()
         dock._set_fetch_running = MagicMock()
         dock.activityTypeComboBox = _FakeComboBox(current_text="All")
-        dock._current_activity_preview_request = MagicMock(return_value=None)
         dock.activity_workflow = MagicMock()
         dock.settings = _FakeSettings()
         dock._apply_activity_type_options = MagicMock()
@@ -2913,8 +2948,16 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         )
         dock.activity_workflow.build_fetch_completion_result.return_value = result
 
-        self.module.QfitDockWidget._on_fetch_finished(dock, [{"id": 1}], None, False, object())
+        with patch.object(
+            self.module,
+            "build_current_activity_preview_request",
+            return_value=None,
+        ) as build_preview_request:
+            self.module.QfitDockWidget._on_fetch_finished(
+                dock, [{"id": 1}], None, False, object()
+            )
 
+        build_preview_request.assert_called_once_with(dock)
         dock._start_store_activities.assert_called_once_with(
             status_text="Storing fetched activities…"
         )
@@ -3045,7 +3088,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
     def test_current_atlas_export_request_uses_current_ui_state(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock.atlas_layer = "atlas-layer"
-        dock._current_activity_preview_request = MagicMock(return_value="preview-request")
         dock.atlasPdfPathLineEdit = _FakeLineEdit(" /tmp/qfit-atlas.pdf ")
         dock.atlasTitleLineEdit = _FakeLineEdit(" Spring Atlas ")
         dock.atlasSubtitleLineEdit = _FakeLineEdit(" Road and trail ")
@@ -3059,6 +3101,10 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._mapbox_access_token = MagicMock(return_value="token")
 
         with patch.object(
+            self.module,
+            "build_current_activity_preview_request",
+            return_value="preview-request",
+        ) as build_preview_request, patch.object(
             self.module,
             "build_activity_preview_selection_state",
             return_value="selection",
@@ -3082,6 +3128,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertEqual(request.style_id, "outdoors-v12")
         self.assertTrue(request.background_enabled)
         self.assertEqual(request.profile_plot_style, "profile-style")
+        build_preview_request.assert_called_once_with(dock)
         build_selection.assert_called_once_with("preview-request")
         build_profile_style.assert_called_once_with(dock.settings)
 

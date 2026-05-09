@@ -799,7 +799,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 cancelled=cancelled,
                 provider=provider,
                 current_activity_type=self.activityTypeComboBox.currentText() or "All",
-                preview_request=self._current_activity_preview_request(),
+                preview_request=build_current_activity_preview_request(self),
             )
         )
 
@@ -1156,7 +1156,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             ),
             selection_state=build_visual_workflow_selection_state_handoff(
                 build_activity_preview_selection_state(
-                    self._current_activity_preview_request()
+                    build_current_activity_preview_request(self)
                 )
             ),
             settings=build_visual_workflow_settings_snapshot(
@@ -1218,7 +1218,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             current_mode=self.analysisModeComboBox.currentText(),
             current_starts_layer=getattr(self, "starts_layer", None),
             current_selection_state=build_activity_preview_selection_state(
-                self._current_activity_preview_request()
+                build_current_activity_preview_request(self)
             ),
             analysis_mode=analysis_mode,
             starts_layer=starts_layer,
@@ -1272,12 +1272,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         except RuntimeError:
             logger.debug("Failed to refresh map canvas", exc_info=True)
 
-    def _current_activity_preview_request(self):
-        return build_current_activity_preview_request(self)
-
     def _refresh_activity_preview(self):
         preview = self.activity_workflow.build_preview_result(
-            self._current_activity_preview_request()
+            build_current_activity_preview_request(self)
         )
         self.querySummaryLabel.setText(preview.query_summary_text)
         self.activityPreviewPlainTextEdit.setPlainText(preview.preview_text)
@@ -1435,7 +1432,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         return DockAtlasExportRequest(
             atlas_layer=self.atlas_layer,
             selection_state=build_activity_preview_selection_state(
-                self._current_activity_preview_request()
+                build_current_activity_preview_request(self)
             ),
             output_path=self.atlasPdfPathLineEdit.text().strip(),
             atlas_title=self.atlasTitleLineEdit.text().strip(),
