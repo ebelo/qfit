@@ -77,7 +77,6 @@ from .ui.application import (
     build_visual_layer_refs,
     set_local_first_analysis_mode,
     update_local_first_atlas_document_settings,
-    build_wizard_progress_facts_from_runtime_state,
     ensure_wizard_settings,
     install_local_first_audited_controls,
     sync_local_first_basemap_style_fields,
@@ -86,13 +85,8 @@ from .ui.application import (
     build_visual_workflow_settings_snapshot,
 )
 from .ui.application.local_first_progress_facts import (
-    current_local_first_activity_style_preset,
-    current_local_first_atlas_output_path,
-    current_local_first_background_facts,
-    current_local_first_filter_facts,
-    current_local_first_last_sync_date,
+    build_current_local_first_progress_facts,
     current_local_first_visual_temporal_mode,
-    runtime_state_with_local_first_output_path,
 )
 from .ui.contextual_help import ContextualHelpBinder, build_dock_help_entries
 from .detailed_route_strategy import DETAILED_ROUTE_STRATEGY_MISSING
@@ -194,44 +188,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def _current_wizard_progress_facts(self):
         """Return render-neutral #609 wizard facts from the live dock state."""
 
-        runtime_state = runtime_state_with_local_first_output_path(
-            self.runtime_state,
-            self._widget_text("outputPathLineEdit"),
-        )
-        atlas_exported = bool(getattr(self, "_atlas_export_completed", False))
-        atlas_export_output_path = current_local_first_atlas_output_path(
-            runtime_state=runtime_state,
-            atlas_pdf_path=self._widget_text("atlasPdfPathLineEdit"),
-            atlas_exported=atlas_exported,
-            completed_output_path=getattr(self, "_atlas_export_output_path", None),
-            task_output_path=getattr(self, "_atlas_export_task_output_path", None),
-        )
-        (
-            background_enabled,
-            background_layer_loaded,
-            background_name,
-        ) = current_local_first_background_facts(self, runtime_state)
-        (
-            filters_active,
-            filtered_activity_count,
-            filter_description,
-        ) = current_local_first_filter_facts(self, runtime_state)
-        return build_wizard_progress_facts_from_runtime_state(
-            runtime_state,
-            connection_configured=self._has_configured_strava_connection(),
-            atlas_exported=atlas_exported,
-            atlas_output_path=atlas_export_output_path,
-            background_enabled=background_enabled,
-            background_layer_loaded=background_layer_loaded,
-            background_name=background_name,
-            filters_active=filters_active,
-            filtered_activity_count=filtered_activity_count,
-            filter_description=filter_description,
-            activity_style_preset=current_local_first_activity_style_preset(self),
-            last_sync_date=current_local_first_last_sync_date(
-                getattr(self, "settings", None)
-            ),
-        )
+        return build_current_local_first_progress_facts(self)
 
     def _on_output_path_changed(self, value: str) -> None:
         """Keep live local-load actions in sync with the selected GeoPackage path."""

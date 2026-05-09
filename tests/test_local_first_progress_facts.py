@@ -4,7 +4,9 @@ from types import SimpleNamespace
 
 from tests import _path  # noqa: F401
 
+from qfit.ui.application.dock_runtime_state import DockRuntimeState
 from qfit.ui.application.local_first_progress_facts import (
+    build_current_local_first_progress_facts,
     current_local_first_activity_style_preset,
     current_local_first_atlas_output_path,
     current_local_first_background_facts,
@@ -31,6 +33,14 @@ class _FakeComboBox:
         return self._text
 
 
+class _FakeLineEdit:
+    def __init__(self, text):
+        self._text = text
+
+    def text(self):
+        return self._text
+
+
 class _FailingComboBox:
     def currentText(self):
         raise RuntimeError("deleted widget")
@@ -50,6 +60,32 @@ class _FakeRuntimeState:
 
 
 class TestLocalFirstProgressFacts(unittest.TestCase):
+    def test_current_progress_facts_assemble_live_local_first_state(self):
+        dock = SimpleNamespace(
+            runtime_state=DockRuntimeState(output_path="stored.gpkg"),
+            outputPathLineEdit=_FakeLineEdit(" selected.gpkg "),
+            atlasPdfPathLineEdit=_FakeLineEdit("draft.pdf"),
+            backgroundMapCheckBox=_FakeCheckBox(False),
+            backgroundPresetComboBox=_FakeComboBox("Outdoors"),
+            stylePresetComboBox=_FakeComboBox(" Simple lines "),
+            settings={"last_sync_date": " 2026-05-09 "},
+            _atlas_export_completed=True,
+            _atlas_export_output_path="exported.pdf",
+            _atlas_export_task_output_path=None,
+            _widget_text=lambda name: getattr(dock, name).text(),
+            _has_configured_strava_connection=lambda: True,
+        )
+
+        facts = build_current_local_first_progress_facts(dock)
+
+        self.assertTrue(facts.connection_configured)
+        self.assertEqual(facts.output_name, "selected.gpkg")
+        self.assertTrue(facts.atlas_exported)
+        self.assertEqual(facts.atlas_output_name, "exported.pdf")
+        self.assertFalse(facts.background_enabled)
+        self.assertEqual(facts.activity_style_preset, "Simple lines")
+        self.assertEqual(facts.last_sync_date, "2026-05-09")
+
     def test_activity_style_preset_reads_trimmed_combo_text(self):
         dock = SimpleNamespace(stylePresetComboBox=_FakeComboBox(" Simple lines "))
 
