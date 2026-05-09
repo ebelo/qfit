@@ -1,5 +1,7 @@
 """Application-facing dock widget workflow helpers."""
 
+from importlib import import_module
+
 from .dock_action_dispatcher import (
     ApplyVisualizationAction,
     DockActionDispatcher,
@@ -166,13 +168,6 @@ from .wizard_settings import (
     save_last_step_index,
     wizard_step_key_for_index,
 )
-from .wizard_progress import (
-    WizardProgressFacts,
-    build_startup_wizard_progress_facts,
-    build_wizard_progress_facts_from_runtime_state,
-    build_wizard_progress_from_facts,
-    build_wizard_progress_from_facts_and_settings,
-)
 from .visual_workflow_action_builder import build_visual_workflow_action
 from .visual_workflow_action_builder import build_visual_workflow_action_inputs
 from .visual_workflow_action_builder import build_visual_workflow_background_inputs
@@ -182,6 +177,26 @@ from .visual_workflow_action_builder import VisualWorkflowActionInputs
 from .visual_workflow_action_builder import VisualWorkflowBackgroundInputs
 from .visual_workflow_action_builder import VisualWorkflowSettingsSnapshot
 from .visual_workflow_action_builder import build_visual_workflow_settings_snapshot
+
+_WIZARD_PROGRESS_COMPAT_EXPORTS = frozenset(
+    {
+        "WizardProgressFacts",
+        "build_startup_wizard_progress_facts",
+        "build_wizard_progress_facts_from_runtime_state",
+        "build_wizard_progress_from_facts",
+        "build_wizard_progress_from_facts_and_settings",
+    }
+)
+
+
+def __getattr__(name: str) -> object:
+    if name in _WIZARD_PROGRESS_COMPAT_EXPORTS:
+        wizard_progress = import_module(".wizard_progress", __name__)
+        value = getattr(wizard_progress, name)
+        globals()[name] = value
+        return value
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
 
 __all__ = [
     "ApplyVisualizationAction",
