@@ -90,6 +90,7 @@ from .ui.application import (
     build_wizard_progress_facts_from_runtime_state,
     ensure_wizard_settings,
     load_wizard_settings,
+    local_first_control_move_for_key,
     save_last_step_index,
     step_index_for_key,
     build_visual_workflow_background_inputs,
@@ -730,40 +731,34 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         setattr(self, installed_target_attr, current_target)
         return True
 
+    def _install_local_first_control_move(self, composition, key: str) -> bool:
+        """Install one audited legacy-backed control area into local-first UI."""
+
+        move = local_first_control_move_for_key(key)
+        return self._install_local_first_group_controls(
+            composition,
+            content_attr=move.content_attr,
+            group_attr=move.group_attr,
+            installed_attr=move.installed_attr,
+            installed_target_attr=move.installed_target_attr,
+            title=move.title,
+            show_after_move=move.show_after_move,
+        )
+
     def _install_local_first_advanced_fetch_controls(self, composition) -> None:
         """Expose backing Strava fetch limits in the Data tab."""
 
-        self._install_local_first_group_controls(
-            composition,
-            content_attr="sync_content",
-            group_attr="advancedFetchGroupBox",
-            installed_attr="_local_first_advanced_fetch_controls_installed",
-            installed_target_attr="_local_first_advanced_fetch_controls_installed_target",
-        )
+        self._install_local_first_control_move(composition, "advanced_fetch")
 
     def _install_local_first_activity_preview_controls(self, composition) -> None:
         """Expose fetched activity query details in the Data tab."""
 
-        self._install_local_first_group_controls(
-            composition,
-            content_attr="sync_content",
-            group_attr="previewGroupBox",
-            installed_attr="_local_first_activity_preview_controls_installed",
-            installed_target_attr="_local_first_activity_preview_controls_installed_target",
-            title="Fetched activity preview",
-        )
+        self._install_local_first_control_move(composition, "activity_preview")
 
     def _install_local_first_backfill_controls(self, composition) -> None:
         """Expose the detailed-route backfill action in the Data tab."""
 
-        installed = self._install_local_first_group_controls(
-            composition,
-            content_attr="sync_content",
-            group_attr="backfillMissingDetailedRoutesButton",
-            installed_attr="_local_first_backfill_controls_installed",
-            installed_target_attr="_local_first_backfill_controls_installed_target",
-            show_after_move=False,
-        )
+        installed = self._install_local_first_control_move(composition, "backfill_routes")
         detailed_streams_checkbox = getattr(self, "detailedStreamsCheckBox", None)
         if installed and hasattr(detailed_streams_checkbox, "isChecked"):
             self._workflow_section_coordinator.update_detailed_fetch_visibility(
@@ -773,14 +768,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def _install_local_first_atlas_pdf_controls(self, composition) -> None:
         """Expose backing PDF output controls in the Atlas tab."""
 
-        installed = self._install_local_first_group_controls(
-            composition,
-            content_attr="atlas_content",
-            group_attr="atlasPdfGroupBox",
-            installed_attr="_local_first_atlas_pdf_controls_installed",
-            installed_target_attr="_local_first_atlas_pdf_controls_installed_target",
-            title="PDF output",
-        )
+        installed = self._install_local_first_control_move(composition, "atlas_pdf")
         legacy_export_button = getattr(self, "generateAtlasPdfButton", None)
         if (
             installed
@@ -792,26 +780,12 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def _install_local_first_basemap_controls(self, composition) -> None:
         """Expose the backing Mapbox basemap controls in the Settings tab."""
 
-        self._install_local_first_group_controls(
-            composition,
-            content_attr="connection_content",
-            group_attr="backgroundGroupBox",
-            installed_attr="_local_first_basemap_controls_installed",
-            installed_target_attr="_local_first_basemap_controls_installed_target",
-            title="Mapbox basemap",
-        )
+        self._install_local_first_control_move(composition, "basemap")
 
     def _install_local_first_storage_controls(self, composition) -> None:
         """Expose the backing GeoPackage storage controls in the Settings tab."""
 
-        self._install_local_first_group_controls(
-            composition,
-            content_attr="connection_content",
-            group_attr="outputGroupBox",
-            installed_attr="_local_first_storage_controls_installed",
-            installed_target_attr="_local_first_storage_controls_installed_target",
-            title="Data storage",
-        )
+        self._install_local_first_control_move(composition, "storage")
 
     def _bind_wizard_analysis_mode_controls(self, composition) -> None:
         """Expose the hidden backing analysis selector in the live wizard path."""
