@@ -257,9 +257,9 @@ __all__ = [
     "save_last_step_index",
     "set_local_first_analysis_mode",
     "show_local_first_control_group",
-    "update_local_first_atlas_document_settings",
     "show_widget",
     "step_index_for_key",
     "step_key_for_index",
+    "update_local_first_atlas_document_settings",
     "wizard_step_key_for_index",
 ]
