@@ -6,8 +6,52 @@ from dataclasses import replace
 from ...activities.application import build_activity_preview_selection_state
 from ...visualization.application import DEFAULT_TEMPORAL_MODE_LABEL
 from .wizard_filter_summary import build_wizard_filter_description
+from .wizard_progress import build_wizard_progress_facts_from_runtime_state
 
 logger = logging.getLogger(__name__)
+
+
+def build_current_local_first_progress_facts(dock):
+    """Return render-neutral local-first progress facts from the live dock state."""
+
+    runtime_state = runtime_state_with_local_first_output_path(
+        dock.runtime_state,
+        dock._widget_text("outputPathLineEdit"),
+    )
+    atlas_exported = bool(getattr(dock, "_atlas_export_completed", False))
+    atlas_export_output_path = current_local_first_atlas_output_path(
+        runtime_state=runtime_state,
+        atlas_pdf_path=dock._widget_text("atlasPdfPathLineEdit"),
+        atlas_exported=atlas_exported,
+        completed_output_path=getattr(dock, "_atlas_export_output_path", None),
+        task_output_path=getattr(dock, "_atlas_export_task_output_path", None),
+    )
+    (
+        background_enabled,
+        background_layer_loaded,
+        background_name,
+    ) = current_local_first_background_facts(dock, runtime_state)
+    (
+        filters_active,
+        filtered_activity_count,
+        filter_description,
+    ) = current_local_first_filter_facts(dock, runtime_state)
+    return build_wizard_progress_facts_from_runtime_state(
+        runtime_state,
+        connection_configured=dock._has_configured_strava_connection(),
+        atlas_exported=atlas_exported,
+        atlas_output_path=atlas_export_output_path,
+        background_enabled=background_enabled,
+        background_layer_loaded=background_layer_loaded,
+        background_name=background_name,
+        filters_active=filters_active,
+        filtered_activity_count=filtered_activity_count,
+        filter_description=filter_description,
+        activity_style_preset=current_local_first_activity_style_preset(dock),
+        last_sync_date=current_local_first_last_sync_date(
+            getattr(dock, "settings", None)
+        ),
+    )
 
 
 def current_local_first_activity_style_preset(dock) -> str | None:
@@ -186,6 +230,7 @@ def _current_local_first_background_name(dock) -> str | None:
 
 
 __all__ = [
+    "build_current_local_first_progress_facts",
     "current_local_first_activity_style_preset",
     "current_local_first_atlas_output_path",
     "current_local_first_background_facts",
