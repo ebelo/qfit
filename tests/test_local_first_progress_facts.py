@@ -10,6 +10,7 @@ from qfit.ui.application.local_first_progress_facts import (
     current_local_first_activity_style_preset,
     current_local_first_atlas_output_path,
     current_local_first_background_facts,
+    current_local_first_connection_configured,
     current_local_first_last_sync_date,
     current_local_first_visual_temporal_mode,
     runtime_state_with_local_first_output_path,
@@ -46,6 +47,11 @@ class _FailingComboBox:
         raise RuntimeError("deleted widget")
 
 
+class _FailingLineEdit:
+    def text(self):
+        raise RuntimeError("deleted widget")
+
+
 class _FakeLayer:
     def __init__(self, name):
         self._name = name
@@ -69,11 +75,13 @@ class TestLocalFirstProgressFacts(unittest.TestCase):
             backgroundPresetComboBox=_FakeComboBox("Outdoors"),
             stylePresetComboBox=_FakeComboBox(" Simple lines "),
             settings={"last_sync_date": " 2026-05-09 "},
+            clientIdLineEdit=_FakeLineEdit("client-id"),
+            clientSecretLineEdit=_FakeLineEdit("client-secret"),
+            refreshTokenLineEdit=_FakeLineEdit("refresh-token"),
             _atlas_export_completed=True,
             _atlas_export_output_path="exported.pdf",
             _atlas_export_task_output_path=None,
             _widget_text=lambda name: getattr(dock, name).text(),
-            _has_configured_strava_connection=lambda: True,
         )
 
         facts = build_current_local_first_progress_facts(dock)
@@ -85,6 +93,30 @@ class TestLocalFirstProgressFacts(unittest.TestCase):
         self.assertFalse(facts.background_enabled)
         self.assertEqual(facts.activity_style_preset, "Simple lines")
         self.assertEqual(facts.last_sync_date, "2026-05-09")
+
+    def test_connection_configured_requires_visible_credential_text(self):
+        configured_dock = SimpleNamespace(
+            clientIdLineEdit=_FakeLineEdit(" client-id "),
+            clientSecretLineEdit=_FakeLineEdit(" client-secret "),
+            refreshTokenLineEdit=_FakeLineEdit(" refresh-token "),
+        )
+        missing_token_dock = SimpleNamespace(
+            clientIdLineEdit=_FakeLineEdit("client-id"),
+            clientSecretLineEdit=_FakeLineEdit("client-secret"),
+            refreshTokenLineEdit=_FakeLineEdit("   "),
+        )
+
+        self.assertTrue(current_local_first_connection_configured(configured_dock))
+        self.assertFalse(current_local_first_connection_configured(missing_token_dock))
+
+    def test_connection_configured_handles_deleted_backing_widgets(self):
+        dock = SimpleNamespace(
+            clientIdLineEdit=_FakeLineEdit("client-id"),
+            clientSecretLineEdit=_FailingLineEdit(),
+            refreshTokenLineEdit=_FakeLineEdit("refresh-token"),
+        )
+
+        self.assertFalse(current_local_first_connection_configured(dock))
 
     def test_activity_style_preset_reads_trimmed_combo_text(self):
         dock = SimpleNamespace(stylePresetComboBox=_FakeComboBox(" Simple lines "))

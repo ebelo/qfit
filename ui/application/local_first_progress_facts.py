@@ -38,7 +38,7 @@ def build_current_local_first_progress_facts(dock):
     ) = current_local_first_filter_facts(dock, runtime_state)
     return build_wizard_progress_facts_from_runtime_state(
         runtime_state,
-        connection_configured=dock._has_configured_strava_connection(),
+        connection_configured=current_local_first_connection_configured(dock),
         atlas_exported=atlas_exported,
         atlas_output_path=atlas_export_output_path,
         background_enabled=background_enabled,
@@ -51,6 +51,19 @@ def build_current_local_first_progress_facts(dock):
         last_sync_date=current_local_first_last_sync_date(
             getattr(dock, "settings", None)
         ),
+    )
+
+
+def current_local_first_connection_configured(dock) -> bool:
+    """Return whether local-first progress can treat Strava as configured."""
+
+    return all(
+        _safe_local_first_widget_text(dock, name)
+        for name in (
+            "clientIdLineEdit",
+            "clientSecretLineEdit",
+            "refreshTokenLineEdit",
+        )
     )
 
 
@@ -170,6 +183,28 @@ def current_local_first_filter_facts(dock, runtime_state) -> tuple[bool, int | N
     )
 
 
+def _safe_local_first_widget_text(dock, widget_name: str) -> str:
+    widget_text = getattr(dock, "_widget_text", None)
+    if callable(widget_text):
+        try:
+            value = widget_text(widget_name)
+        except RuntimeError:
+            logger.debug("Failed to read local-first widget text", exc_info=True)
+            return ""
+        return value.strip() if isinstance(value, str) else ""
+
+    widget = getattr(dock, widget_name, None)
+    text = getattr(widget, "text", None)
+    if not callable(text):
+        return ""
+    try:
+        value = text()
+    except RuntimeError:
+        logger.debug("Failed to read local-first widget text", exc_info=True)
+        return ""
+    return value.strip() if isinstance(value, str) else ""
+
+
 def _current_local_first_layer_filter_facts(runtime_state) -> tuple[bool, int | None] | None:
     layer = runtime_state.activities_layer
     if layer is None or not hasattr(layer, "subsetString"):
@@ -234,6 +269,7 @@ __all__ = [
     "current_local_first_activity_style_preset",
     "current_local_first_atlas_output_path",
     "current_local_first_background_facts",
+    "current_local_first_connection_configured",
     "current_local_first_filter_facts",
     "current_local_first_last_sync_date",
     "current_local_first_visual_temporal_mode",
