@@ -1,6 +1,62 @@
 from __future__ import annotations
 
-from .local_first_control_moves import LocalFirstControlMove, LocalFirstWidgetMove
+from .local_first_control_moves import (
+    LocalFirstControlMove,
+    LocalFirstWidgetMove,
+    local_first_control_move_for_key,
+    local_first_control_move_keys,
+    local_first_widget_move_for_key,
+    local_first_widget_move_keys,
+)
+
+
+def install_local_first_audited_controls(dock, composition) -> None:
+    """Install all audited legacy-backed controls into local-first pages."""
+
+    # The audited inventories define the production install order.  This does
+    # not preserve the older hand-written call sequence when targets are
+    # independent; it keeps the local-first composition aligned with the audit
+    # metadata instead.
+    for key in local_first_widget_move_keys():
+        install_local_first_widget_move(dock, composition, key)
+    for key in local_first_control_move_keys():
+        installed = install_local_first_control_move(dock, composition, key)
+        after_local_first_control_move_installed(dock, key, installed=installed)
+
+
+def install_local_first_control_move(dock, composition, key: str) -> bool:
+    """Install one audited legacy-backed control area into local-first UI."""
+
+    move = local_first_control_move_for_key(key)
+    return install_local_first_group_controls(dock, composition, move)
+
+
+def install_local_first_widget_move(dock, composition, key: str) -> bool:
+    """Install one audited loose-widget area into local-first UI."""
+
+    move = local_first_widget_move_for_key(key)
+    return install_local_first_widget_controls(dock, composition, move)
+
+
+def after_local_first_control_move_installed(
+    dock,
+    key: str,
+    *,
+    installed: bool,
+) -> None:
+    """Apply per-control side effects after an audited local-first move."""
+
+    if not installed:
+        return
+    try:
+        move = local_first_control_move_for_key(key)
+    except KeyError:
+        return
+    hook_attr = move.after_install_hook_attr
+    if hook_attr is None:
+        return
+    hook = getattr(dock, hook_attr)
+    hook()
 
 
 def install_local_first_group_controls(
@@ -176,7 +232,11 @@ def show_widget(widget) -> None:
 
 
 __all__ = [
+    "after_local_first_control_move_installed",
+    "install_local_first_audited_controls",
+    "install_local_first_control_move",
     "install_local_first_group_controls",
+    "install_local_first_widget_move",
     "install_local_first_widget_controls",
     "local_first_control_move_layout",
     "local_first_control_move_parent_panel",

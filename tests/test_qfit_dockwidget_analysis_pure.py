@@ -898,7 +898,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.atlasSubtitleLineEdit = _FakeLineEdit("Road and trail")
         dock._atlas_export_completed = False
         dock.settings = _FakeSettings()
-        dock._install_local_first_audited_controls = MagicMock()
         dock._bind_wizard_analysis_mode_controls = MagicMock()
         parent = object()
 
@@ -923,7 +922,10 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
                     fake_local_first_composition
                 )
             },
-        ):
+        ), patch.object(
+            self.module,
+            "install_local_first_audited_controls",
+        ) as install_local_first_audited_controls:
             composition = self.module.QfitDockWidget._build_local_first_dock_from_runtime(
                 dock,
                 parent=parent,
@@ -966,7 +968,8 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
                 callback.__func__,
                 getattr(self.module.QfitDockWidget, method_name),
             )
-        dock._install_local_first_audited_controls.assert_called_once_with(
+        install_local_first_audited_controls.assert_called_once_with(
+            dock,
             "connected-composition"
         )
         dock._bind_wizard_analysis_mode_controls.assert_called_once_with(
@@ -1006,52 +1009,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
         dock._mark_atlas_export_stale.assert_not_called()
         dock._refresh_summary_status.assert_not_called()
-
-    def test_install_local_first_audited_controls_uses_inventory_order(self):
-        dock = object.__new__(self.module.QfitDockWidget)
-        dock._install_local_first_widget_move = MagicMock(return_value=True)
-        dock._install_local_first_control_move = MagicMock(return_value=True)
-        dock._after_local_first_control_move_installed = MagicMock()
-        composition = object()
-
-        self.module.QfitDockWidget._install_local_first_audited_controls(
-            dock,
-            composition,
-        )
-
-        self.assertEqual(
-            dock._install_local_first_widget_move.call_args_list,
-            [
-                call(composition, "activity_style"),
-                call(composition, "analysis_temporal"),
-            ],
-        )
-        self.assertEqual(
-            dock._install_local_first_control_move.call_args_list,
-            [
-                call(composition, "advanced_fetch"),
-                call(composition, "activity_preview"),
-                call(composition, "backfill_routes"),
-                call(composition, "map_filters"),
-                call(composition, "atlas_pdf"),
-                call(composition, "strava_credentials"),
-                call(composition, "basemap"),
-                call(composition, "storage"),
-            ],
-        )
-        self.assertEqual(
-            dock._after_local_first_control_move_installed.call_args_list,
-            [
-                call("advanced_fetch", installed=True),
-                call("activity_preview", installed=True),
-                call("backfill_routes", installed=True),
-                call("map_filters", installed=True),
-                call("atlas_pdf", installed=True),
-                call("strava_credentials", installed=True),
-                call("basemap", installed=True),
-                call("storage", installed=True),
-            ],
-        )
 
     def test_after_local_first_control_move_installed_applies_required_hooks(self):
         dock = object.__new__(self.module.QfitDockWidget)
@@ -1093,9 +1050,8 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock = object.__new__(self.module.QfitDockWidget)
         move = SimpleNamespace(after_install_hook_attr="_missing_local_first_hook")
 
-        with patch.object(
-            self.module,
-            "local_first_control_move_for_key",
+        with patch(
+            "qfit.ui.application.local_first_control_installer.local_first_control_move_for_key",
             return_value=move,
         ):
             with self.assertRaises(AttributeError):

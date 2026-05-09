@@ -91,11 +91,11 @@ from .ui.application import (
     build_wizard_filter_description,
     build_wizard_progress_facts_from_runtime_state,
     ensure_wizard_settings,
+    after_local_first_control_move_installed,
+    install_local_first_audited_controls,
     load_wizard_settings,
     local_first_control_move_for_key,
-    local_first_control_move_keys,
     local_first_widget_move_for_key,
-    local_first_widget_move_keys,
     install_local_first_group_controls,
     install_local_first_widget_controls,
     local_first_control_move_layout,
@@ -546,7 +546,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 update_atlas_document_settings=self._update_atlas_document_settings,
             ),
         )
-        self._install_local_first_audited_controls(self._local_first_dock_composition)
+        install_local_first_audited_controls(self, self._local_first_dock_composition)
         self._bind_wizard_analysis_mode_controls(self._local_first_dock_composition)
         return self._local_first_dock_composition
 
@@ -741,38 +741,13 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         move = local_first_widget_move_for_key(key)
         return self._install_local_first_widget_controls(composition, move=move)
 
-    def _install_local_first_audited_controls(self, composition) -> None:
-        """Install all audited legacy-backed controls into local-first pages."""
-
-        # The audited inventories define the production install order.  This does
-        # not preserve the older hand-written call sequence when targets are
-        # independent; it keeps the local-first composition aligned with the
-        # audit metadata instead.
-        for key in local_first_widget_move_keys():
-            self._install_local_first_widget_move(composition, key)
-        for key in local_first_control_move_keys():
-            installed = self._install_local_first_control_move(composition, key)
-            self._after_local_first_control_move_installed(key, installed=installed)
-
     def _after_local_first_control_move_installed(
         self,
         key: str,
         *,
         installed: bool,
     ) -> None:
-        """Apply per-control side effects after an audited local-first move."""
-
-        if not installed:
-            return
-        try:
-            move = local_first_control_move_for_key(key)
-        except KeyError:
-            return
-        hook_attr = move.after_install_hook_attr
-        if hook_attr is None:
-            return
-        hook = getattr(self, hook_attr)
-        hook()
+        after_local_first_control_move_installed(self, key, installed=installed)
 
     def _refresh_local_first_advanced_fetch_visibility(self) -> None:
         advanced_fetch_group = getattr(self, "advancedFetchGroupBox", None)
