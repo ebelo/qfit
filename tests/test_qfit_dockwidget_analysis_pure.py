@@ -7,6 +7,15 @@ from types import ModuleType, SimpleNamespace
 from unittest.mock import MagicMock, call, patch
 
 from tests import _path  # noqa: F401
+
+from qfit.ui.application.local_first_control_installer import (
+    after_local_first_control_move_installed,
+    install_local_first_control_move,
+    install_local_first_widget_move,
+)
+from qfit.ui.application.local_first_control_moves import (
+    local_first_control_move_for_key,
+)
 from qfit.activities.domain.activity_query import DETAILED_ROUTE_FILTER_MISSING
 from qfit.sync_repository import ActivitySyncState
 
@@ -281,7 +290,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         cls.module = cls._import_module_with_stubs()
 
     def _install_required_local_first_group_widgets(self, dock, key):
-        move = self.module.local_first_control_move_for_key(key)
+        move = local_first_control_move_for_key(key)
         for attr in move.required_widget_attrs:
             setattr(dock, attr, MagicMock(name=attr))
 
@@ -842,12 +851,12 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "storage",
             "atlas_pdf",
         ):
-            self.module.QfitDockWidget._after_local_first_control_move_installed(
+            after_local_first_control_move_installed(
                 dock,
                 key,
                 installed=True,
             )
-        self.module.QfitDockWidget._after_local_first_control_move_installed(
+        after_local_first_control_move_installed(
             dock,
             "atlas_pdf",
             installed=False,
@@ -864,15 +873,29 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         move = SimpleNamespace(after_install_hook_attr="_missing_local_first_hook")
 
         with patch.dict(
-            self.module.after_local_first_control_move_installed.__globals__,
+            after_local_first_control_move_installed.__globals__,
             {"local_first_control_move_for_key": MagicMock(return_value=move)},
         ):
             with self.assertRaises(AttributeError):
-                self.module.QfitDockWidget._after_local_first_control_move_installed(
+                after_local_first_control_move_installed(
                     dock,
                     "advanced_fetch",
                     installed=True,
                 )
+
+    def test_dock_widget_does_not_reintroduce_per_move_local_first_installers(self):
+        self.assertFalse(
+            hasattr(self.module.QfitDockWidget, "_install_local_first_control_move")
+        )
+        self.assertFalse(
+            hasattr(self.module.QfitDockWidget, "_install_local_first_widget_move")
+        )
+        self.assertFalse(
+            hasattr(
+                self.module.QfitDockWidget,
+                "_after_local_first_control_move_installed",
+            )
+        )
 
     def test_local_first_visibility_updates_do_not_use_workflow_sections(self):
         dock = object.__new__(self.module.QfitDockWidget)
@@ -1030,7 +1053,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             set_filter_controls_visible=MagicMock(),
         )
 
-        self.module.QfitDockWidget._install_local_first_control_move(
+        install_local_first_control_move(
             dock,
             SimpleNamespace(map_content=map_content),
             "map_filters",
@@ -1075,7 +1098,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             set_style_controls_visible=MagicMock(),
         )
 
-        self.module.QfitDockWidget._install_local_first_widget_move(
+        install_local_first_widget_move(
             dock,
             SimpleNamespace(map_content=map_content),
             "activity_style",
@@ -1135,7 +1158,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             set_temporal_controls_visible=MagicMock(),
         )
 
-        self.module.QfitDockWidget._install_local_first_widget_move(
+        install_local_first_widget_move(
             dock,
             SimpleNamespace(analysis_content=analysis_content),
             "analysis_temporal",
@@ -1166,7 +1189,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             style_controls_layout=MagicMock(return_value=style_layout),
         )
 
-        self.module.QfitDockWidget._install_local_first_widget_move(
+        install_local_first_widget_move(
             dock,
             SimpleNamespace(map_content=map_content),
             "activity_style",
@@ -1303,12 +1326,12 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "strava_credentials",
         )
 
-        self.module.QfitDockWidget._install_local_first_control_move(
+        install_local_first_control_move(
             dock,
             composition,
             "strava_credentials",
         )
-        self.module.QfitDockWidget._install_local_first_control_move(
+        install_local_first_control_move(
             dock,
             composition,
             "strava_credentials",
@@ -1364,12 +1387,12 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.backgroundGroupBox = basemap_group
         self._install_required_local_first_group_widgets(dock, "basemap")
 
-        self.module.QfitDockWidget._install_local_first_control_move(
+        install_local_first_control_move(
             dock,
             composition,
             "basemap",
         )
-        self.module.QfitDockWidget._install_local_first_control_move(
+        install_local_first_control_move(
             dock,
             composition,
             "basemap",
@@ -1425,12 +1448,12 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.outputGroupBox = storage_group
         self._install_required_local_first_group_widgets(dock, "storage")
 
-        self.module.QfitDockWidget._install_local_first_control_move(
+        install_local_first_control_move(
             dock,
             composition,
             "storage",
         )
-        self.module.QfitDockWidget._install_local_first_control_move(
+        install_local_first_control_move(
             dock,
             composition,
             "storage",
@@ -1482,12 +1505,12 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.advancedFetchGroupBox = advanced_fetch_group
         self._install_required_local_first_group_widgets(dock, "advanced_fetch")
 
-        self.module.QfitDockWidget._install_local_first_control_move(
+        install_local_first_control_move(
             dock,
             composition,
             "advanced_fetch",
         )
-        self.module.QfitDockWidget._install_local_first_control_move(
+        install_local_first_control_move(
             dock,
             composition,
             "advanced_fetch",
@@ -1542,12 +1565,12 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.previewGroupBox = preview_group
         self._install_required_local_first_group_widgets(dock, "activity_preview")
 
-        self.module.QfitDockWidget._install_local_first_control_move(
+        install_local_first_control_move(
             dock,
             composition,
             "activity_preview",
         )
-        self.module.QfitDockWidget._install_local_first_control_move(
+        install_local_first_control_move(
             dock,
             composition,
             "activity_preview",
@@ -1603,22 +1626,22 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.backfillMissingDetailedRoutesButton = backfill_button
         dock.detailedStreamsCheckBox = SimpleNamespace(isChecked=lambda: False)
 
-        installed = self.module.QfitDockWidget._install_local_first_control_move(
+        installed = install_local_first_control_move(
             dock,
             composition,
             "backfill_routes",
         )
-        self.module.QfitDockWidget._after_local_first_control_move_installed(
+        after_local_first_control_move_installed(
             dock,
             "backfill_routes",
             installed=installed,
         )
-        installed = self.module.QfitDockWidget._install_local_first_control_move(
+        installed = install_local_first_control_move(
             dock,
             composition,
             "backfill_routes",
         )
-        self.module.QfitDockWidget._after_local_first_control_move_installed(
+        after_local_first_control_move_installed(
             dock,
             "backfill_routes",
             installed=installed,
@@ -1675,22 +1698,22 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.generateAtlasPdfButton = MagicMock()
         self._install_required_local_first_group_widgets(dock, "atlas_pdf")
 
-        installed = self.module.QfitDockWidget._install_local_first_control_move(
+        installed = install_local_first_control_move(
             dock,
             composition,
             "atlas_pdf",
         )
-        self.module.QfitDockWidget._after_local_first_control_move_installed(
+        after_local_first_control_move_installed(
             dock,
             "atlas_pdf",
             installed=installed,
         )
-        installed = self.module.QfitDockWidget._install_local_first_control_move(
+        installed = install_local_first_control_move(
             dock,
             composition,
             "atlas_pdf",
         )
-        self.module.QfitDockWidget._after_local_first_control_move_installed(
+        after_local_first_control_move_installed(
             dock,
             "atlas_pdf",
             installed=installed,
@@ -1711,12 +1734,12 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         composition = SimpleNamespace(atlas_content=atlas_content)
         dock.generateAtlasPdfButton = MagicMock()
 
-        installed = self.module.QfitDockWidget._install_local_first_control_move(
+        installed = install_local_first_control_move(
             dock,
             composition,
             "atlas_pdf",
         )
-        self.module.QfitDockWidget._after_local_first_control_move_installed(
+        after_local_first_control_move_installed(
             dock,
             "atlas_pdf",
             installed=installed,
@@ -1736,7 +1759,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         atlas_content = SimpleNamespace(outer_layout=lambda: atlas_layout)
         composition = SimpleNamespace(atlas_content=atlas_content)
 
-        installed = self.module.QfitDockWidget._install_local_first_control_move(
+        installed = install_local_first_control_move(
             dock,
             composition,
             "atlas_pdf",
@@ -1757,7 +1780,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._local_first_atlas_pdf_controls_installed = True
         dock._local_first_atlas_pdf_controls_installed_target = id(atlas_content)
 
-        installed = self.module.QfitDockWidget._install_local_first_control_move(
+        installed = install_local_first_control_move(
             dock,
             SimpleNamespace(atlas_content=atlas_content),
             "atlas_pdf",
