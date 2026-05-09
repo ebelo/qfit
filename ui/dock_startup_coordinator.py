@@ -2,6 +2,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from .application.local_first_activity_controls import (
+    configure_local_first_activity_preview_options,
+)
 from .application.local_first_backing_controls import (
     configure_local_first_backing_controls,
     configure_local_first_spinbox_unit_copy,
@@ -57,14 +60,10 @@ class DockStartupCoordinator:
         configure_local_first_basemap_options(dock)
         performed_steps.append("configure_local_first_basemap_options")
 
-        dock._configure_detailed_route_filter_options()
-        performed_steps.append("configure_detailed_route_filter_options")
-
-        dock._configure_detailed_route_strategy_options()
-        performed_steps.append("configure_detailed_route_strategy_options")
-
-        dock._configure_preview_sort_options()
-        performed_steps.append("configure_preview_sort_options")
+        configure_local_first_activity_preview_options(dock)
+        performed_steps.append(
+            "configure_local_first_activity_preview_options"
+        )
 
         configure_local_first_temporal_mode_backing_controls(dock)
         performed_steps.append("configure_temporal_mode_options")
