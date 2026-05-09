@@ -837,6 +837,10 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def _install_local_first_audited_controls(self, composition) -> None:
         """Install all audited legacy-backed controls into local-first pages."""
 
+        # The audited inventories define the production install order.  This does
+        # not preserve the older hand-written call sequence when targets are
+        # independent; it keeps the local-first composition aligned with the
+        # audit metadata instead.
         for key in local_first_widget_move_keys():
             self._install_local_first_widget_move(composition, key)
         for key in local_first_control_move_keys():
@@ -868,27 +872,27 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 legacy_export_button.hide()
 
     def _install_local_first_activity_style_controls(self, composition) -> None:
-        """Expose activity visualization controls in the local-first Map tab."""
+        """Deprecated wrapper for activity visualization local-first controls."""
 
         self._install_local_first_widget_move(composition, "activity_style")
 
     def _install_local_first_filter_controls(self, composition) -> None:
-        """Expose the backing map filters in the local-first Map tab."""
+        """Deprecated wrapper for map-filter local-first controls."""
 
         self._install_local_first_control_move(composition, "map_filters")
 
     def _install_local_first_advanced_fetch_controls(self, composition) -> None:
-        """Expose backing Strava fetch limits in the Data tab."""
+        """Deprecated wrapper for Strava fetch-limit local-first controls."""
 
         self._install_local_first_control_move(composition, "advanced_fetch")
 
     def _install_local_first_activity_preview_controls(self, composition) -> None:
-        """Expose fetched activity query details in the Data tab."""
+        """Deprecated wrapper for activity-preview local-first controls."""
 
         self._install_local_first_control_move(composition, "activity_preview")
 
     def _install_local_first_backfill_controls(self, composition) -> None:
-        """Expose the detailed-route backfill action in the Data tab."""
+        """Deprecated wrapper for detailed-route backfill local-first controls."""
 
         installed = self._install_local_first_control_move(composition, "backfill_routes")
         self._after_local_first_control_move_installed(
@@ -897,23 +901,23 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         )
 
     def _install_local_first_atlas_pdf_controls(self, composition) -> None:
-        """Expose backing PDF output controls in the Atlas tab."""
+        """Deprecated wrapper for PDF output local-first controls."""
 
         installed = self._install_local_first_control_move(composition, "atlas_pdf")
         self._after_local_first_control_move_installed("atlas_pdf", installed=installed)
 
     def _install_local_first_strava_credentials_controls(self, composition) -> None:
-        """Expose the backing Strava OAuth controls in the Settings tab."""
+        """Deprecated wrapper for Strava OAuth local-first controls."""
 
         self._install_local_first_control_move(composition, "strava_credentials")
 
     def _install_local_first_basemap_controls(self, composition) -> None:
-        """Expose the backing Mapbox basemap controls in the Settings tab."""
+        """Deprecated wrapper for Mapbox basemap local-first controls."""
 
         self._install_local_first_control_move(composition, "basemap")
 
     def _install_local_first_storage_controls(self, composition) -> None:
-        """Expose the backing GeoPackage storage controls in the Settings tab."""
+        """Deprecated wrapper for GeoPackage storage local-first controls."""
 
         self._install_local_first_control_move(composition, "storage")
 
