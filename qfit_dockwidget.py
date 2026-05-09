@@ -78,6 +78,7 @@ from .ui.application import (
     set_local_first_analysis_mode,
     update_local_first_atlas_document_settings,
     ensure_wizard_settings,
+    request_local_first_connection_configuration,
     install_local_first_audited_controls,
     sync_local_first_basemap_style_fields,
     build_visual_workflow_background_inputs,
@@ -162,22 +163,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
         return ensure_wizard_settings(self.settings)
 
-    def _show_connection_configuration_hint(self) -> None:
-        """Open or describe the dedicated qfit configuration dialog for wizard users."""
-
-        open_configuration = getattr(self, "_open_configuration", None)
-        if open_configuration is not None:
-            open_configuration()
-            self._set_status("qfit configuration opened; save credentials to continue.")
-            return
-
-        self._show_info(
-            "Configure qfit connection",
-            "Open qfit → Configuration from the QGIS plugin menu to edit Strava "
-            "credentials, then return to the dock to continue the workflow.",
-        )
-        self._set_status("Open qfit → Configuration to edit Strava credentials.")
-
     def refresh_configuration_from_settings(self) -> None:
         """Reload saved configuration and refresh live wizard connection state."""
 
@@ -215,7 +200,17 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._local_first_dock_composition = connect_local_first_action_callbacks(
             composition,
             WizardActionCallbacks(
-                configure_connection=self._show_connection_configuration_hint,
+                configure_connection=(
+                    lambda: request_local_first_connection_configuration(
+                        open_configuration=getattr(
+                            self,
+                            "_open_configuration",
+                            None,
+                        ),
+                        set_status=self._set_status,
+                        show_info=self._show_info,
+                    )
+                ),
                 sync_activities=self.on_refresh_clicked,
                 store_activities=self.on_load_clicked,
                 sync_saved_routes=self.on_sync_routes_clicked,
