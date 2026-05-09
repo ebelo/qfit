@@ -88,6 +88,7 @@ from .ui.application import (
     build_visual_layer_refs,
     build_wizard_filter_description,
     set_local_first_analysis_mode,
+    update_local_first_atlas_document_settings,
     build_wizard_progress_facts_from_runtime_state,
     ensure_wizard_settings,
     install_local_first_audited_controls,
@@ -449,22 +450,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         return self._local_first_dock_composition
 
     def _update_atlas_document_settings(self, atlas_title: str, atlas_subtitle: str) -> None:
-        """Mirror visible atlas-page title fields into the export settings widgets."""
+        """Delegate local-first atlas document mirroring to application policy."""
 
-        title_line_edit = getattr(self, "atlasTitleLineEdit", None)
-        subtitle_line_edit = getattr(self, "atlasSubtitleLineEdit", None)
-        title_changed = title_line_edit is not None and title_line_edit.text() != atlas_title
-        subtitle_changed = (
-            subtitle_line_edit is not None
-            and subtitle_line_edit.text() != atlas_subtitle
-        )
-        if title_line_edit is not None:
-            title_line_edit.setText(atlas_title)
-        if subtitle_line_edit is not None:
-            subtitle_line_edit.setText(atlas_subtitle)
-        if title_changed or subtitle_changed:
-            self._mark_atlas_export_stale()
-            self._refresh_summary_status()
+        update_local_first_atlas_document_settings(self, atlas_title, atlas_subtitle)
 
     def _refresh_conditional_control_visibility(self) -> None:
         """Refresh production local-first backing controls from their live state."""

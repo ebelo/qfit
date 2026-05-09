@@ -43,6 +43,7 @@ from .local_first_analysis_controls import (
     local_first_analysis_mode_options,
     set_local_first_analysis_mode,
 )
+from .local_first_atlas_controls import update_local_first_atlas_document_settings
 from .local_first_control_moves import (
     LOCAL_FIRST_CONTROL_MOVES,
     LOCAL_FIRST_WIDGET_MOVES,
@@ -256,6 +257,7 @@ __all__ = [
     "save_last_step_index",
     "set_local_first_analysis_mode",
     "show_local_first_control_group",
+    "update_local_first_atlas_document_settings",
     "show_widget",
     "step_index_for_key",
     "step_key_for_index",
