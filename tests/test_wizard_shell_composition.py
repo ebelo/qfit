@@ -329,6 +329,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         callbacks = self.composition.WizardActionCallbacks(
             configure_connection=lambda: calls.append("configure"),
             sync_activities=lambda: calls.append("sync"),
+            store_activities=lambda: calls.append("store"),
             sync_saved_routes=lambda: calls.append("routes"),
             clear_database=lambda: calls.append("clear"),
             load_activity_layers=lambda: calls.append("load"),
@@ -377,6 +378,25 @@ class WizardShellCompositionTest(unittest.TestCase):
                 "atlas",
             ],
         )
+
+    def test_sync_primary_action_stores_when_activities_are_fetched(self):
+        calls = []
+        callbacks = self.composition.WizardActionCallbacks(
+            sync_activities=lambda: calls.append("sync"),
+            store_activities=lambda: calls.append("store"),
+        )
+        assembled = self.composition.build_placeholder_wizard_shell(
+            progress_facts=self.composition.WizardProgressFacts(
+                connection_configured=True,
+                activities_fetched=True,
+            ),
+        )
+
+        self.composition.connect_wizard_action_callbacks(assembled, callbacks)
+        assembled.sync_content.sync_button.clicked.emit()
+
+        self.assertEqual(assembled.sync_content.sync_button.text(), "Finish activity sync")
+        self.assertEqual(calls, ["store"])
 
     def test_action_callbacks_are_only_wired_once_per_composition(self):
         calls = []

@@ -68,6 +68,7 @@ class WizardActionCallbacks:
 
     configure_connection: Callable[[], None] | None = None
     sync_activities: Callable[[], None] | None = None
+    store_activities: Callable[[], None] | None = None
     sync_saved_routes: Callable[[], None] | None = None
     clear_database: Callable[[], None] | None = None
     load_activity_layers: Callable[[], None] | None = None
@@ -413,6 +414,7 @@ def _connect_action_callbacks(
         callbacks.configure_connection,
     )
     _connect_optional_signal(sync_content, "syncRequested", callbacks.sync_activities)
+    _connect_optional_signal(sync_content, "storeRequested", callbacks.store_activities)
     _connect_optional_signal(
         sync_content,
         "syncRoutesRequested",
@@ -588,9 +590,12 @@ def _sync_state_from_facts(facts: WizardProgressFacts) -> SyncPageState:
         status_text = "Connection required before sync"
         detail_text = "Configure Strava credentials before syncing activities."
     primary_action_label = default.primary_action_label
+    primary_action_kind = default.primary_action_kind
     routes_action_label = default.routes_action_label
     if facts.activities_fetched:
         primary_action_label = "Finish activity sync"
+        primary_action_kind = "store"
+        sync_blocked_tooltip = ""
     if facts.route_sync_in_progress:
         routes_action_label = "Cancel route sync"
     if facts.sync_in_progress:
@@ -599,6 +604,7 @@ def _sync_state_from_facts(facts: WizardProgressFacts) -> SyncPageState:
             "Wait for the current synchronization to finish before starting another sync."
         )
         primary_action_label = "Sync in progress…"
+        primary_action_kind = "sync"
         sync_blocked_tooltip = _SYNC_IN_PROGRESS_TOOLTIP
     return SyncPageState(
         ready=facts.activities_stored,
@@ -606,7 +612,10 @@ def _sync_state_from_facts(facts: WizardProgressFacts) -> SyncPageState:
         detail_text=detail_text,
         activity_summary_text=_sync_activity_summary(facts, default),
         primary_action_label=primary_action_label,
-        primary_action_enabled=facts.connection_configured and not facts.sync_in_progress,
+        primary_action_kind=primary_action_kind,
+        primary_action_enabled=(
+            facts.activities_fetched or facts.connection_configured
+        ) and not facts.sync_in_progress,
         primary_action_blocked_tooltip=sync_blocked_tooltip,
         local_action_enabled=facts.activities_stored and not facts.sync_in_progress,
         local_action_blocked_tooltip=_sync_local_action_blocked_tooltip(facts, default),

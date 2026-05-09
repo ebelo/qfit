@@ -136,6 +136,11 @@ def connect_local_first_action_callbacks(
     _connect_optional_signal(composition.sync_content, "syncRequested", callbacks.sync_activities)
     _connect_optional_signal(
         composition.sync_content,
+        "storeRequested",
+        callbacks.store_activities,
+    )
+    _connect_optional_signal(
+        composition.sync_content,
         "syncRoutesRequested",
         callbacks.sync_saved_routes,
     )

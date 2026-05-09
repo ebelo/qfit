@@ -487,7 +487,8 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             composition,
             WizardActionCallbacks(
                 configure_connection=self._show_connection_configuration_hint,
-                sync_activities=self._run_wizard_sync_step,
+                sync_activities=self.on_refresh_clicked,
+                store_activities=self.on_load_clicked,
                 sync_saved_routes=self.on_sync_routes_clicked,
                 clear_database=self.on_clear_database_clicked,
                 load_activity_layers=self.on_load_layers_clicked,
@@ -530,7 +531,8 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             composition,
             WizardActionCallbacks(
                 configure_connection=self._show_connection_configuration_hint,
-                sync_activities=self._run_wizard_sync_step,
+                sync_activities=self.on_refresh_clicked,
+                store_activities=self.on_load_clicked,
                 sync_saved_routes=self.on_sync_routes_clicked,
                 clear_database=self.on_clear_database_clicked,
                 load_activity_layers=self.on_load_layers_clicked,

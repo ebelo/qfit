@@ -46,6 +46,7 @@ class SyncPageState:
     detail_text: str = "Sync Strava activities or load stored map layers from an existing GeoPackage."
     activity_summary_text: str = "No activities stored"
     primary_action_label: str = "Sync activities"
+    primary_action_kind: str = "sync"
     primary_action_enabled: bool = True
     primary_action_blocked_tooltip: str = "Configure the Strava connection before syncing activities."
     local_action_label: str = "Load stored map layers"
@@ -65,6 +66,7 @@ class SyncPageContent(QWidget):
     """Reusable second-page content for the wizard synchronization step."""
 
     syncRequested = pyqtSignal()
+    storeRequested = pyqtSignal()
     loadActivitiesRequested = pyqtSignal()
     syncRoutesRequested = pyqtSignal()
     clearDatabaseRequested = pyqtSignal()
@@ -88,7 +90,8 @@ class SyncPageContent(QWidget):
             self.sync_button,
             action_name="sync_activities",
         )
-        self.sync_button.clicked.connect(self.syncRequested.emit)
+        self._primary_action_kind = "sync"
+        self.sync_button.clicked.connect(self._emit_primary_action_requested)
         self.load_button = QToolButton(self)
         self.load_button.setObjectName("qfitWizardSyncLoadButton")
         style_secondary_action_button(
@@ -135,6 +138,7 @@ class SyncPageContent(QWidget):
         self.detail_label.setText(state.detail_text)
         self.activity_summary_label.setText(state.activity_summary_text)
         self.activity_summary_label.setProperty("syncState", sync_state)
+        self._primary_action_kind = state.primary_action_kind
         self.sync_button.setText(state.primary_action_label)
         set_wizard_action_availability(
             self.sync_button,
@@ -164,6 +168,12 @@ class SyncPageContent(QWidget):
         """Expose the layout for adapter wiring and pure tests."""
 
         return self._layout
+
+    def _emit_primary_action_requested(self) -> None:
+        if self._primary_action_kind == "store":
+            self.storeRequested.emit()
+            return
+        self.syncRequested.emit()
 
     def _build_layout(self):
         layout = QVBoxLayout(self)

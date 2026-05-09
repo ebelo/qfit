@@ -831,7 +831,8 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         callbacks = connect_args[1]
         expected_callbacks = {
             "configure_connection": "_show_connection_configuration_hint",
-            "sync_activities": "_run_wizard_sync_step",
+            "sync_activities": "on_refresh_clicked",
+            "store_activities": "on_load_clicked",
             "sync_saved_routes": "on_sync_routes_clicked",
             "clear_database": "on_clear_database_clicked",
             "load_activity_layers": "on_load_layers_clicked",
@@ -986,7 +987,8 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         callbacks = connect_args[1]
         expected_callbacks = {
             "configure_connection": "_show_connection_configuration_hint",
-            "sync_activities": "_run_wizard_sync_step",
+            "sync_activities": "on_refresh_clicked",
+            "store_activities": "on_load_clicked",
             "sync_saved_routes": "on_sync_routes_clicked",
             "clear_database": "on_clear_database_clicked",
             "load_activity_layers": "on_load_layers_clicked",
