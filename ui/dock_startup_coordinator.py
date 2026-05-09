@@ -67,8 +67,8 @@ class DockStartupCoordinator:
         dock._wire_events()
         performed_steps.append("wire_events")
 
-        self.workflow_section_coordinator.configure_workflow_sections()
-        performed_steps.append("configure_workflow_sections")
+        dock._refresh_conditional_control_visibility()
+        performed_steps.append("refresh_conditional_control_visibility")
 
         dock._refresh_activity_preview()
         performed_steps.append("refresh_activity_preview")

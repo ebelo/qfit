@@ -60,7 +60,6 @@ try:
     from qfit.qfit_dockwidget import ApplyVisualizationAction, QfitDockWidget
     from qfit.configuration.application.settings_service import SettingsService
     from qfit.ui.dockwidget_dependencies import build_dockwidget_dependencies
-    from qfit.ui.workflow_section_coordinator import WorkflowSectionCoordinator
     from qfit.visualization.application.visual_apply import VisualApplyService
     from qfit.visualization.application.temporal_config import DEFAULT_TEMPORAL_MODE_LABEL
 
@@ -422,34 +421,32 @@ class QgisSmokeTests(unittest.TestCase):
             dock.close()
             dock.deleteLater()
 
-    def test_workflow_section_coordinator_updates_visibility_rules(self):
+    def test_dock_widget_updates_local_first_visibility_rules(self):
         dock = QfitDockWidget(self.iface)
         try:
-            coordinator = WorkflowSectionCoordinator(dock)
-
-            coordinator.update_detailed_fetch_visibility(False)
+            dock._update_detailed_fetch_visibility(False)
             self.assertTrue(dock.backfillMissingDetailedRoutesButton.isHidden())
             self.assertTrue(dock.detailedRouteStrategyLabel.isHidden())
             self.assertTrue(dock.maxDetailedActivitiesSpinBox.isHidden())
 
-            coordinator.update_detailed_fetch_visibility(True)
+            dock._update_detailed_fetch_visibility(True)
             self.assertFalse(dock.backfillMissingDetailedRoutesButton.isHidden())
             self.assertFalse(dock.detailedRouteStrategyLabel.isHidden())
             self.assertFalse(dock.maxDetailedActivitiesSpinBox.isHidden())
 
-            coordinator.update_point_sampling_visibility(False)
+            dock._update_point_sampling_visibility(False)
             self.assertTrue(dock.pointSamplingStrideSpinBox.isHidden())
-            coordinator.update_point_sampling_visibility(True)
+            dock._update_point_sampling_visibility(True)
             self.assertFalse(dock.pointSamplingStrideSpinBox.isHidden())
 
-            coordinator.update_advanced_fetch_visibility(False)
+            dock._update_advanced_fetch_visibility(False)
             self.assertTrue(dock.advancedFetchSettingsWidget.isHidden())
-            coordinator.update_advanced_fetch_visibility(True)
+            dock._update_advanced_fetch_visibility(True)
             self.assertFalse(dock.advancedFetchSettingsWidget.isHidden())
 
-            coordinator.update_mapbox_advanced_visibility("Outdoor")
+            dock._update_mapbox_advanced_visibility("Outdoor")
             self.assertTrue(dock.mapboxStyleOwnerLineEdit.isHidden())
-            coordinator.update_mapbox_advanced_visibility("Custom")
+            dock._update_mapbox_advanced_visibility("Custom")
             self.assertFalse(dock.mapboxStyleOwnerLineEdit.isHidden())
             self.assertFalse(dock.mapboxStyleIdLineEdit.isHidden())
         finally:

@@ -495,6 +495,14 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 write_activity_points_checkbox.isChecked()
             )
 
+    def _refresh_conditional_control_visibility(self) -> None:
+        """Refresh production local-first backing controls from their live state."""
+
+        self._refresh_local_first_advanced_fetch_visibility()
+        self._refresh_local_first_detailed_fetch_visibility()
+        self._refresh_local_first_mapbox_visibility()
+        self._refresh_local_first_point_sampling_visibility()
+
     def _update_advanced_fetch_visibility(self, expanded: bool) -> None:
         self._set_named_widgets_visible(
             ("advancedFetchSettingsWidget",),
