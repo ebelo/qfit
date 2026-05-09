@@ -952,6 +952,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "_configure_detailed_route_filter_options",
             "_configure_detailed_route_strategy_options",
             "_configure_preview_sort_options",
+            "_current_wizard_atlas_output_path",
             "_current_wizard_filter_facts",
             "_current_wizard_layer_feature_count",
             "_current_wizard_layer_filter_facts",

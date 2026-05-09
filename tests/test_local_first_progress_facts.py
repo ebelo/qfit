@@ -5,6 +5,7 @@ from tests import _path  # noqa: F401
 
 from qfit.ui.application.local_first_progress_facts import (
     current_local_first_activity_style_preset,
+    current_local_first_atlas_output_path,
     current_local_first_background_facts,
     current_local_first_visual_temporal_mode,
 )
@@ -91,6 +92,59 @@ class TestLocalFirstProgressFacts(unittest.TestCase):
         self.assertEqual(
             current_local_first_background_facts(dock, runtime_state),
             (True, False, "Satellite"),
+        )
+
+    def test_atlas_output_path_uses_visible_path_before_export(self):
+        runtime_state = SimpleNamespace(atlas_export_task=None)
+
+        self.assertEqual(
+            current_local_first_atlas_output_path(
+                runtime_state=runtime_state,
+                atlas_pdf_path="draft.pdf",
+                atlas_exported=False,
+                completed_output_path="completed.pdf",
+            ),
+            "draft.pdf",
+        )
+
+    def test_atlas_output_path_prefers_completed_path_after_export(self):
+        runtime_state = SimpleNamespace(atlas_export_task=None)
+
+        self.assertEqual(
+            current_local_first_atlas_output_path(
+                runtime_state=runtime_state,
+                atlas_pdf_path="draft.pdf",
+                atlas_exported=True,
+                completed_output_path="completed.pdf",
+            ),
+            "completed.pdf",
+        )
+
+    def test_atlas_output_path_freezes_task_path_during_export(self):
+        runtime_state = SimpleNamespace(atlas_export_task=object())
+
+        self.assertEqual(
+            current_local_first_atlas_output_path(
+                runtime_state=runtime_state,
+                atlas_pdf_path="changed.pdf",
+                atlas_exported=True,
+                completed_output_path="completed.pdf",
+                task_output_path="running.pdf",
+            ),
+            "running.pdf",
+        )
+
+    def test_atlas_output_path_falls_back_to_visible_path_for_running_legacy_task(self):
+        runtime_state = SimpleNamespace(atlas_export_task=object())
+
+        self.assertEqual(
+            current_local_first_atlas_output_path(
+                runtime_state=runtime_state,
+                atlas_pdf_path="changed.pdf",
+                atlas_exported=True,
+                completed_output_path="completed.pdf",
+            ),
+            "changed.pdf",
         )
 
     def test_visual_temporal_mode_reads_trimmed_combo_text(self):

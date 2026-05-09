@@ -88,6 +88,7 @@ from .ui.application import (
 )
 from .ui.application.local_first_progress_facts import (
     current_local_first_activity_style_preset,
+    current_local_first_atlas_output_path,
     current_local_first_background_facts,
     current_local_first_filter_facts,
     current_local_first_visual_temporal_mode,
@@ -194,9 +195,12 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
         runtime_state = self._wizard_runtime_state_with_selected_output_path()
         atlas_exported = bool(getattr(self, "_atlas_export_completed", False))
-        atlas_export_output_path = self._current_wizard_atlas_output_path(
+        atlas_export_output_path = current_local_first_atlas_output_path(
             runtime_state=runtime_state,
+            atlas_pdf_path=self._widget_text("atlasPdfPathLineEdit"),
             atlas_exported=atlas_exported,
+            completed_output_path=getattr(self, "_atlas_export_output_path", None),
+            task_output_path=getattr(self, "_atlas_export_task_output_path", None),
         )
         (
             background_enabled,
@@ -249,19 +253,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
         self._runtime_store().select_output_path((value or "").strip() or None)
         self._refresh_live_dock_navigation_from_runtime()
-
-    def _current_wizard_atlas_output_path(self, *, runtime_state, atlas_exported: bool):
-        """Return the atlas output path the optional wizard should describe."""
-
-        if runtime_state.atlas_export_task is not None:
-            return (
-                getattr(self, "_atlas_export_task_output_path", None)
-                or self._widget_text("atlasPdfPathLineEdit")
-            )
-        completed_output_path = getattr(self, "_atlas_export_output_path", None)
-        if atlas_exported and completed_output_path:
-            return completed_output_path
-        return self._widget_text("atlasPdfPathLineEdit")
 
     def _build_local_first_dock_from_runtime(self, *, parent=None):
         """Build the #748 local-first dock composition from live runtime facts.
