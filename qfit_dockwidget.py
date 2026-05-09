@@ -705,37 +705,47 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         ):
             return True
 
-        layout_getter = getattr(content, move.layout_getter_attr, None)
-        layout = layout_getter() if callable(layout_getter) else None
+        layout = self._local_first_control_move_layout(content, move)
         if layout is None or not hasattr(layout, "addWidget"):
             return False
 
         self._remove_widget_from_current_layout(group)
-        parent_panel = content
-        if move.parent_panel_attr is not None:
-            parent_panel = getattr(content, move.parent_panel_attr, content)
+        parent_panel = self._local_first_control_move_parent_panel(content, move)
         if hasattr(group, "setParent"):
             group.setParent(parent_panel)
         if move.title is not None and hasattr(group, "setTitle"):
             group.setTitle(move.title)
         layout.addWidget(group)
-        if move.show_after_move:
-            if hasattr(group, "show"):
-                group.show()
-            elif hasattr(group, "setVisible"):
-                group.setVisible(True)
-
-        set_visible = getattr(
-            content,
-            f"set_{move.layout_getter_attr.removesuffix('_layout')}_visible",
-            None,
-        )
-        if callable(set_visible):
-            set_visible()
+        self._show_local_first_control_group(group, move)
+        self._refresh_local_first_control_visibility(content, move)
 
         setattr(self, move.installed_attr, True)
         setattr(self, move.installed_target_attr, current_target)
         return True
+
+    def _local_first_control_move_layout(self, content, move: LocalFirstControlMove):
+        layout_getter = getattr(content, move.layout_getter_attr, None)
+        return layout_getter() if callable(layout_getter) else None
+
+    def _local_first_control_move_parent_panel(self, content, move: LocalFirstControlMove):
+        if move.parent_panel_attr is None:
+            return content
+        return getattr(content, move.parent_panel_attr, content)
+
+    def _show_local_first_control_group(self, group, move: LocalFirstControlMove) -> None:
+        if not move.show_after_move:
+            return
+        if hasattr(group, "show"):
+            group.show()
+        elif hasattr(group, "setVisible"):
+            group.setVisible(True)
+
+    def _refresh_local_first_control_visibility(self, content, move: LocalFirstControlMove) -> None:
+        if move.post_install_visible_attr is None:
+            return
+        set_visible = getattr(content, move.post_install_visible_attr, None)
+        if callable(set_visible):
+            set_visible()
 
     def _install_local_first_control_move(self, composition, key: str) -> bool:
         """Install one audited legacy-backed control area into local-first UI."""

@@ -68,6 +68,7 @@ class LocalFirstControlMoveTests(unittest.TestCase):
         filters = local_first_control_move_for_key("map_filters")
         self.assertEqual(filters.layout_getter_attr, "filter_controls_layout")
         self.assertEqual(filters.parent_panel_attr, "filter_controls_panel")
+        self.assertEqual(filters.post_install_visible_attr, "set_filter_controls_visible")
 
     def test_lookup_rejects_unknown_control_area(self):
         with self.assertRaises(KeyError):
