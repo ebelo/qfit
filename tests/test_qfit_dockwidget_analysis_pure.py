@@ -1089,6 +1089,22 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._update_point_sampling_visibility.assert_called_once_with(True)
         dock.generateAtlasPdfButton.hide.assert_called_once_with()
 
+    def test_after_local_first_control_move_installed_raises_for_missing_hook(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        move = SimpleNamespace(after_install_hook_attr="_missing_local_first_hook")
+
+        with patch.object(
+            self.module,
+            "local_first_control_move_for_key",
+            return_value=move,
+        ):
+            with self.assertRaises(AttributeError):
+                self.module.QfitDockWidget._after_local_first_control_move_installed(
+                    dock,
+                    "advanced_fetch",
+                    installed=True,
+                )
+
     def test_local_first_visibility_updates_do_not_use_workflow_sections(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._workflow_section_coordinator = MagicMock()

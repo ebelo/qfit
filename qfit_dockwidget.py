@@ -858,9 +858,8 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         hook_attr = move.after_install_hook_attr
         if hook_attr is None:
             return
-        hook = getattr(self, hook_attr, None)
-        if callable(hook):
-            hook()
+        hook = getattr(self, hook_attr)
+        hook()
 
     def _refresh_local_first_advanced_fetch_visibility(self) -> None:
         advanced_fetch_group = getattr(self, "advancedFetchGroupBox", None)
