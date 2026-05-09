@@ -1,19 +1,14 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
+from qfit.ui.application.workflow_footer_status import (
+    WorkflowFooterFacts,
+    build_workflow_footer_facts_from_progress_facts,
+    build_workflow_footer_status,
+)
 from qfit.ui.application.workflow_progress_facts import WorkflowProgressFacts
 
-
-@dataclass(frozen=True)
-class WizardFooterFacts:
-    """Render-neutral facts for the explicit #609 wizard footer controls."""
-
-    strava_connected: bool = False
-    activity_count: int | None = None
-    layer_count: int = 0
-    gpkg_path: str | None = None
-    last_sync_date: str | None = None
+WizardFooterFacts = WorkflowFooterFacts
+"""Compatibility alias for wizard footer callers during #805."""
 
 
 def build_wizard_footer_status(
@@ -24,75 +19,23 @@ def build_wizard_footer_status(
     analysis_status: str | None,
     atlas_status: str | None,
 ) -> str:
-    """Build the compact persistent footer text for the #609 wizard shell.
+    """Compatibility wrapper for :func:`build_workflow_footer_status`."""
 
-    The footer deliberately summarizes page-level render facts instead of
-    reading current dock widgets. That keeps the wizard replacement path free to
-    migrate one page at a time while still giving users the one-glance status
-    requested by the #608 UX audit.
-    """
-
-    return _join_unique_status_parts(
-        connection_status,
-        activity_summary,
-        map_summary,
-        analysis_status,
-        atlas_status,
+    return build_workflow_footer_status(
+        connection_status=connection_status,
+        activity_summary=activity_summary,
+        map_summary=map_summary,
+        analysis_status=analysis_status,
+        atlas_status=atlas_status,
     )
 
 
 def build_wizard_footer_facts_from_progress_facts(
     facts: WorkflowProgressFacts,
 ) -> WizardFooterFacts:
-    """Build footer pill/path facts from shared workflow progress facts.
+    """Compatibility wrapper for workflow footer fact construction."""
 
-    The compact text summary remains as a compatibility seam for the placeholder
-    shell. This adapter drives the footer's explicit Strava/activity/layer/path
-    controls from the same render-neutral state used by workflow pages, avoiding
-    any dependency on current long-scroll dock widgets.
-    """
-
-    return WizardFooterFacts(
-        strava_connected=facts.connection_configured,
-        activity_count=_stored_activity_count(facts),
-        layer_count=_loaded_layer_count(facts),
-        gpkg_path=facts.output_name,
-        last_sync_date=_optional_text(facts.last_sync_date),
-    )
-
-
-def _join_unique_status_parts(*values: str | None) -> str:
-    parts: list[str] = []
-    seen: set[str] = set()
-    for value in values:
-        part = (value or "").strip()
-        if not part or part in seen:
-            continue
-        parts.append(part)
-        seen.add(part)
-
-    if not parts:
-        return "Ready"
-    return " · ".join(parts)
-
-
-def _optional_text(value: str | None) -> str | None:
-    stripped = (value or "").strip()
-    return stripped or None
-
-
-def _stored_activity_count(facts) -> int | None:
-    if not facts.activities_stored or facts.activity_count is None:
-        return None
-    return max(int(facts.activity_count), 0)
-
-
-def _loaded_layer_count(facts) -> int:
-    if not facts.activity_layers_loaded:
-        return 0
-    if facts.loaded_layer_count is None:
-        return 1
-    return max(int(facts.loaded_layer_count), 0)
+    return build_workflow_footer_facts_from_progress_facts(facts)
 
 
 __all__ = [
