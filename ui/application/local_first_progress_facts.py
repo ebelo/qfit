@@ -4,6 +4,7 @@ import logging
 from dataclasses import replace
 
 from ...activities.application import build_activity_preview_selection_state
+from .local_first_activity_controls import build_current_activity_preview_request
 from ...visualization.application import DEFAULT_TEMPORAL_MODE_LABEL
 from .wizard_filter_summary import build_wizard_filter_description
 from .wizard_progress import build_wizard_progress_facts_from_runtime_state
@@ -171,7 +172,7 @@ def current_local_first_filter_facts(dock, runtime_state) -> tuple[bool, int | N
     activities = tuple(runtime_state.activities)
     if not activities:
         return False, None, None
-    preview_request = dock._current_activity_preview_request()
+    preview_request = build_current_activity_preview_request(dock)
     selection_state = build_activity_preview_selection_state(preview_request)
     filters_active = selection_state.filtered_count != len(activities)
     if not filters_active:
