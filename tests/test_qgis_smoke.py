@@ -353,6 +353,16 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertEqual(dock.atlasTitleLineEdit.text(), "qfit Activity Atlas")
             self.assertEqual(dock.atlasSubtitleLineEdit.text(), "")
             self.assertEqual(dock.detailedRouteStrategyComboBox.currentText(), "Missing routes only")
+            self.assertEqual(
+                dock.backfillMissingDetailedRoutesButton.parentWidget(),
+                dock._local_first_dock_composition.sync_content,
+            )
+            self.assertGreaterEqual(
+                dock._local_first_dock_composition.sync_content.outer_layout().indexOf(
+                    dock.backfillMissingDetailedRoutesButton,
+                ),
+                0,
+            )
             self.assertIsNotNone(dock.findChild(QLabel, "detailedRouteStrategyComboBoxContextHelpLabel"))
             self.assertIsNotNone(dock.findChild(QWidget, "detailedRouteStrategyComboBoxHelpField"))
             self.assertIsNotNone(dock.findChild(QLabel, "maxDetailedActivitiesSpinBoxContextHelpLabel"))
