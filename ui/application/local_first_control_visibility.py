@@ -51,7 +51,7 @@ def build_advanced_fetch_visibility_update(
     return LocalFirstControlVisibilityUpdate(
         key="advanced_fetch",
         widget_attrs=ADVANCED_FETCH_VISIBILITY_WIDGETS,
-        visible=expanded,
+        visible=bool(expanded),
     )
 
 
@@ -63,7 +63,7 @@ def build_detailed_fetch_visibility_update(
     return LocalFirstControlVisibilityUpdate(
         key="detailed_fetch",
         widget_attrs=DETAILED_FETCH_VISIBILITY_WIDGETS,
-        visible=enabled,
+        visible=bool(enabled),
     )
 
 
@@ -75,7 +75,7 @@ def build_point_sampling_visibility_update(
     return LocalFirstControlVisibilityUpdate(
         key="point_sampling",
         widget_attrs=POINT_SAMPLING_VISIBILITY_WIDGETS,
-        visible=enabled,
+        visible=bool(enabled),
     )
 
 
@@ -91,14 +91,89 @@ def build_mapbox_custom_style_visibility_update(
     )
 
 
+def apply_local_first_visibility_update(
+    dock,
+    update: LocalFirstControlVisibilityUpdate,
+) -> None:
+    """Apply a visibility update to named legacy-backed local-first widgets."""
+
+    set_named_widgets_visible(dock, update.widget_attrs, update.visible)
+
+
+def refresh_local_first_conditional_control_visibility(dock) -> None:
+    """Refresh all conditional local-first backing controls from live widget state."""
+
+    for update in build_local_first_conditional_visibility_updates(dock):
+        apply_local_first_visibility_update(dock, update)
+
+
+def build_local_first_conditional_visibility_updates(
+    dock,
+) -> tuple[LocalFirstControlVisibilityUpdate, ...]:
+    """Return the current conditional visibility updates for the local-first dock."""
+
+    return (
+        build_advanced_fetch_visibility_update(
+            _checked(getattr(dock, "advancedFetchGroupBox", None))
+        ),
+        build_detailed_fetch_visibility_update(
+            _checked(getattr(dock, "detailedStreamsCheckBox", None))
+        ),
+        build_mapbox_custom_style_visibility_update(
+            _current_text(getattr(dock, "backgroundPresetComboBox", None))
+        ),
+        build_point_sampling_visibility_update(
+            _checked(getattr(dock, "writeActivityPointsCheckBox", None))
+        ),
+    )
+
+
+def set_named_widgets_visible(
+    dock,
+    widget_attrs: tuple[str, ...],
+    visible: bool,
+) -> None:
+    """Set visibility for every named dock widget that exposes setVisible()."""
+
+    for widget_attr in widget_attrs:
+        widget = getattr(dock, widget_attr, None)
+        if widget is not None and hasattr(widget, "setVisible"):
+            widget.setVisible(visible)
+
+
+def _checked(widget) -> bool:
+    is_checked = getattr(widget, "isChecked", None)
+    if not callable(is_checked):
+        return False
+    try:
+        return bool(is_checked())
+    except RuntimeError:
+        return False
+
+
+def _current_text(widget) -> str | None:
+    current_text = getattr(widget, "currentText", None)
+    if not callable(current_text):
+        return None
+    try:
+        text = current_text()
+    except RuntimeError:
+        return None
+    return text if isinstance(text, str) else None
+
+
 __all__ = [
     "ADVANCED_FETCH_VISIBILITY_WIDGETS",
     "DETAILED_FETCH_VISIBILITY_WIDGETS",
     "MAPBOX_CUSTOM_STYLE_VISIBILITY_WIDGETS",
     "POINT_SAMPLING_VISIBILITY_WIDGETS",
     "LocalFirstControlVisibilityUpdate",
+    "apply_local_first_visibility_update",
     "build_advanced_fetch_visibility_update",
     "build_detailed_fetch_visibility_update",
+    "build_local_first_conditional_visibility_updates",
     "build_mapbox_custom_style_visibility_update",
     "build_point_sampling_visibility_update",
+    "refresh_local_first_conditional_control_visibility",
+    "set_named_widgets_visible",
 ]

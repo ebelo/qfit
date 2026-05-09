@@ -83,6 +83,7 @@ from .ui.application import (
     DockVisualWorkflowCoordinator,
     DockVisualWorkflowRequest,
     LocalFirstControlVisibilityUpdate,
+    apply_local_first_visibility_update,
     RunAnalysisAction,
     build_advanced_fetch_visibility_update,
     build_detailed_fetch_visibility_update,
@@ -94,6 +95,7 @@ from .ui.application import (
     build_wizard_progress_facts_from_runtime_state,
     ensure_wizard_settings,
     install_local_first_audited_controls,
+    refresh_local_first_conditional_control_visibility,
     build_visual_workflow_background_inputs,
     build_visual_workflow_selection_state_handoff,
     build_visual_workflow_settings_snapshot,
@@ -471,41 +473,10 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._mark_atlas_export_stale()
             self._refresh_summary_status()
 
-    def _refresh_local_first_advanced_fetch_visibility(self) -> None:
-        advanced_fetch_group = getattr(self, "advancedFetchGroupBox", None)
-        if hasattr(advanced_fetch_group, "isChecked"):
-            self._update_advanced_fetch_visibility(advanced_fetch_group.isChecked())
-
-    def _refresh_local_first_detailed_fetch_visibility(self) -> None:
-        detailed_streams_checkbox = getattr(self, "detailedStreamsCheckBox", None)
-        if hasattr(detailed_streams_checkbox, "isChecked"):
-            self._update_detailed_fetch_visibility(
-                detailed_streams_checkbox.isChecked()
-            )
-
-    def _refresh_local_first_mapbox_visibility(self) -> None:
-        background_preset_combo = getattr(self, "backgroundPresetComboBox", None)
-        if hasattr(background_preset_combo, "currentText"):
-            self._update_mapbox_advanced_visibility(background_preset_combo.currentText())
-
-    def _refresh_local_first_point_sampling_visibility(self) -> None:
-        write_activity_points_checkbox = getattr(
-            self,
-            "writeActivityPointsCheckBox",
-            None,
-        )
-        if hasattr(write_activity_points_checkbox, "isChecked"):
-            self._update_point_sampling_visibility(
-                write_activity_points_checkbox.isChecked()
-            )
-
     def _refresh_conditional_control_visibility(self) -> None:
         """Refresh production local-first backing controls from their live state."""
 
-        self._refresh_local_first_advanced_fetch_visibility()
-        self._refresh_local_first_detailed_fetch_visibility()
-        self._refresh_local_first_mapbox_visibility()
-        self._refresh_local_first_point_sampling_visibility()
+        refresh_local_first_conditional_control_visibility(self)
 
     def _update_advanced_fetch_visibility(self, expanded: bool) -> None:
         self._apply_local_first_visibility_update(
@@ -531,17 +502,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self,
         update: LocalFirstControlVisibilityUpdate,
     ) -> None:
-        self._set_named_widgets_visible(update.widget_attrs, update.visible)
-
-    def _set_named_widgets_visible(
-        self,
-        widget_attrs: tuple[str, ...],
-        visible: bool,
-    ) -> None:
-        for widget_attr in widget_attrs:
-            widget = getattr(self, widget_attr, None)
-            if widget is not None and hasattr(widget, "setVisible"):
-                widget.setVisible(visible)
+        apply_local_first_visibility_update(self, update)
 
     def _hide_legacy_atlas_export_button(self) -> None:
         legacy_export_button = getattr(self, "generateAtlasPdfButton", None)

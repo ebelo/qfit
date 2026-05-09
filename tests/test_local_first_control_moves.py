@@ -5,6 +5,7 @@ from tests import _path  # noqa: F401
 from qfit.ui.application.local_first_control_moves import (
     LOCAL_FIRST_CONTROL_MOVES,
     LOCAL_FIRST_WIDGET_MOVES,
+    REFRESH_CONDITIONAL_VISIBILITY_HOOK,
     local_first_control_move_for_key,
     local_first_control_move_keys,
     local_first_widget_move_for_key,
@@ -137,7 +138,7 @@ class LocalFirstControlMoveTests(unittest.TestCase):
         self.assertFalse(backfill.show_after_move)
         self.assertEqual(
             backfill.after_install_hook_attr,
-            "_refresh_local_first_detailed_fetch_visibility",
+            REFRESH_CONDITIONAL_VISIBILITY_HOOK,
         )
 
         filters = local_first_control_move_for_key("map_filters")
@@ -159,14 +160,14 @@ class LocalFirstControlMoveTests(unittest.TestCase):
         self.assertEqual(
             hooks,
             {
-                "advanced_fetch": "_refresh_local_first_advanced_fetch_visibility",
+                "advanced_fetch": REFRESH_CONDITIONAL_VISIBILITY_HOOK,
                 "activity_preview": None,
-                "backfill_routes": "_refresh_local_first_detailed_fetch_visibility",
+                "backfill_routes": REFRESH_CONDITIONAL_VISIBILITY_HOOK,
                 "map_filters": None,
                 "atlas_pdf": "_hide_legacy_atlas_export_button",
                 "strava_credentials": None,
-                "basemap": "_refresh_local_first_mapbox_visibility",
-                "storage": "_refresh_local_first_point_sampling_visibility",
+                "basemap": REFRESH_CONDITIONAL_VISIBILITY_HOOK,
+                "storage": REFRESH_CONDITIONAL_VISIBILITY_HOOK,
             },
         )
 
