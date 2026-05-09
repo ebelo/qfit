@@ -83,7 +83,11 @@ from .ui.application import (
     DockVisualWorkflowCoordinator,
     DockVisualWorkflowRequest,
     RunAnalysisAction,
+    build_advanced_fetch_visibility_update,
+    build_detailed_fetch_visibility_update,
     build_dock_summary_status,
+    build_mapbox_custom_style_visibility_update,
+    build_point_sampling_visibility_update,
     build_visual_layer_refs,
     build_wizard_filter_description,
     build_wizard_progress_facts_from_runtime_state,
@@ -102,7 +106,6 @@ from .mapbox_config import (
     TILE_MODES,
     MapboxConfigError,
     background_preset_names,
-    preset_requires_custom_style,
 )
 from .visualization.application import (
     LayerRefs,
@@ -504,52 +507,27 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._refresh_local_first_point_sampling_visibility()
 
     def _update_advanced_fetch_visibility(self, expanded: bool) -> None:
-        self._set_named_widgets_visible(
-            ("advancedFetchSettingsWidget",),
-            expanded,
+        self._apply_local_first_visibility_update(
+            build_advanced_fetch_visibility_update(expanded)
         )
 
     def _update_detailed_fetch_visibility(self, enabled: bool) -> None:
-        self._set_named_widgets_visible(
-            (
-                "backfillMissingDetailedRoutesButton",
-                "detailedRouteStrategyLabel",
-                "detailedRouteStrategyComboBox",
-                "detailedRouteStrategyComboBoxContextHelpLabel",
-                "detailedRouteStrategyComboBoxHelpField",
-                "maxDetailedActivitiesLabel",
-                "maxDetailedActivitiesSpinBox",
-                "maxDetailedActivitiesSpinBoxContextHelpLabel",
-                "maxDetailedActivitiesSpinBoxHelpField",
-            ),
-            enabled,
+        self._apply_local_first_visibility_update(
+            build_detailed_fetch_visibility_update(enabled)
         )
 
     def _update_point_sampling_visibility(self, enabled: bool) -> None:
-        self._set_named_widgets_visible(
-            (
-                "pointSamplingStrideLabel",
-                "pointSamplingStrideSpinBox",
-                "pointSamplingStrideSpinBoxContextHelpLabel",
-                "pointSamplingStrideSpinBoxHelpField",
-            ),
-            enabled,
+        self._apply_local_first_visibility_update(
+            build_point_sampling_visibility_update(enabled)
         )
 
     def _update_mapbox_advanced_visibility(self, preset_name: str | None) -> None:
-        show_advanced = preset_requires_custom_style(preset_name)
-        self._set_named_widgets_visible(
-            (
-                "mapboxStyleOwnerLabel",
-                "mapboxStyleOwnerLineEdit",
-                "mapboxStyleIdLabel",
-                "mapboxStyleIdLineEdit",
-                "mapboxStyleOwnerLineEditContextHelpLabel",
-                "mapboxStyleIdLineEditContextHelpLabel",
-                "mapboxStyleIdLineEditHelpField",
-            ),
-            show_advanced,
+        self._apply_local_first_visibility_update(
+            build_mapbox_custom_style_visibility_update(preset_name)
         )
+
+    def _apply_local_first_visibility_update(self, update) -> None:
+        self._set_named_widgets_visible(update.widget_attrs, update.visible)
 
     def _set_named_widgets_visible(
         self,
