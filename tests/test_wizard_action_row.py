@@ -143,7 +143,7 @@ class WizardActionRowTest(unittest.TestCase):
         self.assertIsNotNone(button.cursor().shape())
 
     def test_unknown_action_role_is_rejected(self):
-        with self.assertRaisesRegex(ValueError, "Unknown wizard action button role"):
+        with self.assertRaisesRegex(ValueError, "Unknown workflow action button role"):
             self.action_row._button_stylesheet(role="primray")
 
     def test_action_availability_marks_blocked_and_available_buttons(self):

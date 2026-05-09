@@ -107,7 +107,7 @@ def style_primary_action_button(
     *,
     action_name: str,
 ) -> QToolButton:
-    """Mark a wizard button as the one primary CTA for its page."""
+    """Mark a workflow button as the one primary CTA for its page."""
 
     button.setProperty("primaryAction", action_name)
     button.setProperty("wizardActionRole", "primary")
@@ -120,7 +120,7 @@ def style_secondary_action_button(
     *,
     action_name: str,
 ) -> QToolButton:
-    """Mark a wizard button as a secondary page action."""
+    """Mark a workflow button as a secondary page action."""
 
     button.setProperty("secondaryAction", action_name)
     button.setProperty("wizardActionRole", "secondary")
@@ -133,7 +133,7 @@ def style_destructive_action_button(
     *,
     action_name: str,
 ) -> QToolButton:
-    """Mark a wizard button as a destructive page action."""
+    """Mark a workflow button as a destructive page action."""
 
     button.setProperty("destructiveAction", action_name)
     button.setProperty("wizardActionRole", "destructive")
@@ -215,7 +215,7 @@ def _button_stylesheet(*, role: str) -> str:
         )
     if role == "secondary":
         return ""
-    raise ValueError(f"Unknown wizard action button role: {role!r}")
+    raise ValueError(f"Unknown workflow action button role: {role!r}")
 
 
 __all__ = [
