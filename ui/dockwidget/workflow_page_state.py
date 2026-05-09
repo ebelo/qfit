@@ -3,10 +3,8 @@ from __future__ import annotations
 from collections.abc import Callable
 from dataclasses import dataclass
 
-from qfit.ui.application.wizard_progress import (
-    WizardProgressFacts,
-    build_wizard_progress_from_facts,
-)
+from qfit.ui.application.workflow_progress_facts import WorkflowProgressFacts
+from qfit.ui.application.wizard_progress import build_wizard_progress_from_facts
 
 from .analysis_page import AnalysisPageState
 from .atlas_page import AtlasPageState
@@ -53,7 +51,7 @@ class WorkflowPageStateSnapshots:
 
 
 def build_workflow_page_states_from_facts(
-    facts: WizardProgressFacts,
+    facts: WorkflowProgressFacts,
 ) -> WorkflowPageStateSnapshots:
     """Build page status and CTA defaults from render-neutral progress facts.
 
@@ -79,9 +77,9 @@ def connect_optional_signal(content, signal_name: str, callback) -> None:
     getattr(content, signal_name).connect(callback)
 
 
-def completed_prefix_facts(facts: WizardProgressFacts) -> WizardProgressFacts:
+def completed_prefix_facts(facts: WorkflowProgressFacts) -> WorkflowProgressFacts:
     completed = build_wizard_progress_from_facts(facts).completed_keys
-    return WizardProgressFacts(
+    return WorkflowProgressFacts(
         connection_configured=facts.connection_configured,
         activities_fetched=facts.activities_fetched,
         activities_stored="sync" in completed,
@@ -109,7 +107,7 @@ def completed_prefix_facts(facts: WizardProgressFacts) -> WizardProgressFacts:
     )
 
 
-def _connection_state_from_facts(facts: WizardProgressFacts) -> ConnectionPageState:
+def _connection_state_from_facts(facts: WorkflowProgressFacts) -> ConnectionPageState:
     default = ConnectionPageState()
     if facts.connection_configured:
         return ConnectionPageState(
@@ -137,7 +135,7 @@ def _connection_state_from_facts(facts: WizardProgressFacts) -> ConnectionPageSt
     return default
 
 
-def _sync_state_from_facts(facts: WizardProgressFacts) -> SyncPageState:
+def _sync_state_from_facts(facts: WorkflowProgressFacts) -> SyncPageState:
     default = SyncPageState()
     status_text = default.status_text
     detail_text = default.detail_text
@@ -201,7 +199,7 @@ def _sync_state_from_facts(facts: WizardProgressFacts) -> SyncPageState:
 
 
 def _sync_local_action_blocked_tooltip(
-    facts: WizardProgressFacts,
+    facts: WorkflowProgressFacts,
     default: SyncPageState,
 ) -> str:
     if facts.sync_in_progress or facts.route_sync_in_progress:
@@ -212,7 +210,7 @@ def _sync_local_action_blocked_tooltip(
 
 
 def _sync_routes_action_blocked_tooltip(
-    facts: WizardProgressFacts,
+    facts: WorkflowProgressFacts,
     default: SyncPageState,
 ) -> str:
     if facts.route_sync_in_progress:
@@ -225,7 +223,7 @@ def _sync_routes_action_blocked_tooltip(
 
 
 def _sync_clear_action_blocked_tooltip(
-    facts: WizardProgressFacts,
+    facts: WorkflowProgressFacts,
     default: SyncPageState,
 ) -> str:
     if facts.sync_in_progress or facts.route_sync_in_progress:
@@ -236,7 +234,7 @@ def _sync_clear_action_blocked_tooltip(
 
 
 def _sync_activity_summary(
-    facts: WizardProgressFacts,
+    facts: WorkflowProgressFacts,
     default: SyncPageState,
 ) -> str:
     if facts.sync_in_progress:
@@ -250,7 +248,7 @@ def _sync_activity_summary(
     return default.activity_summary_text
 
 
-def _sync_in_progress_summary(facts: WizardProgressFacts) -> str:
+def _sync_in_progress_summary(facts: WorkflowProgressFacts) -> str:
     if not facts.activities_stored:
         return "Synchronization in progress"
     if facts.output_name is None:
@@ -258,7 +256,7 @@ def _sync_in_progress_summary(facts: WizardProgressFacts) -> str:
     return f"Updating activities in {facts.output_name}"
 
 
-def _stored_activity_summary(facts: WizardProgressFacts) -> str:
+def _stored_activity_summary(facts: WorkflowProgressFacts) -> str:
     if facts.activity_count is None and facts.output_name is None:
         return "Activities stored in GeoPackage"
     if facts.activity_count is None:
@@ -270,14 +268,14 @@ def _stored_activity_summary(facts: WizardProgressFacts) -> str:
     return f"{activity_summary} stored in {output_summary}"
 
 
-def _fetched_activity_summary(facts: WizardProgressFacts) -> str:
+def _fetched_activity_summary(facts: WorkflowProgressFacts) -> str:
     if facts.fetched_activity_count is None:
         return "Fetched activities ready to finish sync"
     noun = "activity" if facts.fetched_activity_count == 1 else "activities"
     return f"{max(facts.fetched_activity_count, 0)} fetched {noun} ready to finish sync"
 
 
-def _map_state_from_facts(facts: WizardProgressFacts) -> MapPageState:
+def _map_state_from_facts(facts: WorkflowProgressFacts) -> MapPageState:
     default = MapPageState()
     activity_layers_loaded = facts.activity_layers_loaded
     stored_without_loaded_layers = facts.activities_stored and not activity_layers_loaded
@@ -311,7 +309,7 @@ def _map_state_from_facts(facts: WizardProgressFacts) -> MapPageState:
     )
 
 
-def _map_status_text(facts: WizardProgressFacts) -> str:
+def _map_status_text(facts: WorkflowProgressFacts) -> str:
     if facts.activity_layers_loaded:
         return "Stored map layers loaded"
     if facts.activities_stored:
@@ -319,7 +317,7 @@ def _map_status_text(facts: WizardProgressFacts) -> str:
     return "Sync required before map loading"
 
 
-def _map_layer_summary(facts: WizardProgressFacts) -> str:
+def _map_layer_summary(facts: WorkflowProgressFacts) -> str:
     if facts.activity_layers_loaded:
         if facts.output_name is not None:
             return f"Stored map layers from {facts.output_name} are loaded on the map"
@@ -331,7 +329,7 @@ def _map_layer_summary(facts: WizardProgressFacts) -> str:
     return "Sync activities before loading stored map layers"
 
 
-def _map_background_summary(facts: WizardProgressFacts, default: MapPageState) -> str:
+def _map_background_summary(facts: WorkflowProgressFacts, default: MapPageState) -> str:
     if not facts.background_enabled:
         return default.background_summary_text
     if facts.background_layer_loaded:
@@ -343,13 +341,13 @@ def _map_background_summary(facts: WizardProgressFacts, default: MapPageState) -
     return "Basemap enabled"
 
 
-def _map_style_summary(facts: WizardProgressFacts, default: MapPageState) -> str:
+def _map_style_summary(facts: WorkflowProgressFacts, default: MapPageState) -> str:
     if facts.activity_style_preset is None:
         return default.style_summary_text
     return f"Selected activity style: {facts.activity_style_preset}"
 
 
-def _map_filter_summary(facts: WizardProgressFacts, default: MapPageState) -> str:
+def _map_filter_summary(facts: WorkflowProgressFacts, default: MapPageState) -> str:
     if not facts.activity_layers_loaded:
         return default.filter_summary_text
     if facts.filters_active:
@@ -357,7 +355,7 @@ def _map_filter_summary(facts: WizardProgressFacts, default: MapPageState) -> st
     return "All loaded activities are visible"
 
 
-def _map_active_filter_summary(facts: WizardProgressFacts) -> str:
+def _map_active_filter_summary(facts: WorkflowProgressFacts) -> str:
     if facts.filtered_activity_count is None:
         summary = "Subset filters are active"
     else:
@@ -369,7 +367,7 @@ def _map_active_filter_summary(facts: WizardProgressFacts) -> str:
     return f"{summary} · {filter_description}"
 
 
-def _analysis_state_from_facts(facts: WizardProgressFacts) -> AnalysisPageState:
+def _analysis_state_from_facts(facts: WorkflowProgressFacts) -> AnalysisPageState:
     default = AnalysisPageState()
     return AnalysisPageState(
         ready=facts.analysis_generated,
@@ -388,7 +386,7 @@ def _analysis_state_from_facts(facts: WizardProgressFacts) -> AnalysisPageState:
 
 
 def _analysis_status_text(
-    facts: WizardProgressFacts,
+    facts: WorkflowProgressFacts,
     default: AnalysisPageState,
 ) -> str:
     if facts.analysis_generated:
@@ -398,7 +396,7 @@ def _analysis_status_text(
     return default.status_text
 
 
-def _analysis_input_summary(facts: WizardProgressFacts) -> str:
+def _analysis_input_summary(facts: WorkflowProgressFacts) -> str:
     if not facts.activity_layers_loaded:
         return "Load activity layers before running analysis"
     if facts.filters_active:
@@ -409,7 +407,7 @@ def _analysis_input_summary(facts: WizardProgressFacts) -> str:
     )
 
 
-def _analysis_filtered_input_summary(facts: WizardProgressFacts) -> str:
+def _analysis_filtered_input_summary(facts: WorkflowProgressFacts) -> str:
     if facts.filtered_activity_count is None:
         summary = "Filtered activity subset ready for analysis"
     else:
@@ -421,13 +419,13 @@ def _analysis_filtered_input_summary(facts: WizardProgressFacts) -> str:
     return _with_analysis_input_context(summary, facts=facts)
 
 
-def _analysis_loaded_activity_layer_summary(facts: WizardProgressFacts) -> str:
+def _analysis_loaded_activity_layer_summary(facts: WorkflowProgressFacts) -> str:
     if facts.output_name is None:
         return "Activity layer ready for analysis"
     return f"Activity layer from {facts.output_name} ready for analysis"
 
 
-def _with_analysis_input_context(summary: str, *, facts: WizardProgressFacts) -> str:
+def _with_analysis_input_context(summary: str, *, facts: WorkflowProgressFacts) -> str:
     details = tuple(
         detail
         for detail in (
@@ -441,14 +439,14 @@ def _with_analysis_input_context(summary: str, *, facts: WizardProgressFacts) ->
     return f"{summary} · {' · '.join(details)}"
 
 
-def _analysis_filter_description(facts: WizardProgressFacts) -> str | None:
+def _analysis_filter_description(facts: WorkflowProgressFacts) -> str | None:
     if not facts.filters_active:
         return None
     description = (facts.filter_description or "").strip()
     return description or None
 
 
-def _analysis_loaded_layer_count_summary(facts: WizardProgressFacts) -> str | None:
+def _analysis_loaded_layer_count_summary(facts: WorkflowProgressFacts) -> str | None:
     if facts.loaded_layer_count is None:
         return None
     count = max(facts.loaded_layer_count, 0)
@@ -456,13 +454,13 @@ def _analysis_loaded_layer_count_summary(facts: WizardProgressFacts) -> str | No
     return f"{count} {noun} loaded"
 
 
-def _analysis_result_summary(facts: WizardProgressFacts) -> str:
+def _analysis_result_summary(facts: WorkflowProgressFacts) -> str:
     if facts.analysis_output_name is not None:
         return f"Analysis output {facts.analysis_output_name} is available"
     return "Analysis outputs are available"
 
 
-def _atlas_state_from_facts(facts: WizardProgressFacts) -> AtlasPageState:
+def _atlas_state_from_facts(facts: WorkflowProgressFacts) -> AtlasPageState:
     default = AtlasPageState()
     status_text = _atlas_status_text(facts, default)
     output_summary_text = _atlas_output_summary(facts, default)
@@ -487,7 +485,7 @@ def _atlas_state_from_facts(facts: WizardProgressFacts) -> AtlasPageState:
     )
 
 
-def _atlas_status_text(facts: WizardProgressFacts, default: AtlasPageState) -> str:
+def _atlas_status_text(facts: WorkflowProgressFacts, default: AtlasPageState) -> str:
     if facts.atlas_exported:
         return "Atlas PDF exported"
     if not facts.activity_layers_loaded:
@@ -495,7 +493,7 @@ def _atlas_status_text(facts: WizardProgressFacts, default: AtlasPageState) -> s
     return default.status_text
 
 
-def _atlas_input_summary(facts: WizardProgressFacts) -> str:
+def _atlas_input_summary(facts: WorkflowProgressFacts) -> str:
     if not facts.activity_layers_loaded:
         return "Load activity layers before exporting atlas PDF"
     if facts.analysis_output_name is not None:
@@ -511,7 +509,7 @@ def _atlas_input_summary(facts: WizardProgressFacts) -> str:
     return _atlas_activity_layer_input_summary(facts)
 
 
-def _atlas_activity_layer_input_summary(facts: WizardProgressFacts) -> str:
+def _atlas_activity_layer_input_summary(facts: WorkflowProgressFacts) -> str:
     selected_activity_count = _atlas_selected_activity_count(facts)
     if selected_activity_count is not None:
         summary = _atlas_selected_activity_input_summary(
@@ -538,7 +536,7 @@ def _atlas_activity_layer_input_summary(facts: WizardProgressFacts) -> str:
     return f"{summary} · {' · '.join(details)}"
 
 
-def _with_atlas_selection_context(summary: str, *, facts: WizardProgressFacts) -> str:
+def _with_atlas_selection_context(summary: str, *, facts: WorkflowProgressFacts) -> str:
     selected_activity_count = _atlas_selected_activity_count(facts)
     details = tuple(
         detail
@@ -553,7 +551,7 @@ def _with_atlas_selection_context(summary: str, *, facts: WizardProgressFacts) -
     return f"{summary} · {' · '.join(details)}"
 
 
-def _atlas_selected_activity_count(facts: WizardProgressFacts) -> int | None:
+def _atlas_selected_activity_count(facts: WorkflowProgressFacts) -> int | None:
     if facts.filters_active:
         if facts.filtered_activity_count is not None:
             return max(facts.filtered_activity_count, 0)
@@ -573,7 +571,7 @@ def _atlas_selected_activity_count_summary(
 
 
 def _atlas_selected_activity_input_summary(
-    facts: WizardProgressFacts,
+    facts: WorkflowProgressFacts,
     *,
     selected_activity_count: int,
 ) -> str:
@@ -597,7 +595,7 @@ def _atlas_page_count_summary(selected_activity_count: int | None) -> str | None
 
 
 def _atlas_output_summary(
-    facts: WizardProgressFacts,
+    facts: WorkflowProgressFacts,
     default: AtlasPageState,
 ) -> str:
     if facts.atlas_export_in_progress:
