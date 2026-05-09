@@ -24,6 +24,7 @@ def _load_wizard_composition_module():
         "qfit.ui.dockwidget.map_page",
         "qfit.ui.dockwidget.step_page",
         "qfit.ui.dockwidget.wizard_shell_presenter",
+        "qfit.ui.dockwidget.workflow_shell_presenter",
         "qfit.ui.dockwidget.wizard_page",
         "qfit.ui.dockwidget.wizard_shell",
         "qfit.ui.dockwidget.stepper_bar",
@@ -48,6 +49,18 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertIs(self.composition.DockWizardProgress, DockWorkflowProgress)
         self.assertIn("DockWorkflowProgress", self.composition.__all__)
         self.assertIn("DockWizardProgress", self.composition.__all__)
+
+    def test_exports_workflow_presenter_as_canonical_composition_api(self):
+        self.assertEqual(
+            self.composition.WorkflowShellPresenter.__name__,
+            "WorkflowShellPresenter",
+        )
+        self.assertIs(
+            self.composition.WizardShellPresenter,
+            self.composition.WorkflowShellPresenter,
+        )
+        self.assertIn("WorkflowShellPresenter", self.composition.__all__)
+        self.assertIn("WizardShellPresenter", self.composition.__all__)
 
     def test_keeps_wizard_progress_facts_as_compatibility_alias(self):
         self.assertIs(self.composition.WizardProgressFacts, WorkflowProgressFacts)

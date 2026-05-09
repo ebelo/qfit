@@ -49,7 +49,7 @@ from .step_page import (
 )
 from .wizard_page import WizardPage, install_wizard_pages
 from .wizard_shell import WizardShell
-from .wizard_shell_presenter import WizardShellPresenter
+from .workflow_shell_presenter import WorkflowShellPresenter
 from .workflow_page_state import (
     DockWorkflowActionCallbacks as WizardActionCallbacks,
     WorkflowPageStateSnapshots as WizardPageStateSnapshots,
@@ -70,6 +70,8 @@ WizardProgressFacts = WorkflowProgressFacts
 """Compatibility alias for wizard shell composition callers during #805."""
 DockWizardProgress = DockWorkflowProgress
 """Compatibility alias for pre-#805 wizard shell composition callers."""
+WizardShellPresenter = WorkflowShellPresenter
+"""Compatibility alias for pre-#805 wizard shell composition callers."""
 
 
 @dataclass
@@ -84,7 +86,7 @@ class WizardShellComposition:
 
     shell: WizardShell
     pages: tuple[WizardCompositionPage, ...]
-    presenter: WizardShellPresenter
+    presenter: WorkflowShellPresenter
     connection_content: ConnectionPageContent | None = None
     sync_content: SyncPageContent | None = None
     map_content: MapPageContent | None = None
@@ -187,7 +189,7 @@ def build_placeholder_wizard_shell(
     )
     atlas_content = _install_atlas_content(pages, atlas_state=atlas_state)
     _validate_progress_targets_installed_page(resolved_progress, pages)
-    presenter = WizardShellPresenter(
+    presenter = WorkflowShellPresenter(
         shell,
         resolved_progress,
         page_indices_by_key=_build_page_indices_by_key(pages),
@@ -550,7 +552,7 @@ def _install_shell_pages(
 def _connect_step_page_navigation(
     shell: WizardShell,
     pages: Sequence[WizardCompositionPage],
-    presenter: WizardShellPresenter,
+    presenter: WorkflowShellPresenter,
 ) -> None:
     step_pages = tuple(
         (index, page)
@@ -592,7 +594,7 @@ def _connect_step_page_navigation(
 
 def _sync_step_page_navigation_and_status(
     pages: Sequence[WizardCompositionPage],
-    presenter: WizardShellPresenter,
+    presenter: WorkflowShellPresenter,
 ) -> None:
     _sync_step_page_navigation_buttons(pages, presenter)
     _sync_step_page_status_pills(pages, presenter)
@@ -600,7 +602,7 @@ def _sync_step_page_navigation_and_status(
 
 def _sync_step_page_navigation_buttons(
     pages: Sequence[WizardCompositionPage],
-    presenter: WizardShellPresenter,
+    presenter: WorkflowShellPresenter,
 ) -> None:
     statuses = build_progress_workflow_step_statuses(presenter.progress)
     last_index = len(statuses) - 1
@@ -667,7 +669,7 @@ def _step_page_titles_by_workflow_index(
 
 def _sync_step_page_status_pills(
     pages: Sequence[WizardCompositionPage],
-    presenter: WizardShellPresenter,
+    presenter: WorkflowShellPresenter,
 ) -> None:
     step_pages = tuple(page for page in pages if isinstance(page, WizardStepPage))
     if not step_pages:
@@ -795,6 +797,8 @@ __all__ = [
     "WizardProgressFacts",
     "WizardSettingsSnapshot",
     "WizardShellComposition",
+    "WizardShellPresenter",
+    "WorkflowShellPresenter",
     "WorkflowProgressFacts",
     "build_default_workflow_page_specs",
     "build_default_wizard_page_specs",

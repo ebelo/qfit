@@ -10,6 +10,7 @@ from tests.test_wizard_shell import _fake_qt_modules
 def _load_wizard_modules():
     for name in (
         "qfit.ui.dockwidget.wizard_shell_presenter",
+        "qfit.ui.dockwidget.workflow_shell_presenter",
         "qfit.ui.dockwidget.wizard_page",
         "qfit.ui.dockwidget.wizard_shell",
         "qfit.ui.dockwidget.stepper_bar",
@@ -21,13 +22,47 @@ def _load_wizard_modules():
             importlib.import_module("qfit.ui.dockwidget.wizard_page"),
             importlib.import_module("qfit.ui.dockwidget.wizard_shell"),
             importlib.import_module("qfit.ui.dockwidget.wizard_shell_presenter"),
+            importlib.import_module("qfit.ui.dockwidget.workflow_shell_presenter"),
+            importlib.import_module("qfit.ui.dockwidget"),
         )
 
 
 class WizardShellPresenterTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.wizard_page, cls.wizard_shell, cls.presenter = _load_wizard_modules()
+        (
+            cls.wizard_page,
+            cls.wizard_shell,
+            cls.presenter,
+            cls.workflow_presenter,
+            cls.dockwidget_package,
+        ) = _load_wizard_modules()
+
+    def test_workflow_presenter_is_canonical_identity_preserving_export(self):
+        self.assertIs(
+            self.presenter.WorkflowShellPresenter,
+            self.workflow_presenter.WorkflowShellPresenter,
+        )
+        self.assertIs(
+            self.presenter.WizardShellPresenter,
+            self.workflow_presenter.WorkflowShellPresenter,
+        )
+        self.assertIs(
+            self.dockwidget_package.WorkflowShellPresenter,
+            self.workflow_presenter.WorkflowShellPresenter,
+        )
+        self.assertIs(
+            self.dockwidget_package.WizardShellPresenter,
+            self.workflow_presenter.WorkflowShellPresenter,
+        )
+        for module in (
+            self.workflow_presenter,
+            self.presenter,
+            self.dockwidget_package,
+        ):
+            with self.subTest(module=module.__name__):
+                self.assertIn("WorkflowShellPresenter", module.__all__)
+                self.assertIn("WizardShellPresenter", module.__all__)
 
     def _build_shell_with_pages(self):
         shell = self.wizard_shell.WizardShell()
