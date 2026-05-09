@@ -60,11 +60,72 @@ class LocalFirstControlMoveTests(unittest.TestCase):
             },
         )
 
+    def test_control_moves_document_required_supported_controls(self):
+        required_widgets = {
+            move.key: move.required_widget_attrs for move in LOCAL_FIRST_CONTROL_MOVES
+        }
+
+        self.assertEqual(
+            required_widgets,
+            {
+                "advanced_fetch": (
+                    "advancedFetchSettingsWidget",
+                    "perPageSpinBox",
+                    "maxPagesSpinBox",
+                    "detailedStreamsCheckBox",
+                    "detailedRouteStrategyComboBox",
+                    "maxDetailedActivitiesSpinBox",
+                ),
+                "activity_preview": (
+                    "querySummaryLabel",
+                    "activityPreviewPlainTextEdit",
+                ),
+                "backfill_routes": (),
+                "map_filters": (
+                    "activityTypeComboBox",
+                    "activitySearchLineEdit",
+                    "dateFromEdit",
+                    "dateToEdit",
+                    "minDistanceSpinBox",
+                    "maxDistanceSpinBox",
+                    "detailedRouteStatusComboBox",
+                ),
+                "atlas_pdf": ("atlasPdfPathLineEdit", "atlasPdfBrowseButton"),
+                "strava_credentials": (
+                    "clientIdLineEdit",
+                    "clientSecretLineEdit",
+                    "redirectUriLineEdit",
+                    "authCodeLineEdit",
+                    "refreshTokenLineEdit",
+                    "openAuthorizeButton",
+                    "exchangeCodeButton",
+                ),
+                "basemap": (
+                    "backgroundMapCheckBox",
+                    "backgroundPresetComboBox",
+                    "mapboxStyleOwnerLineEdit",
+                    "mapboxStyleIdLineEdit",
+                    "tileModeComboBox",
+                    "loadBackgroundButton",
+                ),
+                "storage": (
+                    "outputPathLineEdit",
+                    "browseButton",
+                    "writeActivityPointsCheckBox",
+                    "pointSamplingStrideSpinBox",
+                ),
+            },
+        )
+
     def test_lookup_returns_full_install_metadata(self):
         move = local_first_control_move_for_key("atlas_pdf")
 
         self.assertEqual(move.content_attr, "atlas_content")
         self.assertEqual(move.group_attr, "atlasPdfGroupBox")
+        self.assertEqual(
+            move.required_widget_attrs,
+            ("atlasPdfPathLineEdit", "atlasPdfBrowseButton"),
+        )
         self.assertEqual(move.title, "PDF output")
         self.assertTrue(move.show_after_move)
 

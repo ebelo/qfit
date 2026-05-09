@@ -280,6 +280,11 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
     def setUpClass(cls):
         cls.module = cls._import_module_with_stubs()
 
+    def _install_required_local_first_group_widgets(self, dock, key):
+        move = self.module.local_first_control_move_for_key(key)
+        for attr in move.required_widget_attrs:
+            setattr(dock, attr, MagicMock(name=attr))
+
     @staticmethod
     def _import_module_with_stubs():
         qgis_mod = ModuleType("qgis")
@@ -1107,6 +1112,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         filter_group = MagicMock()
         filter_group.parentWidget.return_value = parent_widget
         dock.filterGroupBox = filter_group
+        self._install_required_local_first_group_widgets(dock, "map_filters")
         panel = object()
         filter_layout = MagicMock()
         map_content = SimpleNamespace(
@@ -1575,6 +1581,10 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         settings_content = SimpleNamespace(outer_layout=lambda: settings_layout)
         composition = SimpleNamespace(connection_content=settings_content)
         dock.credentialsGroupBox = credentials_group
+        self._install_required_local_first_group_widgets(
+            dock,
+            "strava_credentials",
+        )
 
         self.module.QfitDockWidget._install_local_first_strava_credentials_controls(
             dock,
@@ -1633,6 +1643,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         settings_content = SimpleNamespace(outer_layout=lambda: settings_layout)
         composition = SimpleNamespace(connection_content=settings_content)
         dock.backgroundGroupBox = basemap_group
+        self._install_required_local_first_group_widgets(dock, "basemap")
 
         self.module.QfitDockWidget._install_local_first_basemap_controls(
             dock,
@@ -1691,6 +1702,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         settings_content = SimpleNamespace(outer_layout=lambda: settings_layout)
         composition = SimpleNamespace(connection_content=settings_content)
         dock.outputGroupBox = storage_group
+        self._install_required_local_first_group_widgets(dock, "storage")
 
         self.module.QfitDockWidget._install_local_first_storage_controls(
             dock,
@@ -1745,6 +1757,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         data_content = SimpleNamespace(outer_layout=lambda: data_layout)
         composition = SimpleNamespace(sync_content=data_content)
         dock.advancedFetchGroupBox = advanced_fetch_group
+        self._install_required_local_first_group_widgets(dock, "advanced_fetch")
 
         self.module.QfitDockWidget._install_local_first_advanced_fetch_controls(
             dock,
@@ -1802,6 +1815,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         data_content = SimpleNamespace(outer_layout=lambda: data_layout)
         composition = SimpleNamespace(sync_content=data_content)
         dock.previewGroupBox = preview_group
+        self._install_required_local_first_group_widgets(dock, "activity_preview")
 
         self.module.QfitDockWidget._install_local_first_activity_preview_controls(
             dock,
@@ -1919,6 +1933,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         composition = SimpleNamespace(atlas_content=atlas_content)
         dock.atlasPdfGroupBox = atlas_pdf_group
         dock.generateAtlasPdfButton = MagicMock()
+        self._install_required_local_first_group_widgets(dock, "atlas_pdf")
 
         self.module.QfitDockWidget._install_local_first_atlas_pdf_controls(
             dock,
@@ -1954,6 +1969,44 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertFalse(
             getattr(dock, "_local_first_atlas_pdf_controls_installed", False)
         )
+
+    def test_local_first_group_move_requires_audited_supported_controls(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.atlasPdfGroupBox = MagicMock()
+        dock.atlasPdfPathLineEdit = MagicMock()
+        atlas_layout = _FakeLayout()
+        atlas_content = SimpleNamespace(outer_layout=lambda: atlas_layout)
+        composition = SimpleNamespace(atlas_content=atlas_content)
+
+        installed = self.module.QfitDockWidget._install_local_first_control_move(
+            dock,
+            composition,
+            "atlas_pdf",
+        )
+
+        self.assertFalse(installed)
+        self.assertEqual(atlas_layout.added, [])
+        self.assertFalse(
+            getattr(dock, "_local_first_atlas_pdf_controls_installed", False)
+        )
+
+    def test_local_first_group_move_keeps_idempotent_result_before_required_guard(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.atlasPdfGroupBox = MagicMock()
+        dock.atlasPdfPathLineEdit = MagicMock()
+        atlas_layout = _FakeLayout()
+        atlas_content = SimpleNamespace(outer_layout=lambda: atlas_layout)
+        dock._local_first_atlas_pdf_controls_installed = True
+        dock._local_first_atlas_pdf_controls_installed_target = id(atlas_content)
+
+        installed = self.module.QfitDockWidget._install_local_first_control_move(
+            dock,
+            SimpleNamespace(atlas_content=atlas_content),
+            "atlas_pdf",
+        )
+
+        self.assertTrue(installed)
+        self.assertEqual(atlas_layout.added, [])
 
     def test_refresh_wizard_shell_from_runtime_updates_optional_composition(self):
         dock = object.__new__(self.module.QfitDockWidget)

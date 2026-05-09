@@ -18,6 +18,7 @@ class LocalFirstControlMove:
     group_attr: str
     installed_attr: str
     installed_target_attr: str
+    required_widget_attrs: tuple[str, ...] = ()
     title: str | None = None
     show_after_move: bool = True
     layout_getter_attr: str = "outer_layout"
@@ -69,6 +70,14 @@ LOCAL_FIRST_CONTROL_MOVES: tuple[LocalFirstControlMove, ...] = (
         key="advanced_fetch",
         content_attr="sync_content",
         group_attr="advancedFetchGroupBox",
+        required_widget_attrs=(
+            "advancedFetchSettingsWidget",
+            "perPageSpinBox",
+            "maxPagesSpinBox",
+            "detailedStreamsCheckBox",
+            "detailedRouteStrategyComboBox",
+            "maxDetailedActivitiesSpinBox",
+        ),
         installed_attr="_local_first_advanced_fetch_controls_installed",
         installed_target_attr="_local_first_advanced_fetch_controls_installed_target",
     ),
@@ -76,6 +85,7 @@ LOCAL_FIRST_CONTROL_MOVES: tuple[LocalFirstControlMove, ...] = (
         key="activity_preview",
         content_attr="sync_content",
         group_attr="previewGroupBox",
+        required_widget_attrs=("querySummaryLabel", "activityPreviewPlainTextEdit"),
         installed_attr="_local_first_activity_preview_controls_installed",
         installed_target_attr="_local_first_activity_preview_controls_installed_target",
         title="Fetched activity preview",
@@ -92,6 +102,15 @@ LOCAL_FIRST_CONTROL_MOVES: tuple[LocalFirstControlMove, ...] = (
         key="map_filters",
         content_attr="map_content",
         group_attr="filterGroupBox",
+        required_widget_attrs=(
+            "activityTypeComboBox",
+            "activitySearchLineEdit",
+            "dateFromEdit",
+            "dateToEdit",
+            "minDistanceSpinBox",
+            "maxDistanceSpinBox",
+            "detailedRouteStatusComboBox",
+        ),
         installed_attr="_local_first_filter_controls_installed",
         installed_target_attr="_local_first_filter_controls_installed_target",
         title="Map filters",
@@ -103,6 +122,7 @@ LOCAL_FIRST_CONTROL_MOVES: tuple[LocalFirstControlMove, ...] = (
         key="atlas_pdf",
         content_attr="atlas_content",
         group_attr="atlasPdfGroupBox",
+        required_widget_attrs=("atlasPdfPathLineEdit", "atlasPdfBrowseButton"),
         installed_attr="_local_first_atlas_pdf_controls_installed",
         installed_target_attr="_local_first_atlas_pdf_controls_installed_target",
         title="PDF output",
@@ -111,6 +131,15 @@ LOCAL_FIRST_CONTROL_MOVES: tuple[LocalFirstControlMove, ...] = (
         key="strava_credentials",
         content_attr="connection_content",
         group_attr="credentialsGroupBox",
+        required_widget_attrs=(
+            "clientIdLineEdit",
+            "clientSecretLineEdit",
+            "redirectUriLineEdit",
+            "authCodeLineEdit",
+            "refreshTokenLineEdit",
+            "openAuthorizeButton",
+            "exchangeCodeButton",
+        ),
         installed_attr="_local_first_strava_credentials_controls_installed",
         installed_target_attr="_local_first_strava_credentials_controls_installed_target",
         title="Strava connection",
@@ -119,6 +148,14 @@ LOCAL_FIRST_CONTROL_MOVES: tuple[LocalFirstControlMove, ...] = (
         key="basemap",
         content_attr="connection_content",
         group_attr="backgroundGroupBox",
+        required_widget_attrs=(
+            "backgroundMapCheckBox",
+            "backgroundPresetComboBox",
+            "mapboxStyleOwnerLineEdit",
+            "mapboxStyleIdLineEdit",
+            "tileModeComboBox",
+            "loadBackgroundButton",
+        ),
         installed_attr="_local_first_basemap_controls_installed",
         installed_target_attr="_local_first_basemap_controls_installed_target",
         title="Mapbox basemap",
@@ -127,6 +164,12 @@ LOCAL_FIRST_CONTROL_MOVES: tuple[LocalFirstControlMove, ...] = (
         key="storage",
         content_attr="connection_content",
         group_attr="outputGroupBox",
+        required_widget_attrs=(
+            "outputPathLineEdit",
+            "browseButton",
+            "writeActivityPointsCheckBox",
+            "pointSamplingStrideSpinBox",
+        ),
         installed_attr="_local_first_storage_controls_installed",
         installed_target_attr="_local_first_storage_controls_installed_target",
         title="Data storage",

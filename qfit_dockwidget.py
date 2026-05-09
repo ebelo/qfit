@@ -711,6 +711,8 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             getattr(self, move.installed_target_attr, None) == current_target
         ):
             return True
+        if not self._local_first_control_move_required_widgets_available(move):
+            return False
 
         layout = self._local_first_control_move_layout(content, move)
         if layout is None or not hasattr(layout, "addWidget"):
@@ -729,6 +731,15 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         setattr(self, move.installed_attr, True)
         setattr(self, move.installed_target_attr, current_target)
         return True
+
+    def _local_first_control_move_required_widgets_available(
+        self,
+        move: LocalFirstControlMove,
+    ) -> bool:
+        return all(
+            getattr(self, attr, None) is not None
+            for attr in move.required_widget_attrs
+        )
 
     def _local_first_control_move_layout(
         self,
