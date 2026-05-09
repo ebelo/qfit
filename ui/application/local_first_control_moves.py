@@ -25,6 +25,45 @@ class LocalFirstControlMove:
     post_install_visible_attr: str | None = None
 
 
+@dataclass(frozen=True)
+class LocalFirstWidgetMove:
+    """Legacy-backed loose widgets that are surfaced in local-first UI.
+
+    Some remaining controls were not wrapped in a single group box in the old
+    dock. Keep their widget contracts audited here so local-first parity does
+    not depend on ad-hoc installer methods with wizard-era naming.
+    """
+
+    key: str
+    content_attr: str
+    required_widget_attrs: tuple[str, ...]
+    installed_attr: str
+    installed_target_attr: str
+    optional_widget_groups: tuple[tuple[str, ...], ...] = ()
+    optional_widget_attrs: tuple[str, ...] = ()
+    show_widget_attrs_after_move: tuple[str, ...] = ()
+    layout_getter_attr: str = "outer_layout"
+    parent_panel_attr: str | None = None
+    post_install_visible_attr: str | None = None
+
+
+LOCAL_FIRST_WIDGET_MOVES: tuple[LocalFirstWidgetMove, ...] = (
+    LocalFirstWidgetMove(
+        key="activity_style",
+        content_attr="map_content",
+        required_widget_attrs=("stylePresetLabel", "stylePresetComboBox"),
+        installed_attr="_local_first_activity_style_controls_installed",
+        installed_target_attr="_local_first_activity_style_controls_installed_target",
+        optional_widget_groups=(("previewSortLabel", "previewSortComboBox"),),
+        optional_widget_attrs=("analysisTemporalModeRow", "temporalHelpLabel"),
+        show_widget_attrs_after_move=("temporalModeLabel", "temporalModeComboBox"),
+        layout_getter_attr="style_controls_layout",
+        parent_panel_attr="style_controls_panel",
+        post_install_visible_attr="set_style_controls_visible",
+    ),
+)
+
+
 LOCAL_FIRST_CONTROL_MOVES: tuple[LocalFirstControlMove, ...] = (
     LocalFirstControlMove(
         key="advanced_fetch",
@@ -110,9 +149,28 @@ def local_first_control_move_keys() -> tuple[str, ...]:
     return tuple(move.key for move in LOCAL_FIRST_CONTROL_MOVES)
 
 
+def local_first_widget_move_for_key(key: str) -> LocalFirstWidgetMove:
+    """Return the local-first loose-widget move spec for a supported area."""
+
+    for move in LOCAL_FIRST_WIDGET_MOVES:
+        if move.key == key:
+            return move
+    raise KeyError(key)
+
+
+def local_first_widget_move_keys() -> tuple[str, ...]:
+    """Return stable audit keys for loose local-first widget moves."""
+
+    return tuple(move.key for move in LOCAL_FIRST_WIDGET_MOVES)
+
+
 __all__ = [
     "LOCAL_FIRST_CONTROL_MOVES",
+    "LOCAL_FIRST_WIDGET_MOVES",
     "LocalFirstControlMove",
+    "LocalFirstWidgetMove",
     "local_first_control_move_for_key",
     "local_first_control_move_keys",
+    "local_first_widget_move_for_key",
+    "local_first_widget_move_keys",
 ]

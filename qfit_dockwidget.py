@@ -83,6 +83,7 @@ from .ui.application import (
     DockVisualWorkflowCoordinator,
     DockVisualWorkflowRequest,
     LocalFirstControlMove,
+    LocalFirstWidgetMove,
     RunAnalysisAction,
     build_dock_summary_status,
     build_startup_wizard_progress_facts,
@@ -92,6 +93,7 @@ from .ui.application import (
     ensure_wizard_settings,
     load_wizard_settings,
     local_first_control_move_for_key,
+    local_first_widget_move_for_key,
     save_last_step_index,
     step_index_for_key,
     build_visual_workflow_background_inputs,
@@ -538,7 +540,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 update_atlas_document_settings=self._update_atlas_document_settings,
             ),
         )
-        self._install_wizard_style_controls(self._local_first_dock_composition)
+        self._install_local_first_activity_style_controls(
+            self._local_first_dock_composition
+        )
         self._install_local_first_filter_controls(self._local_first_dock_composition)
         self._install_local_first_advanced_fetch_controls(
             self._local_first_dock_composition
@@ -755,6 +759,71 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
         move = local_first_control_move_for_key(key)
         return self._install_local_first_group_controls(composition, move=move)
+
+    def _install_local_first_widget_controls(
+        self,
+        composition,
+        move: LocalFirstWidgetMove,
+    ) -> bool:
+        content = getattr(composition, move.content_attr, None)
+        if content is None:
+            return False
+        current_target = id(content)
+        if getattr(self, move.installed_attr, False) and (
+            getattr(self, move.installed_target_attr, None) == current_target
+        ):
+            return True
+
+        layout = self._local_first_control_move_layout(content, move)
+        if layout is None or not hasattr(layout, "addWidget"):
+            return False
+
+        widgets = self._local_first_widget_move_widgets(move)
+        if widgets is None:
+            return False
+
+        parent_panel = self._local_first_control_move_parent_panel(content, move)
+        for widget in widgets:
+            self._remove_widget_from_current_layout(widget)
+            if hasattr(widget, "setParent"):
+                widget.setParent(parent_panel)
+            layout.addWidget(widget)
+            self._show_widget(widget)
+        for attr in move.show_widget_attrs_after_move:
+            widget = getattr(self, attr, None)
+            if widget is not None:
+                self._show_widget(widget)
+        self._refresh_local_first_control_visibility(content, move)
+
+        setattr(self, move.installed_attr, True)
+        setattr(self, move.installed_target_attr, current_target)
+        return True
+
+    def _local_first_widget_move_widgets(
+        self,
+        move: LocalFirstWidgetMove,
+    ):
+        widgets = []
+        for attr in move.required_widget_attrs:
+            widget = getattr(self, attr, None)
+            if widget is None:
+                return None
+            widgets.append(widget)
+        for group in move.optional_widget_groups:
+            group_widgets = [getattr(self, attr, None) for attr in group]
+            if all(widget is not None for widget in group_widgets):
+                widgets.extend(group_widgets)
+        for attr in move.optional_widget_attrs:
+            widget = getattr(self, attr, None)
+            if widget is not None:
+                widgets.append(widget)
+        return widgets
+
+    def _install_local_first_activity_style_controls(self, composition) -> None:
+        """Expose activity visualization controls in the local-first Map tab."""
+
+        move = local_first_widget_move_for_key("activity_style")
+        self._install_local_first_widget_controls(composition, move=move)
 
     def _install_local_first_filter_controls(self, composition) -> None:
         """Expose the backing map filters in the local-first Map tab."""
