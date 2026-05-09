@@ -7,7 +7,7 @@ from qfit.ui.application.wizard_footer_status import (
     build_wizard_footer_facts_from_progress_facts,
     build_wizard_footer_status,
 )
-from qfit.ui.application.wizard_progress import WizardProgressFacts
+from qfit.ui.application.workflow_progress_facts import WorkflowProgressFacts
 
 
 class WizardFooterStatusTests(unittest.TestCase):
@@ -49,7 +49,7 @@ class WizardFooterStatusTests(unittest.TestCase):
         )
 
     def test_builds_explicit_footer_facts_from_progress_facts(self):
-        facts = WizardProgressFacts(
+        facts = WorkflowProgressFacts(
             connection_configured=True,
             activities_stored=True,
             activity_layers_loaded=True,
@@ -71,7 +71,7 @@ class WizardFooterStatusTests(unittest.TestCase):
         )
 
     def test_footer_facts_do_not_report_unstored_or_unloaded_counts(self):
-        facts = WizardProgressFacts(
+        facts = WorkflowProgressFacts(
             connection_configured=True,
             activities_fetched=True,
             fetched_activity_count=5,
@@ -90,7 +90,7 @@ class WizardFooterStatusTests(unittest.TestCase):
         )
 
     def test_footer_facts_fall_back_to_single_loaded_layer_when_count_unknown(self):
-        facts = WizardProgressFacts(activity_layers_loaded=True)
+        facts = WorkflowProgressFacts(activity_layers_loaded=True)
 
         self.assertEqual(
             build_wizard_footer_facts_from_progress_facts(facts).layer_count,
@@ -98,7 +98,7 @@ class WizardFooterStatusTests(unittest.TestCase):
         )
 
     def test_footer_facts_ignore_blank_last_sync_date(self):
-        facts = WizardProgressFacts(last_sync_date="   ")
+        facts = WorkflowProgressFacts(last_sync_date="   ")
 
         self.assertIsNone(
             build_wizard_footer_facts_from_progress_facts(facts).last_sync_date

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from qfit.ui.application.wizard_progress import WizardProgressFacts
+from qfit.ui.application.workflow_progress_facts import WorkflowProgressFacts
 
 
 @dataclass(frozen=True)
@@ -42,13 +42,13 @@ def build_wizard_footer_status(
 
 
 def build_wizard_footer_facts_from_progress_facts(
-    facts: WizardProgressFacts,
+    facts: WorkflowProgressFacts,
 ) -> WizardFooterFacts:
-    """Build footer pill/path facts from the shared wizard progress facts.
+    """Build footer pill/path facts from shared workflow progress facts.
 
     The compact text summary remains as a compatibility seam for the placeholder
     shell. This adapter drives the footer's explicit Strava/activity/layer/path
-    controls from the same render-neutral state used by wizard pages, avoiding
+    controls from the same render-neutral state used by workflow pages, avoiding
     any dependency on current long-scroll dock widgets.
     """
 
