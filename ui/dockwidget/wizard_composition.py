@@ -784,6 +784,7 @@ __all__ = [
     "WizardProgressFacts",
     "WizardSettingsSnapshot",
     "WizardShellComposition",
+    "WorkflowProgressFacts",
     "build_placeholder_wizard_shell",
     "build_wizard_page_states_from_facts",
     "connect_wizard_action_callbacks",

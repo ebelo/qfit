@@ -36,6 +36,10 @@ class WizardShellCompositionTest(unittest.TestCase):
     def setUpClass(cls):
         cls.composition = _load_wizard_composition_module()
 
+    def test_exports_workflow_progress_facts_for_internal_callers(self):
+        self.assertIs(self.composition.WorkflowProgressFacts, WorkflowProgressFacts)
+        self.assertIn("WorkflowProgressFacts", self.composition.__all__)
+
     def test_keeps_wizard_progress_facts_as_compatibility_alias(self):
         self.assertIs(self.composition.WizardProgressFacts, WorkflowProgressFacts)
 
@@ -143,7 +147,7 @@ class WizardShellCompositionTest(unittest.TestCase):
 
     def test_can_build_shell_with_spec_step_pages(self):
         assembled = self.composition.build_placeholder_wizard_shell(
-            progress_facts=self.composition.WizardProgressFacts(
+            progress_facts=WorkflowProgressFacts(
                 connection_configured=True,
                 activities_stored=True,
                 preferred_current_key="map",
@@ -228,7 +232,7 @@ class WizardShellCompositionTest(unittest.TestCase):
 
     def test_map_next_button_skips_optional_analysis_when_atlas_is_reachable(self):
         assembled = self.composition.build_placeholder_wizard_shell(
-            progress_facts=self.composition.WizardProgressFacts(
+            progress_facts=WorkflowProgressFacts(
                 connection_configured=True,
                 activities_stored=True,
                 activity_layers_loaded=True,
@@ -252,7 +256,7 @@ class WizardShellCompositionTest(unittest.TestCase):
 
     def test_configured_connection_restore_keeps_connection_page_accessible(self):
         assembled = self.composition.build_placeholder_wizard_shell(
-            progress_facts=self.composition.WizardProgressFacts(
+            progress_facts=WorkflowProgressFacts(
                 connection_configured=True,
             ),
             wizard_settings=self.composition.WizardSettingsSnapshot(
@@ -290,7 +294,7 @@ class WizardShellCompositionTest(unittest.TestCase):
 
         self.composition.refresh_wizard_shell_composition(
             assembled,
-            progress_facts=self.composition.WizardProgressFacts(
+            progress_facts=WorkflowProgressFacts(
                 connection_configured=True,
                 activities_stored=True,
                 preferred_current_key="map",
@@ -309,7 +313,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         specs = self.composition.build_default_wizard_page_specs()
         assembled = self.composition.build_placeholder_wizard_shell(
             specs=(specs[0], specs[4]),
-            progress_facts=self.composition.WizardProgressFacts(
+            progress_facts=WorkflowProgressFacts(
                 connection_configured=True,
                 activities_stored=True,
                 activity_layers_loaded=True,
@@ -391,7 +395,7 @@ class WizardShellCompositionTest(unittest.TestCase):
             store_activities=lambda: calls.append("store"),
         )
         assembled = self.composition.build_placeholder_wizard_shell(
-            progress_facts=self.composition.WizardProgressFacts(
+            progress_facts=WorkflowProgressFacts(
                 connection_configured=True,
                 activities_fetched=True,
             ),
@@ -465,7 +469,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         )
 
     def test_initial_progress_can_be_derived_from_workflow_facts(self):
-        facts = self.composition.WizardProgressFacts(
+        facts = WorkflowProgressFacts(
             connection_configured=True,
             activities_stored=True,
             preferred_current_key="map",
@@ -507,7 +511,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         )
 
     def test_local_geopackage_flow_reaches_map_without_strava_connection(self):
-        facts = self.composition.WizardProgressFacts(
+        facts = WorkflowProgressFacts(
             connection_configured=False,
             activities_stored=True,
             output_name="offline.gpkg",
@@ -543,7 +547,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         )
 
         assembled = self.composition.build_placeholder_wizard_shell(
-            progress_facts=self.composition.WizardProgressFacts(
+            progress_facts=WorkflowProgressFacts(
                 connection_configured=True,
                 activities_stored=True,
                 activity_layers_loaded=True,
@@ -566,7 +570,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         )
 
         assembled = self.composition.build_placeholder_wizard_shell(
-            progress_facts=self.composition.WizardProgressFacts(),
+            progress_facts=WorkflowProgressFacts(),
             wizard_settings=settings,
         )
 
@@ -574,7 +578,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertEqual(assembled.shell.pages_stack.currentIndex(), 0)
 
     def test_connection_page_summary_reports_configured_credentials(self):
-        facts = self.composition.WizardProgressFacts(connection_configured=True)
+        facts = WorkflowProgressFacts(connection_configured=True)
 
         assembled = self.composition.build_placeholder_wizard_shell(progress_facts=facts)
 
@@ -588,7 +592,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         )
 
     def test_sync_page_summary_uses_runtime_activity_count_and_output_name(self):
-        facts = self.composition.WizardProgressFacts(
+        facts = WorkflowProgressFacts(
             connection_configured=True,
             activities_stored=True,
             activity_count=12,
@@ -609,7 +613,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertEqual(assembled.shell.footer_bar.path_label.text(), "qfit.gpkg")
 
     def test_sync_page_summary_uses_singular_activity_count(self):
-        facts = self.composition.WizardProgressFacts(
+        facts = WorkflowProgressFacts(
             connection_configured=True,
             activities_stored=True,
             activity_count=1,
@@ -624,7 +628,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         )
 
     def test_sync_page_summary_omits_unknown_activity_count(self):
-        facts = self.composition.WizardProgressFacts(
+        facts = WorkflowProgressFacts(
             connection_configured=True,
             activities_stored=True,
             output_name="qfit.gpkg",
@@ -639,7 +643,7 @@ class WizardShellCompositionTest(unittest.TestCase):
 
     def test_sync_page_enables_clear_database_when_output_path_is_selected(self):
         assembled = self.composition.build_placeholder_wizard_shell(
-            progress_facts=self.composition.WizardProgressFacts(
+            progress_facts=WorkflowProgressFacts(
                 output_name="qfit.gpkg",
             ),
         )
@@ -649,7 +653,7 @@ class WizardShellCompositionTest(unittest.TestCase):
 
     def test_sync_page_blocks_clear_database_while_route_sync_is_running(self):
         assembled = self.composition.build_placeholder_wizard_shell(
-            progress_facts=self.composition.WizardProgressFacts(
+            progress_facts=WorkflowProgressFacts(
                 output_name="qfit.gpkg",
                 route_sync_in_progress=True,
             ),
@@ -662,7 +666,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         )
 
     def test_sync_page_shows_fetched_activities_ready_to_finish_sync(self):
-        facts = self.composition.WizardProgressFacts(
+        facts = WorkflowProgressFacts(
             connection_configured=True,
             activities_fetched=True,
             fetched_activity_count=3,
@@ -691,7 +695,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         )
 
     def test_sync_page_describes_unknown_fetched_activity_count(self):
-        facts = self.composition.WizardProgressFacts(
+        facts = WorkflowProgressFacts(
             connection_configured=True,
             activities_fetched=True,
             fetched_activity_count=None,
@@ -705,7 +709,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         )
 
     def test_sync_page_uses_singular_fetched_activity_summary(self):
-        facts = self.composition.WizardProgressFacts(
+        facts = WorkflowProgressFacts(
             connection_configured=True,
             activities_fetched=True,
             fetched_activity_count=1,
@@ -719,7 +723,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         )
 
     def test_sync_page_prioritizes_pending_fetch_over_existing_stored_dataset(self):
-        facts = self.composition.WizardProgressFacts(
+        facts = WorkflowProgressFacts(
             connection_configured=True,
             activities_fetched=True,
             activities_stored=True,
@@ -736,7 +740,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         )
 
     def test_map_page_summary_names_stored_output_before_layers_load(self):
-        facts = self.composition.WizardProgressFacts(
+        facts = WorkflowProgressFacts(
             connection_configured=True,
             activities_stored=True,
             output_name="qfit.gpkg",
@@ -758,7 +762,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         )
 
     def test_loaded_map_page_summary_names_source_output(self):
-        facts = self.composition.WizardProgressFacts(
+        facts = WorkflowProgressFacts(
             connection_configured=True,
             activities_stored=True,
             activity_layers_loaded=True,
@@ -777,7 +781,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         )
 
     def test_map_page_summary_reports_enabled_basemap_before_load(self):
-        facts = self.composition.WizardProgressFacts(
+        facts = WorkflowProgressFacts(
             connection_configured=True,
             activities_stored=True,
             background_enabled=True,
@@ -792,7 +796,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         )
 
     def test_map_page_summary_reports_loaded_basemap(self):
-        facts = self.composition.WizardProgressFacts(
+        facts = WorkflowProgressFacts(
             connection_configured=True,
             activities_stored=True,
             activity_layers_loaded=True,
@@ -809,7 +813,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         )
 
     def test_map_page_summary_reports_loaded_basemap_without_stale_name(self):
-        facts = self.composition.WizardProgressFacts(
+        facts = WorkflowProgressFacts(
             connection_configured=True,
             activities_stored=True,
             activity_layers_loaded=True,
@@ -825,7 +829,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         )
 
     def test_map_page_summary_reports_selected_activity_style_before_load(self):
-        facts = self.composition.WizardProgressFacts(
+        facts = WorkflowProgressFacts(
             connection_configured=True,
             activities_stored=True,
             activity_style_preset="By activity type",
@@ -839,7 +843,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         )
 
     def test_map_page_summary_does_not_claim_loaded_style_is_applied(self):
-        facts = self.composition.WizardProgressFacts(
+        facts = WorkflowProgressFacts(
             connection_configured=True,
             activities_stored=True,
             activity_layers_loaded=True,
@@ -854,7 +858,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         )
 
     def test_loaded_map_page_summary_reports_visible_filter_count(self):
-        facts = self.composition.WizardProgressFacts(
+        facts = WorkflowProgressFacts(
             connection_configured=True,
             activities_stored=True,
             activity_layers_loaded=True,
@@ -870,7 +874,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         )
 
     def test_loaded_map_page_summary_includes_filter_description_when_available(self):
-        facts = self.composition.WizardProgressFacts(
+        facts = WorkflowProgressFacts(
             connection_configured=True,
             activities_stored=True,
             activity_layers_loaded=True,
@@ -887,7 +891,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         )
 
     def test_loaded_map_page_summary_reports_all_visible_when_unfiltered(self):
-        facts = self.composition.WizardProgressFacts(
+        facts = WorkflowProgressFacts(
             connection_configured=True,
             activities_stored=True,
             activity_layers_loaded=True,
@@ -901,7 +905,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         )
 
     def test_analysis_page_input_summary_reports_filtered_count(self):
-        facts = self.composition.WizardProgressFacts(
+        facts = WorkflowProgressFacts(
             connection_configured=True,
             activities_stored=True,
             activity_layers_loaded=True,
@@ -917,7 +921,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         )
 
     def test_analysis_page_input_summary_reports_singular_filtered_count(self):
-        facts = self.composition.WizardProgressFacts(
+        facts = WorkflowProgressFacts(
             connection_configured=True,
             activities_stored=True,
             activity_layers_loaded=True,
@@ -933,7 +937,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         )
 
     def test_analysis_page_input_summary_reports_zero_filtered_count(self):
-        facts = self.composition.WizardProgressFacts(
+        facts = WorkflowProgressFacts(
             connection_configured=True,
             activities_stored=True,
             activity_layers_loaded=True,
@@ -949,7 +953,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         )
 
     def test_analysis_page_input_summary_reports_filtered_subset_without_count(self):
-        facts = self.composition.WizardProgressFacts(
+        facts = WorkflowProgressFacts(
             connection_configured=True,
             activities_stored=True,
             activity_layers_loaded=True,
@@ -964,7 +968,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         )
 
     def test_analysis_page_input_summary_names_source_and_loaded_layer_count(self):
-        facts = self.composition.WizardProgressFacts(
+        facts = WorkflowProgressFacts(
             connection_configured=True,
             activities_stored=True,
             activity_layers_loaded=True,
@@ -980,7 +984,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         )
 
     def test_analysis_page_input_summary_includes_filter_description_and_layer_count(self):
-        facts = self.composition.WizardProgressFacts(
+        facts = WorkflowProgressFacts(
             connection_configured=True,
             activities_stored=True,
             activity_layers_loaded=True,
@@ -999,7 +1003,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         )
 
     def test_analysis_page_input_summary_drops_blank_filter_description(self):
-        facts = self.composition.WizardProgressFacts(
+        facts = WorkflowProgressFacts(
             connection_configured=True,
             activities_stored=True,
             activity_layers_loaded=True,
@@ -1017,7 +1021,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         )
 
     def test_progress_facts_drive_page_cta_prerequisites_without_marking_done(self):
-        facts = self.composition.WizardProgressFacts(connection_configured=True)
+        facts = WorkflowProgressFacts(connection_configured=True)
 
         assembled = self.composition.build_placeholder_wizard_shell(progress_facts=facts)
 
@@ -1048,7 +1052,7 @@ class WizardShellCompositionTest(unittest.TestCase):
 
     def test_progress_facts_explain_locked_page_prerequisites(self):
         assembled = self.composition.build_placeholder_wizard_shell(
-            progress_facts=self.composition.WizardProgressFacts()
+            progress_facts=WorkflowProgressFacts()
         )
 
         self.assertEqual(
@@ -1094,7 +1098,7 @@ class WizardShellCompositionTest(unittest.TestCase):
 
     def test_progress_facts_disable_busy_sync_and_atlas_ctas(self):
         assembled = self.composition.build_placeholder_wizard_shell(
-            progress_facts=self.composition.WizardProgressFacts(
+            progress_facts=WorkflowProgressFacts(
                 connection_configured=True,
                 activities_stored=True,
                 activity_layers_loaded=True,
@@ -1134,7 +1138,7 @@ class WizardShellCompositionTest(unittest.TestCase):
 
     def test_busy_sync_summary_uses_output_name_when_available(self):
         assembled = self.composition.build_placeholder_wizard_shell(
-            progress_facts=self.composition.WizardProgressFacts(
+            progress_facts=WorkflowProgressFacts(
                 connection_configured=True,
                 activities_stored=True,
                 sync_in_progress=True,
@@ -1150,7 +1154,7 @@ class WizardShellCompositionTest(unittest.TestCase):
 
     def test_route_sync_in_progress_keeps_routes_action_cancellable(self):
         assembled = self.composition.build_placeholder_wizard_shell(
-            progress_facts=self.composition.WizardProgressFacts(
+            progress_facts=WorkflowProgressFacts(
                 connection_configured=True,
                 sync_in_progress=True,
                 route_sync_in_progress=True,
@@ -1164,7 +1168,7 @@ class WizardShellCompositionTest(unittest.TestCase):
 
     def test_busy_sync_without_stored_activities_replaces_empty_summary(self):
         assembled = self.composition.build_placeholder_wizard_shell(
-            progress_facts=self.composition.WizardProgressFacts(
+            progress_facts=WorkflowProgressFacts(
                 connection_configured=True,
                 sync_in_progress=True,
             )
@@ -1178,7 +1182,7 @@ class WizardShellCompositionTest(unittest.TestCase):
 
     def test_atlas_page_summary_uses_configured_output_name_before_export(self):
         assembled = self.composition.build_placeholder_wizard_shell(
-            progress_facts=self.composition.WizardProgressFacts(
+            progress_facts=WorkflowProgressFacts(
                 connection_configured=True,
                 activities_stored=True,
                 activity_layers_loaded=True,
@@ -1194,7 +1198,7 @@ class WizardShellCompositionTest(unittest.TestCase):
 
     def test_analysis_page_summary_names_generated_output(self):
         assembled = self.composition.build_placeholder_wizard_shell(
-            progress_facts=self.composition.WizardProgressFacts(
+            progress_facts=WorkflowProgressFacts(
                 connection_configured=True,
                 activities_stored=True,
                 activity_layers_loaded=True,
@@ -1210,7 +1214,7 @@ class WizardShellCompositionTest(unittest.TestCase):
 
     def test_analysis_page_cta_switches_to_refresh_after_generation(self):
         assembled = self.composition.build_placeholder_wizard_shell(
-            progress_facts=self.composition.WizardProgressFacts(
+            progress_facts=WorkflowProgressFacts(
                 connection_configured=True,
                 activities_stored=True,
                 activity_layers_loaded=True,
@@ -1226,7 +1230,7 @@ class WizardShellCompositionTest(unittest.TestCase):
 
     def test_atlas_page_is_available_after_map_without_analysis(self):
         assembled = self.composition.build_placeholder_wizard_shell(
-            progress_facts=self.composition.WizardProgressFacts(
+            progress_facts=WorkflowProgressFacts(
                 connection_configured=True,
                 activities_stored=True,
                 activity_layers_loaded=True,
@@ -1251,7 +1255,7 @@ class WizardShellCompositionTest(unittest.TestCase):
 
     def test_atlas_page_input_summary_describes_filtered_layers_without_analysis(self):
         assembled = self.composition.build_placeholder_wizard_shell(
-            progress_facts=self.composition.WizardProgressFacts(
+            progress_facts=WorkflowProgressFacts(
                 connection_configured=True,
                 activities_stored=True,
                 activity_layers_loaded=True,
@@ -1272,7 +1276,7 @@ class WizardShellCompositionTest(unittest.TestCase):
 
     def test_atlas_page_input_summary_reports_selected_activity_count(self):
         assembled = self.composition.build_placeholder_wizard_shell(
-            progress_facts=self.composition.WizardProgressFacts(
+            progress_facts=WorkflowProgressFacts(
                 connection_configured=True,
                 activities_stored=True,
                 activity_layers_loaded=True,
@@ -1289,7 +1293,7 @@ class WizardShellCompositionTest(unittest.TestCase):
 
     def test_atlas_page_input_summary_reports_singular_selected_activity_count(self):
         assembled = self.composition.build_placeholder_wizard_shell(
-            progress_facts=self.composition.WizardProgressFacts(
+            progress_facts=WorkflowProgressFacts(
                 connection_configured=True,
                 activities_stored=True,
                 activity_layers_loaded=True,
@@ -1307,7 +1311,7 @@ class WizardShellCompositionTest(unittest.TestCase):
 
     def test_atlas_page_input_summary_reports_zero_selected_activity_count(self):
         assembled = self.composition.build_placeholder_wizard_shell(
-            progress_facts=self.composition.WizardProgressFacts(
+            progress_facts=WorkflowProgressFacts(
                 connection_configured=True,
                 activities_stored=True,
                 activity_layers_loaded=True,
@@ -1326,7 +1330,7 @@ class WizardShellCompositionTest(unittest.TestCase):
 
     def test_atlas_page_input_summary_uses_subset_copy_when_filter_count_unknown(self):
         assembled = self.composition.build_placeholder_wizard_shell(
-            progress_facts=self.composition.WizardProgressFacts(
+            progress_facts=WorkflowProgressFacts(
                 connection_configured=True,
                 activities_stored=True,
                 activity_layers_loaded=True,
@@ -1344,7 +1348,7 @@ class WizardShellCompositionTest(unittest.TestCase):
 
     def test_atlas_page_input_summary_names_analysis_output(self):
         assembled = self.composition.build_placeholder_wizard_shell(
-            progress_facts=self.composition.WizardProgressFacts(
+            progress_facts=WorkflowProgressFacts(
                 connection_configured=True,
                 activities_stored=True,
                 activity_layers_loaded=True,
@@ -1360,7 +1364,7 @@ class WizardShellCompositionTest(unittest.TestCase):
 
     def test_atlas_page_input_summary_keeps_generic_copy_without_named_output(self):
         assembled = self.composition.build_placeholder_wizard_shell(
-            progress_facts=self.composition.WizardProgressFacts(
+            progress_facts=WorkflowProgressFacts(
                 connection_configured=True,
                 activities_stored=True,
                 activity_layers_loaded=True,
@@ -1376,7 +1380,7 @@ class WizardShellCompositionTest(unittest.TestCase):
 
     def test_busy_atlas_page_summary_uses_configured_output_name(self):
         assembled = self.composition.build_placeholder_wizard_shell(
-            progress_facts=self.composition.WizardProgressFacts(
+            progress_facts=WorkflowProgressFacts(
                 connection_configured=True,
                 activities_stored=True,
                 activity_layers_loaded=True,
@@ -1393,7 +1397,7 @@ class WizardShellCompositionTest(unittest.TestCase):
 
     def test_exported_atlas_page_summary_uses_configured_output_name(self):
         assembled = self.composition.build_placeholder_wizard_shell(
-            progress_facts=self.composition.WizardProgressFacts(
+            progress_facts=WorkflowProgressFacts(
                 connection_configured=True,
                 activities_stored=True,
                 activity_layers_loaded=True,
@@ -1410,7 +1414,7 @@ class WizardShellCompositionTest(unittest.TestCase):
 
     def test_exported_atlas_page_cta_switches_to_refresh(self):
         assembled = self.composition.build_placeholder_wizard_shell(
-            progress_facts=self.composition.WizardProgressFacts(
+            progress_facts=WorkflowProgressFacts(
                 connection_configured=True,
                 activities_stored=True,
                 activity_layers_loaded=True,
@@ -1427,7 +1431,7 @@ class WizardShellCompositionTest(unittest.TestCase):
 
     def test_explicit_page_state_overrides_progress_fact_defaults(self):
         assembled = self.composition.build_placeholder_wizard_shell(
-            progress_facts=self.composition.WizardProgressFacts(connection_configured=True),
+            progress_facts=WorkflowProgressFacts(connection_configured=True),
             sync_state=self.composition.SyncPageState(
                 primary_action_enabled=False,
                 primary_action_blocked_tooltip="Sync is paused.",
@@ -1439,7 +1443,7 @@ class WizardShellCompositionTest(unittest.TestCase):
 
     def test_progress_fact_page_states_are_gated_by_completed_prefix(self):
         assembled = self.composition.build_placeholder_wizard_shell(
-            progress_facts=self.composition.WizardProgressFacts(
+            progress_facts=WorkflowProgressFacts(
                 connection_configured=False,
                 activities_stored=False,
                 activity_layers_loaded=True,
@@ -1468,7 +1472,7 @@ class WizardShellCompositionTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "progress or progress_facts"):
             self.composition.build_placeholder_wizard_shell(
                 progress=DockWizardProgress(current_key="connection"),
-                progress_facts=self.composition.WizardProgressFacts(),
+                progress_facts=WorkflowProgressFacts(),
             )
 
     def test_builds_default_footer_from_page_status_facts(self):
@@ -1709,7 +1713,7 @@ class WizardShellCompositionTest(unittest.TestCase):
 
         refreshed = self.composition.refresh_wizard_shell_composition(
             assembled,
-            progress_facts=self.composition.WizardProgressFacts(
+            progress_facts=WorkflowProgressFacts(
                 connection_configured=True,
                 activities_stored=True,
                 activity_layers_loaded=True,
@@ -1744,7 +1748,7 @@ class WizardShellCompositionTest(unittest.TestCase):
 
     def test_progress_facts_drive_explicit_footer_controls_on_build_and_refresh(self):
         assembled = self.composition.build_placeholder_wizard_shell(
-            progress_facts=self.composition.WizardProgressFacts(
+            progress_facts=WorkflowProgressFacts(
                 connection_configured=True,
                 activities_stored=True,
                 activity_layers_loaded=True,
@@ -1761,7 +1765,7 @@ class WizardShellCompositionTest(unittest.TestCase):
 
         self.composition.refresh_wizard_shell_composition(
             assembled,
-            progress_facts=self.composition.WizardProgressFacts(),
+            progress_facts=WorkflowProgressFacts(),
         )
 
         self.assertEqual(assembled.shell.footer_bar.strava_pill.property("tone"), "danger")
@@ -1774,7 +1778,7 @@ class WizardShellCompositionTest(unittest.TestCase):
 
         self.composition.refresh_wizard_shell_composition(
             assembled,
-            progress_facts=self.composition.WizardProgressFacts(
+            progress_facts=WorkflowProgressFacts(
                 connection_configured=True,
                 activities_stored=True,
             ),
@@ -1800,7 +1804,7 @@ class WizardShellCompositionTest(unittest.TestCase):
 
         self.composition.refresh_wizard_shell_composition(
             assembled,
-            progress_facts=self.composition.WizardProgressFacts(connection_configured=True),
+            progress_facts=WorkflowProgressFacts(connection_configured=True),
         )
 
         self.assertTrue(assembled.sync_content.sync_button.isEnabled())
@@ -1817,7 +1821,7 @@ class WizardShellCompositionTest(unittest.TestCase):
                     status_text="Strava connected",
                 ),
                 progress=DockWizardProgress(current_key="connection"),
-                progress_facts=self.composition.WizardProgressFacts(),
+                progress_facts=WorkflowProgressFacts(),
             )
 
         self.assertEqual(
