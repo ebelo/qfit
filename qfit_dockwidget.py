@@ -185,11 +185,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._update_connection_status()
         self._set_status("Configuration saved; qfit dock connection state refreshed.")
 
-    def _current_wizard_progress_facts(self):
-        """Return render-neutral #609 wizard facts from the live dock state."""
-
-        return build_current_local_first_progress_facts(self)
-
     def _on_output_path_changed(self, value: str) -> None:
         """Keep live local-load actions in sync with the selected GeoPackage path."""
 
@@ -213,7 +208,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
         composition = build_local_first_dock_composition(
             parent=self if parent is None else parent,
-            progress_facts=self._current_wizard_progress_facts(),
+            progress_facts=build_current_local_first_progress_facts(self),
             atlas_title=self.atlasTitleLineEdit.text(),
             atlas_subtitle=self.atlasSubtitleLineEdit.text(),
         )
@@ -294,7 +289,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
         self._local_first_dock_composition = refresh_local_first_dock_composition(
             composition,
-            progress_facts=self._current_wizard_progress_facts(),
+            progress_facts=build_current_local_first_progress_facts(self),
         )
         return self._local_first_dock_composition
 
