@@ -17,13 +17,9 @@ from qgis.PyQt.QtWidgets import (
     QMessageBox,
 )
 
-from .activities.domain.activity_query import (
-    DEFAULT_SORT_LABEL,
-)
 from .activities.application import (
     ActivitySelectionState,
     ActivityTypeOptionsResult,
-    build_activity_preview_request,
     build_activity_preview_selection_state,
     build_activity_type_options_from_activities,
     build_activity_type_options_from_records,
@@ -72,6 +68,7 @@ from .ui.application import (
     bind_local_first_analysis_mode_controls,
     bind_local_first_basemap_preset_controls,
     bind_local_first_conditional_visibility_controls,
+    build_current_activity_preview_request,
     RunAnalysisAction,
     build_dock_summary_status,
     build_visual_layer_refs,
@@ -1276,17 +1273,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             logger.debug("Failed to refresh map canvas", exc_info=True)
 
     def _current_activity_preview_request(self):
-        return build_activity_preview_request(
-            activities=self.runtime_state.activities,
-            activity_type=self.activityTypeComboBox.currentText() or "All",
-            date_from=self.dateFromEdit.date().toString("yyyy-MM-dd") if self.dateFromEdit.date().isValid() else None,
-            date_to=self.dateToEdit.date().toString("yyyy-MM-dd") if self.dateToEdit.date().isValid() else None,
-            min_distance_km=self.minDistanceSpinBox.value(),
-            max_distance_km=self.maxDistanceSpinBox.value(),
-            search_text=self.activitySearchLineEdit.text().strip(),
-            detailed_route_filter=self.detailedRouteStatusComboBox.currentData(),
-            sort_label=self.previewSortComboBox.currentText() or DEFAULT_SORT_LABEL,
-        )
+        return build_current_activity_preview_request(self)
 
     def _refresh_activity_preview(self):
         preview = self.activity_workflow.build_preview_result(
