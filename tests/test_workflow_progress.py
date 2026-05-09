@@ -1,9 +1,19 @@
 import unittest
 
 from qfit.ui.application import build_workflow_progress_from_facts as exported_builder
-from qfit.ui.application.workflow_progress import build_workflow_progress_from_facts
+from qfit.ui.application import (
+    build_workflow_progress_from_facts_and_settings as exported_settings_builder,
+)
+from qfit.ui.application.workflow_progress import (
+    build_workflow_progress_from_facts,
+    build_workflow_progress_from_facts_and_settings,
+)
 from qfit.ui.application.workflow_progress_facts import WorkflowProgressFacts
-from qfit.ui.application.wizard_progress import build_wizard_progress_from_facts
+from qfit.ui.application.wizard_progress import (
+    build_wizard_progress_from_facts,
+    build_wizard_progress_from_facts_and_settings,
+)
+from qfit.ui.application.wizard_settings import WizardSettingsSnapshot
 
 
 class WorkflowProgressTests(unittest.TestCase):
@@ -51,8 +61,49 @@ class WorkflowProgressTests(unittest.TestCase):
             build_workflow_progress_from_facts(facts),
         )
 
+    def test_settings_builder_applies_reachable_persisted_step(self):
+        progress = build_workflow_progress_from_facts_and_settings(
+            WorkflowProgressFacts(
+                connection_configured=True,
+                activities_stored=True,
+                activity_layers_loaded=True,
+            ),
+            WizardSettingsSnapshot(
+                wizard_version=1,
+                last_step_index=2,
+                first_launch=False,
+            ),
+        )
+
+        self.assertEqual(progress.current_key, "map")
+        self.assertEqual(
+            progress.completed_keys,
+            frozenset({"connection", "sync", "map"}),
+        )
+
+    def test_wizard_settings_builder_delegates_to_neutral_workflow_builder(self):
+        facts = WorkflowProgressFacts(
+            connection_configured=True,
+            activities_stored=True,
+            activity_layers_loaded=True,
+        )
+        settings = WizardSettingsSnapshot(
+            wizard_version=1,
+            last_step_index=4,
+            first_launch=False,
+        )
+
+        self.assertEqual(
+            build_wizard_progress_from_facts_and_settings(facts, settings),
+            build_workflow_progress_from_facts_and_settings(facts, settings),
+        )
+
     def test_application_package_exports_neutral_workflow_builder(self):
         self.assertIs(exported_builder, build_workflow_progress_from_facts)
+        self.assertIs(
+            exported_settings_builder,
+            build_workflow_progress_from_facts_and_settings,
+        )
 
 
 if __name__ == "__main__":
