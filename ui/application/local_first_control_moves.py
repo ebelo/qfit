@@ -14,6 +14,8 @@ class LocalFirstControlMove:
     installed_target_attr: str
     title: str | None = None
     show_after_move: bool = True
+    layout_getter_attr: str = "outer_layout"
+    parent_panel_attr: str | None = None
 
 
 LOCAL_FIRST_CONTROL_MOVES: tuple[LocalFirstControlMove, ...] = (
@@ -39,6 +41,16 @@ LOCAL_FIRST_CONTROL_MOVES: tuple[LocalFirstControlMove, ...] = (
         installed_attr="_local_first_backfill_controls_installed",
         installed_target_attr="_local_first_backfill_controls_installed_target",
         show_after_move=False,
+    ),
+    LocalFirstControlMove(
+        key="map_filters",
+        content_attr="map_content",
+        group_attr="filterGroupBox",
+        installed_attr="_local_first_filter_controls_installed",
+        installed_target_attr="_local_first_filter_controls_installed_target",
+        title="Map filters",
+        layout_getter_attr="filter_controls_layout",
+        parent_panel_attr="filter_controls_panel",
     ),
     LocalFirstControlMove(
         key="atlas_pdf",
