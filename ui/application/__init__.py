@@ -40,6 +40,7 @@ from .local_first_analysis_controls import (
     NONE_ANALYSIS_MODE_LABEL,
     bind_local_first_analysis_mode_controls,
     configure_local_first_analysis_mode_backing_controls,
+    configure_local_first_temporal_mode_backing_controls,
     local_first_analysis_mode_options,
     set_local_first_analysis_mode,
 )
@@ -215,6 +216,7 @@ __all__ = [
     "bind_local_first_basemap_preset_controls",
     "bind_local_first_conditional_visibility_controls",
     "configure_local_first_analysis_mode_backing_controls",
+    "configure_local_first_temporal_mode_backing_controls",
     "configure_local_first_basemap_options",
     "build_current_dock_workflow_label",
     "build_detailed_fetch_visibility_update",

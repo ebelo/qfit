@@ -539,6 +539,10 @@ class DockStartupCoordinatorTests(unittest.TestCase):
             ) as configure_local_first_analysis_mode_backing_controls,
             patch(
                 "qfit.ui.dock_startup_coordinator."
+                "configure_local_first_temporal_mode_backing_controls"
+            ) as configure_local_first_temporal_mode_backing_controls,
+            patch(
+                "qfit.ui.dock_startup_coordinator."
                 "configure_local_first_basemap_options"
             ) as configure_local_first_basemap_options,
             patch(
@@ -586,7 +590,6 @@ class DockStartupCoordinatorTests(unittest.TestCase):
                 call._configure_detailed_route_filter_options(),
                 call._configure_detailed_route_strategy_options(),
                 call._configure_preview_sort_options(),
-                call._configure_temporal_mode_options(),
                 call._load_settings(),
                 call._set_default_dates(),
                 call._wire_events(),
@@ -598,6 +601,9 @@ class DockStartupCoordinatorTests(unittest.TestCase):
         configure_local_first_spinbox_unit_copy.assert_called_once_with(dock)
         configure_local_first_basemap_options.assert_called_once_with(dock)
         configure_local_first_analysis_mode_backing_controls.assert_called_once_with(
+            dock
+        )
+        configure_local_first_temporal_mode_backing_controls.assert_called_once_with(
             dock
         )
         refresh_local_first_conditional_control_visibility.assert_called_once_with(dock)
