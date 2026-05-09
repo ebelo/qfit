@@ -38,6 +38,23 @@ class WizardActionRowTest(unittest.TestCase):
     def setUpClass(cls):
         cls.action_row = _load_action_row_module()
 
+    def test_workflow_names_are_canonical_exports_with_wizard_aliases(self):
+        button = self.action_row.QToolButton()
+
+        row = self.action_row.build_workflow_action_row(button)
+
+        self.assertIs(self.action_row.WizardActionRow, self.action_row.WorkflowActionRow)
+        self.assertIs(
+            self.action_row.build_wizard_action_row,
+            self.action_row.build_workflow_action_row,
+        )
+        self.assertIs(
+            self.action_row.set_wizard_action_availability,
+            self.action_row.set_workflow_action_availability,
+        )
+        self.assertIsInstance(row, self.action_row.WorkflowActionRow)
+        self.assertEqual(row.objectName(), "qfitWizardActionRow")
+
     def test_builds_scoped_row_with_supplied_buttons(self):
         primary = self.action_row.QToolButton()
         secondary = self.action_row.QToolButton()
@@ -126,7 +143,7 @@ class WizardActionRowTest(unittest.TestCase):
         self.assertIsNotNone(button.cursor().shape())
 
     def test_unknown_action_role_is_rejected(self):
-        with self.assertRaisesRegex(ValueError, "Unknown wizard action button role"):
+        with self.assertRaisesRegex(ValueError, "Unknown workflow action button role"):
             self.action_row._button_stylesheet(role="primray")
 
     def test_action_availability_marks_blocked_and_available_buttons(self):

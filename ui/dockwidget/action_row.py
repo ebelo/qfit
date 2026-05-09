@@ -31,8 +31,8 @@ ACTION_ROW_NARROW_WIDTH = 360
 COLOR_DANGER_BG = pill_tone_palette("danger")[0]
 
 
-class WizardActionRow(QWidget):
-    """Compact action container for one wizard page CTA area."""
+class WorkflowActionRow(QWidget):
+    """Compact action container for one workflow page CTA area."""
 
     def __init__(self, buttons: Iterable[QToolButton] = (), parent=None) -> None:
         super().__init__(parent)
@@ -90,14 +90,14 @@ class WizardActionRow(QWidget):
         return layout
 
 
-def build_wizard_action_row(
+def build_workflow_action_row(
     *buttons: QToolButton,
     parent=None,
     object_name: str = "qfitWizardActionRow",
-) -> WizardActionRow:
-    """Build a scoped action row for wizard page buttons."""
+) -> WorkflowActionRow:
+    """Build a scoped action row for workflow page buttons."""
 
-    row = WizardActionRow(buttons, parent=parent)
+    row = WorkflowActionRow(buttons, parent=parent)
     row.setObjectName(object_name)
     return row
 
@@ -107,7 +107,7 @@ def style_primary_action_button(
     *,
     action_name: str,
 ) -> QToolButton:
-    """Mark a wizard button as the one primary CTA for its page."""
+    """Mark a workflow button as the one primary CTA for its page."""
 
     button.setProperty("primaryAction", action_name)
     button.setProperty("wizardActionRole", "primary")
@@ -120,7 +120,7 @@ def style_secondary_action_button(
     *,
     action_name: str,
 ) -> QToolButton:
-    """Mark a wizard button as a secondary page action."""
+    """Mark a workflow button as a secondary page action."""
 
     button.setProperty("secondaryAction", action_name)
     button.setProperty("wizardActionRole", "secondary")
@@ -133,7 +133,7 @@ def style_destructive_action_button(
     *,
     action_name: str,
 ) -> QToolButton:
-    """Mark a wizard button as a destructive page action."""
+    """Mark a workflow button as a destructive page action."""
 
     button.setProperty("destructiveAction", action_name)
     button.setProperty("wizardActionRole", "destructive")
@@ -141,13 +141,13 @@ def style_destructive_action_button(
     return button
 
 
-def set_wizard_action_availability(
+def set_workflow_action_availability(
     button: QToolButton,
     *,
     enabled: bool,
     tooltip: str = "",
 ) -> QToolButton:
-    """Apply a wizard-specific availability state to an action button.
+    """Apply a workflow-specific availability state to an action button.
 
     The tooltip is only shown while the action is blocked; available actions
     clear it so stale prerequisite copy does not linger after state refreshes.
@@ -158,6 +158,11 @@ def set_wizard_action_availability(
     button.setProperty("wizardActionAvailability", action_availability)
     button.setToolTip("" if enabled else tooltip)
     return button
+
+
+WizardActionRow = WorkflowActionRow
+build_wizard_action_row = build_workflow_action_row
+set_wizard_action_availability = set_workflow_action_availability
 
 
 def _allow_button_shrink(button: QToolButton) -> None:
@@ -210,12 +215,15 @@ def _button_stylesheet(*, role: str) -> str:
         )
     if role == "secondary":
         return ""
-    raise ValueError(f"Unknown wizard action button role: {role!r}")
+    raise ValueError(f"Unknown workflow action button role: {role!r}")
 
 
 __all__ = [
+    "WorkflowActionRow",
     "WizardActionRow",
+    "build_workflow_action_row",
     "build_wizard_action_row",
+    "set_workflow_action_availability",
     "set_wizard_action_availability",
     "style_destructive_action_button",
     "style_primary_action_button",

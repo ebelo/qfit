@@ -4,8 +4,8 @@ from dataclasses import dataclass
 
 from ._qt_compat import import_qt_module
 from .action_row import (
-    build_wizard_action_row,
-    set_wizard_action_availability,
+    build_workflow_action_row,
+    set_workflow_action_availability,
     style_destructive_action_button,
     style_primary_action_button,
     style_secondary_action_button,
@@ -113,14 +113,14 @@ class SyncPageContent(QWidget):
             action_name="clear_database",
         )
         self.clear_button.clicked.connect(self.clearDatabaseRequested.emit)
-        self.action_row = build_wizard_action_row(
+        self.action_row = build_workflow_action_row(
             self.load_button,
             self.routes_button,
             self.sync_button,
             parent=self,
             object_name="qfitWizardSyncActionRow",
         )
-        self.clear_action_row = build_wizard_action_row(
+        self.clear_action_row = build_workflow_action_row(
             self.clear_button,
             parent=self,
             object_name="qfitWizardSyncDestructiveActionRow",
@@ -140,25 +140,25 @@ class SyncPageContent(QWidget):
         self.activity_summary_label.setProperty("syncState", sync_state)
         self._primary_action_kind = state.primary_action_kind
         self.sync_button.setText(state.primary_action_label)
-        set_wizard_action_availability(
+        set_workflow_action_availability(
             self.sync_button,
             enabled=state.primary_action_enabled,
             tooltip=state.primary_action_blocked_tooltip,
         )
         self.load_button.setText(state.local_action_label)
-        set_wizard_action_availability(
+        set_workflow_action_availability(
             self.load_button,
             enabled=state.local_action_enabled,
             tooltip=state.local_action_blocked_tooltip,
         )
         self.routes_button.setText(state.routes_action_label)
-        set_wizard_action_availability(
+        set_workflow_action_availability(
             self.routes_button,
             enabled=state.routes_action_enabled,
             tooltip=state.routes_action_blocked_tooltip,
         )
         self.clear_button.setText(state.clear_action_label)
-        set_wizard_action_availability(
+        set_workflow_action_availability(
             self.clear_button,
             enabled=state.clear_action_enabled,
             tooltip=state.clear_action_blocked_tooltip,
