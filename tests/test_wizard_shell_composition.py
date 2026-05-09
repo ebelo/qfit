@@ -12,6 +12,7 @@ from qfit.ui.application.dock_workflow_sections import DockWizardProgress
 def _load_wizard_composition_module():
     for name in (
         "qfit.ui.dockwidget.wizard_composition",
+        "qfit.ui.dockwidget.workflow_page_state",
         "qfit.ui.dockwidget.analysis_page",
         "qfit.ui.dockwidget.atlas_page",
         "qfit.ui.dockwidget.connection_page",
