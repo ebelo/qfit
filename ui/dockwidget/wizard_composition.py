@@ -22,12 +22,11 @@ from qfit.ui.application.wizard_page_specs import (
     DockWizardPageSpec,
     build_default_wizard_page_specs,
 )
-from qfit.ui.application.workflow_progress import build_workflow_progress_from_facts
-from qfit.ui.application.workflow_progress_facts import WorkflowProgressFacts
-from qfit.ui.application.wizard_progress import (
-    WizardProgressFacts,
-    build_wizard_progress_from_facts_and_settings,
+from qfit.ui.application.workflow_progress import (
+    build_workflow_progress_from_facts,
+    build_workflow_progress_from_facts_and_settings,
 )
+from qfit.ui.application.workflow_progress_facts import WorkflowProgressFacts
 from qfit.ui.application.wizard_settings import WizardSettingsSnapshot
 
 from .analysis_page import (
@@ -62,6 +61,8 @@ from .workflow_page_state import (
 
 _StateT = TypeVar("_StateT")
 WizardCompositionPage = WizardPage | WizardStepPage
+WizardProgressFacts = WorkflowProgressFacts
+"""Compatibility alias for wizard composition callers during the #805 migration."""
 
 
 @dataclass
@@ -431,7 +432,7 @@ def _resolve_progress(
         return progress
     facts = progress_facts or WorkflowProgressFacts()
     if wizard_settings is not None:
-        return build_wizard_progress_from_facts_and_settings(facts, wizard_settings)
+        return build_workflow_progress_from_facts_and_settings(facts, wizard_settings)
     return build_workflow_progress_from_facts(facts)
 
 

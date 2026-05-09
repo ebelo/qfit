@@ -3,7 +3,10 @@ from __future__ import annotations
 from dataclasses import replace
 
 from .dock_workflow_sections import DockWizardProgress
-from .workflow_progress import build_workflow_progress_from_facts
+from .workflow_progress import (
+    build_workflow_progress_from_facts,
+    build_workflow_progress_from_facts_and_settings,
+)
 from .workflow_progress_facts import (
     WorkflowProgressFacts,
     build_workflow_progress_facts_from_runtime_state,
@@ -34,21 +37,9 @@ def build_wizard_progress_from_facts_and_settings(
     facts: WizardProgressFacts,
     settings: WizardSettingsSnapshot,
 ) -> DockWizardProgress:
-    """Build wizard progress while honoring a persisted step preference.
+    """Compatibility wrapper for settings-aware workflow progress."""
 
-    The persisted step is a preference, not an unlock rule. The normal progress
-    builder still gates it behind completed prerequisites so the wizard cannot
-    restore into a page that should remain locked.
-    """
-
-    if facts.preferred_current_key is not None:
-        return build_wizard_progress_from_facts(facts)
-    return build_wizard_progress_from_facts(
-        _wizard_progress_facts_with_preferred_current_key(
-            facts,
-            preferred_current_key=preferred_current_key_from_settings(settings),
-        )
-    )
+    return build_workflow_progress_from_facts_and_settings(facts, settings)
 
 
 def build_startup_wizard_progress_facts(

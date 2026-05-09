@@ -113,7 +113,10 @@ from .local_first_progress_facts import (
     current_local_first_last_sync_date,
     runtime_state_with_local_first_output_path,
 )
-from .workflow_progress import build_workflow_progress_from_facts
+from .workflow_progress import (
+    build_workflow_progress_from_facts,
+    build_workflow_progress_from_facts_and_settings,
+)
 from .workflow_progress_facts import (
     WorkflowProgressFacts,
     build_workflow_progress_facts_from_runtime_state,
@@ -272,6 +275,7 @@ __all__ = [
     "build_wizard_filter_description",
     "build_workflow_progress_facts_from_runtime_state",
     "build_workflow_progress_from_facts",
+    "build_workflow_progress_from_facts_and_settings",
     "build_wizard_progress_facts_from_runtime_state",
     "build_wizard_progress_from_facts",
     "build_wizard_progress_from_facts_and_settings",
