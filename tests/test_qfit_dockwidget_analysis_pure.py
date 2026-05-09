@@ -937,15 +937,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.atlasSubtitleLineEdit = _FakeLineEdit("Road and trail")
         dock._atlas_export_completed = False
         dock.settings = _FakeSettings()
-        dock._install_local_first_activity_style_controls = MagicMock()
-        dock._install_local_first_filter_controls = MagicMock()
-        dock._install_local_first_advanced_fetch_controls = MagicMock()
-        dock._install_local_first_activity_preview_controls = MagicMock()
-        dock._install_local_first_backfill_controls = MagicMock()
-        dock._install_local_first_atlas_pdf_controls = MagicMock()
-        dock._install_local_first_strava_credentials_controls = MagicMock()
-        dock._install_local_first_basemap_controls = MagicMock()
-        dock._install_local_first_storage_controls = MagicMock()
+        dock._install_local_first_audited_controls = MagicMock()
         dock._bind_wizard_analysis_mode_controls = MagicMock()
         parent = object()
 
@@ -1012,31 +1004,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
                 callback.__func__,
                 getattr(self.module.QfitDockWidget, method_name),
             )
-        dock._install_local_first_activity_style_controls.assert_called_once_with(
-            "connected-composition"
-        )
-        dock._install_local_first_filter_controls.assert_called_once_with(
-            "connected-composition"
-        )
-        dock._install_local_first_advanced_fetch_controls.assert_called_once_with(
-            "connected-composition"
-        )
-        dock._install_local_first_activity_preview_controls.assert_called_once_with(
-            "connected-composition"
-        )
-        dock._install_local_first_backfill_controls.assert_called_once_with(
-            "connected-composition"
-        )
-        dock._install_local_first_atlas_pdf_controls.assert_called_once_with(
-            "connected-composition"
-        )
-        dock._install_local_first_strava_credentials_controls.assert_called_once_with(
-            "connected-composition"
-        )
-        dock._install_local_first_basemap_controls.assert_called_once_with(
-            "connected-composition"
-        )
-        dock._install_local_first_storage_controls.assert_called_once_with(
+        dock._install_local_first_audited_controls.assert_called_once_with(
             "connected-composition"
         )
         dock._bind_wizard_analysis_mode_controls.assert_called_once_with(
@@ -1076,6 +1044,82 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
         dock._mark_atlas_export_stale.assert_not_called()
         dock._refresh_summary_status.assert_not_called()
+
+    def test_install_local_first_audited_controls_uses_inventory_order(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._install_local_first_widget_move = MagicMock(return_value=True)
+        dock._install_local_first_control_move = MagicMock(return_value=True)
+        dock._after_local_first_control_move_installed = MagicMock()
+        composition = object()
+
+        self.module.QfitDockWidget._install_local_first_audited_controls(
+            dock,
+            composition,
+        )
+
+        dock._install_local_first_widget_move.assert_called_once_with(
+            composition,
+            "activity_style",
+        )
+        self.assertEqual(
+            dock._install_local_first_control_move.call_args_list,
+            [
+                call(composition, "advanced_fetch"),
+                call(composition, "activity_preview"),
+                call(composition, "backfill_routes"),
+                call(composition, "map_filters"),
+                call(composition, "atlas_pdf"),
+                call(composition, "strava_credentials"),
+                call(composition, "basemap"),
+                call(composition, "storage"),
+            ],
+        )
+        self.assertEqual(
+            dock._after_local_first_control_move_installed.call_args_list,
+            [
+                call("advanced_fetch", installed=True),
+                call("activity_preview", installed=True),
+                call("backfill_routes", installed=True),
+                call("map_filters", installed=True),
+                call("atlas_pdf", installed=True),
+                call("strava_credentials", installed=True),
+                call("basemap", installed=True),
+                call("storage", installed=True),
+            ],
+        )
+
+    def test_after_local_first_control_move_installed_applies_required_hooks(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.detailedStreamsCheckBox = SimpleNamespace(isChecked=lambda: True)
+        dock._workflow_section_coordinator = MagicMock()
+        dock.generateAtlasPdfButton = MagicMock()
+
+        self.module.QfitDockWidget._after_local_first_control_move_installed(
+            dock,
+            "backfill_routes",
+            installed=True,
+        )
+        self.module.QfitDockWidget._after_local_first_control_move_installed(
+            dock,
+            "atlas_pdf",
+            installed=True,
+        )
+        self.module.QfitDockWidget._after_local_first_control_move_installed(
+            dock,
+            "storage",
+            installed=True,
+        )
+        self.module.QfitDockWidget._after_local_first_control_move_installed(
+            dock,
+            "atlas_pdf",
+            installed=False,
+        )
+
+        update_visibility = (
+            dock._workflow_section_coordinator.update_detailed_fetch_visibility
+        )
+        update_visibility.assert_called_once_with(True)
+        dock.generateAtlasPdfButton.hide.assert_called_once_with()
 
     def test_install_wizard_filter_controls_moves_live_filter_group_into_map_panel(self):
         dock = object.__new__(self.module.QfitDockWidget)
