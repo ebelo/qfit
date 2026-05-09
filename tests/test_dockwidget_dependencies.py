@@ -535,6 +535,10 @@ class DockStartupCoordinatorTests(unittest.TestCase):
             ) as configure_local_first_spinbox_unit_copy,
             patch(
                 "qfit.ui.dock_startup_coordinator."
+                "configure_local_first_activity_preview_options"
+            ) as configure_local_first_activity_preview_options,
+            patch(
+                "qfit.ui.dock_startup_coordinator."
                 "configure_local_first_analysis_mode_backing_controls"
             ) as configure_local_first_analysis_mode_backing_controls,
             patch(
@@ -565,9 +569,7 @@ class DockStartupCoordinatorTests(unittest.TestCase):
                     "apply_contextual_help",
                     "configure_local_first_spinbox_unit_copy",
                     "configure_local_first_basemap_options",
-                    "configure_detailed_route_filter_options",
-                    "configure_detailed_route_strategy_options",
-                    "configure_preview_sort_options",
+                    "configure_local_first_activity_preview_options",
                     "configure_temporal_mode_options",
                     "configure_analysis_mode_options",
                     "load_settings",
@@ -587,9 +589,6 @@ class DockStartupCoordinatorTests(unittest.TestCase):
                 call._ensure_wizard_settings(),
                 call._remove_stale_qfit_layers(),
                 call._apply_contextual_help(),
-                call._configure_detailed_route_filter_options(),
-                call._configure_detailed_route_strategy_options(),
-                call._configure_preview_sort_options(),
                 call._load_settings(),
                 call._set_default_dates(),
                 call._wire_events(),
@@ -600,6 +599,9 @@ class DockStartupCoordinatorTests(unittest.TestCase):
         configure_local_first_backing_controls.assert_called_once_with(dock)
         configure_local_first_spinbox_unit_copy.assert_called_once_with(dock)
         configure_local_first_basemap_options.assert_called_once_with(dock)
+        configure_local_first_activity_preview_options.assert_called_once_with(
+            dock
+        )
         configure_local_first_analysis_mode_backing_controls.assert_called_once_with(
             dock
         )

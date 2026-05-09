@@ -855,6 +855,9 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "_bind_local_first_analysis_mode_controls",
             "_set_local_first_analysis_mode",
             "_update_atlas_document_settings",
+            "_configure_detailed_route_filter_options",
+            "_configure_detailed_route_strategy_options",
+            "_configure_preview_sort_options",
         )
 
         for method_name in retired_methods:

@@ -35,6 +35,12 @@ from .local_first_navigation import (
     build_local_first_dock_navigation_state,
     local_first_dock_page_keys,
 )
+from .local_first_activity_controls import (
+    configure_detailed_route_filter_options,
+    configure_detailed_route_strategy_options,
+    configure_local_first_activity_preview_options,
+    configure_preview_sort_options,
+)
 from .local_first_analysis_controls import (
     ANALYSIS_MODE_LABELS,
     NONE_ANALYSIS_MODE_LABEL,
@@ -215,9 +221,13 @@ __all__ = [
     "bind_local_first_analysis_mode_controls",
     "bind_local_first_basemap_preset_controls",
     "bind_local_first_conditional_visibility_controls",
+    "configure_detailed_route_filter_options",
+    "configure_detailed_route_strategy_options",
+    "configure_local_first_activity_preview_options",
     "configure_local_first_analysis_mode_backing_controls",
     "configure_local_first_temporal_mode_backing_controls",
     "configure_local_first_basemap_options",
+    "configure_preview_sort_options",
     "build_current_dock_workflow_label",
     "build_detailed_fetch_visibility_update",
     "build_dock_summary_status",

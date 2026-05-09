@@ -13,7 +13,6 @@ from qgis.PyQt.QtCore import QDate, Qt, QUrl
 from qgis.PyQt.QtGui import QDesktopServices
 from qgis.PyQt.QtWidgets import (
     QApplication,
-    QComboBox,
     QFileDialog,
     QDockWidget,
     QMessageBox,
@@ -21,10 +20,6 @@ from qgis.PyQt.QtWidgets import (
 
 from .activities.domain.activity_query import (
     DEFAULT_SORT_LABEL,
-    DETAILED_ROUTE_FILTER_ANY,
-    DETAILED_ROUTE_FILTER_MISSING,
-    DETAILED_ROUTE_FILTER_PRESENT,
-    SORT_OPTIONS,
 )
 from .activities.application import (
     ActivitySelectionState,
@@ -93,10 +88,7 @@ from .ui.application import (
     build_visual_workflow_settings_snapshot,
 )
 from .ui.contextual_help import ContextualHelpBinder, build_dock_help_entries
-from .detailed_route_strategy import (
-    DETAILED_ROUTE_STRATEGY_MISSING,
-    detailed_route_strategy_labels,
-)
+from .detailed_route_strategy import DETAILED_ROUTE_STRATEGY_MISSING
 from .mapbox_config import MapboxConfigError
 from .visualization.application import (
     LayerRefs,
@@ -707,36 +699,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         ]
         for signal in preview_inputs:
             signal.connect(self._refresh_activity_preview)
-
-    def _configure_detailed_route_filter_options(self):
-        legacy_checkbox = getattr(self, "detailedOnlyCheckBox", None)
-        combo = getattr(self, "detailedRouteStatusComboBox", None)
-        if combo is None:
-            combo = QComboBox(legacy_checkbox.parentWidget())
-            combo.setObjectName("detailedRouteStatusComboBox")
-            layout = legacy_checkbox.parentWidget().layout()
-            if layout is not None and hasattr(layout, "replaceWidget"):
-                layout.replaceWidget(legacy_checkbox, combo)
-            legacy_checkbox.hide()
-            self.detailedRouteStatusComboBox = combo
-        combo.clear()
-        combo.addItem("Any routes", DETAILED_ROUTE_FILTER_ANY)
-        combo.addItem("Detailed routes only", DETAILED_ROUTE_FILTER_PRESENT)
-        combo.addItem("Missing detailed routes", DETAILED_ROUTE_FILTER_MISSING)
-        combo.setToolTip("Filter activities by detailed-route availability")
-
-    def _configure_detailed_route_strategy_options(self):
-        combo = getattr(self, "detailedRouteStrategyComboBox", None)
-        if combo is None:
-            return
-        combo.clear()
-        for label in detailed_route_strategy_labels():
-            combo.addItem(label)
-
-    def _configure_preview_sort_options(self):
-        self.previewSortComboBox.clear()
-        for label in SORT_OPTIONS:
-            self.previewSortComboBox.addItem(label)
 
     def _bind_dependencies(self, dependencies: DockWidgetDependencies) -> None:
         self.settings = dependencies.settings
