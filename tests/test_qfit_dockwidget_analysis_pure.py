@@ -935,6 +935,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._install_wizard_filter_controls = MagicMock()
         dock._install_wizard_style_controls = MagicMock()
         dock._install_local_first_advanced_fetch_controls = MagicMock()
+        dock._install_local_first_activity_preview_controls = MagicMock()
         dock._install_local_first_backfill_controls = MagicMock()
         dock._install_local_first_atlas_pdf_controls = MagicMock()
         dock._install_local_first_basemap_controls = MagicMock()
@@ -1012,6 +1013,9 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "connected-composition"
         )
         dock._install_local_first_advanced_fetch_controls.assert_called_once_with(
+            "connected-composition"
+        )
+        dock._install_local_first_activity_preview_controls.assert_called_once_with(
             "connected-composition"
         )
         dock._install_local_first_backfill_controls.assert_called_once_with(
@@ -1562,6 +1566,64 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertTrue(advanced_fetch_group.shown)
         self.assertEqual(data_layout.added, [advanced_fetch_group])
         self.assertTrue(dock._local_first_advanced_fetch_controls_installed)
+
+    def test_local_first_activity_preview_controls_move_to_data_page(self):
+        class _SourceLayout:
+            def __init__(self):
+                self.removed = []
+
+            def removeWidget(self, widget):
+                self.removed.append(widget)
+
+        class _SourceParent:
+            def __init__(self, layout):
+                self._layout = layout
+
+            def layout(self):
+                return self._layout
+
+        class _ActivityPreviewGroup:
+            def __init__(self, parent):
+                self._parent = parent
+                self.title = None
+                self.shown = False
+
+            def parentWidget(self):
+                return self._parent
+
+            def setParent(self, parent):
+                self._parent = parent
+
+            def setTitle(self, title):
+                self.title = title
+
+            def show(self):
+                self.shown = True
+
+        dock = object.__new__(self.module.QfitDockWidget)
+        source_layout = _SourceLayout()
+        source_parent = _SourceParent(source_layout)
+        preview_group = _ActivityPreviewGroup(source_parent)
+        data_layout = _FakeLayout()
+        data_content = SimpleNamespace(outer_layout=lambda: data_layout)
+        composition = SimpleNamespace(sync_content=data_content)
+        dock.previewGroupBox = preview_group
+
+        self.module.QfitDockWidget._install_local_first_activity_preview_controls(
+            dock,
+            composition,
+        )
+        self.module.QfitDockWidget._install_local_first_activity_preview_controls(
+            dock,
+            composition,
+        )
+
+        self.assertEqual(source_layout.removed, [preview_group])
+        self.assertIs(preview_group.parentWidget(), data_content)
+        self.assertEqual(preview_group.title, "Fetched activity preview")
+        self.assertTrue(preview_group.shown)
+        self.assertEqual(data_layout.added, [preview_group])
+        self.assertTrue(dock._local_first_activity_preview_controls_installed)
 
     def test_local_first_backfill_action_moves_to_data_page_with_existing_visibility_rule(self):
         class _SourceLayout:
