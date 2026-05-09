@@ -107,6 +107,7 @@ from .local_first_control_visibility import (
     refresh_local_first_conditional_control_visibility,
     update_local_first_mapbox_custom_style_visibility,
 )
+from .local_first_filter_summary import build_local_first_filter_description
 from .local_first_progress_facts import (
     current_local_first_last_sync_date,
     runtime_state_with_local_first_output_path,
@@ -252,6 +253,7 @@ __all__ = [
     "build_issue805_local_first_parity_surfaces",
     "build_local_first_dock_navigation_state",
     "build_local_first_conditional_visibility_updates",
+    "build_local_first_filter_description",
     "build_mapbox_custom_style_visibility_update",
     "build_point_sampling_visibility_update",
     "build_progress_wizard_step_statuses",
