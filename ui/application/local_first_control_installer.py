@@ -1,13 +1,17 @@
 from __future__ import annotations
 
 from .local_first_control_moves import (
+    HIDE_LEGACY_ATLAS_EXPORT_BUTTON_HOOK,
     LocalFirstControlMove,
     LocalFirstWidgetMove,
+    REFRESH_CONDITIONAL_VISIBILITY_HOOK,
     local_first_control_move_for_key,
     local_first_control_move_keys,
     local_first_widget_move_for_key,
     local_first_widget_move_keys,
 )
+from .local_first_atlas_controls import hide_legacy_atlas_export_button
+from .local_first_control_visibility import refresh_local_first_conditional_control_visibility
 
 
 def install_local_first_audited_controls(dock, composition) -> None:
@@ -52,11 +56,23 @@ def after_local_first_control_move_installed(
         move = local_first_control_move_for_key(key)
     except KeyError:
         return
-    hook_attr = move.after_install_hook_attr
-    if hook_attr is None:
+    hook_key = move.after_install_hook_key
+    if hook_key is None:
         return
-    hook = getattr(dock, hook_attr)
-    hook()
+    hook = local_first_after_install_hook_for_key(hook_key)
+    hook(dock)
+
+
+def local_first_after_install_hook_for_key(hook_key: str):
+    """Return the application-layer side effect for a local-first install hook."""
+
+    hooks = {
+        REFRESH_CONDITIONAL_VISIBILITY_HOOK: (
+            refresh_local_first_conditional_control_visibility
+        ),
+        HIDE_LEGACY_ATLAS_EXPORT_BUTTON_HOOK: hide_legacy_atlas_export_button,
+    }
+    return hooks[hook_key]
 
 
 def install_local_first_group_controls(
@@ -238,6 +254,7 @@ __all__ = [
     "install_local_first_group_controls",
     "install_local_first_widget_move",
     "install_local_first_widget_controls",
+    "local_first_after_install_hook_for_key",
     "local_first_control_move_layout",
     "local_first_control_move_parent_panel",
     "local_first_control_move_required_widgets_available",

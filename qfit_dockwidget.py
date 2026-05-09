@@ -87,7 +87,6 @@ from .ui.application import (
     build_wizard_progress_facts_from_runtime_state,
     ensure_wizard_settings,
     install_local_first_audited_controls,
-    refresh_local_first_conditional_control_visibility,
     update_local_first_mapbox_custom_style_visibility,
     build_visual_workflow_background_inputs,
     build_visual_workflow_selection_state_handoff,
@@ -434,41 +433,26 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 apply_map_filters=self.on_apply_filters_clicked,
                 run_analysis=self.on_run_analysis_clicked,
                 clear_analysis=self.on_clear_analysis_clicked,
-                set_analysis_mode=self._set_local_first_analysis_mode,
+                set_analysis_mode=lambda mode: set_local_first_analysis_mode(
+                    self,
+                    mode,
+                ),
                 export_atlas=self.on_generate_atlas_pdf_clicked,
-                update_atlas_document_settings=self._update_atlas_document_settings,
+                update_atlas_document_settings=(
+                    lambda title, subtitle: update_local_first_atlas_document_settings(
+                        self,
+                        title,
+                        subtitle,
+                    )
+                ),
             ),
         )
         install_local_first_audited_controls(self, self._local_first_dock_composition)
-        self._bind_local_first_analysis_mode_controls(
+        bind_local_first_analysis_mode_controls(
+            self,
             self._local_first_dock_composition
         )
         return self._local_first_dock_composition
-
-    def _update_atlas_document_settings(self, atlas_title: str, atlas_subtitle: str) -> None:
-        """Delegate local-first atlas document mirroring to application policy."""
-
-        update_local_first_atlas_document_settings(self, atlas_title, atlas_subtitle)
-
-    def _refresh_conditional_control_visibility(self) -> None:
-        """Refresh production local-first backing controls from their live state."""
-
-        refresh_local_first_conditional_control_visibility(self)
-
-    def _hide_legacy_atlas_export_button(self) -> None:
-        legacy_export_button = getattr(self, "generateAtlasPdfButton", None)
-        if legacy_export_button is not None and hasattr(legacy_export_button, "hide"):
-            legacy_export_button.hide()
-
-    def _bind_local_first_analysis_mode_controls(self, composition) -> None:
-        """Delegate local-first analysis selector binding to application policy."""
-
-        bind_local_first_analysis_mode_controls(self, composition)
-
-    def _set_local_first_analysis_mode(self, mode: str) -> None:
-        """Mirror the local-first analysis mode selector into dock backing state."""
-
-        set_local_first_analysis_mode(self, mode)
 
     def _install_live_local_first_dock(self) -> None:
         """Make the #748 local-first navigation shell the visible dock path."""

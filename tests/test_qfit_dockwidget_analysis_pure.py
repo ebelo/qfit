@@ -696,7 +696,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.atlasSubtitleLineEdit = _FakeLineEdit("Road and trail")
         dock._atlas_export_completed = False
         dock.settings = _FakeSettings()
-        dock._bind_local_first_analysis_mode_controls = MagicMock()
         parent = object()
 
         class FakeWizardActionCallbacks(SimpleNamespace):
@@ -723,7 +722,10 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         ), patch.object(
             self.module,
             "install_local_first_audited_controls",
-        ) as install_local_first_audited_controls:
+        ) as install_local_first_audited_controls, patch.object(
+            self.module,
+            "bind_local_first_analysis_mode_controls",
+        ) as bind_local_first_analysis_mode_controls:
             composition = self.module.QfitDockWidget._build_local_first_dock_from_runtime(
                 dock,
                 parent=parent,
@@ -755,9 +757,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "apply_map_filters": "on_apply_filters_clicked",
             "run_analysis": "on_run_analysis_clicked",
             "clear_analysis": "on_clear_analysis_clicked",
-            "set_analysis_mode": "_set_local_first_analysis_mode",
             "export_atlas": "on_generate_atlas_pdf_clicked",
-            "update_atlas_document_settings": "_update_atlas_document_settings",
         }
         for callback_name, method_name in expected_callbacks.items():
             callback = getattr(callbacks, callback_name)
@@ -766,51 +766,44 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
                 callback.__func__,
                 getattr(self.module.QfitDockWidget, method_name),
             )
+        with patch.object(
+            self.module,
+            "set_local_first_analysis_mode",
+        ) as set_local_first_analysis_mode, patch.object(
+            self.module,
+            "update_local_first_atlas_document_settings",
+        ) as update_local_first_atlas_document_settings:
+            callbacks.set_analysis_mode("Most frequent starting points")
+            callbacks.update_atlas_document_settings("Updated", "Subtitle")
+
+        set_local_first_analysis_mode.assert_called_once_with(
+            dock,
+            "Most frequent starting points",
+        )
+        update_local_first_atlas_document_settings.assert_called_once_with(
+            dock,
+            "Updated",
+            "Subtitle",
+        )
         install_local_first_audited_controls.assert_called_once_with(
             dock,
             "connected-composition"
         )
-        dock._bind_local_first_analysis_mode_controls.assert_called_once_with(
+        bind_local_first_analysis_mode_controls.assert_called_once_with(
+            dock,
             "connected-composition"
         )
 
-    def test_update_atlas_document_settings_mirrors_visible_fields(self):
-        dock = object.__new__(self.module.QfitDockWidget)
-        dock.atlasTitleLineEdit = _FakeLineEdit("Old Atlas")
-        dock.atlasSubtitleLineEdit = _FakeLineEdit("Old subtitle")
-        dock._mark_atlas_export_stale = MagicMock()
-        dock._refresh_summary_status = MagicMock()
-
-        self.module.QfitDockWidget._update_atlas_document_settings(
-            dock,
-            "Spring Atlas",
-            "Road and trail",
-        )
-
-        self.assertEqual(dock.atlasTitleLineEdit.text(), "Spring Atlas")
-        self.assertEqual(dock.atlasSubtitleLineEdit.text(), "Road and trail")
-        dock._mark_atlas_export_stale.assert_called_once_with()
-        dock._refresh_summary_status.assert_called_once_with()
-
-    def test_update_atlas_document_settings_keeps_current_export_when_unchanged(self):
-        dock = object.__new__(self.module.QfitDockWidget)
-        dock.atlasTitleLineEdit = _FakeLineEdit("Spring Atlas")
-        dock.atlasSubtitleLineEdit = _FakeLineEdit("Road and trail")
-        dock._mark_atlas_export_stale = MagicMock()
-        dock._refresh_summary_status = MagicMock()
-
-        self.module.QfitDockWidget._update_atlas_document_settings(
-            dock,
-            "Spring Atlas",
-            "Road and trail",
-        )
-
-        dock._mark_atlas_export_stale.assert_not_called()
-        dock._refresh_summary_status.assert_not_called()
-
     def test_after_local_first_control_move_installed_applies_required_hooks(self):
         dock = object.__new__(self.module.QfitDockWidget)
-        dock._refresh_conditional_control_visibility = MagicMock()
+        dock.advancedFetchGroupBox = SimpleNamespace(isChecked=lambda: True)
+        dock.detailedStreamsCheckBox = SimpleNamespace(isChecked=lambda: False)
+        dock.backgroundPresetComboBox = SimpleNamespace(currentText=lambda: "Custom")
+        dock.writeActivityPointsCheckBox = SimpleNamespace(isChecked=lambda: True)
+        dock.advancedFetchSettingsWidget = MagicMock()
+        dock.backfillMissingDetailedRoutesButton = MagicMock()
+        dock.mapboxStyleOwnerLabel = MagicMock()
+        dock.pointSamplingStrideLabel = MagicMock()
         dock.generateAtlasPdfButton = MagicMock()
 
         for key in (
@@ -831,48 +824,42 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             installed=False,
         )
 
-        self.assertEqual(dock._refresh_conditional_control_visibility.call_count, 4)
+        self.assertEqual(
+            dock.advancedFetchSettingsWidget.setVisible.call_args_list,
+            [call(True)] * 4,
+        )
         dock.generateAtlasPdfButton.hide.assert_called_once_with()
 
     def test_after_local_first_control_move_installed_raises_for_missing_hook(self):
         dock = object.__new__(self.module.QfitDockWidget)
-        move = SimpleNamespace(after_install_hook_attr="_missing_local_first_hook")
+        move = SimpleNamespace(after_install_hook_key="missing_local_first_hook")
 
         with patch.dict(
             after_local_first_control_move_installed.__globals__,
             {"local_first_control_move_for_key": MagicMock(return_value=move)},
         ):
-            with self.assertRaises(AttributeError):
+            with self.assertRaises(KeyError):
                 after_local_first_control_move_installed(
                     dock,
                     "advanced_fetch",
                     installed=True,
                 )
 
-    def test_refresh_conditional_control_visibility_uses_application_refresh(self):
-        dock = object.__new__(self.module.QfitDockWidget)
-
-        with patch.object(
-            self.module,
-            "refresh_local_first_conditional_control_visibility",
-        ) as refresh:
-            self.module.QfitDockWidget._refresh_conditional_control_visibility(dock)
-
-        refresh.assert_called_once_with(dock)
-
     def test_dock_widget_does_not_reintroduce_per_move_local_first_installers(self):
-        self.assertFalse(
-            hasattr(self.module.QfitDockWidget, "_install_local_first_control_move")
+        retired_methods = (
+            "_install_local_first_control_move",
+            "_install_local_first_widget_move",
+            "_after_local_first_control_move_installed",
+            "_refresh_conditional_control_visibility",
+            "_hide_legacy_atlas_export_button",
+            "_bind_local_first_analysis_mode_controls",
+            "_set_local_first_analysis_mode",
+            "_update_atlas_document_settings",
         )
-        self.assertFalse(
-            hasattr(self.module.QfitDockWidget, "_install_local_first_widget_move")
-        )
-        self.assertFalse(
-            hasattr(
-                self.module.QfitDockWidget,
-                "_after_local_first_control_move_installed",
-            )
-        )
+
+        for method_name in retired_methods:
+            with self.subTest(method_name=method_name):
+                self.assertFalse(hasattr(self.module.QfitDockWidget, method_name))
 
     def test_local_first_visibility_updates_do_not_use_workflow_sections(self):
         dock = object.__new__(self.module.QfitDockWidget)
@@ -1172,41 +1159,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertEqual(style_layout.addWidget.call_args_list, [])
         self.assertFalse(
             getattr(dock, "_local_first_activity_style_controls_installed", False)
-        )
-
-    def test_bind_local_first_analysis_mode_controls_delegates_to_application_policy(self):
-        dock = object.__new__(self.module.QfitDockWidget)
-        composition = object()
-
-        with patch.object(
-            self.module,
-            "bind_local_first_analysis_mode_controls",
-        ) as bind_local_first_analysis_mode_controls:
-            self.module.QfitDockWidget._bind_local_first_analysis_mode_controls(
-                dock,
-                composition,
-            )
-
-        bind_local_first_analysis_mode_controls.assert_called_once_with(
-            dock,
-            composition,
-        )
-
-    def test_set_local_first_analysis_mode_delegates_to_application_policy(self):
-        dock = object.__new__(self.module.QfitDockWidget)
-
-        with patch.object(
-            self.module,
-            "set_local_first_analysis_mode",
-        ) as set_local_first_analysis_mode:
-            self.module.QfitDockWidget._set_local_first_analysis_mode(
-                dock,
-                "Most frequent starting points",
-            )
-
-        set_local_first_analysis_mode.assert_called_once_with(
-            dock,
-            "Most frequent starting points",
         )
 
     def test_install_live_local_first_dock_hides_long_scroll_path(self):

@@ -11,8 +11,11 @@ from qfit.ui.application.local_first_control_installer import (
     install_local_first_control_move,
     install_local_first_widget_controls,
     install_local_first_widget_move,
+    local_first_after_install_hook_for_key,
 )
 from qfit.ui.application.local_first_control_moves import (
+    HIDE_LEGACY_ATLAS_EXPORT_BUTTON_HOOK,
+    REFRESH_CONDITIONAL_VISIBILITY_HOOK,
     local_first_control_move_for_key,
     local_first_widget_move_for_key,
 )
@@ -126,12 +129,31 @@ class LocalFirstControlInstallerTests(unittest.TestCase):
         self.assertTrue(dock._local_first_activity_style_controls_installed)
 
     def test_after_control_move_installed_runs_hook_only_after_successful_move(self):
-        dock = SimpleNamespace(_refresh_conditional_control_visibility=MagicMock())
+        hook = MagicMock()
+        dock = SimpleNamespace()
 
-        after_local_first_control_move_installed(dock, "basemap", installed=False)
-        after_local_first_control_move_installed(dock, "basemap", installed=True)
+        with patch(
+            "qfit.ui.application.local_first_control_installer."
+            "local_first_after_install_hook_for_key",
+            return_value=hook,
+        ) as hook_for_key:
+            after_local_first_control_move_installed(dock, "basemap", installed=False)
+            after_local_first_control_move_installed(dock, "basemap", installed=True)
 
-        dock._refresh_conditional_control_visibility.assert_called_once_with()
+        hook_for_key.assert_called_once_with(REFRESH_CONDITIONAL_VISIBILITY_HOOK)
+        hook.assert_called_once_with(dock)
+
+    def test_after_install_hook_lookup_resolves_application_hooks(self):
+        self.assertIsNotNone(
+            local_first_after_install_hook_for_key(
+                REFRESH_CONDITIONAL_VISIBILITY_HOOK,
+            )
+        )
+        self.assertIsNotNone(
+            local_first_after_install_hook_for_key(
+                HIDE_LEGACY_ATLAS_EXPORT_BUTTON_HOOK,
+            )
+        )
 
     def test_installs_group_move_from_audited_inventory(self):
         source_layout = MagicMock()
