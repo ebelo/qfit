@@ -82,6 +82,7 @@ from .ui.application import (
     DockRuntimeStore,
     DockVisualWorkflowCoordinator,
     DockVisualWorkflowRequest,
+    LocalFirstControlMove,
     RunAnalysisAction,
     build_dock_summary_status,
     build_startup_wizard_progress_facts,
@@ -538,7 +539,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             ),
         )
         self._install_wizard_style_controls(self._local_first_dock_composition)
-        self._install_wizard_filter_controls(self._local_first_dock_composition)
+        self._install_local_first_filter_controls(self._local_first_dock_composition)
         self._install_local_first_advanced_fetch_controls(
             self._local_first_dock_composition
         )
@@ -692,58 +693,70 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def _install_local_first_group_controls(
         self,
         composition,
-        *,
-        content_attr: str,
-        group_attr: str,
-        installed_attr: str,
-        installed_target_attr: str,
-        title: str | None = None,
-        show_after_move: bool = True,
+        move: LocalFirstControlMove,
     ) -> bool:
-        content = getattr(composition, content_attr, None)
-        group = getattr(self, group_attr, None)
+        content = getattr(composition, move.content_attr, None)
+        group = getattr(self, move.group_attr, None)
         if content is None or group is None:
             return False
         current_target = id(content)
-        if getattr(self, installed_attr, False) and (
-            getattr(self, installed_target_attr, None) == current_target
+        if getattr(self, move.installed_attr, False) and (
+            getattr(self, move.installed_target_attr, None) == current_target
         ):
             return True
 
-        layout_getter = getattr(content, "outer_layout", None)
-        layout = layout_getter() if callable(layout_getter) else None
+        layout = self._local_first_control_move_layout(content, move)
         if layout is None or not hasattr(layout, "addWidget"):
             return False
 
         self._remove_widget_from_current_layout(group)
+        parent_panel = self._local_first_control_move_parent_panel(content, move)
         if hasattr(group, "setParent"):
-            group.setParent(content)
-        if title is not None and hasattr(group, "setTitle"):
-            group.setTitle(title)
+            group.setParent(parent_panel)
+        if move.title is not None and hasattr(group, "setTitle"):
+            group.setTitle(move.title)
         layout.addWidget(group)
-        if show_after_move:
-            if hasattr(group, "show"):
-                group.show()
-            elif hasattr(group, "setVisible"):
-                group.setVisible(True)
+        self._show_local_first_control_group(group, move)
+        self._refresh_local_first_control_visibility(content, move)
 
-        setattr(self, installed_attr, True)
-        setattr(self, installed_target_attr, current_target)
+        setattr(self, move.installed_attr, True)
+        setattr(self, move.installed_target_attr, current_target)
         return True
+
+    def _local_first_control_move_layout(self, content, move: LocalFirstControlMove):
+        layout_getter = getattr(content, move.layout_getter_attr, None)
+        return layout_getter() if callable(layout_getter) else None
+
+    def _local_first_control_move_parent_panel(self, content, move: LocalFirstControlMove):
+        if move.parent_panel_attr is None:
+            return content
+        return getattr(content, move.parent_panel_attr, content)
+
+    def _show_local_first_control_group(self, group, move: LocalFirstControlMove) -> None:
+        if not move.show_after_move:
+            return
+        if hasattr(group, "show"):
+            group.show()
+        elif hasattr(group, "setVisible"):
+            group.setVisible(True)
+
+    def _refresh_local_first_control_visibility(self, content, move: LocalFirstControlMove) -> None:
+        if move.post_install_visible_attr is None:
+            return
+        set_visible = getattr(content, move.post_install_visible_attr, None)
+        if callable(set_visible):
+            set_visible()
 
     def _install_local_first_control_move(self, composition, key: str) -> bool:
         """Install one audited legacy-backed control area into local-first UI."""
 
         move = local_first_control_move_for_key(key)
-        return self._install_local_first_group_controls(
-            composition,
-            content_attr=move.content_attr,
-            group_attr=move.group_attr,
-            installed_attr=move.installed_attr,
-            installed_target_attr=move.installed_target_attr,
-            title=move.title,
-            show_after_move=move.show_after_move,
-        )
+        return self._install_local_first_group_controls(composition, move=move)
+
+    def _install_local_first_filter_controls(self, composition) -> None:
+        """Expose the backing map filters in the local-first Map tab."""
+
+        self._install_local_first_control_move(composition, "map_filters")
 
     def _install_local_first_advanced_fetch_controls(self, composition) -> None:
         """Expose backing Strava fetch limits in the Data tab."""

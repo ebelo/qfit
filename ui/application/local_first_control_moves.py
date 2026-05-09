@@ -5,7 +5,13 @@ from dataclasses import dataclass
 
 @dataclass(frozen=True)
 class LocalFirstControlMove:
-    """Legacy-backed control group that is explicitly surfaced in local-first UI."""
+    """Legacy-backed control group that is explicitly surfaced in local-first UI.
+
+    ``post_install_visible_attr`` names an optional content method that refreshes
+    local-first visibility after a move. Keep it explicit instead of deriving it
+    from the layout name so inventory entries fail review when their contracts
+    drift.
+    """
 
     key: str
     content_attr: str
@@ -14,6 +20,9 @@ class LocalFirstControlMove:
     installed_target_attr: str
     title: str | None = None
     show_after_move: bool = True
+    layout_getter_attr: str = "outer_layout"
+    parent_panel_attr: str | None = None
+    post_install_visible_attr: str | None = None
 
 
 LOCAL_FIRST_CONTROL_MOVES: tuple[LocalFirstControlMove, ...] = (
@@ -39,6 +48,17 @@ LOCAL_FIRST_CONTROL_MOVES: tuple[LocalFirstControlMove, ...] = (
         installed_attr="_local_first_backfill_controls_installed",
         installed_target_attr="_local_first_backfill_controls_installed_target",
         show_after_move=False,
+    ),
+    LocalFirstControlMove(
+        key="map_filters",
+        content_attr="map_content",
+        group_attr="filterGroupBox",
+        installed_attr="_local_first_filter_controls_installed",
+        installed_target_attr="_local_first_filter_controls_installed_target",
+        title="Map filters",
+        layout_getter_attr="filter_controls_layout",
+        parent_panel_attr="filter_controls_panel",
+        post_install_visible_attr="set_filter_controls_visible",
     ),
     LocalFirstControlMove(
         key="atlas_pdf",

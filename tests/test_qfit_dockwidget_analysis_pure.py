@@ -932,8 +932,8 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.atlasSubtitleLineEdit = _FakeLineEdit("Road and trail")
         dock._atlas_export_completed = False
         dock.settings = _FakeSettings()
-        dock._install_wizard_filter_controls = MagicMock()
         dock._install_wizard_style_controls = MagicMock()
+        dock._install_local_first_filter_controls = MagicMock()
         dock._install_local_first_advanced_fetch_controls = MagicMock()
         dock._install_local_first_activity_preview_controls = MagicMock()
         dock._install_local_first_backfill_controls = MagicMock()
@@ -1009,7 +1009,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._install_wizard_style_controls.assert_called_once_with(
             "connected-composition"
         )
-        dock._install_wizard_filter_controls.assert_called_once_with(
+        dock._install_local_first_filter_controls.assert_called_once_with(
             "connected-composition"
         )
         dock._install_local_first_advanced_fetch_controls.assert_called_once_with(
@@ -1095,6 +1095,38 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         map_content.set_filter_controls_visible.assert_called_once_with()
         self.assertTrue(dock._wizard_filter_controls_installed)
         self.assertEqual(dock._wizard_filter_controls_installed_target, id(map_content))
+
+    def test_install_local_first_filter_controls_uses_audited_map_filter_move(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        parent_layout = MagicMock()
+        parent_widget = SimpleNamespace(layout=lambda: parent_layout)
+        filter_group = MagicMock()
+        filter_group.parentWidget.return_value = parent_widget
+        dock.filterGroupBox = filter_group
+        panel = object()
+        filter_layout = MagicMock()
+        map_content = SimpleNamespace(
+            filter_controls_panel=panel,
+            filter_controls_layout=MagicMock(return_value=filter_layout),
+            set_filter_controls_visible=MagicMock(),
+        )
+
+        self.module.QfitDockWidget._install_local_first_filter_controls(
+            dock,
+            SimpleNamespace(map_content=map_content),
+        )
+
+        parent_layout.removeWidget.assert_called_once_with(filter_group)
+        filter_group.setParent.assert_called_once_with(panel)
+        filter_group.setTitle.assert_called_once_with("Map filters")
+        filter_layout.addWidget.assert_called_once_with(filter_group)
+        filter_group.show.assert_called_once_with()
+        map_content.set_filter_controls_visible.assert_called_once_with()
+        self.assertTrue(dock._local_first_filter_controls_installed)
+        self.assertEqual(
+            dock._local_first_filter_controls_installed_target,
+            id(map_content),
+        )
 
     def test_install_wizard_filter_controls_is_idempotent(self):
         dock = object.__new__(self.module.QfitDockWidget)

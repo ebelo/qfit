@@ -17,6 +17,7 @@ class LocalFirstControlMoveTests(unittest.TestCase):
                 "advanced_fetch",
                 "activity_preview",
                 "backfill_routes",
+                "map_filters",
                 "atlas_pdf",
                 "basemap",
                 "storage",
@@ -28,6 +29,7 @@ class LocalFirstControlMoveTests(unittest.TestCase):
                 "advancedFetchGroupBox",
                 "previewGroupBox",
                 "backfillMissingDetailedRoutesButton",
+                "filterGroupBox",
                 "atlasPdfGroupBox",
                 "backgroundGroupBox",
                 "outputGroupBox",
@@ -45,6 +47,7 @@ class LocalFirstControlMoveTests(unittest.TestCase):
                 "advanced_fetch": "sync_content",
                 "activity_preview": "sync_content",
                 "backfill_routes": "sync_content",
+                "map_filters": "map_content",
                 "atlas_pdf": "atlas_content",
                 "basemap": "connection_content",
                 "storage": "connection_content",
@@ -61,6 +64,11 @@ class LocalFirstControlMoveTests(unittest.TestCase):
 
         backfill = local_first_control_move_for_key("backfill_routes")
         self.assertFalse(backfill.show_after_move)
+
+        filters = local_first_control_move_for_key("map_filters")
+        self.assertEqual(filters.layout_getter_attr, "filter_controls_layout")
+        self.assertEqual(filters.parent_panel_attr, "filter_controls_panel")
+        self.assertEqual(filters.post_install_visible_attr, "set_filter_controls_visible")
 
     def test_lookup_rejects_unknown_control_area(self):
         with self.assertRaises(KeyError):
