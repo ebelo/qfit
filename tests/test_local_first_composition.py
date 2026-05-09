@@ -6,7 +6,7 @@ from unittest.mock import patch
 from tests import _path  # noqa: F401
 from tests.test_wizard_shell import _FakeQt, _fake_qt_modules
 
-from qfit.ui.application.wizard_progress import WizardProgressFacts
+from qfit.ui.application.local_first_progress_facts import LocalFirstProgressFacts
 
 
 def _load_local_first_composition_module():
@@ -36,7 +36,7 @@ class LocalFirstDockCompositionTests(unittest.TestCase):
 
     def test_builds_shell_with_local_first_pages_and_reused_content(self):
         composition = self.module.build_local_first_dock_composition(
-            progress_facts=WizardProgressFacts(activities_stored=True),
+            progress_facts=LocalFirstProgressFacts(activities_stored=True),
         )
 
         self.assertEqual(composition.shell.objectName(), "qfitLocalFirstDockShell")
@@ -78,7 +78,7 @@ class LocalFirstDockCompositionTests(unittest.TestCase):
 
     def test_data_page_is_local_first_and_navigation_is_not_step_locked(self):
         composition = self.module.build_local_first_dock_composition(
-            progress_facts=WizardProgressFacts(
+            progress_facts=LocalFirstProgressFacts(
                 activities_stored=True,
                 preferred_current_key="settings",
             ),
@@ -192,7 +192,7 @@ class LocalFirstDockCompositionTests(unittest.TestCase):
 
         self.module.refresh_local_first_dock_composition(
             composition,
-            progress_facts=WizardProgressFacts(
+            progress_facts=LocalFirstProgressFacts(
                 connection_configured=True,
                 activities_stored=True,
                 activity_layers_loaded=True,
@@ -218,12 +218,12 @@ class LocalFirstDockCompositionTests(unittest.TestCase):
 
     def test_refresh_preserves_current_page_without_explicit_preference(self):
         composition = self.module.build_local_first_dock_composition(
-            progress_facts=WizardProgressFacts(preferred_current_key="atlas"),
+            progress_facts=LocalFirstProgressFacts(preferred_current_key="atlas"),
         )
 
         self.module.refresh_local_first_dock_composition(
             composition,
-            progress_facts=WizardProgressFacts(activities_stored=True),
+            progress_facts=LocalFirstProgressFacts(activities_stored=True),
         )
 
         self.assertEqual(composition.shell.current_key(), "atlas")

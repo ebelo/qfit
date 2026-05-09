@@ -4,7 +4,7 @@ from qfit.ui.application.local_first_navigation import (
     build_local_first_dock_navigation_state,
     local_first_dock_page_keys,
 )
-from qfit.ui.application.wizard_progress import WizardProgressFacts
+from qfit.ui.application.workflow_progress_facts import WorkflowProgressFacts
 
 
 class LocalFirstDockNavigationTests(unittest.TestCase):
@@ -26,7 +26,7 @@ class LocalFirstDockNavigationTests(unittest.TestCase):
 
     def test_preferred_current_page_is_resolved_without_locking(self):
         navigation = build_local_first_dock_navigation_state(
-            WizardProgressFacts(preferred_current_key="atlas"),
+            WorkflowProgressFacts(preferred_current_key="atlas"),
         )
 
         self.assertEqual(navigation.current_key, "atlas")
@@ -38,7 +38,7 @@ class LocalFirstDockNavigationTests(unittest.TestCase):
 
     def test_explicit_preferred_current_page_overrides_fact_preference(self):
         navigation = build_local_first_dock_navigation_state(
-            WizardProgressFacts(preferred_current_key="settings"),
+            WorkflowProgressFacts(preferred_current_key="settings"),
             preferred_current_key="map",
         )
 
@@ -61,7 +61,7 @@ class LocalFirstDockNavigationTests(unittest.TestCase):
 
     def test_page_readiness_describes_state_without_gating_navigation(self):
         navigation = build_local_first_dock_navigation_state(
-            WizardProgressFacts(
+            WorkflowProgressFacts(
                 connection_configured=True,
                 activities_stored=True,
                 activity_layers_loaded=True,
@@ -81,7 +81,7 @@ class LocalFirstDockNavigationTests(unittest.TestCase):
         self.assertTrue(all(page.enabled for page in navigation.pages))
 
     def test_data_page_status_is_local_first_before_strava_configuration(self):
-        navigation = build_local_first_dock_navigation_state(WizardProgressFacts())
+        navigation = build_local_first_dock_navigation_state(WorkflowProgressFacts())
         data_page = navigation.pages[0]
 
         self.assertEqual(data_page.key, "data")
