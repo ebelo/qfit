@@ -6,6 +6,9 @@ from .application.local_first_backing_controls import (
     configure_local_first_backing_controls,
     configure_local_first_spinbox_unit_copy,
 )
+from .application.local_first_analysis_controls import (
+    configure_local_first_analysis_mode_backing_controls,
+)
 
 
 @dataclass(frozen=True)
@@ -59,7 +62,7 @@ class DockStartupCoordinator:
         dock._configure_temporal_mode_options()
         performed_steps.append("configure_temporal_mode_options")
 
-        dock._configure_analysis_mode_options()
+        configure_local_first_analysis_mode_backing_controls(dock)
         performed_steps.append("configure_analysis_mode_options")
 
         dock._load_settings()

@@ -17,13 +17,7 @@ from qgis.PyQt.QtWidgets import (
     QFileDialog,
     QDockWidget,
     QGridLayout,
-    QHBoxLayout,
-    QLabel,
     QMessageBox,
-    QPushButton,
-    QToolButton,
-    QVBoxLayout,
-    QWidget,
 )
 
 from .activities.domain.activity_query import (
@@ -844,37 +838,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         temporal_row = getattr(self, "analysisTemporalModeRow", None)
         if temporal_row is not None:
             temporal_row.hide()
-
-    def _configure_analysis_mode_options(self):
-        content_widget = self.analysisWorkflowGroupBox
-        content_layout = content_widget.layout()
-
-        row = QWidget(content_widget)
-        row.setObjectName("analysisModeRow")
-        layout = QHBoxLayout(row)
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(6)
-
-        label = QLabel("Analysis", row)
-        label.setObjectName("analysisModeLabel")
-        layout.addWidget(label)
-
-        combo = QComboBox(row)
-        combo.setObjectName("analysisModeComboBox")
-        combo.addItem("None")
-        combo.addItem("Most frequent starting points")
-        combo.addItem("Heatmap")
-        layout.addWidget(combo)
-
-        button = QPushButton("Run analysis", row)
-        button.setObjectName("runAnalysisButton")
-        layout.addWidget(button)
-        layout.addStretch(1)
-
-        content_layout.insertWidget(0, row)
-        self.analysisModeLabel = label
-        self.analysisModeComboBox = combo
-        self.runAnalysisButton = button
 
     def _bind_dependencies(self, dependencies: DockWidgetDependencies) -> None:
         self.settings = dependencies.settings

@@ -36,8 +36,10 @@ from .local_first_navigation import (
     local_first_dock_page_keys,
 )
 from .local_first_analysis_controls import (
+    ANALYSIS_MODE_LABELS,
     NONE_ANALYSIS_MODE_LABEL,
     bind_local_first_analysis_mode_controls,
+    configure_local_first_analysis_mode_backing_controls,
     local_first_analysis_mode_options,
     set_local_first_analysis_mode,
 )
@@ -173,6 +175,7 @@ __all__ = [
     "LOCAL_FIRST_WIDGET_MOVES",
     "NONE_ANALYSIS_MODE_LABEL",
     "ADVANCED_FETCH_VISIBILITY_WIDGETS",
+    "ANALYSIS_MODE_LABELS",
     "DETAILED_FETCH_VISIBILITY_WIDGETS",
     "MAPBOX_CUSTOM_STYLE_VISIBILITY_WIDGETS",
     "POINT_SAMPLING_VISIBILITY_WIDGETS",
@@ -201,6 +204,7 @@ __all__ = [
     "build_advanced_fetch_visibility_update",
     "apply_local_first_visibility_update",
     "bind_local_first_analysis_mode_controls",
+    "configure_local_first_analysis_mode_backing_controls",
     "build_current_dock_workflow_label",
     "build_detailed_fetch_visibility_update",
     "build_dock_summary_status",

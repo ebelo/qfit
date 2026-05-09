@@ -533,6 +533,10 @@ class DockStartupCoordinatorTests(unittest.TestCase):
                 "qfit.ui.dock_startup_coordinator."
                 "configure_local_first_spinbox_unit_copy"
             ) as configure_local_first_spinbox_unit_copy,
+            patch(
+                "qfit.ui.dock_startup_coordinator."
+                "configure_local_first_analysis_mode_backing_controls"
+            ) as configure_local_first_analysis_mode_backing_controls,
         ):
             coordinator = DockStartupCoordinator(dock)
             result = coordinator.run()
@@ -576,7 +580,6 @@ class DockStartupCoordinatorTests(unittest.TestCase):
                 call._configure_detailed_route_strategy_options(),
                 call._configure_preview_sort_options(),
                 call._configure_temporal_mode_options(),
-                call._configure_analysis_mode_options(),
                 call._load_settings(),
                 call._set_default_dates(),
                 call._wire_events(),
@@ -587,3 +590,6 @@ class DockStartupCoordinatorTests(unittest.TestCase):
         )
         configure_local_first_backing_controls.assert_called_once_with(dock)
         configure_local_first_spinbox_unit_copy.assert_called_once_with(dock)
+        configure_local_first_analysis_mode_backing_controls.assert_called_once_with(
+            dock
+        )

@@ -2,6 +2,58 @@ from __future__ import annotations
 
 
 NONE_ANALYSIS_MODE_LABEL = "None"
+ANALYSIS_MODE_LABELS = (
+    NONE_ANALYSIS_MODE_LABEL,
+    "Most frequent starting points",
+    "Heatmap",
+)
+
+
+def configure_local_first_analysis_mode_backing_controls(dock) -> None:
+    """Install the analysis-mode backing controls used by local-first pages.
+
+    The visible local-first analysis page owns the user-facing selector, but the
+    dock still keeps a hidden combo/button row as the persistence and workflow
+    bridge during consolidation. Keep that bridge setup with the rest of the
+    local-first analysis control policy instead of growing QfitDockWidget.
+    """
+
+    from qgis.PyQt.QtWidgets import (
+        QComboBox,
+        QHBoxLayout,
+        QLabel,
+        QPushButton,
+        QWidget,
+    )
+
+    content_widget = dock.analysisWorkflowGroupBox
+    content_layout = content_widget.layout()
+
+    row = QWidget(content_widget)
+    row.setObjectName("analysisModeRow")
+    layout = QHBoxLayout(row)
+    layout.setContentsMargins(0, 0, 0, 0)
+    layout.setSpacing(6)
+
+    label = QLabel("Analysis", row)
+    label.setObjectName("analysisModeLabel")
+    layout.addWidget(label)
+
+    combo = QComboBox(row)
+    combo.setObjectName("analysisModeComboBox")
+    for mode_label in ANALYSIS_MODE_LABELS:
+        combo.addItem(mode_label)
+    layout.addWidget(combo)
+
+    button = QPushButton("Run analysis", row)
+    button.setObjectName("runAnalysisButton")
+    layout.addWidget(button)
+    layout.addStretch(1)
+
+    content_layout.insertWidget(0, row)
+    dock.analysisModeLabel = label
+    dock.analysisModeComboBox = combo
+    dock.runAnalysisButton = button
 
 
 def bind_local_first_analysis_mode_controls(dock, composition) -> None:
@@ -51,8 +103,10 @@ def set_local_first_analysis_mode(dock, mode: str) -> None:
 
 
 __all__ = [
+    "ANALYSIS_MODE_LABELS",
     "NONE_ANALYSIS_MODE_LABEL",
     "bind_local_first_analysis_mode_controls",
+    "configure_local_first_analysis_mode_backing_controls",
     "local_first_analysis_mode_options",
     "set_local_first_analysis_mode",
 ]

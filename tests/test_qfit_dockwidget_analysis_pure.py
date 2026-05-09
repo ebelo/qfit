@@ -343,35 +343,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             sys.modules.pop("qfit.qfit_dockwidget", None)
             return importlib.import_module("qfit.qfit_dockwidget")
 
-    def test_configure_analysis_mode_options_inserts_row_into_analysis_group(self):
-        dock = object.__new__(self.module.QfitDockWidget)
-        content_layout = _FakeLayout()
-        dock.analysisWorkflowGroupBox = _FakeWidget()
-        dock.analysisWorkflowGroupBox.setLayout(content_layout)
-        dock.analysisWorkflowLayout = _FakeLayout()
-
-        with patch.multiple(
-            self.module,
-            QWidget=_FakeWidget,
-            QHBoxLayout=_FakeHBoxLayout,
-            QLabel=_FakeLabel,
-            QComboBox=_FakeComboBox,
-            QPushButton=_FakeButton,
-        ):
-            self.module.QfitDockWidget._configure_analysis_mode_options(dock)
-
-        self.assertEqual(len(content_layout.inserted), 1)
-        index, row = content_layout.inserted[0]
-        self.assertEqual(index, 0)
-        self.assertEqual(row.objectName(), "analysisModeRow")
-        self.assertIs(row.parentWidget(), dock.analysisWorkflowGroupBox)
-        self.assertEqual(dock.analysisModeLabel.text(), "Analysis")
-        self.assertEqual(
-            dock.analysisModeComboBox.items,
-            ["None", "Most frequent starting points", "Heatmap"],
-        )
-        self.assertEqual(dock.runAnalysisButton.text(), "Run analysis")
-
     def test_set_default_dates_uses_current_date_window(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock.dateFromEdit = MagicMock()
