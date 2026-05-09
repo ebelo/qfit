@@ -98,6 +98,10 @@ from .local_first_control_visibility import (
     refresh_local_first_conditional_control_visibility,
     update_local_first_mapbox_custom_style_visibility,
 )
+from .local_first_progress_facts import (
+    current_local_first_last_sync_date,
+    runtime_state_with_local_first_output_path,
+)
 from .dock_workflow_sections import (
     CURRENT_DOCK_SECTIONS,
     WIZARD_WORKFLOW_STEPS,
@@ -240,6 +244,7 @@ __all__ = [
     "build_stepper_items",
     "build_stepper_states",
     "build_startup_wizard_progress_facts",
+    "current_local_first_last_sync_date",
     "build_wizard_filter_description",
     "build_wizard_progress_facts_from_runtime_state",
     "build_wizard_progress_from_facts",
@@ -275,6 +280,7 @@ __all__ = [
     "refresh_local_first_conditional_control_visibility",
     "refresh_local_first_control_visibility",
     "remove_widget_from_current_layout",
+    "runtime_state_with_local_first_output_path",
     "save_collapsed_groups",
     "save_last_step_index",
     "set_local_first_analysis_mode",
