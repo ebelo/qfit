@@ -1,3 +1,4 @@
+import importlib.util
 import os
 import sys
 import unittest
@@ -511,43 +512,11 @@ class LocalFirstBackingControlsTests(unittest.TestCase):
         self.assertEqual(dock.pointSamplingStrideLabel.text, "Keep every Nth point")
         self.assertEqual(dock.pointSamplingStrideSpinBox.suffix, " points")
 
-    def test_no_hidden_collapsible_section_api_remains(self):
-        import qfit.ui.workflow_section_coordinator as workflow_section_coordinator
+    def test_workflow_section_coordinator_compatibility_module_is_retired(self):
+        module_name = "qfit.ui.workflow_section_coordinator"
 
-        self.assertFalse(
-            hasattr(
-                workflow_section_coordinator.WorkflowSectionCoordinator,
-                "install_collapsible_section",
-            )
-        )
-        self.assertFalse(
-            hasattr(
-                workflow_section_coordinator.WorkflowSectionCoordinator,
-                "set_section_expanded",
-            )
-        )
-
-    def test_workflow_section_coordinator_is_only_compatibility_shim(self):
-        import qfit.ui.workflow_section_coordinator as workflow_section_coordinator
-
-        dock = object()
-        coordinator = workflow_section_coordinator.WorkflowSectionCoordinator(dock)
-
-        with (
-            patch.object(
-                workflow_section_coordinator,
-                "configure_local_first_backing_controls",
-            ) as configure_local_first_backing_controls,
-            patch.object(
-                workflow_section_coordinator,
-                "configure_local_first_spinbox_unit_copy",
-            ) as configure_local_first_spinbox_unit_copy,
-        ):
-            coordinator.configure_starting_sections()
-            coordinator.configure_spinbox_unit_copy()
-
-        configure_local_first_backing_controls.assert_called_once_with(dock)
-        configure_local_first_spinbox_unit_copy.assert_called_once_with(dock)
+        self.assertNotIn(module_name, sys.modules)
+        self.assertIsNone(importlib.util.find_spec(module_name))
 
 
 class DockStartupCoordinatorTests(unittest.TestCase):
