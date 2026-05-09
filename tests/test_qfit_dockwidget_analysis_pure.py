@@ -1094,7 +1094,10 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.detailedStreamsCheckBox = SimpleNamespace(isChecked=lambda: True)
         dock.backgroundPresetComboBox = SimpleNamespace(currentText=lambda: "Custom")
         dock.writeActivityPointsCheckBox = SimpleNamespace(isChecked=lambda: True)
-        dock._workflow_section_coordinator = MagicMock()
+        dock._update_advanced_fetch_visibility = MagicMock()
+        dock._update_detailed_fetch_visibility = MagicMock()
+        dock._update_mapbox_advanced_visibility = MagicMock()
+        dock._update_point_sampling_visibility = MagicMock()
         dock.generateAtlasPdfButton = MagicMock()
 
         for key in (
@@ -1115,12 +1118,151 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             installed=False,
         )
 
-        coordinator = dock._workflow_section_coordinator
-        coordinator.update_advanced_fetch_visibility.assert_called_once_with(False)
-        coordinator.update_detailed_fetch_visibility.assert_called_once_with(True)
-        coordinator.update_mapbox_advanced_visibility.assert_called_once_with("Custom")
-        coordinator.update_point_sampling_visibility.assert_called_once_with(True)
+        dock._update_advanced_fetch_visibility.assert_called_once_with(False)
+        dock._update_detailed_fetch_visibility.assert_called_once_with(True)
+        dock._update_mapbox_advanced_visibility.assert_called_once_with("Custom")
+        dock._update_point_sampling_visibility.assert_called_once_with(True)
         dock.generateAtlasPdfButton.hide.assert_called_once_with()
+
+    def test_local_first_visibility_updates_do_not_use_workflow_sections(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._workflow_section_coordinator = MagicMock()
+        widget_names = (
+            "advancedFetchSettingsWidget",
+            "backfillMissingDetailedRoutesButton",
+            "detailedRouteStrategyLabel",
+            "detailedRouteStrategyComboBox",
+            "detailedRouteStrategyComboBoxContextHelpLabel",
+            "detailedRouteStrategyComboBoxHelpField",
+            "maxDetailedActivitiesLabel",
+            "maxDetailedActivitiesSpinBox",
+            "maxDetailedActivitiesSpinBoxContextHelpLabel",
+            "maxDetailedActivitiesSpinBoxHelpField",
+            "pointSamplingStrideLabel",
+            "pointSamplingStrideSpinBox",
+            "pointSamplingStrideSpinBoxContextHelpLabel",
+            "pointSamplingStrideSpinBoxHelpField",
+            "mapboxStyleOwnerLabel",
+            "mapboxStyleOwnerLineEdit",
+            "mapboxStyleIdLabel",
+            "mapboxStyleIdLineEdit",
+            "mapboxStyleOwnerLineEditContextHelpLabel",
+            "mapboxStyleIdLineEditContextHelpLabel",
+            "mapboxStyleIdLineEditHelpField",
+        )
+        widgets = {name: MagicMock() for name in widget_names}
+        for name, widget in widgets.items():
+            setattr(dock, name, widget)
+
+        self.module.QfitDockWidget._update_advanced_fetch_visibility(dock, True)
+        self.module.QfitDockWidget._update_detailed_fetch_visibility(dock, False)
+        self.module.QfitDockWidget._update_point_sampling_visibility(dock, True)
+        self.module.QfitDockWidget._update_mapbox_advanced_visibility(dock, "Custom")
+
+        widgets["advancedFetchSettingsWidget"].setVisible.assert_called_once_with(
+            True
+        )
+        widgets[
+            "backfillMissingDetailedRoutesButton"
+        ].setVisible.assert_called_once_with(False)
+        widgets["detailedRouteStrategyLabel"].setVisible.assert_called_once_with(False)
+        widgets["pointSamplingStrideLabel"].setVisible.assert_called_once_with(True)
+        widgets["mapboxStyleOwnerLabel"].setVisible.assert_called_once_with(True)
+        self.assertEqual(dock._workflow_section_coordinator.method_calls, [])
+
+    def test_local_first_mapbox_visibility_hides_builtin_preset_fields(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.mapboxStyleOwnerLabel = MagicMock()
+        dock.mapboxStyleOwnerLineEdit = MagicMock()
+        dock.mapboxStyleIdLabel = MagicMock()
+        dock.mapboxStyleIdLineEdit = MagicMock()
+
+        self.module.QfitDockWidget._update_mapbox_advanced_visibility(dock, "Outdoor")
+
+        dock.mapboxStyleOwnerLabel.setVisible.assert_called_once_with(False)
+        dock.mapboxStyleOwnerLineEdit.setVisible.assert_called_once_with(False)
+        dock.mapboxStyleIdLabel.setVisible.assert_called_once_with(False)
+        dock.mapboxStyleIdLineEdit.setVisible.assert_called_once_with(False)
+
+    def test_wire_events_routes_visibility_changes_to_local_first_handlers(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.openAuthorizeButton = SimpleNamespace(clicked=_FakeSignal())
+        dock.exchangeCodeButton = SimpleNamespace(clicked=_FakeSignal())
+        dock.browseButton = SimpleNamespace(clicked=_FakeSignal())
+        dock.refreshButton = SimpleNamespace(clicked=_FakeSignal())
+        dock.backfillMissingDetailedRoutesButton = SimpleNamespace(
+            clicked=_FakeSignal(),
+        )
+        dock.loadButton = SimpleNamespace(clicked=_FakeSignal())
+        dock.syncRoutesButton = SimpleNamespace(clicked=_FakeSignal())
+        dock.loadLayersButton = SimpleNamespace(clicked=_FakeSignal())
+        dock.clearDatabaseButton = SimpleNamespace(clicked=_FakeSignal())
+        dock.applyFiltersButton = SimpleNamespace(clicked=_FakeSignal())
+        dock.runAnalysisButton = SimpleNamespace(clicked=_FakeSignal())
+        dock.loadBackgroundButton = SimpleNamespace(clicked=_FakeSignal())
+        dock.backgroundPresetComboBox = SimpleNamespace(
+            currentTextChanged=_FakeSignal(),
+        )
+        dock.detailedStreamsCheckBox = SimpleNamespace(toggled=_FakeSignal())
+        dock.writeActivityPointsCheckBox = SimpleNamespace(toggled=_FakeSignal())
+        dock.advancedFetchGroupBox = SimpleNamespace(toggled=_FakeSignal())
+        dock.atlasPdfBrowseButton = SimpleNamespace(clicked=_FakeSignal())
+        dock.atlasPdfPathLineEdit = SimpleNamespace(textChanged=_FakeSignal())
+        dock.generateAtlasPdfButton = SimpleNamespace(clicked=_FakeSignal())
+        dock.clientIdLineEdit = SimpleNamespace(textChanged=_FakeSignal())
+        dock.clientSecretLineEdit = SimpleNamespace(textChanged=_FakeSignal())
+        dock.refreshTokenLineEdit = SimpleNamespace(textChanged=_FakeSignal())
+        dock.outputPathLineEdit = SimpleNamespace(textChanged=_FakeSignal())
+        dock.activityTypeComboBox = SimpleNamespace(currentTextChanged=_FakeSignal())
+        dock.activitySearchLineEdit = SimpleNamespace(textChanged=_FakeSignal())
+        dock.dateFromEdit = SimpleNamespace(dateChanged=_FakeSignal())
+        dock.dateToEdit = SimpleNamespace(dateChanged=_FakeSignal())
+        dock.minDistanceSpinBox = SimpleNamespace(valueChanged=_FakeSignal())
+        dock.maxDistanceSpinBox = SimpleNamespace(valueChanged=_FakeSignal())
+        dock.detailedRouteStatusComboBox = SimpleNamespace(
+            currentIndexChanged=_FakeSignal(),
+        )
+        dock.previewSortComboBox = SimpleNamespace(currentTextChanged=_FakeSignal())
+        for name in (
+            "on_open_authorize_clicked",
+            "on_exchange_code_clicked",
+            "on_browse_clicked",
+            "on_refresh_clicked",
+            "on_backfill_missing_detailed_routes_clicked",
+            "on_load_clicked",
+            "on_sync_routes_clicked",
+            "on_load_layers_clicked",
+            "on_clear_database_clicked",
+            "on_apply_filters_clicked",
+            "on_run_analysis_clicked",
+            "on_load_background_clicked",
+            "on_background_preset_changed",
+            "on_atlas_pdf_browse_clicked",
+            "_on_atlas_pdf_path_changed",
+            "on_generate_atlas_pdf_clicked",
+            "_update_connection_status",
+            "_on_output_path_changed",
+            "_refresh_activity_preview",
+            "_update_detailed_fetch_visibility",
+            "_update_point_sampling_visibility",
+            "_update_advanced_fetch_visibility",
+        ):
+            setattr(dock, name, MagicMock(name=name))
+
+        self.module.QfitDockWidget._wire_events(dock)
+
+        self.assertEqual(
+            dock.detailedStreamsCheckBox.toggled.connected,
+            [dock._update_detailed_fetch_visibility],
+        )
+        self.assertEqual(
+            dock.writeActivityPointsCheckBox.toggled.connected,
+            [dock._update_point_sampling_visibility],
+        )
+        self.assertEqual(
+            dock.advancedFetchGroupBox.toggled.connected,
+            [dock._update_advanced_fetch_visibility],
+        )
 
     def test_install_wizard_filter_controls_moves_live_filter_group_into_map_panel(self):
         dock = object.__new__(self.module.QfitDockWidget)
@@ -1910,6 +2052,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             def __init__(self, parent):
                 self._parent = parent
                 self.shown = False
+                self.visible_calls = []
 
             def parentWidget(self):
                 return self._parent
@@ -1920,6 +2063,9 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             def show(self):
                 self.shown = True
 
+            def setVisible(self, visible):
+                self.visible_calls.append(visible)
+
         dock = object.__new__(self.module.QfitDockWidget)
         source_layout = _SourceLayout()
         source_parent = _SourceParent(source_layout)
@@ -1929,7 +2075,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         composition = SimpleNamespace(sync_content=data_content)
         dock.backfillMissingDetailedRoutesButton = backfill_button
         dock.detailedStreamsCheckBox = SimpleNamespace(isChecked=lambda: False)
-        dock._workflow_section_coordinator = MagicMock()
 
         installed = self.module.QfitDockWidget._install_local_first_control_move(
             dock,
@@ -1955,11 +2100,9 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertEqual(source_layout.removed, [backfill_button])
         self.assertIs(backfill_button.parentWidget(), data_content)
         self.assertFalse(backfill_button.shown)
+        self.assertEqual(backfill_button.visible_calls, [False, False])
         self.assertEqual(data_layout.added, [backfill_button])
         self.assertTrue(dock._local_first_backfill_controls_installed)
-        dock._workflow_section_coordinator.update_detailed_fetch_visibility.assert_has_calls(
-            [call(False), call(False)]
-        )
 
     def test_local_first_atlas_pdf_controls_move_to_atlas_page(self):
         class _SourceLayout:
