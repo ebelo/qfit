@@ -84,6 +84,7 @@ class FakeWidget:
         self._parent = parent
         self._object_name = None
         self._layout = None
+        self.hidden = False
 
     def setObjectName(self, name):
         self._object_name = name
