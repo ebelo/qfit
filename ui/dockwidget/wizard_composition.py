@@ -22,6 +22,7 @@ from qfit.ui.application.wizard_page_specs import (
     DockWizardPageSpec,
     build_default_wizard_page_specs,
 )
+from qfit.ui.application.workflow_progress_facts import WorkflowProgressFacts
 from qfit.ui.application.wizard_progress import (
     WizardProgressFacts,
     build_wizard_progress_from_facts_and_settings,
@@ -95,7 +96,7 @@ def build_placeholder_wizard_shell(
     parent=None,
     footer_text: str = "",
     progress: DockWizardProgress | None = None,
-    progress_facts: WizardProgressFacts | None = None,
+    progress_facts: WorkflowProgressFacts | None = None,
     wizard_settings: WizardSettingsSnapshot | None = None,
     specs: Sequence[DockWizardPageSpec] | None = None,
     use_step_pages: bool = True,
@@ -213,7 +214,7 @@ def refresh_wizard_shell_composition(
     atlas_state: AtlasPageState | None = None,
     footer_text: str | None = None,
     progress: DockWizardProgress | None = None,
-    progress_facts: WizardProgressFacts | None = None,
+    progress_facts: WorkflowProgressFacts | None = None,
     wizard_settings: WizardSettingsSnapshot | None = None,
 ) -> WizardShellComposition:
     """Refresh installed wizard page state without rebuilding the shell.
@@ -421,21 +422,21 @@ def _connect_action_callbacks(
 def _resolve_progress(
     *,
     progress: DockWizardProgress | None,
-    progress_facts: WizardProgressFacts | None,
+    progress_facts: WorkflowProgressFacts | None,
     wizard_settings: WizardSettingsSnapshot | None,
 ) -> DockWizardProgress | None:
     if progress is not None and (progress_facts is not None or wizard_settings is not None):
         raise ValueError("Pass progress or progress_facts/wizard_settings, not both")
     if progress_facts is None and wizard_settings is None:
         return progress
-    facts = progress_facts or WizardProgressFacts()
+    facts = progress_facts or WorkflowProgressFacts()
     if wizard_settings is not None:
         return build_wizard_progress_from_facts_and_settings(facts, wizard_settings)
     return build_wizard_progress_from_facts(facts)
 
 
 def _page_state_defaults_from_progress_facts(
-    progress_facts: WizardProgressFacts | None,
+    progress_facts: WorkflowProgressFacts | None,
 ) -> WizardPageStateSnapshots | None:
     if progress_facts is None:
         return None
@@ -445,7 +446,7 @@ def _page_state_defaults_from_progress_facts(
 
 
 def _footer_facts_from_progress_facts(
-    progress_facts: WizardProgressFacts | None,
+    progress_facts: WorkflowProgressFacts | None,
 ) -> WizardFooterFacts | None:
     if progress_facts is None:
         return None
