@@ -13,12 +13,12 @@ from qfit.ui.application.workflow_progress import (
     build_workflow_progress_from_facts_and_settings,
 )
 from qfit.ui.application.workflow_progress_facts import WorkflowProgressFacts
+from qfit.ui.application.workflow_settings import WorkflowSettingsSnapshot
 from qfit.ui.application.wizard_progress import (
     build_startup_wizard_progress_facts,
     build_wizard_progress_from_facts,
     build_wizard_progress_from_facts_and_settings,
 )
-from qfit.ui.application.wizard_settings import WizardSettingsSnapshot
 
 
 class WorkflowProgressTests(unittest.TestCase):
@@ -73,8 +73,8 @@ class WorkflowProgressTests(unittest.TestCase):
                 activities_stored=True,
                 activity_layers_loaded=True,
             ),
-            WizardSettingsSnapshot(
-                wizard_version=1,
+            WorkflowSettingsSnapshot(
+                settings_version=1,
                 last_step_index=2,
                 first_launch=False,
             ),
@@ -92,8 +92,8 @@ class WorkflowProgressTests(unittest.TestCase):
             activities_stored=True,
             activity_layers_loaded=True,
         )
-        settings = WizardSettingsSnapshot(
-            wizard_version=1,
+        settings = WorkflowSettingsSnapshot(
+            settings_version=1,
             last_step_index=4,
             first_launch=False,
         )
@@ -104,8 +104,8 @@ class WorkflowProgressTests(unittest.TestCase):
         )
 
     def test_startup_facts_skip_configured_connection_restore_target(self):
-        settings = WizardSettingsSnapshot(
-            wizard_version=1,
+        settings = WorkflowSettingsSnapshot(
+            settings_version=1,
             last_step_index=0,
             first_launch=False,
         )
@@ -123,8 +123,8 @@ class WorkflowProgressTests(unittest.TestCase):
         self.assertEqual(progress.completed_keys, frozenset({"connection"}))
 
     def test_startup_facts_preserve_explicit_user_selected_connection_step(self):
-        settings = WizardSettingsSnapshot(
-            wizard_version=1,
+        settings = WorkflowSettingsSnapshot(
+            settings_version=1,
             last_step_index=0,
             last_step_index_user_selected=True,
             first_launch=False,
@@ -144,8 +144,8 @@ class WorkflowProgressTests(unittest.TestCase):
 
     def test_wizard_startup_facts_builder_delegates_to_neutral_workflow_builder(self):
         facts = WorkflowProgressFacts(connection_configured=True)
-        settings = WizardSettingsSnapshot(
-            wizard_version=1,
+        settings = WorkflowSettingsSnapshot(
+            settings_version=1,
             last_step_index=0,
             first_launch=False,
         )

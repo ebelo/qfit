@@ -156,23 +156,34 @@ from .stepper_presenter import (
     step_key_for_index,
 )
 from .wizard_filter_summary import build_wizard_filter_description
-from .wizard_settings import (
+from .workflow_settings import (
     COLLAPSED_GROUPS_KEY,
     DEFAULT_COLLAPSED_GROUP_OBJECT_NAMES,
     LAST_STEP_INDEX_KEY,
     LAST_STEP_INDEX_USER_SELECTED_KEY,
-    WIZARD_STEP_COUNT,
-    WIZARD_VERSION,
-    WIZARD_VERSION_KEY,
-    WizardSettingsSnapshot,
-    clamp_wizard_step_index,
-    ensure_wizard_settings,
-    load_wizard_settings,
-    preferred_current_key_from_settings,
+    WORKFLOW_SETTINGS_VERSION,
+    WORKFLOW_SETTINGS_VERSION_KEY,
+    WORKFLOW_STEP_COUNT,
+    WorkflowSettingsSnapshot,
+    clamp_workflow_step_index,
+    ensure_workflow_settings,
+    load_workflow_settings,
+    preferred_current_key_from_workflow_settings,
     save_collapsed_groups,
-    save_last_step_index,
-    wizard_step_key_for_index,
+    save_workflow_step_index,
+    workflow_step_key_for_index,
 )
+
+WIZARD_VERSION = WORKFLOW_SETTINGS_VERSION
+WIZARD_VERSION_KEY = WORKFLOW_SETTINGS_VERSION_KEY
+WIZARD_STEP_COUNT = WORKFLOW_STEP_COUNT
+WizardSettingsSnapshot = WorkflowSettingsSnapshot
+clamp_wizard_step_index = clamp_workflow_step_index
+ensure_wizard_settings = ensure_workflow_settings
+load_wizard_settings = load_workflow_settings
+preferred_current_key_from_settings = preferred_current_key_from_workflow_settings
+save_last_step_index = save_workflow_step_index
+wizard_step_key_for_index = workflow_step_key_for_index
 from .visual_workflow_action_builder import build_visual_workflow_action
 from .visual_workflow_action_builder import build_visual_workflow_action_inputs
 from .visual_workflow_action_builder import build_visual_workflow_background_inputs
@@ -248,6 +259,9 @@ __all__ = [
     "LocalFirstProgressFacts",
     "LocalFirstWidgetMove",
     "WIZARD_WORKFLOW_STEPS",
+    "WORKFLOW_SETTINGS_VERSION",
+    "WORKFLOW_SETTINGS_VERSION_KEY",
+    "WORKFLOW_STEP_COUNT",
     "WIZARD_STEP_COUNT",
     "WIZARD_VERSION",
     "WIZARD_VERSION_KEY",
@@ -265,6 +279,7 @@ __all__ = [
     "WizardProgressFacts",
     "WorkflowFooterFacts",
     "WorkflowProgressFacts",
+    "WorkflowSettingsSnapshot",
     "WizardSettingsSnapshot",
     "build_advanced_fetch_visibility_update",
     "apply_local_first_visibility_update",
@@ -312,7 +327,9 @@ __all__ = [
     "build_visual_workflow_selection_state_handoff",
     "build_visual_workflow_settings_snapshot",
     "can_request_step",
+    "clamp_workflow_step_index",
     "clamp_wizard_step_index",
+    "ensure_workflow_settings",
     "ensure_wizard_settings",
     "get_workflow_section",
     "install_local_first_audited_controls",
@@ -321,6 +338,7 @@ __all__ = [
     "install_local_first_widget_move",
     "install_local_first_widget_controls",
     "issue805_local_first_coverage_by_area",
+    "load_workflow_settings",
     "load_wizard_settings",
     "local_first_analysis_mode_options",
     "local_first_control_move_layout",
@@ -333,12 +351,14 @@ __all__ = [
     "local_first_widget_move_for_key",
     "local_first_widget_move_keys",
     "preferred_current_key_from_settings",
+    "preferred_current_key_from_workflow_settings",
     "missing_issue805_local_first_areas",
     "refresh_local_first_conditional_control_visibility",
     "refresh_local_first_control_visibility",
     "remove_widget_from_current_layout",
     "runtime_state_with_local_first_output_path",
     "save_collapsed_groups",
+    "save_workflow_step_index",
     "save_last_step_index",
     "set_local_first_analysis_mode",
     "show_local_first_control_group",
@@ -348,5 +368,6 @@ __all__ = [
     "step_index_for_key",
     "step_key_for_index",
     "update_local_first_atlas_document_settings",
+    "workflow_step_key_for_index",
     "wizard_step_key_for_index",
 ]

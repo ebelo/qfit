@@ -74,7 +74,7 @@ from .ui.application import (
     build_visual_layer_refs,
     set_local_first_analysis_mode,
     update_local_first_atlas_document_settings,
-    ensure_wizard_settings,
+    ensure_workflow_settings,
     request_local_first_connection_configuration,
     install_local_first_audited_controls,
     sync_local_first_basemap_style_fields,
@@ -156,9 +156,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._install_live_local_first_dock()
 
     def _ensure_wizard_settings(self):
-        """Persist first-launch wizard defaults for the #609 dock migration."""
+        """Persist first-launch workflow defaults for the local-first dock."""
 
-        return ensure_wizard_settings(self.settings)
+        return ensure_workflow_settings(self.settings)
 
     def refresh_configuration_from_settings(self) -> None:
         """Reload saved configuration and refresh live wizard connection state."""
