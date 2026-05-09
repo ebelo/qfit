@@ -2,14 +2,19 @@ import unittest
 
 from qfit.ui.application import build_workflow_progress_from_facts as exported_builder
 from qfit.ui.application import (
+    build_startup_workflow_progress_facts as exported_startup_facts_builder,
+)
+from qfit.ui.application import (
     build_workflow_progress_from_facts_and_settings as exported_settings_builder,
 )
 from qfit.ui.application.workflow_progress import (
+    build_startup_workflow_progress_facts,
     build_workflow_progress_from_facts,
     build_workflow_progress_from_facts_and_settings,
 )
 from qfit.ui.application.workflow_progress_facts import WorkflowProgressFacts
 from qfit.ui.application.wizard_progress import (
+    build_startup_wizard_progress_facts,
     build_wizard_progress_from_facts,
     build_wizard_progress_from_facts_and_settings,
 )
@@ -98,11 +103,67 @@ class WorkflowProgressTests(unittest.TestCase):
             build_workflow_progress_from_facts_and_settings(facts, settings),
         )
 
+    def test_startup_facts_skip_configured_connection_restore_target(self):
+        settings = WizardSettingsSnapshot(
+            wizard_version=1,
+            last_step_index=0,
+            first_launch=False,
+        )
+        startup_facts = build_startup_workflow_progress_facts(
+            WorkflowProgressFacts(connection_configured=True),
+            settings,
+        )
+
+        progress = build_workflow_progress_from_facts_and_settings(
+            startup_facts,
+            settings,
+        )
+
+        self.assertEqual(progress.current_key, "sync")
+        self.assertEqual(progress.completed_keys, frozenset({"connection"}))
+
+    def test_startup_facts_preserve_explicit_user_selected_connection_step(self):
+        settings = WizardSettingsSnapshot(
+            wizard_version=1,
+            last_step_index=0,
+            last_step_index_user_selected=True,
+            first_launch=False,
+        )
+        startup_facts = build_startup_workflow_progress_facts(
+            WorkflowProgressFacts(connection_configured=True),
+            settings,
+        )
+
+        progress = build_workflow_progress_from_facts_and_settings(
+            startup_facts,
+            settings,
+        )
+
+        self.assertEqual(progress.current_key, "connection")
+        self.assertEqual(progress.completed_keys, frozenset({"connection"}))
+
+    def test_wizard_startup_facts_builder_delegates_to_neutral_workflow_builder(self):
+        facts = WorkflowProgressFacts(connection_configured=True)
+        settings = WizardSettingsSnapshot(
+            wizard_version=1,
+            last_step_index=0,
+            first_launch=False,
+        )
+
+        self.assertEqual(
+            build_startup_wizard_progress_facts(facts, settings),
+            build_startup_workflow_progress_facts(facts, settings),
+        )
+
     def test_application_package_exports_neutral_workflow_builder(self):
         self.assertIs(exported_builder, build_workflow_progress_from_facts)
         self.assertIs(
             exported_settings_builder,
             build_workflow_progress_from_facts_and_settings,
+        )
+        self.assertIs(
+            exported_startup_facts_builder,
+            build_startup_workflow_progress_facts,
         )
 
 

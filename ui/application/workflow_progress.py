@@ -48,13 +48,46 @@ def build_workflow_progress_from_facts_and_settings(
     if facts.preferred_current_key is not None:
         return build_workflow_progress_from_facts(facts)
     return build_workflow_progress_from_facts(
-        cast(
-            WorkflowProgressFacts,
-            replace(
-                facts,
-                preferred_current_key=preferred_current_key_from_settings(settings),
-            ),
+        _workflow_progress_facts_with_preferred_current_key(
+            facts,
+            preferred_current_key=preferred_current_key_from_settings(settings),
         )
+    )
+
+
+def build_startup_workflow_progress_facts(
+    facts: WorkflowProgressFacts,
+    settings: WizardSettingsSnapshot,
+) -> WorkflowProgressFacts:
+    """Return startup-only facts for the first visible workflow page.
+
+    Persisted step settings still control normal refreshes. Startup is the one
+    place where a saved default Connection target should not make configured
+    users reconfirm an already-completed prerequisite before continuing.
+    """
+
+    preferred_current_key = preferred_current_key_from_settings(settings)
+    if (
+        preferred_current_key == "connection"
+        and facts.connection_configured
+        and not settings.last_step_index_user_selected
+    ):
+        progress = build_workflow_progress_from_facts(facts)
+        return _workflow_progress_facts_with_preferred_current_key(
+            facts,
+            preferred_current_key=progress.current_key,
+        )
+    return facts
+
+
+def _workflow_progress_facts_with_preferred_current_key(
+    facts: WorkflowProgressFacts,
+    *,
+    preferred_current_key: str | None,
+) -> WorkflowProgressFacts:
+    return cast(
+        WorkflowProgressFacts,
+        replace(facts, preferred_current_key=preferred_current_key),
     )
 
 
@@ -123,6 +156,7 @@ def _workflow_keys() -> tuple[str, ...]:
 
 
 __all__ = [
+    "build_startup_workflow_progress_facts",
     "build_workflow_progress_from_facts",
     "build_workflow_progress_from_facts_and_settings",
 ]
