@@ -3,8 +3,8 @@ from __future__ import annotations
 from collections.abc import Callable
 from dataclasses import dataclass
 
+from qfit.ui.application.workflow_progress import build_workflow_progress_from_facts
 from qfit.ui.application.workflow_progress_facts import WorkflowProgressFacts
-from qfit.ui.application.wizard_progress import build_wizard_progress_from_facts
 
 from .analysis_page import AnalysisPageState
 from .atlas_page import AtlasPageState
@@ -78,7 +78,7 @@ def connect_optional_signal(content, signal_name: str, callback) -> None:
 
 
 def completed_prefix_facts(facts: WorkflowProgressFacts) -> WorkflowProgressFacts:
-    completed = build_wizard_progress_from_facts(facts).completed_keys
+    completed = build_workflow_progress_from_facts(facts).completed_keys
     return WorkflowProgressFacts(
         connection_configured=facts.connection_configured,
         activities_fetched=facts.activities_fetched,
