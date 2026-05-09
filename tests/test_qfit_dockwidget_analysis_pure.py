@@ -1579,7 +1579,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         credentials_group = _CredentialsGroup(source_parent)
         settings_layout = _FakeLayout()
         settings_content = SimpleNamespace(outer_layout=lambda: settings_layout)
-        composition = SimpleNamespace(connection_content=settings_content)
+        composition = SimpleNamespace(settings_content=settings_content)
         dock.credentialsGroupBox = credentials_group
         self._install_required_local_first_group_widgets(
             dock,
@@ -1641,7 +1641,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         basemap_group = _BasemapGroup(source_parent)
         settings_layout = _FakeLayout()
         settings_content = SimpleNamespace(outer_layout=lambda: settings_layout)
-        composition = SimpleNamespace(connection_content=settings_content)
+        composition = SimpleNamespace(settings_content=settings_content)
         dock.backgroundGroupBox = basemap_group
         self._install_required_local_first_group_widgets(dock, "basemap")
 
@@ -1700,7 +1700,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         storage_group = _StorageGroup(source_parent)
         settings_layout = _FakeLayout()
         settings_content = SimpleNamespace(outer_layout=lambda: settings_layout)
-        composition = SimpleNamespace(connection_content=settings_content)
+        composition = SimpleNamespace(settings_content=settings_content)
         dock.outputGroupBox = storage_group
         self._install_required_local_first_group_widgets(dock, "storage")
 

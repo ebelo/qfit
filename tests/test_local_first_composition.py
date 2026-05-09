@@ -58,16 +58,20 @@ class LocalFirstDockCompositionTests(unittest.TestCase):
         )
         self.assertIs(composition.sync_content, composition.page_content.data_content)
         self.assertIs(
-            composition.connection_content,
+            composition.settings_content,
             composition.page_content.settings_content,
         )
+        self.assertIs(
+            composition.connection_content,
+            composition.settings_content,
+        )
         self.assertEqual(
-            composition.connection_content.detail_label.text(),
+            composition.settings_content.detail_label.text(),
             "Review provider credentials and durable qfit preferences away from "
             "daily workflow panels.",
         )
         self.assertEqual(
-            composition.connection_content.configure_button.text(),
+            composition.settings_content.configure_button.text(),
             "Configure settings",
         )
 
@@ -101,7 +105,7 @@ class LocalFirstDockCompositionTests(unittest.TestCase):
             composition.map_content,
             composition.analysis_content,
             composition.atlas_content,
-            composition.connection_content,
+            composition.settings_content,
         ):
             layout = content.outer_layout()
             self.assertEqual(layout.contents_margins, (0, 0, 0, 0))
@@ -134,7 +138,7 @@ class LocalFirstDockCompositionTests(unittest.TestCase):
         )
 
         self.module.connect_local_first_action_callbacks(composition, callbacks)
-        composition.connection_content.configureRequested.emit()
+        composition.settings_content.configureRequested.emit()
         composition.sync_content.syncRequested.emit()
         composition.sync_content.syncRoutesRequested.emit()
         composition.sync_content.clearDatabaseRequested.emit()
@@ -197,14 +201,14 @@ class LocalFirstDockCompositionTests(unittest.TestCase):
         self.assertTrue(composition.shell.navigation_item_for_key("map").property("current"))
         self.assertEqual(composition.sync_content.status_label.text(), "Activities stored")
         self.assertEqual(composition.map_content.status_label.text(), "Stored map layers loaded")
-        self.assertEqual(composition.connection_content.status_label.text(), "Strava connected")
+        self.assertEqual(composition.settings_content.status_label.text(), "Strava connected")
         self.assertEqual(
-            composition.connection_content.detail_label.text(),
+            composition.settings_content.detail_label.text(),
             "Review provider credentials and durable qfit preferences away from "
             "daily workflow panels.",
         )
         self.assertEqual(
-            composition.connection_content.configure_button.text(),
+            composition.settings_content.configure_button.text(),
             "Review settings",
         )
 
