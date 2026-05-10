@@ -17,7 +17,8 @@ A complete run writes:
 - `mapbox-gl-reference.png` — browser/Mapbox GL JS reference image
 - `qgis-vector-render.png` — qfit/QGIS native vector-tile render for the same camera
 - `mapbox-gl-vs-qgis-diff.png` — pixel diff for quick drift inspection
-- `manifest.json` — camera, output paths, and capture status without any token values
+- `metrics.json` — simple image-diff metrics such as changed-pixel ratio when diff generation runs
+- `manifest.json` — camera, output paths, capture status, and metrics without any token values
 
 ## Cameras
 
@@ -36,13 +37,14 @@ Current camera:
 For a complete browser + QGIS + diff run, install or run from an environment with:
 
 - a Mapbox access token in `MAPBOX_ACCESS_TOKEN` or `QFIT_MAPBOX_ACCESS_TOKEN`
-- Playwright and Chromium for the Mapbox GL JS screenshot
-  - `python3 -m pip install playwright`
-  - `python3 -m playwright install chromium`
+- Node.js, the Playwright npm package, and Chromium for the Mapbox GL JS screenshot
+  - from the qfit checkout or its parent dev workspace: `npm install --save-dev playwright`
+  - the harness searches `node_modules` in the qfit checkout and its parent workspace
+  - the harness uses system Chromium when available (`chromium`, `chromium-browser`, or `QFIT_CHROMIUM_EXECUTABLE`)
 - PyQGIS available to the Python runtime for the QGIS vector render
   - for example, run from a QGIS Python shell, OSGeo/QGIS environment, or another shell where `import qgis` works
 - Pillow for the diff image
-  - `python3 -m pip install pillow`
+  - already available in the qfit development environment; if missing, install it in a virtual environment rather than using system `sudo pip`
 - `QT_QPA_PLATFORM=offscreen` when running headlessly, if your QGIS environment requires it
 - `xvfb-run` or another virtual display when your local Chromium/QGIS build cannot render headlessly without an X server
 
@@ -51,11 +53,11 @@ Keep tokens out of shell history where practical by exporting an environment var
 ## Run a complete comparison
 
 ```bash
-export MAPBOX_ACCESS_TOKEN="pk..."
+export MAPBOX_ACCESS_TOKEN="***"
 python3 validation/mapbox_outdoors_comparison.py valais-geneva-outdoors
 ```
 
-The command prints only artifact paths. It does not print the token, and `manifest.json` intentionally excludes token values.
+The command prints only artifact paths. It does not print the token, and `manifest.json` intentionally excludes token values. The QGIS capture builds a temporary vector-tile layer for rendering and does not clear the active QGIS project.
 
 ## Partial captures
 
@@ -81,7 +83,7 @@ Use the browser image as the Mapbox GL reference. Inspect the QGIS image for hig
 - label size/priority mismatches
 - broad color/width drift caused by expression simplification
 
-Use the diff image as a navigation aid, not as a pass/fail metric. Label placement and antialiasing differences will create expected diff noise.
+Use the brightness-enhanced diff image and metrics as navigation aids, not as pass/fail gates. Label placement and antialiasing differences will create expected diff noise.
 
 ## PR notes
 

@@ -6,11 +6,13 @@ import datetime as dt
 import json
 import math
 import os
+import shutil
+import subprocess
 import sys
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable, Iterable
+from typing import Callable, Iterable, TypeAlias
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PACKAGE_PARENT = REPO_ROOT.parent
@@ -19,6 +21,7 @@ DEFAULT_MAPBOX_STYLE_OWNER = "mapbox"
 DEFAULT_MAPBOX_STYLE_ID = "outdoors-v12"
 WEB_MERCATOR_HALF_WORLD = 20037508.342789244
 WEB_MERCATOR_TILE_SIZE = 512
+ImageMetrics: TypeAlias = dict[str, object]
 
 
 @dataclass(frozen=True)
@@ -64,6 +67,7 @@ class ComparisonPaths:
     browser_png: Path
     qgis_png: Path
     diff_png: Path
+    metrics_json: Path
     manifest_json: Path
 
 
@@ -85,6 +89,7 @@ class ComparisonResult:
     browser_captured: bool
     qgis_captured: bool
     diff_captured: bool
+    image_metrics: dict[str, object] = dataclasses.field(default_factory=dict)
 
 
 def _utc_timestamp(now: dt.datetime | None = None) -> str:
@@ -106,6 +111,7 @@ def build_comparison_paths(*, run_dir: Path) -> ComparisonPaths:
         browser_png=run_dir / "mapbox-gl-reference.png",
         qgis_png=run_dir / "qgis-vector-render.png",
         diff_png=run_dir / "mapbox-gl-vs-qgis-diff.png",
+        metrics_json=run_dir / "metrics.json",
         manifest_json=run_dir / "manifest.json",
     )
 
@@ -171,12 +177,14 @@ def _redacted_manifest(
             "browser_reference": str(result.paths.browser_png),
             "qgis_vector_render": str(result.paths.qgis_png),
             "diff": str(result.paths.diff_png),
+            "metrics": str(result.paths.metrics_json),
         },
         "captured": {
             "browser_reference": result.browser_captured,
             "qgis_vector_render": result.qgis_captured,
             "diff": result.diff_captured,
         },
+        "metrics": result.image_metrics,
         "notes": [
             "Mapbox tokens are intentionally excluded from this manifest.",
             "This is a manual visual QA aid, not a CI gate.",
@@ -189,14 +197,9 @@ def write_manifest(*, camera: MapboxComparisonCamera, result: ComparisonResult) 
     result.paths.manifest_json.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
 
 
-def build_mapbox_gl_html(*, camera: MapboxComparisonCamera, token: str) -> str:
-    """Return temporary HTML for the browser reference capture.
+def build_mapbox_gl_html(*, camera: MapboxComparisonCamera) -> str:
+    """Return token-free temporary HTML for the browser reference capture."""
 
-    The caller writes this to a temporary directory, not the committed/debug output
-    tree, because it necessarily contains the short-lived Mapbox token value.
-    """
-
-    token_json = json.dumps(token)
     style_json = json.dumps(camera.style_url)
     center_json = json.dumps([camera.longitude, camera.latitude])
     return f"""<!doctype html>
@@ -215,62 +218,157 @@ def build_mapbox_gl_html(*, camera: MapboxComparisonCamera, token: str) -> str:
 <body>
   <div id=\"map\"></div>
   <script>
-    mapboxgl.accessToken = {token_json};
-    const map = new mapboxgl.Map({{
-      container: 'map',
-      style: {style_json},
-      center: {center_json},
-      zoom: {camera.zoom},
-      bearing: {camera.bearing},
-      pitch: {camera.pitch},
-      interactive: false,
-      preserveDrawingBuffer: true,
-      fadeDuration: 0,
-    }});
-    map.once('idle', () => {{ window.qfitMapboxReady = true; }});
+    window.startQfitMapboxComparison = (accessToken) => {{
+      mapboxgl.accessToken = accessToken;
+      const map = new mapboxgl.Map({{
+        container: 'map',
+        style: {style_json},
+        center: {center_json},
+        zoom: {camera.zoom},
+        bearing: {camera.bearing},
+        pitch: {camera.pitch},
+        interactive: false,
+        preserveDrawingBuffer: true,
+        fadeDuration: 0,
+      }});
+      map.once('idle', () => {{ window.qfitMapboxReady = true; }});
+    }};
   </script>
 </body>
 </html>
 """
 
 
-def render_browser_reference(
+def build_node_playwright_capture_script() -> str:
+    return r"""
+const fs = require('fs');
+const { pathToFileURL } = require('url');
+const { chromium } = require('playwright');
+
+const [htmlPath, outputPath, widthText, heightText, timeoutText, executablePath] = process.argv.slice(2);
+const width = Number.parseInt(widthText, 10);
+const height = Number.parseInt(heightText, 10);
+const timeout = Number.parseInt(timeoutText, 10);
+
+(async () => {
+  const accessToken = fs.readFileSync(0, 'utf8').trim();
+  if (!accessToken) {
+    throw new Error('Mapbox token was not provided on stdin.');
+  }
+  const launchOptions = {
+    headless: true,
+    args: ['--no-sandbox', '--disable-dev-shm-usage'],
+  };
+  if (executablePath) {
+    launchOptions.executablePath = executablePath;
+  }
+  const browser = await chromium.launch(launchOptions);
+  try {
+    const page = await browser.newPage({ viewport: { width, height }, deviceScaleFactor: 1 });
+    await page.goto(pathToFileURL(htmlPath).href, { waitUntil: 'domcontentloaded', timeout });
+    await page.evaluate((token) => window.startQfitMapboxComparison(token), accessToken);
+    await page.waitForFunction('window.qfitMapboxReady === true', { timeout });
+    await page.screenshot({ path: outputPath, fullPage: false });
+  } finally {
+    await browser.close();
+  }
+})().catch((error) => {
+  console.error(error && error.message ? error.message : String(error));
+  process.exit(1);
+});
+""".strip()
+
+
+def _node_modules_paths() -> list[Path]:
+    return [REPO_ROOT / "node_modules", PACKAGE_PARENT / "node_modules"]
+
+
+def _node_capture_environment() -> dict[str, str]:
+    env = os.environ.copy()
+    node_paths = [str(path) for path in _node_modules_paths()]
+    if env.get("NODE_PATH"):
+        node_paths.append(env["NODE_PATH"])
+    env["NODE_PATH"] = os.pathsep.join(node_paths)
+    return env
+
+
+def _chromium_executable() -> str:
+    configured = os.environ.get("QFIT_CHROMIUM_EXECUTABLE")
+    if configured:
+        return configured
+    for binary_name in ("chromium", "chromium-browser", "google-chrome", "google-chrome-stable"):
+        resolved = shutil.which(binary_name)
+        if resolved:
+            return resolved
+    return ""
+
+
+def redact_sensitive_text(text: str, secret: str) -> str:
+    if not secret:
+        return text
+    return text.replace(secret, "<redacted>")
+
+
+def render_browser_reference(  # pragma: no cover - depends on optional Node/Chromium toolchain
     *,
     camera: MapboxComparisonCamera,
     token: str,
     output_path: Path,
     timeout_ms: int,
 ) -> None:
-    try:
-        from playwright.sync_api import sync_playwright  # type: ignore[import-not-found]
-    except ImportError as exc:  # pragma: no cover - depends on optional local toolchain
+    node_binary = shutil.which("node")
+    if not node_binary:
         raise RuntimeError(
-            "Browser reference capture requires Playwright. Install it locally with "
-            "`python3 -m pip install playwright` and `python3 -m playwright install chromium`, "
+            "Browser reference capture requires Node.js plus the Playwright npm package, "
             "or run with --skip-browser."
-        ) from exc
+        )
 
     with tempfile.TemporaryDirectory(prefix="qfit-mapbox-reference-") as tmpdir:
-        html_path = Path(tmpdir) / "reference.html"
-        html_path.write_text(build_mapbox_gl_html(camera=camera, token=token), encoding="utf-8")
-        with sync_playwright() as playwright:
-            browser = playwright.chromium.launch()
-            try:
-                page = browser.new_page(viewport={"width": camera.width, "height": camera.height}, device_scale_factor=1)
-                page.goto(html_path.as_uri(), wait_until="domcontentloaded", timeout=timeout_ms)
-                page.wait_for_function("window.qfitMapboxReady === true", timeout=timeout_ms)
-                page.screenshot(path=str(output_path), full_page=False)
-            finally:
-                browser.close()
+        tmp_path = Path(tmpdir)
+        html_path = tmp_path / "reference.html"
+        script_path = tmp_path / "capture-reference.js"
+        html_path.write_text(build_mapbox_gl_html(camera=camera), encoding="utf-8")
+        script_path.write_text(build_node_playwright_capture_script(), encoding="utf-8")
+        command = [
+            node_binary,
+            str(script_path),
+            str(html_path),
+            str(output_path),
+            str(camera.width),
+            str(camera.height),
+            str(timeout_ms),
+            _chromium_executable(),
+        ]
+        completed = subprocess.run(
+            command,
+            cwd=REPO_ROOT,
+            env=_node_capture_environment(),
+            input=token,
+            capture_output=True,
+            text=True,
+            timeout=max(5.0, timeout_ms / 1000.0 + 10.0),
+            check=False,
+        )
+    if completed.returncode != 0:
+        detail = redact_sensitive_text((completed.stderr or completed.stdout).strip(), token)
+        raise RuntimeError(
+            "Browser reference capture failed. Install dev dependencies with "
+            "`npm install --save-dev playwright`, run under xvfb-run if needed, "
+            f"or use --skip-browser. Details: {detail}"
+        )
 
 
-def _ensure_package_parent_on_path() -> None:
+def _ensure_package_parent_on_path() -> None:  # pragma: no cover - exercised only in PyQGIS capture
     package_parent_text = str(PACKAGE_PARENT)
     if package_parent_text not in sys.path:
         sys.path.insert(0, package_parent_text)
 
 
-def render_qgis_vector(
+def is_valid_qgis_vector_tile_layer(*, layer: object, vector_tile_layer_type: type) -> bool:
+    return isinstance(layer, vector_tile_layer_type) and bool(layer.isValid())
+
+
+def render_qgis_vector(  # pragma: no cover - depends on optional PyQGIS runtime
     *,
     camera: MapboxComparisonCamera,
     token: str,
@@ -285,8 +383,8 @@ def render_qgis_vector(
             QgsCoordinateReferenceSystem,
             QgsMapRendererParallelJob,
             QgsMapSettings,
-            QgsProject,
             QgsRectangle,
+            QgsVectorTileLayer,
         )
     except ImportError as exc:  # pragma: no cover - depends on optional PyQGIS runtime
         raise RuntimeError(
@@ -295,7 +393,12 @@ def render_qgis_vector(
             "or use --skip-qgis to capture only the browser reference."
         ) from exc
 
-    from qfit.mapbox_config import TILE_MODE_VECTOR
+    from qfit.mapbox_config import (
+        build_vector_tile_layer_uri,
+        extract_mapbox_vector_source_ids,
+        fetch_mapbox_style_definition,
+        simplify_mapbox_style_expressions,
+    )
     from qfit.visualization.infrastructure.background_map_service import BackgroundMapService
 
     app = QgsApplication.instance()
@@ -305,21 +408,22 @@ def render_qgis_vector(
         app.initQgis()
 
     try:
-        project = QgsProject.instance()
-        project.clear()
-        destination_crs = QgsCoordinateReferenceSystem("EPSG:3857")
-        project.setCrs(destination_crs)
-        layer = BackgroundMapService().ensure_background_layer(
-            enabled=True,
-            preset_name="Outdoor",
-            access_token=token,
-            style_owner=camera.style_owner,
-            style_id=camera.style_id,
-            tile_mode=TILE_MODE_VECTOR,
+        style_definition = fetch_mapbox_style_definition(token, camera.style_owner, camera.style_id)
+        simplified_style = simplify_mapbox_style_expressions(style_definition)
+        tileset_ids = extract_mapbox_vector_source_ids(style_definition)
+        layer_uri = build_vector_tile_layer_uri(
+            token,
+            camera.style_owner,
+            camera.style_id,
+            tileset_ids=tileset_ids,
+            include_style_url=False,
         )
-        if layer is None or not layer.isValid():
+        layer = QgsVectorTileLayer(layer_uri, f"qfit comparison {camera.style_owner}/{camera.style_id}")
+        if not is_valid_qgis_vector_tile_layer(layer=layer, vector_tile_layer_type=QgsVectorTileLayer):
             raise RuntimeError("QGIS did not create a valid Mapbox vector tile layer.")
+        BackgroundMapService()._apply_mapbox_gl_style(layer, simplified_style)
 
+        destination_crs = QgsCoordinateReferenceSystem("EPSG:3857")
         settings = QgsMapSettings()
         settings.setLayers([layer])
         settings.setDestinationCrs(destination_crs)
@@ -340,9 +444,9 @@ def render_qgis_vector(
             app.exitQgis()
 
 
-def build_image_diff(*, reference_path: Path, candidate_path: Path, output_path: Path) -> None:
+def build_image_diff(*, reference_path: Path, candidate_path: Path, output_path: Path) -> ImageMetrics:  # pragma: no cover
     try:
-        from PIL import Image, ImageChops  # type: ignore[import-not-found]
+        from PIL import Image, ImageChops, ImageEnhance, ImageStat  # type: ignore[import-not-found]
     except ImportError as exc:  # pragma: no cover - depends on optional local toolchain
         raise RuntimeError(
             "Diff image generation requires Pillow. Install it locally with "
@@ -356,7 +460,42 @@ def build_image_diff(*, reference_path: Path, candidate_path: Path, output_path:
                     f"Cannot diff images with different sizes: {reference.size} vs {candidate.size}."
                 )
             diff = ImageChops.difference(reference, candidate)
-            diff.save(output_path)
+            ImageEnhance.Brightness(diff).enhance(8.0).save(output_path)
+            diff_rgb = diff.convert("RGB")
+            stats = ImageStat.Stat(diff_rgb)
+            channel_count = max(1, len(stats.mean))
+            mean_absolute_delta = sum(stats.mean) / channel_count
+            rms_delta = sum(stats.rms) / channel_count
+            changed_pixel_count = sum(1 for pixel in diff_rgb.getdata() if any(channel != 0 for channel in pixel))
+            pixel_count = reference.width * reference.height
+            metrics: ImageMetrics = {
+                "pixel_count": pixel_count,
+                "changed_pixel_count": changed_pixel_count,
+                "changed_pixel_ratio": changed_pixel_count / pixel_count if pixel_count else 0.0,
+                "mean_absolute_channel_delta": mean_absolute_delta,
+                "normalized_mean_absolute_channel_delta": mean_absolute_delta / 255.0,
+                "rms_channel_delta": rms_delta,
+                "normalized_rms_channel_delta": rms_delta / 255.0,
+            }
+            metrics.update(_optional_ssim_metric(reference=reference, candidate=candidate))
+            return metrics
+
+
+def _optional_ssim_metric(*, reference: object, candidate: object) -> ImageMetrics:  # pragma: no cover
+    try:
+        import numpy as np  # type: ignore[import-not-found]
+        from skimage.metrics import structural_similarity  # type: ignore[import-not-found]
+    except ImportError:
+        return {"ssim_status": "unavailable"}
+
+    reference_array = np.asarray(reference.convert("RGB"))
+    candidate_array = np.asarray(candidate.convert("RGB"))
+    return {
+        "ssim_status": "available",
+        "structural_similarity": float(
+            structural_similarity(reference_array, candidate_array, channel_axis=2, data_range=255)
+        ),
+    }
 
 
 def run_comparison(
@@ -364,7 +503,7 @@ def run_comparison(
     *,
     browser_renderer: Callable[..., None] = render_browser_reference,
     qgis_renderer: Callable[..., None] = render_qgis_vector,
-    diff_builder: Callable[..., None] = build_image_diff,
+    diff_builder: Callable[..., ImageMetrics | None] = build_image_diff,
 ) -> ComparisonResult:
     run_dir = build_run_directory(
         output_root=config.output_root,
@@ -377,6 +516,7 @@ def run_comparison(
     browser_captured = False
     qgis_captured = False
     diff_captured = False
+    image_metrics: ImageMetrics = {}
 
     if config.browser:
         browser_renderer(
@@ -392,11 +532,12 @@ def run_comparison(
         qgis_captured = True
 
     if config.diff and browser_captured and qgis_captured:
-        diff_builder(
+        image_metrics = diff_builder(
             reference_path=paths.browser_png,
             candidate_path=paths.qgis_png,
             output_path=paths.diff_png,
-        )
+        ) or {}
+        paths.metrics_json.write_text(json.dumps(image_metrics, indent=2) + "\n", encoding="utf-8")
         diff_captured = True
 
     result = ComparisonResult(
@@ -404,6 +545,7 @@ def run_comparison(
         browser_captured=browser_captured,
         qgis_captured=qgis_captured,
         diff_captured=diff_captured,
+        image_metrics=image_metrics,
     )
     write_manifest(camera=config.camera, result=result)
     return result
@@ -485,6 +627,7 @@ def main(argv: Iterable[str] | None = None) -> int:
         print(list_cameras())
         return 0
 
+    token = ""
     try:
         token = resolve_mapbox_token(provided_token=args.mapbox_token)
         config = ComparisonConfig(
@@ -498,7 +641,8 @@ def main(argv: Iterable[str] | None = None) -> int:
         )
         result = run_comparison(config)
     except (RuntimeError, ValueError) as exc:
-        parser.exit(2, f"error: {exc}\n")
+        print(f"error: {redact_sensitive_text(str(exc), token)}", file=sys.stderr)
+        return 2
 
     _print_result(result)
     return 0
