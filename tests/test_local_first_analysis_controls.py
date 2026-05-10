@@ -209,17 +209,27 @@ class LocalFirstAnalysisControlsTests(unittest.TestCase):
 
     def test_mode_options_exclude_legacy_none_sentinel(self):
         combo = FakeComboBox()
-        for mode in ("None", "Heatmap", "Most frequent starting points"):
+        for mode in (
+            "None",
+            "Most frequent starting points",
+            "Heatmap",
+            "Slope grade lines",
+        ):
             combo.addItem(mode)
 
         self.assertEqual(
             local_first_analysis_mode_options(combo),
-            ("Heatmap", "Most frequent starting points"),
+            ("Most frequent starting points", "Heatmap", "Slope grade lines"),
         )
 
     def test_bind_exposes_user_facing_modes_and_selects_first_real_mode(self):
         combo = FakeComboBox(current_text="None")
-        for mode in ("None", "Heatmap", "Most frequent starting points"):
+        for mode in (
+            "None",
+            "Most frequent starting points",
+            "Heatmap",
+            "Slope grade lines",
+        ):
             combo.addItem(mode)
         dock = SimpleNamespace(analysisModeComboBox=combo)
         analysis_content = SimpleNamespace(set_analysis_mode_options=MagicMock())
@@ -230,14 +240,19 @@ class LocalFirstAnalysisControlsTests(unittest.TestCase):
         )
 
         analysis_content.set_analysis_mode_options.assert_called_once_with(
-            ("Heatmap", "Most frequent starting points"),
-            selected="Heatmap",
+            ("Most frequent starting points", "Heatmap", "Slope grade lines"),
+            selected="Most frequent starting points",
         )
-        self.assertEqual(combo.currentText(), "Heatmap")
+        self.assertEqual(combo.currentText(), "Most frequent starting points")
 
     def test_bind_preserves_supported_current_mode(self):
         combo = FakeComboBox(current_text="Most frequent starting points")
-        for mode in ("None", "Heatmap", "Most frequent starting points"):
+        for mode in (
+            "None",
+            "Most frequent starting points",
+            "Heatmap",
+            "Slope grade lines",
+        ):
             combo.addItem(mode)
         dock = SimpleNamespace(analysisModeComboBox=combo)
         analysis_content = SimpleNamespace(set_analysis_mode_options=MagicMock())
@@ -248,7 +263,7 @@ class LocalFirstAnalysisControlsTests(unittest.TestCase):
         )
 
         analysis_content.set_analysis_mode_options.assert_called_once_with(
-            ("Heatmap", "Most frequent starting points"),
+            ("Most frequent starting points", "Heatmap", "Slope grade lines"),
             selected="Most frequent starting points",
         )
         self.assertEqual(combo.currentText(), "Most frequent starting points")

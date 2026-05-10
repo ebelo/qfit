@@ -2106,8 +2106,16 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             status="Showing top 2 frequent starting-point clusters",
             layer=None,
         )
-        dock.activities_layer = "activities-layer"
-        dock.points_layer = "points-layer"
+        dock._runtime_state_store = self.module.DockRuntimeStore()
+        dock._runtime_state_store.set_dataset_layers(
+            activities_layer="activities-layer",
+            points_layer="points-layer",
+        )
+        dock._runtime_state_store.set_route_layers(
+            route_tracks_layer="route-tracks-layer",
+            route_points_layer="route-points-layer",
+            route_profile_samples_layer="route-profile-samples-layer",
+        )
         selection_state = self.module.ActivitySelectionState(query=object(), filtered_count=2)
 
         result = self.module.QfitDockWidget._run_selected_analysis(
@@ -2124,6 +2132,9 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             selection_state=selection_state,
             activities_layer="activities-layer",
             points_layer="points-layer",
+            route_tracks_layer="route-tracks-layer",
+            route_points_layer="route-points-layer",
+            route_profile_samples_layer="route-profile-samples-layer",
         )
         dock.analysis_workflow.run_request.assert_called_once_with("analysis-request")
 

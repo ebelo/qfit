@@ -2,6 +2,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from qfit.analysis.application.analysis_execution_dispatch import (
+    FREQUENT_STARTING_POINTS_MODE,
+    HEATMAP_MODE,
+    SLOPE_GRADE_MODE,
+)
+
 from ._qt_compat import import_qt_module
 from .action_row import (
     build_workflow_action_row,
@@ -85,7 +91,9 @@ class AnalysisPageContent(QWidget):
         style_detail_label(self.analysis_mode_label)
         self.analysis_mode_combo = QComboBox(self)
         self.analysis_mode_combo.setObjectName("qfitWizardAnalysisModeComboBox")
-        self.set_analysis_mode_options(("Heatmap", "Most frequent starting points"))
+        self.set_analysis_mode_options(
+            (HEATMAP_MODE, FREQUENT_STARTING_POINTS_MODE, SLOPE_GRADE_MODE)
+        )
         if hasattr(self.analysis_mode_combo, "currentTextChanged"):
             self.analysis_mode_combo.currentTextChanged.connect(
                 self.analysisModeChanged.emit

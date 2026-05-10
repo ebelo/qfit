@@ -33,6 +33,9 @@ class TestAnalysisPolicyFacade(unittest.TestCase):
             selection_state=selection_state,
             activities_layer="activities-layer",
             points_layer="points-layer",
+            route_tracks_layer=None,
+            route_points_layer=None,
+            route_profile_samples_layer=None,
         )
 
     def test_run_analysis_workflow_request_delegates_to_execution_use_case(self):

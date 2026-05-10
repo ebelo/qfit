@@ -1,13 +1,19 @@
 from __future__ import annotations
 
+from ...analysis.application.analysis_execution_dispatch import (
+    FREQUENT_STARTING_POINTS_MODE,
+    HEATMAP_MODE,
+    SLOPE_GRADE_MODE,
+)
 from ...visualization.application import DEFAULT_TEMPORAL_MODE_LABEL, temporal_mode_labels
 
 
 NONE_ANALYSIS_MODE_LABEL = "None"
 ANALYSIS_MODE_LABELS = (
     NONE_ANALYSIS_MODE_LABEL,
-    "Most frequent starting points",
-    "Heatmap",
+    FREQUENT_STARTING_POINTS_MODE,
+    HEATMAP_MODE,
+    SLOPE_GRADE_MODE,
 )
 
 

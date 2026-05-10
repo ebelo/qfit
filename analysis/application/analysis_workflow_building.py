@@ -8,6 +8,9 @@ def build_analysis_workflow(
     selection_state: ActivitySelectionState | None = None,
     activities_layer=None,
     points_layer=None,
+    route_tracks_layer=None,
+    route_points_layer=None,
+    route_profile_samples_layer=None,
 ):
     from .analysis_request_builder import (
         build_analysis_workflow_request_inputs,
@@ -21,5 +24,8 @@ def build_analysis_workflow(
             selection_state=selection_state,
             activities_layer=activities_layer,
             points_layer=points_layer,
+            route_tracks_layer=route_tracks_layer,
+            route_points_layer=route_points_layer,
+            route_profile_samples_layer=route_profile_samples_layer,
         )
     )

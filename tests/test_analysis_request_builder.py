@@ -58,11 +58,20 @@ class TestAnalysisRequestBuilder(unittest.TestCase):
         current = build_run_analysis_current_inputs(
             activities_layer="activities-layer",
             points_layer="points-layer",
+            route_tracks_layer="route-tracks-layer",
+            route_points_layer="route-points-layer",
+            route_profile_samples_layer="route-profile-samples-layer",
         )
 
         self.assertIsInstance(current, RunAnalysisCurrentInputs)
         self.assertEqual(current.activities_layer, "activities-layer")
         self.assertEqual(current.points_layer, "points-layer")
+        self.assertEqual(current.route_tracks_layer, "route-tracks-layer")
+        self.assertEqual(current.route_points_layer, "route-points-layer")
+        self.assertEqual(
+            current.route_profile_samples_layer,
+            "route-profile-samples-layer",
+        )
 
     def test_build_run_analysis_request_inputs_keeps_inputs(self):
         selection_state = ActivitySelectionState(query=ActivityQuery(search_text="gravel"), filtered_count=4)
@@ -71,6 +80,9 @@ class TestAnalysisRequestBuilder(unittest.TestCase):
             current=RunAnalysisCurrentInputs(
                 activities_layer="activities-layer",
                 points_layer="points-layer",
+                route_tracks_layer="route-tracks-layer",
+                route_points_layer="route-points-layer",
+                route_profile_samples_layer="route-profile-samples-layer",
             ),
             analysis_mode="Heatmap",
             starts_layer="starts-layer",
@@ -82,6 +94,12 @@ class TestAnalysisRequestBuilder(unittest.TestCase):
         self.assertEqual(inputs.activities_layer, "activities-layer")
         self.assertEqual(inputs.starts_layer, "starts-layer")
         self.assertEqual(inputs.points_layer, "points-layer")
+        self.assertEqual(inputs.route_tracks_layer, "route-tracks-layer")
+        self.assertEqual(inputs.route_points_layer, "route-points-layer")
+        self.assertEqual(
+            inputs.route_profile_samples_layer,
+            "route-profile-samples-layer",
+        )
         self.assertIs(inputs.selection_state, selection_state)
 
     def test_build_run_analysis_request_inputs_defaults_empty_values(self):
@@ -91,6 +109,9 @@ class TestAnalysisRequestBuilder(unittest.TestCase):
         self.assertIsNone(inputs.activities_layer)
         self.assertIsNone(inputs.starts_layer)
         self.assertIsNone(inputs.points_layer)
+        self.assertIsNone(inputs.route_tracks_layer)
+        self.assertIsNone(inputs.route_points_layer)
+        self.assertIsNone(inputs.route_profile_samples_layer)
         self.assertEqual(inputs.selection_state.filtered_count, 0)
 
     def test_build_analysis_workflow_request_inputs_keeps_inputs(self):
@@ -102,6 +123,9 @@ class TestAnalysisRequestBuilder(unittest.TestCase):
             selection_state=selection_state,
             activities_layer="activities-layer",
             points_layer="points-layer",
+            route_tracks_layer="route-tracks-layer",
+            route_points_layer="route-points-layer",
+            route_profile_samples_layer="route-profile-samples-layer",
         )
 
         self.assertIsInstance(inputs, RunAnalysisRequestInputs)
@@ -109,6 +133,12 @@ class TestAnalysisRequestBuilder(unittest.TestCase):
         self.assertEqual(inputs.activities_layer, "activities-layer")
         self.assertEqual(inputs.starts_layer, "starts-layer")
         self.assertEqual(inputs.points_layer, "points-layer")
+        self.assertEqual(inputs.route_tracks_layer, "route-tracks-layer")
+        self.assertEqual(inputs.route_points_layer, "route-points-layer")
+        self.assertEqual(
+            inputs.route_profile_samples_layer,
+            "route-profile-samples-layer",
+        )
         self.assertIs(inputs.selection_state, selection_state)
 
     def test_build_run_analysis_request_keeps_inputs(self):
@@ -120,6 +150,9 @@ class TestAnalysisRequestBuilder(unittest.TestCase):
                 activities_layer="activities-layer",
                 starts_layer="starts-layer",
                 points_layer="points-layer",
+                route_tracks_layer="route-tracks-layer",
+                route_points_layer="route-points-layer",
+                route_profile_samples_layer="route-profile-samples-layer",
                 selection_state=selection_state,
             )
         )
@@ -128,6 +161,12 @@ class TestAnalysisRequestBuilder(unittest.TestCase):
         self.assertEqual(request.activities_layer, "activities-layer")
         self.assertEqual(request.starts_layer, "starts-layer")
         self.assertEqual(request.points_layer, "points-layer")
+        self.assertEqual(request.route_tracks_layer, "route-tracks-layer")
+        self.assertEqual(request.route_points_layer, "route-points-layer")
+        self.assertEqual(
+            request.route_profile_samples_layer,
+            "route-profile-samples-layer",
+        )
         self.assertIs(request.selection_state, selection_state)
 
     def test_build_run_analysis_request_defaults_empty_values(self):
@@ -137,6 +176,9 @@ class TestAnalysisRequestBuilder(unittest.TestCase):
         self.assertIsNone(request.activities_layer)
         self.assertIsNone(request.starts_layer)
         self.assertIsNone(request.points_layer)
+        self.assertIsNone(request.route_tracks_layer)
+        self.assertIsNone(request.route_points_layer)
+        self.assertIsNone(request.route_profile_samples_layer)
         self.assertEqual(request.selection_state.filtered_count, 0)
 
 
