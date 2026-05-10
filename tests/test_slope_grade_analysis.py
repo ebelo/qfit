@@ -33,6 +33,15 @@ class _Layer:
         return self._fields
 
 
+class _WkbLayer(_Layer):
+    def __init__(self, *, wkb_type, fields=()):
+        super().__init__(geometry=None, fields=fields)
+        self._wkb_type = wkb_type
+
+    def wkbType(self):
+        return self._wkb_type
+
+
 class SlopeGradeAnalysisTests(unittest.TestCase):
     def test_legend_uses_documented_deterministic_percent_grade_classes(self):
         self.assertEqual(SLOPE_GRADE_MODE, "Slope grade lines")
@@ -94,6 +103,38 @@ class SlopeGradeAnalysisTests(unittest.TestCase):
         self.assertEqual(plan.enabled_layers, ())
         self.assertIn("activity track target is not a line layer", plan.layers[0].blocked_reason)
         self.assertIn("saved route target is not a line layer", plan.layers[1].blocked_reason)
+
+    def test_plan_uses_wkb_type_fallback_without_confusing_point_and_line_codes(self):
+        point_wkb_layer = _WkbLayer(
+            wkb_type=1,
+            fields=("grade_smooth_pct", "stream_distance_m"),
+        )
+        line_wkb_layer = _WkbLayer(wkb_type=2, fields=("name",))
+        multi_line_wkb_layer = _WkbLayer(wkb_type=5, fields=("name",))
+        route_samples = _Layer(fields=("distance_m", "altitude_m"))
+
+        plan = build_slope_grade_analysis_plan(
+            activities_layer=line_wkb_layer,
+            points_layer=point_wkb_layer,
+            route_tracks_layer=multi_line_wkb_layer,
+            route_profile_samples_layer=route_samples,
+        )
+
+        self.assertEqual(
+            tuple(layer.key for layer in plan.enabled_layers),
+            ("activity_tracks", "saved_route_tracks"),
+        )
+
+        rejected_plan = build_slope_grade_analysis_plan(
+            activities_layer=point_wkb_layer,
+            points_layer=point_wkb_layer,
+        )
+
+        self.assertEqual(rejected_plan.enabled_layers, ())
+        self.assertIn(
+            "activity track target is not a line layer",
+            rejected_plan.layers[0].blocked_reason,
+        )
 
     def test_plan_reports_missing_elevation_distance_sources_gracefully(self):
         plan = build_slope_grade_analysis_plan(

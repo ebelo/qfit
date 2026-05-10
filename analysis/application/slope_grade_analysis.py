@@ -89,8 +89,12 @@ class SlopeGradeAnalysisPlan:
 SLOPE_GRADE_LEGEND = tuple(grade_class.label for grade_class in SLOPE_GRADE_CLASSES)
 
 
+ACTIVITY_TRACKS_LABEL = "activity tracks"
+SAVED_ROUTE_TRACKS_LABEL = "saved route tracks"
 _ACTIVITY_POINT_GRADE_FIELDS = ("grade_smooth_pct", "stream_distance_m")
 _ROUTE_ELEVATION_SAMPLE_FIELDS = ("distance_m", "altitude_m")
+_LINE_GEOMETRY_TYPE = 1
+_LINE_WKB_TYPES = frozenset((2, 5))
 
 
 def build_slope_grade_analysis_plan(
@@ -155,20 +159,20 @@ def _activity_track_plan(activities_layer, points_layer) -> SlopeGradeLayerPlan:
     if activities_layer is None:
         return SlopeGradeLayerPlan(
             key="activity_tracks",
-            label="activity tracks",
+            label=ACTIVITY_TRACKS_LABEL,
             blocked_reason="activity track lines are not loaded",
         )
     if not _is_line_layer(activities_layer):
         return SlopeGradeLayerPlan(
             key="activity_tracks",
-            label="activity tracks",
+            label=ACTIVITY_TRACKS_LABEL,
             layer=activities_layer,
             blocked_reason="activity track target is not a line layer",
         )
     if not _has_fields(points_layer, _ACTIVITY_POINT_GRADE_FIELDS):
         return SlopeGradeLayerPlan(
             key="activity_tracks",
-            label="activity tracks",
+            label=ACTIVITY_TRACKS_LABEL,
             layer=activities_layer,
             blocked_reason=(
                 "activity tracks need point samples with grade_smooth_pct and "
@@ -177,7 +181,7 @@ def _activity_track_plan(activities_layer, points_layer) -> SlopeGradeLayerPlan:
         )
     return SlopeGradeLayerPlan(
         key="activity_tracks",
-        label="activity tracks",
+        label=ACTIVITY_TRACKS_LABEL,
         layer=activities_layer,
         enabled=True,
         source_fields=_ACTIVITY_POINT_GRADE_FIELDS,
@@ -188,20 +192,20 @@ def _route_track_plan(route_tracks_layer, sample_layer) -> SlopeGradeLayerPlan:
     if route_tracks_layer is None:
         return SlopeGradeLayerPlan(
             key="saved_route_tracks",
-            label="saved route tracks",
+            label=SAVED_ROUTE_TRACKS_LABEL,
             blocked_reason="saved route track lines are not loaded",
         )
     if not _is_line_layer(route_tracks_layer):
         return SlopeGradeLayerPlan(
             key="saved_route_tracks",
-            label="saved route tracks",
+            label=SAVED_ROUTE_TRACKS_LABEL,
             layer=route_tracks_layer,
             blocked_reason="saved route target is not a line layer",
         )
     if not _has_fields(sample_layer, _ROUTE_ELEVATION_SAMPLE_FIELDS):
         return SlopeGradeLayerPlan(
             key="saved_route_tracks",
-            label="saved route tracks",
+            label=SAVED_ROUTE_TRACKS_LABEL,
             layer=route_tracks_layer,
             blocked_reason=(
                 "saved routes need profile or route point samples with "
@@ -210,7 +214,7 @@ def _route_track_plan(route_tracks_layer, sample_layer) -> SlopeGradeLayerPlan:
         )
     return SlopeGradeLayerPlan(
         key="saved_route_tracks",
-        label="saved route tracks",
+        label=SAVED_ROUTE_TRACKS_LABEL,
         layer=route_tracks_layer,
         enabled=True,
         source_fields=_ROUTE_ELEVATION_SAMPLE_FIELDS,
@@ -236,10 +240,10 @@ def _field_names(layer) -> frozenset[str]:
 
 def _is_line_layer(layer) -> bool:
     geometry_type = _call_if_present(layer, "geometryType")
-    if _looks_like_line_geometry(geometry_type):
+    if _looks_like_line_geometry_type(geometry_type):
         return True
     wkb_type = _call_if_present(layer, "wkbType")
-    return _looks_like_line_geometry(wkb_type)
+    return _looks_like_line_wkb_type(wkb_type)
 
 
 def _call_if_present(obj, attr: str):
@@ -249,14 +253,24 @@ def _call_if_present(obj, attr: str):
     return None
 
 
-def _looks_like_line_geometry(value) -> bool:
+def _looks_like_line_geometry_type(value) -> bool:
     if value is None:
         return False
     if isinstance(value, str):
         lowered = value.lower()
         return "line" in lowered and "polygon" not in lowered
     # QgsWkbTypes.LineGeometry is 1 in QGIS, but keep this module QGIS-free.
-    return value == 1
+    return value == _LINE_GEOMETRY_TYPE
+
+
+def _looks_like_line_wkb_type(value) -> bool:
+    if value is None:
+        return False
+    if isinstance(value, str):
+        lowered = value.lower()
+        return "line" in lowered and "polygon" not in lowered
+    # Common QgsWkbTypes values: LineString=2 and MultiLineString=5.
+    return value in _LINE_WKB_TYPES
 
 
 __all__ = [
