@@ -23,6 +23,15 @@ def _property_text(widget: ET.Element, property_name: str) -> str:
     raise AssertionError(f"property {property_name!r} not found on {widget.get('name')!r}")
 
 
+def _combo_items(widget: ET.Element) -> list[str]:
+    items = []
+    for item in widget.findall("item"):
+        prop = item.find("property[@name='text']")
+        string = prop.find("string") if prop is not None else None
+        items.append(string.text if string is not None and string.text is not None else "")
+    return items
+
+
 class DockUiFieldGrammarTests(unittest.TestCase):
     def setUp(self):
         self.root = ET.parse(UI_PATH).getroot()
@@ -83,6 +92,12 @@ class DockUiFieldGrammarTests(unittest.TestCase):
 
     def test_basemap_checkbox_uses_short_action_label(self):
         self.assertEqual(_property_text(_widget(self.root, "backgroundMapCheckBox"), "text"), "Enable Mapbox basemap")
+
+    def test_style_preset_combo_excludes_analysis_presets(self):
+        self.assertEqual(
+            _combo_items(_widget(self.root, "stylePresetComboBox")),
+            ["Simple lines", "By activity type", "Track points"],
+        )
 
     def test_detailed_route_actions_use_short_labels(self):
         self.assertEqual(_property_text(_widget(self.root, "backfillMissingDetailedRoutesButton"), "text"), "Backfill routes")

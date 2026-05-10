@@ -233,35 +233,16 @@ class LayerStyleServiceTests(unittest.TestCase):
             categories = {cat.value() for cat in renderer.categories()}
             self.assertEqual(categories, {"Ride", "Run"})
 
-    def test_heatmap_applies_heatmap_renderer_and_hides_tracks(self):
+    def test_removed_analysis_style_preset_falls_back_to_default_lines(self):
         with tempfile.TemporaryDirectory() as tmp:
             activities_layer, starts_layer, points_layer, atlas_layer = self._write_and_load(tmp)
             self.style_service.apply_style(
                 activities_layer, starts_layer, points_layer, atlas_layer, "Heatmap"
             )
-            renderer = starts_layer.renderer()
-            self.assertIsInstance(renderer, QgsHeatmapRenderer)
-            self.assertEqual(renderer.maximumValue(), float(min(25, starts_layer.featureCount())))
-            self.assertAlmostEqual(activities_layer.opacity(), 0.0, places=2)
-            self.assertAlmostEqual(points_layer.opacity(), 0.0, places=2)
-
-    def test_heatmap_falls_back_to_starts_when_no_points_layer(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            activities_layer, starts_layer, _points_layer, atlas_layer = self._write_and_load(tmp)
-            self.style_service.apply_style(
-                activities_layer, starts_layer, None, atlas_layer, "Heatmap"
-            )
-            self.assertIsInstance(starts_layer.renderer(), QgsHeatmapRenderer)
-            self.assertAlmostEqual(activities_layer.opacity(), 0.0, places=2)
-
-    def test_start_points_preset_makes_starts_prominent(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            activities_layer, starts_layer, points_layer, atlas_layer = self._write_and_load(tmp)
-            self.style_service.apply_style(
-                activities_layer, starts_layer, points_layer, atlas_layer, "Start points"
-            )
+            self.assertIsInstance(activities_layer.renderer(), QgsSingleSymbolRenderer)
+            self.assertGreater(activities_layer.opacity(), 0.0)
             self.assertIsInstance(starts_layer.renderer(), QgsSingleSymbolRenderer)
-            self.assertGreaterEqual(starts_layer.opacity(), 0.8)
+            self.assertIsInstance(points_layer.renderer(), QgsSingleSymbolRenderer)
 
     def test_apply_style_via_layer_manager_delegates_to_service(self):
         """LayerManager.apply_style must produce the same result as calling LayerStyleService directly."""
@@ -411,49 +392,6 @@ class LayerStyleServiceUnitTests(unittest.TestCase):
         self.service.apply_style(acts, None, None, None, "By activity type")
         acts.setRenderer.assert_called_once()
 
-    def test_heatmap_hides_tracks_and_points(self):
-        acts = self._make_layer()
-        starts = self._make_layer()
-        points = self._make_layer()
-        self.service.apply_style(acts, starts, points, None, "Heatmap")
-        acts.setOpacity.assert_called()
-        points.setOpacity.assert_called_with(0.0)
-
-    def test_heatmap_uses_starts_when_no_points_layer(self):
-        acts = self._make_layer()
-        starts = self._make_layer()
-        self.service.apply_style(acts, starts, None, None, "Heatmap")
-        acts.setOpacity.assert_called()
-        starts.setRenderer.assert_called_once()
-
-    def test_heatmap_uses_starts_when_points_layer_is_empty(self):
-        acts = self._make_layer()
-        starts = self._make_layer()
-        points = self._make_layer(feature_count=0)
-        self.service.apply_style(acts, starts, points, None, "Heatmap")
-        acts.setOpacity.assert_called()
-        starts.setRenderer.assert_called_once()
-        starts.setOpacity.assert_called_with(1.0)
-        points.setOpacity.assert_called_with(0.0)
-
-    def test_heatmap_falls_back_to_points_when_starts_layer_is_missing(self):
-        acts = self._make_layer()
-        points = self._make_layer()
-        self.service.apply_style(acts, None, points, None, "Heatmap")
-        acts.setOpacity.assert_called()
-        points.setRenderer.assert_called_once()
-        points.setOpacity.assert_called_with(1.0)
-
-    def test_heatmap_falls_back_to_points_when_starts_layer_is_empty(self):
-        acts = self._make_layer()
-        starts = self._make_layer(feature_count=0)
-        points = self._make_layer()
-        self.service.apply_style(acts, starts, points, None, "Heatmap")
-        acts.setOpacity.assert_called()
-        points.setRenderer.assert_called_once()
-        points.setOpacity.assert_called_with(1.0)
-        starts.setOpacity.assert_called_with(0.0)
-
     def test_track_points_sets_renderer_on_tracks_and_points(self):
         acts = self._make_layer()
         starts = self._make_layer()
@@ -461,16 +399,6 @@ class LayerStyleServiceUnitTests(unittest.TestCase):
         self.service.apply_style(acts, starts, points, None, "Track points")
         acts.setRenderer.assert_called_once()
         points.setRenderer.assert_called_once()
-
-    def test_clustered_starts_sets_renderer_on_starts(self):
-        starts = self._make_layer()
-        self.service.apply_style(None, starts, None, None, "Clustered starts")
-        starts.setRenderer.assert_called_once()
-
-    def test_start_points_makes_starts_prominent(self):
-        starts = self._make_layer()
-        self.service.apply_style(None, starts, None, None, "Start points")
-        starts.setRenderer.assert_called_once()
 
     def test_atlas_layer_is_styled(self):
         atlas = self._make_layer()
@@ -564,7 +492,7 @@ class LayerStyleServiceUnitTests(unittest.TestCase):
         self.service._build_line_symbol("#abcdef", line_style)
 
     def test_heatmap_renderer_builders_use_map_units_and_maximum_values(self):
-        module_globals = self.service._apply_heatmap_style.__func__.__globals__
+        module_globals = self.service._build_line_symbol.__func__.__globals__
         visualize_renderer = MagicMock()
         analysis_renderer = MagicMock()
 
@@ -593,32 +521,6 @@ class LayerStyleServiceUnitTests(unittest.TestCase):
             module_globals["QgsUnitTypes"].RenderMapUnits
         )
         analysis_renderer.setMaximumValue.assert_called_once_with(6.0)
-
-    def test_fixed_visualize_heatmap_maximum_caps_at_25(self):
-        module_globals = self.service._apply_heatmap_style.__func__.__globals__
-        fixed_maximum = module_globals["_fixed_visualize_heatmap_maximum"]
-
-        sparse_layer = MagicMock()
-        sparse_layer.featureCount.return_value = 3
-
-        dense_layer = MagicMock()
-        dense_layer.featureCount.return_value = 100
-
-        self.assertEqual(fixed_maximum(sparse_layer), 3.0)
-        self.assertEqual(fixed_maximum(dense_layer), 25.0)
-        self.assertIsNone(fixed_maximum(None))
-
-    def test_fixed_visualize_heatmap_maximum_uses_default_when_feature_count_unknown(self):
-        module_globals = self.service._apply_heatmap_style.__func__.__globals__
-        fixed_maximum = module_globals["_fixed_visualize_heatmap_maximum"]
-
-        unknown_layer = MagicMock()
-        unknown_layer.featureCount.return_value = -1
-
-        self.assertEqual(
-            fixed_maximum(unknown_layer),
-            float(module_globals["HEATMAP_VISUALIZE_MAXIMUM"]),
-        )
 
     def test_infer_background_preset_name_returns_none_for_malformed_name(self):
         layer = MagicMock()

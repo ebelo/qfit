@@ -113,7 +113,7 @@ class FakeDock:
         self.backgroundPresetComboBox = ComboWidget([DEFAULT_BACKGROUND_PRESET, "Custom"])
         self.tileModeComboBox = ComboWidget([TILE_MODE_RASTER, "Vector"])
         self.previewSortComboBox = ComboWidget([DEFAULT_SORT_LABEL, "Newest first"])
-        self.stylePresetComboBox = ComboWidget(["By activity type", "Heatmap"])
+        self.stylePresetComboBox = ComboWidget(["Simple lines", "By activity type", "Track points"])
 
     def _default_output_path(self):
         return "/tmp/qfit_activities.gpkg"
@@ -213,7 +213,7 @@ class DockSettingsBindingsTests(unittest.TestCase):
         self.assertEqual(dock.atlasTitleLineEdit.text(), "Spring Atlas")
         self.assertEqual(dock.atlasSubtitleLineEdit.text(), "Selected rides")
         self.assertEqual(dock.previewSortComboBox.currentText(), "Newest first")
-        self.assertEqual(dock.stylePresetComboBox.currentText(), "Heatmap")
+        self.assertEqual(dock.stylePresetComboBox.currentText(), "By activity type")
         self.assertEqual(dock.analysisModeComboBox.currentText(), "None")
 
     def test_save_roundtrip_preserves_values(self):
@@ -253,7 +253,7 @@ class DockSettingsBindingsTests(unittest.TestCase):
         self.assertEqual(settings.get("atlas_title"), "Weekend Atlas")
         self.assertEqual(settings.get("atlas_subtitle"), "Alpine routes")
         self.assertEqual(settings.get("analysis_mode"), "Most frequent starting points")
-        self.assertEqual(settings.get("style_preset"), "Heatmap")
+        self.assertEqual(settings.get("style_preset"), "By activity type")
 
 
 if __name__ == "__main__":

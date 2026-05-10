@@ -21,13 +21,10 @@ from qgis.core import (
 
 from ...mapbox_config import BACKGROUND_LAYER_PREFIX
 from ..application.render_plan import (
-    BY_ACTIVITY_TYPE_PRESET,
     DEFAULT_RENDER_PRESET,
     RENDERER_ATLAS_PAGE,
     RENDERER_CATEGORIZED_LINES,
     RENDERER_CATEGORIZED_POINTS,
-    RENDERER_CLUSTERISH,
-    RENDERER_HEATMAP,
     RENDERER_SIMPLE_LINES,
     RENDERER_START_POINTS,
     RENDERER_TRACK_POINTS,
@@ -47,18 +44,6 @@ HEATMAP_VISUALIZE_RADIUS_M = 250
 HEATMAP_VISUALIZE_MAXIMUM = 25
 ROUTE_LINE_HEX = "#8e44ad"
 ROUTE_POINT_RGB = "142,68,173"
-
-
-def _fixed_visualize_heatmap_maximum(layer):
-    if layer is None:
-        return None
-
-    feature_count = layer.featureCount()
-    if feature_count is None or feature_count < 0:
-        return float(HEATMAP_VISUALIZE_MAXIMUM)
-    if feature_count == 0:
-        return None
-    return float(min(HEATMAP_VISUALIZE_MAXIMUM, feature_count))
 
 
 def build_qfit_heatmap_renderer(*, maximum_value=None):
@@ -130,8 +115,6 @@ class LayerStyleService:
         basemap_preset_name = background_preset_name or self._infer_background_preset_name()
         render_plan = render_plan or build_render_plan(
             preset or DEFAULT_RENDER_PRESET,
-            has_start_features=self._has_features(starts_layer),
-            has_point_features=self._has_features(points_layer),
             has_points_layer=points_layer is not None,
             background_preset_name=basemap_preset_name,
         )
@@ -192,12 +175,6 @@ class LayerStyleService:
             return
         if renderer_family == RENDERER_CATEGORIZED_POINTS:
             self._apply_categorized_point_style(layer, basemap_preset_name, size=size or "1.8")
-            return
-        if renderer_family == RENDERER_HEATMAP:
-            self._apply_heatmap_style(layer)
-            return
-        if renderer_family == RENDERER_CLUSTERISH:
-            self._apply_clusterish_style(layer)
             return
         if renderer_family == RENDERER_ATLAS_PAGE:
             self._apply_atlas_page_style(layer)
@@ -315,33 +292,6 @@ class LayerStyleService:
         )
         layer.setRenderer(QgsSingleSymbolRenderer(symbol))
         layer.setOpacity(0.8 if not subtle else 0.35)
-        layer.triggerRepaint()
-
-    def _apply_heatmap_style(self, layer):
-        layer.setRenderer(
-            build_qfit_visualize_heatmap_renderer(
-                radius_map_units=HEATMAP_VISUALIZE_RADIUS_M,
-                maximum_value=_fixed_visualize_heatmap_maximum(layer),
-            )
-        )
-        layer.setOpacity(1.0)
-        layer.triggerRepaint()
-
-    def _has_features(self, layer):
-        return layer is not None and layer.featureCount() > 0
-
-    def _apply_clusterish_style(self, layer):
-        symbol = QgsMarkerSymbol.createSimple(
-            {
-                "name": "circle",
-                "color": "52,152,219,200",
-                "size": "4.2",
-                "outline_color": "255,255,255,255",
-                "outline_width": "0.4",
-            }
-        )
-        layer.setRenderer(QgsSingleSymbolRenderer(symbol))
-        layer.setOpacity(0.75)
         layer.triggerRepaint()
 
     def _apply_atlas_page_style(self, layer):

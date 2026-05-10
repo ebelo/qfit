@@ -1,12 +1,11 @@
 import unittest
 from types import SimpleNamespace
-from unittest.mock import MagicMock, call, patch
+from unittest.mock import MagicMock, patch
 
 from tests import _path  # noqa: F401
 from qfit.visualization.application.render_plan import (
-    RENDERER_HEATMAP,
-    SOURCE_ROLE_POINTS,
-    SOURCE_ROLE_STARTS,
+    DEFAULT_RENDER_PRESET,
+    RENDERER_SIMPLE_LINES,
 )
 from qfit.visualization.application.visual_apply import (
     BackgroundConfig,
@@ -133,8 +132,6 @@ class ApplyWithSubsetFiltersTests(unittest.TestCase):
         self.assertEqual(args[0][4], "Speed gradient")
 
     def test_builds_and_passes_render_plan(self):
-        self.layer_manager.has_features.side_effect = [False, True]
-
         self.service.apply(
             layers=self.layers,
             query=_make_query(),
@@ -147,22 +144,19 @@ class ApplyWithSubsetFiltersTests(unittest.TestCase):
 
         kwargs = self.layer_manager.apply_style.call_args[1]
         render_plan = kwargs["render_plan"]
-        self.assertEqual(render_plan.selected_source_role, SOURCE_ROLE_POINTS)
-        self.assertEqual(render_plan.points.renderer_family, RENDERER_HEATMAP)
+        self.assertEqual(render_plan.preset_name, DEFAULT_RENDER_PRESET)
+        self.assertEqual(render_plan.activities.renderer_family, RENDERER_SIMPLE_LINES)
         self.assertEqual(render_plan.background_preset_name, "Satellite")
-        self.layer_manager.has_features.assert_has_calls(
-            [call(self.layers.starts), call(self.layers.points)]
-        )
+        self.layer_manager.has_features.assert_not_called()
 
     def test_render_plan_tolerates_layers_without_feature_count(self):
         self.layers.starts = SimpleNamespace(name="starts")
         self.layers.points = SimpleNamespace(name="points")
-        self.layer_manager.has_features.side_effect = [False, False]
 
         self.service.apply(
             layers=self.layers,
             query=_make_query(),
-            style_preset="Heatmap",
+            style_preset="Track points",
             temporal_mode="Off",
             background_config=_make_bg_config(),
             apply_subset_filters=True,
@@ -171,11 +165,8 @@ class ApplyWithSubsetFiltersTests(unittest.TestCase):
 
         kwargs = self.layer_manager.apply_style.call_args[1]
         render_plan = kwargs["render_plan"]
-        self.assertEqual(render_plan.selected_source_role, SOURCE_ROLE_STARTS)
-        self.assertEqual(render_plan.starts.renderer_family, RENDERER_HEATMAP)
-        self.layer_manager.has_features.assert_has_calls(
-            [call(self.layers.starts), call(self.layers.points)]
-        )
+        self.assertEqual(render_plan.points.renderer_family, "track_points")
+        self.layer_manager.has_features.assert_not_called()
 
     def test_status_includes_filtered_count(self):
         result = self.service.apply(

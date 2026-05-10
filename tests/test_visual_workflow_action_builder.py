@@ -159,7 +159,7 @@ class TestVisualWorkflowActionBuilder(unittest.TestCase):
             VisualWorkflowActionInputs(
                 layers=LayerRefs(starts="starts"),
                 selection_state=selection_state,
-                style_preset="Heatmap",
+                style_preset="By activity type",
                 temporal_mode="By month",
                 background_config=BackgroundConfig(tile_mode="Raster"),
                 analysis_mode="Heatmap",
