@@ -6,17 +6,14 @@ from unittest.mock import patch
 from tests import _path  # noqa: F401
 
 from qfit.activities.domain.activity_query import (
-    DEFAULT_SORT_LABEL,
     DETAILED_ROUTE_FILTER_ANY,
     DETAILED_ROUTE_FILTER_MISSING,
     DETAILED_ROUTE_FILTER_PRESENT,
-    SORT_OPTIONS,
 )
 from qfit.ui.application.local_first_activity_controls import (
     build_current_activity_preview_request,
     configure_detailed_route_filter_options,
     configure_local_first_activity_preview_options,
-    configure_preview_sort_options,
 )
 
 
@@ -181,35 +178,15 @@ class LocalFirstActivityControlsTests(unittest.TestCase):
             ],
         )
 
-    def test_configure_preview_sort_populates_sort_options(self):
-        combo = FakeComboBox()
-        combo.addItem("stale")
-        dock = SimpleNamespace(previewSortComboBox=combo)
-
-        configure_preview_sort_options(dock)
-
-        self.assertTrue(combo.cleared)
-        self.assertEqual(
-            combo.items,
-            [(label, None) for label in SORT_OPTIONS],
-        )
-        self.assertEqual(combo.items[0], (DEFAULT_SORT_LABEL, None))
-
-    def test_configure_activity_preview_options_populates_backing_combos(self):
+    def test_configure_activity_preview_options_populates_route_filter_combo(self):
         route_status_combo = FakeComboBox()
-        sort_combo = FakeComboBox()
         dock = SimpleNamespace(
             detailedRouteStatusComboBox=route_status_combo,
-            previewSortComboBox=sort_combo,
         )
 
         configure_local_first_activity_preview_options(dock)
 
         self.assertEqual(route_status_combo.items[0], ("Any routes", "any"))
-        self.assertEqual(
-            sort_combo.items,
-            [(label, None) for label in SORT_OPTIONS],
-        )
 
     def test_build_current_activity_preview_request_reads_local_first_backing_controls(self):
         activities = [SimpleNamespace(name="Morning Ride")]
@@ -220,8 +197,6 @@ class LocalFirstActivityControlsTests(unittest.TestCase):
             "Detailed routes only",
             DETAILED_ROUTE_FILTER_PRESENT,
         )
-        preview_sort_combo = FakeComboBox()
-        preview_sort_combo.addItem("Newest first")
         dock = SimpleNamespace(
             runtime_state=SimpleNamespace(activities=activities),
             activityTypeComboBox=activity_type_combo,
@@ -231,7 +206,6 @@ class LocalFirstActivityControlsTests(unittest.TestCase):
             maxDistanceSpinBox=FakeSpinBox(120),
             activitySearchLineEdit=FakeLineEdit("  gravel  "),
             detailedRouteStatusComboBox=detailed_route_status_combo,
-            previewSortComboBox=preview_sort_combo,
         )
 
         request = build_current_activity_preview_request(dock)
@@ -244,13 +218,12 @@ class LocalFirstActivityControlsTests(unittest.TestCase):
         self.assertEqual(request.max_distance_km, 120)
         self.assertEqual(request.search_text, "gravel")
         self.assertEqual(request.detailed_route_filter, DETAILED_ROUTE_FILTER_PRESENT)
-        self.assertEqual(request.sort_label, "Newest first")
+        self.assertFalse(hasattr(request, "sort_label"))
 
     def test_build_current_activity_preview_request_uses_safe_defaults(self):
         activity_type_combo = FakeComboBox()
         detailed_route_status_combo = FakeComboBox()
         detailed_route_status_combo.addItem("Any routes", DETAILED_ROUTE_FILTER_ANY)
-        preview_sort_combo = FakeComboBox()
         dock = SimpleNamespace(
             runtime_state=SimpleNamespace(activities=[]),
             activityTypeComboBox=activity_type_combo,
@@ -260,7 +233,6 @@ class LocalFirstActivityControlsTests(unittest.TestCase):
             maxDistanceSpinBox=FakeSpinBox(0),
             activitySearchLineEdit=FakeLineEdit(""),
             detailedRouteStatusComboBox=detailed_route_status_combo,
-            previewSortComboBox=preview_sort_combo,
         )
 
         request = build_current_activity_preview_request(dock)
@@ -268,7 +240,7 @@ class LocalFirstActivityControlsTests(unittest.TestCase):
         self.assertEqual(request.activity_type, "All")
         self.assertIsNone(request.date_from)
         self.assertIsNone(request.date_to)
-        self.assertEqual(request.sort_label, DEFAULT_SORT_LABEL)
+        self.assertFalse(hasattr(request, "sort_label"))
 
 
 if __name__ == "__main__":

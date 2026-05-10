@@ -86,10 +86,7 @@ class LocalFirstParityAuditTests(unittest.TestCase):
             surfaces["activity_style"].required_widget_attrs,
             activity_style.required_widget_attrs,
         )
-        self.assertEqual(
-            surfaces["activity_style"].optional_widget_attrs,
-            ("previewSortLabel", "previewSortComboBox"),
-        )
+        self.assertEqual(surfaces["activity_style"].optional_widget_attrs, ())
         self.assertEqual(
             surfaces["analysis_actions"].action_names,
             (

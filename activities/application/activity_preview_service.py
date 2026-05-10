@@ -17,6 +17,7 @@ class ActivityPreviewService:
         **legacy_kwargs,
     ) -> ActivityPreviewResult:
         if request is None:
+            legacy_kwargs.pop("sort_label", None)
             request = ActivityPreviewRequest(**legacy_kwargs)
         return build_activity_preview(request)
 

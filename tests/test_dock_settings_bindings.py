@@ -4,7 +4,7 @@ from tests import _path  # noqa: F401
 
 from qfit.configuration.infrastructure.credential_store import InMemoryCredentialStore
 from qfit.configuration.application.settings_service import SettingsService
-from qfit.activities.domain.activity_query import DEFAULT_SORT_LABEL, DETAILED_ROUTE_FILTER_ANY
+from qfit.activities.domain.activity_query import DETAILED_ROUTE_FILTER_ANY
 from qfit.configuration.application.dock_settings_bindings import build_dock_settings_bindings
 from qfit.configuration.application.ui_settings_binding import load_bindings, save_bindings
 from qfit.mapbox_config import DEFAULT_BACKGROUND_PRESET, TILE_MODE_RASTER
@@ -112,7 +112,6 @@ class FakeDock:
         self.analysisModeComboBox = ComboWidget(["None", "Most frequent starting points"])
         self.backgroundPresetComboBox = ComboWidget([DEFAULT_BACKGROUND_PRESET, "Custom"])
         self.tileModeComboBox = ComboWidget([TILE_MODE_RASTER, "Vector"])
-        self.previewSortComboBox = ComboWidget([DEFAULT_SORT_LABEL, "Newest first"])
         self.stylePresetComboBox = ComboWidget(["Simple lines", "By activity type", "Track points"])
 
     def _default_output_path(self):
@@ -180,7 +179,6 @@ class DockSettingsBindingsTests(unittest.TestCase):
         "analysis_mode",
         "background_preset",
         "tile_mode",
-        "preview_sort",
         "style_preset",
     }
 
@@ -198,7 +196,6 @@ class DockSettingsBindingsTests(unittest.TestCase):
                 "qfit/use_background_map": True,
                 "qfit/atlas_title": "Spring Atlas",
                 "qfit/atlas_subtitle": "Selected rides",
-                "qfit/preview_sort": "Newest first",
                 "qfit/style_preset": "Heatmap",
             }
         )
@@ -212,7 +209,6 @@ class DockSettingsBindingsTests(unittest.TestCase):
         self.assertTrue(dock.backgroundMapCheckBox.isChecked())
         self.assertEqual(dock.atlasTitleLineEdit.text(), "Spring Atlas")
         self.assertEqual(dock.atlasSubtitleLineEdit.text(), "Selected rides")
-        self.assertEqual(dock.previewSortComboBox.currentText(), "Newest first")
         self.assertEqual(dock.stylePresetComboBox.currentText(), "By activity type")
         self.assertEqual(dock.analysisModeComboBox.currentText(), "None")
 
@@ -233,7 +229,6 @@ class DockSettingsBindingsTests(unittest.TestCase):
         dock.analysisModeComboBox.setCurrentIndex(1)
         dock.backgroundPresetComboBox.setCurrentIndex(1)
         dock.tileModeComboBox.setCurrentIndex(1)
-        dock.previewSortComboBox.setCurrentIndex(1)
         dock.stylePresetComboBox.setCurrentIndex(1)
 
         settings = _settings()

@@ -10,8 +10,6 @@ from .activity_classification import (
     resolve_activity_family,
 )
 from .activity_query import (
-    DEFAULT_SORT_LABEL,
-    SORT_OPTIONS,
     ActivityQuery,
     ActivitySummary,
     build_preview_lines,

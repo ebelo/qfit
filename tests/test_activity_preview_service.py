@@ -39,7 +39,7 @@ class ActivityPreviewServiceTests(unittest.TestCase):
         request = build_preview.call_args.args[0]
         self.assertIsInstance(request, ActivityPreviewRequest)
         self.assertEqual(request.activity_type, "Run")
-        self.assertEqual(request.sort_label, "Name (A–Z)")
+        self.assertFalse(hasattr(request, "sort_label"))
 
 
 if __name__ == "__main__":

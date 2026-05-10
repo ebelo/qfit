@@ -51,7 +51,6 @@ from .local_first_activity_controls import (
     build_current_activity_preview_request,
     configure_detailed_route_filter_options,
     configure_local_first_activity_preview_options,
-    configure_preview_sort_options,
 )
 from .local_first_analysis_controls import (
     ANALYSIS_MODE_LABELS,
@@ -318,7 +317,6 @@ __all__ = [
     "configure_local_first_activity_preview_options",
     "configure_local_first_analysis_mode_backing_controls",
     "configure_local_first_basemap_options",
-    "configure_preview_sort_options",
     "build_current_dock_workflow_label",
     "build_current_activity_preview_request",
     "build_dock_summary_status",

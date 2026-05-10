@@ -154,10 +154,7 @@ class LocalFirstControlMoveTests(unittest.TestCase):
             activity_style.required_widget_attrs,
             ("stylePresetLabel", "stylePresetComboBox"),
         )
-        self.assertEqual(
-            activity_style.optional_widget_groups,
-            (("previewSortLabel", "previewSortComboBox"),),
-        )
+        self.assertEqual(activity_style.optional_widget_groups, ())
         self.assertEqual(activity_style.optional_widget_attrs, ())
         self.assertEqual(activity_style.layout_getter_attr, "style_controls_layout")
         self.assertEqual(activity_style.parent_panel_attr, "style_controls_panel")

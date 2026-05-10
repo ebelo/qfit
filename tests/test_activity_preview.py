@@ -14,7 +14,7 @@ from qfit.activities.application.activity_preview import (
     build_activity_query,
     build_activity_selection_state,
 )
-from qfit.activities.domain.activity_query import DEFAULT_SORT_LABEL, DETAILED_ROUTE_FILTER_MISSING
+from qfit.activities.domain.activity_query import DETAILED_ROUTE_FILTER_MISSING
 
 
 class ActivityPreviewTests(unittest.TestCase):
@@ -50,7 +50,6 @@ class ActivityPreviewTests(unittest.TestCase):
             max_distance_km=8,
             search_text="lunch",
             detailed_route_filter=DETAILED_ROUTE_FILTER_MISSING,
-            sort_label="Name (A–Z)",
         )
 
         query = build_activity_query(request)
@@ -62,7 +61,7 @@ class ActivityPreviewTests(unittest.TestCase):
         self.assertEqual(query.max_distance_km, 8.0)
         self.assertEqual(query.search_text, "lunch")
         self.assertEqual(query.detailed_route_filter, DETAILED_ROUTE_FILTER_MISSING)
-        self.assertEqual(query.sort_label, "Name (A–Z)")
+        self.assertFalse(hasattr(query, "sort_label"))
 
     def test_build_activity_preview_query_delegates_to_activity_query_builder(self):
         request = ActivityPreviewRequest(
@@ -108,7 +107,6 @@ class ActivityPreviewTests(unittest.TestCase):
             max_distance_km=8,
             search_text="lunch",
             detailed_route_filter=DETAILED_ROUTE_FILTER_MISSING,
-            sort_label="Name (A–Z)",
             preview_limit=5,
         )
 
@@ -121,7 +119,6 @@ class ActivityPreviewTests(unittest.TestCase):
         self.assertEqual(request.max_distance_km, 8)
         self.assertEqual(request.search_text, "lunch")
         self.assertEqual(request.detailed_route_filter, DETAILED_ROUTE_FILTER_MISSING)
-        self.assertEqual(request.sort_label, "Name (A–Z)")
         self.assertEqual(request.preview_limit, 5)
 
     def test_build_activity_selection_state_filters_with_query(self):
@@ -184,14 +181,13 @@ class ActivityPreviewTests(unittest.TestCase):
             ActivityPreviewRequest(
                 activities=self.activities,
                 preview_limit=1,
-                sort_label="Name (A–Z)",
             )
         )
 
         self.assertEqual(result.fetched_activities[0].name, "Lunch Run")
         self.assertEqual(len(result.preview_text.splitlines()), 2)
         self.assertIn("… and 1 more", result.preview_text)
-        self.assertEqual(result.selection_state.query.sort_label, "Name (A–Z)")
+        self.assertFalse(hasattr(result.selection_state.query, "sort_label"))
 
 
 if __name__ == "__main__":
