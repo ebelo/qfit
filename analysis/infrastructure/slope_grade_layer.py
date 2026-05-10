@@ -18,7 +18,6 @@ from ..application.slope_grade_analysis import (
     SLOPE_GRADE_CLASSES,
     build_activity_slope_grade_line_segments,
     build_slope_grade_analysis_plan,
-    build_route_slope_grade_line_segments,
 )
 
 SLOPE_GRADE_LAYER_NAME = "qfit slope grade lines"
@@ -34,7 +33,6 @@ def build_slope_grade_layer(
 ):
     """Create a styled memory line layer for slope-grade analysis segments."""
 
-    route_sample_layer = route_profile_samples_layer or route_points_layer
     plan = build_slope_grade_analysis_plan(
         activities_layer=activities_layer,
         points_layer=points_layer,
@@ -45,13 +43,11 @@ def build_slope_grade_layer(
     line_segments = []
     if _plan_enables_layer(plan, "activity_tracks"):
         line_segments.extend(build_activity_slope_grade_line_segments(points_layer))
-    if _plan_enables_layer(plan, "saved_route_tracks"):
-        line_segments.extend(build_route_slope_grade_line_segments(route_sample_layer))
 
     if not line_segments:
         return None, ()
 
-    layer = _build_memory_layer(_preferred_crs_layer(points_layer, route_sample_layer))
+    layer = _build_memory_layer(points_layer)
     provider = layer.dataProvider()
     provider.addAttributes(
         [
@@ -87,11 +83,6 @@ def _build_memory_layer(source_layer):
         "memory",
     )
 
-
-def _preferred_crs_layer(points_layer, route_sample_layer):
-    if points_layer is not None:
-        return points_layer
-    return route_sample_layer
 
 
 def _layer_crs(layer):

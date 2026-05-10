@@ -14,8 +14,6 @@ from qfit.analysis.application.slope_grade_analysis import (
     SlopeGradeLayerResult,
     build_activity_slope_grade_line_segments,
     build_activity_slope_grade_segments,
-    build_route_slope_grade_line_segments,
-    build_route_slope_grade_segments,
     build_slope_grade_analysis_result,
     build_slope_grade_analysis_plan,
     build_slope_grade_segments,
@@ -253,59 +251,8 @@ class SlopeGradeAnalysisTests(unittest.TestCase):
             ("climb", "descent"),
         )
 
-    def test_builds_route_segments_from_sample_layer_features(self):
-        segments = build_route_slope_grade_segments(
-            _FeatureLayer(
-                (
-                    _FeatureSample(
-                        {
-                            "sample_group_index": 1,
-                            "distance_m": 0,
-                            "altitude_m": 100,
-                        }
-                    ),
-                    _FeatureSample(
-                        {
-                            "sample_group_index": 1,
-                            "distance_m": 100,
-                            "altitude_m": 108,
-                        }
-                    ),
-                )
-            )
-        )
-
-        self.assertEqual(len(segments), 1)
-        self.assertEqual(segments[0].grade_class.key, "steep_climb")
-
-    def test_builds_route_segments_per_sample_group(self):
-        segments = build_route_slope_grade_segments(
-            _FeatureLayer(
-                (
-                    _FeatureSample(
-                        {"sample_group_index": 1, "distance_m": 0, "altitude_m": 100}
-                    ),
-                    _FeatureSample(
-                        {"sample_group_index": 1, "distance_m": 100, "altitude_m": 104}
-                    ),
-                    _FeatureSample(
-                        {"sample_group_index": 2, "distance_m": 0, "altitude_m": 100}
-                    ),
-                    _FeatureSample(
-                        {"sample_group_index": 2, "distance_m": 100, "altitude_m": 91}
-                    ),
-                )
-            )
-        )
-
-        self.assertEqual(
-            tuple(segment.grade_class.key for segment in segments),
-            ("climb", "steep_descent"),
-        )
-
     def test_layer_segment_builders_ignore_missing_layers(self):
         self.assertEqual(build_activity_slope_grade_segments(None), ())
-        self.assertEqual(build_route_slope_grade_segments(None), ())
 
     def test_builds_activity_line_segments_from_point_sample_geometry(self):
         segments = build_activity_slope_grade_line_segments(
@@ -340,43 +287,6 @@ class SlopeGradeAnalysisTests(unittest.TestCase):
         self.assertEqual(segments[0].end_xy, (6.7, 46.6))
         self.assertEqual(segments[0].grade_class.key, "climb")
 
-    def test_builds_route_line_segments_from_lat_lon_profile_samples(self):
-        segments = build_route_slope_grade_line_segments(
-            _FeatureLayer(
-                (
-                    _FeatureSample(
-                        {
-                            "sample_group_index": 1,
-                            "source": "strava",
-                            "source_route_id": "r-1",
-                            "lat": 46.5,
-                            "lon": 6.6,
-                            "distance_m": 0,
-                            "altitude_m": 100,
-                        }
-                    ),
-                    _FeatureSample(
-                        {
-                            "sample_group_index": 1,
-                            "source": "strava",
-                            "source_route_id": "r-1",
-                            "lat": 46.6,
-                            "lon": 6.7,
-                            "distance_m": 100,
-                            "altitude_m": 91,
-                        }
-                    ),
-                )
-            )
-        )
-
-        self.assertEqual(len(segments), 1)
-        self.assertEqual(segments[0].layer_key, "saved_route_tracks")
-        self.assertEqual(segments[0].source_id, "r-1")
-        self.assertEqual(segments[0].start_xy, (6.6, 46.5))
-        self.assertEqual(segments[0].end_xy, (6.7, 46.6))
-        self.assertEqual(segments[0].grade_class.key, "steep_descent")
-
     def test_line_segment_builders_do_not_connect_across_sample_groups(self):
         segments = build_activity_slope_grade_line_segments(
             _FeatureLayer(
@@ -405,7 +315,7 @@ class SlopeGradeAnalysisTests(unittest.TestCase):
 
         self.assertEqual(segments, ())
 
-    def test_analysis_result_classifies_segments_for_eligible_line_targets(self):
+    def test_analysis_result_classifies_segments_for_eligible_activity_line_targets(self):
         result = build_slope_grade_analysis_result(
             activities_layer=_Layer(fields=("name",)),
             points_layer=_FeatureLayer(
@@ -443,21 +353,18 @@ class SlopeGradeAnalysisTests(unittest.TestCase):
             ),
         )
 
-        self.assertEqual(result.segment_count, 2)
+        self.assertEqual(result.segment_count, 1)
         self.assertEqual(
             tuple(layer.segment_count for layer in result.layers),
-            (1, 1),
+            (1,),
         )
         self.assertEqual(
             tuple(layer.segments[0].grade_class.key for layer in result.layers),
-            ("climb", "steep_descent"),
+            ("climb",),
         )
         self.assertEqual(
             build_slope_grade_status(result),
-            (
-                "Slope grade line analysis classified activity tracks (1 segment), "
-                "saved route tracks (1 segment)."
-            ),
+            "Slope grade line analysis classified activity tracks (1 segment).",
         )
 
     def test_analysis_result_reports_when_eligible_layers_have_no_segments(self):
@@ -495,8 +402,8 @@ class SlopeGradeAnalysisTests(unittest.TestCase):
                     ),
                 ),
                 SlopeGradeLayerResult(
-                    key="saved_route_tracks",
-                    label="saved route tracks",
+                    key="empty_layer",
+                    label="empty layer",
                     segments=(),
                 ),
             ),
@@ -557,7 +464,7 @@ class SlopeGradeAnalysisTests(unittest.TestCase):
         self.assertAlmostEqual(segments[0].grade_percent, 4.0)
         self.assertEqual(segments[0].grade_class.key, "climb")
 
-    def test_plan_targets_only_eligible_activity_and_route_line_layers(self):
+    def test_plan_targets_only_eligible_activity_line_layers(self):
         activity_tracks = _Layer(fields=("name",))
         activity_points = _Layer(
             fields=("grade_smooth_pct", "stream_distance_m", "altitude_m")
@@ -574,16 +481,16 @@ class SlopeGradeAnalysisTests(unittest.TestCase):
 
         self.assertEqual(
             tuple(layer.key for layer in plan.enabled_layers),
-            ("activity_tracks", "saved_route_tracks"),
+            ("activity_tracks",),
         )
         self.assertEqual(
             plan.layers[0].source_fields,
             ("grade_smooth_pct", "stream_distance_m"),
         )
-        self.assertEqual(plan.layers[1].source_fields, ("distance_m", "altitude_m"))
+        self.assertEqual(len(plan.layers), 1)
         self.assertEqual(
             build_slope_grade_status(plan),
-            "Slope grade line analysis ready for activity tracks, saved route tracks.",
+            "Slope grade line analysis ready for activity tracks.",
         )
 
     def test_plan_rejects_non_line_targets_without_touching_other_layers(self):
@@ -598,8 +505,8 @@ class SlopeGradeAnalysisTests(unittest.TestCase):
         )
 
         self.assertEqual(plan.enabled_layers, ())
+        self.assertEqual(len(plan.layers), 1)
         self.assertIn("activity track target is not a line layer", plan.layers[0].blocked_reason)
-        self.assertIn("saved route target is not a line layer", plan.layers[1].blocked_reason)
 
     def test_plan_uses_wkb_type_fallback_without_confusing_point_and_line_codes(self):
         point_wkb_layer = _WkbLayer(
@@ -619,7 +526,7 @@ class SlopeGradeAnalysisTests(unittest.TestCase):
 
         self.assertEqual(
             tuple(layer.key for layer in plan.enabled_layers),
-            ("activity_tracks", "saved_route_tracks"),
+            ("activity_tracks",),
         )
 
         rejected_plan = build_slope_grade_analysis_plan(
@@ -644,7 +551,7 @@ class SlopeGradeAnalysisTests(unittest.TestCase):
         self.assertEqual(plan.enabled_layers, ())
         status = build_slope_grade_status(plan)
         self.assertIn("activity tracks need point samples", status)
-        self.assertIn("saved routes need profile or route point samples", status)
+        self.assertNotIn("saved routes", status)
 
     def test_run_slope_grade_analysis_returns_status_without_creating_overlay_layer(self):
         result = run_slope_grade_analysis(
