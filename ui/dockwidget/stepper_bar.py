@@ -256,7 +256,6 @@ __all__ = [
     "STEPPER_LABELS",
     "STEPPER_STATES",
     "StepperBar",
-    "WIZARD_STEPPER_STATE_PROPERTY",
     "WORKFLOW_STEPPER_STATE_PROPERTY",
     "import_qt_module",
 ]
