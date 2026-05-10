@@ -654,7 +654,7 @@ def main(argv: Iterable[str] | None = None) -> int:
     except ValueError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2
-    except RuntimeError:
+    except (RuntimeError, OSError):
         print("error: comparison capture failed; use --skip-browser or --skip-qgis to isolate setup issues.", file=sys.stderr)
         return 2
 

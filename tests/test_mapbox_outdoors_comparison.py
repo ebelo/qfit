@@ -436,6 +436,23 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         self.assertIn("comparison capture failed", stderr_text)
         self.assertNotIn("test-mapbox-token", stderr_text)
 
+    def test_main_uses_generic_error_for_network_failures(self):
+        from qfit.validation import mapbox_outdoors_comparison
+
+        with patch("qfit.validation.mapbox_outdoors_comparison.run_comparison") as run_mock:
+            run_mock.side_effect = OSError("style fetch failed for test-mapbox-token")
+            with patch("sys.stderr") as stderr_mock:
+                result = mapbox_outdoors_comparison.main([
+                    "valais-geneva-outdoors",
+                    "--mapbox-token",
+                    "test-mapbox-token",
+                ])
+
+        stderr_text = "".join(call.args[0] for call in stderr_mock.write.call_args_list)
+        self.assertEqual(result, 2)
+        self.assertIn("comparison capture failed", stderr_text)
+        self.assertNotIn("test-mapbox-token", stderr_text)
+
     def test_default_output_root_stays_under_ignored_debug_directory(self):
         self.assertEqual(DEFAULT_OUTPUT_ROOT, Path(__file__).resolve().parents[1] / "debug" / "mapbox-outdoors-comparison")
 
