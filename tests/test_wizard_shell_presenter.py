@@ -51,18 +51,13 @@ class WizardShellPresenterTest(unittest.TestCase):
             self.dockwidget_package.WorkflowShellPresenter,
             self.workflow_presenter.WorkflowShellPresenter,
         )
-        self.assertIs(
-            self.dockwidget_package.WizardShellPresenter,
-            self.workflow_presenter.WorkflowShellPresenter,
-        )
-        for module in (
-            self.workflow_presenter,
-            self.presenter,
-            self.dockwidget_package,
-        ):
+        self.assertFalse(hasattr(self.dockwidget_package, "WizardShellPresenter"))
+        for module in (self.workflow_presenter, self.presenter):
             with self.subTest(module=module.__name__):
                 self.assertIn("WorkflowShellPresenter", module.__all__)
                 self.assertIn("WizardShellPresenter", module.__all__)
+        self.assertIn("WorkflowShellPresenter", self.dockwidget_package.__all__)
+        self.assertNotIn("WizardShellPresenter", self.dockwidget_package.__all__)
 
     def _build_shell_with_pages(self):
         shell = self.wizard_shell.WizardShell()
