@@ -12,6 +12,7 @@ from qfit.ui.application.workflow_page_specs import build_default_workflow_page_
 
 def _load_step_page_module():
     for name in (
+        "qfit.ui.dockwidget.action_row",
         "qfit.ui.dockwidget.step_page",
         "qfit.ui.dockwidget.wizard_shell",
         "qfit.ui.dockwidget.stepper_bar",
