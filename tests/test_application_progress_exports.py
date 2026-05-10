@@ -71,6 +71,7 @@ class ApplicationProgressExportTests(unittest.TestCase):
             for module_name in (
                 "qfit.ui.application.wizard_footer_status",
                 "qfit.ui.application.wizard_page_specs",
+                "qfit.ui.application.wizard_progress",
                 "qfit.ui.application.wizard_settings",
             ):
                 with self.subTest(module_name=module_name):
