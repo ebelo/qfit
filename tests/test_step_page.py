@@ -10,16 +10,29 @@ from qfit.ui.application.dock_workflow_sections import build_wizard_step_statuse
 from qfit.ui.application.workflow_page_specs import build_default_workflow_page_specs
 
 
-def _load_step_page_module():
-    for name in (
-        "qfit.ui.dockwidget.action_row",
-        "qfit.ui.dockwidget.wizard_step_page",
-        "qfit.ui.dockwidget.step_page",
-        "qfit.ui.dockwidget.wizard_shell",
-        "qfit.ui.dockwidget.stepper_bar",
-        "qfit.ui.dockwidget",
-    ):
+_STEP_PAGE_MODULES = (
+    "qfit.ui.dockwidget.action_row",
+    "qfit.ui.dockwidget.wizard_step_page",
+    "qfit.ui.dockwidget.step_page",
+    "qfit.ui.dockwidget.wizard_shell",
+    "qfit.ui.dockwidget.stepper_bar",
+    "qfit.ui.dockwidget",
+)
+
+
+def _clear_step_page_modules():
+    for name in _STEP_PAGE_MODULES:
         sys.modules.pop(name, None)
+
+
+def _load_only_step_page_module():
+    _clear_step_page_modules()
+    with patch.dict(sys.modules, _fake_qt_modules()):
+        return importlib.import_module("qfit.ui.dockwidget.step_page")
+
+
+def _load_step_page_module():
+    _clear_step_page_modules()
     with patch.dict(sys.modules, _fake_qt_modules()):
         step_page = importlib.import_module("qfit.ui.dockwidget.step_page")
         wizard_step_page = importlib.import_module("qfit.ui.dockwidget.wizard_step_page")
@@ -281,6 +294,31 @@ class StepPageTest(unittest.TestCase):
             self.step_page.apply_wizard_step_page_statuses,
             self.step_page.apply_workflow_step_page_statuses,
         )
+
+    def test_step_page_resolves_wizard_aliases_lazily(self):
+        module = _load_only_step_page_module()
+        alias_targets = module._WIZARD_COMPAT_ALIAS_TARGETS
+
+        for name in alias_targets:
+            with self.subTest(name=name):
+                self.assertNotIn(name, module.__dict__)
+                self.assertIs(getattr(module, name), getattr(module, alias_targets[name]))
+
+    def test_lazy_wizard_alias_reports_missing_canonical_target_as_attribute_error(self):
+        module = _load_only_step_page_module()
+        module._WIZARD_COMPAT_ALIAS_TARGETS["BrokenWizardAlias"] = (
+            "MissingWorkflowAlias"
+        )
+        try:
+            self.assertFalse(hasattr(module, "BrokenWizardAlias"))
+            with self.assertRaisesRegex(
+                AttributeError,
+                "BrokenWizardAlias.*MissingWorkflowAlias",
+            ):
+                module.__getattr__("BrokenWizardAlias")
+        finally:
+            module._WIZARD_COMPAT_ALIAS_TARGETS.pop("BrokenWizardAlias", None)
+            module.__dict__.pop("BrokenWizardAlias", None)
 
     def test_wizard_step_page_module_exports_compatibility_aliases(self):
         self.assertIs(
