@@ -1,3 +1,4 @@
+import base64
 import datetime as dt
 import json
 import sys
@@ -22,13 +23,13 @@ from qfit.validation.mapbox_outdoors_comparison import (
     build_run_directory,
     camera_center_web_mercator,
     camera_extent_web_mercator,
+    encode_browser_capture_html,
     is_valid_qgis_vector_tile_layer,
     list_cameras,
     redact_sensitive_text,
     render_qgis_vector,
     resolve_mapbox_token,
     run_comparison,
-    write_browser_capture_assets,
 )
 
 
@@ -117,7 +118,8 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         script = build_node_playwright_capture_script()
 
         self.assertIn("require('playwright')", script)
-        self.assertIn("pathToFileURL", script)
+        self.assertIn("Buffer.from", script)
+        self.assertIn("setContent", script)
         self.assertIn("startQfitMapboxComparison", script)
         self.assertIn("window.qfitMapboxReady", script)
         self.assertIn("readFileSync(0", script)
@@ -125,22 +127,13 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         self.assertNotIn("MAPBOX_ACCESS_TOKEN", script)
         self.assertNotIn("pk.", script)
 
-    def test_write_browser_capture_assets_writes_token_free_temp_files(self):
-        with tempfile.TemporaryDirectory() as tmpdir:
-            html_path, script_path = write_browser_capture_assets(
-                camera=CAMERAS["valais-geneva-outdoors"],
-                directory=Path(tmpdir),
-            )
-
-            html = html_path.read_text(encoding="utf-8")
-            script = script_path.read_text(encoding="utf-8")
+    def test_encode_browser_capture_html_keeps_reference_page_token_free(self):
+        encoded_html = encode_browser_capture_html(camera=CAMERAS["valais-geneva-outdoors"])
+        html = base64.b64decode(encoded_html).decode("utf-8")
 
         self.assertIn("startQfitMapboxComparison", html)
-        self.assertIn("startQfitMapboxComparison", script)
         self.assertNotIn("test-mapbox-token", html)
-        self.assertNotIn("test-mapbox-token", script)
         self.assertNotIn("accessToken", html)
-        self.assertNotIn("accessToken", script)
 
     def test_qgis_vector_tile_guard_rejects_raster_or_invalid_layers(self):
         class FakeVectorTileLayer:
@@ -408,13 +401,13 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         )
 
     def test_main_lists_cameras_without_requiring_token(self):
-        with patch("builtins.print") as print_mock:
+        with patch("sys.stdout") as stdout_mock:
             from qfit.validation import mapbox_outdoors_comparison
 
             result = mapbox_outdoors_comparison.main(["--list-cameras"])
 
         self.assertEqual(result, 0)
-        printed = "\n".join(str(call.args[0]) for call in print_mock.call_args_list)
+        printed = "".join(call.args[0] for call in stdout_mock.write.call_args_list)
         self.assertIn("valais-geneva-outdoors", printed)
 
     def test_main_returns_error_when_token_is_missing(self):

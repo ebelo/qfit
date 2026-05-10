@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import dataclasses
 import datetime as dt
 import json
@@ -242,10 +243,10 @@ def build_mapbox_gl_html(*, camera: MapboxComparisonCamera) -> str:
 def build_node_playwright_capture_script() -> str:
     return r"""
 const fs = require('fs');
-const { pathToFileURL } = require('url');
 const { chromium } = require('playwright');
 
-const [htmlPath, outputPath, widthText, heightText, timeoutText, executablePath] = process.argv.slice(2);
+const [encodedHtml, outputPath, widthText, heightText, timeoutText, executablePath] = process.argv.slice(2);
+const html = Buffer.from(encodedHtml, 'base64').toString('utf8');
 const width = Number.parseInt(widthText, 10);
 const height = Number.parseInt(heightText, 10);
 const timeout = Number.parseInt(timeoutText, 10);
@@ -265,7 +266,7 @@ const timeout = Number.parseInt(timeoutText, 10);
   const browser = await chromium.launch(launchOptions);
   try {
     const page = await browser.newPage({ viewport: { width, height }, deviceScaleFactor: 1 });
-    await page.goto(pathToFileURL(htmlPath).href, { waitUntil: 'domcontentloaded', timeout });
+    await page.setContent(html, { waitUntil: 'domcontentloaded', timeout });
     await page.evaluate((value) => window.startQfitMapboxComparison(value), credential);
     await page.waitForFunction('window.qfitMapboxReady === true', { timeout });
     await page.screenshot({ path: outputPath, fullPage: false });
@@ -309,12 +310,9 @@ def redact_sensitive_text(text: str, secret: str) -> str:
     return text.replace(secret, "<redacted>")
 
 
-def write_browser_capture_assets(*, camera: MapboxComparisonCamera, directory: Path) -> tuple[Path, Path]:
-    html_path = directory / "reference.html"
-    script_path = directory / "capture-reference.js"
-    html_path.write_text(build_mapbox_gl_html(camera=camera), encoding="utf-8")
-    script_path.write_text(build_node_playwright_capture_script(), encoding="utf-8")
-    return html_path, script_path
+def encode_browser_capture_html(*, camera: MapboxComparisonCamera) -> str:
+    html = build_mapbox_gl_html(camera=camera).encode("utf-8")
+    return base64.b64encode(html).decode("ascii")
 
 
 def render_browser_reference(  # pragma: no cover - depends on optional Node/Chromium toolchain
@@ -333,11 +331,12 @@ def render_browser_reference(  # pragma: no cover - depends on optional Node/Chr
 
     with tempfile.TemporaryDirectory(prefix="qfit-mapbox-reference-") as tmpdir:
         tmp_path = Path(tmpdir)
-        html_path, script_path = write_browser_capture_assets(camera=camera, directory=tmp_path)
+        script_path = tmp_path / "capture-reference.js"
+        script_path.write_text(build_node_playwright_capture_script(), encoding="utf-8")
         command = [
             node_binary,
             str(script_path),
-            str(html_path),
+            encode_browser_capture_html(camera=camera),
             str(output_path),
             str(camera.width),
             str(camera.height),
@@ -643,7 +642,7 @@ def main(argv: Iterable[str] | None = None) -> int:
     args = parser.parse_args(list(argv) if argv is not None else None)
 
     if args.list_cameras:
-        print(list_cameras())
+        sys.stdout.write(f"{list_cameras()}\n")
         return 0
 
     try:
