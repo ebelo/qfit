@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from typing import Sequence
 
 from ..domain.activity_query import (
-    DEFAULT_SORT_LABEL,
     ActivityQuery,
     build_preview_lines,
     filter_activities,
@@ -28,7 +27,6 @@ class ActivityPreviewRequest:
     max_distance_km: float | int | None = None
     search_text: str | None = None
     detailed_route_filter: str | None = None
-    sort_label: str | None = DEFAULT_SORT_LABEL
     preview_limit: int = 10
 
 
@@ -50,7 +48,6 @@ def build_activity_preview_request(
     max_distance_km: float | int | None = None,
     search_text: str | None = None,
     detailed_route_filter: str | None = None,
-    sort_label: str | None = DEFAULT_SORT_LABEL,
     preview_limit: int = 10,
 ) -> ActivityPreviewRequest:
     return ActivityPreviewRequest(
@@ -62,7 +59,6 @@ def build_activity_preview_request(
         max_distance_km=max_distance_km,
         search_text=search_text,
         detailed_route_filter=detailed_route_filter,
-        sort_label=sort_label,
         preview_limit=preview_limit,
     )
 
@@ -76,7 +72,6 @@ def build_activity_query(request: ActivityPreviewRequest) -> ActivityQuery:
         max_distance_km=request.max_distance_km,
         search_text=request.search_text,
         detailed_route_filter=request.detailed_route_filter,
-        sort_label=request.sort_label or DEFAULT_SORT_LABEL,
     )
 
 
@@ -124,7 +119,7 @@ def build_activity_preview(request: ActivityPreviewRequest) -> ActivityPreviewRe
             preview_text="",
         )
 
-    fetched_activities = sort_activities(request.activities, DEFAULT_SORT_LABEL)
+    fetched_activities = sort_activities(request.activities)
     summary = summarize_activities(fetched_activities)
     query_summary_text = format_summary_text(summary)
     if selection_state.filtered_count != len(request.activities):

@@ -213,15 +213,11 @@ class LocalFirstControlInstallerTests(unittest.TestCase):
         source_parent = SimpleNamespace(layout=lambda: source_layout)
         style_label = MagicMock()
         style_combo = MagicMock()
-        preview_label = MagicMock()
-        preview_combo = MagicMock()
-        for widget in (style_label, style_combo, preview_label, preview_combo):
+        for widget in (style_label, style_combo):
             widget.parentWidget.return_value = source_parent
         dock = SimpleNamespace(
             stylePresetLabel=style_label,
             stylePresetComboBox=style_combo,
-            previewSortLabel=preview_label,
-            previewSortComboBox=preview_combo,
         )
         target_layout = MagicMock()
         panel = object()
@@ -240,13 +236,13 @@ class LocalFirstControlInstallerTests(unittest.TestCase):
         self.assertTrue(installed)
         self.assertEqual(
             source_layout.removeWidget.call_args_list,
-            [call(style_label), call(style_combo), call(preview_label), call(preview_combo)],
+            [call(style_label), call(style_combo)],
         )
         self.assertEqual(
             target_layout.addWidget.call_args_list,
-            [call(style_label), call(style_combo), call(preview_label), call(preview_combo)],
+            [call(style_label), call(style_combo)],
         )
-        for widget in (style_label, style_combo, preview_label, preview_combo):
+        for widget in (style_label, style_combo):
             widget.setParent.assert_called_once_with(panel)
             widget.show.assert_called_once_with()
         map_content.set_style_controls_visible.assert_called_once_with()

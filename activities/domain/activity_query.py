@@ -21,15 +21,6 @@ class ActivitySummary:
     by_type: dict[str, int]
     latest_date: str | None
 
-DEFAULT_SORT_LABEL = "Start date (newest first)"
-SORT_OPTIONS = (
-    DEFAULT_SORT_LABEL,
-    "Start date (oldest first)",
-    "Distance (longest first)",
-    "Distance (shortest first)",
-    "Moving time (longest first)",
-    "Name (A–Z)",
-)
 DETAILED_ROUTE_FILTER_ANY = "any"
 DETAILED_ROUTE_FILTER_PRESENT = "present"
 DETAILED_ROUTE_FILTER_MISSING = "missing"
@@ -62,7 +53,6 @@ class ActivityQuery:
         search_text: str | None = None,
         detailed_only: bool = False,
         detailed_route_filter: str | None = None,
-        sort_label: str | None = DEFAULT_SORT_LABEL,
     ):
         self.activity_type = activity_type or "All"
         self.date_from = date_from or None
@@ -75,7 +65,6 @@ class ActivityQuery:
             detailed_route_filter,
             detailed_only=self.detailed_only,
         )
-        self.sort_label = sort_label or DEFAULT_SORT_LABEL
 
 
 def filter_activities(activities: Iterable[object], query: ActivityQuery) -> list[object]:
@@ -130,22 +119,8 @@ def filter_activities(activities: Iterable[object], query: ActivityQuery) -> lis
     return results
 
 
-def sort_activities(activities: Sequence[object], sort_label: str | None) -> list[object]:
-    sort_label = sort_label or DEFAULT_SORT_LABEL
-    items = list(activities)
-
-    if sort_label == "Start date (oldest first)":
-        return sorted(items, key=lambda activity: (_sort_datetime(activity) is None, _sort_datetime(activity) or datetime.min))
-    if sort_label == "Distance (longest first)":
-        return sorted(items, key=lambda activity: _distance_sort_value(activity), reverse=True)
-    if sort_label == "Distance (shortest first)":
-        return sorted(items, key=lambda activity: (_distance_sort_value(activity) is None, _distance_sort_value(activity) or float("inf")))
-    if sort_label == "Moving time (longest first)":
-        return sorted(items, key=lambda activity: _moving_time_sort_value(activity), reverse=True)
-    if sort_label == "Name (A–Z)":
-        return sorted(items, key=lambda activity: ((getattr(activity, "name", None) or "").casefold(), _sort_datetime(activity) or datetime.min), reverse=False)
-
-    return sorted(items, key=lambda activity: (_sort_datetime(activity) or datetime.min, (getattr(activity, "name", None) or "").casefold()), reverse=True)
+def sort_activities(activities: Sequence[object]) -> list[object]:
+    return sorted(activities, key=lambda activity: (_sort_datetime(activity) or datetime.min, (getattr(activity, "name", None) or "").casefold()), reverse=True)
 
 
 def summarize_activities(activities: Sequence[object]) -> ActivitySummary:
@@ -291,20 +266,6 @@ def _distance_km(activity: object) -> float | None:
     if not isinstance(distance_m, (int, float)):
         return None
     return float(distance_m) / 1000.0
-
-
-def _distance_sort_value(activity: object) -> float:
-    distance_m = getattr(activity, "distance_m", None)
-    if not isinstance(distance_m, (int, float)):
-        return -1.0
-    return float(distance_m)
-
-
-def _moving_time_sort_value(activity: object) -> int:
-    value = getattr(activity, "moving_time_s", None)
-    if not isinstance(value, (int, float)):
-        return -1
-    return int(value)
 
 
 def _sql_normalize_expr(field: str) -> str:

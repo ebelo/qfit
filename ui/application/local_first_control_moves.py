@@ -60,7 +60,6 @@ LOCAL_FIRST_WIDGET_MOVES: tuple[LocalFirstWidgetMove, ...] = (
         required_widget_attrs=("stylePresetLabel", "stylePresetComboBox"),
         installed_attr="_local_first_activity_style_controls_installed",
         installed_target_attr="_local_first_activity_style_controls_installed_target",
-        optional_widget_groups=(("previewSortLabel", "previewSortComboBox"),),
         layout_getter_attr="style_controls_layout",
         parent_panel_attr="style_controls_panel",
         post_install_visible_attr="set_style_controls_visible",

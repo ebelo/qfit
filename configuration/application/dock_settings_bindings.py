@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from .ui_settings_binding import UIFieldBinding
-from ...activities.domain.activity_query import DEFAULT_SORT_LABEL, DETAILED_ROUTE_FILTER_ANY
+from ...activities.domain.activity_query import DETAILED_ROUTE_FILTER_ANY
 from ...mapbox_config import DEFAULT_BACKGROUND_PRESET, TILE_MODE_RASTER
 
 
@@ -105,12 +105,6 @@ def build_dock_settings_bindings(dock) -> list[UIFieldBinding]:
             TILE_MODE_RASTER,
             lambda: dock.tileModeComboBox.currentText(),
             lambda value: dock._set_combo_value(dock.tileModeComboBox, value, TILE_MODE_RASTER),
-        ),
-        UIFieldBinding(
-            "preview_sort",
-            DEFAULT_SORT_LABEL,
-            lambda: dock.previewSortComboBox.currentText(),
-            lambda value: dock._set_combo_value(dock.previewSortComboBox, value, DEFAULT_SORT_LABEL),
         ),
         UIFieldBinding(
             "style_preset",

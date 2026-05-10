@@ -86,16 +86,17 @@ class ActivityQueryTests(unittest.TestCase):
 
         self.assertEqual([activity.source_activity_id for activity in results], ["2", "3"])
 
-    def test_sort_activities_supports_distance_and_name(self):
-        by_distance = sort_activities(self.activities, "Distance (longest first)")
-        by_name = sort_activities(self.activities, "Name (A–Z)")
+    def test_sort_activities_always_uses_newest_start_date_first(self):
+        sorted_activities = sort_activities(self.activities)
 
-        self.assertEqual([activity.source_activity_id for activity in by_distance], ["1", "3", "2"])
-        self.assertEqual([activity.source_activity_id for activity in by_name], ["3", "2", "1"])
+        self.assertEqual(
+            [activity.source_activity_id for activity in sorted_activities],
+            ["3", "2", "1"],
+        )
 
     def test_summarize_activities_and_preview_lines(self):
         summary = summarize_activities(self.activities)
-        lines = build_preview_lines(sort_activities(self.activities, None), limit=2)
+        lines = build_preview_lines(sort_activities(self.activities), limit=2)
 
         self.assertEqual(summary.count, 3)
         self.assertEqual(summary.total_distance_km, 70.7)

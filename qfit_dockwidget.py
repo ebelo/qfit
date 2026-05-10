@@ -482,7 +482,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self.minDistanceSpinBox.valueChanged,
             self.maxDistanceSpinBox.valueChanged,
             self.detailedRouteStatusComboBox.currentIndexChanged,
-            self.previewSortComboBox.currentTextChanged,
         ]
         for signal in preview_inputs:
             signal.connect(self._refresh_activity_preview)

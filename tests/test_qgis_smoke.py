@@ -434,9 +434,6 @@ class QgisSmokeTests(unittest.TestCase):
 
         dock = QfitDockWidget(self.iface, dependencies=dependencies)
         try:
-            preview_sort_text = dock.previewSortComboBox.itemText(
-                1 if dock.previewSortComboBox.count() > 1 else 0
-            )
             style_preset_text = dock.stylePresetComboBox.itemText(
                 1 if dock.stylePresetComboBox.count() > 1 else 0
             )
@@ -447,7 +444,6 @@ class QgisSmokeTests(unittest.TestCase):
             dock.outputPathLineEdit.setText("/tmp/roundtrip.gpkg")
             dock.backgroundMapCheckBox.setChecked(True)
             dock.backgroundPresetComboBox.setCurrentText(background_preset_text)
-            dock.previewSortComboBox.setCurrentText(preview_sort_text)
             dock.stylePresetComboBox.setCurrentText(style_preset_text)
             dock.analysisModeComboBox.setCurrentText("Most frequent starting points")
             dock.atlasTitleLineEdit.setText("Spring Atlas")
@@ -466,7 +462,7 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertIsNone(settings.get("detailed_route_strategy"))
             self.assertTrue(settings.get_bool("use_background_map"))
             self.assertEqual(settings.get("background_preset"), background_preset_text)
-            self.assertEqual(settings.get("preview_sort"), preview_sort_text)
+            self.assertIsNone(settings.get("preview_sort"))
             self.assertEqual(settings.get("style_preset"), style_preset_text)
             self.assertIsNone(settings.get("temporal_mode"))
             self.assertEqual(settings.get("analysis_mode"), "Most frequent starting points")
@@ -484,7 +480,7 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertEqual(dock_reloaded.outputPathLineEdit.text(), "/tmp/roundtrip.gpkg")
             self.assertTrue(dock_reloaded.backgroundMapCheckBox.isChecked())
             self.assertEqual(dock_reloaded.backgroundPresetComboBox.currentText(), background_preset_text)
-            self.assertEqual(dock_reloaded.previewSortComboBox.currentText(), preview_sort_text)
+            self.assertFalse(hasattr(dock_reloaded, "previewSortComboBox"))
             self.assertEqual(dock_reloaded.stylePresetComboBox.currentText(), style_preset_text)
             self.assertFalse(hasattr(dock_reloaded, "temporalModeComboBox"))
             self.assertEqual(dock_reloaded.analysisModeComboBox.currentText(), "Most frequent starting points")

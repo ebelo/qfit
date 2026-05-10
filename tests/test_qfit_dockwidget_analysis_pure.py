@@ -1022,7 +1022,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.detailedRouteStatusComboBox = SimpleNamespace(
             currentIndexChanged=_FakeSignal(),
         )
-        dock.previewSortComboBox = SimpleNamespace(currentTextChanged=_FakeSignal())
         for name in (
             "on_browse_clicked",
             "on_refresh_clicked",
@@ -1103,19 +1102,13 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         parent_widget = SimpleNamespace(layout=lambda: parent_layout)
         style_label = MagicMock()
         style_combo = MagicMock()
-        preview_sort_label = MagicMock()
-        preview_sort_combo = MagicMock()
         for widget in (
             style_label,
             style_combo,
-            preview_sort_label,
-            preview_sort_combo,
         ):
             widget.parentWidget.return_value = parent_widget
         dock.stylePresetLabel = style_label
         dock.stylePresetComboBox = style_combo
-        dock.previewSortLabel = preview_sort_label
-        dock.previewSortComboBox = preview_sort_combo
         panel = object()
         style_layout = MagicMock()
         map_content = SimpleNamespace(
@@ -1135,8 +1128,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             [
                 call(style_label),
                 call(style_combo),
-                call(preview_sort_label),
-                call(preview_sort_combo),
             ],
         )
         self.assertEqual(
@@ -1144,15 +1135,11 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             [
                 call(style_label),
                 call(style_combo),
-                call(preview_sort_label),
-                call(preview_sort_combo),
             ],
         )
         for widget in (
             style_label,
             style_combo,
-            preview_sort_label,
-            preview_sort_combo,
         ):
             widget.show.assert_called_once_with()
         map_content.set_style_controls_visible.assert_called_once_with()
