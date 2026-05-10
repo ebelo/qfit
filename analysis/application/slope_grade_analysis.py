@@ -233,6 +233,55 @@ def build_slope_grade_segments(
     return tuple(segments)
 
 
+def build_activity_slope_grade_segments(points_layer) -> tuple[SlopeGradeSegment, ...]:
+    """Build activity slope-grade segments from a point-sample layer."""
+
+    return _build_grouped_slope_grade_segments(
+        _layer_features(points_layer),
+        group_field_sets=(("source", "source_activity_id"),),
+        distance_field="stream_distance_m",
+        elevation_field=None,
+        grade_field="grade_smooth_pct",
+    )
+
+
+def build_route_slope_grade_segments(sample_layer) -> tuple[SlopeGradeSegment, ...]:
+    """Build saved-route slope-grade segments from route profile samples."""
+
+    return _build_grouped_slope_grade_segments(
+        _layer_features(sample_layer),
+        group_field_sets=(("sample_group_index",), ("source", "source_route_id")),
+        distance_field="distance_m",
+        elevation_field="altitude_m",
+    )
+
+
+def _build_grouped_slope_grade_segments(
+    samples,
+    *,
+    group_field_sets,
+    distance_field,
+    elevation_field,
+    grade_field=None,
+):
+    groups: dict[tuple[object, ...], list[object]] = {}
+    for sample in samples:
+        key = _sample_group_key(sample, group_field_sets)
+        groups.setdefault(key, []).append(sample)
+
+    segments: list[SlopeGradeSegment] = []
+    for group_samples in groups.values():
+        segments.extend(
+            build_slope_grade_segments(
+                group_samples,
+                distance_field=distance_field,
+                elevation_field=elevation_field,
+                grade_field=grade_field,
+            )
+        )
+    return tuple(segments)
+
+
 def _grade_class_contains(grade_class: SlopeGradeClass, grade_percent: float) -> bool:
     if (
         grade_class.min_percent is not None
@@ -258,6 +307,23 @@ def _normalize_slope_grade_sample(sample, distance_field, elevation_field, grade
     if grade_field:
         grade = _numeric_value(_sample_value(sample, grade_field))
     return distance, elevation, grade
+
+
+def _layer_features(layer):
+    if layer is None:
+        return ()
+    features = getattr(layer, "getFeatures", None)
+    if not callable(features):
+        return ()
+    return features()
+
+
+def _sample_group_key(sample, group_field_sets):
+    for group_fields in group_field_sets:
+        values = tuple(_sample_value(sample, field_name) for field_name in group_fields)
+        if any(value not in (None, "") for value in values):
+            return values
+    return (None,)
 
 
 def _sample_value(sample, field_name):
@@ -408,9 +474,11 @@ __all__ = [
     "SlopeGradeClass",
     "SlopeGradeLayerPlan",
     "SlopeGradeSegment",
+    "build_activity_slope_grade_segments",
     "build_slope_grade_analysis_plan",
     "build_slope_grade_segments",
     "build_slope_grade_status",
+    "build_route_slope_grade_segments",
     "run_slope_grade_analysis",
     "slope_grade_class_for_percent",
 ]
