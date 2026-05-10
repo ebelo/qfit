@@ -25,6 +25,7 @@ class ApplicationProgressExportTests(unittest.TestCase):
             app = importlib.import_module("qfit.ui.application")
 
             for module_name in (
+                "qfit.ui.application.wizard_filter_summary",
                 "qfit.ui.application.wizard_footer_status",
                 "qfit.ui.application.wizard_page_specs",
                 "qfit.ui.application.wizard_progress",
@@ -33,6 +34,9 @@ class ApplicationProgressExportTests(unittest.TestCase):
                 with self.subTest(module_name=module_name):
                     self.assertNotIn(module_name, sys.modules)
 
+            local_first_filter = importlib.import_module(
+                "qfit.ui.application.local_first_filter_summary"
+            )
             workflow_footer = importlib.import_module(
                 "qfit.ui.application.workflow_footer_status"
             )
@@ -60,6 +64,10 @@ class ApplicationProgressExportTests(unittest.TestCase):
                 workflow_pages.build_default_workflow_page_specs,
             )
             self.assertIs(
+                app.build_wizard_filter_description,
+                local_first_filter.build_local_first_filter_description,
+            )
+            self.assertIs(
                 app.build_wizard_footer_facts_from_progress_facts,
                 workflow_footer.build_workflow_footer_facts_from_progress_facts,
             )
@@ -69,6 +77,7 @@ class ApplicationProgressExportTests(unittest.TestCase):
             )
 
             for module_name in (
+                "qfit.ui.application.wizard_filter_summary",
                 "qfit.ui.application.wizard_footer_status",
                 "qfit.ui.application.wizard_page_specs",
                 "qfit.ui.application.wizard_progress",
