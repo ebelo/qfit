@@ -53,10 +53,18 @@ class WizardShellPresenterTest(unittest.TestCase):
             self.workflow_presenter.WorkflowShellPresenter,
         )
         self.assertFalse(hasattr(self.dockwidget_package, "WizardShellPresenter"))
+        self.assertFalse(hasattr(self.workflow_presenter, "DockWizardProgress"))
+        self.assertIs(
+            self.presenter.DockWizardProgress,
+            self.workflow_presenter.DockWorkflowProgress,
+        )
         self.assertIn("WorkflowShellPresenter", self.workflow_presenter.__all__)
         self.assertNotIn("WizardShellPresenter", self.workflow_presenter.__all__)
+        self.assertIn("DockWorkflowProgress", self.workflow_presenter.__all__)
+        self.assertNotIn("DockWizardProgress", self.workflow_presenter.__all__)
         self.assertIn("WorkflowShellPresenter", self.presenter.__all__)
         self.assertIn("WizardShellPresenter", self.presenter.__all__)
+        self.assertIn("DockWizardProgress", self.presenter.__all__)
         self.assertIn("WorkflowShellPresenter", self.dockwidget_package.__all__)
         self.assertNotIn("WizardShellPresenter", self.dockwidget_package.__all__)
 
