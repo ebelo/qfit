@@ -103,9 +103,10 @@ class LoadDatasetWorkflowTests(unittest.TestCase):
         self.assertEqual(result.route_profile_samples_layer, route_layers[2])
         self.assertIn("/tmp/existing.gpkg", result.status)
         self.assertIn(
-            "3 route tracks, 24 route points, and 16 profile samples",
+            "3 route tracks and 24 route points",
             result.status,
         )
+        self.assertNotIn("profile samples", result.status)
 
     def test_load_existing_status_explains_when_route_layers_are_missing(self):
         layer_gateway = MagicMock()
