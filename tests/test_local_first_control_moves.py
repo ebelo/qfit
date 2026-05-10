@@ -111,6 +111,7 @@ class LocalFirstControlMoveTests(unittest.TestCase):
             move.after_install_hook_key,
             HIDE_LEGACY_ATLAS_EXPORT_BUTTON_HOOK,
         )
+        self.assertEqual(move.insert_before_attr, "action_row")
 
         backfill = local_first_control_move_for_key("backfill_routes")
         self.assertTrue(backfill.show_after_move)

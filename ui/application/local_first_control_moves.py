@@ -12,9 +12,10 @@ class LocalFirstControlMove:
     """Legacy-backed control group that is explicitly surfaced in local-first UI.
 
     ``post_install_visible_attr`` names an optional content method that refreshes
-    local-first visibility after a move. Keep it explicit instead of deriving it
-    from the layout name so inventory entries fail review when their contracts
-    drift.
+    local-first visibility after a move. ``insert_before_attr`` names an optional
+    destination-page widget that the group should be inserted before. Keep these
+    explicit instead of deriving them from layout names so inventory entries fail
+    review when their contracts drift.
     """
 
     key: str
@@ -29,6 +30,7 @@ class LocalFirstControlMove:
     parent_panel_attr: str | None = None
     post_install_visible_attr: str | None = None
     after_install_hook_key: str | None = None
+    insert_before_attr: str | None = None
 
 
 @dataclass(frozen=True)
@@ -114,6 +116,7 @@ LOCAL_FIRST_CONTROL_MOVES: tuple[LocalFirstControlMove, ...] = (
         installed_target_attr="_local_first_atlas_pdf_controls_installed_target",
         title="PDF output",
         after_install_hook_key=HIDE_LEGACY_ATLAS_EXPORT_BUTTON_HOOK,
+        insert_before_attr="action_row",
     ),
     LocalFirstControlMove(
         key="basemap",

@@ -52,14 +52,23 @@ class _FakeLayout:
     def __init__(self):
         self.inserted = []
         self.added = []
+        self.widgets = []
         self.contents_margins = None
         self.spacing = None
 
+    def indexOf(self, widget):
+        try:
+            return self.widgets.index(widget)
+        except ValueError:
+            return -1
+
     def insertWidget(self, index, widget):
         self.inserted.append((index, widget))
+        self.widgets.insert(index, widget)
 
     def addWidget(self, widget):
         self.added.append(widget)
+        self.widgets.append(widget)
 
     def setContentsMargins(self, *margins):
         self.contents_margins = margins
@@ -1509,8 +1518,13 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         source_layout = _SourceLayout()
         source_parent = _SourceParent(source_layout)
         atlas_pdf_group = _AtlasPdfGroup(source_parent)
+        atlas_action_row = object()
         atlas_layout = _FakeLayout()
-        atlas_content = SimpleNamespace(outer_layout=lambda: atlas_layout)
+        atlas_layout.widgets.append(atlas_action_row)
+        atlas_content = SimpleNamespace(
+            action_row=atlas_action_row,
+            outer_layout=lambda: atlas_layout,
+        )
         composition = SimpleNamespace(atlas_content=atlas_content)
         dock.atlasPdfGroupBox = atlas_pdf_group
         dock.generateAtlasPdfButton = MagicMock()
@@ -1541,7 +1555,9 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertIs(atlas_pdf_group.parentWidget(), atlas_content)
         self.assertEqual(atlas_pdf_group.title, "PDF output")
         self.assertTrue(atlas_pdf_group.shown)
-        self.assertEqual(atlas_layout.added, [atlas_pdf_group])
+        self.assertEqual(atlas_layout.added, [])
+        self.assertEqual(atlas_layout.inserted, [(0, atlas_pdf_group)])
+        self.assertEqual(atlas_layout.widgets, [atlas_pdf_group, atlas_action_row])
         self.assertEqual(dock.generateAtlasPdfButton.hide.call_count, 2)
         self.assertTrue(dock._local_first_atlas_pdf_controls_installed)
 

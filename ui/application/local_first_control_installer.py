@@ -104,7 +104,7 @@ def install_local_first_group_controls(
         group.setParent(parent_panel)
     if move.title is not None and hasattr(group, "setTitle"):
         group.setTitle(move.title)
-    layout.addWidget(group)
+    add_local_first_group_to_layout(layout, group, content, move)
     show_local_first_control_group(group, move)
     refresh_local_first_control_visibility(content, move)
 
@@ -130,6 +130,44 @@ def local_first_control_move_layout(
 
     layout_getter = getattr(content, move.layout_getter_attr, None)
     return layout_getter() if callable(layout_getter) else None
+
+
+def add_local_first_group_to_layout(
+    layout,
+    group,
+    content,
+    move: LocalFirstControlMove,
+) -> None:
+    """Place a moved control group at its audited destination position."""
+
+    anchor_attr = move.insert_before_attr
+    anchor = getattr(content, anchor_attr, None) if anchor_attr is not None else None
+    anchor_index = local_first_layout_index_of(layout, anchor)
+    if anchor_index is not None and hasattr(layout, "insertWidget"):
+        layout.insertWidget(anchor_index, group)
+        return
+    layout.addWidget(group)
+
+
+def local_first_layout_index_of(layout, widget) -> int | None:
+    """Return a layout index for ``widget`` when the layout can report one."""
+
+    if widget is None:
+        return None
+    index_of = getattr(layout, "indexOf", None)
+    if callable(index_of):
+        index = index_of(widget)
+        if isinstance(index, int) and index >= 0:
+            return index
+    widgets = getattr(layout, "widgets", None)
+    if widgets is not None:
+        try:
+            index = widgets.index(widget)
+        except ValueError:
+            return None
+        if isinstance(index, int):
+            return index
+    return None
 
 
 def local_first_control_move_parent_panel(
@@ -248,6 +286,7 @@ def show_widget(widget) -> None:
 
 
 __all__ = [
+    "add_local_first_group_to_layout",
     "after_local_first_control_move_installed",
     "install_local_first_audited_controls",
     "install_local_first_control_move",
@@ -256,6 +295,7 @@ __all__ = [
     "install_local_first_widget_controls",
     "local_first_after_install_hook_for_key",
     "local_first_control_move_layout",
+    "local_first_layout_index_of",
     "local_first_control_move_parent_panel",
     "local_first_control_move_required_widgets_available",
     "local_first_widget_move_widgets",
