@@ -637,12 +637,16 @@ def _run_configured_comparison(args: argparse.Namespace) -> ComparisonResult:
     return run_comparison(config)
 
 
+def _write_stdout_line(text: str) -> None:
+    os.write(1, f"{text}\n".encode("utf-8"))
+
+
 def main(argv: Iterable[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(list(argv) if argv is not None else None)
 
     if args.list_cameras:
-        sys.stdout.write(f"{list_cameras()}\n")
+        _write_stdout_line(list_cameras())
         return 0
 
     try:

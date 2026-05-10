@@ -401,14 +401,14 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         )
 
     def test_main_lists_cameras_without_requiring_token(self):
-        with patch("sys.stdout") as stdout_mock:
+        with patch("os.write") as write_mock:
             from qfit.validation import mapbox_outdoors_comparison
 
             result = mapbox_outdoors_comparison.main(["--list-cameras"])
 
         self.assertEqual(result, 0)
-        printed = "".join(call.args[0] for call in stdout_mock.write.call_args_list)
-        self.assertIn("valais-geneva-outdoors", printed)
+        written = b"".join(call.args[1] for call in write_mock.call_args_list).decode("utf-8")
+        self.assertIn("valais-geneva-outdoors", written)
 
     def test_main_returns_error_when_token_is_missing(self):
         from qfit.validation import mapbox_outdoors_comparison
