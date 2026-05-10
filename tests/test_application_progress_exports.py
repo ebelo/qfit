@@ -172,5 +172,22 @@ class ApplicationProgressExportTests(unittest.TestCase):
                 setattr(ui_package, "application", saved_application)
 
 
+    def test_lazy_wizard_alias_reports_missing_canonical_target_as_attribute_error(self):
+        app = importlib.import_module("qfit.ui.application")
+        app._WIZARD_COMPAT_ALIAS_TARGETS["BrokenWizardAlias"] = (
+            "MissingWorkflowAlias"
+        )
+        try:
+            self.assertFalse(hasattr(app, "BrokenWizardAlias"))
+            with self.assertRaisesRegex(
+                AttributeError,
+                "BrokenWizardAlias.*MissingWorkflowAlias",
+            ):
+                app.__getattr__("BrokenWizardAlias")
+        finally:
+            app._WIZARD_COMPAT_ALIAS_TARGETS.pop("BrokenWizardAlias", None)
+            app.__dict__.pop("BrokenWizardAlias", None)
+
+
 if __name__ == "__main__":
     unittest.main()
