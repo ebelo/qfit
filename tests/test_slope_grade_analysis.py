@@ -51,6 +51,14 @@ class _Sample:
         self.grade_smooth_pct = grade_smooth_pct
 
 
+class _FeatureSample:
+    def __init__(self, values):
+        self._values = values
+
+    def __getitem__(self, key):
+        return self._values[key]
+
+
 class SlopeGradeAnalysisTests(unittest.TestCase):
     def test_legend_uses_documented_deterministic_percent_grade_classes(self):
         self.assertEqual(SLOPE_GRADE_MODE, "Slope grade lines")
@@ -111,6 +119,18 @@ class SlopeGradeAnalysisTests(unittest.TestCase):
         )
         self.assertEqual(segments[0].grade_percent, 2.5)
         self.assertEqual(segments[1].grade_percent, 9.1)
+
+    def test_builds_segments_from_feature_item_access_rows(self):
+        segments = build_slope_grade_segments(
+            (
+                _FeatureSample({"distance_m": 0, "altitude_m": 100}),
+                _FeatureSample({"distance_m": 50, "altitude_m": 95}),
+            )
+        )
+
+        self.assertEqual(len(segments), 1)
+        self.assertAlmostEqual(segments[0].grade_percent, -10.0)
+        self.assertEqual(segments[0].grade_class.key, "steep_descent")
 
     def test_segments_skip_invalid_or_non_forward_samples(self):
         segments = build_slope_grade_segments(

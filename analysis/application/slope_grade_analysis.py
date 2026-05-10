@@ -262,6 +262,10 @@ def _normalize_slope_grade_sample(sample, distance_field, elevation_field, grade
 def _sample_value(sample, field_name):
     if isinstance(sample, dict):
         return sample.get(field_name)
+    try:
+        return sample[field_name]
+    except (KeyError, IndexError, TypeError, AttributeError):
+        pass
     value = getattr(sample, field_name, None)
     if callable(value):
         return value()
