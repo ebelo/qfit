@@ -162,11 +162,9 @@ def local_first_layout_index_of(layout, widget) -> int | None:
     widgets = getattr(layout, "widgets", None)
     if widgets is not None:
         try:
-            index = widgets.index(widget)
+            return widgets.index(widget)
         except ValueError:
             return None
-        if isinstance(index, int):
-            return index
     return None
 
 
