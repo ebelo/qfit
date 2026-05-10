@@ -50,6 +50,7 @@ from .analysis.application.analysis_request_builder import (
 from .analysis.infrastructure.frequent_start_points_layer import (
     FREQUENT_STARTING_POINTS_LAYER_NAME,
 )
+from .analysis.infrastructure.slope_grade_layer import SLOPE_GRADE_LAYER_NAME
 from .atlas.export_service import (
     AtlasExportResult,
     AtlasExportService,
@@ -1248,6 +1249,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         analysis_layer_names = {
             FREQUENT_STARTING_POINTS_LAYER_NAME,
             ACTIVITY_HEATMAP_LAYER_NAME,
+            SLOPE_GRADE_LAYER_NAME,
         }
         for layer in tuple(project.mapLayers().values()):
             if layer.name() not in analysis_layer_names:
