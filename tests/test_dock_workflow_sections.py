@@ -1,3 +1,4 @@
+import importlib
 import unittest
 
 from tests import _path  # noqa: F401
@@ -75,6 +76,35 @@ class DockWorkflowSectionsTests(unittest.TestCase):
         self.assertEqual(
             build_progress_workflow_step_statuses(progress),
             build_progress_wizard_step_statuses(progress),
+        )
+
+    def test_workflow_sections_star_exports_are_canonical(self):
+        module = importlib.import_module("qfit.ui.application.dock_workflow_sections")
+
+        self.assertIn("DockWorkflowProgress", module.__all__)
+        self.assertIn("build_workflow_step_statuses", module.__all__)
+        self.assertNotIn("DockWizardProgress", module.__all__)
+        self.assertNotIn("WIZARD_WORKFLOW_STEPS", module.__all__)
+        self.assertIs(module.DockWizardProgress, module.DockWorkflowProgress)
+
+    def test_wizard_workflow_sections_exports_compatibility_metadata(self):
+        module = importlib.import_module("qfit.ui.application.wizard_workflow_sections")
+
+        self.assertEqual(
+            module.__all__,
+            [
+                "DockWizardProgress",
+                "WIZARD_WORKFLOW_STEPS",
+                "build_initial_wizard_step_statuses",
+                "build_progress_wizard_step_statuses",
+                "build_wizard_step_statuses",
+            ],
+        )
+        self.assertIs(module.DockWizardProgress, DockWorkflowProgress)
+        self.assertIs(module.WIZARD_WORKFLOW_STEPS, WORKFLOW_STEPS)
+        self.assertIs(
+            module.build_wizard_step_statuses,
+            build_workflow_step_statuses,
         )
 
     def test_wizard_step_statuses_distinguish_unlocked_from_done(self):

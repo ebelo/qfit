@@ -232,3 +232,18 @@ def _validate_workflow_keys(
     unknown_keys = all_provided_keys - known_keys
     if unknown_keys:
         raise KeyError(min(unknown_keys))
+
+
+__all__ = [
+    "CURRENT_DOCK_SECTIONS",
+    "DockWorkflowProgress",
+    "DockWorkflowSection",
+    "DockWorkflowStepState",
+    "DockWorkflowStepStatus",
+    "WORKFLOW_STEPS",
+    "build_current_dock_workflow_label",
+    "build_initial_workflow_step_statuses",
+    "build_progress_workflow_step_statuses",
+    "build_workflow_step_statuses",
+    "get_workflow_section",
+]
