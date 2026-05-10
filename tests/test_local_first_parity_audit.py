@@ -43,7 +43,6 @@ class LocalFirstParityAuditTests(unittest.TestCase):
                     "data_actions",
                 ),
                 "analysis_controls": (
-                    "analysis_temporal",
                     "analysis_actions",
                 ),
                 "atlas_export_controls": ("atlas_pdf", "atlas_actions"),

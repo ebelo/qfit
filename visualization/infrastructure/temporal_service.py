@@ -1,63 +1,32 @@
-from qgis.core import QgsVectorLayerTemporalProperties
-
-from ..application.temporal_config import (
-    build_temporal_plan,
-    describe_temporal_configuration,
-    is_temporal_mode_enabled,
-)
-
-
 class TemporalService:
-    """Applies temporal configuration to qfit output layers.
+    """Keep qfit output layers out of QGIS temporal playback by default.
 
-    Reads temporal plans from :mod:`visualization.application.temporal_config`
-    and wires them into the QGIS temporal-properties API on each layer.
+    Date/time filtering is owned by qfit's Map tab filters. Loaded layers should
+    therefore not activate QGIS temporal properties and expose a second temporal
+    control path through the QGIS temporal controller or layer tree.
     """
 
-    LAYER_SPECS = [
-        ("activities", "activity_tracks"),
-        ("starts", "activity_starts"),
-        ("points", "activity_points"),
-        ("atlas", "activity_atlas_pages"),
-    ]
+    LAYER_SLOTS = ("activities", "starts", "points", "atlas")
 
     def apply_temporal_configuration(self, activities_layer, starts_layer, points_layer, atlas_layer, mode_label):
+        _ = mode_label
         layers_by_slot = {
             "activities": activities_layer,
             "starts": starts_layer,
             "points": points_layer,
             "atlas": atlas_layer,
         }
-        plans = []
-        for slot, layer_key in self.LAYER_SPECS:
+        for slot in self.LAYER_SLOTS:
             layer = layers_by_slot[slot]
             if layer is None:
                 continue
-            plan = self._apply_temporal_plan(layer, layer_key, mode_label)
-            if plan is not None:
-                plans.append(plan)
-        return describe_temporal_configuration(plans, mode_label)
+            self._disable_temporal_properties(layer)
+        return ""
 
     @staticmethod
-    def _apply_temporal_plan(layer, layer_key, mode_label):
+    def _disable_temporal_properties(layer):
         props = layer.temporalProperties()
         if props is None:
-            return None
-        if not is_temporal_mode_enabled(mode_label):
-            props.setIsActive(False)
-            layer.triggerRepaint()
-            return None
-
-        available_fields = [field.name() for field in layer.fields()]
-        plan = build_temporal_plan(layer_key, available_fields, mode_label)
-        if plan is None:
-            props.setIsActive(False)
-            layer.triggerRepaint()
-            return None
-
-        props.setIsActive(True)
-        props.setMode(QgsVectorLayerTemporalProperties.ModeFeatureDateTimeStartAndEndFromExpressions)
-        props.setStartExpression(plan.expression)
-        props.setEndExpression(plan.expression)
+            return
+        props.setIsActive(False)
         layer.triggerRepaint()
-        return plan

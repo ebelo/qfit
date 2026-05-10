@@ -29,7 +29,6 @@ _CONTROL_MOVE_AREAS = {
 
 _WIDGET_MOVE_AREAS = {
     "activity_style": "activity_visualization_options",
-    "analysis_temporal": "analysis_controls",
 }
 
 

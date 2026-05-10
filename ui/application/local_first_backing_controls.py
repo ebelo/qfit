@@ -23,7 +23,6 @@ def configure_local_first_backing_controls(dock) -> None:
     )
     _move_store_section_under_fetch(dock)
     _move_load_layers_to_visualize(dock)
-    _move_temporal_controls_to_visualize(dock)
     _move_clear_database_to_actions_menu(dock)
     dock.outputGroupBox.setTitle("Store / database")
     dock.publishGroupBox.setCheckable(False)
@@ -209,28 +208,6 @@ def _move_load_layers_to_visualize(dock) -> None:
     output_layout.removeWidget(dock.loadLayersButton)
     dock.loadLayersButton.setParent(dock.styleGroupBox)
     style_layout.insertWidget(0, dock.loadLayersButton)
-
-
-def _move_temporal_controls_to_visualize(dock) -> None:
-    analysis_layout = getattr(dock, "analysisWorkflowLayout", None)
-    style_layout = getattr(dock, "styleGroupLayout", None)
-    temporal_row = getattr(dock, "analysisTemporalModeRow", None)
-    temporal_help = getattr(dock, "temporalHelpLabel", None)
-    if (
-        analysis_layout is None
-        or style_layout is None
-        or temporal_row is None
-        or temporal_help is None
-    ):
-        return
-    if temporal_row.parent() is dock.styleGroupBox:
-        return
-    analysis_layout.removeWidget(temporal_row)
-    analysis_layout.removeWidget(temporal_help)
-    temporal_row.setParent(dock.styleGroupBox)
-    temporal_help.setParent(dock.styleGroupBox)
-    style_layout.addWidget(temporal_row)
-    style_layout.addWidget(temporal_help)
 
 
 __all__ = [

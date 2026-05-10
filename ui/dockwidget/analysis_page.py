@@ -98,13 +98,6 @@ class AnalysisPageContent(QWidget):
             self.analysis_mode_combo.currentTextChanged.connect(
                 self.analysisModeChanged.emit
             )
-        self.temporal_controls_panel = QWidget(self)
-        self.temporal_controls_panel.setObjectName(
-            "qfitWizardAnalysisTemporalControlsPanel"
-        )
-        self.temporal_controls_panel.setVisible(True)
-        self.temporal_controls_panel.setProperty("temporalControlsState", "expanded")
-        self._temporal_controls_layout = self._build_temporal_controls_layout()
         self.run_analysis_button = QToolButton(self)
         self.run_analysis_button.setObjectName("qfitWizardAnalysisRunButton")
         style_primary_action_button(
@@ -158,7 +151,6 @@ class AnalysisPageContent(QWidget):
         self.detail_label.setText(state.detail_text)
         self.input_summary_label.setText(state.input_summary_text)
         self.input_summary_label.setProperty("analysisState", analysis_state)
-        self.set_temporal_controls_visible()
         self.result_summary_label.setText(state.result_summary_text)
         self.result_summary_label.setProperty("analysisState", analysis_state)
         self.run_analysis_button.setText(state.primary_action_label)
@@ -178,28 +170,10 @@ class AnalysisPageContent(QWidget):
             enabled=state.clear_action_enabled,
         )
 
-    def temporal_controls_layout(self):
-        """Expose the panel slot for temporal playback controls."""
-
-        return self._temporal_controls_layout
-
-    def set_temporal_controls_visible(self) -> None:
-        """Keep embedded temporal playback controls visible after state refreshes."""
-
-        self.temporal_controls_panel.setVisible(True)
-        self.temporal_controls_panel.setProperty("temporalControlsState", "expanded")
-
     def outer_layout(self):
         """Expose the layout for adapter wiring and pure tests."""
 
         return self._layout
-
-    def _build_temporal_controls_layout(self):
-        layout = QVBoxLayout(self.temporal_controls_panel)
-        if hasattr(layout, "setObjectName"):
-            layout.setObjectName("qfitWizardAnalysisTemporalControlsLayout")
-        configure_top_aligned_panel_layout(layout)
-        return layout
 
     def _build_layout(self):
         layout = QVBoxLayout(self)
@@ -212,7 +186,6 @@ class AnalysisPageContent(QWidget):
             self.input_summary_label,
             self.analysis_mode_label,
             self.analysis_mode_combo,
-            self.temporal_controls_panel,
             self.action_row,
             self.result_summary_label,
         ):

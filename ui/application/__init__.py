@@ -58,7 +58,6 @@ from .local_first_analysis_controls import (
     NONE_ANALYSIS_MODE_LABEL,
     bind_local_first_analysis_mode_controls,
     configure_local_first_analysis_mode_backing_controls,
-    configure_local_first_temporal_mode_backing_controls,
     local_first_analysis_mode_options,
     set_local_first_analysis_mode,
 )
@@ -318,7 +317,6 @@ __all__ = [
     "configure_detailed_route_filter_options",
     "configure_local_first_activity_preview_options",
     "configure_local_first_analysis_mode_backing_controls",
-    "configure_local_first_temporal_mode_backing_controls",
     "configure_local_first_basemap_options",
     "configure_preview_sort_options",
     "build_current_dock_workflow_label",

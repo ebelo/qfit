@@ -1162,51 +1162,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             id(map_content),
         )
 
-    def test_install_local_first_widget_move_handles_analysis_temporal_controls(self):
-        dock = object.__new__(self.module.QfitDockWidget)
-        parent_layout = MagicMock()
-        parent_widget = SimpleNamespace(layout=lambda: parent_layout)
-        temporal_row = MagicMock()
-        temporal_label = MagicMock()
-        temporal_combo = MagicMock()
-        temporal_help = MagicMock()
-        for widget in (temporal_row, temporal_help):
-            widget.parentWidget.return_value = parent_widget
-        dock.analysisTemporalModeRow = temporal_row
-        dock.temporalModeLabel = temporal_label
-        dock.temporalModeComboBox = temporal_combo
-        dock.temporalHelpLabel = temporal_help
-        panel = object()
-        temporal_layout = MagicMock()
-        analysis_content = SimpleNamespace(
-            temporal_controls_panel=panel,
-            temporal_controls_layout=MagicMock(return_value=temporal_layout),
-            set_temporal_controls_visible=MagicMock(),
-        )
-
-        install_local_first_widget_move(
-            dock,
-            SimpleNamespace(analysis_content=analysis_content),
-            "analysis_temporal",
-        )
-
-        self.assertEqual(
-            parent_layout.removeWidget.call_args_list,
-            [call(temporal_row), call(temporal_help)],
-        )
-        self.assertEqual(
-            temporal_layout.addWidget.call_args_list,
-            [call(temporal_row), call(temporal_help)],
-        )
-        for widget in (temporal_row, temporal_label, temporal_combo, temporal_help):
-            widget.show.assert_called_once_with()
-        analysis_content.set_temporal_controls_visible.assert_called_once_with()
-        self.assertTrue(dock._local_first_analysis_temporal_controls_installed)
-        self.assertEqual(
-            dock._local_first_analysis_temporal_controls_installed_target,
-            id(analysis_content),
-        )
-
     def test_install_local_first_widget_move_requires_activity_style_pair(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock.stylePresetLabel = MagicMock()
@@ -1860,7 +1815,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.atlas_layer = "atlas"
         selection_state = self.module.ActivitySelectionState(query=object(), filtered_count=3)
         dock.stylePresetComboBox = _FakeComboBox(current_text="By activity type")
-        dock.temporalModeComboBox = _FakeComboBox(current_text="By month")
         dock.backgroundMapCheckBox = _FakeCheckBox(True)
         dock.backgroundPresetComboBox = _FakeComboBox(current_text="Outdoors")
         dock._mapbox_access_token = MagicMock(return_value="token")
@@ -1915,7 +1869,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         build_selection_handoff.assert_called_once_with(selection_state)
         build_settings.assert_called_once_with(
             style_preset="By activity type",
-            temporal_mode="By month",
+            temporal_mode="Disabled",
             analysis_mode="Most frequent starting points",
         )
         build_background.assert_called_once_with(

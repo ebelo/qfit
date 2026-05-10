@@ -145,7 +145,7 @@ class LocalFirstControlMoveTests(unittest.TestCase):
     def test_widget_move_inventory_covers_loose_visualization_controls(self):
         self.assertEqual(
             local_first_widget_move_keys(),
-            ("activity_style", "analysis_temporal"),
+            ("activity_style",),
         )
 
         activity_style = LOCAL_FIRST_WIDGET_MOVES[0]
@@ -166,23 +166,6 @@ class LocalFirstControlMoveTests(unittest.TestCase):
             "set_style_controls_visible",
         )
 
-        analysis_temporal = LOCAL_FIRST_WIDGET_MOVES[1]
-        self.assertEqual(analysis_temporal.content_attr, "analysis_content")
-        self.assertEqual(
-            analysis_temporal.required_widget_attrs,
-            ("analysisTemporalModeRow", "temporalHelpLabel"),
-        )
-        self.assertEqual(
-            analysis_temporal.show_widget_attrs_after_move,
-            ("temporalModeLabel", "temporalModeComboBox"),
-        )
-        self.assertEqual(analysis_temporal.layout_getter_attr, "temporal_controls_layout")
-        self.assertEqual(analysis_temporal.parent_panel_attr, "temporal_controls_panel")
-        self.assertEqual(
-            analysis_temporal.post_install_visible_attr,
-            "set_temporal_controls_visible",
-        )
-
     def test_widget_move_lookup_returns_full_install_metadata(self):
         move = local_first_widget_move_for_key("activity_style")
 
@@ -193,16 +176,6 @@ class LocalFirstControlMoveTests(unittest.TestCase):
         self.assertEqual(
             move.installed_target_attr,
             "_local_first_activity_style_controls_installed_target",
-        )
-
-        temporal_move = local_first_widget_move_for_key("analysis_temporal")
-        self.assertEqual(
-            temporal_move.installed_attr,
-            "_local_first_analysis_temporal_controls_installed",
-        )
-        self.assertEqual(
-            temporal_move.installed_target_attr,
-            "_local_first_analysis_temporal_controls_installed_target",
         )
 
     def test_lookup_rejects_unknown_control_area(self):

@@ -5,7 +5,6 @@ from ...analysis.application.analysis_execution_dispatch import (
     HEATMAP_MODE,
     SLOPE_GRADE_MODE,
 )
-from ...visualization.application import DEFAULT_TEMPORAL_MODE_LABEL, temporal_mode_labels
 
 
 NONE_ANALYSIS_MODE_LABEL = "None"
@@ -64,44 +63,6 @@ def configure_local_first_analysis_mode_backing_controls(dock) -> None:
     dock.runAnalysisButton = button
 
 
-def configure_local_first_temporal_mode_backing_controls(dock) -> None:
-    """Prepare temporal playback backing controls for the local-first Analysis page.
-
-    The visible local-first Analysis page owns temporal playback controls, but the
-    dock still keeps the legacy combo row as the settings/workflow bridge during
-    #805 consolidation. Keep option population and hidden backing-row policy here
-    with the rest of the local-first analysis setup.
-    """
-
-    label = getattr(dock, "temporalModeLabel", None)
-    combo = getattr(dock, "temporalModeComboBox", None)
-    help_label = getattr(dock, "temporalHelpLabel", None)
-    if label is None or combo is None or help_label is None:
-        return
-
-    parent_widget = label.parentWidget()
-    outer_layout = parent_widget.layout() if parent_widget is not None else None
-    set_spacing = getattr(outer_layout, "setSpacing", None)
-    if callable(set_spacing):
-        set_spacing(6)
-
-    _set_combo_size_policy(combo)
-    combo.setMinimumContentsLength(10)
-    help_label.setMargin(2)
-    combo.clear()
-    for label_text in temporal_mode_labels():
-        combo.addItem(label_text)
-    combo.setCurrentText(DEFAULT_TEMPORAL_MODE_LABEL)
-    combo.setMinimumContentsLength(10)
-    combo.hide()
-    label.hide()
-    help_label.hide()
-
-    temporal_row = getattr(dock, "analysisTemporalModeRow", None)
-    if temporal_row is not None:
-        temporal_row.hide()
-
-
 def bind_local_first_analysis_mode_controls(dock, composition) -> None:
     """Bind the local-first analysis page mode selector to dock state.
 
@@ -148,29 +109,11 @@ def set_local_first_analysis_mode(dock, mode: str) -> None:
     mode_combo.setCurrentText(mode)
 
 
-def _set_combo_size_policy(combo) -> None:
-    set_size_policy = getattr(combo, "setSizeAdjustPolicy", None)
-    if not callable(set_size_policy):
-        return
-
-    adjust_to_minimum = getattr(
-        type(combo),
-        "AdjustToMinimumContentsLengthWithIcon",
-        None,
-    )
-    if adjust_to_minimum is None:
-        from qgis.PyQt.QtWidgets import QComboBox
-
-        adjust_to_minimum = QComboBox.AdjustToMinimumContentsLengthWithIcon
-    set_size_policy(adjust_to_minimum)
-
-
 __all__ = [
     "ANALYSIS_MODE_LABELS",
     "NONE_ANALYSIS_MODE_LABEL",
     "bind_local_first_analysis_mode_controls",
     "configure_local_first_analysis_mode_backing_controls",
-    "configure_local_first_temporal_mode_backing_controls",
     "local_first_analysis_mode_options",
     "set_local_first_analysis_mode",
 ]

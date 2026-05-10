@@ -303,7 +303,14 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertFalse(dock.backgroundHelpLabel.isVisible())
             self.assertFalse(dock.analysisHelpLabel.isVisible())
             self.assertFalse(dock.publishHelpLabel.isVisible())
-            self.assertFalse(dock.temporalHelpLabel.isVisible())
+            for removed_temporal_attr in (
+                "analysisTemporalModeRow",
+                "temporalModeLabel",
+                "temporalModeComboBox",
+                "temporalHelpLabel",
+            ):
+                with self.subTest(removed_temporal_attr=removed_temporal_attr):
+                    self.assertFalse(hasattr(dock, removed_temporal_attr))
             self.assertTrue(dock.outputIntroLabel.isHidden())
             self.assertEqual(
                 dock.outputGroupBox.toolTip(),
@@ -365,23 +372,6 @@ class QgisSmokeTests(unittest.TestCase):
                 dock.analysisModeLabel.parentWidget().parentWidget(),
                 dock.analysisWorkflowGroupBox,
             )
-            self.assertEqual(
-                dock.temporalModeLabel.parentWidget().parentWidget(),
-                dock._local_first_dock_composition.analysis_content.temporal_controls_panel,
-            )
-            self.assertGreaterEqual(
-                dock._local_first_dock_composition.analysis_content.temporal_controls_layout().indexOf(
-                    dock.analysisTemporalModeRow,
-                ),
-                0,
-            )
-            temporal_mode_layout = dock.temporalModeLabel.parentWidget().layout()
-            self.assertEqual(temporal_mode_layout.spacing(), 6)
-            self.assertGreaterEqual(dock.temporalModeComboBox.minimumContentsLength(), 10)
-            self.assertGreaterEqual(dock.temporalHelpLabel.margin(), 2)
-            self.assertFalse(dock.temporalModeLabel.isHidden())
-            self.assertFalse(dock.temporalModeComboBox.isHidden())
-            self.assertFalse(dock.temporalHelpLabel.isHidden())
             self.assertEqual(dock.publishGroupBox.title(), "")
             self.assertFalse(hasattr(dock, "publishSectionToggleButton"))
             self.assertFalse(hasattr(dock, "publishSectionContentWidget"))
@@ -496,7 +486,7 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertEqual(dock_reloaded.backgroundPresetComboBox.currentText(), background_preset_text)
             self.assertEqual(dock_reloaded.previewSortComboBox.currentText(), preview_sort_text)
             self.assertEqual(dock_reloaded.stylePresetComboBox.currentText(), style_preset_text)
-            self.assertEqual(dock_reloaded.temporalModeComboBox.currentText(), DEFAULT_TEMPORAL_MODE_LABEL)
+            self.assertFalse(hasattr(dock_reloaded, "temporalModeComboBox"))
             self.assertEqual(dock_reloaded.analysisModeComboBox.currentText(), "Most frequent starting points")
             self.assertEqual(dock_reloaded.atlasTitleLineEdit.text(), "Spring Atlas")
             self.assertEqual(dock_reloaded.atlasSubtitleLineEdit.text(), "Road and trail")
@@ -505,7 +495,7 @@ class QgisSmokeTests(unittest.TestCase):
             dock_reloaded.close()
             dock_reloaded.deleteLater()
 
-    def test_dock_widget_ignores_legacy_temporal_mode_settings_and_uses_local_time(self):
+    def test_dock_widget_ignores_legacy_temporal_mode_settings_and_uses_disabled_default(self):
         settings = SettingsService(
             qsettings=_FakeQSettings({"qfit/temporal_mode": "UTC time"}),
             credential_store=InMemoryCredentialStore(),
@@ -517,7 +507,7 @@ class QgisSmokeTests(unittest.TestCase):
 
         dock = QfitDockWidget(self.iface, dependencies=dependencies)
         try:
-            self.assertEqual(dock.temporalModeComboBox.currentText(), DEFAULT_TEMPORAL_MODE_LABEL)
+            self.assertFalse(hasattr(dock, "temporalModeComboBox"))
             action = dock._build_visual_workflow_action(ApplyVisualizationAction)
             self.assertEqual(action.temporal_mode, DEFAULT_TEMPORAL_MODE_LABEL)
         finally:
@@ -1130,18 +1120,11 @@ class QgisSmokeTests(unittest.TestCase):
                 atlas_layer,
                 "Local activity time",
             )
-            self.assertIn("activity tracks (LOCAL)", temporal_summary)
-            self.assertIn("activity points (LOCAL)", temporal_summary)
-            self.assertTrue(activities_layer.temporalProperties().isActive())
-            self.assertEqual(
-                activities_layer.temporalProperties().startExpression(),
-                'to_datetime("start_date_local")',
-            )
-            self.assertTrue(points_layer.temporalProperties().isActive())
-            self.assertEqual(
-                points_layer.temporalProperties().startExpression(),
-                'to_datetime("point_timestamp_local")',
-            )
+            self.assertEqual(temporal_summary, "")
+            self.assertFalse(activities_layer.temporalProperties().isActive())
+            self.assertFalse(starts_layer.temporalProperties().isActive())
+            self.assertFalse(points_layer.temporalProperties().isActive())
+            self.assertFalse(atlas_layer.temporalProperties().isActive())
 
             atlas_feature = next(atlas_layer.getFeatures())
             self.assertEqual(atlas_feature["page_number"], 1)

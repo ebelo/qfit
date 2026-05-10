@@ -448,7 +448,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             "backgroundHelpLabel",
             "analysisHelpLabel",
             "publishHelpLabel",
-            "temporalHelpLabel",
         ]:
             label = getattr(self, name, None)
             if label is not None:
