@@ -539,6 +539,13 @@ class SlopeGradeAnalysisTests(unittest.TestCase):
         self.assertIn("activity tracks need point samples", status)
         self.assertNotIn("saved routes", status)
 
+    def test_plan_rejects_unexpected_layer_kwargs(self):
+        with self.assertRaisesRegex(
+            TypeError,
+            "Unexpected slope-grade layer kwargs: future_layer",
+        ):
+            build_slope_grade_analysis_plan(future_layer=object())
+
     def test_run_slope_grade_analysis_ignores_saved_route_layers(self):
         result = run_slope_grade_analysis(
             RunAnalysisRequest(
