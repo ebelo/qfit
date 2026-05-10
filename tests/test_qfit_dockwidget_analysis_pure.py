@@ -1526,7 +1526,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertEqual(data_layout.added, [preview_group])
         self.assertTrue(dock._local_first_activity_preview_controls_installed)
 
-    def test_local_first_backfill_action_moves_to_data_page_with_existing_visibility_rule(self):
+    def test_local_first_backfill_action_moves_visible_to_data_page(self):
         class _SourceLayout:
             def __init__(self):
                 self.removed = []
@@ -1591,7 +1591,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
         self.assertEqual(source_layout.removed, [backfill_button])
         self.assertIs(backfill_button.parentWidget(), data_content)
-        self.assertFalse(backfill_button.shown)
+        self.assertTrue(backfill_button.shown)
         self.assertEqual(backfill_button.visible_calls, [])
         self.assertEqual(data_layout.added, [backfill_button])
         self.assertTrue(dock._local_first_backfill_controls_installed)

@@ -95,7 +95,6 @@ LOCAL_FIRST_CONTROL_MOVES: tuple[LocalFirstControlMove, ...] = (
         group_attr="backfillMissingDetailedRoutesButton",
         installed_attr="_local_first_backfill_controls_installed",
         installed_target_attr="_local_first_backfill_controls_installed_target",
-        show_after_move=False,
         after_install_hook_key=REFRESH_CONDITIONAL_VISIBILITY_HOOK,
     ),
     LocalFirstControlMove(

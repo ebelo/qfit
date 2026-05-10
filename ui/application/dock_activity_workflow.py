@@ -11,9 +11,9 @@ from ...activities.application import (
 )
 
 
-_DEFAULT_PER_PAGE = 200
-_DEFAULT_MAX_PAGES = 0
-_DEFAULT_MAX_DETAILED_ACTIVITIES = 25
+DEFAULT_FETCH_PER_PAGE = 200
+DEFAULT_FETCH_MAX_PAGES = 0
+DEFAULT_FETCH_MAX_DETAILED_ACTIVITIES = 25
 
 
 @dataclass(frozen=True)
@@ -78,10 +78,10 @@ class DockActivityWorkflowCoordinator:
             client_secret=request.client_secret,
             refresh_token=request.refresh_token,
             cache=request.cache,
-            per_page=_DEFAULT_PER_PAGE,
-            max_pages=_DEFAULT_MAX_PAGES,
+            per_page=DEFAULT_FETCH_PER_PAGE,
+            max_pages=DEFAULT_FETCH_MAX_PAGES,
             use_detailed_streams=request.use_detailed_streams,
-            max_detailed_activities=_DEFAULT_MAX_DETAILED_ACTIVITIES,
+            max_detailed_activities=DEFAULT_FETCH_MAX_DETAILED_ACTIVITIES,
             detailed_route_strategy=request.detailed_route_strategy,
             on_finished=request.on_finished,
             before=request.before_epoch,
@@ -142,6 +142,9 @@ class DockActivityWorkflowCoordinator:
 
 
 __all__ = [
+    "DEFAULT_FETCH_MAX_DETAILED_ACTIVITIES",
+    "DEFAULT_FETCH_MAX_PAGES",
+    "DEFAULT_FETCH_PER_PAGE",
     "DockActivityWorkflowCoordinator",
     "DockFetchCompletionRequest",
     "DockFetchCompletionResult",

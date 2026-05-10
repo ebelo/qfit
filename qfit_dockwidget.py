@@ -58,6 +58,8 @@ from .atlas.export_service import (
 from .atlas.profile_style import build_native_profile_plot_style_from_settings
 from .ui.application import (
     ApplyVisualizationAction,
+    DEFAULT_FETCH_MAX_PAGES,
+    DEFAULT_FETCH_PER_PAGE,
     DockActionDispatcher,
     DockAtlasExportRequest,
     DockAtlasWorkflowCoordinator,
@@ -918,8 +920,8 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 refresh_token=self.refreshTokenLineEdit.text().strip(),
                 cache=self.cache,
                 output_path=output_path,
-                per_page=200,
-                max_pages=0,
+                per_page=DEFAULT_FETCH_PER_PAGE,
+                max_pages=DEFAULT_FETCH_MAX_PAGES,
                 use_gpx_geometry=True,
                 on_finished=self._handle_route_sync_task_finished,
             )

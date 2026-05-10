@@ -125,7 +125,7 @@ class LocalFirstControlMoveTests(unittest.TestCase):
         )
 
         backfill = local_first_control_move_for_key("backfill_routes")
-        self.assertFalse(backfill.show_after_move)
+        self.assertTrue(backfill.show_after_move)
         self.assertEqual(
             backfill.after_install_hook_key,
             REFRESH_CONDITIONAL_VISIBILITY_HOOK,

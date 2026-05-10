@@ -9,6 +9,9 @@ from .dock_action_dispatcher import (
     RunAnalysisAction,
 )
 from .dock_activity_workflow import (
+    DEFAULT_FETCH_MAX_DETAILED_ACTIVITIES,
+    DEFAULT_FETCH_MAX_PAGES,
+    DEFAULT_FETCH_PER_PAGE,
     DockActivityWorkflowCoordinator,
     DockFetchCompletionRequest,
     DockFetchCompletionResult,
@@ -249,6 +252,9 @@ __all__ = [
     "after_local_first_control_move_installed",
     "COLLAPSED_GROUPS_KEY",
     "DEFAULT_COLLAPSED_GROUP_OBJECT_NAMES",
+    "DEFAULT_FETCH_MAX_DETAILED_ACTIVITIES",
+    "DEFAULT_FETCH_MAX_PAGES",
+    "DEFAULT_FETCH_PER_PAGE",
     "DockActionDispatcher",
     "DockActionResult",
     "DockActivityWorkflowCoordinator",
