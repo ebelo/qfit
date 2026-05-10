@@ -12,6 +12,10 @@ from qfit.ui.application.workflow_page_specs import (
 )
 from .action_row import set_workflow_action_role
 from ._qt_compat import import_qt_module
+from .workflow_page import (
+    PLACEHOLDER_HINT_RETIRED,
+    set_workflow_placeholder_hint_state,
+)
 from qfit.ui.widgets.pill import set_pill_tone
 from qfit.ui.widgets.tokens import (
     COLOR_ACCENT,
@@ -365,13 +369,16 @@ class WorkflowStepPage(StepPage):
         """Keep compatibility with placeholder pages while avoiding extra copy."""
 
         self.primary_hint_label.setText("")
-        self.primary_hint_label.setProperty("wizardPlaceholderHint", "retired")
+        set_workflow_placeholder_hint_state(
+            self.primary_hint_label,
+            PLACEHOLDER_HINT_RETIRED,
+        )
         self.primary_hint_label.setVisible(False)
 
     def _build_primary_hint_label(self, text: str):
         label = QLabel(text, self)
         label.setObjectName(self.spec.primary_hint_object_name)
-        label.setProperty("wizardPlaceholderHint", "retired")
+        set_workflow_placeholder_hint_state(label, PLACEHOLDER_HINT_RETIRED)
         label.setVisible(False)
         return label
 

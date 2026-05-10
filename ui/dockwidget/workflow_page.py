@@ -34,6 +34,9 @@ _TITLE_LABEL_QSS = (
 )
 _SUMMARY_LABEL_QSS = f"QLabel {{ color: {COLOR_MUTED}; }}"
 _PRIMARY_HINT_LABEL_QSS = f"QLabel {{ color: {COLOR_MUTED}; }}"
+WORKFLOW_PLACEHOLDER_HINT_PROPERTY = "workflowPlaceholderHint"
+WIZARD_PLACEHOLDER_HINT_PROPERTY = "wizardPlaceholderHint"
+PLACEHOLDER_HINT_RETIRED = "retired"
 
 
 DockWizardPageSpec = DockWorkflowPageSpec
@@ -87,7 +90,10 @@ class WorkflowPage(QWidget):
         """
 
         self.primary_hint_label.setText("")
-        self.primary_hint_label.setProperty("wizardPlaceholderHint", "retired")
+        set_workflow_placeholder_hint_state(
+            self.primary_hint_label,
+            PLACEHOLDER_HINT_RETIRED,
+        )
         self.primary_hint_label.setVisible(False)
 
     def outer_layout(self):
@@ -143,6 +149,14 @@ build_wizard_pages = build_workflow_pages
 """Compatibility alias for pre-#805 wizard page callers."""
 
 
+def set_workflow_placeholder_hint_state(label, state: str) -> None:
+    """Tag placeholder hint labels with canonical metadata plus legacy alias."""
+
+    label.setProperty(WORKFLOW_PLACEHOLDER_HINT_PROPERTY, state)
+    # Preserve the wizard-named property while #805 retires older shell naming.
+    label.setProperty(WIZARD_PLACEHOLDER_HINT_PROPERTY, state)
+
+
 def install_workflow_pages(
     shell,
     specs: Sequence[DockWorkflowPageSpec] | None = None,
@@ -162,6 +176,9 @@ install_wizard_pages = install_workflow_pages
 __all__ = [
     "DockWorkflowPageSpec",
     "DockWizardPageSpec",
+    "PLACEHOLDER_HINT_RETIRED",
+    "WIZARD_PLACEHOLDER_HINT_PROPERTY",
+    "WORKFLOW_PLACEHOLDER_HINT_PROPERTY",
     "WorkflowPage",
     "WizardPage",
     "build_default_workflow_page_specs",
@@ -170,4 +187,5 @@ __all__ = [
     "build_wizard_pages",
     "install_workflow_pages",
     "install_wizard_pages",
+    "set_workflow_placeholder_hint_state",
 ]

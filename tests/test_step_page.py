@@ -217,6 +217,14 @@ class StepPageTest(unittest.TestCase):
             page.primary_hint_label.objectName(),
             "qfitWizardMapPagePrimaryHint",
         )
+        self.assertEqual(
+            page.primary_hint_label.property("workflowPlaceholderHint"),
+            "retired",
+        )
+        self.assertEqual(
+            page.primary_hint_label.property("wizardPlaceholderHint"),
+            "retired",
+        )
         self.assertFalse(page.primary_hint_label.isVisible())
 
     def test_wizard_step_page_retire_primary_hint_is_installer_compatible(self):
@@ -227,6 +235,10 @@ class StepPageTest(unittest.TestCase):
         page.retire_primary_action_hint()
 
         self.assertEqual(page.primary_hint_label.text(), "")
+        self.assertEqual(
+            page.primary_hint_label.property("workflowPlaceholderHint"),
+            "retired",
+        )
         self.assertEqual(
             page.primary_hint_label.property("wizardPlaceholderHint"),
             "retired",

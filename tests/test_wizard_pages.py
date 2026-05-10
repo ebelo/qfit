@@ -120,6 +120,10 @@ class WizardPageTest(unittest.TestCase):
 
         self.assertEqual(page.primary_hint_label.text(), "")
         self.assertEqual(
+            page.primary_hint_label.property("workflowPlaceholderHint"),
+            "retired",
+        )
+        self.assertEqual(
             page.primary_hint_label.property("wizardPlaceholderHint"),
             "retired",
         )
@@ -135,6 +139,10 @@ class WizardPageTest(unittest.TestCase):
         self.assertIsInstance(page, self.workflow_page.WizardPage)
         self.assertIn("WorkflowPage", self.workflow_page.__all__)
         self.assertIn("WizardPage", self.workflow_page.__all__)
+        self.assertIn("PLACEHOLDER_HINT_RETIRED", self.workflow_page.__all__)
+        self.assertIn("WORKFLOW_PLACEHOLDER_HINT_PROPERTY", self.workflow_page.__all__)
+        self.assertIn("WIZARD_PLACEHOLDER_HINT_PROPERTY", self.workflow_page.__all__)
+        self.assertIn("set_workflow_placeholder_hint_state", self.workflow_page.__all__)
 
     def test_wizard_page_module_reexports_workflow_page_api(self):
         self.assertIs(self.wizard_page.WorkflowPage, self.workflow_page.WorkflowPage)
@@ -147,6 +155,26 @@ class WizardPageTest(unittest.TestCase):
             self.wizard_page.install_workflow_pages,
             self.workflow_page.install_workflow_pages,
         )
+        self.assertEqual(
+            self.wizard_page.PLACEHOLDER_HINT_RETIRED,
+            self.workflow_page.PLACEHOLDER_HINT_RETIRED,
+        )
+        self.assertEqual(
+            self.wizard_page.WORKFLOW_PLACEHOLDER_HINT_PROPERTY,
+            self.workflow_page.WORKFLOW_PLACEHOLDER_HINT_PROPERTY,
+        )
+        self.assertEqual(
+            self.wizard_page.WIZARD_PLACEHOLDER_HINT_PROPERTY,
+            self.workflow_page.WIZARD_PLACEHOLDER_HINT_PROPERTY,
+        )
+        self.assertIs(
+            self.wizard_page.set_workflow_placeholder_hint_state,
+            self.workflow_page.set_workflow_placeholder_hint_state,
+        )
+        self.assertIn("PLACEHOLDER_HINT_RETIRED", self.wizard_page.__all__)
+        self.assertIn("WORKFLOW_PLACEHOLDER_HINT_PROPERTY", self.wizard_page.__all__)
+        self.assertIn("WIZARD_PLACEHOLDER_HINT_PROPERTY", self.wizard_page.__all__)
+        self.assertIn("set_workflow_placeholder_hint_state", self.wizard_page.__all__)
 
     def test_workflow_page_builders_keep_wizard_compatibility_aliases(self):
         self.assertIs(
