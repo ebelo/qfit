@@ -8,8 +8,10 @@ from qfit.analysis.application.slope_grade_analysis import (
     SLOPE_GRADE_LEGEND,
     SLOPE_GRADE_MODE,
     build_slope_grade_analysis_plan,
+    build_slope_grade_segments,
     build_slope_grade_status,
     run_slope_grade_analysis,
+    slope_grade_class_for_percent,
 )
 
 
@@ -42,6 +44,13 @@ class _WkbLayer(_Layer):
         return self._wkb_type
 
 
+class _Sample:
+    def __init__(self, *, stream_distance_m, altitude_m=None, grade_smooth_pct=None):
+        self.stream_distance_m = stream_distance_m
+        self.altitude_m = altitude_m
+        self.grade_smooth_pct = grade_smooth_pct
+
+
 class SlopeGradeAnalysisTests(unittest.TestCase):
     def test_legend_uses_documented_deterministic_percent_grade_classes(self):
         self.assertEqual(SLOPE_GRADE_MODE, "Slope grade lines")
@@ -59,6 +68,62 @@ class SlopeGradeAnalysisTests(unittest.TestCase):
             [grade_class.color_hex for grade_class in SLOPE_GRADE_CLASSES],
             ["#2c7fb8", "#7fcdbb", "#f0f0f0", "#fdae61", "#d7191c"],
         )
+
+    def test_classifies_percent_grade_boundaries_deterministically(self):
+        self.assertEqual(slope_grade_class_for_percent(-9.0).key, "steep_descent")
+        self.assertEqual(slope_grade_class_for_percent(-8.0).key, "descent")
+        self.assertEqual(slope_grade_class_for_percent(-3.0).key, "flat")
+        self.assertEqual(slope_grade_class_for_percent(3.0).key, "climb")
+        self.assertEqual(slope_grade_class_for_percent(8.0).key, "steep_climb")
+
+    def test_builds_route_segments_from_elevation_distance_samples(self):
+        segments = build_slope_grade_segments(
+            (
+                {"distance_m": 0, "altitude_m": 100},
+                {"distance_m": 100, "altitude_m": 104},
+                {"distance_m": 200, "altitude_m": 94},
+            )
+        )
+
+        self.assertEqual(len(segments), 2)
+        self.assertEqual(segments[0].start_distance_m, 0.0)
+        self.assertEqual(segments[0].end_distance_m, 100.0)
+        self.assertAlmostEqual(segments[0].grade_percent, 4.0)
+        self.assertEqual(segments[0].grade_class.key, "climb")
+        self.assertAlmostEqual(segments[1].grade_percent, -10.0)
+        self.assertEqual(segments[1].grade_class.key, "steep_descent")
+
+    def test_builds_activity_segments_from_existing_smoothed_grade_samples(self):
+        segments = build_slope_grade_segments(
+            (
+                _Sample(stream_distance_m=0, grade_smooth_pct=0.0),
+                _Sample(stream_distance_m=20, grade_smooth_pct="2.5"),
+                _Sample(stream_distance_m=40, grade_smooth_pct="9.1"),
+            ),
+            distance_field="stream_distance_m",
+            elevation_field=None,
+            grade_field="grade_smooth_pct",
+        )
+
+        self.assertEqual(
+            tuple(segment.grade_class.key for segment in segments),
+            ("flat", "steep_climb"),
+        )
+        self.assertEqual(segments[0].grade_percent, 2.5)
+        self.assertEqual(segments[1].grade_percent, 9.1)
+
+    def test_segments_skip_invalid_or_non_forward_samples(self):
+        segments = build_slope_grade_segments(
+            (
+                {"distance_m": 0, "altitude_m": 100},
+                {"distance_m": 0, "altitude_m": 101},
+                {"distance_m": "bad", "altitude_m": 102},
+                {"distance_m": 100, "altitude_m": None},
+                {"distance_m": 200, "altitude_m": 104},
+            )
+        )
+
+        self.assertEqual(segments, ())
 
     def test_plan_targets_only_eligible_activity_and_route_line_layers(self):
         activity_tracks = _Layer(fields=("name",))
