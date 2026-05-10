@@ -24,14 +24,6 @@ WORKFLOW_DOCK_FEATURES = (
     | QDockWidget.DockWidgetFloatable
 )
 
-WIZARD_DOCK_OBJECT_NAME = WORKFLOW_DOCK_OBJECT_NAME
-"""Compatibility alias for pre-#805 wizard dock callers."""
-WIZARD_DOCK_TITLE = WORKFLOW_DOCK_TITLE
-"""Compatibility alias for pre-#805 wizard dock callers."""
-WIZARD_DOCK_ALLOWED_AREAS = WORKFLOW_DOCK_ALLOWED_AREAS
-"""Compatibility alias for pre-#805 wizard dock callers."""
-WIZARD_DOCK_FEATURES = WORKFLOW_DOCK_FEATURES
-"""Compatibility alias for pre-#805 wizard dock callers."""
 
 
 class WorkflowShellCompositionLike(Protocol):
@@ -39,9 +31,6 @@ class WorkflowShellCompositionLike(Protocol):
 
     shell: QWidget
 
-
-WizardShellCompositionLike = WorkflowShellCompositionLike
-"""Compatibility alias for pre-#805 wizard dock callers."""
 
 
 class WorkflowDockWidget(QDockWidget):
@@ -75,9 +64,6 @@ class WorkflowDockWidget(QDockWidget):
         self.composition = composition
 
 
-WizardDockWidget = WorkflowDockWidget
-"""Compatibility alias for pre-#805 wizard dock callers."""
-
 
 def build_workflow_dock_widget(
     composition: WorkflowShellCompositionLike,
@@ -89,9 +75,6 @@ def build_workflow_dock_widget(
 
     return WorkflowDockWidget(composition, parent=parent, title=title)
 
-
-build_wizard_dock_widget = build_workflow_dock_widget
-"""Compatibility alias for pre-#805 wizard dock callers."""
 
 
 def _composition_shell(composition: WorkflowShellCompositionLike):
@@ -108,12 +91,5 @@ __all__ = [
     "WORKFLOW_DOCK_TITLE",
     "WorkflowDockWidget",
     "WorkflowShellCompositionLike",
-    "WIZARD_DOCK_ALLOWED_AREAS",
-    "WIZARD_DOCK_FEATURES",
-    "WIZARD_DOCK_OBJECT_NAME",
-    "WIZARD_DOCK_TITLE",
-    "WizardDockWidget",
-    "WizardShellCompositionLike",
     "build_workflow_dock_widget",
-    "build_wizard_dock_widget",
 ]

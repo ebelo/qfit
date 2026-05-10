@@ -72,10 +72,8 @@ class WorkflowDockWidgetTest(unittest.TestCase):
             self.workflow_dock.WORKFLOW_DOCK_OBJECT_NAME,
             "qfitWizardDockWidget",
         )
-        self.assertEqual(
-            self.workflow_dock.WIZARD_DOCK_OBJECT_NAME,
-            self.workflow_dock.WORKFLOW_DOCK_OBJECT_NAME,
-        )
+        self.assertNotIn("WIZARD_DOCK_OBJECT_NAME", self.workflow_dock.__all__)
+        self.assertFalse(hasattr(self.workflow_dock, "WIZARD_DOCK_OBJECT_NAME"))
 
     def test_builds_qgis_dock_container_for_workflow_shell_composition(self):
         shell = _FakeWidget()
@@ -116,19 +114,13 @@ class WorkflowDockWidgetTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "must expose a shell"):
             self.workflow_dock.WorkflowDockWidget(SimpleNamespace(shell=None))
 
-    def test_wizard_names_are_compatibility_aliases(self):
-        self.assertIs(
-            self.workflow_dock.WizardDockWidget,
-            self.workflow_dock.WorkflowDockWidget,
-        )
-        self.assertIs(
-            self.workflow_dock.WizardShellCompositionLike,
-            self.workflow_dock.WorkflowShellCompositionLike,
-        )
-        self.assertIs(
-            self.workflow_dock.build_wizard_dock_widget,
-            self.workflow_dock.build_workflow_dock_widget,
-        )
+    def test_workflow_dock_exports_only_workflow_names(self):
+        self.assertNotIn("WizardDockWidget", self.workflow_dock.__all__)
+        self.assertNotIn("WizardShellCompositionLike", self.workflow_dock.__all__)
+        self.assertNotIn("build_wizard_dock_widget", self.workflow_dock.__all__)
+        self.assertFalse(hasattr(self.workflow_dock, "WizardDockWidget"))
+        self.assertFalse(hasattr(self.workflow_dock, "WizardShellCompositionLike"))
+        self.assertFalse(hasattr(self.workflow_dock, "build_wizard_dock_widget"))
 
 
 if __name__ == "__main__":
