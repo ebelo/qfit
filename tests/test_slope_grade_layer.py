@@ -146,6 +146,20 @@ class SlopeGradeLayerTests(unittest.TestCase):
         self.assertIsNone(layer)
         self.assertEqual(segments, ())
 
+    def test_accepts_but_ignores_saved_route_layers(self):
+        module = _load_slope_grade_layer_with_qgis_stub()
+
+        layer, segments = module.build_slope_grade_layer(
+            route_tracks_layer=_TargetLayer(),
+            route_profile_samples_layer=_FeatureLayer(
+                (),
+                fields=("distance_m", "altitude_m"),
+            ),
+        )
+
+        self.assertIsNone(layer)
+        self.assertEqual(segments, ())
+
     def test_does_not_build_overlay_when_activity_target_is_not_a_line_layer(self):
         module = _load_slope_grade_layer_with_qgis_stub()
         points_layer = _FeatureLayer(

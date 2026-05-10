@@ -318,6 +318,18 @@ class SlopeGradeAnalysisTests(unittest.TestCase):
     def test_analysis_result_classifies_segments_for_eligible_activity_line_targets(self):
         result = build_slope_grade_analysis_result(
             activities_layer=_Layer(fields=("name",)),
+            route_tracks_layer=_Layer(fields=("name",)),
+            route_profile_samples_layer=_FeatureLayer(
+                (
+                    _FeatureSample(
+                        {"sample_group_index": 1, "distance_m": 0, "altitude_m": 100}
+                    ),
+                    _FeatureSample(
+                        {"sample_group_index": 1, "distance_m": 100, "altitude_m": 91}
+                    ),
+                ),
+                fields=("distance_m", "altitude_m"),
+            ),
             points_layer=_FeatureLayer(
                 (
                     _FeatureSample(
@@ -460,6 +472,8 @@ class SlopeGradeAnalysisTests(unittest.TestCase):
         plan = build_slope_grade_analysis_plan(
             activities_layer=activity_tracks,
             points_layer=activity_points,
+            route_tracks_layer=_Layer(fields=("name", "has_elevation")),
+            route_profile_samples_layer=_Layer(fields=("distance_m", "altitude_m")),
         )
 
         self.assertEqual(

@@ -142,6 +142,9 @@ SLOPE_GRADE_LEGEND = tuple(grade_class.label for grade_class in SLOPE_GRADE_CLAS
 
 ACTIVITY_TRACKS_LABEL = "activity tracks"
 _ACTIVITY_POINT_GRADE_FIELDS = ("grade_smooth_pct", "stream_distance_m")
+_IGNORED_ROUTE_LAYER_KWARGS = frozenset(
+    ("route_tracks_layer", "route_points_layer", "route_profile_samples_layer")
+)
 _LINE_GEOMETRY_TYPE = 1
 _LINE_WKB_TYPES = frozenset((2, 5))
 
@@ -150,6 +153,7 @@ def build_slope_grade_analysis_plan(
     *,
     activities_layer=None,
     points_layer=None,
+    **route_layers,
 ) -> SlopeGradeAnalysisPlan:
     """Build a pure eligibility plan for slope-grade line styling.
 
@@ -158,6 +162,7 @@ def build_slope_grade_analysis_plan(
     even when loaded so route-profile/sample data never drives this analysis.
     """
 
+    _ignore_route_layer_kwargs(route_layers)
     return SlopeGradeAnalysisPlan(
         layers=(_activity_track_plan(activities_layer, points_layer),)
     )
@@ -190,9 +195,11 @@ def build_slope_grade_analysis_result(
     *,
     activities_layer=None,
     points_layer=None,
+    **route_layers,
 ) -> SlopeGradeAnalysisResult:
     """Classify slope-grade segments for eligible line-layer targets."""
 
+    _ignore_route_layer_kwargs(route_layers)
     plan = build_slope_grade_analysis_plan(
         activities_layer=activities_layer,
         points_layer=points_layer,
@@ -215,6 +222,13 @@ def build_slope_grade_analysis_result(
             )
         )
     return SlopeGradeAnalysisResult(plan=plan, layers=tuple(layer_results))
+
+
+def _ignore_route_layer_kwargs(route_layers):
+    unexpected = set(route_layers) - _IGNORED_ROUTE_LAYER_KWARGS
+    if unexpected:
+        unexpected_names = ", ".join(sorted(unexpected))
+        raise TypeError(f"Unexpected slope-grade layer kwargs: {unexpected_names}")
 
 
 def build_slope_grade_status(result_or_plan) -> str:
