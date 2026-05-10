@@ -28,7 +28,7 @@ class SlopeGradeClass:
 SLOPE_GRADE_CLASSES: tuple[SlopeGradeClass, ...] = (
     SlopeGradeClass(
         key="steep_descent",
-        label="Steep descent (≤ -8%)",
+        label="Steep descent (< -8%)",
         color_hex="#2c7fb8",
         max_percent=-8.0,
     ),
@@ -72,6 +72,16 @@ class SlopeGradeLayerPlan:
     enabled: bool = False
     source_fields: tuple[str, ...] = ()
     blocked_reason: str = ""
+
+
+@dataclass(frozen=True)
+class SlopeGradeSegment:
+    """Pure per-distance segment classification for slope-grade styling."""
+
+    start_distance_m: float
+    end_distance_m: float
+    grade_percent: float
+    grade_class: SlopeGradeClass
 
 
 @dataclass(frozen=True)
@@ -153,6 +163,123 @@ def build_slope_grade_status(plan: SlopeGradeAnalysisPlan) -> str:
     if reasons:
         return "Slope grade line analysis unchanged: " + "; ".join(reasons)
     return "Slope grade line analysis unchanged: no eligible line layers found."
+
+
+def slope_grade_class_for_percent(grade_percent: float) -> SlopeGradeClass:
+    """Return the deterministic legend class for a percent-grade value."""
+
+    for grade_class in SLOPE_GRADE_CLASSES:
+        if _grade_class_contains(grade_class, grade_percent):
+            return grade_class
+    return SLOPE_GRADE_CLASSES[-1]
+
+
+def build_slope_grade_segments(
+    samples: Iterable[object],
+    *,
+    distance_field: str = "distance_m",
+    elevation_field: str | None = "altitude_m",
+    grade_field: str | None = None,
+) -> tuple[SlopeGradeSegment, ...]:
+    """Build deterministic slope-grade segments from ordered sample rows.
+
+    Activity samples can pass ``grade_field`` to reuse an existing smoothed
+    grade, while saved-route samples can pass elevation/distance fields so the
+    segment grade is computed from the elevation delta. Non-numeric or
+    non-forward samples are skipped rather than aborting the whole analysis.
+    """
+
+    normalized = tuple(
+        _normalize_slope_grade_sample(
+            sample,
+            distance_field,
+            elevation_field,
+            grade_field,
+        )
+        for sample in samples
+    )
+    segments: list[SlopeGradeSegment] = []
+    previous = None
+    for current in normalized:
+        if current is None:
+            continue
+        if previous is None:
+            previous = current
+            continue
+        start_distance, start_elevation, _start_grade = previous
+        end_distance, end_elevation, end_grade = current
+        distance_delta = end_distance - start_distance
+        if distance_delta <= 0:
+            continue
+        grade_percent = end_grade
+        if grade_percent is None:
+            if start_elevation is None:
+                previous = current
+                continue
+            if end_elevation is None:
+                continue
+            grade_percent = (
+                (end_elevation - start_elevation) / distance_delta
+            ) * 100.0
+        segments.append(
+            SlopeGradeSegment(
+                start_distance_m=start_distance,
+                end_distance_m=end_distance,
+                grade_percent=grade_percent,
+                grade_class=slope_grade_class_for_percent(grade_percent),
+            )
+        )
+        previous = current
+    return tuple(segments)
+
+
+def _grade_class_contains(grade_class: SlopeGradeClass, grade_percent: float) -> bool:
+    if (
+        grade_class.min_percent is not None
+        and grade_percent < grade_class.min_percent
+    ):
+        return False
+    if (
+        grade_class.max_percent is not None
+        and grade_percent >= grade_class.max_percent
+    ):
+        return False
+    return True
+
+
+def _normalize_slope_grade_sample(sample, distance_field, elevation_field, grade_field):
+    distance = _numeric_value(_sample_value(sample, distance_field))
+    if distance is None:
+        return None
+    elevation = None
+    if elevation_field:
+        elevation = _numeric_value(_sample_value(sample, elevation_field))
+    grade = None
+    if grade_field:
+        grade = _numeric_value(_sample_value(sample, grade_field))
+    return distance, elevation, grade
+
+
+def _sample_value(sample, field_name):
+    if isinstance(sample, dict):
+        return sample.get(field_name)
+    try:
+        return sample[field_name]
+    except (KeyError, IndexError, TypeError, AttributeError):
+        pass
+    value = getattr(sample, field_name, None)
+    if callable(value):
+        return value()
+    return value
+
+
+def _numeric_value(value):
+    if value is None:
+        return None
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
 
 
 def _activity_track_plan(activities_layer, points_layer) -> SlopeGradeLayerPlan:
@@ -280,7 +407,10 @@ __all__ = [
     "SlopeGradeAnalysisPlan",
     "SlopeGradeClass",
     "SlopeGradeLayerPlan",
+    "SlopeGradeSegment",
     "build_slope_grade_analysis_plan",
+    "build_slope_grade_segments",
     "build_slope_grade_status",
     "run_slope_grade_analysis",
+    "slope_grade_class_for_percent",
 ]
