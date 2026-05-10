@@ -155,13 +155,18 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         )
         self._install_live_local_first_dock()
 
-    def _ensure_wizard_settings(self):
+    def _ensure_workflow_settings(self):
         """Persist first-launch workflow defaults for the local-first dock."""
 
         return ensure_workflow_settings(self.settings)
 
+    def _ensure_wizard_settings(self):
+        """Compatibility alias for pre-#805 wizard-named startup callers."""
+
+        return self._ensure_workflow_settings()
+
     def refresh_configuration_from_settings(self) -> None:
-        """Reload saved configuration and refresh live wizard connection state."""
+        """Reload saved configuration and refresh live workflow connection state."""
 
         self._load_settings()
         self._update_connection_status()

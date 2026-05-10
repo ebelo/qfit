@@ -10,8 +10,11 @@ from .workflow_progress_facts import (
     WorkflowProgressFacts,
     build_workflow_progress_facts_from_runtime_state,
 )
-from .wizard_settings import WizardSettingsSnapshot
+from .workflow_settings import WorkflowSettingsSnapshot
 
+
+WizardSettingsSnapshot = WorkflowSettingsSnapshot
+"""Compatibility alias for wizard progress callers during the #805 migration."""
 
 WizardProgressFacts = WorkflowProgressFacts
 """Compatibility alias for wizard progress callers during the #805 migration."""

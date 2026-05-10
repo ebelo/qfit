@@ -42,8 +42,8 @@ class DockStartupCoordinator:
         dock.setAllowedAreas(dock.STARTUP_ALLOWED_AREAS)
         performed_steps.append("set_allowed_areas")
 
-        dock._ensure_wizard_settings()
-        performed_steps.append("ensure_wizard_settings")
+        dock._ensure_workflow_settings()
+        performed_steps.append("ensure_workflow_settings")
 
         configure_local_first_backing_controls(dock)
         performed_steps.append("configure_local_first_backing_controls")

@@ -2,6 +2,7 @@ import unittest
 
 from tests import _path  # noqa: F401
 
+from qfit.ui import application as application_exports
 from qfit.ui.application.workflow_settings import (
     COLLAPSED_GROUPS_KEY,
     DEFAULT_COLLAPSED_GROUP_OBJECT_NAMES,
@@ -113,6 +114,36 @@ class WorkflowSettingsTests(unittest.TestCase):
         self.assertEqual(
             preferred_current_key_from_workflow_settings(snapshot),
             "analysis",
+        )
+
+    def test_application_package_exports_workflow_settings_api_and_compat_aliases(self):
+        self.assertIs(
+            application_exports.WorkflowSettingsSnapshot,
+            WorkflowSettingsSnapshot,
+        )
+        self.assertIs(
+            application_exports.ensure_workflow_settings,
+            ensure_workflow_settings,
+        )
+        self.assertIs(
+            application_exports.load_workflow_settings,
+            load_workflow_settings,
+        )
+        self.assertIs(
+            application_exports.WizardSettingsSnapshot,
+            WorkflowSettingsSnapshot,
+        )
+        self.assertIs(
+            application_exports.ensure_wizard_settings,
+            ensure_workflow_settings,
+        )
+        self.assertIs(
+            application_exports.load_wizard_settings,
+            load_workflow_settings,
+        )
+        self.assertIs(
+            application_exports.save_last_step_index,
+            save_workflow_step_index,
         )
 
     def test_wizard_wrapper_preserves_legacy_api_and_aliases(self):

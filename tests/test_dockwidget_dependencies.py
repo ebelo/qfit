@@ -563,7 +563,7 @@ class DockStartupCoordinatorTests(unittest.TestCase):
                 performed_steps=(
                     "set_features",
                     "set_allowed_areas",
-                    "ensure_wizard_settings",
+                    "ensure_workflow_settings",
                     "configure_local_first_backing_controls",
                     "remove_stale_qfit_layers",
                     "apply_contextual_help",
@@ -586,7 +586,7 @@ class DockStartupCoordinatorTests(unittest.TestCase):
             [
                 call.setFeatures(sentinel.features),
                 call.setAllowedAreas(sentinel.allowed_areas),
-                call._ensure_wizard_settings(),
+                call._ensure_workflow_settings(),
                 call._remove_stale_qfit_layers(),
                 call._apply_contextual_help(),
                 call._load_settings(),

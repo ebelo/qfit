@@ -11,6 +11,7 @@ from qfit.ui.application import (
 from qfit.ui.application import (
     build_workflow_progress_from_facts_and_settings as exported_settings_builder,
 )
+from qfit.ui.application import wizard_progress as wizard_progress_module
 from qfit.ui.application.workflow_progress import (
     build_startup_workflow_progress_facts,
     build_workflow_progress_from_facts,
@@ -92,6 +93,12 @@ class WorkflowProgressTests(unittest.TestCase):
         self.assertEqual(
             progress.completed_keys,
             frozenset({"connection", "sync", "map"}),
+        )
+
+    def test_wizard_progress_module_preserves_settings_snapshot_alias(self):
+        self.assertIs(
+            wizard_progress_module.WizardSettingsSnapshot,
+            WorkflowSettingsSnapshot,
         )
 
     def test_wizard_settings_builder_delegates_to_neutral_workflow_builder(self):
