@@ -7,6 +7,8 @@ from qfit.analysis.application.slope_grade_analysis import (
     SLOPE_GRADE_CLASSES,
     SLOPE_GRADE_LEGEND,
     SLOPE_GRADE_MODE,
+    build_activity_slope_grade_segments,
+    build_route_slope_grade_segments,
     build_slope_grade_analysis_plan,
     build_slope_grade_segments,
     build_slope_grade_status,
@@ -57,6 +59,14 @@ class _FeatureSample:
 
     def __getitem__(self, key):
         return self._values[key]
+
+
+class _FeatureLayer:
+    def __init__(self, features):
+        self._features = tuple(features)
+
+    def getFeatures(self):
+        return iter(self._features)
 
 
 class SlopeGradeAnalysisTests(unittest.TestCase):
@@ -131,6 +141,40 @@ class SlopeGradeAnalysisTests(unittest.TestCase):
         self.assertEqual(len(segments), 1)
         self.assertAlmostEqual(segments[0].grade_percent, -10.0)
         self.assertEqual(segments[0].grade_class.key, "steep_descent")
+
+    def test_builds_activity_segments_from_point_layer_features(self):
+        segments = build_activity_slope_grade_segments(
+            _FeatureLayer(
+                (
+                    _FeatureSample(
+                        {"stream_distance_m": 0, "grade_smooth_pct": 0.0}
+                    ),
+                    _FeatureSample(
+                        {"stream_distance_m": 50, "grade_smooth_pct": -4.0}
+                    ),
+                )
+            )
+        )
+
+        self.assertEqual(len(segments), 1)
+        self.assertEqual(segments[0].grade_class.key, "descent")
+
+    def test_builds_route_segments_from_sample_layer_features(self):
+        segments = build_route_slope_grade_segments(
+            _FeatureLayer(
+                (
+                    _FeatureSample({"distance_m": 0, "altitude_m": 100}),
+                    _FeatureSample({"distance_m": 100, "altitude_m": 108}),
+                )
+            )
+        )
+
+        self.assertEqual(len(segments), 1)
+        self.assertEqual(segments[0].grade_class.key, "steep_climb")
+
+    def test_layer_segment_builders_ignore_missing_layers(self):
+        self.assertEqual(build_activity_slope_grade_segments(None), ())
+        self.assertEqual(build_route_slope_grade_segments(None), ())
 
     def test_segments_skip_invalid_or_non_forward_samples_and_recover(self):
         segments = build_slope_grade_segments(

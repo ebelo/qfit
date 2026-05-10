@@ -233,6 +233,27 @@ def build_slope_grade_segments(
     return tuple(segments)
 
 
+def build_activity_slope_grade_segments(points_layer) -> tuple[SlopeGradeSegment, ...]:
+    """Build activity slope-grade segments from a point-sample layer."""
+
+    return build_slope_grade_segments(
+        _layer_features(points_layer),
+        distance_field="stream_distance_m",
+        elevation_field=None,
+        grade_field="grade_smooth_pct",
+    )
+
+
+def build_route_slope_grade_segments(sample_layer) -> tuple[SlopeGradeSegment, ...]:
+    """Build saved-route slope-grade segments from route profile samples."""
+
+    return build_slope_grade_segments(
+        _layer_features(sample_layer),
+        distance_field="distance_m",
+        elevation_field="altitude_m",
+    )
+
+
 def _grade_class_contains(grade_class: SlopeGradeClass, grade_percent: float) -> bool:
     if (
         grade_class.min_percent is not None
@@ -258,6 +279,15 @@ def _normalize_slope_grade_sample(sample, distance_field, elevation_field, grade
     if grade_field:
         grade = _numeric_value(_sample_value(sample, grade_field))
     return distance, elevation, grade
+
+
+def _layer_features(layer):
+    if layer is None:
+        return ()
+    features = getattr(layer, "getFeatures", None)
+    if not callable(features):
+        return ()
+    return features()
 
 
 def _sample_value(sample, field_name):
@@ -408,9 +438,11 @@ __all__ = [
     "SlopeGradeClass",
     "SlopeGradeLayerPlan",
     "SlopeGradeSegment",
+    "build_activity_slope_grade_segments",
     "build_slope_grade_analysis_plan",
     "build_slope_grade_segments",
     "build_slope_grade_status",
+    "build_route_slope_grade_segments",
     "run_slope_grade_analysis",
     "slope_grade_class_for_percent",
 ]
