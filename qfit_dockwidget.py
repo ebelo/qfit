@@ -160,11 +160,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
         return ensure_workflow_settings(self.settings)
 
-    def _ensure_wizard_settings(self):
-        """Compatibility alias for pre-#805 wizard-named startup callers."""
-
-        return self._ensure_workflow_settings()
-
     def refresh_configuration_from_settings(self) -> None:
         """Reload saved configuration and refresh live workflow connection state."""
 
