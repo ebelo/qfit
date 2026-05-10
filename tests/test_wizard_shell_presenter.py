@@ -47,15 +47,16 @@ class WizardShellPresenterTest(unittest.TestCase):
             self.presenter.WizardShellPresenter,
             self.workflow_presenter.WorkflowShellPresenter,
         )
+        self.assertFalse(hasattr(self.workflow_presenter, "WizardShellPresenter"))
         self.assertIs(
             self.dockwidget_package.WorkflowShellPresenter,
             self.workflow_presenter.WorkflowShellPresenter,
         )
         self.assertFalse(hasattr(self.dockwidget_package, "WizardShellPresenter"))
-        for module in (self.workflow_presenter, self.presenter):
-            with self.subTest(module=module.__name__):
-                self.assertIn("WorkflowShellPresenter", module.__all__)
-                self.assertIn("WizardShellPresenter", module.__all__)
+        self.assertIn("WorkflowShellPresenter", self.workflow_presenter.__all__)
+        self.assertNotIn("WizardShellPresenter", self.workflow_presenter.__all__)
+        self.assertIn("WorkflowShellPresenter", self.presenter.__all__)
+        self.assertIn("WizardShellPresenter", self.presenter.__all__)
         self.assertIn("WorkflowShellPresenter", self.dockwidget_package.__all__)
         self.assertNotIn("WizardShellPresenter", self.dockwidget_package.__all__)
 
