@@ -4,7 +4,16 @@ from itertools import count
 from math import log, pi, tan
 
 from qgis.PyQt.QtCore import QVariant
-from qgis.core import QgsFeature, QgsField, QgsGeometry, QgsPointXY, QgsVectorLayer
+from qgis.core import (
+    QgsCoordinateReferenceSystem,
+    QgsCoordinateTransform,
+    QgsFeature,
+    QgsField,
+    QgsGeometry,
+    QgsPointXY,
+    QgsProject,
+    QgsVectorLayer,
+)
 
 from ...visualization.infrastructure.layer_style_service import (
     build_qfit_visualize_heatmap_renderer,
@@ -141,9 +150,28 @@ def _build_point_feature(
 def _heatmap_coordinates(source_layer, point):
     x = float(point.x())
     y = float(point.y())
-    if _layer_authid(source_layer) == _WGS84_AUTHID:
+    authid = _layer_authid(source_layer)
+    if authid == _WEB_MERCATOR_AUTHID:
+        return x, y
+    if authid == _WGS84_AUTHID:
         return _lon_lat_to_web_mercator(x, y)
-    return x, y
+
+    transform = _coordinate_transform_to_web_mercator(source_layer)
+    if transform is None:
+        return x, y
+    transformed = transform.transform(QgsPointXY(x, y))
+    return float(transformed.x()), float(transformed.y())
+
+
+def _coordinate_transform_to_web_mercator(source_layer):
+    source_crs = source_layer.crs() if source_layer is not None else None
+    if source_crs is None or not source_crs.isValid():
+        return None
+    return QgsCoordinateTransform(
+        source_crs,
+        QgsCoordinateReferenceSystem(_WEB_MERCATOR_AUTHID),
+        QgsProject.instance(),
+    )
 
 
 def _layer_authid(layer):

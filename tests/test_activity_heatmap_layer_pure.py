@@ -120,6 +120,28 @@ class _FakeCrs:
         return self._valid
 
 
+class _FakeCoordinateReferenceSystem(_FakeCrs):
+    pass
+
+
+class _FakeCoordinateTransform:
+    calls = []
+
+    def __init__(self, source_crs, destination_crs, _project):
+        self.source_crs = source_crs
+        self.destination_crs = destination_crs
+        self.calls.append((source_crs.authid(), destination_crs.authid()))
+
+    def transform(self, point):
+        return _FakePoint(point.x() + 1000.0, point.y() + 2000.0)
+
+
+class _FakeProject:
+    @staticmethod
+    def instance():
+        return sentinel.qgis_project
+
+
 class _FakeMemoryLayer:
     def __init__(self, spec, name, provider_key):
         self.spec = spec
@@ -182,15 +204,19 @@ class _FakeSourceLayer:
 class ActivityHeatmapLayerPureTests(unittest.TestCase):
     def setUp(self):
         _FakeFeature._reset_id()
+        _FakeCoordinateTransform.calls = []
         qgis_mod = types.ModuleType("qgis")
         qgis_pyqt = types.ModuleType("qgis.PyQt")
         qgis_qtcore = types.ModuleType("qgis.PyQt.QtCore")
         qgis_qtcore.QVariant = types.SimpleNamespace(Int=1, String=2)
         qgis_core = types.ModuleType("qgis.core")
+        qgis_core.QgsCoordinateReferenceSystem = _FakeCoordinateReferenceSystem
+        qgis_core.QgsCoordinateTransform = _FakeCoordinateTransform
         qgis_core.QgsFeature = _FakeFeature
         qgis_core.QgsField = _FakeField
         qgis_core.QgsGeometry = _FakeGeometry
         qgis_core.QgsPointXY = _FakePoint
+        qgis_core.QgsProject = _FakeProject
         qgis_core.QgsVectorLayer = _FakeMemoryLayer
 
         layer_style_service = types.ModuleType(
@@ -320,6 +346,25 @@ class ActivityHeatmapLayerPureTests(unittest.TestCase):
         point = feature.geometry().asPoint()
         self.assertEqual(point.x(), 737000.0)
         self.assertEqual(point.y(), 5873000.0)
+        self.assertEqual(_FakeCoordinateTransform.calls, [])
+
+    def test_transforms_non_web_mercator_source_coordinates_for_heatmap_points(self):
+        points_layer = _FakeSourceLayer(
+            features=[_FakeFeature(_FakeGeometry(point=_FakePoint(2600000.0, 1200000.0)))],
+            crs=_FakeCrs(authid="EPSG:2056"),
+        )
+
+        layer, count = self.module.build_activity_heatmap_layer(
+            activities_layer=None,
+            points_layer=points_layer,
+        )
+
+        self.assertEqual(count, 1)
+        [feature] = layer.dataProvider().added
+        point = feature.geometry().asPoint()
+        self.assertEqual(point.x(), 2601000.0)
+        self.assertEqual(point.y(), 1202000.0)
+        self.assertEqual(_FakeCoordinateTransform.calls, [("EPSG:2056", "EPSG:3857")])
 
     def test_populates_attribute_rows_from_activity_line_fallback(self):
         fields = _FakeFields(["source_activity_id"])
