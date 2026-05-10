@@ -52,10 +52,6 @@ QVBoxLayout = _qtwidgets.QVBoxLayout
 QWidget = _qtwidgets.QWidget
 
 STEP_PAGE_NARROW_WIDTH = 360
-DockWizardPageSpec = DockWorkflowPageSpec
-"""Compatibility alias for pre-#805 wizard step page callers."""
-build_default_wizard_page_specs = build_default_workflow_page_specs
-"""Compatibility alias for pre-#805 wizard step page builders."""
 
 
 class StepPage(QWidget):
@@ -383,10 +379,6 @@ class WorkflowStepPage(StepPage):
         return label
 
 
-WizardStepPage = WorkflowStepPage
-"""Compatibility alias for pre-#805 wizard step-page callers."""
-
-
 def build_workflow_step_pages(
     *,
     parent=None,
@@ -407,10 +399,6 @@ def build_workflow_step_pages(
     )
 
 
-build_wizard_step_pages = build_workflow_step_pages
-"""Compatibility alias for pre-#805 wizard step-page callers."""
-
-
 def install_workflow_step_pages(
     shell,
     specs: Sequence[DockWorkflowPageSpec] | None = None,
@@ -421,10 +409,6 @@ def install_workflow_step_pages(
     for page in pages:
         shell.add_page(page)
     return pages
-
-
-install_wizard_step_pages = install_workflow_step_pages
-"""Compatibility alias for pre-#805 wizard step-page callers."""
 
 
 def apply_workflow_step_page_statuses(
@@ -448,8 +432,29 @@ def apply_workflow_step_page_statuses(
         page.set_status(text, tone=tone)
 
 
-apply_wizard_step_page_statuses = apply_workflow_step_page_statuses
-"""Compatibility alias for pre-#805 wizard step-page callers."""
+# Preserve direct named imports from the original step-page module lazily while
+# the explicit wizard_step_page compatibility module remains the preferred path.
+_WIZARD_COMPAT_ALIAS_TARGETS = {
+    "DockWizardPageSpec": "DockWorkflowPageSpec",
+    "build_default_wizard_page_specs": "build_default_workflow_page_specs",
+    "WizardStepPage": "WorkflowStepPage",
+    "build_wizard_step_pages": "build_workflow_step_pages",
+    "install_wizard_step_pages": "install_workflow_step_pages",
+    "apply_wizard_step_page_statuses": "apply_workflow_step_page_statuses",
+}
+
+
+def __getattr__(name: str) -> object:
+    alias_target = _WIZARD_COMPAT_ALIAS_TARGETS.get(name)
+    if alias_target is not None:
+        try:
+            return globals()[alias_target]
+        except KeyError:
+            raise AttributeError(
+                f"module {__name__!r} alias {name!r} target "
+                f"{alias_target!r} not found"
+            ) from None
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 class _LayoutWidget(QWidget):
