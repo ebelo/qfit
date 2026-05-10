@@ -23,7 +23,7 @@ class DockActivityWorkflowCoordinatorTests(unittest.TestCase):
             activity_preview_service=self.activity_preview_service,
         )
 
-    def test_build_fetch_task_uses_defaults_when_advanced_fetch_is_disabled(self):
+    def test_build_fetch_task_uses_internal_fetch_defaults(self):
         self.sync_controller.build_fetch_task_request.return_value = "fetch-request"
         self.sync_controller.build_fetch_task.return_value = "fetch-task"
 
@@ -35,11 +35,6 @@ class DockActivityWorkflowCoordinatorTests(unittest.TestCase):
                 cache=object(),
                 detailed_route_strategy="missing",
                 on_finished=object(),
-                advanced_fetch_enabled=False,
-                detailed_streams_checked=True,
-                per_page_value=50,
-                max_pages_value=7,
-                max_detailed_activities_value=12,
             )
         )
 
@@ -54,7 +49,7 @@ class DockActivityWorkflowCoordinatorTests(unittest.TestCase):
         self.assertIsNone(kwargs["after"])
         self.sync_controller.build_fetch_task.assert_called_once_with("fetch-request")
 
-    def test_build_fetch_task_respects_advanced_fetch_values(self):
+    def test_build_fetch_task_uses_default_limits_with_detailed_route_override(self):
         self.sync_controller.build_fetch_task_request.return_value = "fetch-request"
         self.sync_controller.build_fetch_task.return_value = "fetch-task"
 
@@ -66,21 +61,17 @@ class DockActivityWorkflowCoordinatorTests(unittest.TestCase):
                 cache=object(),
                 detailed_route_strategy="all",
                 on_finished=object(),
-                advanced_fetch_enabled=True,
-                detailed_streams_checked=True,
-                per_page_value=75,
-                max_pages_value=4,
-                max_detailed_activities_value=30,
+                use_detailed_streams=True,
                 before_epoch=200,
                 after_epoch=100,
             )
         )
 
         _, kwargs = self.sync_controller.build_fetch_task_request.call_args
-        self.assertEqual(kwargs["per_page"], 75)
-        self.assertEqual(kwargs["max_pages"], 4)
+        self.assertEqual(kwargs["per_page"], 200)
+        self.assertEqual(kwargs["max_pages"], 0)
         self.assertTrue(kwargs["use_detailed_streams"])
-        self.assertEqual(kwargs["max_detailed_activities"], 30)
+        self.assertEqual(kwargs["max_detailed_activities"], 25)
         self.assertEqual(kwargs["before"], 200)
         self.assertEqual(kwargs["after"], 100)
 

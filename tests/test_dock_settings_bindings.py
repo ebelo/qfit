@@ -7,7 +7,6 @@ from qfit.configuration.application.settings_service import SettingsService
 from qfit.activities.domain.activity_query import DEFAULT_SORT_LABEL, DETAILED_ROUTE_FILTER_ANY
 from qfit.configuration.application.dock_settings_bindings import build_dock_settings_bindings
 from qfit.configuration.application.ui_settings_binding import load_bindings, save_bindings
-from qfit.detailed_route_strategy import DEFAULT_DETAILED_ROUTE_STRATEGY
 from qfit.mapbox_config import DEFAULT_BACKGROUND_PRESET, TILE_MODE_RASTER
 from qfit.providers.infrastructure.strava_provider import StravaProvider
 
@@ -101,13 +100,6 @@ class FakeDock:
         self.redirectUriLineEdit = TextWidget()
         self.refreshTokenLineEdit = TextWidget()
         self.outputPathLineEdit = TextWidget()
-        self.perPageSpinBox = SpinWidget(200)
-        self.maxPagesSpinBox = SpinWidget(0)
-        self.detailedStreamsCheckBox = CheckWidget(False)
-        self.maxDetailedActivitiesSpinBox = SpinWidget(25)
-        self.detailedRouteStrategyComboBox = ComboWidget(
-            [DEFAULT_DETAILED_ROUTE_STRATEGY, "Only missing detailed routes"],
-        )
         self.writeActivityPointsCheckBox = CheckWidget(True)
         self.pointSamplingStrideSpinBox = SpinWidget(5)
         self.activitySearchLineEdit = TextWidget()
@@ -183,11 +175,6 @@ class DockSettingsBindingsTests(unittest.TestCase):
         "redirect_uri",
         "refresh_token",
         "output_path",
-        "per_page",
-        "max_pages",
-        "use_detailed_streams",
-        "max_detailed_activities",
-        "detailed_route_strategy",
         "write_activity_points",
         "point_sampling_stride",
         "activity_search_text",
@@ -216,8 +203,6 @@ class DockSettingsBindingsTests(unittest.TestCase):
             {
                 "qfit/client_id": "client-123",
                 "qfit/redirect_uri": "http://example.test/callback",
-                "qfit/per_page": "75",
-                "qfit/use_detailed_streams": "true",
                 "qfit/detailed_route_filter": "missing",
                 "qfit/use_background_map": True,
                 "qfit/atlas_title": "Spring Atlas",
@@ -232,8 +217,6 @@ class DockSettingsBindingsTests(unittest.TestCase):
         self.assertEqual(dock.clientIdLineEdit.text(), "client-123")
         self.assertEqual(dock.redirectUriLineEdit.text(), "http://example.test/callback")
         self.assertEqual(dock.outputPathLineEdit.text(), dock._default_output_path())
-        self.assertEqual(dock.perPageSpinBox.value(), 75)
-        self.assertTrue(dock.detailedStreamsCheckBox.isChecked())
         self.assertEqual(dock.detailedRouteStatusComboBox.currentData(), "missing")
         self.assertTrue(dock.backgroundMapCheckBox.isChecked())
         self.assertEqual(dock.atlasTitleLineEdit.text(), "Spring Atlas")
@@ -248,10 +231,6 @@ class DockSettingsBindingsTests(unittest.TestCase):
         dock.clientSecretLineEdit.setText("secret")
         dock.redirectUriLineEdit.setText(StravaProvider.DEFAULT_REDIRECT_URI)
         dock.outputPathLineEdit.setText("/tmp/out.gpkg")
-        dock.perPageSpinBox.setValue(123)
-        dock.detailedStreamsCheckBox.setChecked(True)
-        dock.maxDetailedActivitiesSpinBox.setValue(11)
-        dock.detailedRouteStrategyComboBox.setCurrentIndex(1)
         dock.writeActivityPointsCheckBox.setChecked(False)
         dock.pointSamplingStrideSpinBox.setValue(9)
         dock.activitySearchLineEdit.setText(" commute ")
@@ -274,9 +253,9 @@ class DockSettingsBindingsTests(unittest.TestCase):
 
         self.assertEqual(settings.get("client_id"), "abc")
         self.assertEqual(settings.get("activity_search_text"), "commute")
-        self.assertEqual(settings.get("per_page"), 123)
-        self.assertTrue(settings.get_bool("use_detailed_streams"))
-        self.assertEqual(settings.get("detailed_route_strategy"), "Only missing detailed routes")
+        self.assertIsNone(settings.get("per_page"))
+        self.assertIsNone(settings.get("use_detailed_streams"))
+        self.assertIsNone(settings.get("detailed_route_strategy"))
         self.assertFalse(settings.get_bool("write_activity_points", True))
         self.assertEqual(settings.get("detailed_route_filter"), "missing")
         self.assertEqual(settings.get("mapbox_style_owner"), "custom-owner")

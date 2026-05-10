@@ -81,22 +81,6 @@ LOCAL_FIRST_WIDGET_MOVES: tuple[LocalFirstWidgetMove, ...] = (
 
 LOCAL_FIRST_CONTROL_MOVES: tuple[LocalFirstControlMove, ...] = (
     LocalFirstControlMove(
-        key="advanced_fetch",
-        content_attr="sync_content",
-        group_attr="advancedFetchGroupBox",
-        required_widget_attrs=(
-            "advancedFetchSettingsWidget",
-            "perPageSpinBox",
-            "maxPagesSpinBox",
-            "detailedStreamsCheckBox",
-            "detailedRouteStrategyComboBox",
-            "maxDetailedActivitiesSpinBox",
-        ),
-        installed_attr="_local_first_advanced_fetch_controls_installed",
-        installed_target_attr="_local_first_advanced_fetch_controls_installed_target",
-        after_install_hook_key=REFRESH_CONDITIONAL_VISIBILITY_HOOK,
-    ),
-    LocalFirstControlMove(
         key="activity_preview",
         content_attr="sync_content",
         group_attr="previewGroupBox",

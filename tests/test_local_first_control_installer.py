@@ -47,7 +47,6 @@ class LocalFirstControlInstallerTests(unittest.TestCase):
         self.assertEqual(
             install_control_move.call_args_list,
             [
-                call(dock, composition, "advanced_fetch"),
                 call(dock, composition, "activity_preview"),
                 call(dock, composition, "backfill_routes"),
                 call(dock, composition, "map_filters"),
@@ -60,7 +59,6 @@ class LocalFirstControlInstallerTests(unittest.TestCase):
         self.assertEqual(
             after_control_move.call_args_list,
             [
-                call(dock, "advanced_fetch", installed=True),
                 call(dock, "activity_preview", installed=True),
                 call(dock, "backfill_routes", installed=True),
                 call(dock, "map_filters", installed=True),

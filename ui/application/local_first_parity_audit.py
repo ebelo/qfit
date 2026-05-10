@@ -13,16 +13,14 @@ ISSUE_805_REQUIRED_AREAS = (
     "activity_visualization_options",
     "map_filters",
     "data_storage_settings",
-    "advanced_fetch_settings",
     "analysis_controls",
     "atlas_export_controls",
     "connection_settings_controls",
 )
 
 _CONTROL_MOVE_AREAS = {
-    "advanced_fetch": "advanced_fetch_settings",
     "activity_preview": "activity_visualization_options",
-    "backfill_routes": "advanced_fetch_settings",
+    "backfill_routes": "data_storage_settings",
     "map_filters": "map_filters",
     "atlas_pdf": "atlas_export_controls",
     "strava_credentials": "connection_settings_controls",

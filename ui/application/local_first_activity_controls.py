@@ -8,7 +8,6 @@ from ...activities.domain.activity_query import (
     SORT_OPTIONS,
 )
 from ...activities.application import build_activity_preview_request
-from ...detailed_route_strategy import detailed_route_strategy_labels
 
 
 def build_current_activity_preview_request(dock):
@@ -41,7 +40,6 @@ def configure_local_first_activity_preview_options(dock) -> None:
     """Prepare activity preview backing controls for the Data page."""
 
     configure_detailed_route_filter_options(dock)
-    configure_detailed_route_strategy_options(dock)
     configure_preview_sort_options(dock)
 
 
@@ -67,17 +65,6 @@ def configure_detailed_route_filter_options(dock) -> None:
     combo.setToolTip("Filter activities by detailed-route availability")
 
 
-def configure_detailed_route_strategy_options(dock) -> None:
-    """Populate the detailed-route fetch strategy backing combo."""
-
-    combo = getattr(dock, "detailedRouteStrategyComboBox", None)
-    if combo is None:
-        return
-    combo.clear()
-    for label in detailed_route_strategy_labels():
-        combo.addItem(label)
-
-
 def configure_preview_sort_options(dock) -> None:
     """Populate the activity preview sort backing combo."""
 
@@ -92,7 +79,6 @@ def configure_preview_sort_options(dock) -> None:
 __all__ = [
     "build_current_activity_preview_request",
     "configure_detailed_route_filter_options",
-    "configure_detailed_route_strategy_options",
     "configure_local_first_activity_preview_options",
     "configure_preview_sort_options",
 ]

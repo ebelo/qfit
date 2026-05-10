@@ -5,20 +5,14 @@ from unittest.mock import MagicMock
 from tests import _path  # noqa: F401
 
 from qfit.ui.application.local_first_control_visibility import (
-    ADVANCED_FETCH_VISIBILITY_WIDGETS,
-    DETAILED_FETCH_VISIBILITY_WIDGETS,
     MAPBOX_CUSTOM_STYLE_VISIBILITY_WIDGETS,
     POINT_SAMPLING_VISIBILITY_WIDGETS,
     bind_local_first_conditional_visibility_controls,
-    build_advanced_fetch_visibility_update,
-    build_detailed_fetch_visibility_update,
     build_local_first_conditional_visibility_updates,
     build_mapbox_custom_style_visibility_update,
     build_point_sampling_visibility_update,
     refresh_local_first_conditional_control_visibility,
     set_named_widgets_visible,
-    update_local_first_advanced_fetch_visibility,
-    update_local_first_detailed_fetch_visibility,
     update_local_first_mapbox_custom_style_visibility,
     update_local_first_point_sampling_visibility,
 )
@@ -37,23 +31,6 @@ class _FakeSignal:
 
 
 class LocalFirstControlVisibilityTests(unittest.TestCase):
-    def test_advanced_fetch_visibility_targets_only_details_panel(self):
-        update = build_advanced_fetch_visibility_update(True)
-
-        self.assertEqual(update.key, "advanced_fetch")
-        self.assertEqual(update.widget_attrs, ADVANCED_FETCH_VISIBILITY_WIDGETS)
-        self.assertEqual(update.widget_attrs, ("advancedFetchSettingsWidget",))
-        self.assertTrue(update.visible)
-
-    def test_detailed_fetch_visibility_keeps_backfill_and_strategy_controls_together(self):
-        update = build_detailed_fetch_visibility_update(False)
-
-        self.assertEqual(update.key, "detailed_fetch")
-        self.assertEqual(update.widget_attrs, DETAILED_FETCH_VISIBILITY_WIDGETS)
-        self.assertIn("backfillMissingDetailedRoutesButton", update.widget_attrs)
-        self.assertIn("detailedRouteStrategyComboBox", update.widget_attrs)
-        self.assertFalse(update.visible)
-
     def test_point_sampling_visibility_targets_stride_controls(self):
         update = build_point_sampling_visibility_update(True)
 
@@ -77,8 +54,6 @@ class LocalFirstControlVisibilityTests(unittest.TestCase):
 
     def test_build_conditional_visibility_updates_reads_live_control_state(self):
         dock = SimpleNamespace(
-            advancedFetchGroupBox=SimpleNamespace(isChecked=lambda: True),
-            detailedStreamsCheckBox=SimpleNamespace(isChecked=lambda: False),
             backgroundPresetComboBox=SimpleNamespace(currentText=lambda: "Custom"),
             writeActivityPointsCheckBox=SimpleNamespace(isChecked=lambda: True),
         )
@@ -88,8 +63,6 @@ class LocalFirstControlVisibilityTests(unittest.TestCase):
         self.assertEqual(
             [(update.key, update.visible) for update in updates],
             [
-                ("advanced_fetch", True),
-                ("detailed_fetch", False),
                 ("mapbox_custom_style", True),
                 ("point_sampling", True),
             ],
@@ -100,7 +73,6 @@ class LocalFirstControlVisibilityTests(unittest.TestCase):
             raise RuntimeError("wrapped C/C++ object has been deleted")
 
         dock = SimpleNamespace(
-            advancedFetchGroupBox=SimpleNamespace(isChecked=raise_runtime_error),
             backgroundPresetComboBox=SimpleNamespace(currentText=raise_runtime_error),
         )
 
@@ -109,8 +81,6 @@ class LocalFirstControlVisibilityTests(unittest.TestCase):
         self.assertEqual(
             [(update.key, update.visible) for update in updates],
             [
-                ("advanced_fetch", False),
-                ("detailed_fetch", False),
                 ("mapbox_custom_style", False),
                 ("point_sampling", False),
             ],
@@ -133,62 +103,40 @@ class LocalFirstControlVisibilityTests(unittest.TestCase):
 
     def test_refresh_conditional_visibility_applies_all_updates(self):
         dock = SimpleNamespace(
-            advancedFetchGroupBox=SimpleNamespace(isChecked=lambda: True),
-            detailedStreamsCheckBox=SimpleNamespace(isChecked=lambda: False),
             backgroundPresetComboBox=SimpleNamespace(currentText=lambda: "Custom"),
             writeActivityPointsCheckBox=SimpleNamespace(isChecked=lambda: False),
-            advancedFetchSettingsWidget=MagicMock(),
-            backfillMissingDetailedRoutesButton=MagicMock(),
             mapboxStyleOwnerLabel=MagicMock(),
             pointSamplingStrideLabel=MagicMock(),
         )
 
         refresh_local_first_conditional_control_visibility(dock)
 
-        dock.advancedFetchSettingsWidget.setVisible.assert_called_once_with(True)
-        dock.backfillMissingDetailedRoutesButton.setVisible.assert_called_once_with(False)
         dock.mapboxStyleOwnerLabel.setVisible.assert_called_once_with(True)
         dock.pointSamplingStrideLabel.setVisible.assert_called_once_with(False)
 
     def test_update_helpers_apply_named_visibility_groups(self):
         dock = SimpleNamespace(
-            advancedFetchSettingsWidget=MagicMock(),
-            backfillMissingDetailedRoutesButton=MagicMock(),
             pointSamplingStrideLabel=MagicMock(),
             mapboxStyleOwnerLabel=MagicMock(),
         )
 
-        update_local_first_advanced_fetch_visibility(dock, True)
-        update_local_first_detailed_fetch_visibility(dock, False)
         update_local_first_point_sampling_visibility(dock, True)
         update_local_first_mapbox_custom_style_visibility(dock, "Custom")
 
-        dock.advancedFetchSettingsWidget.setVisible.assert_called_once_with(True)
-        dock.backfillMissingDetailedRoutesButton.setVisible.assert_called_once_with(False)
         dock.pointSamplingStrideLabel.setVisible.assert_called_once_with(True)
         dock.mapboxStyleOwnerLabel.setVisible.assert_called_once_with(True)
 
     def test_bind_conditional_visibility_controls_routes_signals_to_application_rules(self):
-        detailed_signal = _FakeSignal()
         point_signal = _FakeSignal()
-        advanced_signal = _FakeSignal()
         dock = SimpleNamespace(
-            detailedStreamsCheckBox=SimpleNamespace(toggled=detailed_signal),
             writeActivityPointsCheckBox=SimpleNamespace(toggled=point_signal),
-            advancedFetchGroupBox=SimpleNamespace(toggled=advanced_signal),
-            backfillMissingDetailedRoutesButton=MagicMock(),
             pointSamplingStrideLabel=MagicMock(),
-            advancedFetchSettingsWidget=MagicMock(),
         )
 
         bind_local_first_conditional_visibility_controls(dock)
-        detailed_signal.emit(False)
         point_signal.emit(True)
-        advanced_signal.emit(True)
 
-        dock.backfillMissingDetailedRoutesButton.setVisible.assert_called_once_with(False)
         dock.pointSamplingStrideLabel.setVisible.assert_called_once_with(True)
-        dock.advancedFetchSettingsWidget.setVisible.assert_called_once_with(True)
 
 
 if __name__ == "__main__":

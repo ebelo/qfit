@@ -59,8 +59,6 @@ try:
     from qfit.qfit_config_dialog import QfitConfigDialog
     from qfit.qfit_dockwidget import ApplyVisualizationAction, QfitDockWidget
     from qfit.ui.application.local_first_control_visibility import (
-        update_local_first_advanced_fetch_visibility,
-        update_local_first_detailed_fetch_visibility,
         update_local_first_mapbox_custom_style_visibility,
         update_local_first_point_sampling_visibility,
     )
@@ -91,8 +89,6 @@ except Exception as exc:  # pragma: no cover - exercised only when QGIS is unava
     Activity = None
     QfitConfigDialog = None
     QfitDockWidget = None
-    update_local_first_advanced_fetch_visibility = None
-    update_local_first_detailed_fetch_visibility = None
     update_local_first_mapbox_custom_style_visibility = None
     update_local_first_point_sampling_visibility = None
     build_dockwidget_dependencies = None
@@ -274,7 +270,6 @@ class QgisSmokeTests(unittest.TestCase):
         try:
             from qgis.PyQt.QtWidgets import QComboBox, QLabel, QWidget
 
-            self.assertEqual(dock.maxDetailedActivitiesLabel.text(), "Max new detailed routes this run")
             self.assertEqual(dock.pointSamplingStrideLabel.text(), "Keep every Nth point")
             self.assertEqual(dock.workflowLabel.text(), "Sections: Fetch & store · Visualize · Analyze · Publish")
             self.assertEqual(dock.credentialsGroupBox.title(), "Strava connection")
@@ -399,7 +394,6 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertEqual(dock.tileModeComboBox.currentText(), TILE_MODE_RASTER)
             self.assertEqual(dock.atlasTitleLineEdit.text(), "qfit Activity Atlas")
             self.assertEqual(dock.atlasSubtitleLineEdit.text(), "")
-            self.assertEqual(dock.detailedRouteStrategyComboBox.currentText(), "Missing routes only")
             self.assertEqual(
                 dock.backfillMissingDetailedRoutesButton.parentWidget(),
                 dock._local_first_dock_composition.sync_content,
@@ -410,10 +404,6 @@ class QgisSmokeTests(unittest.TestCase):
                 ),
                 0,
             )
-            self.assertIsNotNone(dock.findChild(QLabel, "detailedRouteStrategyComboBoxContextHelpLabel"))
-            self.assertIsNotNone(dock.findChild(QWidget, "detailedRouteStrategyComboBoxHelpField"))
-            self.assertIsNotNone(dock.findChild(QLabel, "maxDetailedActivitiesSpinBoxContextHelpLabel"))
-            self.assertIsNotNone(dock.findChild(QWidget, "maxDetailedActivitiesSpinBoxHelpField"))
             temporal_helper = dock.findChild(QLabel, "temporalModeComboBoxContextHelpLabel")
             self.assertIsNone(temporal_helper)
         finally:
@@ -423,25 +413,10 @@ class QgisSmokeTests(unittest.TestCase):
     def test_dock_widget_updates_local_first_visibility_rules(self):
         dock = QfitDockWidget(self.iface)
         try:
-            update_local_first_detailed_fetch_visibility(dock, False)
-            self.assertTrue(dock.backfillMissingDetailedRoutesButton.isHidden())
-            self.assertTrue(dock.detailedRouteStrategyLabel.isHidden())
-            self.assertTrue(dock.maxDetailedActivitiesSpinBox.isHidden())
-
-            update_local_first_detailed_fetch_visibility(dock, True)
-            self.assertFalse(dock.backfillMissingDetailedRoutesButton.isHidden())
-            self.assertFalse(dock.detailedRouteStrategyLabel.isHidden())
-            self.assertFalse(dock.maxDetailedActivitiesSpinBox.isHidden())
-
             update_local_first_point_sampling_visibility(dock, False)
             self.assertTrue(dock.pointSamplingStrideSpinBox.isHidden())
             update_local_first_point_sampling_visibility(dock, True)
             self.assertFalse(dock.pointSamplingStrideSpinBox.isHidden())
-
-            update_local_first_advanced_fetch_visibility(dock, False)
-            self.assertTrue(dock.advancedFetchSettingsWidget.isHidden())
-            update_local_first_advanced_fetch_visibility(dock, True)
-            self.assertFalse(dock.advancedFetchSettingsWidget.isHidden())
 
             update_local_first_mapbox_custom_style_visibility(dock, "Outdoor")
             self.assertTrue(dock.mapboxStyleOwnerLineEdit.isHidden())
@@ -476,9 +451,6 @@ class QgisSmokeTests(unittest.TestCase):
 
             dock.clientIdLineEdit.setText("client-123")
             dock.outputPathLineEdit.setText("/tmp/roundtrip.gpkg")
-            dock.perPageSpinBox.setValue(123)
-            dock.detailedStreamsCheckBox.setChecked(True)
-            dock.detailedRouteStrategyComboBox.setCurrentText("Recent fetch only")
             dock.backgroundMapCheckBox.setChecked(True)
             dock.backgroundPresetComboBox.setCurrentText(background_preset_text)
             dock.previewSortComboBox.setCurrentText(preview_sort_text)
@@ -492,9 +464,9 @@ class QgisSmokeTests(unittest.TestCase):
 
             self.assertEqual(settings.get("client_id"), "client-123")
             self.assertEqual(settings.get("output_path"), "/tmp/roundtrip.gpkg")
-            self.assertEqual(int(settings.get("per_page")), 123)
-            self.assertTrue(settings.get_bool("use_detailed_streams"))
-            self.assertEqual(settings.get("detailed_route_strategy"), "Recent fetch only")
+            self.assertIsNone(settings.get("per_page"))
+            self.assertIsNone(settings.get("use_detailed_streams"))
+            self.assertIsNone(settings.get("detailed_route_strategy"))
             self.assertTrue(settings.get_bool("use_background_map"))
             self.assertEqual(settings.get("background_preset"), background_preset_text)
             self.assertEqual(settings.get("preview_sort"), preview_sort_text)
@@ -512,9 +484,6 @@ class QgisSmokeTests(unittest.TestCase):
         try:
             self.assertEqual(dock_reloaded.clientIdLineEdit.text(), "client-123")
             self.assertEqual(dock_reloaded.outputPathLineEdit.text(), "/tmp/roundtrip.gpkg")
-            self.assertEqual(dock_reloaded.perPageSpinBox.value(), 123)
-            self.assertTrue(dock_reloaded.detailedStreamsCheckBox.isChecked())
-            self.assertEqual(dock_reloaded.detailedRouteStrategyComboBox.currentText(), "Recent fetch only")
             self.assertTrue(dock_reloaded.backgroundMapCheckBox.isChecked())
             self.assertEqual(dock_reloaded.backgroundPresetComboBox.currentText(), background_preset_text)
             self.assertEqual(dock_reloaded.previewSortComboBox.currentText(), preview_sort_text)
@@ -633,13 +602,12 @@ class QgisSmokeTests(unittest.TestCase):
 
             with patch("qfit.qfit_dockwidget.QgsApplication.taskManager") as task_manager:
                 task_manager.return_value.addTask = MagicMock()
-                dock.detailedRouteStrategyComboBox.setCurrentText("Recent fetch only")
                 dock.on_refresh_clicked()
 
             dock.sync_controller.build_fetch_task_request.assert_called_once()
             self.assertEqual(
                 dock.sync_controller.build_fetch_task_request.call_args.kwargs["detailed_route_strategy"],
-                "Recent fetch only",
+                "Missing routes only",
             )
             self.assertEqual(dock.sync_controller.build_fetch_task_request.call_args.kwargs["per_page"], 200)
             self.assertEqual(dock.sync_controller.build_fetch_task_request.call_args.kwargs["max_pages"], 0)
@@ -648,68 +616,6 @@ class QgisSmokeTests(unittest.TestCase):
             task_manager.return_value.addTask.assert_called_once_with(fake_task)
             self.assertIs(dock._fetch_task, fake_task)
             self.assertEqual(dock.refreshButton.text(), "Cancel")
-        finally:
-            dock.close()
-            dock.deleteLater()
-
-    def test_refresh_clicked_ignores_hidden_advanced_fetch_settings(self):
-        dock = QfitDockWidget(self.iface)
-        try:
-            fake_task = MagicMock(name="fetch_task")
-            dock._save_settings = MagicMock()
-            dock.sync_controller.build_fetch_task_request = MagicMock(return_value="fetch-request")
-            dock.sync_controller.build_fetch_task = MagicMock(return_value=fake_task)
-            dock.advancedFetchGroupBox.setChecked(False)
-            dock.perPageSpinBox.setValue(50)
-            dock.maxPagesSpinBox.setValue(1)
-            dock.maxDetailedActivitiesSpinBox.setValue(3)
-            dock.detailedStreamsCheckBox.setChecked(True)
-
-            with patch("qfit.qfit_dockwidget.QgsApplication.taskManager") as task_manager:
-                task_manager.return_value.addTask = MagicMock()
-                dock.on_refresh_clicked()
-
-            dock.sync_controller.build_fetch_task_request.assert_called_once()
-            self.assertEqual(dock.sync_controller.build_fetch_task_request.call_args.kwargs["per_page"], 200)
-            self.assertEqual(dock.sync_controller.build_fetch_task_request.call_args.kwargs["max_pages"], 0)
-            self.assertEqual(
-                dock.sync_controller.build_fetch_task_request.call_args.kwargs["max_detailed_activities"],
-                25,
-            )
-            self.assertFalse(dock.sync_controller.build_fetch_task_request.call_args.kwargs["use_detailed_streams"])
-            dock.sync_controller.build_fetch_task.assert_called_once_with("fetch-request")
-            task_manager.return_value.addTask.assert_called_once_with(fake_task)
-        finally:
-            dock.close()
-            dock.deleteLater()
-
-    def test_refresh_clicked_uses_advanced_fetch_settings_when_enabled(self):
-        dock = QfitDockWidget(self.iface)
-        try:
-            fake_task = MagicMock(name="fetch_task")
-            dock._save_settings = MagicMock()
-            dock.sync_controller.build_fetch_task_request = MagicMock(return_value="fetch-request")
-            dock.sync_controller.build_fetch_task = MagicMock(return_value=fake_task)
-            dock.advancedFetchGroupBox.setChecked(True)
-            dock.perPageSpinBox.setValue(50)
-            dock.maxPagesSpinBox.setValue(1)
-            dock.maxDetailedActivitiesSpinBox.setValue(3)
-            dock.detailedStreamsCheckBox.setChecked(True)
-
-            with patch("qfit.qfit_dockwidget.QgsApplication.taskManager") as task_manager:
-                task_manager.return_value.addTask = MagicMock()
-                dock.on_refresh_clicked()
-
-            dock.sync_controller.build_fetch_task_request.assert_called_once()
-            self.assertEqual(dock.sync_controller.build_fetch_task_request.call_args.kwargs["per_page"], 50)
-            self.assertEqual(dock.sync_controller.build_fetch_task_request.call_args.kwargs["max_pages"], 1)
-            self.assertEqual(
-                dock.sync_controller.build_fetch_task_request.call_args.kwargs["max_detailed_activities"],
-                3,
-            )
-            self.assertTrue(dock.sync_controller.build_fetch_task_request.call_args.kwargs["use_detailed_streams"])
-            dock.sync_controller.build_fetch_task.assert_called_once_with("fetch-request")
-            task_manager.return_value.addTask.assert_called_once_with(fake_task)
         finally:
             dock.close()
             dock.deleteLater()
@@ -789,9 +695,6 @@ class QgisSmokeTests(unittest.TestCase):
             dock._save_settings = MagicMock()
             dock.sync_controller.build_fetch_task_request = MagicMock(return_value="fetch-request")
             dock.sync_controller.build_fetch_task = MagicMock(return_value=fake_task)
-            dock.detailedStreamsCheckBox.setChecked(False)
-            dock.detailedRouteStrategyComboBox.setCurrentText("Recent fetch only")
-
             with patch("qfit.qfit_dockwidget.QgsApplication.taskManager") as task_manager:
                 task_manager.return_value.addTask = MagicMock()
                 dock.on_backfill_missing_detailed_routes_clicked()
@@ -802,24 +705,19 @@ class QgisSmokeTests(unittest.TestCase):
                 dock.sync_controller.build_fetch_task_request.call_args.kwargs["detailed_route_strategy"],
                 "Missing routes only",
             )
-            self.assertFalse(dock.detailedStreamsCheckBox.isChecked())
-            self.assertEqual(dock.detailedRouteStrategyComboBox.currentText(), "Recent fetch only")
             self.assertIn("Backfilling missing detailed routes", dock.statusLabel.text())
             task_manager.return_value.addTask.assert_called_once_with(fake_task)
         finally:
             dock.close()
             dock.deleteLater()
 
-    def test_backfill_missing_detailed_routes_preserves_cap_when_advanced_fetch_is_hidden(self):
+    def test_backfill_missing_detailed_routes_uses_internal_cap(self):
         dock = QfitDockWidget(self.iface)
         try:
             fake_task = MagicMock(name="fetch_task")
             dock._save_settings = MagicMock()
             dock.sync_controller.build_fetch_task_request = MagicMock(return_value="fetch-request")
             dock.sync_controller.build_fetch_task = MagicMock(return_value=fake_task)
-            dock.advancedFetchGroupBox.setChecked(False)
-            dock.maxDetailedActivitiesSpinBox.setValue(7)
-
             with patch("qfit.qfit_dockwidget.QgsApplication.taskManager") as task_manager:
                 task_manager.return_value.addTask = MagicMock()
                 dock.on_backfill_missing_detailed_routes_clicked()
@@ -828,7 +726,7 @@ class QgisSmokeTests(unittest.TestCase):
             self.assertTrue(dock.sync_controller.build_fetch_task_request.call_args.kwargs["use_detailed_streams"])
             self.assertEqual(
                 dock.sync_controller.build_fetch_task_request.call_args.kwargs["max_detailed_activities"],
-                7,
+                25,
             )
             task_manager.return_value.addTask.assert_called_once_with(fake_task)
         finally:
@@ -874,17 +772,8 @@ class QgisSmokeTests(unittest.TestCase):
         dock = QfitDockWidget(self.iface)
         try:
             self.assertEqual(
-                dock.detailedStreamsCheckBox.text(),
-                "Fetch detailed routes",
-            )
-            self.assertEqual(
                 dock.backfillMissingDetailedRoutesButton.text(),
                 "Backfill routes",
-            )
-            self.assertEqual(dock.detailedRouteStrategyLabel.text(), "Detailed route strategy")
-            self.assertEqual(
-                dock.maxDetailedActivitiesLabel.text(),
-                "Max new detailed routes this run",
             )
         finally:
             dock.close()

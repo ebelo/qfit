@@ -271,11 +271,7 @@ class ContextualHelpTests(unittest.TestCase):
         entries = {entry.anchor_name: entry for entry in build_dock_help_entries()}
 
         for anchor_name in [
-            "detailedRouteStrategyComboBox",
-            "maxDetailedActivitiesSpinBox",
             "backfillMissingDetailedRoutesButton",
-            "perPageSpinBox",
-            "maxPagesSpinBox",
             "writeActivityPointsCheckBox",
             "pointSamplingStrideSpinBox",
             "backgroundPresetComboBox",
@@ -289,20 +285,9 @@ class ContextualHelpTests(unittest.TestCase):
         ]:
             self.assertIn(anchor_name, entries)
 
-        self.assertEqual(entries["detailedStreamsCheckBox"].target_text, "Fetch detailed routes")
         self.assertEqual(entries["backfillMissingDetailedRoutesButton"].target_text, "Backfill routes")
         self.assertIn("still missing", entries["backfillMissingDetailedRoutesButton"].tooltip)
-        self.assertEqual(entries["detailedRouteStrategyComboBox"].label_text, "Detailed route strategy")
-        self.assertIn("Missing routes only", entries["detailedRouteStrategyComboBox"].helper_text)
-        self.assertEqual(entries["maxDetailedActivitiesSpinBox"].label_text, "Max new detailed routes this run")
-        self.assertTrue(entries["maxDetailedActivitiesSpinBox"].help_button)
-        self.assertIn("downloads up to 25 new detailed routes", entries["maxDetailedActivitiesSpinBox"].helper_text)
         self.assertEqual(entries["backgroundMapCheckBox"].target_text, "Enable Mapbox basemap")
-        self.assertEqual(entries["perPageSpinBox"].label_text, "Activities per page")
-        self.assertIn("fewer API requests", entries["perPageSpinBox"].tooltip)
-        self.assertEqual(entries["maxPagesSpinBox"].label_text, "Max pages")
-        self.assertTrue(entries["maxPagesSpinBox"].help_button)
-        self.assertIn("All is recommended", entries["maxPagesSpinBox"].helper_text)
         self.assertEqual(
             entries["writeActivityPointsCheckBox"].target_text,
             "Write sampled activity points from detailed tracks",

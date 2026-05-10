@@ -373,12 +373,6 @@ class LocalFirstBackingControlsTests(unittest.TestCase):
         dock.outputIntroLabel.text = "Pick where qfit should store the synced GeoPackage."
         dock.atlasPdfHelpLabel = _FakeLabel()
         dock.atlasPdfHelpLabel.text = "Export a per-activity PDF atlas using loaded activity_atlas_pages."
-        dock.perPageLabel = _FakeLabel()
-        dock.perPageSpinBox = _FakeSpinBox()
-        dock.maxPagesLabel = _FakeLabel()
-        dock.maxPagesSpinBox = _FakeSpinBox()
-        dock.maxDetailedActivitiesLabel = _FakeLabel()
-        dock.maxDetailedActivitiesSpinBox = _FakeSpinBox()
         dock.pointSamplingStrideLabel = _FakeLabel()
         dock.pointSamplingStrideSpinBox = _FakeSpinBox()
         dock.atlasPdfGroupBox = _FakeGroupBox()
@@ -500,15 +494,6 @@ class LocalFirstBackingControlsTests(unittest.TestCase):
         dock = self._make_section_dock()
         configure_local_first_spinbox_unit_copy(dock)
 
-        self.assertEqual(dock.perPageLabel.text, "Page size")
-        self.assertEqual(dock.perPageSpinBox.suffix, " activities")
-        self.assertEqual(dock.maxPagesLabel.text, "Pages to fetch")
-        self.assertEqual(dock.maxPagesSpinBox.suffix, " pages")
-        self.assertEqual(
-            dock.maxDetailedActivitiesLabel.text,
-            "Max new detailed routes this run",
-        )
-        self.assertEqual(dock.maxDetailedActivitiesSpinBox.suffix, " routes")
         self.assertEqual(dock.pointSamplingStrideLabel.text, "Keep every Nth point")
         self.assertEqual(dock.pointSamplingStrideSpinBox.suffix, " points")
 

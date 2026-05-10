@@ -60,21 +60,6 @@ class DockUiFieldGrammarTests(unittest.TestCase):
             " km",
         )
 
-    def test_max_pages_all_hint_lives_on_spinbox(self):
-        self.assertEqual(_property_text(_widget(self.root, "maxPagesLabel"), "text"), "Max pages")
-        self.assertEqual(
-            _property_text(_widget(self.root, "maxPagesSpinBox"), "specialValueText"),
-            "All",
-        )
-
-    def test_advanced_fetch_group_signals_optional_defaults(self):
-        group_box = _widget(self.root, "advancedFetchGroupBox")
-        self.assertEqual(
-            _property_text(group_box, "title"),
-            "Advanced fetch settings (optional)",
-        )
-        self.assertIn("recommended full-sync defaults", _property_text(group_box, "toolTip"))
-
     def test_atlas_labels_use_sentence_case(self):
         self.assertEqual(_property_text(_widget(self.root, "atlasTitleLabel"), "text"), "Atlas title")
         self.assertEqual(
@@ -101,7 +86,6 @@ class DockUiFieldGrammarTests(unittest.TestCase):
         self.assertEqual(_property_text(_widget(self.root, "backgroundMapCheckBox"), "text"), "Enable Mapbox basemap")
 
     def test_detailed_route_actions_use_short_labels(self):
-        self.assertEqual(_property_text(_widget(self.root, "detailedStreamsCheckBox"), "text"), "Fetch detailed routes")
         self.assertEqual(_property_text(_widget(self.root, "backfillMissingDetailedRoutesButton"), "text"), "Backfill routes")
 
     def test_atlas_pdf_labels_use_sentence_case(self):

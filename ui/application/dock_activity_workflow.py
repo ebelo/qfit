@@ -24,12 +24,7 @@ class DockFetchRequest:
     cache: object
     detailed_route_strategy: str
     on_finished: object
-    advanced_fetch_enabled: bool
-    detailed_streams_checked: bool
-    per_page_value: int
-    max_pages_value: int
-    max_detailed_activities_value: int
-    use_detailed_streams_override: bool | None = None
+    use_detailed_streams: bool = False
     before_epoch: int | None = None
     after_epoch: int | None = None
 
@@ -78,19 +73,15 @@ class DockActivityWorkflowCoordinator:
         self.activity_preview_service = activity_preview_service
 
     def build_fetch_task(self, request: DockFetchRequest):
-        use_detailed_streams = self._resolve_use_detailed_streams(request)
         fetch_request = self.sync_controller.build_fetch_task_request(
             client_id=request.client_id,
             client_secret=request.client_secret,
             refresh_token=request.refresh_token,
             cache=request.cache,
-            per_page=self._resolve_per_page(request),
-            max_pages=self._resolve_max_pages(request),
-            use_detailed_streams=use_detailed_streams,
-            max_detailed_activities=self._resolve_max_detailed_activities(
-                request,
-                use_detailed_streams=use_detailed_streams,
-            ),
+            per_page=_DEFAULT_PER_PAGE,
+            max_pages=_DEFAULT_MAX_PAGES,
+            use_detailed_streams=request.use_detailed_streams,
+            max_detailed_activities=_DEFAULT_MAX_DETAILED_ACTIVITIES,
             detailed_route_strategy=request.detailed_route_strategy,
             on_finished=request.on_finished,
             before=request.before_epoch,
@@ -148,36 +139,6 @@ class DockActivityWorkflowCoordinator:
 
     def build_preview_result(self, request: ActivityPreviewRequest) -> ActivityPreviewResult:
         return self.activity_preview_service.build_result_request(request)
-
-    @staticmethod
-    def _resolve_use_detailed_streams(request: DockFetchRequest) -> bool:
-        if request.use_detailed_streams_override is not None:
-            return request.use_detailed_streams_override
-        if request.advanced_fetch_enabled:
-            return request.detailed_streams_checked
-        return False
-
-    @staticmethod
-    def _resolve_per_page(request: DockFetchRequest) -> int:
-        if request.advanced_fetch_enabled:
-            return request.per_page_value
-        return _DEFAULT_PER_PAGE
-
-    @staticmethod
-    def _resolve_max_pages(request: DockFetchRequest) -> int:
-        if request.advanced_fetch_enabled:
-            return request.max_pages_value
-        return _DEFAULT_MAX_PAGES
-
-    @staticmethod
-    def _resolve_max_detailed_activities(
-        request: DockFetchRequest,
-        *,
-        use_detailed_streams: bool,
-    ) -> int:
-        if request.advanced_fetch_enabled or use_detailed_streams:
-            return request.max_detailed_activities_value
-        return _DEFAULT_MAX_DETAILED_ACTIVITIES
 
 
 __all__ = [
