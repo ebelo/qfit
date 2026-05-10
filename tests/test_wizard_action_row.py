@@ -52,6 +52,10 @@ class WizardActionRowTest(unittest.TestCase):
             self.action_row.set_wizard_action_availability,
             self.action_row.set_workflow_action_availability,
         )
+        self.assertIs(
+            self.action_row.set_wizard_action_role,
+            self.action_row.set_workflow_action_role,
+        )
         self.assertIsInstance(row, self.action_row.WorkflowActionRow)
         self.assertEqual(row.objectName(), "qfitWizardActionRow")
 
@@ -108,6 +112,7 @@ class WizardActionRowTest(unittest.TestCase):
 
         self.assertIs(returned, button)
         self.assertEqual(button.property("primaryAction"), "sync_activities")
+        self.assertEqual(button.property("workflowActionRole"), "primary")
         self.assertEqual(button.property("wizardActionRole"), "primary")
         self.assertIn("font-weight: 700", button.styleSheet())
         self.assertIn("QToolButton:disabled", button.styleSheet())
@@ -123,6 +128,7 @@ class WizardActionRowTest(unittest.TestCase):
 
         self.assertIs(returned, button)
         self.assertEqual(button.property("secondaryAction"), "load_activity_layers")
+        self.assertEqual(button.property("workflowActionRole"), "secondary")
         self.assertEqual(button.property("wizardActionRole"), "secondary")
         self.assertEqual(button.styleSheet(), "")
         self.assertIsNotNone(button.cursor().shape())
@@ -137,6 +143,7 @@ class WizardActionRowTest(unittest.TestCase):
 
         self.assertIs(returned, button)
         self.assertEqual(button.property("destructiveAction"), "clear_database")
+        self.assertEqual(button.property("workflowActionRole"), "destructive")
         self.assertEqual(button.property("wizardActionRole"), "destructive")
         self.assertIn("#c01c28", button.styleSheet())
         self.assertNotIn("#589632", button.styleSheet())
@@ -157,12 +164,14 @@ class WizardActionRowTest(unittest.TestCase):
 
         self.assertIs(returned, button)
         self.assertFalse(button.isEnabled())
+        self.assertEqual(button.property("workflowActionAvailability"), "blocked")
         self.assertEqual(button.property("wizardActionAvailability"), "blocked")
         self.assertEqual(button.toolTip(), "Load activity layers first.")
 
         self.action_row.set_wizard_action_availability(button, enabled=True)
 
         self.assertTrue(button.isEnabled())
+        self.assertEqual(button.property("workflowActionAvailability"), "available")
         self.assertEqual(button.property("wizardActionAvailability"), "available")
         self.assertEqual(button.toolTip(), "")
 

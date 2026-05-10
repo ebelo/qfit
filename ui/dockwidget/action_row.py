@@ -29,6 +29,10 @@ QWidget = _qtwidgets.QWidget
 
 ACTION_ROW_NARROW_WIDTH = 360
 COLOR_DANGER_BG = pill_tone_palette("danger")[0]
+WORKFLOW_ACTION_ROLE_PROPERTY = "workflowActionRole"
+WIZARD_ACTION_ROLE_PROPERTY = "wizardActionRole"
+WORKFLOW_ACTION_AVAILABILITY_PROPERTY = "workflowActionAvailability"
+WIZARD_ACTION_AVAILABILITY_PROPERTY = "wizardActionAvailability"
 
 
 class WorkflowActionRow(QWidget):
@@ -110,7 +114,7 @@ def style_primary_action_button(
     """Mark a workflow button as the one primary CTA for its page."""
 
     button.setProperty("primaryAction", action_name)
-    button.setProperty("wizardActionRole", "primary")
+    set_workflow_action_role(button, role="primary")
     _apply_button_chrome(button, role="primary")
     return button
 
@@ -123,7 +127,7 @@ def style_secondary_action_button(
     """Mark a workflow button as a secondary page action."""
 
     button.setProperty("secondaryAction", action_name)
-    button.setProperty("wizardActionRole", "secondary")
+    set_workflow_action_role(button, role="secondary")
     _apply_button_chrome(button, role="secondary")
     return button
 
@@ -136,8 +140,22 @@ def style_destructive_action_button(
     """Mark a workflow button as a destructive page action."""
 
     button.setProperty("destructiveAction", action_name)
-    button.setProperty("wizardActionRole", "destructive")
+    set_workflow_action_role(button, role="destructive")
     _apply_button_chrome(button, role="destructive")
+    return button
+
+
+def set_workflow_action_role(
+    button: QToolButton,
+    *,
+    role: str,
+) -> QToolButton:
+    """Tag a workflow action with canonical metadata plus legacy aliases."""
+
+    button.setProperty(WORKFLOW_ACTION_ROLE_PROPERTY, role)
+    # Keep the old dynamic property until the QSS/tests that still target the
+    # pre-#805 wizard naming are fully retired.
+    button.setProperty(WIZARD_ACTION_ROLE_PROPERTY, role)
     return button
 
 
@@ -155,13 +173,16 @@ def set_workflow_action_availability(
 
     button.setEnabled(enabled)
     action_availability = "available" if enabled else "blocked"
-    button.setProperty("wizardActionAvailability", action_availability)
+    button.setProperty(WORKFLOW_ACTION_AVAILABILITY_PROPERTY, action_availability)
+    # Compatibility alias for remaining wizard-named selectors during #805.
+    button.setProperty(WIZARD_ACTION_AVAILABILITY_PROPERTY, action_availability)
     button.setToolTip("" if enabled else tooltip)
     return button
 
 
 WizardActionRow = WorkflowActionRow
 build_wizard_action_row = build_workflow_action_row
+set_wizard_action_role = set_workflow_action_role
 set_wizard_action_availability = set_workflow_action_availability
 
 
@@ -224,7 +245,9 @@ __all__ = [
     "build_workflow_action_row",
     "build_wizard_action_row",
     "set_workflow_action_availability",
+    "set_workflow_action_role",
     "set_wizard_action_availability",
+    "set_wizard_action_role",
     "style_destructive_action_button",
     "style_primary_action_button",
     "style_secondary_action_button",
