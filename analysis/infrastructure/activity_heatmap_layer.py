@@ -1,6 +1,9 @@
 from __future__ import annotations
 
-from qgis.core import QgsFeature, QgsGeometry, QgsPointXY, QgsVectorLayer
+from itertools import count
+
+from qgis.PyQt.QtCore import QVariant
+from qgis.core import QgsFeature, QgsField, QgsGeometry, QgsPointXY, QgsVectorLayer
 
 from ...visualization.infrastructure.layer_style_service import (
     build_qfit_visualize_heatmap_renderer,
@@ -22,7 +25,7 @@ def build_activity_heatmap_layer(activities_layer=None, points_layer=None):
         return None, 0
 
     heatmap_layer = _build_memory_heatmap_layer(source_layer)
-    features = _collect_heatmap_features(points_layer, activities_layer)
+    features = _collect_heatmap_features(heatmap_layer, points_layer, activities_layer)
 
     if not features:
         return None, 0
@@ -42,22 +45,34 @@ def _build_memory_heatmap_layer(source_layer):
         if layer_crs is not None and layer_crs.isValid()
         else "EPSG:3857"
     )
-    return QgsVectorLayer(
+    layer = QgsVectorLayer(
         f"Point?crs={authid}",
         ACTIVITY_HEATMAP_LAYER_NAME,
         "memory",
     )
+    layer.dataProvider().addAttributes(
+        [
+            QgsField("sample_index", QVariant.Int),
+            QgsField("source_layer", QVariant.String),
+            QgsField("source_feature_id", QVariant.Int),
+            QgsField("source_activity_id", QVariant.String),
+            QgsField("point_index", QVariant.Int),
+        ]
+    )
+    layer.updateFields()
+    return layer
 
 
-def _collect_heatmap_features(points_layer, activities_layer):
+def _collect_heatmap_features(heatmap_layer, points_layer, activities_layer):
     if _has_features(points_layer):
-        return list(_point_features_from_points_layer(points_layer))
+        return list(_point_features_from_points_layer(heatmap_layer, points_layer))
     if _has_features(activities_layer):
-        return list(_point_features_from_activity_layer(activities_layer))
+        return list(_point_features_from_activity_layer(heatmap_layer, activities_layer))
     return []
 
 
-def _point_features_from_points_layer(points_layer):
+def _point_features_from_points_layer(heatmap_layer, points_layer):
+    sample_indexes = count(1)
     for source_feature in points_layer.getFeatures():
         geometry = source_feature.geometry()
         if geometry is None or geometry.isEmpty():
@@ -65,22 +80,72 @@ def _point_features_from_points_layer(points_layer):
         point = geometry.asPoint()
         if point.isEmpty():
             continue
-        yield _build_point_feature(point.x(), point.y())
+        yield _build_point_feature(
+            heatmap_layer,
+            x=point.x(),
+            y=point.y(),
+            sample_index=next(sample_indexes),
+            source_layer="activity_points",
+            source_feature=source_feature,
+            source_activity_id=_field_value(source_feature, "source_activity_id"),
+            point_index=_field_value(source_feature, "point_index"),
+        )
 
 
-def _point_features_from_activity_layer(activities_layer):
+def _point_features_from_activity_layer(heatmap_layer, activities_layer):
+    sample_indexes = count(1)
     for source_feature in activities_layer.getFeatures():
         geometry = source_feature.geometry()
         if geometry is None or geometry.isEmpty():
             continue
-        for vertex in geometry.vertices():
-            yield _build_point_feature(vertex.x(), vertex.y())
+        for point_index, vertex in enumerate(geometry.vertices(), start=1):
+            yield _build_point_feature(
+                heatmap_layer,
+                x=vertex.x(),
+                y=vertex.y(),
+                sample_index=next(sample_indexes),
+                source_layer="activity_tracks",
+                source_feature=source_feature,
+                source_activity_id=_field_value(source_feature, "source_activity_id"),
+                point_index=point_index,
+            )
 
 
-def _build_point_feature(x, y):
-    feature = QgsFeature()
+def _build_point_feature(
+    target_layer,
+    *,
+    x,
+    y,
+    sample_index,
+    source_layer,
+    source_feature,
+    source_activity_id,
+    point_index,
+):
+    feature = QgsFeature(target_layer.fields())
     feature.setGeometry(QgsGeometry.fromPointXY(QgsPointXY(x, y)))
+    feature["sample_index"] = sample_index
+    feature["source_layer"] = source_layer
+    feature["source_feature_id"] = _feature_id(source_feature)
+    feature["source_activity_id"] = source_activity_id
+    feature["point_index"] = point_index
     return feature
+
+
+def _field_value(feature, field_name):
+    fields = getattr(feature, "fields", lambda: None)()
+    field_names = fields.names() if fields is not None and hasattr(fields, "names") else []
+    if field_name not in field_names:
+        return None
+    try:
+        return feature[field_name]
+    except (KeyError, RuntimeError):
+        return None
+
+
+def _feature_id(feature):
+    feature_id = getattr(feature, "id", None)
+    return feature_id() if callable(feature_id) else None
 
 
 def _has_features(layer):

@@ -1488,6 +1488,8 @@ class QgisSmokeTests(unittest.TestCase):
                 self.assertIn("activity heatmap", status)
                 self.assertIsNotNone(dock.analysis_layer)
                 self.assertEqual(dock.analysis_layer.name(), "qfit activity heatmap")
+                self.assertGreater(dock.analysis_layer.featureCount(), 0)
+                self.assertIn("source_activity_id", dock.analysis_layer.fields().names())
                 image = self._render_layers_to_image(
                     [dock.analysis_layer],
                     dock.activities_layer.extent(),
@@ -1519,6 +1521,8 @@ class QgisSmokeTests(unittest.TestCase):
 
                 self.assertIn("activity heatmap", status)
                 self.assertIsNotNone(dock.analysis_layer)
+                self.assertGreater(dock.analysis_layer.featureCount(), 0)
+                self.assertIn("source_activity_id", dock.analysis_layer.fields().names())
                 image = self._render_layers_to_image(
                     [dock.analysis_layer],
                     dock.activities_layer.extent(),
