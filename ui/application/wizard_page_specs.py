@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
-from .dock_workflow_sections import DockWorkflowSection, WIZARD_WORKFLOW_STEPS
+from .dock_workflow_sections import DockWorkflowSection, WORKFLOW_STEPS
 from .workflow_page_specs import (
     DockWorkflowPageSpec,
     build_default_workflow_page_specs,
@@ -18,7 +18,7 @@ def build_default_wizard_page_specs(
 ) -> tuple[DockWizardPageSpec, ...]:
     """Compatibility wrapper for the workflow-named page spec builder."""
 
-    steps = WIZARD_WORKFLOW_STEPS if workflow_steps is None else tuple(workflow_steps)
+    steps = WORKFLOW_STEPS if workflow_steps is None else tuple(workflow_steps)
     return build_default_workflow_page_specs(workflow_steps=steps)
 
 
