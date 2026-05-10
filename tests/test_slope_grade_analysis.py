@@ -12,7 +12,9 @@ from qfit.analysis.application.slope_grade_analysis import (
     SlopeGradeAnalysisResult,
     SlopeGradeLayerPlan,
     SlopeGradeLayerResult,
+    build_activity_slope_grade_line_segments,
     build_activity_slope_grade_segments,
+    build_route_slope_grade_line_segments,
     build_route_slope_grade_segments,
     build_slope_grade_analysis_result,
     build_slope_grade_analysis_plan,
@@ -60,11 +62,38 @@ class _Sample:
 
 
 class _FeatureSample:
-    def __init__(self, values):
+    def __init__(self, values, *, geometry=None):
         self._values = values
+        self._geometry = geometry
 
     def __getitem__(self, key):
         return self._values[key]
+
+    def geometry(self):
+        return self._geometry
+
+
+class _Point:
+    def __init__(self, x, y):
+        self._x = x
+        self._y = y
+
+    def x(self):
+        return self._x
+
+    def y(self):
+        return self._y
+
+
+class _Geometry:
+    def __init__(self, x, y):
+        self._point = _Point(x, y)
+
+    def isEmpty(self):
+        return False
+
+    def asPoint(self):
+        return self._point
 
 
 class _FeatureLayer:
@@ -277,6 +306,104 @@ class SlopeGradeAnalysisTests(unittest.TestCase):
     def test_layer_segment_builders_ignore_missing_layers(self):
         self.assertEqual(build_activity_slope_grade_segments(None), ())
         self.assertEqual(build_route_slope_grade_segments(None), ())
+
+    def test_builds_activity_line_segments_from_point_sample_geometry(self):
+        segments = build_activity_slope_grade_line_segments(
+            _FeatureLayer(
+                (
+                    _FeatureSample(
+                        {
+                            "source": "strava",
+                            "source_activity_id": "a-1",
+                            "stream_distance_m": 0,
+                            "grade_smooth_pct": 0.0,
+                        },
+                        geometry=_Geometry(6.6, 46.5),
+                    ),
+                    _FeatureSample(
+                        {
+                            "source": "strava",
+                            "source_activity_id": "a-1",
+                            "stream_distance_m": 100,
+                            "grade_smooth_pct": 4.0,
+                        },
+                        geometry=_Geometry(6.7, 46.6),
+                    ),
+                )
+            )
+        )
+
+        self.assertEqual(len(segments), 1)
+        self.assertEqual(segments[0].layer_key, "activity_tracks")
+        self.assertEqual(segments[0].source_id, "a-1")
+        self.assertEqual(segments[0].start_xy, (6.6, 46.5))
+        self.assertEqual(segments[0].end_xy, (6.7, 46.6))
+        self.assertEqual(segments[0].grade_class.key, "climb")
+
+    def test_builds_route_line_segments_from_lat_lon_profile_samples(self):
+        segments = build_route_slope_grade_line_segments(
+            _FeatureLayer(
+                (
+                    _FeatureSample(
+                        {
+                            "sample_group_index": 1,
+                            "source": "strava",
+                            "source_route_id": "r-1",
+                            "lat": 46.5,
+                            "lon": 6.6,
+                            "distance_m": 0,
+                            "altitude_m": 100,
+                        }
+                    ),
+                    _FeatureSample(
+                        {
+                            "sample_group_index": 1,
+                            "source": "strava",
+                            "source_route_id": "r-1",
+                            "lat": 46.6,
+                            "lon": 6.7,
+                            "distance_m": 100,
+                            "altitude_m": 91,
+                        }
+                    ),
+                )
+            )
+        )
+
+        self.assertEqual(len(segments), 1)
+        self.assertEqual(segments[0].layer_key, "saved_route_tracks")
+        self.assertEqual(segments[0].source_id, "r-1")
+        self.assertEqual(segments[0].start_xy, (6.6, 46.5))
+        self.assertEqual(segments[0].end_xy, (6.7, 46.6))
+        self.assertEqual(segments[0].grade_class.key, "steep_descent")
+
+    def test_line_segment_builders_do_not_connect_across_sample_groups(self):
+        segments = build_activity_slope_grade_line_segments(
+            _FeatureLayer(
+                (
+                    _FeatureSample(
+                        {
+                            "source": "strava",
+                            "source_activity_id": "a-1",
+                            "stream_distance_m": 0,
+                            "grade_smooth_pct": 4.0,
+                        },
+                        geometry=_Geometry(6.6, 46.5),
+                    ),
+                    _FeatureSample(
+                        {
+                            "source": "strava",
+                            "source_activity_id": "a-2",
+                            "stream_distance_m": 100,
+                            "grade_smooth_pct": -4.0,
+                        },
+                        geometry=_Geometry(6.7, 46.6),
+                    ),
+                )
+            )
+        )
+
+        self.assertEqual(segments, ())
 
     def test_analysis_result_classifies_segments_for_eligible_line_targets(self):
         result = build_slope_grade_analysis_result(

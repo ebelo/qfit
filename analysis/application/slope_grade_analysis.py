@@ -85,6 +85,22 @@ class SlopeGradeSegment:
 
 
 @dataclass(frozen=True)
+class SlopeGradeLineSegment:
+    """Render-ready slope-grade line segment derived from adjacent samples."""
+
+    layer_key: str
+    layer_label: str
+    source: object
+    source_id: object
+    start_xy: tuple[float, float]
+    end_xy: tuple[float, float]
+    start_distance_m: float
+    end_distance_m: float
+    grade_percent: float
+    grade_class: SlopeGradeClass
+
+
+@dataclass(frozen=True)
 class SlopeGradeAnalysisPlan:
     """Render-neutral plan for #815 slope-grade line analysis."""
 
@@ -351,6 +367,41 @@ def build_route_slope_grade_segments(sample_layer) -> tuple[SlopeGradeSegment, .
     )
 
 
+def build_activity_slope_grade_line_segments(
+    points_layer,
+) -> tuple[SlopeGradeLineSegment, ...]:
+    """Build render-ready activity line segments from point samples."""
+
+    return _build_grouped_slope_grade_line_segments(
+        _layer_features(points_layer),
+        layer_key="activity_tracks",
+        layer_label=ACTIVITY_TRACKS_LABEL,
+        group_field_sets=(("source", "source_activity_id"),),
+        source_field="source",
+        source_id_field="source_activity_id",
+        distance_field="stream_distance_m",
+        elevation_field=None,
+        grade_field="grade_smooth_pct",
+    )
+
+
+def build_route_slope_grade_line_segments(
+    sample_layer,
+) -> tuple[SlopeGradeLineSegment, ...]:
+    """Build render-ready saved-route line segments from route samples."""
+
+    return _build_grouped_slope_grade_line_segments(
+        _layer_features(sample_layer),
+        layer_key="saved_route_tracks",
+        layer_label=SAVED_ROUTE_TRACKS_LABEL,
+        group_field_sets=(("sample_group_index",), ("source", "source_route_id")),
+        source_field="source",
+        source_id_field="source_route_id",
+        distance_field="distance_m",
+        elevation_field="altitude_m",
+    )
+
+
 def _build_grouped_slope_grade_segments(
     samples,
     *,
@@ -375,6 +426,104 @@ def _build_grouped_slope_grade_segments(
             )
         )
     return tuple(segments)
+
+
+def _build_grouped_slope_grade_line_segments(
+    samples,
+    *,
+    layer_key,
+    layer_label,
+    group_field_sets,
+    source_field,
+    source_id_field,
+    distance_field,
+    elevation_field,
+    grade_field=None,
+):
+    groups: dict[tuple[object, ...], list[object]] = {}
+    for sample in samples:
+        key = _sample_group_key(sample, group_field_sets)
+        groups.setdefault(key, []).append(sample)
+
+    line_segments: list[SlopeGradeLineSegment] = []
+    for group_samples in groups.values():
+        line_segments.extend(
+            _build_slope_grade_line_segments(
+                group_samples,
+                layer_key=layer_key,
+                layer_label=layer_label,
+                source_field=source_field,
+                source_id_field=source_id_field,
+                distance_field=distance_field,
+                elevation_field=elevation_field,
+                grade_field=grade_field,
+            )
+        )
+    return tuple(line_segments)
+
+
+def _build_slope_grade_line_segments(
+    samples,
+    *,
+    layer_key,
+    layer_label,
+    source_field,
+    source_id_field,
+    distance_field,
+    elevation_field,
+    grade_field=None,
+):
+    normalized = tuple(
+        _normalize_slope_grade_line_sample(
+            sample,
+            distance_field,
+            elevation_field,
+            grade_field,
+        )
+        for sample in samples
+    )
+    line_segments: list[SlopeGradeLineSegment] = []
+    previous = None
+    for sample, current in zip(samples, normalized):
+        if current is None:
+            continue
+        if previous is None:
+            previous = current
+            continue
+
+        start_distance, start_elevation, _start_grade, start_xy = previous
+        end_distance, end_elevation, end_grade, end_xy = current
+        distance_delta = end_distance - start_distance
+        if distance_delta <= 0:
+            continue
+
+        grade_percent = end_grade
+        if grade_percent is None:
+            if start_elevation is None:
+                previous = current
+                continue
+            if end_elevation is None:
+                continue
+            grade_percent = (
+                (end_elevation - start_elevation) / distance_delta
+            ) * 100.0
+
+        line_segments.append(
+            SlopeGradeLineSegment(
+                layer_key=layer_key,
+                layer_label=layer_label,
+                source=_sample_value(sample, source_field),
+                source_id=_sample_value(sample, source_id_field),
+                start_xy=start_xy,
+                end_xy=end_xy,
+                start_distance_m=start_distance,
+                end_distance_m=end_distance,
+                grade_percent=grade_percent,
+                grade_class=slope_grade_class_for_percent(grade_percent),
+            )
+        )
+        previous = current
+    return tuple(line_segments)
 
 
 def _grade_class_contains(grade_class: SlopeGradeClass, grade_percent: float) -> bool:
@@ -402,6 +551,78 @@ def _normalize_slope_grade_sample(sample, distance_field, elevation_field, grade
     if grade_field:
         grade = _numeric_value(_sample_value(sample, grade_field))
     return distance, elevation, grade
+
+
+def _normalize_slope_grade_line_sample(
+    sample,
+    distance_field,
+    elevation_field,
+    grade_field,
+):
+    normalized = _normalize_slope_grade_sample(
+        sample,
+        distance_field,
+        elevation_field,
+        grade_field,
+    )
+    if normalized is None:
+        return None
+    xy = _sample_xy(sample)
+    if xy is None:
+        return None
+    distance, elevation, grade = normalized
+    return distance, elevation, grade, xy
+
+
+def _sample_xy(sample):
+    geometry = _sample_geometry(sample)
+    if geometry is not None and not _is_empty_geometry(geometry):
+        point = _geometry_point(geometry)
+        xy = _point_xy(point)
+        if xy is not None:
+            return xy
+
+    lon = _numeric_value(_sample_value(sample, "lon"))
+    lat = _numeric_value(_sample_value(sample, "lat"))
+    if lon is None or lat is None:
+        return None
+    return lon, lat
+
+
+def _sample_geometry(sample):
+    geometry = getattr(sample, "geometry", None)
+    if callable(geometry):
+        return geometry()
+    return geometry
+
+
+def _is_empty_geometry(geometry) -> bool:
+    is_empty = getattr(geometry, "isEmpty", None)
+    return bool(is_empty()) if callable(is_empty) else False
+
+
+def _geometry_point(geometry):
+    as_point = getattr(geometry, "asPoint", None)
+    if callable(as_point):
+        return as_point()
+    return geometry
+
+
+def _point_xy(point):
+    if point is None:
+        return None
+    x_value = _coordinate_value(point, "x")
+    y_value = _coordinate_value(point, "y")
+    if x_value is None or y_value is None:
+        return None
+    return x_value, y_value
+
+
+def _coordinate_value(point, attr):
+    value = getattr(point, attr, None)
+    if callable(value):
+        value = value()
+    return _numeric_value(value)
 
 
 def _layer_features(layer):
@@ -570,8 +791,11 @@ __all__ = [
     "SlopeGradeClass",
     "SlopeGradeLayerPlan",
     "SlopeGradeLayerResult",
+    "SlopeGradeLineSegment",
     "SlopeGradeSegment",
+    "build_activity_slope_grade_line_segments",
     "build_activity_slope_grade_segments",
+    "build_route_slope_grade_line_segments",
     "build_slope_grade_analysis_result",
     "build_slope_grade_analysis_plan",
     "build_slope_grade_segments",
