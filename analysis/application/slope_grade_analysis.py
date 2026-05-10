@@ -102,7 +102,7 @@ class SlopeGradeLineSegment:
 
 @dataclass(frozen=True)
 class SlopeGradeAnalysisPlan:
-    """Render-neutral plan for #815 slope-grade line analysis."""
+    """Render-neutral plan for activity-only slope-grade line analysis."""
 
     layers: tuple[SlopeGradeLayerPlan, ...]
     grade_classes: tuple[SlopeGradeClass, ...] = SLOPE_GRADE_CLASSES
@@ -141,9 +141,10 @@ SLOPE_GRADE_LEGEND = tuple(grade_class.label for grade_class in SLOPE_GRADE_CLAS
 
 
 ACTIVITY_TRACKS_LABEL = "activity tracks"
-SAVED_ROUTE_TRACKS_LABEL = "saved route tracks"
 _ACTIVITY_POINT_GRADE_FIELDS = ("grade_smooth_pct", "stream_distance_m")
-_ROUTE_ELEVATION_SAMPLE_FIELDS = ("distance_m", "altitude_m")
+_IGNORED_ROUTE_LAYER_KWARGS = frozenset(
+    ("route_tracks_layer", "route_points_layer", "route_profile_samples_layer")
+)
 _LINE_GEOMETRY_TYPE = 1
 _LINE_WKB_TYPES = frozenset((2, 5))
 
@@ -152,26 +153,20 @@ def build_slope_grade_analysis_plan(
     *,
     activities_layer=None,
     points_layer=None,
-    route_tracks_layer=None,
-    route_points_layer=None,
-    route_profile_samples_layer=None,
+    **route_layers,
 ) -> SlopeGradeAnalysisPlan:
     """Build a pure eligibility plan for slope-grade line styling.
 
-    The first #815 slice keeps the QGIS-facing styling work behind this
-    render-neutral contract. It deliberately targets only the loaded activity
-    track and saved-route track line layers, and documents why a target remains
-    unchanged when the companion elevation/distance samples are unavailable.
+    The QGIS-facing styling work stays behind this render-neutral contract.
+    Slope grade is intentionally activity-only: saved route layers are ignored
+    even when loaded so route-profile/sample data never drives this analysis.
+    Route-layer keyword arguments are still accepted as a compatibility shim
+    for callers that pass the full loaded layer set.
     """
 
+    _ignore_route_layer_kwargs(route_layers)
     return SlopeGradeAnalysisPlan(
-        layers=(
-            _activity_track_plan(activities_layer, points_layer),
-            _route_track_plan(
-                route_tracks_layer,
-                route_profile_samples_layer or route_points_layer,
-            ),
-        )
+        layers=(_activity_track_plan(activities_layer, points_layer),)
     )
 
 
@@ -181,9 +176,6 @@ def run_slope_grade_analysis(request: RunAnalysisRequest) -> RunAnalysisResult:
     result = build_slope_grade_analysis_result(
         activities_layer=request.activities_layer,
         points_layer=request.points_layer,
-        route_tracks_layer=request.route_tracks_layer,
-        route_points_layer=request.route_points_layer,
-        route_profile_samples_layer=request.route_profile_samples_layer,
     )
     layer, _line_segments = _build_slope_grade_layer(request)
     return RunAnalysisResult(status=build_slope_grade_status(result), layer=layer)
@@ -198,9 +190,6 @@ def _build_slope_grade_layer(request: RunAnalysisRequest):
     return build_slope_grade_layer(
         activities_layer=request.activities_layer,
         points_layer=request.points_layer,
-        route_tracks_layer=request.route_tracks_layer,
-        route_points_layer=request.route_points_layer,
-        route_profile_samples_layer=request.route_profile_samples_layer,
     )
 
 
@@ -208,27 +197,23 @@ def build_slope_grade_analysis_result(
     *,
     activities_layer=None,
     points_layer=None,
-    route_tracks_layer=None,
-    route_points_layer=None,
-    route_profile_samples_layer=None,
+    **route_layers,
 ) -> SlopeGradeAnalysisResult:
-    """Classify slope-grade segments for eligible line-layer targets."""
+    """Classify activity slope-grade segments.
 
+    Route-layer keyword arguments are accepted only for compatibility and are
+    ignored because slope grade is an activity-only analysis.
+    """
+
+    _ignore_route_layer_kwargs(route_layers)
     plan = build_slope_grade_analysis_plan(
         activities_layer=activities_layer,
         points_layer=points_layer,
-        route_tracks_layer=route_tracks_layer,
-        route_points_layer=route_points_layer,
-        route_profile_samples_layer=route_profile_samples_layer,
     )
     layer_results = []
     for layer_plan in plan.enabled_layers:
         if layer_plan.key == "activity_tracks":
             segments = build_activity_slope_grade_segments(points_layer)
-        elif layer_plan.key == "saved_route_tracks":
-            segments = build_route_slope_grade_segments(
-                route_profile_samples_layer or route_points_layer
-            )
         else:
             raise ValueError(
                 "Unsupported slope-grade layer key: {key}".format(
@@ -243,6 +228,13 @@ def build_slope_grade_analysis_result(
             )
         )
     return SlopeGradeAnalysisResult(plan=plan, layers=tuple(layer_results))
+
+
+def _ignore_route_layer_kwargs(route_layers):
+    unexpected = set(route_layers) - _IGNORED_ROUTE_LAYER_KWARGS
+    if unexpected:
+        unexpected_names = ", ".join(sorted(unexpected))
+        raise TypeError(f"Unexpected slope-grade layer kwargs: {unexpected_names}")
 
 
 def build_slope_grade_status(result_or_plan) -> str:
@@ -372,17 +364,6 @@ def build_activity_slope_grade_segments(points_layer) -> tuple[SlopeGradeSegment
     )
 
 
-def build_route_slope_grade_segments(sample_layer) -> tuple[SlopeGradeSegment, ...]:
-    """Build saved-route slope-grade segments from route profile samples."""
-
-    return _build_grouped_slope_grade_segments(
-        _layer_features(sample_layer),
-        group_field_sets=(("sample_group_index",), ("source", "source_route_id")),
-        distance_field="distance_m",
-        elevation_field="altitude_m",
-    )
-
-
 def build_activity_slope_grade_line_segments(
     points_layer,
 ) -> tuple[SlopeGradeLineSegment, ...]:
@@ -398,23 +379,6 @@ def build_activity_slope_grade_line_segments(
         distance_field="stream_distance_m",
         elevation_field=None,
         grade_field="grade_smooth_pct",
-    )
-
-
-def build_route_slope_grade_line_segments(
-    sample_layer,
-) -> tuple[SlopeGradeLineSegment, ...]:
-    """Build render-ready saved-route line segments from route samples."""
-
-    return _build_grouped_slope_grade_line_segments(
-        _layer_features(sample_layer),
-        layer_key="saved_route_tracks",
-        layer_label=SAVED_ROUTE_TRACKS_LABEL,
-        group_field_sets=(("sample_group_index",), ("source", "source_route_id")),
-        source_field="source",
-        source_id_field="source_route_id",
-        distance_field="distance_m",
-        elevation_field="altitude_m",
     )
 
 
@@ -712,40 +676,6 @@ def _activity_track_plan(activities_layer, points_layer) -> SlopeGradeLayerPlan:
         source_fields=_ACTIVITY_POINT_GRADE_FIELDS,
     )
 
-
-def _route_track_plan(route_tracks_layer, sample_layer) -> SlopeGradeLayerPlan:
-    if route_tracks_layer is None:
-        return SlopeGradeLayerPlan(
-            key="saved_route_tracks",
-            label=SAVED_ROUTE_TRACKS_LABEL,
-            blocked_reason="saved route track lines are not loaded",
-        )
-    if not _is_line_layer(route_tracks_layer):
-        return SlopeGradeLayerPlan(
-            key="saved_route_tracks",
-            label=SAVED_ROUTE_TRACKS_LABEL,
-            layer=route_tracks_layer,
-            blocked_reason="saved route target is not a line layer",
-        )
-    if not _has_fields(sample_layer, _ROUTE_ELEVATION_SAMPLE_FIELDS):
-        return SlopeGradeLayerPlan(
-            key="saved_route_tracks",
-            label=SAVED_ROUTE_TRACKS_LABEL,
-            layer=route_tracks_layer,
-            blocked_reason=(
-                "saved routes need profile or route point samples with "
-                "distance_m and altitude_m"
-            ),
-        )
-    return SlopeGradeLayerPlan(
-        key="saved_route_tracks",
-        label=SAVED_ROUTE_TRACKS_LABEL,
-        layer=route_tracks_layer,
-        enabled=True,
-        source_fields=_ROUTE_ELEVATION_SAMPLE_FIELDS,
-    )
-
-
 def _has_fields(layer, expected: Iterable[str]) -> bool:
     field_names = _field_names(layer)
     return all(field_name in field_names for field_name in expected)
@@ -811,12 +741,10 @@ __all__ = [
     "SlopeGradeSegment",
     "build_activity_slope_grade_line_segments",
     "build_activity_slope_grade_segments",
-    "build_route_slope_grade_line_segments",
     "build_slope_grade_analysis_result",
     "build_slope_grade_analysis_plan",
     "build_slope_grade_segments",
     "build_slope_grade_status",
-    "build_route_slope_grade_segments",
     "run_slope_grade_analysis",
     "slope_grade_class_for_percent",
 ]

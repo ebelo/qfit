@@ -18,7 +18,6 @@ from ..application.slope_grade_analysis import (
     SLOPE_GRADE_CLASSES,
     build_activity_slope_grade_line_segments,
     build_slope_grade_analysis_plan,
-    build_route_slope_grade_line_segments,
 )
 
 SLOPE_GRADE_LAYER_NAME = "qfit slope grade lines"
@@ -28,30 +27,27 @@ def build_slope_grade_layer(
     *,
     activities_layer=None,
     points_layer=None,
-    route_tracks_layer=None,
-    route_points_layer=None,
-    route_profile_samples_layer=None,
+    **route_layers,
 ):
-    """Create a styled memory line layer for slope-grade analysis segments."""
+    """Create a styled memory line layer for activity slope-grade segments.
 
-    route_sample_layer = route_profile_samples_layer or route_points_layer
+    Route-layer keyword arguments are accepted only for compatibility and are
+    ignored because slope grade is an activity-only analysis.
+    """
+
     plan = build_slope_grade_analysis_plan(
         activities_layer=activities_layer,
         points_layer=points_layer,
-        route_tracks_layer=route_tracks_layer,
-        route_points_layer=route_points_layer,
-        route_profile_samples_layer=route_profile_samples_layer,
+        **route_layers,
     )
     line_segments = []
     if _plan_enables_layer(plan, "activity_tracks"):
         line_segments.extend(build_activity_slope_grade_line_segments(points_layer))
-    if _plan_enables_layer(plan, "saved_route_tracks"):
-        line_segments.extend(build_route_slope_grade_line_segments(route_sample_layer))
 
     if not line_segments:
         return None, ()
 
-    layer = _build_memory_layer(_preferred_crs_layer(points_layer, route_sample_layer))
+    layer = _build_memory_layer(points_layer)
     provider = layer.dataProvider()
     provider.addAttributes(
         [
@@ -86,13 +82,6 @@ def _build_memory_layer(source_layer):
         SLOPE_GRADE_LAYER_NAME,
         "memory",
     )
-
-
-def _preferred_crs_layer(points_layer, route_sample_layer):
-    if points_layer is not None:
-        return points_layer
-    return route_sample_layer
-
 
 def _layer_crs(layer):
     crs = getattr(layer, "crs", None)
