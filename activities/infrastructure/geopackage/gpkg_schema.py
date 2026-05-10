@@ -92,6 +92,7 @@ POINT_FIELDS = [
     ("start_date", QVariant.String),
     ("distance_m", QVariant.Double),
     ("geometry_source", QVariant.String),
+    ("stream_status", QVariant.String),
     ("last_synced_at", QVariant.String),
 ]
 

@@ -43,6 +43,7 @@ def build_point_layer(records, write_activity_points=False, point_stride=1):
             continue
 
         stream_metrics = _stream_metrics(record, geometry_source)
+        stream_status = _stream_status(geometry_source, stream_metrics)
         sampled_points = _sample_points(source_points, stride)
         total_points = max(1, len(source_points) - 1)
         for point_index, lat, lon in sampled_points:
@@ -71,6 +72,7 @@ def build_point_layer(records, write_activity_points=False, point_stride=1):
             feature["start_date"] = record.get("start_date")
             feature["distance_m"] = record.get("distance_m")
             feature["geometry_source"] = geometry_source
+            feature["stream_status"] = stream_status
             feature["last_synced_at"] = record.get("last_synced_at")
             features.append(feature)
 
@@ -132,7 +134,24 @@ def _normalized_points(points):
 def _stream_metrics(record, geometry_source):
     if geometry_source != "stream":
         return {}
-    return ((record.get("details_json") or {}).get("stream_metrics") or {})
+    details_json = record.get("details_json") or {}
+    if not isinstance(details_json, dict):
+        return {}
+    return details_json.get("stream_metrics") or {}
+
+
+def _stream_status(geometry_source, stream_metrics):
+    if geometry_source == "stream":
+        return "stream_metrics" if _has_stream_metric_values(stream_metrics) else "stream_missing_metrics"
+    if geometry_source:
+        return f"{geometry_source}_no_stream_metrics"
+    return "no_geometry"
+
+
+def _has_stream_metric_values(stream_metrics):
+    if not isinstance(stream_metrics, dict):
+        return False
+    return any(isinstance(values, list) and bool(values) for values in stream_metrics.values())
 
 
 def _metric_value(stream_metrics, key, index, as_int=False):
