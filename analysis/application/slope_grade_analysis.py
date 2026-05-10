@@ -28,7 +28,7 @@ class SlopeGradeClass:
 SLOPE_GRADE_CLASSES: tuple[SlopeGradeClass, ...] = (
     SlopeGradeClass(
         key="steep_descent",
-        label="Steep descent (≤ -8%)",
+        label="Steep descent (< -8%)",
         color_hex="#2c7fb8",
         max_percent=-8.0,
     ),
@@ -210,12 +210,13 @@ def build_slope_grade_segments(
         end_distance, end_elevation, end_grade = current
         distance_delta = end_distance - start_distance
         if distance_delta <= 0:
-            previous = current
             continue
         grade_percent = end_grade
         if grade_percent is None:
-            if start_elevation is None or end_elevation is None:
+            if start_elevation is None:
                 previous = current
+                continue
+            if end_elevation is None:
                 continue
             grade_percent = (
                 (end_elevation - start_elevation) / distance_delta

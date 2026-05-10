@@ -65,7 +65,7 @@ class SlopeGradeAnalysisTests(unittest.TestCase):
         self.assertEqual(
             SLOPE_GRADE_LEGEND,
             (
-                "Steep descent (≤ -8%)",
+                "Steep descent (< -8%)",
                 "Descent (-8% to -3%)",
                 "Flat / rolling (-3% to +3%)",
                 "Climb (+3% to +8%)",
@@ -132,7 +132,7 @@ class SlopeGradeAnalysisTests(unittest.TestCase):
         self.assertAlmostEqual(segments[0].grade_percent, -10.0)
         self.assertEqual(segments[0].grade_class.key, "steep_descent")
 
-    def test_segments_skip_invalid_or_non_forward_samples(self):
+    def test_segments_skip_invalid_or_non_forward_samples_and_recover(self):
         segments = build_slope_grade_segments(
             (
                 {"distance_m": 0, "altitude_m": 100},
@@ -143,7 +143,25 @@ class SlopeGradeAnalysisTests(unittest.TestCase):
             )
         )
 
-        self.assertEqual(segments, ())
+        self.assertEqual(len(segments), 1)
+        self.assertEqual(segments[0].start_distance_m, 0.0)
+        self.assertEqual(segments[0].end_distance_m, 200.0)
+        self.assertAlmostEqual(segments[0].grade_percent, 2.0)
+
+    def test_segments_recover_after_missing_midstream_elevation_sample(self):
+        segments = build_slope_grade_segments(
+            (
+                {"distance_m": 0, "altitude_m": 100},
+                {"distance_m": 50, "altitude_m": None},
+                {"distance_m": 100, "altitude_m": 104},
+            )
+        )
+
+        self.assertEqual(len(segments), 1)
+        self.assertEqual(segments[0].start_distance_m, 0.0)
+        self.assertEqual(segments[0].end_distance_m, 100.0)
+        self.assertAlmostEqual(segments[0].grade_percent, 4.0)
+        self.assertEqual(segments[0].grade_class.key, "climb")
 
     def test_plan_targets_only_eligible_activity_and_route_line_layers(self):
         activity_tracks = _Layer(fields=("name",))
