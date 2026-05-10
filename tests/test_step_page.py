@@ -13,6 +13,7 @@ from qfit.ui.application.workflow_page_specs import build_default_workflow_page_
 def _load_step_page_module():
     for name in (
         "qfit.ui.dockwidget.action_row",
+        "qfit.ui.dockwidget.wizard_step_page",
         "qfit.ui.dockwidget.step_page",
         "qfit.ui.dockwidget.wizard_shell",
         "qfit.ui.dockwidget.stepper_bar",
@@ -21,8 +22,9 @@ def _load_step_page_module():
         sys.modules.pop(name, None)
     with patch.dict(sys.modules, _fake_qt_modules()):
         step_page = importlib.import_module("qfit.ui.dockwidget.step_page")
+        wizard_step_page = importlib.import_module("qfit.ui.dockwidget.wizard_step_page")
         wizard_shell = importlib.import_module("qfit.ui.dockwidget.wizard_shell")
-        return step_page, wizard_shell
+        return step_page, wizard_step_page, wizard_shell
 
 
 class _FakeSize:
@@ -44,7 +46,7 @@ class _FakeResizeEvent:
 class StepPageTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.step_page, cls.wizard_shell = _load_step_page_module()
+        cls.step_page, cls.wizard_step_page, cls.wizard_shell = _load_step_page_module()
 
     def test_builds_spec_step_chrome_with_header_content_and_nav(self):
         page = self.step_page.StepPage(
@@ -245,16 +247,28 @@ class StepPageTest(unittest.TestCase):
         )
         self.assertFalse(page.primary_hint_label.isVisible())
 
-    def test_workflow_step_page_is_canonical_export_with_wizard_alias(self):
+    def test_workflow_step_page_star_exports_only_canonical_workflow_names(self):
         spec = build_default_workflow_page_specs()[2]
 
         page = self.step_page.WorkflowStepPage(spec, step_num=3, step_total=5)
 
-        self.assertIs(self.step_page.WizardStepPage, self.step_page.WorkflowStepPage)
         self.assertEqual(page.objectName(), "qfitWizardMapPage")
-        self.assertIsInstance(page, self.step_page.WizardStepPage)
+        self.assertIn("WorkflowStepPage", self.step_page.__all__)
+        self.assertIn("build_workflow_step_pages", self.step_page.__all__)
+        self.assertIn("install_workflow_step_pages", self.step_page.__all__)
+        self.assertIn("apply_workflow_step_page_statuses", self.step_page.__all__)
+        for name in (
+            "DockWizardPageSpec",
+            "WizardStepPage",
+            "build_default_wizard_page_specs",
+            "build_wizard_step_pages",
+            "install_wizard_step_pages",
+            "apply_wizard_step_page_statuses",
+        ):
+            self.assertNotIn(name, self.step_page.__all__)
 
-    def test_workflow_step_page_builders_keep_wizard_compatibility_aliases(self):
+    def test_step_page_keeps_direct_wizard_named_compatibility_aliases(self):
+        self.assertIs(self.step_page.WizardStepPage, self.step_page.WorkflowStepPage)
         self.assertIs(
             self.step_page.build_wizard_step_pages,
             self.step_page.build_workflow_step_pages,
@@ -267,6 +281,38 @@ class StepPageTest(unittest.TestCase):
             self.step_page.apply_wizard_step_page_statuses,
             self.step_page.apply_workflow_step_page_statuses,
         )
+
+    def test_wizard_step_page_module_exports_compatibility_aliases(self):
+        self.assertIs(
+            self.wizard_step_page.WizardStepPage,
+            self.step_page.WorkflowStepPage,
+        )
+        self.assertIs(
+            self.wizard_step_page.build_wizard_step_pages,
+            self.step_page.build_workflow_step_pages,
+        )
+        self.assertIs(
+            self.wizard_step_page.install_wizard_step_pages,
+            self.step_page.install_workflow_step_pages,
+        )
+        self.assertIs(
+            self.wizard_step_page.apply_wizard_step_page_statuses,
+            self.step_page.apply_workflow_step_page_statuses,
+        )
+        self.assertIn("WizardStepPage", self.wizard_step_page.__all__)
+        self.assertIn("build_wizard_step_pages", self.wizard_step_page.__all__)
+        self.assertIn("install_wizard_step_pages", self.wizard_step_page.__all__)
+        self.assertIn("apply_wizard_step_page_statuses", self.wizard_step_page.__all__)
+        for name in (
+            "DockWorkflowPageSpec",
+            "StepPage",
+            "WorkflowStepPage",
+            "apply_workflow_step_page_statuses",
+            "build_default_workflow_page_specs",
+            "build_workflow_step_pages",
+            "install_workflow_step_pages",
+        ):
+            self.assertNotIn(name, self.wizard_step_page.__all__)
 
     def test_builds_wizard_step_pages_from_default_specs(self):
         pages = self.step_page.build_workflow_step_pages()
