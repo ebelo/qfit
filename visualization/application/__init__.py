@@ -41,7 +41,6 @@ from .render_plan import (
 from .temporal_config import (
     DEFAULT_TEMPORAL_MODE_LABEL,
     TEMPORAL_MODE_LABELS,
-    TemporalLayerPlan,
     build_temporal_plan,
     describe_temporal_configuration,
     is_temporal_mode_enabled,
@@ -100,7 +99,6 @@ __all__ = [
     "START_POINTS_PRESET",
     "TEMPORAL_MODE_LABELS",
     "TRACK_POINTS_PRESET",
-    "TemporalLayerPlan",
     "VisualApplyRequest",
     "VisualApplyResult",
     "VisualApplyService",

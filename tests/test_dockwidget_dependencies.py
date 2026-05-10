@@ -526,10 +526,6 @@ class DockStartupCoordinatorTests(unittest.TestCase):
             ) as configure_local_first_analysis_mode_backing_controls,
             patch(
                 "qfit.ui.dock_startup_coordinator."
-                "configure_local_first_temporal_mode_backing_controls"
-            ) as configure_local_first_temporal_mode_backing_controls,
-            patch(
-                "qfit.ui.dock_startup_coordinator."
                 "configure_local_first_basemap_options"
             ) as configure_local_first_basemap_options,
             patch(
@@ -553,7 +549,6 @@ class DockStartupCoordinatorTests(unittest.TestCase):
                     "configure_local_first_spinbox_unit_copy",
                     "configure_local_first_basemap_options",
                     "configure_local_first_activity_preview_options",
-                    "configure_temporal_mode_options",
                     "configure_analysis_mode_options",
                     "load_settings",
                     "set_default_dates",
@@ -586,9 +581,6 @@ class DockStartupCoordinatorTests(unittest.TestCase):
             dock
         )
         configure_local_first_analysis_mode_backing_controls.assert_called_once_with(
-            dock
-        )
-        configure_local_first_temporal_mode_backing_controls.assert_called_once_with(
             dock
         )
         refresh_local_first_conditional_control_visibility.assert_called_once_with(dock)

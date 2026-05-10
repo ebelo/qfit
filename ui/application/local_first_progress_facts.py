@@ -102,19 +102,9 @@ def current_local_first_activity_style_preset(dock) -> str | None:
 
 
 def current_local_first_visual_temporal_mode(dock) -> str:
-    """Return the visible temporal playback setting for visual workflow actions."""
+    """Return qfit's internal non-dynamic temporal mode for visual actions."""
 
-    combo = getattr(dock, "temporalModeComboBox", None)
-    if combo is None or not hasattr(combo, "currentText"):
-        return DEFAULT_TEMPORAL_MODE_LABEL
-    try:
-        mode_label = combo.currentText()
-    except RuntimeError:
-        logger.debug("Failed to read local-first temporal playback mode", exc_info=True)
-        return DEFAULT_TEMPORAL_MODE_LABEL
-    if not isinstance(mode_label, str):
-        return DEFAULT_TEMPORAL_MODE_LABEL
-    return mode_label.strip() or DEFAULT_TEMPORAL_MODE_LABEL
+    return DEFAULT_TEMPORAL_MODE_LABEL
 
 
 def current_local_first_background_facts(dock, runtime_state) -> tuple[bool, bool, str | None]:

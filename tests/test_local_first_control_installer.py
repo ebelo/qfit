@@ -41,7 +41,6 @@ class LocalFirstControlInstallerTests(unittest.TestCase):
             install_widget_move.call_args_list,
             [
                 call(dock, composition, "activity_style"),
-                call(dock, composition, "analysis_temporal"),
             ],
         )
         self.assertEqual(

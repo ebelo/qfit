@@ -11,7 +11,6 @@ from .application.local_first_backing_controls import (
 )
 from .application.local_first_analysis_controls import (
     configure_local_first_analysis_mode_backing_controls,
-    configure_local_first_temporal_mode_backing_controls,
 )
 from .application.local_first_basemap_controls import (
     configure_local_first_basemap_options,
@@ -64,9 +63,6 @@ class DockStartupCoordinator:
         performed_steps.append(
             "configure_local_first_activity_preview_options"
         )
-
-        configure_local_first_temporal_mode_backing_controls(dock)
-        performed_steps.append("configure_temporal_mode_options")
 
         configure_local_first_analysis_mode_backing_controls(dock)
         performed_steps.append("configure_analysis_mode_options")

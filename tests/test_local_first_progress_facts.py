@@ -267,29 +267,13 @@ class TestLocalFirstProgressFacts(unittest.TestCase):
         self.assertEqual(runtime_state.output_path, "stored.gpkg")
         self.assertIsNot(updated, runtime_state)
 
-    def test_visual_temporal_mode_reads_trimmed_combo_text(self):
-        dock = SimpleNamespace(temporalModeComboBox=_FakeComboBox(" Activity time "))
-
-        self.assertEqual(
-            current_local_first_visual_temporal_mode(dock),
-            "Activity time",
-        )
-
-    def test_visual_temporal_mode_falls_back_to_default_for_missing_blank_or_deleted_combo(self):
+    def test_visual_temporal_mode_uses_internal_disabled_default(self):
         self.assertEqual(
             current_local_first_visual_temporal_mode(SimpleNamespace()),
             DEFAULT_TEMPORAL_MODE_LABEL,
         )
         self.assertEqual(
-            current_local_first_visual_temporal_mode(
-                SimpleNamespace(temporalModeComboBox=_FakeComboBox("   "))
-            ),
-            DEFAULT_TEMPORAL_MODE_LABEL,
-        )
-        self.assertEqual(
-            current_local_first_visual_temporal_mode(
-                SimpleNamespace(temporalModeComboBox=_FailingComboBox())
-            ),
+            current_local_first_visual_temporal_mode(SimpleNamespace(anything="Activity time")),
             DEFAULT_TEMPORAL_MODE_LABEL,
         )
 

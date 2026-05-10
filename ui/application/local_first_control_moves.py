@@ -65,17 +65,6 @@ LOCAL_FIRST_WIDGET_MOVES: tuple[LocalFirstWidgetMove, ...] = (
         parent_panel_attr="style_controls_panel",
         post_install_visible_attr="set_style_controls_visible",
     ),
-    LocalFirstWidgetMove(
-        key="analysis_temporal",
-        content_attr="analysis_content",
-        required_widget_attrs=("analysisTemporalModeRow", "temporalHelpLabel"),
-        installed_attr="_local_first_analysis_temporal_controls_installed",
-        installed_target_attr="_local_first_analysis_temporal_controls_installed_target",
-        show_widget_attrs_after_move=("temporalModeLabel", "temporalModeComboBox"),
-        layout_getter_attr="temporal_controls_layout",
-        parent_panel_attr="temporal_controls_panel",
-        post_install_visible_attr="set_temporal_controls_visible",
-    ),
 )
 
 
