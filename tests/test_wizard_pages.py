@@ -120,6 +120,10 @@ class WizardPageTest(unittest.TestCase):
 
         self.assertEqual(page.primary_hint_label.text(), "")
         self.assertEqual(
+            page.primary_hint_label.property("workflowPlaceholderHint"),
+            "retired",
+        )
+        self.assertEqual(
             page.primary_hint_label.property("wizardPlaceholderHint"),
             "retired",
         )
@@ -135,6 +139,8 @@ class WizardPageTest(unittest.TestCase):
         self.assertIsInstance(page, self.workflow_page.WizardPage)
         self.assertIn("WorkflowPage", self.workflow_page.__all__)
         self.assertIn("WizardPage", self.workflow_page.__all__)
+        self.assertIn("WORKFLOW_PLACEHOLDER_HINT_PROPERTY", self.workflow_page.__all__)
+        self.assertIn("WIZARD_PLACEHOLDER_HINT_PROPERTY", self.workflow_page.__all__)
 
     def test_wizard_page_module_reexports_workflow_page_api(self):
         self.assertIs(self.wizard_page.WorkflowPage, self.workflow_page.WorkflowPage)
