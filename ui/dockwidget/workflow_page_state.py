@@ -630,7 +630,6 @@ def __getattr__(name: str) -> object:
                 f"module {__name__!r} alias {name!r} target "
                 f"{alias_target!r} not found"
             ) from None
-        globals()[name] = value
         return value
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
