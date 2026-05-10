@@ -141,6 +141,7 @@ from .workflow_progress_facts import (
 )
 from .dock_workflow_sections import (
     CURRENT_DOCK_SECTIONS,
+    WORKFLOW_STEPS,
     WIZARD_WORKFLOW_STEPS,
     DockWizardProgress,
     DockWorkflowProgress,
@@ -282,6 +283,7 @@ __all__ = [
     "LocalFirstParitySurface",
     "LocalFirstProgressFacts",
     "LocalFirstWidgetMove",
+    "WORKFLOW_STEPS",
     "WIZARD_WORKFLOW_STEPS",
     "WORKFLOW_SETTINGS_VERSION",
     "WORKFLOW_SETTINGS_VERSION_KEY",

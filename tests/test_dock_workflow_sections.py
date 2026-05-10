@@ -4,6 +4,7 @@ from tests import _path  # noqa: F401
 
 from qfit.ui.application.dock_workflow_sections import (
     CURRENT_DOCK_SECTIONS,
+    WORKFLOW_STEPS,
     WIZARD_WORKFLOW_STEPS,
     DockWizardProgress,
     DockWorkflowProgress,
@@ -20,17 +21,17 @@ from qfit.ui.application.dock_workflow_sections import (
 
 
 class DockWorkflowSectionsTests(unittest.TestCase):
-    def test_wizard_steps_keep_stable_order_and_labels(self):
+    def test_workflow_steps_keep_stable_order_and_labels(self):
         self.assertEqual(
-            [section.key for section in WIZARD_WORKFLOW_STEPS],
+            [section.key for section in WORKFLOW_STEPS],
             ["connection", "sync", "map", "analysis", "atlas"],
         )
         self.assertEqual(
-            [section.title for section in WIZARD_WORKFLOW_STEPS],
+            [section.title for section in WORKFLOW_STEPS],
             ["Connection", "Synchronization", "Map & filters", "Spatial analysis (optional)", "Atlas PDF"],
         )
 
-    def test_current_dock_sections_reuse_wizard_steps_without_connection_page(self):
+    def test_current_dock_sections_reuse_workflow_steps_without_connection_page(self):
         self.assertEqual(
             [section.key for section in CURRENT_DOCK_SECTIONS],
             ["sync", "map", "analysis", "atlas"],
@@ -60,6 +61,7 @@ class DockWorkflowSectionsTests(unittest.TestCase):
             completed_keys=frozenset({"connection", "sync"}),
         )
 
+        self.assertIs(WIZARD_WORKFLOW_STEPS, WORKFLOW_STEPS)
         self.assertIs(DockWizardProgress, DockWorkflowProgress)
         self.assertIs(
             build_initial_wizard_step_statuses,

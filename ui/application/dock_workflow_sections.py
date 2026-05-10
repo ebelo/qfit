@@ -56,7 +56,7 @@ DockWizardProgress = DockWorkflowProgress
 """Compatibility alias for pre-#805 wizard-named progress callers."""
 
 
-WIZARD_WORKFLOW_STEPS: tuple[DockWorkflowSection, ...] = (
+WORKFLOW_STEPS: tuple[DockWorkflowSection, ...] = (
     DockWorkflowSection(
         key="connection",
         title="Connection",
@@ -85,10 +85,12 @@ WIZARD_WORKFLOW_STEPS: tuple[DockWorkflowSection, ...] = (
         current_dock_overview_title="Publish",
     ),
 )
+WIZARD_WORKFLOW_STEPS = WORKFLOW_STEPS
+"""Compatibility alias for pre-#805 wizard-named workflow steps."""
 
 CURRENT_DOCK_SECTION_KEYS: frozenset[str] = frozenset({"sync", "map", "analysis", "atlas"})
 CURRENT_DOCK_SECTIONS: tuple[DockWorkflowSection, ...] = tuple(
-    section for section in WIZARD_WORKFLOW_STEPS if section.key in CURRENT_DOCK_SECTION_KEYS
+    section for section in WORKFLOW_STEPS if section.key in CURRENT_DOCK_SECTION_KEYS
 )
 
 
@@ -102,7 +104,7 @@ def build_current_dock_workflow_label() -> str:
 def get_workflow_section(key: str) -> DockWorkflowSection:
     """Return a workflow section by stable key."""
 
-    for section in WIZARD_WORKFLOW_STEPS:
+    for section in WORKFLOW_STEPS:
         if section.key == key:
             return section
     raise KeyError(key)
@@ -179,7 +181,7 @@ def _build_workflow_step_status_tuple(
     unlocked_keys: set[str],
 ) -> tuple[DockWorkflowStepStatus, ...]:
     statuses = []
-    for index, section in enumerate(WIZARD_WORKFLOW_STEPS):
+    for index, section in enumerate(WORKFLOW_STEPS):
         statuses.append(
             DockWorkflowStepStatus(
                 key=section.key,
@@ -197,7 +199,7 @@ def _derive_unlocked_step_keys(
     visited_keys: set[str],
 ) -> set[str]:
     unlocked = set(visited_keys)
-    for previous, section in zip(WIZARD_WORKFLOW_STEPS, WIZARD_WORKFLOW_STEPS[1:]):
+    for previous, section in zip(WORKFLOW_STEPS, WORKFLOW_STEPS[1:]):
         if previous.key in completed_keys:
             unlocked.add(section.key)
     if "map" in completed_keys:
@@ -225,7 +227,7 @@ def _validate_workflow_keys(
     completed_keys: Collection[str],
     unlocked_keys: Collection[str],
 ) -> None:
-    known_keys = {section.key for section in WIZARD_WORKFLOW_STEPS}
+    known_keys = {section.key for section in WORKFLOW_STEPS}
     all_provided_keys = {current_key} | set(completed_keys) | set(unlocked_keys)
     unknown_keys = all_provided_keys - known_keys
     if unknown_keys:
