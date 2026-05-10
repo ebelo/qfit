@@ -137,20 +137,26 @@ class WizardPageTest(unittest.TestCase):
         )
         self.assertFalse(page.primary_hint_label.isVisible())
 
-    def test_workflow_page_is_canonical_export_with_wizard_alias(self):
+    def test_workflow_page_exports_only_workflow_page_api(self):
         spec = build_default_workflow_page_specs()[2]
 
         page = self.workflow_page.WorkflowPage(spec)
 
-        self.assertIs(self.workflow_page.WizardPage, self.workflow_page.WorkflowPage)
         self.assertEqual(page.objectName(), "qfitWizardMapPage")
-        self.assertIsInstance(page, self.workflow_page.WizardPage)
         self.assertIn("WorkflowPage", self.workflow_page.__all__)
-        self.assertIn("WizardPage", self.workflow_page.__all__)
         self.assertIn("PLACEHOLDER_HINT_RETIRED", self.workflow_page.__all__)
         self.assertIn("WORKFLOW_PLACEHOLDER_HINT_PROPERTY", self.workflow_page.__all__)
-        self.assertIn("WIZARD_PLACEHOLDER_HINT_PROPERTY", self.workflow_page.__all__)
         self.assertIn("set_workflow_placeholder_hint_state", self.workflow_page.__all__)
+        for name in (
+            "DockWizardPageSpec",
+            "WizardPage",
+            "build_default_wizard_page_specs",
+            "build_wizard_pages",
+            "install_wizard_pages",
+            "WIZARD_PLACEHOLDER_HINT_PROPERTY",
+        ):
+            self.assertNotIn(name, self.workflow_page.__all__)
+            self.assertFalse(hasattr(self.workflow_page, name))
 
     def test_wizard_page_module_reexports_workflow_page_api(self):
         self.assertIs(self.wizard_page.WorkflowPage, self.workflow_page.WorkflowPage)
@@ -173,7 +179,7 @@ class WizardPageTest(unittest.TestCase):
         )
         self.assertEqual(
             self.wizard_page.WIZARD_PLACEHOLDER_HINT_PROPERTY,
-            self.workflow_page.WIZARD_PLACEHOLDER_HINT_PROPERTY,
+            "wizardPlaceholderHint",
         )
         self.assertIs(
             self.wizard_page.set_workflow_placeholder_hint_state,
