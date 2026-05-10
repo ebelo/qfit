@@ -318,7 +318,6 @@ class StepPageTest(unittest.TestCase):
                 module.__getattr__("BrokenWizardAlias")
         finally:
             module._WIZARD_COMPAT_ALIAS_TARGETS.pop("BrokenWizardAlias", None)
-            module.__dict__.pop("BrokenWizardAlias", None)
 
     def test_wizard_step_page_module_exports_compatibility_aliases(self):
         self.assertIs(
