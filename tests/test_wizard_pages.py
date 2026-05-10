@@ -65,6 +65,7 @@ class WorkflowPageSpecsTests(unittest.TestCase):
 def _load_wizard_modules():
     for name in (
         "qfit.ui.dockwidget.wizard_page",
+        "qfit.ui.dockwidget.workflow_page",
         "qfit.ui.dockwidget.wizard_shell",
         "qfit.ui.dockwidget.stepper_bar",
         "qfit.ui.dockwidget",
@@ -73,6 +74,7 @@ def _load_wizard_modules():
     with patch.dict(sys.modules, _fake_qt_modules()):
         return (
             importlib.import_module("qfit.ui.dockwidget.wizard_page"),
+            importlib.import_module("qfit.ui.dockwidget.workflow_page"),
             importlib.import_module("qfit.ui.dockwidget.wizard_shell"),
         )
 
@@ -80,7 +82,7 @@ def _load_wizard_modules():
 class WizardPageTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.wizard_page, cls.wizard_shell = _load_wizard_modules()
+        cls.wizard_page, cls.workflow_page, cls.wizard_shell = _load_wizard_modules()
 
     def test_page_container_builds_visible_placeholder_chrome(self):
         spec = build_default_workflow_page_specs()[2]
@@ -126,13 +128,25 @@ class WizardPageTest(unittest.TestCase):
     def test_workflow_page_is_canonical_export_with_wizard_alias(self):
         spec = build_default_workflow_page_specs()[2]
 
-        page = self.wizard_page.WorkflowPage(spec)
+        page = self.workflow_page.WorkflowPage(spec)
 
-        self.assertIs(self.wizard_page.WizardPage, self.wizard_page.WorkflowPage)
+        self.assertIs(self.workflow_page.WizardPage, self.workflow_page.WorkflowPage)
         self.assertEqual(page.objectName(), "qfitWizardMapPage")
-        self.assertIsInstance(page, self.wizard_page.WizardPage)
-        self.assertIn("WorkflowPage", self.wizard_page.__all__)
-        self.assertIn("WizardPage", self.wizard_page.__all__)
+        self.assertIsInstance(page, self.workflow_page.WizardPage)
+        self.assertIn("WorkflowPage", self.workflow_page.__all__)
+        self.assertIn("WizardPage", self.workflow_page.__all__)
+
+    def test_wizard_page_module_reexports_workflow_page_api(self):
+        self.assertIs(self.wizard_page.WorkflowPage, self.workflow_page.WorkflowPage)
+        self.assertIs(self.wizard_page.WizardPage, self.workflow_page.WorkflowPage)
+        self.assertIs(
+            self.wizard_page.build_workflow_pages,
+            self.workflow_page.build_workflow_pages,
+        )
+        self.assertIs(
+            self.wizard_page.install_workflow_pages,
+            self.workflow_page.install_workflow_pages,
+        )
 
     def test_workflow_page_builders_keep_wizard_compatibility_aliases(self):
         self.assertIs(
