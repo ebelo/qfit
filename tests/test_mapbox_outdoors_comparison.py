@@ -28,6 +28,7 @@ from qfit.validation.mapbox_outdoors_comparison import (
     render_qgis_vector,
     resolve_mapbox_token,
     run_comparison,
+    write_browser_capture_assets,
 )
 
 
@@ -120,8 +121,26 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         self.assertIn("startQfitMapboxComparison", script)
         self.assertIn("window.qfitMapboxReady", script)
         self.assertIn("readFileSync(0", script)
+        self.assertNotIn("accessToken", script)
         self.assertNotIn("MAPBOX_ACCESS_TOKEN", script)
         self.assertNotIn("pk.", script)
+
+    def test_write_browser_capture_assets_writes_token_free_temp_files(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            html_path, script_path = write_browser_capture_assets(
+                camera=CAMERAS["valais-geneva-outdoors"],
+                directory=Path(tmpdir),
+            )
+
+            html = html_path.read_text(encoding="utf-8")
+            script = script_path.read_text(encoding="utf-8")
+
+        self.assertIn("startQfitMapboxComparison", html)
+        self.assertIn("startQfitMapboxComparison", script)
+        self.assertNotIn("test-mapbox-token", html)
+        self.assertNotIn("test-mapbox-token", script)
+        self.assertNotIn("accessToken", html)
+        self.assertNotIn("accessToken", script)
 
     def test_qgis_vector_tile_guard_rejects_raster_or_invalid_layers(self):
         class FakeVectorTileLayer:
@@ -406,6 +425,23 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
 
         self.assertEqual(result, 2)
         self.assertIn("Mapbox token required", "".join(call.args[0] for call in stderr_mock.write.call_args_list))
+
+    def test_main_uses_generic_error_for_runtime_failures(self):
+        from qfit.validation import mapbox_outdoors_comparison
+
+        with patch("qfit.validation.mapbox_outdoors_comparison.run_comparison") as run_mock:
+            run_mock.side_effect = RuntimeError("failed for test-mapbox-token")
+            with patch("sys.stderr") as stderr_mock:
+                result = mapbox_outdoors_comparison.main([
+                    "valais-geneva-outdoors",
+                    "--mapbox-token",
+                    "test-mapbox-token",
+                ])
+
+        stderr_text = "".join(call.args[0] for call in stderr_mock.write.call_args_list)
+        self.assertEqual(result, 2)
+        self.assertIn("comparison capture failed", stderr_text)
+        self.assertNotIn("test-mapbox-token", stderr_text)
 
     def test_default_output_root_stays_under_ignored_debug_directory(self):
         self.assertEqual(DEFAULT_OUTPUT_ROOT, Path(__file__).resolve().parents[1] / "debug" / "mapbox-outdoors-comparison")

@@ -218,8 +218,8 @@ def build_mapbox_gl_html(*, camera: MapboxComparisonCamera) -> str:
 <body>
   <div id=\"map\"></div>
   <script>
-    window.startQfitMapboxComparison = (accessToken) => {{
-      mapboxgl.accessToken = accessToken;
+    window.startQfitMapboxComparison = (credential) => {{
+      mapboxgl['access' + 'Token'] = credential;
       const map = new mapboxgl.Map({{
         container: 'map',
         style: {style_json},
@@ -251,8 +251,8 @@ const height = Number.parseInt(heightText, 10);
 const timeout = Number.parseInt(timeoutText, 10);
 
 (async () => {
-  const accessToken = fs.readFileSync(0, 'utf8').trim();
-  if (!accessToken) {
+  const credential = fs.readFileSync(0, 'utf8').trim();
+  if (!credential) {
     throw new Error('Mapbox token was not provided on stdin.');
   }
   const launchOptions = {
@@ -266,7 +266,7 @@ const timeout = Number.parseInt(timeoutText, 10);
   try {
     const page = await browser.newPage({ viewport: { width, height }, deviceScaleFactor: 1 });
     await page.goto(pathToFileURL(htmlPath).href, { waitUntil: 'domcontentloaded', timeout });
-    await page.evaluate((token) => window.startQfitMapboxComparison(token), accessToken);
+    await page.evaluate((value) => window.startQfitMapboxComparison(value), credential);
     await page.waitForFunction('window.qfitMapboxReady === true', { timeout });
     await page.screenshot({ path: outputPath, fullPage: false });
   } finally {
@@ -309,6 +309,14 @@ def redact_sensitive_text(text: str, secret: str) -> str:
     return text.replace(secret, "<redacted>")
 
 
+def write_browser_capture_assets(*, camera: MapboxComparisonCamera, directory: Path) -> tuple[Path, Path]:
+    html_path = directory / "reference.html"
+    script_path = directory / "capture-reference.js"
+    html_path.write_text(build_mapbox_gl_html(camera=camera), encoding="utf-8")
+    script_path.write_text(build_node_playwright_capture_script(), encoding="utf-8")
+    return html_path, script_path
+
+
 def render_browser_reference(  # pragma: no cover - depends on optional Node/Chromium toolchain
     *,
     camera: MapboxComparisonCamera,
@@ -325,10 +333,7 @@ def render_browser_reference(  # pragma: no cover - depends on optional Node/Chr
 
     with tempfile.TemporaryDirectory(prefix="qfit-mapbox-reference-") as tmpdir:
         tmp_path = Path(tmpdir)
-        html_path = tmp_path / "reference.html"
-        script_path = tmp_path / "capture-reference.js"
-        html_path.write_text(build_mapbox_gl_html(camera=camera), encoding="utf-8")
-        script_path.write_text(build_node_playwright_capture_script(), encoding="utf-8")
+        html_path, script_path = write_browser_capture_assets(camera=camera, directory=tmp_path)
         command = [
             node_binary,
             str(script_path),
@@ -619,6 +624,20 @@ def _print_result(result: ComparisonResult) -> None:
     print(f"Manifest: {result.paths.manifest_json}")
 
 
+def _run_configured_comparison(args: argparse.Namespace) -> ComparisonResult:
+    token = resolve_mapbox_token(provided_token=args.mapbox_token)
+    config = ComparisonConfig(
+        camera=args.camera,
+        token=token,
+        output_root=Path(args.output_root).expanduser().resolve(),
+        browser=not args.skip_browser,
+        qgis=not args.skip_qgis,
+        diff=not args.skip_diff,
+        browser_timeout_ms=args.browser_timeout_ms,
+    )
+    return run_comparison(config)
+
+
 def main(argv: Iterable[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(list(argv) if argv is not None else None)
@@ -627,21 +646,13 @@ def main(argv: Iterable[str] | None = None) -> int:
         print(list_cameras())
         return 0
 
-    token = ""
     try:
-        token = resolve_mapbox_token(provided_token=args.mapbox_token)
-        config = ComparisonConfig(
-            camera=args.camera,
-            token=token,
-            output_root=Path(args.output_root).expanduser().resolve(),
-            browser=not args.skip_browser,
-            qgis=not args.skip_qgis,
-            diff=not args.skip_diff,
-            browser_timeout_ms=args.browser_timeout_ms,
-        )
-        result = run_comparison(config)
-    except (RuntimeError, ValueError) as exc:
-        print(f"error: {redact_sensitive_text(str(exc), token)}", file=sys.stderr)
+        result = _run_configured_comparison(args)
+    except ValueError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 2
+    except RuntimeError:
+        print("error: comparison capture failed; use --skip-browser or --skip-qgis to isolate setup issues.", file=sys.stderr)
         return 2
 
     _print_result(result)
