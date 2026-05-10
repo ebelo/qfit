@@ -1,15 +1,30 @@
 from __future__ import annotations
 
 from itertools import count
+from math import log, pi, tan
 
 from qgis.PyQt.QtCore import QVariant
-from qgis.core import QgsFeature, QgsField, QgsGeometry, QgsPointXY, QgsVectorLayer
+from qgis.core import (
+    QgsCoordinateReferenceSystem,
+    QgsCoordinateTransform,
+    QgsFeature,
+    QgsField,
+    QgsGeometry,
+    QgsPointXY,
+    QgsProject,
+    QgsVectorLayer,
+)
 
 from ...visualization.infrastructure.layer_style_service import (
     build_qfit_visualize_heatmap_renderer,
 )
 
 ACTIVITY_HEATMAP_LAYER_NAME = "qfit activity heatmap"
+_WEB_MERCATOR_AUTHID = "EPSG:3857"
+_WGS84_AUTHID = "EPSG:4326"
+_WEB_MERCATOR_HALF_WORLD_M = 20037508.342789244
+_WEB_MERCATOR_EARTH_RADIUS_M = _WEB_MERCATOR_HALF_WORLD_M / pi
+_WEB_MERCATOR_MAX_LAT = 85.05112878
 
 
 def build_activity_heatmap_layer(activities_layer=None, points_layer=None):
@@ -32,21 +47,19 @@ def build_activity_heatmap_layer(activities_layer=None, points_layer=None):
 
     heatmap_layer.dataProvider().addFeatures(features)
     heatmap_layer.updateExtents()
-    heatmap_layer.setRenderer(build_qfit_visualize_heatmap_renderer())
+    heatmap_layer.setRenderer(
+        build_qfit_visualize_heatmap_renderer(
+            maximum_value=_heatmap_maximum_value(len(features)),
+        )
+    )
     heatmap_layer.setOpacity(1.0)
     heatmap_layer.triggerRepaint()
     return heatmap_layer, len(features)
 
 
-def _build_memory_heatmap_layer(source_layer):
-    layer_crs = source_layer.crs()
-    authid = (
-        layer_crs.authid()
-        if layer_crs is not None and layer_crs.isValid()
-        else "EPSG:3857"
-    )
+def _build_memory_heatmap_layer(_source_layer):
     layer = QgsVectorLayer(
-        f"Point?crs={authid}",
+        f"Point?crs={_WEB_MERCATOR_AUTHID}",
         ACTIVITY_HEATMAP_LAYER_NAME,
         "memory",
     )
@@ -73,6 +86,7 @@ def _collect_heatmap_features(heatmap_layer, points_layer, activities_layer):
 
 def _point_features_from_points_layer(heatmap_layer, points_layer):
     sample_indexes = count(1)
+    source_authid, coordinate_transform = _heatmap_coordinate_context(points_layer)
     for source_feature in points_layer.getFeatures():
         geometry = source_feature.geometry()
         if geometry is None or geometry.isEmpty():
@@ -80,10 +94,15 @@ def _point_features_from_points_layer(heatmap_layer, points_layer):
         point = geometry.asPoint()
         if point.isEmpty():
             continue
+        x, y = _heatmap_coordinates(
+            point,
+            source_authid=source_authid,
+            coordinate_transform=coordinate_transform,
+        )
         yield _build_point_feature(
             heatmap_layer,
-            x=point.x(),
-            y=point.y(),
+            x=x,
+            y=y,
             sample_index=next(sample_indexes),
             source_layer="activity_points",
             source_feature=source_feature,
@@ -94,15 +113,21 @@ def _point_features_from_points_layer(heatmap_layer, points_layer):
 
 def _point_features_from_activity_layer(heatmap_layer, activities_layer):
     sample_indexes = count(1)
+    source_authid, coordinate_transform = _heatmap_coordinate_context(activities_layer)
     for source_feature in activities_layer.getFeatures():
         geometry = source_feature.geometry()
         if geometry is None or geometry.isEmpty():
             continue
         for point_index, vertex in enumerate(geometry.vertices(), start=1):
+            x, y = _heatmap_coordinates(
+                vertex,
+                source_authid=source_authid,
+                coordinate_transform=coordinate_transform,
+            )
             yield _build_point_feature(
                 heatmap_layer,
-                x=vertex.x(),
-                y=vertex.y(),
+                x=x,
+                y=y,
                 sample_index=next(sample_indexes),
                 source_layer="activity_tracks",
                 source_feature=source_feature,
@@ -130,6 +155,59 @@ def _build_point_feature(
     feature["source_activity_id"] = source_activity_id
     feature["point_index"] = point_index
     return feature
+
+
+def _heatmap_coordinate_context(source_layer):
+    authid = _layer_authid(source_layer)
+    if authid in {_WEB_MERCATOR_AUTHID, _WGS84_AUTHID}:
+        return authid, None
+    return authid, _coordinate_transform_to_web_mercator(source_layer)
+
+
+def _heatmap_coordinates(point, *, source_authid, coordinate_transform=None):
+    x = float(point.x())
+    y = float(point.y())
+    if source_authid == _WEB_MERCATOR_AUTHID:
+        return x, y
+    if source_authid == _WGS84_AUTHID:
+        return _lon_lat_to_web_mercator(x, y)
+    if coordinate_transform is None:
+        return x, y
+    transformed = coordinate_transform.transform(QgsPointXY(x, y))
+    return float(transformed.x()), float(transformed.y())
+
+
+def _coordinate_transform_to_web_mercator(source_layer):
+    source_crs = source_layer.crs() if source_layer is not None else None
+    if source_crs is None or not source_crs.isValid():
+        return None
+    return QgsCoordinateTransform(
+        source_crs,
+        QgsCoordinateReferenceSystem(_WEB_MERCATOR_AUTHID),
+        QgsProject.instance(),
+    )
+
+
+def _layer_authid(layer):
+    crs = layer.crs() if layer is not None else None
+    if crs is None or not crs.isValid():
+        return _WEB_MERCATOR_AUTHID
+    return crs.authid()
+
+
+def _lon_lat_to_web_mercator(lon, lat):
+    clamped_lat = max(-_WEB_MERCATOR_MAX_LAT, min(_WEB_MERCATOR_MAX_LAT, lat))
+    x = lon * _WEB_MERCATOR_HALF_WORLD_M / 180.0
+    y = _WEB_MERCATOR_EARTH_RADIUS_M * log(tan((90.0 + clamped_lat) * pi / 360.0))
+    return x, y
+
+
+def _heatmap_maximum_value(sample_count):
+    if sample_count < 25:
+        return 1
+    if sample_count < 100:
+        return 4
+    return None
 
 
 def _field_value(feature, field_name):

@@ -1492,7 +1492,7 @@ class QgisSmokeTests(unittest.TestCase):
                 self.assertIn("source_activity_id", dock.analysis_layer.fields().names())
                 image = self._render_layers_to_image(
                     [dock.analysis_layer],
-                    dock.activities_layer.extent(),
+                    dock.analysis_layer.extent(),
                 )
                 artifact_path = Path(tmp) / "heatmap-analysis.png"
                 self.assertTrue(image.save(str(artifact_path)))
@@ -1525,7 +1525,7 @@ class QgisSmokeTests(unittest.TestCase):
                 self.assertIn("source_activity_id", dock.analysis_layer.fields().names())
                 image = self._render_layers_to_image(
                     [dock.analysis_layer],
-                    dock.activities_layer.extent(),
+                    dock.analysis_layer.extent(),
                 )
                 artifact_path = Path(tmp) / "heatmap-analysis-lines-fallback.png"
                 self.assertTrue(image.save(str(artifact_path)))
