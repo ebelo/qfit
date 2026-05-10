@@ -35,6 +35,9 @@ class ApplyVisualizationAction(_BaseVisualWorkflowAction):
 class RefreshVisualizationStyleAction(_BaseVisualWorkflowAction):
     """Normalized request for refreshing styling without changing filters."""
 
+    apply_subset_filters: bool = False
+    update_background: bool = False
+
 
 @dataclass(frozen=True)
 class RunAnalysisAction(_BaseVisualWorkflowAction):
@@ -123,8 +126,8 @@ class DockActionDispatcher:
             style_preset=action.style_preset,
             temporal_mode=action.temporal_mode,
             background_config=action.background_config,
-            apply_subset_filters=False,
-            update_background=False,
+            apply_subset_filters=action.apply_subset_filters,
+            update_background=action.update_background,
         )
         visual_result = self.visual_apply.apply_request(request)
         return DockActionResult(status=visual_result.status)
