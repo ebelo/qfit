@@ -196,9 +196,13 @@ class ActivityHeatmapLayerPureTests(unittest.TestCase):
         layer_style_service = types.ModuleType(
             "qfit.visualization.infrastructure.layer_style_service"
         )
-        layer_style_service.build_qfit_visualize_heatmap_renderer = (
-            lambda: sentinel.heatmap_renderer
-        )
+        self.renderer_kwargs = []
+
+        def _build_heatmap_renderer(**kwargs):
+            self.renderer_kwargs.append(kwargs)
+            return sentinel.heatmap_renderer
+
+        layer_style_service.build_qfit_visualize_heatmap_renderer = _build_heatmap_renderer
 
         self._modules = {
             "qgis": qgis_mod,
@@ -255,7 +259,7 @@ class ActivityHeatmapLayerPureTests(unittest.TestCase):
 
         self.assertIsNotNone(layer)
         self.assertEqual(layer.name(), self.module.ACTIVITY_HEATMAP_LAYER_NAME)
-        self.assertEqual(layer.spec, "Point?crs=EPSG:4326")
+        self.assertEqual(layer.spec, "Point?crs=EPSG:3857")
         self.assertEqual(count, 2)
         self.assertEqual(layer.featureCount(), 2)
         self.assertEqual(
@@ -269,6 +273,7 @@ class ActivityHeatmapLayerPureTests(unittest.TestCase):
             ],
         )
         self.assertIs(layer.renderer, sentinel.heatmap_renderer)
+        self.assertEqual(self.renderer_kwargs[-1], {"maximum_value": 1})
         self.assertEqual(layer.opacity, 1.0)
         self.assertTrue(layer.repainted)
 
@@ -295,6 +300,26 @@ class ActivityHeatmapLayerPureTests(unittest.TestCase):
         self.assertEqual(feature["source_layer"], "activity_points")
         self.assertEqual(feature["source_activity_id"], "ride-1")
         self.assertEqual(feature["point_index"], 7)
+        point = feature.geometry().asPoint()
+        self.assertAlmostEqual(point.x(), 736935.0, delta=1.0)
+        self.assertAlmostEqual(point.y(), 5864074.8, delta=1.0)
+
+    def test_preserves_projected_source_coordinates_for_heatmap_points(self):
+        points_layer = _FakeSourceLayer(
+            features=[_FakeFeature(_FakeGeometry(point=_FakePoint(737000.0, 5873000.0)))],
+            crs=_FakeCrs(authid="EPSG:3857"),
+        )
+
+        layer, count = self.module.build_activity_heatmap_layer(
+            activities_layer=None,
+            points_layer=points_layer,
+        )
+
+        self.assertEqual(count, 1)
+        [feature] = layer.dataProvider().added
+        point = feature.geometry().asPoint()
+        self.assertEqual(point.x(), 737000.0)
+        self.assertEqual(point.y(), 5873000.0)
 
     def test_populates_attribute_rows_from_activity_line_fallback(self):
         fields = _FakeFields(["source_activity_id"])
