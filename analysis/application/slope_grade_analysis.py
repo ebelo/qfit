@@ -150,9 +150,6 @@ def build_slope_grade_analysis_plan(
     *,
     activities_layer=None,
     points_layer=None,
-    route_tracks_layer=None,
-    route_points_layer=None,
-    route_profile_samples_layer=None,
 ) -> SlopeGradeAnalysisPlan:
     """Build a pure eligibility plan for slope-grade line styling.
 
@@ -193,9 +190,6 @@ def build_slope_grade_analysis_result(
     *,
     activities_layer=None,
     points_layer=None,
-    route_tracks_layer=None,
-    route_points_layer=None,
-    route_profile_samples_layer=None,
 ) -> SlopeGradeAnalysisResult:
     """Classify slope-grade segments for eligible line-layer targets."""
 

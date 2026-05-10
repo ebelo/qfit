@@ -27,18 +27,12 @@ def build_slope_grade_layer(
     *,
     activities_layer=None,
     points_layer=None,
-    route_tracks_layer=None,
-    route_points_layer=None,
-    route_profile_samples_layer=None,
 ):
     """Create a styled memory line layer for slope-grade analysis segments."""
 
     plan = build_slope_grade_analysis_plan(
         activities_layer=activities_layer,
         points_layer=points_layer,
-        route_tracks_layer=route_tracks_layer,
-        route_points_layer=route_points_layer,
-        route_profile_samples_layer=route_profile_samples_layer,
     )
     line_segments = []
     if _plan_enables_layer(plan, "activity_tracks"):

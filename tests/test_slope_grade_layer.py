@@ -132,44 +132,6 @@ class SlopeGradeLayerTests(unittest.TestCase):
         self.assertAlmostEqual(layer.opacity, 0.95)
         self.assertEqual(layer.repaint_count, 1)
 
-    def test_ignores_saved_route_profile_samples(self):
-        module = _load_slope_grade_layer_with_qgis_stub()
-        profile_layer = _FeatureLayer(
-            (
-                _FeatureSample(
-                    {
-                        "sample_group_index": 1,
-                        "source": "strava",
-                        "source_route_id": "r-1",
-                        "lat": 46.5,
-                        "lon": 6.6,
-                        "distance_m": 0,
-                        "altitude_m": 100,
-                    }
-                ),
-                _FeatureSample(
-                    {
-                        "sample_group_index": 1,
-                        "source": "strava",
-                        "source_route_id": "r-1",
-                        "lat": 46.6,
-                        "lon": 6.7,
-                        "distance_m": 100,
-                        "altitude_m": 91,
-                    }
-                ),
-            ),
-            fields=("distance_m", "altitude_m"),
-        )
-
-        layer, segments = module.build_slope_grade_layer(
-            route_tracks_layer=_TargetLayer(),
-            route_profile_samples_layer=profile_layer,
-        )
-
-        self.assertIsNone(layer)
-        self.assertEqual(segments, ())
-
     def test_returns_empty_result_when_no_line_segments_are_available(self):
         module = _load_slope_grade_layer_with_qgis_stub()
 
