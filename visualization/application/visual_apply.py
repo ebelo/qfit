@@ -129,8 +129,6 @@ class VisualApplyService:
         if has_layers:
             render_plan = build_render_plan(
                 request.style_preset,
-                has_start_features=self.layer_gateway.has_features(request.layers.starts),
-                has_point_features=self.layer_gateway.has_features(request.layers.points),
                 has_points_layer=request.layers.points is not None,
                 background_preset_name=(
                     request.background_config.preset_name
