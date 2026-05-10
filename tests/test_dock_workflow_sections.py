@@ -21,6 +21,10 @@ from qfit.ui.application.dock_workflow_sections import (
 )
 
 
+def _load_dock_workflow_sections_module():
+    return importlib.import_module("qfit.ui.application.dock_workflow_sections")
+
+
 class DockWorkflowSectionsTests(unittest.TestCase):
     def test_workflow_steps_keep_stable_order_and_labels(self):
         self.assertEqual(
@@ -87,8 +91,37 @@ class DockWorkflowSectionsTests(unittest.TestCase):
         self.assertNotIn("WIZARD_WORKFLOW_STEPS", module.__all__)
         self.assertIs(module.DockWizardProgress, module.DockWorkflowProgress)
 
+    def test_workflow_sections_resolve_wizard_aliases_lazily(self):
+        module = _load_dock_workflow_sections_module()
+        alias_targets = module._WIZARD_COMPAT_ALIAS_TARGETS
+
+        for name in alias_targets:
+            with self.subTest(name=name):
+                # The module-level __getattr__ intentionally does not cache
+                # compatibility aliases, even after earlier direct imports.
+                self.assertNotIn(name, module.__dict__)
+                self.assertIs(getattr(module, name), getattr(module, alias_targets[name]))
+
+    def test_lazy_wizard_alias_reports_missing_canonical_target_as_attribute_error(self):
+        module = _load_dock_workflow_sections_module()
+        module._WIZARD_COMPAT_ALIAS_TARGETS["BrokenWizardAlias"] = (
+            "MissingWorkflowAlias"
+        )
+        try:
+            self.assertFalse(hasattr(module, "BrokenWizardAlias"))
+            with self.assertRaisesRegex(
+                AttributeError,
+                "BrokenWizardAlias.*MissingWorkflowAlias",
+            ):
+                module.__getattr__("BrokenWizardAlias")
+        finally:
+            module._WIZARD_COMPAT_ALIAS_TARGETS.pop("BrokenWizardAlias", None)
+
     def test_wizard_workflow_sections_exports_compatibility_metadata(self):
         module = importlib.import_module("qfit.ui.application.wizard_workflow_sections")
+        workflow_module = importlib.import_module(
+            "qfit.ui.application.dock_workflow_sections"
+        )
 
         self.assertEqual(
             module.__all__,
@@ -100,19 +133,19 @@ class DockWorkflowSectionsTests(unittest.TestCase):
                 "build_wizard_step_statuses",
             ],
         )
-        self.assertIs(module.DockWizardProgress, DockWorkflowProgress)
-        self.assertIs(module.WIZARD_WORKFLOW_STEPS, WORKFLOW_STEPS)
+        self.assertIs(module.DockWizardProgress, workflow_module.DockWorkflowProgress)
+        self.assertIs(module.WIZARD_WORKFLOW_STEPS, workflow_module.WORKFLOW_STEPS)
         self.assertIs(
             module.build_initial_wizard_step_statuses,
-            build_initial_workflow_step_statuses,
+            workflow_module.build_initial_workflow_step_statuses,
         )
         self.assertIs(
             module.build_progress_wizard_step_statuses,
-            build_progress_workflow_step_statuses,
+            workflow_module.build_progress_workflow_step_statuses,
         )
         self.assertIs(
             module.build_wizard_step_statuses,
-            build_workflow_step_statuses,
+            workflow_module.build_workflow_step_statuses,
         )
 
     def test_wizard_step_statuses_distinguish_unlocked_from_done(self):

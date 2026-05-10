@@ -52,10 +52,6 @@ class DockWorkflowProgress:
     visited_keys: frozenset[str] = frozenset()
 
 
-DockWizardProgress = DockWorkflowProgress
-"""Compatibility alias for pre-#805 wizard-named progress callers."""
-
-
 WORKFLOW_STEPS: tuple[DockWorkflowSection, ...] = (
     DockWorkflowSection(
         key="connection",
@@ -85,8 +81,6 @@ WORKFLOW_STEPS: tuple[DockWorkflowSection, ...] = (
         current_dock_overview_title="Publish",
     ),
 )
-WIZARD_WORKFLOW_STEPS = WORKFLOW_STEPS
-"""Compatibility alias for pre-#805 wizard-named workflow steps."""
 
 CURRENT_DOCK_SECTION_KEYS: frozenset[str] = frozenset({"sync", "map", "analysis", "atlas"})
 CURRENT_DOCK_SECTIONS: tuple[DockWorkflowSection, ...] = tuple(
@@ -164,14 +158,29 @@ def build_progress_workflow_step_statuses(
     )
 
 
-build_initial_wizard_step_statuses = build_initial_workflow_step_statuses
-"""Compatibility alias for pre-#805 wizard-named step status callers."""
+# Preserve direct named imports from the canonical workflow-section module lazily
+# while the explicit wizard_workflow_sections compatibility module remains the
+# preferred path for wizard-named imports.
+_WIZARD_COMPAT_ALIAS_TARGETS = {
+    "DockWizardProgress": "DockWorkflowProgress",
+    "WIZARD_WORKFLOW_STEPS": "WORKFLOW_STEPS",
+    "build_initial_wizard_step_statuses": "build_initial_workflow_step_statuses",
+    "build_wizard_step_statuses": "build_workflow_step_statuses",
+    "build_progress_wizard_step_statuses": "build_progress_workflow_step_statuses",
+}
 
-build_wizard_step_statuses = build_workflow_step_statuses
-"""Compatibility alias for pre-#805 wizard-named step status callers."""
 
-build_progress_wizard_step_statuses = build_progress_workflow_step_statuses
-"""Compatibility alias for pre-#805 wizard-named progress status callers."""
+def __getattr__(name: str) -> object:
+    alias_target = _WIZARD_COMPAT_ALIAS_TARGETS.get(name)
+    if alias_target is not None:
+        try:
+            return globals()[alias_target]
+        except KeyError:
+            raise AttributeError(
+                f"module {__name__!r} alias {name!r} target "
+                f"{alias_target!r} not found"
+            ) from None
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 def _build_workflow_step_status_tuple(
