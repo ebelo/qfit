@@ -198,7 +198,11 @@ def build_slope_grade_analysis_result(
                 route_profile_samples_layer or route_points_layer
             )
         else:
-            segments = ()
+            raise ValueError(
+                "Unsupported slope-grade layer key: {key}".format(
+                    key=layer_plan.key
+                )
+            )
         layer_results.append(
             SlopeGradeLayerResult(
                 key=layer_plan.key,
@@ -233,13 +237,16 @@ def build_slope_grade_status(result_or_plan) -> str:
 
 def _build_slope_grade_result_status(result: SlopeGradeAnalysisResult) -> str:
     if result.layers and result.segment_count > 0:
+        classified_layers = tuple(
+            layer for layer in result.layers if layer.segment_count > 0
+        )
         summaries = ", ".join(
             "{label} ({count} {segment_word})".format(
                 label=layer.label,
                 count=layer.segment_count,
                 segment_word="segment" if layer.segment_count == 1 else "segments",
             )
-            for layer in result.layers
+            for layer in classified_layers
         )
         return f"Slope grade line analysis classified {summaries}."
 

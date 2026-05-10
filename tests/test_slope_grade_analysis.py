@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import patch
 
 from tests import _path  # noqa: F401
 
@@ -7,6 +8,10 @@ from qfit.analysis.application.slope_grade_analysis import (
     SLOPE_GRADE_CLASSES,
     SLOPE_GRADE_LEGEND,
     SLOPE_GRADE_MODE,
+    SlopeGradeAnalysisPlan,
+    SlopeGradeAnalysisResult,
+    SlopeGradeLayerPlan,
+    SlopeGradeLayerResult,
     build_activity_slope_grade_segments,
     build_route_slope_grade_segments,
     build_slope_grade_analysis_result,
@@ -345,6 +350,54 @@ class SlopeGradeAnalysisTests(unittest.TestCase):
                 "grade segments could be classified."
             ),
         )
+
+    def test_status_only_reports_layers_with_classified_segments(self):
+        result = SlopeGradeAnalysisResult(
+            plan=SlopeGradeAnalysisPlan(layers=()),
+            layers=(
+                SlopeGradeLayerResult(
+                    key="activity_tracks",
+                    label="activity tracks",
+                    segments=(
+                        build_slope_grade_segments(
+                            (
+                                {"distance_m": 0, "altitude_m": 100},
+                                {"distance_m": 100, "altitude_m": 104},
+                            )
+                        )[0],
+                    ),
+                ),
+                SlopeGradeLayerResult(
+                    key="saved_route_tracks",
+                    label="saved route tracks",
+                    segments=(),
+                ),
+            ),
+        )
+
+        self.assertEqual(
+            build_slope_grade_status(result),
+            "Slope grade line analysis classified activity tracks (1 segment).",
+        )
+
+    def test_analysis_result_rejects_unhandled_plan_layer_keys(self):
+        with patch(
+            "qfit.analysis.application.slope_grade_analysis.build_slope_grade_analysis_plan",
+            return_value=SlopeGradeAnalysisPlan(
+                layers=(
+                    SlopeGradeLayerPlan(
+                        key="future_layer",
+                        label="future layer",
+                        enabled=True,
+                    ),
+                )
+            ),
+        ):
+            with self.assertRaisesRegex(
+                ValueError,
+                "Unsupported slope-grade layer key: future_layer",
+            ):
+                build_slope_grade_analysis_result()
 
     def test_segments_skip_invalid_or_non_forward_samples_and_recover(self):
         segments = build_slope_grade_segments(
