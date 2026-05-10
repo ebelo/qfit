@@ -120,6 +120,12 @@ from .workflow_footer_status import (
     build_workflow_footer_facts_from_progress_facts,
     build_workflow_footer_status,
 )
+
+WizardFooterFacts = WorkflowFooterFacts
+build_wizard_footer_facts_from_progress_facts = (
+    build_workflow_footer_facts_from_progress_facts
+)
+build_wizard_footer_status = build_workflow_footer_status
 from .workflow_progress import (
     build_startup_workflow_progress_facts,
     build_workflow_progress_from_facts,
@@ -164,6 +170,9 @@ from .workflow_page_specs import (
     DockWorkflowPageSpec,
     build_default_workflow_page_specs,
 )
+
+DockWizardPageSpec = DockWorkflowPageSpec
+build_default_wizard_page_specs = build_default_workflow_page_specs
 from .workflow_settings import (
     COLLAPSED_GROUPS_KEY,
     DEFAULT_COLLAPSED_GROUP_OBJECT_NAMES,
@@ -242,6 +251,7 @@ __all__ = [
     "DockVisualWorkflowCoordinator",
     "DockVisualWorkflowRequest",
     "DockWizardProgress",
+    "DockWizardPageSpec",
     "DockWorkflowPageSpec",
     "DockWorkflowProgress",
     "DockWorkflowSection",
@@ -286,6 +296,7 @@ __all__ = [
     "VisualWorkflowBackgroundInputs",
     "VisualWorkflowActionInputs",
     "VisualWorkflowSettingsSnapshot",
+    "WizardFooterFacts",
     "WizardProgressFacts",
     "WorkflowFooterFacts",
     "WorkflowProgressFacts",
@@ -323,8 +334,11 @@ __all__ = [
     "build_startup_workflow_progress_facts",
     "current_local_first_last_sync_date",
     "build_wizard_filter_description",
+    "build_wizard_footer_facts_from_progress_facts",
+    "build_wizard_footer_status",
     "build_workflow_footer_facts_from_progress_facts",
     "build_workflow_footer_status",
+    "build_default_wizard_page_specs",
     "build_default_workflow_page_specs",
     "build_workflow_progress_facts_from_runtime_state",
     "build_workflow_progress_from_facts",
