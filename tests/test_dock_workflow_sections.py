@@ -103,6 +103,14 @@ class DockWorkflowSectionsTests(unittest.TestCase):
         self.assertIs(module.DockWizardProgress, DockWorkflowProgress)
         self.assertIs(module.WIZARD_WORKFLOW_STEPS, WORKFLOW_STEPS)
         self.assertIs(
+            module.build_initial_wizard_step_statuses,
+            build_initial_workflow_step_statuses,
+        )
+        self.assertIs(
+            module.build_progress_wizard_step_statuses,
+            build_progress_workflow_step_statuses,
+        )
+        self.assertIs(
             module.build_wizard_step_statuses,
             build_workflow_step_statuses,
         )
