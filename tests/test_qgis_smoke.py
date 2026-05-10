@@ -1550,6 +1550,7 @@ class QgisSmokeTests(unittest.TestCase):
 
             from qgis.core import QgsApplication, QgsLayoutExporter, QgsProject, QgsRectangle
             from qgis.PyQt.QtGui import QImage
+            from pypdf import PdfReader
 
             from qfit.atlas.export_task import (
                 BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO,
@@ -1611,6 +1612,13 @@ class QgisSmokeTests(unittest.TestCase):
                         if delta > 30:
                             changed += 1
                 return changed
+
+            def pdf_content_stream_size(pdf_path):
+                page = PdfReader(pdf_path).pages[0]
+                contents = page.get_contents()
+                if isinstance(contents, list):
+                    return sum(len(content.get_data()) for content in contents)
+                return len(contents.get_data())
 
             app = QgsApplication([], False)
             app.initQgis()
@@ -1720,15 +1728,31 @@ class QgisSmokeTests(unittest.TestCase):
                         exporter = QgsLayoutExporter(layout)
                         image_settings = QgsLayoutExporter.ImageExportSettings()
                         image_settings.dpi = 150
+                        pdf_settings = QgsLayoutExporter.PdfExportSettings()
+                        pdf_settings.dpi = 150
+                        pdf_settings.rasterizeWholeImage = False
+                        pdf_settings.forceVectorOutput = True
+
                         bound_path = str(Path(tmp) / "profile-bound.png")
                         blank_path = str(Path(tmp) / "profile-blank.png")
+                        bound_pdf_path = str(Path(tmp) / "profile-bound.pdf")
+                        blank_pdf_path = str(Path(tmp) / "profile-blank.pdf")
                         if exporter.exportToImage(bound_path, image_settings) != QgsLayoutExporter.Success:
                             raise RuntimeError("Bound profile image export failed")
+                        if exporter.exportToPdf(bound_pdf_path, pdf_settings) != QgsLayoutExporter.Success:
+                            raise RuntimeError("Bound profile PDF export failed")
                         profile_adapter.clear_profile()
                         if exporter.exportToImage(blank_path, image_settings) != QgsLayoutExporter.Success:
                             raise RuntimeError("Blank profile image export failed")
+                        if exporter.exportToPdf(blank_pdf_path, pdf_settings) != QgsLayoutExporter.Success:
+                            raise RuntimeError("Blank profile PDF export failed")
 
-                        print(count_changed_pixels(bound_path, blank_path), flush=True)
+                        print(
+                            count_changed_pixels(bound_path, blank_path),
+                            pdf_content_stream_size(bound_pdf_path),
+                            pdf_content_stream_size(blank_pdf_path),
+                            flush=True,
+                        )
                         os._exit(0)
                     finally:
                         atlas.endRender()
@@ -1750,11 +1774,18 @@ class QgisSmokeTests(unittest.TestCase):
             0,
             f"Profile smoke subprocess failed with code {result.returncode}\nSTDOUT:\n{result.stdout}\nSTDERR:\n{result.stderr}",
         )
-        changed_pixels = int(result.stdout.strip().splitlines()[-1])
+        changed_pixels, bound_pdf_content_bytes, blank_pdf_content_bytes = [
+            int(value) for value in result.stdout.strip().splitlines()[-1].split()
+        ]
         self.assertGreater(
             changed_pixels,
             80,
             f"Expected rendered profile content in exported chart, but only {changed_pixels} profile-chart pixels changed",
+        )
+        self.assertGreater(
+            bound_pdf_content_bytes,
+            blank_pdf_content_bytes + 1000,
+            "Expected exported profile PDF content stream to include the rendered chart",
         )
 
     def _write_sample_gpkg(self, temp_dir):
