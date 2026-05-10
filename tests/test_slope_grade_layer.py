@@ -18,16 +18,36 @@ class _FeatureSample:
         return self._geometry
 
 
+class _Field:
+    def __init__(self, name):
+        self._name = name
+
+    def name(self):
+        return self._name
+
+
 class _FeatureLayer:
-    def __init__(self, features, *, crs_authid="EPSG:4326"):
+    def __init__(self, features, *, crs_authid="EPSG:4326", fields=()):
         self._features = tuple(features)
         self._crs = _Crs(crs_authid)
+        self._fields = tuple(_Field(name) for name in fields)
 
     def getFeatures(self):
         return iter(self._features)
 
     def crs(self):
         return self._crs
+
+    def fields(self):
+        return self._fields
+
+
+class _TargetLayer:
+    def __init__(self, geometry="LineString"):
+        self._geometry = geometry
+
+    def geometryType(self):
+        return self._geometry
 
 
 class _Crs:
@@ -89,10 +109,11 @@ class SlopeGradeLayerTests(unittest.TestCase):
                 ),
             ),
             crs_authid="EPSG:2056",
+            fields=("stream_distance_m", "grade_smooth_pct"),
         )
 
         layer, segments = module.build_slope_grade_layer(
-            activities_layer=object(),
+            activities_layer=_TargetLayer(),
             points_layer=points_layer,
         )
 
@@ -137,11 +158,12 @@ class SlopeGradeLayerTests(unittest.TestCase):
                         "altitude_m": 91,
                     }
                 ),
-            )
+            ),
+            fields=("distance_m", "altitude_m"),
         )
 
         layer, segments = module.build_slope_grade_layer(
-            route_tracks_layer=object(),
+            route_tracks_layer=_TargetLayer(),
             route_profile_samples_layer=profile_layer,
         )
 
@@ -157,8 +179,45 @@ class SlopeGradeLayerTests(unittest.TestCase):
         module = _load_slope_grade_layer_with_qgis_stub()
 
         layer, segments = module.build_slope_grade_layer(
-            activities_layer=object(),
-            points_layer=_FeatureLayer(()),
+            activities_layer=_TargetLayer(),
+            points_layer=_FeatureLayer(
+                (),
+                fields=("stream_distance_m", "grade_smooth_pct"),
+            ),
+        )
+
+        self.assertIsNone(layer)
+        self.assertEqual(segments, ())
+
+    def test_does_not_build_overlay_when_activity_target_is_not_a_line_layer(self):
+        module = _load_slope_grade_layer_with_qgis_stub()
+        points_layer = _FeatureLayer(
+            (
+                _FeatureSample(
+                    {
+                        "source": "strava",
+                        "source_activity_id": "a-1",
+                        "stream_distance_m": 0,
+                        "grade_smooth_pct": 0.0,
+                    },
+                    geometry=_Geometry(6.6, 46.5),
+                ),
+                _FeatureSample(
+                    {
+                        "source": "strava",
+                        "source_activity_id": "a-1",
+                        "stream_distance_m": 100,
+                        "grade_smooth_pct": 4.0,
+                    },
+                    geometry=_Geometry(6.7, 46.6),
+                ),
+            ),
+            fields=("stream_distance_m", "grade_smooth_pct"),
+        )
+
+        layer, segments = module.build_slope_grade_layer(
+            activities_layer=_TargetLayer(geometry="Point"),
+            points_layer=points_layer,
         )
 
         self.assertIsNone(layer)

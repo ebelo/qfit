@@ -17,6 +17,7 @@ from qgis.core import (
 from ..application.slope_grade_analysis import (
     SLOPE_GRADE_CLASSES,
     build_activity_slope_grade_line_segments,
+    build_slope_grade_analysis_plan,
     build_route_slope_grade_line_segments,
 )
 
@@ -33,11 +34,18 @@ def build_slope_grade_layer(
 ):
     """Create a styled memory line layer for slope-grade analysis segments."""
 
-    line_segments = []
-    if activities_layer is not None and points_layer is not None:
-        line_segments.extend(build_activity_slope_grade_line_segments(points_layer))
     route_sample_layer = route_profile_samples_layer or route_points_layer
-    if route_tracks_layer is not None and route_sample_layer is not None:
+    plan = build_slope_grade_analysis_plan(
+        activities_layer=activities_layer,
+        points_layer=points_layer,
+        route_tracks_layer=route_tracks_layer,
+        route_points_layer=route_points_layer,
+        route_profile_samples_layer=route_profile_samples_layer,
+    )
+    line_segments = []
+    if _plan_enables_layer(plan, "activity_tracks"):
+        line_segments.extend(build_activity_slope_grade_line_segments(points_layer))
+    if _plan_enables_layer(plan, "saved_route_tracks"):
         line_segments.extend(build_route_slope_grade_line_segments(route_sample_layer))
 
     if not line_segments:
@@ -64,6 +72,10 @@ def build_slope_grade_layer(
     layer.updateExtents()
     _apply_slope_grade_style(layer)
     return layer, tuple(line_segments)
+
+
+def _plan_enables_layer(plan, layer_key):
+    return any(layer.key == layer_key for layer in plan.enabled_layers)
 
 
 def _build_memory_layer(source_layer):
