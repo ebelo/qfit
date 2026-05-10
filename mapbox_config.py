@@ -251,6 +251,23 @@ def _nearest_zoom_stop_value(expr: list[object], target_zoom: float = _REPRESENT
     return min(stops, key=lambda stop: abs(stop[0] - target_zoom))[1]
 
 
+def _nearest_interpolate_output_value(
+    expr: list[object],
+    target_stop: float = _REPRESENTATIVE_STYLE_ZOOM,
+) -> object | None:
+    """Return a representative output value from any Mapbox interpolate expression."""
+    if len(expr) < 5:
+        return None
+    stops: list[tuple[float, object]] = []
+    for index in range(3, len(expr) - 1, 2):
+        stop = expr[index]
+        if isinstance(stop, (int, float)):
+            stops.append((float(stop), expr[index + 1]))
+    if not stops:
+        return None
+    return min(stops, key=lambda stop: abs(stop[0] - target_stop))[1]
+
+
 def _step_zoom_value(expr: list[object], target_zoom: float = _REPRESENTATIVE_STYLE_ZOOM) -> object | None:
     """Evaluate a simple ``['step', ['zoom'], ...]`` expression at target zoom."""
     if len(expr) < 3 or expr[1] != ["zoom"]:
@@ -318,6 +335,10 @@ def _extract_midrange_size(expr: object) -> float | None:
     op = expr[0]
     if op == "interpolate":
         representative = _nearest_zoom_stop_value(expr)
+        value = _extract_midrange_size(representative)
+        if value is not None:
+            return value
+        representative = _nearest_interpolate_output_value(expr)
         value = _extract_midrange_size(representative)
         if value is not None:
             return value

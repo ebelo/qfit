@@ -316,6 +316,21 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
         width = result["layers"][0]["paint"]["line-width"]
         self.assertAlmostEqual(width, 4 * 25.4 / 96.0)
 
+    def test_line_width_expression_uses_output_stop_for_property_interpolation(self):
+        style = {
+            "layers": [
+                {
+                    "paint": {
+                        "line-width": ["interpolate", ["linear"], ["get", "rank"], 0, 8, 10, 16]
+                    },
+                    "layout": {},
+                }
+            ]
+        }
+        result = simplify_mapbox_style_expressions(style)
+        width = result["layers"][0]["paint"]["line-width"]
+        self.assertEqual(width, 3.0)
+
     def test_original_style_not_mutated(self):
         expr = ["match", ["get", "class"], "motorway", "hsl(15, 100%, 75%)", "hsl(35, 89%, 75%)"]
         style = {"layers": [{"paint": {"line-color": expr}, "layout": {}}]}
