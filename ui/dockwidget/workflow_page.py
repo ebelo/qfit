@@ -37,6 +37,7 @@ _PRIMARY_HINT_LABEL_QSS = f"QLabel {{ color: {COLOR_MUTED}; }}"
 WORKFLOW_PLACEHOLDER_HINT_PROPERTY = "workflowPlaceholderHint"
 PLACEHOLDER_HINT_RETIRED = "retired"
 
+
 class WorkflowPage(QWidget):
     """Reusable visible page container for the workflow shell.
 
@@ -121,6 +122,7 @@ class WorkflowPage(QWidget):
         layout.addWidget(self.primary_hint_label)
         return layout
 
+
 def build_workflow_pages(
     *,
     parent=None,
@@ -131,12 +133,14 @@ def build_workflow_pages(
     page_specs = build_default_workflow_page_specs() if specs is None else tuple(specs)
     return tuple(WorkflowPage(spec, parent) for spec in page_specs)
 
+
 def set_workflow_placeholder_hint_state(label, state: str) -> None:
     """Tag placeholder hint labels with canonical metadata plus legacy alias."""
 
     label.setProperty(WORKFLOW_PLACEHOLDER_HINT_PROPERTY, state)
     # Preserve the wizard-named property while #805 retires older shell naming.
     label.setProperty("wizardPlaceholderHint", state)
+
 
 def install_workflow_pages(
     shell,
@@ -148,6 +152,7 @@ def install_workflow_pages(
     for page in pages:
         shell.add_page(page)
     return pages
+
 
 __all__ = [
     "DockWorkflowPageSpec",
