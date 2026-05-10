@@ -253,7 +253,7 @@ class StepPage(QWidget):
         button = QToolButton(self)
         button.setObjectName("qfitWizardStepBackButton")
         _configure_responsive_button(button)
-        _apply_wizard_navigation_cursor(button)
+        _apply_workflow_navigation_cursor(button)
         button.clicked.connect(self.backRequested.emit)
         return button
 
@@ -261,7 +261,7 @@ class StepPage(QWidget):
         button = QToolButton(self)
         button.setObjectName("qfitWizardStepNextButton")
         _configure_responsive_button(button)
-        _apply_wizard_navigation_cursor(button)
+        _apply_workflow_navigation_cursor(button)
         button.clicked.connect(self.nextRequested.emit)
         return button
 
@@ -483,7 +483,7 @@ def _configure_responsive_button(button) -> None:
         button.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Fixed)
 
 
-def _apply_wizard_navigation_cursor(button) -> None:
+def _apply_workflow_navigation_cursor(button) -> None:
     if hasattr(button, "setCursor"):
         button.setCursor(Qt.PointingHandCursor)
 
