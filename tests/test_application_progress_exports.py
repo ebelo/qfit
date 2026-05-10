@@ -47,6 +47,33 @@ class ApplicationProgressExportTests(unittest.TestCase):
                 "qfit.ui.application.workflow_settings"
             )
 
+            eager_alias_names = (
+                "DockWizardPageSpec",
+                "DockWizardProgress",
+                "WIZARD_STEP_COUNT",
+                "WIZARD_VERSION",
+                "WIZARD_VERSION_KEY",
+                "WIZARD_WORKFLOW_STEPS",
+                "WizardFooterFacts",
+                "WizardSettingsSnapshot",
+                "build_default_wizard_page_specs",
+                "build_initial_wizard_step_statuses",
+                "build_progress_wizard_step_statuses",
+                "build_wizard_filter_description",
+                "build_wizard_footer_facts_from_progress_facts",
+                "build_wizard_footer_status",
+                "build_wizard_step_statuses",
+                "clamp_wizard_step_index",
+                "ensure_wizard_settings",
+                "load_wizard_settings",
+                "preferred_current_key_from_settings",
+                "save_last_step_index",
+                "wizard_step_key_for_index",
+            )
+            for name in eager_alias_names:
+                with self.subTest(eager_alias=name):
+                    self.assertNotIn(name, app.__dict__)
+
             self.assertIs(
                 app.DockWizardPageSpec,
                 workflow_pages.DockWorkflowPageSpec,
@@ -143,6 +170,23 @@ class ApplicationProgressExportTests(unittest.TestCase):
                     delattr(ui_package, "application")
             else:
                 setattr(ui_package, "application", saved_application)
+
+
+    def test_lazy_wizard_alias_reports_missing_canonical_target_as_attribute_error(self):
+        app = importlib.import_module("qfit.ui.application")
+        app._WIZARD_COMPAT_ALIAS_TARGETS["BrokenWizardAlias"] = (
+            "MissingWorkflowAlias"
+        )
+        try:
+            self.assertFalse(hasattr(app, "BrokenWizardAlias"))
+            with self.assertRaisesRegex(
+                AttributeError,
+                "BrokenWizardAlias.*MissingWorkflowAlias",
+            ):
+                app.__getattr__("BrokenWizardAlias")
+        finally:
+            app._WIZARD_COMPAT_ALIAS_TARGETS.pop("BrokenWizardAlias", None)
+            app.__dict__.pop("BrokenWizardAlias", None)
 
 
 if __name__ == "__main__":
