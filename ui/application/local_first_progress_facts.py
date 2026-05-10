@@ -104,6 +104,7 @@ def current_local_first_activity_style_preset(dock) -> str | None:
 def current_local_first_visual_temporal_mode(dock) -> str:
     """Return qfit's internal non-dynamic temporal mode for visual actions."""
 
+    _ = dock
     return DEFAULT_TEMPORAL_MODE_LABEL
 
 

@@ -14,6 +14,7 @@ class TemporalService:
     ]
 
     def apply_temporal_configuration(self, activities_layer, starts_layer, points_layer, atlas_layer, mode_label):
+        _ = mode_label
         layers_by_slot = {
             "activities": activities_layer,
             "starts": starts_layer,
