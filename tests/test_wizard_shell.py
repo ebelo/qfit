@@ -456,14 +456,14 @@ class WizardShellTest(unittest.TestCase):
         self.assertEqual(shell.footer_bar.text(), "Ready")
         self.assertEqual(shell.footer_bar.path_label.text(), "Ready")
 
-    def test_workflow_shell_is_canonical_export_with_wizard_alias(self):
+    def test_workflow_shell_is_canonical_export_without_wizard_alias(self):
         shell = self.workflow_shell.WorkflowShell()
 
-        self.assertIs(self.workflow_shell.WizardShell, self.workflow_shell.WorkflowShell)
+        self.assertFalse(hasattr(self.workflow_shell, "WizardShell"))
         self.assertEqual(shell.objectName(), "qfitWizardShell")
-        self.assertIsInstance(shell, self.workflow_shell.WizardShell)
+        self.assertIsInstance(shell, self.workflow_shell.WorkflowShell)
         self.assertIn("WorkflowShell", self.workflow_shell.__all__)
-        self.assertIn("WizardShell", self.workflow_shell.__all__)
+        self.assertNotIn("WizardShell", self.workflow_shell.__all__)
 
     def test_wizard_shell_module_reexports_workflow_shell_api(self):
         self.assertIs(self.wizard_shell.WorkflowShell, self.workflow_shell.WorkflowShell)

@@ -156,8 +156,4 @@ class WorkflowShell(QWidget):
         return FooterStatusBar(self, footer_text=footer_text)
 
 
-WizardShell = WorkflowShell
-"""Compatibility alias for pre-#805 wizard shell callers."""
-
-
-__all__ = ["STEPPER_LABELS", "WorkflowShell", "WizardShell"]
+__all__ = ["STEPPER_LABELS", "WorkflowShell"]
