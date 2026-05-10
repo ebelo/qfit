@@ -40,7 +40,7 @@ class WorkflowPageSpecsTests(unittest.TestCase):
     def test_default_specs_reject_missing_page_copy_with_clear_message(self):
         unknown_step = type("UnknownStep", (), {"key": "review", "title": "Review"})()
 
-        with patch.object(workflow_page_specs, "WIZARD_WORKFLOW_STEPS", (unknown_step,)):
+        with patch.object(workflow_page_specs, "WORKFLOW_STEPS", (unknown_step,)):
             with self.assertRaisesRegex(
                 KeyError,
                 "No page copy found for workflow step 'review'",

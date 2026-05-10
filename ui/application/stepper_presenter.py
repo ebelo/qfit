@@ -4,7 +4,7 @@ from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 
 from .dock_workflow_sections import (
-    WIZARD_WORKFLOW_STEPS,
+    WORKFLOW_STEPS,
     DockWorkflowStepState,
     DockWorkflowStepStatus,
 )
@@ -68,17 +68,17 @@ def can_request_step(
 
 
 def step_key_for_index(index: int) -> str:
-    """Return the stable wizard step key for a StepperBar index."""
+    """Return the stable workflow step key for a StepperBar index."""
 
-    if index < 0 or index >= len(WIZARD_WORKFLOW_STEPS):
+    if index < 0 or index >= len(WORKFLOW_STEPS):
         raise IndexError(index)
-    return WIZARD_WORKFLOW_STEPS[index].key
+    return WORKFLOW_STEPS[index].key
 
 
 def step_index_for_key(key: str) -> int:
-    """Return the StepperBar index for a stable wizard step key."""
+    """Return the StepperBar index for a stable workflow step key."""
 
-    for index, section in enumerate(WIZARD_WORKFLOW_STEPS):
+    for index, section in enumerate(WORKFLOW_STEPS):
         if section.key == key:
             return index
     raise KeyError(key)

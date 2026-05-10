@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Sequence
 
-from qfit.ui.application.dock_workflow_sections import WIZARD_WORKFLOW_STEPS
+from qfit.ui.application.dock_workflow_sections import WORKFLOW_STEPS
 from qfit.ui.application.stepper_presenter import (
     STEPPER_STATE_CURRENT,
     STEPPER_STATE_DONE,
@@ -15,7 +15,7 @@ from qfit.ui.tokens import COLOR_ACCENT, COLOR_HOVER, COLOR_MUTED, COLOR_SEPARAT
 
 from ._qt_compat import import_qt_module
 
-STEPPER_LABELS = tuple(section.title for section in WIZARD_WORKFLOW_STEPS)
+STEPPER_LABELS = tuple(section.title for section in WORKFLOW_STEPS)
 STEPPER_STATES = frozenset(
     {
         STEPPER_STATE_DONE,

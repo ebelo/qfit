@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-from .dock_workflow_sections import DockWorkflowSection, WIZARD_WORKFLOW_STEPS
+from .dock_workflow_sections import DockWorkflowSection, WORKFLOW_STEPS
 
 
 @dataclass(frozen=True)
@@ -72,7 +72,7 @@ def build_default_workflow_page_specs(
 ) -> tuple[DockWorkflowPageSpec, ...]:
     """Return local-first dock page specs in stable workflow order."""
 
-    steps = WIZARD_WORKFLOW_STEPS if workflow_steps is None else tuple(workflow_steps)
+    steps = WORKFLOW_STEPS if workflow_steps is None else tuple(workflow_steps)
     specs = []
     for step in steps:
         if step.key not in _PAGE_COPY_BY_KEY:

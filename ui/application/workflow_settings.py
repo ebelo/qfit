@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from ...configuration.application.settings_port import SettingsPort
-from .dock_workflow_sections import WIZARD_WORKFLOW_STEPS
+from .dock_workflow_sections import WORKFLOW_STEPS
 
 WORKFLOW_SETTINGS_VERSION = 1
 WORKFLOW_SETTINGS_VERSION_KEY = "ui/wizard_version"
@@ -136,7 +136,7 @@ def save_collapsed_groups(
 def workflow_step_key_for_index(index: int) -> str:
     """Return the stable workflow step key for a persisted step index."""
 
-    return WIZARD_WORKFLOW_STEPS[clamp_workflow_step_index(index)].key
+    return WORKFLOW_STEPS[clamp_workflow_step_index(index)].key
 
 
 def preferred_current_key_from_workflow_settings(

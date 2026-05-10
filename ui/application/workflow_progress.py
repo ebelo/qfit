@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import replace
 from typing import cast
 
-from .dock_workflow_sections import DockWorkflowProgress, WIZARD_WORKFLOW_STEPS
+from .dock_workflow_sections import DockWorkflowProgress, WORKFLOW_STEPS
 from .workflow_progress_facts import WorkflowProgressFacts
 from .workflow_settings import (
     WorkflowSettingsSnapshot,
@@ -154,7 +154,7 @@ def _first_incomplete_key(completed_keys: set[str]) -> str:
 
 
 def _workflow_keys() -> tuple[str, ...]:
-    return tuple(section.key for section in WIZARD_WORKFLOW_STEPS)
+    return tuple(section.key for section in WORKFLOW_STEPS)
 
 
 __all__ = [
