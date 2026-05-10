@@ -86,6 +86,7 @@ def _collect_heatmap_features(heatmap_layer, points_layer, activities_layer):
 
 def _point_features_from_points_layer(heatmap_layer, points_layer):
     sample_indexes = count(1)
+    source_authid, coordinate_transform = _heatmap_coordinate_context(points_layer)
     for source_feature in points_layer.getFeatures():
         geometry = source_feature.geometry()
         if geometry is None or geometry.isEmpty():
@@ -93,7 +94,11 @@ def _point_features_from_points_layer(heatmap_layer, points_layer):
         point = geometry.asPoint()
         if point.isEmpty():
             continue
-        x, y = _heatmap_coordinates(points_layer, point)
+        x, y = _heatmap_coordinates(
+            point,
+            source_authid=source_authid,
+            coordinate_transform=coordinate_transform,
+        )
         yield _build_point_feature(
             heatmap_layer,
             x=x,
@@ -108,12 +113,17 @@ def _point_features_from_points_layer(heatmap_layer, points_layer):
 
 def _point_features_from_activity_layer(heatmap_layer, activities_layer):
     sample_indexes = count(1)
+    source_authid, coordinate_transform = _heatmap_coordinate_context(activities_layer)
     for source_feature in activities_layer.getFeatures():
         geometry = source_feature.geometry()
         if geometry is None or geometry.isEmpty():
             continue
         for point_index, vertex in enumerate(geometry.vertices(), start=1):
-            x, y = _heatmap_coordinates(activities_layer, vertex)
+            x, y = _heatmap_coordinates(
+                vertex,
+                source_authid=source_authid,
+                coordinate_transform=coordinate_transform,
+            )
             yield _build_point_feature(
                 heatmap_layer,
                 x=x,
@@ -147,19 +157,23 @@ def _build_point_feature(
     return feature
 
 
-def _heatmap_coordinates(source_layer, point):
+def _heatmap_coordinate_context(source_layer):
+    authid = _layer_authid(source_layer)
+    if authid in {_WEB_MERCATOR_AUTHID, _WGS84_AUTHID}:
+        return authid, None
+    return authid, _coordinate_transform_to_web_mercator(source_layer)
+
+
+def _heatmap_coordinates(point, *, source_authid, coordinate_transform=None):
     x = float(point.x())
     y = float(point.y())
-    authid = _layer_authid(source_layer)
-    if authid == _WEB_MERCATOR_AUTHID:
+    if source_authid == _WEB_MERCATOR_AUTHID:
         return x, y
-    if authid == _WGS84_AUTHID:
+    if source_authid == _WGS84_AUTHID:
         return _lon_lat_to_web_mercator(x, y)
-
-    transform = _coordinate_transform_to_web_mercator(source_layer)
-    if transform is None:
+    if coordinate_transform is None:
         return x, y
-    transformed = transform.transform(QgsPointXY(x, y))
+    transformed = coordinate_transform.transform(QgsPointXY(x, y))
     return float(transformed.x()), float(transformed.y())
 
 

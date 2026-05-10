@@ -350,7 +350,10 @@ class ActivityHeatmapLayerPureTests(unittest.TestCase):
 
     def test_transforms_non_web_mercator_source_coordinates_for_heatmap_points(self):
         points_layer = _FakeSourceLayer(
-            features=[_FakeFeature(_FakeGeometry(point=_FakePoint(2600000.0, 1200000.0)))],
+            features=[
+                _FakeFeature(_FakeGeometry(point=_FakePoint(2600000.0, 1200000.0))),
+                _FakeFeature(_FakeGeometry(point=_FakePoint(2600100.0, 1200100.0))),
+            ],
             crs=_FakeCrs(authid="EPSG:2056"),
         )
 
@@ -359,11 +362,14 @@ class ActivityHeatmapLayerPureTests(unittest.TestCase):
             points_layer=points_layer,
         )
 
-        self.assertEqual(count, 1)
-        [feature] = layer.dataProvider().added
-        point = feature.geometry().asPoint()
-        self.assertEqual(point.x(), 2601000.0)
-        self.assertEqual(point.y(), 1202000.0)
+        self.assertEqual(count, 2)
+        first, second = layer.dataProvider().added
+        first_point = first.geometry().asPoint()
+        second_point = second.geometry().asPoint()
+        self.assertEqual(first_point.x(), 2601000.0)
+        self.assertEqual(first_point.y(), 1202000.0)
+        self.assertEqual(second_point.x(), 2601100.0)
+        self.assertEqual(second_point.y(), 1202100.0)
         self.assertEqual(_FakeCoordinateTransform.calls, [("EPSG:2056", "EPSG:3857")])
 
     def test_populates_attribute_rows_from_activity_line_fallback(self):
@@ -391,6 +397,32 @@ class ActivityHeatmapLayerPureTests(unittest.TestCase):
         point = feature.geometry().asPoint()
         self.assertAlmostEqual(point.x(), 734708.6, delta=1.0)
         self.assertAlmostEqual(point.y(), 5860839.8, delta=1.0)
+
+    def test_transforms_projected_activity_vertices_with_one_reused_transform(self):
+        activities_layer = _FakeSourceLayer(
+            features=[
+                _FakeFeature(
+                    _FakeGeometry(
+                        vertices=[
+                            _FakePoint(2600000.0, 1200000.0),
+                            _FakePoint(2600100.0, 1200100.0),
+                        ]
+                    )
+                )
+            ],
+            crs=_FakeCrs(authid="EPSG:2056"),
+        )
+
+        layer, count = self.module.build_activity_heatmap_layer(
+            activities_layer=activities_layer,
+            points_layer=None,
+        )
+
+        self.assertEqual(count, 2)
+        first, second = layer.dataProvider().added
+        self.assertEqual(first.geometry().asPoint().x(), 2601000.0)
+        self.assertEqual(second.geometry().asPoint().x(), 2601100.0)
+        self.assertEqual(_FakeCoordinateTransform.calls, [("EPSG:2056", "EPSG:3857")])
 
     def test_falls_back_to_activity_vertices_when_points_layer_missing(self):
         activities_layer = _FakeSourceLayer(
