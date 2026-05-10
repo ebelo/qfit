@@ -9,7 +9,6 @@ def configure_local_first_backing_controls(dock) -> None:
     """Prepare legacy widgets that still back the local-first dock pages."""
 
     dock.workflowLabel.setText(build_current_dock_workflow_label())
-    dock.credentialsGroupBox.hide()
     for group_box in (
         dock.activitiesGroupBox,
         dock.styleGroupBox,

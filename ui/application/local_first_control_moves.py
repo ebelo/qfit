@@ -128,23 +128,6 @@ LOCAL_FIRST_CONTROL_MOVES: tuple[LocalFirstControlMove, ...] = (
         after_install_hook_key=HIDE_LEGACY_ATLAS_EXPORT_BUTTON_HOOK,
     ),
     LocalFirstControlMove(
-        key="strava_credentials",
-        content_attr="settings_content",
-        group_attr="credentialsGroupBox",
-        required_widget_attrs=(
-            "clientIdLineEdit",
-            "clientSecretLineEdit",
-            "redirectUriLineEdit",
-            "authCodeLineEdit",
-            "refreshTokenLineEdit",
-            "openAuthorizeButton",
-            "exchangeCodeButton",
-        ),
-        installed_attr="_local_first_strava_credentials_controls_installed",
-        installed_target_attr="_local_first_strava_credentials_controls_installed_target",
-        title="Strava connection",
-    ),
-    LocalFirstControlMove(
         key="basemap",
         content_attr="settings_content",
         group_attr="backgroundGroupBox",

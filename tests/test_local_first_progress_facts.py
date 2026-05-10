@@ -75,10 +75,12 @@ class TestLocalFirstProgressFacts(unittest.TestCase):
             backgroundMapCheckBox=_FakeCheckBox(False),
             backgroundPresetComboBox=_FakeComboBox("Outdoors"),
             stylePresetComboBox=_FakeComboBox(" Simple lines "),
-            settings={"last_sync_date": " 2026-05-09 "},
-            clientIdLineEdit=_FakeLineEdit("client-id"),
-            clientSecretLineEdit=_FakeLineEdit("client-secret"),
-            refreshTokenLineEdit=_FakeLineEdit("refresh-token"),
+            settings={
+                "last_sync_date": " 2026-05-09 ",
+                "client_id": "client-id",
+                "client_secret": "client-secret",
+                "refresh_token": "refresh-token",
+            },
             _atlas_export_completed=True,
             _atlas_export_output_path="exported.pdf",
             _atlas_export_task_output_path=None,
@@ -96,29 +98,35 @@ class TestLocalFirstProgressFacts(unittest.TestCase):
         self.assertIsInstance(facts, LocalFirstProgressFacts)
         self.assertEqual(facts.last_sync_date, "2026-05-09")
 
-    def test_connection_configured_requires_visible_credential_text(self):
+    def test_connection_configured_requires_persisted_credential_text(self):
         configured_dock = SimpleNamespace(
-            clientIdLineEdit=_FakeLineEdit(" client-id "),
-            clientSecretLineEdit=_FakeLineEdit(" client-secret "),
-            refreshTokenLineEdit=_FakeLineEdit(" refresh-token "),
+            settings={
+                "client_id": " client-id ",
+                "client_secret": " client-secret ",
+                "refresh_token": " refresh-token ",
+            }
         )
         missing_token_dock = SimpleNamespace(
-            clientIdLineEdit=_FakeLineEdit("client-id"),
-            clientSecretLineEdit=_FakeLineEdit("client-secret"),
-            refreshTokenLineEdit=_FakeLineEdit("   "),
+            settings={
+                "client_id": "client-id",
+                "client_secret": "client-secret",
+                "refresh_token": "   ",
+            }
         )
 
         self.assertTrue(current_local_first_connection_configured(configured_dock))
         self.assertFalse(current_local_first_connection_configured(missing_token_dock))
 
-    def test_connection_configured_handles_deleted_backing_widgets(self):
-        dock = SimpleNamespace(
-            clientIdLineEdit=_FakeLineEdit("client-id"),
-            clientSecretLineEdit=_FailingLineEdit(),
-            refreshTokenLineEdit=_FakeLineEdit("refresh-token"),
-        )
+    def test_connection_configured_handles_unreadable_settings(self):
+        class _FailingSettings:
+            def get(self, key, default=None):
+                raise RuntimeError("settings unavailable")
 
-        self.assertFalse(current_local_first_connection_configured(dock))
+        self.assertFalse(
+            current_local_first_connection_configured(
+                SimpleNamespace(settings=_FailingSettings())
+            )
+        )
 
     def test_activity_style_preset_reads_trimmed_combo_text(self):
         dock = SimpleNamespace(stylePresetComboBox=_FakeComboBox(" Simple lines "))

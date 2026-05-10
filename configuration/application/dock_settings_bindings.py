@@ -3,7 +3,6 @@ from __future__ import annotations
 from .ui_settings_binding import UIFieldBinding
 from ...activities.domain.activity_query import DEFAULT_SORT_LABEL, DETAILED_ROUTE_FILTER_ANY
 from ...mapbox_config import DEFAULT_BACKGROUND_PRESET, TILE_MODE_RASTER
-from ...providers.infrastructure.strava_provider import StravaProvider
 
 
 DEFAULT_STYLE_PRESET = "By activity type"
@@ -18,15 +17,6 @@ def build_dock_settings_bindings(dock) -> list[UIFieldBinding]:
     """
 
     return [
-        UIFieldBinding("client_id", "", lambda: dock.clientIdLineEdit.text().strip(), dock.clientIdLineEdit.setText),
-        UIFieldBinding("client_secret", "", lambda: dock.clientSecretLineEdit.text().strip(), dock.clientSecretLineEdit.setText),
-        UIFieldBinding(
-            "redirect_uri",
-            StravaProvider.DEFAULT_REDIRECT_URI,
-            lambda: dock.redirectUriLineEdit.text().strip(),
-            dock.redirectUriLineEdit.setText,
-        ),
-        UIFieldBinding("refresh_token", "", lambda: dock.refreshTokenLineEdit.text().strip(), dock.refreshTokenLineEdit.setText),
         UIFieldBinding("output_path", dock._default_output_path(), lambda: dock.outputPathLineEdit.text().strip(), dock.outputPathLineEdit.setText),
         UIFieldBinding(
             "write_activity_points",

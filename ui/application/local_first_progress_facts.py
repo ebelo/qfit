@@ -64,14 +64,24 @@ def build_current_local_first_progress_facts(dock):
 def current_local_first_connection_configured(dock) -> bool:
     """Return whether local-first progress can treat Strava as configured."""
 
+    settings = getattr(dock, "settings", None)
+    if settings is None or not hasattr(settings, "get"):
+        return False
     return all(
-        _safe_local_first_widget_text(dock, name)
-        for name in (
-            "clientIdLineEdit",
-            "clientSecretLineEdit",
-            "refreshTokenLineEdit",
-        )
+        _safe_local_first_setting_text(settings, key)
+        for key in ("client_id", "client_secret", "refresh_token")
     )
+
+
+def _safe_local_first_setting_text(settings, key: str) -> str:
+    try:
+        value = settings.get(key, "")
+    except RuntimeError:
+        logger.debug("Failed to read local-first connection setting", exc_info=True)
+        return ""
+    if not isinstance(value, str):
+        return ""
+    return value.strip()
 
 
 def current_local_first_activity_style_preset(dock) -> str | None:

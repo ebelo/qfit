@@ -23,7 +23,6 @@ class LocalFirstControlMoveTests(unittest.TestCase):
                 "backfill_routes",
                 "map_filters",
                 "atlas_pdf",
-                "strava_credentials",
                 "basemap",
                 "storage",
             ),
@@ -35,7 +34,6 @@ class LocalFirstControlMoveTests(unittest.TestCase):
                 "backfillMissingDetailedRoutesButton",
                 "filterGroupBox",
                 "atlasPdfGroupBox",
-                "credentialsGroupBox",
                 "backgroundGroupBox",
                 "outputGroupBox",
             ],
@@ -53,7 +51,6 @@ class LocalFirstControlMoveTests(unittest.TestCase):
                 "backfill_routes": "sync_content",
                 "map_filters": "map_content",
                 "atlas_pdf": "atlas_content",
-                "strava_credentials": "settings_content",
                 "basemap": "settings_content",
                 "storage": "settings_content",
             },
@@ -82,15 +79,6 @@ class LocalFirstControlMoveTests(unittest.TestCase):
                     "detailedRouteStatusComboBox",
                 ),
                 "atlas_pdf": ("atlasPdfPathLineEdit", "atlasPdfBrowseButton"),
-                "strava_credentials": (
-                    "clientIdLineEdit",
-                    "clientSecretLineEdit",
-                    "redirectUriLineEdit",
-                    "authCodeLineEdit",
-                    "refreshTokenLineEdit",
-                    "openAuthorizeButton",
-                    "exchangeCodeButton",
-                ),
                 "basemap": (
                     "backgroundMapCheckBox",
                     "backgroundPresetComboBox",
@@ -137,11 +125,6 @@ class LocalFirstControlMoveTests(unittest.TestCase):
         self.assertEqual(filters.post_install_visible_attr, "set_filter_controls_visible")
         self.assertIsNone(filters.after_install_hook_key)
 
-        credentials = local_first_control_move_for_key("strava_credentials")
-        self.assertEqual(credentials.content_attr, "settings_content")
-        self.assertEqual(credentials.group_attr, "credentialsGroupBox")
-        self.assertEqual(credentials.title, "Strava connection")
-
     def test_control_moves_document_post_install_hooks(self):
         hooks = {
             move.key: move.after_install_hook_key for move in LOCAL_FIRST_CONTROL_MOVES
@@ -154,7 +137,6 @@ class LocalFirstControlMoveTests(unittest.TestCase):
                 "backfill_routes": REFRESH_CONDITIONAL_VISIBILITY_HOOK,
                 "map_filters": None,
                 "atlas_pdf": HIDE_LEGACY_ATLAS_EXPORT_BUTTON_HOOK,
-                "strava_credentials": None,
                 "basemap": REFRESH_CONDITIONAL_VISIBILITY_HOOK,
                 "storage": REFRESH_CONDITIONAL_VISIBILITY_HOOK,
             },
