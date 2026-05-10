@@ -611,19 +611,10 @@ def _atlas_output_summary(
     return default.output_summary_text
 
 
-# Backward-compatible names while the retired wizard shell is still importable.
-WizardActionCallbacks = DockWorkflowActionCallbacks
-WizardPageStateSnapshots = WorkflowPageStateSnapshots
-build_wizard_page_states_from_facts = build_workflow_page_states_from_facts
-
-
 __all__ = [
     "DockWorkflowActionCallbacks",
     "WorkflowPageStateSnapshots",
-    "WizardActionCallbacks",
-    "WizardPageStateSnapshots",
     "build_workflow_page_states_from_facts",
-    "build_wizard_page_states_from_facts",
     "completed_prefix_facts",
     "connect_optional_signal",
 ]
