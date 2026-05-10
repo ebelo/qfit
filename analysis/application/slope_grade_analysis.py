@@ -102,7 +102,7 @@ class SlopeGradeLineSegment:
 
 @dataclass(frozen=True)
 class SlopeGradeAnalysisPlan:
-    """Render-neutral plan for #815 slope-grade line analysis."""
+    """Render-neutral plan for activity-only slope-grade line analysis."""
 
     layers: tuple[SlopeGradeLayerPlan, ...]
     grade_classes: tuple[SlopeGradeClass, ...] = SLOPE_GRADE_CLASSES
@@ -160,6 +160,8 @@ def build_slope_grade_analysis_plan(
     The QGIS-facing styling work stays behind this render-neutral contract.
     Slope grade is intentionally activity-only: saved route layers are ignored
     even when loaded so route-profile/sample data never drives this analysis.
+    Route-layer keyword arguments are still accepted as a compatibility shim
+    for callers that pass the full loaded layer set.
     """
 
     _ignore_route_layer_kwargs(route_layers)
@@ -197,7 +199,11 @@ def build_slope_grade_analysis_result(
     points_layer=None,
     **route_layers,
 ) -> SlopeGradeAnalysisResult:
-    """Classify slope-grade segments for eligible line-layer targets."""
+    """Classify activity slope-grade segments.
+
+    Route-layer keyword arguments are accepted only for compatibility and are
+    ignored because slope grade is an activity-only analysis.
+    """
 
     _ignore_route_layer_kwargs(route_layers)
     plan = build_slope_grade_analysis_plan(
@@ -669,8 +675,6 @@ def _activity_track_plan(activities_layer, points_layer) -> SlopeGradeLayerPlan:
         enabled=True,
         source_fields=_ACTIVITY_POINT_GRADE_FIELDS,
     )
-
-
 
 def _has_fields(layer, expected: Iterable[str]) -> bool:
     field_names = _field_names(layer)

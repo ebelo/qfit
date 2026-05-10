@@ -29,7 +29,11 @@ def build_slope_grade_layer(
     points_layer=None,
     **route_layers,
 ):
-    """Create a styled memory line layer for slope-grade analysis segments."""
+    """Create a styled memory line layer for activity slope-grade segments.
+
+    Route-layer keyword arguments are accepted only for compatibility and are
+    ignored because slope grade is an activity-only analysis.
+    """
 
     plan = build_slope_grade_analysis_plan(
         activities_layer=activities_layer,
