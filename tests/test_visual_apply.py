@@ -66,6 +66,9 @@ class ShouldUpdateBackgroundTests(unittest.TestCase):
     def test_returns_false_when_applying_subset_filters(self):
         self.assertFalse(VisualApplyService.should_update_background(True))
 
+    def test_returns_false_when_background_updates_are_disabled(self):
+        self.assertFalse(VisualApplyService.should_update_background(False, False))
+
 
 class BuildRequestTests(unittest.TestCase):
     def test_build_request_returns_structured_request(self):
@@ -82,6 +85,7 @@ class BuildRequestTests(unittest.TestCase):
         self.assertIsInstance(request, VisualApplyRequest)
         self.assertEqual(request.style_preset, "By activity type")
         self.assertTrue(request.apply_subset_filters)
+        self.assertTrue(request.update_background)
 
 
 class ApplyWithSubsetFiltersTests(unittest.TestCase):
@@ -350,6 +354,22 @@ class ApplyWithoutSubsetFiltersTests(unittest.TestCase):
             tile_mode="raster",
         )
         self.assertIsNotNone(result.background_layer)
+
+    def test_skips_background_when_background_update_disabled(self):
+        result = self.service.apply(
+            layers=self.layers,
+            query=_make_query(),
+            style_preset="By activity type",
+            temporal_mode="Off",
+            background_config=_make_bg_config(enabled=True),
+            apply_subset_filters=False,
+            update_background=False,
+            filtered_count=0,
+        )
+
+        self.layer_manager.ensure_background_layer.assert_not_called()
+        self.assertIsNone(result.background_layer)
+        self.assertNotIn("background", result.status.lower())
 
     def test_status_mentions_styling_and_background(self):
         bg = _make_bg_config(enabled=True)

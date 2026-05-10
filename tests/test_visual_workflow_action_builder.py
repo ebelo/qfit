@@ -5,6 +5,7 @@ from qfit.activities.application.activity_selection_state import ActivitySelecti
 from qfit.activities.domain.activity_query import ActivityQuery
 from qfit.ui.application import (
     ApplyVisualizationAction,
+    RefreshVisualizationStyleAction,
     RunAnalysisAction,
     VisualWorkflowBackgroundInputs,
     VisualWorkflowActionInputs,
@@ -171,6 +172,27 @@ class TestVisualWorkflowActionBuilder(unittest.TestCase):
         self.assertFalse(action.apply_subset_filters)
         self.assertEqual(action.starts_layer, "starts")
         self.assertFalse(action.background_config.enabled)
+
+    def test_builds_style_refresh_action_without_filters_or_background(self):
+        selection_state = ActivitySelectionState(query=ActivityQuery(), filtered_count=1)
+
+        action = build_visual_workflow_action(
+            RefreshVisualizationStyleAction,
+            VisualWorkflowActionInputs(
+                layers=LayerRefs(activities="activities"),
+                selection_state=selection_state,
+                style_preset="Track points",
+                temporal_mode="Off",
+                background_config=BackgroundConfig(enabled=True),
+                analysis_mode="None",
+                apply_subset_filters=True,
+            ),
+        )
+
+        self.assertIsInstance(action, RefreshVisualizationStyleAction)
+        self.assertFalse(action.apply_subset_filters)
+        self.assertFalse(action.update_background)
+        self.assertEqual(action.style_preset, "Track points")
 
     def test_rejects_unsupported_action_types(self):
         with self.assertRaises(TypeError):

@@ -67,6 +67,7 @@ from .ui.application import (
     DockRuntimeStore,
     DockVisualWorkflowCoordinator,
     DockVisualWorkflowRequest,
+    RefreshVisualizationStyleAction,
     bind_local_first_analysis_mode_controls,
     bind_local_first_basemap_preset_controls,
     bind_local_first_conditional_visibility_controls,
@@ -465,6 +466,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.loadLayersButton.clicked.connect(self.on_load_layers_clicked)
         self.clearDatabaseButton.clicked.connect(self.on_clear_database_clicked)
         self.applyFiltersButton.clicked.connect(self.on_apply_filters_clicked)
+        self.stylePresetComboBox.currentTextChanged.connect(self.on_style_preset_changed)
         self.runAnalysisButton.clicked.connect(self.on_run_analysis_clicked)
         self.loadBackgroundButton.clicked.connect(self.on_load_background_clicked)
         bind_local_first_basemap_preset_controls(self)
@@ -1030,6 +1032,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
     def on_apply_filters_clicked(self):
         self._dispatch_dock_action(ApplyVisualizationAction)
+
+    def on_style_preset_changed(self, *_args):
+        self._dispatch_dock_action(RefreshVisualizationStyleAction)
 
     def on_run_analysis_clicked(self):
         self._dispatch_dock_action(RunAnalysisAction)

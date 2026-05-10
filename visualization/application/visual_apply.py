@@ -52,6 +52,7 @@ class ApplyVisualizationRequest:
     temporal_mode: str = ""
     background_config: BackgroundConfig = field(default_factory=BackgroundConfig)
     apply_subset_filters: bool = False
+    update_background: bool = True
 
     @property
     def query(self):
@@ -86,9 +87,9 @@ class VisualApplyService:
         self.layer_gateway = layer_gateway
 
     @staticmethod
-    def should_update_background(apply_subset_filters):
+    def should_update_background(apply_subset_filters, update_background=True):
         """Background layer is only updated on initial load, not on filter-only applies."""
-        return not apply_subset_filters
+        return bool(update_background) and not apply_subset_filters
 
     @staticmethod
     def build_request(
@@ -97,6 +98,7 @@ class VisualApplyService:
         temporal_mode,
         background_config,
         apply_subset_filters,
+        update_background=True,
         selection_state=None,
         query=None,
         filtered_count=0,
@@ -113,6 +115,7 @@ class VisualApplyService:
             temporal_mode=temporal_mode,
             background_config=background_config,
             apply_subset_filters=apply_subset_filters,
+            update_background=update_background,
         )
 
     def apply(self, request: ApplyVisualizationRequest | None = None, **legacy_kwargs):
@@ -154,7 +157,10 @@ class VisualApplyService:
             )
 
         background_layer = None
-        if self.should_update_background(request.apply_subset_filters):
+        if self.should_update_background(
+            request.apply_subset_filters,
+            request.update_background,
+        ):
             background_layer, bg_error = self._ensure_background(request.background_config)
             if bg_error is not None:
                 failure_status = build_visual_apply_background_failure_result_status(
@@ -171,7 +177,7 @@ class VisualApplyService:
             has_layers=has_layers,
             apply_subset_filters=request.apply_subset_filters,
             filtered_count=request.filtered_count,
-            wants_background=request.background_config.enabled,
+            wants_background=request.update_background and request.background_config.enabled,
             background_loaded=background_layer is not None,
             temporal_note=temporal_note,
         )
