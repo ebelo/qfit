@@ -50,14 +50,6 @@ def configure_local_first_spinbox_unit_copy(dock) -> None:
     """Keep units in spin boxes instead of repeating them in form labels."""
 
     for label_name, label_text, spinbox_name, suffix in (
-        ("perPageLabel", "Page size", "perPageSpinBox", " activities"),
-        ("maxPagesLabel", "Pages to fetch", "maxPagesSpinBox", " pages"),
-        (
-            "maxDetailedActivitiesLabel",
-            "Max new detailed routes this run",
-            "maxDetailedActivitiesSpinBox",
-            " routes",
-        ),
         (
             "pointSamplingStrideLabel",
             "Keep every Nth point",

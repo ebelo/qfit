@@ -58,6 +58,8 @@ from .atlas.export_service import (
 from .atlas.profile_style import build_native_profile_plot_style_from_settings
 from .ui.application import (
     ApplyVisualizationAction,
+    DEFAULT_FETCH_MAX_PAGES,
+    DEFAULT_FETCH_PER_PAGE,
     DockActionDispatcher,
     DockAtlasExportRequest,
     DockAtlasWorkflowCoordinator,
@@ -88,7 +90,7 @@ from .ui.application.local_first_progress_facts import (
     current_local_first_visual_temporal_mode,
 )
 from .ui.contextual_help import ContextualHelpBinder, build_dock_help_entries
-from .detailed_route_strategy import DETAILED_ROUTE_STRATEGY_MISSING
+from .detailed_route_strategy import DEFAULT_DETAILED_ROUTE_STRATEGY, DETAILED_ROUTE_STRATEGY_MISSING
 from .mapbox_config import MapboxConfigError
 from .visualization.application import (
     LayerRefs,
@@ -711,7 +713,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             return
 
         self._start_fetch(
-            detailed_route_strategy=self.detailedRouteStrategyComboBox.currentText(),
+            detailed_route_strategy=DEFAULT_DETAILED_ROUTE_STRATEGY,
             status_text="Fetching activities from Strava…",
         )
 
@@ -748,12 +750,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                     cache=self.cache,
                     detailed_route_strategy=detailed_route_strategy,
                     on_finished=self._on_fetch_finished,
-                    advanced_fetch_enabled=self.advancedFetchGroupBox.isChecked(),
-                    detailed_streams_checked=self.detailedStreamsCheckBox.isChecked(),
-                    per_page_value=self.perPageSpinBox.value(),
-                    max_pages_value=self.maxPagesSpinBox.value(),
-                    max_detailed_activities_value=self.maxDetailedActivitiesSpinBox.value(),
-                    use_detailed_streams_override=use_detailed_streams,
+                    use_detailed_streams=bool(use_detailed_streams),
                     before_epoch=sync_plan.before_epoch,
                     after_epoch=sync_plan.after_epoch,
                 )
@@ -923,8 +920,8 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 refresh_token=self.refreshTokenLineEdit.text().strip(),
                 cache=self.cache,
                 output_path=output_path,
-                per_page=self.perPageSpinBox.value(),
-                max_pages=self.maxPagesSpinBox.value(),
+                per_page=DEFAULT_FETCH_PER_PAGE,
+                max_pages=DEFAULT_FETCH_MAX_PAGES,
                 use_gpx_geometry=True,
                 on_finished=self._handle_route_sync_task_finished,
             )

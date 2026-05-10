@@ -19,7 +19,6 @@ class LocalFirstControlMoveTests(unittest.TestCase):
         self.assertEqual(
             local_first_control_move_keys(),
             (
-                "advanced_fetch",
                 "activity_preview",
                 "backfill_routes",
                 "map_filters",
@@ -32,7 +31,6 @@ class LocalFirstControlMoveTests(unittest.TestCase):
         self.assertEqual(
             [move.group_attr for move in LOCAL_FIRST_CONTROL_MOVES],
             [
-                "advancedFetchGroupBox",
                 "previewGroupBox",
                 "backfillMissingDetailedRoutesButton",
                 "filterGroupBox",
@@ -51,7 +49,6 @@ class LocalFirstControlMoveTests(unittest.TestCase):
         self.assertEqual(
             destinations,
             {
-                "advanced_fetch": "sync_content",
                 "activity_preview": "sync_content",
                 "backfill_routes": "sync_content",
                 "map_filters": "map_content",
@@ -70,14 +67,6 @@ class LocalFirstControlMoveTests(unittest.TestCase):
         self.assertEqual(
             required_widgets,
             {
-                "advanced_fetch": (
-                    "advancedFetchSettingsWidget",
-                    "perPageSpinBox",
-                    "maxPagesSpinBox",
-                    "detailedStreamsCheckBox",
-                    "detailedRouteStrategyComboBox",
-                    "maxDetailedActivitiesSpinBox",
-                ),
                 "activity_preview": (
                     "querySummaryLabel",
                     "activityPreviewPlainTextEdit",
@@ -136,7 +125,7 @@ class LocalFirstControlMoveTests(unittest.TestCase):
         )
 
         backfill = local_first_control_move_for_key("backfill_routes")
-        self.assertFalse(backfill.show_after_move)
+        self.assertTrue(backfill.show_after_move)
         self.assertEqual(
             backfill.after_install_hook_key,
             REFRESH_CONDITIONAL_VISIBILITY_HOOK,
@@ -161,7 +150,6 @@ class LocalFirstControlMoveTests(unittest.TestCase):
         self.assertEqual(
             hooks,
             {
-                "advanced_fetch": REFRESH_CONDITIONAL_VISIBILITY_HOOK,
                 "activity_preview": None,
                 "backfill_routes": REFRESH_CONDITIONAL_VISIBILITY_HOOK,
                 "map_filters": None,

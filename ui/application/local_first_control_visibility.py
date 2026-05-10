@@ -14,18 +14,6 @@ class LocalFirstControlVisibilityUpdate:
     visible: bool
 
 
-ADVANCED_FETCH_VISIBILITY_WIDGETS = ("advancedFetchSettingsWidget",)
-DETAILED_FETCH_VISIBILITY_WIDGETS = (
-    "backfillMissingDetailedRoutesButton",
-    "detailedRouteStrategyLabel",
-    "detailedRouteStrategyComboBox",
-    "detailedRouteStrategyComboBoxContextHelpLabel",
-    "detailedRouteStrategyComboBoxHelpField",
-    "maxDetailedActivitiesLabel",
-    "maxDetailedActivitiesSpinBox",
-    "maxDetailedActivitiesSpinBoxContextHelpLabel",
-    "maxDetailedActivitiesSpinBoxHelpField",
-)
 POINT_SAMPLING_VISIBILITY_WIDGETS = (
     "pointSamplingStrideLabel",
     "pointSamplingStrideSpinBox",
@@ -41,30 +29,6 @@ MAPBOX_CUSTOM_STYLE_VISIBILITY_WIDGETS = (
     "mapboxStyleIdLineEditContextHelpLabel",
     "mapboxStyleIdLineEditHelpField",
 )
-
-
-def build_advanced_fetch_visibility_update(
-    expanded: bool,
-) -> LocalFirstControlVisibilityUpdate:
-    """Return the local-first advanced-fetch details visibility update."""
-
-    return LocalFirstControlVisibilityUpdate(
-        key="advanced_fetch",
-        widget_attrs=ADVANCED_FETCH_VISIBILITY_WIDGETS,
-        visible=bool(expanded),
-    )
-
-
-def build_detailed_fetch_visibility_update(
-    enabled: bool,
-) -> LocalFirstControlVisibilityUpdate:
-    """Return the local-first detailed-route controls visibility update."""
-
-    return LocalFirstControlVisibilityUpdate(
-        key="detailed_fetch",
-        widget_attrs=DETAILED_FETCH_VISIBILITY_WIDGETS,
-        visible=bool(enabled),
-    )
 
 
 def build_point_sampling_visibility_update(
@@ -100,24 +64,6 @@ def apply_local_first_visibility_update(
     set_named_widgets_visible(dock, update.widget_attrs, update.visible)
 
 
-def update_local_first_advanced_fetch_visibility(dock, expanded: bool) -> None:
-    """Apply the advanced-fetch visibility rule to a local-first dock."""
-
-    apply_local_first_visibility_update(
-        dock,
-        build_advanced_fetch_visibility_update(expanded),
-    )
-
-
-def update_local_first_detailed_fetch_visibility(dock, enabled: bool) -> None:
-    """Apply the detailed-fetch visibility rule to a local-first dock."""
-
-    apply_local_first_visibility_update(
-        dock,
-        build_detailed_fetch_visibility_update(enabled),
-    )
-
-
 def update_local_first_mapbox_custom_style_visibility(
     dock,
     preset_name: str | None,
@@ -144,21 +90,9 @@ def bind_local_first_conditional_visibility_controls(dock) -> None:
 
     _connect_widget_signal(
         dock,
-        "detailedStreamsCheckBox",
-        "toggled",
-        lambda enabled: update_local_first_detailed_fetch_visibility(dock, enabled),
-    )
-    _connect_widget_signal(
-        dock,
         "writeActivityPointsCheckBox",
         "toggled",
         lambda enabled: update_local_first_point_sampling_visibility(dock, enabled),
-    )
-    _connect_widget_signal(
-        dock,
-        "advancedFetchGroupBox",
-        "toggled",
-        lambda expanded: update_local_first_advanced_fetch_visibility(dock, expanded),
     )
 
 
@@ -175,12 +109,6 @@ def build_local_first_conditional_visibility_updates(
     """Return the current conditional visibility updates for the local-first dock."""
 
     return (
-        build_advanced_fetch_visibility_update(
-            _checked(getattr(dock, "advancedFetchGroupBox", None))
-        ),
-        build_detailed_fetch_visibility_update(
-            _checked(getattr(dock, "detailedStreamsCheckBox", None))
-        ),
         build_mapbox_custom_style_visibility_update(
             _current_text(getattr(dock, "backgroundPresetComboBox", None))
         ),
@@ -233,22 +161,16 @@ def _current_text(widget) -> str | None:
 
 
 __all__ = [
-    "ADVANCED_FETCH_VISIBILITY_WIDGETS",
-    "DETAILED_FETCH_VISIBILITY_WIDGETS",
     "MAPBOX_CUSTOM_STYLE_VISIBILITY_WIDGETS",
     "POINT_SAMPLING_VISIBILITY_WIDGETS",
     "LocalFirstControlVisibilityUpdate",
     "apply_local_first_visibility_update",
     "bind_local_first_conditional_visibility_controls",
-    "build_advanced_fetch_visibility_update",
-    "build_detailed_fetch_visibility_update",
     "build_local_first_conditional_visibility_updates",
     "build_mapbox_custom_style_visibility_update",
     "build_point_sampling_visibility_update",
     "refresh_local_first_conditional_control_visibility",
     "set_named_widgets_visible",
-    "update_local_first_advanced_fetch_visibility",
-    "update_local_first_detailed_fetch_visibility",
     "update_local_first_mapbox_custom_style_visibility",
     "update_local_first_point_sampling_visibility",
 ]

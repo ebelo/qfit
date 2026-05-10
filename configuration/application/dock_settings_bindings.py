@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from .ui_settings_binding import UIFieldBinding
 from ...activities.domain.activity_query import DEFAULT_SORT_LABEL, DETAILED_ROUTE_FILTER_ANY
-from ...detailed_route_strategy import DEFAULT_DETAILED_ROUTE_STRATEGY
 from ...mapbox_config import DEFAULT_BACKGROUND_PRESET, TILE_MODE_RASTER
 from ...providers.infrastructure.strava_provider import StravaProvider
 
@@ -29,30 +28,6 @@ def build_dock_settings_bindings(dock) -> list[UIFieldBinding]:
         ),
         UIFieldBinding("refresh_token", "", lambda: dock.refreshTokenLineEdit.text().strip(), dock.refreshTokenLineEdit.setText),
         UIFieldBinding("output_path", dock._default_output_path(), lambda: dock.outputPathLineEdit.text().strip(), dock.outputPathLineEdit.setText),
-        UIFieldBinding("per_page", 200, lambda: dock.perPageSpinBox.value(), lambda value: dock._set_int_value(dock.perPageSpinBox, value, 200)),
-        UIFieldBinding("max_pages", 0, lambda: dock.maxPagesSpinBox.value(), lambda value: dock._set_int_value(dock.maxPagesSpinBox, value, 0)),
-        UIFieldBinding(
-            "use_detailed_streams",
-            False,
-            lambda: dock.detailedStreamsCheckBox.isChecked(),
-            lambda value: dock._set_bool_value(dock.detailedStreamsCheckBox, value, False),
-        ),
-        UIFieldBinding(
-            "max_detailed_activities",
-            25,
-            lambda: dock.maxDetailedActivitiesSpinBox.value(),
-            lambda value: dock._set_int_value(dock.maxDetailedActivitiesSpinBox, value, 25),
-        ),
-        UIFieldBinding(
-            "detailed_route_strategy",
-            DEFAULT_DETAILED_ROUTE_STRATEGY,
-            lambda: dock.detailedRouteStrategyComboBox.currentText(),
-            lambda value: dock._set_combo_value(
-                dock.detailedRouteStrategyComboBox,
-                value,
-                DEFAULT_DETAILED_ROUTE_STRATEGY,
-            ),
-        ),
         UIFieldBinding(
             "write_activity_points",
             True,

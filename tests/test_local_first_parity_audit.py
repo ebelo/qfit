@@ -37,10 +37,10 @@ class LocalFirstParityAuditTests(unittest.TestCase):
                     "activity_preview",
                 ),
                 "map_filters": ("map_filters", "map_actions"),
-                "data_storage_settings": ("storage", "data_actions"),
-                "advanced_fetch_settings": (
-                    "advanced_fetch",
+                "data_storage_settings": (
                     "backfill_routes",
+                    "storage",
+                    "data_actions",
                 ),
                 "analysis_controls": (
                     "analysis_temporal",
@@ -136,7 +136,7 @@ class LocalFirstParityAuditTests(unittest.TestCase):
 
     def test_audit_rejects_unknown_content_attrs_with_context(self):
         move = SimpleNamespace(
-            key="advanced_fetch",
+            key="backfill_routes",
             content_attr="onboarding_content",
             required_widget_attrs=(),
         )

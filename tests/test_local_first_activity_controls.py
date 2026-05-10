@@ -12,11 +12,9 @@ from qfit.activities.domain.activity_query import (
     DETAILED_ROUTE_FILTER_PRESENT,
     SORT_OPTIONS,
 )
-from qfit.detailed_route_strategy import detailed_route_strategy_labels
 from qfit.ui.application.local_first_activity_controls import (
     build_current_activity_preview_request,
     configure_detailed_route_filter_options,
-    configure_detailed_route_strategy_options,
     configure_local_first_activity_preview_options,
     configure_preview_sort_options,
 )
@@ -183,22 +181,6 @@ class LocalFirstActivityControlsTests(unittest.TestCase):
             ],
         )
 
-    def test_configure_detailed_route_strategy_populates_when_present(self):
-        combo = FakeComboBox()
-        combo.addItem("stale")
-        dock = SimpleNamespace(detailedRouteStrategyComboBox=combo)
-
-        configure_detailed_route_strategy_options(dock)
-
-        self.assertTrue(combo.cleared)
-        self.assertEqual(
-            combo.items,
-            [(label, None) for label in detailed_route_strategy_labels()],
-        )
-
-    def test_configure_detailed_route_strategy_skips_missing_combo(self):
-        configure_detailed_route_strategy_options(SimpleNamespace())
-
     def test_configure_preview_sort_populates_sort_options(self):
         combo = FakeComboBox()
         combo.addItem("stale")
@@ -215,21 +197,15 @@ class LocalFirstActivityControlsTests(unittest.TestCase):
 
     def test_configure_activity_preview_options_populates_backing_combos(self):
         route_status_combo = FakeComboBox()
-        strategy_combo = FakeComboBox()
         sort_combo = FakeComboBox()
         dock = SimpleNamespace(
             detailedRouteStatusComboBox=route_status_combo,
-            detailedRouteStrategyComboBox=strategy_combo,
             previewSortComboBox=sort_combo,
         )
 
         configure_local_first_activity_preview_options(dock)
 
         self.assertEqual(route_status_combo.items[0], ("Any routes", "any"))
-        self.assertEqual(
-            strategy_combo.items,
-            [(label, None) for label in detailed_route_strategy_labels()],
-        )
         self.assertEqual(
             sort_combo.items,
             [(label, None) for label in SORT_OPTIONS],

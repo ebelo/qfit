@@ -17,8 +17,6 @@ from qfit.ui.application.local_first_control_moves import (
     local_first_control_move_for_key,
 )
 from qfit.ui.application.local_first_control_visibility import (
-    update_local_first_advanced_fetch_visibility,
-    update_local_first_detailed_fetch_visibility,
     update_local_first_mapbox_custom_style_visibility,
     update_local_first_point_sampling_visibility,
 )
@@ -881,18 +879,13 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
     def test_after_local_first_control_move_installed_applies_required_hooks(self):
         dock = object.__new__(self.module.QfitDockWidget)
-        dock.advancedFetchGroupBox = SimpleNamespace(isChecked=lambda: True)
-        dock.detailedStreamsCheckBox = SimpleNamespace(isChecked=lambda: False)
         dock.backgroundPresetComboBox = SimpleNamespace(currentText=lambda: "Custom")
         dock.writeActivityPointsCheckBox = SimpleNamespace(isChecked=lambda: True)
-        dock.advancedFetchSettingsWidget = MagicMock()
-        dock.backfillMissingDetailedRoutesButton = MagicMock()
         dock.mapboxStyleOwnerLabel = MagicMock()
         dock.pointSamplingStrideLabel = MagicMock()
         dock.generateAtlasPdfButton = MagicMock()
 
         for key in (
-            "advanced_fetch",
             "backfill_routes",
             "basemap",
             "storage",
@@ -910,8 +903,12 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         )
 
         self.assertEqual(
-            dock.advancedFetchSettingsWidget.setVisible.call_args_list,
-            [call(True)] * 4,
+            dock.mapboxStyleOwnerLabel.setVisible.call_args_list,
+            [call(True)] * 3,
+        )
+        self.assertEqual(
+            dock.pointSamplingStrideLabel.setVisible.call_args_list,
+            [call(True)] * 3,
         )
         dock.generateAtlasPdfButton.hide.assert_called_once_with()
 
@@ -926,7 +923,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             with self.assertRaises(KeyError):
                 after_local_first_control_move_installed(
                     dock,
-                    "advanced_fetch",
+                    "basemap",
                     installed=True,
                 )
 
@@ -942,7 +939,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "_update_atlas_document_settings",
             "_show_connection_configuration_hint",
             "_configure_detailed_route_filter_options",
-            "_configure_detailed_route_strategy_options",
             "_configure_preview_sort_options",
             "_current_wizard_atlas_output_path",
             "_current_wizard_progress_facts",
@@ -959,16 +955,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._workflow_section_coordinator = MagicMock()
         widget_names = (
-            "advancedFetchSettingsWidget",
-            "backfillMissingDetailedRoutesButton",
-            "detailedRouteStrategyLabel",
-            "detailedRouteStrategyComboBox",
-            "detailedRouteStrategyComboBoxContextHelpLabel",
-            "detailedRouteStrategyComboBoxHelpField",
-            "maxDetailedActivitiesLabel",
-            "maxDetailedActivitiesSpinBox",
-            "maxDetailedActivitiesSpinBoxContextHelpLabel",
-            "maxDetailedActivitiesSpinBoxHelpField",
             "pointSamplingStrideLabel",
             "pointSamplingStrideSpinBox",
             "pointSamplingStrideSpinBoxContextHelpLabel",
@@ -985,18 +971,9 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         for name, widget in widgets.items():
             setattr(dock, name, widget)
 
-        update_local_first_advanced_fetch_visibility(dock, True)
-        update_local_first_detailed_fetch_visibility(dock, False)
         update_local_first_point_sampling_visibility(dock, True)
         update_local_first_mapbox_custom_style_visibility(dock, "Custom")
 
-        widgets["advancedFetchSettingsWidget"].setVisible.assert_called_once_with(
-            True
-        )
-        widgets[
-            "backfillMissingDetailedRoutesButton"
-        ].setVisible.assert_called_once_with(False)
-        widgets["detailedRouteStrategyLabel"].setVisible.assert_called_once_with(False)
         widgets["pointSamplingStrideLabel"].setVisible.assert_called_once_with(True)
         widgets["mapboxStyleOwnerLabel"].setVisible.assert_called_once_with(True)
         self.assertEqual(dock._workflow_section_coordinator.method_calls, [])
@@ -1034,9 +1011,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.backgroundPresetComboBox = SimpleNamespace(
             currentTextChanged=_FakeSignal(),
         )
-        dock.detailedStreamsCheckBox = SimpleNamespace(toggled=_FakeSignal())
         dock.writeActivityPointsCheckBox = SimpleNamespace(toggled=_FakeSignal())
-        dock.advancedFetchGroupBox = SimpleNamespace(toggled=_FakeSignal())
         dock.atlasPdfBrowseButton = SimpleNamespace(clicked=_FakeSignal())
         dock.atlasPdfPathLineEdit = SimpleNamespace(textChanged=_FakeSignal())
         dock.generateAtlasPdfButton = SimpleNamespace(clicked=_FakeSignal())
@@ -1078,9 +1053,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
         self.module.QfitDockWidget._wire_events(dock)
 
-        self.assertEqual(len(dock.detailedStreamsCheckBox.toggled.connected), 1)
         self.assertEqual(len(dock.writeActivityPointsCheckBox.toggled.connected), 1)
-        self.assertEqual(len(dock.advancedFetchGroupBox.toggled.connected), 1)
         self.assertFalse(
             hasattr(self.module.QfitDockWidget, "_update_detailed_fetch_visibility")
         )
@@ -1492,62 +1465,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertEqual(settings_layout.added, [storage_group])
         self.assertTrue(dock._local_first_storage_controls_installed)
 
-    def test_local_first_advanced_fetch_controls_move_to_data_page(self):
-        class _SourceLayout:
-            def __init__(self):
-                self.removed = []
-
-            def removeWidget(self, widget):
-                self.removed.append(widget)
-
-        class _SourceParent:
-            def __init__(self, layout):
-                self._layout = layout
-
-            def layout(self):
-                return self._layout
-
-        class _AdvancedFetchGroup:
-            def __init__(self, parent):
-                self._parent = parent
-                self.shown = False
-
-            def parentWidget(self):
-                return self._parent
-
-            def setParent(self, parent):
-                self._parent = parent
-
-            def show(self):
-                self.shown = True
-
-        dock = object.__new__(self.module.QfitDockWidget)
-        source_layout = _SourceLayout()
-        source_parent = _SourceParent(source_layout)
-        advanced_fetch_group = _AdvancedFetchGroup(source_parent)
-        data_layout = _FakeLayout()
-        data_content = SimpleNamespace(outer_layout=lambda: data_layout)
-        composition = SimpleNamespace(sync_content=data_content)
-        dock.advancedFetchGroupBox = advanced_fetch_group
-        self._install_required_local_first_group_widgets(dock, "advanced_fetch")
-
-        install_local_first_control_move(
-            dock,
-            composition,
-            "advanced_fetch",
-        )
-        install_local_first_control_move(
-            dock,
-            composition,
-            "advanced_fetch",
-        )
-
-        self.assertEqual(source_layout.removed, [advanced_fetch_group])
-        self.assertIs(advanced_fetch_group.parentWidget(), data_content)
-        self.assertTrue(advanced_fetch_group.shown)
-        self.assertEqual(data_layout.added, [advanced_fetch_group])
-        self.assertTrue(dock._local_first_advanced_fetch_controls_installed)
-
     def test_local_first_activity_preview_controls_move_to_data_page(self):
         class _SourceLayout:
             def __init__(self):
@@ -1609,7 +1526,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertEqual(data_layout.added, [preview_group])
         self.assertTrue(dock._local_first_activity_preview_controls_installed)
 
-    def test_local_first_backfill_action_moves_to_data_page_with_existing_visibility_rule(self):
+    def test_local_first_backfill_action_moves_visible_to_data_page(self):
         class _SourceLayout:
             def __init__(self):
                 self.removed = []
@@ -1650,7 +1567,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         data_content = SimpleNamespace(outer_layout=lambda: data_layout)
         composition = SimpleNamespace(sync_content=data_content)
         dock.backfillMissingDetailedRoutesButton = backfill_button
-        dock.detailedStreamsCheckBox = SimpleNamespace(isChecked=lambda: False)
 
         installed = install_local_first_control_move(
             dock,
@@ -1675,8 +1591,8 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
         self.assertEqual(source_layout.removed, [backfill_button])
         self.assertIs(backfill_button.parentWidget(), data_content)
-        self.assertFalse(backfill_button.shown)
-        self.assertEqual(backfill_button.visible_calls, [False, False])
+        self.assertTrue(backfill_button.shown)
+        self.assertEqual(backfill_button.visible_calls, [])
         self.assertEqual(data_layout.added, [backfill_button])
         self.assertTrue(dock._local_first_backfill_controls_installed)
 
@@ -2577,8 +2493,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.clientIdLineEdit = _FakeLineEdit("client-id")
         dock.clientSecretLineEdit = _FakeLineEdit("client-secret")
         dock.refreshTokenLineEdit = _FakeLineEdit("refresh-token")
-        dock.perPageSpinBox = _FakeSpinBox(100)
-        dock.maxPagesSpinBox = _FakeSpinBox(0)
         dock.cache = "cache"
         dock.syncRoutesButton = _FakeButton("Sync saved routes")
         dock.exchangeCodeButton = _FakeButton("Exchange")
@@ -2604,7 +2518,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             refresh_token="refresh-token",
             cache="cache",
             output_path="/tmp/qfit.gpkg",
-            per_page=100,
+            per_page=200,
             max_pages=0,
             use_gpx_geometry=True,
             on_finished=dock._handle_route_sync_task_finished,
@@ -2736,11 +2650,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.refreshTokenLineEdit = _FakeLineEdit("token")
         dock.outputPathLineEdit = _FakeLineEdit("/tmp/qfit.gpkg")
         dock.cache = object()
-        dock.advancedFetchGroupBox = _FakeCheckBox(False)
-        dock.detailedStreamsCheckBox = _FakeCheckBox(True)
-        dock.perPageSpinBox = _FakeSpinBox(50)
-        dock.maxPagesSpinBox = _FakeSpinBox(2)
-        dock.maxDetailedActivitiesSpinBox = _FakeSpinBox(9)
         task_manager = MagicMock()
         sync_state = ActivitySyncState(
             provider="strava",
