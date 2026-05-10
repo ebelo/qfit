@@ -61,32 +61,8 @@ from .workflow_page_state import (
 )
 
 
-DockWizardPageSpec = DockWorkflowPageSpec
-"""Compatibility alias for pre-#805 wizard composition page spec callers."""
-build_default_wizard_page_specs = build_default_workflow_page_specs
-"""Compatibility alias for pre-#805 wizard composition builder callers."""
 _StateT = TypeVar("_StateT")
 WorkflowCompositionPage: TypeAlias = WorkflowPage | WorkflowStepPage
-WizardCompositionPage: TypeAlias = WorkflowCompositionPage
-"""Compatibility alias for pre-#805 wizard composition page callers."""
-WizardProgressFacts = WorkflowProgressFacts
-"""Compatibility alias for wizard shell composition callers during #805."""
-WizardSettingsSnapshot = WorkflowSettingsSnapshot
-"""Compatibility alias for pre-#805 wizard shell composition callers."""
-DockWizardProgress = DockWorkflowProgress
-"""Compatibility alias for pre-#805 wizard shell composition callers."""
-WizardShell = WorkflowShell
-"""Compatibility alias for pre-#805 wizard shell composition callers."""
-WizardPage = WorkflowPage
-"""Compatibility alias for pre-#805 wizard shell composition callers."""
-WizardShellPresenter = WorkflowShellPresenter
-"""Compatibility alias for pre-#805 wizard shell composition callers."""
-WizardActionCallbacks = DockWorkflowActionCallbacks
-"""Compatibility alias for pre-#805 wizard shell composition callers."""
-WizardPageStateSnapshots = WorkflowPageStateSnapshots
-"""Compatibility alias for pre-#805 wizard shell composition callers."""
-build_wizard_page_states_from_facts = build_workflow_page_states_from_facts
-"""Compatibility alias for pre-#805 wizard shell composition callers."""
 
 
 @dataclass
@@ -116,8 +92,36 @@ class WorkflowShellComposition:
     on_current_step_changed: Callable[[int], None] | None = None
 
 
-WizardShellComposition = WorkflowShellComposition
-"""Compatibility alias for pre-#805 wizard shell composition callers."""
+# Preserve direct named imports from the original workflow module lazily while
+# the explicit wizard_composition compatibility module remains the preferred path.
+_WIZARD_COMPAT_ALIAS_TARGETS = {
+    "DockWizardPageSpec": "DockWorkflowPageSpec",
+    "build_default_wizard_page_specs": "build_default_workflow_page_specs",
+    "WizardCompositionPage": "WorkflowCompositionPage",
+    "WizardProgressFacts": "WorkflowProgressFacts",
+    "WizardSettingsSnapshot": "WorkflowSettingsSnapshot",
+    "DockWizardProgress": "DockWorkflowProgress",
+    "WizardShell": "WorkflowShell",
+    "WizardPage": "WorkflowPage",
+    "WizardShellPresenter": "WorkflowShellPresenter",
+    "WizardActionCallbacks": "DockWorkflowActionCallbacks",
+    "WizardPageStateSnapshots": "WorkflowPageStateSnapshots",
+    "build_wizard_page_states_from_facts": "build_workflow_page_states_from_facts",
+    "WizardShellComposition": "WorkflowShellComposition",
+}
+
+
+def __getattr__(name: str) -> object:
+    alias_target = _WIZARD_COMPAT_ALIAS_TARGETS.get(name)
+    if alias_target is not None:
+        try:
+            return globals()[alias_target]
+        except KeyError:
+            raise AttributeError(
+                f"module {__name__!r} alias {name!r} target "
+                f"{alias_target!r} not found"
+            ) from None
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 def build_placeholder_workflow_shell(
