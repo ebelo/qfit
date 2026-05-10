@@ -252,4 +252,11 @@ def _button_stylesheet(state: str, *, compact: bool = False) -> str:
         f"QToolButton:hover:enabled {{ background: {COLOR_HOVER}; color: {COLOR_TEXT}; }}"    )
 
 
-__all__ = ["STEPPER_LABELS", "STEPPER_STATES", "StepperBar", "import_qt_module"]
+__all__ = [
+    "STEPPER_LABELS",
+    "STEPPER_STATES",
+    "StepperBar",
+    "WIZARD_STEPPER_STATE_PROPERTY",
+    "WORKFLOW_STEPPER_STATE_PROPERTY",
+    "import_qt_module",
+]

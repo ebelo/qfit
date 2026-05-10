@@ -263,6 +263,18 @@ class StepperBarTest(unittest.TestCase):
             ),
         )
 
+    def test_workflow_state_properties_are_public_exports(self):
+        self.assertIn("WORKFLOW_STEPPER_STATE_PROPERTY", self.stepper.__all__)
+        self.assertIn("WIZARD_STEPPER_STATE_PROPERTY", self.stepper.__all__)
+        self.assertEqual(
+            self.stepper.WORKFLOW_STEPPER_STATE_PROPERTY,
+            "workflowState",
+        )
+        self.assertEqual(
+            self.stepper.WIZARD_STEPPER_STATE_PROPERTY,
+            "wizardState",
+        )
+
     def test_qt_import_guard_requires_all_widget_classes(self):
         incomplete_qtwidgets = types.ModuleType("qgis.PyQt.QtWidgets")
         incomplete_qtwidgets.QWidget = object
