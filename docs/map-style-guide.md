@@ -317,6 +317,27 @@ Outline:
 
 ## 9. QGIS Implementation
 
+### Mapbox raster vs vector expectations
+
+Use **Mapbox raster tiles** when the goal is the closest visual parity with
+Mapbox's own renderer. Raster tiles are pre-rendered by Mapbox, so they preserve
+Mapbox GL styling decisions such as labels, sprites, fonts, antialiasing, and
+zoom interpolation more faithfully.
+
+Use **Mapbox vector tiles** when the goal is native QGIS rendering for an
+interactive/local workflow. qfit converts and simplifies Mapbox style rules for
+QGIS, but this remains an approximation: QGIS and Mapbox GL JS differ in
+expression support, label placement and collision behavior, symbol/sprite
+handling, font substitution, antialiasing, and zoom-stop interpolation.
+
+For Mapbox Outdoors specifically:
+
+- raster mode is the user-facing choice for highest visual fidelity;
+- vector mode is intended to be a useful QGIS-native approximation, not a
+  pixel-perfect clone;
+- rendering-sensitive vector changes should be checked with the manual visual
+  comparison harness in `docs/mapbox-outdoors-comparison-harness.md`.
+
 ### Symbology
 
 Layer Properties → Symbology → Categorized  
