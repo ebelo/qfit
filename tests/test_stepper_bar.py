@@ -206,11 +206,18 @@ def _fake_qt_modules():
     }
 
 
-def _load_stepper_module():
-    for name in ("qfit.ui.dockwidget.stepper_bar", "qfit.ui.dockwidget"):
+def _load_stepper_modules():
+    for name in (
+        "qfit.ui.dockwidget.wizard_stepper_bar",
+        "qfit.ui.dockwidget.stepper_bar",
+        "qfit.ui.dockwidget",
+    ):
         sys.modules.pop(name, None)
     with patch.dict(sys.modules, _fake_qt_modules()):
-        return importlib.import_module("qfit.ui.dockwidget.stepper_bar")
+        return (
+            importlib.import_module("qfit.ui.dockwidget.stepper_bar"),
+            importlib.import_module("qfit.ui.dockwidget.wizard_stepper_bar"),
+        )
 
 
 class _FakeSize:
@@ -232,7 +239,7 @@ class _FakeResizeEvent:
 class StepperBarTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.stepper = _load_stepper_module()
+        cls.stepper, cls.wizard_stepper = _load_stepper_modules()
 
     def test_initial_state_matches_first_launch_spec(self):
         bar = self.stepper.StepperBar()
@@ -263,9 +270,9 @@ class StepperBarTest(unittest.TestCase):
             ),
         )
 
-    def test_workflow_state_properties_are_public_exports(self):
+    def test_workflow_state_property_is_canonical_star_export(self):
         self.assertIn("WORKFLOW_STEPPER_STATE_PROPERTY", self.stepper.__all__)
-        self.assertIn("WIZARD_STEPPER_STATE_PROPERTY", self.stepper.__all__)
+        self.assertNotIn("WIZARD_STEPPER_STATE_PROPERTY", self.stepper.__all__)
         self.assertEqual(
             self.stepper.WORKFLOW_STEPPER_STATE_PROPERTY,
             "workflowState",
@@ -273,6 +280,16 @@ class StepperBarTest(unittest.TestCase):
         self.assertEqual(
             self.stepper.WIZARD_STEPPER_STATE_PROPERTY,
             "wizardState",
+        )
+
+    def test_wizard_stepper_module_exports_compatibility_metadata(self):
+        self.assertEqual(
+            self.wizard_stepper.WIZARD_STEPPER_STATE_PROPERTY,
+            self.stepper.WIZARD_STEPPER_STATE_PROPERTY,
+        )
+        self.assertEqual(
+            self.wizard_stepper.__all__,
+            ["WIZARD_STEPPER_STATE_PROPERTY"],
         )
 
     def test_qt_import_guard_requires_all_widget_classes(self):
