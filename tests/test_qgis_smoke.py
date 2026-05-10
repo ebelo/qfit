@@ -1616,6 +1616,8 @@ class QgisSmokeTests(unittest.TestCase):
             def pdf_content_stream_size(pdf_path):
                 page = PdfReader(pdf_path).pages[0]
                 contents = page.get_contents()
+                if contents is None:
+                    return 0
                 if isinstance(contents, list):
                     return sum(len(content.get_data()) for content in contents)
                 return len(contents.get_data())
