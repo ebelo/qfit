@@ -96,6 +96,31 @@ class SlopeGradeAnalysisPlan:
         return tuple(layer for layer in self.layers if layer.enabled)
 
 
+@dataclass(frozen=True)
+class SlopeGradeLayerResult:
+    """Classified segment result for one slope-grade target layer."""
+
+    key: str
+    label: str
+    segments: tuple[SlopeGradeSegment, ...] = ()
+
+    @property
+    def segment_count(self) -> int:
+        return len(self.segments)
+
+
+@dataclass(frozen=True)
+class SlopeGradeAnalysisResult:
+    """Render-neutral slope-grade execution result for eligible line layers."""
+
+    plan: SlopeGradeAnalysisPlan
+    layers: tuple[SlopeGradeLayerResult, ...] = ()
+
+    @property
+    def segment_count(self) -> int:
+        return sum(layer.segment_count for layer in self.layers)
+
+
 SLOPE_GRADE_LEGEND = tuple(grade_class.label for grade_class in SLOPE_GRADE_CLASSES)
 
 
@@ -137,19 +162,64 @@ def build_slope_grade_analysis_plan(
 def run_slope_grade_analysis(request: RunAnalysisRequest) -> RunAnalysisResult:
     """Return clear feedback for slope-grade line-analysis eligibility."""
 
-    plan = build_slope_grade_analysis_plan(
+    result = build_slope_grade_analysis_result(
         activities_layer=request.activities_layer,
         points_layer=request.points_layer,
         route_tracks_layer=request.route_tracks_layer,
         route_points_layer=request.route_points_layer,
         route_profile_samples_layer=request.route_profile_samples_layer,
     )
-    return RunAnalysisResult(status=build_slope_grade_status(plan), layer=None)
+    return RunAnalysisResult(status=build_slope_grade_status(result), layer=None)
 
 
-def build_slope_grade_status(plan: SlopeGradeAnalysisPlan) -> str:
+def build_slope_grade_analysis_result(
+    *,
+    activities_layer=None,
+    points_layer=None,
+    route_tracks_layer=None,
+    route_points_layer=None,
+    route_profile_samples_layer=None,
+) -> SlopeGradeAnalysisResult:
+    """Classify slope-grade segments for eligible line-layer targets."""
+
+    plan = build_slope_grade_analysis_plan(
+        activities_layer=activities_layer,
+        points_layer=points_layer,
+        route_tracks_layer=route_tracks_layer,
+        route_points_layer=route_points_layer,
+        route_profile_samples_layer=route_profile_samples_layer,
+    )
+    layer_results = []
+    for layer_plan in plan.enabled_layers:
+        if layer_plan.key == "activity_tracks":
+            segments = build_activity_slope_grade_segments(points_layer)
+        elif layer_plan.key == "saved_route_tracks":
+            segments = build_route_slope_grade_segments(
+                route_profile_samples_layer or route_points_layer
+            )
+        else:
+            raise ValueError(
+                "Unsupported slope-grade layer key: {key}".format(
+                    key=layer_plan.key
+                )
+            )
+        layer_results.append(
+            SlopeGradeLayerResult(
+                key=layer_plan.key,
+                label=layer_plan.label,
+                segments=segments,
+            )
+        )
+    return SlopeGradeAnalysisResult(plan=plan, layers=tuple(layer_results))
+
+
+def build_slope_grade_status(result_or_plan) -> str:
     """Summarize which line layers can be styled by slope-grade analysis."""
 
+    if isinstance(result_or_plan, SlopeGradeAnalysisResult):
+        return _build_slope_grade_result_status(result_or_plan)
+
+    plan = result_or_plan
     enabled = plan.enabled_layers
     if enabled:
         labels = ", ".join(layer.label for layer in enabled)
@@ -163,6 +233,31 @@ def build_slope_grade_status(plan: SlopeGradeAnalysisPlan) -> str:
     if reasons:
         return "Slope grade line analysis unchanged: " + "; ".join(reasons)
     return "Slope grade line analysis unchanged: no eligible line layers found."
+
+
+def _build_slope_grade_result_status(result: SlopeGradeAnalysisResult) -> str:
+    if result.layers and result.segment_count > 0:
+        classified_layers = tuple(
+            layer for layer in result.layers if layer.segment_count > 0
+        )
+        summaries = ", ".join(
+            "{label} ({count} {segment_word})".format(
+                label=layer.label,
+                count=layer.segment_count,
+                segment_word="segment" if layer.segment_count == 1 else "segments",
+            )
+            for layer in classified_layers
+        )
+        return f"Slope grade line analysis classified {summaries}."
+
+    if result.plan.enabled_layers:
+        labels = ", ".join(layer.label for layer in result.plan.enabled_layers)
+        return (
+            "Slope grade line analysis found eligible {labels}, but no grade "
+            "segments could be classified."
+        ).format(labels=labels)
+
+    return build_slope_grade_status(result.plan)
 
 
 def slope_grade_class_for_percent(grade_percent: float) -> SlopeGradeClass:
@@ -471,10 +566,13 @@ __all__ = [
     "SLOPE_GRADE_LEGEND",
     "SLOPE_GRADE_MODE",
     "SlopeGradeAnalysisPlan",
+    "SlopeGradeAnalysisResult",
     "SlopeGradeClass",
     "SlopeGradeLayerPlan",
+    "SlopeGradeLayerResult",
     "SlopeGradeSegment",
     "build_activity_slope_grade_segments",
+    "build_slope_grade_analysis_result",
     "build_slope_grade_analysis_plan",
     "build_slope_grade_segments",
     "build_slope_grade_status",

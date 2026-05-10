@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import patch
 
 from tests import _path  # noqa: F401
 
@@ -7,8 +8,13 @@ from qfit.analysis.application.slope_grade_analysis import (
     SLOPE_GRADE_CLASSES,
     SLOPE_GRADE_LEGEND,
     SLOPE_GRADE_MODE,
+    SlopeGradeAnalysisPlan,
+    SlopeGradeAnalysisResult,
+    SlopeGradeLayerPlan,
+    SlopeGradeLayerResult,
     build_activity_slope_grade_segments,
     build_route_slope_grade_segments,
+    build_slope_grade_analysis_result,
     build_slope_grade_analysis_plan,
     build_slope_grade_segments,
     build_slope_grade_status,
@@ -62,11 +68,15 @@ class _FeatureSample:
 
 
 class _FeatureLayer:
-    def __init__(self, features):
+    def __init__(self, features, *, fields=()):
         self._features = tuple(features)
+        self._fields = tuple(_Field(name) for name in fields)
 
     def getFeatures(self):
         return iter(self._features)
+
+    def fields(self):
+        return self._fields
 
 
 class SlopeGradeAnalysisTests(unittest.TestCase):
@@ -268,6 +278,127 @@ class SlopeGradeAnalysisTests(unittest.TestCase):
         self.assertEqual(build_activity_slope_grade_segments(None), ())
         self.assertEqual(build_route_slope_grade_segments(None), ())
 
+    def test_analysis_result_classifies_segments_for_eligible_line_targets(self):
+        result = build_slope_grade_analysis_result(
+            activities_layer=_Layer(fields=("name",)),
+            points_layer=_FeatureLayer(
+                (
+                    _FeatureSample(
+                        {
+                            "source": "strava",
+                            "source_activity_id": "a-1",
+                            "stream_distance_m": 0,
+                            "grade_smooth_pct": 0,
+                        }
+                    ),
+                    _FeatureSample(
+                        {
+                            "source": "strava",
+                            "source_activity_id": "a-1",
+                            "stream_distance_m": 100,
+                            "grade_smooth_pct": 4,
+                        }
+                    ),
+                ),
+                fields=("stream_distance_m", "grade_smooth_pct"),
+            ),
+            route_tracks_layer=_Layer(fields=("name",)),
+            route_profile_samples_layer=_FeatureLayer(
+                (
+                    _FeatureSample(
+                        {"sample_group_index": 1, "distance_m": 0, "altitude_m": 100}
+                    ),
+                    _FeatureSample(
+                        {"sample_group_index": 1, "distance_m": 100, "altitude_m": 91}
+                    ),
+                ),
+                fields=("distance_m", "altitude_m"),
+            ),
+        )
+
+        self.assertEqual(result.segment_count, 2)
+        self.assertEqual(
+            tuple(layer.segment_count for layer in result.layers),
+            (1, 1),
+        )
+        self.assertEqual(
+            tuple(layer.segments[0].grade_class.key for layer in result.layers),
+            ("climb", "steep_descent"),
+        )
+        self.assertEqual(
+            build_slope_grade_status(result),
+            (
+                "Slope grade line analysis classified activity tracks (1 segment), "
+                "saved route tracks (1 segment)."
+            ),
+        )
+
+    def test_analysis_result_reports_when_eligible_layers_have_no_segments(self):
+        result = build_slope_grade_analysis_result(
+            activities_layer=_Layer(fields=("name",)),
+            points_layer=_FeatureLayer(
+                (),
+                fields=("stream_distance_m", "grade_smooth_pct"),
+            ),
+        )
+
+        self.assertEqual(result.segment_count, 0)
+        self.assertEqual(
+            build_slope_grade_status(result),
+            (
+                "Slope grade line analysis found eligible activity tracks, but no "
+                "grade segments could be classified."
+            ),
+        )
+
+    def test_status_only_reports_layers_with_classified_segments(self):
+        result = SlopeGradeAnalysisResult(
+            plan=SlopeGradeAnalysisPlan(layers=()),
+            layers=(
+                SlopeGradeLayerResult(
+                    key="activity_tracks",
+                    label="activity tracks",
+                    segments=(
+                        build_slope_grade_segments(
+                            (
+                                {"distance_m": 0, "altitude_m": 100},
+                                {"distance_m": 100, "altitude_m": 104},
+                            )
+                        )[0],
+                    ),
+                ),
+                SlopeGradeLayerResult(
+                    key="saved_route_tracks",
+                    label="saved route tracks",
+                    segments=(),
+                ),
+            ),
+        )
+
+        self.assertEqual(
+            build_slope_grade_status(result),
+            "Slope grade line analysis classified activity tracks (1 segment).",
+        )
+
+    def test_analysis_result_rejects_unhandled_plan_layer_keys(self):
+        with patch(
+            "qfit.analysis.application.slope_grade_analysis.build_slope_grade_analysis_plan",
+            return_value=SlopeGradeAnalysisPlan(
+                layers=(
+                    SlopeGradeLayerPlan(
+                        key="future_layer",
+                        label="future layer",
+                        enabled=True,
+                    ),
+                )
+            ),
+        ):
+            with self.assertRaisesRegex(
+                ValueError,
+                "Unsupported slope-grade layer key: future_layer",
+            ):
+                build_slope_grade_analysis_result()
+
     def test_segments_skip_invalid_or_non_forward_samples_and_recover(self):
         segments = build_slope_grade_segments(
             (
@@ -393,13 +524,33 @@ class SlopeGradeAnalysisTests(unittest.TestCase):
             RunAnalysisRequest(
                 analysis_mode=SLOPE_GRADE_MODE,
                 activities_layer=_Layer(fields=("name",)),
-                points_layer=_Layer(fields=("grade_smooth_pct", "stream_distance_m")),
+                points_layer=_FeatureLayer(
+                    (
+                        _FeatureSample(
+                            {
+                                "source": "strava",
+                                "source_activity_id": "a-1",
+                                "stream_distance_m": 0,
+                                "grade_smooth_pct": 0,
+                            }
+                        ),
+                        _FeatureSample(
+                            {
+                                "source": "strava",
+                                "source_activity_id": "a-1",
+                                "stream_distance_m": 100,
+                                "grade_smooth_pct": 4,
+                            }
+                        ),
+                    ),
+                    fields=("grade_smooth_pct", "stream_distance_m"),
+                ),
             )
         )
 
         self.assertEqual(
             result.status,
-            "Slope grade line analysis ready for activity tracks.",
+            "Slope grade line analysis classified activity tracks (1 segment).",
         )
         self.assertIsNone(result.layer)
 
