@@ -7,14 +7,18 @@ from tests import _path  # noqa: F401
 from tests.test_wizard_shell import _fake_qt_modules
 
 
-def _load_action_row_module():
+def _load_action_row_modules():
     for name in (
+        "qfit.ui.dockwidget.wizard_action_row",
         "qfit.ui.dockwidget.action_row",
         "qfit.ui.dockwidget",
     ):
         sys.modules.pop(name, None)
     with patch.dict(sys.modules, _fake_qt_modules()):
-        return importlib.import_module("qfit.ui.dockwidget.action_row")
+        return (
+            importlib.import_module("qfit.ui.dockwidget.action_row"),
+            importlib.import_module("qfit.ui.dockwidget.wizard_action_row"),
+        )
 
 
 class _FakeSize:
@@ -36,9 +40,9 @@ class _FakeResizeEvent:
 class WizardActionRowTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.action_row = _load_action_row_module()
+        cls.action_row, cls.wizard_action_row = _load_action_row_modules()
 
-    def test_workflow_names_are_canonical_exports_with_wizard_aliases(self):
+    def test_workflow_names_are_canonical_exports_with_direct_wizard_aliases(self):
         button = self.action_row.QToolButton()
 
         row = self.action_row.build_workflow_action_row(button)
@@ -58,6 +62,42 @@ class WizardActionRowTest(unittest.TestCase):
         )
         self.assertIsInstance(row, self.action_row.WorkflowActionRow)
         self.assertEqual(row.objectName(), "qfitWizardActionRow")
+
+    def test_action_row_star_exports_only_workflow_names(self):
+        for name in (
+            "WizardActionRow",
+            "build_wizard_action_row",
+            "set_wizard_action_availability",
+            "set_wizard_action_role",
+        ):
+            self.assertNotIn(name, self.action_row.__all__)
+
+    def test_wizard_action_row_module_exports_compatibility_aliases(self):
+        self.assertIs(
+            self.wizard_action_row.WizardActionRow,
+            self.action_row.WorkflowActionRow,
+        )
+        self.assertIs(
+            self.wizard_action_row.build_wizard_action_row,
+            self.action_row.build_workflow_action_row,
+        )
+        self.assertIs(
+            self.wizard_action_row.set_wizard_action_availability,
+            self.action_row.set_workflow_action_availability,
+        )
+        self.assertIs(
+            self.wizard_action_row.set_wizard_action_role,
+            self.action_row.set_workflow_action_role,
+        )
+        self.assertEqual(
+            self.wizard_action_row.__all__,
+            [
+                "WizardActionRow",
+                "build_wizard_action_row",
+                "set_wizard_action_availability",
+                "set_wizard_action_role",
+            ],
+        )
 
     def test_builds_scoped_row_with_supplied_buttons(self):
         primary = self.action_row.QToolButton()

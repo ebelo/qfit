@@ -241,13 +241,9 @@ def _button_stylesheet(*, role: str) -> str:
 
 __all__ = [
     "WorkflowActionRow",
-    "WizardActionRow",
     "build_workflow_action_row",
-    "build_wizard_action_row",
     "set_workflow_action_availability",
     "set_workflow_action_role",
-    "set_wizard_action_availability",
-    "set_wizard_action_role",
     "style_destructive_action_button",
     "style_primary_action_button",
     "style_secondary_action_button",
