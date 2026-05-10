@@ -51,17 +51,19 @@ class WizardShellCompositionTest(unittest.TestCase):
             "qfit.ui.dockwidget.workflow_composition",
         )
 
-    def test_exports_workflow_progress_facts_for_internal_callers(self):
+    def test_preserves_direct_workflow_progress_facts_for_internal_callers(self):
         self.assertIs(self.composition.WorkflowProgressFacts, WorkflowProgressFacts)
-        self.assertIn("WorkflowProgressFacts", self.composition.__all__)
+        self.assertIs(self.composition.WizardProgressFacts, WorkflowProgressFacts)
+        self.assertNotIn("WorkflowProgressFacts", self.composition.__all__)
+        self.assertIn("WizardProgressFacts", self.composition.__all__)
 
-    def test_exports_workflow_progress_as_canonical_internal_progress(self):
+    def test_preserves_direct_workflow_progress_as_canonical_internal_progress(self):
         self.assertIs(self.composition.DockWorkflowProgress, DockWorkflowProgress)
         self.assertIs(self.composition.DockWizardProgress, DockWorkflowProgress)
-        self.assertIn("DockWorkflowProgress", self.composition.__all__)
+        self.assertNotIn("DockWorkflowProgress", self.composition.__all__)
         self.assertIn("DockWizardProgress", self.composition.__all__)
 
-    def test_exports_workflow_presenter_as_canonical_composition_api(self):
+    def test_preserves_direct_workflow_presenter_as_canonical_composition_api(self):
         self.assertEqual(
             self.composition.WorkflowShellPresenter.__name__,
             "WorkflowShellPresenter",
@@ -70,26 +72,26 @@ class WizardShellCompositionTest(unittest.TestCase):
             self.composition.WizardShellPresenter,
             self.composition.WorkflowShellPresenter,
         )
-        self.assertIn("WorkflowShellPresenter", self.composition.__all__)
+        self.assertNotIn("WorkflowShellPresenter", self.composition.__all__)
         self.assertIn("WizardShellPresenter", self.composition.__all__)
 
-    def test_exports_workflow_shell_and_page_as_canonical_composition_api(self):
+    def test_preserves_direct_workflow_shell_and_page_as_canonical_composition_api(self):
         self.assertEqual(self.composition.WorkflowShell.__name__, "WorkflowShell")
         self.assertEqual(self.composition.WorkflowPage.__name__, "WorkflowPage")
         self.assertIs(self.composition.WizardShell, self.composition.WorkflowShell)
         self.assertIs(self.composition.WizardPage, self.composition.WorkflowPage)
-        self.assertIn("WorkflowShell", self.composition.__all__)
+        self.assertNotIn("WorkflowShell", self.composition.__all__)
         self.assertIn("WizardShell", self.composition.__all__)
-        self.assertIn("WorkflowPage", self.composition.__all__)
+        self.assertNotIn("WorkflowPage", self.composition.__all__)
         self.assertIn("WizardPage", self.composition.__all__)
         self.assertIs(
             self.composition.WizardCompositionPage,
             self.composition.WorkflowCompositionPage,
         )
-        self.assertIn("WorkflowCompositionPage", self.composition.__all__)
+        self.assertNotIn("WorkflowCompositionPage", self.composition.__all__)
         self.assertIn("WizardCompositionPage", self.composition.__all__)
 
-    def test_exports_workflow_shell_composition_as_canonical_api(self):
+    def test_preserves_direct_workflow_shell_composition_as_canonical_api(self):
         self.assertEqual(
             self.composition.WorkflowShellComposition.__name__,
             "WorkflowShellComposition",
@@ -106,14 +108,48 @@ class WizardShellCompositionTest(unittest.TestCase):
             self.composition.connect_wizard_action_callbacks,
             self.composition.connect_workflow_action_callbacks,
         )
-        self.assertIn("WorkflowShellComposition", self.composition.__all__)
+        self.assertNotIn("WorkflowShellComposition", self.composition.__all__)
         self.assertIn("WizardShellComposition", self.composition.__all__)
-        self.assertIn("build_placeholder_workflow_shell", self.composition.__all__)
+        self.assertNotIn("build_placeholder_workflow_shell", self.composition.__all__)
         self.assertIn("build_placeholder_wizard_shell", self.composition.__all__)
-        self.assertIn("refresh_workflow_shell_composition", self.composition.__all__)
+        self.assertNotIn("refresh_workflow_shell_composition", self.composition.__all__)
         self.assertIn("refresh_wizard_shell_composition", self.composition.__all__)
-        self.assertIn("connect_workflow_action_callbacks", self.composition.__all__)
+        self.assertNotIn("connect_workflow_action_callbacks", self.composition.__all__)
         self.assertIn("connect_wizard_action_callbacks", self.composition.__all__)
+
+
+    def test_wizard_composition_star_exports_only_legacy_names(self):
+        self.assertEqual(
+            self.composition.__all__,
+            [
+                "AnalysisPageContent",
+                "AnalysisPageState",
+                "AtlasPageContent",
+                "AtlasPageState",
+                "ConnectionPageContent",
+                "ConnectionPageState",
+                "DockWizardPageSpec",
+                "DockWizardProgress",
+                "MapPageContent",
+                "MapPageState",
+                "SyncPageContent",
+                "SyncPageState",
+                "WizardActionCallbacks",
+                "WizardCompositionPage",
+                "WizardPage",
+                "WizardPageStateSnapshots",
+                "WizardProgressFacts",
+                "WizardSettingsSnapshot",
+                "WizardShell",
+                "WizardShellComposition",
+                "WizardShellPresenter",
+                "build_default_wizard_page_specs",
+                "build_placeholder_wizard_shell",
+                "build_wizard_page_states_from_facts",
+                "connect_wizard_action_callbacks",
+                "refresh_wizard_shell_composition",
+            ],
+        )
 
     def test_canonical_workflow_composition_keeps_stable_qt_object_names(self):
         assembled = self.composition.build_placeholder_workflow_shell(footer_text="Ready")
