@@ -180,10 +180,27 @@ def set_workflow_action_availability(
     return button
 
 
-WizardActionRow = WorkflowActionRow
-build_wizard_action_row = build_workflow_action_row
-set_wizard_action_role = set_workflow_action_role
-set_wizard_action_availability = set_workflow_action_availability
+# Preserve direct named imports from the original action-row module lazily while
+# the explicit wizard_action_row compatibility module remains the preferred path.
+_WIZARD_COMPAT_ALIAS_TARGETS = {
+    "WizardActionRow": "WorkflowActionRow",
+    "build_wizard_action_row": "build_workflow_action_row",
+    "set_wizard_action_role": "set_workflow_action_role",
+    "set_wizard_action_availability": "set_workflow_action_availability",
+}
+
+
+def __getattr__(name: str) -> object:
+    alias_target = _WIZARD_COMPAT_ALIAS_TARGETS.get(name)
+    if alias_target is not None:
+        try:
+            return globals()[alias_target]
+        except KeyError:
+            raise AttributeError(
+                f"module {__name__!r} alias {name!r} target "
+                f"{alias_target!r} not found"
+            ) from None
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 def _allow_button_shrink(button: QToolButton) -> None:

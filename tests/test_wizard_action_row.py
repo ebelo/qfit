@@ -7,13 +7,26 @@ from tests import _path  # noqa: F401
 from tests.test_wizard_shell import _fake_qt_modules
 
 
-def _load_action_row_modules():
-    for name in (
-        "qfit.ui.dockwidget.wizard_action_row",
-        "qfit.ui.dockwidget.action_row",
-        "qfit.ui.dockwidget",
-    ):
+_ACTION_ROW_MODULES = (
+    "qfit.ui.dockwidget.wizard_action_row",
+    "qfit.ui.dockwidget.action_row",
+    "qfit.ui.dockwidget",
+)
+
+
+def _clear_action_row_modules():
+    for name in _ACTION_ROW_MODULES:
         sys.modules.pop(name, None)
+
+
+def _load_action_row_module():
+    _clear_action_row_modules()
+    with patch.dict(sys.modules, _fake_qt_modules()):
+        return importlib.import_module("qfit.ui.dockwidget.action_row")
+
+
+def _load_action_row_modules():
+    _clear_action_row_modules()
     with patch.dict(sys.modules, _fake_qt_modules()):
         return (
             importlib.import_module("qfit.ui.dockwidget.action_row"),
@@ -71,6 +84,31 @@ class WizardActionRowTest(unittest.TestCase):
             "set_wizard_action_role",
         ):
             self.assertNotIn(name, self.action_row.__all__)
+
+    def test_action_row_resolves_wizard_aliases_lazily(self):
+        module = _load_action_row_module()
+        alias_targets = module._WIZARD_COMPAT_ALIAS_TARGETS
+
+        for name in alias_targets:
+            with self.subTest(name=name):
+                self.assertNotIn(name, module.__dict__)
+                self.assertIs(getattr(module, name), getattr(module, alias_targets[name]))
+
+    def test_lazy_wizard_alias_reports_missing_canonical_target_as_attribute_error(self):
+        module = _load_action_row_module()
+        module._WIZARD_COMPAT_ALIAS_TARGETS["BrokenWizardAlias"] = (
+            "MissingWorkflowAlias"
+        )
+        try:
+            self.assertFalse(hasattr(module, "BrokenWizardAlias"))
+            with self.assertRaisesRegex(
+                AttributeError,
+                "BrokenWizardAlias.*MissingWorkflowAlias",
+            ):
+                module.__getattr__("BrokenWizardAlias")
+        finally:
+            module._WIZARD_COMPAT_ALIAS_TARGETS.pop("BrokenWizardAlias", None)
+            module.__dict__.pop("BrokenWizardAlias", None)
 
     def test_wizard_action_row_module_exports_compatibility_aliases(self):
         self.assertIs(
