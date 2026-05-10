@@ -8,6 +8,7 @@ from qfit.activities.domain.activity_query import ActivityQuery
 from qfit.ui.application import (
     ApplyVisualizationAction,
     DockActionDispatcher,
+    RefreshVisualizationStyleAction,
     RunAnalysisAction,
 )
 from qfit.visualization.application import BackgroundConfig, LayerRefs
@@ -53,6 +54,7 @@ class TestDockActionDispatcher(unittest.TestCase):
             temporal_mode="By month",
             background_config=action.background_config,
             apply_subset_filters=False,
+            update_background=True,
         )
         visual_apply.apply_request.assert_called_once_with("request")
         run_analysis.assert_called_once_with(
@@ -97,6 +99,46 @@ class TestDockActionDispatcher(unittest.TestCase):
         result = dispatcher.dispatch(action)
 
         self.assertEqual(result.status, "Applied current filters")
+        self.assertIsNone(result.background_layer)
+        self.assertEqual(result.background_error, "")
+
+    def test_dispatch_style_refresh_updates_style_without_filters_background_or_analysis(self):
+        visual_apply = MagicMock()
+        visual_apply.build_request.return_value = "request"
+        visual_apply.apply_request.return_value = SimpleNamespace(
+            status="Applied styling to qfit layers",
+            background_layer="ignored-layer",
+            background_error="ignored-error",
+        )
+        dispatcher = DockActionDispatcher(
+            visual_apply=visual_apply,
+            save_settings=MagicMock(),
+            run_analysis=MagicMock(),
+        )
+        selection_state = ActivitySelectionState(query=ActivityQuery(), filtered_count=1)
+        action = RefreshVisualizationStyleAction(
+            layers=LayerRefs(activities=object()),
+            selection_state=selection_state,
+            style_preset="Track points",
+            temporal_mode="Off",
+            background_config=BackgroundConfig(enabled=True),
+            analysis_mode="Most frequent starting points",
+        )
+
+        result = dispatcher.dispatch(action)
+
+        visual_apply.build_request.assert_called_once_with(
+            layers=action.layers,
+            selection_state=selection_state,
+            style_preset="Track points",
+            temporal_mode="Off",
+            background_config=action.background_config,
+            apply_subset_filters=False,
+            update_background=False,
+        )
+        visual_apply.apply_request.assert_called_once_with("request")
+        dispatcher._run_analysis.assert_not_called()
+        self.assertEqual(result.status, "Applied styling to qfit layers")
         self.assertIsNone(result.background_layer)
         self.assertEqual(result.background_error, "")
 

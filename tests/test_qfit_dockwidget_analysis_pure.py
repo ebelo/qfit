@@ -1008,6 +1008,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.backgroundPresetComboBox = SimpleNamespace(
             currentTextChanged=_FakeSignal(),
         )
+        dock.stylePresetComboBox = SimpleNamespace(currentTextChanged=_FakeSignal())
         dock.writeActivityPointsCheckBox = SimpleNamespace(toggled=_FakeSignal())
         dock.atlasPdfBrowseButton = SimpleNamespace(clicked=_FakeSignal())
         dock.atlasPdfPathLineEdit = SimpleNamespace(textChanged=_FakeSignal())
@@ -1031,6 +1032,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "on_load_layers_clicked",
             "on_clear_database_clicked",
             "on_apply_filters_clicked",
+            "on_style_preset_changed",
             "on_run_analysis_clicked",
             "on_load_background_clicked",
             "on_atlas_pdf_browse_clicked",
@@ -1059,6 +1061,10 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         )
         self.assertEqual(
             len(dock.backgroundPresetComboBox.currentTextChanged.connected),
+            1,
+        )
+        self.assertEqual(
+            len(dock.stylePresetComboBox.currentTextChanged.connected),
             1,
         )
 
@@ -1670,6 +1676,18 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
         dock._dispatch_dock_action.assert_called_once_with(
             self.module.ApplyVisualizationAction
+        )
+
+    def test_on_style_preset_changed_stales_atlas_and_dispatches_style_refresh_action(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._mark_atlas_export_stale = MagicMock()
+        dock._dispatch_dock_action = MagicMock()
+
+        self.module.QfitDockWidget.on_style_preset_changed(dock)
+
+        dock._mark_atlas_export_stale.assert_called_once_with()
+        dock._dispatch_dock_action.assert_called_once_with(
+            self.module.RefreshVisualizationStyleAction
         )
 
     def test_on_run_analysis_clicked_dispatches_run_analysis_action(self):

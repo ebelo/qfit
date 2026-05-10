@@ -6,6 +6,7 @@ from .dock_action_dispatcher import (
     ApplyVisualizationAction,
     DockActionDispatcher,
     DockActionResult,
+    RefreshVisualizationStyleAction,
     RunAnalysisAction,
 )
 from .dock_activity_workflow import (

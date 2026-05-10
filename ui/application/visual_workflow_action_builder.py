@@ -1,6 +1,10 @@
 from dataclasses import dataclass
 
-from .dock_action_dispatcher import ApplyVisualizationAction, RunAnalysisAction
+from .dock_action_dispatcher import (
+    ApplyVisualizationAction,
+    RefreshVisualizationStyleAction,
+    RunAnalysisAction,
+)
 from ...activities.application.activity_selection_state import ActivitySelectionState
 from ...visualization.application import BackgroundConfig, LayerRefs
 
@@ -128,8 +132,18 @@ def build_visual_workflow_action(
 ):
     """Build a normalized visual workflow action from dock-edge inputs."""
 
-    if action_type not in (ApplyVisualizationAction, RunAnalysisAction):
+    if action_type not in (
+        ApplyVisualizationAction,
+        RefreshVisualizationStyleAction,
+        RunAnalysisAction,
+    ):
         raise TypeError(f"Unsupported visual workflow action type: {action_type!r}")
+
+    apply_subset_filters = inputs.apply_subset_filters
+    update_background = True
+    if action_type is RefreshVisualizationStyleAction:
+        apply_subset_filters = False
+        update_background = False
 
     return action_type(
         layers=inputs.layers,
@@ -139,5 +153,6 @@ def build_visual_workflow_action(
         background_config=inputs.background_config,
         analysis_mode=inputs.analysis_mode,
         starts_layer=inputs.layers.starts,
-        apply_subset_filters=inputs.apply_subset_filters,
+        apply_subset_filters=apply_subset_filters,
+        update_background=update_background,
     )

@@ -15,6 +15,7 @@ class _BaseVisualWorkflowAction:
     analysis_mode: str
     starts_layer: object = None
     apply_subset_filters: bool = True
+    update_background: bool = True
 
     @property
     def query(self):
@@ -28,6 +29,14 @@ class _BaseVisualWorkflowAction:
 @dataclass(frozen=True)
 class ApplyVisualizationAction(_BaseVisualWorkflowAction):
     """Normalized request for an apply-visualization dock action."""
+
+
+@dataclass(frozen=True)
+class RefreshVisualizationStyleAction(_BaseVisualWorkflowAction):
+    """Normalized request for refreshing styling without changing filters."""
+
+    apply_subset_filters: bool = False
+    update_background: bool = False
 
 
 @dataclass(frozen=True)
@@ -61,6 +70,8 @@ class DockActionDispatcher:
         self._run_analysis = run_analysis
 
     def dispatch(self, action: Any) -> DockActionResult:
+        if isinstance(action, RefreshVisualizationStyleAction):
+            return self._dispatch_style_refresh(action)
         if isinstance(action, (ApplyVisualizationAction, RunAnalysisAction)):
             return self._dispatch_visual_workflow(action)
         return DockActionResult(
@@ -80,12 +91,16 @@ class DockActionDispatcher:
             temporal_mode=action.temporal_mode,
             background_config=action.background_config,
             apply_subset_filters=action.apply_subset_filters,
+            update_background=action.update_background,
         )
         visual_result = self.visual_apply.apply_request(request)
 
         background_layer = None
         background_error = ""
-        if self.visual_apply.should_update_background(action.apply_subset_filters):
+        if self.visual_apply.should_update_background(
+            action.apply_subset_filters,
+            action.update_background,
+        ):
             background_layer = visual_result.background_layer
             background_error = visual_result.background_error
 
@@ -100,6 +115,22 @@ class DockActionDispatcher:
             background_error=background_error,
             analysis_status=analysis_status,
         )
+
+    def _dispatch_style_refresh(
+        self, action: RefreshVisualizationStyleAction
+    ) -> DockActionResult:
+        self._save_settings()
+        request = self.visual_apply.build_request(
+            layers=action.layers,
+            selection_state=action.selection_state,
+            style_preset=action.style_preset,
+            temporal_mode=action.temporal_mode,
+            background_config=action.background_config,
+            apply_subset_filters=action.apply_subset_filters,
+            update_background=action.update_background,
+        )
+        visual_result = self.visual_apply.apply_request(request)
+        return DockActionResult(status=visual_result.status)
 
     @staticmethod
     def _combine_statuses(primary: str, secondary: str) -> str:
