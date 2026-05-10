@@ -80,6 +80,31 @@ class WorkflowShellCompositionModuleTest(unittest.TestCase):
         self.assertEqual(assembled.shell.footer_bar.objectName(), "qfitWizardFooterBar")
         self.assertEqual(assembled.pages[0].objectName(), "qfitWizardConnectionPage")
 
+    def test_workflow_composition_resolves_simple_wizard_aliases_lazily(self):
+        module = _load_workflow_composition_module()
+        alias_targets = module._WIZARD_COMPAT_ALIAS_TARGETS
+
+        for name in alias_targets:
+            with self.subTest(name=name):
+                self.assertNotIn(name, module.__dict__)
+                self.assertIs(getattr(module, name), getattr(module, alias_targets[name]))
+
+    def test_lazy_wizard_alias_reports_missing_canonical_target_as_attribute_error(self):
+        module = _load_workflow_composition_module()
+        module._WIZARD_COMPAT_ALIAS_TARGETS["BrokenWizardAlias"] = (
+            "MissingWorkflowAlias"
+        )
+        try:
+            self.assertFalse(hasattr(module, "BrokenWizardAlias"))
+            with self.assertRaisesRegex(
+                AttributeError,
+                "BrokenWizardAlias.*MissingWorkflowAlias",
+            ):
+                module.__getattr__("BrokenWizardAlias")
+        finally:
+            module._WIZARD_COMPAT_ALIAS_TARGETS.pop("BrokenWizardAlias", None)
+            module.__dict__.pop("BrokenWizardAlias", None)
+
     def test_workflow_composition_star_exports_only_canonical_workflow_names(self):
         for name in (
             "DockWizardPageSpec",
