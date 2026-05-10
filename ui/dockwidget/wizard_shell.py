@@ -26,13 +26,13 @@ QVBoxLayout = _qtwidgets.QVBoxLayout
 QWidget = _qtwidgets.QWidget
 
 
-class WizardShell(QWidget):
-    """Reusable dock shell matching the #609 wizard page structure.
+class WorkflowShell(QWidget):
+    """Reusable dock shell for the local-first workflow structure.
 
     The shell intentionally owns only the structural chrome: stepper, separator,
-    scrollable stacked pages, and compact footer. Page content remains external so
-    the future wizard can migrate one page at a time without binding the current
-    long-scroll dock to another round of cosmetic changes.
+    scrollable stacked pages, and compact footer. Page content remains external
+    so workflow pages can migrate one page at a time. Stable ``qfitWizard*``
+    object names are preserved for QSS and compatibility.
     """
 
     def __init__(self, parent=None, *, footer_text: str = "") -> None:
@@ -156,4 +156,8 @@ class WizardShell(QWidget):
         return FooterStatusBar(self, footer_text=footer_text)
 
 
-__all__ = ["STEPPER_LABELS", "WizardShell"]
+WizardShell = WorkflowShell
+"""Compatibility alias for pre-#805 wizard shell callers."""
+
+
+__all__ = ["STEPPER_LABELS", "WorkflowShell", "WizardShell"]

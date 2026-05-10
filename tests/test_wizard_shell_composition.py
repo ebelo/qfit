@@ -62,6 +62,16 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertIn("WorkflowShellPresenter", self.composition.__all__)
         self.assertIn("WizardShellPresenter", self.composition.__all__)
 
+    def test_exports_workflow_shell_and_page_as_canonical_composition_api(self):
+        self.assertEqual(self.composition.WorkflowShell.__name__, "WorkflowShell")
+        self.assertEqual(self.composition.WorkflowPage.__name__, "WorkflowPage")
+        self.assertIs(self.composition.WizardShell, self.composition.WorkflowShell)
+        self.assertIs(self.composition.WizardPage, self.composition.WorkflowPage)
+        self.assertIn("WorkflowShell", self.composition.__all__)
+        self.assertIn("WizardShell", self.composition.__all__)
+        self.assertIn("WorkflowPage", self.composition.__all__)
+        self.assertIn("WizardPage", self.composition.__all__)
+
     def test_keeps_wizard_progress_facts_as_compatibility_alias(self):
         self.assertIs(self.composition.WizardProgressFacts, WorkflowProgressFacts)
 

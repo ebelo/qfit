@@ -435,7 +435,7 @@ class WizardShellTest(unittest.TestCase):
         cls.wizard_shell = _load_wizard_shell_module()
 
     def test_builds_spec_shell_structure_with_empty_pages_stack(self):
-        shell = self.wizard_shell.WizardShell(footer_text="Ready")
+        shell = self.wizard_shell.WorkflowShell(footer_text="Ready")
 
         self.assertEqual(shell.objectName(), "qfitWizardShell")
         self.assertEqual(shell.stepper_bar.objectName(), "qfitStepperBar")
@@ -452,8 +452,17 @@ class WizardShellTest(unittest.TestCase):
         self.assertEqual(shell.footer_bar.text(), "Ready")
         self.assertEqual(shell.footer_bar.path_label.text(), "Ready")
 
+    def test_workflow_shell_is_canonical_export_with_wizard_alias(self):
+        shell = self.wizard_shell.WorkflowShell()
+
+        self.assertIs(self.wizard_shell.WizardShell, self.wizard_shell.WorkflowShell)
+        self.assertEqual(shell.objectName(), "qfitWizardShell")
+        self.assertIsInstance(shell, self.wizard_shell.WizardShell)
+        self.assertIn("WorkflowShell", self.wizard_shell.__all__)
+        self.assertIn("WizardShell", self.wizard_shell.__all__)
+
     def test_outer_layout_matches_wizard_spec_order(self):
-        shell = self.wizard_shell.WizardShell()
+        shell = self.wizard_shell.WorkflowShell()
         layout = shell.outer_layout()
 
         self.assertEqual(layout.object_name, "qfitWizardOuterLayout")

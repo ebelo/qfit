@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Collection, Sequence
 from dataclasses import dataclass
-from typing import TypeVar
+from typing import TypeAlias, TypeVar
 
 from qfit.ui.application.dock_workflow_sections import (
     DockWorkflowProgress,
@@ -47,8 +47,8 @@ from .step_page import (
     apply_workflow_step_page_statuses,
     install_workflow_step_pages,
 )
-from .wizard_page import WizardPage, install_wizard_pages
-from .wizard_shell import WizardShell
+from .wizard_page import WorkflowPage, install_workflow_pages
+from .wizard_shell import WorkflowShell
 from .workflow_shell_presenter import WorkflowShellPresenter
 from .workflow_page_state import (
     DockWorkflowActionCallbacks as WizardActionCallbacks,
@@ -65,10 +65,14 @@ DockWizardPageSpec = DockWorkflowPageSpec
 build_default_wizard_page_specs = build_default_workflow_page_specs
 """Compatibility alias for pre-#805 wizard composition builder callers."""
 _StateT = TypeVar("_StateT")
-WizardCompositionPage = WizardPage | WorkflowStepPage
+WizardCompositionPage: TypeAlias = WorkflowPage | WorkflowStepPage
 WizardProgressFacts = WorkflowProgressFacts
 """Compatibility alias for wizard shell composition callers during #805."""
 DockWizardProgress = DockWorkflowProgress
+"""Compatibility alias for pre-#805 wizard shell composition callers."""
+WizardShell = WorkflowShell
+"""Compatibility alias for pre-#805 wizard shell composition callers."""
+WizardPage = WorkflowPage
 """Compatibility alias for pre-#805 wizard shell composition callers."""
 WizardShellPresenter = WorkflowShellPresenter
 """Compatibility alias for pre-#805 wizard shell composition callers."""
@@ -84,7 +88,7 @@ class WizardShellComposition:
     this slice focused on wizard-forward UI structure.
     """
 
-    shell: WizardShell
+    shell: WorkflowShell
     pages: tuple[WizardCompositionPage, ...]
     presenter: WorkflowShellPresenter
     connection_content: ConnectionPageContent | None = None
@@ -122,7 +126,7 @@ def build_placeholder_wizard_shell(
     Pages are installed before the presenter renders so the initial progress
     snapshot selects the matching visible page immediately. The helper does not
     bind any current long-scroll dock controls into the shell; page content can
-    migrate later through the stable ``WizardPage.body_layout()`` seams. The
+    migrate later through the stable ``WorkflowPage.body_layout()`` seams. The
     optional step-change callback is the future dock's seam for persisting
     ``ui/last_step_index`` when users navigate the wizard. The shell now uses
     the richer StepPage chrome from the Option B spec by default while preserving
@@ -163,7 +167,7 @@ def build_placeholder_wizard_shell(
     )
     footer_facts = _footer_facts_from_progress_facts(progress_facts)
     page_specs = _resolve_page_specs(specs)
-    shell = WizardShell(
+    shell = WorkflowShell(
         parent=parent,
         footer_text=footer_text
         or _build_default_footer_text(
@@ -539,18 +543,18 @@ def _build_default_footer_text(
 
 
 def _install_shell_pages(
-    shell: WizardShell,
+    shell: WorkflowShell,
     *,
     specs: Sequence[DockWorkflowPageSpec],
     use_step_pages: bool,
 ) -> tuple[WizardCompositionPage, ...]:
     if use_step_pages:
         return install_workflow_step_pages(shell, specs=specs)
-    return install_wizard_pages(shell, specs=specs)
+    return install_workflow_pages(shell, specs=specs)
 
 
 def _connect_step_page_navigation(
-    shell: WizardShell,
+    shell: WorkflowShell,
     pages: Sequence[WizardCompositionPage],
     presenter: WorkflowShellPresenter,
 ) -> None:
@@ -793,11 +797,15 @@ __all__ = [
     "DockWizardPageSpec",
     "DockWizardProgress",
     "WizardActionCallbacks",
+    "WizardPage",
     "WizardPageStateSnapshots",
     "WizardProgressFacts",
     "WizardSettingsSnapshot",
+    "WizardShell",
     "WizardShellComposition",
     "WizardShellPresenter",
+    "WorkflowPage",
+    "WorkflowShell",
     "WorkflowShellPresenter",
     "WorkflowProgressFacts",
     "build_default_workflow_page_specs",
