@@ -48,6 +48,9 @@ class TestAnalysisController(unittest.TestCase):
             selection_state="selection-state",
             activities_layer="activities-layer",
             points_layer="points-layer",
+            route_tracks_layer=None,
+            route_points_layer=None,
+            route_profile_samples_layer=None,
         )
 
     def test_build_request_keeps_selection_state(self):

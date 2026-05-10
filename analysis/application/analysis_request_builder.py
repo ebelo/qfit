@@ -17,6 +17,9 @@ class ApplyAnalysisConfigurationInputs:
 class RunAnalysisCurrentInputs:
     activities_layer: object = None
     points_layer: object = None
+    route_tracks_layer: object = None
+    route_points_layer: object = None
+    route_profile_samples_layer: object = None
 
 
 @dataclass(frozen=True)
@@ -25,6 +28,9 @@ class RunAnalysisRequestInputs:
     activities_layer: object = None
     starts_layer: object = None
     points_layer: object = None
+    route_tracks_layer: object = None
+    route_points_layer: object = None
+    route_profile_samples_layer: object = None
     selection_state: ActivitySelectionState = field(default_factory=ActivitySelectionState)
 
 
@@ -50,12 +56,18 @@ def build_run_analysis_current_inputs(
     *,
     activities_layer=None,
     points_layer=None,
+    route_tracks_layer=None,
+    route_points_layer=None,
+    route_profile_samples_layer=None,
 ) -> RunAnalysisCurrentInputs:
     """Build normalized current layer inputs for analysis request shaping."""
 
     return RunAnalysisCurrentInputs(
         activities_layer=activities_layer,
         points_layer=points_layer,
+        route_tracks_layer=route_tracks_layer,
+        route_points_layer=route_points_layer,
+        route_profile_samples_layer=route_profile_samples_layer,
     )
 
 
@@ -74,6 +86,9 @@ def build_run_analysis_request_inputs(
         activities_layer=current.activities_layer,
         starts_layer=starts_layer,
         points_layer=current.points_layer,
+        route_tracks_layer=current.route_tracks_layer,
+        route_points_layer=current.route_points_layer,
+        route_profile_samples_layer=current.route_profile_samples_layer,
         selection_state=selection_state or ActivitySelectionState(),
     )
 
@@ -85,6 +100,9 @@ def build_analysis_workflow_request_inputs(
     selection_state: ActivitySelectionState | None = None,
     activities_layer: object = None,
     points_layer: object = None,
+    route_tracks_layer: object = None,
+    route_points_layer: object = None,
+    route_profile_samples_layer: object = None,
 ) -> RunAnalysisRequestInputs:
     """Build normalized request inputs for the analysis workflow seam."""
 
@@ -92,6 +110,9 @@ def build_analysis_workflow_request_inputs(
         current=build_run_analysis_current_inputs(
             activities_layer=activities_layer,
             points_layer=points_layer,
+            route_tracks_layer=route_tracks_layer,
+            route_points_layer=route_points_layer,
+            route_profile_samples_layer=route_profile_samples_layer,
         ),
         analysis_mode=analysis_mode,
         starts_layer=starts_layer,
@@ -107,5 +128,8 @@ def build_run_analysis_request(inputs: RunAnalysisRequestInputs) -> RunAnalysisR
         activities_layer=inputs.activities_layer,
         starts_layer=inputs.starts_layer,
         points_layer=inputs.points_layer,
+        route_tracks_layer=inputs.route_tracks_layer,
+        route_points_layer=inputs.route_points_layer,
+        route_profile_samples_layer=inputs.route_profile_samples_layer,
         selection_state=inputs.selection_state or ActivitySelectionState(),
     )

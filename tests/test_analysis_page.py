@@ -70,7 +70,7 @@ class AnalysisPageContentTest(unittest.TestCase):
         )
         self.assertEqual(
             content.analysis_mode_combo.items,
-            ["Heatmap", "Most frequent starting points"],
+            ["Heatmap", "Most frequent starting points", "Slope grade lines"],
         )
         self.assertEqual(content.current_analysis_mode(), "Heatmap")
         self.assertEqual(

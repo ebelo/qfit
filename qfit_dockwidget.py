@@ -1176,12 +1176,16 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         )
 
     def _run_selected_analysis(self, analysis_mode, starts_layer, selection_state=None):
+        runtime_state = self.runtime_state
         request = self.analysis_workflow.build_request(
             analysis_mode=analysis_mode,
             starts_layer=starts_layer,
             selection_state=selection_state,
             activities_layer=getattr(self, "activities_layer", None),
             points_layer=getattr(self, "points_layer", None),
+            route_tracks_layer=runtime_state.route_tracks_layer,
+            route_points_layer=runtime_state.route_points_layer,
+            route_profile_samples_layer=runtime_state.route_profile_samples_layer,
         )
         result = self.analysis_workflow.run_request(request)
         if result.layer is None:

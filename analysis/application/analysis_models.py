@@ -11,6 +11,9 @@ class RunAnalysisRequest:
     activities_layer: object = None
     starts_layer: object = None
     points_layer: object = None
+    route_tracks_layer: object = None
+    route_points_layer: object = None
+    route_profile_samples_layer: object = None
     selection_state: ActivitySelectionState = field(default_factory=ActivitySelectionState)
 
 
