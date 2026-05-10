@@ -159,30 +159,17 @@ def _build_write_and_load_status(result: StoreActivitiesResult) -> str:
     )
 
 
-def _route_layer_load_status(
-    route_tracks_layer,
-    route_points_layer,
-    route_profile_samples_layer,
-) -> str:
-    if all(
-        layer is None
-        for layer in (
-            route_tracks_layer,
-            route_points_layer,
-            route_profile_samples_layer,
-        )
-    ):
+def _route_layer_load_status(route_tracks_layer, route_points_layer) -> str:
+    if route_tracks_layer is None and route_points_layer is None:
         return (
             "No saved route layers found; use Data → Sync saved routes "
             "before loading planned routes."
         )
     tracks = _safe_feature_count(route_tracks_layer)
     points = _safe_feature_count(route_points_layer)
-    samples = _safe_feature_count(route_profile_samples_layer)
     return (
-        "Loaded saved route layers: {tracks} route tracks, {points} route points, "
-        "and {samples} profile samples."
-    ).format(tracks=tracks, points=points, samples=samples)
+        "Loaded saved route layers: {tracks} route tracks and {points} route points."
+    ).format(tracks=tracks, points=points)
 
 
 def _safe_feature_count(layer) -> int:
@@ -342,7 +329,6 @@ class LoadDatasetWorkflow:
                 route_status=_route_layer_load_status(
                     route_tracks_layer,
                     route_points_layer,
-                    route_profile_samples_layer,
                 ),
             ),
         )

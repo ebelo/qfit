@@ -8,7 +8,7 @@ class ProjectLayerLoader:
     LAYER_FALLBACK_CRS = {
         "activity_atlas_pages": "EPSG:3857",
     }
-    HIDDEN_LAYER_NAMES = {"activity_atlas_pages"}
+    HIDDEN_LAYER_NAMES = {"activity_atlas_pages", "route_profile_samples"}
 
     ACTIVITIES_CANDIDATES = [
         ("activity_tracks", "qfit activities"),

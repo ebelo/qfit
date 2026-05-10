@@ -925,7 +925,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         status = (
             "Synced {fetched} saved routes into GeoPackage: inserted {inserted}, "
             "updated {updated}, unchanged {unchanged}, stored total {total}. "
-            "Loaded {tracks} route tracks, {points} route points, and {samples} profile samples."
+            "Loaded {tracks} route tracks and {points} route points."
         ).format(
             fetched=result.get("fetched_count", 0),
             inserted=sync.inserted if sync else 0,
@@ -934,7 +934,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             total=sync.total_count if sync else 0,
             tracks=result.get("route_track_count", 0),
             points=result.get("route_point_count", 0),
-            samples=result.get("route_profile_sample_count", 0),
         )
         if cancelled:
             status = "Route sync completed after cancellation was requested. " + status

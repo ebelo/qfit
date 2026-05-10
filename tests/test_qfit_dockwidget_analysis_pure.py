@@ -2475,10 +2475,13 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.layer_gateway.load_route_layers.assert_called_once_with("/tmp/qfit.gpkg")
         dock._mark_atlas_export_stale.assert_called_once_with()
         dock._set_status.assert_called_once()
+        status_message = dock._set_status.call_args.args[0]
         self.assertIn(
             "Stopped route GPX enrichment early",
-            dock._set_status.call_args.args[0],
+            status_message,
         )
+        self.assertIn("Loaded 2 route tracks and 6 route points.", status_message)
+        self.assertNotIn("profile samples", status_message)
 
     def test_handle_route_sync_task_finished_reports_missing_result_path(self):
         dock = object.__new__(self.module.QfitDockWidget)

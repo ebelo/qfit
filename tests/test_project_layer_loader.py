@@ -135,6 +135,13 @@ class ProjectLayerLoaderRealTests(unittest.TestCase):
                 call("/tmp/out.gpkg|layername=route_profile_samples", "qfit route profile samples", "ogr"),
             ],
         )
+        project.addMapLayer.assert_has_calls(
+            [
+                call(routes, True),
+                call(points, True),
+                call(samples, False),
+            ]
+        )
 
     def test_load_layer_replaces_existing_display_name(self):
         loader = ProjectLayerLoader()
@@ -233,7 +240,7 @@ class ProjectLayerLoaderMockTests(unittest.TestCase):
         points = MagicMock()
         points.isValid.return_value = True
         samples = MagicMock()
-        samples.isValid.return_value = False
+        samples.isValid.return_value = True
 
         project = MagicMock()
         project.mapLayersByName.return_value = []
@@ -243,7 +250,7 @@ class ProjectLayerLoaderMockTests(unittest.TestCase):
             qgs_project.instance.return_value = project
             layers = self.loader.load_route_layers("/tmp/out.gpkg")
 
-        self.assertEqual(layers, (routes, points, None))
+        self.assertEqual(layers, (routes, points, samples))
         self.assertEqual(
             vector_layer.call_args_list,
             [
@@ -251,6 +258,13 @@ class ProjectLayerLoaderMockTests(unittest.TestCase):
                 call("/tmp/out.gpkg|layername=route_points", "qfit route points", "ogr"),
                 call("/tmp/out.gpkg|layername=route_profile_samples", "qfit route profile samples", "ogr"),
             ],
+        )
+        project.addMapLayer.assert_has_calls(
+            [
+                call(routes, True),
+                call(points, True),
+                call(samples, False),
+            ]
         )
 
     def test_load_output_layers_raises_last_error_when_no_activity_layer_can_be_loaded(self):
