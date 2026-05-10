@@ -185,7 +185,23 @@ def run_slope_grade_analysis(request: RunAnalysisRequest) -> RunAnalysisResult:
         route_points_layer=request.route_points_layer,
         route_profile_samples_layer=request.route_profile_samples_layer,
     )
-    return RunAnalysisResult(status=build_slope_grade_status(result), layer=None)
+    layer, _line_segments = _build_slope_grade_layer(request)
+    return RunAnalysisResult(status=build_slope_grade_status(result), layer=layer)
+
+
+def _build_slope_grade_layer(request: RunAnalysisRequest):
+    try:
+        from ..infrastructure.slope_grade_layer import build_slope_grade_layer
+    except ImportError:
+        return None, ()
+
+    return build_slope_grade_layer(
+        activities_layer=request.activities_layer,
+        points_layer=request.points_layer,
+        route_tracks_layer=request.route_tracks_layer,
+        route_points_layer=request.route_points_layer,
+        route_profile_samples_layer=request.route_profile_samples_layer,
+    )
 
 
 def build_slope_grade_analysis_result(

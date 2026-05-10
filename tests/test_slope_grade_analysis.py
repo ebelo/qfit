@@ -681,6 +681,46 @@ class SlopeGradeAnalysisTests(unittest.TestCase):
         )
         self.assertIsNone(result.layer)
 
+    def test_run_slope_grade_analysis_returns_overlay_layer_when_available(self):
+        overlay_layer = object()
+        with patch(
+            "qfit.analysis.application.slope_grade_analysis._build_slope_grade_layer",
+            return_value=(overlay_layer, (object(),)),
+        ):
+            result = run_slope_grade_analysis(
+                RunAnalysisRequest(
+                    analysis_mode=SLOPE_GRADE_MODE,
+                    activities_layer=_Layer(fields=("name",)),
+                    points_layer=_FeatureLayer(
+                        (
+                            _FeatureSample(
+                                {
+                                    "source": "strava",
+                                    "source_activity_id": "a-1",
+                                    "stream_distance_m": 0,
+                                    "grade_smooth_pct": 0,
+                                }
+                            ),
+                            _FeatureSample(
+                                {
+                                    "source": "strava",
+                                    "source_activity_id": "a-1",
+                                    "stream_distance_m": 100,
+                                    "grade_smooth_pct": 4,
+                                }
+                            ),
+                        ),
+                        fields=("grade_smooth_pct", "stream_distance_m"),
+                    ),
+                )
+            )
+
+        self.assertIs(result.layer, overlay_layer)
+        self.assertEqual(
+            result.status,
+            "Slope grade line analysis classified activity tracks (1 segment).",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
