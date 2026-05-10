@@ -303,6 +303,16 @@ class StepPageTest(unittest.TestCase):
         self.assertIn("build_wizard_step_pages", self.wizard_step_page.__all__)
         self.assertIn("install_wizard_step_pages", self.wizard_step_page.__all__)
         self.assertIn("apply_wizard_step_page_statuses", self.wizard_step_page.__all__)
+        for name in (
+            "DockWorkflowPageSpec",
+            "StepPage",
+            "WorkflowStepPage",
+            "apply_workflow_step_page_statuses",
+            "build_default_workflow_page_specs",
+            "build_workflow_step_pages",
+            "install_workflow_step_pages",
+        ):
+            self.assertNotIn(name, self.wizard_step_page.__all__)
 
     def test_builds_wizard_step_pages_from_default_specs(self):
         pages = self.step_page.build_workflow_step_pages()
