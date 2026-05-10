@@ -401,6 +401,7 @@ def _fake_qt_modules():
 def _load_wizard_shell_module():
     for name in (
         "qfit.ui.dockwidget.wizard_shell",
+        "qfit.ui.dockwidget.workflow_shell",
         "qfit.ui.dockwidget.footer_status_bar",
         "qfit.ui.dockwidget.stepper_bar",
         "qfit.ui.widgets.pill",
@@ -410,7 +411,10 @@ def _load_wizard_shell_module():
     ):
         sys.modules.pop(name, None)
     with patch.dict(sys.modules, _fake_qt_modules()):
-        return importlib.import_module("qfit.ui.dockwidget.wizard_shell")
+        return (
+            importlib.import_module("qfit.ui.dockwidget.wizard_shell"),
+            importlib.import_module("qfit.ui.dockwidget.workflow_shell"),
+        )
 
 
 class _FakeSize:
@@ -432,7 +436,7 @@ class _FakeResizeEvent:
 class WizardShellTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.wizard_shell = _load_wizard_shell_module()
+        cls.wizard_shell, cls.workflow_shell = _load_wizard_shell_module()
 
     def test_builds_spec_shell_structure_with_empty_pages_stack(self):
         shell = self.wizard_shell.WorkflowShell(footer_text="Ready")
@@ -453,13 +457,18 @@ class WizardShellTest(unittest.TestCase):
         self.assertEqual(shell.footer_bar.path_label.text(), "Ready")
 
     def test_workflow_shell_is_canonical_export_with_wizard_alias(self):
-        shell = self.wizard_shell.WorkflowShell()
+        shell = self.workflow_shell.WorkflowShell()
 
-        self.assertIs(self.wizard_shell.WizardShell, self.wizard_shell.WorkflowShell)
+        self.assertIs(self.workflow_shell.WizardShell, self.workflow_shell.WorkflowShell)
         self.assertEqual(shell.objectName(), "qfitWizardShell")
-        self.assertIsInstance(shell, self.wizard_shell.WizardShell)
-        self.assertIn("WorkflowShell", self.wizard_shell.__all__)
-        self.assertIn("WizardShell", self.wizard_shell.__all__)
+        self.assertIsInstance(shell, self.workflow_shell.WizardShell)
+        self.assertIn("WorkflowShell", self.workflow_shell.__all__)
+        self.assertIn("WizardShell", self.workflow_shell.__all__)
+
+    def test_wizard_shell_module_reexports_workflow_shell_api(self):
+        self.assertIs(self.wizard_shell.WorkflowShell, self.workflow_shell.WorkflowShell)
+        self.assertIs(self.wizard_shell.WizardShell, self.workflow_shell.WorkflowShell)
+        self.assertIs(self.wizard_shell.STEPPER_LABELS, self.workflow_shell.STEPPER_LABELS)
 
     def test_outer_layout_matches_wizard_spec_order(self):
         shell = self.wizard_shell.WorkflowShell()

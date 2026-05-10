@@ -48,7 +48,7 @@ from .step_page import (
     install_workflow_step_pages,
 )
 from .workflow_page import WorkflowPage, install_workflow_pages
-from .wizard_shell import WorkflowShell
+from .workflow_shell import WorkflowShell
 from .workflow_shell_presenter import WorkflowShellPresenter
 from .workflow_page_state import (
     DockWorkflowActionCallbacks,
