@@ -12,6 +12,7 @@ from qfit.ui.application.local_first_control_installer import (
     install_local_first_widget_controls,
     install_local_first_widget_move,
     local_first_after_install_hook_for_key,
+    local_first_layout_index_of,
 )
 from qfit.ui.application.local_first_control_moves import (
     HIDE_LEGACY_ATLAS_EXPORT_BUTTON_HOOK,
@@ -149,6 +150,14 @@ class LocalFirstControlInstallerTests(unittest.TestCase):
                 HIDE_LEGACY_ATLAS_EXPORT_BUTTON_HOOK,
             )
         )
+
+    def test_layout_index_falls_back_to_test_layout_widget_list(self):
+        anchor = object()
+        layout = SimpleNamespace(widgets=[object(), anchor])
+
+        self.assertEqual(local_first_layout_index_of(layout, anchor), 1)
+        self.assertIsNone(local_first_layout_index_of(layout, object()))
+        self.assertIsNone(local_first_layout_index_of(SimpleNamespace(), anchor))
 
     def test_installs_group_move_from_audited_inventory(self):
         source_layout = MagicMock()
