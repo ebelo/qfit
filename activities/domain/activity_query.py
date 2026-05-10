@@ -120,8 +120,7 @@ def filter_activities(activities: Iterable[object], query: ActivityQuery) -> lis
 
 
 def sort_activities(activities: Sequence[object]) -> list[object]:
-    items = list(activities)
-    return sorted(items, key=lambda activity: (_sort_datetime(activity) or datetime.min, (getattr(activity, "name", None) or "").casefold()), reverse=True)
+    return sorted(activities, key=lambda activity: (_sort_datetime(activity) or datetime.min, (getattr(activity, "name", None) or "").casefold()), reverse=True)
 
 
 def summarize_activities(activities: Sequence[object]) -> ActivitySummary:
@@ -267,20 +266,6 @@ def _distance_km(activity: object) -> float | None:
     if not isinstance(distance_m, (int, float)):
         return None
     return float(distance_m) / 1000.0
-
-
-def _distance_sort_value(activity: object) -> float:
-    distance_m = getattr(activity, "distance_m", None)
-    if not isinstance(distance_m, (int, float)):
-        return -1.0
-    return float(distance_m)
-
-
-def _moving_time_sort_value(activity: object) -> int:
-    value = getattr(activity, "moving_time_s", None)
-    if not isinstance(value, (int, float)):
-        return -1
-    return int(value)
 
 
 def _sql_normalize_expr(field: str) -> str:

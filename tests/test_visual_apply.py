@@ -30,7 +30,6 @@ def _make_query(**overrides):
         search_text="",
         detailed_only=False,
         detailed_route_filter="any",
-        sort_label="Date (newest first)",
     )
     defaults.update(overrides)
     return SimpleNamespace(**defaults)
