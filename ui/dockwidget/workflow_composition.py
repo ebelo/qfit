@@ -108,6 +108,7 @@ _WIZARD_COMPAT_ALIAS_TARGETS = {
     "WizardPageStateSnapshots": "WorkflowPageStateSnapshots",
     "build_wizard_page_states_from_facts": "build_workflow_page_states_from_facts",
     "WizardShellComposition": "WorkflowShellComposition",
+    "connect_wizard_action_callbacks": "connect_workflow_action_callbacks",
 }
 
 
@@ -833,10 +834,6 @@ def _install_atlas_content(
         if page.spec.key == "atlas":
             return install_atlas_page_content(page, state=atlas_state)
     return None
-
-
-connect_wizard_action_callbacks = connect_workflow_action_callbacks
-"""Compatibility alias for pre-#805 wizard shell composition callers."""
 
 
 __all__ = [
