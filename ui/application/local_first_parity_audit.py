@@ -23,7 +23,6 @@ _CONTROL_MOVE_AREAS = {
     "backfill_routes": "data_storage_settings",
     "map_filters": "map_filters",
     "atlas_pdf": "atlas_export_controls",
-    "strava_credentials": "connection_settings_controls",
     "basemap": "mapbox_background_map",
     "storage": "data_storage_settings",
 }

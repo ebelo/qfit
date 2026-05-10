@@ -272,17 +272,18 @@ class QgisSmokeTests(unittest.TestCase):
 
             self.assertEqual(dock.pointSamplingStrideLabel.text(), "Keep every Nth point")
             self.assertEqual(dock.workflowLabel.text(), "Sections: Fetch & store · Visualize · Analyze · Publish")
-            self.assertEqual(dock.credentialsGroupBox.title(), "Strava connection")
-            self.assertEqual(
-                dock.credentialsGroupBox.parentWidget(),
-                dock._local_first_dock_composition.connection_content,
-            )
-            self.assertGreaterEqual(
-                dock._local_first_dock_composition.connection_content.outer_layout().indexOf(
-                    dock.credentialsGroupBox,
-                ),
-                0,
-            )
+            for removed_attr in (
+                "credentialsGroupBox",
+                "clientIdLineEdit",
+                "clientSecretLineEdit",
+                "redirectUriLineEdit",
+                "authCodeLineEdit",
+                "refreshTokenLineEdit",
+                "openAuthorizeButton",
+                "exchangeCodeButton",
+            ):
+                with self.subTest(removed_attr=removed_attr):
+                    self.assertFalse(hasattr(dock, removed_attr))
             self.assertTrue(bool(dock.features() & dock.DockWidgetMovable))
             self.assertTrue(bool(dock.features() & dock.DockWidgetFloatable))
             self.assertEqual(dock.activitiesGroupBox.title(), "")
@@ -432,6 +433,10 @@ class QgisSmokeTests(unittest.TestCase):
             qsettings=_FakeQSettings(),
             credential_store=InMemoryCredentialStore(),
         )
+        settings.set("client_id", "configured-client")
+        settings.set("client_secret", "configured-secret")
+        settings.set("redirect_uri", "http://localhost:8123/callback")
+        settings.set("refresh_token", "configured-token")
         dependencies = replace(
             build_dockwidget_dependencies(self.iface),
             settings=settings,
@@ -449,7 +454,6 @@ class QgisSmokeTests(unittest.TestCase):
                 1 if dock.backgroundPresetComboBox.count() > 1 else 0
             )
 
-            dock.clientIdLineEdit.setText("client-123")
             dock.outputPathLineEdit.setText("/tmp/roundtrip.gpkg")
             dock.backgroundMapCheckBox.setChecked(True)
             dock.backgroundPresetComboBox.setCurrentText(background_preset_text)
@@ -462,7 +466,10 @@ class QgisSmokeTests(unittest.TestCase):
 
             dock._save_settings()
 
-            self.assertEqual(settings.get("client_id"), "client-123")
+            self.assertEqual(settings.get("client_id"), "configured-client")
+            self.assertEqual(settings.get("client_secret"), "configured-secret")
+            self.assertEqual(settings.get("redirect_uri"), "http://localhost:8123/callback")
+            self.assertEqual(settings.get("refresh_token"), "configured-token")
             self.assertEqual(settings.get("output_path"), "/tmp/roundtrip.gpkg")
             self.assertIsNone(settings.get("per_page"))
             self.assertIsNone(settings.get("use_detailed_streams"))
@@ -482,7 +489,8 @@ class QgisSmokeTests(unittest.TestCase):
 
         dock_reloaded = QfitDockWidget(self.iface, dependencies=dependencies)
         try:
-            self.assertEqual(dock_reloaded.clientIdLineEdit.text(), "client-123")
+            self.assertFalse(hasattr(dock_reloaded, "clientIdLineEdit"))
+            self.assertEqual(settings.get("client_id"), "configured-client")
             self.assertEqual(dock_reloaded.outputPathLineEdit.text(), "/tmp/roundtrip.gpkg")
             self.assertTrue(dock_reloaded.backgroundMapCheckBox.isChecked())
             self.assertEqual(dock_reloaded.backgroundPresetComboBox.currentText(), background_preset_text)
@@ -779,24 +787,6 @@ class QgisSmokeTests(unittest.TestCase):
             dock.close()
             dock.deleteLater()
 
-    def test_open_authorize_clicked_builds_authorize_url_via_sync_controller(self):
-        dock = QfitDockWidget(self.iface)
-        try:
-            dock._save_settings = MagicMock()
-            dock.sync_controller.build_authorize_request = MagicMock(return_value="authorize-request")
-            dock.sync_controller.build_authorize_url = MagicMock(return_value="https://strava.test/auth")
-
-            with patch("qfit.qfit_dockwidget.QDesktopServices.openUrl", return_value=True) as open_url:
-                dock.on_open_authorize_clicked()
-
-            dock.sync_controller.build_authorize_request.assert_called_once()
-            dock.sync_controller.build_authorize_url.assert_called_once_with("authorize-request")
-            open_url.assert_called_once()
-            self.assertIn("Strava authorization opened", dock.statusLabel.text())
-        finally:
-            dock.close()
-            dock.deleteLater()
-
     def test_config_dialog_exposes_strava_oauth_helper_controls(self):
         dialog = QfitConfigDialog(
             settings_service=SettingsService(
@@ -911,32 +901,6 @@ class QgisSmokeTests(unittest.TestCase):
         finally:
             dialog.close()
             dialog.deleteLater()
-
-    def test_exchange_code_clicked_uses_sync_controller_exchange_workflow(self):
-        dock = QfitDockWidget(self.iface)
-        try:
-            dock.authCodeLineEdit.setText("abc123")
-            dock._save_settings = MagicMock()
-            dock._update_connection_status = MagicMock()
-            dock.sync_controller.build_exchange_code_request = MagicMock(return_value="exchange-request")
-            dock.sync_controller.exchange_code_for_tokens = MagicMock(
-                return_value={
-                    "refresh_token": "rtok",
-                    "athlete": {"firstname": "Ada", "lastname": "Lovelace"},
-                }
-            )
-
-            dock.on_exchange_code_clicked()
-
-            dock.sync_controller.build_exchange_code_request.assert_called_once()
-            dock.sync_controller.exchange_code_for_tokens.assert_called_once_with("exchange-request")
-            self.assertEqual(dock.refreshTokenLineEdit.text(), "rtok")
-            self.assertEqual(dock.authCodeLineEdit.text(), "")
-            dock._update_connection_status.assert_called_once()
-            self.assertIn("Ada Lovelace", dock.statusLabel.text())
-        finally:
-            dock.close()
-            dock.deleteLater()
 
     def test_load_background_clicked_uses_structured_background_workflow(self):
         dock = QfitDockWidget(self.iface)

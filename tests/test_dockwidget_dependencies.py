@@ -366,7 +366,6 @@ class LocalFirstBackingControlsTests(unittest.TestCase):
         dock.publishGroupBox = _FakeGroupBox()
         dock.outputGroupBox = _FakeWidget()
         dock.publishSettingsWidget = _FakeWidget()
-        dock.credentialsGroupBox = _FakeWidget()
         dock.workflowLabel = _FakeLabel()
         dock.activitiesIntroLabel = _FakeLabel()
         dock.outputIntroLabel = _FakeLabel()
@@ -454,7 +453,6 @@ class LocalFirstBackingControlsTests(unittest.TestCase):
             dock.workflowLabel.text,
             "Sections: Fetch & store · Visualize · Analyze · Publish",
         )
-        self.assertFalse(dock.credentialsGroupBox.visible)
         self.assertEqual(dock.outputGroupBox.parent(), dock.activitiesGroupBox)
         self.assertEqual(dock.loadLayersButton.parent(), dock.styleGroupBox)
         self.assertFalse(dock.clearDatabaseButton.visible)

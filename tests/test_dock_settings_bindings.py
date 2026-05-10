@@ -8,7 +8,6 @@ from qfit.activities.domain.activity_query import DEFAULT_SORT_LABEL, DETAILED_R
 from qfit.configuration.application.dock_settings_bindings import build_dock_settings_bindings
 from qfit.configuration.application.ui_settings_binding import load_bindings, save_bindings
 from qfit.mapbox_config import DEFAULT_BACKGROUND_PRESET, TILE_MODE_RASTER
-from qfit.providers.infrastructure.strava_provider import StravaProvider
 
 
 class FakeQSettings:
@@ -95,10 +94,6 @@ def _settings(data=None):
 
 class FakeDock:
     def __init__(self):
-        self.clientIdLineEdit = TextWidget()
-        self.clientSecretLineEdit = TextWidget()
-        self.redirectUriLineEdit = TextWidget()
-        self.refreshTokenLineEdit = TextWidget()
         self.outputPathLineEdit = TextWidget()
         self.writeActivityPointsCheckBox = CheckWidget(True)
         self.pointSamplingStrideSpinBox = SpinWidget(5)
@@ -170,10 +165,6 @@ class FakeDock:
 
 class DockSettingsBindingsTests(unittest.TestCase):
     EXPECTED_KEYS = {
-        "client_id",
-        "client_secret",
-        "redirect_uri",
-        "refresh_token",
         "output_path",
         "write_activity_points",
         "point_sampling_stride",
@@ -214,8 +205,8 @@ class DockSettingsBindingsTests(unittest.TestCase):
 
         load_bindings(build_dock_settings_bindings(dock), settings)
 
-        self.assertEqual(dock.clientIdLineEdit.text(), "client-123")
-        self.assertEqual(dock.redirectUriLineEdit.text(), "http://example.test/callback")
+        self.assertEqual(settings.get("client_id"), "client-123")
+        self.assertEqual(settings.get("redirect_uri"), "http://example.test/callback")
         self.assertEqual(dock.outputPathLineEdit.text(), dock._default_output_path())
         self.assertEqual(dock.detailedRouteStatusComboBox.currentData(), "missing")
         self.assertTrue(dock.backgroundMapCheckBox.isChecked())
@@ -227,9 +218,6 @@ class DockSettingsBindingsTests(unittest.TestCase):
 
     def test_save_roundtrip_preserves_values(self):
         dock = FakeDock()
-        dock.clientIdLineEdit.setText("  abc  ")
-        dock.clientSecretLineEdit.setText("secret")
-        dock.redirectUriLineEdit.setText(StravaProvider.DEFAULT_REDIRECT_URI)
         dock.outputPathLineEdit.setText("/tmp/out.gpkg")
         dock.writeActivityPointsCheckBox.setChecked(False)
         dock.pointSamplingStrideSpinBox.setValue(9)
@@ -251,7 +239,10 @@ class DockSettingsBindingsTests(unittest.TestCase):
         settings = _settings()
         save_bindings(build_dock_settings_bindings(dock), settings)
 
-        self.assertEqual(settings.get("client_id"), "abc")
+        self.assertIsNone(settings.get("client_id"))
+        self.assertIsNone(settings.get("client_secret"))
+        self.assertIsNone(settings.get("redirect_uri"))
+        self.assertIsNone(settings.get("refresh_token"))
         self.assertEqual(settings.get("activity_search_text"), "commute")
         self.assertIsNone(settings.get("per_page"))
         self.assertIsNone(settings.get("use_detailed_streams"))

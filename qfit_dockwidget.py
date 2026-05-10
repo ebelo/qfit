@@ -2,16 +2,15 @@ import logging
 import os
 import sqlite3
 from collections.abc import Callable
+from dataclasses import dataclass
 from datetime import date
 
 logger = logging.getLogger(__name__)
 
 from qgis.core import QgsApplication, QgsProject
 from qgis.PyQt import uic
-from qgis.PyQt.QtCore import QDate, Qt, QUrl
-from qgis.PyQt.QtGui import QDesktopServices
+from qgis.PyQt.QtCore import QDate, Qt
 from qgis.PyQt.QtWidgets import (
-    QApplication,
     QFileDialog,
     QDockWidget,
     QMessageBox,
@@ -98,7 +97,6 @@ from .visualization.application import (
     build_background_map_failure_title,
 )
 from .providers.domain.provider import ProviderError
-from .providers.infrastructure.strava_provider import StravaProvider
 from .ui.dockwidget_dependencies import DockWidgetDependencies, build_dockwidget_dependencies
 from .ui.dock_startup_coordinator import DockStartupCoordinator
 from .configuration.application.connection_status import build_strava_connection_status
@@ -109,6 +107,13 @@ from .sync_repository import SyncRepository
 FORM_CLASS, _ = uic.loadUiType(
     __import__("os").path.join(__import__("os").path.dirname(__file__), "qfit_dockwidget_base.ui")
 )
+
+
+@dataclass(frozen=True)
+class _StravaCredentials:
+    client_id: str
+    client_secret: str
+    refresh_token: str
 
 
 def _fetch_status_for_sync_plan(status_text, sync_plan):
@@ -452,8 +457,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         ContextualHelpBinder(self).apply(build_dock_help_entries())
 
     def _wire_events(self):
-        self.openAuthorizeButton.clicked.connect(self.on_open_authorize_clicked)
-        self.exchangeCodeButton.clicked.connect(self.on_exchange_code_clicked)
         self.browseButton.clicked.connect(self.on_browse_clicked)
         self.refreshButton.clicked.connect(self.on_refresh_clicked)
         self.backfillMissingDetailedRoutesButton.clicked.connect(self.on_backfill_missing_detailed_routes_clicked)
@@ -470,9 +473,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.atlasPdfBrowseButton.clicked.connect(self.on_atlas_pdf_browse_clicked)
         self.atlasPdfPathLineEdit.textChanged.connect(self._on_atlas_pdf_path_changed)
         self.generateAtlasPdfButton.clicked.connect(self.on_generate_atlas_pdf_clicked)
-        self.clientIdLineEdit.textChanged.connect(self._update_connection_status)
-        self.clientSecretLineEdit.textChanged.connect(self._update_connection_status)
-        self.refreshTokenLineEdit.textChanged.connect(self._update_connection_status)
         self.outputPathLineEdit.textChanged.connect(self._on_output_path_changed)
 
         preview_inputs = [
@@ -583,7 +583,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
     def _load_settings(self):
         load_bindings(build_dock_settings_bindings(self), self.settings)
-        self.authCodeLineEdit.setText("")
         sync_local_first_basemap_style_fields(
             self,
             self.backgroundPresetComboBox.currentText(),
@@ -620,76 +619,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             return
 
         self._set_status(result.status)
-
-    def on_open_authorize_clicked(self):
-        self._save_settings()
-        try:
-            authorize_request = self.sync_controller.build_authorize_request(
-                client_id=self.clientIdLineEdit.text().strip(),
-                client_secret=self.clientSecretLineEdit.text().strip(),
-                refresh_token=self.refreshTokenLineEdit.text().strip(),
-                cache=self.cache,
-                redirect_uri=self._redirect_uri(),
-            )
-            url = self.sync_controller.build_authorize_url(authorize_request)
-            if not QDesktopServices.openUrl(QUrl(url)):
-                clipboard = QApplication.clipboard()
-                if clipboard is not None:
-                    clipboard.setText(url)
-                self._show_info(
-                    "Open Strava authorize page manually",
-                    "qfit could not open the browser automatically. The authorization URL was copied to your clipboard.\n\nOpen this URL in a browser and continue the flow there:\n\n{url}".format(
-                        url=url
-                    ),
-                )
-                self._set_status(
-                    "Could not open browser automatically. Authorization URL copied to clipboard."
-                )
-                return
-            self._set_status(
-                "Strava authorization opened in your browser. Approve access, copy the returned code, then paste it here and click Exchange code."
-            )
-        except ProviderError as exc:
-            self._show_error("Strava authorization failed", str(exc))
-            self._set_status("Could not start the Strava authorization flow")
-
-    def on_exchange_code_clicked(self):
-        self._save_settings()
-        authorization_code = self.authCodeLineEdit.text().strip()
-        if not authorization_code:
-            self._show_error("Missing authorization code", "Paste the code returned by Strava first.")
-            return
-
-        try:
-            exchange_request = self.sync_controller.build_exchange_code_request(
-                client_id=self.clientIdLineEdit.text().strip(),
-                client_secret=self.clientSecretLineEdit.text().strip(),
-                refresh_token=self.refreshTokenLineEdit.text().strip(),
-                cache=self.cache,
-                authorization_code=authorization_code,
-                redirect_uri=self._redirect_uri(),
-            )
-            payload = self.sync_controller.exchange_code_for_tokens(exchange_request)
-            refresh_token = payload["refresh_token"]
-            self.refreshTokenLineEdit.setText(refresh_token)
-            self.authCodeLineEdit.clear()
-            self._save_settings()
-            self._update_connection_status()
-            athlete = payload.get("athlete") or {}
-            athlete_name = " ".join(
-                part for part in [athlete.get("firstname"), athlete.get("lastname")] if part
-            ).strip()
-            if athlete_name:
-                self._set_status(
-                    "Strava connected for {name}. Refresh token saved locally in QGIS settings.".format(
-                        name=athlete_name
-                    )
-                )
-            else:
-                self._set_status("Strava refresh token saved locally in QGIS settings.")
-        except ProviderError as exc:
-            self._show_error("Token exchange failed", str(exc))
-            self._set_status("Could not exchange the Strava authorization code")
 
     def on_browse_clicked(self):
         path, _selected = QFileDialog.getSaveFileName(
@@ -742,11 +671,12 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             else plan_activity_sync(None)
         )
         try:
+            credentials = self._strava_credentials()
             fetch_task = self.activity_workflow.build_fetch_task(
                 DockFetchRequest(
-                    client_id=self.clientIdLineEdit.text().strip(),
-                    client_secret=self.clientSecretLineEdit.text().strip(),
-                    refresh_token=self.refreshTokenLineEdit.text().strip(),
+                    client_id=credentials.client_id,
+                    client_secret=credentials.client_secret,
+                    refresh_token=credentials.refresh_token,
                     cache=self.cache,
                     detailed_route_strategy=detailed_route_strategy,
                     on_finished=self._on_fetch_finished,
@@ -782,8 +712,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         """Toggle UI state while a background fetch is in progress."""
         self.refreshButton.setText("Cancel" if running else "Fetch activities")
         self.backfillMissingDetailedRoutesButton.setEnabled(not running)
-        self.exchangeCodeButton.setEnabled(not running)
-        self.openAuthorizeButton.setEnabled(not running)
 
     def _on_fetch_finished(self, activities, error, cancelled, provider):
         """Called on the main thread when the background fetch completes."""
@@ -914,10 +842,11 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             return
 
         try:
+            credentials = self._strava_credentials()
             route_sync_request = self.sync_controller.build_route_sync_task_request(
-                client_id=self.clientIdLineEdit.text().strip(),
-                client_secret=self.clientSecretLineEdit.text().strip(),
-                refresh_token=self.refreshTokenLineEdit.text().strip(),
+                client_id=credentials.client_id,
+                client_secret=credentials.client_secret,
+                refresh_token=credentials.refresh_token,
                 cache=self.cache,
                 output_path=output_path,
                 per_page=DEFAULT_FETCH_PER_PAGE,
@@ -944,8 +873,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             "Cancel route sync" if running else "Sync saved routes"
         )
         button.setEnabled(True)
-        self.exchangeCodeButton.setEnabled(not running)
-        self.openAuthorizeButton.setEnabled(not running)
 
     def _set_route_sync_cancelling(self):
         button = getattr(self, "syncRoutesButton", None)
@@ -953,8 +880,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             return
         button.setText("Cancelling route sync…")
         button.setEnabled(False)
-        self.exchangeCodeButton.setEnabled(False)
-        self.openAuthorizeButton.setEnabled(False)
 
     def _handle_route_sync_task_finished(self, result, error_message, cancelled, provider):
         self._runtime_store().clear_route_sync()
@@ -1314,8 +1239,12 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         )
         self._refresh_summary_status()
 
-    def _redirect_uri(self):
-        return self.redirectUriLineEdit.text().strip() or StravaProvider.DEFAULT_REDIRECT_URI
+    def _strava_credentials(self):
+        return _StravaCredentials(
+            client_id=(self.settings.get("client_id", "") or "").strip(),
+            client_secret=(self.settings.get("client_secret", "") or "").strip(),
+            refresh_token=(self.settings.get("refresh_token", "") or "").strip(),
+        )
 
     def _mapbox_access_token(self):
         return (self.settings.get("mapbox_access_token", "") or "").strip()
@@ -1363,11 +1292,12 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
 
     def _update_connection_status(self):
+        credentials = self._strava_credentials()
         self.connectionStatusLabel.setText(
             build_strava_connection_status(
-                client_id=self.clientIdLineEdit.text(),
-                client_secret=self.clientSecretLineEdit.text(),
-                refresh_token=self.refreshTokenLineEdit.text(),
+                client_id=credentials.client_id,
+                client_secret=credentials.client_secret,
+                refresh_token=credentials.refresh_token,
             )
         )
         self._refresh_summary_status()

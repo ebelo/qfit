@@ -34,7 +34,6 @@ class DockUiFieldGrammarTests(unittest.TestCase):
         )
 
         expected_titles = {
-            "credentialsGroupBox": "Strava connection",
             "activitiesGroupBox": "Fetch activities",
             "outputGroupBox": "Store data",
             "styleGroupBox": "Visualize",

@@ -382,14 +382,18 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
     def test_local_first_progress_facts_reads_live_dock_runtime(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._runtime_state_store = self.module.DockRuntimeStore()
-        dock.clientIdLineEdit = _FakeLineEdit("client-id")
-        dock.clientSecretLineEdit = _FakeLineEdit("client-secret")
-        dock.refreshTokenLineEdit = _FakeLineEdit("refresh-token")
         dock.atlasPdfPathLineEdit = _FakeLineEdit("/tmp/current-atlas.pdf")
         dock.backgroundMapCheckBox = _FakeCheckBox(True)
         dock.backgroundPresetComboBox = _FakeComboBox(current_text="Outdoors")
         dock.stylePresetComboBox = _FakeComboBox(current_text="By activity type")
-        dock.settings = _FakeSettings({"last_sync_date": "2026-04-16"})
+        dock.settings = _FakeSettings(
+            {
+                "last_sync_date": "2026-04-16",
+                "client_id": "client-id",
+                "client_secret": "client-secret",
+                "refresh_token": "refresh-token",
+            }
+        )
         dock._atlas_export_completed = True
         dock._atlas_export_output_path = "/tmp/exported-atlas.pdf"
 
@@ -484,13 +488,11 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
     def test_local_first_progress_facts_use_frozen_atlas_path_during_export(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._runtime_state_store = self.module.DockRuntimeStore()
-        dock.clientIdLineEdit = _FakeLineEdit("client-id")
-        dock.clientSecretLineEdit = _FakeLineEdit("client-secret")
-        dock.refreshTokenLineEdit = _FakeLineEdit("refresh-token")
         dock.atlasPdfPathLineEdit = _FakeLineEdit("/tmp/new-atlas.pdf")
         dock._atlas_export_completed = True
         dock._atlas_export_output_path = "/tmp/old-atlas.pdf"
         dock._atlas_export_task_output_path = "/tmp/running-atlas.pdf"
+        dock.settings = _FakeSettings()
         dock._runtime_store().set_atlas_export_task(object())
 
         facts = build_current_local_first_progress_facts(dock)
@@ -732,9 +734,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
     def test_local_first_progress_facts_reflect_existing_visible_geopackage_path(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._runtime_state_store = self.module.DockRuntimeStore()
-        dock.clientIdLineEdit = _FakeLineEdit("")
-        dock.clientSecretLineEdit = _FakeLineEdit("")
-        dock.refreshTokenLineEdit = _FakeLineEdit("")
         dock._atlas_export_completed = False
         dock.settings = _FakeSettings()
 
@@ -750,9 +749,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._runtime_state_store = self.module.DockRuntimeStore()
         dock.outputPathLineEdit = _FakeLineEdit("/tmp/qfit-definitely-missing.gpkg")
-        dock.clientIdLineEdit = _FakeLineEdit("")
-        dock.clientSecretLineEdit = _FakeLineEdit("")
-        dock.refreshTokenLineEdit = _FakeLineEdit("")
         dock._atlas_export_completed = False
         dock.settings = _FakeSettings()
 
@@ -764,16 +760,19 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
     def test_build_local_first_dock_from_runtime_wires_independent_callbacks(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._runtime_state_store = self.module.DockRuntimeStore()
-        dock.clientIdLineEdit = _FakeLineEdit("client-id")
-        dock.clientSecretLineEdit = _FakeLineEdit("client-secret")
-        dock.refreshTokenLineEdit = _FakeLineEdit("refresh-token")
         dock.atlasTitleLineEdit = _FakeLineEdit("Spring Atlas")
         dock.atlasSubtitleLineEdit = _FakeLineEdit("Road and trail")
         dock._atlas_export_completed = False
         dock._open_configuration = MagicMock()
         dock._set_status = MagicMock()
         dock._show_info = MagicMock()
-        dock.settings = _FakeSettings()
+        dock.settings = _FakeSettings(
+            {
+                "client_id": "client-id",
+                "client_secret": "client-secret",
+                "refresh_token": "refresh-token",
+            }
+        )
         parent = object()
 
         class FakeDockWorkflowActionCallbacks(SimpleNamespace):
@@ -994,8 +993,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
     def test_wire_events_routes_visibility_changes_to_local_first_handlers(self):
         dock = object.__new__(self.module.QfitDockWidget)
-        dock.openAuthorizeButton = SimpleNamespace(clicked=_FakeSignal())
-        dock.exchangeCodeButton = SimpleNamespace(clicked=_FakeSignal())
         dock.browseButton = SimpleNamespace(clicked=_FakeSignal())
         dock.refreshButton = SimpleNamespace(clicked=_FakeSignal())
         dock.backfillMissingDetailedRoutesButton = SimpleNamespace(
@@ -1015,9 +1012,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.atlasPdfBrowseButton = SimpleNamespace(clicked=_FakeSignal())
         dock.atlasPdfPathLineEdit = SimpleNamespace(textChanged=_FakeSignal())
         dock.generateAtlasPdfButton = SimpleNamespace(clicked=_FakeSignal())
-        dock.clientIdLineEdit = SimpleNamespace(textChanged=_FakeSignal())
-        dock.clientSecretLineEdit = SimpleNamespace(textChanged=_FakeSignal())
-        dock.refreshTokenLineEdit = SimpleNamespace(textChanged=_FakeSignal())
         dock.outputPathLineEdit = SimpleNamespace(textChanged=_FakeSignal())
         dock.activityTypeComboBox = SimpleNamespace(currentTextChanged=_FakeSignal())
         dock.activitySearchLineEdit = SimpleNamespace(textChanged=_FakeSignal())
@@ -1030,8 +1024,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         )
         dock.previewSortComboBox = SimpleNamespace(currentTextChanged=_FakeSignal())
         for name in (
-            "on_open_authorize_clicked",
-            "on_exchange_code_clicked",
             "on_browse_clicked",
             "on_refresh_clicked",
             "on_backfill_missing_detailed_routes_clicked",
@@ -1278,70 +1270,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
         dock.scrollArea.hide.assert_not_called()
         dock.summaryStatusLabel.hide.assert_not_called()
-
-    def test_local_first_strava_credentials_controls_move_to_settings_page(self):
-        class _SourceLayout:
-            def __init__(self):
-                self.removed = []
-
-            def removeWidget(self, widget):
-                self.removed.append(widget)
-
-        class _SourceParent:
-            def __init__(self, layout):
-                self._layout = layout
-
-            def layout(self):
-                return self._layout
-
-        class _CredentialsGroup:
-            def __init__(self, parent):
-                self._parent = parent
-                self.title = None
-                self.shown = False
-
-            def parentWidget(self):
-                return self._parent
-
-            def setParent(self, parent):
-                self._parent = parent
-
-            def setTitle(self, title):
-                self.title = title
-
-            def show(self):
-                self.shown = True
-
-        dock = object.__new__(self.module.QfitDockWidget)
-        source_layout = _SourceLayout()
-        source_parent = _SourceParent(source_layout)
-        credentials_group = _CredentialsGroup(source_parent)
-        settings_layout = _FakeLayout()
-        settings_content = SimpleNamespace(outer_layout=lambda: settings_layout)
-        composition = SimpleNamespace(settings_content=settings_content)
-        dock.credentialsGroupBox = credentials_group
-        self._install_required_local_first_group_widgets(
-            dock,
-            "strava_credentials",
-        )
-
-        install_local_first_control_move(
-            dock,
-            composition,
-            "strava_credentials",
-        )
-        install_local_first_control_move(
-            dock,
-            composition,
-            "strava_credentials",
-        )
-
-        self.assertEqual(source_layout.removed, [credentials_group])
-        self.assertIs(credentials_group.parentWidget(), settings_content)
-        self.assertEqual(credentials_group.title, "Strava connection")
-        self.assertTrue(credentials_group.shown)
-        self.assertEqual(settings_layout.added, [credentials_group])
-        self.assertTrue(dock._local_first_strava_credentials_controls_installed)
 
     def test_local_first_basemap_controls_move_to_settings_page(self):
         class _SourceLayout:
@@ -1734,10 +1662,13 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
     def test_refresh_local_first_dock_from_runtime_updates_optional_composition(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._runtime_state_store = self.module.DockRuntimeStore()
-        dock.clientIdLineEdit = _FakeLineEdit("client-id")
-        dock.clientSecretLineEdit = _FakeLineEdit("client-secret")
-        dock.refreshTokenLineEdit = _FakeLineEdit("refresh-token")
-        dock.settings = _FakeSettings()
+        dock.settings = _FakeSettings(
+            {
+                "client_id": "client-id",
+                "client_secret": "client-secret",
+                "refresh_token": "refresh-token",
+            }
+        )
         composition = object()
         dock._local_first_dock_composition = composition
         fake_local_first_composition = ModuleType(
@@ -2197,9 +2128,13 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
     def test_update_connection_status_delegates_to_connection_status_helper(self):
         dock = object.__new__(self.module.QfitDockWidget)
-        dock.clientIdLineEdit = _FakeLineEdit("client-id")
-        dock.clientSecretLineEdit = _FakeLineEdit("client-secret")
-        dock.refreshTokenLineEdit = _FakeLineEdit("refresh-token")
+        dock.settings = _FakeSettings(
+            {
+                "client_id": "client-id",
+                "client_secret": "client-secret",
+                "refresh_token": "refresh-token",
+            }
+        )
         dock.connectionStatusLabel = SimpleNamespace(setText=MagicMock())
 
         with patch.object(
@@ -2490,13 +2425,15 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._route_sync_task = None
         dock._save_settings = MagicMock()
         dock.outputPathLineEdit = _FakeLineEdit("/tmp/qfit.gpkg")
-        dock.clientIdLineEdit = _FakeLineEdit("client-id")
-        dock.clientSecretLineEdit = _FakeLineEdit("client-secret")
-        dock.refreshTokenLineEdit = _FakeLineEdit("refresh-token")
+        dock.settings = _FakeSettings(
+            {
+                "client_id": "client-id",
+                "client_secret": "client-secret",
+                "refresh_token": "refresh-token",
+            }
+        )
         dock.cache = "cache"
         dock.syncRoutesButton = _FakeButton("Sync saved routes")
-        dock.exchangeCodeButton = _FakeButton("Exchange")
-        dock.openAuthorizeButton = _FakeButton("Authorize")
         dock._set_status = MagicMock()
         dock.sync_controller = MagicMock()
         dock.sync_controller.build_route_sync_task_request.return_value = "route-request"
@@ -2526,8 +2463,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.sync_controller.build_route_sync_task.assert_called_once_with("route-request")
         self.assertIs(dock._route_sync_task, fake_task)
         self.assertEqual(dock.syncRoutesButton.text(), "Cancel route sync")
-        self.assertFalse(dock.exchangeCodeButton.isEnabled())
-        self.assertFalse(dock.openAuthorizeButton.isEnabled())
         dock._set_status.assert_called_once_with("Syncing saved Strava routes…")
         fake_task_manager.addTask.assert_called_once_with(fake_task)
 
@@ -2536,8 +2471,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         running_task = MagicMock()
         dock._route_sync_task = running_task
         dock.syncRoutesButton = _FakeButton("Cancel route sync")
-        dock.exchangeCodeButton = _FakeButton("Exchange")
-        dock.openAuthorizeButton = _FakeButton("Authorize")
         dock._set_status = MagicMock()
 
         self.module.QfitDockWidget.on_sync_routes_clicked(dock)
@@ -2552,10 +2485,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._route_sync_task = object()
         dock.syncRoutesButton = _FakeButton("Cancel route sync")
-        dock.exchangeCodeButton = _FakeButton("Exchange")
-        dock.exchangeCodeButton.setEnabled(False)
-        dock.openAuthorizeButton = _FakeButton("Authorize")
-        dock.openAuthorizeButton.setEnabled(False)
         dock.layer_gateway = MagicMock()
         route_layers = ("route-tracks", "route-points", "route-profile-samples")
         dock.layer_gateway.load_route_layers.return_value = route_layers
@@ -2589,8 +2518,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertEqual(
             dock.syncRoutesButton.text(), "Sync saved routes"
         )
-        self.assertTrue(dock.exchangeCodeButton.isEnabled())
-        self.assertTrue(dock.openAuthorizeButton.isEnabled())
         dock.layer_gateway.load_route_layers.assert_called_once_with("/tmp/qfit.gpkg")
         dock._mark_atlas_export_stale.assert_called_once_with()
         dock._set_status.assert_called_once()
@@ -2603,8 +2530,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._route_sync_task = object()
         dock.syncRoutesButton = _FakeButton("Cancel route sync")
-        dock.exchangeCodeButton = _FakeButton("Exchange")
-        dock.openAuthorizeButton = _FakeButton("Authorize")
         dock.layer_gateway = MagicMock()
         dock._show_error = MagicMock()
         dock._set_status = MagicMock()
@@ -2645,9 +2570,13 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._runtime_store = MagicMock(return_value=MagicMock())
         dock._set_fetch_running = MagicMock()
         dock._set_status = MagicMock()
-        dock.clientIdLineEdit = _FakeLineEdit("cid")
-        dock.clientSecretLineEdit = _FakeLineEdit("secret")
-        dock.refreshTokenLineEdit = _FakeLineEdit("token")
+        dock.settings = _FakeSettings(
+            {
+                "client_id": "cid",
+                "client_secret": "secret",
+                "refresh_token": "token",
+            }
+        )
         dock.outputPathLineEdit = _FakeLineEdit("/tmp/qfit.gpkg")
         dock.cache = object()
         task_manager = MagicMock()

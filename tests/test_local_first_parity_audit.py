@@ -48,7 +48,6 @@ class LocalFirstParityAuditTests(unittest.TestCase):
                 ),
                 "atlas_export_controls": ("atlas_pdf", "atlas_actions"),
                 "connection_settings_controls": (
-                    "strava_credentials",
                     "settings_configuration_action",
                 ),
             },
