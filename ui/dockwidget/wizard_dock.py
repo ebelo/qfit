@@ -15,78 +15,105 @@ Qt = _qtcore.Qt
 QDockWidget = _qtwidgets.QDockWidget
 QWidget = _qtwidgets.QWidget
 
-WIZARD_DOCK_OBJECT_NAME = "qfitWizardDockWidget"
-WIZARD_DOCK_TITLE = "qfit"
-WIZARD_DOCK_ALLOWED_AREAS = Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea
-WIZARD_DOCK_FEATURES = (
+WORKFLOW_DOCK_OBJECT_NAME = "qfitWizardDockWidget"
+WORKFLOW_DOCK_TITLE = "qfit"
+WORKFLOW_DOCK_ALLOWED_AREAS = Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea
+WORKFLOW_DOCK_FEATURES = (
     QDockWidget.DockWidgetClosable
     | QDockWidget.DockWidgetMovable
     | QDockWidget.DockWidgetFloatable
 )
 
+WIZARD_DOCK_OBJECT_NAME = WORKFLOW_DOCK_OBJECT_NAME
+"""Compatibility alias for pre-#805 wizard dock callers."""
+WIZARD_DOCK_TITLE = WORKFLOW_DOCK_TITLE
+"""Compatibility alias for pre-#805 wizard dock callers."""
+WIZARD_DOCK_ALLOWED_AREAS = WORKFLOW_DOCK_ALLOWED_AREAS
+"""Compatibility alias for pre-#805 wizard dock callers."""
+WIZARD_DOCK_FEATURES = WORKFLOW_DOCK_FEATURES
+"""Compatibility alias for pre-#805 wizard dock callers."""
 
-class WizardShellCompositionLike(Protocol):
-    """Small structural protocol for dock-hostable wizard compositions."""
+
+class WorkflowShellCompositionLike(Protocol):
+    """Small structural protocol for dock-hostable workflow compositions."""
 
     shell: QWidget
 
 
-class WizardDockWidget(QDockWidget):
-    """QDockWidget host for the #609 wizard shell composition.
+WizardShellCompositionLike = WorkflowShellCompositionLike
+"""Compatibility alias for pre-#805 wizard dock callers."""
 
-    The current production dock still uses the legacy ``.ui`` while the wizard
-    migrates page-by-page. This adapter captures the final dock-level shape from
-    the Option B spec now: a normal QGIS dock widget whose contents are the
-    reusable ``WizardShell`` composition, without coupling the shell back to the
-    long-scroll dock implementation.
+
+class WorkflowDockWidget(QDockWidget):
+    """QDockWidget host for the local-first workflow shell composition.
+
+    The visible dock is converging on the local-first workflow surface while
+    preserving stable Qt object names and thin wizard-named import aliases for
+    older callers during #805.
     """
 
     def __init__(
         self,
-        composition: WizardShellCompositionLike,
+        composition: WorkflowShellCompositionLike,
         *,
         parent=None,
-        title: str = WIZARD_DOCK_TITLE,
+        title: str = WORKFLOW_DOCK_TITLE,
     ) -> None:
         super().__init__(parent)
-        self.composition: WizardShellCompositionLike | None = None
-        self.setObjectName(WIZARD_DOCK_OBJECT_NAME)
+        self.composition: WorkflowShellCompositionLike | None = None
+        self.setObjectName(WORKFLOW_DOCK_OBJECT_NAME)
         self.setWindowTitle(title)
-        self.setFeatures(WIZARD_DOCK_FEATURES)
-        self.setAllowedAreas(WIZARD_DOCK_ALLOWED_AREAS)
+        self.setFeatures(WORKFLOW_DOCK_FEATURES)
+        self.setAllowedAreas(WORKFLOW_DOCK_ALLOWED_AREAS)
         self.set_composition(composition)
 
-    def set_composition(self, composition: WizardShellCompositionLike) -> None:
-        """Install or replace the hosted wizard composition shell."""
+    def set_composition(self, composition: WorkflowShellCompositionLike) -> None:
+        """Install or replace the hosted workflow composition shell."""
 
         shell = _composition_shell(composition)
         self.setWidget(shell)
         self.composition = composition
 
 
-def build_wizard_dock_widget(
-    composition: WizardShellCompositionLike,
+WizardDockWidget = WorkflowDockWidget
+"""Compatibility alias for pre-#805 wizard dock callers."""
+
+
+def build_workflow_dock_widget(
+    composition: WorkflowShellCompositionLike,
     *,
     parent=None,
-    title: str = WIZARD_DOCK_TITLE,
-) -> WizardDockWidget:
-    """Build the dock-level container for a reusable wizard composition."""
+    title: str = WORKFLOW_DOCK_TITLE,
+) -> WorkflowDockWidget:
+    """Build the dock-level container for a reusable workflow composition."""
 
-    return WizardDockWidget(composition, parent=parent, title=title)
+    return WorkflowDockWidget(composition, parent=parent, title=title)
 
 
-def _composition_shell(composition: WizardShellCompositionLike):
+build_wizard_dock_widget = build_workflow_dock_widget
+"""Compatibility alias for pre-#805 wizard dock callers."""
+
+
+def _composition_shell(composition: WorkflowShellCompositionLike):
     shell = getattr(composition, "shell", None)
     if shell is None:
-        raise ValueError("Wizard dock compositions must expose a shell widget")
+        raise ValueError("Workflow dock compositions must expose a shell widget")
     return shell
 
 
 __all__ = [
+    "WORKFLOW_DOCK_ALLOWED_AREAS",
+    "WORKFLOW_DOCK_FEATURES",
+    "WORKFLOW_DOCK_OBJECT_NAME",
+    "WORKFLOW_DOCK_TITLE",
+    "WorkflowDockWidget",
+    "WorkflowShellCompositionLike",
     "WIZARD_DOCK_ALLOWED_AREAS",
     "WIZARD_DOCK_FEATURES",
     "WIZARD_DOCK_OBJECT_NAME",
     "WIZARD_DOCK_TITLE",
     "WizardDockWidget",
+    "WizardShellCompositionLike",
+    "build_workflow_dock_widget",
     "build_wizard_dock_widget",
 ]

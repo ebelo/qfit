@@ -311,8 +311,8 @@ class StepPage(QWidget):
         return layout
 
 
-class WizardStepPage(StepPage):
-    """Step-page adapter backed by the canonical #609 page spec.
+class WorkflowStepPage(StepPage):
+    """Step-page adapter backed by the canonical workflow page spec.
 
     ``WizardPage`` still powers the current placeholder shell, but the final
     dock swap needs spec-keyed pages with the richer ``StepPage`` chrome. This
@@ -372,17 +372,21 @@ class WizardStepPage(StepPage):
         return label
 
 
-def build_wizard_step_pages(
+WizardStepPage = WorkflowStepPage
+"""Compatibility alias for pre-#805 wizard step-page callers."""
+
+
+def build_workflow_step_pages(
     *,
     parent=None,
     specs: Sequence[DockWorkflowPageSpec] | None = None,
-) -> tuple[WizardStepPage, ...]:
-    """Build StepPage-backed pages in stable #609 wizard order."""
+) -> tuple[WorkflowStepPage, ...]:
+    """Build StepPage-backed pages in stable workflow order."""
 
     page_specs = build_default_workflow_page_specs() if specs is None else tuple(specs)
     step_total = len(page_specs)
     return tuple(
-        WizardStepPage(
+        WorkflowStepPage(
             spec,
             step_num=index + 1,
             step_total=step_total,
@@ -392,23 +396,31 @@ def build_wizard_step_pages(
     )
 
 
-def install_wizard_step_pages(
+build_wizard_step_pages = build_workflow_step_pages
+"""Compatibility alias for pre-#805 wizard step-page callers."""
+
+
+def install_workflow_step_pages(
     shell,
     specs: Sequence[DockWorkflowPageSpec] | None = None,
-) -> tuple[WizardStepPage, ...]:
-    """Create StepPage-backed wizard pages and append them to a shell."""
+) -> tuple[WorkflowStepPage, ...]:
+    """Create StepPage-backed workflow pages and append them to a shell."""
 
-    pages = build_wizard_step_pages(parent=shell, specs=specs)
+    pages = build_workflow_step_pages(parent=shell, specs=specs)
     for page in pages:
         shell.add_page(page)
     return pages
 
 
-def apply_wizard_step_page_statuses(
-    pages: Sequence[WizardStepPage],
+install_wizard_step_pages = install_workflow_step_pages
+"""Compatibility alias for pre-#805 wizard step-page callers."""
+
+
+def apply_workflow_step_page_statuses(
+    pages: Sequence[WorkflowStepPage],
     statuses: Sequence[DockWorkflowStepStatus],
 ) -> None:
-    """Render progress status pills on StepPage-backed wizard pages.
+    """Render progress status pills on StepPage-backed workflow pages.
 
     The stepper remains the source of truth for current-step navigation state.
     Header pills are therefore reserved for non-current states, avoiding a
@@ -423,6 +435,10 @@ def apply_wizard_step_page_statuses(
             continue
         text, tone = _step_status_pill(status.state)
         page.set_status(text, tone=tone)
+
+
+apply_wizard_step_page_statuses = apply_workflow_step_page_statuses
+"""Compatibility alias for pre-#805 wizard step-page callers."""
 
 
 class _LayoutWidget(QWidget):
@@ -534,10 +550,14 @@ __all__ = [
     "DockWorkflowPageSpec",
     "DockWizardPageSpec",
     "StepPage",
+    "WorkflowStepPage",
     "WizardStepPage",
+    "apply_workflow_step_page_statuses",
     "apply_wizard_step_page_statuses",
     "build_default_workflow_page_specs",
     "build_default_wizard_page_specs",
+    "build_workflow_step_pages",
     "build_wizard_step_pages",
+    "install_workflow_step_pages",
     "install_wizard_step_pages",
 ]

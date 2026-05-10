@@ -227,8 +227,31 @@ class StepPageTest(unittest.TestCase):
         )
         self.assertFalse(page.primary_hint_label.isVisible())
 
+    def test_workflow_step_page_is_canonical_export_with_wizard_alias(self):
+        spec = build_default_workflow_page_specs()[2]
+
+        page = self.step_page.WorkflowStepPage(spec, step_num=3, step_total=5)
+
+        self.assertIs(self.step_page.WizardStepPage, self.step_page.WorkflowStepPage)
+        self.assertEqual(page.objectName(), "qfitWizardMapPage")
+        self.assertIsInstance(page, self.step_page.WizardStepPage)
+
+    def test_workflow_step_page_builders_keep_wizard_compatibility_aliases(self):
+        self.assertIs(
+            self.step_page.build_wizard_step_pages,
+            self.step_page.build_workflow_step_pages,
+        )
+        self.assertIs(
+            self.step_page.install_wizard_step_pages,
+            self.step_page.install_workflow_step_pages,
+        )
+        self.assertIs(
+            self.step_page.apply_wizard_step_page_statuses,
+            self.step_page.apply_workflow_step_page_statuses,
+        )
+
     def test_builds_wizard_step_pages_from_default_specs(self):
-        pages = self.step_page.build_wizard_step_pages()
+        pages = self.step_page.build_workflow_step_pages()
 
         self.assertEqual(
             [page.spec.key for page in pages],
@@ -240,19 +263,19 @@ class StepPageTest(unittest.TestCase):
         )
 
     def test_build_wizard_step_pages_preserves_explicit_empty_specs(self):
-        pages = self.step_page.build_wizard_step_pages(specs=())
+        pages = self.step_page.build_workflow_step_pages(specs=())
 
         self.assertEqual(pages, ())
 
     def test_applies_progress_status_pills_to_step_pages(self):
-        pages = self.step_page.build_wizard_step_pages()
+        pages = self.step_page.build_workflow_step_pages()
         statuses = build_wizard_step_statuses(
             current_key="map",
             completed_keys={"connection", "sync"},
             unlocked_keys={"analysis"},
         )
 
-        self.step_page.apply_wizard_step_page_statuses(pages, statuses)
+        self.step_page.apply_workflow_step_page_statuses(pages, statuses)
 
         self.assertEqual(
             [page.status_pill.text() for page in pages],
@@ -270,7 +293,7 @@ class StepPageTest(unittest.TestCase):
     def test_installs_wizard_step_pages_into_shell(self):
         shell = self.wizard_shell.WizardShell()
 
-        pages = self.step_page.install_wizard_step_pages(shell)
+        pages = self.step_page.install_workflow_step_pages(shell)
 
         self.assertEqual(shell.page_count(), 5)
         self.assertEqual(shell.pages_stack.widgets, list(pages))
