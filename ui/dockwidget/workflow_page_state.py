@@ -611,11 +611,28 @@ def _atlas_output_summary(
     return default.output_summary_text
 
 
-# Preserve direct named imports from the original workflow module while the
-# explicit wizard_page_state compatibility module becomes the preferred path.
-WizardActionCallbacks = DockWorkflowActionCallbacks
-WizardPageStateSnapshots = WorkflowPageStateSnapshots
-build_wizard_page_states_from_facts = build_workflow_page_states_from_facts
+# Preserve direct named imports from the original workflow module lazily while
+# the explicit wizard_page_state compatibility module remains the preferred path.
+_WIZARD_COMPAT_ALIAS_TARGETS = {
+    "WizardActionCallbacks": "DockWorkflowActionCallbacks",
+    "WizardPageStateSnapshots": "WorkflowPageStateSnapshots",
+    "build_wizard_page_states_from_facts": "build_workflow_page_states_from_facts",
+}
+
+
+def __getattr__(name: str) -> object:
+    alias_target = _WIZARD_COMPAT_ALIAS_TARGETS.get(name)
+    if alias_target is not None:
+        try:
+            value = globals()[alias_target]
+        except KeyError:
+            raise AttributeError(
+                f"module {__name__!r} alias {name!r} target "
+                f"{alias_target!r} not found"
+            ) from None
+        globals()[name] = value
+        return value
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 __all__ = [
