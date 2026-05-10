@@ -236,8 +236,9 @@ def build_slope_grade_segments(
 def build_activity_slope_grade_segments(points_layer) -> tuple[SlopeGradeSegment, ...]:
     """Build activity slope-grade segments from a point-sample layer."""
 
-    return build_slope_grade_segments(
+    return _build_grouped_slope_grade_segments(
         _layer_features(points_layer),
+        group_field_sets=(("source", "source_activity_id"),),
         distance_field="stream_distance_m",
         elevation_field=None,
         grade_field="grade_smooth_pct",
@@ -247,11 +248,38 @@ def build_activity_slope_grade_segments(points_layer) -> tuple[SlopeGradeSegment
 def build_route_slope_grade_segments(sample_layer) -> tuple[SlopeGradeSegment, ...]:
     """Build saved-route slope-grade segments from route profile samples."""
 
-    return build_slope_grade_segments(
+    return _build_grouped_slope_grade_segments(
         _layer_features(sample_layer),
+        group_field_sets=(("sample_group_index",), ("source", "source_route_id")),
         distance_field="distance_m",
         elevation_field="altitude_m",
     )
+
+
+def _build_grouped_slope_grade_segments(
+    samples,
+    *,
+    group_field_sets,
+    distance_field,
+    elevation_field,
+    grade_field=None,
+):
+    groups: dict[tuple[object, ...], list[object]] = {}
+    for sample in samples:
+        key = _sample_group_key(sample, group_field_sets)
+        groups.setdefault(key, []).append(sample)
+
+    segments: list[SlopeGradeSegment] = []
+    for group_samples in groups.values():
+        segments.extend(
+            build_slope_grade_segments(
+                group_samples,
+                distance_field=distance_field,
+                elevation_field=elevation_field,
+                grade_field=grade_field,
+            )
+        )
+    return tuple(segments)
 
 
 def _grade_class_contains(grade_class: SlopeGradeClass, grade_percent: float) -> bool:
@@ -288,6 +316,14 @@ def _layer_features(layer):
     if not callable(features):
         return ()
     return features()
+
+
+def _sample_group_key(sample, group_field_sets):
+    for group_fields in group_field_sets:
+        values = tuple(_sample_value(sample, field_name) for field_name in group_fields)
+        if any(value not in (None, "") for value in values):
+            return values
+    return (None,)
 
 
 def _sample_value(sample, field_name):
