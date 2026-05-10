@@ -62,9 +62,10 @@ class WizardShellPresenterTest(unittest.TestCase):
         self.assertNotIn("WizardShellPresenter", self.workflow_presenter.__all__)
         self.assertIn("DockWorkflowProgress", self.workflow_presenter.__all__)
         self.assertNotIn("DockWizardProgress", self.workflow_presenter.__all__)
-        self.assertIn("WorkflowShellPresenter", self.presenter.__all__)
-        self.assertIn("WizardShellPresenter", self.presenter.__all__)
-        self.assertIn("DockWizardProgress", self.presenter.__all__)
+        self.assertEqual(
+            self.presenter.__all__,
+            ["DockWizardProgress", "WizardShellPresenter"],
+        )
         self.assertIn("WorkflowShellPresenter", self.dockwidget_package.__all__)
         self.assertNotIn("WizardShellPresenter", self.dockwidget_package.__all__)
 
