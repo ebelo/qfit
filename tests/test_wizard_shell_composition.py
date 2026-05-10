@@ -71,6 +71,90 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertIn("WizardShell", self.composition.__all__)
         self.assertIn("WorkflowPage", self.composition.__all__)
         self.assertIn("WizardPage", self.composition.__all__)
+        self.assertIs(
+            self.composition.WizardCompositionPage,
+            self.composition.WorkflowCompositionPage,
+        )
+        self.assertIn("WorkflowCompositionPage", self.composition.__all__)
+        self.assertIn("WizardCompositionPage", self.composition.__all__)
+
+    def test_exports_workflow_shell_composition_as_canonical_api(self):
+        self.assertEqual(
+            self.composition.WorkflowShellComposition.__name__,
+            "WorkflowShellComposition",
+        )
+        self.assertIs(
+            self.composition.WizardShellComposition,
+            self.composition.WorkflowShellComposition,
+        )
+        self.assertTrue(callable(self.composition.build_placeholder_wizard_shell))
+        self.assertTrue(callable(self.composition.build_placeholder_workflow_shell))
+        self.assertTrue(callable(self.composition.refresh_wizard_shell_composition))
+        self.assertTrue(callable(self.composition.refresh_workflow_shell_composition))
+        self.assertIs(
+            self.composition.connect_wizard_action_callbacks,
+            self.composition.connect_workflow_action_callbacks,
+        )
+        self.assertIn("WorkflowShellComposition", self.composition.__all__)
+        self.assertIn("WizardShellComposition", self.composition.__all__)
+        self.assertIn("build_placeholder_workflow_shell", self.composition.__all__)
+        self.assertIn("build_placeholder_wizard_shell", self.composition.__all__)
+        self.assertIn("refresh_workflow_shell_composition", self.composition.__all__)
+        self.assertIn("refresh_wizard_shell_composition", self.composition.__all__)
+        self.assertIn("connect_workflow_action_callbacks", self.composition.__all__)
+        self.assertIn("connect_wizard_action_callbacks", self.composition.__all__)
+
+    def test_canonical_workflow_composition_keeps_stable_qt_object_names(self):
+        assembled = self.composition.build_placeholder_workflow_shell(footer_text="Ready")
+
+        self.assertIsInstance(assembled, self.composition.WorkflowShellComposition)
+        self.assertEqual(assembled.shell.objectName(), "qfitWizardShell")
+        self.assertEqual(assembled.shell.stepper_bar.objectName(), "qfitStepperBar")
+        self.assertEqual(assembled.shell.footer_bar.objectName(), "qfitWizardFooterBar")
+
+    def test_canonical_workflow_settings_restore_reachable_initial_step(self):
+        assembled = self.composition.build_placeholder_workflow_shell(
+            progress_facts=WorkflowProgressFacts(connection_configured=True),
+            workflow_settings=self.composition.WorkflowSettingsSnapshot(
+                wizard_version=1,
+                last_step_index=0,
+                first_launch=False,
+            ),
+        )
+
+        self.assertEqual(assembled.presenter.progress.current_key, "connection")
+        self.assertEqual(assembled.shell.pages_stack.currentIndex(), 0)
+
+    def test_workflow_settings_reject_duplicate_wizard_settings_alias(self):
+        settings = self.composition.WorkflowSettingsSnapshot(
+            wizard_version=1,
+            last_step_index=0,
+            first_launch=False,
+        )
+
+        with self.assertRaisesRegex(
+            ValueError,
+            "Pass workflow_settings or wizard_settings, not both",
+        ):
+            self.composition.build_placeholder_wizard_shell(
+                workflow_settings=settings,
+                wizard_settings=settings,
+            )
+
+    def test_wizard_settings_alias_routes_through_compatibility_wrapper(self):
+        settings = self.composition.WorkflowSettingsSnapshot(
+            wizard_version=1,
+            last_step_index=0,
+            first_launch=False,
+        )
+
+        assembled = self.composition.build_placeholder_wizard_shell(
+            progress_facts=WorkflowProgressFacts(connection_configured=True),
+            wizard_settings=settings,
+        )
+
+        self.assertEqual(assembled.presenter.progress.current_key, "connection")
+        self.assertIsInstance(assembled, self.composition.WorkflowShellComposition)
 
     def test_keeps_wizard_progress_facts_as_compatibility_alias(self):
         self.assertIs(self.composition.WizardProgressFacts, WorkflowProgressFacts)

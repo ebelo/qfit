@@ -51,23 +51,26 @@ from .wizard_page import WorkflowPage, install_workflow_pages
 from .wizard_shell import WorkflowShell
 from .workflow_shell_presenter import WorkflowShellPresenter
 from .workflow_page_state import (
-    DockWorkflowActionCallbacks as WizardActionCallbacks,
-    WorkflowPageStateSnapshots as WizardPageStateSnapshots,
-    build_workflow_page_states_from_facts as build_wizard_page_states_from_facts,
+    DockWorkflowActionCallbacks,
+    WorkflowPageStateSnapshots,
+    build_workflow_page_states_from_facts,
     completed_prefix_facts,
     connect_optional_signal as _connect_optional_signal,
 )
 
 
-WizardSettingsSnapshot = WorkflowSettingsSnapshot
 DockWizardPageSpec = DockWorkflowPageSpec
 """Compatibility alias for pre-#805 wizard composition page spec callers."""
 build_default_wizard_page_specs = build_default_workflow_page_specs
 """Compatibility alias for pre-#805 wizard composition builder callers."""
 _StateT = TypeVar("_StateT")
-WizardCompositionPage: TypeAlias = WorkflowPage | WorkflowStepPage
+WorkflowCompositionPage: TypeAlias = WorkflowPage | WorkflowStepPage
+WizardCompositionPage: TypeAlias = WorkflowCompositionPage
+"""Compatibility alias for pre-#805 wizard composition page callers."""
 WizardProgressFacts = WorkflowProgressFacts
 """Compatibility alias for wizard shell composition callers during #805."""
+WizardSettingsSnapshot = WorkflowSettingsSnapshot
+"""Compatibility alias for pre-#805 wizard shell composition callers."""
 DockWizardProgress = DockWorkflowProgress
 """Compatibility alias for pre-#805 wizard shell composition callers."""
 WizardShell = WorkflowShell
@@ -76,27 +79,33 @@ WizardPage = WorkflowPage
 """Compatibility alias for pre-#805 wizard shell composition callers."""
 WizardShellPresenter = WorkflowShellPresenter
 """Compatibility alias for pre-#805 wizard shell composition callers."""
+WizardActionCallbacks = DockWorkflowActionCallbacks
+"""Compatibility alias for pre-#805 wizard shell composition callers."""
+WizardPageStateSnapshots = WorkflowPageStateSnapshots
+"""Compatibility alias for pre-#805 wizard shell composition callers."""
+build_wizard_page_states_from_facts = build_workflow_page_states_from_facts
+"""Compatibility alias for pre-#805 wizard shell composition callers."""
 
 
 @dataclass
-class WizardShellComposition:
-    """Concrete placeholder wizard assembly for the future dock replacement.
+class WorkflowShellComposition:
+    """Concrete placeholder workflow assembly for the future dock replacement.
 
     The composition keeps the shell, page placeholders, and presenter wiring in
     one reusable unit without replacing the current production dock yet. That
-    gives #609 a safe integration seam for the eventual dock swap while keeping
-    this slice focused on wizard-forward UI structure.
+    gives #805 a safe integration seam for the local-first/tabbed dock swap
+    while keeping stable widget names and UX unchanged.
     """
 
     shell: WorkflowShell
-    pages: tuple[WizardCompositionPage, ...]
+    pages: tuple[WorkflowCompositionPage, ...]
     presenter: WorkflowShellPresenter
     connection_content: ConnectionPageContent | None = None
     sync_content: SyncPageContent | None = None
     map_content: MapPageContent | None = None
     analysis_content: AnalysisPageContent | None = None
     atlas_content: AtlasPageContent | None = None
-    action_callbacks: WizardActionCallbacks | None = None
+    action_callbacks: DockWorkflowActionCallbacks | None = None
     connection_state: ConnectionPageState | None = None
     sync_state: SyncPageState | None = None
     map_state: MapPageState | None = None
@@ -105,13 +114,17 @@ class WizardShellComposition:
     on_current_step_changed: Callable[[int], None] | None = None
 
 
-def build_placeholder_wizard_shell(
+WizardShellComposition = WorkflowShellComposition
+"""Compatibility alias for pre-#805 wizard shell composition callers."""
+
+
+def build_placeholder_workflow_shell(
     *,
     parent=None,
     footer_text: str = "",
     progress: DockWorkflowProgress | None = None,
     progress_facts: WorkflowProgressFacts | None = None,
-    wizard_settings: WizardSettingsSnapshot | None = None,
+    workflow_settings: WorkflowSettingsSnapshot | None = None,
     specs: Sequence[DockWorkflowPageSpec] | None = None,
     use_step_pages: bool = True,
     connection_state: ConnectionPageState | None = None,
@@ -120,8 +133,8 @@ def build_placeholder_wizard_shell(
     analysis_state: AnalysisPageState | None = None,
     atlas_state: AtlasPageState | None = None,
     on_current_step_changed: Callable[[int], None] | None = None,
-) -> WizardShellComposition:
-    """Build the placeholder #609 wizard shell with pages and presenter wired.
+) -> WorkflowShellComposition:
+    """Build the placeholder #805 workflow shell with pages and presenter wired.
 
     Pages are installed before the presenter renders so the initial progress
     snapshot selects the matching visible page immediately. The helper does not
@@ -163,7 +176,7 @@ def build_placeholder_wizard_shell(
     resolved_progress = _resolve_progress(
         progress=progress,
         progress_facts=progress_facts,
-        wizard_settings=wizard_settings,
+        workflow_settings=workflow_settings,
     )
     footer_facts = _footer_facts_from_progress_facts(progress_facts)
     page_specs = _resolve_page_specs(specs)
@@ -200,7 +213,7 @@ def build_placeholder_wizard_shell(
         on_current_step_changed=on_current_step_changed,
     )
     _connect_step_page_navigation(shell, pages, presenter)
-    return WizardShellComposition(
+    return WorkflowShellComposition(
         shell=shell,
         pages=pages,
         presenter=presenter,
@@ -218,8 +231,15 @@ def build_placeholder_wizard_shell(
     )
 
 
-def refresh_wizard_shell_composition(
-    composition: WizardShellComposition,
+def build_placeholder_wizard_shell(**kwargs) -> WorkflowShellComposition:
+    """Compatibility wrapper for pre-#805 wizard shell composition callers."""
+
+    _normalize_wizard_settings_kwargs(kwargs)
+    return build_placeholder_workflow_shell(**kwargs)
+
+
+def refresh_workflow_shell_composition(
+    composition: WorkflowShellComposition,
     *,
     connection_state: ConnectionPageState | None = None,
     sync_state: SyncPageState | None = None,
@@ -229,12 +249,12 @@ def refresh_wizard_shell_composition(
     footer_text: str | None = None,
     progress: DockWorkflowProgress | None = None,
     progress_facts: WorkflowProgressFacts | None = None,
-    wizard_settings: WizardSettingsSnapshot | None = None,
-) -> WizardShellComposition:
-    """Refresh installed wizard page state without rebuilding the shell.
+    workflow_settings: WorkflowSettingsSnapshot | None = None,
+) -> WorkflowShellComposition:
+    """Refresh installed workflow page state without rebuilding the shell.
 
-    This is the small adapter seam the future dock can use when real workflow
-    facts change: update only the installed page widgets, then refresh the
+    This is the small local-first seam the dock can use when real workflow facts
+    change: update only the installed page widgets, then refresh the
     persistent footer and optional stepper progress from the same render-neutral
     state snapshots. Missing page content is skipped so partial/spec-filtered
     wizard assemblies remain valid. When ``progress_facts`` are provided, their
@@ -297,7 +317,7 @@ def refresh_wizard_shell_composition(
     resolved_progress = _resolve_progress(
         progress=progress,
         progress_facts=progress_facts,
-        wizard_settings=wizard_settings,
+        workflow_settings=workflow_settings,
     )
     footer_facts = _footer_facts_from_progress_facts(progress_facts)
     _validate_progress_targets_installed_page(resolved_progress, composition.pages)
@@ -339,15 +359,25 @@ def refresh_wizard_shell_composition(
     return composition
 
 
-def connect_wizard_action_callbacks(
-    composition: WizardShellComposition,
-    callbacks: WizardActionCallbacks,
-) -> WizardShellComposition:
-    """Wire concrete action callbacks into an assembled wizard shell.
+def refresh_wizard_shell_composition(
+    composition: WorkflowShellComposition,
+    **kwargs,
+) -> WorkflowShellComposition:
+    """Compatibility wrapper for pre-#805 wizard shell composition callers."""
 
-    This keeps the reusable #609 shell decoupled from ``QfitDockWidget`` while
+    _normalize_wizard_settings_kwargs(kwargs)
+    return refresh_workflow_shell_composition(composition, **kwargs)
+
+
+def connect_workflow_action_callbacks(
+    composition: WorkflowShellComposition,
+    callbacks: DockWorkflowActionCallbacks,
+) -> WorkflowShellComposition:
+    """Wire concrete action callbacks into an assembled workflow shell.
+
+    This keeps the reusable #805 shell decoupled from ``QfitDockWidget`` while
     giving the future dock swap a single adapter seam for visible page CTAs.
-    Missing page content is skipped so partial wizard assemblies remain safe.
+    Missing page content is skipped so partial workflow assemblies remain safe.
     """
 
     if composition.action_callbacks is not None:
@@ -364,9 +394,6 @@ def connect_wizard_action_callbacks(
     composition.action_callbacks = callbacks
     return composition
 
-
-
-
 def _connect_action_callbacks(
     *,
     connection_content: ConnectionPageContent | None,
@@ -374,7 +401,7 @@ def _connect_action_callbacks(
     map_content: MapPageContent | None,
     analysis_content: AnalysisPageContent | None,
     atlas_content: AtlasPageContent | None,
-    callbacks: WizardActionCallbacks,
+    callbacks: DockWorkflowActionCallbacks,
 ) -> None:
     _connect_optional_signal(
         connection_content,
@@ -430,23 +457,34 @@ def _connect_action_callbacks(
         callbacks.update_atlas_document_settings,
     )
 
-
-
-
 def _resolve_progress(
     *,
     progress: DockWorkflowProgress | None,
     progress_facts: WorkflowProgressFacts | None,
-    wizard_settings: WizardSettingsSnapshot | None,
+    workflow_settings: WorkflowSettingsSnapshot | None,
 ) -> DockWorkflowProgress | None:
-    if progress is not None and (progress_facts is not None or wizard_settings is not None):
-        raise ValueError("Pass progress or progress_facts/wizard_settings, not both")
-    if progress_facts is None and wizard_settings is None:
+    if progress is not None and (
+        progress_facts is not None
+        or workflow_settings is not None
+    ):
+        raise ValueError(
+            "Pass progress or progress_facts/workflow_settings, not both; "
+            "wizard_settings is a compatibility alias for workflow_settings"
+        )
+    if progress_facts is None and workflow_settings is None:
         return progress
     facts = progress_facts or WorkflowProgressFacts()
-    if wizard_settings is not None:
-        return build_workflow_progress_from_facts_and_settings(facts, wizard_settings)
+    if workflow_settings is not None:
+        return build_workflow_progress_from_facts_and_settings(facts, workflow_settings)
     return build_workflow_progress_from_facts(facts)
+
+
+def _normalize_wizard_settings_kwargs(kwargs) -> None:
+    wizard_settings = kwargs.pop("wizard_settings", None)
+    if kwargs.get("workflow_settings") is not None and wizard_settings is not None:
+        raise ValueError("Pass workflow_settings or wizard_settings, not both")
+    if wizard_settings is not None:
+        kwargs["workflow_settings"] = wizard_settings
 
 
 def _page_state_defaults_from_progress_facts(
@@ -454,10 +492,7 @@ def _page_state_defaults_from_progress_facts(
 ) -> WizardPageStateSnapshots | None:
     if progress_facts is None:
         return None
-    return build_wizard_page_states_from_facts(progress_facts)
-
-
-
+    return build_workflow_page_states_from_facts(progress_facts)
 
 def _footer_facts_from_progress_facts(
     progress_facts: WorkflowProgressFacts | None,
@@ -481,7 +516,7 @@ def _apply_footer_facts(footer_bar, footer_facts: WorkflowFooterFacts | None) ->
 
 def _validate_progress_targets_installed_page(
     progress: DockWorkflowProgress | None,
-    pages: Sequence[WizardCompositionPage],
+    pages: Sequence[WorkflowCompositionPage],
 ) -> None:
     if progress is None:
         return
@@ -491,7 +526,7 @@ def _validate_progress_targets_installed_page(
 
 
 def _build_page_indices_by_key(
-    pages: Sequence[WizardCompositionPage],
+    pages: Sequence[WorkflowCompositionPage],
 ) -> dict[str, int]:
     return {page.spec.key: index for index, page in enumerate(pages)}
 
@@ -547,7 +582,7 @@ def _install_shell_pages(
     *,
     specs: Sequence[DockWorkflowPageSpec],
     use_step_pages: bool,
-) -> tuple[WizardCompositionPage, ...]:
+) -> tuple[WorkflowCompositionPage, ...]:
     if use_step_pages:
         return install_workflow_step_pages(shell, specs=specs)
     return install_workflow_pages(shell, specs=specs)
@@ -555,7 +590,7 @@ def _install_shell_pages(
 
 def _connect_step_page_navigation(
     shell: WorkflowShell,
-    pages: Sequence[WizardCompositionPage],
+    pages: Sequence[WorkflowCompositionPage],
     presenter: WorkflowShellPresenter,
 ) -> None:
     step_pages = tuple(
@@ -597,7 +632,7 @@ def _connect_step_page_navigation(
 
 
 def _sync_step_page_navigation_and_status(
-    pages: Sequence[WizardCompositionPage],
+    pages: Sequence[WorkflowCompositionPage],
     presenter: WorkflowShellPresenter,
 ) -> None:
     _sync_step_page_navigation_buttons(pages, presenter)
@@ -605,7 +640,7 @@ def _sync_step_page_navigation_and_status(
 
 
 def _sync_step_page_navigation_buttons(
-    pages: Sequence[WizardCompositionPage],
+    pages: Sequence[WorkflowCompositionPage],
     presenter: WorkflowShellPresenter,
 ) -> None:
     statuses = build_progress_workflow_step_statuses(presenter.progress)
@@ -662,7 +697,7 @@ def _navigation_label(
 
 
 def _step_page_titles_by_workflow_index(
-    pages: Sequence[WizardCompositionPage],
+    pages: Sequence[WorkflowCompositionPage],
 ) -> dict[int, str]:
     return {
         step_index_for_key(page.spec.key): page.spec.title
@@ -672,7 +707,7 @@ def _step_page_titles_by_workflow_index(
 
 
 def _sync_step_page_status_pills(
-    pages: Sequence[WizardCompositionPage],
+    pages: Sequence[WorkflowCompositionPage],
     presenter: WorkflowShellPresenter,
 ) -> None:
     step_pages = tuple(page for page in pages if isinstance(page, WorkflowStepPage))
@@ -685,7 +720,7 @@ def _sync_step_page_status_pills(
 
 
 def _step_page_navigation_targets(
-    pages: Sequence[WizardCompositionPage],
+    pages: Sequence[WorkflowCompositionPage],
     *,
     installed_index: int,
     statuses: Sequence[DockWorkflowStepStatus] | None = None,
@@ -709,10 +744,10 @@ def _step_page_navigation_targets(
 
 
 def _should_skip_optional_analysis_to_atlas(
-    pages: Sequence[WizardCompositionPage],
+    pages: Sequence[WorkflowCompositionPage],
     *,
-    current_page: WizardCompositionPage,
-    next_page: WizardCompositionPage | None,
+    current_page: WorkflowCompositionPage,
+    next_page: WorkflowCompositionPage | None,
     installed_index: int,
     statuses: Sequence[DockWorkflowStepStatus] | None,
 ) -> bool:
@@ -730,14 +765,14 @@ def _should_skip_optional_analysis_to_atlas(
     return statuses is not None and can_request_step(statuses, atlas_index)
 
 
-def _workflow_index_for_page(page: WizardCompositionPage | None) -> int | None:
+def _workflow_index_for_page(page: WorkflowCompositionPage | None) -> int | None:
     if page is None:
         return None
     return step_index_for_key(page.spec.key)
 
 
 def _install_connection_content(
-    pages: Sequence[WizardCompositionPage],
+    pages: Sequence[WorkflowCompositionPage],
     *,
     connection_state: ConnectionPageState | None,
 ) -> ConnectionPageContent | None:
@@ -748,7 +783,7 @@ def _install_connection_content(
 
 
 def _install_sync_content(
-    pages: Sequence[WizardCompositionPage],
+    pages: Sequence[WorkflowCompositionPage],
     *,
     sync_state: SyncPageState | None,
 ) -> SyncPageContent | None:
@@ -759,7 +794,7 @@ def _install_sync_content(
 
 
 def _install_map_content(
-    pages: Sequence[WizardCompositionPage],
+    pages: Sequence[WorkflowCompositionPage],
     *,
     map_state: MapPageState | None,
 ) -> MapPageContent | None:
@@ -770,7 +805,7 @@ def _install_map_content(
 
 
 def _install_analysis_content(
-    pages: Sequence[WizardCompositionPage],
+    pages: Sequence[WorkflowCompositionPage],
     *,
     analysis_state: AnalysisPageState | None,
 ) -> AnalysisPageContent | None:
@@ -781,7 +816,7 @@ def _install_analysis_content(
 
 
 def _install_atlas_content(
-    pages: Sequence[WizardCompositionPage],
+    pages: Sequence[WorkflowCompositionPage],
     *,
     atlas_state: AtlasPageState | None,
 ) -> AtlasPageContent | None:
@@ -791,12 +826,18 @@ def _install_atlas_content(
     return None
 
 
+connect_wizard_action_callbacks = connect_workflow_action_callbacks
+"""Compatibility alias for pre-#805 wizard shell composition callers."""
+
+
 __all__ = [
+    "DockWorkflowActionCallbacks",
     "DockWorkflowPageSpec",
     "DockWorkflowProgress",
     "DockWizardPageSpec",
     "DockWizardProgress",
     "WizardActionCallbacks",
+    "WizardCompositionPage",
     "WizardPage",
     "WizardPageStateSnapshots",
     "WizardProgressFacts",
@@ -804,14 +845,22 @@ __all__ = [
     "WizardShell",
     "WizardShellComposition",
     "WizardShellPresenter",
+    "WorkflowCompositionPage",
     "WorkflowPage",
+    "WorkflowPageStateSnapshots",
+    "WorkflowSettingsSnapshot",
     "WorkflowShell",
+    "WorkflowShellComposition",
     "WorkflowShellPresenter",
     "WorkflowProgressFacts",
     "build_default_workflow_page_specs",
     "build_default_wizard_page_specs",
+    "build_placeholder_workflow_shell",
     "build_placeholder_wizard_shell",
+    "build_workflow_page_states_from_facts",
     "build_wizard_page_states_from_facts",
+    "connect_workflow_action_callbacks",
     "connect_wizard_action_callbacks",
+    "refresh_workflow_shell_composition",
     "refresh_wizard_shell_composition",
 ]
