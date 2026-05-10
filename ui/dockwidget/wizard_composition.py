@@ -125,7 +125,6 @@ def build_placeholder_workflow_shell(
     progress: DockWorkflowProgress | None = None,
     progress_facts: WorkflowProgressFacts | None = None,
     workflow_settings: WorkflowSettingsSnapshot | None = None,
-    wizard_settings: WizardSettingsSnapshot | None = None,
     specs: Sequence[DockWorkflowPageSpec] | None = None,
     use_step_pages: bool = True,
     connection_state: ConnectionPageState | None = None,
@@ -178,7 +177,6 @@ def build_placeholder_workflow_shell(
         progress=progress,
         progress_facts=progress_facts,
         workflow_settings=workflow_settings,
-        wizard_settings=wizard_settings,
     )
     footer_facts = _footer_facts_from_progress_facts(progress_facts)
     page_specs = _resolve_page_specs(specs)
@@ -233,6 +231,13 @@ def build_placeholder_workflow_shell(
     )
 
 
+def build_placeholder_wizard_shell(**kwargs) -> WorkflowShellComposition:
+    """Compatibility wrapper for pre-#805 wizard shell composition callers."""
+
+    _normalize_wizard_settings_kwargs(kwargs)
+    return build_placeholder_workflow_shell(**kwargs)
+
+
 def refresh_workflow_shell_composition(
     composition: WorkflowShellComposition,
     *,
@@ -245,7 +250,6 @@ def refresh_workflow_shell_composition(
     progress: DockWorkflowProgress | None = None,
     progress_facts: WorkflowProgressFacts | None = None,
     workflow_settings: WorkflowSettingsSnapshot | None = None,
-    wizard_settings: WizardSettingsSnapshot | None = None,
 ) -> WorkflowShellComposition:
     """Refresh installed workflow page state without rebuilding the shell.
 
@@ -314,7 +318,6 @@ def refresh_workflow_shell_composition(
         progress=progress,
         progress_facts=progress_facts,
         workflow_settings=workflow_settings,
-        wizard_settings=wizard_settings,
     )
     footer_facts = _footer_facts_from_progress_facts(progress_facts)
     _validate_progress_targets_installed_page(resolved_progress, composition.pages)
@@ -356,6 +359,16 @@ def refresh_workflow_shell_composition(
     return composition
 
 
+def refresh_wizard_shell_composition(
+    composition: WorkflowShellComposition,
+    **kwargs,
+) -> WorkflowShellComposition:
+    """Compatibility wrapper for pre-#805 wizard shell composition callers."""
+
+    _normalize_wizard_settings_kwargs(kwargs)
+    return refresh_workflow_shell_composition(composition, **kwargs)
+
+
 def connect_workflow_action_callbacks(
     composition: WorkflowShellComposition,
     callbacks: DockWorkflowActionCallbacks,
@@ -380,9 +393,6 @@ def connect_workflow_action_callbacks(
     )
     composition.action_callbacks = callbacks
     return composition
-
-
-
 
 def _connect_action_callbacks(
     *,
@@ -447,38 +457,34 @@ def _connect_action_callbacks(
         callbacks.update_atlas_document_settings,
     )
 
-
-
-
 def _resolve_progress(
     *,
     progress: DockWorkflowProgress | None,
     progress_facts: WorkflowProgressFacts | None,
     workflow_settings: WorkflowSettingsSnapshot | None,
-    wizard_settings: WizardSettingsSnapshot | None,
 ) -> DockWorkflowProgress | None:
     if progress is not None and (
         progress_facts is not None
         or workflow_settings is not None
-        or wizard_settings is not None
     ):
-        raise ValueError("Pass progress or progress_facts/workflow_settings, not both")
-    settings = _resolve_workflow_settings(workflow_settings, wizard_settings)
-    if progress_facts is None and settings is None:
+        raise ValueError(
+            "Pass progress or progress_facts/workflow_settings, not both; "
+            "wizard_settings is a compatibility alias for workflow_settings"
+        )
+    if progress_facts is None and workflow_settings is None:
         return progress
     facts = progress_facts or WorkflowProgressFacts()
-    if settings is not None:
-        return build_workflow_progress_from_facts_and_settings(facts, settings)
+    if workflow_settings is not None:
+        return build_workflow_progress_from_facts_and_settings(facts, workflow_settings)
     return build_workflow_progress_from_facts(facts)
 
 
-def _resolve_workflow_settings(
-    workflow_settings: WorkflowSettingsSnapshot | None,
-    wizard_settings: WizardSettingsSnapshot | None,
-) -> WorkflowSettingsSnapshot | None:
-    if workflow_settings is not None and wizard_settings is not None:
+def _normalize_wizard_settings_kwargs(kwargs) -> None:
+    wizard_settings = kwargs.pop("wizard_settings", None)
+    if kwargs.get("workflow_settings") is not None and wizard_settings is not None:
         raise ValueError("Pass workflow_settings or wizard_settings, not both")
-    return workflow_settings if workflow_settings is not None else wizard_settings
+    if wizard_settings is not None:
+        kwargs["workflow_settings"] = wizard_settings
 
 
 def _page_state_defaults_from_progress_facts(
@@ -487,9 +493,6 @@ def _page_state_defaults_from_progress_facts(
     if progress_facts is None:
         return None
     return build_workflow_page_states_from_facts(progress_facts)
-
-
-
 
 def _footer_facts_from_progress_facts(
     progress_facts: WorkflowProgressFacts | None,
@@ -823,10 +826,6 @@ def _install_atlas_content(
     return None
 
 
-build_placeholder_wizard_shell = build_placeholder_workflow_shell
-"""Compatibility alias for pre-#805 wizard shell composition callers."""
-refresh_wizard_shell_composition = refresh_workflow_shell_composition
-"""Compatibility alias for pre-#805 wizard shell composition callers."""
 connect_wizard_action_callbacks = connect_workflow_action_callbacks
 """Compatibility alias for pre-#805 wizard shell composition callers."""
 
