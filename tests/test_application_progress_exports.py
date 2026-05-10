@@ -49,12 +49,26 @@ class ApplicationProgressExportTests(unittest.TestCase):
 
             eager_alias_names = (
                 "DockWizardPageSpec",
+                "DockWizardProgress",
+                "WIZARD_STEP_COUNT",
+                "WIZARD_VERSION",
+                "WIZARD_VERSION_KEY",
+                "WIZARD_WORKFLOW_STEPS",
                 "WizardFooterFacts",
                 "WizardSettingsSnapshot",
                 "build_default_wizard_page_specs",
+                "build_initial_wizard_step_statuses",
+                "build_progress_wizard_step_statuses",
                 "build_wizard_filter_description",
                 "build_wizard_footer_facts_from_progress_facts",
                 "build_wizard_footer_status",
+                "build_wizard_step_statuses",
+                "clamp_wizard_step_index",
+                "ensure_wizard_settings",
+                "load_wizard_settings",
+                "preferred_current_key_from_settings",
+                "save_last_step_index",
+                "wizard_step_key_for_index",
             )
             for name in eager_alias_names:
                 with self.subTest(eager_alias=name):

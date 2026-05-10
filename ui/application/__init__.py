@@ -232,7 +232,13 @@ _WIZARD_PROGRESS_COMPAT_EXPORTS = frozenset(
 def __getattr__(name: str) -> object:
     alias_target = _WIZARD_COMPAT_ALIAS_TARGETS.get(name)
     if alias_target is not None:
-        value = globals()[alias_target]
+        try:
+            value = globals()[alias_target]
+        except KeyError:
+            raise AttributeError(
+                f"module {__name__!r} alias {name!r} target "
+                f"{alias_target!r} not found"
+            ) from None
         globals()[name] = value
         return value
     if name in _WIZARD_PROGRESS_COMPAT_EXPORTS:
