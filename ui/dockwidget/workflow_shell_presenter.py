@@ -180,13 +180,9 @@ def _missing_completion_prerequisites(
 
 DockWizardProgress = DockWorkflowProgress
 """Compatibility alias for pre-#805 wizard shell presenter tests/callers."""
-WizardShellPresenter = WorkflowShellPresenter
-"""Compatibility alias for pre-#805 wizard shell presenter callers."""
-
 
 __all__ = [
     "DockWorkflowProgress",
     "DockWizardProgress",
     "WorkflowShellPresenter",
-    "WizardShellPresenter",
 ]
