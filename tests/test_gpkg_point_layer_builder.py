@@ -279,7 +279,7 @@ class BuildPointLayerTests(unittest.TestCase):
         self.assertEqual(features[-1]["altitude_m"], 410.0)
         self.assertEqual(features[-1]["point_ratio"], 1.0)
 
-    def test_summary_polyline_points_record_missing_stream_status(self):
+    def test_summary_polyline_points_have_no_stream_metrics_status(self):
         records = [
             {
                 "source": "strava",
