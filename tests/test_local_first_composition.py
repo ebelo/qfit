@@ -14,6 +14,7 @@ def _load_local_first_composition_module():
         "qfit.ui.dockwidget.local_first_composition",
         "qfit.ui.dockwidget.local_first_shell",
         "qfit.ui.dockwidget.wizard_composition",
+        "qfit.ui.dockwidget.workflow_composition",
         "qfit.ui.dockwidget.workflow_page_state",
         "qfit.ui.dockwidget.analysis_page",
         "qfit.ui.dockwidget.atlas_page",

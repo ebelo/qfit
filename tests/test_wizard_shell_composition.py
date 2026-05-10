@@ -16,6 +16,7 @@ from qfit.ui.application.workflow_progress_facts import WorkflowProgressFacts
 def _load_wizard_composition_module():
     for name in (
         "qfit.ui.dockwidget.wizard_composition",
+        "qfit.ui.dockwidget.workflow_composition",
         "qfit.ui.dockwidget.workflow_page_state",
         "qfit.ui.dockwidget.analysis_page",
         "qfit.ui.dockwidget.atlas_page",
@@ -39,6 +40,16 @@ class WizardShellCompositionTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.composition = _load_wizard_composition_module()
+
+    def test_wizard_composition_reexports_canonical_workflow_module(self):
+        self.assertEqual(
+            self.composition.WorkflowShellComposition.__module__,
+            "qfit.ui.dockwidget.workflow_composition",
+        )
+        self.assertEqual(
+            self.composition.build_placeholder_workflow_shell.__module__,
+            "qfit.ui.dockwidget.workflow_composition",
+        )
 
     def test_exports_workflow_progress_facts_for_internal_callers(self):
         self.assertIs(self.composition.WorkflowProgressFacts, WorkflowProgressFacts)
