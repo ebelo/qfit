@@ -1034,6 +1034,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._dispatch_dock_action(ApplyVisualizationAction)
 
     def on_style_preset_changed(self, *_args):
+        self._mark_atlas_export_stale()
         self._dispatch_dock_action(RefreshVisualizationStyleAction)
 
     def on_run_analysis_clicked(self):
