@@ -388,6 +388,9 @@ class ActivityHeatmapLayerPureTests(unittest.TestCase):
         self.assertEqual(feature["source_layer"], "activity_tracks")
         self.assertEqual(feature["source_activity_id"], "ride-2")
         self.assertEqual(feature["point_index"], 1)
+        point = feature.geometry().asPoint()
+        self.assertAlmostEqual(point.x(), 734708.6, delta=1.0)
+        self.assertAlmostEqual(point.y(), 5860839.8, delta=1.0)
 
     def test_falls_back_to_activity_vertices_when_points_layer_missing(self):
         activities_layer = _FakeSourceLayer(
