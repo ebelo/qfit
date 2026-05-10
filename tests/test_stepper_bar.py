@@ -263,6 +263,18 @@ class StepperBarTest(unittest.TestCase):
             ),
         )
 
+    def test_workflow_state_properties_are_public_exports(self):
+        self.assertIn("WORKFLOW_STEPPER_STATE_PROPERTY", self.stepper.__all__)
+        self.assertIn("WIZARD_STEPPER_STATE_PROPERTY", self.stepper.__all__)
+        self.assertEqual(
+            self.stepper.WORKFLOW_STEPPER_STATE_PROPERTY,
+            "workflowState",
+        )
+        self.assertEqual(
+            self.stepper.WIZARD_STEPPER_STATE_PROPERTY,
+            "wizardState",
+        )
+
     def test_qt_import_guard_requires_all_widget_classes(self):
         incomplete_qtwidgets = types.ModuleType("qgis.PyQt.QtWidgets")
         incomplete_qtwidgets.QWidget = object
@@ -306,6 +318,7 @@ class StepperBarTest(unittest.TestCase):
         buttons = bar.step_buttons()
         self.assertEqual(bar.states(), ("done", "current", "upcoming", "locked", "upcoming"))
         self.assertTrue(buttons[0].text().startswith("✓"))
+        self.assertEqual(buttons[1].property("workflowState"), "current")
         self.assertEqual(buttons[1].property("wizardState"), "current")
         self.assertTrue(buttons[2].isEnabled())
         self.assertEqual(buttons[2].toolTip(), "Map & filters")
@@ -315,6 +328,14 @@ class StepperBarTest(unittest.TestCase):
             "Complete Map & filters before opening Spatial analysis (optional).",
         )
         self.assertEqual(buttons[3].cursor().shape(), _FakeQt.ForbiddenCursor)
+        self.assertEqual(
+            [connector.property("workflowState") for connector in bar._connectors],
+            ["done", "upcoming", "upcoming", "upcoming"],
+        )
+        self.assertEqual(
+            [connector.property("wizardState") for connector in bar._connectors],
+            ["done", "upcoming", "upcoming", "upcoming"],
+        )
 
     def test_set_current_marks_other_steps_upcoming(self):
         bar = self.stepper.StepperBar()

@@ -44,6 +44,8 @@ QWidget = _qtwidgets.QWidget
 STEPPER_COMPACT_WIDTH = 520
 STEPPER_WIDE_HEIGHT = 36
 STEPPER_COMPACT_HEIGHT = 32
+WORKFLOW_STEPPER_STATE_PROPERTY = "workflowState"
+WIZARD_STEPPER_STATE_PROPERTY = "wizardState"
 
 
 class StepperBar(QWidget):
@@ -151,7 +153,7 @@ class StepperBar(QWidget):
     def _configure_button(self, button: QToolButton, index: int, state: str) -> None:
         button.setText(_button_text(index, state, compact=self._compact))
         button.setProperty("stepIndex", index)
-        button.setProperty("wizardState", state)
+        _set_workflow_step_state(button, state)
         button.setProperty("responsiveMode", "compact" if self._compact else "wide")
         button.setEnabled(state != "locked")
         button.setCursor(
@@ -164,8 +166,9 @@ class StepperBar(QWidget):
         for index, connector in enumerate(self._connectors):
             previous_step_is_done = self._states[index] == "done"
             color = COLOR_ACCENT if previous_step_is_done else COLOR_SEPARATOR
-            connector.setProperty(
-                "wizardState", "done" if previous_step_is_done else "upcoming"
+            _set_workflow_step_state(
+                connector,
+                "done" if previous_step_is_done else "upcoming",
             )
             connector.setStyleSheet(
                 f"QFrame#{connector.objectName()} {{ border: 0; background: {color}; }}"
@@ -185,6 +188,14 @@ def _validate_states(states: Sequence[str]) -> tuple[str, ...]:
         known = ", ".join(sorted(STEPPER_STATES))
         raise ValueError(f"Unknown stepper state(s): {', '.join(invalid_states)}; expected one of: {known}")
     return values
+
+
+def _set_workflow_step_state(widget, state: str) -> None:
+    """Tag workflow step chrome with canonical state plus legacy alias."""
+
+    widget.setProperty(WORKFLOW_STEPPER_STATE_PROPERTY, state)
+    # Preserve the wizard-named selector while #805 retires older shell naming.
+    widget.setProperty(WIZARD_STEPPER_STATE_PROPERTY, state)
 
 
 def _button_text(index: int, state: str, *, compact: bool = False) -> str:
@@ -241,4 +252,11 @@ def _button_stylesheet(state: str, *, compact: bool = False) -> str:
         f"QToolButton:hover:enabled {{ background: {COLOR_HOVER}; color: {COLOR_TEXT}; }}"    )
 
 
-__all__ = ["STEPPER_LABELS", "STEPPER_STATES", "StepperBar", "import_qt_module"]
+__all__ = [
+    "STEPPER_LABELS",
+    "STEPPER_STATES",
+    "StepperBar",
+    "WIZARD_STEPPER_STATE_PROPERTY",
+    "WORKFLOW_STEPPER_STATE_PROPERTY",
+    "import_qt_module",
+]
