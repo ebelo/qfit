@@ -42,13 +42,12 @@ build_default_wizard_page_specs = build_default_workflow_page_specs
 """Compatibility alias for pre-#805 wizard page builders."""
 
 
-class WizardPage(QWidget):
-    """Reusable visible page container for the #609 wizard shell.
+class WorkflowPage(QWidget):
+    """Reusable visible page container for the workflow shell.
 
-    The container supplies stable chrome for the future wizard pages while
-    leaving real page controls to later focused slices. It is deliberately not
-    wired into the current dock yet, so it remains compatible with the shell
-    structure without locking in the old scroll layout.
+    The container supplies stable chrome for the workflow pages while leaving
+    real page controls to focused slices. It preserves the stable
+    ``qfitWizard*`` object names used by QSS and existing tests.
     """
 
     def __init__(self, spec: DockWorkflowPageSpec, parent=None) -> None:
@@ -125,35 +124,50 @@ class WizardPage(QWidget):
         return layout
 
 
-def build_wizard_pages(
+WizardPage = WorkflowPage
+"""Compatibility alias for pre-#805 wizard page callers."""
+
+
+def build_workflow_pages(
     *,
     parent=None,
     specs: Sequence[DockWorkflowPageSpec] | None = None,
-) -> tuple[WizardPage, ...]:
-    """Build visible wizard page containers from render-neutral specs."""
+) -> tuple[WorkflowPage, ...]:
+    """Build visible workflow page containers from render-neutral specs."""
 
     page_specs = build_default_workflow_page_specs() if specs is None else tuple(specs)
-    return tuple(WizardPage(spec, parent) for spec in page_specs)
+    return tuple(WorkflowPage(spec, parent) for spec in page_specs)
 
 
-def install_wizard_pages(
+build_wizard_pages = build_workflow_pages
+"""Compatibility alias for pre-#805 wizard page callers."""
+
+
+def install_workflow_pages(
     shell,
     specs: Sequence[DockWorkflowPageSpec] | None = None,
-) -> tuple[WizardPage, ...]:
-    """Create default wizard pages and append them to a :class:`WizardShell`."""
+) -> tuple[WorkflowPage, ...]:
+    """Create default workflow pages and append them to a shell."""
 
-    pages = build_wizard_pages(parent=shell, specs=specs)
+    pages = build_workflow_pages(parent=shell, specs=specs)
     for page in pages:
         shell.add_page(page)
     return pages
 
 
+install_wizard_pages = install_workflow_pages
+"""Compatibility alias for pre-#805 wizard page callers."""
+
+
 __all__ = [
     "DockWorkflowPageSpec",
     "DockWizardPageSpec",
+    "WorkflowPage",
     "WizardPage",
     "build_default_workflow_page_specs",
     "build_default_wizard_page_specs",
+    "build_workflow_pages",
     "build_wizard_pages",
+    "install_workflow_pages",
     "install_wizard_pages",
 ]

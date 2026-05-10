@@ -85,7 +85,7 @@ class WizardPageTest(unittest.TestCase):
     def test_page_container_builds_visible_placeholder_chrome(self):
         spec = build_default_workflow_page_specs()[2]
 
-        page = self.wizard_page.WizardPage(spec)
+        page = self.wizard_page.WorkflowPage(spec)
 
         self.assertEqual(page.objectName(), "qfitWizardMapPage")
         self.assertEqual(page.title_label.objectName(), "qfitWizardMapPageTitle")
@@ -123,15 +123,36 @@ class WizardPageTest(unittest.TestCase):
         )
         self.assertFalse(page.primary_hint_label.isVisible())
 
+    def test_workflow_page_is_canonical_export_with_wizard_alias(self):
+        spec = build_default_workflow_page_specs()[2]
+
+        page = self.wizard_page.WorkflowPage(spec)
+
+        self.assertIs(self.wizard_page.WizardPage, self.wizard_page.WorkflowPage)
+        self.assertEqual(page.objectName(), "qfitWizardMapPage")
+        self.assertIsInstance(page, self.wizard_page.WizardPage)
+        self.assertIn("WorkflowPage", self.wizard_page.__all__)
+        self.assertIn("WizardPage", self.wizard_page.__all__)
+
+    def test_workflow_page_builders_keep_wizard_compatibility_aliases(self):
+        self.assertIs(
+            self.wizard_page.build_wizard_pages,
+            self.wizard_page.build_workflow_pages,
+        )
+        self.assertIs(
+            self.wizard_page.install_wizard_pages,
+            self.wizard_page.install_workflow_pages,
+        )
+
     def test_build_pages_preserves_explicit_empty_specs(self):
-        pages = self.wizard_page.build_wizard_pages(specs=())
+        pages = self.wizard_page.build_workflow_pages(specs=())
 
         self.assertEqual(pages, ())
 
     def test_installs_default_pages_into_wizard_shell(self):
-        shell = self.wizard_shell.WizardShell()
+        shell = self.wizard_shell.WorkflowShell()
 
-        pages = self.wizard_page.install_wizard_pages(shell)
+        pages = self.wizard_page.install_workflow_pages(shell)
 
         self.assertEqual(shell.page_count(), 5)
         self.assertEqual([page.spec.key for page in pages], ["connection", "sync", "map", "analysis", "atlas"])
