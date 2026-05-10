@@ -97,6 +97,8 @@ class DockWorkflowSectionsTests(unittest.TestCase):
 
         for name in alias_targets:
             with self.subTest(name=name):
+                # The module-level __getattr__ intentionally does not cache
+                # compatibility aliases, even after earlier direct imports.
                 self.assertNotIn(name, module.__dict__)
                 self.assertIs(getattr(module, name), getattr(module, alias_targets[name]))
 
