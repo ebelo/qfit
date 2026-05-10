@@ -469,6 +469,13 @@ class WizardShellTest(unittest.TestCase):
         self.assertIs(self.wizard_shell.WorkflowShell, self.workflow_shell.WorkflowShell)
         self.assertIs(self.wizard_shell.WizardShell, self.workflow_shell.WorkflowShell)
         self.assertIs(self.wizard_shell.STEPPER_LABELS, self.workflow_shell.STEPPER_LABELS)
+        self.assertIs(
+            self.wizard_shell.FooterStatusBar,
+            self.workflow_shell.FooterStatusBar,
+        )
+        self.assertIn("FooterStatusBar", self.wizard_shell.__all__)
+        self.assertIn("WorkflowShell", self.wizard_shell.__all__)
+        self.assertIn("WizardShell", self.wizard_shell.__all__)
 
     def test_outer_layout_matches_wizard_spec_order(self):
         shell = self.wizard_shell.WorkflowShell()
