@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Collection, Sequence
 from dataclasses import dataclass
-from typing import TypeVar
+from typing import TypeAlias, TypeVar
 
 from qfit.ui.application.dock_workflow_sections import (
     DockWorkflowProgress,
@@ -65,7 +65,7 @@ DockWizardPageSpec = DockWorkflowPageSpec
 build_default_wizard_page_specs = build_default_workflow_page_specs
 """Compatibility alias for pre-#805 wizard composition builder callers."""
 _StateT = TypeVar("_StateT")
-WizardCompositionPage = WorkflowPage | WorkflowStepPage
+WizardCompositionPage: TypeAlias = WorkflowPage | WorkflowStepPage
 WizardProgressFacts = WorkflowProgressFacts
 """Compatibility alias for wizard shell composition callers during #805."""
 DockWizardProgress = DockWorkflowProgress
