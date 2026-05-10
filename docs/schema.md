@@ -235,7 +235,8 @@ Primary purpose:
 | `activity_type` | TEXT | run, ride, etc. |
 | `start_date` | TEXT | ISO 8601 UTC |
 | `distance_m` | REAL | copied for filtering / styling |
-| `geometry_source` | TEXT | usually `stream` |
+| `geometry_source` | TEXT | point geometry source: `stream`, `summary_polyline`, or `start_end` |
+| `stream_status` | TEXT | whether detailed stream metrics are present (`stream_metrics`) or why sampled points only expose geometry, such as `summary_polyline_no_stream_metrics`, `start_end_no_stream_metrics`, or `stream_missing_metrics` |
 | `last_synced_at` | TEXT | last registry sync time |
 
 ## Layer: `activity_atlas_pages`
