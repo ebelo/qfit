@@ -7,7 +7,7 @@ from tests import _path  # noqa: F401
 from tests.test_wizard_shell import _fake_qt_modules
 
 from qfit.ui import application
-from qfit.ui.application import workflow_page_specs
+from qfit.ui.application import wizard_page_specs, workflow_page_specs
 from qfit.ui.application.wizard_page_specs import (
     DockWizardPageSpec,
     build_default_wizard_page_specs,
@@ -60,6 +60,14 @@ class WorkflowPageSpecsTests(unittest.TestCase):
             build_default_wizard_page_specs(),
             build_default_workflow_page_specs(),
         )
+
+    def test_wizard_page_specs_wrapper_uses_canonical_workflow_steps(self):
+        custom_step = type("CustomStep", (), {"key": "sync", "title": "Custom Sync"})()
+
+        with patch.object(wizard_page_specs, "WORKFLOW_STEPS", (custom_step,)):
+            specs = build_default_wizard_page_specs()
+
+        self.assertEqual([(spec.key, spec.title) for spec in specs], [("sync", "Custom Sync")])
 
 
 def _load_wizard_modules():
