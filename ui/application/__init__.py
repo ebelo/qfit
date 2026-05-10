@@ -110,6 +110,9 @@ from .local_first_control_visibility import (
     update_local_first_mapbox_custom_style_visibility,
 )
 from .local_first_filter_summary import build_local_first_filter_description
+
+build_wizard_filter_description = build_local_first_filter_description
+
 from .local_first_progress_facts import (
     LocalFirstProgressFacts,
     current_local_first_last_sync_date,
@@ -166,7 +169,6 @@ from .stepper_presenter import (
     step_index_for_key,
     step_key_for_index,
 )
-from .wizard_filter_summary import build_wizard_filter_description
 from .workflow_page_specs import (
     DockWorkflowPageSpec,
     build_default_workflow_page_specs,
