@@ -111,8 +111,6 @@ from .local_first_control_visibility import (
 )
 from .local_first_filter_summary import build_local_first_filter_description
 
-build_wizard_filter_description = build_local_first_filter_description
-
 from .local_first_progress_facts import (
     LocalFirstProgressFacts,
     current_local_first_last_sync_date,
@@ -123,12 +121,6 @@ from .workflow_footer_status import (
     build_workflow_footer_facts_from_progress_facts,
     build_workflow_footer_status,
 )
-
-WizardFooterFacts = WorkflowFooterFacts
-build_wizard_footer_facts_from_progress_facts = (
-    build_workflow_footer_facts_from_progress_facts
-)
-build_wizard_footer_status = build_workflow_footer_status
 
 from .workflow_progress import (
     build_startup_workflow_progress_facts,
@@ -142,18 +134,13 @@ from .workflow_progress_facts import (
 from .dock_workflow_sections import (
     CURRENT_DOCK_SECTIONS,
     WORKFLOW_STEPS,
-    WIZARD_WORKFLOW_STEPS,
-    DockWizardProgress,
     DockWorkflowProgress,
     DockWorkflowSection,
     DockWorkflowStepState,
     DockWorkflowStepStatus,
     build_current_dock_workflow_label,
-    build_initial_wizard_step_statuses,
     build_initial_workflow_step_statuses,
-    build_progress_wizard_step_statuses,
     build_progress_workflow_step_statuses,
-    build_wizard_step_statuses,
     build_workflow_step_statuses,
     get_workflow_section,
 )
@@ -175,9 +162,6 @@ from .workflow_page_specs import (
     build_default_workflow_page_specs,
 )
 
-DockWizardPageSpec = DockWorkflowPageSpec
-build_default_wizard_page_specs = build_default_workflow_page_specs
-
 from .workflow_settings import (
     COLLAPSED_GROUPS_KEY,
     DEFAULT_COLLAPSED_GROUP_OBJECT_NAMES,
@@ -196,16 +180,6 @@ from .workflow_settings import (
     workflow_step_key_for_index,
 )
 
-WIZARD_VERSION = WORKFLOW_SETTINGS_VERSION
-WIZARD_VERSION_KEY = WORKFLOW_SETTINGS_VERSION_KEY
-WIZARD_STEP_COUNT = WORKFLOW_STEP_COUNT
-WizardSettingsSnapshot = WorkflowSettingsSnapshot
-clamp_wizard_step_index = clamp_workflow_step_index
-ensure_wizard_settings = ensure_workflow_settings
-load_wizard_settings = load_workflow_settings
-preferred_current_key_from_settings = preferred_current_key_from_workflow_settings
-save_last_step_index = save_workflow_step_index
-wizard_step_key_for_index = workflow_step_key_for_index
 from .visual_workflow_action_builder import build_visual_workflow_action
 from .visual_workflow_action_builder import build_visual_workflow_action_inputs
 from .visual_workflow_action_builder import build_visual_workflow_background_inputs
@@ -215,6 +189,34 @@ from .visual_workflow_action_builder import VisualWorkflowActionInputs
 from .visual_workflow_action_builder import VisualWorkflowBackgroundInputs
 from .visual_workflow_action_builder import VisualWorkflowSettingsSnapshot
 from .visual_workflow_action_builder import build_visual_workflow_settings_snapshot
+
+_WIZARD_COMPAT_ALIAS_TARGETS = {
+    "DockWizardPageSpec": "DockWorkflowPageSpec",
+    "DockWizardProgress": "DockWorkflowProgress",
+    "WIZARD_STEP_COUNT": "WORKFLOW_STEP_COUNT",
+    "WIZARD_VERSION": "WORKFLOW_SETTINGS_VERSION",
+    "WIZARD_VERSION_KEY": "WORKFLOW_SETTINGS_VERSION_KEY",
+    "WIZARD_WORKFLOW_STEPS": "WORKFLOW_STEPS",
+    "WizardFooterFacts": "WorkflowFooterFacts",
+    "WizardSettingsSnapshot": "WorkflowSettingsSnapshot",
+    "build_default_wizard_page_specs": "build_default_workflow_page_specs",
+    "build_initial_wizard_step_statuses": "build_initial_workflow_step_statuses",
+    "build_progress_wizard_step_statuses": "build_progress_workflow_step_statuses",
+    "build_wizard_filter_description": "build_local_first_filter_description",
+    "build_wizard_footer_facts_from_progress_facts": (
+        "build_workflow_footer_facts_from_progress_facts"
+    ),
+    "build_wizard_footer_status": "build_workflow_footer_status",
+    "build_wizard_step_statuses": "build_workflow_step_statuses",
+    "clamp_wizard_step_index": "clamp_workflow_step_index",
+    "ensure_wizard_settings": "ensure_workflow_settings",
+    "load_wizard_settings": "load_workflow_settings",
+    "preferred_current_key_from_settings": (
+        "preferred_current_key_from_workflow_settings"
+    ),
+    "save_last_step_index": "save_workflow_step_index",
+    "wizard_step_key_for_index": "workflow_step_key_for_index",
+}
 
 _WIZARD_PROGRESS_COMPAT_EXPORTS = frozenset(
     {
@@ -228,6 +230,11 @@ _WIZARD_PROGRESS_COMPAT_EXPORTS = frozenset(
 
 
 def __getattr__(name: str) -> object:
+    alias_target = _WIZARD_COMPAT_ALIAS_TARGETS.get(name)
+    if alias_target is not None:
+        value = globals()[alias_target]
+        globals()[name] = value
+        return value
     if name in _WIZARD_PROGRESS_COMPAT_EXPORTS:
         wizard_progress = import_module(".wizard_progress", __name__)
         value = getattr(wizard_progress, name)

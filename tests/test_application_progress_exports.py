@@ -47,6 +47,19 @@ class ApplicationProgressExportTests(unittest.TestCase):
                 "qfit.ui.application.workflow_settings"
             )
 
+            eager_alias_names = (
+                "DockWizardPageSpec",
+                "WizardFooterFacts",
+                "WizardSettingsSnapshot",
+                "build_default_wizard_page_specs",
+                "build_wizard_filter_description",
+                "build_wizard_footer_facts_from_progress_facts",
+                "build_wizard_footer_status",
+            )
+            for name in eager_alias_names:
+                with self.subTest(eager_alias=name):
+                    self.assertNotIn(name, app.__dict__)
+
             self.assertIs(
                 app.DockWizardPageSpec,
                 workflow_pages.DockWorkflowPageSpec,
