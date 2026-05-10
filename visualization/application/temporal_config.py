@@ -8,12 +8,14 @@ def temporal_mode_labels():
 
 
 def normalize_temporal_mode(mode_label):
-    _ = mode_label
+    """Normalize legacy temporal labels to qfit's disabled temporal mode."""
+
+    _ = mode_label  # Kept for compatibility with existing normalization callers.
     return DEFAULT_TEMPORAL_MODE_LABEL
 
 
 def is_temporal_mode_enabled(mode_label):
-    _ = mode_label
+    _ = mode_label  # Kept for compatibility with existing predicate callers.
     return False
 
 
