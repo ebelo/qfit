@@ -46,6 +46,10 @@ class _FakeGeometry:
 class _FakeFeature:
     _next_id = 1
 
+    @classmethod
+    def _reset_id(cls):
+        cls._next_id = 1
+
     def __init__(self, fields=None, geometry=None, attrs=None):
         if isinstance(fields, _FakeGeometry):
             geometry = fields
@@ -177,6 +181,7 @@ class _FakeSourceLayer:
 
 class ActivityHeatmapLayerPureTests(unittest.TestCase):
     def setUp(self):
+        _FakeFeature._reset_id()
         qgis_mod = types.ModuleType("qgis")
         qgis_pyqt = types.ModuleType("qgis.PyQt")
         qgis_qtcore = types.ModuleType("qgis.PyQt.QtCore")
@@ -353,6 +358,26 @@ class ActivityHeatmapLayerPureTests(unittest.TestCase):
 
         self.assertIsNone(layer)
         self.assertEqual(count, 0)
+
+    def test_points_layer_sample_indexes_skip_empty_geometries_without_gaps(self):
+        points_layer = _FakeSourceLayer(
+            features=[
+                _FakeFeature(_FakeGeometry(point=_FakePoint(6.62, 46.52))),
+                _FakeFeature(_FakeGeometry(empty=True)),
+                _FakeFeature(_FakeGeometry(point=_FakePoint(6.63, 46.53))),
+            ]
+        )
+
+        layer, count = self.module.build_activity_heatmap_layer(
+            activities_layer=None,
+            points_layer=points_layer,
+        )
+
+        self.assertEqual(count, 2)
+        self.assertEqual(
+            [feature["sample_index"] for feature in layer.dataProvider().added],
+            [1, 2],
+        )
 
     def test_defaults_output_crs_when_source_crs_is_invalid(self):
         activities_layer = _FakeSourceLayer(

@@ -72,7 +72,8 @@ def _collect_heatmap_features(heatmap_layer, points_layer, activities_layer):
 
 
 def _point_features_from_points_layer(heatmap_layer, points_layer):
-    for sample_index, source_feature in enumerate(points_layer.getFeatures(), start=1):
+    sample_indexes = count(1)
+    for source_feature in points_layer.getFeatures():
         geometry = source_feature.geometry()
         if geometry is None or geometry.isEmpty():
             continue
@@ -83,7 +84,7 @@ def _point_features_from_points_layer(heatmap_layer, points_layer):
             heatmap_layer,
             x=point.x(),
             y=point.y(),
-            sample_index=sample_index,
+            sample_index=next(sample_indexes),
             source_layer="activity_points",
             source_feature=source_feature,
             source_activity_id=_field_value(source_feature, "source_activity_id"),
