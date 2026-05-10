@@ -10,6 +10,7 @@ from qfit.ui.application.workflow_page_specs import (
     DockWorkflowPageSpec,
     build_default_workflow_page_specs,
 )
+from .action_row import set_workflow_action_role
 from ._qt_compat import import_qt_module
 from qfit.ui.widgets.pill import set_pill_tone
 from qfit.ui.widgets.tokens import (
@@ -125,7 +126,10 @@ class StepPage(QWidget):
         self._apply_navigation_button_texts()
         self.next_button.setEnabled(enabled)
         self.next_button.setVisible(visible)
-        self.next_button.setProperty("wizardActionRole", "primary" if primary else "secondary")
+        set_workflow_action_role(
+            self.next_button,
+            role="primary" if primary else "secondary",
+        )
         self.next_button.setStyleSheet(
             _primary_button_stylesheet() if primary else _ghost_button_stylesheet()
         )
@@ -136,7 +140,7 @@ class StepPage(QWidget):
         self._back_label = label
         self._apply_navigation_button_texts()
         self.back_button.setEnabled(enabled)
-        self.back_button.setProperty("wizardActionRole", "back")
+        set_workflow_action_role(self.back_button, role="back")
         self.back_button.setStyleSheet(_ghost_button_stylesheet())
 
     def _apply_navigation_button_texts(self) -> None:
@@ -154,7 +158,7 @@ class StepPage(QWidget):
     def add_extra_button(self, btn, align: str = "right") -> None:
         """Add a page-specific secondary button to the navigation row."""
 
-        btn.setProperty("wizardActionRole", "extra")
+        set_workflow_action_role(btn, role="extra")
         _configure_responsive_button(btn)
         if align == "left":
             self._extra_left_layout.addWidget(btn)

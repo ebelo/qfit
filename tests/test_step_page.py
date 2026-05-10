@@ -63,12 +63,14 @@ class StepPageTest(unittest.TestCase):
         self.assertEqual(page.content_container.objectName(), "qfitWizardStepContent")
         self.assertEqual(page.content_layout().contents_margins, (0, 0, 0, 0))
         self.assertEqual(page.back_button.text(), "Précédent")
+        self.assertEqual(page.back_button.property("workflowActionRole"), "back")
         self.assertEqual(page.back_button.property("wizardActionRole"), "back")
         self.assertEqual(
             page.back_button.cursor().shape(),
             self.step_page.Qt.PointingHandCursor,
         )
         self.assertEqual(page.next_button.text(), "Suivant →")
+        self.assertEqual(page.next_button.property("workflowActionRole"), "primary")
         self.assertEqual(page.next_button.property("wizardActionRole"), "primary")
         self.assertEqual(
             page.next_button.cursor().shape(),
@@ -116,9 +118,11 @@ class StepPageTest(unittest.TestCase):
         self.assertEqual(page.next_button.text(), "Lancer l'analyse")
         self.assertFalse(page.next_button.isEnabled())
         self.assertFalse(page.next_button.isVisible())
+        self.assertEqual(page.next_button.property("workflowActionRole"), "secondary")
         self.assertEqual(page.next_button.property("wizardActionRole"), "secondary")
         self.assertEqual(page.back_button.text(), "Retour")
         self.assertFalse(page.back_button.isEnabled())
+        self.assertEqual(page.back_button.property("workflowActionRole"), "back")
 
     def test_content_and_extra_buttons_are_extensible_for_concrete_pages(self):
         page = self.step_page.StepPage(5, 5, "Atlas PDF", "Configure l'export.")
@@ -128,6 +132,7 @@ class StepPageTest(unittest.TestCase):
         page.add_extra_button(extra_button)
         page.content_layout().addWidget(content_widget)
 
+        self.assertEqual(extra_button.property("workflowActionRole"), "extra")
         self.assertEqual(extra_button.property("wizardActionRole"), "extra")
         self.assertEqual(extra_button.minimumWidth(), 0)
         self.assertIn(extra_button, page._extra_right_layout.widgets)
