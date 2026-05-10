@@ -465,7 +465,7 @@ class WizardShellTest(unittest.TestCase):
         self.assertIn("WorkflowShell", self.workflow_shell.__all__)
         self.assertNotIn("WizardShell", self.workflow_shell.__all__)
 
-    def test_wizard_shell_module_reexports_workflow_shell_api(self):
+    def test_wizard_shell_module_keeps_direct_aliases_but_stars_wizard_api(self):
         self.assertIs(self.wizard_shell.WorkflowShell, self.workflow_shell.WorkflowShell)
         self.assertIs(self.wizard_shell.WizardShell, self.workflow_shell.WorkflowShell)
         self.assertIs(self.wizard_shell.STEPPER_LABELS, self.workflow_shell.STEPPER_LABELS)
@@ -473,9 +473,9 @@ class WizardShellTest(unittest.TestCase):
             self.wizard_shell.FooterStatusBar,
             self.workflow_shell.FooterStatusBar,
         )
-        self.assertIn("FooterStatusBar", self.wizard_shell.__all__)
-        self.assertIn("WorkflowShell", self.wizard_shell.__all__)
-        self.assertIn("WizardShell", self.wizard_shell.__all__)
+        self.assertEqual(self.wizard_shell.__all__, ["WizardShell"])
+        self.assertNotIn("FooterStatusBar", self.wizard_shell.__all__)
+        self.assertNotIn("WorkflowShell", self.wizard_shell.__all__)
 
     def test_outer_layout_matches_wizard_spec_order(self):
         shell = self.wizard_shell.WorkflowShell()
