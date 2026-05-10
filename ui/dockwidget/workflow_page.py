@@ -35,14 +35,7 @@ _TITLE_LABEL_QSS = (
 _SUMMARY_LABEL_QSS = f"QLabel {{ color: {COLOR_MUTED}; }}"
 _PRIMARY_HINT_LABEL_QSS = f"QLabel {{ color: {COLOR_MUTED}; }}"
 WORKFLOW_PLACEHOLDER_HINT_PROPERTY = "workflowPlaceholderHint"
-WIZARD_PLACEHOLDER_HINT_PROPERTY = "wizardPlaceholderHint"
 PLACEHOLDER_HINT_RETIRED = "retired"
-
-
-DockWizardPageSpec = DockWorkflowPageSpec
-"""Compatibility alias for pre-#805 wizard page callers."""
-build_default_wizard_page_specs = build_default_workflow_page_specs
-"""Compatibility alias for pre-#805 wizard page builders."""
 
 
 class WorkflowPage(QWidget):
@@ -130,10 +123,6 @@ class WorkflowPage(QWidget):
         return layout
 
 
-WizardPage = WorkflowPage
-"""Compatibility alias for pre-#805 wizard page callers."""
-
-
 def build_workflow_pages(
     *,
     parent=None,
@@ -145,16 +134,12 @@ def build_workflow_pages(
     return tuple(WorkflowPage(spec, parent) for spec in page_specs)
 
 
-build_wizard_pages = build_workflow_pages
-"""Compatibility alias for pre-#805 wizard page callers."""
-
-
 def set_workflow_placeholder_hint_state(label, state: str) -> None:
     """Tag placeholder hint labels with canonical metadata plus legacy alias."""
 
     label.setProperty(WORKFLOW_PLACEHOLDER_HINT_PROPERTY, state)
     # Preserve the wizard-named property while #805 retires older shell naming.
-    label.setProperty(WIZARD_PLACEHOLDER_HINT_PROPERTY, state)
+    label.setProperty("wizardPlaceholderHint", state)
 
 
 def install_workflow_pages(
@@ -169,23 +154,13 @@ def install_workflow_pages(
     return pages
 
 
-install_wizard_pages = install_workflow_pages
-"""Compatibility alias for pre-#805 wizard page callers."""
-
-
 __all__ = [
     "DockWorkflowPageSpec",
-    "DockWizardPageSpec",
     "PLACEHOLDER_HINT_RETIRED",
-    "WIZARD_PLACEHOLDER_HINT_PROPERTY",
     "WORKFLOW_PLACEHOLDER_HINT_PROPERTY",
     "WorkflowPage",
-    "WizardPage",
     "build_default_workflow_page_specs",
-    "build_default_wizard_page_specs",
     "build_workflow_pages",
-    "build_wizard_pages",
     "install_workflow_pages",
-    "install_wizard_pages",
     "set_workflow_placeholder_hint_state",
 ]
