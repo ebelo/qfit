@@ -474,8 +474,6 @@ class WizardShellTest(unittest.TestCase):
             self.workflow_shell.FooterStatusBar,
         )
         self.assertEqual(self.wizard_shell.__all__, ["WizardShell"])
-        self.assertNotIn("FooterStatusBar", self.wizard_shell.__all__)
-        self.assertNotIn("WorkflowShell", self.wizard_shell.__all__)
 
     def test_outer_layout_matches_wizard_spec_order(self):
         shell = self.wizard_shell.WorkflowShell()
