@@ -611,6 +611,13 @@ def _atlas_output_summary(
     return default.output_summary_text
 
 
+# Preserve direct named imports from the original workflow module while the
+# explicit wizard_page_state compatibility module becomes the preferred path.
+WizardActionCallbacks = DockWorkflowActionCallbacks
+WizardPageStateSnapshots = WorkflowPageStateSnapshots
+build_wizard_page_states_from_facts = build_workflow_page_states_from_facts
+
+
 __all__ = [
     "DockWorkflowActionCallbacks",
     "WorkflowPageStateSnapshots",

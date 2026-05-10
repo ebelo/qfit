@@ -37,14 +37,25 @@ class WorkflowPageStatePublicNamesTest(unittest.TestCase):
         self.assertIn("WorkflowPageStateSnapshots", self.module.__all__)
         self.assertIn("build_workflow_page_states_from_facts", self.module.__all__)
 
-    def test_workflow_module_exports_only_canonical_workflow_names(self):
+    def test_workflow_module_narrows_star_exports_but_keeps_named_aliases(self):
         for name in (
             "WizardActionCallbacks",
             "WizardPageStateSnapshots",
             "build_wizard_page_states_from_facts",
         ):
             self.assertNotIn(name, self.module.__all__)
-            self.assertFalse(hasattr(self.module, name))
+        self.assertIs(
+            self.module.WizardActionCallbacks,
+            self.module.DockWorkflowActionCallbacks,
+        )
+        self.assertIs(
+            self.module.WizardPageStateSnapshots,
+            self.module.WorkflowPageStateSnapshots,
+        )
+        self.assertIs(
+            self.module.build_wizard_page_states_from_facts,
+            self.module.build_workflow_page_states_from_facts,
+        )
 
     def test_wizard_module_keeps_identity_preserving_compatibility_aliases(self):
         self.assertIs(
