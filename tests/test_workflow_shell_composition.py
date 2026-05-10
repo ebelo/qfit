@@ -59,7 +59,7 @@ class WorkflowShellCompositionModuleTest(unittest.TestCase):
             _WORKFLOW_COMPOSITION_MODULE,
         )
 
-    def test_workflow_composition_preserves_wizard_aliases_and_object_names(self):
+    def test_workflow_composition_preserves_direct_wizard_aliases_and_object_names(self):
         assembled = self.composition.build_placeholder_workflow_shell(
             footer_text="Ready"
         )
@@ -79,6 +79,27 @@ class WorkflowShellCompositionModuleTest(unittest.TestCase):
         self.assertEqual(assembled.shell.objectName(), "qfitWizardShell")
         self.assertEqual(assembled.shell.footer_bar.objectName(), "qfitWizardFooterBar")
         self.assertEqual(assembled.pages[0].objectName(), "qfitWizardConnectionPage")
+
+    def test_workflow_composition_star_exports_only_canonical_workflow_names(self):
+        for name in (
+            "DockWizardPageSpec",
+            "DockWizardProgress",
+            "WizardActionCallbacks",
+            "WizardCompositionPage",
+            "WizardPage",
+            "WizardPageStateSnapshots",
+            "WizardProgressFacts",
+            "WizardSettingsSnapshot",
+            "WizardShell",
+            "WizardShellComposition",
+            "WizardShellPresenter",
+            "build_default_wizard_page_specs",
+            "build_placeholder_wizard_shell",
+            "build_wizard_page_states_from_facts",
+            "connect_wizard_action_callbacks",
+            "refresh_wizard_shell_composition",
+        ):
+            self.assertNotIn(name, self.composition.__all__)
 
 
 if __name__ == "__main__":
