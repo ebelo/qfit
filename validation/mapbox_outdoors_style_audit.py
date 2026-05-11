@@ -393,21 +393,23 @@ def _property_count_summary(layers: list[dict[str, object]], key: str) -> list[d
     ]
 
 
+def _iter_expression_operator_pairs(layer: dict[str, object]) -> Iterable[tuple[str, str]]:
+    unresolved = layer.get("qfit_unresolved")
+    if not isinstance(unresolved, list):
+        return
+    for item in unresolved:
+        if not isinstance(item, dict) or not isinstance(item.get("property"), str):
+            continue
+        operators = item.get("expression_operators")
+        if not isinstance(operators, list):
+            continue
+        yield from ((item["property"], operator) for operator in operators if isinstance(operator, str))
+
+
 def _expression_operator_count_summary(layers: list[dict[str, object]]) -> list[dict[str, object]]:
     counts: Counter[tuple[str, str]] = Counter()
     for layer in layers:
-        unresolved = layer.get("qfit_unresolved")
-        if not isinstance(unresolved, list):
-            continue
-        for item in unresolved:
-            if not isinstance(item, dict) or not isinstance(item.get("property"), str):
-                continue
-            operators = item.get("expression_operators")
-            if not isinstance(operators, list):
-                continue
-            for operator in operators:
-                if isinstance(operator, str):
-                    counts[(item["property"], operator)] += 1
+        counts.update(_iter_expression_operator_pairs(layer))
     return [
         {"property": property_name, "operator": operator, "count": count}
         for (property_name, operator), count in sorted(
