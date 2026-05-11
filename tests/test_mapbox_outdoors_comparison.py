@@ -153,7 +153,7 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         self.assertIn("setContent", script)
         self.assertIn("startQfitMapboxComparison", script)
         self.assertIn("window.qfitMapboxReady", script)
-        self.assertIn("readFileSync(htmlPath", script)
+        self.assertIn("JSON.parse", script)
         self.assertIn("readFileSync(0", script)
         self.assertNotIn("Buffer.from", script)
         self.assertNotIn("accessToken", script)
@@ -168,7 +168,7 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         self.assertNotIn("test-mapbox-token", html)
         self.assertNotIn("accessToken", html)
 
-    def test_render_browser_reference_passes_html_file_instead_of_large_argv(self):
+    def test_render_browser_reference_passes_large_html_on_stdin_instead_of_argv(self):
         captured = {}
         large_style = {
             **SAMPLE_STYLE,
@@ -176,10 +176,8 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         }
 
         def fake_run(command, **kwargs):
-            html_path = Path(command[2])
             captured["command"] = command
-            captured["html"] = html_path.read_text(encoding="utf-8")
-            captured["input"] = kwargs["input"]
+            captured["payload"] = json.loads(kwargs["input"])
             return types.SimpleNamespace(returncode=0, stdout="", stderr="")
 
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -194,10 +192,10 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
                         style_definition=large_style,
                     )
 
-        self.assertEqual(captured["input"], "test-mapbox-token")
+        self.assertEqual(captured["payload"]["credential"], "test-mapbox-token")
         self.assertLess(max(len(value) for value in captured["command"]), 1_000)
-        self.assertIn("qfit-large-style-padding", captured["html"])
-        self.assertNotIn("test-mapbox-token", captured["html"])
+        self.assertIn("qfit-large-style-padding", captured["payload"]["html"])
+        self.assertNotIn("test-mapbox-token", captured["payload"]["html"])
 
     def test_load_style_definition_requires_json_object(self):
         with tempfile.TemporaryDirectory() as tmpdir:

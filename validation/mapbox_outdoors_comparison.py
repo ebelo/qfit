@@ -308,14 +308,15 @@ def build_node_playwright_capture_script() -> str:
 const fs = require('fs');
 const { chromium } = require('playwright');
 
-const [htmlPath, outputPath, widthText, heightText, timeoutText, executablePath] = process.argv.slice(2);
-const html = fs.readFileSync(htmlPath, 'utf8');
+const [outputPath, widthText, heightText, timeoutText, executablePath] = process.argv.slice(2);
+const payload = JSON.parse(fs.readFileSync(0, 'utf8'));
+const html = payload.html;
 const width = Number.parseInt(widthText, 10);
 const height = Number.parseInt(heightText, 10);
 const timeout = Number.parseInt(timeoutText, 10);
 
 (async () => {
-  const credential = fs.readFileSync(0, 'utf8').trim();
+  const credential = String(payload.credential || '').trim();
   if (!credential) {
     throw new Error('Mapbox token was not provided on stdin.');
   }
@@ -400,13 +401,10 @@ def render_browser_reference(  # pragma: no cover - depends on optional Node/Chr
     with tempfile.TemporaryDirectory(prefix="qfit-mapbox-reference-") as tmpdir:
         tmp_path = Path(tmpdir)
         script_path = tmp_path / "capture-reference.js"
-        html_path = tmp_path / "mapbox-reference.html"
         script_path.write_text(build_node_playwright_capture_script(), encoding="utf-8")
-        html_path.write_text(build_mapbox_gl_html(camera=camera, style_definition=style_definition), encoding="utf-8")
         command = [
             node_binary,
             str(script_path),
-            str(html_path),
             str(output_path),
             str(camera.width),
             str(camera.height),
@@ -417,7 +415,10 @@ def render_browser_reference(  # pragma: no cover - depends on optional Node/Chr
             command,
             cwd=REPO_ROOT,
             env=_node_capture_environment(),
-            input=token,
+            input=json.dumps({
+                "credential": token,
+                "html": build_mapbox_gl_html(camera=camera, style_definition=style_definition),
+            }),
             capture_output=True,
             text=True,
             timeout=max(5.0, timeout_ms / 1000.0 + 10.0),
