@@ -358,11 +358,31 @@ def _extract_midrange_size(expr: object) -> float | None:
     return None
 
 
+def _first_simple_text_field_reference(expr: object) -> object | None:
+    """Return the first direct ``['get', field]`` from text-oriented expressions."""
+    if not isinstance(expr, list) or not expr:
+        return None
+    op = expr[0]
+    if op == "get" and len(expr) == 2 and isinstance(expr[1], str):
+        return expr
+    if op in {"coalesce", "concat", "format"}:
+        for child in expr[1:]:
+            if isinstance(child, dict):
+                continue
+            reference = _first_simple_text_field_reference(child)
+            if reference is not None:
+                return reference
+    if op == "to-string" and len(expr) >= 2:
+        return _first_simple_text_field_reference(expr[1])
+    return None
+
+
 def _simplify_text_field(expr: object) -> object:
     """Simplify a Mapbox text-field expression to the first simple field reference.
 
-    QGIS handles ``['get', 'name']`` but not ``['coalesce', ['get', 'name_en'], ['get', 'name'], ...]``.
-    We extract the first ``['get', <field>]`` from a coalesce and return it directly.
+    QGIS handles ``['get', 'name']`` but not richer Mapbox label expressions such
+    as ``coalesce`` or ``format``. We extract the first useful ``['get', <field>]``
+    reference so formatted labels still render with their primary label text.
     """
     if not isinstance(expr, list) or not expr:
         return expr
@@ -372,6 +392,10 @@ def _simplify_text_field(expr: object) -> object:
         for child in expr[1:]:
             if isinstance(child, list) and len(child) == 2 and child[0] == "get" and isinstance(child[1], str):
                 return child
+    if op in {"concat", "format", "to-string"}:
+        reference = _first_simple_text_field_reference(expr)
+        if reference is not None:
+            return reference
     if op == "step":
         # step expressions for text-field — find the first literal string fallback
         for item in expr[1:]:
