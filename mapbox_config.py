@@ -358,7 +358,7 @@ def _extract_midrange_size(expr: object) -> float | None:
     return None
 
 
-def _first_simple_text_field_reference(expr: object) -> object | None:
+def _first_simple_text_field_reference(expr: object, *, allow_concat: bool = True) -> object | None:
     """Return the first direct ``['get', field]`` from text-oriented expressions."""
     if not isinstance(expr, list) or not expr:
         return None
@@ -367,21 +367,24 @@ def _first_simple_text_field_reference(expr: object) -> object | None:
         return expr
     if op == "coalesce":
         for child in expr[1:]:
-            if isinstance(child, list) and len(child) == 2 and child[0] == "get" and isinstance(child[1], str):
-                return child
+            reference = _first_simple_text_field_reference(child, allow_concat=False)
+            if reference is not None:
+                return reference
         for child in expr[1:]:
             reference = _first_simple_text_field_reference(child)
             if reference is not None:
                 return reference
+    if op == "concat" and not allow_concat:
+        return None
     if op in {"concat", "format"}:
         for child in expr[1:]:
             if isinstance(child, dict):
                 continue
-            reference = _first_simple_text_field_reference(child)
+            reference = _first_simple_text_field_reference(child, allow_concat=allow_concat)
             if reference is not None:
                 return reference
     if op == "to-string" and len(expr) >= 2:
-        return _first_simple_text_field_reference(expr[1])
+        return _first_simple_text_field_reference(expr[1], allow_concat=allow_concat)
     return None
 
 
