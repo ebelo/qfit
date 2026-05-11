@@ -394,7 +394,7 @@ def _text_field_reference_name(reference: object) -> str | None:
 
 def _is_localized_name_reference(reference: object) -> bool:
     name = _text_field_reference_name(reference)
-    return name is not None and (name.startswith("name_") or name.startswith("name:"))
+    return name is not None and name.startswith(("name_", "name:"))
 
 
 def _prefer_generic_name_reference(references: list[object]) -> object | None:
