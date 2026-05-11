@@ -856,19 +856,8 @@ def _markdown_qgis_converter_warnings(report: object) -> list[str]:
     return lines
 
 
-def build_audit_markdown(audit: dict[str, object]) -> str:
-    style = audit["style"] if isinstance(audit.get("style"), dict) else {}
-    layers = audit.get("layers") if isinstance(audit.get("layers"), list) else []
-    summary = audit.get("summary") if isinstance(audit.get("summary"), dict) else {}
-    lines = [
-        f"# Mapbox Outdoors style audit — {style.get('label', 'mapbox/outdoors-v12')}",
-        "",
-        f"Generated: {audit.get('generated_at', '')}",
-        f"Layers: {audit.get('layer_count', len(layers))}",
-        "",
-        "This developer audit compares the live Mapbox style rules with qfit's current QGIS preprocessing.",
-        "Use it to choose the next visual-parity slice before making rendering-sensitive changes.",
-        "",
+def _markdown_summary(summary: dict[str, object], qgis_converter_warnings: object) -> list[str]:
+    return [
         "## Summary",
         "",
         "### Simplified/substituted by qfit",
@@ -890,7 +879,45 @@ def build_audit_markdown(audit: dict[str, object]) -> str:
         *_markdown_group_expression_operator_table(
             list(summary.get("qfit_unresolved_expression_operators_by_layer_group_and_property") or [])
         ),
-        *_markdown_qgis_converter_warnings(audit.get("qgis_converter_warnings")),
+        *_markdown_qgis_converter_warnings(qgis_converter_warnings),
+    ]
+
+
+def _markdown_source_filter(layer_obj: dict[str, object]) -> str:
+    source_parts = [part for part in (layer_obj.get("source"), layer_obj.get("source_layer")) if part]
+    source_filter = " / ".join(str(part) for part in source_parts) or "—"
+    if layer_obj.get("filter") is not None:
+        source_filter += f"<br>`filter`: `{_compact_json(layer_obj.get('filter'))}`"
+    return source_filter
+
+
+def _markdown_layer_row(layer_obj: dict[str, object]) -> str:
+    layer_label = f"`{layer_obj.get('id', '')}`<br>{layer_obj.get('type', '')}"
+    return "| {layer} | {group} | {source_filter} | {zoom} | {preserved} | {simplified} | {unresolved} |".format(
+        layer=layer_label,
+        group=layer_obj.get("group", "other"),
+        source_filter=_markdown_source_filter(layer_obj),
+        zoom=layer_obj.get("zoom_band", "all zooms"),
+        preserved=_markdown_list(list(layer_obj.get("qfit_preserves") or [])),
+        simplified=_markdown_change_list(list(layer_obj.get("qfit_simplifies") or [])),
+        unresolved=_markdown_layer_unresolved(layer_obj),
+    )
+
+
+def build_audit_markdown(audit: dict[str, object]) -> str:
+    style = audit["style"] if isinstance(audit.get("style"), dict) else {}
+    layers = audit.get("layers") if isinstance(audit.get("layers"), list) else []
+    summary = audit.get("summary") if isinstance(audit.get("summary"), dict) else {}
+    lines = [
+        f"# Mapbox Outdoors style audit — {style.get('label', 'mapbox/outdoors-v12')}",
+        "",
+        f"Generated: {audit.get('generated_at', '')}",
+        f"Layers: {audit.get('layer_count', len(layers))}",
+        "",
+        "This developer audit compares the live Mapbox style rules with qfit's current QGIS preprocessing.",
+        "Use it to choose the next visual-parity slice before making rendering-sensitive changes.",
+        "",
+        *_markdown_summary(summary, audit.get("qgis_converter_warnings")),
         "## Layers",
         "",
         "| Layer | Group | Source/filter | Zoom | Preserved | Simplified/substituted by qfit | QGIS-dependent / unresolved |",
@@ -899,22 +926,7 @@ def build_audit_markdown(audit: dict[str, object]) -> str:
     for layer_obj in layers:
         if not isinstance(layer_obj, dict):
             continue
-        source_parts = [part for part in (layer_obj.get("source"), layer_obj.get("source_layer")) if part]
-        source_filter = " / ".join(str(part) for part in source_parts) or "—"
-        if layer_obj.get("filter") is not None:
-            source_filter += f"<br>`filter`: `{_compact_json(layer_obj.get('filter'))}`"
-        layer_label = f"`{layer_obj.get('id', '')}`<br>{layer_obj.get('type', '')}"
-        lines.append(
-            "| {layer} | {group} | {source_filter} | {zoom} | {preserved} | {simplified} | {unresolved} |".format(
-                layer=layer_label,
-                group=layer_obj.get("group", "other"),
-                source_filter=source_filter,
-                zoom=layer_obj.get("zoom_band", "all zooms"),
-                preserved=_markdown_list(list(layer_obj.get("qfit_preserves") or [])),
-                simplified=_markdown_change_list(list(layer_obj.get("qfit_simplifies") or [])),
-                unresolved=_markdown_layer_unresolved(layer_obj),
-            )
-        )
+        lines.append(_markdown_layer_row(layer_obj))
     lines.append("")
     return "\n".join(lines)
 
