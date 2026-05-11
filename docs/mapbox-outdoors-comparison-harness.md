@@ -72,6 +72,7 @@ python3 validation/mapbox_outdoors_comparison.py --all-cameras
 ```
 
 `--all-cameras` uses the same capture options as a single-camera run, so you can combine it with setup-isolation flags such as `--skip-qgis` or `--skip-browser`.
+Do not pass a positional camera name with `--all-cameras`; use one mode or the other.
 
 ## Partial captures
 

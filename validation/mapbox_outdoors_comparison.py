@@ -619,7 +619,6 @@ def build_parser() -> argparse.ArgumentParser:
         "camera",
         nargs="?",
         type=_parse_camera,
-        default=CAMERAS["valais-geneva-outdoors"],
         help="Comparison camera to capture. Defaults to valais-geneva-outdoors.",
     )
     parser.add_argument(
@@ -665,7 +664,9 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def _print_result(result: ComparisonResult) -> None:
+def _print_result(result: ComparisonResult, *, camera_name: str | None = None) -> None:
+    if camera_name is not None:
+        print(f"Camera: {camera_name}")
     print(f"Run directory: {result.paths.run_dir}")
     if result.browser_captured:
         print(f"Mapbox GL reference: {result.paths.browser_png}")
@@ -679,34 +680,42 @@ def _print_result(result: ComparisonResult) -> None:
 def _selected_cameras(args: argparse.Namespace) -> list[MapboxComparisonCamera]:
     if args.all_cameras:
         return list(CAMERAS.values())
-    return [args.camera]
+    return [args.camera or CAMERAS["valais-geneva-outdoors"]]
 
 
-def _run_configured_comparisons(args: argparse.Namespace) -> list[ComparisonResult]:
+def _comparison_config(
+    *,
+    args: argparse.Namespace,
+    camera: MapboxComparisonCamera,
+    token: str,
+    output_root: Path,
+) -> ComparisonConfig:
+    return ComparisonConfig(
+        camera=camera,
+        token=token,
+        output_root=output_root,
+        browser=not args.skip_browser,
+        qgis=not args.skip_qgis,
+        diff=not args.skip_diff,
+        browser_timeout_ms=args.browser_timeout_ms,
+    )
+
+
+def _run_and_print_configured_comparisons(args: argparse.Namespace) -> None:
     token = resolve_mapbox_token(provided_token=args.mapbox_token)
     output_root = Path(args.output_root).expanduser().resolve()
-    return [
-        run_comparison(
-            ComparisonConfig(
+    cameras = _selected_cameras(args)
+    multiple_results = len(cameras) > 1
+    for camera in cameras:
+        result = run_comparison(
+            _comparison_config(
+                args=args,
                 camera=camera,
                 token=token,
                 output_root=output_root,
-                browser=not args.skip_browser,
-                qgis=not args.skip_qgis,
-                diff=not args.skip_diff,
-                browser_timeout_ms=args.browser_timeout_ms,
             )
         )
-        for camera in _selected_cameras(args)
-    ]
-
-
-def _print_results(results: list[ComparisonResult]) -> None:
-    multiple_results = len(results) > 1
-    for result in results:
-        if multiple_results:
-            print(f"Camera: {result.paths.run_dir.parent.name}")
-        _print_result(result)
+        _print_result(result, camera_name=camera.name if multiple_results else None)
 
 
 def _write_stdout_line(text: str) -> None:
@@ -720,9 +729,12 @@ def main(argv: Iterable[str] | None = None) -> int:
     if args.list_cameras:
         _write_stdout_line(list_cameras())
         return 0
+    if args.all_cameras and args.camera is not None:
+        print("error: pass either a single camera or --all-cameras, not both.", file=sys.stderr)
+        return 2
 
     try:
-        results = _run_configured_comparisons(args)
+        _run_and_print_configured_comparisons(args)
     except ValueError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2
@@ -730,7 +742,6 @@ def main(argv: Iterable[str] | None = None) -> int:
         print("error: comparison capture failed; use --skip-browser or --skip-qgis to isolate setup issues.", file=sys.stderr)
         return 2
 
-    _print_results(results)
     return 0
 
 
