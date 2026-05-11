@@ -373,6 +373,25 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
 
         self.assertEqual(result["layers"][0]["layout"]["text-field"], ["get", "name_en"])
 
+    def test_coalesce_text_field_expression_searches_nested_stringified_field(self):
+        style = {
+            "layers": [
+                {
+                    "layout": {
+                        "text-field": [
+                            "coalesce",
+                            ["to-string", ["get", "name"]],
+                            "",
+                        ]
+                    },
+                }
+            ]
+        }
+
+        result = simplify_mapbox_style_expressions(style)
+
+        self.assertEqual(result["layers"][0]["layout"]["text-field"], ["get", "name"])
+
     def test_concat_text_field_expression_uses_first_stringified_field(self):
         style = {
             "layers": [

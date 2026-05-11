@@ -387,12 +387,7 @@ def _simplify_text_field(expr: object) -> object:
     if not isinstance(expr, list) or not expr:
         return expr
     op = expr[0]
-    if op == "coalesce":
-        # Return the first simple ['get', field] child
-        for child in expr[1:]:
-            if isinstance(child, list) and len(child) == 2 and child[0] == "get" and isinstance(child[1], str):
-                return child
-    if op in {"concat", "format", "to-string"}:
+    if op in {"coalesce", "concat", "format", "to-string"}:
         reference = _first_simple_text_field_reference(expr)
         if reference is not None:
             return reference
