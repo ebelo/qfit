@@ -125,6 +125,7 @@ class ComparisonConfig:
     camera: MapboxComparisonCamera
     token: str
     output_root: Path
+    style_json_path: Path | None = None
     browser: bool = True
     qgis: bool = True
     diff: bool = True
@@ -139,6 +140,7 @@ class ComparisonResult:
     qgis_captured: bool
     diff_captured: bool
     image_metrics: dict[str, object] = dataclasses.field(default_factory=dict)
+    style_json_path: str | None = None
 
 
 def _utc_timestamp(now: dt.datetime | None = None) -> str:
@@ -210,6 +212,14 @@ def resolve_mapbox_token(*, provided_token: str | None, environ: dict[str, str] 
     return token
 
 
+def load_style_definition(path: Path) -> dict[str, object]:
+    with path.open("r", encoding="utf-8") as handle:
+        loaded = json.load(handle)
+    if not isinstance(loaded, dict):
+        raise ValueError(f"Mapbox style JSON must be an object: {path}")
+    return loaded
+
+
 def _ensure_output_directory(path: Path) -> None:
     path.mkdir(parents=True, exist_ok=True)
 
@@ -228,6 +238,7 @@ def _redacted_manifest(
             "diff": str(result.paths.diff_png),
             "metrics": str(result.paths.metrics_json),
         },
+        "style_json_path": result.style_json_path,
         "captured": {
             "browser_reference": result.browser_captured,
             "qgis_vector_render": result.qgis_captured,
@@ -246,10 +257,14 @@ def write_manifest(*, camera: MapboxComparisonCamera, result: ComparisonResult) 
     result.paths.manifest_json.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
 
 
-def build_mapbox_gl_html(*, camera: MapboxComparisonCamera) -> str:
+def build_mapbox_gl_html(
+    *,
+    camera: MapboxComparisonCamera,
+    style_definition: dict[str, object] | None = None,
+) -> str:
     """Return token-free temporary HTML for the browser reference capture."""
 
-    style_json = json.dumps(camera.style_url)
+    style_json = json.dumps(style_definition if style_definition is not None else camera.style_url)
     center_json = json.dumps([camera.longitude, camera.latitude])
     return f"""<!doctype html>
 <html>
@@ -358,8 +373,12 @@ def redact_sensitive_text(text: str, secret: str) -> str:
     return text.replace(secret, "<redacted>")
 
 
-def encode_browser_capture_html(*, camera: MapboxComparisonCamera) -> str:
-    html = build_mapbox_gl_html(camera=camera).encode("utf-8")
+def encode_browser_capture_html(
+    *,
+    camera: MapboxComparisonCamera,
+    style_definition: dict[str, object] | None = None,
+) -> str:
+    html = build_mapbox_gl_html(camera=camera, style_definition=style_definition).encode("utf-8")
     return base64.b64encode(html).decode("ascii")
 
 
@@ -369,6 +388,7 @@ def render_browser_reference(  # pragma: no cover - depends on optional Node/Chr
     token: str,
     output_path: Path,
     timeout_ms: int,
+    style_definition: dict[str, object] | None = None,
 ) -> None:
     node_binary = shutil.which("node")
     if not node_binary:
@@ -384,7 +404,7 @@ def render_browser_reference(  # pragma: no cover - depends on optional Node/Chr
         command = [
             node_binary,
             str(script_path),
-            encode_browser_capture_html(camera=camera),
+            encode_browser_capture_html(camera=camera, style_definition=style_definition),
             str(output_path),
             str(camera.width),
             str(camera.height),
@@ -425,6 +445,7 @@ def render_qgis_vector(  # pragma: no cover - depends on optional PyQGIS runtime
     camera: MapboxComparisonCamera,
     token: str,
     output_path: Path,
+    style_definition: dict[str, object] | None = None,
 ) -> None:
     _ensure_package_parent_on_path()
     try:
@@ -460,9 +481,13 @@ def render_qgis_vector(  # pragma: no cover - depends on optional PyQGIS runtime
         app.initQgis()
 
     try:
-        style_definition = fetch_mapbox_style_definition(token, camera.style_owner, camera.style_id)
-        simplified_style = simplify_mapbox_style_expressions(style_definition)
-        tileset_ids = extract_mapbox_vector_source_ids(style_definition)
+        resolved_style_definition = (
+            style_definition
+            if style_definition is not None
+            else fetch_mapbox_style_definition(token, camera.style_owner, camera.style_id)
+        )
+        simplified_style = simplify_mapbox_style_expressions(resolved_style_definition)
+        tileset_ids = extract_mapbox_vector_source_ids(resolved_style_definition)
         layer_uri = build_vector_tile_layer_uri(
             token,
             camera.style_owner,
@@ -569,6 +594,11 @@ def run_comparison(
     qgis_captured = False
     diff_captured = False
     image_metrics: ImageMetrics = {}
+    style_definition = (
+        load_style_definition(config.style_json_path)
+        if config.style_json_path is not None
+        else None
+    )
 
     if config.browser:
         browser_renderer(
@@ -576,11 +606,17 @@ def run_comparison(
             token=config.token,
             output_path=paths.browser_png,
             timeout_ms=config.browser_timeout_ms,
+            style_definition=style_definition,
         )
         browser_captured = True
 
     if config.qgis:
-        qgis_renderer(camera=config.camera, token=config.token, output_path=paths.qgis_png)
+        qgis_renderer(
+            camera=config.camera,
+            token=config.token,
+            output_path=paths.qgis_png,
+            style_definition=style_definition,
+        )
         qgis_captured = True
 
     if config.diff and browser_captured and qgis_captured:
@@ -598,6 +634,7 @@ def run_comparison(
         qgis_captured=qgis_captured,
         diff_captured=diff_captured,
         image_metrics=image_metrics,
+        style_json_path=str(config.style_json_path) if config.style_json_path is not None else None,
     )
     write_manifest(camera=config.camera, result=result)
     return result
@@ -634,6 +671,14 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--mapbox-token",
         help="Mapbox access token. Prefer MAPBOX_ACCESS_TOKEN to avoid shell history exposure.",
+    )
+    parser.add_argument(
+        "--style-json",
+        type=Path,
+        help=(
+            "Use an already downloaded Mapbox style JSON snapshot for the browser reference "
+            "and QGIS style preprocessing instead of fetching live style metadata."
+        ),
     )
     parser.add_argument(
         "--output-root",
@@ -694,6 +739,7 @@ def _comparison_config(
         camera=camera,
         token=token,
         output_root=output_root,
+        style_json_path=args.style_json,
         browser=not args.skip_browser,
         qgis=not args.skip_qgis,
         diff=not args.skip_diff,
