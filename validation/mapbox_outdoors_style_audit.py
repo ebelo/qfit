@@ -302,7 +302,7 @@ def _expression_operator_names(value: object) -> list[str]:
         operator = candidate[0]
         if isinstance(operator, str) and operator in _MAPBOX_EXPRESSION_OPERATORS:
             operators.add(operator)
-            children = candidate[1:]
+            children = [] if operator == "literal" else candidate[1:]
         else:
             children = candidate
         for child in children:

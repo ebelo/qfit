@@ -322,6 +322,10 @@ class MapboxOutdoorsStyleAuditTests(unittest.TestCase):
             ["get", "in", "literal"],
         )
         self.assertEqual(
+            mapbox_outdoors_style_audit._expression_operator_names(["literal", ["step", 1, 2]]),
+            ["literal"],
+        )
+        self.assertEqual(
             mapbox_outdoors_style_audit._expression_operator_names(
                 ["slice", ["get", "ref"], ["index-of", "A", ["get", "ref"]]]
             ),
