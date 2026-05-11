@@ -315,6 +315,22 @@ class MapboxOutdoorsStyleAuditTests(unittest.TestCase):
             mapbox_outdoors_style_audit._expression_operator_names(["DIN Pro Medium", "Arial Unicode MS Regular"]),
             [],
         )
+        self.assertEqual(
+            mapbox_outdoors_style_audit._expression_operator_names(
+                ["in", ["get", "class"], ["literal", ["primary", "secondary"]]]
+            ),
+            ["get", "in", "literal"],
+        )
+        self.assertEqual(
+            mapbox_outdoors_style_audit._expression_operator_names(
+                ["slice", ["get", "ref"], ["index-of", "A", ["get", "ref"]]]
+            ),
+            ["get", "index-of", "slice"],
+        )
+        self.assertEqual(
+            mapbox_outdoors_style_audit._expression_operator_names(["accumulated"]),
+            ["accumulated"],
+        )
 
     def test_qgis_warning_summaries_by_layer_skip_unprefixed_warnings(self):
         summaries = mapbox_outdoors_style_audit._qgis_warning_summaries_by_layer(
