@@ -195,7 +195,7 @@ def _is_supported_simple_text_field(value: object) -> bool:
 
 
 def _is_literal_number_array(value: object) -> bool:
-    return isinstance(value, list) and all(isinstance(item, (int, float)) for item in value)
+    return isinstance(value, list) and len(value) > 0 and all(isinstance(item, (int, float)) for item in value)
 
 
 def _is_hidden_by_qfit(simplified_layer: dict[str, object] | None) -> bool:
