@@ -381,15 +381,59 @@ def _first_text_field_reference_child(
     return None
 
 
+def _text_field_reference_name(reference: object) -> str | None:
+    if (
+        isinstance(reference, list)
+        and len(reference) == 2
+        and reference[0] == "get"
+        and isinstance(reference[1], str)
+    ):
+        return reference[1]
+    return None
+
+
+def _prefer_generic_name_reference(references: list[object]) -> object | None:
+    for reference in references:
+        if _text_field_reference_name(reference) == "name":
+            return reference
+    return references[0] if references else None
+
+
+def _text_field_references_from_children(
+    children: list[object],
+    *,
+    allow_concat: bool,
+    allow_to_string: bool,
+) -> list[object]:
+    references: list[object] = []
+    for child in children:
+        if isinstance(child, dict):
+            continue
+        reference = _first_simple_text_field_reference(
+            child,
+            allow_concat=allow_concat,
+            allow_to_string=allow_to_string,
+        )
+        if reference is not None:
+            references.append(reference)
+    return references
+
+
 def _first_coalesced_text_field_reference(expr: list[object]) -> object | None:
-    reference = _first_text_field_reference_child(
+    references = _text_field_references_from_children(
         expr[1:],
         allow_concat=False,
         allow_to_string=False,
     )
-    if reference is not None:
-        return reference
-    return _first_text_field_reference_child(expr[1:], allow_concat=True)
+    if references:
+        return _prefer_generic_name_reference(references)
+    return _prefer_generic_name_reference(
+        _text_field_references_from_children(
+            expr[1:],
+            allow_concat=True,
+            allow_to_string=True,
+        )
+    )
 
 
 def _first_simple_text_field_reference(
