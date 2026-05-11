@@ -365,7 +365,15 @@ def _first_simple_text_field_reference(expr: object) -> object | None:
     op = expr[0]
     if op == "get" and len(expr) == 2 and isinstance(expr[1], str):
         return expr
-    if op in {"coalesce", "concat", "format"}:
+    if op == "coalesce":
+        for child in expr[1:]:
+            if isinstance(child, list) and len(child) == 2 and child[0] == "get" and isinstance(child[1], str):
+                return child
+        for child in expr[1:]:
+            reference = _first_simple_text_field_reference(child)
+            if reference is not None:
+                return reference
+    if op in {"concat", "format"}:
         for child in expr[1:]:
             if isinstance(child, dict):
                 continue
