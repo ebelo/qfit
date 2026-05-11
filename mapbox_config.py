@@ -362,24 +362,42 @@ def _is_simple_text_field_reference(expr: object) -> bool:
     return isinstance(expr, list) and len(expr) == 2 and expr[0] == "get" and isinstance(expr[1], str)
 
 
-def _first_text_field_reference_child(children: list[object], *, allow_concat: bool) -> object | None:
+def _first_text_field_reference_child(
+    children: list[object],
+    *,
+    allow_concat: bool,
+    allow_to_string: bool = True,
+) -> object | None:
     for child in children:
         if isinstance(child, dict):
             continue
-        reference = _first_simple_text_field_reference(child, allow_concat=allow_concat)
+        reference = _first_simple_text_field_reference(
+            child,
+            allow_concat=allow_concat,
+            allow_to_string=allow_to_string,
+        )
         if reference is not None:
             return reference
     return None
 
 
 def _first_coalesced_text_field_reference(expr: list[object]) -> object | None:
-    reference = _first_text_field_reference_child(expr[1:], allow_concat=False)
+    reference = _first_text_field_reference_child(
+        expr[1:],
+        allow_concat=False,
+        allow_to_string=False,
+    )
     if reference is not None:
         return reference
     return _first_text_field_reference_child(expr[1:], allow_concat=True)
 
 
-def _first_simple_text_field_reference(expr: object, *, allow_concat: bool = True) -> object | None:
+def _first_simple_text_field_reference(
+    expr: object,
+    *,
+    allow_concat: bool = True,
+    allow_to_string: bool = True,
+) -> object | None:
     """Return the first direct ``['get', field]`` from text-oriented expressions."""
     if not isinstance(expr, list) or not expr:
         return None
@@ -391,9 +409,19 @@ def _first_simple_text_field_reference(expr: object, *, allow_concat: bool = Tru
     if op == "concat" and not allow_concat:
         return None
     if op in {"concat", "format"}:
-        return _first_text_field_reference_child(expr[1:], allow_concat=allow_concat)
+        return _first_text_field_reference_child(
+            expr[1:],
+            allow_concat=allow_concat,
+            allow_to_string=allow_to_string,
+        )
     if op == "to-string" and len(expr) >= 2:
-        return _first_simple_text_field_reference(expr[1], allow_concat=allow_concat)
+        if not allow_to_string:
+            return None
+        return _first_simple_text_field_reference(
+            expr[1],
+            allow_concat=allow_concat,
+            allow_to_string=allow_to_string,
+        )
     return None
 
 
