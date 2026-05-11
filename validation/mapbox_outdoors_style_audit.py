@@ -394,17 +394,35 @@ def build_layer_audit(
 def _property_count_summary(layers: list[dict[str, object]], key: str) -> list[dict[str, object]]:
     counts: Counter[str] = Counter()
     for layer in layers:
-        values = layer.get(key)
-        if not isinstance(values, list):
-            continue
-        for item in values:
-            if isinstance(item, str):
-                counts[item] += 1
-            elif isinstance(item, dict) and isinstance(item.get("property"), str):
-                counts[item["property"]] += 1
+        counts.update(_iter_property_names(layer, key))
     return [
         {"property": property_name, "count": count}
         for property_name, count in sorted(counts.items(), key=lambda item: (-item[1], item[0]))
+    ]
+
+
+def _iter_property_names(layer: dict[str, object], key: str) -> Iterable[str]:
+    values = layer.get(key)
+    if not isinstance(values, list):
+        return
+    for item in values:
+        if isinstance(item, str):
+            yield item
+        elif isinstance(item, dict) and isinstance(item.get("property"), str):
+            yield item["property"]
+
+
+def _property_group_count_summary(layers: list[dict[str, object]], key: str) -> list[dict[str, object]]:
+    counts: Counter[tuple[str, str]] = Counter()
+    for layer in layers:
+        group = str(layer.get("group") or "other")
+        counts.update((group, property_name) for property_name in _iter_property_names(layer, key))
+    return [
+        {"group": group, "property": property_name, "count": count}
+        for (group, property_name), count in sorted(
+            counts.items(),
+            key=lambda item: (-item[1], item[0][0], item[0][1]),
+        )
     ]
 
 
@@ -430,6 +448,23 @@ def _expression_operator_count_summary(layers: list[dict[str, object]]) -> list[
         for (property_name, operator), count in sorted(
             counts.items(),
             key=lambda item: (-item[1], item[0][0], item[0][1]),
+        )
+    ]
+
+
+def _expression_operator_group_count_summary(layers: list[dict[str, object]]) -> list[dict[str, object]]:
+    counts: Counter[tuple[str, str, str]] = Counter()
+    for layer in layers:
+        group = str(layer.get("group") or "other")
+        counts.update(
+            (group, property_name, operator)
+            for property_name, operator in _iter_expression_operator_pairs(layer)
+        )
+    return [
+        {"group": group, "property": property_name, "operator": operator, "count": count}
+        for (group, property_name, operator), count in sorted(
+            counts.items(),
+            key=lambda item: (-item[1], item[0][0], item[0][1], item[0][2]),
         )
     ]
 
@@ -608,7 +643,14 @@ def build_style_audit(
         "summary": {
             "qfit_simplifies_by_property": _property_count_summary(layers, "qfit_simplifies"),
             "qfit_unresolved_by_property": _property_count_summary(layers, "qfit_unresolved"),
+            "qfit_unresolved_by_layer_group_and_property": _property_group_count_summary(
+                layers,
+                "qfit_unresolved",
+            ),
             "qfit_unresolved_expression_operators_by_property": _expression_operator_count_summary(layers),
+            "qfit_unresolved_expression_operators_by_layer_group_and_property": (
+                _expression_operator_group_count_summary(layers)
+            ),
         },
         "layers": layers,
     }
@@ -677,6 +719,22 @@ def _markdown_count_table(items: list[dict[str, object]], *, empty: str = "—")
     return lines
 
 
+def _markdown_group_count_table(items: list[dict[str, object]], *, empty: str = "—") -> list[str]:
+    if not items:
+        return [empty, ""]
+    lines = ["| Layer group | Property | # Layers |", "| --- | --- | ---: |"]
+    for item in items:
+        lines.append(
+            "| `{group}` | `{property_name}` | {count} |".format(
+                group=item.get("group", ""),
+                property_name=item.get("property", ""),
+                count=item.get("count", 0),
+            )
+        )
+    lines.append("")
+    return lines
+
+
 def _markdown_expression_operator_table(items: list[dict[str, object]], *, empty: str = "—") -> list[str]:
     if not items:
         return [empty, ""]
@@ -684,6 +742,27 @@ def _markdown_expression_operator_table(items: list[dict[str, object]], *, empty
     for item in items:
         lines.append(
             "| `{property_name}` | `{operator}` | {count} |".format(
+                property_name=item.get("property", ""),
+                operator=item.get("operator", ""),
+                count=item.get("count", 0),
+            )
+        )
+    lines.append("")
+    return lines
+
+
+def _markdown_group_expression_operator_table(
+    items: list[dict[str, object]],
+    *,
+    empty: str = "—",
+) -> list[str]:
+    if not items:
+        return [empty, ""]
+    lines = ["| Layer group | Property | Operator | # Layers |", "| --- | --- | --- | ---: |"]
+    for item in items:
+        lines.append(
+            "| `{group}` | `{property_name}` | `{operator}` | {count} |".format(
+                group=item.get("group", ""),
                 property_name=item.get("property", ""),
                 operator=item.get("operator", ""),
                 count=item.get("count", 0),
@@ -798,10 +877,18 @@ def build_audit_markdown(audit: dict[str, object]) -> str:
         "### QGIS-dependent / unresolved",
         "",
         *_markdown_count_table(list(summary.get("qfit_unresolved_by_property") or [])),
+        "### QGIS-dependent / unresolved by layer group",
+        "",
+        *_markdown_group_count_table(list(summary.get("qfit_unresolved_by_layer_group_and_property") or [])),
         "### Unresolved expression operators",
         "",
         *_markdown_expression_operator_table(
             list(summary.get("qfit_unresolved_expression_operators_by_property") or [])
+        ),
+        "### Unresolved expression operators by layer group",
+        "",
+        *_markdown_group_expression_operator_table(
+            list(summary.get("qfit_unresolved_expression_operators_by_layer_group_and_property") or [])
         ),
         *_markdown_qgis_converter_warnings(audit.get("qgis_converter_warnings")),
         "## Layers",
