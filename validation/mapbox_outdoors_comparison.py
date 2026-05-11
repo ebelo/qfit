@@ -628,6 +628,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="List supported comparison cameras and exit.",
     )
     parser.add_argument(
+        "--all-cameras",
+        action="store_true",
+        help="Capture the full recommended z5-z18 inspection camera matrix.",
+    )
+    parser.add_argument(
         "--mapbox-token",
         help="Mapbox access token. Prefer MAPBOX_ACCESS_TOKEN to avoid shell history exposure.",
     )
@@ -671,18 +676,37 @@ def _print_result(result: ComparisonResult) -> None:
     print(f"Manifest: {result.paths.manifest_json}")
 
 
-def _run_configured_comparison(args: argparse.Namespace) -> ComparisonResult:
+def _selected_cameras(args: argparse.Namespace) -> list[MapboxComparisonCamera]:
+    if args.all_cameras:
+        return list(CAMERAS.values())
+    return [args.camera]
+
+
+def _run_configured_comparisons(args: argparse.Namespace) -> list[ComparisonResult]:
     token = resolve_mapbox_token(provided_token=args.mapbox_token)
-    config = ComparisonConfig(
-        camera=args.camera,
-        token=token,
-        output_root=Path(args.output_root).expanduser().resolve(),
-        browser=not args.skip_browser,
-        qgis=not args.skip_qgis,
-        diff=not args.skip_diff,
-        browser_timeout_ms=args.browser_timeout_ms,
-    )
-    return run_comparison(config)
+    output_root = Path(args.output_root).expanduser().resolve()
+    return [
+        run_comparison(
+            ComparisonConfig(
+                camera=camera,
+                token=token,
+                output_root=output_root,
+                browser=not args.skip_browser,
+                qgis=not args.skip_qgis,
+                diff=not args.skip_diff,
+                browser_timeout_ms=args.browser_timeout_ms,
+            )
+        )
+        for camera in _selected_cameras(args)
+    ]
+
+
+def _print_results(results: list[ComparisonResult]) -> None:
+    multiple_results = len(results) > 1
+    for result in results:
+        if multiple_results:
+            print(f"Camera: {result.paths.run_dir.parent.name}")
+        _print_result(result)
 
 
 def _write_stdout_line(text: str) -> None:
@@ -698,7 +722,7 @@ def main(argv: Iterable[str] | None = None) -> int:
         return 0
 
     try:
-        result = _run_configured_comparison(args)
+        results = _run_configured_comparisons(args)
     except ValueError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2
@@ -706,7 +730,7 @@ def main(argv: Iterable[str] | None = None) -> int:
         print("error: comparison capture failed; use --skip-browser or --skip-qgis to isolate setup issues.", file=sys.stderr)
         return 2
 
-    _print_result(result)
+    _print_results(results)
     return 0
 
 

@@ -405,6 +405,36 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         self.assertTrue(args.skip_qgis)
         self.assertEqual(args.browser_timeout_ms, 5000)
 
+    def test_main_all_cameras_runs_full_inspection_matrix(self):
+        from qfit.validation import mapbox_outdoors_comparison
+
+        captured_camera_names = []
+
+        def fake_run_comparison(config):
+            captured_camera_names.append(config.camera.name)
+            paths = mapbox_outdoors_comparison.build_comparison_paths(
+                run_dir=Path("/tmp/qfit-mapbox") / config.camera.name / "20260511T130000Z"
+            )
+            return mapbox_outdoors_comparison.ComparisonResult(
+                paths=paths,
+                browser_captured=False,
+                qgis_captured=False,
+                diff_captured=False,
+            )
+
+        with patch.dict("os.environ", {"MAPBOX_ACCESS_TOKEN": "test-mapbox-token"}, clear=True):
+            with patch("qfit.validation.mapbox_outdoors_comparison.run_comparison", side_effect=fake_run_comparison):
+                with patch("builtins.print"):
+                    result = mapbox_outdoors_comparison.main([
+                        "--all-cameras",
+                        "--skip-browser",
+                        "--skip-qgis",
+                        "--skip-diff",
+                    ])
+
+        self.assertEqual(result, 0)
+        self.assertEqual(captured_camera_names, list(CAMERAS))
+
     def test_redact_sensitive_text_removes_token_from_errors(self):
         self.assertEqual(
             redact_sensitive_text("failed for test-mapbox-token", "test-mapbox-token"),
