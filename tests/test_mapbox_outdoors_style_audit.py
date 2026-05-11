@@ -447,6 +447,19 @@ class MapboxOutdoorsStyleAuditTests(unittest.TestCase):
         self.assertIn("QGIS converter warnings: 2", markdown)
         self.assertIn("`Referenced font DIN Pro Medium is not available on system` (1)", markdown)
 
+    def test_markdown_layer_unresolved_omits_empty_unresolved_sentinel_for_qgis_warnings(self):
+        rendered = mapbox_outdoors_style_audit._markdown_layer_unresolved(
+            {
+                "qfit_unresolved": [],
+                "qgis_converter_warnings": {
+                    "count": 1,
+                    "by_message": [{"message": "Skipping unsupported expression", "count": 1}],
+                },
+            }
+        )
+
+        self.assertEqual(rendered, "QGIS converter warnings: 1<br>`Skipping unsupported expression` (1)")
+
     def test_markdown_omits_qgis_reduction_sections_when_no_reductions_exist(self):
         audit = build_style_audit(SAMPLE_STYLE)
         audit["qgis_converter_warnings"] = {

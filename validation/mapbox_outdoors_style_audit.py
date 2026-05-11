@@ -506,13 +506,13 @@ def _markdown_layer_qgis_warnings(layer_obj: dict[str, object]) -> str:
 
 
 def _markdown_layer_unresolved(layer_obj: dict[str, object]) -> str:
-    unresolved = _markdown_unresolved_list(list(layer_obj.get("qfit_unresolved") or []))
+    raw_unresolved = list(layer_obj.get("qfit_unresolved") or [])
     qgis_warnings = _markdown_layer_qgis_warnings(layer_obj)
     if not qgis_warnings:
-        return unresolved
-    if unresolved == "—":
+        return _markdown_unresolved_list(raw_unresolved)
+    if not raw_unresolved:
         return qgis_warnings
-    return f"{unresolved}<br>{qgis_warnings}"
+    return f"{_markdown_unresolved_list(raw_unresolved)}<br>{qgis_warnings}"
 
 
 def _markdown_count_table(items: list[dict[str, object]], *, empty: str = "—") -> list[str]:
