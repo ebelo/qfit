@@ -336,6 +336,24 @@ class MapboxOutdoorsStyleAuditTests(unittest.TestCase):
             ["accumulated"],
         )
 
+    def test_expression_operator_names_include_current_mapbox_reference_operators(self):
+        reference_operators = [
+            "at-interpolated",
+            "distance-from-center",
+            "hsl",
+            "hsla",
+            "number-format",
+            "pitch",
+            "random",
+            "split",
+            "to-hsla",
+            "to-rgba",
+            "worldview",
+        ]
+        for operator in reference_operators:
+            with self.subTest(operator=operator):
+                self.assertEqual(mapbox_outdoors_style_audit._expression_operator_names([operator]), [operator])
+
     def test_qgis_warning_summaries_by_layer_skip_unprefixed_warnings(self):
         summaries = mapbox_outdoors_style_audit._qgis_warning_summaries_by_layer(
             [
