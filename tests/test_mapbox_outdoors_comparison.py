@@ -28,6 +28,7 @@ from qfit.validation.mapbox_outdoors_comparison import (
     list_cameras,
     load_style_definition,
     redact_sensitive_text,
+    render_browser_reference,
     render_qgis_vector,
     resolve_mapbox_token,
     run_comparison,
@@ -149,11 +150,12 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         script = build_node_playwright_capture_script()
 
         self.assertIn("require('playwright')", script)
-        self.assertIn("Buffer.from", script)
         self.assertIn("setContent", script)
         self.assertIn("startQfitMapboxComparison", script)
         self.assertIn("window.qfitMapboxReady", script)
+        self.assertIn("readFileSync(htmlPath", script)
         self.assertIn("readFileSync(0", script)
+        self.assertNotIn("Buffer.from", script)
         self.assertNotIn("accessToken", script)
         self.assertNotIn("MAPBOX_ACCESS_TOKEN", script)
         self.assertNotIn("pk.", script)
@@ -165,6 +167,37 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         self.assertIn("startQfitMapboxComparison", html)
         self.assertNotIn("test-mapbox-token", html)
         self.assertNotIn("accessToken", html)
+
+    def test_render_browser_reference_passes_html_file_instead_of_large_argv(self):
+        captured = {}
+        large_style = {
+            **SAMPLE_STYLE,
+            "metadata": {"qfit-large-style-padding": "x" * 150_000},
+        }
+
+        def fake_run(command, **kwargs):
+            html_path = Path(command[2])
+            captured["command"] = command
+            captured["html"] = html_path.read_text(encoding="utf-8")
+            captured["input"] = kwargs["input"]
+            return types.SimpleNamespace(returncode=0, stdout="", stderr="")
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output_path = Path(tmpdir) / "reference.png"
+            with patch("qfit.validation.mapbox_outdoors_comparison.shutil.which", return_value="/usr/bin/node"):
+                with patch("qfit.validation.mapbox_outdoors_comparison.subprocess.run", side_effect=fake_run):
+                    render_browser_reference(
+                        camera=CAMERAS["valais-geneva-outdoors"],
+                        token="test-mapbox-token",
+                        output_path=output_path,
+                        timeout_ms=5_000,
+                        style_definition=large_style,
+                    )
+
+        self.assertEqual(captured["input"], "test-mapbox-token")
+        self.assertLess(max(len(value) for value in captured["command"]), 1_000)
+        self.assertIn("qfit-large-style-padding", captured["html"])
+        self.assertNotIn("test-mapbox-token", captured["html"])
 
     def test_load_style_definition_requires_json_object(self):
         with tempfile.TemporaryDirectory() as tmpdir:

@@ -308,8 +308,8 @@ def build_node_playwright_capture_script() -> str:
 const fs = require('fs');
 const { chromium } = require('playwright');
 
-const [encodedHtml, outputPath, widthText, heightText, timeoutText, executablePath] = process.argv.slice(2);
-const html = Buffer.from(encodedHtml, 'base64').toString('utf8');
+const [htmlPath, outputPath, widthText, heightText, timeoutText, executablePath] = process.argv.slice(2);
+const html = fs.readFileSync(htmlPath, 'utf8');
 const width = Number.parseInt(widthText, 10);
 const height = Number.parseInt(heightText, 10);
 const timeout = Number.parseInt(timeoutText, 10);
@@ -400,11 +400,13 @@ def render_browser_reference(  # pragma: no cover - depends on optional Node/Chr
     with tempfile.TemporaryDirectory(prefix="qfit-mapbox-reference-") as tmpdir:
         tmp_path = Path(tmpdir)
         script_path = tmp_path / "capture-reference.js"
+        html_path = tmp_path / "mapbox-reference.html"
         script_path.write_text(build_node_playwright_capture_script(), encoding="utf-8")
+        html_path.write_text(build_mapbox_gl_html(camera=camera, style_definition=style_definition), encoding="utf-8")
         command = [
             node_binary,
             str(script_path),
-            encode_browser_capture_html(camera=camera, style_definition=style_definition),
+            str(html_path),
             str(output_path),
             str(camera.width),
             str(camera.height),
