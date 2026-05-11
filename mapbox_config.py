@@ -359,9 +359,7 @@ def _extract_midrange_size(expr: object) -> float | None:
 
 
 def _line_layout_choice(expr: object, choices: set[str]) -> str | None:
-    if isinstance(expr, str) and expr in choices:
-        return expr
-    if not isinstance(expr, list) or len(expr) < 3 or expr[0] != "step":
+    if not isinstance(expr, list) or len(expr) < 3 or expr[0] != "step" or expr[1] != ["zoom"]:
         return None
     step_outputs = [expr[2], *expr[4::2]]
     for item in reversed(step_outputs):

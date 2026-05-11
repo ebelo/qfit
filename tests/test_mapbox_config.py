@@ -374,6 +374,21 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
 
         self.assertEqual(result["layers"][0]["layout"]["line-join"], expression)
 
+    def test_data_driven_line_join_step_expression_is_left_unchanged(self):
+        expression = ["step", ["get", "rank"], "miter", 3, "round"]
+        style = {
+            "layers": [
+                {
+                    "paint": {},
+                    "layout": {"line-join": expression},
+                }
+            ]
+        }
+
+        result = simplify_mapbox_style_expressions(style)
+
+        self.assertEqual(result["layers"][0]["layout"]["line-join"], expression)
+
     def test_format_text_field_expression_uses_primary_label_field(self):
         style = {
             "layers": [
