@@ -358,31 +358,40 @@ def _extract_midrange_size(expr: object) -> float | None:
     return None
 
 
+def _is_simple_text_field_reference(expr: object) -> bool:
+    return isinstance(expr, list) and len(expr) == 2 and expr[0] == "get" and isinstance(expr[1], str)
+
+
+def _first_text_field_reference_child(children: list[object], *, allow_concat: bool) -> object | None:
+    for child in children:
+        if isinstance(child, dict):
+            continue
+        reference = _first_simple_text_field_reference(child, allow_concat=allow_concat)
+        if reference is not None:
+            return reference
+    return None
+
+
+def _first_coalesced_text_field_reference(expr: list[object]) -> object | None:
+    reference = _first_text_field_reference_child(expr[1:], allow_concat=False)
+    if reference is not None:
+        return reference
+    return _first_text_field_reference_child(expr[1:], allow_concat=True)
+
+
 def _first_simple_text_field_reference(expr: object, *, allow_concat: bool = True) -> object | None:
     """Return the first direct ``['get', field]`` from text-oriented expressions."""
     if not isinstance(expr, list) or not expr:
         return None
-    op = expr[0]
-    if op == "get" and len(expr) == 2 and isinstance(expr[1], str):
+    if _is_simple_text_field_reference(expr):
         return expr
+    op = expr[0]
     if op == "coalesce":
-        for child in expr[1:]:
-            reference = _first_simple_text_field_reference(child, allow_concat=False)
-            if reference is not None:
-                return reference
-        for child in expr[1:]:
-            reference = _first_simple_text_field_reference(child)
-            if reference is not None:
-                return reference
+        return _first_coalesced_text_field_reference(expr)
     if op == "concat" and not allow_concat:
         return None
     if op in {"concat", "format"}:
-        for child in expr[1:]:
-            if isinstance(child, dict):
-                continue
-            reference = _first_simple_text_field_reference(child, allow_concat=allow_concat)
-            if reference is not None:
-                return reference
+        return _first_text_field_reference_child(expr[1:], allow_concat=allow_concat)
     if op == "to-string" and len(expr) >= 2:
         return _first_simple_text_field_reference(expr[1], allow_concat=allow_concat)
     return None
