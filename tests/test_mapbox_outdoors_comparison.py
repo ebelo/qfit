@@ -431,6 +431,7 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         )
         self.assertEqual(result.style_json_path, str(style_path))
         self.assertEqual(manifest["style_json_path"], str(style_path))
+        self.assertIsNone(manifest["style_url"])
 
     def test_run_comparison_skips_diff_when_one_capture_is_disabled(self):
         def fake_qgis_renderer(*, output_path, **_kwargs):
@@ -589,6 +590,28 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
 
         self.assertEqual(result, 2)
         self.assertIn("Mapbox token required", "".join(call.args[0] for call in stderr_mock.write.call_args_list))
+
+    def test_main_returns_targeted_error_when_style_json_is_missing(self):
+        from qfit.validation import mapbox_outdoors_comparison
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            missing_path = Path(tmpdir) / "missing-style.json"
+            with patch.dict("os.environ", {"MAPBOX_ACCESS_TOKEN": "test-mapbox-token"}, clear=True):
+                with patch("sys.stderr") as stderr_mock:
+                    result = mapbox_outdoors_comparison.main([
+                        "valais-geneva-outdoors",
+                        "--style-json",
+                        str(missing_path),
+                        "--skip-browser",
+                        "--skip-qgis",
+                        "--skip-diff",
+                    ])
+
+        stderr_text = "".join(call.args[0] for call in stderr_mock.write.call_args_list)
+        self.assertEqual(result, 2)
+        self.assertIn("style JSON not found", stderr_text)
+        self.assertIn(str(missing_path), stderr_text)
+        self.assertNotIn("comparison capture failed", stderr_text)
 
     def test_main_uses_generic_error_for_runtime_failures(self):
         from qfit.validation import mapbox_outdoors_comparison

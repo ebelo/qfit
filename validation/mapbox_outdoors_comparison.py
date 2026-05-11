@@ -231,7 +231,7 @@ def _redacted_manifest(
 ) -> dict[str, object]:
     return {
         "camera": dataclasses.asdict(camera),
-        "style_url": camera.style_url,
+        "style_url": None if result.style_json_path is not None else camera.style_url,
         "outputs": {
             "browser_reference": str(result.paths.browser_png),
             "qgis_vector_render": str(result.paths.qgis_png),
@@ -783,6 +783,9 @@ def main(argv: Iterable[str] | None = None) -> int:
         _run_and_print_configured_comparisons(args)
     except ValueError as exc:
         print(f"error: {exc}", file=sys.stderr)
+        return 2
+    except FileNotFoundError as exc:
+        print(f"error: style JSON not found: {exc.filename}", file=sys.stderr)
         return 2
     except (RuntimeError, OSError):
         print("error: comparison capture failed; use --skip-browser or --skip-qgis to isolate setup issues.", file=sys.stderr)
