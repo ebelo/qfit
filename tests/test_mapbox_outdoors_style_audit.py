@@ -44,6 +44,7 @@ SAMPLE_STYLE = {
             "minzoom": 5,
             "paint": {
                 "line-color": ["match", ["get", "class"], "primary", "#ffffff", "#cccccc"],
+                "line-dasharray": [3, 3],
                 "line-width": ["interpolate", ["linear"], ["zoom"], 5, 1, 12, 6],
             },
             "layout": {"line-cap": "round"},
@@ -118,7 +119,10 @@ class MapboxOutdoorsStyleAuditTests(unittest.TestCase):
         road_simplified = {change["property"] for change in layers["road-primary"]["qfit_simplifies"]}
         self.assertIn("paint.line-color", road_simplified)
         self.assertIn("paint.line-width", road_simplified)
+        self.assertIn("paint.line-dasharray", layers["road-primary"]["qfit_preserves"])
         self.assertIn("layout.line-cap", layers["road-primary"]["qfit_preserves"])
+        road_unresolved = {item["property"] for item in layers["road-primary"]["qfit_unresolved"]}
+        self.assertNotIn("paint.line-dasharray", road_unresolved)
 
         poi_simplified = {change["property"] for change in layers["poi-label"]["qfit_simplifies"]}
         self.assertIn("layout.text-field", poi_simplified)
