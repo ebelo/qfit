@@ -468,6 +468,25 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
 
         self.assertEqual(result["layers"][0]["layout"]["text-field"], ["get", "name_en"])
 
+    def test_coalesce_text_field_expression_preserves_non_locale_primary_before_name(self):
+        style = {
+            "layers": [
+                {
+                    "layout": {
+                        "text-field": [
+                            "coalesce",
+                            ["get", "ref"],
+                            ["get", "name"],
+                        ]
+                    },
+                }
+            ]
+        }
+
+        result = simplify_mapbox_style_expressions(style)
+
+        self.assertEqual(result["layers"][0]["layout"]["text-field"], ["get", "ref"])
+
     def test_concat_text_field_expression_uses_first_stringified_field(self):
         style = {
             "layers": [

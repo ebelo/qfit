@@ -392,10 +392,16 @@ def _text_field_reference_name(reference: object) -> str | None:
     return None
 
 
+def _is_localized_name_reference(reference: object) -> bool:
+    name = _text_field_reference_name(reference)
+    return name is not None and (name.startswith("name_") or name.startswith("name:"))
+
+
 def _prefer_generic_name_reference(references: list[object]) -> object | None:
-    for reference in references:
+    for index, reference in enumerate(references):
         if _text_field_reference_name(reference) == "name":
-            return reference
+            if index == 0 or all(_is_localized_name_reference(item) for item in references[:index]):
+                return reference
     return references[0] if references else None
 
 
