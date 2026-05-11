@@ -47,6 +47,89 @@ _LAYER_GROUP_RULES: tuple[tuple[str, tuple[str, ...]], ...] = (
 )
 _ABSENT_VALUE = "absent"
 _ABSENT = object()
+_MAPBOX_EXPRESSION_OPERATORS = frozenset(
+    {
+        "!",
+        "!=",
+        "<",
+        "<=",
+        "==",
+        ">",
+        ">=",
+        "%",
+        "*",
+        "+",
+        "-",
+        "/",
+        "^",
+        "abs",
+        "acos",
+        "all",
+        "any",
+        "array",
+        "asin",
+        "at",
+        "atan",
+        "boolean",
+        "case",
+        "ceil",
+        "coalesce",
+        "collator",
+        "concat",
+        "config",
+        "cos",
+        "distance",
+        "downcase",
+        "e",
+        "feature-state",
+        "floor",
+        "format",
+        "geometry-type",
+        "get",
+        "has",
+        "heatmap-density",
+        "id",
+        "image",
+        "interpolate",
+        "interpolate-hcl",
+        "interpolate-lab",
+        "is-supported-script",
+        "length",
+        "let",
+        "line-progress",
+        "literal",
+        "ln",
+        "ln2",
+        "log10",
+        "log2",
+        "match",
+        "max",
+        "measure-light",
+        "min",
+        "number",
+        "object",
+        "pi",
+        "properties",
+        "resolved-locale",
+        "rgb",
+        "rgba",
+        "round",
+        "sin",
+        "sqrt",
+        "step",
+        "string",
+        "tan",
+        "to-boolean",
+        "to-color",
+        "to-number",
+        "to-string",
+        "typeof",
+        "upcase",
+        "var",
+        "within",
+        "zoom",
+    }
+)
 
 
 @dataclass(frozen=True)
@@ -206,41 +289,68 @@ def _is_hidden_by_qfit(simplified_layer: dict[str, object] | None) -> bool:
     return _section_properties(simplified_layer, "layout").get("visibility") == "none"
 
 
-def _unresolved_cues(layer: dict[str, object], simplified_layer: dict[str, object] | None) -> list[dict[str, str]]:
+def _expression_operator_names(value: object) -> list[str]:
+    operators: set[str] = set()
+
+    def visit(candidate: object) -> None:
+        if not isinstance(candidate, list) or not candidate:
+            return
+        operator = candidate[0]
+        if isinstance(operator, str) and operator in _MAPBOX_EXPRESSION_OPERATORS:
+            operators.add(operator)
+            children = candidate[1:]
+        else:
+            children = candidate
+        for child in children:
+            visit(child)
+
+    visit(value)
+    return sorted(operators)
+
+
+def _unresolved_entry(*, property_name: str, value: object, reason: str) -> dict[str, object]:
+    entry: dict[str, object] = {
+        "property": property_name,
+        "value": _compact_json(value),
+        "reason": reason,
+    }
+    operators = _expression_operator_names(value)
+    if operators:
+        entry["expression_operators"] = operators
+    return entry
+
+
+def _unresolved_cues(layer: dict[str, object], simplified_layer: dict[str, object] | None) -> list[dict[str, object]]:
     if _is_hidden_by_qfit(simplified_layer):
         return []
 
-    unresolved: list[dict[str, str]] = []
+    unresolved: list[dict[str, object]] = []
     comparison_layer = simplified_layer or layer
     filter_value = comparison_layer.get("filter")
     if isinstance(filter_value, list):
         unresolved.append(
-            {
-                "property": "filter",
-                "value": _compact_json(filter_value),
-                "reason": "Mapbox filter expression is still handed to QGIS after qfit simplification; verify native support visually.",
-            }
+            _unresolved_entry(
+                property_name="filter",
+                value=filter_value,
+                reason="Mapbox filter expression is still handed to QGIS after qfit simplification; verify native support visually.",
+            )
         )
     for section, prop, value in _iter_symbology(comparison_layer):
         reason = _UNSUPPORTED_CUES.get((section, prop))
         if reason is not None:
             unresolved.append(
-                {
-                    "property": f"{section}.{prop}",
-                    "value": _compact_json(value),
-                    "reason": reason,
-                }
+                _unresolved_entry(property_name=f"{section}.{prop}", value=value, reason=reason)
             )
         elif isinstance(value, list) and not (
             (section == "layout" and prop == "text-field" and _is_supported_simple_text_field(value))
             or _is_literal_number_array(value)
         ):
             unresolved.append(
-                {
-                    "property": f"{section}.{prop}",
-                    "value": _compact_json(value),
-                    "reason": "Expression is still handed to QGIS after qfit simplification; verify native support visually.",
-                }
+                _unresolved_entry(
+                    property_name=f"{section}.{prop}",
+                    value=value,
+                    reason="Expression is still handed to QGIS after qfit simplification; verify native support visually.",
+                )
             )
     return unresolved
 
@@ -280,6 +390,30 @@ def _property_count_summary(layers: list[dict[str, object]], key: str) -> list[d
     return [
         {"property": property_name, "count": count}
         for property_name, count in sorted(counts.items(), key=lambda item: (-item[1], item[0]))
+    ]
+
+
+def _expression_operator_count_summary(layers: list[dict[str, object]]) -> list[dict[str, object]]:
+    counts: Counter[tuple[str, str]] = Counter()
+    for layer in layers:
+        unresolved = layer.get("qfit_unresolved")
+        if not isinstance(unresolved, list):
+            continue
+        for item in unresolved:
+            if not isinstance(item, dict) or not isinstance(item.get("property"), str):
+                continue
+            operators = item.get("expression_operators")
+            if not isinstance(operators, list):
+                continue
+            for operator in operators:
+                if isinstance(operator, str):
+                    counts[(item["property"], operator)] += 1
+    return [
+        {"property": property_name, "operator": operator, "count": count}
+        for (property_name, operator), count in sorted(
+            counts.items(),
+            key=lambda item: (-item[1], item[0][0], item[0][1]),
+        )
     ]
 
 
@@ -457,6 +591,7 @@ def build_style_audit(
         "summary": {
             "qfit_simplifies_by_property": _property_count_summary(layers, "qfit_simplifies"),
             "qfit_unresolved_by_property": _property_count_summary(layers, "qfit_unresolved"),
+            "qfit_unresolved_expression_operators_by_property": _expression_operator_count_summary(layers),
         },
         "layers": layers,
     }
@@ -484,7 +619,7 @@ def _markdown_change_list(changes: list[dict[str, str]], *, empty: str = "—") 
     )
 
 
-def _markdown_unresolved_list(unresolved: list[dict[str, str]], *, empty: str = "—") -> str:
+def _markdown_unresolved_list(unresolved: list[dict[str, object]], *, empty: str = "—") -> str:
     if not unresolved:
         return empty
     return "<br>".join(
@@ -521,6 +656,22 @@ def _markdown_count_table(items: list[dict[str, object]], *, empty: str = "—")
     lines = ["| Property | # Layers |", "| --- | ---: |"]
     for item in items:
         lines.append(f"| `{item.get('property', '')}` | {item.get('count', 0)} |")
+    lines.append("")
+    return lines
+
+
+def _markdown_expression_operator_table(items: list[dict[str, object]], *, empty: str = "—") -> list[str]:
+    if not items:
+        return [empty, ""]
+    lines = ["| Property | Operator | # Layers |", "| --- | --- | ---: |"]
+    for item in items:
+        lines.append(
+            "| `{property_name}` | `{operator}` | {count} |".format(
+                property_name=item.get("property", ""),
+                operator=item.get("operator", ""),
+                count=item.get("count", 0),
+            )
+        )
     lines.append("")
     return lines
 
@@ -630,6 +781,11 @@ def build_audit_markdown(audit: dict[str, object]) -> str:
         "### QGIS-dependent / unresolved",
         "",
         *_markdown_count_table(list(summary.get("qfit_unresolved_by_property") or [])),
+        "### Unresolved expression operators",
+        "",
+        *_markdown_expression_operator_table(
+            list(summary.get("qfit_unresolved_expression_operators_by_property") or [])
+        ),
         *_markdown_qgis_converter_warnings(audit.get("qgis_converter_warnings")),
         "## Layers",
         "",
