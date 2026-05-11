@@ -361,11 +361,8 @@ def _extract_midrange_size(expr: object) -> float | None:
 def _line_layout_choice(expr: object, choices: set[str]) -> str | None:
     if not isinstance(expr, list) or len(expr) < 3 or expr[0] != "step" or expr[1] != ["zoom"]:
         return None
-    step_outputs = [expr[2], *expr[4::2]]
-    for item in reversed(step_outputs):
-        if isinstance(item, str) and item in choices:
-            return item
-    return None
+    output = expr[-1] if len(expr) >= 5 else expr[2]
+    return output if isinstance(output, str) and output in choices else None
 
 
 def _is_simple_text_field_reference(expr: object) -> bool:

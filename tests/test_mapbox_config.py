@@ -389,6 +389,21 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
 
         self.assertEqual(result["layers"][0]["layout"]["line-join"], expression)
 
+    def test_line_join_step_expression_with_unsupported_high_zoom_choice_is_left_unchanged(self):
+        expression = ["step", ["zoom"], "miter", 14, "none"]
+        style = {
+            "layers": [
+                {
+                    "paint": {},
+                    "layout": {"line-join": expression},
+                }
+            ]
+        }
+
+        result = simplify_mapbox_style_expressions(style)
+
+        self.assertEqual(result["layers"][0]["layout"]["line-join"], expression)
+
     def test_format_text_field_expression_uses_primary_label_field(self):
         style = {
             "layers": [
