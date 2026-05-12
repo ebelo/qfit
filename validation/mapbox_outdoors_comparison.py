@@ -25,6 +25,10 @@ WEB_MERCATOR_TILE_SIZE = 512
 ImageMetrics: TypeAlias = dict[str, object]
 
 
+class ComparisonCaptureError(RuntimeError):
+    """Non-sensitive comparison harness failure safe to show on stderr."""
+
+
 @dataclass(frozen=True)
 class MapboxComparisonCamera:
     """Camera used by the manual Mapbox Outdoors comparison harness."""
@@ -765,6 +769,9 @@ def _run_and_print_configured_comparisons(args: argparse.Namespace) -> None:
     token = resolve_mapbox_token(provided_token=args.mapbox_token)
     output_root = Path(args.output_root).expanduser().resolve()
     cameras = _selected_cameras(args)
+    if args.all_cameras:
+        _run_all_cameras_in_subprocesses(args=args, cameras=cameras, token=token, output_root=output_root)
+        return
     multiple_results = len(cameras) > 1
     for camera in cameras:
         result = run_comparison(
@@ -776,6 +783,69 @@ def _run_and_print_configured_comparisons(args: argparse.Namespace) -> None:
             )
         )
         _print_result(result, camera_name=camera.name if multiple_results else None)
+
+
+def _single_camera_subprocess_command(
+    *,
+    args: argparse.Namespace,
+    camera: MapboxComparisonCamera,
+    output_root: Path,
+) -> list[str]:
+    command = [sys.executable, str(Path(__file__).resolve()), camera.name]
+    if args.style_json is not None:
+        command.extend(["--style-json", str(args.style_json)])
+    command.extend(["--output-root", str(output_root)])
+    if args.skip_browser:
+        command.append("--skip-browser")
+    if args.skip_qgis:
+        command.append("--skip-qgis")
+    if args.skip_diff:
+        command.append("--skip-diff")
+    command.extend(["--browser-timeout-ms", str(args.browser_timeout_ms)])
+    return command
+
+
+def _single_camera_subprocess_environment(*, token: str) -> dict[str, str]:
+    env = os.environ.copy()
+    env["MAPBOX_ACCESS_TOKEN"] = token
+    return env
+
+
+def _write_child_output(*, stdout: str, stderr: str, token: str) -> None:
+    safe_stdout = redact_sensitive_text(stdout, token)
+    safe_stderr = redact_sensitive_text(stderr, token)
+    if safe_stdout:
+        print(safe_stdout, end="")
+    if safe_stderr:
+        print(safe_stderr, end="", file=sys.stderr)
+
+
+def _run_all_cameras_in_subprocesses(
+    *,
+    args: argparse.Namespace,
+    cameras: list[MapboxComparisonCamera],
+    token: str,
+    output_root: Path,
+) -> None:
+    failures: list[str] = []
+    for camera in cameras:
+        completed = subprocess.run(  # noqa: S603 - command is built from this script and static camera names.
+            _single_camera_subprocess_command(args=args, camera=camera, output_root=output_root),
+            cwd=REPO_ROOT,
+            env=_single_camera_subprocess_environment(token=token),
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        _write_child_output(stdout=completed.stdout, stderr=completed.stderr, token=token)
+        if completed.returncode != 0:
+            failures.append(f"{camera.name} (exit {completed.returncode})")
+            print(
+                f"error: camera {camera.name} failed with exit code {completed.returncode}; continuing.",
+                file=sys.stderr,
+            )
+    if failures:
+        raise ComparisonCaptureError(f"comparison capture failed for: {', '.join(failures)}")
 
 
 def _write_stdout_line(text: str) -> None:
@@ -800,6 +870,9 @@ def main(argv: Iterable[str] | None = None) -> int:
         return 2
     except FileNotFoundError as exc:
         print(f"error: style JSON not found: {exc.filename}", file=sys.stderr)
+        return 2
+    except ComparisonCaptureError as exc:
+        print(f"error: {exc}", file=sys.stderr)
         return 2
     except (RuntimeError, OSError):
         print("error: comparison capture failed; use --skip-browser or --skip-qgis to isolate setup issues.", file=sys.stderr)
