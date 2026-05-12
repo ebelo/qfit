@@ -837,6 +837,8 @@ def _clamp_opacity_value(value: object) -> float | None:
 
 
 def _representative_interpolate_output(expr: list[object]) -> object | None:
+    if len(expr) < 3 or expr[2] != ["zoom"]:
+        return None
     stops: list[tuple[float, object]] = []
     for index in range(3, len(expr) - 1, 2):
         stop = expr[index]
@@ -849,8 +851,10 @@ def _representative_interpolate_output(expr: list[object]) -> object | None:
 
 
 def _representative_step_output(expr: list[object]) -> object | None:
-    if len(expr) < 3 or expr[1] != ["zoom"]:
+    if len(expr) < 3:
         return None
+    if expr[1] != ["zoom"]:
+        return expr[2]
     value = expr[2]
     for index in range(3, len(expr) - 1, 2):
         stop = expr[index]
