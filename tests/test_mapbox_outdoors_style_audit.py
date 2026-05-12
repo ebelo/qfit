@@ -2655,6 +2655,7 @@ class MapboxOutdoorsStyleAuditTests(unittest.TestCase):
         self.assertIn("Unsupported direct parts re-tested after zoom-normalizing at z12: 1", markdown)
         self.assertIn("Changed by zoom-normalization: 1", markdown)
         self.assertIn("Accepted after zoom-normalization: 1", markdown)
+        self.assertIn("Still rejected after zoom-normalization: 0", markdown)
         self.assertIn("##### Unsupported filter probes by layer group", markdown)
         self.assertIn("| `pois/labels` | 1 |", markdown)
         self.assertIn("##### Unsupported filter parser warnings by message", markdown)

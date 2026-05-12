@@ -2923,6 +2923,10 @@ def _markdown_filter_parse_support_probe(probe: object) -> list[str]:
             "Accepted after zoom-normalization: "
             f"{probe.get('qgis_parser_supported_zoom_normalized_part_count', 0)}"
         ),
+        (
+            "Still rejected after zoom-normalization: "
+            f"{probe.get('qgis_parser_unsupported_zoom_normalized_part_count', 0)}"
+        ),
         "",
         "##### Unsupported filter probes by layer group",
         "",
