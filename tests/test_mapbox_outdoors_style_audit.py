@@ -2712,7 +2712,7 @@ class MapboxOutdoorsStyleAuditTests(unittest.TestCase):
                 },
             },
             "with_scalar_line_opacity_probe": {
-                "line_opacity_expression_count_replaced": 2,
+                "line_opacity_expression_count_replaced": 1,
                 "line_opacity_scalarization_rows": [
                     {
                         "group": "roads/trails",
@@ -2999,7 +2999,7 @@ class MapboxOutdoorsStyleAuditTests(unittest.TestCase):
         )
         self.assertIn("| `pois/labels` | `layout.icon-image` | 1 |", markdown)
         self.assertIn("#### Diagnostic line-opacity scalarization probe", markdown)
-        self.assertIn("Line opacity expressions replaced in probe: 2", markdown)
+        self.assertIn("Line opacity expressions replaced in probe: 1", markdown)
         self.assertIn("Warnings after scalar line opacity: 1", markdown)
         self.assertIn("##### Line-opacity probe reductions by message", markdown)
         self.assertIn("| Message | Before line-opacity probe | Scalar line-opacity | Reduced |", markdown)
