@@ -12,7 +12,9 @@ import importlib
 import importlib.util
 import os
 import sys
+import types
 import unittest
+from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 from tests import _path  # noqa: F401
@@ -75,7 +77,7 @@ def _load_service_with_mock_qgis():
 
     qstub.QgsRasterLayer = _QgsRasterLayer
 
-    _QGIS_MODS = ["qgis", "qgis.core", "qgis.PyQt", "qgis.PyQt.QtCore"]
+    _QGIS_MODS = ["qgis", "qgis.core", "qgis.PyQt", "qgis.PyQt.QtCore", "qgis.PyQt.QtGui"]
 
     saved_qgis = {m: sys.modules.get(m) for m in _QGIS_MODS}
     saved_bms = sys.modules.get("qfit.visualization.infrastructure.background_map_service")
@@ -339,7 +341,13 @@ class EnsureBackgroundLayerMockTests(unittest.TestCase):
 
     def setUp(self):
         self._sys_patch = patch.dict(
-            "sys.modules", {"qgis": _qstub, "qgis.core": _qstub}
+            "sys.modules",
+            {
+                "qgis": _qstub,
+                "qgis.core": _qstub,
+                "qgis.PyQt": _qstub,
+                "qgis.PyQt.QtGui": _qstub,
+            },
         )
         self._sys_patch.start()
         self.service = _mock_bms_cls()
@@ -392,6 +400,59 @@ class EnsureBackgroundLayerMockTests(unittest.TestCase):
                     access_token="tok",
                     tile_mode="Raster",
                 )
+
+    def test_enabled_vector_passes_sprite_resources_to_style_conversion(self):
+        vector_layer = MagicMock()
+        vector_layer.isValid.return_value = True
+        sprite_resources = SimpleNamespace(definitions={"marker": {"x": 0}}, image_bytes=b"png")
+
+        style_definition = {"sources": {}, "sprite": "mapbox://sprites/shared-owner/shared-style"}
+
+        with patch.object(_mock_bms_mod, "fetch_mapbox_style_definition", return_value=style_definition) as style_fetch, \
+             patch.object(_mock_bms_mod, "simplify_mapbox_style_expressions", return_value={"layers": []}), \
+             patch.object(_mock_bms_mod, "fetch_mapbox_sprite_resources", return_value=sprite_resources) as sprite_fetch, \
+             patch.object(_mock_bms_mod, "extract_mapbox_vector_source_ids", return_value=["mapbox.mapbox-streets-v8"]), \
+             patch.object(_mock_bms_mod, "build_vector_tile_layer_uri", return_value="vector://style") as uri_builder, \
+             patch.object(_mock_bms_mod, "QgsVectorTileLayer", return_value=vector_layer), \
+             patch.object(self.service, "_apply_mapbox_gl_style") as apply_style:
+            result = self.service.ensure_background_layer(
+                enabled=True,
+                preset_name="Outdoor",
+                access_token="tok",
+                tile_mode="Vector",
+            )
+
+        self.assertIs(result, vector_layer)
+        style_fetch.assert_called_once_with("tok", "mapbox", "outdoors-v12")
+        sprite_fetch.assert_called_once_with(
+            "tok",
+            "mapbox",
+            "outdoors-v12",
+            sprite_url="mapbox://sprites/shared-owner/shared-style",
+        )
+        uri_builder.assert_called_once()
+        apply_style.assert_called_once_with(vector_layer, {"layers": []}, sprite_resources=sprite_resources)
+
+    def test_enabled_vector_continues_without_unavailable_sprite_resources(self):
+        vector_layer = MagicMock()
+        vector_layer.isValid.return_value = True
+
+        with patch.object(_mock_bms_mod, "fetch_mapbox_style_definition", return_value={"sources": {}, "sprite": "mapbox://sprites/shared-owner/shared-style"}), \
+             patch.object(_mock_bms_mod, "simplify_mapbox_style_expressions", return_value={"layers": []}), \
+             patch.object(_mock_bms_mod, "fetch_mapbox_sprite_resources", side_effect=OSError("offline")), \
+             patch.object(_mock_bms_mod, "extract_mapbox_vector_source_ids", return_value=["mapbox.mapbox-streets-v8"]), \
+             patch.object(_mock_bms_mod, "build_vector_tile_layer_uri", return_value="vector://style"), \
+             patch.object(_mock_bms_mod, "QgsVectorTileLayer", return_value=vector_layer), \
+             patch.object(self.service, "_apply_mapbox_gl_style") as apply_style:
+            result = self.service.ensure_background_layer(
+                enabled=True,
+                preset_name="Outdoor",
+                access_token="tok",
+                tile_mode="Vector",
+            )
+
+        self.assertIs(result, vector_layer)
+        apply_style.assert_called_once_with(vector_layer, {"layers": []}, sprite_resources=None)
 
 
 @unittest.skipIf(QGIS_AVAILABLE, SKIP_MOCK)
@@ -644,6 +705,50 @@ class ApplyMapboxGlStyleMockTests(unittest.TestCase):
         layer.setRenderer.assert_called_once()
         layer.setLabeling.assert_called_once()
         layer.setLabelsEnabled.assert_called_once_with(True)
+
+    def test_applies_sprite_resources_to_conversion_context(self):
+        layer = MagicMock()
+        sprite_image = MagicMock()
+        sprite_image.loadFromData.return_value = True
+        converted_image = MagicMock()
+        sprite_image.convertToFormat.return_value = converted_image
+        fake_qt_gui = types.ModuleType("qgis.PyQt.QtGui")
+        fake_qt_gui.QImage = MagicMock(return_value=sprite_image)
+        fake_qt_gui.QImage.Format_ARGB32 = "argb32"
+        sprite_resources = SimpleNamespace(definitions={"marker": {"x": 0}}, image_bytes=b"png-bytes")
+
+        with patch.dict(sys.modules, {"qgis.PyQt.QtGui": fake_qt_gui}):
+            self.service._apply_mapbox_gl_style(layer, {"layers": []}, sprite_resources=sprite_resources)
+
+        ctx = _qstub.QgsMapBoxGlStyleConversionContext.return_value
+        sprite_image.loadFromData.assert_called_once_with(b"png-bytes")
+        sprite_image.convertToFormat.assert_called_once_with("argb32")
+        ctx.setSprites.assert_called_once_with(converted_image, {"marker": {"x": 0}})
+
+    def test_sprite_resources_skip_invalid_images(self):
+        ctx = MagicMock()
+        sprite_image = MagicMock()
+        sprite_image.loadFromData.return_value = False
+        fake_qt_gui = types.ModuleType("qgis.PyQt.QtGui")
+        fake_qt_gui.QImage = MagicMock(return_value=sprite_image)
+        sprite_resources = SimpleNamespace(definitions={"marker": {"x": 0}}, image_bytes=b"not-an-image")
+
+        with patch.dict(sys.modules, {"qgis.PyQt.QtGui": fake_qt_gui}):
+            self.service._apply_sprite_resources_to_context(ctx, sprite_resources)
+
+        sprite_image.loadFromData.assert_called_once_with(b"not-an-image")
+        ctx.setSprites.assert_not_called()
+
+    def test_sprite_resources_skip_qimage_errors(self):
+        ctx = MagicMock()
+        fake_qt_gui = types.ModuleType("qgis.PyQt.QtGui")
+        fake_qt_gui.QImage = MagicMock(side_effect=RuntimeError("qt image unavailable"))
+        sprite_resources = SimpleNamespace(definitions={"marker": {"x": 0}}, image_bytes=b"png-bytes")
+
+        with patch.dict(sys.modules, {"qgis.PyQt.QtGui": fake_qt_gui}):
+            self.service._apply_sprite_resources_to_context(ctx, sprite_resources)
+
+        ctx.setSprites.assert_not_called()
 
     def test_skips_when_renderer_is_none(self):
         _qstub.QgsMapBoxGlStyleConverter.return_value.renderer.return_value = None
