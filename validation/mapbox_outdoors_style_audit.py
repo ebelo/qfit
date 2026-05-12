@@ -643,7 +643,7 @@ def _annotate_probe_warning_groups(
     probe: dict[str, object],
     qfit_summary: dict[str, object],
     layer_groups: dict[str, str],
-) -> dict[str, object]:
+) -> None:
     summary = probe.get("summary") if isinstance(probe.get("summary"), dict) else {}
     _annotate_warning_summary_groups(summary, layer_groups)
     reduced_from_qfit = probe.setdefault("reduced_from_qfit", {})
@@ -653,7 +653,6 @@ def _annotate_probe_warning_groups(
             list(summary.get("by_layer_group") or []),
             key="group",
         )
-    return summary
 
 
 def _warning_layer_unresolved_property_summaries(
