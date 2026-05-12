@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import patch
 
 import tests._path  # noqa: F401,E402
 
@@ -12,11 +13,13 @@ from mapbox_config import (  # noqa: E402
     TILE_MODES,
     MapboxConfigError,
     build_background_layer_name,
+    build_mapbox_sprite_url,
     build_mapbox_style_json_url,
     build_mapbox_tiles_url,
     build_mapbox_vector_tiles_url,
     build_vector_tile_layer_uri,
     extract_mapbox_vector_source_ids,
+    fetch_mapbox_sprite_resources,
     nearest_native_web_mercator_zoom_level,
     native_web_mercator_resolution_for_zoom,
     simplify_mapbox_style_expressions,
@@ -26,6 +29,20 @@ from mapbox_config import (  # noqa: E402
     resolve_background_style,
     snap_web_mercator_bounds_to_native_zoom,
 )
+
+
+class _FakeUrlResponse:
+    def __init__(self, payload):
+        self.payload = payload
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, traceback):
+        return False
+
+    def read(self):
+        return self.payload
 
 
 class MapboxConfigTests(unittest.TestCase):
@@ -137,6 +154,35 @@ class MapboxConfigTests(unittest.TestCase):
         url = build_mapbox_style_json_url("pk.token", "mapbox", "outdoors-v12")
         self.assertIn("api.mapbox.com/styles/v1/mapbox/outdoors-v12", url)
         self.assertIn("access_token=pk.token", url)
+
+    def test_sprite_url_uses_styles_endpoint(self):
+        url = build_mapbox_sprite_url(
+            "pk.test token",
+            "my user",
+            "style/id",
+            file_type="png",
+            retina=True,
+        )
+
+        self.assertIn("api.mapbox.com/styles/v1/my%20user/style%2Fid/sprite@2x.png", url)
+        self.assertIn("access_token=pk.test%20token", url)
+
+    def test_sprite_url_rejects_unknown_file_type(self):
+        with self.assertRaises(MapboxConfigError):
+            build_mapbox_sprite_url("pk.token", "mapbox", "outdoors-v12", file_type="svg")
+
+    def test_fetch_sprite_resources_fetches_definitions_and_image(self):
+        responses = [
+            _FakeUrlResponse(b'{"marker":{"x":0,"y":0,"width":12,"height":12}}'),
+            _FakeUrlResponse(b"png-bytes"),
+        ]
+
+        with patch("mapbox_config.urlopen", side_effect=responses) as urlopen_mock:
+            resources = fetch_mapbox_sprite_resources("pk.token", "mapbox", "outdoors-v12")
+
+        self.assertEqual(resources.definitions, {"marker": {"x": 0, "y": 0, "width": 12, "height": 12}})
+        self.assertEqual(resources.image_bytes, b"png-bytes")
+        self.assertEqual(urlopen_mock.call_count, 2)
 
     def test_vector_tile_layer_uri_contains_both_urls(self):
         uri = build_vector_tile_layer_uri("pk.token", "mapbox", "outdoors-v12")

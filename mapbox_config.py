@@ -1,12 +1,21 @@
 from __future__ import annotations
 
 import json
+from dataclasses import dataclass
 from urllib.parse import quote, unquote
 from urllib.request import urlopen
 
 
 class MapboxConfigError(ValueError):
     """Raised when the configured Mapbox background settings are incomplete."""
+
+
+@dataclass(frozen=True)
+class MapboxSpriteResources:
+    """Mapbox sprite sheet resources for QGIS Mapbox GL style conversion."""
+
+    definitions: dict[str, object]
+    image_bytes: bytes
 
 
 BACKGROUND_LAYER_PREFIX = "qfit background"
@@ -694,6 +703,62 @@ def build_mapbox_style_json_url(
         style_id=quote(resolved_style_id, safe=""),
         token=quote(token, safe=""),
     )
+
+
+def build_mapbox_sprite_url(
+    access_token: str,
+    style_owner: str,
+    style_id: str,
+    *,
+    file_type: str,
+    retina: bool = False,
+) -> str:
+    """Return a Mapbox sprite JSON or PNG URL for a style."""
+    token, owner, resolved_style_id = _validated_mapbox_style_parts(access_token, style_owner, style_id)
+    if file_type not in {"json", "png"}:
+        raise MapboxConfigError("Mapbox sprite file_type must be 'json' or 'png'.")
+    retina_suffix = "@2x" if retina else ""
+    return (
+        "https://api.mapbox.com/styles/v1/{owner}/{style_id}/sprite{retina}.{file_type}"
+        "?access_token={token}"
+    ).format(
+        owner=quote(owner, safe=""),
+        style_id=quote(resolved_style_id, safe=""),
+        retina=retina_suffix,
+        file_type=file_type,
+        token=quote(token, safe=""),
+    )
+
+
+def fetch_mapbox_sprite_resources(
+    access_token: str,
+    style_owner: str,
+    style_id: str,
+    *,
+    retina: bool = False,
+) -> MapboxSpriteResources:
+    """Fetch Mapbox sprite definitions and image bytes for a style."""
+    definitions_url = build_mapbox_sprite_url(
+        access_token,
+        style_owner,
+        style_id,
+        file_type="json",
+        retina=retina,
+    )
+    image_url = build_mapbox_sprite_url(
+        access_token,
+        style_owner,
+        style_id,
+        file_type="png",
+        retina=retina,
+    )
+    with urlopen(definitions_url, timeout=20) as response:  # noqa: S310
+        definitions = json.loads(response.read().decode("utf-8"))
+    if not isinstance(definitions, dict):
+        raise MapboxConfigError("Mapbox sprite definitions response must be a JSON object.")
+    with urlopen(image_url, timeout=20) as response:  # noqa: S310
+        image_bytes = response.read()
+    return MapboxSpriteResources(definitions=definitions, image_bytes=image_bytes)
 
 
 def build_vector_tile_layer_uri(

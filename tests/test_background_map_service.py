@@ -12,7 +12,9 @@ import importlib
 import importlib.util
 import os
 import sys
+import types
 import unittest
+from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 from tests import _path  # noqa: F401
@@ -75,7 +77,7 @@ def _load_service_with_mock_qgis():
 
     qstub.QgsRasterLayer = _QgsRasterLayer
 
-    _QGIS_MODS = ["qgis", "qgis.core", "qgis.PyQt", "qgis.PyQt.QtCore"]
+    _QGIS_MODS = ["qgis", "qgis.core", "qgis.PyQt", "qgis.PyQt.QtCore", "qgis.PyQt.QtGui"]
 
     saved_qgis = {m: sys.modules.get(m) for m in _QGIS_MODS}
     saved_bms = sys.modules.get("qfit.visualization.infrastructure.background_map_service")
@@ -339,7 +341,13 @@ class EnsureBackgroundLayerMockTests(unittest.TestCase):
 
     def setUp(self):
         self._sys_patch = patch.dict(
-            "sys.modules", {"qgis": _qstub, "qgis.core": _qstub}
+            "sys.modules",
+            {
+                "qgis": _qstub,
+                "qgis.core": _qstub,
+                "qgis.PyQt": _qstub,
+                "qgis.PyQt.QtGui": _qstub,
+            },
         )
         self._sys_patch.start()
         self.service = _mock_bms_cls()
@@ -644,6 +652,39 @@ class ApplyMapboxGlStyleMockTests(unittest.TestCase):
         layer.setRenderer.assert_called_once()
         layer.setLabeling.assert_called_once()
         layer.setLabelsEnabled.assert_called_once_with(True)
+
+    def test_applies_sprite_resources_to_conversion_context(self):
+        layer = MagicMock()
+        sprite_image = MagicMock()
+        sprite_image.loadFromData.return_value = True
+        converted_image = MagicMock()
+        sprite_image.convertToFormat.return_value = converted_image
+        fake_qt_gui = types.ModuleType("qgis.PyQt.QtGui")
+        fake_qt_gui.QImage = MagicMock(return_value=sprite_image)
+        fake_qt_gui.QImage.Format_ARGB32 = "argb32"
+        sprite_resources = SimpleNamespace(definitions={"marker": {"x": 0}}, image_bytes=b"png-bytes")
+
+        with patch.dict(sys.modules, {"qgis.PyQt.QtGui": fake_qt_gui}):
+            self.service._apply_mapbox_gl_style(layer, {"layers": []}, sprite_resources=sprite_resources)
+
+        ctx = _qstub.QgsMapBoxGlStyleConversionContext.return_value
+        sprite_image.loadFromData.assert_called_once_with(b"png-bytes")
+        sprite_image.convertToFormat.assert_called_once_with("argb32")
+        ctx.setSprites.assert_called_once_with(converted_image, {"marker": {"x": 0}})
+
+    def test_sprite_resources_skip_invalid_images(self):
+        ctx = MagicMock()
+        sprite_image = MagicMock()
+        sprite_image.loadFromData.return_value = False
+        fake_qt_gui = types.ModuleType("qgis.PyQt.QtGui")
+        fake_qt_gui.QImage = MagicMock(return_value=sprite_image)
+        sprite_resources = SimpleNamespace(definitions={"marker": {"x": 0}}, image_bytes=b"not-an-image")
+
+        with patch.dict(sys.modules, {"qgis.PyQt.QtGui": fake_qt_gui}):
+            self.service._apply_sprite_resources_to_context(ctx, sprite_resources)
+
+        sprite_image.loadFromData.assert_called_once_with(b"not-an-image")
+        ctx.setSprites.assert_not_called()
 
     def test_skips_when_renderer_is_none(self):
         _qstub.QgsMapBoxGlStyleConverter.return_value.renderer.return_value = None
