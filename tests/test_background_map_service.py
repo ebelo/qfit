@@ -406,7 +406,9 @@ class EnsureBackgroundLayerMockTests(unittest.TestCase):
         vector_layer.isValid.return_value = True
         sprite_resources = SimpleNamespace(definitions={"marker": {"x": 0}}, image_bytes=b"png")
 
-        with patch.object(_mock_bms_mod, "fetch_mapbox_style_definition", return_value={"sources": {}}) as style_fetch, \
+        style_definition = {"sources": {}, "sprite": "mapbox://sprites/shared-owner/shared-style"}
+
+        with patch.object(_mock_bms_mod, "fetch_mapbox_style_definition", return_value=style_definition) as style_fetch, \
              patch.object(_mock_bms_mod, "simplify_mapbox_style_expressions", return_value={"layers": []}), \
              patch.object(_mock_bms_mod, "fetch_mapbox_sprite_resources", return_value=sprite_resources) as sprite_fetch, \
              patch.object(_mock_bms_mod, "extract_mapbox_vector_source_ids", return_value=["mapbox.mapbox-streets-v8"]), \
@@ -422,7 +424,12 @@ class EnsureBackgroundLayerMockTests(unittest.TestCase):
 
         self.assertIs(result, vector_layer)
         style_fetch.assert_called_once_with("tok", "mapbox", "outdoors-v12")
-        sprite_fetch.assert_called_once_with("tok", "mapbox", "outdoors-v12")
+        sprite_fetch.assert_called_once_with(
+            "tok",
+            "mapbox",
+            "outdoors-v12",
+            sprite_url="mapbox://sprites/shared-owner/shared-style",
+        )
         uri_builder.assert_called_once()
         apply_style.assert_called_once_with(vector_layer, {"layers": []}, sprite_resources=sprite_resources)
 
@@ -430,7 +437,7 @@ class EnsureBackgroundLayerMockTests(unittest.TestCase):
         vector_layer = MagicMock()
         vector_layer.isValid.return_value = True
 
-        with patch.object(_mock_bms_mod, "fetch_mapbox_style_definition", return_value={"sources": {}}), \
+        with patch.object(_mock_bms_mod, "fetch_mapbox_style_definition", return_value={"sources": {}, "sprite": "mapbox://sprites/shared-owner/shared-style"}), \
              patch.object(_mock_bms_mod, "simplify_mapbox_style_expressions", return_value={"layers": []}), \
              patch.object(_mock_bms_mod, "fetch_mapbox_sprite_resources", side_effect=OSError("offline")), \
              patch.object(_mock_bms_mod, "extract_mapbox_vector_source_ids", return_value=["mapbox.mapbox-streets-v8"]), \

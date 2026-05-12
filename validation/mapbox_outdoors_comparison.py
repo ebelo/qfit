@@ -493,9 +493,14 @@ def render_qgis_vector(  # pragma: no cover - depends on optional PyQGIS runtime
         simplified_style = simplify_mapbox_style_expressions(resolved_style_definition)
         sprite_resources = None
         try:
-            sprite_resources = fetch_mapbox_sprite_resources(token, camera.style_owner, camera.style_id)
+            sprite_resources = fetch_mapbox_sprite_resources(
+                token,
+                camera.style_owner,
+                camera.style_id,
+                sprite_url=resolved_style_definition.get("sprite"),
+            )
         except (RuntimeError, KeyError, ValueError, OSError):
-            sprite_resources = None
+            pass
         tileset_ids = extract_mapbox_vector_source_ids(resolved_style_definition)
         layer_uri = build_vector_tile_layer_uri(
             token,

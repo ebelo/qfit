@@ -13,6 +13,7 @@ from mapbox_config import (  # noqa: E402
     TILE_MODES,
     MapboxConfigError,
     build_background_layer_name,
+    build_mapbox_sprite_file_url,
     build_mapbox_sprite_url,
     build_mapbox_style_json_url,
     build_mapbox_tiles_url,
@@ -171,6 +172,46 @@ class MapboxConfigTests(unittest.TestCase):
         with self.assertRaises(MapboxConfigError):
             build_mapbox_sprite_url("pk.token", "mapbox", "outdoors-v12", file_type="svg")
 
+    def test_sprite_file_url_uses_style_json_mapbox_sprite_reference(self):
+        url = build_mapbox_sprite_file_url(
+            "pk.token",
+            "mapbox://sprites/shared-owner/shared-style",
+            file_type="json",
+            retina=True,
+        )
+
+        self.assertIn("api.mapbox.com/styles/v1/shared-owner/shared-style/sprite@2x.json", url)
+        self.assertIn("access_token=pk.token", url)
+
+    def test_sprite_file_url_appends_file_type_and_token_to_mapbox_https_url(self):
+        url = build_mapbox_sprite_file_url(
+            "pk.test token",
+            "https://api.mapbox.com/styles/v1/shared-owner/shared-style/sprite?fresh=true",
+            file_type="png",
+        )
+
+        self.assertEqual(
+            url,
+            "https://api.mapbox.com/styles/v1/shared-owner/shared-style/sprite.png"
+            "?fresh=true&access_token=pk.test+token",
+        )
+
+    def test_sprite_file_url_preserves_existing_token(self):
+        url = build_mapbox_sprite_file_url(
+            "pk.replacement",
+            "https://api.mapbox.com/styles/v1/shared-owner/shared-style/sprite?access_token=pk.embedded",
+            file_type="json",
+        )
+
+        self.assertEqual(
+            url,
+            "https://api.mapbox.com/styles/v1/shared-owner/shared-style/sprite.json?access_token=pk.embedded",
+        )
+
+    def test_sprite_file_url_rejects_unknown_url_scheme(self):
+        with self.assertRaises(MapboxConfigError):
+            build_mapbox_sprite_file_url("pk.token", "ftp://example.test/sprite", file_type="json")
+
     def test_fetch_sprite_resources_fetches_definitions_and_image(self):
         responses = [
             _FakeUrlResponse(b'{"marker":{"x":0,"y":0,"width":12,"height":12}}'),
@@ -178,11 +219,17 @@ class MapboxConfigTests(unittest.TestCase):
         ]
 
         with patch("mapbox_config.urlopen", side_effect=responses) as urlopen_mock:
-            resources = fetch_mapbox_sprite_resources("pk.token", "mapbox", "outdoors-v12")
+            resources = fetch_mapbox_sprite_resources(
+                "pk.token",
+                "mapbox",
+                "outdoors-v12",
+                sprite_url="mapbox://sprites/shared-owner/shared-style",
+            )
 
         self.assertEqual(resources.definitions, {"marker": {"x": 0, "y": 0, "width": 12, "height": 12}})
         self.assertEqual(resources.image_bytes, b"png-bytes")
         self.assertEqual(urlopen_mock.call_count, 2)
+        self.assertIn("shared-owner/shared-style/sprite.json", urlopen_mock.call_args_list[0].args[0])
 
     def test_vector_tile_layer_uri_contains_both_urls(self):
         uri = build_vector_tile_layer_uri("pk.token", "mapbox", "outdoors-v12")

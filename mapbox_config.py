@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
-from urllib.parse import quote, unquote
+from urllib.parse import parse_qsl, quote, urlencode, unquote, urlparse, urlunparse
 from urllib.request import urlopen
 
 
@@ -730,28 +730,68 @@ def build_mapbox_sprite_url(
     )
 
 
+def build_mapbox_sprite_file_url(
+    access_token: str,
+    sprite_url: str,
+    *,
+    file_type: str,
+    retina: bool = False,
+) -> str:
+    """Return a concrete sprite JSON or PNG URL from a style JSON sprite base URL."""
+    token = access_token.strip()
+    sprite_base_url = sprite_url.strip()
+    if not token:
+        raise MapboxConfigError("Enter a Mapbox access token to load the selected background map.")
+    if not sprite_base_url:
+        raise MapboxConfigError("Mapbox style JSON does not define a sprite URL.")
+    if file_type not in {"json", "png"}:
+        raise MapboxConfigError("Mapbox sprite file_type must be 'json' or 'png'.")
+
+    if sprite_base_url.startswith("mapbox://sprites/"):
+        sprite_path = sprite_base_url.removeprefix("mapbox://sprites/")
+        owner, _, resolved_style_id = sprite_path.partition("/")
+        if not owner or not resolved_style_id:
+            raise MapboxConfigError("Mapbox sprite URL must include an owner and style ID.")
+        return build_mapbox_sprite_url(
+            token,
+            unquote(owner),
+            unquote(resolved_style_id),
+            file_type=file_type,
+            retina=retina,
+        )
+
+    parsed = urlparse(sprite_base_url)
+    if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+        raise MapboxConfigError("Mapbox sprite URL must be a mapbox://, http://, or https:// URL.")
+
+    retina_suffix = "@2x" if retina else ""
+    query = parse_qsl(parsed.query, keep_blank_values=True)
+    if parsed.netloc.endswith("mapbox.com") and not any(key == "access_token" for key, _ in query):
+        query.append(("access_token", token))
+    return urlunparse(
+        parsed._replace(
+            path=f"{parsed.path}{retina_suffix}.{file_type}",
+            query=urlencode(query),
+        )
+    )
+
+
 def fetch_mapbox_sprite_resources(
     access_token: str,
     style_owner: str,
     style_id: str,
     *,
+    sprite_url: str | None = None,
     retina: bool = False,
 ) -> MapboxSpriteResources:
     """Fetch Mapbox sprite definitions and image bytes for a style."""
-    definitions_url = build_mapbox_sprite_url(
-        access_token,
-        style_owner,
-        style_id,
-        file_type="json",
-        retina=retina,
-    )
-    image_url = build_mapbox_sprite_url(
-        access_token,
-        style_owner,
-        style_id,
-        file_type="png",
-        retina=retina,
-    )
+    url_builder = build_mapbox_sprite_url
+    url_args = (access_token, style_owner, style_id)
+    if sprite_url:
+        url_builder = build_mapbox_sprite_file_url
+        url_args = (access_token, sprite_url)
+    definitions_url = url_builder(*url_args, file_type="json", retina=retina)
+    image_url = url_builder(*url_args, file_type="png", retina=retina)
     with urlopen(definitions_url, timeout=20) as response:  # noqa: S310
         definitions = json.loads(response.read().decode("utf-8"))
     if not isinstance(definitions, dict):

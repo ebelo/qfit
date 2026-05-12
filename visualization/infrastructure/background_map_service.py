@@ -13,6 +13,7 @@ from ...mapbox_config import (
     BACKGROUND_LAYER_PREFIX,
     TILE_MODE_RASTER,
     TILE_MODE_VECTOR,
+    MapboxSpriteResources,
     build_background_layer_name,
     build_vector_tile_layer_uri,
     build_xyz_layer_uri,
@@ -63,7 +64,12 @@ class BackgroundMapService:
                 simplified_style = simplify_mapbox_style_expressions(style_definition)
                 sprite_resources = None
                 try:
-                    sprite_resources = fetch_mapbox_sprite_resources(access_token, resolved_owner, resolved_style_id)
+                    sprite_resources = fetch_mapbox_sprite_resources(
+                        access_token,
+                        resolved_owner,
+                        resolved_style_id,
+                        sprite_url=style_definition.get("sprite"),
+                    )
                 except (RuntimeError, KeyError, ValueError, OSError):
                     logger.debug("Mapbox sprite sheet unavailable for vector style conversion", exc_info=True)
                 tileset_ids = extract_mapbox_vector_source_ids(style_definition)
@@ -190,7 +196,7 @@ class BackgroundMapService:
         except (RuntimeError, AttributeError):
             logger.debug("Mapbox GL style application skipped", exc_info=True)
 
-    def _apply_sprite_resources_to_context(self, ctx, sprite_resources) -> None:
+    def _apply_sprite_resources_to_context(self, ctx: object, sprite_resources: MapboxSpriteResources | None) -> None:
         if sprite_resources is None:
             return
         try:
@@ -202,10 +208,18 @@ class BackgroundMapService:
                 if argb_format is not None:
                     sprite_image = sprite_image.convertToFormat(argb_format)
                 ctx.setSprites(sprite_image, sprite_resources.definitions)
+            else:
+                logger.debug("Mapbox sprite sheet image could not be decoded for vector style conversion")
         except (RuntimeError, ImportError, AttributeError, TypeError):
             logger.debug("Mapbox sprite sheet skipped for vector style conversion", exc_info=True)
 
-    def _apply_mapbox_gl_style(self, layer: QgsVectorTileLayer, style_definition: dict, *, sprite_resources=None) -> None:
+    def _apply_mapbox_gl_style(
+        self,
+        layer: QgsVectorTileLayer,
+        style_definition: dict,
+        *,
+        sprite_resources: MapboxSpriteResources | None = None,
+    ) -> None:
         try:
             from qgis.core import (  # noqa: PLC0415
                 QgsMapBoxGlStyleConversionContext,
