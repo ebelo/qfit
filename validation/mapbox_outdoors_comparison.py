@@ -793,7 +793,7 @@ def _single_camera_subprocess_command(
 ) -> list[str]:
     command = [sys.executable, str(Path(__file__).resolve()), camera.name]
     if args.style_json is not None:
-        command.extend(["--style-json", str(args.style_json)])
+        command.extend(["--style-json", str(args.style_json.expanduser().resolve())])
     command.extend(["--output-root", str(output_root)])
     if args.skip_browser:
         command.append("--skip-browser")
@@ -803,6 +803,10 @@ def _single_camera_subprocess_command(
         command.append("--skip-diff")
     command.extend(["--browser-timeout-ms", str(args.browser_timeout_ms)])
     return command
+
+
+def _camera_subprocess_timeout_seconds(args: argparse.Namespace) -> float:
+    return max(args.browser_timeout_ms / 1000 + 60, 1.0)
 
 
 def _single_camera_subprocess_environment(*, token: str) -> dict[str, str]:
@@ -820,6 +824,14 @@ def _write_child_output(*, stdout: str, stderr: str, token: str) -> None:
         print(safe_stderr, end="", file=sys.stderr)
 
 
+def _timeout_output_text(value: bytes | str | None) -> str:
+    if value is None:
+        return ""
+    if isinstance(value, bytes):
+        return value.decode("utf-8", errors="replace")
+    return value
+
+
 def _run_all_cameras_in_subprocesses(
     *,
     args: argparse.Namespace,
@@ -829,14 +841,29 @@ def _run_all_cameras_in_subprocesses(
 ) -> None:
     failures: list[str] = []
     for camera in cameras:
-        completed = subprocess.run(  # noqa: S603 - command is built from this script and static camera names.
-            _single_camera_subprocess_command(args=args, camera=camera, output_root=output_root),
-            cwd=REPO_ROOT,
-            env=_single_camera_subprocess_environment(token=token),
-            capture_output=True,
-            text=True,
-            check=False,
-        )
+        timeout_seconds = _camera_subprocess_timeout_seconds(args)
+        try:
+            completed = subprocess.run(  # noqa: S603 - command is built from this script and static camera names.
+                _single_camera_subprocess_command(args=args, camera=camera, output_root=output_root),
+                cwd=REPO_ROOT,
+                env=_single_camera_subprocess_environment(token=token),
+                capture_output=True,
+                text=True,
+                check=False,
+                timeout=timeout_seconds,
+            )
+        except subprocess.TimeoutExpired as exc:
+            _write_child_output(
+                stdout=_timeout_output_text(exc.output),
+                stderr=_timeout_output_text(exc.stderr),
+                token=token,
+            )
+            failures.append(f"{camera.name} (timeout after {timeout_seconds:g}s)")
+            print(
+                f"error: camera {camera.name} timed out after {timeout_seconds:g}s; continuing.",
+                file=sys.stderr,
+            )
+            continue
         _write_child_output(stdout=completed.stdout, stderr=completed.stderr, token=token)
         if completed.returncode != 0:
             failures.append(f"{camera.name} (exit {completed.returncode})")
