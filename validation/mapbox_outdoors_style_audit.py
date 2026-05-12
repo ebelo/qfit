@@ -964,6 +964,20 @@ def _literal_line_dasharray(value: object) -> list[object] | None:
     return None
 
 
+def _first_line_dasharray_literal(candidates: Iterable[object]) -> list[object] | None:
+    for candidate in candidates:
+        literal_dasharray = _extract_line_dasharray_literal(candidate)
+        if literal_dasharray is not None:
+            return literal_dasharray
+    return None
+
+
+def _case_line_dasharray_output_candidates(expr: list[object]) -> list[object]:
+    if len(expr) < 4:
+        return []
+    return [expr[-1], *(expr[index] for index in range(len(expr) - 2, 1, -2))]
+
+
 def _extract_line_dasharray_literal(expr: object) -> list[object] | None:
     literal_dasharray = _literal_line_dasharray(expr)
     if literal_dasharray is not None:
@@ -979,17 +993,9 @@ def _extract_line_dasharray_literal(expr: object) -> list[object] | None:
     if op == "match":
         return _extract_line_dasharray_literal(expr[-1]) if len(expr) >= 5 else None
     if op == "case":
-        if len(expr) < 4:
-            return None
-        for index in [len(expr) - 1, *range(len(expr) - 2, 1, -2)]:
-            literal_dasharray = _extract_line_dasharray_literal(expr[index])
-            if literal_dasharray is not None:
-                return literal_dasharray
+        return _first_line_dasharray_literal(_case_line_dasharray_output_candidates(expr))
     if op == "coalesce":
-        for item in reversed(expr[1:]):
-            literal_dasharray = _extract_line_dasharray_literal(item)
-            if literal_dasharray is not None:
-                return literal_dasharray
+        return _first_line_dasharray_literal(reversed(expr[1:]))
     return None
 
 
