@@ -634,12 +634,12 @@ def _filter_parse_unsupported_message_summary(warnings: list[str]) -> list[dict[
     ]
 
 
-def _minimal_filter_probe_layer(layer: dict[str, object]) -> dict[str, object]:
+def _minimal_filter_probe_layer(layer: dict[str, object], filter_value: object = _ABSENT) -> dict[str, object]:
     layer_type = str(layer.get("type") or "")
     probe_layer: dict[str, object] = {
         "id": str(layer.get("id") or "filter-probe"),
         "type": layer_type,
-        "filter": layer.get("filter"),
+        "filter": filter_value if filter_value is not _ABSENT else layer.get("filter"),
     }
     for key in ("source", "source-layer", "minzoom", "maxzoom"):
         if key in layer:
@@ -676,8 +676,7 @@ def _filter_part_probe_style(
     layer: dict[str, object],
     filter_part: list[object],
 ) -> dict[str, object]:
-    probe_layer = _minimal_filter_probe_layer(layer)
-    probe_layer["filter"] = copy.deepcopy(filter_part)
+    probe_layer = _minimal_filter_probe_layer(layer, copy.deepcopy(filter_part))
     return {
         "version": style_definition.get("version", 8),
         "sources": copy.deepcopy(style_definition.get("sources", {})),

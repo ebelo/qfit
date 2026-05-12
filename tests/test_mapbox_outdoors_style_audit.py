@@ -1635,6 +1635,43 @@ class MapboxOutdoorsStyleAuditTests(unittest.TestCase):
             ["step", ["zoom"], False, 12, True],
         )
 
+    def test_iter_direct_filter_parts_skips_non_boolean_and_non_list_parts(self):
+        self.assertEqual(list(mapbox_outdoors_style_audit._iter_direct_filter_parts([])), [])
+        self.assertEqual(
+            list(mapbox_outdoors_style_audit._iter_direct_filter_parts(["==", ["get", "class"], "park"])),
+            [],
+        )
+        self.assertEqual(
+            list(
+                mapbox_outdoors_style_audit._iter_direct_filter_parts(
+                    ["all", True, ["==", ["get", "class"], "park"], False, ["has", "name"]]
+                )
+            ),
+            [
+                (2, "all", ["==", ["get", "class"], "park"]),
+                (4, "all", ["has", "name"]),
+            ],
+        )
+
+    def test_filter_part_probe_style_uses_direct_part_filter(self):
+        layer = {
+            "id": "poi-label",
+            "type": "symbol",
+            "source": "composite",
+            "source-layer": "poi_label",
+            "filter": ["all", ["==", ["get", "class"], "park"], ["has", "name"]],
+        }
+        filter_part = ["==", ["get", "class"], "park"]
+
+        style = mapbox_outdoors_style_audit._filter_part_probe_style(
+            {"version": 8, "sources": {"composite": {"type": "vector"}}}, layer, filter_part
+        )
+
+        self.assertEqual(style["layers"][0]["filter"], ["==", ["get", "class"], "park"])
+        self.assertNotEqual(style["layers"][0]["filter"], layer["filter"])
+        filter_part[1][1] = "mutated"
+        self.assertEqual(style["layers"][0]["filter"], ["==", ["get", "class"], "park"])
+
     def test_qgis_converter_warning_report_can_include_sprite_context_probe(self):
         class FakeQImage:
             Format_ARGB32 = "argb32"
