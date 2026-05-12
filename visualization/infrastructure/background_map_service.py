@@ -203,13 +203,13 @@ class BackgroundMapService:
             from qgis.PyQt.QtGui import QImage  # noqa: PLC0415
 
             sprite_image = QImage()
-            if sprite_image.loadFromData(sprite_resources.image_bytes):
-                argb_format = getattr(QImage, "Format_ARGB32", None)
-                if argb_format is not None:
-                    sprite_image = sprite_image.convertToFormat(argb_format)
-                ctx.setSprites(sprite_image, sprite_resources.definitions)
-            else:
+            if not sprite_image.loadFromData(sprite_resources.image_bytes):
                 logger.debug("Mapbox sprite sheet image could not be decoded for vector style conversion")
+                return
+            argb_format = getattr(QImage, "Format_ARGB32", None)
+            if argb_format is not None:
+                sprite_image = sprite_image.convertToFormat(argb_format)
+            ctx.setSprites(sprite_image, sprite_resources.definitions)
         except (RuntimeError, ImportError, AttributeError, TypeError):
             logger.debug("Mapbox sprite sheet skipped for vector style conversion", exc_info=True)
 
