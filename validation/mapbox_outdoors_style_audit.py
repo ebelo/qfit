@@ -981,7 +981,13 @@ def _filter_parse_zoom_normalized_part_support_rows(
     return rows
 
 
-def _qgis_filter_parse_support_report(style_definition: dict[str, object]) -> dict[str, object]:
+def _filter_parse_row_is_unsupported(row: dict[str, object]) -> bool:
+    return int(row.get("unsupported_warning_count") or 0) > 0
+
+
+def _collect_filter_parse_support_rows(
+    style_definition: dict[str, object],
+) -> tuple[list[dict[str, object]], list[dict[str, object]], dict[str, dict[str, object]]]:
     rows: list[dict[str, object]] = []
     part_rows: list[dict[str, object]] = []
     layers_by_id: dict[str, dict[str, object]] = {}
@@ -989,17 +995,22 @@ def _qgis_filter_parse_support_report(style_definition: dict[str, object]) -> di
         layers_by_id[str(layer.get("id") or "")] = layer
         row = _filter_parse_support_row(style_definition, layer, filter_value)
         rows.append(row)
-        if int(row.get("unsupported_warning_count") or 0) > 0:
+        if _filter_parse_row_is_unsupported(row):
             part_rows.extend(_filter_parse_part_support_rows(style_definition, layer, filter_value))
-    unsupported_rows = [row for row in rows if int(row.get("unsupported_warning_count") or 0) > 0]
-    unsupported_part_rows = [row for row in part_rows if int(row.get("unsupported_warning_count") or 0) > 0]
+    return rows, part_rows, layers_by_id
+
+
+def _qgis_filter_parse_support_report(style_definition: dict[str, object]) -> dict[str, object]:
+    rows, part_rows, layers_by_id = _collect_filter_parse_support_rows(style_definition)
+    unsupported_rows = [row for row in rows if _filter_parse_row_is_unsupported(row)]
+    unsupported_part_rows = [row for row in part_rows if _filter_parse_row_is_unsupported(row)]
     zoom_normalized_part_rows = _filter_parse_zoom_normalized_part_support_rows(
         style_definition,
         layers_by_id,
         unsupported_part_rows,
     )
     zoom_normalized_supported_part_rows = [
-        row for row in zoom_normalized_part_rows if int(row.get("unsupported_warning_count") or 0) == 0
+        row for row in zoom_normalized_part_rows if not _filter_parse_row_is_unsupported(row)
     ]
     supported_count = len(rows) - len(unsupported_rows)
     return {
