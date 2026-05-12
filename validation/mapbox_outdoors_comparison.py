@@ -20,6 +20,7 @@ PACKAGE_PARENT = REPO_ROOT.parent
 DEFAULT_OUTPUT_ROOT = REPO_ROOT / "debug" / "mapbox-outdoors-comparison"
 DEFAULT_MAPBOX_STYLE_OWNER = "mapbox"
 DEFAULT_MAPBOX_STYLE_ID = "outdoors-v12"
+DEFAULT_MAPBOX_STYLE_URL = f"mapbox://styles/{DEFAULT_MAPBOX_STYLE_OWNER}/{DEFAULT_MAPBOX_STYLE_ID}"
 WEB_MERCATOR_HALF_WORLD = 20037508.342789244
 WEB_MERCATOR_TILE_SIZE = 512
 ImageMetrics: TypeAlias = dict[str, object]
@@ -868,6 +869,7 @@ def _all_camera_summary_entry(
     returncode: int | None,
     timeout_seconds: float,
     manifest_path: Path | None,
+    token: str,
 ) -> dict[str, object]:
     return {
         "camera": camera.name,
@@ -876,7 +878,7 @@ def _all_camera_summary_entry(
         "status": status,
         "returncode": returncode,
         "timeout_seconds": timeout_seconds,
-        "manifest": str(manifest_path) if manifest_path is not None else None,
+        "manifest": redact_sensitive_text(str(manifest_path), token) if manifest_path is not None else None,
         "metrics": _metric_summary_from_manifest(manifest_path),
     }
 
@@ -929,6 +931,7 @@ def _write_all_cameras_summary(
     args: argparse.Namespace,
     output_root: Path,
     entries: list[dict[str, object]],
+    token: str,
 ) -> tuple[Path, Path]:
     generated_at = _utc_timestamp()
     run_dir = output_root / "all-cameras" / generated_at
@@ -939,9 +942,13 @@ def _write_all_cameras_summary(
     }
     summary: dict[str, object] = {
         "generated_at": generated_at,
-        "style_url": None if args.style_json is not None else CAMERAS["valais-geneva-outdoors"].style_url,
-        "style_json_path": str(args.style_json.expanduser().resolve()) if args.style_json is not None else None,
-        "output_root": str(output_root),
+        "style_url": None if args.style_json is not None else DEFAULT_MAPBOX_STYLE_URL,
+        "style_json_path": (
+            redact_sensitive_text(str(args.style_json.expanduser().resolve()), token)
+            if args.style_json is not None
+            else None
+        ),
+        "output_root": redact_sensitive_text(str(output_root), token),
         "counts": counts,
         "cameras": entries,
         "notes": [
@@ -990,6 +997,7 @@ def _run_all_cameras_in_subprocesses(
                     returncode=None,
                     timeout_seconds=timeout_seconds,
                     manifest_path=None,
+                    token=token,
                 )
             )
             failures.append(f"{camera.name} (timeout after {timeout_seconds:g}s)")
@@ -1007,6 +1015,7 @@ def _run_all_cameras_in_subprocesses(
                 returncode=completed.returncode,
                 timeout_seconds=timeout_seconds,
                 manifest_path=manifest_path,
+                token=token,
             )
         )
         if completed.returncode != 0:
@@ -1015,9 +1024,14 @@ def _run_all_cameras_in_subprocesses(
                 f"error: camera {camera.name} failed with exit code {completed.returncode}; continuing.",
                 file=sys.stderr,
             )
-    summary_json, summary_markdown = _write_all_cameras_summary(args=args, output_root=output_root, entries=summary_entries)
-    print(f"Matrix summary: {summary_json}")
-    print(f"Matrix report: {summary_markdown}")
+    summary_json, summary_markdown = _write_all_cameras_summary(
+        args=args,
+        output_root=output_root,
+        entries=summary_entries,
+        token=token,
+    )
+    print(f"Matrix summary: {redact_sensitive_text(str(summary_json), token)}")
+    print(f"Matrix report: {redact_sensitive_text(str(summary_markdown), token)}")
     if failures:
         raise ComparisonCaptureError(f"comparison capture failed for: {', '.join(failures)}")
 

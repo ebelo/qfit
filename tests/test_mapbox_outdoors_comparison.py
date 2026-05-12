@@ -596,7 +596,7 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         from qfit.validation import mapbox_outdoors_comparison
 
         with tempfile.TemporaryDirectory() as tmpdir:
-            output_root = Path(tmpdir)
+            output_root = Path(tmpdir) / "test-mapbox-token-output"
 
             def fake_run(command, **_kwargs):
                 camera_name = command[2]
@@ -636,7 +636,8 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
                         "--skip-diff",
                     ])
 
-            summary_json = next((output_root / "all-cameras").glob("*/summary.json"))
+            summary_json = next((output_root / "all-cameras").glob("*/summary.json"), None)
+            self.assertIsNotNone(summary_json, "all-cameras summary.json should be written")
             summary_markdown = summary_json.with_name("summary.md")
             summary_json_text = summary_json.read_text(encoding="utf-8")
             summary = json.loads(summary_json_text)
@@ -649,6 +650,9 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         self.assertIn("| `switzerland-alps-z5-outdoors` | passed | 5.35 | 0.1000 |", summary_text)
         self.assertNotIn("test-mapbox-token", summary_json_text)
         self.assertNotIn("test-mapbox-token", summary_text)
+        for call in print_mock.call_args_list:
+            if call.args:
+                self.assertNotIn("test-mapbox-token", call.args[0])
         self.assertTrue(any(call.args[0].startswith("Matrix summary:") for call in print_mock.call_args_list))
 
     def test_main_rejects_single_camera_with_all_cameras(self):
