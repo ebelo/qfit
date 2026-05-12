@@ -18,6 +18,12 @@ class MapboxSpriteResources:
     image_bytes: bytes
 
 
+def _is_mapbox_hostname(hostname: str | None) -> bool:
+    if not hostname:
+        return False
+    return hostname.lower().split(".")[-2:] == ["mapbox", "com"]
+
+
 BACKGROUND_LAYER_PREFIX = "qfit background"
 DEFAULT_BACKGROUND_PRESET = "Outdoor"
 DEFAULT_MAPBOX_TILE_SIZE = 512
@@ -766,7 +772,7 @@ def build_mapbox_sprite_file_url(
 
     retina_suffix = "@2x" if retina else ""
     query = parse_qsl(parsed.query, keep_blank_values=True)
-    if parsed.netloc.endswith("mapbox.com") and not any(key == "access_token" for key, _ in query):
+    if _is_mapbox_hostname(parsed.hostname) and not any(key == "access_token" for key, _ in query):
         query.append(("access_token", token))
     return urlunparse(
         parsed._replace(

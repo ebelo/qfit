@@ -208,6 +208,18 @@ class MapboxConfigTests(unittest.TestCase):
             "https://api.mapbox.com/styles/v1/shared-owner/shared-style/sprite.json?access_token=pk.embedded",
         )
 
+    def test_sprite_file_url_does_not_append_token_to_lookalike_hosts(self):
+        url = build_mapbox_sprite_file_url(
+            "pk.secret",
+            "https://evilmapbox.com/styles/v1/shared-owner/shared-style/sprite",
+            file_type="json",
+        )
+
+        self.assertEqual(
+            url,
+            "https://evilmapbox.com/styles/v1/shared-owner/shared-style/sprite.json",
+        )
+
     def test_sprite_file_url_rejects_unknown_url_scheme(self):
         with self.assertRaises(MapboxConfigError):
             build_mapbox_sprite_file_url("pk.token", "ftp://example.test/sprite", file_type="json")
