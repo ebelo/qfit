@@ -1671,6 +1671,8 @@ class MapboxOutdoorsStyleAuditTests(unittest.TestCase):
             mapbox_outdoors_style_audit._diagnostic_filter_value_at_zoom(["+", 1, "not-numeric"]),
             ["+", 1, "not-numeric"],
         )
+        literal_filter = ["literal", [["zoom"]]]
+        self.assertIs(mapbox_outdoors_style_audit._diagnostic_filter_value_at_zoom(literal_filter), literal_filter)
         self.assertEqual(mapbox_outdoors_style_audit._diagnostic_filter_value_at_zoom(["step"]), ["step"])
         self.assertEqual(
             mapbox_outdoors_style_audit._diagnostic_filter_value_at_zoom(["interpolate"]),

@@ -744,6 +744,8 @@ def _diagnostic_interpolate_value_at_zoom(expression: list[object], zoom: float)
         return stops[0][1]
     for (lower_stop, lower_value), (upper_stop, upper_value) in zip(stops, stops[1:]):
         if input_value <= upper_stop:
+            # Diagnostic-only: approximate in-range numeric interpolation linearly.
+            # This is not a full Mapbox expression evaluator for exponential/cubic-bezier curves.
             outputs_are_numeric = all(isinstance(value, (int, float)) for value in (lower_value, upper_value))
             if outputs_are_numeric and upper_stop != lower_stop:
                 fraction = (input_value - lower_stop) / (upper_stop - lower_stop)
@@ -756,6 +758,8 @@ def _diagnostic_filter_value_at_zoom(value: object, zoom: float = _EXPRESSION_PR
     if not isinstance(value, list) or not value:
         return value
     operator = value[0]
+    if operator == "literal":
+        return value
     if operator == "zoom" and len(value) == 1:
         return zoom
     if operator == "step":
