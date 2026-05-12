@@ -401,6 +401,52 @@ class EnsureBackgroundLayerMockTests(unittest.TestCase):
                     tile_mode="Raster",
                 )
 
+    def test_enabled_vector_passes_sprite_resources_to_style_conversion(self):
+        vector_layer = MagicMock()
+        vector_layer.isValid.return_value = True
+        sprite_resources = SimpleNamespace(definitions={"marker": {"x": 0}}, image_bytes=b"png")
+
+        with patch.object(_mock_bms_mod, "fetch_mapbox_style_definition", return_value={"sources": {}}) as style_fetch, \
+             patch.object(_mock_bms_mod, "simplify_mapbox_style_expressions", return_value={"layers": []}), \
+             patch.object(_mock_bms_mod, "fetch_mapbox_sprite_resources", return_value=sprite_resources) as sprite_fetch, \
+             patch.object(_mock_bms_mod, "extract_mapbox_vector_source_ids", return_value=["mapbox.mapbox-streets-v8"]), \
+             patch.object(_mock_bms_mod, "build_vector_tile_layer_uri", return_value="vector://style") as uri_builder, \
+             patch.object(_mock_bms_mod, "QgsVectorTileLayer", return_value=vector_layer), \
+             patch.object(self.service, "_apply_mapbox_gl_style") as apply_style:
+            result = self.service.ensure_background_layer(
+                enabled=True,
+                preset_name="Outdoor",
+                access_token="tok",
+                tile_mode="Vector",
+            )
+
+        self.assertIs(result, vector_layer)
+        style_fetch.assert_called_once_with("tok", "mapbox", "outdoors-v12")
+        sprite_fetch.assert_called_once_with("tok", "mapbox", "outdoors-v12")
+        uri_builder.assert_called_once()
+        apply_style.assert_called_once_with(vector_layer, {"layers": []}, sprite_resources=sprite_resources)
+
+    def test_enabled_vector_continues_without_unavailable_sprite_resources(self):
+        vector_layer = MagicMock()
+        vector_layer.isValid.return_value = True
+
+        with patch.object(_mock_bms_mod, "fetch_mapbox_style_definition", return_value={"sources": {}}), \
+             patch.object(_mock_bms_mod, "simplify_mapbox_style_expressions", return_value={"layers": []}), \
+             patch.object(_mock_bms_mod, "fetch_mapbox_sprite_resources", side_effect=OSError("offline")), \
+             patch.object(_mock_bms_mod, "extract_mapbox_vector_source_ids", return_value=["mapbox.mapbox-streets-v8"]), \
+             patch.object(_mock_bms_mod, "build_vector_tile_layer_uri", return_value="vector://style"), \
+             patch.object(_mock_bms_mod, "QgsVectorTileLayer", return_value=vector_layer), \
+             patch.object(self.service, "_apply_mapbox_gl_style") as apply_style:
+            result = self.service.ensure_background_layer(
+                enabled=True,
+                preset_name="Outdoor",
+                access_token="tok",
+                tile_mode="Vector",
+            )
+
+        self.assertIs(result, vector_layer)
+        apply_style.assert_called_once_with(vector_layer, {"layers": []}, sprite_resources=None)
+
 
 @unittest.skipIf(QGIS_AVAILABLE, SKIP_MOCK)
 @unittest.skipIf(_mock_bms_cls is None, SKIP_MOCK_LOAD)
@@ -684,6 +730,17 @@ class ApplyMapboxGlStyleMockTests(unittest.TestCase):
             self.service._apply_sprite_resources_to_context(ctx, sprite_resources)
 
         sprite_image.loadFromData.assert_called_once_with(b"not-an-image")
+        ctx.setSprites.assert_not_called()
+
+    def test_sprite_resources_skip_qimage_errors(self):
+        ctx = MagicMock()
+        fake_qt_gui = types.ModuleType("qgis.PyQt.QtGui")
+        fake_qt_gui.QImage = MagicMock(side_effect=RuntimeError("qt image unavailable"))
+        sprite_resources = SimpleNamespace(definitions={"marker": {"x": 0}}, image_bytes=b"png-bytes")
+
+        with patch.dict(sys.modules, {"qgis.PyQt.QtGui": fake_qt_gui}):
+            self.service._apply_sprite_resources_to_context(ctx, sprite_resources)
+
         ctx.setSprites.assert_not_called()
 
     def test_skips_when_renderer_is_none(self):
