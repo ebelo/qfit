@@ -183,6 +183,19 @@ class MapboxConfigTests(unittest.TestCase):
         self.assertIn("api.mapbox.com/styles/v1/shared-owner/shared-style/sprite@2x.json", url)
         self.assertIn("access_token=pk.token", url)
 
+    def test_sprite_file_url_preserves_immutable_mapbox_sprite_id(self):
+        url = build_mapbox_sprite_file_url(
+            "pk.token",
+            "mapbox://sprites/shared-owner/shared-style/immutable-sprite-id",
+            file_type="png",
+        )
+
+        self.assertIn(
+            "api.mapbox.com/styles/v1/shared-owner/shared-style/immutable-sprite-id/sprite.png",
+            url,
+        )
+        self.assertIn("access_token=pk.token", url)
+
     def test_sprite_file_url_appends_file_type_and_token_to_mapbox_https_url(self):
         url = build_mapbox_sprite_file_url(
             "pk.test token",

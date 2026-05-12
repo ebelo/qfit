@@ -24,6 +24,30 @@ def _is_mapbox_hostname(hostname: str | None) -> bool:
     return hostname.lower().split(".")[-2:] == ["mapbox", "com"]
 
 
+def _format_mapbox_sprite_url(
+    token: str,
+    owner: str,
+    style_id: str,
+    sprite_path_segments: tuple[str, ...],
+    *,
+    file_type: str,
+    retina: bool,
+) -> str:
+    retina_suffix = "@2x" if retina else ""
+    extra_sprite_path = "".join(f"/{quote(segment, safe='')}" for segment in sprite_path_segments)
+    return (
+        "https://api.mapbox.com/styles/v1/{owner}/{style_id}{extra}/sprite{retina}.{file_type}"
+        "?access_token={token}"
+    ).format(
+        owner=quote(owner, safe=""),
+        style_id=quote(style_id, safe=""),
+        extra=extra_sprite_path,
+        retina=retina_suffix,
+        file_type=file_type,
+        token=quote(token, safe=""),
+    )
+
+
 BACKGROUND_LAYER_PREFIX = "qfit background"
 DEFAULT_BACKGROUND_PRESET = "Outdoor"
 DEFAULT_MAPBOX_TILE_SIZE = 512
@@ -723,16 +747,13 @@ def build_mapbox_sprite_url(
     token, owner, resolved_style_id = _validated_mapbox_style_parts(access_token, style_owner, style_id)
     if file_type not in {"json", "png"}:
         raise MapboxConfigError("Mapbox sprite file_type must be 'json' or 'png'.")
-    retina_suffix = "@2x" if retina else ""
-    return (
-        "https://api.mapbox.com/styles/v1/{owner}/{style_id}/sprite{retina}.{file_type}"
-        "?access_token={token}"
-    ).format(
-        owner=quote(owner, safe=""),
-        style_id=quote(resolved_style_id, safe=""),
-        retina=retina_suffix,
+    return _format_mapbox_sprite_url(
+        token,
+        owner,
+        resolved_style_id,
+        (),
         file_type=file_type,
-        token=quote(token, safe=""),
+        retina=retina,
     )
 
 
@@ -755,13 +776,16 @@ def build_mapbox_sprite_file_url(
 
     if sprite_base_url.startswith("mapbox://sprites/"):
         sprite_path = sprite_base_url.removeprefix("mapbox://sprites/")
-        owner, _, resolved_style_id = sprite_path.partition("/")
-        if not owner or not resolved_style_id:
+        path_segments = tuple(unquote(segment) for segment in sprite_path.split("/"))
+        if len(path_segments) < 2 or not path_segments[0] or not path_segments[1] or any(
+            not segment for segment in path_segments[2:]
+        ):
             raise MapboxConfigError("Mapbox sprite URL must include an owner and style ID.")
-        return build_mapbox_sprite_url(
+        return _format_mapbox_sprite_url(
             token,
-            unquote(owner),
-            unquote(resolved_style_id),
+            path_segments[0],
+            path_segments[1],
+            path_segments[2:],
             file_type=file_type,
             retina=retina,
         )
