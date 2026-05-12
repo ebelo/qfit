@@ -769,6 +769,21 @@ class MapboxOutdoorsStyleAuditTests(unittest.TestCase):
                 },
                 {"id": "literal", "paint": {"line-dasharray": [5, 2]}},
                 {"id": "literal-expression", "paint": {"line-dasharray": ["literal", [2, 1]]}},
+                {
+                    "id": "malformed-match",
+                    "paint": {"line-dasharray": ["match", ["get", "class"], "primary", ["literal", [9, 9]]]},
+                },
+                {
+                    "id": "case-literal-condition",
+                    "paint": {
+                        "line-dasharray": [
+                            "case",
+                            ["literal", [9, 9]],
+                            ["get", "dash"],
+                            ["get", "fallbackDash"],
+                        ]
+                    },
+                },
                 {"id": "data-only", "paint": {"line-dasharray": ["get", "dash"]}},
             ]
         }
@@ -781,7 +796,12 @@ class MapboxOutdoorsStyleAuditTests(unittest.TestCase):
         self.assertEqual(result["layers"][2]["paint"]["line-dasharray"], [2, 2])
         self.assertEqual(result["layers"][3]["paint"]["line-dasharray"], [5, 2])
         self.assertEqual(result["layers"][4]["paint"]["line-dasharray"], [2, 1])
-        self.assertEqual(result["layers"][5]["paint"]["line-dasharray"], ["get", "dash"])
+        self.assertEqual(result["layers"][5]["paint"]["line-dasharray"], ["match", ["get", "class"], "primary", ["literal", [9, 9]]])
+        self.assertEqual(
+            result["layers"][6]["paint"]["line-dasharray"],
+            ["case", ["literal", [9, 9]], ["get", "dash"], ["get", "fallbackDash"]],
+        )
+        self.assertEqual(result["layers"][7]["paint"]["line-dasharray"], ["get", "dash"])
         self.assertEqual(style["layers"][0]["paint"]["line-dasharray"][0], "step")
 
     def test_qgis_converter_warning_report_initializes_and_closes_qgis_app(self):

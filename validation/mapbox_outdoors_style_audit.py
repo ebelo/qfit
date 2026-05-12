@@ -977,8 +977,15 @@ def _extract_line_dasharray_literal(expr: object) -> list[object] | None:
     if op == "step":
         return _extract_line_dasharray_literal(_representative_step_output(expr))
     if op == "match":
-        return _extract_line_dasharray_literal(expr[-1]) if len(expr) >= 4 else None
-    if op in {"case", "coalesce"}:
+        return _extract_line_dasharray_literal(expr[-1]) if len(expr) >= 5 else None
+    if op == "case":
+        if len(expr) < 4:
+            return None
+        for index in [len(expr) - 1, *range(len(expr) - 2, 1, -2)]:
+            literal_dasharray = _extract_line_dasharray_literal(expr[index])
+            if literal_dasharray is not None:
+                return literal_dasharray
+    if op == "coalesce":
         for item in reversed(expr[1:]):
             literal_dasharray = _extract_line_dasharray_literal(item)
             if literal_dasharray is not None:
