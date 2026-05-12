@@ -1607,6 +1607,7 @@ class MapboxOutdoorsStyleAuditTests(unittest.TestCase):
                 ["poi-label: Skipping unsupported expression"],
                 [],
                 ["poi-label: Skipping unsupported expression"],
+                [],
             ],
         ) as collect_warnings:
             report = mapbox_outdoors_style_audit._qgis_filter_parse_support_report(style)
@@ -1614,6 +1615,10 @@ class MapboxOutdoorsStyleAuditTests(unittest.TestCase):
         self.assertEqual(report["direct_filter_part_count"], 2)
         self.assertEqual(report["qgis_parser_supported_part_count"], 1)
         self.assertEqual(report["qgis_parser_unsupported_part_count"], 1)
+        self.assertEqual(report["zoom_normalized_direct_part_count"], 1)
+        self.assertEqual(report["zoom_normalized_changed_direct_part_count"], 1)
+        self.assertEqual(report["qgis_parser_supported_zoom_normalized_part_count"], 1)
+        self.assertEqual(report["qgis_parser_unsupported_zoom_normalized_part_count"], 0)
         self.assertEqual(
             report["unsupported_parts_by_layer_group_and_operator_signature"],
             [
@@ -1630,9 +1635,27 @@ class MapboxOutdoorsStyleAuditTests(unittest.TestCase):
         self.assertEqual(report["unsupported_parts"][0]["parent_operator"], "all")
         self.assertEqual(report["unsupported_parts"][0]["part_index"], 2)
         self.assertEqual(report["unsupported_parts"][0]["operator_signature"], "step, zoom")
+        self.assertEqual(len(report["zoom_normalized_supported_parts"]), 1)
+        self.assertTrue(report["zoom_normalized_supported_parts"][0]["filter"])
+        self.assertEqual(report["zoom_normalized_supported_parts"][0]["original_operator_signature"], "step, zoom")
+        self.assertEqual(report["zoom_normalized_supported_parts"][0]["operator_signature"], "(none)")
         self.assertEqual(
             collect_warnings.call_args_list[2].args[0]["layers"][0]["filter"],
             ["step", ["zoom"], False, 12, True],
+        )
+        self.assertTrue(collect_warnings.call_args_list[3].args[0]["layers"][0]["filter"])
+
+    def test_diagnostic_filter_value_at_zoom_evaluates_zoom_driven_steps(self):
+        self.assertEqual(mapbox_outdoors_style_audit._diagnostic_filter_value_at_zoom(["zoom"]), 12.0)
+        self.assertEqual(
+            mapbox_outdoors_style_audit._diagnostic_filter_value_at_zoom(
+                ["step", ["zoom"], False, 10, ["match", ["get", "class"], "track", True, False], 13, True]
+            ),
+            ["match", ["get", "class"], "track", True, False],
+        )
+        self.assertEqual(
+            mapbox_outdoors_style_audit._diagnostic_filter_value_at_zoom(["<", ["-", 16, ["zoom"]], 5]),
+            ["<", 4.0, 5],
         )
 
     def test_iter_direct_filter_parts_skips_non_boolean_and_non_list_parts(self):
@@ -2093,6 +2116,10 @@ class MapboxOutdoorsStyleAuditTests(unittest.TestCase):
                 "direct_filter_part_count": 2,
                 "qgis_parser_supported_part_count": 1,
                 "qgis_parser_unsupported_part_count": 1,
+                "zoom_normalized_direct_part_count": 1,
+                "zoom_normalized_changed_direct_part_count": 1,
+                "qgis_parser_supported_zoom_normalized_part_count": 1,
+                "qgis_parser_unsupported_zoom_normalized_part_count": 0,
                 "unsupported_by_layer_group": [{"group": "pois/labels", "count": 1}],
                 "unsupported_by_warning_message": [{"message": "Skipping unsupported expression", "count": 1}],
                 "unsupported_by_layer_group_and_operator_signature": [
@@ -2126,6 +2153,24 @@ class MapboxOutdoorsStyleAuditTests(unittest.TestCase):
                         ],
                         "supported_by_qgis_parser": False,
                         "filter": ["step", ["zoom"], False, 12, True],
+                    }
+                ],
+                "zoom_normalized_supported_parts": [
+                    {
+                        "layer": "poi-label",
+                        "group": "pois/labels",
+                        "type": "symbol",
+                        "source_layer": "poi_label",
+                        "parent_operator": "all",
+                        "part_index": 2,
+                        "original_operator_signature": "step, zoom",
+                        "operator_signature": "(none)",
+                        "changed_by_zoom_normalization": True,
+                        "unsupported_warning_count": 0,
+                        "unsupported_warning_messages": [],
+                        "supported_by_qgis_parser": True,
+                        "filter": True,
+                        "original_filter": ["step", ["zoom"], False, 12, True],
                     }
                 ],
                 "unsupported_layers": [
@@ -2434,6 +2479,9 @@ class MapboxOutdoorsStyleAuditTests(unittest.TestCase):
         self.assertIn("Rejected by the QGIS parser probe: 1", markdown)
         self.assertIn("Direct parts tested from rejected boolean filters: 2", markdown)
         self.assertIn("Rejected direct parts: 1", markdown)
+        self.assertIn("Unsupported direct parts re-tested after zoom-normalizing at z12: 1", markdown)
+        self.assertIn("Changed by zoom-normalization: 1", markdown)
+        self.assertIn("Accepted after zoom-normalization: 1", markdown)
         self.assertIn("##### Unsupported filter probes by layer group", markdown)
         self.assertIn("| `pois/labels` | 1 |", markdown)
         self.assertIn("##### Unsupported filter parser warnings by message", markdown)
@@ -2442,6 +2490,9 @@ class MapboxOutdoorsStyleAuditTests(unittest.TestCase):
         self.assertIn("| `pois/labels` | `==, case, get` | 1 | `poi-label` |", markdown)
         self.assertIn("##### Unsupported direct filter parts by layer group and operators", markdown)
         self.assertIn("| `pois/labels` | `step, zoom` | 1 | `poi-label` |", markdown)
+        self.assertIn("##### Direct filter parts accepted after zoom-normalization", markdown)
+        self.assertIn("This diagnostic evaluates zoom-driven `step`/`interpolate` filter fragments at z12", markdown)
+        self.assertIn("| `poi-label` | 2 | `step, zoom` | `(none)` | <code>true</code> |", markdown)
         self.assertIn("##### Unsupported direct filter parts", markdown)
         self.assertIn("| `poi-label` | `all` | 2 | `step, zoom` | 1 |", markdown)
         self.assertIn('<code>["step",["zoom"],false,12,true]</code>', markdown)
