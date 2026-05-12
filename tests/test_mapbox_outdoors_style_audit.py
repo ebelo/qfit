@@ -1671,6 +1671,14 @@ class MapboxOutdoorsStyleAuditTests(unittest.TestCase):
             mapbox_outdoors_style_audit._diagnostic_filter_value_at_zoom(["+", 1, "not-numeric"]),
             ["+", 1, "not-numeric"],
         )
+        self.assertEqual(
+            mapbox_outdoors_style_audit._diagnostic_filter_value_at_zoom(["==", ["+", 1, 2], 3]),
+            ["==", ["+", 1, 2], 3],
+        )
+        self.assertEqual(
+            mapbox_outdoors_style_audit._diagnostic_filter_value_at_zoom(["==", ["+", ["zoom"], 2], 14]),
+            ["==", 14.0, 14],
+        )
         literal_filter = ["literal", [["zoom"]]]
         self.assertIs(mapbox_outdoors_style_audit._diagnostic_filter_value_at_zoom(literal_filter), literal_filter)
         self.assertEqual(mapbox_outdoors_style_audit._diagnostic_filter_value_at_zoom(["step"]), ["step"])
@@ -1722,6 +1730,10 @@ class MapboxOutdoorsStyleAuditTests(unittest.TestCase):
         )
 
     def test_filter_probe_helpers_cover_nonstandard_inputs(self):
+        self.assertFalse(mapbox_outdoors_style_audit._diagnostic_value_depends_on_zoom("not-a-list"))
+        self.assertFalse(mapbox_outdoors_style_audit._diagnostic_value_depends_on_zoom(["literal", [["zoom"]]]))
+        self.assertTrue(mapbox_outdoors_style_audit._diagnostic_value_depends_on_zoom(["unknown", ["zoom"]]))
+        self.assertTrue(mapbox_outdoors_style_audit._diagnostic_value_depends_on_zoom([["zoom"]]))
         self.assertEqual(
             mapbox_outdoors_style_audit._filter_operator_names(["not-a-filter-op", ["==", ["get", "class"], "park"]]),
             ["==", "get"],

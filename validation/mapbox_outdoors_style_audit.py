@@ -770,7 +770,7 @@ def _diagnostic_filter_value_at_zoom(value: object, zoom: float = _EXPRESSION_PR
         interpolate_value = _diagnostic_interpolate_value_at_zoom(value, zoom)
         if interpolate_value is not _ABSENT:
             return interpolate_value
-    if isinstance(operator, str) and operator in {"+", "-", "*", "/"}:
+    if isinstance(operator, str) and operator in {"+", "-", "*", "/"} and _diagnostic_value_depends_on_zoom(value):
         arithmetic_value = _diagnostic_arithmetic_value(
             operator,
             [_diagnostic_filter_value_at_zoom(item, zoom) for item in value[1:]],
@@ -795,6 +795,19 @@ def _mapbox_operator_children(operator: str, candidate: list[object]) -> Iterabl
     if operator == "match":
         return _match_expression_children(candidate)
     return candidate[1:]
+
+
+def _diagnostic_value_depends_on_zoom(value: object) -> bool:
+    if not isinstance(value, list) or not value:
+        return False
+    operator = value[0]
+    if operator == "zoom" and len(value) == 1:
+        return True
+    if isinstance(operator, str) and operator in _MAPBOX_FILTER_OPERATORS:
+        children = _mapbox_operator_children(operator, value)
+    else:
+        children = value[1:] if isinstance(operator, str) else value
+    return any(_diagnostic_value_depends_on_zoom(child) for child in children)
 
 
 def _filter_operator_names(value: object) -> list[str]:
