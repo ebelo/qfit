@@ -688,7 +688,7 @@ class MapboxOutdoorsStyleAuditTests(unittest.TestCase):
                 {
                     "id": "data-interpolate",
                     "paint": {
-                        "line-opacity": ["interpolate", ["linear"], ["get", "altitude"], 0, 0.0, 3000, 1.0]
+                        "line-opacity": ["interpolate", ["linear"], ["get", "altitude"], 0, 0.2, 3000, 1.0]
                     },
                 },
             ]
@@ -696,17 +696,14 @@ class MapboxOutdoorsStyleAuditTests(unittest.TestCase):
 
         result, replaced_count = mapbox_outdoors_style_audit._style_with_scalar_line_opacity(style)
 
-        self.assertEqual(replaced_count, 4)
+        self.assertEqual(replaced_count, 5)
         self.assertEqual(result["layers"][0]["paint"]["line-opacity"], 1.0)
         self.assertEqual(result["layers"][1]["paint"]["line-opacity"], 1.0)
         self.assertEqual(result["layers"][2]["paint"]["line-opacity"], 0.3)
         self.assertEqual(result["layers"][3]["paint"]["line-opacity"], 0.2)
         self.assertEqual(result["layers"][4]["paint"]["line-opacity"], ["get", "opacity"])
         self.assertEqual(result["layers"][5]["paint"]["line-opacity"], 0.2)
-        self.assertEqual(
-            result["layers"][6]["paint"]["line-opacity"],
-            ["interpolate", ["linear"], ["get", "altitude"], 0, 0.0, 3000, 1.0],
-        )
+        self.assertEqual(result["layers"][6]["paint"]["line-opacity"], 0.2)
         self.assertIsInstance(style["layers"][0]["paint"]["line-opacity"], list)
 
     def test_qgis_converter_warning_report_initializes_and_closes_qgis_app(self):
