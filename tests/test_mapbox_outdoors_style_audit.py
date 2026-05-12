@@ -1658,6 +1658,78 @@ class MapboxOutdoorsStyleAuditTests(unittest.TestCase):
             ["<", 4.0, 5],
         )
 
+    def test_diagnostic_filter_value_at_zoom_handles_arithmetic_and_interpolation_edges(self):
+        self.assertEqual(mapbox_outdoors_style_audit._diagnostic_filter_value_at_zoom(["+", 1, ["zoom"], 3]), 16.0)
+        self.assertEqual(mapbox_outdoors_style_audit._diagnostic_filter_value_at_zoom(["-", ["zoom"]]), -12.0)
+        self.assertEqual(mapbox_outdoors_style_audit._diagnostic_filter_value_at_zoom(["*", 2, ["zoom"]]), 24.0)
+        self.assertEqual(mapbox_outdoors_style_audit._diagnostic_filter_value_at_zoom(["/", ["zoom"], 3]), 4.0)
+        self.assertEqual(
+            mapbox_outdoors_style_audit._diagnostic_filter_value_at_zoom(["/", ["zoom"], 0]),
+            ["/", 12.0, 0],
+        )
+        self.assertEqual(
+            mapbox_outdoors_style_audit._diagnostic_filter_value_at_zoom(["+", 1, "not-numeric"]),
+            ["+", 1, "not-numeric"],
+        )
+        self.assertEqual(mapbox_outdoors_style_audit._diagnostic_filter_value_at_zoom(["step"]), ["step"])
+        self.assertEqual(
+            mapbox_outdoors_style_audit._diagnostic_filter_value_at_zoom(["interpolate"]),
+            ["interpolate"],
+        )
+        self.assertEqual(
+            mapbox_outdoors_style_audit._diagnostic_filter_value_at_zoom(
+                ["interpolate", ["linear"], ["get", "rank"], 10, 0, 14, 8]
+            ),
+            ["interpolate", ["linear"], ["get", "rank"], 10, 0, 14, 8],
+        )
+        self.assertEqual(
+            mapbox_outdoors_style_audit._diagnostic_filter_value_at_zoom(
+                ["interpolate", ["linear"], ["zoom"], 14, 8, 16, 12]
+            ),
+            8,
+        )
+        self.assertEqual(
+            mapbox_outdoors_style_audit._diagnostic_filter_value_at_zoom(
+                ["interpolate", ["linear"], ["zoom"], 10, 0, 14, 8]
+            ),
+            4.0,
+        )
+        self.assertEqual(
+            mapbox_outdoors_style_audit._diagnostic_filter_value_at_zoom(
+                ["interpolate", ["linear"], ["zoom"], 10, "wide", 14, "wider"]
+            ),
+            "wide",
+        )
+        self.assertEqual(
+            mapbox_outdoors_style_audit._diagnostic_filter_value_at_zoom(
+                ["interpolate", ["linear"], ["zoom"], "bad-stop", 0, "worse-stop", 1]
+            ),
+            ["interpolate", ["linear"], 12.0, "bad-stop", 0, "worse-stop", 1],
+        )
+        self.assertEqual(
+            mapbox_outdoors_style_audit._diagnostic_filter_value_at_zoom(
+                ["interpolate", ["linear"], ["zoom"], 8, 1, 10, 2]
+            ),
+            2,
+        )
+        self.assertEqual(
+            mapbox_outdoors_style_audit._diagnostic_filter_value_at_zoom(
+                ["step", ["get", "rank"], False, 10, True]
+            ),
+            ["step", ["get", "rank"], False, 10, True],
+        )
+
+    def test_filter_probe_helpers_cover_nonstandard_inputs(self):
+        self.assertEqual(
+            mapbox_outdoors_style_audit._filter_operator_names(["not-a-filter-op", ["==", ["get", "class"], "park"]]),
+            ["==", "get"],
+        )
+        self.assertEqual(list(mapbox_outdoors_style_audit._iter_filter_probe_layers({"layers": "not-a-list"})), [])
+        self.assertEqual(
+            list(mapbox_outdoors_style_audit._iter_filter_probe_layers({"layers": ["not-a-layer", {"id": "x"}]})),
+            [],
+        )
+
     def test_iter_direct_filter_parts_skips_non_boolean_and_non_list_parts(self):
         self.assertEqual(list(mapbox_outdoors_style_audit._iter_direct_filter_parts([])), [])
         self.assertEqual(
