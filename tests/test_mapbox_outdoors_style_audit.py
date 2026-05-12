@@ -228,6 +228,7 @@ class MapboxOutdoorsStyleAuditTests(unittest.TestCase):
         self.assertEqual(simplified_counts["paint.line-width"], 1)
         self.assertEqual(simplified_counts["layout.visibility"], 1)
         self.assertEqual(simplified_group_counts[("pois/labels", "layout.text-field")], 1)
+        self.assertEqual(simplified_group_counts[("settlements/places", "layout.text-field")], 1)
         self.assertEqual(simplified_group_counts[("roads/trails", "paint.line-width")], 1)
         self.assertEqual(simplified_group_counts[("settlements/places", "layout.visibility")], 1)
         self.assertEqual(unresolved_counts["filter"], 1)
