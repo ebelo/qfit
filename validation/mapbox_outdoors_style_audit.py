@@ -84,12 +84,13 @@ _FILTER_PARSE_PART_PARENT_OPERATORS = frozenset({"all", "any", "none"})
 _NO_OPERATOR_SIGNATURE = "(none)"
 _ALL_ZOOMS_BAND = "all zooms"
 _LINE_DASHARRAY_PROPERTY = "paint.line-dasharray"
+_SYMBOL_SPACING_PROPERTY = "layout.symbol-spacing"
 _LABEL_DENSITY_CONTROL_PROPERTIES = (
     "layout.icon-allow-overlap",
     "layout.icon-ignore-placement",
     "layout.icon-optional",
     "layout.symbol-sort-key",
-    "layout.symbol-spacing",
+    _SYMBOL_SPACING_PROPERTY,
     "layout.text-allow-overlap",
     "layout.text-anchor",
     "layout.text-field",
@@ -120,7 +121,7 @@ _ICON_SPRITE_CONTROL_PROPERTIES = (
     "layout.icon-text-fit-padding",
     "layout.symbol-avoid-edges",
     "layout.symbol-placement",
-    "layout.symbol-spacing",
+    _SYMBOL_SPACING_PROPERTY,
     "paint.icon-color",
     "paint.icon-halo-blur",
     "paint.icon-halo-color",
@@ -2050,7 +2051,7 @@ def _annotate_qgis_warning_group_summaries(
         symbol_spacing_probe,
         layers,
         exclude_properties_by_layer={
-            layer_id: {"layout.symbol-spacing"} for layer_id in symbol_spacing_replaced_layers
+            layer_id: {_SYMBOL_SPACING_PROPERTY} for layer_id in symbol_spacing_replaced_layers
         },
     )
     sprite_context_probe = (
