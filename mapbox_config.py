@@ -349,23 +349,25 @@ def _representative_zoom_in_layer_range(minzoom: object, maxzoom: object) -> flo
     return target_zoom
 
 
-def _literal_step_icon_image(expr: object, *, minzoom: object = None, maxzoom: object = None) -> str | None:
+def _representative_step_icon_image(expr: object, *, minzoom: object = None, maxzoom: object = None) -> str | None:
     if not isinstance(expr, list) or len(expr) < 3 or expr[0] != "step" or expr[1] != ["zoom"]:
-        return None
-    if not isinstance(expr[2], str) or not expr[2]:
         return None
     for index in range(3, len(expr) - 1, 2):
         threshold = expr[index]
-        output = expr[index + 1]
         if isinstance(threshold, bool) or not isinstance(threshold, (int, float)):
-            return None
-        if not isinstance(output, str) or not output:
             return None
     target_zoom = _representative_zoom_in_layer_range(minzoom, maxzoom)
     if target_zoom is None:
         return None
     representative = _step_zoom_value(expr, target_zoom=target_zoom)
-    if isinstance(representative, str) and representative:
+    if representative == "":
+        return ""
+    if not isinstance(representative, str) or not representative:
+        return None
+    # Non-empty icon scalarization stays conservative: every possible output must
+    # already be a literal sprite name, so data-driven icons remain untouched.
+    outputs = [expr[2], *[expr[index] for index in range(4, len(expr), 2)]]
+    if all(isinstance(output, str) and output for output in outputs):
         return representative
     return None
 
@@ -1014,11 +1016,14 @@ def simplify_mapbox_style_expressions(style_definition: dict[str, object]) -> di
                     if val == "":
                         del props[prop]
                         continue
-                    icon_image = _literal_step_icon_image(
+                    icon_image = _representative_step_icon_image(
                         val,
                         minzoom=layer.get("minzoom"),
                         maxzoom=layer.get("maxzoom"),
                     )
+                    if icon_image == "":
+                        del props[prop]
+                        continue
                     if icon_image is not None:
                         props[prop] = icon_image
                         continue

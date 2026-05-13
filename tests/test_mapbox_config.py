@@ -604,6 +604,7 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
                 {"layout": {"icon-image": ["step", ["zoom"], "oneway-small", 18, "oneway-large"]}},
                 {"minzoom": 14, "layout": {"icon-image": ["step", ["zoom"], "oneway-small", 13, "oneway-large"]}},
                 {"maxzoom": 11, "layout": {"icon-image": ["step", ["zoom"], "zoom-low", 10, "zoom-mid", 12, "zoom-high"]}},
+                {"maxzoom": 8, "layout": {"icon-image": empty_output_step}},
                 {"layout": {"icon-image": empty_output_step}},
                 {"layout": {"icon-image": data_driven_step}},
             ]
@@ -619,7 +620,8 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
         self.assertEqual(result["layers"][4]["layout"]["icon-image"], "oneway-large")
         self.assertEqual(result["layers"][5]["layout"]["icon-image"], "zoom-mid")
         self.assertEqual(result["layers"][6]["layout"]["icon-image"], empty_output_step)
-        self.assertEqual(result["layers"][7]["layout"]["icon-image"], data_driven_step)
+        self.assertNotIn("icon-image", result["layers"][7]["layout"])
+        self.assertEqual(result["layers"][8]["layout"]["icon-image"], data_driven_step)
 
     def test_line_dasharray_expressions_resolve_to_literal_arrays(self):
         style = {
