@@ -839,6 +839,17 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
                     "type": "symbol",
                     "filter": ["==", ["+", ["match", ["get", "class"], "primary", ["zoom"], 0], 2], 14],
                 },
+                {
+                    "id": "road-label",
+                    "type": "symbol",
+                    "filter": [
+                        "match",
+                        ["get", "class"],
+                        ["zoom"],
+                        ["==", ["step", ["zoom"], "low", 14, "high"], "low"],
+                        False,
+                    ],
+                },
             ]
         }
 
@@ -848,6 +859,10 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
         self.assertEqual(
             result["layers"][1]["filter"],
             ["==", ["+", ["match", ["get", "class"], "primary", 12.0, 0], 2], 14],
+        )
+        self.assertEqual(
+            result["layers"][2]["filter"],
+            ["match", ["get", "class"], ["zoom"], ["==", "low", "low"], False],
         )
 
     def test_filter_simplification_handles_unsupported_zoom_step_shapes(self):
@@ -942,7 +957,7 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
         self.assertEqual(result["layers"][4]["filter"], ["==", "low", "low"])
         self.assertEqual(result["layers"][5]["filter"], ["==", 12, 12])
         self.assertEqual(result["layers"][6]["filter"][0], "==")
-        self.assertAlmostEqual(result["layers"][6]["filter"][1], 1.3333333333333333)
+        self.assertAlmostEqual(result["layers"][6]["filter"][1], 4.970562748477143)
         self.assertEqual(result["layers"][6]["filter"][2], 0)
         self.assertEqual(
             result["layers"][7]["filter"],

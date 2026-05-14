@@ -856,17 +856,48 @@ def _interpolate_filter_factor(
     linear_factor = (input_value - lower_stop) / (upper_stop - lower_stop)
     if interpolation_type == ["linear"]:
         return linear_factor
-    if isinstance(interpolation_type, list) and len(interpolation_type) == 2 and interpolation_type[0] == "exponential":
+    if (
+        isinstance(interpolation_type, list)
+        and len(interpolation_type) == 2
+        and interpolation_type[0] == "exponential"
+    ):
         base = _numeric_expression_value(interpolation_type[1])
         if base is None or base <= 0:
             return None
         if abs(base - 1.0) <= _ZOOM_BOUND_EPSILON:
             return linear_factor
-        denominator = (base ** (upper_stop - lower_stop)) - 1.0
+        denominator = base - 1.0
         if denominator == 0:
             return None
-        return ((base ** (input_value - lower_stop)) - 1.0) / denominator
+        return ((base**linear_factor) - 1.0) / denominator
     return None
+
+
+def _interpolate_filter_stops(expression: list[object], zoom: float) -> list[tuple[float, object]]:
+    stops: list[tuple[float, object]] = []
+    for index in range(3, len(expression) - 1, 2):
+        stop = _numeric_expression_value(expression[index])
+        if stop is not None:
+            stops.append((stop, _filter_expression_value_at_zoom(expression[index + 1], zoom)))
+    return stops
+
+
+def _interpolate_filter_output_between_stops(
+    interpolation_type: object,
+    input_value: float,
+    lower_stop: float,
+    lower_value: object,
+    upper_stop: float,
+    upper_value: object,
+) -> object | None:
+    lower_numeric = _numeric_expression_value(lower_value)
+    upper_numeric = _numeric_expression_value(upper_value)
+    if lower_numeric is None or upper_numeric is None:
+        return lower_value
+    fraction = _interpolate_filter_factor(interpolation_type, input_value, lower_stop, upper_stop)
+    if fraction is None:
+        return None
+    return lower_numeric + ((upper_numeric - lower_numeric) * fraction)
 
 
 def _interpolate_filter_value_at_zoom(expression: list[object], zoom: float) -> object | None:
@@ -875,26 +906,32 @@ def _interpolate_filter_value_at_zoom(expression: list[object], zoom: float) -> 
     input_value = _numeric_expression_value(_filter_expression_value_at_zoom(expression[2], zoom))
     if input_value is None:
         return None
-    stops: list[tuple[float, object]] = []
-    for index in range(3, len(expression) - 1, 2):
-        stop = _numeric_expression_value(expression[index])
-        if stop is not None:
-            stops.append((stop, _filter_expression_value_at_zoom(expression[index + 1], zoom)))
+    stops = _interpolate_filter_stops(expression, zoom)
     if not stops:
         return None
     if input_value <= stops[0][0]:
         return stops[0][1]
     for (lower_stop, lower_value), (upper_stop, upper_value) in zip(stops, stops[1:]):
         if input_value <= upper_stop:
-            lower_numeric = _numeric_expression_value(lower_value)
-            upper_numeric = _numeric_expression_value(upper_value)
-            if lower_numeric is not None and upper_numeric is not None:
-                fraction = _interpolate_filter_factor(expression[1], input_value, lower_stop, upper_stop)
-                if fraction is None:
-                    return None
-                return lower_numeric + ((upper_numeric - lower_numeric) * fraction)
-            return lower_value
+            return _interpolate_filter_output_between_stops(
+                expression[1], input_value, lower_stop, lower_value, upper_stop, upper_value
+            )
     return stops[-1][1]
+
+
+def _match_filter_value_at_zoom(expression: list[object], zoom: float) -> object:
+    if len(expression) < 5 or (len(expression) - 3) % 2 != 0:
+        return _FILTER_SIMPLIFICATION_NOT_AVAILABLE
+    normalized = ["match", _filter_expression_value_at_zoom(expression[1], zoom)]
+    for label_index in range(2, len(expression) - 1, 2):
+        normalized.extend(
+            [
+                copy.deepcopy(expression[label_index]),
+                _filter_expression_value_at_zoom(expression[label_index + 1], zoom),
+            ]
+        )
+    normalized.append(_filter_expression_value_at_zoom(expression[-1], zoom))
+    return normalized
 
 
 def _filter_expression_value_at_zoom(value: object, zoom: float) -> object:
@@ -916,6 +953,10 @@ def _filter_expression_value_at_zoom(value: object, zoom: float) -> object:
         if interpolate_value is not None:
             return interpolate_value
         return value
+    if operator == "match":
+        match_value = _match_filter_value_at_zoom(value, zoom)
+        if match_value is not _FILTER_SIMPLIFICATION_NOT_AVAILABLE:
+            return match_value
     if isinstance(operator, str) and operator in {"+", "-", "*", "/"} and _filter_expression_depends_on_zoom(value):
         arithmetic_value = _arithmetic_filter_value_at_zoom(
             operator,
