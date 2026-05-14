@@ -957,7 +957,7 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
         self.assertEqual(result["layers"][4]["filter"], ["==", "low", "low"])
         self.assertEqual(result["layers"][5]["filter"], ["==", 12, 12])
         self.assertEqual(result["layers"][6]["filter"][0], "==")
-        self.assertAlmostEqual(result["layers"][6]["filter"][1], 4.970562748477143)
+        self.assertAlmostEqual(result["layers"][6]["filter"][1], 1.3333333333333333)
         self.assertEqual(result["layers"][6]["filter"][2], 0)
         self.assertEqual(
             result["layers"][7]["filter"],

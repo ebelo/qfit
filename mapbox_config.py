@@ -866,10 +866,12 @@ def _interpolate_filter_factor(
             return None
         if abs(base - 1.0) <= _ZOOM_BOUND_EPSILON:
             return linear_factor
-        denominator = base - 1.0
+        # Match Mapbox GL JS' exponentialInterpolation: the exponent uses raw
+        # stop distance, not the normalized 0..1 progress fraction.
+        denominator = (base ** (upper_stop - lower_stop)) - 1.0
         if denominator == 0:
             return None
-        return ((base**linear_factor) - 1.0) / denominator
+        return ((base ** (input_value - lower_stop)) - 1.0) / denominator
     return None
 
 
