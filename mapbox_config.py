@@ -934,6 +934,34 @@ def _match_filter_value_at_zoom(expression: list[object], zoom: float) -> object
     return normalized
 
 
+def _operator_filter_value_at_zoom(operator: object, expression: list[object], zoom: float) -> object:
+    if operator == "zoom" and len(expression) == 1:
+        return zoom
+    if operator == "step":
+        step_value = _step_filter_value_at_zoom(expression, zoom)
+        return step_value if step_value is not None else expression
+    if operator == "interpolate":
+        interpolate_value = _interpolate_filter_value_at_zoom(expression, zoom)
+        return interpolate_value if interpolate_value is not None else expression
+    if operator == "match":
+        return _match_filter_value_at_zoom(expression, zoom)
+    return _FILTER_SIMPLIFICATION_NOT_AVAILABLE
+
+
+def _arithmetic_filter_expression_value_at_zoom(operator: object, expression: list[object], zoom: float) -> object:
+    if not isinstance(operator, str) or operator not in {"+", "-", "*", "/"}:
+        return _FILTER_SIMPLIFICATION_NOT_AVAILABLE
+    if not _filter_expression_depends_on_zoom(expression):
+        return _FILTER_SIMPLIFICATION_NOT_AVAILABLE
+    arithmetic_value = _arithmetic_filter_value_at_zoom(
+        operator,
+        [_filter_expression_value_at_zoom(item, zoom) for item in expression[1:]],
+    )
+    if arithmetic_value is None:
+        return _FILTER_SIMPLIFICATION_NOT_AVAILABLE
+    return arithmetic_value
+
+
 def _filter_expression_value_at_zoom(value: object, zoom: float) -> object:
     """Collapse Mapbox filter zoom expressions to a QGIS-parser-friendly snapshot."""
     if not isinstance(value, list) or not value:
@@ -941,29 +969,12 @@ def _filter_expression_value_at_zoom(value: object, zoom: float) -> object:
     operator = value[0]
     if operator == "literal":
         return value
-    if operator == "zoom" and len(value) == 1:
-        return zoom
-    if operator == "step":
-        step_value = _step_filter_value_at_zoom(value, zoom)
-        if step_value is not None:
-            return step_value
-        return value
-    if operator == "interpolate":
-        interpolate_value = _interpolate_filter_value_at_zoom(value, zoom)
-        if interpolate_value is not None:
-            return interpolate_value
-        return value
-    if operator == "match":
-        match_value = _match_filter_value_at_zoom(value, zoom)
-        if match_value is not _FILTER_SIMPLIFICATION_NOT_AVAILABLE:
-            return match_value
-    if isinstance(operator, str) and operator in {"+", "-", "*", "/"} and _filter_expression_depends_on_zoom(value):
-        arithmetic_value = _arithmetic_filter_value_at_zoom(
-            operator,
-            [_filter_expression_value_at_zoom(item, zoom) for item in value[1:]],
-        )
-        if arithmetic_value is not None:
-            return arithmetic_value
+    operator_value = _operator_filter_value_at_zoom(operator, value, zoom)
+    if operator_value is not _FILTER_SIMPLIFICATION_NOT_AVAILABLE:
+        return operator_value
+    arithmetic_value = _arithmetic_filter_expression_value_at_zoom(operator, value, zoom)
+    if arithmetic_value is not _FILTER_SIMPLIFICATION_NOT_AVAILABLE:
+        return arithmetic_value
     return [_filter_expression_value_at_zoom(item, zoom) for item in value]
 
 
