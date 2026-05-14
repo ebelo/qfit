@@ -1083,6 +1083,29 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
         for layer in style["layers"]:
             self.assertEqual(layer["filter"], original_minor_filter)
 
+    def test_filter_simplification_clamps_minor_line_zoom_override_to_layer_bounds(self):
+        minor_filter = [
+            "match",
+            ["get", "class"],
+            ["track"],
+            True,
+            "service",
+            ["step", ["zoom"], False, 14, True],
+            False,
+        ]
+        style = {
+            "layers": [
+                {"id": "road-minor", "type": "line", "minzoom": 13, "maxzoom": 14, "filter": minor_filter},
+            ]
+        }
+
+        result = simplify_mapbox_style_expressions(style)
+
+        self.assertEqual(
+            result["layers"][0]["filter"],
+            ["match", ["get", "class"], ["track"], True, "service", False, False],
+        )
+
     def test_filter_simplification_normalizes_nested_zoom_arithmetic(self):
         style = {
             "layers": [

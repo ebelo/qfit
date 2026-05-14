@@ -375,8 +375,7 @@ def _numeric_zoom_bound(value: object) -> float | None:
     return float(value)
 
 
-def _representative_zoom_in_layer_range(minzoom: object, maxzoom: object) -> float | None:
-    target_zoom = _REPRESENTATIVE_STYLE_ZOOM
+def _zoom_in_layer_range(target_zoom: float, minzoom: object, maxzoom: object) -> float | None:
     minimum_zoom = _numeric_zoom_bound(minzoom)
     maximum_zoom = _numeric_zoom_bound(maxzoom)
     if minimum_zoom is not None and maximum_zoom is not None and minimum_zoom >= maximum_zoom:
@@ -388,6 +387,10 @@ def _representative_zoom_in_layer_range(minzoom: object, maxzoom: object) -> flo
     if minimum_zoom is not None and target_zoom < minimum_zoom:
         return None
     return target_zoom
+
+
+def _representative_zoom_in_layer_range(minzoom: object, maxzoom: object) -> float | None:
+    return _zoom_in_layer_range(_REPRESENTATIVE_STYLE_ZOOM, minzoom, maxzoom)
 
 
 def _has_valid_zoom_step_thresholds(expr: list[object]) -> bool:
@@ -1081,7 +1084,12 @@ def _zoom_normalized_filter_expression_for_qgis(layer: dict[str, object], value:
     # Some Mapbox Outdoors road layers begin just below their high-detail filter
     # branch. Snapshot those layers at the branch threshold instead of the layer
     # minzoom so QGIS keeps service-road detail in high-zoom renders.
-    target_zoom = _FILTER_NORMALIZATION_ZOOM_OVERRIDES.get(str(layer.get("id") or ""))
+    override_zoom = _FILTER_NORMALIZATION_ZOOM_OVERRIDES.get(str(layer.get("id") or ""))
+    target_zoom = (
+        _zoom_in_layer_range(override_zoom, layer.get("minzoom"), layer.get("maxzoom"))
+        if override_zoom is not None
+        else None
+    )
     if target_zoom is None:
         target_zoom = _representative_zoom_in_layer_range(layer.get("minzoom"), layer.get("maxzoom"))
     if target_zoom is None:
