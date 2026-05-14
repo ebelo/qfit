@@ -290,8 +290,22 @@ _ZOOM_NORMALIZED_FILL_FILTER_LAYER_IDS = {
     "landuse",
 }
 _ZOOM_NORMALIZED_LINE_FILTER_LAYER_IDS = {
+    "bridge-minor",
+    "bridge-minor-case",
     "road-motorway-trunk",
     "road-motorway-trunk-case",
+    "road-minor",
+    "road-minor-case",
+    "tunnel-minor",
+    "tunnel-minor-case",
+}
+_FILTER_NORMALIZATION_ZOOM_OVERRIDES = {
+    "bridge-minor": 14.0,
+    "bridge-minor-case": 14.0,
+    "road-minor": 14.0,
+    "road-minor-case": 14.0,
+    "tunnel-minor": 14.0,
+    "tunnel-minor-case": 14.0,
 }
 
 
@@ -1061,7 +1075,12 @@ def _filter_expression_value_at_zoom(value: object, zoom: float) -> object:
 
 
 def _zoom_normalized_filter_expression_for_qgis(layer: dict[str, object], value: object) -> object:
-    target_zoom = _representative_zoom_in_layer_range(layer.get("minzoom"), layer.get("maxzoom"))
+    # Some Mapbox Outdoors road layers begin just below their high-detail filter
+    # branch. Snapshot those layers at the branch threshold instead of the layer
+    # minzoom so QGIS keeps service-road detail in high-zoom renders.
+    target_zoom = _FILTER_NORMALIZATION_ZOOM_OVERRIDES.get(str(layer.get("id") or ""))
+    if target_zoom is None:
+        target_zoom = _representative_zoom_in_layer_range(layer.get("minzoom"), layer.get("maxzoom"))
     if target_zoom is None:
         target_zoom = _REPRESENTATIVE_STYLE_ZOOM
     return _filter_expression_value_at_zoom(value, target_zoom)
@@ -1072,15 +1091,15 @@ def _should_zoom_normalize_filter_for_qgis(layer: dict[str, object]) -> bool:
     # zoom snapshots to the high-signal label layers from #949 visual audits:
     # repeated road labels, pedestrian path label noise, ferry/transit label
     # leakage, road shields/one-way arrows, terrain/landcover layers, and the
-    # motorway/trunk line filters whose normalized branch is stable at the
-    # representative zoom. Applying the same approximation broadly can hide
-    # high-zoom road/path geometry or over-suppress POIs/places, so keep this
-    # deliberately small.
+    # road line filters whose normalized branches improved #949 visual audits.
+    # Applying the same approximation broadly can hide high-zoom path geometry
+    # or over-suppress POIs/places, so keep this deliberately small.
     layer_id = layer.get("id")
+    layer_type = layer.get("type")
     return (
-        layer.get("type") == "symbol" and layer_id in _ZOOM_NORMALIZED_SYMBOL_FILTER_LAYER_IDS
-    ) or (layer.get("type") == "fill" and layer_id in _ZOOM_NORMALIZED_FILL_FILTER_LAYER_IDS) or (
-        layer.get("type") == "line" and layer_id in _ZOOM_NORMALIZED_LINE_FILTER_LAYER_IDS
+        (layer_type == "symbol" and layer_id in _ZOOM_NORMALIZED_SYMBOL_FILTER_LAYER_IDS)
+        or (layer_type == "fill" and layer_id in _ZOOM_NORMALIZED_FILL_FILTER_LAYER_IDS)
+        or (layer_type == "line" and layer_id in _ZOOM_NORMALIZED_LINE_FILTER_LAYER_IDS)
     )
 
 
