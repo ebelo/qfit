@@ -307,6 +307,9 @@ _FILTER_NORMALIZATION_ZOOM_OVERRIDES = {
     "tunnel-minor": 14.0,
     "tunnel-minor-case": 14.0,
 }
+assert set(_FILTER_NORMALIZATION_ZOOM_OVERRIDES).issubset(_ZOOM_NORMALIZED_LINE_FILTER_LAYER_IDS), (
+    "Filter zoom overrides must also be present in the line filter normalization allowlist."
+)
 
 
 def _is_literal_color(value: object) -> bool:
