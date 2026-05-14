@@ -1,3 +1,4 @@
+import copy
 import unittest
 from unittest.mock import patch
 
@@ -971,6 +972,7 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
             ],
             ["match", ["get", "structure"], ["none", "ford"], True, False],
         ]
+        original_arrow_filter = copy.deepcopy(arrow_filter)
         style = {
             "layers": [
                 {"id": "road-oneway-arrow-blue", "type": "symbol", "minzoom": 16, "filter": arrow_filter},
@@ -991,7 +993,9 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
                     ["match", ["get", "structure"], ["none", "ford"], True, False],
                 ],
             )
-        self.assertEqual(style["layers"][0]["filter"], arrow_filter)
+        self.assertEqual(arrow_filter, original_arrow_filter)
+        for layer in style["layers"]:
+            self.assertEqual(layer["filter"], original_arrow_filter)
 
     def test_filter_simplification_normalizes_nested_zoom_arithmetic(self):
         style = {
