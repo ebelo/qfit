@@ -945,6 +945,54 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
         self.assertEqual(style["layers"][0]["filter"], landuse_filter)
         self.assertEqual(style["layers"][1]["filter"], hillshade_filter)
 
+    def test_filter_simplification_snapshots_oneway_arrow_filters_at_minzoom(self):
+        low_zoom_classes = ["primary", "secondary", "tertiary", "street", "street_limited"]
+        high_zoom_classes = [
+            "primary",
+            "secondary",
+            "tertiary",
+            "street",
+            "street_limited",
+            "primary_link",
+            "secondary_link",
+            "tertiary_link",
+            "service",
+            "track",
+        ]
+        arrow_filter = [
+            "all",
+            ["==", ["get", "oneway"], "true"],
+            [
+                "step",
+                ["zoom"],
+                ["match", ["get", "class"], low_zoom_classes, True, False],
+                16,
+                ["match", ["get", "class"], high_zoom_classes, True, False],
+            ],
+            ["match", ["get", "structure"], ["none", "ford"], True, False],
+        ]
+        style = {
+            "layers": [
+                {"id": "road-oneway-arrow-blue", "type": "symbol", "minzoom": 16, "filter": arrow_filter},
+                {"id": "bridge-oneway-arrow-blue", "type": "symbol", "minzoom": 16, "filter": arrow_filter},
+                {"id": "tunnel-oneway-arrow-blue", "type": "symbol", "minzoom": 16, "filter": arrow_filter},
+            ]
+        }
+
+        result = simplify_mapbox_style_expressions(style)
+
+        for layer in result["layers"]:
+            self.assertEqual(
+                layer["filter"],
+                [
+                    "all",
+                    ["==", ["get", "oneway"], "true"],
+                    ["match", ["get", "class"], high_zoom_classes, True, False],
+                    ["match", ["get", "structure"], ["none", "ford"], True, False],
+                ],
+            )
+        self.assertEqual(style["layers"][0]["filter"], arrow_filter)
+
     def test_filter_simplification_normalizes_nested_zoom_arithmetic(self):
         style = {
             "layers": [
