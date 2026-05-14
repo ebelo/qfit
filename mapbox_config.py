@@ -486,10 +486,10 @@ def _extract_zoom_scalar_size(expr: object, *, minzoom: object = None, maxzoom: 
     if target_zoom is None:
         return None
     if expr[0] == "step" and expr[1] == ["zoom"]:
-        outputs = [expr[2], *(expr[index + 1] for index in range(3, len(expr) - 1, 2))]
+        outputs = _step_outputs(expr)
         if all(_numeric_expression_value(output) is not None for output in outputs):
             return _numeric_expression_value(_step_zoom_value(expr, target_zoom=target_zoom))
-    if expr[0] == "interpolate" and len(expr) >= 6 and expr[2] == ["zoom"]:
+    if expr[0] == "interpolate" and len(expr) >= 5 and expr[2] == ["zoom"]:
         outputs = [expr[index] for index in range(4, len(expr), 2)]
         if all(_numeric_expression_value(output) is not None for output in outputs):
             return _numeric_expression_value(_interpolate_filter_value_at_zoom(expr, target_zoom))
