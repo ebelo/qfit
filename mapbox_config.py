@@ -2617,7 +2617,10 @@ def _water_point_label_typography_layer_variants(layer: dict[str, object]) -> li
 
 
 def _water_label_typography_layer_variants(layer: dict[str, object]) -> list[dict[str, object]] | None:
-    return _water_line_label_typography_layer_variants(layer) or _water_point_label_typography_layer_variants(layer)
+    variants = _water_line_label_typography_layer_variants(layer)
+    if variants is not None:
+        return variants
+    return _water_point_label_typography_layer_variants(layer)
 
 
 def _split_water_label_typography_layers_for_qgis(layers: object) -> object:
