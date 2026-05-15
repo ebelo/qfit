@@ -1042,6 +1042,72 @@ def base_mapbox_style_layer_id_for_qfit(layer_id: object) -> str:
     return str(layer_id or "")
 
 
+def _has_label_icon_visibility_expression(layer: dict[str, object]) -> bool:
+    base_layer_id = base_mapbox_style_layer_id_for_qfit(layer.get("id"))
+    layout = layer.get("layout")
+    paint = layer.get("paint")
+    return (
+        base_layer_id in {_NATURAL_POINT_LABEL_LAYER_ID, _POI_LABEL_LAYER_ID}
+        and layer.get("type") == "symbol"
+        and isinstance(layout, dict)
+        and isinstance(paint, dict)
+        and paint.get("icon-opacity") == _LABEL_ICON_OPACITY_EXPRESSION
+        and layout.get("text-anchor") == _LABEL_ICON_TEXT_ANCHOR_EXPRESSION
+        and layout.get("text-offset") == _LABEL_ICON_TEXT_OFFSET_EXPRESSION
+    )
+
+
+def _label_icon_visibility_text_layer(
+    layer: dict[str, object],
+    *,
+    layer_id: str,
+    suffix: str,
+    band_minzoom: float | None,
+    band_maxzoom: float | None,
+    sizerank_threshold: float,
+) -> dict[str, object]:
+    variant = _apply_zoom_band_bounds(layer, band_minzoom, band_maxzoom)
+    variant["id"] = f"{layer_id}-{suffix}-text"
+    variant["filter"] = _with_additional_filter_clauses(
+        layer.get("filter"),
+        ["<", ["get", "sizerank"], sizerank_threshold],
+    )
+    layout = variant["layout"]
+    if isinstance(layout, dict):
+        layout.pop("icon-image", None)
+        layout["text-anchor"] = "center"
+        layout["text-offset"] = [0, 0]
+    paint = variant["paint"]
+    if isinstance(paint, dict):
+        paint.pop("icon-opacity", None)
+    return variant
+
+
+def _label_icon_visibility_icon_layer(
+    layer: dict[str, object],
+    *,
+    layer_id: str,
+    suffix: str,
+    band_minzoom: float | None,
+    band_maxzoom: float | None,
+    sizerank_threshold: float,
+) -> dict[str, object]:
+    variant = _apply_zoom_band_bounds(layer, band_minzoom, band_maxzoom)
+    variant["id"] = f"{layer_id}-{suffix}-icon"
+    variant["filter"] = _with_additional_filter_clauses(
+        layer.get("filter"),
+        [">=", ["get", "sizerank"], sizerank_threshold],
+    )
+    layout = variant["layout"]
+    if isinstance(layout, dict):
+        layout["text-anchor"] = "top"
+        layout["text-offset"] = [0, 0.8]
+    paint = variant["paint"]
+    if isinstance(paint, dict):
+        paint.pop("icon-opacity", None)
+    return variant
+
+
 def _label_icon_visibility_layer_variants(layer: dict[str, object]) -> list[dict[str, object]] | None:
     """Split audited POI/natural icon visibility expressions into QGIS-safe layers.
 
@@ -1050,58 +1116,36 @@ def _label_icon_visibility_layer_variants(layer: dict[str, object]) -> list[dict
     QGIS skips the data-driven opacity expression, so preserve the same
     sizerank/zoom behavior with static text-only and icon variants.
     """
-    base_layer_id = base_mapbox_style_layer_id_for_qfit(layer.get("id"))
-    if base_layer_id not in {_NATURAL_POINT_LABEL_LAYER_ID, _POI_LABEL_LAYER_ID} or layer.get("type") != "symbol":
-        return None
-    layout = layer.get("layout")
-    paint = layer.get("paint")
-    if not isinstance(layout, dict) or not isinstance(paint, dict):
-        return None
-    if paint.get("icon-opacity") != _LABEL_ICON_OPACITY_EXPRESSION:
-        return None
-    if layout.get("text-anchor") != _LABEL_ICON_TEXT_ANCHOR_EXPRESSION:
-        return None
-    if layout.get("text-offset") != _LABEL_ICON_TEXT_OFFSET_EXPRESSION:
+    if not _has_label_icon_visibility_expression(layer):
         return None
 
     existing_minzoom = _numeric_zoom_bound(layer.get("minzoom"))
     existing_maxzoom = _numeric_zoom_bound(layer.get("maxzoom"))
-    layer_id = str(layer.get("id") or base_layer_id)
+    layer_id = str(layer.get("id") or base_mapbox_style_layer_id_for_qfit(layer.get("id")))
     variants: list[dict[str, object]] = []
     for suffix, band_minzoom, band_maxzoom, sizerank_threshold in _LABEL_ICON_VISIBILITY_ZOOM_BANDS:
         if not _zoom_ranges_overlap(existing_minzoom, existing_maxzoom, band_minzoom, band_maxzoom):
             continue
-
-        text_layer = _apply_zoom_band_bounds(layer, band_minzoom, band_maxzoom)
-        text_layer["id"] = f"{layer_id}-{suffix}-text"
-        text_layer["filter"] = _with_additional_filter_clauses(
-            layer.get("filter"),
-            ["<", ["get", "sizerank"], sizerank_threshold],
+        variants.append(
+            _label_icon_visibility_text_layer(
+                layer,
+                layer_id=layer_id,
+                suffix=suffix,
+                band_minzoom=band_minzoom,
+                band_maxzoom=band_maxzoom,
+                sizerank_threshold=sizerank_threshold,
+            )
         )
-        text_layout = text_layer.setdefault("layout", {})
-        if isinstance(text_layout, dict):
-            text_layout.pop("icon-image", None)
-            text_layout["text-anchor"] = "center"
-            text_layout["text-offset"] = [0, 0]
-        text_paint = text_layer.setdefault("paint", {})
-        if isinstance(text_paint, dict):
-            text_paint.pop("icon-opacity", None)
-        variants.append(text_layer)
-
-        icon_layer = _apply_zoom_band_bounds(layer, band_minzoom, band_maxzoom)
-        icon_layer["id"] = f"{layer_id}-{suffix}-icon"
-        icon_layer["filter"] = _with_additional_filter_clauses(
-            layer.get("filter"),
-            [">=", ["get", "sizerank"], sizerank_threshold],
+        variants.append(
+            _label_icon_visibility_icon_layer(
+                layer,
+                layer_id=layer_id,
+                suffix=suffix,
+                band_minzoom=band_minzoom,
+                band_maxzoom=band_maxzoom,
+                sizerank_threshold=sizerank_threshold,
+            )
         )
-        icon_layout = icon_layer.setdefault("layout", {})
-        if isinstance(icon_layout, dict):
-            icon_layout["text-anchor"] = "top"
-            icon_layout["text-offset"] = [0, 0.8]
-        icon_paint = icon_layer.setdefault("paint", {})
-        if isinstance(icon_paint, dict):
-            icon_paint.pop("icon-opacity", None)
-        variants.append(icon_layer)
     return variants or None
 
 
