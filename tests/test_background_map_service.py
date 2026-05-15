@@ -658,6 +658,11 @@ class ApplyLabelPriorityMockTests(unittest.TestCase):
         expression_arg = _qstub.QgsProperty.fromExpression.call_args[0][0]
         self.assertIn('to_int("symbolrank")', expression_arg)
         self.assertIn('to_int("sizerank")', expression_arg)
+        self.assertLess(
+            expression_arg.index('to_int("symbolrank")'),
+            expression_arg.index('to_int("sizerank")'),
+            "symbolrank must appear before sizerank in the coalesce expression",
+        )
 
     def test_unknown_layer_is_skipped(self):
         labeling = MagicMock()
