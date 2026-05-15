@@ -1539,7 +1539,12 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
                     "type": "symbol",
                     "minzoom": 4,
                     "filter": ["==", ["geometry-type"], "Point"],
-                    "layout": {"icon-image": ["get", "maki"], "text-anchor": text_anchor, "text-offset": text_offset},
+                    "layout": {
+                        "icon-image": ["get", "maki"],
+                        "icon-size": 1,
+                        "text-anchor": text_anchor,
+                        "text-offset": text_offset,
+                    },
                     "paint": {"icon-opacity": icon_opacity},
                 }
             ]
@@ -1564,6 +1569,7 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
         self.assertEqual(below_text["layout"]["text-anchor"], "center")
         self.assertEqual(below_text["layout"]["text-offset"], [0, 0])
         self.assertNotIn("icon-image", below_text["layout"])
+        self.assertNotIn("icon-size", below_text["layout"])
         self.assertNotIn("icon-opacity", below_text["paint"])
         self.assertEqual(below_text["filter"], ["all", ["==", ["geometry-type"], "Point"], ["<", ["get", "sizerank"], 5.0]])
         self.assertEqual(below_icon["layout"]["text-anchor"], "top")

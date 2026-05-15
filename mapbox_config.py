@@ -1074,7 +1074,8 @@ def _label_icon_visibility_text_layer(
     )
     layout = variant["layout"]
     if isinstance(layout, dict):
-        layout.pop("icon-image", None)
+        for icon_key in [key for key in layout if str(key).startswith("icon-")]:
+            layout.pop(icon_key, None)
         layout["text-anchor"] = "center"
         layout["text-offset"] = [0, 0]
     paint = variant["paint"]
