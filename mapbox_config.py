@@ -2182,15 +2182,26 @@ def _literal_translate_vector(value: object) -> list[float] | None:
 
 
 def _water_shadow_translate_at_zoom(zoom: float) -> list[float] | None:
-    lower_translate = _literal_translate_vector(_WATER_SHADOW_TRANSLATE_EXPRESSION[4])
-    upper_translate = _literal_translate_vector(_WATER_SHADOW_TRANSLATE_EXPRESSION[6])
+    expr = _WATER_SHADOW_TRANSLATE_EXPRESSION
+    if len(expr) < 7:
+        return None
+    lower_stop = expr[3]
+    lower_translate = _literal_translate_vector(expr[4])
+    upper_stop = expr[5]
+    upper_translate = _literal_translate_vector(expr[6])
+    if not isinstance(lower_stop, (int, float)) or isinstance(lower_stop, bool):
+        return None
+    if not isinstance(upper_stop, (int, float)) or isinstance(upper_stop, bool):
+        return None
     if lower_translate is None or upper_translate is None:
         return None
-    if zoom <= 7.0:
+    lower_zoom = float(lower_stop)
+    upper_zoom = float(upper_stop)
+    if zoom <= lower_zoom:
         return lower_translate
-    if zoom >= 16.0:
+    if zoom >= upper_zoom:
         return upper_translate
-    factor = _interpolate_filter_factor(["exponential", 1.2], zoom, 7.0, 16.0)
+    factor = _interpolate_filter_factor(expr[1], zoom, lower_zoom, upper_zoom)
     if factor is None:
         return None
     return [

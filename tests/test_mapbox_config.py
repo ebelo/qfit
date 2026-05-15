@@ -2522,6 +2522,23 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
             self.assertAlmostEqual(mid_layer["paint"][paint_property][1], -0.7032048944969905)
             self.assertEqual(high_layer["paint"][paint_property], [-1.0, -1.0])
 
+    def test_water_shadow_translate_uses_expression_stops_and_base(self):
+        expression = [
+            "interpolate",
+            ["exponential", 2],
+            ["zoom"],
+            8,
+            ["literal", [0, 0]],
+            12,
+            ["literal", [-4, -8]],
+        ]
+
+        with patch.object(mapbox_config, "_WATER_SHADOW_TRANSLATE_EXPRESSION", expression):
+            translate = mapbox_config._water_shadow_translate_at_zoom(10)
+
+        self.assertAlmostEqual(translate[0], -0.8)
+        self.assertAlmostEqual(translate[1], -1.6)
+
     def test_water_shadow_translate_is_not_split_when_shape_changes(self):
         translate = ["literal", [0, -1]]
         style = {"layers": [self._water_shadow_layer(translate=translate)]}
