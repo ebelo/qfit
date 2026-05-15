@@ -818,10 +818,10 @@ _ROAD_PEDESTRIAN_POLYGON_PATTERN_FILL_OPACITY_ZOOM_BANDS: tuple[tuple[str, float
 )
 _RAIL_TRACK_LINE_OPACITY_EXPRESSION = ["interpolate", ["linear"], ["zoom"], 13.75, 0, 14, 1]
 _RAIL_TRACK_LINE_OPACITY_LAYER_IDS = ("road-rail-tracks", "bridge-rail-tracks")
-_RAIL_TRACK_LINE_OPACITY_EXPRESSIONS = {
-    layer_id: _RAIL_TRACK_LINE_OPACITY_EXPRESSION
-    for layer_id in _RAIL_TRACK_LINE_OPACITY_LAYER_IDS
-}
+_RAIL_TRACK_LINE_OPACITY_EXPRESSIONS = dict.fromkeys(
+    _RAIL_TRACK_LINE_OPACITY_LAYER_IDS,
+    _RAIL_TRACK_LINE_OPACITY_EXPRESSION,
+)
 _RAIL_TRACK_LINE_OPACITY_ZOOM_BANDS: tuple[tuple[str, float | None, float | None], ...] = (
     ("below-z13_75", None, 13.75),
     ("z13_75-to-z14", 13.75, 14.0),
