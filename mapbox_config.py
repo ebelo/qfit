@@ -3964,13 +3964,14 @@ def simplify_mapbox_style_expressions(style_definition: dict[str, object]) -> di
                 continue
             for prop in list(props.keys()):
                 val = props[prop]
-                if section == "layout" and prop == "symbol-sort-key":
-                    if (
-                        base_layer_id in {_SETTLEMENT_MAJOR_LABEL_LAYER_ID, _SETTLEMENT_MINOR_LABEL_LAYER_ID}
-                        and val == _SETTLEMENT_SYMBOL_SORT_KEY_EXPRESSION
-                    ):
-                        del props[prop]
-                        continue
+                if (
+                    section == "layout"
+                    and prop == "symbol-sort-key"
+                    and base_layer_id in {_SETTLEMENT_MAJOR_LABEL_LAYER_ID, _SETTLEMENT_MINOR_LABEL_LAYER_ID}
+                    and val == _SETTLEMENT_SYMBOL_SORT_KEY_EXPRESSION
+                ):
+                    del props[prop]
+                    continue
                 if section == "layout" and prop == "icon-image":
                     if val == "":
                         del props[prop]
