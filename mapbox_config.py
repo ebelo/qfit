@@ -773,10 +773,12 @@ _CONTOUR_LINE_OPACITY_VARIANTS: tuple[
     tuple[str, object, float | None, float | None, float],
     ...,
 ] = (
-    ("index-major-z11-to-z13", ["match", ["get", "index"], [1, 2], True, False], 11.0, 13.0, 0.225),
-    ("index-major-z13-plus", ["match", ["get", "index"], [1, 2], True, False], 13.0, None, 0.3),
-    ("index-other-z11-to-z13", ["match", ["get", "index"], [1, 2], False, True], 11.0, 13.0, 0.4),
-    ("index-other-z13-plus", ["match", ["get", "index"], [1, 2], False, True], 13.0, None, 0.5),
+    ("index-minor-below-z11", ["match", ["get", "index"], [1, 2], True, False], None, 11.0, 0.15),
+    ("index-minor-z11-to-z13", ["match", ["get", "index"], [1, 2], True, False], 11.0, 13.0, 0.225),
+    ("index-minor-z13-plus", ["match", ["get", "index"], [1, 2], True, False], 13.0, None, 0.3),
+    ("index-major-below-z11", ["match", ["get", "index"], [1, 2], False, True], None, 11.0, 0.3),
+    ("index-major-z11-to-z13", ["match", ["get", "index"], [1, 2], False, True], 11.0, 13.0, 0.4),
+    ("index-major-z13-plus", ["match", ["get", "index"], [1, 2], False, True], 13.0, None, 0.5),
 )
 _FILTER_NORMALIZATION_ZOOM_OVERRIDES = {
     "bridge-minor": 14.0,
