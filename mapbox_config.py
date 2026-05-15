@@ -2320,8 +2320,7 @@ def _turning_feature_circle_size_for_zoom_band(
     return _circle_size_value(_interpolate_filter_value_at_zoom(expression, representative_zoom))
 
 
-def _turning_feature_circle_layer_variants(layer: dict[str, object]) -> list[dict[str, object]] | None:
-    """Split audited turning circle radii/strokes into static QGIS zoom bands."""
+def _turning_feature_circle_layer_match(layer: dict[str, object]) -> tuple[str, bool] | None:
     layer_id = str(layer.get("id") or "")
     if layer_id not in {_TURNING_FEATURE_LAYER_ID, _TURNING_FEATURE_OUTLINE_LAYER_ID} or layer.get("type") != "circle":
         return None
@@ -2331,6 +2330,30 @@ def _turning_feature_circle_layer_variants(layer: dict[str, object]) -> list[dic
     has_stroke_width = layer_id == _TURNING_FEATURE_OUTLINE_LAYER_ID
     if has_stroke_width and paint.get("circle-stroke-width") != _TURNING_FEATURE_CIRCLE_STROKE_WIDTH_EXPRESSION:
         return None
+    return layer_id, has_stroke_width
+
+
+def _turning_feature_circle_stroke_width_for_zoom_band(
+    existing_minzoom: float | None,
+    existing_maxzoom: float | None,
+    band_minzoom: float | None,
+    band_maxzoom: float | None,
+) -> float | None:
+    return _turning_feature_circle_size_for_zoom_band(
+        _TURNING_FEATURE_CIRCLE_STROKE_WIDTH_EXPRESSION,
+        existing_minzoom,
+        existing_maxzoom,
+        band_minzoom,
+        band_maxzoom,
+    )
+
+
+def _turning_feature_circle_layer_variants(layer: dict[str, object]) -> list[dict[str, object]] | None:
+    """Split audited turning circle radii/strokes into static QGIS zoom bands."""
+    layer_match = _turning_feature_circle_layer_match(layer)
+    if layer_match is None:
+        return None
+    layer_id, has_stroke_width = layer_match
 
     existing_minzoom = _numeric_zoom_bound(layer.get("minzoom"))
     existing_maxzoom = _numeric_zoom_bound(layer.get("maxzoom"))
@@ -2351,8 +2374,7 @@ def _turning_feature_circle_layer_variants(layer: dict[str, object]) -> list[dic
         assert isinstance(variant_paint, dict)
         variant_paint["circle-radius"] = circle_radius
         if has_stroke_width:
-            circle_stroke_width = _turning_feature_circle_size_for_zoom_band(
-                _TURNING_FEATURE_CIRCLE_STROKE_WIDTH_EXPRESSION,
+            circle_stroke_width = _turning_feature_circle_stroke_width_for_zoom_band(
                 existing_minzoom,
                 existing_maxzoom,
                 band_minzoom,
