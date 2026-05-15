@@ -1392,7 +1392,13 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
         original_poi_filter = copy.deepcopy(poi_filter)
         style = {
             "layers": [
-                {"id": "poi-label", "type": "symbol", "minzoom": 6, "filter": poi_filter},
+                {
+                    "id": "poi-label",
+                    "type": "symbol",
+                    "minzoom": 6,
+                    "filter": poi_filter,
+                    "layout": {"text-size": ["interpolate", ["linear"], ["zoom"], 0, 4, 20, 24]},
+                },
                 {"id": "natural-point-label", "type": "symbol", "minzoom": 6, "filter": poi_filter},
             ]
         }
@@ -1409,6 +1415,9 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
         self.assertEqual(result["layers"][1]["maxzoom"], 17.0)
         self.assertEqual(result["layers"][2]["minzoom"], 17.0)
         self.assertNotIn("maxzoom", result["layers"][2])
+        self.assertEqual(result["layers"][0]["layout"]["text-size"], 9.0)
+        self.assertEqual(result["layers"][1]["layout"]["text-size"], 9.0)
+        self.assertEqual(result["layers"][2]["layout"]["text-size"], 9.0)
         self.assertEqual(
             result["layers"][0]["filter"],
             ["<=", ["get", "filterrank"], ["match", ["get", "class"], "food_and_drink_stores", 3.0, "park_like", 4.0, 2.0]],

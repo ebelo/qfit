@@ -634,6 +634,16 @@ class ApplyLabelPriorityMockTests(unittest.TestCase):
         self.assertEqual(settings.priority, 10)
         style.setLabelSettings.assert_called_once_with(settings)
 
+    def test_priority_set_for_split_poi_layer(self):
+        labeling = MagicMock()
+        style, settings = self._make_style("poi-label-z17-plus")
+        labeling.styles.return_value = [style]
+
+        self.service._apply_label_priority(labeling)
+
+        self.assertEqual(settings.priority, 2)
+        style.setLabelSettings.assert_called_once_with(settings)
+
     def test_data_defined_priority_for_settlement_layer(self):
         labeling = MagicMock()
         style, settings = self._make_style("settlement-major-label")

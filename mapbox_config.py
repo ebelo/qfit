@@ -862,6 +862,20 @@ def _is_road_number_shield_layer_id(layer_id: object) -> bool:
     return normalized == _ROAD_NUMBER_SHIELD_LAYER_ID or normalized.startswith(f"{_ROAD_NUMBER_SHIELD_LAYER_ID}-")
 
 
+def _is_poi_label_layer_id(layer_id: object) -> bool:
+    normalized = str(layer_id or "")
+    return normalized == _POI_LABEL_LAYER_ID or normalized.startswith(f"{_POI_LABEL_LAYER_ID}-")
+
+
+def base_mapbox_style_layer_id_for_qfit(layer_id: object) -> str:
+    """Return the original Mapbox layer id for qfit-created layer variants."""
+    if _is_road_number_shield_layer_id(layer_id):
+        return _ROAD_NUMBER_SHIELD_LAYER_ID
+    if _is_poi_label_layer_id(layer_id):
+        return _POI_LABEL_LAYER_ID
+    return str(layer_id or "")
+
+
 def _expand_road_number_shield_layers_for_qgis(layers: object) -> object:
     if not isinstance(layers, list):
         return layers
@@ -1525,8 +1539,7 @@ def _should_zoom_normalize_filter_for_qgis(layer: dict[str, object]) -> bool:
     # road line filters whose normalized branches improved #949 visual audits.
     # Applying the same approximation broadly can hide high-zoom path geometry
     # or over-suppress POIs/places, so keep this deliberately small.
-    layer_id = layer.get("id")
-    normalized_layer_id = _ROAD_NUMBER_SHIELD_LAYER_ID if _is_road_number_shield_layer_id(layer_id) else layer_id
+    normalized_layer_id = base_mapbox_style_layer_id_for_qfit(layer.get("id"))
     layer_type = layer.get("type")
     return (
         (layer_type == "symbol" and normalized_layer_id in _ZOOM_NORMALIZED_SYMBOL_FILTER_LAYER_IDS)
@@ -1805,6 +1818,7 @@ def simplify_mapbox_style_expressions(style_definition: dict[str, object]) -> di
 
     for layer in style.get("layers", []):
         layer_id = layer.get("id", "")
+        base_layer_id = base_mapbox_style_layer_id_for_qfit(layer_id)
 
         # Suppress or filter settlement label layers
         settlement_filter = _SETTLEMENT_FILTERS.get(layer_id, "NOTSET")
@@ -1894,7 +1908,7 @@ def simplify_mapbox_style_expressions(style_definition: dict[str, object]) -> di
                 elif prop == "text-font" and _is_text_font_stack(val):
                     props[prop] = [QGIS_TEXT_FONT_FALLBACK]
                 elif prop == "text-size":
-                    override = _TEXT_SIZE_OVERRIDES.get(layer_id)
+                    override = _TEXT_SIZE_OVERRIDES.get(base_layer_id)
                     if override is not None:
                         props[prop] = override
                     else:
