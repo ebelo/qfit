@@ -743,7 +743,7 @@ _LANDUSE_FILL_OPACITY_EXPRESSION = [
     ["match", ["get", "class"], "residential", 0, 1],
 ]
 _LANDUSE_FILL_OPACITY_VARIANTS: tuple[
-    tuple[str, object, float | None, float | None, float],
+    tuple[str, object, float | None, float | None, bool],
     ...,
 ] = (
     (
@@ -751,42 +751,42 @@ _LANDUSE_FILL_OPACITY_VARIANTS: tuple[
         ["match", ["get", "class"], "residential", True, False],
         None,
         8.0,
-        0.8,
+        True,
     ),
     (
         "residential-z8-to-z10",
         ["match", ["get", "class"], "residential", True, False],
         8.0,
         10.0,
-        0.4,
+        True,
     ),
     (
         "residential-z10-plus",
         ["match", ["get", "class"], "residential", True, False],
         10.0,
         None,
-        0.0,
+        True,
     ),
     (
         "other-below-z8",
         ["match", ["get", "class"], "residential", False, True],
         None,
         8.0,
-        0.2,
+        False,
     ),
     (
         "other-z8-to-z10",
         ["match", ["get", "class"], "residential", False, True],
         8.0,
         10.0,
-        0.6,
+        False,
     ),
     (
         "other-z10-plus",
         ["match", ["get", "class"], "residential", False, True],
         10.0,
         None,
-        1.0,
+        False,
     ),
 )
 _NATIONAL_PARK_LAYER_ID = "national-park"
@@ -1926,6 +1926,39 @@ def _split_landcover_fill_opacity_layers_for_qgis(layers: object) -> object:
     return expanded_layers
 
 
+def _landuse_fill_opacity_at_zoom(zoom: float, *, residential: bool) -> float | None:
+    lower_opacity = 0.8 if residential else 0.2
+    upper_opacity = 0.0 if residential else 1.0
+    if zoom <= 8.0:
+        return lower_opacity
+    if zoom >= 10.0:
+        return upper_opacity
+    factor = _interpolate_filter_factor(["linear"], zoom, 8.0, 10.0)
+    if factor is None:
+        return None
+    return _clamp_opacity_value(lower_opacity + ((upper_opacity - lower_opacity) * factor))
+
+
+def _landuse_fill_opacity_for_zoom_band(
+    existing_minzoom: float | None,
+    existing_maxzoom: float | None,
+    band_minzoom: float | None,
+    band_maxzoom: float | None,
+    *,
+    residential: bool,
+) -> float | None:
+    effective_zoom_band = _effective_zoom_band(
+        existing_minzoom,
+        existing_maxzoom,
+        band_minzoom,
+        band_maxzoom,
+    )
+    if effective_zoom_band is None:
+        return None
+    representative_zoom = _zoom_band_representative_zoom(*effective_zoom_band)
+    return _landuse_fill_opacity_at_zoom(representative_zoom, residential=residential)
+
+
 def _landuse_fill_opacity_layer_variants(layer: dict[str, object]) -> list[dict[str, object]] | None:
     """Split audited landuse opacity class fade into static QGIS zoom/class bands."""
     layer_id = str(layer.get("id") or "")
@@ -1938,9 +1971,15 @@ def _landuse_fill_opacity_layer_variants(layer: dict[str, object]) -> list[dict[
     existing_minzoom = _numeric_zoom_bound(layer.get("minzoom"))
     existing_maxzoom = _numeric_zoom_bound(layer.get("maxzoom"))
     variants: list[dict[str, object]] = []
-    for suffix, class_filter, band_minzoom, band_maxzoom, fill_opacity in _LANDUSE_FILL_OPACITY_VARIANTS:
-        effective_zoom_band = _effective_zoom_band(existing_minzoom, existing_maxzoom, band_minzoom, band_maxzoom)
-        if effective_zoom_band is None:
+    for suffix, class_filter, band_minzoom, band_maxzoom, residential in _LANDUSE_FILL_OPACITY_VARIANTS:
+        fill_opacity = _landuse_fill_opacity_for_zoom_band(
+            existing_minzoom,
+            existing_maxzoom,
+            band_minzoom,
+            band_maxzoom,
+            residential=residential,
+        )
+        if fill_opacity is None:
             continue
         variant = _apply_zoom_band_bounds(layer, band_minzoom, band_maxzoom)
         variant["id"] = f"{layer_id}-{suffix}"

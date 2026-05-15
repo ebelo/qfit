@@ -2055,6 +2055,21 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
             )
             self.assertEqual(layer["paint"]["fill-color"], "hsl(60, 22%, 72%)")
 
+    def test_landuse_fill_opacity_uses_effective_zoom_band_midpoints(self):
+        layer = self._landuse_layer()
+        layer["minzoom"] = 9.5
+        style = {"layers": [layer]}
+
+        result = simplify_mapbox_style_expressions(style)
+
+        by_id = {layer["id"]: layer for layer in result["layers"]}
+        self.assertNotIn("landuse-residential-below-z8", by_id)
+        self.assertNotIn("landuse-other-below-z8", by_id)
+        self.assertAlmostEqual(by_id["landuse-residential-z8-to-z10"]["paint"]["fill-opacity"], 0.1)
+        self.assertAlmostEqual(by_id["landuse-other-z8-to-z10"]["paint"]["fill-opacity"], 0.9)
+        self.assertAlmostEqual(by_id["landuse-residential-z10-plus"]["paint"]["fill-opacity"], 0.0)
+        self.assertAlmostEqual(by_id["landuse-other-z10-plus"]["paint"]["fill-opacity"], 1.0)
+
     def test_landuse_fill_opacity_variants_keep_filter_normalization(self):
         style = {"layers": [self._landuse_layer(filter_value=["step", ["zoom"], False, 8, True])]}
 
