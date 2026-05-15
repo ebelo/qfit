@@ -514,12 +514,41 @@ _PATH_TYPE_FILTER_LOW_ZOOM_SIMPLIFIED_MATCH = [
     True,
 ]
 _PATH_TYPE_FILTER_SPLIT_ZOOM = 16.0
+_NATURAL_POINT_LABEL_LAYER_ID = "natural-point-label"
 _POI_LABEL_LAYER_ID = "poi-label"
 _POI_FILTER_RANK_ZOOM_STEP = ["step", ["zoom"], 0, 16, 1, 17, 2]
 _POI_FILTER_RANK_ZOOM_BANDS: tuple[tuple[str, float | None, float | None, float], ...] = (
     ("below-z16", None, 16.0, 0.0),
     ("z16-to-z17", 16.0, 17.0, 1.0),
     ("z17-plus", 17.0, None, 2.0),
+)
+_LABEL_ICON_VISIBILITY_SPLIT_ZOOM = 17.0
+_LABEL_ICON_LOW_ZOOM_SIZERANK_THRESHOLD = 5.0
+_LABEL_ICON_HIGH_ZOOM_SIZERANK_THRESHOLD = 13.0
+_LABEL_ICON_OPACITY_EXPRESSION = [
+    "step",
+    ["zoom"],
+    ["step", ["get", "sizerank"], 0, _LABEL_ICON_LOW_ZOOM_SIZERANK_THRESHOLD, 1],
+    _LABEL_ICON_VISIBILITY_SPLIT_ZOOM,
+    ["step", ["get", "sizerank"], 0, _LABEL_ICON_HIGH_ZOOM_SIZERANK_THRESHOLD, 1],
+]
+_LABEL_ICON_TEXT_ANCHOR_EXPRESSION = [
+    "step",
+    ["zoom"],
+    ["step", ["get", "sizerank"], "center", _LABEL_ICON_LOW_ZOOM_SIZERANK_THRESHOLD, "top"],
+    _LABEL_ICON_VISIBILITY_SPLIT_ZOOM,
+    ["step", ["get", "sizerank"], "center", _LABEL_ICON_HIGH_ZOOM_SIZERANK_THRESHOLD, "top"],
+]
+_LABEL_ICON_TEXT_OFFSET_EXPRESSION = [
+    "step",
+    ["zoom"],
+    ["step", ["get", "sizerank"], ["literal", [0, 0]], _LABEL_ICON_LOW_ZOOM_SIZERANK_THRESHOLD, ["literal", [0, 0.8]]],
+    _LABEL_ICON_VISIBILITY_SPLIT_ZOOM,
+    ["step", ["get", "sizerank"], ["literal", [0, 0]], _LABEL_ICON_HIGH_ZOOM_SIZERANK_THRESHOLD, ["literal", [0, 0.8]]],
+]
+_LABEL_ICON_VISIBILITY_ZOOM_BANDS: tuple[tuple[str, float | None, float | None, float], ...] = (
+    ("below-z17", None, _LABEL_ICON_VISIBILITY_SPLIT_ZOOM, _LABEL_ICON_LOW_ZOOM_SIZERANK_THRESHOLD),
+    ("z17-plus", _LABEL_ICON_VISIBILITY_SPLIT_ZOOM, None, _LABEL_ICON_HIGH_ZOOM_SIZERANK_THRESHOLD),
 )
 _FILTER_NORMALIZATION_ZOOM_OVERRIDES = {
     "bridge-minor": 14.0,
@@ -997,13 +1026,96 @@ def _is_poi_label_layer_id(layer_id: object) -> bool:
     return normalized == _POI_LABEL_LAYER_ID or normalized.startswith(f"{_POI_LABEL_LAYER_ID}-")
 
 
+def _is_natural_point_label_layer_id(layer_id: object) -> bool:
+    normalized = str(layer_id or "")
+    return normalized == _NATURAL_POINT_LABEL_LAYER_ID or normalized.startswith(f"{_NATURAL_POINT_LABEL_LAYER_ID}-")
+
+
 def base_mapbox_style_layer_id_for_qfit(layer_id: object) -> str:
     """Return the original Mapbox layer id for qfit-created layer variants."""
     if _is_road_number_shield_layer_id(layer_id):
         return _ROAD_NUMBER_SHIELD_LAYER_ID
     if _is_poi_label_layer_id(layer_id):
         return _POI_LABEL_LAYER_ID
+    if _is_natural_point_label_layer_id(layer_id):
+        return _NATURAL_POINT_LABEL_LAYER_ID
     return str(layer_id or "")
+
+
+def _label_icon_visibility_layer_variants(layer: dict[str, object]) -> list[dict[str, object]] | None:
+    """Split audited POI/natural icon visibility expressions into QGIS-safe layers.
+
+    Mapbox couples ``icon-opacity``, ``text-anchor``, and ``text-offset`` so
+    labels are centered when the icon is hidden and offset above visible icons.
+    QGIS skips the data-driven opacity expression, so preserve the same
+    sizerank/zoom behavior with static text-only and icon variants.
+    """
+    base_layer_id = base_mapbox_style_layer_id_for_qfit(layer.get("id"))
+    if base_layer_id not in {_NATURAL_POINT_LABEL_LAYER_ID, _POI_LABEL_LAYER_ID} or layer.get("type") != "symbol":
+        return None
+    layout = layer.get("layout")
+    paint = layer.get("paint")
+    if not isinstance(layout, dict) or not isinstance(paint, dict):
+        return None
+    if paint.get("icon-opacity") != _LABEL_ICON_OPACITY_EXPRESSION:
+        return None
+    if layout.get("text-anchor") != _LABEL_ICON_TEXT_ANCHOR_EXPRESSION:
+        return None
+    if layout.get("text-offset") != _LABEL_ICON_TEXT_OFFSET_EXPRESSION:
+        return None
+
+    existing_minzoom = _numeric_zoom_bound(layer.get("minzoom"))
+    existing_maxzoom = _numeric_zoom_bound(layer.get("maxzoom"))
+    layer_id = str(layer.get("id") or base_layer_id)
+    variants: list[dict[str, object]] = []
+    for suffix, band_minzoom, band_maxzoom, sizerank_threshold in _LABEL_ICON_VISIBILITY_ZOOM_BANDS:
+        if not _zoom_ranges_overlap(existing_minzoom, existing_maxzoom, band_minzoom, band_maxzoom):
+            continue
+
+        text_layer = _apply_zoom_band_bounds(layer, band_minzoom, band_maxzoom)
+        text_layer["id"] = f"{layer_id}-{suffix}-text"
+        text_layer["filter"] = _with_additional_filter_clauses(
+            layer.get("filter"),
+            ["<", ["get", "sizerank"], sizerank_threshold],
+        )
+        text_layout = text_layer.setdefault("layout", {})
+        if isinstance(text_layout, dict):
+            text_layout.pop("icon-image", None)
+            text_layout["text-anchor"] = "center"
+            text_layout["text-offset"] = [0, 0]
+        text_paint = text_layer.setdefault("paint", {})
+        if isinstance(text_paint, dict):
+            text_paint.pop("icon-opacity", None)
+        variants.append(text_layer)
+
+        icon_layer = _apply_zoom_band_bounds(layer, band_minzoom, band_maxzoom)
+        icon_layer["id"] = f"{layer_id}-{suffix}-icon"
+        icon_layer["filter"] = _with_additional_filter_clauses(
+            layer.get("filter"),
+            [">=", ["get", "sizerank"], sizerank_threshold],
+        )
+        icon_layout = icon_layer.setdefault("layout", {})
+        if isinstance(icon_layout, dict):
+            icon_layout["text-anchor"] = "top"
+            icon_layout["text-offset"] = [0, 0.8]
+        icon_paint = icon_layer.setdefault("paint", {})
+        if isinstance(icon_paint, dict):
+            icon_paint.pop("icon-opacity", None)
+        variants.append(icon_layer)
+    return variants or None
+
+
+def _split_label_icon_visibility_layers_for_qgis(layers: object) -> object:
+    if not isinstance(layers, list):
+        return layers
+    expanded_layers: list[object] = []
+    for layer in layers:
+        if not isinstance(layer, dict):
+            expanded_layers.append(layer)
+            continue
+        variants = _label_icon_visibility_layer_variants(layer)
+        expanded_layers.extend(variants if variants is not None else [layer])
+    return expanded_layers
 
 
 def _expand_road_number_shield_layers_for_qgis(layers: object) -> object:
@@ -1897,6 +2009,7 @@ def simplify_mapbox_style_expressions(style_definition: dict[str, object]) -> di
     style["layers"] = _expand_road_number_shield_layers_for_qgis(style.get("layers"))
     style["layers"] = _split_path_type_filter_layers_for_qgis(style.get("layers"))
     style["layers"] = _split_poi_label_filter_layers_for_qgis(style.get("layers"))
+    style["layers"] = _split_label_icon_visibility_layers_for_qgis(style.get("layers"))
     color_props = {
         "line-color", "fill-color", "fill-outline-color", "circle-color",
         "circle-stroke-color", "text-color", "text-halo-color",
