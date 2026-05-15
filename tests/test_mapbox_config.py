@@ -715,7 +715,19 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
         )
         self.assertEqual(
             result["layers"][1]["layout"]["icon-image"],
-            ["match", ["get", "maki"], "marker", "marker", "mountain", "mountain", "marker"],
+            [
+                "match",
+                ["get", "maki"],
+                "marker",
+                "marker",
+                "mountain",
+                "mountain",
+                "volcano",
+                "volcano",
+                "waterfall",
+                "waterfall",
+                "marker",
+            ],
         )
         self.assertEqual(result["layers"][2]["layout"]["icon-image"], other_field_icon)
 
@@ -740,6 +752,9 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
         self.assertEqual(replacement[:2], ["match", ["get", "maki"]])
         self.assertIn("lodging", replacement)
         self.assertIn("restaurant", replacement)
+        self.assertIn("fuel", replacement)
+        self.assertIn("parking", replacement)
+        self.assertIn("zoo", replacement)
         self.assertNotIn("terminal", replacement)
         self.assertEqual(replacement[-1], "marker")
         self.assertEqual(result["layers"][1]["layout"]["icon-image"], original_poi_icon)
