@@ -1506,6 +1506,11 @@ def _is_poi_label_layer_id(layer_id: object) -> bool:
     return normalized == _POI_LABEL_LAYER_ID or normalized.startswith(f"{_POI_LABEL_LAYER_ID}-")
 
 
+def _is_gate_label_layer_id(layer_id: object) -> bool:
+    normalized = str(layer_id or "")
+    return normalized == _GATE_LABEL_LAYER_ID or normalized.startswith(f"{_GATE_LABEL_LAYER_ID}-")
+
+
 def _is_natural_point_label_layer_id(layer_id: object) -> bool:
     normalized = str(layer_id or "")
     return normalized == _NATURAL_POINT_LABEL_LAYER_ID or normalized.startswith(f"{_NATURAL_POINT_LABEL_LAYER_ID}-")
@@ -1582,6 +1587,8 @@ def base_mapbox_style_layer_id_for_qfit(layer_id: object) -> str:
         return _ROAD_NUMBER_SHIELD_LAYER_ID
     if _is_poi_label_layer_id(layer_id):
         return _POI_LABEL_LAYER_ID
+    if _is_gate_label_layer_id(layer_id):
+        return _GATE_LABEL_LAYER_ID
     if _is_natural_point_label_layer_id(layer_id):
         return _NATURAL_POINT_LABEL_LAYER_ID
     if _is_continent_label_layer_id(layer_id):
@@ -2922,7 +2929,10 @@ def _gate_label_icon_image_layer_variants(layer: dict[str, object]) -> list[dict
     for suffix, filter_clause, icon_image in _GATE_LABEL_ICON_IMAGE_VARIANTS:
         variant = copy.deepcopy(layer)
         variant["id"] = f"{layer_id}-{suffix}"
-        variant["filter"] = _with_additional_filter_clauses(variant.get("filter"), filter_clause)
+        if variant.get("filter") is False:
+            variant["filter"] = False
+        else:
+            variant["filter"] = _with_additional_filter_clauses(variant.get("filter"), filter_clause)
         variant_layout = variant.get("layout")
         if isinstance(variant_layout, dict):
             variant_layout["icon-image"] = icon_image
