@@ -681,8 +681,9 @@ _COUNTRY_LABEL_LAYOUT_TEXT_JUSTIFY_EXPRESSION = [
     "auto",
 ]
 _COUNTRY_LABEL_LAYOUT_TEXT_RADIAL_OFFSET_EXPRESSION = ["step", ["zoom"], 0.6, 8, 0]
+_COUNTRY_LABEL_BELOW_Z7_BAND_SUFFIX = "below-z7"
 _COUNTRY_LABEL_LAYOUT_ZOOM_BANDS: tuple[tuple[str, float | None, float | None, str | None, float | None], ...] = (
-    ("below-z7", None, 7.0, None, 0.6),
+    (_COUNTRY_LABEL_BELOW_Z7_BAND_SUFFIX, None, 7.0, None, 0.6),
     ("z7-to-z8", 7.0, 8.0, "auto", 0.6),
     ("z8-plus", 8.0, None, "auto", 0.0),
 )
@@ -1838,7 +1839,7 @@ def _country_label_layout_layer_variants(layer: dict[str, object]) -> list[dict[
             continue
         variant = _apply_zoom_band_bounds(layer, band_minzoom, band_maxzoom)
         variant["id"] = f"{layer_id}-{suffix}"
-        if suffix == "below-z7" and text_justify is None:
+        if suffix == _COUNTRY_LABEL_BELOW_Z7_BAND_SUFFIX and text_justify is None:
             variants.extend(
                 _country_label_low_zoom_text_justify_variants(
                     variant,
