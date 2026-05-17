@@ -601,6 +601,71 @@ class SnapExtentMockTests(unittest.TestCase):
         self.assertEqual(len(args), 4)
 
 
+@unittest.skipUnless(QGIS_AVAILABLE, SKIP_REAL)
+class ApplyLabelPriorityRealTests(unittest.TestCase):
+    """Covers QGIS label-setting post-processing when real QGIS imports are available."""
+
+    def setUp(self):
+        from qgis.core import QgsApplication
+
+        from tests.qgis_app import get_shared_qgis_app
+
+        self.qgs = get_shared_qgis_app(QgsApplication)
+        self.service = BackgroundMapService()
+
+    def _make_style(self, layer_name, style_name=None):
+        style = MagicMock()
+        style.layerName.return_value = layer_name
+        style.styleName.return_value = style_name if style_name is not None else layer_name
+        settings = MagicMock()
+        settings.dataDefinedProperties.return_value = MagicMock()
+        style.labelSettings.return_value = settings
+        return style, settings
+
+    def test_priority_uses_qgis_style_name_not_tile_source_layer(self):
+        labeling = MagicMock()
+        style, settings = self._make_style("place_label", "settlement-major-label")
+        labeling.styles.return_value = [style]
+
+        self.service._apply_label_priority(labeling)
+
+        self.assertEqual(settings.priority, 8)
+        style.setLabelSettings.assert_called_once_with(settings)
+
+    def test_priority_uses_base_layer_for_split_style_name(self):
+        labeling = MagicMock()
+        style, settings = self._make_style("poi_label", "poi-label-z17-plus")
+        labeling.styles.return_value = [style]
+
+        self.service._apply_label_priority(labeling)
+
+        self.assertEqual(settings.priority, 2)
+        style.setLabelSettings.assert_called_once_with(settings)
+
+    def test_priority_persists_on_real_qgis_labeling_style_copies(self):
+        from qgis.core import (
+            QgsPalLayerSettings,
+            QgsVectorTileBasicLabeling,
+            QgsVectorTileBasicLabelingStyle,
+        )
+
+        labeling = QgsVectorTileBasicLabeling()
+        style = QgsVectorTileBasicLabelingStyle()
+        style.setLayerName("poi_label")
+        style.setStyleName("poi-label-z17-plus")
+        settings = QgsPalLayerSettings()
+        settings.priority = 5
+        style.setLabelSettings(settings)
+        labeling.setStyles([style])
+
+        self.service._apply_label_priority(labeling)
+
+        updated_style = labeling.styles()[0]
+        self.assertEqual(updated_style.styleName(), "poi-label-z17-plus")
+        self.assertEqual(updated_style.layerName(), "poi_label")
+        self.assertEqual(updated_style.labelSettings().priority, 2)
+
+
 @unittest.skipIf(QGIS_AVAILABLE, SKIP_MOCK)
 @unittest.skipIf(_mock_bms_cls is None, SKIP_MOCK_LOAD)
 class ApplyLabelPriorityMockTests(unittest.TestCase):
@@ -616,9 +681,10 @@ class ApplyLabelPriorityMockTests(unittest.TestCase):
     def tearDown(self):
         self._sys_patch.stop()
 
-    def _make_style(self, layer_name):
+    def _make_style(self, layer_name, style_name=None):
         style = MagicMock()
         style.layerName.return_value = layer_name
+        style.styleName.return_value = style_name if style_name is not None else layer_name
         settings = MagicMock()
         settings.dataDefinedProperties.return_value = MagicMock()
         style.labelSettings.return_value = settings
@@ -637,6 +703,26 @@ class ApplyLabelPriorityMockTests(unittest.TestCase):
     def test_priority_set_for_split_poi_layer(self):
         labeling = MagicMock()
         style, settings = self._make_style("poi-label-z17-plus")
+        labeling.styles.return_value = [style]
+
+        self.service._apply_label_priority(labeling)
+
+        self.assertEqual(settings.priority, 2)
+        style.setLabelSettings.assert_called_once_with(settings)
+
+    def test_priority_uses_qgis_style_name_not_tile_source_layer(self):
+        labeling = MagicMock()
+        style, settings = self._make_style("place_label", "settlement-major-label")
+        labeling.styles.return_value = [style]
+
+        self.service._apply_label_priority(labeling)
+
+        self.assertEqual(settings.priority, 8)
+        style.setLabelSettings.assert_called_once_with(settings)
+
+    def test_priority_uses_base_layer_for_split_style_name(self):
+        labeling = MagicMock()
+        style, settings = self._make_style("poi_label", "poi-label-z17-plus")
         labeling.styles.return_value = [style]
 
         self.service._apply_label_priority(labeling)
