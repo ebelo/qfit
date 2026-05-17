@@ -1756,6 +1756,8 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
             remaining_beta_layer["layout"]["icon-image"][:2],
             ["match", ["get", "shield_beta"]],
         )
+        self.assertNotIn("ch-motorway", remaining_beta_layer["layout"]["icon-image"])
+        self.assertNotIn("ch-motorway-2", remaining_beta_layer["layout"]["icon-image"])
         self.assertIn("gr-motorway-2", remaining_beta_layer["layout"]["icon-image"])
         self.assertIn("au-national-highway-2", remaining_beta_layer["layout"]["icon-image"])
         self.assertIn("cl-highway-2", remaining_beta_layer["layout"]["icon-image"])
@@ -1778,8 +1780,18 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
             ],
         )
         self.assertEqual(shield_layer["layout"]["icon-image"][:2], ["match", ["get", "shield"]])
+        self.assertNotIn("ch-motorway", shield_layer["layout"]["icon-image"])
+        self.assertNotIn("ch-motorway-2", shield_layer["layout"]["icon-image"])
         self.assertIn("rectangle-yellow-2", shield_layer["layout"]["icon-image"])
         self.assertEqual(by_id["road-number-shield-3-ch-motorway-icon"]["layout"]["icon-image"], "ch-motorway-3")
+        self.assertNotIn(
+            "ch-motorway",
+            by_id["road-number-shield-3-beta-remaining-icons"]["layout"]["icon-image"],
+        )
+        self.assertNotIn(
+            "ch-motorway-3",
+            by_id["road-number-shield-3-beta-remaining-icons"]["layout"]["icon-image"],
+        )
         self.assertIn("au-national-highway-3", by_id["road-number-shield-3-beta-remaining-icons"]["layout"]["icon-image"])
         self.assertIn("cl-highway-3", by_id["road-number-shield-3-beta-remaining-icons"]["layout"]["icon-image"])
         self.assertIn("md-main-3", by_id["road-number-shield-3-beta-remaining-icons"]["layout"]["icon-image"])

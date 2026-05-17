@@ -1749,9 +1749,14 @@ def _is_road_number_shield_icon_image(expr: object) -> bool:
     )
 
 
-def _road_shield_icon_match(field_name: str, reflen: int) -> list[object]:
+def _road_shield_icon_match(
+    field_name: str,
+    reflen: int,
+    excluded_sprite_bases: Iterable[str] = (),
+) -> list[object]:
     fallback = f"default-{reflen}"
-    values = _ROAD_SHIELD_SPRITE_BASES_BY_REFLEN[reflen]
+    excluded = set(excluded_sprite_bases)
+    values = tuple(value for value in _ROAD_SHIELD_SPRITE_BASES_BY_REFLEN[reflen] if value not in excluded)
     return [
         "match",
         ["get", field_name],
@@ -1818,6 +1823,11 @@ def _road_shield_literal_icon_layer_variants(
     remaining_layer["filter"] = _with_additional_filter_clauses(
         layer.get("filter"),
         _road_shield_remaining_icon_filter(field_name, literal_bases),
+    )
+    remaining_layer["layout"]["icon-image"] = _road_shield_icon_match(
+        field_name,
+        reflen,
+        literal_bases,
     )
     variants.append(remaining_layer)
     return variants
