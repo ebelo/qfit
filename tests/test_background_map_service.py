@@ -763,6 +763,7 @@ class ApplyLabelPriorityMockTests(unittest.TestCase):
         labeling = MagicMock()
         style = MagicMock()
         style.layerName.return_value = "country-label"
+        style.styleName.return_value = "country-label"
         style.labelSettings.return_value = None
         labeling.styles.return_value = [style]
 
