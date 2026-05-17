@@ -105,6 +105,11 @@ _LINE_DASHARRAY_PROPERTY = "paint.line-dasharray"
 _SYMBOL_SPACING_PROPERTY = "layout.symbol-spacing"
 _LABEL_DENSITY_CONTROLS_BY_PROPERTY_KEY = "label_density_controls_by_property"
 _LABEL_DENSITY_QGIS_DEPENDENT_BY_PROPERTY_KEY = "label_density_qgis_dependent_by_property"
+_LINE_LABEL_REPETITION_CANDIDATES_KEY = "line_label_repetition_candidates"
+_LINE_LABEL_REPETITION_CANDIDATES_BY_LAYER_GROUP_KEY = "line_label_repetition_candidates_by_layer_group"
+_LINE_LABEL_REPETITION_CONTROLS_BY_PROPERTY_KEY = "line_label_repetition_controls_by_property"
+_LINE_LABEL_REPETITION_SIMPLIFIED_BY_PROPERTY_KEY = "line_label_repetition_simplified_by_property"
+_LINE_LABEL_REPETITION_QGIS_DEPENDENT_BY_PROPERTY_KEY = "line_label_repetition_qgis_dependent_by_property"
 _LABEL_DENSITY_CONTROL_PROPERTIES = (
     "layout.icon-allow-overlap",
     "layout.icon-ignore-placement",
@@ -909,6 +914,15 @@ def _label_density_unresolved_controls(layer: dict[str, object]) -> list[str]:
     )
 
 
+def _is_line_label_repetition_candidate_layer(layer: dict[str, object]) -> bool:
+    layout = layer.get("layout")
+    return (
+        _is_label_density_candidate_layer(layer)
+        and isinstance(layout, dict)
+        and layout.get("symbol-placement") == "line"
+    )
+
+
 def _is_road_trail_hierarchy_candidate_layer(layer: dict[str, object]) -> bool:
     return (
         str(layer.get("group") or "") == "roads/trails"
@@ -1392,6 +1406,28 @@ def _label_density_candidate_rows(layers: list[dict[str, object]]) -> list[dict[
                 _FILTER_OPERATOR_SIGNATURE_KEY: _operator_signature(_qgis_filter_value(layer)),
                 "label_control_properties": _label_density_control_properties(layer),
                 _QGIS_DEPENDENT_CONTROL_PROPERTIES_KEY: _label_density_unresolved_controls(layer),
+            }
+        )
+    return sorted(rows, key=lambda row: (str(row["group"]), str(row["layer"])))
+
+
+def _line_label_repetition_candidate_rows(layers: list[dict[str, object]]) -> list[dict[str, object]]:
+    rows: list[dict[str, object]] = []
+    for layer in layers:
+        if not _is_line_label_repetition_candidate_layer(layer):
+            continue
+        controls = _label_density_control_properties(layer)
+        control_set = set(controls)
+        rows.append(
+            {
+                "layer": str(layer.get("id") or ""),
+                "group": str(layer.get("group") or "other"),
+                "source_layer": str(layer.get("source_layer") or ""),
+                "zoom_band": str(layer.get("zoom_band") or _ALL_ZOOMS_BAND),
+                _FILTER_OPERATOR_SIGNATURE_KEY: _operator_signature(_qgis_filter_value(layer)),
+                "line_label_control_properties": controls,
+                _QFIT_SIMPLIFIED_CONTROL_PROPERTIES_KEY: _qfit_simplified_control_properties(layer, control_set),
+                _QGIS_DEPENDENT_CONTROL_PROPERTIES_KEY: _qgis_dependent_control_properties(layer, control_set),
             }
         )
     return sorted(rows, key=lambda row: (str(row["group"]), str(row["layer"])))
@@ -3209,6 +3245,7 @@ def build_style_audit(
         for layer in original_layers
     ]
     label_density_candidates = _label_density_candidate_rows(layers)
+    line_label_repetition_candidates = _line_label_repetition_candidate_rows(layers)
     road_trail_hierarchy_candidates = _road_trail_hierarchy_candidate_rows(layers)
     terrain_landcover_candidates = _terrain_landcover_candidate_rows(layers)
     water_flow_candidates = _water_flow_candidate_rows(layers)
@@ -3271,6 +3308,23 @@ def build_style_audit(
                 _QGIS_DEPENDENT_CONTROL_PROPERTIES_KEY,
             ),
             "label_density_candidates": label_density_candidates,
+            _LINE_LABEL_REPETITION_CANDIDATES_BY_LAYER_GROUP_KEY: _count_rows_by_key(
+                line_label_repetition_candidates,
+                "group",
+            ),
+            _LINE_LABEL_REPETITION_CONTROLS_BY_PROPERTY_KEY: _count_row_values(
+                line_label_repetition_candidates,
+                "line_label_control_properties",
+            ),
+            _LINE_LABEL_REPETITION_SIMPLIFIED_BY_PROPERTY_KEY: _count_row_values(
+                line_label_repetition_candidates,
+                _QFIT_SIMPLIFIED_CONTROL_PROPERTIES_KEY,
+            ),
+            _LINE_LABEL_REPETITION_QGIS_DEPENDENT_BY_PROPERTY_KEY: _count_row_values(
+                line_label_repetition_candidates,
+                _QGIS_DEPENDENT_CONTROL_PROPERTIES_KEY,
+            ),
+            _LINE_LABEL_REPETITION_CANDIDATES_KEY: line_label_repetition_candidates,
             _ROAD_TRAIL_HIERARCHY_CANDIDATES_BY_SOURCE_LAYER_KEY: _count_rows_by_key(
                 road_trail_hierarchy_candidates,
                 "source_layer",
@@ -3558,6 +3612,40 @@ def _markdown_label_density_candidate_table(rows: list[dict[str, object]], *, em
                 zoom=row.get("zoom_band", _ALL_ZOOMS_BAND),
                 filter_operators=row.get(_FILTER_OPERATOR_SIGNATURE_KEY, _NO_OPERATOR_SIGNATURE),
                 controls=_markdown_list(list(row.get("label_control_properties") or [])),
+                unresolved=_markdown_list(list(row.get(_QGIS_DEPENDENT_CONTROL_PROPERTIES_KEY) or [])),
+            )
+        )
+    lines.append("")
+    return lines
+
+
+def _markdown_line_label_repetition_candidate_table(
+    rows: list[dict[str, object]],
+    *,
+    empty: str = "—",
+) -> list[str]:
+    if not rows:
+        return [empty, ""]
+    lines = [
+        (
+            "| Layer group | Layer | Source layer | Zoom | Filter operators | Line-label controls | "
+            "Simplified/substituted by qfit | QGIS-dependent controls |"
+        ),
+        "| --- | --- | --- | --- | --- | --- | --- | --- |",
+    ]
+    for row in rows:
+        lines.append(
+            (
+                "| `{group}` | `{layer}` | `{source_layer}` | {zoom} | `{filter_operators}` | "
+                "{controls} | {simplified} | {unresolved} |"
+            ).format(
+                group=row.get("group", ""),
+                layer=row.get("layer", ""),
+                source_layer=row.get("source_layer", ""),
+                zoom=row.get("zoom_band", _ALL_ZOOMS_BAND),
+                filter_operators=row.get(_FILTER_OPERATOR_SIGNATURE_KEY, _NO_OPERATOR_SIGNATURE),
+                controls=_markdown_list(list(row.get("line_label_control_properties") or [])),
+                simplified=_markdown_list(list(row.get(_QFIT_SIMPLIFIED_CONTROL_PROPERTIES_KEY) or [])),
                 unresolved=_markdown_list(list(row.get(_QGIS_DEPENDENT_CONTROL_PROPERTIES_KEY) or [])),
             )
         )
@@ -5082,6 +5170,48 @@ def _markdown_label_density_summary(summary: dict[str, object]) -> list[str]:
     ]
 
 
+def _markdown_line_label_repetition_summary(summary: dict[str, object]) -> list[str]:
+    return [
+        "### Line label repetition candidates",
+        "",
+        (
+            "Visible line-placement text labels where QGIS may repeat labels per feature segment. Use this "
+            "diagnostic with live screenshots before changing road, path, waterway, contour, or natural-line "
+            "label spacing, filters, or placement."
+        ),
+        "",
+        *_markdown_named_count_table(
+            _summary_rows(summary, _LINE_LABEL_REPETITION_CANDIDATES_BY_LAYER_GROUP_KEY),
+            key="group",
+            label=_MARKDOWN_LAYER_GROUP_LABEL,
+        ),
+        "#### Line label repetition controls by property",
+        "",
+        *_markdown_named_count_table(
+            _summary_rows(summary, _LINE_LABEL_REPETITION_CONTROLS_BY_PROPERTY_KEY),
+            key="property",
+            label="Property",
+        ),
+        "#### Line label repetition controls simplified/substituted by qfit",
+        "",
+        *_markdown_named_count_table(
+            _summary_rows(summary, _LINE_LABEL_REPETITION_SIMPLIFIED_BY_PROPERTY_KEY),
+            key="property",
+            label="Property",
+        ),
+        "#### Line label repetition QGIS-dependent controls",
+        "",
+        *_markdown_named_count_table(
+            _summary_rows(summary, _LINE_LABEL_REPETITION_QGIS_DEPENDENT_BY_PROPERTY_KEY),
+            key="property",
+            label="Property",
+        ),
+        *_markdown_line_label_repetition_candidate_table(
+            _summary_rows(summary, _LINE_LABEL_REPETITION_CANDIDATES_KEY)
+        ),
+    ]
+
+
 def _markdown_road_trail_hierarchy_summary(summary: dict[str, object]) -> list[str]:
     return [
         "### Road/trail hierarchy candidates",
@@ -5305,6 +5435,7 @@ def _markdown_summary(summary: dict[str, object], qgis_converter_warnings: objec
             _summary_rows(summary, "qfit_unresolved_filter_expression_signatures_by_layer_group")
         ),
         *_markdown_label_density_summary(summary),
+        *_markdown_line_label_repetition_summary(summary),
         *_markdown_road_trail_hierarchy_summary(summary),
         *_markdown_terrain_landcover_summary(summary),
         *_markdown_water_flow_summary(summary),
