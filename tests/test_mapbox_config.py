@@ -4675,15 +4675,15 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
         self.assertEqual(result["layers"][0]["id"], "contour-line")
         self.assertEqual(result["layers"][0]["paint"]["line-opacity"], line_opacity)
 
-    def test_contour_line_opacity_helpers_keep_passthrough_inputs(self):
+    def test_contour_line_helpers_keep_passthrough_inputs(self):
         unchanged_layers = "not-a-layer-list"
         mixed_layers = ["not-a-layer", self._contour_line_layer()]
 
         self.assertIs(
-            mapbox_config._split_contour_line_opacity_layers_for_qgis(unchanged_layers),
+            mapbox_config._split_contour_line_layers_for_qgis(unchanged_layers),
             unchanged_layers,
         )
-        result = mapbox_config._split_contour_line_opacity_layers_for_qgis(mixed_layers)
+        result = mapbox_config._split_contour_line_layers_for_qgis(mixed_layers)
 
         self.assertEqual(result[0], "not-a-layer")
         self.assertEqual(result[1]["id"], "contour-line-index-minor-z11-to-z13")

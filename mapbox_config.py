@@ -4497,8 +4497,8 @@ def _split_water_label_typography_layers_for_qgis(layers: object) -> object:
     return expanded_layers
 
 
-def _contour_line_opacity_layer_variants(layer: dict[str, object]) -> list[dict[str, object]] | None:
-    """Split audited contour index opacity expressions into static QGIS zoom bands."""
+def _contour_line_layer_variants(layer: dict[str, object]) -> list[dict[str, object]] | None:
+    """Split audited contour index styling into static QGIS zoom bands."""
     layer_id = str(layer.get("id") or "")
     paint = layer.get("paint")
     if layer_id != _CONTOUR_LINE_LAYER_ID or layer.get("type") != "line" or not isinstance(paint, dict):
@@ -4533,7 +4533,7 @@ def _contour_line_opacity_layer_variants(layer: dict[str, object]) -> list[dict[
     return variants or None
 
 
-def _split_contour_line_opacity_layers_for_qgis(layers: object) -> object:
+def _split_contour_line_layers_for_qgis(layers: object) -> object:
     if not isinstance(layers, list):
         return layers
     expanded_layers: list[object] = []
@@ -4541,7 +4541,7 @@ def _split_contour_line_opacity_layers_for_qgis(layers: object) -> object:
         if not isinstance(layer, dict):
             expanded_layers.append(layer)
             continue
-        variants = _contour_line_opacity_layer_variants(layer)
+        variants = _contour_line_layer_variants(layer)
         expanded_layers.extend(variants if variants is not None else [layer])
     return expanded_layers
 
@@ -5699,7 +5699,7 @@ def simplify_mapbox_style_expressions(style_definition: dict[str, object]) -> di
     style["layers"] = _split_turning_feature_circle_layers_for_qgis(style.get("layers"))
     style["layers"] = _split_waterway_label_symbol_spacing_layers_for_qgis(style.get("layers"))
     style["layers"] = _split_water_label_typography_layers_for_qgis(style.get("layers"))
-    style["layers"] = _split_contour_line_opacity_layers_for_qgis(style.get("layers"))
+    style["layers"] = _split_contour_line_layers_for_qgis(style.get("layers"))
     color_props = {
         "line-color", "fill-color", "fill-outline-color", "circle-color",
         "circle-stroke-color", "text-color", "text-halo-color",
