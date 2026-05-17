@@ -1206,6 +1206,7 @@ _LANDUSE_CLASS_FILL_COLOR_VARIANTS: tuple[tuple[str, object, str], ...] = (
     ("grass", ["match", ["get", "class"], "grass", True, False], _LANDUSE_AGRICULTURE_FILL_COLOR),
     ("glacier", ["match", ["get", "class"], "glacier", True, False], _LANDUSE_GLACIER_FILL_COLOR),
     ("sand", ["match", ["get", "class"], "sand", True, False], _LANDUSE_SAND_FILL_COLOR),
+    ("rock", ["match", ["get", "class"], "rock", True, False], _LANDUSE_ROCK_HIGH_ZOOM_FILL_COLOR),
     (
         "park-special",
         [
@@ -1246,6 +1247,7 @@ _LANDUSE_CLASS_FILL_COLOR_VARIANTS: tuple[tuple[str, object, str], ...] = (
                 "grass",
                 "glacier",
                 "sand",
+                "rock",
                 "park",
                 "airport",
                 "cemetery",

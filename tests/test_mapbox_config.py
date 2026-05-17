@@ -3142,7 +3142,7 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
             mapbox_config._LANDUSE_CLASS_FILL_COLOR_SPLIT_LAYER_IDS,
             {"landuse-other-z8-to-z10", "landuse-other-z10-plus"},
         )
-        self.assertEqual(len(result["layers"]), 34)
+        self.assertEqual(len(result["layers"]), 36)
         self.assertIn("landuse-other-below-z8", by_id)
         self.assertNotIn("landuse-other-below-z8-park", by_id)
         stable_class_variants = {
@@ -3152,6 +3152,7 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
             "grass": (mapbox_config._LANDUSE_AGRICULTURE_FILL_COLOR, "grass"),
             "glacier": (mapbox_config._LANDUSE_GLACIER_FILL_COLOR, "glacier"),
             "sand": (mapbox_config._LANDUSE_SAND_FILL_COLOR, "sand"),
+            "rock": (mapbox_config._LANDUSE_ROCK_HIGH_ZOOM_FILL_COLOR, "rock"),
             "cemetery": (mapbox_config._LANDUSE_CEMETERY_FILL_COLOR, "cemetery"),
             "hospital": (mapbox_config._LANDUSE_HOSPITAL_FILL_COLOR, "hospital"),
             "pitch": (mapbox_config._LANDUSE_PITCH_FILL_COLOR, "pitch"),
@@ -3229,6 +3230,7 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
                     "grass",
                     "glacier",
                     "sand",
+                    "rock",
                     "park",
                     "airport",
                     "cemetery",
@@ -3244,6 +3246,10 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
         )
         self.assertEqual(
             mapbox_config.base_mapbox_style_layer_id_for_qfit("landuse-other-z10-plus-airport"),
+            "landuse",
+        )
+        self.assertEqual(
+            mapbox_config.base_mapbox_style_layer_id_for_qfit("landuse-other-z10-plus-rock"),
             "landuse",
         )
 
@@ -3325,6 +3331,7 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
                 "landuse-other-z10-plus-grass",
                 "landuse-other-z10-plus-glacier",
                 "landuse-other-z10-plus-sand",
+                "landuse-other-z10-plus-rock",
                 "landuse-other-z10-plus-park-special",
                 "landuse-other-z10-plus-park",
                 "landuse-other-z10-plus-airport",
