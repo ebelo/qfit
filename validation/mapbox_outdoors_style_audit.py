@@ -683,6 +683,8 @@ def _qfit_split_variant_audit_layers_for_original_id(
                 "group": _layer_group(simplified_layer),
                 "source": str(simplified_layer.get("source") or ""),
                 "source_layer": str(simplified_layer.get("source-layer") or ""),
+                "minzoom": simplified_layer.get("minzoom"),
+                "maxzoom": simplified_layer.get("maxzoom"),
                 "zoom_band": _zoom_band(simplified_layer),
                 "filter": simplified_layer.get("filter"),
                 "qgis_filter": simplified_layer.get("filter"),
@@ -706,6 +708,8 @@ def build_layer_audit(
         "group": _layer_group(layer),
         "source": str(layer.get("source") or ""),
         "source_layer": str(layer.get("source-layer") or ""),
+        "minzoom": layer.get("minzoom"),
+        "maxzoom": layer.get("maxzoom"),
         "zoom_band": _zoom_band(layer),
         "filter": layer.get("filter"),
         "qgis_filter": (simplified_layer or layer).get("filter"),
@@ -914,15 +918,68 @@ def _label_density_unresolved_controls(layer: dict[str, object]) -> list[str]:
     )
 
 
-def _symbol_placement_may_be_line(value: object) -> bool:
+def _numeric_layer_zoom_bounds(layer: dict[str, object]) -> tuple[float, float]:
+    minzoom = layer.get("minzoom")
+    maxzoom = layer.get("maxzoom")
+    min_zoom = float(minzoom) if isinstance(minzoom, (int, float)) else 0.0
+    max_zoom = float(maxzoom) if isinstance(maxzoom, (int, float)) else float("inf")
+    return min_zoom, max_zoom
+
+
+def _zoom_expression(value: object) -> bool:
+    return isinstance(value, list) and value == ["zoom"]
+
+
+def _zoom_ranges_overlap(start: float, end: float, layer_min: float, layer_max: float) -> bool:
+    return start < layer_max and layer_min < end
+
+
+def _symbol_placement_zoom_step_may_be_line(
+    value: list[object],
+    *,
+    min_zoom: float,
+    max_zoom: float,
+) -> bool | None:
+    if len(value) < 3 or not _zoom_expression(value[1]):
+        return None
+    active_start = float("-inf")
+    active_value = value[2]
+    for index in range(3, len(value) - 1, 2):
+        stop = value[index]
+        if not isinstance(stop, (int, float)):
+            return None
+        active_end = float(stop)
+        if _zoom_ranges_overlap(active_start, active_end, min_zoom, max_zoom) and _symbol_placement_may_be_line(
+            active_value,
+            min_zoom=max(min_zoom, active_start),
+            max_zoom=min(max_zoom, active_end),
+        ):
+            return True
+        active_start = active_end
+        active_value = value[index + 1]
+    return _zoom_ranges_overlap(active_start, float("inf"), min_zoom, max_zoom) and _symbol_placement_may_be_line(
+        active_value,
+        min_zoom=max(min_zoom, active_start),
+        max_zoom=max_zoom,
+    )
+
+
+def _symbol_placement_may_be_line(value: object, *, min_zoom: float = 0.0, max_zoom: float = float("inf")) -> bool:
     if value == "line":
         return True
     if not isinstance(value, list) or not value:
         return False
     operator = value[0]
     if operator == "literal":
-        return len(value) == 2 and _symbol_placement_may_be_line(value[1])
+        return len(value) == 2 and _symbol_placement_may_be_line(
+            value[1],
+            min_zoom=min_zoom,
+            max_zoom=max_zoom,
+        )
     if operator == "step":
+        step_result = _symbol_placement_zoom_step_may_be_line(value, min_zoom=min_zoom, max_zoom=max_zoom)
+        if step_result is not None:
+            return step_result
         output_indexes = range(2, len(value), 2)
     elif operator == "interpolate":
         output_indexes = range(4, len(value), 2)
@@ -936,15 +993,19 @@ def _symbol_placement_may_be_line(value: object) -> bool:
         output_indexes = [len(value) - 1]
     else:
         return False
-    return any(_symbol_placement_may_be_line(value[index]) for index in output_indexes)
+    return any(
+        _symbol_placement_may_be_line(value[index], min_zoom=min_zoom, max_zoom=max_zoom)
+        for index in output_indexes
+    )
 
 
 def _is_line_label_repetition_candidate_layer(layer: dict[str, object]) -> bool:
     layout = layer.get("layout")
+    min_zoom, max_zoom = _numeric_layer_zoom_bounds(layer)
     return (
         _is_label_density_candidate_layer(layer)
         and isinstance(layout, dict)
-        and _symbol_placement_may_be_line(layout.get("symbol-placement"))
+        and _symbol_placement_may_be_line(layout.get("symbol-placement"), min_zoom=min_zoom, max_zoom=max_zoom)
     )
 
 

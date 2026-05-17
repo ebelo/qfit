@@ -510,6 +510,18 @@ class MapboxOutdoorsStyleAuditTests(unittest.TestCase):
                         },
                     },
                     {
+                        "id": "road-shield-low-zoom",
+                        "type": "symbol",
+                        "source-layer": "road",
+                        "maxzoom": 10,
+                        "filter": ["all", ["has", "reflen"], ["<=", ["get", "reflen"], 6]],
+                        "layout": {
+                            "symbol-placement": ["step", ["zoom"], "point", 11, "line"],
+                            "symbol-spacing": ["interpolate", ["linear"], ["zoom"], 10, 120, 16, 400],
+                            "text-field": ["get", "ref"],
+                        },
+                    },
+                    {
                         "id": "poi-label",
                         "type": "symbol",
                         "source-layer": "poi_label",
@@ -602,6 +614,7 @@ class MapboxOutdoorsStyleAuditTests(unittest.TestCase):
         )[0]
         self.assertNotIn("poi-label` |", line_label_section)
         self.assertNotIn("hidden-line-label` |", line_label_section)
+        self.assertNotIn("road-shield-low-zoom` |", line_label_section)
 
     def test_symbol_placement_may_be_line_handles_expression_outputs(self):
         cases = [
@@ -610,6 +623,7 @@ class MapboxOutdoorsStyleAuditTests(unittest.TestCase):
             ("literal-expression", ["literal", "line"], True),
             ("step-line-output", ["step", ["zoom"], "point", 11, "line"], True),
             ("step-point-only", ["step", ["zoom"], "point", 11, "point"], False),
+            ("data-driven-step-line-output", ["step", ["get", "rank"], "point", 3, "line"], True),
             ("interpolate-line-output", ["interpolate", ["linear"], ["zoom"], 10, "point", 12, "line"], True),
             ("case-line-output", ["case", [">=", ["zoom"], 11], "line", "point"], True),
             ("case-line-default", ["case", [">=", ["zoom"], 11], "point", "line"], True),
@@ -623,6 +637,24 @@ class MapboxOutdoorsStyleAuditTests(unittest.TestCase):
         for label, value, expected in cases:
             with self.subTest(label=label):
                 self.assertIs(mapbox_outdoors_style_audit._symbol_placement_may_be_line(value), expected)
+
+        zoom_step_placement = ["step", ["zoom"], "point", 11, "line"]
+        self.assertIs(
+            mapbox_outdoors_style_audit._symbol_placement_may_be_line(
+                zoom_step_placement,
+                min_zoom=0,
+                max_zoom=10,
+            ),
+            False,
+        )
+        self.assertIs(
+            mapbox_outdoors_style_audit._symbol_placement_may_be_line(
+                zoom_step_placement,
+                min_zoom=10,
+                max_zoom=12,
+            ),
+            True,
+        )
 
     def test_build_style_audit_reports_road_trail_hierarchy_candidates(self):
         audit = build_style_audit(
