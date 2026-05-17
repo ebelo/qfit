@@ -1510,6 +1510,15 @@ _CONTOUR_LINE_OPACITY_EXPRESSION = [
     13,
     ["match", ["get", "index"], [1, 2], 0.3, 0.5],
 ]
+_CONTOUR_LINE_WIDTH_EXPRESSION = [
+    "interpolate",
+    ["linear"],
+    ["zoom"],
+    13,
+    ["match", ["get", "index"], [1, 2], 0.5, 0.6],
+    16,
+    ["match", ["get", "index"], [1, 2], 0.8, 1.2],
+]
 _CONTOUR_LINE_VARIANTS: tuple[
     tuple[str, object, float | None, float | None, float, float],
     ...,
@@ -4503,7 +4512,10 @@ def _contour_line_layer_variants(layer: dict[str, object]) -> list[dict[str, obj
     paint = layer.get("paint")
     if layer_id != _CONTOUR_LINE_LAYER_ID or layer.get("type") != "line" or not isinstance(paint, dict):
         return None
-    if paint.get("line-opacity") != _CONTOUR_LINE_OPACITY_EXPRESSION:
+    if (
+        paint.get("line-opacity") != _CONTOUR_LINE_OPACITY_EXPRESSION
+        or paint.get("line-width") != _CONTOUR_LINE_WIDTH_EXPRESSION
+    ):
         return None
 
     existing_minzoom = _numeric_zoom_bound(layer.get("minzoom"))

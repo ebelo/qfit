@@ -4552,7 +4552,7 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
         self.assertEqual(result[9]["id"], "water-point-label-other-name-en")
         self.assertEqual(result[10]["id"], "water-point-label-other-name")
 
-    def _contour_line_layer(self, line_opacity=None, minzoom=11):
+    def _contour_line_layer(self, line_opacity=None, line_width=None, minzoom=11):
         if line_opacity is None:
             line_opacity = [
                 "interpolate",
@@ -4563,6 +4563,16 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
                 13,
                 ["match", ["get", "index"], [1, 2], 0.3, 0.5],
             ]
+        if line_width is None:
+            line_width = [
+                "interpolate",
+                ["linear"],
+                ["zoom"],
+                13,
+                ["match", ["get", "index"], [1, 2], 0.5, 0.6],
+                16,
+                ["match", ["get", "index"], [1, 2], 0.8, 1.2],
+            ]
         return {
             "id": "contour-line",
             "type": "line",
@@ -4572,6 +4582,7 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
             "paint": {
                 "line-color": "hsl(33, 20%, 50%)",
                 "line-opacity": line_opacity,
+                "line-width": line_width,
             },
         }
 
@@ -4674,6 +4685,16 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
         self.assertEqual(len(result["layers"]), 1)
         self.assertEqual(result["layers"][0]["id"], "contour-line")
         self.assertEqual(result["layers"][0]["paint"]["line-opacity"], line_opacity)
+
+    def test_contour_line_width_is_not_overwritten_when_shape_changes(self):
+        line_width = ["interpolate", ["linear"], ["zoom"], 13, 0.25, 16, 0.5]
+        style = {"layers": [self._contour_line_layer(line_width=line_width)]}
+
+        result = simplify_mapbox_style_expressions(style)
+
+        self.assertEqual(len(result["layers"]), 1)
+        self.assertEqual(result["layers"][0]["id"], "contour-line")
+        self.assertEqual(result["layers"][0]["paint"]["line-width"], 0.1)
 
     def test_contour_line_helpers_keep_passthrough_inputs(self):
         unchanged_layers = "not-a-layer-list"
