@@ -2716,6 +2716,10 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
             for class_name, fill_color in natural_colors.items():
                 natural_layer = by_id[f"landuse-other-{band}-{class_name}"]
                 self.assertEqual(natural_layer["paint"]["fill-color"], fill_color)
+                self.assertEqual(
+                    natural_layer["filter"][-1],
+                    ["match", ["get", "class"], class_name, True, False],
+                )
         self.assertEqual(park_special_mid["paint"]["fill-color"], mapbox_config._LANDUSE_PARK_SPECIAL_FILL_COLOR)
         self.assertEqual(park_mid["paint"]["fill-color"], mapbox_config._LANDUSE_PARK_FILL_COLOR)
         self.assertEqual(airport_mid["paint"]["fill-color"], mapbox_config._LANDUSE_AIRPORT_FILL_COLOR)
@@ -2752,10 +2756,6 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
         self.assertEqual(
             airport_mid["filter"][-1],
             ["match", ["get", "class"], "airport", True, False],
-        )
-        self.assertEqual(
-            by_id["landuse-other-z8-to-z10-wood"]["filter"][-1],
-            ["match", ["get", "class"], "wood", True, False],
         )
         self.assertEqual(
             remaining_mid["filter"][-1],
