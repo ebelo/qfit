@@ -1510,16 +1510,18 @@ _CONTOUR_LINE_OPACITY_EXPRESSION = [
     13,
     ["match", ["get", "index"], [1, 2], 0.3, 0.5],
 ]
-_CONTOUR_LINE_OPACITY_VARIANTS: tuple[
-    tuple[str, object, float | None, float | None, float],
+_CONTOUR_LINE_VARIANTS: tuple[
+    tuple[str, object, float | None, float | None, float, float],
     ...,
 ] = (
-    ("index-minor-below-z11", ["match", ["get", "index"], [1, 2], True, False], None, 11.0, 0.15),
-    ("index-minor-z11-to-z13", ["match", ["get", "index"], [1, 2], True, False], 11.0, 13.0, 0.225),
-    ("index-minor-z13-plus", ["match", ["get", "index"], [1, 2], True, False], 13.0, None, 0.3),
-    ("index-major-below-z11", ["match", ["get", "index"], [1, 2], False, True], None, 11.0, 0.3),
-    ("index-major-z11-to-z13", ["match", ["get", "index"], [1, 2], False, True], 11.0, 13.0, 0.4),
-    ("index-major-z13-plus", ["match", ["get", "index"], [1, 2], False, True], 13.0, None, 0.5),
+    ("index-minor-below-z11", ["match", ["get", "index"], [1, 2], True, False], None, 11.0, 0.15, 0.5),
+    ("index-minor-z11-to-z13", ["match", ["get", "index"], [1, 2], True, False], 11.0, 13.0, 0.225, 0.5),
+    ("index-minor-z13-to-z16", ["match", ["get", "index"], [1, 2], True, False], 13.0, 16.0, 0.3, 0.65),
+    ("index-minor-z16-plus", ["match", ["get", "index"], [1, 2], True, False], 16.0, None, 0.3, 0.8),
+    ("index-major-below-z11", ["match", ["get", "index"], [1, 2], False, True], None, 11.0, 0.3, 0.6),
+    ("index-major-z11-to-z13", ["match", ["get", "index"], [1, 2], False, True], 11.0, 13.0, 0.4, 0.6),
+    ("index-major-z13-to-z16", ["match", ["get", "index"], [1, 2], False, True], 13.0, 16.0, 0.5, 0.9),
+    ("index-major-z16-plus", ["match", ["get", "index"], [1, 2], False, True], 16.0, None, 0.5, 1.2),
 )
 _FILTER_NORMALIZATION_ZOOM_OVERRIDES = {
     "bridge-minor": 14.0,
@@ -4507,7 +4509,14 @@ def _contour_line_opacity_layer_variants(layer: dict[str, object]) -> list[dict[
     existing_minzoom = _numeric_zoom_bound(layer.get("minzoom"))
     existing_maxzoom = _numeric_zoom_bound(layer.get("maxzoom"))
     variants: list[dict[str, object]] = []
-    for suffix, index_filter, band_minzoom, band_maxzoom, line_opacity in _CONTOUR_LINE_OPACITY_VARIANTS:
+    for (
+        suffix,
+        index_filter,
+        band_minzoom,
+        band_maxzoom,
+        line_opacity,
+        line_width_px,
+    ) in _CONTOUR_LINE_VARIANTS:
         if _effective_zoom_band(existing_minzoom, existing_maxzoom, band_minzoom, band_maxzoom) is None:
             continue
         variant = _apply_zoom_band_bounds(layer, band_minzoom, band_maxzoom)
@@ -4516,6 +4525,10 @@ def _contour_line_opacity_layer_variants(layer: dict[str, object]) -> list[dict[
         variant_paint = variant["paint"]
         assert isinstance(variant_paint, dict)
         variant_paint["line-opacity"] = line_opacity
+        variant_paint["line-width"] = max(
+            0.1,
+            min(line_width_px * _MAPBOX_PIXEL_TO_MM, _MAX_LINE_WIDTH_MM),
+        )
         variants.append(variant)
     return variants or None
 
