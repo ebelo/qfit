@@ -4024,10 +4024,7 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
         self.assertAlmostEqual(low_other["paint"]["line-width"], 0.022620108479255864)
         self.assertAlmostEqual(mid_major["paint"]["line-width"], 0.42585675726411115)
         self.assertAlmostEqual(high_major["paint"]["line-width"], 0.6780241671213343)
-        self.assertAlmostEqual(
-            high_other["paint"]["line-width"],
-            0.24743006346379784 * mapbox_config._WATERWAY_OTHER_HIGH_ZOOM_QGIS_WIDTH_SCALE,
-        )
+        self.assertAlmostEqual(high_other["paint"]["line-width"], 0.37114509519569676)
         self.assertAlmostEqual(shadow_low_major["paint"]["line-width"], 0.14095142330582108)
         self.assertAlmostEqual(shadow_high_other["paint"]["line-width"], 0.24743006346379784)
         self.assertEqual(
