@@ -603,6 +603,27 @@ class MapboxOutdoorsStyleAuditTests(unittest.TestCase):
         self.assertNotIn("poi-label` |", line_label_section)
         self.assertNotIn("hidden-line-label` |", line_label_section)
 
+    def test_symbol_placement_may_be_line_handles_expression_outputs(self):
+        cases = [
+            ("literal-line", "line", True),
+            ("literal-point", "point", False),
+            ("literal-expression", ["literal", "line"], True),
+            ("step-line-output", ["step", ["zoom"], "point", 11, "line"], True),
+            ("step-point-only", ["step", ["zoom"], "point", 11, "point"], False),
+            ("interpolate-line-output", ["interpolate", ["linear"], ["zoom"], 10, "point", 12, "line"], True),
+            ("case-line-output", ["case", [">=", ["zoom"], 11], "line", "point"], True),
+            ("case-line-default", ["case", [">=", ["zoom"], 11], "point", "line"], True),
+            ("match-line-output", ["match", ["get", "class"], "primary", "line", "point"], True),
+            ("match-line-default", ["match", ["get", "class"], "primary", "point", "line"], True),
+            ("coalesce-line-output", ["coalesce", ["get", "placement"], "line"], True),
+            ("let-line-output", ["let", "placement", "point", "line"], True),
+            ("get-expression", ["get", "placement"], False),
+        ]
+
+        for label, value, expected in cases:
+            with self.subTest(label=label):
+                self.assertIs(mapbox_outdoors_style_audit._symbol_placement_may_be_line(value), expected)
+
     def test_build_style_audit_reports_road_trail_hierarchy_candidates(self):
         audit = build_style_audit(
             {
