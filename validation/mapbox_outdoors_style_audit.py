@@ -914,12 +914,37 @@ def _label_density_unresolved_controls(layer: dict[str, object]) -> list[str]:
     )
 
 
+def _symbol_placement_may_be_line(value: object) -> bool:
+    if value == "line":
+        return True
+    if not isinstance(value, list) or not value:
+        return False
+    operator = value[0]
+    if operator == "literal":
+        return len(value) == 2 and _symbol_placement_may_be_line(value[1])
+    if operator == "step":
+        output_indexes = range(2, len(value), 2)
+    elif operator == "interpolate":
+        output_indexes = range(4, len(value), 2)
+    elif operator == "case":
+        output_indexes = [*range(2, len(value) - 1, 2), len(value) - 1]
+    elif operator == "match":
+        output_indexes = [*range(3, len(value) - 1, 2), len(value) - 1]
+    elif operator == "coalesce":
+        output_indexes = range(1, len(value))
+    elif operator == "let":
+        output_indexes = [len(value) - 1]
+    else:
+        return False
+    return any(_symbol_placement_may_be_line(value[index]) for index in output_indexes)
+
+
 def _is_line_label_repetition_candidate_layer(layer: dict[str, object]) -> bool:
     layout = layer.get("layout")
     return (
         _is_label_density_candidate_layer(layer)
         and isinstance(layout, dict)
-        and layout.get("symbol-placement") == "line"
+        and _symbol_placement_may_be_line(layout.get("symbol-placement"))
     )
 
 
