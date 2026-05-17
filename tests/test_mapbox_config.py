@@ -2839,6 +2839,14 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
             mapbox_config.base_mapbox_style_layer_id_for_qfit("hillshade-shadow-z13-plus"),
             "hillshade",
         )
+        self.assertEqual(
+            mapbox_config.base_mapbox_style_layer_id_for_qfit("hillshade-highlight-z13-plus"),
+            "hillshade",
+        )
+        self.assertEqual(
+            mapbox_config.base_mapbox_style_layer_id_for_qfit("hillshade-z13-plus"),
+            "hillshade",
+        )
 
     def test_hillshade_fill_color_skips_highlight_when_not_visible(self):
         style = {"layers": [self._hillshade_layer(maxzoom=10)]}
