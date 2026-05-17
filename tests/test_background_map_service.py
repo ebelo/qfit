@@ -639,7 +639,7 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
 
         self.service._apply_label_priority(labeling)
 
-        self.assertEqual(settings.priority, 2)
+        self.assertEqual(settings.priority, 5)
         style.setLabelSettings.assert_called_once_with(settings)
 
     def test_priority_persists_on_real_qgis_labeling_style_copies(self):
@@ -663,7 +663,7 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
         updated_style = labeling.styles()[0]
         self.assertEqual(updated_style.styleName(), "poi-label-z17-plus")
         self.assertEqual(updated_style.layerName(), "poi_label")
-        self.assertEqual(updated_style.labelSettings().priority, 2)
+        self.assertEqual(updated_style.labelSettings().priority, 5)
 
 
 @unittest.skipIf(QGIS_AVAILABLE, SKIP_MOCK)
@@ -707,7 +707,7 @@ class ApplyLabelPriorityMockTests(unittest.TestCase):
 
         self.service._apply_label_priority(labeling)
 
-        self.assertEqual(settings.priority, 2)
+        self.assertEqual(settings.priority, 5)
         style.setLabelSettings.assert_called_once_with(settings)
 
     def test_priority_uses_qgis_style_name_not_tile_source_layer(self):
@@ -727,8 +727,26 @@ class ApplyLabelPriorityMockTests(unittest.TestCase):
 
         self.service._apply_label_priority(labeling)
 
-        self.assertEqual(settings.priority, 2)
+        self.assertEqual(settings.priority, 5)
         style.setLabelSettings.assert_called_once_with(settings)
+
+    def test_priority_tuning_favors_airport_and_poi_over_roads(self):
+        cases = [
+            ("airport_label", "airport-label", 8),
+            ("poi_label", "poi-label", 5),
+            ("road", "road-label", 4),
+            ("natural_label", "natural-point-label", 4),
+        ]
+        for layer_name, style_name, expected_priority in cases:
+            with self.subTest(style_name=style_name):
+                labeling = MagicMock()
+                style, settings = self._make_style(layer_name, style_name)
+                labeling.styles.return_value = [style]
+
+                self.service._apply_label_priority(labeling)
+
+                self.assertEqual(settings.priority, expected_priority)
+                style.setLabelSettings.assert_called_once_with(settings)
 
     def test_data_defined_priority_for_settlement_layer(self):
         labeling = MagicMock()
