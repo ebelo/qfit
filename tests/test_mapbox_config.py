@@ -4687,14 +4687,29 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
         self.assertEqual(result["layers"][0]["paint"]["line-opacity"], line_opacity)
 
     def test_contour_line_width_is_not_overwritten_when_shape_changes(self):
-        line_width = ["interpolate", ["linear"], ["zoom"], 13, 0.25, 16, 0.5]
+        line_width = ["interpolate", ["linear"], ["zoom"], 13, 2.0, 16, 2.0]
         style = {"layers": [self._contour_line_layer(line_width=line_width)]}
 
         result = simplify_mapbox_style_expressions(style)
 
-        self.assertEqual(len(result["layers"]), 1)
-        self.assertEqual(result["layers"][0]["id"], "contour-line")
-        self.assertEqual(result["layers"][0]["paint"]["line-width"], 0.1)
+        self.assertEqual(len(result["layers"]), 6)
+        by_id = {layer["id"]: layer for layer in result["layers"]}
+        self.assertEqual(
+            by_id["contour-line-index-minor-z11-to-z13"]["paint"]["line-opacity"],
+            0.225,
+        )
+        self.assertEqual(
+            by_id["contour-line-index-major-z13-to-z16"]["paint"]["line-opacity"],
+            0.5,
+        )
+        self.assertEqual(
+            by_id["contour-line-index-minor-z11-to-z13"]["paint"]["line-width"],
+            2.0 * mapbox_config._MAPBOX_PIXEL_TO_MM,
+        )
+        self.assertAlmostEqual(
+            by_id["contour-line-index-major-z16-plus"]["paint"]["line-width"],
+            2.0 * mapbox_config._MAPBOX_PIXEL_TO_MM,
+        )
 
     def test_contour_line_helpers_keep_passthrough_inputs(self):
         unchanged_layers = "not-a-layer-list"

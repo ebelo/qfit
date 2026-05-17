@@ -4512,12 +4512,10 @@ def _contour_line_layer_variants(layer: dict[str, object]) -> list[dict[str, obj
     paint = layer.get("paint")
     if layer_id != _CONTOUR_LINE_LAYER_ID or layer.get("type") != "line" or not isinstance(paint, dict):
         return None
-    if (
-        paint.get("line-opacity") != _CONTOUR_LINE_OPACITY_EXPRESSION
-        or paint.get("line-width") != _CONTOUR_LINE_WIDTH_EXPRESSION
-    ):
+    if paint.get("line-opacity") != _CONTOUR_LINE_OPACITY_EXPRESSION:
         return None
 
+    should_override_line_width = paint.get("line-width") == _CONTOUR_LINE_WIDTH_EXPRESSION
     existing_minzoom = _numeric_zoom_bound(layer.get("minzoom"))
     existing_maxzoom = _numeric_zoom_bound(layer.get("maxzoom"))
     variants: list[dict[str, object]] = []
@@ -4537,10 +4535,11 @@ def _contour_line_layer_variants(layer: dict[str, object]) -> list[dict[str, obj
         variant_paint = variant["paint"]
         assert isinstance(variant_paint, dict)
         variant_paint["line-opacity"] = line_opacity
-        variant_paint["line-width"] = max(
-            0.1,
-            min(line_width_px * _MAPBOX_PIXEL_TO_MM, _MAX_LINE_WIDTH_MM),
-        )
+        if should_override_line_width:
+            variant_paint["line-width"] = max(
+                0.1,
+                min(line_width_px * _MAPBOX_PIXEL_TO_MM, _MAX_LINE_WIDTH_MM),
+            )
         variants.append(variant)
     return variants or None
 
