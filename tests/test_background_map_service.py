@@ -753,6 +753,19 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
 
         style.setLabelSettings.assert_not_called()
 
+    def test_custom_contour_label_field_is_left_unchanged(self):
+        labeling = MagicMock()
+        style, settings = self._make_style("contour", "contour-label")
+        settings.repeatDistance = 0.0
+        settings.fieldName = '"height_ft"'
+        settings.isExpression = True
+        labeling.styles.return_value = [style]
+
+        self.service._apply_label_priority(labeling)
+
+        self.assertEqual(settings.fieldName, '"height_ft"')
+        style.setLabelSettings.assert_not_called()
+
 
 @unittest.skipIf(QGIS_AVAILABLE, SKIP_MOCK)
 @unittest.skipIf(_mock_bms_cls is None, SKIP_MOCK_LOAD)
@@ -960,6 +973,18 @@ class ApplyLabelPriorityMockTests(unittest.TestCase):
         self.assertEqual(settings.fieldName, "concat(\"ele\", ' m')")
         self.assertTrue(settings.isExpression)
         style.setLabelSettings.assert_called_once_with(settings)
+
+    def test_custom_contour_label_field_is_left_unchanged(self):
+        labeling = MagicMock()
+        style, settings = self._make_style("contour", "contour-label")
+        settings.fieldName = '"height_ft"'
+        settings.isExpression = True
+        labeling.styles.return_value = [style]
+
+        self.service._apply_label_priority(labeling)
+
+        self.assertEqual(settings.fieldName, '"height_ft"')
+        style.setLabelSettings.assert_not_called()
 
     def test_none_settings_is_skipped(self):
         labeling = MagicMock()

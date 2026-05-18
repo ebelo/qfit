@@ -59,6 +59,7 @@ _WATERWAY_LABEL_REPEAT_DISTANCE_PX_BY_STYLE_MARKER = {
     "z15-to-z17": 325.0,
     "z17-plus": 400.0,
 }
+_CONTOUR_LABEL_ELEVATION_FIELD_EXPRESSION = '"ele"'
 _CONTOUR_LABEL_EXPRESSION = "concat(\"ele\", ' m')"
 
 
@@ -111,8 +112,12 @@ def _label_repeat_distance(layer_name: str, style) -> float | None:
     return _symbol_spacing_mm(_MAPBOX_DEFAULT_SYMBOL_SPACING_PX)
 
 
-def _label_field_expression(layer_name: str) -> str | None:
-    if layer_name == "contour-label":
+def _label_field_expression(layer_name: str, settings) -> str | None:
+    if (
+        layer_name == "contour-label"
+        and getattr(settings, "fieldName", "") == _CONTOUR_LABEL_ELEVATION_FIELD_EXPRESSION
+        and getattr(settings, "isExpression", False)
+    ):
         return _CONTOUR_LABEL_EXPRESSION
     return None
 
@@ -298,11 +303,13 @@ class BackgroundMapService:
                 layer_name = _label_style_mapbox_layer_id(style)
                 priority = _label_priority(layer_name, style)
                 repeat_distance = _label_repeat_distance(layer_name, style)
-                field_expression = _label_field_expression(layer_name)
-                if priority is None and repeat_distance is None and field_expression is None:
+                if priority is None and repeat_distance is None and layer_name != "contour-label":
                     continue
                 settings = style.labelSettings()
                 if settings is None:
+                    continue
+                field_expression = _label_field_expression(layer_name, settings)
+                if priority is None and repeat_distance is None and field_expression is None:
                     continue
                 if _apply_label_settings(
                     settings,
