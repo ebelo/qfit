@@ -198,15 +198,15 @@ def _fetch_sprite_resources(config: LabelSettingsConfig, original_style: dict[st
 
 
 def _convert_style_to_labeling(qfit_style: dict[str, object], sprite_resources: object | None, qgis_modules) -> tuple[object, object, bool]:
-    QgsMapBoxGlStyleConversionContext, QgsMapBoxGlStyleConverter, Qgis = qgis_modules
-    ctx = QgsMapBoxGlStyleConversionContext()
-    ctx.setTargetUnit(Qgis.RenderUnit.Millimeters)
+    conversion_context_cls, converter_cls, qgis_api = qgis_modules
+    ctx = conversion_context_cls()
+    ctx.setTargetUnit(qgis_api.RenderUnit.Millimeters)
     ctx.setPixelSizeConversionFactor(25.4 / 96.0)
     sprite_loaded = _apply_sprite_context(ctx, sprite_resources)
 
-    converter = QgsMapBoxGlStyleConverter()
+    converter = converter_cls()
     result = converter.convert(qfit_style, ctx)
-    success_value = getattr(QgsMapBoxGlStyleConverter, "Success", None)
+    success_value = getattr(converter_cls, "Success", None)
     if success_value is not None and result != success_value:
         raise RuntimeError(f"QGIS Mapbox style conversion failed: {result}")
     return result, converter.labeling(), sprite_loaded
