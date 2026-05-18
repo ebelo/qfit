@@ -437,6 +437,8 @@ class MapboxOutdoorsLabelSettingsTests(unittest.TestCase):
                         "icon-size": 0.8,
                         "symbol-placement": "line",
                         "text-field": ["concat", ["get", "ele"], " m"],
+                        "text-letter-spacing": ["match", ["get", "class"], "ocean", 0.25, 0.01],
+                        "text-max-width": ["match", ["get", "class"], "ocean", 4, 10],
                         "text-size": ["interpolate", ["linear"], ["zoom"], 12, 10, 16, 12],
                         "text-max-angle": 25,
                     },
@@ -462,6 +464,8 @@ class MapboxOutdoorsLabelSettingsTests(unittest.TestCase):
                         "icon-size": 0.8,
                         "symbol-placement": "line",
                         "text-field": ["concat", ["get", "ele"], " m"],
+                        "text-letter-spacing": 0.25,
+                        "text-max-width": 4,
                         "text-size": 9,
                     },
                     "paint": {
@@ -488,10 +492,14 @@ class MapboxOutdoorsLabelSettingsTests(unittest.TestCase):
         self.assertEqual(record["layout"]["icon-image"], "mountain")
         self.assertEqual(record["layout"]["icon-size"], 0.8)
         self.assertEqual(record["layout"]["symbol-placement"], "line")
+        self.assertEqual(record["layout"]["text-letter-spacing"], ["match", ["get", "class"], "ocean", 0.25, 0.01])
+        self.assertEqual(record["layout"]["text-max-width"], ["match", ["get", "class"], "ocean", 4, 10])
         self.assertEqual(record["layout"]["text-size"], ["interpolate", ["linear"], ["zoom"], 12, 10, 16, 12])
         self.assertEqual(record["paint"]["icon-opacity"], 0.75)
         self.assertEqual(record["paint"]["text-halo-width"], 2)
         self.assertEqual(record["qfit_layout"]["icon-image"], "mountain")
+        self.assertEqual(record["qfit_layout"]["text-letter-spacing"], 0.25)
+        self.assertEqual(record["qfit_layout"]["text-max-width"], 4)
         self.assertEqual(record["qfit_layout"]["text-size"], 9)
 
     def test_source_label_layer_records_marks_missing_qfit_layer(self):

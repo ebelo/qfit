@@ -38,6 +38,8 @@ _SOURCE_LABEL_LAYOUT_PROPERTIES = (
     "text-field",
     "text-size",
     "text-font",
+    "text-letter-spacing",
+    "text-max-width",
     "text-max-angle",
     "text-allow-overlap",
     "text-ignore-placement",
