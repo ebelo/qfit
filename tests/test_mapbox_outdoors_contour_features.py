@@ -162,8 +162,9 @@ class MapboxOutdoorsContourFeatureTests(unittest.TestCase):
                 }
             }
 
+        generated = dt.datetime(2026, 5, 18, 11, 35, tzinfo=dt.timezone.utc)
         report = collect_contour_feature_report(
-            ContourFeatureConfig(token="token", output_root=Path("/tmp"), tile_zoom=0),
+            ContourFeatureConfig(token="token", output_root=Path("/tmp"), tile_zoom=0, now=generated),
             style_fetcher=fetch_style,
             tile_fetcher=fetch_tile,
             tile_decoder=decoder,
@@ -178,6 +179,7 @@ class MapboxOutdoorsContourFeatureTests(unittest.TestCase):
         self.assertEqual(report["decoded_tile_count"], 1)
         self.assertEqual(report["contour_feature_count"], 3)
         self.assertEqual(report["contour_label_candidate_count"], 2)
+        self.assertEqual(report["generated"], "2026-05-18T11:35:00+00:00")
 
     def test_write_report_writes_json_and_markdown(self):
         report = {

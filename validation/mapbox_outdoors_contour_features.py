@@ -166,6 +166,9 @@ def _tile_error_types() -> tuple[type[BaseException], ...]:
     return (*errors, DecodeError)
 
 
+_TILE_ERROR_TYPES = _tile_error_types()
+
+
 def _decompressed_tile_bytes(tile_bytes: bytes) -> bytes:
     return gzip.decompress(tile_bytes) if tile_bytes.startswith(b"\x1f\x8b") else tile_bytes
 
@@ -236,7 +239,7 @@ def contour_tile_record(
     try:
         tile_bytes = tile_fetcher(_tile_url(tile_url_template, tile))
         decoded = decode_vector_tile_bytes(tile_bytes, tile_decoder)
-    except _tile_error_types() as exc:
+    except _TILE_ERROR_TYPES as exc:
         return {**tile, "status": "error", "error": type(exc).__name__, "message": str(exc)}
     features = _decoded_layer_features(decoded, CONTOUR_SOURCE_LAYER)
     candidates = [feature for feature in features if is_contour_label_candidate(_feature_properties(feature))]
@@ -339,10 +342,11 @@ def collect_contour_feature_report(
         for tile in iter_tile_coordinates(tile_bounds, tile_zoom)
     ]
     decoded_tile_count = sum(1 for tile in tile_records if tile.get("status") == "decoded")
+    generated = config.now or dt.datetime.now(dt.timezone.utc)
     return {
         "style_owner": config.style_owner,
         "style_id": config.style_id,
-        "generated": dt.datetime.now(dt.timezone.utc).isoformat(),
+        "generated": generated.isoformat(),
         "camera": {
             "name": camera.name,
             "longitude": camera.longitude,
@@ -436,6 +440,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+    now = dt.datetime.now(dt.timezone.utc)
     config = ContourFeatureConfig(
         token=resolve_mapbox_token(provided_token=args.mapbox_token),
         output_root=args.output_root,
@@ -444,6 +449,7 @@ def main(argv: list[str] | None = None) -> int:
         style_id=args.style_id,
         style_json_path=args.style_json,
         tile_zoom=args.tile_zoom,
+        now=now,
     )
     report = collect_contour_feature_report(config)
     paths = build_contour_feature_paths(
