@@ -512,8 +512,8 @@ class MapboxOutdoorsLabelSettingsTests(unittest.TestCase):
             [{"base_style_layer_id": "contour-label", "style_name": "contour-label"}],
         )
 
-        self.assertEqual(records[0]["qfit_style_layer_id"], None)
-        self.assertEqual(records[0]["qfit_filter"], None)
+        self.assertIsNone(records[0]["qfit_style_layer_id"])
+        self.assertIsNone(records[0]["qfit_filter"])
         self.assertEqual(records[0]["qfit_layout"], {})
         self.assertEqual(records[0]["qfit_paint"], {})
 
