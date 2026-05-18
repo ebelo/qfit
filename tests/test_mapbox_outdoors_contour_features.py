@@ -175,6 +175,64 @@ class MapboxOutdoorsContourFeatureTests(unittest.TestCase):
             },
         )
 
+    def test_contour_tile_record_covers_remaining_candidate_geometry_statuses(self):
+        cases = [
+            (
+                [
+                    {
+                        "geometry": {"type": "LineString", "coordinates": [[0, 0], [1, 1]]},
+                        "properties": {"index": 1},
+                    }
+                ],
+                {
+                    "status": "no_candidates",
+                    "candidate_count": 0,
+                    "line_compatible_count": 0,
+                    "polygon_count": 0,
+                    "other_count": 0,
+                },
+            ),
+            (
+                [
+                    {
+                        "geometry": {"type": "LineString", "coordinates": [[0, 0], [1, 1]]},
+                        "properties": {"index": 5},
+                    },
+                    {
+                        "geometry": {"type": "Polygon", "coordinates": [[[0, 0], [1, 0], [1, 1], [0, 0]]]},
+                        "properties": {"index": 10},
+                    },
+                ],
+                {
+                    "status": "mixed_with_line_compatible",
+                    "candidate_count": 2,
+                    "line_compatible_count": 1,
+                    "polygon_count": 1,
+                    "other_count": 0,
+                },
+            ),
+            (
+                [{"geometry": {"type": "Point", "coordinates": [0, 0]}, "properties": {"index": 5}}],
+                {
+                    "status": "no_line_compatible",
+                    "candidate_count": 1,
+                    "line_compatible_count": 0,
+                    "polygon_count": 0,
+                    "other_count": 1,
+                },
+            ),
+        ]
+        for features, expected in cases:
+            with self.subTest(status=expected["status"]):
+                record = contour_tile_record(
+                    tile={"z": 14, "x": 8504, "y": 5833},
+                    tile_url_template="https://example.test/{z}/{x}/{y}.mvt",
+                    tile_fetcher=lambda _url: gzip.compress(b"tile"),
+                    tile_decoder=lambda _payload, features=features: {"contour": {"features": features}},
+                )
+
+                self.assertEqual(record["candidate_label_geometry"], expected)
+
     def test_contour_tile_record_reports_fetch_or_decode_errors(self):
         def failing_fetcher(_url):
             raise RuntimeError("offline")
