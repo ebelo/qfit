@@ -3949,15 +3949,29 @@ def _road_pedestrian_polygon_pattern_fill_opacity_layer_variants(
         zoom_bands=_ROAD_PEDESTRIAN_POLYGON_PATTERN_FILL_OPACITY_ZOOM_BANDS,
     )
     if variants is None:
-        return None
+        fallback_layer = _road_pedestrian_polygon_pattern_fallback_layer(layer)
+        return [fallback_layer] if fallback_layer is not None else None
     for variant in variants:
-        paint = variant.get("paint")
-        if not isinstance(paint, dict):
-            continue
-        if paint.get("fill-pattern") == _ROAD_PEDESTRIAN_POLYGON_PATTERN:
-            paint.pop("fill-pattern", None)
-            paint.setdefault("fill-color", _ROAD_PEDESTRIAN_POLYGON_PATTERN_QGIS_FILL_COLOR)
+        _apply_road_pedestrian_polygon_pattern_fallback(variant)
     return variants
+
+
+def _road_pedestrian_polygon_pattern_fallback_layer(
+    layer: dict[str, object],
+) -> dict[str, object] | None:
+    if layer.get("id") != _ROAD_PEDESTRIAN_POLYGON_PATTERN_LAYER_ID or layer.get("type") != "fill":
+        return None
+    fallback_layer = copy.deepcopy(layer)
+    return fallback_layer if _apply_road_pedestrian_polygon_pattern_fallback(fallback_layer) else None
+
+
+def _apply_road_pedestrian_polygon_pattern_fallback(layer: dict[str, object]) -> bool:
+    paint = layer.get("paint")
+    if not isinstance(paint, dict) or paint.get("fill-pattern") != _ROAD_PEDESTRIAN_POLYGON_PATTERN:
+        return False
+    paint.pop("fill-pattern", None)
+    paint.setdefault("fill-color", _ROAD_PEDESTRIAN_POLYGON_PATTERN_QGIS_FILL_COLOR)
+    return True
 
 
 def _split_road_pedestrian_polygon_pattern_fill_opacity_layers_for_qgis(layers: object) -> object:
