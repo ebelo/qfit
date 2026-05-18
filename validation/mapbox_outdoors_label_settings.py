@@ -21,6 +21,20 @@ _SOURCE_LABEL_LAYOUT_PROPERTIES = (
     "symbol-avoid-edges",
     "symbol-sort-key",
     "symbol-z-order",
+    "icon-allow-overlap",
+    "icon-anchor",
+    "icon-ignore-placement",
+    "icon-image",
+    "icon-keep-upright",
+    "icon-offset",
+    "icon-optional",
+    "icon-padding",
+    "icon-pitch-alignment",
+    "icon-rotate",
+    "icon-rotation-alignment",
+    "icon-size",
+    "icon-text-fit",
+    "icon-text-fit-padding",
     "text-field",
     "text-size",
     "text-font",
@@ -38,6 +52,13 @@ _SOURCE_LABEL_LAYOUT_PROPERTIES = (
     "visibility",
 )
 _SOURCE_LABEL_PAINT_PROPERTIES = (
+    "icon-color",
+    "icon-halo-blur",
+    "icon-halo-color",
+    "icon-halo-width",
+    "icon-opacity",
+    "icon-translate",
+    "icon-translate-anchor",
     "text-color",
     "text-halo-color",
     "text-halo-width",
@@ -119,18 +140,17 @@ def _source_label_layer_record(
     qfit_layer: dict[str, object] | None,
     style_name: str,
 ) -> dict[str, object]:
-    comparison_layer = qfit_layer or original_layer
     return {
         "base_style_layer_id": str(original_layer.get("id") or ""),
         "style_name": style_name,
-        "qfit_style_layer_id": str(comparison_layer.get("id") or ""),
+        "qfit_style_layer_id": str(qfit_layer.get("id") or "") if qfit_layer is not None else None,
         "source_layer": str(original_layer.get("source-layer") or ""),
         "minzoom": original_layer.get("minzoom"),
         "maxzoom": original_layer.get("maxzoom"),
-        "qfit_minzoom": comparison_layer.get("minzoom"),
-        "qfit_maxzoom": comparison_layer.get("maxzoom"),
+        "qfit_minzoom": qfit_layer.get("minzoom") if qfit_layer is not None else None,
+        "qfit_maxzoom": qfit_layer.get("maxzoom") if qfit_layer is not None else None,
         "filter": original_layer.get("filter"),
-        "qfit_filter": comparison_layer.get("filter"),
+        "qfit_filter": qfit_layer.get("filter") if qfit_layer is not None else None,
         "layout": _selected_section_properties(
             original_layer,
             "layout",
@@ -141,15 +161,15 @@ def _source_label_layer_record(
             "paint",
             _SOURCE_LABEL_PAINT_PROPERTIES,
         ),
-        "qfit_layout": _selected_section_properties(
-            comparison_layer,
-            "layout",
-            _SOURCE_LABEL_LAYOUT_PROPERTIES,
+        "qfit_layout": (
+            _selected_section_properties(qfit_layer, "layout", _SOURCE_LABEL_LAYOUT_PROPERTIES)
+            if qfit_layer is not None
+            else {}
         ),
-        "qfit_paint": _selected_section_properties(
-            comparison_layer,
-            "paint",
-            _SOURCE_LABEL_PAINT_PROPERTIES,
+        "qfit_paint": (
+            _selected_section_properties(qfit_layer, "paint", _SOURCE_LABEL_PAINT_PROPERTIES)
+            if qfit_layer is not None
+            else {}
         ),
     }
 
@@ -486,7 +506,7 @@ def _compound_markdown_value(*values: object, separator: str = " ") -> str:
 
 
 def _json_markdown_value(value: object) -> str:
-    if value is None or value == {}:
+    if value is None or value == {} or value == []:
         return "—"
     if isinstance(value, (dict, list)):
         return json.dumps(value, sort_keys=True, separators=(",", ":")).replace("|", "\\|")
@@ -579,7 +599,11 @@ def build_summary_markdown(report: dict[str, object]) -> str:
                 qfit_layer=_markdown_value(row.get("qfit_style_layer_id")),
                 source=_markdown_value(row.get("source_layer")),
                 zoom=_zoom_range_markdown_value(row.get("minzoom"), row.get("maxzoom")),
-                qfit_zoom=_zoom_range_markdown_value(row.get("qfit_minzoom"), row.get("qfit_maxzoom")),
+                qfit_zoom=(
+                    _zoom_range_markdown_value(row.get("qfit_minzoom"), row.get("qfit_maxzoom"))
+                    if row.get("qfit_style_layer_id") is not None
+                    else "—"
+                ),
                 filter=_json_markdown_value(row.get("filter")),
                 qfit_filter=_json_markdown_value(row.get("qfit_filter")),
                 layout=_json_markdown_value(row.get("layout")),

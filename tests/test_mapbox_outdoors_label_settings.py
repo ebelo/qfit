@@ -433,12 +433,15 @@ class MapboxOutdoorsLabelSettingsTests(unittest.TestCase):
                     "minzoom": 12,
                     "filter": ["==", ["get", "index"], 5],
                     "layout": {
+                        "icon-image": "mountain",
+                        "icon-size": 0.8,
                         "symbol-placement": "line",
                         "text-field": ["concat", ["get", "ele"], " m"],
                         "text-size": ["interpolate", ["linear"], ["zoom"], 12, 10, 16, 12],
                         "text-max-angle": 25,
                     },
                     "paint": {
+                        "icon-opacity": 0.75,
                         "text-color": "#626250",
                         "text-halo-color": "#dcdcd4",
                         "text-halo-width": 2,
@@ -455,11 +458,14 @@ class MapboxOutdoorsLabelSettingsTests(unittest.TestCase):
                     "source-layer": "contour",
                     "minzoom": 12,
                     "layout": {
+                        "icon-image": "mountain",
+                        "icon-size": 0.8,
                         "symbol-placement": "line",
                         "text-field": ["concat", ["get", "ele"], " m"],
                         "text-size": 9,
                     },
                     "paint": {
+                        "icon-opacity": 0.75,
                         "text-color": "#626250",
                         "text-halo-color": "#dcdcd4",
                     },
@@ -479,10 +485,37 @@ class MapboxOutdoorsLabelSettingsTests(unittest.TestCase):
         self.assertEqual(record["qfit_style_layer_id"], "contour-label")
         self.assertEqual(record["source_layer"], "contour")
         self.assertEqual(record["filter"], ["==", ["get", "index"], 5])
+        self.assertEqual(record["layout"]["icon-image"], "mountain")
+        self.assertEqual(record["layout"]["icon-size"], 0.8)
         self.assertEqual(record["layout"]["symbol-placement"], "line")
         self.assertEqual(record["layout"]["text-size"], ["interpolate", ["linear"], ["zoom"], 12, 10, 16, 12])
+        self.assertEqual(record["paint"]["icon-opacity"], 0.75)
         self.assertEqual(record["paint"]["text-halo-width"], 2)
+        self.assertEqual(record["qfit_layout"]["icon-image"], "mountain")
         self.assertEqual(record["qfit_layout"]["text-size"], 9)
+
+    def test_source_label_layer_records_marks_missing_qfit_layer(self):
+        records = source_label_layer_records(
+            {
+                "version": 8,
+                "layers": [
+                    {
+                        "id": "contour-label",
+                        "type": "symbol",
+                        "source-layer": "contour",
+                        "layout": {"text-field": ["get", "ele"]},
+                        "paint": {"text-color": "#626250"},
+                    }
+                ],
+            },
+            {"version": 8, "layers": []},
+            [{"base_style_layer_id": "contour-label", "style_name": "contour-label"}],
+        )
+
+        self.assertEqual(records[0]["qfit_style_layer_id"], None)
+        self.assertEqual(records[0]["qfit_filter"], None)
+        self.assertEqual(records[0]["qfit_layout"], {})
+        self.assertEqual(records[0]["qfit_paint"], {})
 
     def test_label_settings_report_captures_summary_metadata(self):
         report = _label_settings_report(
@@ -644,6 +677,21 @@ class MapboxOutdoorsLabelSettingsTests(unittest.TestCase):
             "sprite_definition_count": 0,
             "label_count": 1,
             "labels": [{"style_name": "sparse-label"}],
+            "source_label_layer_count": 1,
+            "source_label_layers": [
+                {
+                    "base_style_layer_id": "sparse-label",
+                    "style_name": "sparse-label",
+                    "qfit_style_layer_id": None,
+                    "source_layer": "sparse",
+                    "filter": [],
+                    "qfit_filter": [],
+                    "layout": {},
+                    "paint": {},
+                    "qfit_layout": {},
+                    "qfit_paint": {},
+                }
+            ],
         }
 
         markdown = build_summary_markdown(report)
@@ -651,6 +699,8 @@ class MapboxOutdoorsLabelSettingsTests(unittest.TestCase):
         self.assertIn("sparse-label", markdown)
         self.assertNotIn("— —", markdown)
         self.assertNotIn("—/—", markdown)
+        self.assertNotIn("[]", markdown)
+        self.assertIn("| sparse-label | sparse-label | — | sparse | all | — | — | — |", markdown)
 
     def test_write_report_writes_json_and_summary(self):
         report = {
