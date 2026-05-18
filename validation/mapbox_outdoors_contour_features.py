@@ -24,6 +24,7 @@ CONTOUR_SOURCE_LAYER = "contour"
 CONTOUR_LABEL_INDICES = (5, 10)
 SAMPLE_PROPERTY_KEYS = ("ele", "index", "class", "worldview", "level", "sizerank", "name")
 MAX_SAMPLE_CANDIDATES = 12
+MISSING_VALUE = "(missing)"
 
 TileFetcher = Callable[[str], bytes]
 TileDecoder = Callable[[bytes], dict[str, object]]
@@ -196,9 +197,9 @@ def _feature_properties(feature: dict[str, object]) -> dict[str, object]:
 def _geometry_type(feature: dict[str, object]) -> str:
     geometry = feature.get("geometry")
     if not isinstance(geometry, dict):
-        return "(missing)"
+        return MISSING_VALUE
     geometry_type = geometry.get("type")
-    return geometry_type if isinstance(geometry_type, str) and geometry_type else "(missing)"
+    return geometry_type if isinstance(geometry_type, str) and geometry_type else MISSING_VALUE
 
 
 def _is_coordinate_number(value: object) -> bool:
@@ -283,7 +284,7 @@ def _count_indices(features: list[dict[str, object]]) -> dict[str, int]:
     counts: dict[str, int] = {}
     for feature in features:
         index = _normalized_index(_feature_properties(feature).get("index"))
-        key = str(index) if index is not None else "(missing)"
+        key = str(index) if index is not None else MISSING_VALUE
         counts[key] = counts.get(key, 0) + 1
     return dict(sorted(counts.items()))
 
