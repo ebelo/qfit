@@ -5189,6 +5189,34 @@ def _additive_identity_filter(value: list[object], *, root: bool) -> object:
     return _FILTER_SIMPLIFICATION_NOT_AVAILABLE
 
 
+def _numeric_literal(value: object) -> float | None:
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return None
+    return float(value)
+
+
+def _comparison_left_offset_filter(value: list[object]) -> object:
+    if len(value) != 3 or value[0] not in {"<", "<=", ">", ">="}:
+        return _FILTER_SIMPLIFICATION_NOT_AVAILABLE
+    left = _simplify_filter_expression_for_qgis(value[1], root=False)
+    right = _simplify_filter_expression_for_qgis(value[2], root=False)
+    right_number = _numeric_literal(right)
+    if right_number is None or not isinstance(left, list) or len(left) != 3:
+        return _FILTER_SIMPLIFICATION_NOT_AVAILABLE
+
+    arithmetic_operator = left[0]
+    expression = left[1]
+    offset = _numeric_literal(left[2])
+    if arithmetic_operator == "+" and offset is None:
+        expression = left[2]
+        offset = _numeric_literal(left[1])
+    if arithmetic_operator not in {"+", "-"} or offset is None:
+        return _FILTER_SIMPLIFICATION_NOT_AVAILABLE
+
+    adjusted_right = right_number - offset if arithmetic_operator == "+" else right_number + offset
+    return [value[0], _simplify_filter_expression_for_qgis(expression, root=False), adjusted_right]
+
+
 def _simplify_filter_expression_for_qgis(value: object, *, root: bool = True) -> object:
     """Apply semantics-preserving filter rewrites that QGIS parses more reliably."""
     if isinstance(value, bool):
@@ -5211,6 +5239,10 @@ def _simplify_filter_expression_for_qgis(value: object, *, root: bool = True) ->
         additive_identity = _additive_identity_filter(value, root=root)
         if additive_identity is not _FILTER_SIMPLIFICATION_NOT_AVAILABLE:
             return additive_identity
+    if operator in {"<", "<=", ">", ">="}:
+        comparison_filter = _comparison_left_offset_filter(value)
+        if comparison_filter is not _FILTER_SIMPLIFICATION_NOT_AVAILABLE:
+            return comparison_filter
     return [operator, *[_simplify_filter_expression_for_qgis(item, root=False) for item in value[1:]]]
 
 
