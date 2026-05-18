@@ -47,10 +47,10 @@ _SWISS_MOTORWAY_SHIELD_PRIORITY = 6
 _SWISS_MOTORWAY_SHIELD_Z11_STYLE_MARKER = "ch-motorway-icon-z11-plus"
 _MAPBOX_SYMBOL_PIXEL_TO_MM = 25.4 / 96.0
 _MAPBOX_DEFAULT_SYMBOL_SPACING_PX = 250.0
+_ROAD_LABEL_LOW_ZOOM_SYMBOL_SPACING_PX = 150.0
 _LINE_LABEL_REPEAT_DISTANCE_LAYERS = {
     "ferry-aerialway-label",
     "path-pedestrian-label",
-    "road-label",
 }
 _WATERWAY_LABEL_REPEAT_DISTANCE_PX_BY_STYLE_MARKER = {
     "z13-to-z15": 250.0,
@@ -92,12 +92,16 @@ def _symbol_spacing_mm(pixels: float) -> float:
 
 
 def _label_repeat_distance(layer_name: str, style) -> float | None:
+    style_name = _label_style_name(style)
+    if layer_name == "road-label":
+        if style_name in {"road-label-below-z12", "road-label-z12-to-z15"}:
+            return _symbol_spacing_mm(_ROAD_LABEL_LOW_ZOOM_SYMBOL_SPACING_PX)
+        return _symbol_spacing_mm(_MAPBOX_DEFAULT_SYMBOL_SPACING_PX)
     if layer_name in _LINE_LABEL_REPEAT_DISTANCE_LAYERS:
         return _symbol_spacing_mm(_MAPBOX_DEFAULT_SYMBOL_SPACING_PX)
     if layer_name != "waterway-label":
         return None
 
-    style_name = _label_style_name(style)
     for marker, pixels in _WATERWAY_LABEL_REPEAT_DISTANCE_PX_BY_STYLE_MARKER.items():
         if marker in style_name:
             return _symbol_spacing_mm(pixels)

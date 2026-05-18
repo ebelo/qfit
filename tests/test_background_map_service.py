@@ -700,6 +700,18 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
         self.assertAlmostEqual(settings.repeatDistance, 250 * 25.4 / 96)
         style.setLabelSettings.assert_called_once_with(settings)
 
+    def test_low_zoom_road_label_repeat_distance_uses_audited_spacing(self):
+        labeling = MagicMock()
+        style, settings = self._make_style("road", "road-label-z12-to-z15")
+        settings.repeatDistance = 0.0
+        labeling.styles.return_value = [style]
+
+        self.service._apply_label_priority(labeling)
+
+        self.assertEqual(settings.priority, 4)
+        self.assertAlmostEqual(settings.repeatDistance, 150 * 25.4 / 96)
+        style.setLabelSettings.assert_called_once_with(settings)
+
     def test_waterway_label_repeat_distance_uses_split_symbol_spacing(self):
         labeling = MagicMock()
         style, settings = self._make_style("natural_label", "waterway-label-z17-plus")
@@ -837,6 +849,18 @@ class ApplyLabelPriorityMockTests(unittest.TestCase):
 
         self.assertEqual(settings.priority, 4)
         self.assertAlmostEqual(settings.repeatDistance, 250 * 25.4 / 96)
+        style.setLabelSettings.assert_called_once_with(settings)
+
+    def test_low_zoom_road_label_repeat_distance_uses_audited_spacing(self):
+        labeling = MagicMock()
+        style, settings = self._make_style("road", "road-label-below-z12")
+        settings.repeatDistance = 0.0
+        labeling.styles.return_value = [style]
+
+        self.service._apply_label_priority(labeling)
+
+        self.assertEqual(settings.priority, 4)
+        self.assertAlmostEqual(settings.repeatDistance, 150 * 25.4 / 96)
         style.setLabelSettings.assert_called_once_with(settings)
 
     def test_waterway_label_repeat_distance_uses_split_symbol_spacing(self):
