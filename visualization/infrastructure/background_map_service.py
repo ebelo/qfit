@@ -191,6 +191,13 @@ class BackgroundMapService:
             for style in styles:
                 layer_name = _label_style_mapbox_layer_id(style)
                 priority = _LAYER_PRIORITIES.get(layer_name)
+                try:
+                    style_name_value = style.styleName()
+                except AttributeError:
+                    style_name_value = ""
+                style_name = style_name_value if isinstance(style_name_value, str) else ""
+                if layer_name == "road-number-shield" and "ch-motorway-icon-z11-plus" in style_name:
+                    priority = 6
                 if priority is None:
                     continue
                 settings = style.labelSettings()
