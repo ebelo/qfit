@@ -665,6 +665,29 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
         self.assertEqual(updated_style.layerName(), "poi_label")
         self.assertEqual(updated_style.labelSettings().priority, 5)
 
+    def test_priority_promotes_swiss_motorway_shields_without_promoting_other_shields(self):
+        labeling = MagicMock()
+        swiss_style, swiss_settings = self._make_style(
+            "road",
+            "road-number-shield-2-beta-ch-motorway-icon-z11-plus",
+        )
+        other_style, _other_settings = self._make_style(
+            "road",
+            "road-number-shield-2-beta-ch-motorway-icon-below-z11",
+        )
+        remaining_style, _remaining_settings = self._make_style(
+            "road",
+            "road-number-shield-2-beta-remaining-icons-z11-plus",
+        )
+        labeling.styles.return_value = [swiss_style, other_style, remaining_style]
+
+        self.service._apply_label_priority(labeling)
+
+        self.assertEqual(swiss_settings.priority, 6)
+        swiss_style.setLabelSettings.assert_called_once_with(swiss_settings)
+        other_style.setLabelSettings.assert_not_called()
+        remaining_style.setLabelSettings.assert_not_called()
+
 
 @unittest.skipIf(QGIS_AVAILABLE, SKIP_MOCK)
 @unittest.skipIf(_mock_bms_cls is None, SKIP_MOCK_LOAD)
@@ -747,6 +770,29 @@ class ApplyLabelPriorityMockTests(unittest.TestCase):
 
                 self.assertEqual(settings.priority, expected_priority)
                 style.setLabelSettings.assert_called_once_with(settings)
+
+    def test_priority_promotes_swiss_motorway_shields_without_promoting_other_shields(self):
+        labeling = MagicMock()
+        swiss_style, swiss_settings = self._make_style(
+            "road",
+            "road-number-shield-2-beta-ch-motorway-icon-z11-plus",
+        )
+        other_style, _other_settings = self._make_style(
+            "road",
+            "road-number-shield-2-beta-ch-motorway-icon-below-z11",
+        )
+        remaining_style, _remaining_settings = self._make_style(
+            "road",
+            "road-number-shield-2-beta-remaining-icons-z11-plus",
+        )
+        labeling.styles.return_value = [swiss_style, other_style, remaining_style]
+
+        self.service._apply_label_priority(labeling)
+
+        self.assertEqual(swiss_settings.priority, 6)
+        swiss_style.setLabelSettings.assert_called_once_with(swiss_settings)
+        other_style.setLabelSettings.assert_not_called()
+        remaining_style.setLabelSettings.assert_not_called()
 
     def test_data_defined_priority_for_settlement_layer(self):
         labeling = MagicMock()
