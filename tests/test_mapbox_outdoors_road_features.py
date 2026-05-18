@@ -328,8 +328,10 @@ class MapboxOutdoorsRoadFeatureTests(unittest.TestCase):
 
     def test_collect_all_camera_road_feature_report_aggregates_camera_counts(self):
         generated = dt.datetime(2026, 5, 18, 15, 40, tzinfo=dt.timezone.utc)
+        style_calls = []
 
         def style_fetcher(_token, _owner, _style_id):
+            style_calls.append((_token, _owner, _style_id))
             return {"sources": {"composite": {"type": "vector", "url": "mapbox://mapbox.mapbox-streets-v8"}}}
 
         def decoder(_payload):
@@ -360,6 +362,7 @@ class MapboxOutdoorsRoadFeatureTests(unittest.TestCase):
         self.assertEqual(report["pedestrian_polygon_type_counts"], {"pedestrian": 2})
         self.assertEqual(report["pedestrian_line_type_counts"], {"pedestrian": 2})
         self.assertEqual(report["path_line_type_counts"], {"footway": 2})
+        self.assertEqual(style_calls, [("token", "mapbox", "outdoors-v12")])
         self.assertEqual(
             [camera_report["camera"]["name"] for camera_report in report["cameras"]],
             ["zermatt-trails-z18-outdoors", "chamonix-trails-z14-outdoors"],

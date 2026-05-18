@@ -73,13 +73,6 @@ class RoadFeaturePaths:
 
 
 @dataclass(frozen=True)
-class RoadFeatureMatrixPaths:
-    run_dir: Path
-    json_path: Path
-    summary_path: Path
-
-
-@dataclass(frozen=True)
 class RoadFeatureConfig:
     token: str | None
     output_root: Path
@@ -99,8 +92,8 @@ def build_road_feature_paths(run_dir: Path) -> RoadFeaturePaths:
     )
 
 
-def build_all_camera_road_feature_paths(run_dir: Path) -> RoadFeatureMatrixPaths:
-    return RoadFeatureMatrixPaths(
+def build_all_camera_road_feature_paths(run_dir: Path) -> RoadFeaturePaths:
+    return RoadFeaturePaths(
         run_dir=run_dir,
         json_path=run_dir / "road-features.json",
         summary_path=run_dir / "summary.md",
@@ -249,10 +242,11 @@ def _load_original_style(config: RoadFeatureConfig, style_fetcher) -> dict[str, 
 def _road_tileset_context(
     config: RoadFeatureConfig,
     style_fetcher: Callable[[str, str, str], dict[str, object]] | None,
+    style_definition: dict[str, object] | None = None,
 ) -> tuple[list[str], str]:
     fetch_style = style_fetcher if style_fetcher is not None else mapbox_config.fetch_mapbox_style_definition
-    style_definition = _load_original_style(config, fetch_style)
-    tileset_ids = mapbox_config.extract_mapbox_vector_source_ids(style_definition)
+    resolved_style_definition = style_definition if style_definition is not None else _load_original_style(config, fetch_style)
+    tileset_ids = mapbox_config.extract_mapbox_vector_source_ids(resolved_style_definition)
     if not config.token:
         raise ValueError("A Mapbox token is required to fetch vector tiles.")
     tile_url_template = mapbox_config.build_mapbox_vector_tiles_url(
@@ -284,11 +278,12 @@ def collect_road_feature_report(
     config: RoadFeatureConfig,
     *,
     style_fetcher: Callable[[str, str, str], dict[str, object]] | None = None,
+    style_definition: dict[str, object] | None = None,
     tile_fetcher: TileFetcher | None = None,
     tile_decoder: TileDecoder | None = None,
 ) -> dict[str, object]:
     _ensure_package_parent_on_path()
-    tileset_ids, tile_url_template = _road_tileset_context(config, style_fetcher)
+    tileset_ids, tile_url_template = _road_tileset_context(config, style_fetcher, style_definition)
     camera = _camera_by_name(config.camera_name)
     tile_zoom = config.tile_zoom if config.tile_zoom is not None else recommended_tile_zoom(float(camera.zoom))
     tile_bounds = tile_bounds_for_web_mercator_extent(_camera_extent(camera), tile_zoom)
@@ -363,6 +358,8 @@ def collect_all_camera_road_feature_report(
 ) -> dict[str, object]:
     generated = config.now or dt.datetime.now(dt.timezone.utc)
     names = list(camera_names) if camera_names is not None else _all_camera_names()
+    fetch_style = style_fetcher if style_fetcher is not None else mapbox_config.fetch_mapbox_style_definition
+    style_definition = _load_original_style(config, fetch_style)
     camera_reports = [
         collect_road_feature_report(
             RoadFeatureConfig(
@@ -376,6 +373,7 @@ def collect_all_camera_road_feature_report(
                 now=generated,
             ),
             style_fetcher=style_fetcher,
+            style_definition=style_definition,
             tile_fetcher=tile_fetcher,
             tile_decoder=tile_decoder,
         )
@@ -528,7 +526,7 @@ def write_report(report: dict[str, object], paths: RoadFeaturePaths) -> None:
     paths.summary_path.write_text(build_summary_markdown(report), encoding="utf-8")
 
 
-def write_all_camera_report(report: dict[str, object], paths: RoadFeatureMatrixPaths) -> None:
+def write_all_camera_report(report: dict[str, object], paths: RoadFeaturePaths) -> None:
     paths.run_dir.mkdir(parents=True, exist_ok=True)
     paths.json_path.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     paths.summary_path.write_text(build_all_camera_summary_markdown(report), encoding="utf-8")
