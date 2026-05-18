@@ -723,7 +723,7 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
 
         self.service._apply_label_priority(labeling)
 
-        self.assertAlmostEqual(settings.repeatDistance, 400 * 25.4 / 96)
+        self.assertAlmostEqual(settings.repeatDistance, 600 * 25.4 / 96)
         style.setLabelSettings.assert_called_once_with(settings)
 
     def test_contour_label_appends_metre_suffix_without_repeat_distance(self):
@@ -905,7 +905,7 @@ class ApplyLabelPriorityMockTests(unittest.TestCase):
 
         self.service._apply_label_priority(labeling)
 
-        self.assertAlmostEqual(settings.repeatDistance, 400 * 25.4 / 96)
+        self.assertAlmostEqual(settings.repeatDistance, 600 * 25.4 / 96)
         style.setLabelSettings.assert_called_once_with(settings)
 
     def test_existing_line_label_repeat_distance_is_preserved(self):
