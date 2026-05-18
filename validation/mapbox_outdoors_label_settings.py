@@ -140,7 +140,7 @@ def label_settings_record(style: object, settings: object) -> dict[str, object]:
 
 
 def _iter_label_records(labeling: object) -> Iterable[dict[str, object]]:
-    for style in list(_method_value(labeling, "styles") or []):
+    for style in _method_value(labeling, "styles") or []:
         settings = _method_value(style, "labelSettings")
         if settings is None:
             continue
@@ -165,6 +165,84 @@ def _apply_sprite_context(ctx: object, sprite_resources: object | None) -> bool:
         return False
 
 
+def _ensure_qgis_application(qgs_application):
+    app = qgs_application.instance()
+    created_app = app is None
+    if created_app:
+        app = qgs_application([], False)
+        app.initQgis()
+    return app, created_app
+
+
+def _load_original_style(config: LabelSettingsConfig, fetch_mapbox_style_definition) -> dict[str, object]:
+    if config.style_json_path is not None:
+        return load_style_definition(config.style_json_path)
+    if not config.token:
+        raise ValueError("A Mapbox token is required unless --style-json is provided.")
+    return fetch_mapbox_style_definition(config.token, config.style_owner, config.style_id)
+
+
+def _fetch_sprite_resources(config: LabelSettingsConfig, original_style: dict[str, object], fetch_mapbox_sprite_resources):
+    if not config.include_sprite_context or not config.token:
+        return None, 0
+    try:
+        resources = fetch_mapbox_sprite_resources(
+            config.token,
+            config.style_owner,
+            config.style_id,
+            sprite_url=original_style.get("sprite"),
+        )
+    except (KeyError, OSError, RuntimeError, TypeError, ValueError):
+        return None, 0
+    return resources, len(resources.definitions)
+
+
+def _convert_style_to_labeling(qfit_style: dict[str, object], sprite_resources: object | None, qgis_modules) -> tuple[object, object, bool]:
+    QgsMapBoxGlStyleConversionContext, QgsMapBoxGlStyleConverter, Qgis = qgis_modules
+    ctx = QgsMapBoxGlStyleConversionContext()
+    ctx.setTargetUnit(Qgis.RenderUnit.Millimeters)
+    ctx.setPixelSizeConversionFactor(25.4 / 96.0)
+    sprite_loaded = _apply_sprite_context(ctx, sprite_resources)
+
+    converter = QgsMapBoxGlStyleConverter()
+    result = converter.convert(qfit_style, ctx)
+    success_value = getattr(QgsMapBoxGlStyleConverter, "Success", None)
+    if success_value is not None and result != success_value:
+        raise RuntimeError(f"QGIS Mapbox style conversion failed: {result}")
+    return result, converter.labeling(), sprite_loaded
+
+
+def _postprocessed_label_records(labeling: object | None, background_map_service_cls) -> list[dict[str, object]]:
+    if labeling is None:
+        return []
+    background_map_service_cls()._apply_label_priority(labeling)
+    return sorted(
+        _iter_label_records(labeling),
+        key=lambda row: (str(row.get("base_style_layer_id") or ""), str(row.get("style_name") or "")),
+    )
+
+
+def _label_settings_report(
+    *,
+    config: LabelSettingsConfig,
+    result: object,
+    sprite_loaded: bool,
+    sprite_count: int,
+    records: list[dict[str, object]],
+) -> dict[str, object]:
+    return {
+        "style_owner": config.style_owner,
+        "style_id": config.style_id,
+        "generated": dt.datetime.now(dt.timezone.utc).isoformat(),
+        "qgis_converter_result": result,
+        "sprite_context_requested": config.include_sprite_context,
+        "sprite_context_loaded": sprite_loaded,
+        "sprite_definition_count": sprite_count,
+        "label_count": len(records),
+        "labels": records,
+    }
+
+
 def collect_label_settings(config: LabelSettingsConfig) -> dict[str, object]:
     _ensure_package_parent_on_path()
     _ensure_headless_qt_platform()
@@ -185,68 +263,24 @@ def collect_label_settings(config: LabelSettingsConfig) -> dict[str, object]:
     )
     from qfit.visualization.infrastructure.background_map_service import BackgroundMapService
 
-    app = QgsApplication.instance()
-    created_app = app is None
-    if created_app:
-        app = QgsApplication([], False)
-        app.initQgis()
-
+    app, created_app = _ensure_qgis_application(QgsApplication)
     try:
-        if config.style_json_path is not None:
-            original_style = load_style_definition(config.style_json_path)
-        else:
-            if not config.token:
-                raise ValueError("A Mapbox token is required unless --style-json is provided.")
-            original_style = fetch_mapbox_style_definition(config.token, config.style_owner, config.style_id)
+        original_style = _load_original_style(config, fetch_mapbox_style_definition)
         qfit_style = simplify_mapbox_style_expressions(original_style)
-
-        sprite_loaded = False
-        sprite_count = 0
-        sprite_resources = None
-        if config.include_sprite_context and config.token:
-            try:
-                sprite_resources = fetch_mapbox_sprite_resources(
-                    config.token,
-                    config.style_owner,
-                    config.style_id,
-                    sprite_url=original_style.get("sprite"),
-                )
-                sprite_count = len(sprite_resources.definitions)
-            except (KeyError, OSError, RuntimeError, TypeError, ValueError):
-                sprite_resources = None
-
-        ctx = QgsMapBoxGlStyleConversionContext()
-        ctx.setTargetUnit(Qgis.RenderUnit.Millimeters)
-        ctx.setPixelSizeConversionFactor(25.4 / 96.0)
-        sprite_loaded = _apply_sprite_context(ctx, sprite_resources)
-
-        converter = QgsMapBoxGlStyleConverter()
-        result = converter.convert(qfit_style, ctx)
-        success_value = getattr(QgsMapBoxGlStyleConverter, "Success", None)
-        if success_value is not None and result != success_value:
-            raise RuntimeError(f"QGIS Mapbox style conversion failed: {result}")
-
-        labeling = converter.labeling()
-        if labeling is None:
-            records: list[dict[str, object]] = []
-        else:
-            BackgroundMapService()._apply_label_priority(labeling)
-            records = sorted(
-                _iter_label_records(labeling),
-                key=lambda row: (str(row.get("base_style_layer_id") or ""), str(row.get("style_name") or "")),
-            )
-
-        return {
-            "style_owner": config.style_owner,
-            "style_id": config.style_id,
-            "generated": dt.datetime.now(dt.timezone.utc).isoformat(),
-            "qgis_converter_result": result,
-            "sprite_context_requested": config.include_sprite_context,
-            "sprite_context_loaded": sprite_loaded,
-            "sprite_definition_count": sprite_count,
-            "label_count": len(records),
-            "labels": records,
-        }
+        sprite_resources, sprite_count = _fetch_sprite_resources(config, original_style, fetch_mapbox_sprite_resources)
+        result, labeling, sprite_loaded = _convert_style_to_labeling(
+            qfit_style,
+            sprite_resources,
+            (QgsMapBoxGlStyleConversionContext, QgsMapBoxGlStyleConverter, Qgis),
+        )
+        records = _postprocessed_label_records(labeling, BackgroundMapService)
+        return _label_settings_report(
+            config=config,
+            result=result,
+            sprite_loaded=sprite_loaded,
+            sprite_count=sprite_count,
+            records=records,
+        )
     finally:
         if created_app:
             app.exitQgis()
