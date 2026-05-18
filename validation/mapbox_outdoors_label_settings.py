@@ -212,10 +212,10 @@ def _convert_style_to_labeling(qfit_style: dict[str, object], sprite_resources: 
     return result, converter.labeling(), sprite_loaded
 
 
-def _postprocessed_label_records(labeling: object | None, background_map_service_cls) -> list[dict[str, object]]:
+def _postprocessed_label_records(labeling: object | None, apply_label_priority) -> list[dict[str, object]]:
     if labeling is None:
         return []
-    background_map_service_cls()._apply_label_priority(labeling)
+    apply_label_priority(labeling)
     return sorted(
         _iter_label_records(labeling),
         key=lambda row: (str(row.get("base_style_layer_id") or ""), str(row.get("style_name") or "")),
@@ -261,7 +261,7 @@ def collect_label_settings(config: LabelSettingsConfig) -> dict[str, object]:
         fetch_mapbox_style_definition,
         simplify_mapbox_style_expressions,
     )
-    from qfit.visualization.infrastructure.background_map_service import BackgroundMapService
+    from qfit.visualization.infrastructure.background_map_service import apply_mapbox_label_priority
 
     app, created_app = _ensure_qgis_application(QgsApplication)
     try:
@@ -273,7 +273,7 @@ def collect_label_settings(config: LabelSettingsConfig) -> dict[str, object]:
             sprite_resources,
             (QgsMapBoxGlStyleConversionContext, QgsMapBoxGlStyleConverter, Qgis),
         )
-        records = _postprocessed_label_records(labeling, BackgroundMapService)
+        records = _postprocessed_label_records(labeling, apply_mapbox_label_priority)
         return _label_settings_report(
             config=config,
             result=result,
@@ -294,7 +294,7 @@ def _markdown_value(value: object) -> str:
     if isinstance(value, float):
         return f"{value:.6g}"
     if isinstance(value, list):
-        return ", ".join(str(item) for item in value) if value else "—"
+        return ", ".join(str(item).replace("|", "\\|") for item in value) if value else "—"
     return str(value).replace("|", "\\|")
 
 

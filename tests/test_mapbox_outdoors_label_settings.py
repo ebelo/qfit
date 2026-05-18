@@ -144,10 +144,12 @@ class FakeConverter:
 
 class FakeBackgroundMapService:
     applied_count = 0
+    labeling = None
 
-    def _apply_label_priority(self, labeling):
-        type(self).applied_count += 1
-        self.labeling = labeling
+
+def fake_apply_label_priority(labeling):
+    FakeBackgroundMapService.applied_count += 1
+    FakeBackgroundMapService.labeling = labeling
 
 
 def _fake_qgis_modules():
@@ -163,7 +165,7 @@ def _fake_qgis_modules():
 
 def _fake_background_map_service_module():
     module = types.ModuleType("qfit.visualization.infrastructure.background_map_service")
-    module.BackgroundMapService = FakeBackgroundMapService
+    module.apply_mapbox_label_priority = fake_apply_label_priority
     return module
 
 
@@ -171,6 +173,7 @@ class MapboxOutdoorsLabelSettingsTests(unittest.TestCase):
     def setUp(self):
         FakeQgsApplication._instance = None
         FakeBackgroundMapService.applied_count = 0
+        FakeBackgroundMapService.labeling = None
         FakeConversionContext.last_instance = None
         FakeConverter.last_style = None
 
@@ -234,6 +237,8 @@ class MapboxOutdoorsLabelSettingsTests(unittest.TestCase):
         self.assertEqual(record["placement"], "Line")
         self.assertAlmostEqual(record["repeat_distance"], 66.1458333333)
         self.assertEqual(record["repeat_distance_unit"], "Millimeters")
+        self.assertFalse(record["display_all"])
+        self.assertTrue(record["obstacle"])
         self.assertEqual(record["data_defined_property_keys"], [50, 87])
 
     def test_ensure_qgis_application_reuses_or_creates_application(self):
@@ -340,12 +345,13 @@ class MapboxOutdoorsLabelSettingsTests(unittest.TestCase):
                     FakeLabelStyle(style_name="road-label-z15-plus", layer_name="road", settings=FakeSettings()),
                 ]
             ),
-            FakeBackgroundMapService,
+            fake_apply_label_priority,
         )
 
         self.assertEqual(FakeBackgroundMapService.applied_count, 1)
+        self.assertIsInstance(FakeBackgroundMapService.labeling, FakeLabeling)
         self.assertEqual([record["base_style_layer_id"] for record in records], ["road-label", "waterway-label"])
-        self.assertEqual(_postprocessed_label_records(None, FakeBackgroundMapService), [])
+        self.assertEqual(_postprocessed_label_records(None, fake_apply_label_priority), [])
 
     def test_label_settings_report_captures_summary_metadata(self):
         report = _label_settings_report(
@@ -413,7 +419,7 @@ class MapboxOutdoorsLabelSettingsTests(unittest.TestCase):
                     "repeat_distance_unit": "Millimeters",
                     "display_all": False,
                     "obstacle": True,
-                    "data_defined_property_keys": [],
+                    "data_defined_property_keys": ["pipe|key"],
                 }
             ],
         }
@@ -426,6 +432,7 @@ class MapboxOutdoorsLabelSettingsTests(unittest.TestCase):
         self.assertIn("contour-label", markdown)
         self.assertIn("concat", markdown)
         self.assertIn("Millimeters", markdown)
+        self.assertIn("pipe\\|key", markdown)
 
     def test_write_report_writes_json_and_summary(self):
         report = {
