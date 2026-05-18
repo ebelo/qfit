@@ -109,11 +109,11 @@ def _needs_repeat_distance(settings) -> bool:
     return not isinstance(repeat_distance, (int, float)) or repeat_distance <= 0
 
 
-def _apply_settlement_label_priority(settings, QgsProperty) -> None:
+def _apply_settlement_label_priority(settings, qgs_property) -> None:
     dd_props = settings.dataDefinedProperties()
     dd_props.setProperty(
         87,
-        QgsProperty.fromExpression(
+        qgs_property.fromExpression(
             "greatest(1, least(10, 10 - coalesce(to_int(\"symbolrank\"), to_int(\"sizerank\"), 8) + 1))"
         ),
     )
@@ -126,13 +126,13 @@ def _apply_label_settings(
     layer_name: str,
     priority: int | None,
     repeat_distance: float | None,
-    QgsProperty,
+    qgs_property,
 ) -> bool:
     changed = False
     if priority is not None:
         settings.priority = priority
         if layer_name in _SETTLEMENT_LAYERS:
-            _apply_settlement_label_priority(settings, QgsProperty)
+            _apply_settlement_label_priority(settings, qgs_property)
         changed = True
     if repeat_distance is not None and _needs_repeat_distance(settings):
         settings.repeatDistance = repeat_distance
@@ -285,7 +285,7 @@ class BackgroundMapService:
                     layer_name=layer_name,
                     priority=priority,
                     repeat_distance=repeat_distance,
-                    QgsProperty=QgsProperty,
+                    qgs_property=QgsProperty,
                 ):
                     style.setLabelSettings(settings)
                     changed = True
