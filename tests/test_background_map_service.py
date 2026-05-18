@@ -689,6 +689,8 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
         remaining_style.setLabelSettings.assert_not_called()
 
     def test_line_label_repeat_distance_uses_mapbox_default_spacing(self):
+        from qgis.core import Qgis
+
         labeling = MagicMock()
         style, settings = self._make_style("road", "road-label-z15-plus")
         settings.repeatDistance = 0.0
@@ -698,6 +700,7 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
 
         self.assertEqual(settings.priority, 4)
         self.assertAlmostEqual(settings.repeatDistance, 250 * 25.4 / 96)
+        self.assertEqual(settings.repeatDistanceUnit, Qgis.RenderUnit.Millimeters)
         style.setLabelSettings.assert_called_once_with(settings)
 
     def test_low_zoom_road_label_repeat_distance_uses_audited_spacing(self):
@@ -849,6 +852,7 @@ class ApplyLabelPriorityMockTests(unittest.TestCase):
 
         self.assertEqual(settings.priority, 4)
         self.assertAlmostEqual(settings.repeatDistance, 250 * 25.4 / 96)
+        self.assertEqual(settings.repeatDistanceUnit, _qstub.Qgis.RenderUnit.Millimeters)
         style.setLabelSettings.assert_called_once_with(settings)
 
     def test_low_zoom_road_label_repeat_distance_uses_audited_spacing(self):

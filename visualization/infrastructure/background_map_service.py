@@ -52,6 +52,8 @@ _LINE_LABEL_REPEAT_DISTANCE_LAYERS = {
     "ferry-aerialway-label",
     "path-pedestrian-label",
 }
+# Representative-zoom values from mapbox_config's waterway-label spacing
+# expression after qfit splits it into static QGIS zoom bands.
 _WATERWAY_LABEL_REPEAT_DISTANCE_PX_BY_STYLE_MARKER = {
     "z13-to-z15": 250.0,
     "z15-to-z17": 325.0,
@@ -131,6 +133,7 @@ def _apply_label_settings(
     priority: int | None,
     repeat_distance: float | None,
     qgs_property,
+    qgis,
 ) -> bool:
     changed = False
     if priority is not None:
@@ -140,6 +143,7 @@ def _apply_label_settings(
         changed = True
     if repeat_distance is not None and _needs_repeat_distance(settings):
         settings.repeatDistance = repeat_distance
+        settings.repeatDistanceUnit = qgis.RenderUnit.Millimeters
         changed = True
     return changed
 
@@ -271,7 +275,7 @@ class BackgroundMapService:
 
     def _apply_label_priority(self, labeling) -> None:
         try:
-            from qgis.core import QgsProperty  # noqa: PLC0415
+            from qgis.core import QgsProperty, Qgis  # noqa: PLC0415
 
             styles = list(labeling.styles())
             changed = False
@@ -290,6 +294,7 @@ class BackgroundMapService:
                     priority=priority,
                     repeat_distance=repeat_distance,
                     qgs_property=QgsProperty,
+                    qgis=Qgis,
                 ):
                     style.setLabelSettings(settings)
                     changed = True
