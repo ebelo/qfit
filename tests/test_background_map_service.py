@@ -726,14 +726,44 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
         self.assertAlmostEqual(settings.repeatDistance, 400 * 25.4 / 96)
         style.setLabelSettings.assert_called_once_with(settings)
 
-    def test_contour_label_repeat_distance_is_left_unchanged(self):
+    def test_contour_label_appends_metre_suffix_without_repeat_distance(self):
         labeling = MagicMock()
         style, settings = self._make_style("contour", "contour-label")
         settings.repeatDistance = 0.0
+        settings.fieldName = '"ele"'
+        settings.isExpression = True
         labeling.styles.return_value = [style]
 
         self.service._apply_label_priority(labeling)
 
+        self.assertEqual(settings.fieldName, "concat(\"ele\", ' m')")
+        self.assertTrue(settings.isExpression)
+        self.assertEqual(settings.repeatDistance, 0.0)
+        style.setLabelSettings.assert_called_once_with(settings)
+
+    def test_contour_label_suffix_expression_is_left_unchanged(self):
+        labeling = MagicMock()
+        style, settings = self._make_style("contour", "contour-label")
+        settings.repeatDistance = 0.0
+        settings.fieldName = "concat(\"ele\", ' m')"
+        settings.isExpression = True
+        labeling.styles.return_value = [style]
+
+        self.service._apply_label_priority(labeling)
+
+        style.setLabelSettings.assert_not_called()
+
+    def test_custom_contour_label_field_is_left_unchanged(self):
+        labeling = MagicMock()
+        style, settings = self._make_style("contour", "contour-label")
+        settings.repeatDistance = 0.0
+        settings.fieldName = '"height_ft"'
+        settings.isExpression = True
+        labeling.styles.return_value = [style]
+
+        self.service._apply_label_priority(labeling)
+
+        self.assertEqual(settings.fieldName, '"height_ft"')
         style.setLabelSettings.assert_not_called()
 
 
@@ -890,10 +920,12 @@ class ApplyLabelPriorityMockTests(unittest.TestCase):
         self.assertEqual(settings.repeatDistance, 12.5)
         style.setLabelSettings.assert_called_once_with(settings)
 
-    def test_contour_label_repeat_distance_is_left_unchanged(self):
+    def test_contour_label_suffix_expression_is_left_unchanged(self):
         labeling = MagicMock()
         style, settings = self._make_style("contour", "contour-label")
         settings.repeatDistance = 0.0
+        settings.fieldName = "concat(\"ele\", ' m')"
+        settings.isExpression = True
         labeling.styles.return_value = [style]
 
         self.service._apply_label_priority(labeling)
@@ -927,6 +959,31 @@ class ApplyLabelPriorityMockTests(unittest.TestCase):
 
         self.service._apply_label_priority(labeling)
 
+        style.setLabelSettings.assert_not_called()
+
+    def test_contour_label_appends_metre_suffix(self):
+        labeling = MagicMock()
+        style, settings = self._make_style("contour", "contour-label")
+        settings.fieldName = '"ele"'
+        settings.isExpression = True
+        labeling.styles.return_value = [style]
+
+        self.service._apply_label_priority(labeling)
+
+        self.assertEqual(settings.fieldName, "concat(\"ele\", ' m')")
+        self.assertTrue(settings.isExpression)
+        style.setLabelSettings.assert_called_once_with(settings)
+
+    def test_custom_contour_label_field_is_left_unchanged(self):
+        labeling = MagicMock()
+        style, settings = self._make_style("contour", "contour-label")
+        settings.fieldName = '"height_ft"'
+        settings.isExpression = True
+        labeling.styles.return_value = [style]
+
+        self.service._apply_label_priority(labeling)
+
+        self.assertEqual(settings.fieldName, '"height_ft"')
         style.setLabelSettings.assert_not_called()
 
     def test_none_settings_is_skipped(self):
