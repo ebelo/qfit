@@ -1,5 +1,4 @@
 import datetime as dt
-import importlib
 import json
 import sys
 import tempfile
@@ -160,6 +159,12 @@ def _fake_qgis_modules():
     core_module.Qgis = SimpleNamespace(RenderUnit=SimpleNamespace(Millimeters="millimeters"))
     qgis_module.core = core_module
     return {"qgis": qgis_module, "qgis.core": core_module}
+
+
+def _fake_background_map_service_module():
+    module = types.ModuleType("qfit.visualization.infrastructure.background_map_service")
+    module.BackgroundMapService = FakeBackgroundMapService
+    return module
 
 
 class MapboxOutdoorsLabelSettingsTests(unittest.TestCase):
@@ -359,10 +364,11 @@ class MapboxOutdoorsLabelSettingsTests(unittest.TestCase):
         self.assertEqual(report["label_count"], 1)
 
     def test_collect_label_settings_runs_with_fake_qgis_runtime(self):
-        background_map_service = importlib.import_module(
-            "qfit.visualization.infrastructure.background_map_service"
-        )
-        with mock.patch.dict(sys.modules, _fake_qgis_modules()):
+        modules = {
+            **_fake_qgis_modules(),
+            "qfit.visualization.infrastructure.background_map_service": _fake_background_map_service_module(),
+        }
+        with mock.patch.dict(sys.modules, modules):
             with mock.patch(
                 "qfit.mapbox_config.fetch_mapbox_style_definition",
                 return_value={"version": 8, "layers": [], "sprite": "sprite-url"},
@@ -375,8 +381,7 @@ class MapboxOutdoorsLabelSettingsTests(unittest.TestCase):
                         "qfit.mapbox_config.simplify_mapbox_style_expressions",
                         return_value={"version": 8, "layers": [{"id": "road-label-z15-plus"}]},
                     ):
-                        with mock.patch.object(background_map_service, "BackgroundMapService", FakeBackgroundMapService):
-                            report = collect_label_settings(LabelSettingsConfig(token="token", output_root=Path("/tmp")))
+                        report = collect_label_settings(LabelSettingsConfig(token="token", output_root=Path("/tmp")))
 
         fetch_style.assert_called_once_with("token", "mapbox", "outdoors-v12")
         fetch_sprites.assert_called_once()
