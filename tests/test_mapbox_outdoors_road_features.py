@@ -489,6 +489,7 @@ class MapboxOutdoorsRoadFeatureTests(unittest.TestCase):
         self.assertIn("Path line candidates: 1", markdown)
         self.assertIn("Step line candidates: 1", markdown)
         self.assertIn('Pedestrian polygon surface counts: {"paved":1}', markdown)
+        self.assertIn('Pedestrian line surface counts: {"paved":1}', markdown)
         self.assertIn('Path line surface counts: {"unpaved":1}', markdown)
         self.assertIn('Step line structure counts: {"none":1}', markdown)
         self.assertIn('Step line surface counts: {"paved":1}', markdown)
