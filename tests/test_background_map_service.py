@@ -688,6 +688,39 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
         other_style.setLabelSettings.assert_not_called()
         remaining_style.setLabelSettings.assert_not_called()
 
+    def test_line_label_repeat_distance_uses_mapbox_default_spacing(self):
+        labeling = MagicMock()
+        style, settings = self._make_style("road", "road-label-z15-plus")
+        settings.repeatDistance = 0.0
+        labeling.styles.return_value = [style]
+
+        self.service._apply_label_priority(labeling)
+
+        self.assertEqual(settings.priority, 4)
+        self.assertAlmostEqual(settings.repeatDistance, 250 * 25.4 / 96)
+        style.setLabelSettings.assert_called_once_with(settings)
+
+    def test_waterway_label_repeat_distance_uses_split_symbol_spacing(self):
+        labeling = MagicMock()
+        style, settings = self._make_style("natural_label", "waterway-label-z17-plus")
+        settings.repeatDistance = 0.0
+        labeling.styles.return_value = [style]
+
+        self.service._apply_label_priority(labeling)
+
+        self.assertAlmostEqual(settings.repeatDistance, 400 * 25.4 / 96)
+        style.setLabelSettings.assert_called_once_with(settings)
+
+    def test_contour_label_repeat_distance_is_left_unchanged(self):
+        labeling = MagicMock()
+        style, settings = self._make_style("contour", "contour-label")
+        settings.repeatDistance = 0.0
+        labeling.styles.return_value = [style]
+
+        self.service._apply_label_priority(labeling)
+
+        style.setLabelSettings.assert_not_called()
+
 
 @unittest.skipIf(QGIS_AVAILABLE, SKIP_MOCK)
 @unittest.skipIf(_mock_bms_cls is None, SKIP_MOCK_LOAD)
@@ -793,6 +826,51 @@ class ApplyLabelPriorityMockTests(unittest.TestCase):
         swiss_style.setLabelSettings.assert_called_once_with(swiss_settings)
         other_style.setLabelSettings.assert_not_called()
         remaining_style.setLabelSettings.assert_not_called()
+
+    def test_line_label_repeat_distance_uses_mapbox_default_spacing(self):
+        labeling = MagicMock()
+        style, settings = self._make_style("road", "road-label-z15-plus")
+        settings.repeatDistance = 0.0
+        labeling.styles.return_value = [style]
+
+        self.service._apply_label_priority(labeling)
+
+        self.assertEqual(settings.priority, 4)
+        self.assertAlmostEqual(settings.repeatDistance, 250 * 25.4 / 96)
+        style.setLabelSettings.assert_called_once_with(settings)
+
+    def test_waterway_label_repeat_distance_uses_split_symbol_spacing(self):
+        labeling = MagicMock()
+        style, settings = self._make_style("natural_label", "waterway-label-z17-plus")
+        settings.repeatDistance = 0.0
+        labeling.styles.return_value = [style]
+
+        self.service._apply_label_priority(labeling)
+
+        self.assertAlmostEqual(settings.repeatDistance, 400 * 25.4 / 96)
+        style.setLabelSettings.assert_called_once_with(settings)
+
+    def test_existing_line_label_repeat_distance_is_preserved(self):
+        labeling = MagicMock()
+        style, settings = self._make_style("road", "road-label-z15-plus")
+        settings.repeatDistance = 12.5
+        labeling.styles.return_value = [style]
+
+        self.service._apply_label_priority(labeling)
+
+        self.assertEqual(settings.priority, 4)
+        self.assertEqual(settings.repeatDistance, 12.5)
+        style.setLabelSettings.assert_called_once_with(settings)
+
+    def test_contour_label_repeat_distance_is_left_unchanged(self):
+        labeling = MagicMock()
+        style, settings = self._make_style("contour", "contour-label")
+        settings.repeatDistance = 0.0
+        labeling.styles.return_value = [style]
+
+        self.service._apply_label_priority(labeling)
+
+        style.setLabelSettings.assert_not_called()
 
     def test_data_defined_priority_for_settlement_layer(self):
         labeling = MagicMock()

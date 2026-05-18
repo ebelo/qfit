@@ -45,6 +45,18 @@ _LABEL_PRIORITIES = {
 _SETTLEMENT_LAYERS = {"settlement-major-label", "settlement-minor-label"}
 _SWISS_MOTORWAY_SHIELD_PRIORITY = 6
 _SWISS_MOTORWAY_SHIELD_Z11_STYLE_MARKER = "ch-motorway-icon-z11-plus"
+_MAPBOX_SYMBOL_PIXEL_TO_MM = 25.4 / 96.0
+_MAPBOX_DEFAULT_SYMBOL_SPACING_PX = 250.0
+_LINE_LABEL_REPEAT_DISTANCE_LAYERS = {
+    "ferry-aerialway-label",
+    "path-pedestrian-label",
+    "road-label",
+}
+_WATERWAY_LABEL_REPEAT_DISTANCE_PX_BY_STYLE_MARKER = {
+    "z13-to-z15": 250.0,
+    "z15-to-z17": 325.0,
+    "z17-plus": 400.0,
+}
 
 
 def _label_style_mapbox_layer_id(style) -> str:
@@ -73,6 +85,59 @@ def _label_priority(layer_name: str, style) -> int | None:
     ):
         return _SWISS_MOTORWAY_SHIELD_PRIORITY
     return _LABEL_PRIORITIES.get(layer_name)
+
+
+def _symbol_spacing_mm(pixels: float) -> float:
+    return pixels * _MAPBOX_SYMBOL_PIXEL_TO_MM
+
+
+def _label_repeat_distance(layer_name: str, style) -> float | None:
+    if layer_name in _LINE_LABEL_REPEAT_DISTANCE_LAYERS:
+        return _symbol_spacing_mm(_MAPBOX_DEFAULT_SYMBOL_SPACING_PX)
+    if layer_name != "waterway-label":
+        return None
+
+    style_name = _label_style_name(style)
+    for marker, pixels in _WATERWAY_LABEL_REPEAT_DISTANCE_PX_BY_STYLE_MARKER.items():
+        if marker in style_name:
+            return _symbol_spacing_mm(pixels)
+    return _symbol_spacing_mm(_MAPBOX_DEFAULT_SYMBOL_SPACING_PX)
+
+
+def _needs_repeat_distance(settings) -> bool:
+    repeat_distance = getattr(settings, "repeatDistance", 0.0)
+    return not isinstance(repeat_distance, (int, float)) or repeat_distance <= 0
+
+
+def _apply_settlement_label_priority(settings, QgsProperty) -> None:
+    dd_props = settings.dataDefinedProperties()
+    dd_props.setProperty(
+        87,
+        QgsProperty.fromExpression(
+            "greatest(1, least(10, 10 - coalesce(to_int(\"symbolrank\"), to_int(\"sizerank\"), 8) + 1))"
+        ),
+    )
+    settings.setDataDefinedProperties(dd_props)
+
+
+def _apply_label_settings(
+    settings,
+    *,
+    layer_name: str,
+    priority: int | None,
+    repeat_distance: float | None,
+    QgsProperty,
+) -> bool:
+    changed = False
+    if priority is not None:
+        settings.priority = priority
+        if layer_name in _SETTLEMENT_LAYERS:
+            _apply_settlement_label_priority(settings, QgsProperty)
+        changed = True
+    if repeat_distance is not None and _needs_repeat_distance(settings):
+        settings.repeatDistance = repeat_distance
+        changed = True
+    return changed
 
 
 class BackgroundMapService:
@@ -209,23 +274,21 @@ class BackgroundMapService:
             for style in styles:
                 layer_name = _label_style_mapbox_layer_id(style)
                 priority = _label_priority(layer_name, style)
-                if priority is None:
+                repeat_distance = _label_repeat_distance(layer_name, style)
+                if priority is None and repeat_distance is None:
                     continue
                 settings = style.labelSettings()
                 if settings is None:
                     continue
-                settings.priority = priority
-                if layer_name in _SETTLEMENT_LAYERS:
-                    dd_props = settings.dataDefinedProperties()
-                    dd_props.setProperty(
-                        87,
-                        QgsProperty.fromExpression(
-                            "greatest(1, least(10, 10 - coalesce(to_int(\"symbolrank\"), to_int(\"sizerank\"), 8) + 1))"
-                        ),
-                    )
-                    settings.setDataDefinedProperties(dd_props)
-                style.setLabelSettings(settings)
-                changed = True
+                if _apply_label_settings(
+                    settings,
+                    layer_name=layer_name,
+                    priority=priority,
+                    repeat_distance=repeat_distance,
+                    QgsProperty=QgsProperty,
+                ):
+                    style.setLabelSettings(settings)
+                    changed = True
             if changed:
                 labeling.setStyles(styles)
         except (RuntimeError, AttributeError):
