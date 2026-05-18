@@ -521,6 +521,23 @@ class MapboxOutdoorsLabelSettingsTests(unittest.TestCase):
         self.assertIn("25/-25", markdown)
         self.assertIn("pipe\\|key", markdown)
 
+    def test_summary_markdown_collapses_empty_compound_cells(self):
+        report = {
+            "style_owner": "mapbox",
+            "style_id": "outdoors-v12",
+            "generated": "2026-05-18T10:02:00+00:00",
+            "sprite_context_loaded": False,
+            "sprite_definition_count": 0,
+            "label_count": 1,
+            "labels": [{"style_name": "sparse-label"}],
+        }
+
+        markdown = build_summary_markdown(report)
+
+        self.assertIn("sparse-label", markdown)
+        self.assertNotIn("— —", markdown)
+        self.assertNotIn("—/—", markdown)
+
     def test_write_report_writes_json_and_summary(self):
         report = {
             "style_owner": "mapbox",

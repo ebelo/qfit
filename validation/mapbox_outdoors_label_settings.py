@@ -329,6 +329,13 @@ def _markdown_value(value: object) -> str:
     return str(value).replace("|", "\\|")
 
 
+def _compound_markdown_value(*values: object, separator: str = " ") -> str:
+    rendered_values = [_markdown_value(value) for value in values]
+    if all(value == "—" for value in rendered_values):
+        return "—"
+    return separator.join(rendered_values)
+
+
 def build_summary_markdown(report: dict[str, object]) -> str:
     labels = report.get("labels")
     rows = labels if isinstance(labels, list) else []
@@ -347,7 +354,7 @@ def build_summary_markdown(report: dict[str, object]) -> str:
         if not isinstance(row, dict):
             continue
         lines.append(
-            "| {base} | {style} | {source} | {field} | {expr} | {priority} | {placement} | {placement_flags} | {repeat} | {unit} | {display_all} | {obstacle} | {text_size} {text_size_unit} | {text_color} | {text_opacity} | {buffer_enabled} | {buffer_size} {buffer_size_unit} | {buffer_color} | {buffer_opacity} | {label_per_part} | {merge_lines} | {curve_angles} | {overrun} | {keys} |".format(
+            "| {base} | {style} | {source} | {field} | {expr} | {priority} | {placement} | {placement_flags} | {repeat} | {unit} | {display_all} | {obstacle} | {text_size} | {text_color} | {text_opacity} | {buffer_enabled} | {buffer_size} | {buffer_color} | {buffer_opacity} | {label_per_part} | {merge_lines} | {curve_angles} | {overrun} | {keys} |".format(
                 base=_markdown_value(row.get("base_style_layer_id")),
                 style=_markdown_value(row.get("style_name")),
                 source=_markdown_value(row.get("source_layer")),
@@ -360,24 +367,23 @@ def build_summary_markdown(report: dict[str, object]) -> str:
                 unit=_markdown_value(row.get("repeat_distance_unit")),
                 display_all=_markdown_value(row.get("display_all")),
                 obstacle=_markdown_value(row.get("obstacle")),
-                text_size=_markdown_value(row.get("text_size")),
-                text_size_unit=_markdown_value(row.get("text_size_unit")),
+                text_size=_compound_markdown_value(row.get("text_size"), row.get("text_size_unit")),
                 text_color=_markdown_value(row.get("text_color")),
                 text_opacity=_markdown_value(row.get("text_opacity")),
                 buffer_enabled=_markdown_value(row.get("buffer_enabled")),
-                buffer_size=_markdown_value(row.get("buffer_size")),
-                buffer_size_unit=_markdown_value(row.get("buffer_size_unit")),
+                buffer_size=_compound_markdown_value(row.get("buffer_size"), row.get("buffer_size_unit")),
                 buffer_color=_markdown_value(row.get("buffer_color")),
                 buffer_opacity=_markdown_value(row.get("buffer_opacity")),
                 label_per_part=_markdown_value(row.get("label_per_part")),
                 merge_lines=_markdown_value(row.get("merge_lines")),
-                curve_angles="{in_angle}/{out_angle}".format(
-                    in_angle=_markdown_value(row.get("max_curved_char_angle_in")),
-                    out_angle=_markdown_value(row.get("max_curved_char_angle_out")),
+                curve_angles=_compound_markdown_value(
+                    row.get("max_curved_char_angle_in"),
+                    row.get("max_curved_char_angle_out"),
+                    separator="/",
                 ),
-                overrun="{distance} {unit}".format(
-                    distance=_markdown_value(row.get("overrun_distance")),
-                    unit=_markdown_value(row.get("overrun_distance_unit")),
+                overrun=_compound_markdown_value(
+                    row.get("overrun_distance"),
+                    row.get("overrun_distance_unit"),
                 ),
                 keys=_markdown_value(row.get("data_defined_property_keys")),
             )
