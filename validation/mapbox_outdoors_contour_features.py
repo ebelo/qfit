@@ -545,6 +545,7 @@ def _all_camera_row(report: dict[str, object]) -> dict[str, object]:
         else {}
     )
     return {
+        "status": "decoded",
         "camera": camera.get("name"),
         "camera_zoom": camera.get("zoom"),
         "tile_zoom": report.get("tile_zoom"),
@@ -556,6 +557,19 @@ def _all_camera_row(report: dict[str, object]) -> dict[str, object]:
         "candidate_label_geometry_status": candidate_geometry.get("status"),
         "candidate_geometry_type_counts": report.get("candidate_geometry_type_counts"),
     }
+
+
+def _all_camera_error_row(camera_name: str, exc: BaseException) -> dict[str, object]:
+    return {
+        "status": "error",
+        "camera": camera_name,
+        "error": type(exc).__name__,
+        "message": str(exc),
+    }
+
+
+def _all_camera_sum(rows: list[dict[str, object]], key: str) -> int:
+    return sum(int(row.get(key) or 0) for row in rows)
 
 
 def _config_for_camera(config: ContourFeatureConfig, camera_name: str) -> ContourFeatureConfig:
@@ -582,38 +596,41 @@ def collect_all_camera_contour_feature_report(
     from qfit.mapbox_config import fetch_mapbox_style_definition
 
     shared_style = _load_original_style(config, style_fetcher or fetch_mapbox_style_definition)
+    if not config.token:
+        raise ValueError("A Mapbox token is required to fetch vector tiles.")
 
-    camera_reports = [
-        collect_contour_feature_report(
-            _config_for_camera(config, camera_name),
-            style_fetcher=lambda _token, _owner, _style_id: shared_style,
-            tile_fetcher=tile_fetcher,
-            tile_decoder=tile_decoder,
-        )
-        for camera_name in _comparison_camera_names()
-    ]
-    rows = [_all_camera_row(report) for report in camera_reports]
+    rows: list[dict[str, object]] = []
+    for camera_name in _comparison_camera_names():
+        try:
+            report = collect_contour_feature_report(
+                _config_for_camera(config, camera_name),
+                style_fetcher=lambda _token, _owner, _style_id: shared_style,
+                tile_fetcher=tile_fetcher,
+                tile_decoder=tile_decoder,
+            )
+        except _TILE_ERROR_TYPES as exc:
+            rows.append(_all_camera_error_row(camera_name, exc))
+            continue
+        rows.append(_all_camera_row(report))
     generated = config.now or dt.datetime.now(dt.timezone.utc)
+    status_counts = _all_camera_summary_counts(rows, "status")
     return {
         "style_owner": config.style_owner,
         "style_id": config.style_id,
         "generated": generated.isoformat(),
         "camera_count": len(rows),
-        "tile_count": sum(int(report.get("tile_count") or 0) for report in camera_reports),
-        "decoded_tile_count": sum(int(report.get("decoded_tile_count") or 0) for report in camera_reports),
-        "failed_tile_count": sum(int(report.get("failed_tile_count") or 0) for report in camera_reports),
-        "contour_feature_count": sum(
-            int(report.get("contour_feature_count") or 0) for report in camera_reports
-        ),
-        "contour_label_candidate_count": sum(
-            int(report.get("contour_label_candidate_count") or 0) for report in camera_reports
-        ),
+        "successful_camera_count": status_counts.get("decoded", 0),
+        "failed_camera_count": status_counts.get("error", 0),
+        "tile_count": _all_camera_sum(rows, "tile_count"),
+        "decoded_tile_count": _all_camera_sum(rows, "decoded_tile_count"),
+        "failed_tile_count": _all_camera_sum(rows, "failed_tile_count"),
+        "contour_feature_count": _all_camera_sum(rows, "contour_feature_count"),
+        "contour_label_candidate_count": _all_camera_sum(rows, "contour_label_candidate_count"),
         "candidate_label_geometry_statuses": _all_camera_summary_counts(
             rows,
             "candidate_label_geometry_status",
         ),
         "cameras": rows,
-        "camera_reports": camera_reports,
     }
 
 
@@ -678,28 +695,30 @@ def write_report(report: dict[str, object], paths: ContourFeaturePaths) -> None:
 
 
 def build_all_camera_summary_markdown(report: dict[str, object]) -> str:
+    cameras = report.get("cameras")
+    camera_rows = cameras if isinstance(cameras, list) else []
     lines = [
         "# Mapbox Outdoors contour feature diagnostic - all cameras",
         "",
         f"Generated: {report.get('generated')}",
         f"Style: {report.get('style_owner')}/{report.get('style_id')}",
         f"Cameras: {report.get('camera_count')}",
+        f"Camera statuses: {_markdown_value(_all_camera_summary_counts(camera_rows, 'status'))}",
         f"Tiles: {report.get('decoded_tile_count')}/{report.get('tile_count')} decoded",
         f"Contour features: {report.get('contour_feature_count')}",
         f"Contour-label candidates (index 5/10): {report.get('contour_label_candidate_count')}",
         f"Candidate label geometry statuses: {_markdown_value(report.get('candidate_label_geometry_statuses'))}",
         "",
-        "| Camera | Camera zoom | Tile zoom | Tiles decoded | Contour features | Label candidates | Candidate label geometry | Candidate geometry types |",
-        "| --- | ---: | ---: | ---: | ---: | ---: | --- | --- |",
+        "| Camera | Status | Camera zoom | Tile zoom | Tiles decoded | Contour features | Label candidates | Candidate label geometry | Candidate geometry types | Error |",
+        "| --- | --- | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |",
     ]
-    cameras = report.get("cameras")
-    camera_rows = cameras if isinstance(cameras, list) else []
     for camera in camera_rows:
         if not isinstance(camera, dict):
             continue
         lines.append(
-            "| {camera} | {camera_zoom} | {tile_zoom} | {decoded}/{tile_count} | {feature_count} | {candidate_count} | {candidate_geometry} | {candidate_geometry_types} |".format(
+            "| {camera} | {status} | {camera_zoom} | {tile_zoom} | {decoded}/{tile_count} | {feature_count} | {candidate_count} | {candidate_geometry} | {candidate_geometry_types} | {error} |".format(
                 camera=_markdown_value(camera.get("camera")),
+                status=_markdown_value(camera.get("status")),
                 camera_zoom=_markdown_value(camera.get("camera_zoom")),
                 tile_zoom=_markdown_value(camera.get("tile_zoom")),
                 decoded=_markdown_value(camera.get("decoded_tile_count")),
@@ -708,6 +727,7 @@ def build_all_camera_summary_markdown(report: dict[str, object]) -> str:
                 candidate_count=_markdown_value(camera.get("contour_label_candidate_count")),
                 candidate_geometry=_markdown_value(camera.get("candidate_label_geometry_status")),
                 candidate_geometry_types=_markdown_value(camera.get("candidate_geometry_type_counts")),
+                error=_markdown_value(camera.get("error")),
             )
         )
     return "\n".join(lines) + "\n"

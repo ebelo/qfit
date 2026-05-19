@@ -375,6 +375,8 @@ class MapboxOutdoorsContourFeatureTests(unittest.TestCase):
 
         self.assertEqual(style_calls, [("token", "mapbox", "outdoors-v12")])
         self.assertEqual(report["camera_count"], 2)
+        self.assertEqual(report["successful_camera_count"], 2)
+        self.assertEqual(report["failed_camera_count"], 0)
         self.assertEqual(report["tile_count"], 2)
         self.assertEqual(report["decoded_tile_count"], 2)
         self.assertEqual(report["contour_feature_count"], 4)
@@ -384,7 +386,39 @@ class MapboxOutdoorsContourFeatureTests(unittest.TestCase):
             [camera["camera"] for camera in report["cameras"]],
             ["chamonix-trails-z14-outdoors", "zermatt-trails-z18-outdoors"],
         )
-        self.assertEqual(len(report["camera_reports"]), 2)
+        self.assertEqual([camera["status"] for camera in report["cameras"]], ["decoded", "decoded"])
+        self.assertNotIn("camera_reports", report)
+
+    def test_collect_all_camera_contour_feature_report_keeps_camera_errors(self):
+        def fetch_style(_token, _owner, _style_id):
+            return {
+                "version": 8,
+                "sources": {
+                    "composite": {
+                        "type": "vector",
+                        "url": "mapbox://mapbox.mapbox-streets-v8,mapbox.mapbox-terrain-v2",
+                    }
+                },
+                "layers": [],
+            }
+
+        with mock.patch(
+            "qfit.validation.mapbox_outdoors_contour_features._comparison_camera_names",
+            return_value=["chamonix-trails-z14-outdoors", "missing-camera"],
+        ):
+            report = collect_all_camera_contour_feature_report(
+                ContourFeatureConfig(token="token", output_root=Path("/tmp"), tile_zoom=0),
+                style_fetcher=fetch_style,
+                tile_fetcher=lambda _url: gzip.compress(b"tile"),
+                tile_decoder=lambda _payload: {"contour": {"features": []}},
+            )
+
+        self.assertEqual(report["camera_count"], 2)
+        self.assertEqual(report["successful_camera_count"], 1)
+        self.assertEqual(report["failed_camera_count"], 1)
+        self.assertEqual(report["cameras"][1]["camera"], "missing-camera")
+        self.assertEqual(report["cameras"][1]["status"], "error")
+        self.assertEqual(report["cameras"][1]["error"], "ValueError")
 
     def test_write_report_writes_json_and_markdown(self):
         report = {
@@ -443,6 +477,8 @@ class MapboxOutdoorsContourFeatureTests(unittest.TestCase):
             "style_owner": "mapbox",
             "style_id": "outdoors-v12",
             "camera_count": 2,
+            "successful_camera_count": 2,
+            "failed_camera_count": 0,
             "tile_count": 2,
             "decoded_tile_count": 2,
             "contour_feature_count": 4,
@@ -450,6 +486,7 @@ class MapboxOutdoorsContourFeatureTests(unittest.TestCase):
             "candidate_label_geometry_statuses": {"no_candidates": 1, "polygon_only": 1},
             "cameras": [
                 {
+                    "status": "decoded",
                     "camera": "switzerland-alps-z5-outdoors",
                     "camera_zoom": 5.0,
                     "tile_zoom": 5,
@@ -461,6 +498,7 @@ class MapboxOutdoorsContourFeatureTests(unittest.TestCase):
                     "candidate_geometry_type_counts": {},
                 },
                 {
+                    "status": "decoded",
                     "camera": "chamonix-trails-z14-outdoors",
                     "camera_zoom": 14.0,
                     "tile_zoom": 14,
@@ -472,19 +510,21 @@ class MapboxOutdoorsContourFeatureTests(unittest.TestCase):
                     "candidate_geometry_type_counts": {"Polygon": 2},
                 },
             ],
-            "camera_reports": [],
         }
         markdown = build_all_camera_summary_markdown(report)
 
         self.assertIn("# Mapbox Outdoors contour feature diagnostic - all cameras", markdown)
+        self.assertIn('Camera statuses: {"decoded":2}', markdown)
         self.assertIn('Candidate label geometry statuses: {"no_candidates":1,"polygon_only":1}', markdown)
-        self.assertIn("| chamonix-trails-z14-outdoors | 14.0 | 14 | 1/1 | 4 | 2 | polygon_only |", markdown)
+        self.assertIn("| chamonix-trails-z14-outdoors | decoded | 14.0 | 14 | 1/1 | 4 | 2 | polygon_only |", markdown)
 
         with tempfile.TemporaryDirectory() as tmpdir:
             paths = build_all_camera_contour_feature_paths(Path(tmpdir) / "run")
             write_all_camera_report(report, paths)
 
-            self.assertEqual(json.loads(paths.json_path.read_text(encoding="utf-8"))["camera_count"], 2)
+            written = json.loads(paths.json_path.read_text(encoding="utf-8"))
+            self.assertEqual(written["camera_count"], 2)
+            self.assertNotIn("camera_reports", written)
             self.assertIn("Cameras: 2", paths.summary_path.read_text(encoding="utf-8"))
 
     def test_main_writes_single_camera_report(self):
@@ -531,6 +571,8 @@ class MapboxOutdoorsContourFeatureTests(unittest.TestCase):
             "style_owner": "mapbox",
             "style_id": "outdoors-v12",
             "camera_count": 1,
+            "successful_camera_count": 1,
+            "failed_camera_count": 0,
             "tile_count": 1,
             "decoded_tile_count": 1,
             "contour_feature_count": 3,
@@ -538,6 +580,7 @@ class MapboxOutdoorsContourFeatureTests(unittest.TestCase):
             "candidate_label_geometry_statuses": {"polygon_only": 1},
             "cameras": [
                 {
+                    "status": "decoded",
                     "camera": "chamonix-trails-z14-outdoors",
                     "camera_zoom": 13.75,
                     "tile_zoom": 14,
@@ -549,7 +592,6 @@ class MapboxOutdoorsContourFeatureTests(unittest.TestCase):
                     "candidate_geometry_type_counts": {"Polygon": 2},
                 }
             ],
-            "camera_reports": [],
         }
 
         with tempfile.TemporaryDirectory() as tmpdir:
