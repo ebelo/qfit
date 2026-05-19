@@ -657,7 +657,7 @@ def _all_camera_row(report: dict[str, object]) -> dict[str, object]:
     return row
 
 
-def _all_camera_error_row(camera_name: str, exc: Exception) -> dict[str, object]:
+def _all_camera_error_row(camera_name: str, exc: BaseException) -> dict[str, object]:
     return {
         "status": "error",
         "camera": camera_name,
@@ -862,7 +862,7 @@ def collect_all_camera_road_feature_report(
                 tile_fetcher=tile_fetcher,
                 tile_decoder=tile_decoder,
             )
-        except Exception as exc:  # noqa: BLE001 - diagnostic batch should preserve other camera rows.
+        except _TILE_ERROR_TYPES as exc:
             camera_reports.append(_all_camera_error_row(camera_name, exc))
             continue
         camera_reports.append(_all_camera_row(report))
