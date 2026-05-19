@@ -501,71 +501,103 @@ def _line_label_record_for_repeat(row: dict[str, object]) -> bool:
     return row.get("geometry_type") == "Line" or placement in {"Curved", "Line", "Horizontal"}
 
 
-def _line_label_repeat_spacing_rows(
-    source_label_layers: list[dict[str, object]],
-    label_records: list[dict[str, object]],
-) -> list[dict[str, object]]:
+def _base_style_layer_id(row: dict[str, object]) -> str:
+    return str(row.get("base_style_layer_id") or row.get("style_name") or "")
+
+
+def _deduplicated_label_records(records: Iterable[dict[str, object]]) -> list[dict[str, object]]:
+    deduplicated: list[dict[str, object]] = []
+    seen_record_ids: set[int] = set()
+    for record in records:
+        record_id = id(record)
+        if record_id in seen_record_ids:
+            continue
+        seen_record_ids.add(record_id)
+        deduplicated.append(record)
+    return deduplicated
+
+
+def _label_records_by_style(label_records: list[dict[str, object]]) -> dict[str, list[dict[str, object]]]:
     labels_by_style: dict[str, list[dict[str, object]]] = defaultdict(list)
     for record in label_records:
         style_name = str(record.get("style_name") or "")
         if style_name:
             labels_by_style[style_name].append(record)
+    return labels_by_style
 
+
+def _matched_label_records_for_source_row(
+    row: dict[str, object],
+    labels_by_style: dict[str, list[dict[str, object]]],
+) -> list[dict[str, object]]:
+    style_keys = {str(row.get("style_name") or ""), str(row.get("qfit_style_layer_id") or "")}
+    return _deduplicated_label_records(
+        record
+        for style_key in style_keys
+        for record in labels_by_style.get(style_key, [])
+    )
+
+
+def _line_label_source_groups(
+    source_label_layers: list[dict[str, object]],
+    labels_by_style: dict[str, list[dict[str, object]]],
+) -> dict[str, list[tuple[dict[str, object], list[dict[str, object]]]]]:
     grouped: dict[str, list[tuple[dict[str, object], list[dict[str, object]]]]] = defaultdict(list)
     for row in source_label_layers:
-        if not isinstance(row, dict) or not _is_line_label_source_row(row):
-            continue
-        base_layer = str(row.get("base_style_layer_id") or row.get("style_name") or "")
-        if not base_layer:
-            continue
-        style_keys = {str(row.get("style_name") or ""), str(row.get("qfit_style_layer_id") or "")}
-        seen_label_ids: set[int] = set()
-        matched_labels = []
-        for style_key in style_keys:
-            for record in labels_by_style.get(style_key, []):
-                label_id = id(record)
-                if label_id in seen_label_ids:
-                    continue
-                seen_label_ids.add(label_id)
-                matched_labels.append(record)
-        grouped[base_layer].append((row, matched_labels))
+        if isinstance(row, dict) and _is_line_label_source_row(row):
+            base_layer = _base_style_layer_id(row)
+            if base_layer:
+                grouped[base_layer].append((row, _matched_label_records_for_source_row(row, labels_by_style)))
+    return grouped
 
-    rows: list[dict[str, object]] = []
+
+def _repeat_label_records(
+    grouped_rows: list[tuple[dict[str, object], list[dict[str, object]]]],
+) -> list[dict[str, object]]:
+    return _deduplicated_label_records(
+        record
+        for _row, labels in grouped_rows
+        for record in labels
+        if _line_label_record_for_repeat(record)
+    )
+
+
+def _line_label_repeat_spacing_row(
+    base_layer: str,
+    source_rows: list[dict[str, object]],
+    line_label_rows: list[dict[str, object]],
+) -> dict[str, object]:
+    return {
+        "base_style_layer_id": base_layer,
+        "source_label_rows": len(source_rows),
+        "converted_line_label_styles": len(line_label_rows),
+        "missing_qfit_symbol_spacing": sum(
+            1
+            for row in source_rows
+            if _section_control(row, "qfit_layout", "symbol-spacing") is None
+        ),
+        "source_symbol_spacings": _sorted_count_map(
+            _section_control(row, "layout", "symbol-spacing") for row in source_rows
+        ),
+        "qfit_symbol_spacings": _sorted_count_map(
+            _section_control(row, "qfit_layout", "symbol-spacing") for row in source_rows
+        ),
+        "repeat_distances": _sorted_count_map(row.get("repeat_distance") for row in line_label_rows),
+        "placements": _sorted_count_map(row.get("placement") for row in line_label_rows),
+        "style_names": _sorted_count_map(row.get("style_name") for row in source_rows),
+        "zero_repeat_distance_count": sum(1 for row in line_label_rows if row.get("repeat_distance") == 0),
+    }
+
+
+def _line_label_repeat_spacing_rows(
+    source_label_layers: list[dict[str, object]],
+    label_records: list[dict[str, object]],
+) -> list[dict[str, object]]:
+    grouped = _line_label_source_groups(source_label_layers, _label_records_by_style(label_records))
+    rows = []
     for base_layer, grouped_rows in grouped.items():
         source_rows = [row for row, _labels in grouped_rows]
-        line_label_rows: list[dict[str, object]] = []
-        seen_line_label_ids: set[int] = set()
-        for _row, labels in grouped_rows:
-            for record in labels:
-                label_id = id(record)
-                if label_id in seen_line_label_ids or not _line_label_record_for_repeat(record):
-                    continue
-                seen_line_label_ids.add(label_id)
-                line_label_rows.append(record)
-        rows.append(
-            {
-                "base_style_layer_id": base_layer,
-                "source_label_rows": len(source_rows),
-                "converted_line_label_styles": len(line_label_rows),
-                "missing_qfit_symbol_spacing": sum(
-                    1
-                    for row in source_rows
-                    if _section_control(row, "qfit_layout", "symbol-spacing") is None
-                ),
-                "source_symbol_spacings": _sorted_count_map(
-                    _section_control(row, "layout", "symbol-spacing") for row in source_rows
-                ),
-                "qfit_symbol_spacings": _sorted_count_map(
-                    _section_control(row, "qfit_layout", "symbol-spacing") for row in source_rows
-                ),
-                "repeat_distances": _sorted_count_map(row.get("repeat_distance") for row in line_label_rows),
-                "placements": _sorted_count_map(row.get("placement") for row in line_label_rows),
-                "style_names": _sorted_count_map(row.get("style_name") for row in source_rows),
-                "zero_repeat_distance_count": sum(
-                    1 for row in line_label_rows if row.get("repeat_distance") == 0
-                ),
-            }
-        )
+        rows.append(_line_label_repeat_spacing_row(base_layer, source_rows, _repeat_label_records(grouped_rows)))
     return sorted(
         rows,
         key=lambda row: (
