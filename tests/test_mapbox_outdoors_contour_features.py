@@ -4,14 +4,19 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from tests import _path  # noqa: F401
 
 from qfit.validation.mapbox_outdoors_contour_features import (
     ContourFeatureConfig,
+    build_all_camera_contour_feature_paths,
+    build_all_camera_run_directory,
+    build_all_camera_summary_markdown,
     build_contour_feature_paths,
     build_run_directory,
     build_summary_markdown,
+    collect_all_camera_contour_feature_report,
     collect_contour_feature_report,
     contour_tile_record,
     decode_vector_tile_bytes,
@@ -22,6 +27,7 @@ from qfit.validation.mapbox_outdoors_contour_features import (
     resolve_mapbox_token,
     tile_bounds_for_web_mercator_extent,
     web_mercator_to_lon_lat,
+    write_all_camera_report,
     write_report,
 )
 
@@ -55,6 +61,17 @@ class MapboxOutdoorsContourFeatureTests(unittest.TestCase):
 
         self.assertEqual(run_dir, Path("/tmp/contours/chamonix/20260518T112200Z"))
         self.assertEqual(paths.json_path, run_dir / "contour-features.json")
+        self.assertEqual(paths.summary_path, run_dir / "summary.md")
+
+    def test_build_all_camera_paths_are_predictable(self):
+        run_dir = build_all_camera_run_directory(
+            output_root=Path("/tmp/contours"),
+            now=dt.datetime(2026, 5, 18, 11, 22, tzinfo=dt.timezone.utc),
+        )
+        paths = build_all_camera_contour_feature_paths(run_dir)
+
+        self.assertEqual(run_dir, Path("/tmp/contours/all-cameras/20260518T112200Z"))
+        self.assertEqual(paths.json_path, run_dir / "summary.json")
         self.assertEqual(paths.summary_path, run_dir / "summary.md")
 
     def test_tile_helpers_cover_web_mercator_extent(self):
@@ -311,6 +328,63 @@ class MapboxOutdoorsContourFeatureTests(unittest.TestCase):
         self.assertEqual(report["candidate_label_geometry"]["status"], "polygon_only")
         self.assertEqual(report["candidate_label_geometry"]["line_compatible_count"], 0)
 
+    def test_collect_all_camera_contour_feature_report_aggregates_camera_rows(self):
+        style_calls = []
+
+        def fetch_style(_token, _owner, _style_id):
+            style_calls.append((_token, _owner, _style_id))
+            return {
+                "version": 8,
+                "sources": {
+                    "composite": {
+                        "type": "vector",
+                        "url": "mapbox://mapbox.mapbox-streets-v8,mapbox.mapbox-terrain-v2",
+                    }
+                },
+                "layers": [],
+            }
+
+        def decoder(_payload):
+            return {
+                "contour": {
+                    "features": [
+                        {
+                            "geometry": {"type": "Polygon", "coordinates": [[[0, 0], [1, 0], [1, 1], [0, 0]]]},
+                            "properties": {"ele": 1000, "index": 5},
+                        },
+                        {
+                            "geometry": {"type": "LineString", "coordinates": [[0, 0], [1, 1]]},
+                            "properties": {"ele": 1010, "index": 1},
+                        },
+                    ]
+                }
+            }
+
+        generated = dt.datetime(2026, 5, 18, 11, 35, tzinfo=dt.timezone.utc)
+        with mock.patch(
+            "qfit.validation.mapbox_outdoors_contour_features._comparison_camera_names",
+            return_value=["chamonix-trails-z14-outdoors", "zermatt-trails-z18-outdoors"],
+        ):
+            report = collect_all_camera_contour_feature_report(
+                ContourFeatureConfig(token="token", output_root=Path("/tmp"), tile_zoom=0, now=generated),
+                style_fetcher=fetch_style,
+                tile_fetcher=lambda _url: gzip.compress(b"tile"),
+                tile_decoder=decoder,
+            )
+
+        self.assertEqual(style_calls, [("token", "mapbox", "outdoors-v12")])
+        self.assertEqual(report["camera_count"], 2)
+        self.assertEqual(report["tile_count"], 2)
+        self.assertEqual(report["decoded_tile_count"], 2)
+        self.assertEqual(report["contour_feature_count"], 4)
+        self.assertEqual(report["contour_label_candidate_count"], 2)
+        self.assertEqual(report["candidate_label_geometry_statuses"], {"polygon_only": 2})
+        self.assertEqual(
+            [camera["camera"] for camera in report["cameras"]],
+            ["chamonix-trails-z14-outdoors", "zermatt-trails-z18-outdoors"],
+        )
+        self.assertEqual(len(report["camera_reports"]), 2)
+
     def test_write_report_writes_json_and_markdown(self):
         report = {
             "generated": "2026-05-18T11:22:00+00:00",
@@ -361,6 +435,56 @@ class MapboxOutdoorsContourFeatureTests(unittest.TestCase):
 
             self.assertEqual(json.loads(paths.json_path.read_text(encoding="utf-8"))["tile_count"], 1)
             self.assertIn("Contour features: 3", paths.summary_path.read_text(encoding="utf-8"))
+
+    def test_write_all_camera_report_writes_json_and_markdown(self):
+        report = {
+            "generated": "2026-05-18T11:22:00+00:00",
+            "style_owner": "mapbox",
+            "style_id": "outdoors-v12",
+            "camera_count": 2,
+            "tile_count": 2,
+            "decoded_tile_count": 2,
+            "contour_feature_count": 4,
+            "contour_label_candidate_count": 2,
+            "candidate_label_geometry_statuses": {"no_candidates": 1, "polygon_only": 1},
+            "cameras": [
+                {
+                    "camera": "switzerland-alps-z5-outdoors",
+                    "camera_zoom": 5.0,
+                    "tile_zoom": 5,
+                    "tile_count": 1,
+                    "decoded_tile_count": 1,
+                    "contour_feature_count": 0,
+                    "contour_label_candidate_count": 0,
+                    "candidate_label_geometry_status": "no_candidates",
+                    "candidate_geometry_type_counts": {},
+                },
+                {
+                    "camera": "chamonix-trails-z14-outdoors",
+                    "camera_zoom": 14.0,
+                    "tile_zoom": 14,
+                    "tile_count": 1,
+                    "decoded_tile_count": 1,
+                    "contour_feature_count": 4,
+                    "contour_label_candidate_count": 2,
+                    "candidate_label_geometry_status": "polygon_only",
+                    "candidate_geometry_type_counts": {"Polygon": 2},
+                },
+            ],
+            "camera_reports": [],
+        }
+        markdown = build_all_camera_summary_markdown(report)
+
+        self.assertIn("# Mapbox Outdoors contour feature diagnostic - all cameras", markdown)
+        self.assertIn('Candidate label geometry statuses: {"no_candidates":1,"polygon_only":1}', markdown)
+        self.assertIn("| chamonix-trails-z14-outdoors | 14.0 | 14 | 1/1 | 4 | 2 | polygon_only |", markdown)
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            paths = build_all_camera_contour_feature_paths(Path(tmpdir) / "run")
+            write_all_camera_report(report, paths)
+
+            self.assertEqual(json.loads(paths.json_path.read_text(encoding="utf-8"))["camera_count"], 2)
+            self.assertIn("Cameras: 2", paths.summary_path.read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":
