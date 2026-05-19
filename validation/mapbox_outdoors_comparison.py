@@ -580,11 +580,11 @@ def _label_value(value: object) -> object:
 
 
 def _label_setting_value(settings: object | None, name: str) -> object:
-    if settings is None or not hasattr(settings, name):
+    if settings is None:
         return None
     try:
         return _label_value(getattr(settings, name))
-    except (AttributeError, RuntimeError, TypeError):
+    except (AttributeError, RuntimeError, TypeError, ValueError):
         return None
 
 

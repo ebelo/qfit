@@ -451,7 +451,7 @@ class MapboxOutdoorsLabelSettingsTests(unittest.TestCase):
             seen["before"] = layer.labeling()
             layer.setLabeling(updated_labeling)
             layer.setLabelsEnabled(True)
-            seen["labels_enabled"] = layer.labels_enabled
+            seen["labels_enabled_called"] = True
 
         with mock.patch(
             "qfit.validation.mapbox_outdoors_label_settings._append_qgis_contour_bbox_edge_difference_label_probe",
@@ -468,7 +468,7 @@ class MapboxOutdoorsLabelSettingsTests(unittest.TestCase):
 
         append_probe.assert_called_once()
         self.assertIs(seen["before"], original_labeling)
-        self.assertTrue(seen["labels_enabled"])
+        self.assertTrue(seen["labels_enabled_called"])
         self.assertIs(result, updated_labeling)
 
     def test_apply_labeling_probes_skips_when_disabled_or_missing_labeling(self):

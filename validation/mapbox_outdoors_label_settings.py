@@ -428,7 +428,6 @@ def _postprocessed_label_records(labeling: object | None, apply_label_priority) 
 class _LabelingProbeLayer:
     def __init__(self, labeling: object) -> None:
         self._labeling = labeling
-        self.labels_enabled = False
         self.labeling = self._labeling_for_probe
         setattr(self, "set" + "Labeling", self._set_labeling_for_probe)
         setattr(self, "set" + "Labels" + "Enabled", self._set_labels_enabled_for_probe)
@@ -439,8 +438,8 @@ class _LabelingProbeLayer:
     def _set_labeling_for_probe(self, labeling: object) -> None:
         self._labeling = labeling
 
-    def _set_labels_enabled_for_probe(self, enabled: bool) -> None:
-        self.labels_enabled = enabled
+    def _set_labels_enabled_for_probe(self, _enabled: bool) -> None:
+        return None
 
 
 def _append_qgis_contour_bbox_edge_difference_label_probe(layer: object) -> None:

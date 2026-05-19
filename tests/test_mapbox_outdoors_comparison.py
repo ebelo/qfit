@@ -733,20 +733,20 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         )
 
     def test_label_setting_value_handles_missing_and_runtime_errors(self):
-        class FlakySettings:
-            def __init__(self):
-                self.calls = 0
-
+        class RuntimeErrorSettings:
             @property
             def priority(self):
-                self.calls += 1
-                if self.calls == 1:
-                    return 3
                 raise RuntimeError("unavailable")
+
+        class ValueErrorSettings:
+            @property
+            def placement(self):
+                raise ValueError("unavailable")
 
         self.assertIsNone(_label_setting_value(None, "fieldName"))
         self.assertIsNone(_label_setting_value(object(), "fieldName"))
-        self.assertIsNone(_label_setting_value(FlakySettings(), "priority"))
+        self.assertIsNone(_label_setting_value(RuntimeErrorSettings(), "priority"))
+        self.assertIsNone(_label_setting_value(ValueErrorSettings(), "placement"))
 
     def test_write_qgis_label_styles_snapshot_redacts_token(self):
         class FakeSettings:
