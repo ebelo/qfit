@@ -23,6 +23,7 @@ from qfit.validation.mapbox_outdoors_contour_features import (
     is_contour_label_candidate,
     iter_tile_coordinates,
     lon_lat_to_tile,
+    main,
     recommended_tile_zoom,
     resolve_mapbox_token,
     tile_bounds_for_web_mercator_extent,
@@ -485,6 +486,90 @@ class MapboxOutdoorsContourFeatureTests(unittest.TestCase):
 
             self.assertEqual(json.loads(paths.json_path.read_text(encoding="utf-8"))["camera_count"], 2)
             self.assertIn("Cameras: 2", paths.summary_path.read_text(encoding="utf-8"))
+
+    def test_main_writes_single_camera_report(self):
+        report = {
+            "generated": "2026-05-18T11:22:00+00:00",
+            "style_owner": "mapbox",
+            "style_id": "outdoors-v12",
+            "camera": {"name": "chamonix-trails-z14-outdoors"},
+            "tile_zoom": 14,
+            "tile_count": 1,
+            "decoded_tile_count": 1,
+            "contour_feature_count": 3,
+            "contour_label_candidate_count": 2,
+            "index_counts": {},
+            "geometry_type_counts": {},
+            "candidate_geometry_type_counts": {},
+            "candidate_label_geometry": {"status": "polygon_only"},
+            "sample_candidates": [],
+            "tiles": [],
+        }
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with mock.patch(
+                "qfit.validation.mapbox_outdoors_contour_features.collect_contour_feature_report",
+                return_value=report,
+            ) as collect_report:
+                result = main([
+                    "chamonix-trails-z14-outdoors",
+                    "--mapbox-token",
+                    "token",
+                    "--output-root",
+                    tmpdir,
+                ])
+
+            self.assertIsNone(result)
+            collect_report.assert_called_once()
+            summaries = list(Path(tmpdir).glob("chamonix-trails-z14-outdoors/*/summary.md"))
+            self.assertEqual(len(summaries), 1)
+            self.assertIn("Contour features: 3", summaries[0].read_text(encoding="utf-8"))
+
+    def test_main_writes_all_camera_report(self):
+        report = {
+            "generated": "2026-05-18T11:22:00+00:00",
+            "style_owner": "mapbox",
+            "style_id": "outdoors-v12",
+            "camera_count": 1,
+            "tile_count": 1,
+            "decoded_tile_count": 1,
+            "contour_feature_count": 3,
+            "contour_label_candidate_count": 2,
+            "candidate_label_geometry_statuses": {"polygon_only": 1},
+            "cameras": [
+                {
+                    "camera": "chamonix-trails-z14-outdoors",
+                    "camera_zoom": 13.75,
+                    "tile_zoom": 14,
+                    "tile_count": 1,
+                    "decoded_tile_count": 1,
+                    "contour_feature_count": 3,
+                    "contour_label_candidate_count": 2,
+                    "candidate_label_geometry_status": "polygon_only",
+                    "candidate_geometry_type_counts": {"Polygon": 2},
+                }
+            ],
+            "camera_reports": [],
+        }
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with mock.patch(
+                "qfit.validation.mapbox_outdoors_contour_features.collect_all_camera_contour_feature_report",
+                return_value=report,
+            ) as collect_report:
+                result = main([
+                    "--all-cameras",
+                    "--mapbox-token",
+                    "token",
+                    "--output-root",
+                    tmpdir,
+                ])
+
+            self.assertIsNone(result)
+            collect_report.assert_called_once()
+            summaries = list(Path(tmpdir).glob("all-cameras/*/summary.md"))
+            self.assertEqual(len(summaries), 1)
+            self.assertIn("Cameras: 1", summaries[0].read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":
