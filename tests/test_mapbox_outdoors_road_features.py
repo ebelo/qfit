@@ -644,6 +644,8 @@ class MapboxOutdoorsRoadFeatureTests(unittest.TestCase):
         self.assertEqual(report["level_crossing_candidate_count"], 0)
         self.assertEqual(report["road_number_shield_candidate_count"], 0)
         self.assertEqual(report["road_exit_shield_candidate_count"], 0)
+        self.assertEqual(report["road_geometry_type_counts"], {"LineString": 8, "Polygon": 2})
+        self.assertEqual(report["pedestrian_polygon_class_counts"], {"pedestrian": 2})
         self.assertEqual(report["pedestrian_polygon_type_counts"], {"pedestrian": 2})
         self.assertEqual(report["pedestrian_polygon_structure_counts"], {"none": 2})
         self.assertEqual(report["pedestrian_polygon_layer_counts"], {"0": 2})

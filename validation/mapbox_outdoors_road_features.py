@@ -651,6 +651,8 @@ def _all_camera_row(report: dict[str, object]) -> dict[str, object]:
         "tile_count": report.get("tile_count"),
         "decoded_tile_count": report.get("decoded_tile_count"),
         "failed_tile_count": report.get("failed_tile_count"),
+        "road_geometry_type_counts": report.get("road_geometry_type_counts"),
+        "pedestrian_polygon_class_counts": report.get("pedestrian_polygon_class_counts"),
     }
     for _label, key, _alignment in _ROAD_FEATURE_TABLE_FIELDS:
         row[key] = report.get(key)
