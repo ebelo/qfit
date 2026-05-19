@@ -166,13 +166,13 @@ export MAPBOX_ACCESS_TOKEN="***"
 python3 validation/mapbox_outdoors_contour_features.py --all-cameras
 ```
 
-The all-camera contour diagnostic writes `summary.json` and `summary.md` under:
+The all-camera contour diagnostic writes compact aggregate `summary.json` and `summary.md` files under:
 
 ```text
 debug/mapbox-outdoors-contour-features/all-cameras/<UTC timestamp>/
 ```
 
-Use the aggregate table to check whether contour-label candidates are line-compatible, polygon-only, or absent across the z5-z18 comparison matrix. A polygon-only result means a Mapbox `symbol-spacing` or QGIS line-repeat tweak is not enough by itself; follow-up work should stay focused on QGIS vector-tile polygon/perimeter-label behavior or a separately validated contour-boundary overlay.
+Use the aggregate table to check whether contour-label candidates are line-compatible, polygon-only, or absent across the z5-z18 comparison matrix. Per-camera status and error columns keep the batch useful when one camera fails before tile-level diagnostics can be collected. A polygon-only result means a Mapbox `symbol-spacing` or QGIS line-repeat tweak is not enough by itself; follow-up work should stay focused on QGIS vector-tile polygon/perimeter-label behavior or a separately validated contour-boundary overlay.
 
 ## PR notes
 
