@@ -47,6 +47,7 @@ from qfit.validation.mapbox_outdoors_comparison import (
     is_valid_qgis_vector_tile_layer,
     list_cameras,
     load_style_definition,
+    qgis_label_styles_snapshot,
     redact_sensitive_text,
     render_browser_reference,
     render_qgis_vector,
@@ -116,6 +117,7 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         self.assertEqual(paths.diff_png, Path("/tmp/run/mapbox-gl-vs-qgis-diff.png"))
         self.assertEqual(paths.metrics_json, Path("/tmp/run/metrics.json"))
         self.assertEqual(paths.qgis_preprocessed_style_json, Path("/tmp/run/qgis-preprocessed-style.json"))
+        self.assertEqual(paths.qgis_label_styles_json, Path("/tmp/run/qgis-label-styles.json"))
         self.assertEqual(paths.manifest_json, Path("/tmp/run/manifest.json"))
 
     def test_resolve_token_prefers_argument_then_environment(self):
@@ -650,6 +652,70 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
                 self.assertTrue(probe_settings.geometryGeneratorEnabled)
                 self.assertEqual(probe_settings.geometryGeneratorType, FakeQgis.GeometryType.Line)
 
+    def test_qgis_label_styles_snapshot_captures_probe_settings(self):
+        class FakeSettings:
+            fieldName = 'concat("ele", \' m\')'
+            isExpression = True
+            placement = "Curved"
+            priority = 6
+            repeatDistance = 0.0
+            repeatDistanceUnit = None
+            geometryGenerator = QGIS_CONTOUR_BBOX_EDGE_DIFFERENCE_LABEL_PROBE_EXPRESSION
+            geometryGeneratorEnabled = True
+            geometryGeneratorType = "Line"
+
+        class FakeStyle:
+            def styleName(self):
+                return QGIS_CONTOUR_BBOX_EDGE_DIFFERENCE_LABEL_PROBE_STYLE_NAME
+
+            def layerName(self):
+                return "contour"
+
+            def geometryType(self):
+                return "Polygon"
+
+            def filterExpression(self):
+                return QGIS_CONTOUR_BBOX_EDGE_DIFFERENCE_LABEL_PROBE_FILTER
+
+            def minZoomLevel(self):
+                return QGIS_CONTOUR_BBOX_EDGE_DIFFERENCE_LABEL_PROBE_MIN_ZOOM
+
+            def maxZoomLevel(self):
+                return None
+
+            def labelSettings(self):
+                return FakeSettings()
+
+        class FakeLabeling:
+            def styles(self):
+                return [FakeStyle()]
+
+        class FakeLayer:
+            def labeling(self):
+                return FakeLabeling()
+
+        snapshot = qgis_label_styles_snapshot(FakeLayer())
+
+        self.assertEqual(snapshot, [{
+            "style_name": QGIS_CONTOUR_BBOX_EDGE_DIFFERENCE_LABEL_PROBE_STYLE_NAME,
+            "layer_name": "contour",
+            "geometry_type": "Polygon",
+            "filter_expression": QGIS_CONTOUR_BBOX_EDGE_DIFFERENCE_LABEL_PROBE_FILTER,
+            "min_zoom_level": QGIS_CONTOUR_BBOX_EDGE_DIFFERENCE_LABEL_PROBE_MIN_ZOOM,
+            "max_zoom_level": None,
+            "label_settings": {
+                "field_name": 'concat("ele", \' m\')',
+                "is_expression": True,
+                "placement": "Curved",
+                "priority": 6,
+                "repeat_distance": 0.0,
+                "repeat_distance_unit": None,
+                "geometry_generator": QGIS_CONTOUR_BBOX_EDGE_DIFFERENCE_LABEL_PROBE_EXPRESSION,
+                "geometry_generator_enabled": True,
+                "geometry_generator_type": "Line",
+            },
+        }])
+
     def test_headless_qt_platform_defaults_to_offscreen_without_overriding_callers(self):
         from qfit.validation import mapbox_outdoors_comparison
 
@@ -866,9 +932,10 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         def fake_browser_renderer(*, output_path, **_kwargs):
             output_path.write_bytes(PNG_PLACEHOLDER)
 
-        def fake_qgis_renderer(*, output_path, qgis_preprocessed_style_path, **_kwargs):
+        def fake_qgis_renderer(*, output_path, qgis_preprocessed_style_path, qgis_label_styles_path, **_kwargs):
             output_path.write_bytes(PNG_PLACEHOLDER)
             qgis_preprocessed_style_path.write_text(json.dumps(SAMPLE_STYLE), encoding="utf-8")
+            qgis_label_styles_path.write_text(json.dumps([{"style_name": "contour-label"}]), encoding="utf-8")
 
         def fake_diff_builder(*, output_path, **_kwargs):
             output_path.write_bytes(PNG_PLACEHOLDER)
@@ -891,11 +958,13 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
             manifest = json.loads(manifest_text)
             metrics = json.loads(result.paths.metrics_json.read_text(encoding="utf-8"))
             preprocessed_style = json.loads(result.paths.qgis_preprocessed_style_json.read_text(encoding="utf-8"))
+            label_styles = json.loads(result.paths.qgis_label_styles_json.read_text(encoding="utf-8"))
 
         self.assertTrue(result.browser_captured)
         self.assertTrue(result.qgis_captured)
         self.assertTrue(result.diff_captured)
         self.assertTrue(result.qgis_preprocessed_style_captured)
+        self.assertTrue(result.qgis_label_styles_captured)
         self.assertNotIn("test-mapbox-token", manifest_text)
         self.assertEqual(manifest["camera"]["name"], "valais-geneva-outdoors")
         self.assertEqual(manifest["style_url"], "mapbox://styles/mapbox/outdoors-v12")
@@ -903,10 +972,13 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         self.assertTrue(manifest["captured"]["qgis_vector_render"])
         self.assertTrue(manifest["captured"]["diff"])
         self.assertTrue(manifest["captured"]["qgis_preprocessed_style"])
+        self.assertTrue(manifest["captured"]["qgis_label_styles"])
         self.assertTrue(manifest["outputs"]["qgis_preprocessed_style"].endswith("qgis-preprocessed-style.json"))
+        self.assertTrue(manifest["outputs"]["qgis_label_styles"].endswith("qgis-label-styles.json"))
         self.assertEqual(manifest["metrics"]["changed_pixel_ratio"], 0.25)
         self.assertEqual(metrics["changed_pixel_ratio"], 0.25)
         self.assertEqual(preprocessed_style, SAMPLE_STYLE)
+        self.assertEqual(label_styles, [{"style_name": "contour-label"}])
 
     def test_run_comparison_records_qgis_contour_label_probe_options(self):
         captured = {}
