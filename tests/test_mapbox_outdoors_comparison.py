@@ -34,6 +34,8 @@ from qfit.validation.mapbox_outdoors_comparison import (
     _append_qgis_contour_bbox_edge_difference_label_probe,
     _append_qgis_contour_boundary_generator_label_probe,
     _append_qgis_contour_polygon_label_probe,
+    _label_setting_value,
+    _label_value,
     build_all_cameras_contact_sheet,
     build_comparison_paths,
     build_image_diff,
@@ -53,6 +55,7 @@ from qfit.validation.mapbox_outdoors_comparison import (
     render_qgis_vector,
     resolve_mapbox_token,
     run_comparison,
+    write_qgis_label_styles_snapshot,
 )
 
 
@@ -715,6 +718,68 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
                 "geometry_generator_type": "Line",
             },
         }])
+
+    def test_label_value_normalizes_named_sequence_and_opaque_values(self):
+        class NamedValue:
+            name = "Line"
+
+        class OpaqueValue:
+            def __str__(self):
+                return "opaque-value"
+
+        self.assertEqual(
+            _label_value([NamedValue(), OpaqueValue(), None]),
+            ["Line", "opaque-value", None],
+        )
+
+    def test_label_setting_value_handles_missing_and_runtime_errors(self):
+        class FlakySettings:
+            def __init__(self):
+                self.calls = 0
+
+            @property
+            def priority(self):
+                self.calls += 1
+                if self.calls == 1:
+                    return 3
+                raise RuntimeError("unavailable")
+
+        self.assertIsNone(_label_setting_value(None, "fieldName"))
+        self.assertIsNone(_label_setting_value(object(), "fieldName"))
+        self.assertIsNone(_label_setting_value(FlakySettings(), "priority"))
+
+    def test_write_qgis_label_styles_snapshot_redacts_token(self):
+        class FakeSettings:
+            fieldName = "mapbox-token-secret"
+
+        class FakeStyle:
+            def styleName(self):
+                return "sensitive-label"
+
+            def labelSettings(self):
+                return FakeSettings()
+
+        class FakeLabeling:
+            def styles(self):
+                return [FakeStyle()]
+
+        class FakeLayer:
+            def labeling(self):
+                return FakeLabeling()
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output_path = Path(tmpdir) / "qgis-label-styles.json"
+
+            write_qgis_label_styles_snapshot(
+                layer=FakeLayer(),
+                output_path=output_path,
+                token="mapbox-token-secret",
+            )
+
+            snapshot_text = output_path.read_text(encoding="utf-8")
+
+        self.assertIn("<redacted>", snapshot_text)
+        self.assertNotIn("mapbox-token-secret", snapshot_text)
 
     def test_headless_qt_platform_defaults_to_offscreen_without_overriding_callers(self):
         from qfit.validation import mapbox_outdoors_comparison

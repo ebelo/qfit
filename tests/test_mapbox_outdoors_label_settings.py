@@ -12,6 +12,7 @@ from tests import _path  # noqa: F401
 
 from qfit.validation.mapbox_outdoors_label_settings import (
     LabelSettingsConfig,
+    _append_qgis_contour_bbox_edge_difference_label_probe,
     _apply_labeling_probes,
     _convert_style_to_labeling,
     _ensure_qgis_application,
@@ -495,6 +496,15 @@ class MapboxOutdoorsLabelSettingsTests(unittest.TestCase):
             )
 
         append_probe.assert_not_called()
+
+    def test_append_qgis_contour_bbox_edge_difference_label_probe_delegates_to_comparison_helper(self):
+        layer = object()
+        with mock.patch(
+            "qfit.validation.mapbox_outdoors_comparison._append_qgis_contour_bbox_edge_difference_label_probe"
+        ) as append_probe:
+            _append_qgis_contour_bbox_edge_difference_label_probe(layer)
+
+        append_probe.assert_called_once_with(layer)
 
     def test_source_label_layer_records_align_original_and_qfit_controls(self):
         original_style = {
