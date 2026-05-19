@@ -685,8 +685,41 @@ class MapboxOutdoorsLabelSettingsTests(unittest.TestCase):
         self.assertEqual(contour_row["repeat_distances"], {"0": 1})
         waterway_row = rows[1]
         self.assertEqual(waterway_row["missing_qfit_symbol_spacing"], 0)
+        self.assertEqual(waterway_row["zero_repeat_distance_count"], 0)
         self.assertEqual(waterway_row["qfit_symbol_spacings"], {"400": 1})
         self.assertEqual(waterway_row["repeat_distances"], {"66.1458": 1})
+
+    def test_line_label_repeat_spacing_summary_deduplicates_shared_label_records(self):
+        rows = _line_label_repeat_spacing_rows(
+            [
+                {
+                    "base_style_layer_id": "road-label",
+                    "style_name": "road-label-alias",
+                    "qfit_style_layer_id": "road-label-z15-plus",
+                    "qfit_layout": {"symbol-placement": "line"},
+                },
+                {
+                    "base_style_layer_id": "road-label",
+                    "style_name": "road-label-z15-plus",
+                    "qfit_style_layer_id": "road-label-z15-plus",
+                    "qfit_layout": {"symbol-placement": "line"},
+                },
+            ],
+            [
+                {
+                    "base_style_layer_id": "road-label",
+                    "style_name": "road-label-z15-plus",
+                    "geometry_type": "Line",
+                    "placement": "Curved",
+                    "repeat_distance": 66.1458333333,
+                },
+            ],
+        )
+
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["source_label_rows"], 2)
+        self.assertEqual(rows[0]["converted_line_label_styles"], 1)
+        self.assertEqual(rows[0]["repeat_distances"], {"66.1458": 1})
 
     def test_source_label_fanout_summary_groups_qfit_style_expansion(self):
         rows = _source_label_fanout_summary_rows(

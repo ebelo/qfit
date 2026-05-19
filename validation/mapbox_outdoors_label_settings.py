@@ -519,22 +519,29 @@ def _line_label_repeat_spacing_rows(
         if not base_layer:
             continue
         style_keys = {str(row.get("style_name") or ""), str(row.get("qfit_style_layer_id") or "")}
-        matched_labels = [
-            record
-            for style_key in style_keys
-            for record in labels_by_style.get(style_key, [])
-        ]
+        seen_label_ids: set[int] = set()
+        matched_labels = []
+        for style_key in style_keys:
+            for record in labels_by_style.get(style_key, []):
+                label_id = id(record)
+                if label_id in seen_label_ids:
+                    continue
+                seen_label_ids.add(label_id)
+                matched_labels.append(record)
         grouped[base_layer].append((row, matched_labels))
 
     rows: list[dict[str, object]] = []
     for base_layer, grouped_rows in grouped.items():
         source_rows = [row for row, _labels in grouped_rows]
-        line_label_rows = [
-            record
-            for _row, labels in grouped_rows
-            for record in labels
-            if _line_label_record_for_repeat(record)
-        ]
+        line_label_rows: list[dict[str, object]] = []
+        seen_line_label_ids: set[int] = set()
+        for _row, labels in grouped_rows:
+            for record in labels:
+                label_id = id(record)
+                if label_id in seen_line_label_ids or not _line_label_record_for_repeat(record):
+                    continue
+                seen_line_label_ids.add(label_id)
+                line_label_rows.append(record)
         rows.append(
             {
                 "base_style_layer_id": base_layer,
