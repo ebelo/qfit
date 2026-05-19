@@ -4,6 +4,15 @@ from dataclasses import dataclass
 from typing import Iterable
 
 from .analysis_models import RunAnalysisRequest, RunAnalysisResult
+from .sample_layer_helpers import (
+    has_fields,
+    is_line_layer,
+    layer_features,
+    numeric_value,
+    sample_group_key,
+    sample_value,
+    sample_xy,
+)
 
 SLOPE_GRADE_MODE = "Slope grade lines"
 
@@ -145,8 +154,6 @@ _ACTIVITY_POINT_GRADE_FIELDS = ("grade_smooth_pct", "stream_distance_m")
 _IGNORED_ROUTE_LAYER_KWARGS = frozenset(
     ("route_tracks_layer", "route_points_layer", "route_profile_samples_layer")
 )
-_LINE_GEOMETRY_TYPE = 1
-_LINE_WKB_TYPES = frozenset((2, 5))
 
 
 def build_slope_grade_analysis_plan(
@@ -356,7 +363,7 @@ def build_activity_slope_grade_segments(points_layer) -> tuple[SlopeGradeSegment
     """Build activity slope-grade segments from a point-sample layer."""
 
     return _build_grouped_slope_grade_segments(
-        _layer_features(points_layer),
+        layer_features(points_layer),
         group_field_sets=(("source", "source_activity_id"),),
         distance_field="stream_distance_m",
         elevation_field=None,
@@ -370,7 +377,7 @@ def build_activity_slope_grade_line_segments(
     """Build render-ready activity line segments from point samples."""
 
     return _build_grouped_slope_grade_line_segments(
-        _layer_features(points_layer),
+        layer_features(points_layer),
         layer_key="activity_tracks",
         layer_label=ACTIVITY_TRACKS_LABEL,
         group_field_sets=(("source", "source_activity_id"),),
@@ -392,7 +399,7 @@ def _build_grouped_slope_grade_segments(
 ):
     groups: dict[tuple[object, ...], list[object]] = {}
     for sample in samples:
-        key = _sample_group_key(sample, group_field_sets)
+        key = sample_group_key(sample, group_field_sets)
         groups.setdefault(key, []).append(sample)
 
     segments: list[SlopeGradeSegment] = []
@@ -422,7 +429,7 @@ def _build_grouped_slope_grade_line_segments(
 ):
     groups: dict[tuple[object, ...], list[object]] = {}
     for sample in samples:
-        key = _sample_group_key(sample, group_field_sets)
+        key = sample_group_key(sample, group_field_sets)
         groups.setdefault(key, []).append(sample)
 
     line_segments: list[SlopeGradeLineSegment] = []
@@ -492,8 +499,8 @@ def _build_slope_grade_line_segments(
             SlopeGradeLineSegment(
                 layer_key=layer_key,
                 layer_label=layer_label,
-                source=_sample_value(sample, source_field),
-                source_id=_sample_value(sample, source_id_field),
+                source=sample_value(sample, source_field),
+                source_id=sample_value(sample, source_id_field),
                 start_xy=start_xy,
                 end_xy=end_xy,
                 start_distance_m=start_distance,
@@ -521,15 +528,15 @@ def _grade_class_contains(grade_class: SlopeGradeClass, grade_percent: float) ->
 
 
 def _normalize_slope_grade_sample(sample, distance_field, elevation_field, grade_field):
-    distance = _numeric_value(_sample_value(sample, distance_field))
+    distance = numeric_value(sample_value(sample, distance_field))
     if distance is None:
         return None
     elevation = None
     if elevation_field:
-        elevation = _numeric_value(_sample_value(sample, elevation_field))
+        elevation = numeric_value(sample_value(sample, elevation_field))
     grade = None
     if grade_field:
-        grade = _numeric_value(_sample_value(sample, grade_field))
+        grade = numeric_value(sample_value(sample, grade_field))
     return distance, elevation, grade
 
 
@@ -547,101 +554,11 @@ def _normalize_slope_grade_line_sample(
     )
     if normalized is None:
         return None
-    xy = _sample_xy(sample)
+    xy = sample_xy(sample)
     if xy is None:
         return None
     distance, elevation, grade = normalized
     return distance, elevation, grade, xy
-
-
-def _sample_xy(sample):
-    geometry = _sample_geometry(sample)
-    if geometry is not None and not _is_empty_geometry(geometry):
-        point = _geometry_point(geometry)
-        xy = _point_xy(point)
-        if xy is not None:
-            return xy
-
-    lon = _numeric_value(_sample_value(sample, "lon"))
-    lat = _numeric_value(_sample_value(sample, "lat"))
-    if lon is None or lat is None:
-        return None
-    return lon, lat
-
-
-def _sample_geometry(sample):
-    geometry = getattr(sample, "geometry", None)
-    if callable(geometry):
-        return geometry()
-    return geometry
-
-
-def _is_empty_geometry(geometry) -> bool:
-    is_empty = getattr(geometry, "isEmpty", None)
-    return bool(is_empty()) if callable(is_empty) else False
-
-
-def _geometry_point(geometry):
-    as_point = getattr(geometry, "asPoint", None)
-    if callable(as_point):
-        return as_point()
-    return geometry
-
-
-def _point_xy(point):
-    if point is None:
-        return None
-    x_value = _coordinate_value(point, "x")
-    y_value = _coordinate_value(point, "y")
-    if x_value is None or y_value is None:
-        return None
-    return x_value, y_value
-
-
-def _coordinate_value(point, attr):
-    value = getattr(point, attr, None)
-    if callable(value):
-        value = value()
-    return _numeric_value(value)
-
-
-def _layer_features(layer):
-    if layer is None:
-        return ()
-    features = getattr(layer, "getFeatures", None)
-    if not callable(features):
-        return ()
-    return features()
-
-
-def _sample_group_key(sample, group_field_sets):
-    for group_fields in group_field_sets:
-        values = tuple(_sample_value(sample, field_name) for field_name in group_fields)
-        if any(value not in (None, "") for value in values):
-            return values
-    return (None,)
-
-
-def _sample_value(sample, field_name):
-    if isinstance(sample, dict):
-        return sample.get(field_name)
-    try:
-        return sample[field_name]
-    except (KeyError, IndexError, TypeError, AttributeError):
-        pass
-    value = getattr(sample, field_name, None)
-    if callable(value):
-        return value()
-    return value
-
-
-def _numeric_value(value):
-    if value is None:
-        return None
-    try:
-        return float(value)
-    except (TypeError, ValueError):
-        return None
 
 
 def _activity_track_plan(activities_layer, points_layer) -> SlopeGradeLayerPlan:
@@ -651,14 +568,14 @@ def _activity_track_plan(activities_layer, points_layer) -> SlopeGradeLayerPlan:
             label=ACTIVITY_TRACKS_LABEL,
             blocked_reason="activity track lines are not loaded",
         )
-    if not _is_line_layer(activities_layer):
+    if not is_line_layer(activities_layer):
         return SlopeGradeLayerPlan(
             key="activity_tracks",
             label=ACTIVITY_TRACKS_LABEL,
             layer=activities_layer,
             blocked_reason="activity track target is not a line layer",
         )
-    if not _has_fields(points_layer, _ACTIVITY_POINT_GRADE_FIELDS):
+    if not has_fields(points_layer, _ACTIVITY_POINT_GRADE_FIELDS):
         return SlopeGradeLayerPlan(
             key="activity_tracks",
             label=ACTIVITY_TRACKS_LABEL,
@@ -675,57 +592,6 @@ def _activity_track_plan(activities_layer, points_layer) -> SlopeGradeLayerPlan:
         enabled=True,
         source_fields=_ACTIVITY_POINT_GRADE_FIELDS,
     )
-
-def _has_fields(layer, expected: Iterable[str]) -> bool:
-    field_names = _field_names(layer)
-    return all(field_name in field_names for field_name in expected)
-
-
-def _field_names(layer) -> frozenset[str]:
-    if layer is None:
-        return frozenset()
-    fields = layer.fields() if callable(getattr(layer, "fields", None)) else ()
-    names: list[str] = []
-    for field in fields or ():
-        name = field.name() if callable(getattr(field, "name", None)) else field
-        if name:
-            names.append(str(name))
-    return frozenset(names)
-
-
-def _is_line_layer(layer) -> bool:
-    geometry_type = _call_if_present(layer, "geometryType")
-    if _looks_like_line_geometry_type(geometry_type):
-        return True
-    wkb_type = _call_if_present(layer, "wkbType")
-    return _looks_like_line_wkb_type(wkb_type)
-
-
-def _call_if_present(obj, attr: str):
-    method = getattr(obj, attr, None)
-    if callable(method):
-        return method()
-    return None
-
-
-def _looks_like_line_geometry_type(value) -> bool:
-    if value is None:
-        return False
-    if isinstance(value, str):
-        lowered = value.lower()
-        return "line" in lowered and "polygon" not in lowered
-    # QgsWkbTypes.LineGeometry is 1 in QGIS, but keep this module QGIS-free.
-    return value == _LINE_GEOMETRY_TYPE
-
-
-def _looks_like_line_wkb_type(value) -> bool:
-    if value is None:
-        return False
-    if isinstance(value, str):
-        lowered = value.lower()
-        return "line" in lowered and "polygon" not in lowered
-    # Common QgsWkbTypes values: LineString=2 and MultiLineString=5.
-    return value in _LINE_WKB_TYPES
 
 
 __all__ = [

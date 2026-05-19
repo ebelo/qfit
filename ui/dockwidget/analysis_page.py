@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from qfit.analysis.application.analysis_execution_dispatch import (
     FREQUENT_STARTING_POINTS_MODE,
     HEATMAP_MODE,
+    POWER_OUTPUT_MODE,
     SLOPE_GRADE_MODE,
 )
 
@@ -92,7 +93,12 @@ class AnalysisPageContent(QWidget):
         self.analysis_mode_combo = QComboBox(self)
         self.analysis_mode_combo.setObjectName("qfitWizardAnalysisModeComboBox")
         self.set_analysis_mode_options(
-            (HEATMAP_MODE, FREQUENT_STARTING_POINTS_MODE, SLOPE_GRADE_MODE)
+            (
+                HEATMAP_MODE,
+                FREQUENT_STARTING_POINTS_MODE,
+                SLOPE_GRADE_MODE,
+                POWER_OUTPUT_MODE,
+            )
         )
         if hasattr(self.analysis_mode_combo, "currentTextChanged"):
             self.analysis_mode_combo.currentTextChanged.connect(

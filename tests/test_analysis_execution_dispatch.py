@@ -5,6 +5,7 @@ from tests import _path  # noqa: F401
 from qfit.analysis.application.analysis_controller import (
     FREQUENT_STARTING_POINTS_MODE,
     HEATMAP_MODE,
+    POWER_OUTPUT_MODE,
     SLOPE_GRADE_MODE,
 )
 from qfit.analysis.application.analysis_models import RunAnalysisRequest
@@ -57,6 +58,22 @@ class TestAnalysisExecutionDispatch(unittest.TestCase):
 
         with patch(
             "qfit.analysis.application.analysis_execution_dispatch.run_slope_grade_analysis",
+            return_value="result",
+        ) as run_analysis:
+            result = dispatch_analysis_request(request)
+
+        self.assertEqual(result, "result")
+        run_analysis.assert_called_once_with(request)
+
+    def test_dispatch_analysis_request_routes_power_output_mode(self):
+        request = RunAnalysisRequest(
+            analysis_mode=POWER_OUTPUT_MODE,
+            activities_layer="activities-layer",
+            points_layer="points-layer",
+        )
+
+        with patch(
+            "qfit.analysis.application.analysis_execution_dispatch.run_power_output_analysis",
             return_value="result",
         ) as run_analysis:
             result = dispatch_analysis_request(request)

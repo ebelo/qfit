@@ -183,12 +183,18 @@ class LocalFirstAnalysisControlsTests(unittest.TestCase):
             "Most frequent starting points",
             "Heatmap",
             "Slope grade lines",
+            "Power output lines",
         ):
             combo.addItem(mode)
 
         self.assertEqual(
             local_first_analysis_mode_options(combo),
-            ("Most frequent starting points", "Heatmap", "Slope grade lines"),
+            (
+                "Most frequent starting points",
+                "Heatmap",
+                "Slope grade lines",
+                "Power output lines",
+            ),
         )
 
     def test_bind_exposes_user_facing_modes_and_selects_first_real_mode(self):
@@ -198,6 +204,7 @@ class LocalFirstAnalysisControlsTests(unittest.TestCase):
             "Most frequent starting points",
             "Heatmap",
             "Slope grade lines",
+            "Power output lines",
         ):
             combo.addItem(mode)
         dock = SimpleNamespace(analysisModeComboBox=combo)
@@ -209,7 +216,12 @@ class LocalFirstAnalysisControlsTests(unittest.TestCase):
         )
 
         analysis_content.set_analysis_mode_options.assert_called_once_with(
-            ("Most frequent starting points", "Heatmap", "Slope grade lines"),
+            (
+                "Most frequent starting points",
+                "Heatmap",
+                "Slope grade lines",
+                "Power output lines",
+            ),
             selected="Most frequent starting points",
         )
         self.assertEqual(combo.currentText(), "Most frequent starting points")
@@ -221,6 +233,7 @@ class LocalFirstAnalysisControlsTests(unittest.TestCase):
             "Most frequent starting points",
             "Heatmap",
             "Slope grade lines",
+            "Power output lines",
         ):
             combo.addItem(mode)
         dock = SimpleNamespace(analysisModeComboBox=combo)
@@ -232,7 +245,12 @@ class LocalFirstAnalysisControlsTests(unittest.TestCase):
         )
 
         analysis_content.set_analysis_mode_options.assert_called_once_with(
-            ("Most frequent starting points", "Heatmap", "Slope grade lines"),
+            (
+                "Most frequent starting points",
+                "Heatmap",
+                "Slope grade lines",
+                "Power output lines",
+            ),
             selected="Most frequent starting points",
         )
         self.assertEqual(combo.currentText(), "Most frequent starting points")
