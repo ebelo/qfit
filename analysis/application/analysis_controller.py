@@ -3,6 +3,7 @@ from __future__ import annotations
 from .analysis_execution_dispatch import (
     FREQUENT_STARTING_POINTS_MODE,
     HEATMAP_MODE,
+    POWER_OUTPUT_MODE,
     SLOPE_GRADE_MODE,
 )
 from .analysis_models import RunAnalysisRequest, RunAnalysisResult

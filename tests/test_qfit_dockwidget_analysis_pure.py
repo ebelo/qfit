@@ -2295,8 +2295,14 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         current_layer = _FakeLayer(self.module.FREQUENT_STARTING_POINTS_LAYER_NAME)
         stale_layer = _FakeLayer(self.module.FREQUENT_STARTING_POINTS_LAYER_NAME)
         stale_heatmap_layer = _FakeLayer("qfit activity heatmap")
+        stale_power_layer = _FakeLayer(self.module.POWER_OUTPUT_LAYER_NAME)
         project = _FakeProject(
-            {"one": stale_layer, "two": _FakeLayer("other"), "three": stale_heatmap_layer}
+            {
+                "one": stale_layer,
+                "two": _FakeLayer("other"),
+                "three": stale_heatmap_layer,
+                "four": stale_power_layer,
+            }
         )
         dock.analysis_layer = current_layer
         dock._atlas_export_completed = True
@@ -2311,7 +2317,12 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         canvas.refresh.assert_called_once_with()
         self.assertEqual(
             project.removed,
-            [current_layer.id(), stale_layer.id(), stale_heatmap_layer.id()],
+            [
+                current_layer.id(),
+                stale_layer.id(),
+                stale_heatmap_layer.id(),
+                stale_power_layer.id(),
+            ],
         )
 
     def test_clear_analysis_layer_is_noop_when_no_analysis_is_displayed(self):

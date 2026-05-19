@@ -3,6 +3,7 @@ from __future__ import annotations
 from ...analysis.application.analysis_execution_dispatch import (
     FREQUENT_STARTING_POINTS_MODE,
     HEATMAP_MODE,
+    POWER_OUTPUT_MODE,
     SLOPE_GRADE_MODE,
 )
 
@@ -13,6 +14,7 @@ ANALYSIS_MODE_LABELS = (
     FREQUENT_STARTING_POINTS_MODE,
     HEATMAP_MODE,
     SLOPE_GRADE_MODE,
+    POWER_OUTPUT_MODE,
 )
 
 
