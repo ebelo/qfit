@@ -5345,6 +5345,10 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
             path_background_low_width_mm,
         )
         self.assertAlmostEqual(
+            by_id["bridge-path-bg-below-z16-outdoor"]["paint"]["line-width"],
+            path_background_low_width_mm,
+        )
+        self.assertAlmostEqual(
             by_id["road-path-bg-z16-plus-outdoor"]["paint"]["line-width"],
             high_background_width_mm,
         )
@@ -5585,6 +5589,22 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
         )
         self.assertAlmostEqual(
             by_id["road-path-cycleway-piste-z16-plus"]["paint"]["line-width"],
+            high_width_mm,
+        )
+        self.assertAlmostEqual(
+            by_id["bridge-path-cycleway-piste-below-z16"]["paint"]["line-width"],
+            low_width_mm,
+        )
+        self.assertAlmostEqual(
+            by_id["bridge-path-cycleway-piste-z16-plus"]["paint"]["line-width"],
+            high_width_mm,
+        )
+        self.assertAlmostEqual(
+            by_id["tunnel-path-cycleway-piste-below-z16"]["paint"]["line-width"],
+            low_width_mm,
+        )
+        self.assertAlmostEqual(
+            by_id["tunnel-path-cycleway-piste-z16-plus"]["paint"]["line-width"],
             high_width_mm,
         )
         self.assertEqual(by_id["road-path-cycleway-piste-below-z16"]["paint"]["line-dasharray"], [10, 0])
