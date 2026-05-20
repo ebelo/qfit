@@ -137,6 +137,21 @@ def _make_layer_node(layer_name, layer_cls=None):
     return node, layer
 
 
+def _make_line_label_settings(
+    *,
+    line_anchor_percent=0.0,
+    anchor_text_point=None,
+    anchor_type=None,
+    anchor_clipping=None,
+):
+    settings = MagicMock()
+    settings.lineAnchorPercent.return_value = line_anchor_percent
+    settings.anchorTextPoint.return_value = anchor_text_point
+    settings.anchorType.return_value = anchor_type
+    settings.anchorClipping.return_value = anchor_clipping
+    return settings
+
+
 # ===========================================================================
 # Suite 1 — real-QGIS (skipped when QGIS unavailable)
 # ===========================================================================
@@ -783,6 +798,40 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
                 self.assertAlmostEqual(settings.repeatDistance, spacing_px * 25.4 / 96)
                 style.setLabelSettings.assert_called_once_with(settings)
 
+    def test_line_center_labels_use_strict_center_line_anchor(self):
+        from qgis.core import QgsLabelLineSettings, Qgis
+
+        cases = [
+            ("natural_label", "natural-line-label", 4),
+            ("natural_label", "water-line-label-ocean-name", 6),
+        ]
+        for layer_name, style_name, priority in cases:
+            with self.subTest(style_name=style_name):
+                labeling = MagicMock()
+                style, settings = self._make_style(layer_name, style_name)
+                settings.placement = Qgis.LabelPlacement.OverPoint
+                line_settings = _make_line_label_settings()
+                settings.lineSettings.return_value = line_settings
+                labeling.styles.return_value = [style]
+
+                self.service._apply_label_priority(labeling)
+
+                self.assertEqual(settings.priority, priority)
+                self.assertEqual(settings.placement, Qgis.LabelPlacement.Line)
+                style.setGeometryType.assert_called_once_with(Qgis.GeometryType.Line)
+                line_settings.setLineAnchorPercent.assert_called_once_with(0.5)
+                line_settings.setAnchorTextPoint.assert_called_once_with(
+                    QgsLabelLineSettings.AnchorTextPoint.CenterOfText
+                )
+                line_settings.setAnchorType.assert_called_once_with(
+                    QgsLabelLineSettings.AnchorType.Strict
+                )
+                line_settings.setAnchorClipping.assert_called_once_with(
+                    QgsLabelLineSettings.AnchorClipping.UseEntireLine
+                )
+                settings.setLineSettings.assert_called_once_with(line_settings)
+                style.setLabelSettings.assert_called_once_with(settings)
+
     def test_ferry_aerialway_labels_merge_matching_line_segments(self):
         from qgis.core import Qgis
 
@@ -1068,6 +1117,38 @@ class ApplyLabelPriorityMockTests(unittest.TestCase):
 
                 self.assertTrue(settings.mergeLines)
                 self.assertAlmostEqual(settings.repeatDistance, spacing_px * 25.4 / 96)
+                style.setLabelSettings.assert_called_once_with(settings)
+
+    def test_line_center_labels_use_strict_center_line_anchor(self):
+        cases = [
+            ("natural_label", "natural-line-label", 4),
+            ("natural_label", "water-line-label-ocean-name", 6),
+        ]
+        for layer_name, style_name, priority in cases:
+            with self.subTest(style_name=style_name):
+                labeling = MagicMock()
+                style, settings = self._make_style(layer_name, style_name)
+                settings.placement = _qstub.Qgis.LabelPlacement.OverPoint
+                line_settings = _make_line_label_settings()
+                settings.lineSettings.return_value = line_settings
+                labeling.styles.return_value = [style]
+
+                self.service._apply_label_priority(labeling)
+
+                self.assertEqual(settings.priority, priority)
+                self.assertEqual(settings.placement, _qstub.Qgis.LabelPlacement.Line)
+                style.setGeometryType.assert_called_once_with(_qstub.Qgis.GeometryType.Line)
+                line_settings.setLineAnchorPercent.assert_called_once_with(0.5)
+                line_settings.setAnchorTextPoint.assert_called_once_with(
+                    _qstub.QgsLabelLineSettings.AnchorTextPoint.CenterOfText
+                )
+                line_settings.setAnchorType.assert_called_once_with(
+                    _qstub.QgsLabelLineSettings.AnchorType.Strict
+                )
+                line_settings.setAnchorClipping.assert_called_once_with(
+                    _qstub.QgsLabelLineSettings.AnchorClipping.UseEntireLine
+                )
+                settings.setLineSettings.assert_called_once_with(line_settings)
                 style.setLabelSettings.assert_called_once_with(settings)
 
     def test_ferry_aerialway_labels_merge_matching_line_segments(self):
