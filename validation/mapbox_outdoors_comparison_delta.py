@@ -5,9 +5,19 @@ import datetime as dt
 import json
 import sys
 from collections.abc import Mapping
-from dataclasses import dataclass
 from pathlib import Path
+from typing import NamedTuple
 
+try:
+    from .mapbox_outdoors_path_pedestrian_focus import (
+        build_run_directory as _build_timestamped_run_directory,
+        load_json_object,
+    )
+except ImportError:  # pragma: no cover - supports direct script execution.
+    from mapbox_outdoors_path_pedestrian_focus import (  # type: ignore[no-redef]
+        build_run_directory as _build_timestamped_run_directory,
+        load_json_object,
+    )
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUTPUT_ROOT = REPO_ROOT / "debug" / "mapbox-outdoors-comparison-delta"
@@ -18,16 +28,14 @@ DELTA_METRIC_KEYS = (
 )
 
 
-@dataclass(frozen=True)
-class ComparisonDeltaPaths:
+class ComparisonDeltaPaths(NamedTuple):
     run_dir: Path
     json_path: Path
     summary_path: Path
 
 
-def _utc_timestamp(now: dt.datetime | None = None) -> str:
-    timestamp = now or dt.datetime.now(dt.timezone.utc)
-    return timestamp.astimezone(dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+def _report_timestamp() -> str:
+    return dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
 
 
 def build_run_directory(
@@ -35,8 +43,10 @@ def build_run_directory(
     output_root: Path | None = None,
     now: dt.datetime | None = None,
 ) -> Path:
-    root = DEFAULT_OUTPUT_ROOT if output_root is None else output_root
-    return root / _utc_timestamp(now)
+    return _build_timestamped_run_directory(
+        output_root=output_root if output_root is not None else DEFAULT_OUTPUT_ROOT,
+        now=now,
+    )
 
 
 def build_comparison_delta_paths(run_dir: Path) -> ComparisonDeltaPaths:
@@ -45,14 +55,6 @@ def build_comparison_delta_paths(run_dir: Path) -> ComparisonDeltaPaths:
         json_path=run_dir / "comparison-delta.json",
         summary_path=run_dir / "summary.md",
     )
-
-
-def load_json_object(path: Path) -> dict[str, object]:
-    with path.open("r", encoding="utf-8") as handle:
-        loaded = json.load(handle)
-    if not isinstance(loaded, dict):
-        raise ValueError(f"Expected JSON object in {path}")
-    return loaded
 
 
 def _camera_rows(summary: Mapping[str, object]) -> list[Mapping[str, object]]:
@@ -197,7 +199,7 @@ def build_comparison_delta_report(
         if isinstance(row.get("rms_delta_direction"), str)
     ]
     return {
-        "generated_at": _utc_timestamp(),
+        "generated_at": _report_timestamp(),
         "baseline_label": baseline_label,
         "candidate_label": candidate_label,
         "camera_count": len(rows),

@@ -161,9 +161,14 @@ class MapboxOutdoorsComparisonDeltaTests(unittest.TestCase):
             )
 
             stdout = io.StringIO()
+
+            def fake_run_directory(*, output_root=None, now=None):
+                self.assertIsNone(now)
+                return Path(output_root) / "20260520T185100Z"
+
             with patch(
-                "qfit.validation.mapbox_outdoors_comparison_delta._utc_timestamp",
-                return_value="20260520T185100Z",
+                "qfit.validation.mapbox_outdoors_comparison_delta._build_timestamped_run_directory",
+                side_effect=fake_run_directory,
             ):
                 with redirect_stdout(stdout):
                     exit_code = main(
