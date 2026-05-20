@@ -352,11 +352,12 @@ def _data_defined_property_names(
     names: list[str] = []
     for key in keys:
         try:
-            name = (property_names_by_value or {}).get(int(key))
+            int_key = int(key)
         except (TypeError, ValueError):
+            names.append(str(key))
             continue
-        if name is not None:
-            names.append(name)
+        name = (property_names_by_value or {}).get(int_key)
+        names.append(name if name is not None else str(int_key))
     return names
 
 
@@ -511,11 +512,15 @@ def _convert_style_to_labeling(qfit_style: dict[str, object], sprite_resources: 
     return result, converter.labeling(), sprite_loaded
 
 
-def _postprocessed_label_records(labeling: object | None, apply_label_priority) -> list[dict[str, object]]:
+def _postprocessed_label_records(
+    labeling: object | None,
+    apply_label_priority,
+    property_names_by_value: dict[int, str] | None = None,
+) -> list[dict[str, object]]:
     if labeling is None:
         return []
     apply_label_priority(labeling)
-    return _sorted_label_records(labeling)
+    return _sorted_label_records(labeling, property_names_by_value)
 
 
 def _sorted_label_records(

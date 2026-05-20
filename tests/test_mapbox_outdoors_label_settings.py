@@ -324,7 +324,7 @@ class MapboxOutdoorsLabelSettingsTests(unittest.TestCase):
         record = label_settings_record(
             FakeStyle(style_name="road-label-z15-plus", layer_name="road"),
             FakeSettings(),
-            {50: "ShapeSizeX", 87: "Priority"},
+            {50: "ShapeSizeX"},
         )
 
         self.assertEqual(record["style_name"], "road-label-z15-plus")
@@ -361,8 +361,8 @@ class MapboxOutdoorsLabelSettingsTests(unittest.TestCase):
         self.assertFalse(record["allow_degraded_placement"])
         self.assertEqual(record["overlap_handling"], "PreventOverlap")
         self.assertEqual(record["data_defined_property_keys"], [50, 87])
-        self.assertEqual(record["data_defined_property_names"], ["ShapeSizeX", "Priority"])
-        self.assertEqual(record["data_defined_property_labels"], ["ShapeSizeX (50)", "Priority (87)"])
+        self.assertEqual(record["data_defined_property_names"], ["ShapeSizeX", "87"])
+        self.assertEqual(record["data_defined_property_labels"], ["ShapeSizeX (50)", "87"])
 
     def test_ensure_qgis_application_reuses_or_creates_application(self):
         existing_app = FakeQgsApplication([], False)
@@ -490,11 +490,13 @@ class MapboxOutdoorsLabelSettingsTests(unittest.TestCase):
                 ]
             ),
             fake_apply_label_priority,
+            {50: "ShapeSizeX", 87: "Priority"},
         )
 
         self.assertEqual(FakeBackgroundMapService.applied_count, 1)
         self.assertIsInstance(FakeBackgroundMapService.labeling, FakeLabeling)
         self.assertEqual([record["base_style_layer_id"] for record in records], ["road-label", "waterway-label"])
+        self.assertEqual(records[0]["data_defined_property_names"], ["ShapeSizeX", "Priority"])
         self.assertEqual(_postprocessed_label_records(None, fake_apply_label_priority), [])
 
     def test_apply_labeling_probes_appends_bbox_edge_probes_when_requested(self):
