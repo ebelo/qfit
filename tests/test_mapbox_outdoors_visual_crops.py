@@ -30,6 +30,84 @@ def _require_pillow():
     return Image
 
 
+class _FakeImage:
+    def __init__(self, module, size, color=(0, 0, 0), pixels=None):
+        self._module = module
+        self.width, self.height = size
+        self.size = size
+        self._base = int(sum(color) / max(1, len(color)))
+        self._pixels = dict(pixels or {})
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, _exc_type, _exc, _traceback):
+        return False
+
+    def close(self):
+        pass
+
+    def convert(self, _mode):
+        return _FakeImage(self._module, self.size, (self._base, self._base, self._base), self._pixels)
+
+    def crop(self, box):
+        left, top, right, bottom = box
+        pixels = {
+            (x - left, y - top): value
+            for (x, y), value in self._pixels.items()
+            if left <= x < right and top <= y < bottom
+        }
+        return _FakeImage(
+            self._module,
+            (right - left, bottom - top),
+            (self._base, self._base, self._base),
+            pixels,
+        )
+
+    def putpixel(self, point, color):
+        self._pixels[point] = int(sum(color) / max(1, len(color)))
+
+    def save(self, path, *args, **_kwargs):
+        output_path = Path(path)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_bytes(b"fake image")
+        self._module.images[output_path] = self.convert("RGB")
+
+    def brightness_sum(self):
+        pixel_count = self.width * self.height
+        override_delta = sum(value - self._base for value in self._pixels.values())
+        return self._base * pixel_count + override_delta
+
+
+class _FakeImageModule:
+    def __init__(self):
+        self.images = {}
+
+    def new(self, _mode, size, color):
+        return _FakeImage(self, size, color)
+
+    def open(self, path):
+        return self.images[Path(path)].convert("RGB")
+
+
+class _FakeImageStatModule:
+    class Stat:
+        def __init__(self, image):
+            self.sum = [image.brightness_sum()]
+
+
+def _fake_image_modules():
+    return _FakeImageModule(), _FakeImageStatModule
+
+
+def _fake_contact_sheet(*, entries, output_path, **_kwargs):
+    if not entries:
+        return None
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text("fake contact sheet", encoding="utf-8")
+    return output_path
+
+
 def _box_contains(box, point):
     return box[0] <= point[0] < box[2] and box[1] <= point[1] < box[3]
 
@@ -95,16 +173,22 @@ class MapboxOutdoorsVisualCropsTest(unittest.TestCase):
             parse_crop_size("320-by-240")
 
     def test_find_hotspot_crop_boxes_prefers_bright_non_overlapping_regions(self):
-        Image = _require_pillow()
+        image_module, image_stat_module = _fake_image_modules()
         with tempfile.TemporaryDirectory() as tmpdir:
             diff_path = Path(tmpdir) / "diff.png"
-            diff = Image.new("RGB", (12, 12), (0, 0, 0))
+            diff = image_module.new("RGB", (12, 12), (0, 0, 0))
             for point in ((9, 9), (10, 9), (2, 2)):
                 diff.putpixel(point, (255, 255, 255))
             diff.save(diff_path)
             diff.close()
 
-            boxes = find_hotspot_crop_boxes(diff_path, crop_size=(4, 4), crop_count=2)
+            boxes = find_hotspot_crop_boxes(
+                diff_path,
+                crop_size=(4, 4),
+                crop_count=2,
+                image_module=image_module,
+                image_stat_module=image_stat_module,
+            )
 
         self.assertEqual(len(boxes), 2)
         self.assertTrue(_box_contains(boxes[0]["box"], (9, 9)))
@@ -112,17 +196,23 @@ class MapboxOutdoorsVisualCropsTest(unittest.TestCase):
         self.assertTrue(_box_contains(boxes[1]["box"], (2, 2)))
 
     def test_find_hotspot_crop_boxes_returns_empty_for_blank_diff(self):
-        Image = _require_pillow()
+        image_module, image_stat_module = _fake_image_modules()
         with tempfile.TemporaryDirectory() as tmpdir:
             diff_path = Path(tmpdir) / "diff.png"
-            _save_rgb_image(diff_path, Image, (0, 0, 0), size=(8, 8))
+            _save_rgb_image(diff_path, image_module, (0, 0, 0), size=(8, 8))
 
-            boxes = find_hotspot_crop_boxes(diff_path, crop_size=(20, 20), crop_count=1)
+            boxes = find_hotspot_crop_boxes(
+                diff_path,
+                crop_size=(20, 20),
+                crop_count=1,
+                image_module=image_module,
+                image_stat_module=image_stat_module,
+            )
 
         self.assertEqual(boxes, [])
 
     def test_generate_visual_crop_report_writes_triplet_crops_and_contact_sheet(self):
-        Image = _require_pillow()
+        image_module, image_stat_module = _fake_image_modules()
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir)
             comparison_root = root / "comparison"
@@ -133,9 +223,9 @@ class MapboxOutdoorsVisualCropsTest(unittest.TestCase):
             diff_path = camera_dir / "mapbox-gl-vs-qgis-diff.png"
             camera_dir.mkdir(parents=True)
             summary_path.parent.mkdir(parents=True)
-            _save_rgb_image(browser_path, Image, (255, 255, 255))
-            _save_rgb_image(qgis_path, Image, (128, 128, 128))
-            diff = Image.new("RGB", (12, 12), (0, 0, 0))
+            _save_rgb_image(browser_path, image_module, (255, 255, 255))
+            _save_rgb_image(qgis_path, image_module, (128, 128, 128))
+            diff = image_module.new("RGB", (12, 12), (0, 0, 0))
             diff.putpixel((9, 9), (255, 255, 255))
             diff.save(diff_path)
             diff.close()
@@ -154,14 +244,20 @@ class MapboxOutdoorsVisualCropsTest(unittest.TestCase):
             run_dir = root / "debug" / "run"
             paths = build_visual_crop_paths(run_dir)
 
-            report = generate_visual_crop_report(
-                comparison_summary,
-                comparison_summary_path=summary_path,
-                paths=paths,
-                crop_size=(4, 4),
-                crops_per_camera=1,
-                trusted_output_root=root / "debug",
-            )
+            with patch(
+                "qfit.validation.mapbox_outdoors_visual_crops.build_all_cameras_contact_sheet",
+                side_effect=_fake_contact_sheet,
+            ):
+                report = generate_visual_crop_report(
+                    comparison_summary,
+                    comparison_summary_path=summary_path,
+                    paths=paths,
+                    crop_size=(4, 4),
+                    crops_per_camera=1,
+                    trusted_output_root=root / "debug",
+                    image_module=image_module,
+                    image_stat_module=image_stat_module,
+                )
             write_report(report, paths, trusted_output_root=root / "debug")
 
             crop = report["cameras"][0]["crops"][0]
@@ -176,7 +272,7 @@ class MapboxOutdoorsVisualCropsTest(unittest.TestCase):
             self.assertEqual(loaded["camera_count"], 1)
 
     def test_generate_visual_crop_report_marks_missing_required_artifacts(self):
-        Image = _require_pillow()
+        image_module, image_stat_module = _fake_image_modules()
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir)
             summary_path = root / "comparison" / "all-cameras" / "run" / "summary.json"
@@ -190,7 +286,8 @@ class MapboxOutdoorsVisualCropsTest(unittest.TestCase):
                 crop_size=(4, 4),
                 crops_per_camera=1,
                 trusted_output_root=root / "debug",
-                image_module=Image,
+                image_module=image_module,
+                image_stat_module=image_stat_module,
             )
 
             self.assertEqual(report["camera_count"], 1)
@@ -199,12 +296,12 @@ class MapboxOutdoorsVisualCropsTest(unittest.TestCase):
             self.assertEqual(report["cameras"][0]["status"], "missing_required_artifacts")
 
     def test_generate_visual_crop_report_marks_blank_diffs_without_crops(self):
-        Image = _require_pillow()
+        image_module, image_stat_module = _fake_image_modules()
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir)
-            comparison_summary, summary_path = _write_visual_triplet(root, Image)
+            comparison_summary, summary_path = _write_visual_triplet(root, image_module)
             diff_path = Path(comparison_summary["cameras"][0]["outputs"]["diff"])
-            _save_rgb_image(diff_path, Image, (0, 0, 0))
+            _save_rgb_image(diff_path, image_module, (0, 0, 0))
             paths = build_visual_crop_paths(root / "debug" / "run")
 
             report = generate_visual_crop_report(
@@ -214,6 +311,8 @@ class MapboxOutdoorsVisualCropsTest(unittest.TestCase):
                 crop_size=(4, 4),
                 crops_per_camera=1,
                 trusted_output_root=root / "debug",
+                image_module=image_module,
+                image_stat_module=image_stat_module,
             )
 
             self.assertEqual(report["crop_count"], 0)
@@ -221,7 +320,7 @@ class MapboxOutdoorsVisualCropsTest(unittest.TestCase):
             self.assertEqual(report["cameras"][0]["crops"], [])
 
     def test_generate_visual_crop_report_rejects_output_outside_trusted_root(self):
-        Image = _require_pillow()
+        image_module, image_stat_module = _fake_image_modules()
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir)
             paths = build_visual_crop_paths(root / "outside" / "run")
@@ -232,7 +331,8 @@ class MapboxOutdoorsVisualCropsTest(unittest.TestCase):
                     comparison_summary_path=root / "comparison" / "all-cameras" / "summary.json",
                     paths=paths,
                     trusted_output_root=root / "debug",
-                    image_module=Image,
+                    image_module=image_module,
+                    image_stat_module=image_stat_module,
                 )
 
     def test_write_report_rejects_output_outside_trusted_root(self):
@@ -295,10 +395,10 @@ class MapboxOutdoorsVisualCropsTest(unittest.TestCase):
         self.assertIn("| zermatt-piste-z17-outdoors | - | missing_diff | - | - | - | - |", markdown)
 
     def test_main_writes_visual_crop_report_from_json_input(self):
-        Image = _require_pillow()
+        image_module, image_stat_module = _fake_image_modules()
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir)
-            comparison_summary, summary_path = _write_visual_triplet(root, Image)
+            comparison_summary, summary_path = _write_visual_triplet(root, image_module)
             summary_path.write_text(json.dumps(comparison_summary), encoding="utf-8")
             output_root = root / "debug"
             stdout = io.StringIO()
@@ -306,6 +406,12 @@ class MapboxOutdoorsVisualCropsTest(unittest.TestCase):
             with patch(
                 "qfit.validation.mapbox_outdoors_visual_crops.DEFAULT_OUTPUT_ROOT",
                 output_root,
+            ), patch(
+                "qfit.validation.mapbox_outdoors_visual_crops._image_modules",
+                return_value=(image_module, image_stat_module),
+            ), patch(
+                "qfit.validation.mapbox_outdoors_visual_crops.build_all_cameras_contact_sheet",
+                side_effect=_fake_contact_sheet,
             ), contextlib.redirect_stdout(stdout):
                 result = main(
                     [
