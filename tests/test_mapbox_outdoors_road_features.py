@@ -252,7 +252,8 @@ class MapboxOutdoorsRoadFeatureTests(unittest.TestCase):
         self.assertFalse(is_road_label_candidate(unnamed_road_label, tile_zoom=18))
         self.assertFalse(is_road_label_candidate(null_name_road_label, tile_zoom=18))
         self.assertFalse(is_road_label_candidate(empty_name_road_label, tile_zoom=18))
-        self.assertFalse(is_road_label_candidate(missing_class_road_label, tile_zoom=18))
+        self.assertFalse(is_road_label_candidate(missing_class_road_label, tile_zoom=14))
+        self.assertTrue(is_road_label_candidate(missing_class_road_label, tile_zoom=18))
         self.assertFalse(is_road_label_candidate(point_road_label, tile_zoom=18))
         self.assertFalse(is_road_label_candidate(high_zoom_street_road_label))
 

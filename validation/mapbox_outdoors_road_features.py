@@ -292,7 +292,7 @@ def is_road_label_candidate(feature: dict[str, object], *, tile_zoom: int | None
         return road_class in ROAD_LABEL_LOW_ZOOM_CLASSES
     if tile_zoom < 15:
         return road_class in ROAD_LABEL_MID_ZOOM_CLASSES
-    return road_class is not None and road_class not in ROAD_LABEL_HIGH_ZOOM_EXCLUDED_CLASSES
+    return road_class not in ROAD_LABEL_HIGH_ZOOM_EXCLUDED_CLASSES
 
 
 def _property_count_label(value: object) -> str:
@@ -869,6 +869,7 @@ def collect_all_camera_road_feature_report(
             continue
         camera_reports.append(_all_camera_row(report))
     status_counts = _all_camera_status_counts(camera_reports)
+    road_label_name_counts = _combined_record_counts(camera_reports, "road_label_name_counts")
     return {
         "style_owner": config.style_owner,
         "style_id": config.style_id,
@@ -994,10 +995,8 @@ def collect_all_camera_road_feature_report(
             "road_exit_shield_signature_counts",
         ),
         "road_label_class_counts": _combined_record_counts(camera_reports, "road_label_class_counts"),
-        "road_label_name_counts": _combined_record_counts(camera_reports, "road_label_name_counts"),
-        "road_label_duplicate_name_counts": _duplicate_count_map(
-            _combined_record_counts(camera_reports, "road_label_name_counts")
-        ),
+        "road_label_name_counts": road_label_name_counts,
+        "road_label_duplicate_name_counts": _duplicate_count_map(road_label_name_counts),
         "road_label_signature_counts": _combined_record_counts(camera_reports, "road_label_signature_counts"),
         "cameras": camera_reports,
     }
