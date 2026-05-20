@@ -688,17 +688,59 @@ def _variable_symbol_placement_includes_line(
 def _let_symbol_placement_includes_line(
     value: list[object], *, min_zoom: float, max_zoom: float, bindings: dict[str, object]
 ) -> bool:
+    return _symbol_placement_includes_line(
+        value[-1],
+        min_zoom=min_zoom,
+        max_zoom=max_zoom,
+        bindings=_symbol_placement_let_bindings(value, bindings),
+    )
+
+
+def _symbol_placement_let_bindings(
+    value: list[object],
+    bindings: dict[str, object],
+) -> dict[str, object]:
     let_bindings = dict(bindings)
     for index in range(1, len(value) - 1, 2):
         variable_name = value[index]
         if isinstance(variable_name, str) and index + 1 < len(value):
             let_bindings[variable_name] = value[index + 1]
-    return _symbol_placement_includes_line(
-        value[-1],
-        min_zoom=min_zoom,
-        max_zoom=max_zoom,
-        bindings=let_bindings,
+    return let_bindings
+
+
+def _literal_symbol_placement_value_is_known_non_null(
+    value: list[object], *, bindings: dict[str, object]
+) -> bool:
+    return len(value) == 2 and value[1] is not None
+
+
+def _variable_symbol_placement_value_is_known_non_null(
+    value: list[object], *, bindings: dict[str, object]
+) -> bool:
+    if len(value) != 2 or not isinstance(value[1], str):
+        return False
+    return _symbol_placement_value_is_known_non_null(
+        bindings.get(value[1]),
+        bindings=bindings,
     )
+
+
+def _let_symbol_placement_value_is_known_non_null(
+    value: list[object], *, bindings: dict[str, object]
+) -> bool:
+    if len(value) < 2:
+        return False
+    return _symbol_placement_value_is_known_non_null(
+        value[-1],
+        bindings=_symbol_placement_let_bindings(value, bindings),
+    )
+
+
+_SYMBOL_PLACEMENT_NON_NULL_TESTERS = {
+    "literal": _literal_symbol_placement_value_is_known_non_null,
+    "var": _variable_symbol_placement_value_is_known_non_null,
+    "let": _let_symbol_placement_value_is_known_non_null,
+}
 
 
 def _symbol_placement_value_is_known_non_null(
@@ -713,25 +755,8 @@ def _symbol_placement_value_is_known_non_null(
     if not isinstance(value, list) or not value:
         return True
 
-    operator = value[0]
-    if operator == "literal":
-        return len(value) == 2 and value[1] is not None
-    if operator == "var" and len(value) == 2 and isinstance(value[1], str):
-        return _symbol_placement_value_is_known_non_null(
-            bindings.get(value[1]),
-            bindings=bindings,
-        )
-    if operator == "let" and len(value) >= 2:
-        let_bindings = dict(bindings)
-        for index in range(1, len(value) - 1, 2):
-            variable_name = value[index]
-            if isinstance(variable_name, str) and index + 1 < len(value):
-                let_bindings[variable_name] = value[index + 1]
-        return _symbol_placement_value_is_known_non_null(
-            value[-1],
-            bindings=let_bindings,
-        )
-    return False
+    tester = _SYMBOL_PLACEMENT_NON_NULL_TESTERS.get(value[0])
+    return tester(value, bindings=bindings) if tester else False
 
 
 def _coalesce_symbol_placement_includes_line(
