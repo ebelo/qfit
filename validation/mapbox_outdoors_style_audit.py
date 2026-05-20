@@ -1456,23 +1456,35 @@ def _road_trail_hierarchy_candidate_rows(layers: list[dict[str, object]]) -> lis
     for layer in layers:
         if not _is_road_trail_hierarchy_candidate_layer(layer):
             continue
-        controls = _road_trail_hierarchy_control_properties(layer)
-        if not controls:
-            continue
-        control_set = set(controls)
-        rows.append(
-            {
-                "layer": str(layer.get("id") or ""),
-                "type": str(layer.get("type") or ""),
-                "source_layer": str(layer.get("source_layer") or ""),
-                "zoom_band": str(layer.get("zoom_band") or _ALL_ZOOMS_BAND),
-                _FILTER_OPERATOR_SIGNATURE_KEY: _operator_signature(_qgis_filter_value(layer)),
-                _ROAD_TRAIL_CONTROL_PROPERTIES_KEY: controls,
-                _QFIT_SIMPLIFIED_CONTROL_PROPERTIES_KEY: _qfit_simplified_control_properties(layer, control_set),
-                _QGIS_DEPENDENT_CONTROL_PROPERTIES_KEY: _qgis_dependent_control_properties(layer, control_set),
-            }
-        )
+        row = _road_trail_hierarchy_candidate_row(layer)
+        if row is not None:
+            rows.append(row)
     return sorted(rows, key=lambda row: (str(row["type"]), str(row["layer"])))
+
+
+def _road_trail_hierarchy_candidate_row(
+    layer: dict[str, object],
+    *,
+    markers: list[str] | None = None,
+) -> dict[str, object] | None:
+    controls = _road_trail_hierarchy_control_properties(layer)
+    if not controls:
+        return None
+    control_set = set(controls)
+    row: dict[str, object] = {
+        "layer": str(layer.get("id") or ""),
+        "type": str(layer.get("type") or ""),
+        "source_layer": str(layer.get("source_layer") or ""),
+        "zoom_band": str(layer.get("zoom_band") or _ALL_ZOOMS_BAND),
+        _FILTER_OPERATOR_SIGNATURE_KEY: _operator_signature(_qgis_filter_value(layer)),
+        _ROAD_TRAIL_CONTROL_PROPERTIES_KEY: controls,
+        _QFIT_SIMPLIFIED_CONTROL_PROPERTIES_KEY: _qfit_simplified_control_properties(layer, control_set),
+        _QGIS_DEPENDENT_CONTROL_PROPERTIES_KEY: _qgis_dependent_control_properties(layer, control_set),
+    }
+    if markers is not None:
+        row[_PATH_PEDESTRIAN_HIERARCHY_MARKER_KEY] = ", ".join(markers)
+        row[_PATH_PEDESTRIAN_HIERARCHY_MARKERS_KEY] = markers
+    return row
 
 
 def _path_pedestrian_hierarchy_candidate_rows(layers: list[dict[str, object]]) -> list[dict[str, object]]:
@@ -1480,25 +1492,10 @@ def _path_pedestrian_hierarchy_candidate_rows(layers: list[dict[str, object]]) -
     for layer in layers:
         if not _is_path_pedestrian_hierarchy_candidate_layer(layer):
             continue
-        controls = _road_trail_hierarchy_control_properties(layer)
-        if not controls:
-            continue
-        control_set = set(controls)
         markers = _path_pedestrian_hierarchy_markers(layer)
-        rows.append(
-            {
-                "layer": str(layer.get("id") or ""),
-                "type": str(layer.get("type") or ""),
-                "source_layer": str(layer.get("source_layer") or ""),
-                _PATH_PEDESTRIAN_HIERARCHY_MARKER_KEY: ", ".join(markers),
-                _PATH_PEDESTRIAN_HIERARCHY_MARKERS_KEY: markers,
-                "zoom_band": str(layer.get("zoom_band") or _ALL_ZOOMS_BAND),
-                _FILTER_OPERATOR_SIGNATURE_KEY: _operator_signature(_qgis_filter_value(layer)),
-                _ROAD_TRAIL_CONTROL_PROPERTIES_KEY: controls,
-                _QFIT_SIMPLIFIED_CONTROL_PROPERTIES_KEY: _qfit_simplified_control_properties(layer, control_set),
-                _QGIS_DEPENDENT_CONTROL_PROPERTIES_KEY: _qgis_dependent_control_properties(layer, control_set),
-            }
-        )
+        row = _road_trail_hierarchy_candidate_row(layer, markers=markers)
+        if row is not None:
+            rows.append(row)
     return sorted(rows, key=lambda row: (str(row["type"]), str(row["layer"])))
 
 
@@ -2056,32 +2053,39 @@ def _count_row_values(rows: list[dict[str, object]], key: str) -> list[dict[str,
     ]
 
 
-def _count_route_overlay_markers(rows: list[dict[str, object]]) -> list[dict[str, object]]:
+def _count_multi_value_rows(
+    rows: list[dict[str, object]],
+    *,
+    values_key: str,
+    output_key: str,
+) -> list[dict[str, object]]:
     counts: Counter[str] = Counter()
     for row in rows:
-        values = row.get(_ROUTE_OVERLAY_MARKERS_KEY)
+        values = row.get(values_key)
         if not isinstance(values, list):
             continue
         counts.update(str(value) for value in values if value)
     return [
-        {_ROUTE_OVERLAY_MARKER_KEY: name, "count": count}
+        {output_key: name, "count": count}
         for name, count in sorted(counts.items(), key=lambda item: (-item[1], item[0]))
         if name
     ]
+
+
+def _count_route_overlay_markers(rows: list[dict[str, object]]) -> list[dict[str, object]]:
+    return _count_multi_value_rows(
+        rows,
+        values_key=_ROUTE_OVERLAY_MARKERS_KEY,
+        output_key=_ROUTE_OVERLAY_MARKER_KEY,
+    )
 
 
 def _count_path_pedestrian_hierarchy_markers(rows: list[dict[str, object]]) -> list[dict[str, object]]:
-    counts: Counter[str] = Counter()
-    for row in rows:
-        values = row.get(_PATH_PEDESTRIAN_HIERARCHY_MARKERS_KEY)
-        if not isinstance(values, list):
-            continue
-        counts.update(str(value) for value in values if value)
-    return [
-        {_PATH_PEDESTRIAN_HIERARCHY_MARKER_KEY: name, "count": count}
-        for name, count in sorted(counts.items(), key=lambda item: (-item[1], item[0]))
-        if name
-    ]
+    return _count_multi_value_rows(
+        rows,
+        values_key=_PATH_PEDESTRIAN_HIERARCHY_MARKERS_KEY,
+        output_key=_PATH_PEDESTRIAN_HIERARCHY_MARKER_KEY,
+    )
 
 
 def _filter_parse_signature_summary(rows: list[dict[str, object]]) -> list[dict[str, object]]:
@@ -3952,67 +3956,38 @@ def _markdown_road_trail_hierarchy_candidate_table(
     rows: list[dict[str, object]],
     *,
     empty: str = "—",
+    leading_label: str | None = None,
+    leading_key: str | None = None,
 ) -> list[str]:
     if not rows:
         return [empty, ""]
-    lines = [
-        (
-            "| Layer | Type | Source layer | Zoom | Filter operators | Road/trail controls | "
-            "Simplified/substituted by qfit | QGIS-dependent controls |"
-        ),
-        _MARKDOWN_TYPED_CANDIDATE_SEPARATOR,
+    headers = [
+        "Layer",
+        "Type",
+        "Source layer",
+        "Zoom",
+        "Filter operators",
+        "Road/trail controls",
+        "Simplified/substituted by qfit",
+        "QGIS-dependent controls",
     ]
+    if leading_label is not None:
+        headers.insert(0, leading_label)
+    lines = ["| " + " | ".join(headers) + " |", "| " + " | ".join("---" for _header in headers) + " |"]
     for row in rows:
-        lines.append(
-            (
-                _MARKDOWN_TYPED_CANDIDATE_ROW_PREFIX
-                + _MARKDOWN_TYPED_CANDIDATE_ROW_SUFFIX
-            ).format(
-                layer=row.get("layer", ""),
-                layer_type=row.get("type", ""),
-                source_layer=row.get("source_layer", ""),
-                zoom=row.get("zoom_band", _ALL_ZOOMS_BAND),
-                filter_operators=row.get(_FILTER_OPERATOR_SIGNATURE_KEY, _NO_OPERATOR_SIGNATURE),
-                controls=_markdown_list(list(row.get(_ROAD_TRAIL_CONTROL_PROPERTIES_KEY) or [])),
-                simplified=_markdown_list(list(row.get(_QFIT_SIMPLIFIED_CONTROL_PROPERTIES_KEY) or [])),
-                unresolved=_markdown_list(list(row.get(_QGIS_DEPENDENT_CONTROL_PROPERTIES_KEY) or [])),
-            )
-        )
-    lines.append("")
-    return lines
-
-
-def _markdown_path_pedestrian_hierarchy_candidate_table(
-    rows: list[dict[str, object]],
-    *,
-    empty: str = "—",
-) -> list[str]:
-    if not rows:
-        return [empty, ""]
-    lines = [
-        (
-            "| Markers | Layer | Type | Source layer | Zoom | Filter operators | Road/trail controls | "
-            "Simplified/substituted by qfit | QGIS-dependent controls |"
-        ),
-        "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
-    ]
-    for row in rows:
-        lines.append(
-            (
-                "| `{markers}` | `{layer}` | `{layer_type}` | `{source_layer}` | {zoom} | "
-                "`{filter_operators}` | {controls} | {simplified} | {unresolved} |"
-            ).format(
-                markers=row.get(_PATH_PEDESTRIAN_HIERARCHY_MARKER_KEY, ""),
-                layer=row.get("layer", ""),
-                layer_type=row.get("type", ""),
-                source_layer=row.get("source_layer", ""),
-                zoom=row.get("zoom_band", _ALL_ZOOMS_BAND),
-                filter_operators=row.get(_FILTER_OPERATOR_SIGNATURE_KEY, _NO_OPERATOR_SIGNATURE),
-                controls=_markdown_list(list(row.get(_ROAD_TRAIL_CONTROL_PROPERTIES_KEY) or [])),
-                simplified=_markdown_list(list(row.get(_QFIT_SIMPLIFIED_CONTROL_PROPERTIES_KEY) or [])),
-                unresolved=_markdown_list(list(row.get(_QGIS_DEPENDENT_CONTROL_PROPERTIES_KEY) or [])),
-            )
-        )
+        cells = [
+            f"`{row.get('layer', '')}`",
+            f"`{row.get('type', '')}`",
+            f"`{row.get('source_layer', '')}`",
+            str(row.get("zoom_band", _ALL_ZOOMS_BAND)),
+            f"`{row.get(_FILTER_OPERATOR_SIGNATURE_KEY, _NO_OPERATOR_SIGNATURE)}`",
+            _markdown_list(list(row.get(_ROAD_TRAIL_CONTROL_PROPERTIES_KEY) or [])),
+            _markdown_list(list(row.get(_QFIT_SIMPLIFIED_CONTROL_PROPERTIES_KEY) or [])),
+            _markdown_list(list(row.get(_QGIS_DEPENDENT_CONTROL_PROPERTIES_KEY) or [])),
+        ]
+        if leading_key is not None:
+            cells.insert(0, f"`{row.get(leading_key, '')}`")
+        lines.append("| " + " | ".join(cells) + " |")
     lines.append("")
     return lines
 
@@ -5613,8 +5588,10 @@ def _markdown_path_pedestrian_hierarchy_summary(summary: dict[str, object]) -> l
         "#### Path/pedestrian hierarchy candidates QGIS-dependent controls",
         "",
         *_markdown_count_table(_summary_rows(summary, _PATH_PEDESTRIAN_HIERARCHY_QGIS_DEPENDENT_BY_PROPERTY_KEY)),
-        *_markdown_path_pedestrian_hierarchy_candidate_table(
-            _summary_rows(summary, _PATH_PEDESTRIAN_HIERARCHY_CANDIDATES_KEY)
+        *_markdown_road_trail_hierarchy_candidate_table(
+            _summary_rows(summary, _PATH_PEDESTRIAN_HIERARCHY_CANDIDATES_KEY),
+            leading_label="Markers",
+            leading_key=_PATH_PEDESTRIAN_HIERARCHY_MARKER_KEY,
         ),
     ]
 
