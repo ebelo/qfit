@@ -1344,6 +1344,9 @@ class ApplyLabelPriorityMockTests(unittest.TestCase):
             _mock_bms_mod._CONTOUR_LABEL_BBOX_EDGE_DIFFERENCE_MIN_ZOOM
         )
         appended_style.setLabelSettings.assert_called_once_with(copied_settings)
+        source_style.setMaxZoomLevel.assert_called_once_with(
+            _mock_bms_mod._CONTOUR_LABEL_MAX_ZOOM_BEFORE_BBOX_EDGE_DIFFERENCE
+        )
         self.assertEqual(copied_settings.fieldName, "concat(\"ele\", ' m')")
         self.assertTrue(copied_settings.isExpression)
         self.assertEqual(copied_settings.placement, _qstub.QgsPalLayerSettings.Curved)
@@ -1355,6 +1358,80 @@ class ApplyLabelPriorityMockTests(unittest.TestCase):
         self.assertTrue(copied_settings.geometryGeneratorEnabled)
         self.assertEqual(copied_settings.geometryGeneratorType, _qstub.Qgis.GeometryType.Line)
         labeling.setStyles.assert_called_once_with([source_style, appended_style])
+
+    def test_contour_label_clone_failure_keeps_source_label_uncapped(self):
+        labeling = MagicMock()
+        source_style, source_settings = self._make_style("contour", "contour-label")
+        source_style.maxZoomLevel.return_value = -1
+        source_settings.mergeLines = True
+        source_settings.fieldName = "concat(\"ele\", ' m')"
+        source_settings.isExpression = True
+        labeling.styles.return_value = [source_style]
+        _qstub.QgsPalLayerSettings.reset_mock(return_value=True, side_effect=True)
+        _qstub.QgsPalLayerSettings.side_effect = RuntimeError("copy failed")
+        _qstub.QgsVectorTileBasicLabelingStyle.reset_mock(
+            return_value=True,
+            side_effect=True,
+        )
+
+        self.service._apply_label_priority(labeling)
+
+        source_style.setMaxZoomLevel.assert_not_called()
+        _qstub.QgsVectorTileBasicLabelingStyle.assert_not_called()
+        labeling.setStyles.assert_not_called()
+
+    def test_contour_label_cap_failure_still_appends_bbox_edge_style(self):
+        labeling = MagicMock()
+        source_style, source_settings = self._make_style("contour", "contour-label")
+        source_style.setMaxZoomLevel.side_effect = RuntimeError("cap failed")
+        source_settings.mergeLines = True
+        source_settings.fieldName = "concat(\"ele\", ' m')"
+        source_settings.isExpression = True
+        labeling.styles.return_value = [source_style]
+        copied_settings = SimpleNamespace()
+        appended_style = MagicMock()
+        _qstub.QgsPalLayerSettings.reset_mock(return_value=True, side_effect=True)
+        _qstub.QgsPalLayerSettings.return_value = copied_settings
+        _qstub.QgsVectorTileBasicLabelingStyle.reset_mock(
+            return_value=True,
+            side_effect=True,
+        )
+        _qstub.QgsVectorTileBasicLabelingStyle.return_value = appended_style
+
+        self.service._apply_label_priority(labeling)
+
+        source_style.setMaxZoomLevel.assert_called_once_with(
+            _mock_bms_mod._CONTOUR_LABEL_MAX_ZOOM_BEFORE_BBOX_EDGE_DIFFERENCE
+        )
+        appended_style.setLabelSettings.assert_called_once_with(copied_settings)
+        labeling.setStyles.assert_called_once_with([source_style, appended_style])
+
+    def test_existing_high_zoom_bbox_edge_style_caps_uncapped_source_label(self):
+        labeling = MagicMock()
+        source_style, source_settings = self._make_style("contour", "contour-label")
+        source_style.maxZoomLevel.return_value = -1
+        source_settings.mergeLines = True
+        source_settings.fieldName = "concat(\"ele\", ' m')"
+        source_settings.isExpression = True
+        existing_style, _existing_settings = self._make_style(
+            "contour",
+            _mock_bms_mod._CONTOUR_LABEL_BBOX_EDGE_DIFFERENCE_STYLE_NAME,
+        )
+        labeling.styles.return_value = [source_style, existing_style]
+        _qstub.QgsPalLayerSettings.reset_mock(return_value=True, side_effect=True)
+        _qstub.QgsVectorTileBasicLabelingStyle.reset_mock(
+            return_value=True,
+            side_effect=True,
+        )
+
+        self.service._apply_label_priority(labeling)
+
+        source_style.setMaxZoomLevel.assert_called_once_with(
+            _mock_bms_mod._CONTOUR_LABEL_MAX_ZOOM_BEFORE_BBOX_EDGE_DIFFERENCE
+        )
+        _qstub.QgsPalLayerSettings.assert_not_called()
+        _qstub.QgsVectorTileBasicLabelingStyle.assert_not_called()
+        labeling.setStyles.assert_called_once_with([source_style, existing_style])
 
     def test_custom_contour_label_field_does_not_append_high_zoom_bbox_edge_style(self):
         labeling = MagicMock()
@@ -1370,11 +1447,15 @@ class ApplyLabelPriorityMockTests(unittest.TestCase):
 
         _qstub.QgsPalLayerSettings.assert_not_called()
         _qstub.QgsVectorTileBasicLabelingStyle.assert_not_called()
+        style.setMaxZoomLevel.assert_not_called()
         labeling.setStyles.assert_not_called()
 
     def test_existing_high_zoom_bbox_edge_style_is_not_duplicated(self):
         labeling = MagicMock()
         source_style, source_settings = self._make_style("contour", "contour-label")
+        source_style.maxZoomLevel.return_value = (
+            _mock_bms_mod._CONTOUR_LABEL_MAX_ZOOM_BEFORE_BBOX_EDGE_DIFFERENCE
+        )
         source_settings.mergeLines = True
         source_settings.fieldName = "concat(\"ele\", ' m')"
         source_settings.isExpression = True
@@ -1390,6 +1471,7 @@ class ApplyLabelPriorityMockTests(unittest.TestCase):
 
         _qstub.QgsPalLayerSettings.assert_not_called()
         _qstub.QgsVectorTileBasicLabelingStyle.assert_not_called()
+        source_style.setMaxZoomLevel.assert_not_called()
         labeling.setStyles.assert_not_called()
 
     def test_custom_contour_label_field_is_left_unchanged(self):
