@@ -897,13 +897,15 @@ def _load_cli_json_object(parser: argparse.ArgumentParser, path: Path, *, label:
     raise AssertionError("argparse error should exit")
 
 
-def _qgis_style_paths_from_cli_comparison_summary(
+def _comparison_inputs_from_cli_summary(
     parser: argparse.ArgumentParser,
     path: Path,
-) -> dict[str, Path]:
+) -> tuple[dict[str, Path], dict[str, dict[str, object]]]:
     comparison_summary = _load_cli_json_object(parser, path, label="Comparison summary JSON")
     try:
-        return qgis_style_paths_from_comparison_summary(comparison_summary, summary_path=path)
+        qgis_style_paths = qgis_style_paths_from_comparison_summary(comparison_summary, summary_path=path)
+        visual_artifacts = comparison_visual_artifacts_from_summary(comparison_summary, summary_path=path)
+        return qgis_style_paths, visual_artifacts
     except FileNotFoundError as error:
         parser.error(f"Comparison manifest not found: {error.filename}")
     except json.JSONDecodeError as error:
@@ -944,20 +946,12 @@ def main(argv: list[str] | None = None) -> int:
     qgis_style_paths_by_camera: dict[str, Path] = {}
     visual_artifacts_by_camera: dict[str, dict[str, object]] = {}
     for comparison_summary_path in args.comparison_summary_json:
-        qgis_style_paths_by_camera.update(
-            _qgis_style_paths_from_cli_comparison_summary(parser, comparison_summary_path)
-        )
-        comparison_summary = _load_cli_json_object(
+        qgis_style_paths, visual_artifacts = _comparison_inputs_from_cli_summary(
             parser,
             comparison_summary_path,
-            label="Comparison summary JSON",
         )
-        visual_artifacts_by_camera.update(
-            comparison_visual_artifacts_from_summary(
-                comparison_summary,
-                summary_path=comparison_summary_path,
-            )
-        )
+        qgis_style_paths_by_camera.update(qgis_style_paths)
+        visual_artifacts_by_camera.update(visual_artifacts)
     qgis_style_paths_by_camera.update(dict(args.qgis_style_json))
     qgis_styles_by_camera = {
         camera: _load_cli_json_object(parser, path, label=f"QGIS style JSON for {camera}")

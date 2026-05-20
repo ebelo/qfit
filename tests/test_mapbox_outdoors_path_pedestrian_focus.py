@@ -759,7 +759,10 @@ class MapboxOutdoorsPathPedestrianFocusTests(unittest.TestCase):
             with patch(
                 "qfit.validation.mapbox_outdoors_path_pedestrian_focus.DEFAULT_OUTPUT_ROOT",
                 output_root,
-            ), redirect_stdout(stdout):
+            ), patch(
+                "qfit.validation.mapbox_outdoors_path_pedestrian_focus.load_json_object",
+                wraps=load_json_object,
+            ) as loaded_json, redirect_stdout(stdout):
                 result = main(
                     [
                         "--road-features-json",
@@ -785,6 +788,45 @@ class MapboxOutdoorsPathPedestrianFocusTests(unittest.TestCase):
             self.assertEqual(camera["visual_artifacts"]["diff"], str(diff_path.resolve()))
             self.assertEqual(camera["visual_artifacts"]["contact_sheet"], str(contact_sheet_path.resolve()))
             self.assertEqual(camera["visual_artifacts"]["normalized_rms_channel_delta"], 0.0761)
+            loaded_paths = [call.args[0] for call in loaded_json.call_args_list]
+            self.assertEqual(loaded_paths.count(comparison_summary_path), 1)
+
+    def test_main_reports_untrusted_visual_artifact_without_traceback(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            road_features_path = root / "road-features.json"
+            comparison_summary_path = root / "comparison" / "all-cameras" / "summary.json"
+            comparison_summary_path.parent.mkdir(parents=True)
+            road_features_path.write_text(json.dumps(_road_feature_report()), encoding="utf-8")
+            comparison_summary_path.write_text(
+                json.dumps(
+                    {
+                        "cameras": [
+                            {
+                                "camera": "chamonix-trails-z14-outdoors",
+                                "outputs": {"browser_reference": "/tmp/outside.png"},
+                            }
+                        ]
+                    }
+                ),
+                encoding="utf-8",
+            )
+            stderr = io.StringIO()
+
+            with redirect_stderr(stderr), self.assertRaises(SystemExit) as raised:
+                main(
+                    [
+                        "--road-features-json",
+                        str(road_features_path),
+                        "--comparison-summary-json",
+                        str(comparison_summary_path),
+                    ]
+                )
+
+            self.assertEqual(raised.exception.code, 2)
+            self.assertIn("Comparison artifact path must stay under", stderr.getvalue())
+            self.assertIn("/tmp/outside.png", stderr.getvalue())
+            self.assertNotIn("Traceback", stderr.getvalue())
 
     def test_main_reports_missing_input_without_traceback(self):
         stderr = io.StringIO()
