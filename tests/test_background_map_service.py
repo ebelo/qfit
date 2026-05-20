@@ -680,7 +680,7 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
         self.assertEqual(updated_style.layerName(), "poi_label")
         self.assertEqual(updated_style.labelSettings().priority, 5)
 
-    def test_priority_promotes_swiss_motorway_shields_without_promoting_other_shields(self):
+    def test_priority_promotes_z11_plus_road_shields_without_promoting_below_z11(self):
         labeling = MagicMock()
         swiss_style, swiss_settings = self._make_style(
             "road",
@@ -697,13 +697,12 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
             "road-number-shield-2-beta-remaining-icons-z11-plus",
         )
         remaining_settings.mergeLines = False
-        remaining_priority = remaining_settings.priority
         labeling.styles.return_value = [swiss_style, other_style, remaining_style]
 
         self.service._apply_label_priority(labeling)
 
         self.assertEqual(swiss_settings.priority, 6)
-        self.assertEqual(remaining_settings.priority, remaining_priority)
+        self.assertEqual(remaining_settings.priority, 6)
         self.assertTrue(swiss_settings.mergeLines)
         self.assertFalse(other_settings.mergeLines)
         self.assertTrue(remaining_settings.mergeLines)
@@ -1035,7 +1034,7 @@ class ApplyLabelPriorityMockTests(unittest.TestCase):
                 self.assertEqual(settings.priority, expected_priority)
                 style.setLabelSettings.assert_called_once_with(settings)
 
-    def test_priority_promotes_swiss_motorway_shields_without_promoting_other_shields(self):
+    def test_priority_promotes_z11_plus_road_shields_without_promoting_below_z11(self):
         labeling = MagicMock()
         swiss_style, swiss_settings = self._make_style(
             "road",
@@ -1052,13 +1051,12 @@ class ApplyLabelPriorityMockTests(unittest.TestCase):
             "road-number-shield-2-beta-remaining-icons-z11-plus",
         )
         remaining_settings.mergeLines = False
-        remaining_priority = remaining_settings.priority
         labeling.styles.return_value = [swiss_style, other_style, remaining_style]
 
         self.service._apply_label_priority(labeling)
 
         self.assertEqual(swiss_settings.priority, 6)
-        self.assertEqual(remaining_settings.priority, remaining_priority)
+        self.assertEqual(remaining_settings.priority, 6)
         self.assertTrue(swiss_settings.mergeLines)
         self.assertFalse(other_settings.mergeLines)
         self.assertTrue(remaining_settings.mergeLines)
