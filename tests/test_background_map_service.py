@@ -791,6 +791,7 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
     def test_contour_label_appends_metre_suffix_without_repeat_distance(self):
         labeling = MagicMock()
         style, settings = self._make_style("contour", "contour-label")
+        settings.mergeLines = False
         settings.repeatDistance = 0.0
         settings.fieldName = '"ele"'
         settings.isExpression = True
@@ -800,12 +801,14 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
 
         self.assertEqual(settings.fieldName, "concat(\"ele\", ' m')")
         self.assertTrue(settings.isExpression)
+        self.assertTrue(settings.mergeLines)
         self.assertEqual(settings.repeatDistance, 0.0)
         style.setLabelSettings.assert_called_once_with(settings)
 
     def test_contour_label_suffix_expression_is_left_unchanged(self):
         labeling = MagicMock()
         style, settings = self._make_style("contour", "contour-label")
+        settings.mergeLines = True
         settings.repeatDistance = 0.0
         settings.fieldName = "concat(\"ele\", ' m')"
         settings.isExpression = True
@@ -815,9 +818,26 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
 
         style.setLabelSettings.assert_not_called()
 
+    def test_contour_labels_merge_matching_line_segments_without_field_change(self):
+        labeling = MagicMock()
+        style, settings = self._make_style("contour", "contour-label")
+        settings.mergeLines = False
+        settings.repeatDistance = 0.0
+        settings.fieldName = "concat(\"ele\", ' m')"
+        settings.isExpression = True
+        labeling.styles.return_value = [style]
+
+        self.service._apply_label_priority(labeling)
+
+        self.assertTrue(settings.mergeLines)
+        self.assertEqual(settings.fieldName, "concat(\"ele\", ' m')")
+        self.assertTrue(settings.isExpression)
+        style.setLabelSettings.assert_called_once_with(settings)
+
     def test_custom_contour_label_field_is_left_unchanged(self):
         labeling = MagicMock()
         style, settings = self._make_style("contour", "contour-label")
+        settings.mergeLines = True
         settings.repeatDistance = 0.0
         settings.fieldName = '"height_ft"'
         settings.isExpression = True
@@ -1041,6 +1061,7 @@ class ApplyLabelPriorityMockTests(unittest.TestCase):
     def test_contour_label_suffix_expression_is_left_unchanged(self):
         labeling = MagicMock()
         style, settings = self._make_style("contour", "contour-label")
+        settings.mergeLines = True
         settings.repeatDistance = 0.0
         settings.fieldName = "concat(\"ele\", ' m')"
         settings.isExpression = True
@@ -1082,12 +1103,29 @@ class ApplyLabelPriorityMockTests(unittest.TestCase):
     def test_contour_label_appends_metre_suffix(self):
         labeling = MagicMock()
         style, settings = self._make_style("contour", "contour-label")
+        settings.mergeLines = False
         settings.fieldName = '"ele"'
         settings.isExpression = True
         labeling.styles.return_value = [style]
 
         self.service._apply_label_priority(labeling)
 
+        self.assertEqual(settings.fieldName, "concat(\"ele\", ' m')")
+        self.assertTrue(settings.isExpression)
+        self.assertTrue(settings.mergeLines)
+        style.setLabelSettings.assert_called_once_with(settings)
+
+    def test_contour_labels_merge_matching_line_segments_without_field_change(self):
+        labeling = MagicMock()
+        style, settings = self._make_style("contour", "contour-label")
+        settings.mergeLines = False
+        settings.fieldName = "concat(\"ele\", ' m')"
+        settings.isExpression = True
+        labeling.styles.return_value = [style]
+
+        self.service._apply_label_priority(labeling)
+
+        self.assertTrue(settings.mergeLines)
         self.assertEqual(settings.fieldName, "concat(\"ele\", ' m')")
         self.assertTrue(settings.isExpression)
         style.setLabelSettings.assert_called_once_with(settings)
@@ -1136,6 +1174,7 @@ class ApplyLabelPriorityMockTests(unittest.TestCase):
     def test_custom_contour_label_field_does_not_append_high_zoom_bbox_edge_style(self):
         labeling = MagicMock()
         style, settings = self._make_style("contour", "contour-label")
+        settings.mergeLines = True
         settings.fieldName = '"height_ft"'
         settings.isExpression = True
         labeling.styles.return_value = [style]
@@ -1151,6 +1190,7 @@ class ApplyLabelPriorityMockTests(unittest.TestCase):
     def test_existing_high_zoom_bbox_edge_style_is_not_duplicated(self):
         labeling = MagicMock()
         source_style, source_settings = self._make_style("contour", "contour-label")
+        source_settings.mergeLines = True
         source_settings.fieldName = "concat(\"ele\", ' m')"
         source_settings.isExpression = True
         existing_style, _existing_settings = self._make_style(
@@ -1170,6 +1210,7 @@ class ApplyLabelPriorityMockTests(unittest.TestCase):
     def test_custom_contour_label_field_is_left_unchanged(self):
         labeling = MagicMock()
         style, settings = self._make_style("contour", "contour-label")
+        settings.mergeLines = True
         settings.fieldName = '"height_ft"'
         settings.isExpression = True
         labeling.styles.return_value = [style]
