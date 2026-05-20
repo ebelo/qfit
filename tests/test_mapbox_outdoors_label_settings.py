@@ -1004,6 +1004,11 @@ class MapboxOutdoorsLabelSettingsTests(unittest.TestCase):
         self.assertEqual(report["source_label_layer_count"], 1)
 
     def test_data_defined_expression_issue_rows_count_empty_in_clauses(self):
+        empty_expression = (
+            'CASE WHEN "shield" IN () THEN 5 '
+            'WHEN "shield" in() THEN 6 '
+            'WHEN "shield" IN (   ) THEN 7 ELSE 5 END'
+        )
         rows = _data_defined_expression_issue_rows(
             [
                 {
@@ -1013,7 +1018,7 @@ class MapboxOutdoorsLabelSettingsTests(unittest.TestCase):
                         {
                             "label": "ShapeSizeX (50)",
                             "property_type": "ExpressionBasedProperty",
-                            "expression": 'CASE WHEN "shield" IN () THEN 5 WHEN "shield" in () THEN 6 ELSE 5 END',
+                            "expression": empty_expression,
                         },
                         {
                             "label": "Priority (87)",
@@ -1038,8 +1043,8 @@ class MapboxOutdoorsLabelSettingsTests(unittest.TestCase):
                     "style_name": "road-number-shield-2-remaining-icons-z11-plus",
                     "property": "ShapeSizeX (50)",
                     "property_type": "ExpressionBasedProperty",
-                    "empty_in_clause_count": 2,
-                    "expression_length": 69,
+                    "empty_in_clause_count": 3,
+                    "expression_length": len(empty_expression),
                 }
             ],
         )

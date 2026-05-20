@@ -4,6 +4,7 @@ import argparse
 import datetime as dt
 import json
 import os
+import re
 import sys
 from collections import Counter, defaultdict
 from dataclasses import dataclass
@@ -16,6 +17,7 @@ DEFAULT_OUTPUT_ROOT = REPO_ROOT / "debug" / "mapbox-outdoors-label-settings"
 DEFAULT_MAPBOX_STYLE_OWNER = "mapbox"
 DEFAULT_MAPBOX_STYLE_ID = "outdoors-v12"
 DEFAULT_QT_QPA_PLATFORM = "offscreen"
+_EMPTY_IN_CLAUSE_RE = re.compile(r"\bin\s*\(\s*\)", re.IGNORECASE)
 _BOOL_COUNT_KEY_MARKDOWN_VALUES = {"false": "no", "true": "yes"}
 _SOURCE_LABEL_LAYOUT_PROPERTIES = (
     "symbol-placement",
@@ -1539,7 +1541,9 @@ def _data_defined_expression_issue_rows(
             if not isinstance(detail, dict):
                 continue
             expression = detail.get("expression")
-            empty_in_clause_count = expression.upper().count("IN ()") if isinstance(expression, str) else 0
+            empty_in_clause_count = (
+                len(_EMPTY_IN_CLAUSE_RE.findall(expression)) if isinstance(expression, str) else 0
+            )
             if empty_in_clause_count <= 0:
                 continue
             rows.append(
