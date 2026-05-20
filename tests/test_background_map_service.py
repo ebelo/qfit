@@ -693,11 +693,13 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
 
         labeling = MagicMock()
         style, settings = self._make_style("road", "road-label-z15-plus")
+        settings.mergeLines = False
         settings.repeatDistance = 0.0
         labeling.styles.return_value = [style]
 
         self.service._apply_label_priority(labeling)
 
+        self.assertTrue(settings.mergeLines)
         self.assertEqual(settings.priority, 4)
         self.assertAlmostEqual(settings.repeatDistance, 400 * 25.4 / 96)
         self.assertEqual(settings.repeatDistanceUnit, Qgis.RenderUnit.Millimeters)
@@ -708,11 +710,13 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
 
         labeling = MagicMock()
         style, settings = self._make_style("road", "road-label-z15-plus")
+        settings.mergeLines = False
         settings.repeatDistance = 250 * 25.4 / 96
         labeling.styles.return_value = [style]
 
         self.service._apply_label_priority(labeling)
 
+        self.assertTrue(settings.mergeLines)
         self.assertAlmostEqual(settings.repeatDistance, 400 * 25.4 / 96)
         self.assertEqual(settings.repeatDistanceUnit, Qgis.RenderUnit.Millimeters)
         style.setLabelSettings.assert_called_once_with(settings)
@@ -720,11 +724,13 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
     def test_low_zoom_road_label_repeat_distance_uses_audited_spacing(self):
         labeling = MagicMock()
         style, settings = self._make_style("road", "road-label-z12-to-z15")
+        settings.mergeLines = False
         settings.repeatDistance = 0.0
         labeling.styles.return_value = [style]
 
         self.service._apply_label_priority(labeling)
 
+        self.assertTrue(settings.mergeLines)
         self.assertEqual(settings.priority, 4)
         self.assertAlmostEqual(settings.repeatDistance, 150 * 25.4 / 96)
         style.setLabelSettings.assert_called_once_with(settings)
@@ -905,11 +911,13 @@ class ApplyLabelPriorityMockTests(unittest.TestCase):
     def test_high_zoom_road_label_repeat_distance_uses_audited_spacing(self):
         labeling = MagicMock()
         style, settings = self._make_style("road", "road-label-z15-plus")
+        settings.mergeLines = False
         settings.repeatDistance = 0.0
         labeling.styles.return_value = [style]
 
         self.service._apply_label_priority(labeling)
 
+        self.assertTrue(settings.mergeLines)
         self.assertEqual(settings.priority, 4)
         self.assertAlmostEqual(settings.repeatDistance, 400 * 25.4 / 96)
         self.assertEqual(settings.repeatDistanceUnit, _qstub.Qgis.RenderUnit.Millimeters)
@@ -918,11 +926,13 @@ class ApplyLabelPriorityMockTests(unittest.TestCase):
     def test_high_zoom_road_label_overrides_qgis_default_repeat_distance(self):
         labeling = MagicMock()
         style, settings = self._make_style("road", "road-label-z15-plus")
+        settings.mergeLines = False
         settings.repeatDistance = 250 * 25.4 / 96
         labeling.styles.return_value = [style]
 
         self.service._apply_label_priority(labeling)
 
+        self.assertTrue(settings.mergeLines)
         self.assertAlmostEqual(settings.repeatDistance, 400 * 25.4 / 96)
         self.assertEqual(settings.repeatDistanceUnit, _qstub.Qgis.RenderUnit.Millimeters)
         style.setLabelSettings.assert_called_once_with(settings)
@@ -930,11 +940,13 @@ class ApplyLabelPriorityMockTests(unittest.TestCase):
     def test_low_zoom_road_label_repeat_distance_uses_audited_spacing(self):
         labeling = MagicMock()
         style, settings = self._make_style("road", "road-label-below-z12")
+        settings.mergeLines = False
         settings.repeatDistance = 0.0
         labeling.styles.return_value = [style]
 
         self.service._apply_label_priority(labeling)
 
+        self.assertTrue(settings.mergeLines)
         self.assertEqual(settings.priority, 4)
         self.assertAlmostEqual(settings.repeatDistance, 150 * 25.4 / 96)
         style.setLabelSettings.assert_called_once_with(settings)
