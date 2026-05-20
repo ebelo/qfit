@@ -2720,6 +2720,41 @@ def _split_pedestrian_line_width_layers_for_qgis(layers: object) -> object:
     )
 
 
+def _road_steps_line_style_controls(
+    *,
+    line_width: object,
+    line_dasharray: object,
+    sampled_zoom: float,
+) -> dict[str, object]:
+    controls: dict[str, object] = {}
+    if isinstance(line_width, list):
+        line_width_mm = _line_width_mm_at_zoom(line_width, sampled_zoom)
+        if line_width_mm is not None:
+            controls["line-width"] = line_width_mm
+    if isinstance(line_dasharray, list):
+        dasharray = _extract_line_dasharray_literal(line_dasharray, target_zoom=sampled_zoom)
+        if dasharray is not None:
+            controls["line-dasharray"] = dasharray
+    return controls
+
+
+def _road_steps_line_style_variant(
+    layer: dict[str, object],
+    *,
+    suffix: str,
+    zoom_band: tuple[float | None, float | None],
+    controls: dict[str, object],
+) -> dict[str, object]:
+    layer_id = str(layer.get("id") or "")
+    variant = copy.deepcopy(layer)
+    variant["id"] = f"{layer_id}-{suffix}"
+    _set_zoom_bounds(variant, *zoom_band)
+    variant_paint = variant["paint"]
+    assert isinstance(variant_paint, dict)
+    variant_paint.update(controls)
+    return variant
+
+
 def _road_steps_line_style_layer_variants(layer: dict[str, object]) -> list[dict[str, object]] | None:
     """Split audited step line styles into static QGIS zoom bands."""
     layer_id = str(layer.get("id") or "")
@@ -2751,20 +2786,20 @@ def _road_steps_line_style_layer_variants(layer: dict[str, object]) -> list[dict
         if sampled_zoom is None:
             continue
 
-        variant = copy.deepcopy(layer)
-        variant["id"] = f"{layer_id}-{suffix}"
-        _set_zoom_bounds(variant, *effective_zoom_band)
-        variant_paint = variant["paint"]
-        assert isinstance(variant_paint, dict)
-        if isinstance(line_width, list):
-            line_width_mm = _line_width_mm_at_zoom(line_width, sampled_zoom)
-            if line_width_mm is not None:
-                variant_paint["line-width"] = line_width_mm
-        if isinstance(line_dasharray, list):
-            dasharray = _extract_line_dasharray_literal(line_dasharray, target_zoom=sampled_zoom)
-            if dasharray is not None:
-                variant_paint["line-dasharray"] = dasharray
-        variants.append(variant)
+        controls = _road_steps_line_style_controls(
+            line_width=line_width,
+            line_dasharray=line_dasharray,
+            sampled_zoom=sampled_zoom,
+        )
+        if controls:
+            variants.append(
+                _road_steps_line_style_variant(
+                    layer,
+                    suffix=suffix,
+                    zoom_band=effective_zoom_band,
+                    controls=controls,
+                )
+            )
     return variants or None
 
 
