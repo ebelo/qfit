@@ -300,7 +300,8 @@ def generate_visual_crop_report(
                     "outputs": _contact_sheet_outputs(outputs),
                 }
             )
-        camera_rows.append({"camera": camera_name, "status": "cropped", "crops": crops})
+        status = "cropped" if crops else "no_hotspot_crops"
+        camera_rows.append({"camera": camera_name, "status": status, "crops": crops})
     contact_sheet = build_all_cameras_contact_sheet(entries=contact_sheet_entries, output_path=paths.contact_sheet_path)
     generated = generated_at or dt.datetime.now(dt.timezone.utc)
     return {

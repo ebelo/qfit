@@ -34,6 +34,14 @@ def _box_contains(box, point):
     return box[0] <= point[0] < box[2] and box[1] <= point[1] < box[3]
 
 
+def _save_rgb_image(path, image_module, color, *, size=(12, 12)):
+    image = image_module.new("RGB", size, color)
+    try:
+        image.save(path)
+    finally:
+        image.close()
+
+
 def _write_visual_triplet(root, image_module, *, camera_name="chamonix-trails-z14-outdoors"):
     comparison_root = root / "comparison"
     summary_path = comparison_root / "all-cameras" / "run" / "summary.json"
@@ -43,8 +51,8 @@ def _write_visual_triplet(root, image_module, *, camera_name="chamonix-trails-z1
     diff_path = camera_dir / "mapbox-gl-vs-qgis-diff.png"
     camera_dir.mkdir(parents=True)
     summary_path.parent.mkdir(parents=True)
-    image_module.new("RGB", (12, 12), (255, 255, 255)).save(browser_path)
-    image_module.new("RGB", (12, 12), (128, 128, 128)).save(qgis_path)
+    _save_rgb_image(browser_path, image_module, (255, 255, 255))
+    _save_rgb_image(qgis_path, image_module, (128, 128, 128))
     diff = image_module.new("RGB", (12, 12), (0, 0, 0))
     diff.putpixel((9, 9), (255, 255, 255))
     diff.save(diff_path)
@@ -107,7 +115,7 @@ class MapboxOutdoorsVisualCropsTest(unittest.TestCase):
         Image = _require_pillow()
         with tempfile.TemporaryDirectory() as tmpdir:
             diff_path = Path(tmpdir) / "diff.png"
-            Image.new("RGB", (8, 8), (0, 0, 0)).save(diff_path)
+            _save_rgb_image(diff_path, Image, (0, 0, 0), size=(8, 8))
 
             boxes = find_hotspot_crop_boxes(diff_path, crop_size=(20, 20), crop_count=1)
 
@@ -125,8 +133,8 @@ class MapboxOutdoorsVisualCropsTest(unittest.TestCase):
             diff_path = camera_dir / "mapbox-gl-vs-qgis-diff.png"
             camera_dir.mkdir(parents=True)
             summary_path.parent.mkdir(parents=True)
-            Image.new("RGB", (12, 12), (255, 255, 255)).save(browser_path)
-            Image.new("RGB", (12, 12), (128, 128, 128)).save(qgis_path)
+            _save_rgb_image(browser_path, Image, (255, 255, 255))
+            _save_rgb_image(qgis_path, Image, (128, 128, 128))
             diff = Image.new("RGB", (12, 12), (0, 0, 0))
             diff.putpixel((9, 9), (255, 255, 255))
             diff.save(diff_path)
@@ -189,6 +197,28 @@ class MapboxOutdoorsVisualCropsTest(unittest.TestCase):
             self.assertEqual(report["crop_count"], 0)
             self.assertIsNone(report["contact_sheet"])
             self.assertEqual(report["cameras"][0]["status"], "missing_required_artifacts")
+
+    def test_generate_visual_crop_report_marks_blank_diffs_without_crops(self):
+        Image = _require_pillow()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            comparison_summary, summary_path = _write_visual_triplet(root, Image)
+            diff_path = Path(comparison_summary["cameras"][0]["outputs"]["diff"])
+            _save_rgb_image(diff_path, Image, (0, 0, 0))
+            paths = build_visual_crop_paths(root / "debug" / "run")
+
+            report = generate_visual_crop_report(
+                comparison_summary,
+                comparison_summary_path=summary_path,
+                paths=paths,
+                crop_size=(4, 4),
+                crops_per_camera=1,
+                trusted_output_root=root / "debug",
+            )
+
+            self.assertEqual(report["crop_count"], 0)
+            self.assertEqual(report["cameras"][0]["status"], "no_hotspot_crops")
+            self.assertEqual(report["cameras"][0]["crops"], [])
 
     def test_generate_visual_crop_report_rejects_output_outside_trusted_root(self):
         Image = _require_pillow()
