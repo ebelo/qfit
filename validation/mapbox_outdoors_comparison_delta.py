@@ -174,8 +174,11 @@ def _input_artifact_row(
 
     contact_sheet = summary.get("contact_sheet")
     if isinstance(contact_sheet, str) and contact_sheet:
+        contact_sheet_path = Path(contact_sheet)
+        if not contact_sheet_path.is_absolute() and summary_path is not None:
+            contact_sheet_path = summary_path.parent / contact_sheet_path
         row["contact_sheet"] = _report_path(
-            Path(contact_sheet),
+            contact_sheet_path,
             artifact_base_dir=artifact_base_dir,
         )
     return row
@@ -342,32 +345,32 @@ def build_summary_markdown(report: Mapping[str, object]) -> str:
     _append_input_artifacts_section(lines, report)
     lines.extend(
         [
-        "## Summary",
-        "",
-        "| Metric | Improved | Worsened | Unchanged | Unknown |",
-        "| --- | ---: | ---: | ---: | ---: |",
-        (
-            "| Mean absolute channel delta | "
-            f"{summary.get('mean_improved', 0)} | "
-            f"{summary.get('mean_worsened', 0)} | "
-            f"{summary.get('mean_unchanged', 0)} | "
-            f"{summary.get('mean_unknown', 0)} |"
-        ),
-        (
-            "| RMS channel delta | "
-            f"{summary.get('rms_improved', 0)} | "
-            f"{summary.get('rms_worsened', 0)} | "
-            f"{summary.get('rms_unchanged', 0)} | "
-            f"{summary.get('rms_unknown', 0)} |"
-        ),
-        "",
-        "## Cameras",
-        "",
-        (
-            "| Camera | z | Mean baseline | Mean candidate | Mean delta | "
-            "RMS baseline | RMS candidate | RMS delta | Changed ratio delta | Status |"
-        ),
-        "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |",
+            "## Summary",
+            "",
+            "| Metric | Improved | Worsened | Unchanged | Unknown |",
+            "| --- | ---: | ---: | ---: | ---: |",
+            (
+                "| Mean absolute channel delta | "
+                f"{summary.get('mean_improved', 0)} | "
+                f"{summary.get('mean_worsened', 0)} | "
+                f"{summary.get('mean_unchanged', 0)} | "
+                f"{summary.get('mean_unknown', 0)} |"
+            ),
+            (
+                "| RMS channel delta | "
+                f"{summary.get('rms_improved', 0)} | "
+                f"{summary.get('rms_worsened', 0)} | "
+                f"{summary.get('rms_unchanged', 0)} | "
+                f"{summary.get('rms_unknown', 0)} |"
+            ),
+            "",
+            "## Cameras",
+            "",
+            (
+                "| Camera | z | Mean baseline | Mean candidate | Mean delta | "
+                "RMS baseline | RMS candidate | RMS delta | Changed ratio delta | Status |"
+            ),
+            "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |",
         ]
     )
     cameras = report.get("cameras")

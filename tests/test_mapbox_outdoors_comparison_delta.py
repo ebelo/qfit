@@ -159,7 +159,7 @@ class MapboxOutdoorsComparisonDeltaTests(unittest.TestCase):
             baseline_summary_path = baseline_dir / "summary.json"
             candidate_summary_path = candidate_dir / "summary.json"
             baseline = {
-                "contact_sheet": str(baseline_dir / "contact-sheet.jpg"),
+                "contact_sheet": "contact-sheet.jpg",
                 "cameras": [_camera_row("camera-a", mean=0.05, rms=0.08)],
             }
             candidate = {
@@ -189,6 +189,12 @@ class MapboxOutdoorsComparisonDeltaTests(unittest.TestCase):
                 "| Baseline | `../../baseline/all-cameras/20260520T180000Z/summary.json` | "
                 "`../../baseline/all-cameras/20260520T180000Z/summary.md` | "
                 "`../../baseline/all-cameras/20260520T180000Z/contact-sheet.jpg` |",
+                markdown,
+            )
+            self.assertIn(
+                "| Candidate | `../../candidate/all-cameras/20260520T181000Z/summary.json` | "
+                "`../../candidate/all-cameras/20260520T181000Z/summary.md` | "
+                "`../../candidate/all-cameras/20260520T181000Z/contact-sheet.jpg` |",
                 markdown,
             )
 
