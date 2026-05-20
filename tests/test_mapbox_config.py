@@ -5496,6 +5496,7 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
         self.assertAlmostEqual(by_id["road-path-below-z16"]["paint"]["line-width"], path_core_low_width_mm)
         self.assertAlmostEqual(by_id["road-path"]["paint"]["line-width"], path_core_low_width_mm)
         self.assertAlmostEqual(by_id["road-path-z16-plus"]["paint"]["line-width"], high_width_mm)
+        self.assertAlmostEqual(path_background_low_width_mm, path_core_low_width_mm * 1.15)
         self.assertAlmostEqual(
             by_id["road-path-bg-below-z16-outdoor"]["paint"]["line-width"],
             path_background_low_width_mm,
