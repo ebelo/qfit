@@ -211,6 +211,11 @@ class MapboxOutdoorsVisualCropsTest(unittest.TestCase):
 
         self.assertEqual(boxes, [])
 
+    def test_find_hotspot_crop_boxes_returns_empty_for_zero_crop_count(self):
+        boxes = find_hotspot_crop_boxes(Path("/missing/diff.png"), crop_count=0)
+
+        self.assertEqual(boxes, [])
+
     def test_generate_visual_crop_report_writes_triplet_crops_and_contact_sheet(self):
         image_module, image_stat_module = _fake_image_modules()
         with tempfile.TemporaryDirectory() as tmpdir:

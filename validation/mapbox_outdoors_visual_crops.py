@@ -129,6 +129,8 @@ def find_hotspot_crop_boxes(
     image_module: Any | None = None,
     image_stat_module: Any | None = None,
 ) -> list[dict[str, object]]:
+    if crop_count <= 0:
+        return []
     modules = _image_modules(image_module=image_module, image_stat_module=image_stat_module)
     image_module, image_stat_module = modules
     with image_module.open(diff_path) as opened:

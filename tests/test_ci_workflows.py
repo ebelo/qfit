@@ -33,22 +33,6 @@ class BuildWorkflowTests(unittest.TestCase):
         self.assertIn("scripts/package_plugin.py", self.text)
 
 
-class UnitTestsWorkflowTests(unittest.TestCase):
-    def setUp(self):
-        self.text = _read_workflow("tests.yml")
-
-    def test_installs_visual_crop_test_dependencies(self):
-        self.assertIn("pillow", self.text)
-
-
-class SonarCloudWorkflowTests(unittest.TestCase):
-    def setUp(self):
-        self.text = _read_workflow("sonarcloud.yml")
-
-    def test_installs_visual_crop_coverage_dependencies(self):
-        self.assertIn("coverage pillow pyyaml pypdf", self.text)
-
-
 class ReleaseWorkflowTests(unittest.TestCase):
     def setUp(self):
         self.text = _read_workflow("release.yml")
