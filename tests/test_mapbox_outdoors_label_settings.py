@@ -1052,6 +1052,7 @@ class MapboxOutdoorsLabelSettingsTests(unittest.TestCase):
         )
         below, z11_plus = rows
         self.assertEqual(below["qfit_zoom"], "6 to 11")
+        self.assertEqual(below["source_zoom"], "6+")
         self.assertEqual(below["qfit_symbol_placement"], "point")
         self.assertEqual(below["priority"], 3)
         self.assertEqual(z11_plus["qfit_zoom"], "11+")
@@ -1681,6 +1682,7 @@ class MapboxOutdoorsLabelSettingsTests(unittest.TestCase):
             "road_shield_label_placement_rows": [
                 {
                     "style_name": "road-number-shield-2-remaining-icons-z11-plus",
+                    "source_zoom": "6+",
                     "qfit_zoom": "11+",
                     "source_symbol_placement": ["step", ["zoom"], "point", 11, "line"],
                     "qfit_symbol_placement": "line",
@@ -1854,7 +1856,7 @@ class MapboxOutdoorsLabelSettingsTests(unittest.TestCase):
         self.assertIn("| contour-label | 1 | contour=1 | Line=1 | 3=1 | Line=1 | 0=1 | no=1 | yes=1 | no=1 | no=1 |", markdown)
         self.assertIn("## Road shield label placement detail", markdown)
         self.assertIn(
-            "| road-number-shield-2-remaining-icons-z11-plus | 11+ | step, ['zoom'], point, 11, line | line | 466.667 | Line | Horizontal | 6 | 123.472 | yes | yes | #1d1f25 |",
+            "| road-number-shield-2-remaining-icons-z11-plus | 6+ | 11+ | step, ['zoom'], point, 11, line | line | 466.667 | Line | Horizontal | 6 | 123.472 | yes | yes | #1d1f25 |",
             markdown,
         )
         self.assertIn("## Line label repeat spacing by base layer", markdown)

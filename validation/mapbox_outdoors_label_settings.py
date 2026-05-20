@@ -1789,16 +1789,17 @@ def _append_road_shield_label_placement_rows(lines: list[str], rows: list[object
                 "",
                 "Focused `road-number-shield` rows for placement, repeat-distance, and collision-priority follow-up.",
                 "",
-                "| Style | QGIS zoom | Source placement | QGIS style placement | QGIS symbol spacing | Geometry | Converted placement | Priority | Repeat distance | Obstacle | Merge lines | Text color |",
-                "| --- | --- | --- | --- | ---: | --- | --- | ---: | ---: | --- | --- | --- |",
+                "| Style | Source zoom | QGIS zoom | Source placement | QGIS style placement | QGIS symbol spacing | Geometry | Converted placement | Priority | Repeat distance | Obstacle | Merge lines | Text color |",
+                "| --- | --- | --- | --- | --- | ---: | --- | --- | ---: | ---: | --- | --- | --- |",
             ]
         )
     for row in rows:
         if not isinstance(row, dict):
             continue
         lines.append(
-            "| {style} | {qfit_zoom} | {source_placement} | {qfit_placement} | {qfit_spacing} | {geometry} | {placement} | {priority} | {repeat} | {obstacle} | {merge_lines} | {text_color} |".format(
+            "| {style} | {source_zoom} | {qfit_zoom} | {source_placement} | {qfit_placement} | {qfit_spacing} | {geometry} | {placement} | {priority} | {repeat} | {obstacle} | {merge_lines} | {text_color} |".format(
                 style=_markdown_value(row.get("style_name")),
+                source_zoom=_markdown_value(row.get("source_zoom")),
                 qfit_zoom=_markdown_value(row.get("qfit_zoom")),
                 source_placement=_markdown_value(row.get("source_symbol_placement")),
                 qfit_placement=_markdown_value(row.get("qfit_symbol_placement")),
