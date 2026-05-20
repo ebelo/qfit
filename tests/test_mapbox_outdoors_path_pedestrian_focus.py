@@ -241,6 +241,7 @@ class MapboxOutdoorsPathPedestrianFocusTests(unittest.TestCase):
         self.assertEqual(summary["qgis_path_pedestrian_visible_layer_count"], 3)
         self.assertEqual(summary["qgis_path_pedestrian_visible_line_layer_count"], 2)
         self.assertEqual(summary["qgis_path_pedestrian_visible_fill_layer_count"], 1)
+        self.assertEqual(summary["qgis_path_pedestrian_visible_filter_layer_count"], 2)
         self.assertEqual(summary["qgis_path_pedestrian_visible_line_width_layer_count"], 1)
         self.assertEqual(summary["qgis_path_pedestrian_visible_line_color_layer_count"], 2)
         self.assertEqual(summary["qgis_path_pedestrian_visible_fill_color_layer_count"], 1)
@@ -265,6 +266,30 @@ class MapboxOutdoorsPathPedestrianFocusTests(unittest.TestCase):
         self.assertIn(
             'road-pedestrian-polygon="#f6f2e8"',
             summary["qgis_path_pedestrian_visible_fill_color_samples"],
+        )
+
+    def test_qgis_style_summary_treats_all_layers_as_visible_without_camera_zoom(self):
+        summary = qgis_path_pedestrian_style_summary(_qgis_preprocessed_style())
+
+        self.assertEqual(
+            summary["qgis_path_pedestrian_visible_layer_count"],
+            summary["qgis_path_pedestrian_layer_count"],
+        )
+        self.assertEqual(
+            summary["qgis_path_pedestrian_visible_line_layer_count"],
+            summary["qgis_path_pedestrian_line_layer_count"],
+        )
+        self.assertEqual(
+            summary["qgis_path_pedestrian_visible_filter_layer_count"],
+            summary["qgis_path_pedestrian_filter_layer_count"],
+        )
+        self.assertEqual(
+            summary["qgis_path_pedestrian_visible_line_width_layer_count"],
+            summary["qgis_path_pedestrian_line_width_layer_count"],
+        )
+        self.assertEqual(
+            summary["qgis_path_pedestrian_visible_line_dasharray_layer_count"],
+            summary["qgis_path_pedestrian_line_dasharray_layer_count"],
         )
 
     def test_build_path_pedestrian_focus_report_cross_links_feature_counts_and_qgis_style(self):
@@ -299,6 +324,7 @@ class MapboxOutdoorsPathPedestrianFocusTests(unittest.TestCase):
         self.assertEqual(camera["qgis_style_status"], "missing")
         self.assertEqual(camera["qgis_path_pedestrian_layer_count"], 0)
         self.assertEqual(camera["qgis_path_pedestrian_visible_layer_count"], 0)
+        self.assertEqual(camera["qgis_path_pedestrian_visible_filter_layer_count"], 0)
 
     def test_build_path_pedestrian_focus_report_ignores_boolean_counts(self):
         road_report = {
@@ -338,6 +364,7 @@ class MapboxOutdoorsPathPedestrianFocusTests(unittest.TestCase):
         self.assertIn('"total=4"', markdown)
         self.assertIn('"visible=3"', markdown)
         self.assertIn('"line_colors=3"', markdown)
+        self.assertIn('"visible_filters=2"', markdown)
         self.assertIn('"visible_widths=1"', markdown)
         self.assertIn('"visible_dashes=2"', markdown)
         self.assertIn('"fill_colors=1"', markdown)

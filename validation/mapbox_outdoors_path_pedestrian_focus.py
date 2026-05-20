@@ -407,7 +407,7 @@ def _markdown_cell(value: object) -> str:
     if value is None or value == "":
         text = "-"
     elif isinstance(value, list):
-        text = _compact_json(value)
+        text = _compact_json(value, max_length=160)
     else:
         text = str(value)
     return text.replace("\n", " ").replace("|", "\\|")
@@ -420,6 +420,7 @@ def _markdown_table_row(cells: Iterable[object]) -> str:
 def _qgis_control_summary(camera: Mapping[str, object]) -> list[str]:
     return [
         f"filters={camera.get('qgis_path_pedestrian_filter_layer_count', 0)}",
+        f"visible_filters={camera.get('qgis_path_pedestrian_visible_filter_layer_count', 0)}",
         f"widths={camera.get('qgis_path_pedestrian_line_width_layer_count', 0)}",
         f"visible_widths={camera.get('qgis_path_pedestrian_visible_line_width_layer_count', 0)}",
         f"dashes={camera.get('qgis_path_pedestrian_line_dasharray_layer_count', 0)}",
