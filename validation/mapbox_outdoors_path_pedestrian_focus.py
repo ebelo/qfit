@@ -393,6 +393,22 @@ def _camera_focus_row(
     return row
 
 
+def _json_safe_artifact_value(value: object) -> object:
+    if isinstance(value, Path):
+        return str(value)
+    if isinstance(value, Mapping):
+        return {str(key): _json_safe_artifact_value(child) for key, child in value.items()}
+    if isinstance(value, list | tuple):
+        return [_json_safe_artifact_value(child) for child in value]
+    if isinstance(value, str | int | float | bool) or value is None:
+        return value
+    return str(value)
+
+
+def _json_safe_artifacts(input_artifacts: Mapping[str, object]) -> dict[str, object]:
+    return {str(key): _json_safe_artifact_value(value) for key, value in input_artifacts.items()}
+
+
 def build_path_pedestrian_focus_report(
     road_feature_report: Mapping[str, object],
     *,
@@ -429,7 +445,7 @@ def build_path_pedestrian_focus_report(
         "cameras": rows,
     }
     if input_artifacts is not None:
-        report["input_artifacts"] = dict(input_artifacts)
+        report["input_artifacts"] = _json_safe_artifacts(input_artifacts)
     return report
 
 

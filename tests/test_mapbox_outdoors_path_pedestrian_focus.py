@@ -459,6 +459,22 @@ class MapboxOutdoorsPathPedestrianFocusTests(unittest.TestCase):
         self.assertIn("Comparison summary inputs: `debug/comparison/summary.json`", markdown)
         self.assertIn("QGIS style input cameras: `chamonix-trails-z14-outdoors`", markdown)
 
+    def test_build_report_serializes_path_input_artifacts(self):
+        report = build_path_pedestrian_focus_report(
+            _road_feature_report(),
+            generated_at=dt.datetime(2026, 5, 20, 1, 35, tzinfo=dt.timezone.utc),
+            input_artifacts={
+                "road_features_json": Path("/tmp/road-features.json"),
+                "comparison_summary_jsons": [Path("/tmp/comparison/summary.json")],
+                "nested": {"style": Path("/tmp/qgis-preprocessed-style.json")},
+            },
+        )
+
+        json.dumps(report)
+        self.assertEqual(report["input_artifacts"]["road_features_json"], "/tmp/road-features.json")
+        self.assertEqual(report["input_artifacts"]["comparison_summary_jsons"], ["/tmp/comparison/summary.json"])
+        self.assertEqual(report["input_artifacts"]["nested"], {"style": "/tmp/qgis-preprocessed-style.json"})
+
     def test_build_summary_markdown_ignores_non_mapping_visible_details(self):
         markdown = build_summary_markdown(
             {
