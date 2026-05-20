@@ -736,15 +736,25 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
         style.setLabelSettings.assert_called_once_with(settings)
 
     def test_waterway_label_repeat_distance_uses_split_symbol_spacing(self):
-        labeling = MagicMock()
-        style, settings = self._make_style("natural_label", "waterway-label-z17-plus")
-        settings.repeatDistance = 0.0
-        labeling.styles.return_value = [style]
+        cases = [
+            ("waterway-label-z13-to-z15", 250),
+            ("waterway-label-z15-to-z17", 325),
+            ("waterway-label-z17-plus", 600),
+        ]
 
-        self.service._apply_label_priority(labeling)
+        for style_name, spacing_px in cases:
+            with self.subTest(style_name=style_name):
+                labeling = MagicMock()
+                style, settings = self._make_style("natural_label", style_name)
+                settings.mergeLines = False
+                settings.repeatDistance = 0.0
+                labeling.styles.return_value = [style]
 
-        self.assertAlmostEqual(settings.repeatDistance, 600 * 25.4 / 96)
-        style.setLabelSettings.assert_called_once_with(settings)
+                self.service._apply_label_priority(labeling)
+
+                self.assertTrue(settings.mergeLines)
+                self.assertAlmostEqual(settings.repeatDistance, spacing_px * 25.4 / 96)
+                style.setLabelSettings.assert_called_once_with(settings)
 
     def test_path_pedestrian_labels_merge_matching_line_segments(self):
         from qgis.core import Qgis
@@ -952,15 +962,25 @@ class ApplyLabelPriorityMockTests(unittest.TestCase):
         style.setLabelSettings.assert_called_once_with(settings)
 
     def test_waterway_label_repeat_distance_uses_split_symbol_spacing(self):
-        labeling = MagicMock()
-        style, settings = self._make_style("natural_label", "waterway-label-z17-plus")
-        settings.repeatDistance = 0.0
-        labeling.styles.return_value = [style]
+        cases = [
+            ("waterway-label-z13-to-z15", 250),
+            ("waterway-label-z15-to-z17", 325),
+            ("waterway-label-z17-plus", 600),
+        ]
 
-        self.service._apply_label_priority(labeling)
+        for style_name, spacing_px in cases:
+            with self.subTest(style_name=style_name):
+                labeling = MagicMock()
+                style, settings = self._make_style("natural_label", style_name)
+                settings.mergeLines = False
+                settings.repeatDistance = 0.0
+                labeling.styles.return_value = [style]
 
-        self.assertAlmostEqual(settings.repeatDistance, 600 * 25.4 / 96)
-        style.setLabelSettings.assert_called_once_with(settings)
+                self.service._apply_label_priority(labeling)
+
+                self.assertTrue(settings.mergeLines)
+                self.assertAlmostEqual(settings.repeatDistance, spacing_px * 25.4 / 96)
+                style.setLabelSettings.assert_called_once_with(settings)
 
     def test_path_pedestrian_labels_merge_matching_line_segments(self):
         labeling = MagicMock()
