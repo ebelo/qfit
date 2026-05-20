@@ -209,6 +209,9 @@ _PATH_PEDESTRIAN_HIERARCHY_MARKERS = (
     "platform",
     "corridor",
 )
+_PATH_PEDESTRIAN_HIERARCHY_NEGATION_PREFIXES = frozenset(
+    {"except", "exclude", "excluded", "excluding", "no", "non", "not", "without"}
+)
 _ROUTE_OVERLAY_LAYER_TYPES = frozenset({"line", "symbol"})
 _ROUTE_OVERLAY_TEXT_PAINT_PROPERTIES = (
     "paint.text-color",
@@ -1048,26 +1051,79 @@ def _road_trail_hierarchy_control_properties(layer: dict[str, object]) -> list[s
     return _control_properties(layer, _ROAD_TRAIL_HIERARCHY_CONTROL_PROPERTIES, include_filter=True)
 
 
-def _path_pedestrian_hierarchy_filter_search_text(layer: dict[str, object]) -> str:
-    filter_value = _qgis_filter_value(layer)
-    if filter_value is None:
-        return ""
-    return json.dumps(filter_value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+def _ordered_path_pedestrian_hierarchy_markers(markers: Iterable[str]) -> list[str]:
+    found = set(markers)
+    return [marker for marker in _PATH_PEDESTRIAN_HIERARCHY_MARKERS if marker in found]
 
 
-def _path_pedestrian_hierarchy_search_text(layer: dict[str, object]) -> str:
-    return " ".join(
-        (
-            str(layer.get("id") or ""),
-            str(layer.get("source_layer") or ""),
-            _path_pedestrian_hierarchy_filter_search_text(layer),
-        )
-    ).replace("-", "_").lower()
+def _path_pedestrian_hierarchy_text_markers(value: object) -> list[str]:
+    tokens = [token for token in re.split(r"[^a-z0-9]+", str(value).lower()) if token]
+    markers = [
+        token
+        for index, token in enumerate(tokens)
+        if token in _PATH_PEDESTRIAN_HIERARCHY_MARKERS
+        and (index == 0 or tokens[index - 1] not in _PATH_PEDESTRIAN_HIERARCHY_NEGATION_PREFIXES)
+    ]
+    return _ordered_path_pedestrian_hierarchy_markers(markers)
+
+
+def _path_pedestrian_hierarchy_filter_label_markers(value: object) -> list[str]:
+    if isinstance(value, list):
+        markers: list[str] = []
+        for item in value:
+            markers.extend(_path_pedestrian_hierarchy_filter_label_markers(item))
+        return _ordered_path_pedestrian_hierarchy_markers(markers)
+    if isinstance(value, str):
+        return _path_pedestrian_hierarchy_text_markers(value)
+    return []
+
+
+def _path_pedestrian_hierarchy_filter_output_is_truthy(value: object) -> bool:
+    return value is True or (
+        isinstance(value, str) and value.lower() in {"1", "true", "yes"}
+    )
+
+
+def _path_pedestrian_hierarchy_positive_match_markers(value: list[object]) -> list[str]:
+    markers: list[str] = []
+    for label_index in range(2, len(value) - 1, 2):
+        if _path_pedestrian_hierarchy_filter_output_is_truthy(value[label_index + 1]):
+            markers.extend(_path_pedestrian_hierarchy_filter_label_markers(value[label_index]))
+    return _ordered_path_pedestrian_hierarchy_markers(markers)
+
+
+def _path_pedestrian_hierarchy_positive_filter_markers(value: object) -> list[str]:
+    if not isinstance(value, list) or not value:
+        return []
+    operator = value[0]
+    if operator in {"!", "!=", "!in", "none", "not"}:
+        return []
+    if operator in {"all", "any"}:
+        markers: list[str] = []
+        for item in value[1:]:
+            markers.extend(_path_pedestrian_hierarchy_positive_filter_markers(item))
+        return _ordered_path_pedestrian_hierarchy_markers(markers)
+    if operator == "==":
+        return _path_pedestrian_hierarchy_filter_label_markers(value[2:])
+    if operator == "in":
+        return _path_pedestrian_hierarchy_filter_label_markers(value[2:])
+    if operator == "match":
+        return _path_pedestrian_hierarchy_positive_match_markers(value)
+    if operator == "case":
+        markers = []
+        for predicate_index in range(1, len(value) - 1, 2):
+            if _path_pedestrian_hierarchy_filter_output_is_truthy(value[predicate_index + 1]):
+                markers.extend(_path_pedestrian_hierarchy_positive_filter_markers(value[predicate_index]))
+        return _ordered_path_pedestrian_hierarchy_markers(markers)
+    return []
 
 
 def _path_pedestrian_hierarchy_markers(layer: dict[str, object]) -> list[str]:
-    search_text = _path_pedestrian_hierarchy_search_text(layer)
-    return [marker for marker in _PATH_PEDESTRIAN_HIERARCHY_MARKERS if marker in search_text]
+    markers = [
+        *_path_pedestrian_hierarchy_text_markers(layer.get("id") or ""),
+        *_path_pedestrian_hierarchy_positive_filter_markers(_qgis_filter_value(layer)),
+    ]
+    return _ordered_path_pedestrian_hierarchy_markers(markers)
 
 
 def _is_path_pedestrian_hierarchy_candidate_layer(layer: dict[str, object]) -> bool:
