@@ -944,7 +944,6 @@ def _label_controls(detail: Mapping[str, object]) -> list[str]:
             "repeat_distance",
             "label_per_part",
             "merge_lines",
-            "thinning_settings",
             "text_size",
             "text_color",
             "buffer_size",
