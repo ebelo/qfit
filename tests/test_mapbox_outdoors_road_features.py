@@ -47,6 +47,18 @@ def _feature(geometry_type, properties):
 
 
 class MapboxOutdoorsRoadFeatureTests(unittest.TestCase):
+    def test_top_count_labels_preserves_count_order_and_limit(self):
+        labels = road_features._top_count_labels(
+            {
+                "trail": 2,
+                "footway": 3,
+                "piste": 1,
+                "path": 4,
+            }
+        )
+
+        self.assertEqual(labels, ["path=4", "footway=3", "trail=2"])
+
     def test_resolve_mapbox_token_prefers_argument_then_environment(self):
         self.assertEqual(
             resolve_mapbox_token(
