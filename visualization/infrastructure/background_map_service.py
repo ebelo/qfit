@@ -224,7 +224,7 @@ def _append_high_zoom_contour_bbox_edge_label_style(
     settings.placement = getattr(
         qgs_pal_layer_settings,
         "Curved",
-        qgs_pal_layer_settings.Line,
+        getattr(qgs_pal_layer_settings, "Line", None),
     )
     settings.priority = max(3, _settings_priority(source_settings))
     settings.geometryGenerator = _CONTOUR_LABEL_BBOX_EDGE_DIFFERENCE_EXPRESSION

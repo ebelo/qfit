@@ -1005,6 +1005,7 @@ class ApplyLabelPriorityMockTests(unittest.TestCase):
         appended_style.setLabelSettings.assert_called_once_with(copied_settings)
         self.assertEqual(copied_settings.fieldName, "concat(\"ele\", ' m')")
         self.assertTrue(copied_settings.isExpression)
+        self.assertEqual(copied_settings.placement, _qstub.QgsPalLayerSettings.Curved)
         self.assertEqual(copied_settings.priority, 3)
         self.assertEqual(
             copied_settings.geometryGenerator,
