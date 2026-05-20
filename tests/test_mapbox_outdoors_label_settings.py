@@ -2078,7 +2078,7 @@ class MapboxOutdoorsLabelSettingsTests(unittest.TestCase):
                             "key": 87,
                             "name": "Priority",
                             "label": "Priority (87)",
-                            "active": True,
+                            "active": False,
                             "property_type": "StaticProperty",
                             "expression": None,
                             "field": None,
@@ -2258,7 +2258,7 @@ class MapboxOutdoorsLabelSettingsTests(unittest.TestCase):
         )
         self.assertIn("## Road shield label placement detail", markdown)
         self.assertIn(
-            '| road-number-shield-2-remaining-icons-z11-plus | 6+ | 11+ | step, [\'zoom\'], point, 11, line | line | 466.667 | Line | Horizontal | 6 | 123.472 | no | yes | no | PreventOverlap | no | yes | 2.38125 Millimeters | #1d1f25 | yes ShapeRectangle | 4.49792 x 2.64583 SizeFixed Millimeters | #ffffff 1 | #1d1f25 0.2 Millimeters | ShapeSizeX (50): ExpressionBasedProperty CASE WHEN length("ref") > 3 THEN 8 ELSE 5 END, Priority (87): StaticProperty 0 |',
+            '| road-number-shield-2-remaining-icons-z11-plus | 6+ | 11+ | step, [\'zoom\'], point, 11, line | line | 466.667 | Line | Horizontal | 6 | 123.472 | no | yes | no | PreventOverlap | no | yes | 2.38125 Millimeters | #1d1f25 | yes ShapeRectangle | 4.49792 x 2.64583 SizeFixed Millimeters | #ffffff 1 | #1d1f25 0.2 Millimeters | ShapeSizeX (50): ExpressionBasedProperty CASE WHEN length("ref") > 3 THEN 8 ELSE 5 END, Priority (87): StaticProperty inactive 0 |',
             markdown,
         )
         self.assertIn("## Line label repeat spacing by base layer", markdown)

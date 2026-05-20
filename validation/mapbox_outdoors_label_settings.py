@@ -2033,6 +2033,7 @@ def _data_defined_property_markdown_value(row: dict[str, object]) -> str:
             label = _markdown_value(detail.get("label"))
             parts = [
                 _markdown_value(detail.get("property_type")),
+                "inactive" if detail.get("active") is False else "—",
                 _markdown_value(_data_defined_property_detail_value(detail)),
             ]
             rendered_parts = [part for part in parts if part != "—"]
