@@ -75,8 +75,10 @@ class MapboxOutdoorsComparisonDeltaTests(unittest.TestCase):
             candidate,
             baseline_label="post-label-cleanups",
             candidate_label="probe",
+            now=dt.datetime(2026, 5, 20, 18, 51, tzinfo=dt.timezone.utc),
         )
 
+        self.assertEqual(report["generated_at"], "20260520T185100Z")
         self.assertEqual(report["baseline_label"], "post-label-cleanups")
         self.assertEqual(report["candidate_label"], "probe")
         self.assertEqual(report["camera_count"], 2)
@@ -86,9 +88,11 @@ class MapboxOutdoorsComparisonDeltaTests(unittest.TestCase):
                 "mean_improved": 1,
                 "mean_worsened": 1,
                 "mean_unchanged": 0,
+                "mean_unknown": 0,
                 "rms_improved": 1,
                 "rms_worsened": 1,
                 "rms_unchanged": 0,
+                "rms_unknown": 0,
             },
         )
         chamonix = report["cameras"][0]
@@ -115,6 +119,8 @@ class MapboxOutdoorsComparisonDeltaTests(unittest.TestCase):
             report["cameras"][0]["metrics"]["normalized_mean_absolute_channel_delta"]["delta"]
         )
         self.assertEqual(report["cameras"][1]["baseline_status"], "missing")
+        self.assertEqual(report["summary"]["mean_unknown"], 2)
+        self.assertEqual(report["summary"]["rms_unknown"], 2)
 
     def test_build_summary_markdown_renders_delta_table(self):
         report = build_comparison_delta_report(
@@ -129,7 +135,7 @@ class MapboxOutdoorsComparisonDeltaTests(unittest.TestCase):
         self.assertIn("# Mapbox Outdoors comparison delta", markdown)
         self.assertIn("Baseline: `baseline`", markdown)
         self.assertIn("| `camera-a` | 18.00 | 0.050000000 | 0.040000000 | -0.010000000 |", markdown)
-        self.assertIn("| RMS channel delta | 0 | 1 | 0 |", markdown)
+        self.assertIn("| RMS channel delta | 0 | 1 | 0 | 0 |", markdown)
 
     def test_write_report_outputs_json_and_markdown(self):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -162,13 +168,27 @@ class MapboxOutdoorsComparisonDeltaTests(unittest.TestCase):
 
             stdout = io.StringIO()
 
-            def fake_run_directory(*, output_root=None, now=None):
-                self.assertIsNone(now)
-                return Path(output_root) / "20260520T185100Z"
+            class SequencedDateTime(dt.datetime):
+                calls = 0
+
+                @classmethod
+                def now(cls, tz=None):
+                    cls.calls += 1
+                    seconds = 0 if cls.calls == 1 else 1
+                    timestamp = dt.datetime(
+                        2026,
+                        5,
+                        20,
+                        18,
+                        51,
+                        seconds,
+                        tzinfo=dt.timezone.utc,
+                    )
+                    return timestamp if tz is None else timestamp.astimezone(tz)
 
             with patch(
-                "qfit.validation.mapbox_outdoors_comparison_delta._build_timestamped_run_directory",
-                side_effect=fake_run_directory,
+                "qfit.validation.mapbox_outdoors_comparison_delta.dt.datetime",
+                SequencedDateTime,
             ):
                 with redirect_stdout(stdout):
                     exit_code = main(
@@ -185,8 +205,12 @@ class MapboxOutdoorsComparisonDeltaTests(unittest.TestCase):
                     )
 
             self.assertEqual(exit_code, 0)
+            self.assertEqual(SequencedDateTime.calls, 1)
             self.assertIn("Delta report:", stdout.getvalue())
-            self.assertTrue((tmp_path / "delta" / "20260520T185100Z" / "summary.md").exists())
+            output_dir = tmp_path / "delta" / "20260520T185100Z"
+            self.assertTrue((output_dir / "summary.md").exists())
+            written = json.loads((output_dir / "comparison-delta.json").read_text(encoding="utf-8"))
+            self.assertEqual(written["generated_at"], "20260520T185100Z")
 
 
 if __name__ == "__main__":

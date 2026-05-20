@@ -26,6 +26,7 @@ DELTA_METRIC_KEYS = (
     "normalized_mean_absolute_channel_delta",
     "normalized_rms_channel_delta",
 )
+DIRECTION_BUCKETS = ("improved", "worsened", "unchanged", "unknown")
 
 
 class ComparisonDeltaPaths(NamedTuple):
@@ -34,8 +35,9 @@ class ComparisonDeltaPaths(NamedTuple):
     summary_path: Path
 
 
-def _report_timestamp() -> str:
-    return dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+def _report_timestamp(now: dt.datetime | None = None) -> str:
+    timestamp = now or dt.datetime.now(dt.timezone.utc)
+    return timestamp.astimezone(dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
 
 
 def build_run_directory(
@@ -142,12 +144,17 @@ def _delta_direction(value: float | None) -> str:
     return "unchanged"
 
 
+def _direction_counts(prefix: str, directions: list[str]) -> dict[str, int]:
+    return {f"{prefix}_{bucket}": directions.count(bucket) for bucket in DIRECTION_BUCKETS}
+
+
 def build_comparison_delta_report(
     baseline_summary: Mapping[str, object],
     candidate_summary: Mapping[str, object],
     *,
     baseline_label: str = "baseline",
     candidate_label: str = "candidate",
+    now: dt.datetime | None = None,
 ) -> dict[str, object]:
     baseline_rows = _camera_rows(baseline_summary)
     candidate_rows = _camera_rows(candidate_summary)
@@ -199,18 +206,12 @@ def build_comparison_delta_report(
         if isinstance(row.get("rms_delta_direction"), str)
     ]
     return {
-        "generated_at": _report_timestamp(),
+        "generated_at": _report_timestamp(now),
         "baseline_label": baseline_label,
         "candidate_label": candidate_label,
         "camera_count": len(rows),
-        "summary": {
-            "mean_improved": mean_directions.count("improved"),
-            "mean_worsened": mean_directions.count("worsened"),
-            "mean_unchanged": mean_directions.count("unchanged"),
-            "rms_improved": rms_directions.count("improved"),
-            "rms_worsened": rms_directions.count("worsened"),
-            "rms_unchanged": rms_directions.count("unchanged"),
-        },
+        "summary": _direction_counts("mean", mean_directions)
+        | _direction_counts("rms", rms_directions),
         "cameras": rows,
     }
 
@@ -249,19 +250,21 @@ def build_summary_markdown(report: Mapping[str, object]) -> str:
         "",
         "## Summary",
         "",
-        "| Metric | Improved | Worsened | Unchanged |",
-        "| --- | ---: | ---: | ---: |",
+        "| Metric | Improved | Worsened | Unchanged | Unknown |",
+        "| --- | ---: | ---: | ---: | ---: |",
         (
             "| Mean absolute channel delta | "
             f"{summary.get('mean_improved', 0)} | "
             f"{summary.get('mean_worsened', 0)} | "
-            f"{summary.get('mean_unchanged', 0)} |"
+            f"{summary.get('mean_unchanged', 0)} | "
+            f"{summary.get('mean_unknown', 0)} |"
         ),
         (
             "| RMS channel delta | "
             f"{summary.get('rms_improved', 0)} | "
             f"{summary.get('rms_worsened', 0)} | "
-            f"{summary.get('rms_unchanged', 0)} |"
+            f"{summary.get('rms_unchanged', 0)} | "
+            f"{summary.get('rms_unknown', 0)} |"
         ),
         "",
         "## Cameras",
@@ -360,13 +363,17 @@ def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     baseline_summary = load_json_object(args.baseline_summary)
     candidate_summary = load_json_object(args.candidate_summary)
+    now = dt.datetime.now(dt.timezone.utc)
     report = build_comparison_delta_report(
         baseline_summary,
         candidate_summary,
         baseline_label=args.baseline_label,
         candidate_label=args.candidate_label,
+        now=now,
     )
-    paths = build_comparison_delta_paths(build_run_directory(output_root=args.output_root))
+    paths = build_comparison_delta_paths(
+        build_run_directory(output_root=args.output_root, now=now)
+    )
     write_report(report, paths)
     print(f"Delta JSON: {paths.json_path}")
     print(f"Delta report: {paths.summary_path}")
