@@ -852,6 +852,12 @@ class MapboxOutdoorsStyleAuditTests(unittest.TestCase):
                         "paint": {"line-color": "#cccccc"},
                     },
                     {
+                        "id": "landuse-path-outline",
+                        "type": "line",
+                        "source-layer": "landuse",
+                        "paint": {"line-color": "#88aa77"},
+                    },
+                    {
                         "id": "path-pedestrian-label",
                         "type": "symbol",
                         "source-layer": "road",
@@ -917,6 +923,7 @@ class MapboxOutdoorsStyleAuditTests(unittest.TestCase):
             1,
         )[0]
         self.assertNotIn("hidden-road-path` |", path_pedestrian_section)
+        self.assertNotIn("landuse-path-outline` |", path_pedestrian_section)
         self.assertNotIn("path-pedestrian-label` |", path_pedestrian_section)
 
     def test_build_style_audit_reports_terrain_landcover_palette_candidates(self):

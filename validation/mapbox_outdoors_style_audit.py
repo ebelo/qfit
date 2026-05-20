@@ -1071,7 +1071,12 @@ def _path_pedestrian_hierarchy_markers(layer: dict[str, object]) -> list[str]:
 
 
 def _is_path_pedestrian_hierarchy_candidate_layer(layer: dict[str, object]) -> bool:
-    return _is_road_trail_hierarchy_candidate_layer(layer) and bool(_path_pedestrian_hierarchy_markers(layer))
+    source_layer = str(layer.get("source_layer") or "").replace("-", "_").lower()
+    return (
+        source_layer == "road"
+        and _is_road_trail_hierarchy_candidate_layer(layer)
+        and bool(_path_pedestrian_hierarchy_markers(layer))
+    )
 
 
 def _is_terrain_landcover_candidate_layer(layer: dict[str, object]) -> bool:
