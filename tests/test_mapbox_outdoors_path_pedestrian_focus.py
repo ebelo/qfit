@@ -742,6 +742,29 @@ class MapboxOutdoorsPathPedestrianFocusTests(unittest.TestCase):
         self.assertIn("`debug/comparison/chamonix/mapbox-gl-vs-qgis-diff.png`", markdown)
         self.assertIn("`debug/comparison/all-cameras/contact-sheet.jpg`", markdown)
 
+    def test_build_summary_markdown_omits_duplicate_label_rows_without_duplicate_names(self):
+        markdown = build_summary_markdown(
+            {
+                "generated": "now",
+                "cameras": [
+                    {
+                        "camera": "merge-line-only",
+                        "duplicate_label_diagnostic": {
+                            "has_duplicate_feature_names": False,
+                            "duplicate_name_categories": [],
+                            "visible_merge_line_label_styles": ["road-label-z15-plus"],
+                            "visible_label_repeat_distances": [
+                                "road-label-z15-plus=105.83333333333333"
+                            ],
+                        },
+                    }
+                ],
+            }
+        )
+
+        self.assertIn("| merge-line-only |", markdown)
+        self.assertNotIn("## Duplicate label diagnostics", markdown)
+
     def test_build_summary_markdown_handles_no_focus_rows(self):
         markdown = build_summary_markdown({"generated": "now", "cameras": []})
 

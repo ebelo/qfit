@@ -1051,10 +1051,10 @@ def _duplicate_label_diagnostic_markdown_lines(cameras: Iterable[object]) -> lis
         if not isinstance(diagnostic, Mapping):
             continue
         duplicate_summaries = _duplicate_category_summaries(diagnostic)
+        if not duplicate_summaries:
+            continue
         merge_line_styles = _string_list(diagnostic.get("visible_merge_line_label_styles"))
         repeat_distances = _string_list(diagnostic.get("visible_label_repeat_distances"))
-        if not duplicate_summaries and not merge_line_styles and not repeat_distances:
-            continue
         rows.append([camera.get("camera"), duplicate_summaries, merge_line_styles, repeat_distances])
     if not rows:
         return []
