@@ -232,6 +232,7 @@ _ROAD_NUMBER_SHIELD_SPRITE_NAME_RE = re.compile(
     r"^(?:default|rectangle-(?:blue|green|red|white|yellow)|"
     r"[a-z]{2}-(?:highway|main|motorway|national-highway)(?:-toll)?)-[2-6]$"
 )
+_ROAD_NUMBER_SHIELD_ICON_TOKEN_RE = re.compile(r"^\{shield(?:_beta)?\}-(?P<reflen>[2-6])$")
 _MOTORWAY_EXIT_SPRITE_NAME_RE = re.compile(r"^motorway-exit-[1-9]$")
 _TERRAIN_LANDCOVER_LAYER_TYPES = frozenset({"fill", "line"})
 _TERRAIN_LANDCOVER_CONTROL_PROPERTIES = (
@@ -1201,6 +1202,13 @@ def _match_expression_string_outputs(expr: object) -> list[str]:
 
 def _icon_image_string_outputs(expr: object) -> list[str]:
     if isinstance(expr, str) and expr:
+        token_match = _ROAD_NUMBER_SHIELD_ICON_TOKEN_RE.match(expr)
+        if token_match is not None:
+            reflen = int(token_match.group("reflen"))
+            return sorted(
+                f"{base}-{reflen}"
+                for base in _ROAD_SHIELD_SPRITE_BASES_BY_REFLEN[reflen]
+            )
         return [expr]
     return _match_expression_string_outputs(expr)
 
