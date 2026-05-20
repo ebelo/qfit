@@ -688,7 +688,7 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
         other_style.setLabelSettings.assert_not_called()
         remaining_style.setLabelSettings.assert_not_called()
 
-    def test_line_label_repeat_distance_uses_mapbox_default_spacing(self):
+    def test_high_zoom_road_label_repeat_distance_uses_audited_spacing(self):
         from qgis.core import Qgis
 
         labeling = MagicMock()
@@ -699,7 +699,21 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
         self.service._apply_label_priority(labeling)
 
         self.assertEqual(settings.priority, 4)
-        self.assertAlmostEqual(settings.repeatDistance, 250 * 25.4 / 96)
+        self.assertAlmostEqual(settings.repeatDistance, 400 * 25.4 / 96)
+        self.assertEqual(settings.repeatDistanceUnit, Qgis.RenderUnit.Millimeters)
+        style.setLabelSettings.assert_called_once_with(settings)
+
+    def test_high_zoom_road_label_overrides_qgis_default_repeat_distance(self):
+        from qgis.core import Qgis
+
+        labeling = MagicMock()
+        style, settings = self._make_style("road", "road-label-z15-plus")
+        settings.repeatDistance = 250 * 25.4 / 96
+        labeling.styles.return_value = [style]
+
+        self.service._apply_label_priority(labeling)
+
+        self.assertAlmostEqual(settings.repeatDistance, 400 * 25.4 / 96)
         self.assertEqual(settings.repeatDistanceUnit, Qgis.RenderUnit.Millimeters)
         style.setLabelSettings.assert_called_once_with(settings)
 
@@ -872,7 +886,7 @@ class ApplyLabelPriorityMockTests(unittest.TestCase):
         other_style.setLabelSettings.assert_not_called()
         remaining_style.setLabelSettings.assert_not_called()
 
-    def test_line_label_repeat_distance_uses_mapbox_default_spacing(self):
+    def test_high_zoom_road_label_repeat_distance_uses_audited_spacing(self):
         labeling = MagicMock()
         style, settings = self._make_style("road", "road-label-z15-plus")
         settings.repeatDistance = 0.0
@@ -881,7 +895,19 @@ class ApplyLabelPriorityMockTests(unittest.TestCase):
         self.service._apply_label_priority(labeling)
 
         self.assertEqual(settings.priority, 4)
-        self.assertAlmostEqual(settings.repeatDistance, 250 * 25.4 / 96)
+        self.assertAlmostEqual(settings.repeatDistance, 400 * 25.4 / 96)
+        self.assertEqual(settings.repeatDistanceUnit, _qstub.Qgis.RenderUnit.Millimeters)
+        style.setLabelSettings.assert_called_once_with(settings)
+
+    def test_high_zoom_road_label_overrides_qgis_default_repeat_distance(self):
+        labeling = MagicMock()
+        style, settings = self._make_style("road", "road-label-z15-plus")
+        settings.repeatDistance = 250 * 25.4 / 96
+        labeling.styles.return_value = [style]
+
+        self.service._apply_label_priority(labeling)
+
+        self.assertAlmostEqual(settings.repeatDistance, 400 * 25.4 / 96)
         self.assertEqual(settings.repeatDistanceUnit, _qstub.Qgis.RenderUnit.Millimeters)
         style.setLabelSettings.assert_called_once_with(settings)
 
