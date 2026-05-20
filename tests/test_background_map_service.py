@@ -974,6 +974,81 @@ class ApplyLabelPriorityMockTests(unittest.TestCase):
         self.assertTrue(settings.isExpression)
         style.setLabelSettings.assert_called_once_with(settings)
 
+    def test_contour_label_appends_high_zoom_bbox_edge_style(self):
+        labeling = MagicMock()
+        source_style, source_settings = self._make_style("contour", "contour-label")
+        source_settings.fieldName = '"ele"'
+        source_settings.isExpression = True
+        source_settings.priority = 2
+        labeling.styles.return_value = [source_style]
+        copied_settings = SimpleNamespace()
+        appended_style = MagicMock()
+        _qstub.QgsPalLayerSettings.reset_mock(return_value=True, side_effect=True)
+        _qstub.QgsPalLayerSettings.return_value = copied_settings
+        _qstub.QgsVectorTileBasicLabelingStyle.reset_mock(return_value=True, side_effect=True)
+        _qstub.QgsVectorTileBasicLabelingStyle.return_value = appended_style
+
+        self.service._apply_label_priority(labeling)
+
+        _qstub.QgsPalLayerSettings.assert_called_once_with(source_settings)
+        appended_style.setStyleName.assert_called_once_with(
+            _mock_bms_mod._CONTOUR_LABEL_BBOX_EDGE_DIFFERENCE_STYLE_NAME
+        )
+        appended_style.setLayerName.assert_called_once_with("contour")
+        appended_style.setGeometryType.assert_called_once_with(_qstub.Qgis.GeometryType.Polygon)
+        appended_style.setFilterExpression.assert_called_once_with(
+            _mock_bms_mod._CONTOUR_LABEL_BBOX_EDGE_DIFFERENCE_FILTER
+        )
+        appended_style.setMinZoomLevel.assert_called_once_with(
+            _mock_bms_mod._CONTOUR_LABEL_BBOX_EDGE_DIFFERENCE_MIN_ZOOM
+        )
+        appended_style.setLabelSettings.assert_called_once_with(copied_settings)
+        self.assertEqual(copied_settings.fieldName, "concat(\"ele\", ' m')")
+        self.assertTrue(copied_settings.isExpression)
+        self.assertEqual(copied_settings.placement, _qstub.QgsPalLayerSettings.Curved)
+        self.assertEqual(copied_settings.priority, 3)
+        self.assertEqual(
+            copied_settings.geometryGenerator,
+            _mock_bms_mod._CONTOUR_LABEL_BBOX_EDGE_DIFFERENCE_EXPRESSION,
+        )
+        self.assertTrue(copied_settings.geometryGeneratorEnabled)
+        self.assertEqual(copied_settings.geometryGeneratorType, _qstub.Qgis.GeometryType.Line)
+        labeling.setStyles.assert_called_once_with([source_style, appended_style])
+
+    def test_custom_contour_label_field_does_not_append_high_zoom_bbox_edge_style(self):
+        labeling = MagicMock()
+        style, settings = self._make_style("contour", "contour-label")
+        settings.fieldName = '"height_ft"'
+        settings.isExpression = True
+        labeling.styles.return_value = [style]
+        _qstub.QgsPalLayerSettings.reset_mock(return_value=True, side_effect=True)
+        _qstub.QgsVectorTileBasicLabelingStyle.reset_mock(return_value=True, side_effect=True)
+
+        self.service._apply_label_priority(labeling)
+
+        _qstub.QgsPalLayerSettings.assert_not_called()
+        _qstub.QgsVectorTileBasicLabelingStyle.assert_not_called()
+        labeling.setStyles.assert_not_called()
+
+    def test_existing_high_zoom_bbox_edge_style_is_not_duplicated(self):
+        labeling = MagicMock()
+        source_style, source_settings = self._make_style("contour", "contour-label")
+        source_settings.fieldName = "concat(\"ele\", ' m')"
+        source_settings.isExpression = True
+        existing_style, _existing_settings = self._make_style(
+            "contour",
+            _mock_bms_mod._CONTOUR_LABEL_BBOX_EDGE_DIFFERENCE_STYLE_NAME,
+        )
+        labeling.styles.return_value = [source_style, existing_style]
+        _qstub.QgsPalLayerSettings.reset_mock(return_value=True, side_effect=True)
+        _qstub.QgsVectorTileBasicLabelingStyle.reset_mock(return_value=True, side_effect=True)
+
+        self.service._apply_label_priority(labeling)
+
+        _qstub.QgsPalLayerSettings.assert_not_called()
+        _qstub.QgsVectorTileBasicLabelingStyle.assert_not_called()
+        labeling.setStyles.assert_not_called()
+
     def test_custom_contour_label_field_is_left_unchanged(self):
         labeling = MagicMock()
         style, settings = self._make_style("contour", "contour-label")
