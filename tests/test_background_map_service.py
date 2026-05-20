@@ -738,11 +738,13 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
     def test_waterway_label_repeat_distance_uses_split_symbol_spacing(self):
         labeling = MagicMock()
         style, settings = self._make_style("natural_label", "waterway-label-z17-plus")
+        settings.mergeLines = False
         settings.repeatDistance = 0.0
         labeling.styles.return_value = [style]
 
         self.service._apply_label_priority(labeling)
 
+        self.assertTrue(settings.mergeLines)
         self.assertAlmostEqual(settings.repeatDistance, 600 * 25.4 / 96)
         style.setLabelSettings.assert_called_once_with(settings)
 
@@ -954,11 +956,13 @@ class ApplyLabelPriorityMockTests(unittest.TestCase):
     def test_waterway_label_repeat_distance_uses_split_symbol_spacing(self):
         labeling = MagicMock()
         style, settings = self._make_style("natural_label", "waterway-label-z17-plus")
+        settings.mergeLines = False
         settings.repeatDistance = 0.0
         labeling.styles.return_value = [style]
 
         self.service._apply_label_priority(labeling)
 
+        self.assertTrue(settings.mergeLines)
         self.assertAlmostEqual(settings.repeatDistance, 600 * 25.4 / 96)
         style.setLabelSettings.assert_called_once_with(settings)
 
