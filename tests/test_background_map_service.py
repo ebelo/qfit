@@ -887,7 +887,7 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
         self.service._apply_label_priority(labeling)
 
         self.assertTrue(settings.mergeLines)
-        self.assertAlmostEqual(settings.repeatDistance, 250 * 25.4 / 96)
+        self.assertAlmostEqual(settings.repeatDistance, 400 * 25.4 / 96)
         self.assertEqual(settings.repeatDistanceUnit, Qgis.RenderUnit.Millimeters)
         style.setLabelSettings.assert_called_once_with(settings)
 
@@ -1227,7 +1227,7 @@ class ApplyLabelPriorityMockTests(unittest.TestCase):
         self.service._apply_label_priority(labeling)
 
         self.assertTrue(settings.mergeLines)
-        self.assertAlmostEqual(settings.repeatDistance, 250 * 25.4 / 96)
+        self.assertAlmostEqual(settings.repeatDistance, 400 * 25.4 / 96)
         self.assertEqual(settings.repeatDistanceUnit, _qstub.Qgis.RenderUnit.Millimeters)
         style.setLabelSettings.assert_called_once_with(settings)
 
