@@ -1200,9 +1200,9 @@ def _match_expression_string_outputs(expr: object) -> list[str]:
     return sorted({str(output) for output in outputs if isinstance(output, str)})
 
 
-def _road_number_shield_token_filter_bases(expr: object, field_name: str) -> list[str]:
+def _road_number_shield_token_filter_bases(expr: object, field_name: str) -> list[str] | None:
     if not isinstance(expr, list) or not expr:
-        return []
+        return None
     if (
         len(expr) == 5
         and expr[0] == "match"
@@ -1214,9 +1214,9 @@ def _road_number_shield_token_filter_bases(expr: object, field_name: str) -> lis
         return sorted({str(value) for value in expr[2] if isinstance(value, str)})
     for item in expr[1:]:
         bases = _road_number_shield_token_filter_bases(item, field_name)
-        if bases:
+        if bases is not None:
             return bases
-    return []
+    return None
 
 
 def _icon_image_string_outputs(expr: object, layer_filter: object = None) -> list[str]:
@@ -1227,7 +1227,7 @@ def _icon_image_string_outputs(expr: object, layer_filter: object = None) -> lis
             reflen = int(token_match.group("reflen"))
             configured_bases = set(_ROAD_SHIELD_SPRITE_BASES_BY_REFLEN[reflen])
             filter_bases = _road_number_shield_token_filter_bases(layer_filter, field_name)
-            bases = filter_bases or sorted(configured_bases)
+            bases = filter_bases if filter_bases is not None else sorted(configured_bases)
             return sorted(
                 f"{base}-{reflen}"
                 for base in bases

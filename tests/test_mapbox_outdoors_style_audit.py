@@ -1751,6 +1751,19 @@ class MapboxOutdoorsStyleAuditTests(unittest.TestCase):
         self.assertEqual(outputs, ["gr-motorway-2", "rectangle-yellow-2"])
         self.assertNotIn("ch-motorway-2", outputs)
 
+    def test_road_shield_token_outputs_preserve_empty_known_icon_filter(self):
+        outputs = mapbox_outdoors_style_audit._qfit_road_number_shield_sprite_outputs(
+            [
+                {
+                    "id": "road-number-shield-2-known-icons",
+                    "layout": {"icon-image": "{shield}-2"},
+                    "filter": ["match", ["get", "shield"], [], True, False],
+                },
+            ]
+        )
+
+        self.assertEqual(outputs, [])
+
     def test_build_style_audit_reports_route_overlay_candidates(self):
         audit = build_style_audit(
             {
