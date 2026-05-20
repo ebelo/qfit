@@ -80,13 +80,26 @@ def _resolve_trusted_debug_path(raw_path: str, *, base_dir: Path, trusted_root: 
     return resolved
 
 
+def _trusted_root_for_comparison_summary(summary_path: Path) -> Path:
+    resolved = summary_path.resolve()
+    for parent in resolved.parents:
+        if parent.name == "all-cameras":
+            return parent.parent
+    return DEFAULT_COMPARISON_OUTPUT_ROOT
+
+
 def qgis_style_paths_from_comparison_summary(
     comparison_summary: Mapping[str, object],
     *,
     summary_path: Path | None = None,
     trusted_root: Path | None = None,
 ) -> dict[str, Path]:
-    root = DEFAULT_COMPARISON_OUTPUT_ROOT if trusted_root is None else trusted_root
+    if trusted_root is not None:
+        root = trusted_root
+    elif summary_path is not None:
+        root = _trusted_root_for_comparison_summary(summary_path)
+    else:
+        root = DEFAULT_COMPARISON_OUTPUT_ROOT
     base_dir = Path.cwd() if summary_path is None else summary_path.parent
     cameras = comparison_summary.get("cameras")
     rows = cameras if isinstance(cameras, list) else []

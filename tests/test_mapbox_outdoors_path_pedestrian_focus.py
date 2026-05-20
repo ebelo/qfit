@@ -123,7 +123,8 @@ class MapboxOutdoorsPathPedestrianFocusTests(unittest.TestCase):
     def test_qgis_style_paths_from_comparison_summary_reads_manifest_outputs(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir)
-            run_dir = root / "camera" / "20260520T003504Z"
+            comparison_root = root / "comparison"
+            run_dir = comparison_root / "camera" / "20260520T003504Z"
             run_dir.mkdir(parents=True)
             style_path = run_dir / "qgis-preprocessed-style.json"
             manifest_path = run_dir / "manifest.json"
@@ -143,14 +144,14 @@ class MapboxOutdoorsPathPedestrianFocusTests(unittest.TestCase):
 
             paths = qgis_style_paths_from_comparison_summary(
                 comparison_summary,
-                summary_path=root / "all-cameras" / "summary.json",
-                trusted_root=root,
+                summary_path=comparison_root / "all-cameras" / "summary.json",
             )
 
             self.assertEqual(paths, {"chamonix-trails-z14-outdoors": style_path.resolve()})
 
     def test_qgis_style_paths_from_comparison_summary_rejects_untrusted_manifest_paths(self):
         with tempfile.TemporaryDirectory() as tmpdir:
+            comparison_root = Path(tmpdir) / "comparison"
             comparison_summary = {
                 "cameras": [
                     {
@@ -163,9 +164,35 @@ class MapboxOutdoorsPathPedestrianFocusTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 qgis_style_paths_from_comparison_summary(
                     comparison_summary,
-                    summary_path=Path(tmpdir) / "summary.json",
-                    trusted_root=Path(tmpdir),
+                    summary_path=comparison_root / "all-cameras" / "summary.json",
                 )
+
+    def test_qgis_style_paths_from_comparison_summary_rejects_untrusted_style_paths_with_explicit_root(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            comparison_root = Path(tmpdir) / "comparison"
+            run_dir = comparison_root / "camera" / "20260520T003504Z"
+            run_dir.mkdir(parents=True)
+            manifest_path = run_dir / "manifest.json"
+            manifest_path.write_text(
+                json.dumps({"outputs": {"qgis_preprocessed_style": "/tmp/outside-style.json"}}),
+                encoding="utf-8",
+            )
+            comparison_summary = {
+                "cameras": [
+                    {
+                        "camera": "chamonix-trails-z14-outdoors",
+                        "manifest": str(manifest_path),
+                    }
+                ]
+            }
+
+            with self.assertRaises(ValueError) as raised:
+                qgis_style_paths_from_comparison_summary(
+                    comparison_summary,
+                    summary_path=comparison_root / "all-cameras" / "summary.json",
+                )
+
+            self.assertIn("/tmp/outside-style.json", str(raised.exception))
 
     def test_qgis_style_paths_from_comparison_summary_rejects_untrusted_style_paths(self):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -383,9 +410,6 @@ class MapboxOutdoorsPathPedestrianFocusTests(unittest.TestCase):
             with patch(
                 "qfit.validation.mapbox_outdoors_path_pedestrian_focus.DEFAULT_OUTPUT_ROOT",
                 output_root,
-            ), patch(
-                "qfit.validation.mapbox_outdoors_path_pedestrian_focus.DEFAULT_COMPARISON_OUTPUT_ROOT",
-                root,
             ), redirect_stdout(stdout):
                 result = main(
                     [
