@@ -122,6 +122,19 @@ class MapboxOutdoorsComparisonDeltaTests(unittest.TestCase):
         self.assertEqual(report["summary"]["mean_unknown"], 2)
         self.assertEqual(report["summary"]["rms_unknown"], 2)
 
+    def test_build_comparison_delta_report_falls_back_to_baseline_zoom(self):
+        baseline_row = _camera_row("camera-a", mean=0.1, rms=0.2, zoom=12.5)
+        candidate_row = _camera_row("camera-a", mean=0.08, rms=0.18)
+        candidate_row["zoom"] = "unknown"
+
+        report = build_comparison_delta_report(
+            {"cameras": [baseline_row]},
+            {"cameras": [candidate_row]},
+        )
+
+        self.assertEqual(report["cameras"][0]["zoom"], 12.5)
+        self.assertIn("| `camera-a` | 12.50 |", build_summary_markdown(report))
+
     def test_build_summary_markdown_renders_delta_table(self):
         report = build_comparison_delta_report(
             {"cameras": [_camera_row("camera-a", mean=0.05, rms=0.08, changed=0.9, zoom=18)]},

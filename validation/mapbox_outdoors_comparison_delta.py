@@ -169,6 +169,7 @@ def build_comparison_delta_report(
     for camera in _ordered_camera_names(baseline_rows, candidate_rows):
         baseline_row = baseline_by_camera.get(camera)
         candidate_row = candidate_by_camera.get(camera)
+        candidate_zoom = _row_zoom(candidate_row)
         metric_deltas = {
             key: _metric_delta(baseline_row, candidate_row, key)
             for key in DELTA_METRIC_KEYS
@@ -177,8 +178,8 @@ def build_comparison_delta_report(
             {
                 "camera": camera,
                 "zoom": (
-                    _row_zoom(candidate_row)
-                    if candidate_row is not None
+                    candidate_zoom
+                    if candidate_zoom is not None
                     else _row_zoom(baseline_row)
                 ),
                 "baseline_status": _row_status(baseline_row),
