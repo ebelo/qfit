@@ -36,6 +36,7 @@ PATH_PEDESTRIAN_DETAIL_PAINT_KEYS = (
     "line-dasharray",
     "line-opacity",
     "fill-color",
+    "fill-opacity",
 )
 TOP_COUNT_LIMIT = 3
 SAMPLE_LAYER_LIMIT = 8

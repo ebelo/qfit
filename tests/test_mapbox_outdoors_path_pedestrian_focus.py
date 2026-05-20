@@ -93,7 +93,7 @@ def _qgis_preprocessed_style():
                 "type": "fill",
                 "minzoom": 14,
                 "filter": ["==", ["get", "class"], "pedestrian"],
-                "paint": {"fill-color": "#f6f2e8"},
+                "paint": {"fill-color": "#f6f2e8", "fill-opacity": 0.4},
             },
             {
                 "id": "road-label",
@@ -263,6 +263,8 @@ class MapboxOutdoorsPathPedestrianFocusTests(unittest.TestCase):
         self.assertEqual(details_by_id["road-path"]["line-width"], 1.5)
         self.assertEqual(details_by_id["road-path"]["line-color"], "#d8c6a3")
         self.assertEqual(details_by_id["road-path"]["line-dasharray"], [1, 1])
+        self.assertEqual(details_by_id["road-pedestrian-polygon"]["fill-color"], "#f6f2e8")
+        self.assertEqual(details_by_id["road-pedestrian-polygon"]["fill-opacity"], 0.4)
         visible_detail_ids = [
             detail["id"] for detail in summary["qgis_path_pedestrian_visible_layer_details"]
         ]
