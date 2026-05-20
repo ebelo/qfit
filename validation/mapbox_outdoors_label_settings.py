@@ -2013,6 +2013,16 @@ def _geometry_generator_markdown_value(row: dict[str, object]) -> str:
     )
 
 
+def _data_defined_property_detail_value(detail: dict[str, object]) -> object:
+    expression = detail.get("expression")
+    if expression not in (None, ""):
+        return expression
+    field = detail.get("field")
+    if field not in (None, ""):
+        return field
+    return detail.get("static_value")
+
+
 def _data_defined_property_markdown_value(row: dict[str, object]) -> str:
     details = row.get("data_defined_property_details")
     if isinstance(details, list) and details:
@@ -2023,7 +2033,7 @@ def _data_defined_property_markdown_value(row: dict[str, object]) -> str:
             label = _markdown_value(detail.get("label"))
             parts = [
                 _markdown_value(detail.get("property_type")),
-                _markdown_value(detail.get("expression") or detail.get("field") or detail.get("static_value")),
+                _markdown_value(_data_defined_property_detail_value(detail)),
             ]
             rendered_parts = [part for part in parts if part != "—"]
             rendered_details.append(f"{label}: {' '.join(rendered_parts)}" if rendered_parts else label)

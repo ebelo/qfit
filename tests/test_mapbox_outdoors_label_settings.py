@@ -2061,8 +2061,8 @@ class MapboxOutdoorsLabelSettingsTests(unittest.TestCase):
                     "background_stroke_width": 0.2,
                     "background_stroke_width_unit": "Millimeters",
                     "background_opacity": 1.0,
-                    "data_defined_property_keys": [50],
-                    "data_defined_property_labels": ["ShapeSizeX (50)"],
+                    "data_defined_property_keys": [50, 87],
+                    "data_defined_property_labels": ["ShapeSizeX (50)", "Priority (87)"],
                     "data_defined_property_details": [
                         {
                             "key": 50,
@@ -2073,7 +2073,17 @@ class MapboxOutdoorsLabelSettingsTests(unittest.TestCase):
                             "expression": 'CASE WHEN length("ref") > 3 THEN 8 ELSE 5 END',
                             "field": None,
                             "static_value": None,
-                        }
+                        },
+                        {
+                            "key": 87,
+                            "name": "Priority",
+                            "label": "Priority (87)",
+                            "active": True,
+                            "property_type": "StaticProperty",
+                            "expression": None,
+                            "field": None,
+                            "static_value": 0,
+                        },
                     ],
                 }
             ],
@@ -2248,7 +2258,7 @@ class MapboxOutdoorsLabelSettingsTests(unittest.TestCase):
         )
         self.assertIn("## Road shield label placement detail", markdown)
         self.assertIn(
-            '| road-number-shield-2-remaining-icons-z11-plus | 6+ | 11+ | step, [\'zoom\'], point, 11, line | line | 466.667 | Line | Horizontal | 6 | 123.472 | no | yes | no | PreventOverlap | no | yes | 2.38125 Millimeters | #1d1f25 | yes ShapeRectangle | 4.49792 x 2.64583 SizeFixed Millimeters | #ffffff 1 | #1d1f25 0.2 Millimeters | ShapeSizeX (50): ExpressionBasedProperty CASE WHEN length("ref") > 3 THEN 8 ELSE 5 END |',
+            '| road-number-shield-2-remaining-icons-z11-plus | 6+ | 11+ | step, [\'zoom\'], point, 11, line | line | 466.667 | Line | Horizontal | 6 | 123.472 | no | yes | no | PreventOverlap | no | yes | 2.38125 Millimeters | #1d1f25 | yes ShapeRectangle | 4.49792 x 2.64583 SizeFixed Millimeters | #ffffff 1 | #1d1f25 0.2 Millimeters | ShapeSizeX (50): ExpressionBasedProperty CASE WHEN length("ref") > 3 THEN 8 ELSE 5 END, Priority (87): StaticProperty 0 |',
             markdown,
         )
         self.assertIn("## Line label repeat spacing by base layer", markdown)
