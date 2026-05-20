@@ -1,6 +1,7 @@
 import datetime as dt
 import io
 import json
+import os
 import tempfile
 import unittest
 from contextlib import redirect_stderr, redirect_stdout
@@ -535,6 +536,33 @@ class MapboxOutdoorsPathPedestrianFocusTests(unittest.TestCase):
             self.assertEqual(
                 report["input_artifacts"]["qgis_style_cameras"],
                 ["chamonix-trails-z14-outdoors"],
+            )
+
+    def test_main_records_resolved_external_relative_input_path(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            road_features_path = root / "road-features.json"
+            output_root = root / "out"
+            road_features_path.write_text(json.dumps(_road_feature_report()), encoding="utf-8")
+
+            stdout = io.StringIO()
+            previous_cwd = Path.cwd()
+            try:
+                os.chdir(root)
+                with patch(
+                    "qfit.validation.mapbox_outdoors_path_pedestrian_focus.DEFAULT_OUTPUT_ROOT",
+                    output_root,
+                ), redirect_stdout(stdout):
+                    result = main(["--road-features-json", road_features_path.name])
+            finally:
+                os.chdir(previous_cwd)
+
+            self.assertEqual(result, 0)
+            report_path = Path(stdout.getvalue().strip()).parent / "path-pedestrian-focus.json"
+            report = json.loads(report_path.read_text(encoding="utf-8"))
+            self.assertEqual(
+                report["input_artifacts"]["road_features_json"],
+                str(road_features_path.resolve()),
             )
 
     def test_main_loads_qgis_styles_from_comparison_summary(self):

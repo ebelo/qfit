@@ -741,7 +741,7 @@ def _display_input_path(path: Path) -> str:
     try:
         return str(resolved.relative_to(REPO_ROOT))
     except ValueError:
-        return str(path)
+        return str(resolved)
 
 
 def main(argv: list[str] | None = None) -> int:
