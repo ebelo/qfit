@@ -269,6 +269,13 @@ class MapboxOutdoorsPathPedestrianFocusTests(unittest.TestCase):
             detail["id"] for detail in summary["qgis_path_pedestrian_visible_layer_details"]
         ]
         self.assertEqual(visible_detail_ids, ["road-path", "road-steps", "road-pedestrian-polygon"])
+        visible_details_by_id = {
+            detail["id"]: detail for detail in summary["qgis_path_pedestrian_visible_layer_details"]
+        }
+        self.assertEqual(visible_details_by_id["road-path"]["type"], "line")
+        self.assertEqual(visible_details_by_id["road-path"]["line-width"], 1.5)
+        self.assertEqual(visible_details_by_id["road-pedestrian-polygon"]["type"], "fill")
+        self.assertEqual(visible_details_by_id["road-pedestrian-polygon"]["fill-opacity"], 0.4)
         self.assertIn("road-path=1.5", summary["qgis_path_pedestrian_line_width_samples"])
         self.assertIn('road-path="#d8c6a3"', summary["qgis_path_pedestrian_line_color_samples"])
         self.assertIn('road-pedestrian-polygon="#f6f2e8"', summary["qgis_path_pedestrian_fill_color_samples"])
