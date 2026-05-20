@@ -671,22 +671,30 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
             "road",
             "road-number-shield-2-beta-ch-motorway-icon-z11-plus",
         )
-        other_style, _other_settings = self._make_style(
+        swiss_settings.mergeLines = False
+        other_style, other_settings = self._make_style(
             "road",
             "road-number-shield-2-beta-ch-motorway-icon-below-z11",
         )
-        remaining_style, _remaining_settings = self._make_style(
+        other_settings.mergeLines = False
+        remaining_style, remaining_settings = self._make_style(
             "road",
             "road-number-shield-2-beta-remaining-icons-z11-plus",
         )
+        remaining_settings.mergeLines = False
+        remaining_priority = remaining_settings.priority
         labeling.styles.return_value = [swiss_style, other_style, remaining_style]
 
         self.service._apply_label_priority(labeling)
 
         self.assertEqual(swiss_settings.priority, 6)
+        self.assertEqual(remaining_settings.priority, remaining_priority)
+        self.assertTrue(swiss_settings.mergeLines)
+        self.assertFalse(other_settings.mergeLines)
+        self.assertTrue(remaining_settings.mergeLines)
         swiss_style.setLabelSettings.assert_called_once_with(swiss_settings)
         other_style.setLabelSettings.assert_not_called()
-        remaining_style.setLabelSettings.assert_not_called()
+        remaining_style.setLabelSettings.assert_called_once_with(remaining_settings)
 
     def test_high_zoom_road_label_repeat_distance_uses_audited_spacing(self):
         from qgis.core import Qgis
@@ -937,22 +945,30 @@ class ApplyLabelPriorityMockTests(unittest.TestCase):
             "road",
             "road-number-shield-2-beta-ch-motorway-icon-z11-plus",
         )
-        other_style, _other_settings = self._make_style(
+        swiss_settings.mergeLines = False
+        other_style, other_settings = self._make_style(
             "road",
             "road-number-shield-2-beta-ch-motorway-icon-below-z11",
         )
-        remaining_style, _remaining_settings = self._make_style(
+        other_settings.mergeLines = False
+        remaining_style, remaining_settings = self._make_style(
             "road",
             "road-number-shield-2-beta-remaining-icons-z11-plus",
         )
+        remaining_settings.mergeLines = False
+        remaining_priority = remaining_settings.priority
         labeling.styles.return_value = [swiss_style, other_style, remaining_style]
 
         self.service._apply_label_priority(labeling)
 
         self.assertEqual(swiss_settings.priority, 6)
+        self.assertEqual(remaining_settings.priority, remaining_priority)
+        self.assertTrue(swiss_settings.mergeLines)
+        self.assertFalse(other_settings.mergeLines)
+        self.assertTrue(remaining_settings.mergeLines)
         swiss_style.setLabelSettings.assert_called_once_with(swiss_settings)
         other_style.setLabelSettings.assert_not_called()
-        remaining_style.setLabelSettings.assert_not_called()
+        remaining_style.setLabelSettings.assert_called_once_with(remaining_settings)
 
     def test_high_zoom_road_label_repeat_distance_uses_audited_spacing(self):
         labeling = MagicMock()
