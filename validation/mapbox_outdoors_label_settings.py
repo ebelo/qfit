@@ -2023,21 +2023,29 @@ def _data_defined_property_detail_value(detail: dict[str, object]) -> object:
     return detail.get("static_value")
 
 
+def _data_defined_property_detail_markdown_value(detail: object) -> str | None:
+    if not isinstance(detail, dict):
+        return None
+    label = _markdown_value(detail.get("label"))
+    parts = [
+        _markdown_value(detail.get("property_type")),
+        "inactive" if detail.get("active") is False else "—",
+        _markdown_value(_data_defined_property_detail_value(detail)),
+    ]
+    rendered_parts = [part for part in parts if part != "—"]
+    if rendered_parts:
+        return f"{label}: {' '.join(rendered_parts)}"
+    return label
+
+
 def _data_defined_property_markdown_value(row: dict[str, object]) -> str:
     details = row.get("data_defined_property_details")
     if isinstance(details, list) and details:
-        rendered_details: list[str] = []
-        for detail in details:
-            if not isinstance(detail, dict):
-                continue
-            label = _markdown_value(detail.get("label"))
-            parts = [
-                _markdown_value(detail.get("property_type")),
-                "inactive" if detail.get("active") is False else "—",
-                _markdown_value(_data_defined_property_detail_value(detail)),
-            ]
-            rendered_parts = [part for part in parts if part != "—"]
-            rendered_details.append(f"{label}: {' '.join(rendered_parts)}" if rendered_parts else label)
+        rendered_details = [
+            rendered
+            for detail in details
+            if (rendered := _data_defined_property_detail_markdown_value(detail)) is not None
+        ]
         if rendered_details:
             return ", ".join(rendered_details)
     labels = row.get("data_defined_property_labels")
