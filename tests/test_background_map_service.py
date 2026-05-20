@@ -741,15 +741,19 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
         style.setLabelSettings.assert_called_once_with(settings)
 
     def test_path_pedestrian_labels_merge_matching_line_segments(self):
+        from qgis.core import Qgis
+
         labeling = MagicMock()
         style, settings = self._make_style("road", "path-pedestrian-label")
         settings.mergeLines = False
+        settings.repeatDistance = 0.0
         labeling.styles.return_value = [style]
 
         self.service._apply_label_priority(labeling)
 
         self.assertTrue(settings.mergeLines)
         self.assertAlmostEqual(settings.repeatDistance, 250 * 25.4 / 96)
+        self.assertEqual(settings.repeatDistanceUnit, Qgis.RenderUnit.Millimeters)
         style.setLabelSettings.assert_called_once_with(settings)
 
     def test_contour_label_appends_metre_suffix_without_repeat_distance(self):
@@ -950,12 +954,14 @@ class ApplyLabelPriorityMockTests(unittest.TestCase):
         labeling = MagicMock()
         style, settings = self._make_style("road", "path-pedestrian-label")
         settings.mergeLines = False
+        settings.repeatDistance = 0.0
         labeling.styles.return_value = [style]
 
         self.service._apply_label_priority(labeling)
 
         self.assertTrue(settings.mergeLines)
         self.assertAlmostEqual(settings.repeatDistance, 250 * 25.4 / 96)
+        self.assertEqual(settings.repeatDistanceUnit, _qstub.Qgis.RenderUnit.Millimeters)
         style.setLabelSettings.assert_called_once_with(settings)
 
     def test_existing_line_label_repeat_distance_is_preserved(self):
