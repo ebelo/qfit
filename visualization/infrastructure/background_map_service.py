@@ -121,7 +121,7 @@ def _symbol_spacing_mm(pixels: float) -> float:
 
 def _label_repeat_distance(layer_name: str, style) -> float | None:
     style_name = _label_style_name(style)
-    if layer_name == "road-number-shield" and "z11-plus" in style_name:
+    if layer_name == "road-number-shield" and _ROAD_NUMBER_SHIELD_Z11_PLUS_STYLE_MARKER in style_name:
         return _symbol_spacing_mm(_ROAD_NUMBER_SHIELD_Z11_PLUS_SYMBOL_SPACING_PX)
     if layer_name == "road-label":
         if style_name in {"road-label-below-z12", "road-label-z12-to-z15"}:
@@ -141,7 +141,10 @@ def _label_repeat_distance(layer_name: str, style) -> float | None:
 
 
 def _label_merge_lines(layer_name: str, style) -> bool | None:
-    if layer_name == "road-number-shield" and "z11-plus" in _label_style_name(style):
+    if (
+        layer_name == "road-number-shield"
+        and _ROAD_NUMBER_SHIELD_Z11_PLUS_STYLE_MARKER in _label_style_name(style)
+    ):
         return True
     if layer_name in _LINE_LABEL_MERGE_LAYERS:
         return True
