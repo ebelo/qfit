@@ -436,6 +436,22 @@ class MapboxOutdoorsPathPedestrianFocusTests(unittest.TestCase):
 
         self.assertIn("No decoded cameras include path/pedestrian focus features.", markdown)
 
+    def test_build_summary_markdown_ignores_non_mapping_visible_details(self):
+        markdown = build_summary_markdown(
+            {
+                "generated": "now",
+                "cameras": [
+                    {
+                        "camera": "bad-details",
+                        "qgis_path_pedestrian_visible_layer_details": ["not-a-detail"],
+                    }
+                ],
+            }
+        )
+
+        self.assertIn("| bad-details |", markdown)
+        self.assertNotIn("## Visible QGIS layer details", markdown)
+
     def test_write_report_writes_json_and_markdown(self):
         report = build_path_pedestrian_focus_report(
             _road_feature_report(),

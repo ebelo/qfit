@@ -507,9 +507,10 @@ def _visible_detail_markdown_lines(cameras: Iterable[object]) -> list[str]:
             continue
         details = camera.get("qgis_path_pedestrian_visible_layer_details")
         detail_rows = details if isinstance(details, list) else []
-        if not detail_rows:
+        mapping_rows = [detail for detail in detail_rows if isinstance(detail, Mapping)]
+        if not mapping_rows:
             continue
-        detail_row_count += len(detail_rows)
+        detail_row_count += len(mapping_rows)
         lines.extend(
             [
                 f"### {camera.get('camera')}",
@@ -518,9 +519,7 @@ def _visible_detail_markdown_lines(cameras: Iterable[object]) -> list[str]:
                 "| --- | --- | --- | --- | --- |",
             ]
         )
-        for detail in detail_rows:
-            if not isinstance(detail, Mapping):
-                continue
+        for detail in mapping_rows:
             lines.append(
                 _markdown_table_row(
                     [
