@@ -43,8 +43,8 @@ _LABEL_PRIORITIES = {
     "airport-label": 8,
 }
 _SETTLEMENT_LAYERS = {"settlement-major-label", "settlement-minor-label"}
-_SWISS_MOTORWAY_SHIELD_PRIORITY = 6
-_SWISS_MOTORWAY_SHIELD_Z11_STYLE_MARKER = "ch-motorway-icon-z11-plus"
+_ROAD_NUMBER_SHIELD_Z11_PLUS_PRIORITY = 6
+_ROAD_NUMBER_SHIELD_Z11_PLUS_STYLE_MARKER = "z11-plus"
 _MAPBOX_SYMBOL_PIXEL_TO_MM = 25.4 / 96.0
 _MAPBOX_DEFAULT_SYMBOL_SPACING_PX = 250.0
 _ROAD_LABEL_LOW_ZOOM_SYMBOL_SPACING_PX = 150.0
@@ -109,9 +109,9 @@ def _label_style_name(style) -> str:
 def _label_priority(layer_name: str, style) -> int | None:
     if (
         layer_name == "road-number-shield"
-        and _SWISS_MOTORWAY_SHIELD_Z11_STYLE_MARKER in _label_style_name(style)
+        and _ROAD_NUMBER_SHIELD_Z11_PLUS_STYLE_MARKER in _label_style_name(style)
     ):
-        return _SWISS_MOTORWAY_SHIELD_PRIORITY
+        return _ROAD_NUMBER_SHIELD_Z11_PLUS_PRIORITY
     return _LABEL_PRIORITIES.get(layer_name)
 
 
