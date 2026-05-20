@@ -696,6 +696,25 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
         other_style.setLabelSettings.assert_not_called()
         remaining_style.setLabelSettings.assert_called_once_with(remaining_settings)
 
+    def test_road_number_shield_z11_plus_repeat_distance_uses_audited_spacing(self):
+        from qgis.core import Qgis
+
+        labeling = MagicMock()
+        style, settings = self._make_style(
+            "road",
+            "road-number-shield-2-beta-remaining-icons-z11-plus",
+        )
+        settings.mergeLines = False
+        settings.repeatDistance = 0.0
+        labeling.styles.return_value = [style]
+
+        self.service._apply_label_priority(labeling)
+
+        self.assertTrue(settings.mergeLines)
+        self.assertAlmostEqual(settings.repeatDistance, (1400.0 / 3.0) * 25.4 / 96)
+        self.assertEqual(settings.repeatDistanceUnit, Qgis.RenderUnit.Millimeters)
+        style.setLabelSettings.assert_called_once_with(settings)
+
     def test_high_zoom_road_label_repeat_distance_uses_audited_spacing(self):
         from qgis.core import Qgis
 
@@ -969,6 +988,23 @@ class ApplyLabelPriorityMockTests(unittest.TestCase):
         swiss_style.setLabelSettings.assert_called_once_with(swiss_settings)
         other_style.setLabelSettings.assert_not_called()
         remaining_style.setLabelSettings.assert_called_once_with(remaining_settings)
+
+    def test_road_number_shield_z11_plus_repeat_distance_uses_audited_spacing(self):
+        labeling = MagicMock()
+        style, settings = self._make_style(
+            "road",
+            "road-number-shield-2-beta-remaining-icons-z11-plus",
+        )
+        settings.mergeLines = False
+        settings.repeatDistance = 0.0
+        labeling.styles.return_value = [style]
+
+        self.service._apply_label_priority(labeling)
+
+        self.assertTrue(settings.mergeLines)
+        self.assertAlmostEqual(settings.repeatDistance, (1400.0 / 3.0) * 25.4 / 96)
+        self.assertEqual(settings.repeatDistanceUnit, _qstub.Qgis.RenderUnit.Millimeters)
+        style.setLabelSettings.assert_called_once_with(settings)
 
     def test_high_zoom_road_label_repeat_distance_uses_audited_spacing(self):
         labeling = MagicMock()
