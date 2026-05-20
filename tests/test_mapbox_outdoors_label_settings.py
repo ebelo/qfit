@@ -1013,7 +1013,7 @@ class MapboxOutdoorsLabelSettingsTests(unittest.TestCase):
                         {
                             "label": "ShapeSizeX (50)",
                             "property_type": "ExpressionBasedProperty",
-                            "expression": 'CASE WHEN "shield" IN () THEN 5 WHEN "shield" IN () THEN 6 ELSE 5 END',
+                            "expression": 'CASE WHEN "shield" IN () THEN 5 WHEN "shield" in () THEN 6 ELSE 5 END',
                         },
                         {
                             "label": "Priority (87)",

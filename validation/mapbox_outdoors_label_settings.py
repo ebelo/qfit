@@ -1539,7 +1539,7 @@ def _data_defined_expression_issue_rows(
             if not isinstance(detail, dict):
                 continue
             expression = detail.get("expression")
-            empty_in_clause_count = expression.count("IN ()") if isinstance(expression, str) else 0
+            empty_in_clause_count = expression.upper().count("IN ()") if isinstance(expression, str) else 0
             if empty_in_clause_count <= 0:
                 continue
             rows.append(
