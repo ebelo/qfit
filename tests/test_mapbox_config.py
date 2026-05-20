@@ -5737,6 +5737,45 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
             "road-steps-bg",
         )
 
+    def test_road_steps_line_style_keeps_layer_unsplit_when_dasharray_is_unsupported(self):
+        steps_width = [
+            "interpolate",
+            ["exponential", 1.5],
+            ["zoom"],
+            15,
+            1,
+            16,
+            1.6,
+        ]
+        unsupported_dasharray = ["get", "dash"]
+        style = {
+            "layers": [
+                {
+                    "id": "road-steps",
+                    "type": "line",
+                    "minzoom": 14,
+                    "paint": {
+                        "line-width": copy.deepcopy(steps_width),
+                        "line-dasharray": unsupported_dasharray,
+                    },
+                },
+            ]
+        }
+
+        result = simplify_mapbox_style_expressions(style)
+
+        self.assertEqual(len(result["layers"]), 1)
+        layer = result["layers"][0]
+        self.assertEqual(layer["id"], "road-steps")
+        self.assertEqual(layer["paint"]["line-dasharray"], unsupported_dasharray)
+        self.assertAlmostEqual(
+            layer["paint"]["line-width"],
+            (
+                mapbox_config._extract_zoom_scalar_size_at_zoom(steps_width, 14.0)
+                * mapbox_config._MAPBOX_PIXEL_TO_MM
+            ),
+        )
+
     def test_filter_simplification_splits_poi_filterrank_filter_by_zoom_band(self):
         class_rank_match = [
             "match",

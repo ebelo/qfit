@@ -2725,16 +2725,18 @@ def _road_steps_line_style_controls(
     line_width: object,
     line_dasharray: object,
     sampled_zoom: float,
-) -> dict[str, object]:
+) -> dict[str, object] | None:
     controls: dict[str, object] = {}
     if isinstance(line_width, list):
         line_width_mm = _line_width_mm_at_zoom(line_width, sampled_zoom)
-        if line_width_mm is not None:
-            controls["line-width"] = line_width_mm
+        if line_width_mm is None:
+            return None
+        controls["line-width"] = line_width_mm
     if isinstance(line_dasharray, list):
         dasharray = _extract_line_dasharray_literal(line_dasharray, target_zoom=sampled_zoom)
-        if dasharray is not None:
-            controls["line-dasharray"] = dasharray
+        if dasharray is None:
+            return None
+        controls["line-dasharray"] = dasharray
     return controls
 
 
@@ -2791,7 +2793,7 @@ def _road_steps_line_style_layer_variants(layer: dict[str, object]) -> list[dict
             line_dasharray=line_dasharray,
             sampled_zoom=sampled_zoom,
         )
-        if controls:
+        if controls is not None:
             variants.append(
                 _road_steps_line_style_variant(
                     layer,
