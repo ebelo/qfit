@@ -991,6 +991,13 @@ class MapboxOutdoorsLabelSettingsTests(unittest.TestCase):
         self.assertTrue(
             _symbol_placement_includes_line(["coalesce", ["get", "placement"], "line-center"])
         )
+        self.assertFalse(_symbol_placement_includes_line(["coalesce", "point", "line"]))
+        self.assertFalse(
+            _symbol_placement_includes_line(["coalesce", ["literal", "point"], "line-center"])
+        )
+        self.assertTrue(
+            _symbol_placement_includes_line(["coalesce", ["literal", None], "line-center"])
+        )
         self.assertTrue(
             _symbol_placement_includes_line(
                 ["let", "placement", "line", ["var", "placement"]]

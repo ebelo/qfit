@@ -614,17 +614,32 @@ def _symbol_placement_zoom_step_includes_line(
     )
 
 
+def _interpolate_symbol_placement_output_indexes(value: list[object]) -> Iterable[int]:
+    return range(4, len(value), 2)
+
+
+def _case_symbol_placement_output_indexes(value: list[object]) -> Iterable[int] | None:
+    if len(value) < 4:
+        return None
+    return [*range(2, len(value) - 1, 2), len(value) - 1]
+
+
+def _match_symbol_placement_output_indexes(value: list[object]) -> Iterable[int] | None:
+    if len(value) < 4:
+        return None
+    return [*range(3, len(value) - 1, 2), len(value) - 1]
+
+
+_SYMBOL_PLACEMENT_OUTPUT_INDEXERS = {
+    "interpolate": _interpolate_symbol_placement_output_indexes,
+    "case": _case_symbol_placement_output_indexes,
+    "match": _match_symbol_placement_output_indexes,
+}
+
+
 def _symbol_placement_output_indexes(value: list[object]) -> Iterable[int] | None:
-    operator = value[0]
-    if operator == "interpolate":
-        return range(4, len(value), 2)
-    if operator == "case" and len(value) >= 4:
-        return [*range(2, len(value) - 1, 2), len(value) - 1]
-    if operator == "match" and len(value) >= 4:
-        return [*range(3, len(value) - 1, 2), len(value) - 1]
-    if operator == "coalesce":
-        return range(1, len(value))
-    return None
+    output_indexer = _SYMBOL_PLACEMENT_OUTPUT_INDEXERS.get(value[0])
+    return output_indexer(value) if output_indexer else None
 
 
 def _symbol_placement_outputs_include_line(
@@ -686,6 +701,55 @@ def _let_symbol_placement_includes_line(
     )
 
 
+def _symbol_placement_value_is_known_non_null(
+    value: object,
+    *,
+    bindings: dict[str, object],
+) -> bool:
+    if value is None:
+        return False
+    if isinstance(value, str):
+        return True
+    if not isinstance(value, list) or not value:
+        return True
+
+    operator = value[0]
+    if operator == "literal":
+        return len(value) == 2 and value[1] is not None
+    if operator == "var" and len(value) == 2 and isinstance(value[1], str):
+        return _symbol_placement_value_is_known_non_null(
+            bindings.get(value[1]),
+            bindings=bindings,
+        )
+    if operator == "let" and len(value) >= 2:
+        let_bindings = dict(bindings)
+        for index in range(1, len(value) - 1, 2):
+            variable_name = value[index]
+            if isinstance(variable_name, str) and index + 1 < len(value):
+                let_bindings[variable_name] = value[index + 1]
+        return _symbol_placement_value_is_known_non_null(
+            value[-1],
+            bindings=let_bindings,
+        )
+    return False
+
+
+def _coalesce_symbol_placement_includes_line(
+    value: list[object], *, min_zoom: float, max_zoom: float, bindings: dict[str, object]
+) -> bool:
+    for candidate in value[1:]:
+        if _symbol_placement_includes_line(
+            candidate,
+            min_zoom=min_zoom,
+            max_zoom=max_zoom,
+            bindings=bindings,
+        ):
+            return True
+        if _symbol_placement_value_is_known_non_null(candidate, bindings=bindings):
+            return False
+    return False
+
+
 def _step_symbol_placement_includes_line(
     value: list[object], *, min_zoom: float, max_zoom: float, bindings: dict[str, object]
 ) -> bool:
@@ -734,6 +798,10 @@ def _symbol_placement_includes_line(
         )
     if operator == "step":
         return _step_symbol_placement_includes_line(
+            value, min_zoom=min_zoom, max_zoom=max_zoom, bindings=expression_bindings
+        )
+    if operator == "coalesce":
+        return _coalesce_symbol_placement_includes_line(
             value, min_zoom=min_zoom, max_zoom=max_zoom, bindings=expression_bindings
         )
 
