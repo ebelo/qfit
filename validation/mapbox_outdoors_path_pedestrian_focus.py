@@ -47,10 +47,11 @@ def _utc_timestamp(now: dt.datetime | None = None) -> str:
 
 def build_run_directory(
     *,
-    output_root: Path = DEFAULT_OUTPUT_ROOT,
+    output_root: Path | None = None,
     now: dt.datetime | None = None,
 ) -> Path:
-    return output_root / _utc_timestamp(now)
+    root = DEFAULT_OUTPUT_ROOT if output_root is None else output_root
+    return root / _utc_timestamp(now)
 
 
 def build_path_pedestrian_focus_paths(run_dir: Path) -> PathPedestrianFocusPaths:
@@ -83,7 +84,7 @@ def _count_value(counts: object, key: str) -> int:
     if not isinstance(counts, Mapping):
         return 0
     value = counts.get(key)
-    return value if isinstance(value, int) else 0
+    return value if isinstance(value, int) and not isinstance(value, bool) else 0
 
 
 def _top_count_labels(counts: object, *, limit: int = TOP_COUNT_LIMIT) -> list[str]:
@@ -233,13 +234,15 @@ def build_path_pedestrian_focus_report(
             )
         )
     generated = generated_at or dt.datetime.now(dt.timezone.utc)
+    qgis_matched_camera_count = sum(1 for row in rows if row.get("qgis_style_status") == "available")
     return {
         "generated": generated.astimezone(dt.timezone.utc).isoformat(),
         "road_feature_generated": road_feature_report.get("generated"),
         "style_owner": road_feature_report.get("style_owner"),
         "style_id": road_feature_report.get("style_id"),
         "camera_count": len(rows),
-        "qgis_style_camera_count": len(qgis_styles),
+        "qgis_style_camera_count": qgis_matched_camera_count,
+        "qgis_style_input_count": len(qgis_styles),
         "cameras": rows,
     }
 
@@ -277,7 +280,10 @@ def build_summary_markdown(report: Mapping[str, object]) -> str:
         f"Road feature generated: {report.get('road_feature_generated')}",
         f"Style: {report.get('style_owner')}/{report.get('style_id')}",
         f"Focused cameras: {report.get('camera_count')}",
-        f"QGIS preprocessed style cameras: {report.get('qgis_style_camera_count')}",
+        (
+            "QGIS preprocessed style cameras: "
+            f"{report.get('qgis_style_camera_count')}/{report.get('qgis_style_input_count', 0)} matched"
+        ),
         "",
         (
             "Cross-links decoded road-feature counts with the camera-specific QGIS-preprocessed "
@@ -328,12 +334,27 @@ def build_summary_markdown(report: Mapping[str, object]) -> str:
     return "\n".join(lines) + "\n"
 
 
-def write_report(report: Mapping[str, object], paths: PathPedestrianFocusPaths) -> None:
-    paths.run_dir.mkdir(parents=True, exist_ok=True)
-    with paths.json_path.open("w", encoding="utf-8") as handle:
-        json.dump(report, handle, indent=2, sort_keys=True)
+def _assert_report_output_paths(paths: PathPedestrianFocusPaths, *, trusted_output_root: Path) -> None:
+    root = trusted_output_root.resolve()
+    for output_path in (paths.json_path, paths.summary_path):
+        if not output_path.parent.resolve().is_relative_to(root):
+            raise ValueError(f"Path/pedestrian focus output must stay under {trusted_output_root}")
+
+
+def write_report(
+    report: Mapping[str, object],
+    paths: PathPedestrianFocusPaths,
+    *,
+    trusted_output_root: Path | None = None,
+) -> None:
+    output_root = DEFAULT_OUTPUT_ROOT if trusted_output_root is None else trusted_output_root
+    _assert_report_output_paths(paths, trusted_output_root=output_root)
+    # Safe: report output paths are timestamped beneath the trusted debug report root.
+    paths.run_dir.mkdir(parents=True, exist_ok=True)  # NOSONAR
+    with paths.json_path.open("w", encoding="utf-8") as handle:  # NOSONAR
+        json.dump(report, handle, indent=2, sort_keys=True)  # NOSONAR
         handle.write("\n")
-    with paths.summary_path.open("w", encoding="utf-8") as handle:
+    with paths.summary_path.open("w", encoding="utf-8") as handle:  # NOSONAR
         handle.write(build_summary_markdown(report))
 
 
@@ -365,28 +386,38 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="CAMERA=PATH",
         help="Camera-specific qgis-preprocessed-style.json. May be repeated.",
     )
-    parser.add_argument(
-        "--output-root",
-        type=Path,
-        default=DEFAULT_OUTPUT_ROOT,
-        help="Root directory for timestamped report output.",
-    )
     return parser
+
+
+def _load_cli_json_object(parser: argparse.ArgumentParser, path: Path, *, label: str) -> dict[str, object]:
+    try:
+        return load_json_object(path)
+    except FileNotFoundError:
+        parser.error(f"{label} not found: {path}")
+    except json.JSONDecodeError as error:
+        parser.error(f"{label} is not valid JSON: {path}: {error.msg}")
+    except ValueError as error:
+        parser.error(str(error))
+    raise AssertionError("argparse error should exit")
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
-    road_feature_report = load_json_object(args.road_features_json)
+    road_feature_report = _load_cli_json_object(
+        parser,
+        args.road_features_json,
+        label="Road features JSON",
+    )
     qgis_styles_by_camera = {
-        camera: load_json_object(path)
+        camera: _load_cli_json_object(parser, path, label=f"QGIS style JSON for {camera}")
         for camera, path in args.qgis_style_json
     }
     report = build_path_pedestrian_focus_report(
         road_feature_report,
         qgis_styles_by_camera=qgis_styles_by_camera,
     )
-    paths = build_path_pedestrian_focus_paths(build_run_directory(output_root=args.output_root))
+    paths = build_path_pedestrian_focus_paths(build_run_directory())
     write_report(report, paths)
     print(paths.summary_path)
     return 0

@@ -3,8 +3,9 @@ import io
 import json
 import tempfile
 import unittest
-from contextlib import redirect_stdout
+from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
+from unittest.mock import patch
 
 from tests import _path  # noqa: F401
 
@@ -141,6 +142,7 @@ class MapboxOutdoorsPathPedestrianFocusTests(unittest.TestCase):
         self.assertEqual(report["generated"], "2026-05-20T01:35:00+00:00")
         self.assertEqual(report["camera_count"], 1)
         self.assertEqual(report["qgis_style_camera_count"], 1)
+        self.assertEqual(report["qgis_style_input_count"], 1)
         [camera] = report["cameras"]
         self.assertEqual(camera["camera"], "chamonix-trails-z14-outdoors")
         self.assertEqual(camera["pedestrian_path_polygon_count"], 10)
@@ -161,6 +163,25 @@ class MapboxOutdoorsPathPedestrianFocusTests(unittest.TestCase):
         self.assertEqual(camera["qgis_style_status"], "missing")
         self.assertEqual(camera["qgis_path_pedestrian_layer_count"], 0)
 
+    def test_build_path_pedestrian_focus_report_ignores_boolean_counts(self):
+        road_report = {
+            "generated": "2026-05-20T01:09:13+00:00",
+            "cameras": [
+                {
+                    "status": "decoded",
+                    "camera": "bad-counts",
+                    "pedestrian_polygon_candidate_count": True,
+                    "pedestrian_line_candidate_count": False,
+                    "path_line_candidate_count": False,
+                    "step_line_candidate_count": False,
+                }
+            ],
+        }
+
+        report = build_path_pedestrian_focus_report(road_report)
+
+        self.assertEqual(report["camera_count"], 0)
+
     def test_build_summary_markdown_includes_feature_and_style_matrix(self):
         report = build_path_pedestrian_focus_report(
             _road_feature_report(),
@@ -172,6 +193,7 @@ class MapboxOutdoorsPathPedestrianFocusTests(unittest.TestCase):
 
         self.assertIn("# Mapbox Outdoors path/pedestrian focus", markdown)
         self.assertIn("Focused cameras: 1", markdown)
+        self.assertIn("QGIS preprocessed style cameras: 1/1 matched", markdown)
         self.assertIn("| chamonix-trails-z14-outdoors | 14.25 | 14 |", markdown)
         self.assertIn('"path_lines=236"', markdown)
         self.assertIn('"trail=69"', markdown)
@@ -193,13 +215,25 @@ class MapboxOutdoorsPathPedestrianFocusTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdir:
             paths = build_path_pedestrian_focus_paths(Path(tmpdir) / "run")
 
-            write_report(report, paths)
+            write_report(report, paths, trusted_output_root=Path(tmpdir))
 
             self.assertEqual(json.loads(paths.json_path.read_text(encoding="utf-8"))["camera_count"], 1)
             self.assertIn(
                 "# Mapbox Outdoors path/pedestrian focus",
                 paths.summary_path.read_text(encoding="utf-8"),
             )
+
+    def test_write_report_rejects_paths_outside_trusted_root(self):
+        report = build_path_pedestrian_focus_report(
+            _road_feature_report(),
+            generated_at=dt.datetime(2026, 5, 20, 1, 35, tzinfo=dt.timezone.utc),
+        )
+        with tempfile.TemporaryDirectory() as tmpdir:
+            trusted_root = Path(tmpdir) / "trusted"
+            paths = build_path_pedestrian_focus_paths(Path(tmpdir) / "outside" / "run")
+
+            with self.assertRaises(ValueError):
+                write_report(report, paths, trusted_output_root=trusted_root)
 
     def test_main_writes_report_from_json_inputs(self):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -210,15 +244,16 @@ class MapboxOutdoorsPathPedestrianFocusTests(unittest.TestCase):
             style_path.write_text(json.dumps(_qgis_preprocessed_style()), encoding="utf-8")
 
             stdout = io.StringIO()
-            with redirect_stdout(stdout):
+            with patch(
+                "qfit.validation.mapbox_outdoors_path_pedestrian_focus.DEFAULT_OUTPUT_ROOT",
+                output_root,
+            ), redirect_stdout(stdout):
                 result = main(
                     [
                         "--road-features-json",
                         str(road_features_path),
                         "--qgis-style-json",
                         f"chamonix-trails-z14-outdoors={style_path}",
-                        "--output-root",
-                        str(output_root),
                     ]
                 )
 
@@ -228,6 +263,16 @@ class MapboxOutdoorsPathPedestrianFocusTests(unittest.TestCase):
             self.assertEqual(summary_path.parent.parent, output_root)
             report_path = summary_path.parent / "path-pedestrian-focus.json"
             self.assertEqual(json.loads(report_path.read_text(encoding="utf-8"))["camera_count"], 1)
+
+    def test_main_reports_missing_input_without_traceback(self):
+        stderr = io.StringIO()
+
+        with redirect_stderr(stderr), self.assertRaises(SystemExit) as raised:
+            main(["--road-features-json", "/missing/road-features.json"])
+
+        self.assertEqual(raised.exception.code, 2)
+        self.assertIn("Road features JSON not found", stderr.getvalue())
+        self.assertNotIn("Traceback", stderr.getvalue())
 
 
 if __name__ == "__main__":
