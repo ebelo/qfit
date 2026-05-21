@@ -391,8 +391,8 @@ def _append_largest_metric_movements_section(lines: list[str], report: Mapping[s
         if not isinstance(movement, Mapping):
             continue
         direction = (
-            f"{movement.get('mean_delta_direction', '-')}/"
-            f"{movement.get('rms_delta_direction', '-')}"
+            f"{movement.get('mean_delta_direction') or '-'}/"
+            f"{movement.get('rms_delta_direction') or '-'}"
         )
         lines.append(
             "| "
