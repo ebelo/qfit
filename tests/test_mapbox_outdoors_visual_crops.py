@@ -96,6 +96,8 @@ class _FakeImageStatModule:
     class Stat:
         def __init__(self, image):
             self.sum = [image.brightness_sum()]
+            pixel_count = max(1, image.width * image.height)
+            self.mean = [self.sum[0] / pixel_count]
 
 
 def _fake_image_modules():
@@ -531,6 +533,23 @@ class MapboxOutdoorsVisualCropsTest(unittest.TestCase):
             outputs = crop["outputs"]
             for path_text in outputs.values():
                 self.assertTrue((Path.cwd() / path_text).exists())
+            self.assertEqual(
+                crop["color_metrics"],
+                {
+                    "browser_reference": {
+                        "mean_rgb": [255.0, 255.0, 255.0],
+                        "luminance": 255.0,
+                    },
+                    "qgis_vector_render": {
+                        "mean_rgb": [128.0, 128.0, 128.0],
+                        "luminance": 128.0,
+                    },
+                    "delta": {
+                        "mean_rgb": [-127.0, -127.0, -127.0],
+                        "luminance": -127.0,
+                    },
+                },
+            )
             self.assertEqual(report["crop_count"], 1)
             self.assertTrue(paths.contact_sheet_path.exists())
             self.assertTrue(paths.json_path.exists())
@@ -548,6 +567,9 @@ class MapboxOutdoorsVisualCropsTest(unittest.TestCase):
                     "status": "passed",
                 },
             )
+            summary = paths.summary_path.read_text(encoding="utf-8")
+            self.assertIn("## Crop color metrics", summary)
+            self.assertIn("| chamonix-trails-z14-outdoors | 1 | 255.0, 255.0, 255.0 | 128.0, 128.0, 128.0 | -127.0, -127.0, -127.0 | -127.0 |", summary)
 
     def test_generate_visual_crop_report_marks_missing_required_artifacts(self):
         image_module, image_stat_module = _fake_image_modules()
