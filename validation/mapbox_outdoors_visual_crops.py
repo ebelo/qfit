@@ -281,9 +281,8 @@ def _crop_color_metric(
             mean_values = list(getattr(stat, "mean", []))
             if not mean_values:
                 pixel_count = max(1, rgb_image.width * rgb_image.height)
-                mean_values = [value / pixel_count for value in stat.sum]
-            if len(mean_values) == 1:
-                mean_values = [mean_values[0], mean_values[0], mean_values[0]]
+                mean_values = [value / pixel_count for value in getattr(stat, "sum", [])]
+            mean_values = _three_channel_color_values(mean_values)
             mean_rgb = [round(float(value), 3) for value in mean_values[:3]]
             luminance = round(
                 (0.2126 * mean_rgb[0]) + (0.7152 * mean_rgb[1]) + (0.0722 * mean_rgb[2]),
@@ -293,6 +292,21 @@ def _crop_color_metric(
         finally:
             if rgb_image is not image:
                 rgb_image.close()
+
+
+def _three_channel_color_values(values: Sequence[object]) -> list[float]:
+    numeric_values = [
+        float(value)
+        for value in values
+        if isinstance(value, (int, float)) and not isinstance(value, bool)
+    ]
+    if not numeric_values:
+        return [0.0, 0.0, 0.0]
+    if len(numeric_values) == 1:
+        return [numeric_values[0], numeric_values[0], numeric_values[0]]
+    if len(numeric_values) == 2:
+        return [numeric_values[0], numeric_values[1], 0.0]
+    return numeric_values[:3]
 
 
 def _crop_color_delta(
