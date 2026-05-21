@@ -14,6 +14,7 @@ from qfit.validation.mapbox_outdoors_visual_crops import (
     VisualCropAnnotationInputs,
     _computed_crop_color_movement_group_records,
     _crop_color_metric,
+    _path_pedestrian_focus_coverage_rows,
     _three_channel_color_values,
     annotate_visual_crop_report_with_comparison_delta,
     build_run_directory,
@@ -779,6 +780,44 @@ class MapboxOutdoorsVisualCropsTest(unittest.TestCase):
             self.assertEqual(stroke_cues[0]["candidate_types"], ["trail=69", "hiking=5"])
             self.assertEqual(dash_cues[0]["source_layer_id"], "road-steps")
             self.assertEqual(dash_cues[0]["source_dasharray"], [0.3, 0.3])
+
+    def test_path_pedestrian_focus_coverage_counts_all_stroke_rows(self):
+        focus_report = {
+            "cameras": [
+                {
+                    "camera": "large-focus-camera",
+                    "source_qgis_stroke_control_comparisons": [
+                        {
+                            "source_layer_id": "road-path-trail",
+                            "decoded_candidate_count": 1,
+                            "source_sampled_controls": {"line-width": 0.1},
+                            "qgis_controls": [
+                                {
+                                    "layer_id": f"road-path-trail-{index}",
+                                    "controls": {"line-width": 0.2},
+                                }
+                            ],
+                            "qgis_control_deltas": [
+                                {
+                                    "layer_id": f"road-path-trail-{index}",
+                                    "deltas": {
+                                        "line-width_delta_mm": 0.1,
+                                        "line-width_ratio": 2.0,
+                                        "line-dasharray_match": True,
+                                    },
+                                }
+                            ],
+                        }
+                        for index in range(10_001)
+                    ],
+                }
+            ]
+        }
+
+        self.assertEqual(
+            _path_pedestrian_focus_coverage_rows(focus_report)[0]["stroke_rows"],
+            10_001,
+        )
 
     def test_generate_visual_crop_report_attaches_style_audit_area_fill_focus(self):
         image_module, image_stat_module = _fake_image_modules()
