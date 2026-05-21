@@ -312,6 +312,11 @@ def _style_audit_report():
                         ),
                         "to": "0.8",
                     },
+                    {
+                        "property": "layout.visibility",
+                        "from": '"visible"',
+                        "to": '"none"',
+                    },
                 ],
             },
             {
@@ -708,6 +713,8 @@ class MapboxOutdoorsVisualCropsTest(unittest.TestCase):
                 '"hsla(103,50%,60%,0.8)","hsl(98,48%,67%)"] -> "hsl(98,48%,67%)"',
                 markdown,
             )
+            self.assertIn(r" \| paint.fill-opacity:", markdown)
+            self.assertNotIn("layout.visibility", markdown)
             self.assertIn("unknown-layer (landcover/fill)", markdown)
             self.assertIn("qgis-warnings=Example contour warning", markdown)
             self.assertNotIn("None (", markdown)

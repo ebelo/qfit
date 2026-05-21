@@ -444,34 +444,34 @@ def _style_audit_rows(summary: Mapping[str, object], key: object) -> list[Mappin
 def _style_audit_qgis_converter_warnings_by_layer(
     style_audit_report: Mapping[str, object],
 ) -> dict[str, Mapping[str, object]]:
-    layers = style_audit_report.get("layers")
-    if not isinstance(layers, list):
-        return {}
     warnings_by_layer: dict[str, Mapping[str, object]] = {}
-    for layer in layers:
-        if not isinstance(layer, Mapping):
-            continue
-        layer_id = str(layer.get("id") or "")
+    for layer_id, layer in _style_audit_layer_items(style_audit_report):
         qgis_converter_warnings = layer.get("qgis_converter_warnings")
-        if layer_id and isinstance(qgis_converter_warnings, Mapping):
+        if isinstance(qgis_converter_warnings, Mapping):
             warnings_by_layer[layer_id] = qgis_converter_warnings
     return warnings_by_layer
 
 
-def _style_audit_layers_by_id(
+def _style_audit_layer_items(
     style_audit_report: Mapping[str, object],
-) -> dict[str, Mapping[str, object]]:
+) -> list[tuple[str, Mapping[str, object]]]:
     layers = style_audit_report.get("layers")
     if not isinstance(layers, list):
-        return {}
-    layers_by_id: dict[str, Mapping[str, object]] = {}
+        return []
+    layer_items: list[tuple[str, Mapping[str, object]]] = []
     for layer in layers:
         if not isinstance(layer, Mapping):
             continue
         layer_id = str(layer.get("id") or "")
         if layer_id:
-            layers_by_id[layer_id] = layer
-    return layers_by_id
+            layer_items.append((layer_id, layer))
+    return layer_items
+
+
+def _style_audit_layers_by_id(
+    style_audit_report: Mapping[str, object],
+) -> dict[str, Mapping[str, object]]:
+    return dict(_style_audit_layer_items(style_audit_report))
 
 
 def _compact_style_audit_value(value: object) -> str:
@@ -498,14 +498,10 @@ def _style_audit_ordered_simplification_rows(
     relevant_properties: set[str],
 ) -> list[Mapping[str, object]]:
     if not relevant_properties:
-        return simplifications
-    relevant_rows = [
+        return []
+    return [
         row for row in simplifications if row.get("property") in relevant_properties
     ]
-    other_rows = [
-        row for row in simplifications if row.get("property") not in relevant_properties
-    ]
-    return [*relevant_rows, *other_rows]
 
 
 def _style_audit_simplification_row_sample(row: Mapping[str, object]) -> dict[str, str] | None:
@@ -1494,7 +1490,7 @@ def _candidate_sample_label(candidate: Mapping[str, object]) -> str:
         details.append(f"qfit={', '.join(qfit_simplified[:4])}")
     qfit_simplifications = _candidate_qfit_simplification_labels(candidate)
     if qfit_simplifications:
-        details.append(f"simplifies={'; '.join(qfit_simplifications[:2])}")
+        details.append(f"simplifies={' | '.join(qfit_simplifications[:2])}")
     qgis_dependent = _string_values(candidate.get("qgis_dependent_properties"))
     if qgis_dependent:
         details.append(f"qgis={', '.join(qgis_dependent[:4])}")
