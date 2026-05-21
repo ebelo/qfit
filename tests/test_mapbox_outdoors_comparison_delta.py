@@ -103,6 +103,11 @@ class MapboxOutdoorsComparisonDeltaTests(unittest.TestCase):
         )
         self.assertEqual(chamonix["mean_delta_direction"], "improved")
         self.assertEqual(chamonix["rms_delta_direction"], "worsened")
+        self.assertEqual(
+            [row["camera"] for row in report["largest_metric_movements"]],
+            ["chamonix-trails-z14-outdoors", "zermatt-trails-z18-outdoors"],
+        )
+        self.assertAlmostEqual(report["largest_metric_movements"][0]["mean_delta"], -0.005)
 
     def test_build_comparison_delta_report_preserves_missing_camera_rows(self):
         report = build_comparison_delta_report(
@@ -147,6 +152,8 @@ class MapboxOutdoorsComparisonDeltaTests(unittest.TestCase):
 
         self.assertIn("# Mapbox Outdoors comparison delta", markdown)
         self.assertIn("Baseline: `baseline`", markdown)
+        self.assertIn("## Largest Metric Movements", markdown)
+        self.assertIn("| `camera-a` | 18.00 | -0.010000000 | +0.010000000 | +0.010000000 |", markdown)
         self.assertIn("| `camera-a` | 18.00 | 0.050000000 | 0.040000000 | -0.010000000 |", markdown)
         self.assertIn("| RMS channel delta | 0 | 1 | 0 | 0 |", markdown)
 
