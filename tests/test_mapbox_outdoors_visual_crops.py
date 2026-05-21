@@ -1517,56 +1517,57 @@ class MapboxOutdoorsVisualCropsTest(unittest.TestCase):
         )
 
     def test_computed_crop_color_movement_groups_keep_representative_crop(self):
-        records = _computed_crop_color_movement_group_records(
-            {
-                "cameras": [
-                    {
-                        "camera": "geneva",
-                        "crops": [
-                            {
-                                "index": 1,
-                                "box": [0, 0, 4, 4],
-                                "outputs": {"diff": "debug/geneva-diff.png"},
-                                "color_metrics": {
-                                    "delta": {
-                                        "mean_rgb": [4.0, 0.0, 12.0],
-                                        "luminance": 6.0,
-                                        "luminance_direction": "lighter",
-                                        "dominant_rgb_delta": {
-                                            "channel": "blue",
-                                            "delta": 12.0,
-                                            "direction": "higher",
-                                        },
-                                    }
-                                },
-                            }
-                        ],
-                    },
-                    {
-                        "camera": "zermatt",
-                        "crops": [
-                            {
-                                "index": 2,
-                                "box": [4, 4, 8, 8],
-                                "outputs": {"diff": "debug/zermatt-diff.png"},
-                                "color_metrics": {
-                                    "delta": {
-                                        "mean_rgb": [2.0, 0.0, 16.0],
-                                        "luminance": 8.0,
-                                        "luminance_direction": "lighter",
-                                        "dominant_rgb_delta": {
-                                            "channel": "blue",
-                                            "delta": 16.0,
-                                            "direction": "higher",
-                                        },
-                                    }
-                                },
-                            }
-                        ],
-                    },
-                ],
-            }
-        )
+        report = {
+            "cameras": [
+                {
+                    "camera": "geneva",
+                    "crops": [
+                        {
+                            "index": 1,
+                            "box": [0, 0, 4, 4],
+                            "outputs": {"diff": "debug/geneva-diff.png"},
+                            "color_metrics": {
+                                "delta": {
+                                    "mean_rgb": [4.0, 0.0, 12.0],
+                                    "luminance": 6.0,
+                                    "luminance_direction": "lighter",
+                                    "dominant_rgb_delta": {
+                                        "channel": "blue",
+                                        "delta": 12.0,
+                                        "direction": "higher",
+                                    },
+                                }
+                            },
+                        }
+                    ],
+                },
+                {
+                    "camera": "zermatt",
+                    "crops": [
+                        {
+                            "index": 2,
+                            "box": [4, 4, 8, 8],
+                            "outputs": {"diff": "debug/zermatt-diff.png"},
+                            "color_metrics": {
+                                "delta": {
+                                    "mean_rgb": [2.0, 0.0, 16.0],
+                                    "luminance": 8.0,
+                                    "luminance_direction": "lighter",
+                                    "dominant_rgb_delta": {
+                                        "channel": "blue",
+                                        "delta": 16.0,
+                                        "direction": "higher",
+                                    },
+                                }
+                            },
+                        }
+                    ],
+                },
+            ],
+        }
+
+        records = _computed_crop_color_movement_group_records(report)
+        report["cameras"][1]["crops"][0]["box"][0] = 99
 
         self.assertEqual(len(records), 1)
         self.assertEqual(

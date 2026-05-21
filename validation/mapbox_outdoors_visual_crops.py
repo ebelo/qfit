@@ -1692,7 +1692,7 @@ def _crop_color_movement_representative_record(
     }
     box = crop.get("box")
     if isinstance(box, list):
-        record["box"] = box
+        record["box"] = list(box)
     diff_path = _crop_output_path_value(crop, "diff")
     if diff_path is not None:
         record["diff"] = diff_path
