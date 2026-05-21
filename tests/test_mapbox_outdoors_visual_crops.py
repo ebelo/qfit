@@ -1740,6 +1740,16 @@ class MapboxOutdoorsVisualCropsTest(unittest.TestCase):
                 "crops_per_camera": 1,
                 "camera_count": 1,
                 "crop_count": 0,
+                "crop_color_movement_groups": [
+                    {
+                        "movement": "lighter + blue higher",
+                        "cameras": {"chamonix-trails-z14-outdoors": 2},
+                    },
+                    {
+                        "movement": "darker + red lower",
+                        "cameras": {"lausanne-lavaux-z10-outdoors": 1},
+                    },
+                ],
                 "cameras": [
                     {
                         "camera": "chamonix-trails-z14-outdoors",
@@ -1783,6 +1793,8 @@ class MapboxOutdoorsVisualCropsTest(unittest.TestCase):
         )
         self.assertIn("Path/pedestrian focus comparison match: `True`", markdown)
         self.assertIn("## Path/pedestrian focus cues", markdown)
+        self.assertIn("| Camera | Crop movement groups | Stroke width cues | Dash mismatch cues |", markdown)
+        self.assertIn("| chamonix-trails-z14-outdoors | lighter + blue higher=2 |", markdown)
         self.assertIn("road-path-trail->road-path-trail-below-z16", markdown)
         self.assertIn("candidates=74 (trail=69, hiking=5)", markdown)
         self.assertIn("candidate_types=trail=69", markdown)
