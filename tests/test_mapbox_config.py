@@ -3967,6 +3967,17 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
         self.assertNotIn("fill-pattern", layer["paint"])
         self.assertEqual(layer["paint"]["fill-color"], "hsl(194, 38%, 74%)")
 
+    def test_wetland_pattern_fill_opacity_is_not_split_when_pattern_changes(self):
+        layer = self._wetland_pattern_layer()
+        layer["paint"]["fill-pattern"] = "other-pattern"
+        style = {"layers": [layer]}
+
+        result = simplify_mapbox_style_expressions(style)
+
+        self.assertEqual(len(result["layers"]), 1)
+        self.assertEqual(result["layers"][0]["id"], "wetland-pattern")
+        self.assertEqual(result["layers"][0]["paint"]["fill-pattern"], "other-pattern")
+
     def test_wetland_pattern_helpers_keep_passthrough_inputs(self):
         unchanged_layers = "not-a-layer-list"
         mixed_layers = ["not-a-layer", self._wetland_pattern_layer()]

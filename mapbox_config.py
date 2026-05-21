@@ -1458,6 +1458,11 @@ _WETLAND_PATTERN_QGIS_FILL_COLOR = "hsl(194, 38%, 74%)"
 _WETLAND_PATTERN_FILL_OPACITY_EXPRESSIONS = {
     _WETLAND_PATTERN_LAYER_ID: ["interpolate", ["linear"], ["zoom"], 10, 0, 10.5, 1],
 }
+_WETLAND_PATTERN_FILL_OPACITY_ZOOM_BANDS: tuple[tuple[str, float | None, float | None], ...] = (
+    ("below-z10", None, 10.0),
+    ("z10-to-z10_5", 10.0, 10.5),
+    ("z10_5-plus", 10.5, None),
+)
 _ROAD_PEDESTRIAN_POLYGON_PATTERN_LAYER_ID = "road-pedestrian-polygon-pattern"
 _ROAD_PEDESTRIAN_POLYGON_PATTERN = "pedestrian-polygon"
 _ROAD_PEDESTRIAN_POLYGON_PATTERN_QGIS_FILL_COLOR = "hsl(0, 0%, 96%)"
@@ -4531,13 +4536,14 @@ def _wetland_pattern_fill_opacity_layer_variants(layer: dict[str, object]) -> li
         layer_type="fill",
         paint_property="fill-opacity",
         expressions_by_layer_id=_WETLAND_PATTERN_FILL_OPACITY_EXPRESSIONS,
-        zoom_bands=_WETLAND_FILL_OPACITY_ZOOM_BANDS,
+        zoom_bands=_WETLAND_PATTERN_FILL_OPACITY_ZOOM_BANDS,
     )
     if variants is None:
         fallback_layer = _wetland_pattern_fallback_layer(layer)
         return [fallback_layer] if fallback_layer is not None else None
     for variant in variants:
-        _apply_wetland_pattern_fallback(variant)
+        if not _apply_wetland_pattern_fallback(variant):
+            return None
     return variants
 
 
