@@ -1399,6 +1399,7 @@ def _source_qgis_stroke_control_markdown_lines(cameras: Iterable[object]) -> lis
                 "Pairs visible source Mapbox path/pedestrian line layers with visible QGIS "
                 "variants by original style-layer id."
             ),
+            "Rows with empty QGIS columns identify source strokes with no visible QGIS counterpart.",
             "",
             "| Camera | Source layer | Source controls | QGIS layer ids | QGIS controls |",
             MARKDOWN_SEPARATOR_5_COLUMNS,

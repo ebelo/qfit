@@ -1170,6 +1170,32 @@ class MapboxOutdoorsPathPedestrianFocusTests(unittest.TestCase):
         self.assertIn("| merge-line-only |", markdown)
         self.assertNotIn("## Duplicate label diagnostics", markdown)
 
+    def test_build_summary_markdown_marks_unmatched_source_stroke_rows(self):
+        markdown = build_summary_markdown(
+            {
+                "generated": "now",
+                "cameras": [
+                    {
+                        "camera": "unmatched-source-stroke",
+                        "source_qgis_stroke_control_comparisons": [
+                            {
+                                "source_layer_id": "road-path",
+                                "source_controls": {"line-width": 1.0},
+                                "qgis_layer_ids": [],
+                                "qgis_controls": [],
+                            }
+                        ],
+                    }
+                ],
+            }
+        )
+
+        self.assertIn(
+            "Rows with empty QGIS columns identify source strokes with no visible QGIS counterpart.",
+            markdown,
+        )
+        self.assertIn("| unmatched-source-stroke | road-path | [\"line-width=1.0\"] | [] | [] |", markdown)
+
     def test_build_summary_markdown_handles_no_focus_rows(self):
         markdown = build_summary_markdown({"generated": "now", "cameras": []})
 
