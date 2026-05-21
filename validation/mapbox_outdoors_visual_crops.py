@@ -2208,12 +2208,27 @@ def _summary_focus_coverage_sample_lines(report: Mapping[str, object]) -> list[s
         ]
         if not any(isinstance(sample, list) and sample for sample in samples):
             continue
+        candidate_zero_delta_samples = row.get("candidate_zero_delta_stroke_samples")
+        zero_candidate_stroke_samples = row.get("zero_candidate_stroke_samples")
+        zero_candidate_dash_samples = row.get("zero_candidate_dash_samples")
         sample_rows.append(
             [
                 row.get("camera"),
-                _joined_summary_labels(row.get("candidate_zero_delta_stroke_samples")),
-                _joined_summary_labels(row.get("zero_candidate_stroke_samples")),
-                _joined_summary_labels(row.get("zero_candidate_dash_samples")),
+                _joined_summary_labels(
+                    candidate_zero_delta_samples
+                    if isinstance(candidate_zero_delta_samples, list)
+                    else []
+                ),
+                _joined_summary_labels(
+                    zero_candidate_stroke_samples
+                    if isinstance(zero_candidate_stroke_samples, list)
+                    else []
+                ),
+                _joined_summary_labels(
+                    zero_candidate_dash_samples
+                    if isinstance(zero_candidate_dash_samples, list)
+                    else []
+                ),
             ]
         )
     if not sample_rows:

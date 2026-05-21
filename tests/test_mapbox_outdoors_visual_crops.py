@@ -1927,6 +1927,31 @@ class MapboxOutdoorsVisualCropsTest(unittest.TestCase):
         self.assertNotIn("candidates=None", markdown)
         self.assertIn("dash=[1,0.25]!=[4,0.3]", markdown)
 
+    def test_build_summary_markdown_handles_partial_focus_coverage_sample_rows(self):
+        markdown = build_summary_markdown(
+            {
+                "generated": "2026-05-20T20:00:00+00:00",
+                "path_pedestrian_focus_comparison_match": True,
+                "path_pedestrian_focus_coverage": [
+                    {
+                        "camera": "legacy-focus-report-camera",
+                        "zero_candidate_dash_samples": [
+                            "bridge-path->bridge-path dash=[1,0.25]!=[4,0.3] candidates=0"
+                        ],
+                    }
+                ],
+            }
+        )
+
+        self.assertIn("## Path/pedestrian focus coverage samples", markdown)
+        self.assertIn(
+            (
+                "| legacy-focus-report-camera | - | - | "
+                "bridge-path->bridge-path dash=[1,0.25]!=[4,0.3] candidates=0 |"
+            ),
+            markdown,
+        )
+
     def test_build_summary_markdown_omits_zero_candidate_focus_cues(self):
         markdown = build_summary_markdown(
             {
