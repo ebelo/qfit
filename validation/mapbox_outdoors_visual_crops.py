@@ -1514,13 +1514,11 @@ def _luminance_metric_label(metrics: object) -> str:
     return f"{value:+.1f}"
 
 
-def _summary_crop_color_delta_entries(
-    report: Mapping[str, object],
-) -> list[tuple[float, float, list[object]]]:
-    entries: list[tuple[float, float, list[object]]] = []
+def _summary_crop_mappings(report: Mapping[str, object]) -> list[tuple[Mapping[str, object], Mapping[str, object]]]:
+    crop_mappings: list[tuple[Mapping[str, object], Mapping[str, object]]] = []
     cameras = report.get("cameras")
     if not isinstance(cameras, list):
-        return entries
+        return crop_mappings
     for camera in cameras:
         if not isinstance(camera, Mapping):
             continue
@@ -1528,33 +1526,47 @@ def _summary_crop_color_delta_entries(
         if not isinstance(crops, list):
             continue
         for crop in crops:
-            if not isinstance(crop, Mapping):
-                continue
-            metrics = crop.get("color_metrics")
-            if not isinstance(metrics, Mapping):
-                continue
-            delta = metrics.get("delta")
-            rgb_values = _color_metric_values(delta, "mean_rgb")
-            luminance = _metric_float(delta, "luminance")
-            if not rgb_values and luminance is None:
-                continue
-            max_abs_rgb = max(abs(value) for value in rgb_values) if rgb_values else None
-            luminance_score = abs(luminance) if luminance is not None else 0.0
-            rgb_score = max_abs_rgb if max_abs_rgb is not None else 0.0
-            score = max(rgb_score, luminance_score)
-            entries.append(
-                (
-                    score,
-                    luminance_score,
-                    [
-                        camera.get("camera"),
-                        crop.get("index"),
-                        _color_metric_label(delta, "mean_rgb"),
-                        _luminance_metric_label(delta),
-                        f"{max_abs_rgb:.1f}" if max_abs_rgb is not None else "-",
-                    ],
-                )
-            )
+            if isinstance(crop, Mapping):
+                crop_mappings.append((camera, crop))
+    return crop_mappings
+
+
+def _summary_crop_color_delta_entry(
+    camera: Mapping[str, object],
+    crop: Mapping[str, object],
+) -> tuple[float, float, list[object]] | None:
+    metrics = crop.get("color_metrics")
+    if not isinstance(metrics, Mapping):
+        return None
+    delta = metrics.get("delta")
+    rgb_values = _color_metric_values(delta, "mean_rgb")
+    luminance = _metric_float(delta, "luminance")
+    if not rgb_values and luminance is None:
+        return None
+    max_abs_rgb = max(abs(value) for value in rgb_values) if rgb_values else None
+    luminance_score = abs(luminance) if luminance is not None else 0.0
+    rgb_score = max_abs_rgb if max_abs_rgb is not None else 0.0
+    return (
+        max(rgb_score, luminance_score),
+        luminance_score,
+        [
+            camera.get("camera"),
+            crop.get("index"),
+            _color_metric_label(delta, "mean_rgb"),
+            _luminance_metric_label(delta),
+            f"{max_abs_rgb:.1f}" if max_abs_rgb is not None else "-",
+        ],
+    )
+
+
+def _summary_crop_color_delta_entries(
+    report: Mapping[str, object],
+) -> list[tuple[float, float, list[object]]]:
+    entries = [
+        entry
+        for camera, crop in _summary_crop_mappings(report)
+        if (entry := _summary_crop_color_delta_entry(camera, crop)) is not None
+    ]
     entries.sort(key=lambda entry: (entry[0], entry[1]), reverse=True)
     return entries
 
