@@ -910,6 +910,52 @@ class MapboxOutdoorsPathPedestrianFocusTests(unittest.TestCase):
             ],
         )
 
+    def test_build_path_pedestrian_focus_report_pairs_split_road_path_strokes_with_source_layer(self):
+        road_report = _road_feature_report()
+        road_report["cameras"][0]["camera_zoom"] = 18.0
+        qgis_style = {
+            "version": 8,
+            "layers": [
+                {
+                    "id": "road-path-z16-plus",
+                    "type": "line",
+                    "minzoom": 16,
+                    "paint": {
+                        "line-color": "hsl(0, 0%, 95%)",
+                        "line-width": 1.0583333333333333,
+                        "line-dasharray": [1, 0.3],
+                    },
+                }
+            ],
+        }
+
+        report = build_path_pedestrian_focus_report(
+            road_report,
+            source_style=_source_style(),
+            qgis_styles_by_camera={"chamonix-trails-z14-outdoors": qgis_style},
+            generated_at=dt.datetime(2026, 5, 20, 1, 35, tzinfo=dt.timezone.utc),
+        )
+
+        [camera] = report["cameras"]
+        comparisons = {
+            comparison["source_layer_id"]: comparison
+            for comparison in camera["source_qgis_stroke_control_comparisons"]
+        }
+        self.assertEqual(comparisons["road-path"]["qgis_layer_ids"], ["road-path-z16-plus"])
+        self.assertEqual(
+            comparisons["road-path"]["qgis_controls"],
+            [
+                {
+                    "layer_id": "road-path-z16-plus",
+                    "controls": {
+                        "line-width": 1.0583333333333333,
+                        "line-color": "hsl(0, 0%, 95%)",
+                        "line-dasharray": [1, 0.3],
+                    },
+                }
+            ],
+        )
+
     def test_build_path_pedestrian_focus_report_adds_visual_artifacts_to_focused_cameras(self):
         report = build_path_pedestrian_focus_report(
             _road_feature_report(),

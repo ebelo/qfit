@@ -54,6 +54,15 @@ PATH_PEDESTRIAN_STROKE_CONTROL_KEYS = (
     "line-dasharray",
     "line-opacity",
 )
+PATH_PEDESTRIAN_SOURCE_SPLIT_BASE_LAYER_IDS = frozenset(
+    {
+        "road-path",
+    }
+)
+PATH_PEDESTRIAN_SOURCE_SPLIT_SUFFIXES = (
+    "-below-z16",
+    "-z16-plus",
+)
 TOP_COUNT_LIMIT = 3
 SAMPLE_LAYER_LIMIT = 8
 DUPLICATE_LABEL_CATEGORY_KEYS = (
@@ -88,6 +97,7 @@ COMPARISON_VISUAL_METRIC_KEYS = (
     "normalized_rms_channel_delta",
     "ssim_status",
 )
+MARKDOWN_SEPARATOR_5_COLUMNS = "| --- | --- | --- | --- | --- |"
 ARGPARSE_EXIT_SENTINEL = "argparse error should exit"
 
 
@@ -975,7 +985,16 @@ def _duplicate_label_diagnostic(camera: Mapping[str, object]) -> dict[str, objec
 def _qfit_base_style_layer_id(layer_id: object) -> str:
     from qfit.mapbox_config import base_mapbox_style_layer_id_for_qfit  # noqa: PLC0415
 
-    return base_mapbox_style_layer_id_for_qfit(layer_id)
+    normalized = str(layer_id or "")
+    base_layer_id = base_mapbox_style_layer_id_for_qfit(layer_id)
+    if base_layer_id != normalized:
+        return base_layer_id
+    for split_suffix in PATH_PEDESTRIAN_SOURCE_SPLIT_SUFFIXES:
+        if normalized.endswith(split_suffix):
+            split_base_layer_id = normalized[: -len(split_suffix)]
+            if split_base_layer_id in PATH_PEDESTRIAN_SOURCE_SPLIT_BASE_LAYER_IDS:
+                return split_base_layer_id
+    return base_layer_id
 
 
 def _visible_line_details(camera: Mapping[str, object], detail_key: str) -> list[Mapping[str, object]]:
@@ -1293,7 +1312,7 @@ def _visible_style_detail_markdown_lines(
                 f"### {camera.get('camera')}",
                 "",
                 "| Layer | Type | Zoom band | Paint controls | Filter |",
-                "| --- | --- | --- | --- | --- |",
+                MARKDOWN_SEPARATOR_5_COLUMNS,
             ]
         )
         for detail in mapping_rows:
@@ -1382,7 +1401,7 @@ def _source_qgis_stroke_control_markdown_lines(cameras: Iterable[object]) -> lis
             ),
             "",
             "| Camera | Source layer | Source controls | QGIS layer ids | QGIS controls |",
-            "| --- | --- | --- | --- | --- |",
+            MARKDOWN_SEPARATOR_5_COLUMNS,
         ]
     )
     lines.extend(_markdown_table_row(row) for row in rows)
@@ -1438,7 +1457,7 @@ def _visible_label_detail_markdown_lines(cameras: Iterable[object]) -> list[str]
                 f"### {camera.get('camera')}",
                 "",
                 "| Style | Layer | Zoom band | Controls | Filter |",
-                "| --- | --- | --- | --- | --- |",
+                MARKDOWN_SEPARATOR_5_COLUMNS,
             ]
         )
         for detail in mapping_rows:
