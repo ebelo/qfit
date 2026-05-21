@@ -3037,9 +3037,10 @@ def _should_sample_path_low_zoom_background_line_width(layer_id: object, prop: s
 
 
 def _path_split_line_width(expr: object, layer_id: object, prop: str, minzoom: object, maxzoom: object) -> float | None:
-    if _should_sample_path_low_zoom_line_width(layer_id, prop, maxzoom):
-        target_sample_zoom = _PATH_LOW_ZOOM_LINE_WIDTH_SAMPLE_ZOOM
-    elif _should_sample_path_low_zoom_background_line_width(layer_id, prop):
+    if (
+        _should_sample_path_low_zoom_line_width(layer_id, prop, maxzoom)
+        or _should_sample_path_low_zoom_background_line_width(layer_id, prop)
+    ):
         target_sample_zoom = _PATH_LOW_ZOOM_LINE_WIDTH_SAMPLE_ZOOM
     elif _should_sample_path_high_zoom_line_width(layer_id, prop, minzoom):
         target_sample_zoom = (
