@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import json
+import math
 import os
 import sys
 from collections.abc import Mapping
@@ -566,8 +567,8 @@ def _non_negative_float(value: str) -> float:
         parsed = float(value)
     except ValueError as exc:
         raise argparse.ArgumentTypeError("Expected a numeric threshold") from exc
-    if parsed < 0:
-        raise argparse.ArgumentTypeError("Threshold must be non-negative")
+    if not math.isfinite(parsed) or parsed < 0:
+        raise argparse.ArgumentTypeError("Threshold must be a finite non-negative number")
     return parsed
 
 

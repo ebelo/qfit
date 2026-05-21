@@ -1,3 +1,4 @@
+import argparse
 import datetime as dt
 import io
 import json
@@ -10,6 +11,7 @@ from unittest.mock import patch
 from tests import _path  # noqa: F401
 
 from qfit.validation.mapbox_outdoors_comparison_delta import (
+    _non_negative_float,
     build_comparison_delta_paths,
     build_comparison_delta_report,
     build_run_directory,
@@ -173,6 +175,14 @@ class MapboxOutdoorsComparisonDeltaTests(unittest.TestCase):
         )
         self.assertIn("| `large-move` |", markdown)
         self.assertNotIn("| `small-move` | 14.25 | -0.000050000 |", markdown)
+        self.assertIn("| `small-move` | 14.25 | 0.100000000 |", markdown)
+
+    def test_non_negative_float_rejects_invalid_thresholds(self):
+        self.assertEqual(_non_negative_float("0.001"), 0.001)
+        for value in ("-0.1", "nan", "inf", "-inf"):
+            with self.subTest(value=value):
+                with self.assertRaises(argparse.ArgumentTypeError):
+                    _non_negative_float(value)
 
     def test_build_summary_markdown_renders_delta_table(self):
         report = build_comparison_delta_report(
