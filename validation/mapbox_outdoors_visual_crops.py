@@ -42,6 +42,8 @@ DEFAULT_CROPS_PER_CAMERA = 3
 DEFAULT_FOCUS_DASH_CUE_LIMIT = 2
 DEFAULT_FOCUS_STROKE_CUE_LIMIT = 3
 DEFAULT_STYLE_AUDIT_SAMPLE_LIMIT = 5
+DEFAULT_STYLE_AUDIT_SIMPLIFICATION_LIMIT = 3
+MAX_STYLE_AUDIT_SIMPLIFICATION_VALUE_LENGTH = 96
 MIN_SCORE_FOR_CROP = 1.0
 MAX_OVERLAP_RATIO = 0.35
 CROP_IMAGE_COLUMNS = (
@@ -456,10 +458,77 @@ def _style_audit_qgis_converter_warnings_by_layer(
     return warnings_by_layer
 
 
+def _style_audit_layers_by_id(
+    style_audit_report: Mapping[str, object],
+) -> dict[str, Mapping[str, object]]:
+    layers = style_audit_report.get("layers")
+    if not isinstance(layers, list):
+        return {}
+    layers_by_id: dict[str, Mapping[str, object]] = {}
+    for layer in layers:
+        if not isinstance(layer, Mapping):
+            continue
+        layer_id = str(layer.get("id") or "")
+        if layer_id:
+            layers_by_id[layer_id] = layer
+    return layers_by_id
+
+
+def _compact_style_audit_value(value: object) -> str:
+    text = str(value)
+    if len(text) <= MAX_STYLE_AUDIT_SIMPLIFICATION_VALUE_LENGTH:
+        return text
+    return f"{text[: MAX_STYLE_AUDIT_SIMPLIFICATION_VALUE_LENGTH - 3]}..."
+
+
+def _style_audit_qfit_simplification_sample(
+    candidate: Mapping[str, object],
+    *,
+    style_audit_layer: Mapping[str, object] | None = None,
+    sample_limit: int = DEFAULT_STYLE_AUDIT_SIMPLIFICATION_LIMIT,
+) -> list[dict[str, str]]:
+    if sample_limit <= 0:
+        return []
+    simplifications = _style_audit_mapping_rows(candidate.get("qfit_simplifies"))
+    if not simplifications and style_audit_layer is not None:
+        simplifications = _style_audit_mapping_rows(style_audit_layer.get("qfit_simplifies"))
+    if not simplifications:
+        return []
+
+    relevant_properties = set(_string_values(candidate.get("qfit_simplified_control_properties")))
+    selected: list[dict[str, str]] = []
+    selected_properties: set[str] = set()
+
+    def add_simplification(row: Mapping[str, object]) -> None:
+        if len(selected) >= sample_limit:
+            return
+        property_name = str(row.get("property") or "")
+        if not property_name or property_name in selected_properties:
+            return
+        selected_properties.add(property_name)
+        sample = {"property": property_name}
+        for value_key in ("from", "to"):
+            value = row.get(value_key)
+            if _non_empty_focus_value(value):
+                sample[value_key] = _compact_style_audit_value(value)
+        selected.append(sample)
+
+    if relevant_properties:
+        for simplification in simplifications:
+            if simplification.get("property") in relevant_properties:
+                add_simplification(simplification)
+
+    for simplification in simplifications:
+        add_simplification(simplification)
+
+    return selected
+
+
 def _style_audit_candidate_sample(
     candidate: Mapping[str, object],
     *,
     qgis_converter_warnings_by_layer: Mapping[str, Mapping[str, object]] | None = None,
+    style_audit_layers_by_id: Mapping[str, Mapping[str, object]] | None = None,
 ) -> dict[str, object]:
     sample: dict[str, object] = {}
     for key in (
@@ -477,6 +546,18 @@ def _style_audit_candidate_sample(
         control_properties = candidate.get("airport_special_landuse_control_properties")
     if _non_empty_focus_value(control_properties):
         sample["control_properties"] = control_properties
+    layer_id = str(candidate.get("layer") or "")
+    style_audit_layer = (
+        style_audit_layers_by_id.get(layer_id)
+        if style_audit_layers_by_id is not None and layer_id
+        else None
+    )
+    qfit_simplifications = _style_audit_qfit_simplification_sample(
+        candidate,
+        style_audit_layer=style_audit_layer,
+    )
+    if qfit_simplifications:
+        sample["qfit_simplifications"] = qfit_simplifications
     for source_key, target_key in (
         ("qfit_simplified_control_properties", "qfit_simplified_properties"),
         ("qgis_dependent_control_properties", "qgis_dependent_properties"),
@@ -553,6 +634,7 @@ def _style_audit_area_fill_focus(
     qgis_converter_warnings_by_layer = _style_audit_qgis_converter_warnings_by_layer(
         style_audit_report
     )
+    style_audit_layers_by_id = _style_audit_layers_by_id(style_audit_report)
     focus_rows: list[dict[str, object]] = []
     for section in STYLE_AUDIT_AREA_FILL_SECTIONS:
         candidate_rows = summary.get(str(section["candidates"]))
@@ -576,6 +658,7 @@ def _style_audit_area_fill_focus(
                     _style_audit_candidate_sample(
                         candidate,
                         qgis_converter_warnings_by_layer=qgis_converter_warnings_by_layer,
+                        style_audit_layers_by_id=style_audit_layers_by_id,
                     )
                     for candidate in _style_audit_sample_candidates(
                         candidates,
@@ -1361,6 +1444,9 @@ def _candidate_sample_label(candidate: Mapping[str, object]) -> str:
     qfit_simplified = _string_values(candidate.get("qfit_simplified_properties"))
     if qfit_simplified:
         details.append(f"qfit={', '.join(qfit_simplified[:4])}")
+    qfit_simplifications = _candidate_qfit_simplification_labels(candidate)
+    if qfit_simplifications:
+        details.append(f"simplifies={'; '.join(qfit_simplifications[:2])}")
     qgis_dependent = _string_values(candidate.get("qgis_dependent_properties"))
     if qgis_dependent:
         details.append(f"qgis={', '.join(qgis_dependent[:4])}")
@@ -1369,6 +1455,26 @@ def _candidate_sample_label(candidate: Mapping[str, object]) -> str:
         details.append(f"qgis-warnings={', '.join(qgis_warnings[:2])}")
     detail_suffix = f" ({'; '.join(details)})" if details else ""
     return f"{layer}{detail_suffix}"
+
+
+def _candidate_qfit_simplification_labels(candidate: Mapping[str, object]) -> list[str]:
+    simplifications = candidate.get("qfit_simplifications")
+    if not isinstance(simplifications, list):
+        return []
+    labels = []
+    for row in simplifications:
+        if not isinstance(row, Mapping):
+            continue
+        property_name = row.get("property")
+        if property_name in (None, ""):
+            continue
+        if row.get("from") not in (None, "") and row.get("to") not in (None, ""):
+            labels.append(f"{property_name}: {row.get('from')} -> {row.get('to')}")
+        elif row.get("to") not in (None, ""):
+            labels.append(f"{property_name}: -> {row.get('to')}")
+        else:
+            labels.append(str(property_name))
+    return labels
 
 
 def _candidate_qgis_converter_warning_labels(
