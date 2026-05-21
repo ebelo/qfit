@@ -2004,7 +2004,9 @@ def _focus_movement_group_labels(
     if not isinstance(camera_name, str) or not camera_name:
         return []
     labels: list[str] = []
-    for record in _crop_color_movement_group_records(report):
+    for record in _crop_color_movement_group_records(report)[
+        :DEFAULT_CROP_COLOR_MOVEMENT_GROUP_LIMIT
+    ]:
         movement = record.get("movement")
         cameras = record.get("cameras")
         if not isinstance(movement, str) or not isinstance(cameras, Mapping):
