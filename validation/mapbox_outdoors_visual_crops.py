@@ -43,6 +43,7 @@ DEFAULT_FOCUS_DASH_CUE_LIMIT = 2
 DEFAULT_FOCUS_STROKE_CUE_LIMIT = 3
 DEFAULT_STYLE_AUDIT_SAMPLE_LIMIT = 5
 DEFAULT_STYLE_AUDIT_SIMPLIFICATION_LIMIT = 3
+DEFAULT_CROP_COLOR_DELTA_SUMMARY_LIMIT = 5
 MAX_STYLE_AUDIT_SIMPLIFICATION_VALUE_LENGTH = 96
 MIN_SCORE_FOR_CROP = 1.0
 MAX_OVERLAP_RATIO = 0.35
@@ -1476,22 +1477,107 @@ def _summary_camera_rows(
     ]
 
 
-def _color_metric_label(metrics: object, key: str) -> str:
+def _metric_float(metrics: object, key: str) -> float | None:
     if not isinstance(metrics, Mapping):
-        return "-"
+        return None
+    value = metrics.get(key)
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return None
+    return float(value)
+
+
+def _color_metric_values(metrics: object, key: str) -> list[float]:
+    if not isinstance(metrics, Mapping):
+        return []
     values = metrics.get(key)
     if not isinstance(values, list):
+        return []
+    numeric_values: list[float] = []
+    for value in values[:3]:
+        if isinstance(value, bool) or not isinstance(value, (int, float)):
+            return []
+        numeric_values.append(float(value))
+    return numeric_values if len(numeric_values) == 3 else []
+
+
+def _color_metric_label(metrics: object, key: str) -> str:
+    values = _color_metric_values(metrics, key)
+    if not values:
         return "-"
-    return ", ".join(f"{float(value):.1f}" for value in values[:3])
+    return ", ".join(f"{value:.1f}" for value in values)
 
 
 def _luminance_metric_label(metrics: object) -> str:
-    if not isinstance(metrics, Mapping):
+    value = _metric_float(metrics, "luminance")
+    if value is None:
         return "-"
-    value = metrics.get("luminance")
-    if isinstance(value, bool) or not isinstance(value, (int, float)):
-        return "-"
-    return f"{float(value):+.1f}"
+    return f"{value:+.1f}"
+
+
+def _summary_crop_color_delta_entries(
+    report: Mapping[str, object],
+) -> list[tuple[float, float, list[object]]]:
+    entries: list[tuple[float, float, list[object]]] = []
+    cameras = report.get("cameras")
+    if not isinstance(cameras, list):
+        return entries
+    for camera in cameras:
+        if not isinstance(camera, Mapping):
+            continue
+        crops = camera.get("crops")
+        if not isinstance(crops, list):
+            continue
+        for crop in crops:
+            if not isinstance(crop, Mapping):
+                continue
+            metrics = crop.get("color_metrics")
+            if not isinstance(metrics, Mapping):
+                continue
+            delta = metrics.get("delta")
+            rgb_values = _color_metric_values(delta, "mean_rgb")
+            luminance = _metric_float(delta, "luminance")
+            if not rgb_values and luminance is None:
+                continue
+            max_abs_rgb = max(abs(value) for value in rgb_values) if rgb_values else None
+            luminance_score = abs(luminance) if luminance is not None else 0.0
+            rgb_score = max_abs_rgb if max_abs_rgb is not None else 0.0
+            score = max(rgb_score, luminance_score)
+            entries.append(
+                (
+                    score,
+                    luminance_score,
+                    [
+                        camera.get("camera"),
+                        crop.get("index"),
+                        _color_metric_label(delta, "mean_rgb"),
+                        _luminance_metric_label(delta),
+                        f"{max_abs_rgb:.1f}" if max_abs_rgb is not None else "-",
+                    ],
+                )
+            )
+    entries.sort(key=lambda entry: (entry[0], entry[1]), reverse=True)
+    return entries
+
+
+def _summary_largest_crop_color_delta_lines(report: Mapping[str, object]) -> list[str]:
+    entries = _summary_crop_color_delta_entries(report)[:DEFAULT_CROP_COLOR_DELTA_SUMMARY_LIMIT]
+    if not entries:
+        return []
+    lines = [
+        "",
+        "## Largest crop color deltas",
+        "",
+        (
+            "Ranks crop-local QGIS-minus-Mapbox color deltas by the largest absolute "
+            "RGB or luminance difference, so the worst terrain, landcover, water, "
+            "or tint outliers are visible before reading every crop row."
+        ),
+        "",
+        "| Camera | Crop | QGIS-Mapbox RGB | QGIS-Mapbox luminance | Max abs RGB |",
+        "| --- | ---: | --- | ---: | ---: |",
+    ]
+    lines.extend(_markdown_table_row(row) for _score, _luminance_score, row in entries)
+    return lines
 
 
 def _summary_crop_color_metric_rows(report: Mapping[str, object]) -> list[list[object]]:
@@ -1779,6 +1865,7 @@ def build_summary_markdown(report: Mapping[str, object]) -> str:
                 include_comparison_delta=include_comparison_delta,
             )
         )
+    lines.extend(_summary_largest_crop_color_delta_lines(report))
     lines.extend(_summary_crop_color_metric_lines(report))
     lines.extend(_style_audit_area_fill_focus_lines(report))
     lines.extend(_summary_focus_cue_lines(report))
