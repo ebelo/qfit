@@ -1964,6 +1964,7 @@ class MapboxOutdoorsVisualCropsTest(unittest.TestCase):
         )
 
         self.assertIn("## Path/pedestrian focus coverage samples", markdown)
+        self.assertNotIn("## Path/pedestrian decoded feature coverage", markdown)
         self.assertIn(
             (
                 "| legacy-focus-report-camera | - | - | "
