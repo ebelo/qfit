@@ -205,6 +205,8 @@ class MapboxOutdoorsSourceCropOverlapTests(unittest.TestCase):
         self.assertEqual(_mapbox_expression_value(["get", "class"], properties), "park")
         self.assertEqual(_mapbox_expression_value(["literal", ["park", "cemetery"]], properties), ["park", "cemetery"])
         self.assertTrue(_mapbox_expression_value(["has", "class"], properties))
+        self.assertFalse(_mapbox_expression_value(["!has", "class"], properties))
+        self.assertTrue(_mapbox_expression_value(["!has", "missing"], properties))
         self.assertIsNone(_mapbox_expression_value(["match"], properties))
         self.assertIsNone(_mapbox_expression_value(["match", ["get", "class"], "park", True], properties))
         self.assertIsNone(_mapbox_expression_value(["case"], properties))
@@ -254,6 +256,8 @@ class MapboxOutdoorsSourceCropOverlapTests(unittest.TestCase):
                 properties,
             )
         )
+        self.assertTrue(_mapbox_filter_matches(["none", ["==", "class", "school"], ["!has", "type"]], properties))
+        self.assertFalse(_mapbox_filter_matches(["none", ["==", "class", "school"], ["!has", "missing"]], properties))
         self.assertFalse(_mapbox_filter_matches(["!", ["==", ["get", "class"], "park"]], properties))
         self.assertTrue(_mapbox_filter_matches(["in", ["get", "class"], ["literal", ["park", "cemetery"]]], properties))
         self.assertTrue(_mapbox_filter_matches(["!in", ["get", "class"], ["literal", ["school", "cemetery"]]], properties))

@@ -32,7 +32,7 @@ DEFAULT_SOURCE_LAYERS = (
 PROPERTY_COUNT_KEYS = ("class", "type", "index", "structure", "maki")
 MAX_COUNT_VALUES = 8
 COMPARISON_OPERATORS = frozenset(("==", "!=", ">", ">=", "<", "<=", "in", "!in"))
-BOOLEAN_OPERATORS = frozenset(("all", "any", "!"))
+BOOLEAN_OPERATORS = frozenset(("all", "any", "none", "!"))
 GEOMETRY_TYPE_PROPERTY = "$geometry_type"
 ZOOM_PROPERTY = "$zoom"
 NUMERIC_COMPARISONS = {
@@ -490,6 +490,8 @@ def _mapbox_simple_expression_value(
         return operands[0]
     if operator == "has" and operands:
         return str(operands[0]) in properties
+    if operator == "!has" and operands:
+        return str(operands[0]) not in properties
     if operator == "geometry-type":
         return properties.get(GEOMETRY_TYPE_PROPERTY)
     if operator == "zoom":
@@ -528,6 +530,8 @@ def _mapbox_boolean_value(
         return all(_mapbox_filter_matches(item, properties) for item in operands)
     if operator == "any":
         return any(_mapbox_filter_matches(item, properties) for item in operands)
+    if operator == "none":
+        return not any(_mapbox_filter_matches(item, properties) for item in operands)
     if operator == "!":
         return not _mapbox_filter_matches(operands[0], properties) if operands else False
     return None
@@ -583,7 +587,7 @@ def _mapbox_filter_matches(expression: object, properties: Mapping[str, object])
     if not isinstance(expression, list) or not expression:
         return bool(expression)
     operator = expression[0]
-    if operator in {"all", "any", "!"}:
+    if operator in BOOLEAN_OPERATORS:
         return bool(_mapbox_expression_value(expression, properties))
     legacy_values = _legacy_filter_values(expression, properties)
     if legacy_values is not None:
