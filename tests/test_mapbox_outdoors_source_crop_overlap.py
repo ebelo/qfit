@@ -274,6 +274,46 @@ class MapboxOutdoorsSourceCropOverlapTests(unittest.TestCase):
                         ["!=", ["get", "sizerank"], 3],
                         ["==", ["get", "class"], "cemetery"],
                     ],
+                },
+                {
+                    "id": "landuse-case-preserves-branch",
+                    "type": "fill",
+                    "source-layer": "landuse",
+                    "filter": [
+                        "case",
+                        ["==", ["get", "sizerank"], 1],
+                        True,
+                        ["==", ["get", "class"], "park"],
+                        True,
+                        False,
+                    ],
+                },
+                {
+                    "id": "landuse-case-sized-park",
+                    "type": "fill",
+                    "source-layer": "landuse",
+                    "filter": [
+                        "case",
+                        [
+                            "all",
+                            ["==", ["get", "class"], "park"],
+                            [">=", ["to-number", ["get", "sizerank"]], 0],
+                        ],
+                        True,
+                        False,
+                    ],
+                },
+                {
+                    "id": "landuse-match-sized-park",
+                    "type": "fill",
+                    "source-layer": "landuse",
+                    "filter": [
+                        "match",
+                        ["get", "class"],
+                        "park",
+                        [">=", ["to-number", ["get", "sizerank"]], 0],
+                        False,
+                    ],
                 }
             ],
         )
@@ -291,6 +331,24 @@ class MapboxOutdoorsSourceCropOverlapTests(unittest.TestCase):
         )
         self.assertEqual(
             record["qgis_filter_property_requirements"]["landuse-none-sized"]["candidate_missing_feature_counts"],
+            {"sizerank": 1},
+        )
+        self.assertEqual(
+            record["qgis_filter_property_requirements"]["landuse-case-preserves-branch"][
+                "candidate_missing_feature_counts"
+            ],
+            {},
+        )
+        self.assertEqual(
+            record["qgis_filter_property_requirements"]["landuse-case-sized-park"][
+                "candidate_missing_feature_counts"
+            ],
+            {"sizerank": 1},
+        )
+        self.assertEqual(
+            record["qgis_filter_property_requirements"]["landuse-match-sized-park"][
+                "candidate_missing_feature_counts"
+            ],
             {"sizerank": 1},
         )
 

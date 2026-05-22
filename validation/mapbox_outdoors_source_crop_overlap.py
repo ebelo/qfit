@@ -496,6 +496,54 @@ def _filter_without_missing_not_check(
     return True if stripped_operand is _DROPPED_FILTER else ["!", stripped_operand]
 
 
+def _filter_without_missing_result_expression(
+    expression: object,
+    missing_properties: set[str],
+) -> object:
+    stripped_expression = _filter_without_missing_property_checks(expression, missing_properties)
+    return True if stripped_expression is _DROPPED_FILTER else stripped_expression
+
+
+def _filter_without_missing_case_checks(
+    expression: Sequence[object],
+    missing_properties: set[str],
+) -> object:
+    if len(expression) < 4:
+        return _DROPPED_FILTER
+    stripped_expression: list[object] = ["case"]
+    for index in range(1, len(expression) - 1, 2):
+        stripped_condition = _filter_without_missing_property_checks(expression[index], missing_properties)
+        if stripped_condition is _DROPPED_FILTER:
+            continue
+        stripped_expression.extend(
+            [
+                stripped_condition,
+                _filter_without_missing_result_expression(expression[index + 1], missing_properties),
+            ]
+        )
+    fallback = expression[-1]
+    stripped_expression.append(_filter_without_missing_result_expression(fallback, missing_properties))
+    return stripped_expression[1] if len(stripped_expression) == 2 else stripped_expression
+
+
+def _filter_without_missing_match_checks(
+    expression: Sequence[object],
+    missing_properties: set[str],
+) -> object:
+    if len(expression) < 5:
+        return _DROPPED_FILTER
+    if _filter_property_names(expression[1]) & missing_properties:
+        return _filter_without_missing_result_expression(expression[-1], missing_properties)
+    stripped_expression = ["match", expression[1], *expression[2:-1]]
+    for index in range(3, len(stripped_expression), 2):
+        stripped_expression[index] = _filter_without_missing_result_expression(
+            stripped_expression[index],
+            missing_properties,
+        )
+    stripped_expression.append(_filter_without_missing_result_expression(expression[-1], missing_properties))
+    return stripped_expression
+
+
 def _filter_without_missing_property_checks(
     expression: object,
     missing_properties: set[str],
@@ -510,6 +558,10 @@ def _filter_without_missing_property_checks(
         return _filter_without_missing_boolean_checks(operator, operands, missing_properties)
     if operator == "!":
         return _filter_without_missing_not_check(operands, missing_properties)
+    if operator == "case":
+        return _filter_without_missing_case_checks(expression, missing_properties)
+    if operator == "match":
+        return _filter_without_missing_match_checks(expression, missing_properties)
     return _DROPPED_FILTER
 
 
