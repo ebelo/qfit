@@ -51,6 +51,7 @@ STYLE_MASK_OUTPUT = "qgis-mask-style.json"
 QGIS_RENDER_OUTPUT = "qgis-vector-render.png"
 MAPBOX_DIFF_OUTPUT = "mapbox-gl-vs-qgis-diff.png"
 QGIS_MOVEMENT_DIFF_OUTPUT = "qgis-vs-baseline-diff.png"
+REPORT_CAMERA_DIRECTORY = "comparison-camera"
 VARIANT_SPEC_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]*=[^=]+$")
 SAFE_PATH_SEGMENT_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]*$")
 LUMINANCE_WEIGHTS = (0.2126, 0.7152, 0.0722)
@@ -139,13 +140,6 @@ def safe_path_segment(value: str) -> str:
     if not SAFE_PATH_SEGMENT_RE.match(value):
         raise ValueError(f"Unsafe path segment: {value!r}")
     return value
-
-
-def camera_output_directory_name(camera: MapboxComparisonCamera) -> str:
-    known = CAMERAS.get(camera.name)
-    if known is not None:
-        return known.name
-    return "custom-camera"
 
 
 def load_json_object(path: Path) -> dict[str, object]:
@@ -542,7 +536,7 @@ def build_rendered_layer_mask_report(
     camera = camera_from_manifest(manifest)
     paths = build_rendered_layer_mask_paths(
         output_root=config.output_root.expanduser().resolve(),
-        camera_name=camera_output_directory_name(camera),
+        camera_name=REPORT_CAMERA_DIRECTORY,
         now=config.now,
     )
     paths.run_dir.mkdir(parents=True, exist_ok=True)
@@ -842,10 +836,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     inputs = report.get("inputs")
     if isinstance(inputs, Mapping):
         print(f"Baseline manifest: {inputs.get('baseline_manifest')}")
-    camera = report.get("camera")
-    camera_name = camera.get("name") if isinstance(camera, Mapping) else "unknown"
     output_root = DEFAULT_OUTPUT_ROOT.expanduser().resolve()
-    newest = max((path for path in (output_root / str(camera_name)).glob("*") if path.is_dir()), default=None)
+    newest = max(
+        (path for path in (output_root / REPORT_CAMERA_DIRECTORY).glob("*") if path.is_dir()),
+        default=None,
+    )
     if newest is not None:
         print(f"Run directory: {_repo_relative(newest)}")
         print(f"Summary: {_repo_relative(newest / 'summary.md')}")

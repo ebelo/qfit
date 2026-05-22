@@ -14,7 +14,6 @@ from qfit.validation.mapbox_outdoors_rendered_layer_mask import (
     apply_transparent_layer_mask,
     build_qgis_render_child_script,
     build_rendered_layer_mask_report,
-    camera_output_directory_name,
     image_changed_bbox,
     image_delta_metrics,
     parse_crop_box,
@@ -22,7 +21,7 @@ from qfit.validation.mapbox_outdoors_rendered_layer_mask import (
     render_markdown_summary,
     render_qgis_vector_in_subprocess,
 )
-from qfit.validation.mapbox_outdoors_comparison import CAMERAS, MapboxComparisonCamera
+from qfit.validation.mapbox_outdoors_comparison import MapboxComparisonCamera
 
 
 STYLE = {
@@ -60,24 +59,6 @@ class MapboxOutdoorsRenderedLayerMaskTests(unittest.TestCase):
             parse_crop_box("1,2,1,8")
         with self.assertRaises(Exception):
             parse_crop_box("-1,2,5,8")
-
-    def test_camera_output_directory_name_uses_known_or_constant_segment(self):
-        self.assertEqual(
-            camera_output_directory_name(CAMERAS["zermatt-trails-z18-outdoors"]),
-            "zermatt-trails-z18-outdoors",
-        )
-        self.assertEqual(
-            camera_output_directory_name(
-                MapboxComparisonCamera(
-                    name="../unsafe",
-                    description="Unsafe custom name",
-                    longitude=7.0,
-                    latitude=46.0,
-                    zoom=14.0,
-                )
-            ),
-            "custom-camera",
-        )
 
     def test_apply_transparent_layer_mask_sets_type_specific_opacity(self):
         masked, matched, missing = apply_transparent_layer_mask(
@@ -220,7 +201,7 @@ class MapboxOutdoorsRenderedLayerMaskTests(unittest.TestCase):
             summary_path = (
                 root
                 / "mask-output"
-                / "custom-camera"
+                / "comparison-camera"
                 / "20260522T073000Z"
                 / "summary.md"
             )
