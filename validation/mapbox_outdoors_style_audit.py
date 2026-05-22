@@ -1497,7 +1497,8 @@ def _is_qfit_split_airport_special_landuse_variant(layer: dict[str, object]) -> 
     if layer.get(_QFIT_SPLIT_VARIANT_KEY) is not True:
         return False
     layer_id = str(layer.get("id") or "").replace("_", "-").lower()
-    return any(layer_id.endswith(f"-{marker}") for marker in _AIRPORT_SPECIAL_LANDUSE_MARKERS)
+    layer_segments = set(layer_id.split("-"))
+    return any(marker in layer_segments for marker in _AIRPORT_SPECIAL_LANDUSE_MARKERS)
 
 
 def _is_airport_special_landuse_candidate_layer(layer: dict[str, object]) -> bool:

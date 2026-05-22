@@ -1413,7 +1413,12 @@ class MapboxOutdoorsStyleAuditTests(unittest.TestCase):
         candidates = audit["summary"]["airport_special_landuse_candidates"]
         self.assertEqual(
             [candidate["layer"] for candidate in candidates],
-            ["landuse-other-z10-plus-airport", "landuse-other-z8-to-z10-airport"],
+            [
+                "landuse-other-z10-plus-airport",
+                "landuse-other-z10-plus-airport-muted-z14-to-z15",
+                "landuse-other-z10-plus-airport-z15-plus",
+                "landuse-other-z8-to-z10-airport",
+            ],
         )
         for candidate in candidates:
             self.assertEqual(candidate["source_layer"], "landuse")
@@ -1434,7 +1439,15 @@ class MapboxOutdoorsStyleAuditTests(unittest.TestCase):
             1,
         )[0]
         self.assertIn("| `landuse-other-z8-to-z10-airport` | `fill` | `landuse` | z8–z10 |", airport_section)
-        self.assertIn("| `landuse-other-z10-plus-airport` | `fill` | `landuse` | z≥10 |", airport_section)
+        self.assertIn("| `landuse-other-z10-plus-airport` | `fill` | `landuse` | z10–z14 |", airport_section)
+        self.assertIn(
+            "| `landuse-other-z10-plus-airport-muted-z14-to-z15` | `fill` | `landuse` | z14–z15 |",
+            airport_section,
+        )
+        self.assertIn(
+            "| `landuse-other-z10-plus-airport-z15-plus` | `fill` | `landuse` | z≥15 |",
+            airport_section,
+        )
         self.assertNotIn("| `landuse` | `fill` |", airport_section)
 
     def test_airport_special_landuse_prefers_qfit_split_variants_for_split_positive_landuse(self):
@@ -1459,7 +1472,12 @@ class MapboxOutdoorsStyleAuditTests(unittest.TestCase):
 
         self.assertEqual(
             [candidate["layer"] for candidate in audit["summary"]["airport_special_landuse_candidates"]],
-            ["landuse-other-z10-plus-airport", "landuse-other-z8-to-z10-airport"],
+            [
+                "landuse-other-z10-plus-airport",
+                "landuse-other-z10-plus-airport-muted-z14-to-z15",
+                "landuse-other-z10-plus-airport-z15-plus",
+                "landuse-other-z8-to-z10-airport",
+            ],
         )
 
     def test_airport_special_landuse_omits_qfit_split_variants_when_filter_excludes_airport(self):
