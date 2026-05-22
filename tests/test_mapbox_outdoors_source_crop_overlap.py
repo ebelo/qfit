@@ -11,6 +11,7 @@ from qfit.validation.mapbox_outdoors_source_crop_overlap import (
     _comparison_membership_contains,
     _mapbox_expression_value,
     _mapbox_filter_matches,
+    _source_filter_property_names,
     _style_layer_active_at_zoom,
     bbox_overlaps_lon_lat_bounds,
     build_run_directory,
@@ -287,6 +288,18 @@ class MapboxOutdoorsSourceCropOverlapTests(unittest.TestCase):
         self.assertTrue(_style_layer_active_at_zoom({"minzoom": 10, "maxzoom": 18}, 17.9))
         self.assertFalse(_style_layer_active_at_zoom({"minzoom": 10, "maxzoom": 18}, 18.0))
         self.assertFalse(_style_layer_active_at_zoom({"minzoom": 10}, 9.9))
+        self.assertEqual(
+            _source_filter_property_names(
+                [
+                    "all",
+                    ["!has", "expected_absent"],
+                    ["has", "class"],
+                    ["==", "legacy_left", ["get", "legacy_right"]],
+                    ["==", "$type", ["get", "kind"]],
+                ]
+            ),
+            ["class", "kind", "legacy_left", "legacy_right"],
+        )
 
     def test_write_report_outputs_json_and_markdown(self):
         with tempfile.TemporaryDirectory() as tmp:

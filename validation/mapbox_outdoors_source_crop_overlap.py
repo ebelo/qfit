@@ -429,10 +429,15 @@ def _filter_property_names(expression: object) -> set[str]:
         return set()
     operator = expression[0]
     operands = expression[1:]
-    if operator in {"get", "has", "!has"} and operands:
+    if operator in {"get", "has"} and operands:
         return {str(operands[0])}
+    if operator == "!has":
+        return set()
     if operator in COMPARISON_OPERATORS and len(expression) >= 3 and isinstance(expression[1], str):
-        return {GEOMETRY_TYPE_PROPERTY if expression[1] == "$type" else expression[1]}
+        names = {GEOMETRY_TYPE_PROPERTY if expression[1] == "$type" else expression[1]}
+        for operand in expression[2:]:
+            names.update(_filter_property_names(operand))
+        return names
     names: set[str] = set()
     for operand in operands:
         names.update(_filter_property_names(operand))
