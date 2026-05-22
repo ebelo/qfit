@@ -30,8 +30,10 @@ DEFAULT_SOURCE_LAYERS = (
 )
 PROPERTY_COUNT_KEYS = ("class", "type", "index", "structure", "maki")
 MAX_COUNT_VALUES = 8
-COMPARISON_OPERATORS = frozenset(("==", "!=", ">", ">=", "<", "<=", "in"))
+COMPARISON_OPERATORS = frozenset(("==", "!=", ">", ">=", "<", "<=", "in", "!in"))
 BOOLEAN_OPERATORS = frozenset(("all", "any", "!"))
+GEOMETRY_TYPE_PROPERTY = "$geometry_type"
+ZOOM_PROPERTY = "$zoom"
 STYLE_LAYER_PAINT_KEYS = (
     "fill-color",
     "fill-opacity",
@@ -478,9 +480,9 @@ def _mapbox_simple_expression_value(
     if operator == "has" and operands:
         return str(operands[0]) in properties
     if operator == "geometry-type":
-        return properties.get("$geometry_type")
+        return properties.get(GEOMETRY_TYPE_PROPERTY)
     if operator == "zoom":
-        return properties.get("$zoom")
+        return properties.get(ZOOM_PROPERTY)
     return None
 
 
@@ -520,6 +522,15 @@ def _mapbox_boolean_value(
     return None
 
 
+def _comparison_values(expression: Sequence[object], properties: Mapping[str, object]) -> tuple[object, object] | None:
+    if len(expression) < 3:
+        return None
+    return (
+        _mapbox_expression_value(expression[1], properties),
+        _mapbox_expression_value(expression[2], properties),
+    )
+
+
 def _mapbox_expression_value(expression: object, properties: Mapping[str, object]) -> object:
     if not isinstance(expression, list) or not expression:
         return expression
@@ -539,18 +550,9 @@ def _mapbox_expression_value(expression: object, properties: Mapping[str, object
     return _mapbox_simple_expression_value(operator, operands, properties)
 
 
-def _comparison_values(expression: Sequence[object], properties: Mapping[str, object]) -> tuple[object, object] | None:
-    if len(expression) < 3:
-        return None
-    return (
-        _mapbox_expression_value(expression[1], properties),
-        _mapbox_expression_value(expression[2], properties),
-    )
-
-
 def _legacy_filter_property_value(value: object, properties: Mapping[str, object]) -> object:
     if value == "$type":
-        return properties.get("$geometry_type")
+        return properties.get(GEOMETRY_TYPE_PROPERTY)
     return properties.get(value) if isinstance(value, str) else _mapbox_expression_value(value, properties)
 
 
@@ -600,8 +602,8 @@ def _feature_context_properties(feature: Mapping[str, object], *, camera_zoom: f
     properties = dict(_feature_properties(feature))
     geometry = feature.get("geometry")
     if isinstance(geometry, dict) and isinstance(geometry.get("type"), str):
-        properties["$geometry_type"] = geometry["type"]
-    properties["$zoom"] = camera_zoom
+        properties[GEOMETRY_TYPE_PROPERTY] = geometry["type"]
+    properties[ZOOM_PROPERTY] = camera_zoom
     return properties
 
 

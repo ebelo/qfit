@@ -252,6 +252,8 @@ class MapboxOutdoorsSourceCropOverlapTests(unittest.TestCase):
         )
         self.assertFalse(_mapbox_filter_matches(["!", ["==", ["get", "class"], "park"]], properties))
         self.assertTrue(_mapbox_filter_matches(["in", ["get", "class"], ["literal", ["park", "cemetery"]]], properties))
+        self.assertTrue(_mapbox_filter_matches(["!in", ["get", "class"], ["literal", ["school", "cemetery"]]], properties))
+        self.assertFalse(_mapbox_filter_matches(["!in", ["get", "class"], ["literal", ["park", "cemetery"]]], properties))
         self.assertFalse(_mapbox_filter_matches([">", ["get", "class"], 1], properties))
         self.assertFalse(_mapbox_filter_matches([], properties))
         self.assertTrue(_mapbox_filter_matches(True, properties))
