@@ -352,6 +352,39 @@ class MapboxOutdoorsSourceCropOverlapTests(unittest.TestCase):
             {"sizerank": 1},
         )
 
+    def test_match_input_missing_property_counts_as_candidate_gate(self):
+        record = source_layer_overlap_record(
+            decoded_tiles=[
+                {
+                    "landuse": {
+                        "features": [
+                            _feature(
+                                "Polygon",
+                                [[[-0.9, -0.9], [0.9, -0.9], [0.9, 0.9], [-0.9, 0.9], [-0.9, -0.9]]],
+                                {"type": "park"},
+                            )
+                        ]
+                    }
+                }
+            ],
+            bounds={"west": -1.0, "south": -1.0, "east": 1.0, "north": 1.0},
+            source_layer="landuse",
+            camera_zoom=18.0,
+            style_layers=[
+                {
+                    "id": "landuse-class-match",
+                    "type": "fill",
+                    "source-layer": "landuse",
+                    "filter": ["match", ["get", "class"], "park", True, False],
+                }
+            ],
+        )
+
+        requirement = record["qgis_filter_property_requirements"]["landuse-class-match"]
+        self.assertEqual(requirement["missing_feature_counts"], {"class": 1})
+        self.assertEqual(requirement["candidate_missing_feature_counts"], {"class": 1})
+        self.assertEqual(requirement["matched_feature_count"], 0)
+
     def test_mapbox_filter_helpers_cover_preprocessed_style_expressions(self):
         properties = {"class": "park", "type": "garden", "sizerank": "3", "index": 10}
         context_properties = {**properties, "$geometry_type": "Polygon", "$zoom": 18.0}

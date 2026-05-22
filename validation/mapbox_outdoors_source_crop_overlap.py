@@ -533,7 +533,7 @@ def _filter_without_missing_match_checks(
     if len(expression) < 5:
         return _DROPPED_FILTER
     if _filter_property_names(expression[1]) & missing_properties:
-        return _filter_without_missing_result_expression(expression[-1], missing_properties)
+        return True
     stripped_expression = ["match", expression[1], *expression[2:-1]]
     for index in range(3, len(stripped_expression), 2):
         stripped_expression[index] = _filter_without_missing_result_expression(
