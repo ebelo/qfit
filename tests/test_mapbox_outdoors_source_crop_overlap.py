@@ -168,6 +168,18 @@ class MapboxOutdoorsSourceCropOverlapTests(unittest.TestCase):
             combined["landuse"]["qgis_style_layer_matches"]["landuse-park"]["crop_coverage_ratio"],
             0.128418417649,
         )
+        self.assertEqual(
+            combined["landuse"]["qgis_filter_property_requirements"]["landuse-park-sized"][
+                "missing_feature_counts"
+            ],
+            {"sizerank": 1},
+        )
+        self.assertEqual(
+            combined["landuse"]["qgis_filter_property_requirements"]["landuse-park-sized"][
+                "matched_feature_count"
+            ],
+            0,
+        )
         self.assertEqual(combined["landuse_overlay"]["overlap_feature_count"], 0)
         self.assertEqual(combined["contour"]["overlap_feature_count"], 2)
         self.assertEqual(combined["contour"]["bbox_crop_coverage_ratio"], 0.0)
@@ -185,13 +197,14 @@ class MapboxOutdoorsSourceCropOverlapTests(unittest.TestCase):
         markdown = build_summary_markdown(report)
         self.assertIn("Bbox coverage is a summed upper-bound attribution aid", markdown)
         self.assertIn("QGIS style-layer coverage evaluates camera-zoom-active filters", markdown)
+        self.assertIn("QGIS filter missing props reports active style-layer filter properties", markdown)
         self.assertIn(
-            "| `landuse` | 2 | 1 | 0.128 | park=1 | park=0.128 | landuse-park=0.128 | park=1 | - | - |",
+            "| `landuse` | 2 | 1 | 0.128 | park=1 | park=0.128 | landuse-park=0.128 | landuse-park-sized: sizerank=1/1 (matched=0) | park=1 | - | - |",
             markdown,
         )
-        self.assertIn("| `landuse_overlay` | 0 | 0 | 0.000 | - | - | - | - | - | - |", markdown)
+        self.assertIn("| `landuse_overlay` | 0 | 0 | 0.000 | - | - | - | - | - | - | - |", markdown)
         self.assertIn(
-            "| `contour` | 2 | 2 | 0.000 | - | - | contour-major=0.000, contour-minor=0.000 | - | 10=1, 1=1 | 1580-1600 |",
+            "| `contour` | 2 | 2 | 0.000 | - | - | contour-major=0.000, contour-minor=0.000 | - | - | 10=1, 1=1 | 1580-1600 |",
             markdown,
         )
 
@@ -373,6 +386,18 @@ def _write_source_overlap_fixture(root, *, manual_crop_boxes=None, include_camer
                         "source-layer": "landuse",
                         "minzoom": 3,
                         "filter": ["==", ["get", "class"], "park"],
+                        "paint": {"fill-color": "hsl(98, 55%, 70%)", "fill-opacity": 1.0},
+                    },
+                    {
+                        "id": "landuse-park-sized",
+                        "type": "fill",
+                        "source-layer": "landuse",
+                        "minzoom": 2,
+                        "filter": [
+                            "all",
+                            ["==", ["get", "class"], "park"],
+                            [">=", ["to-number", ["get", "sizerank"]], 0],
+                        ],
                         "paint": {"fill-color": "hsl(98, 55%, 70%)", "fill-opacity": 1.0},
                     },
                     {
