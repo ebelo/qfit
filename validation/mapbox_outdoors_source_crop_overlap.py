@@ -1247,28 +1247,37 @@ def _combined_filter_property_requirements(
             )
             requirement["overlap_feature_count"] = int(requirement["overlap_feature_count"]) + overlap_count
             requirement["matched_feature_count"] = int(requirement["matched_feature_count"]) + matched_count
-    return {
-        layer_id: {
-            **requirement,
-            "missing_feature_counts": dict(requirement["missing_feature_counts"].most_common(MAX_COUNT_VALUES))
+    combined: dict[str, dict[str, object]] = {}
+    for layer_id, requirement in sorted(
+        requirements.items(),
+        key=lambda item: (
+            -int(item[1]["candidate_missing_feature_total"]),
+            -int(item[1]["missing_feature_total"]),
+            -int(item[1]["overlap_feature_count"]),
+            str(item[0]),
+        ),
+    )[:MAX_COUNT_VALUES]:
+        missing_counts = (
+            dict(requirement["missing_feature_counts"].most_common(MAX_COUNT_VALUES))
             if isinstance(requirement["missing_feature_counts"], Counter)
-            else {},
-            "candidate_missing_feature_counts": dict(
-                requirement["candidate_missing_feature_counts"].most_common(MAX_COUNT_VALUES)
-            )
-            if isinstance(requirement["candidate_missing_feature_counts"], Counter)
-            else {},
+            else {}
+        )
+        candidate_counter = requirement["candidate_missing_feature_counts"]
+        candidate_counts = (
+            {
+                property_name: int(candidate_counter[property_name])
+                for property_name in missing_counts
+                if int(candidate_counter[property_name]) > 0
+            }
+            if isinstance(candidate_counter, Counter)
+            else {}
+        )
+        combined[layer_id] = {
+            **requirement,
+            "missing_feature_counts": missing_counts,
+            "candidate_missing_feature_counts": candidate_counts,
         }
-        for layer_id, requirement in sorted(
-            requirements.items(),
-            key=lambda item: (
-                -int(item[1]["candidate_missing_feature_total"]),
-                -int(item[1]["missing_feature_total"]),
-                -int(item[1]["overlap_feature_count"]),
-                str(item[0]),
-            ),
-        )[:MAX_COUNT_VALUES]
-    }
+    return combined
 
 
 def _combined_ele_range(records: Sequence[Mapping[str, object]]) -> dict[str, float] | None:

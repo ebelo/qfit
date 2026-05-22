@@ -8,6 +8,7 @@ from tests import _path  # noqa: F401
 
 from qfit.validation.mapbox_outdoors_source_crop_overlap import (
     SourceCropOverlapConfig,
+    _combined_filter_property_requirements,
     _comparison_membership_contains,
     _mapbox_expression_value,
     _mapbox_filter_matches,
@@ -384,6 +385,34 @@ class MapboxOutdoorsSourceCropOverlapTests(unittest.TestCase):
         self.assertEqual(requirement["missing_feature_counts"], {"class": 1})
         self.assertEqual(requirement["candidate_missing_feature_counts"], {"class": 1})
         self.assertEqual(requirement["matched_feature_count"], 0)
+
+    def test_combined_candidate_counts_follow_displayed_missing_properties(self):
+        missing_counts = {f"p{index}": 20 for index in range(8)}
+        missing_counts["p8"] = 1
+        candidate_counts = {"p0": 1, **{f"p{index}": 5 for index in range(1, 9)}}
+
+        combined = _combined_filter_property_requirements(
+            [
+                {
+                    "qgis_filter_property_requirements": {
+                        "landuse-many": {
+                            "filter_properties": list(missing_counts),
+                            "missing_feature_counts": missing_counts,
+                            "missing_feature_total": sum(missing_counts.values()),
+                            "candidate_missing_feature_counts": candidate_counts,
+                            "candidate_missing_feature_total": sum(candidate_counts.values()),
+                            "overlap_feature_count": 25,
+                            "matched_feature_count": 0,
+                        }
+                    }
+                }
+            ]
+        )
+
+        requirement = combined["landuse-many"]
+        self.assertEqual(set(requirement["missing_feature_counts"]), {f"p{index}" for index in range(8)})
+        self.assertEqual(requirement["candidate_missing_feature_counts"]["p0"], 1)
+        self.assertNotIn("p8", requirement["candidate_missing_feature_counts"])
 
     def test_mapbox_filter_helpers_cover_preprocessed_style_expressions(self):
         properties = {"class": "park", "type": "garden", "sizerank": "3", "index": 10}
