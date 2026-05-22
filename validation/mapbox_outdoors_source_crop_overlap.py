@@ -614,7 +614,7 @@ def _candidate_missing_filter_property_summary(
     return (
         {name: counts[name] for name in properties if counts[name] > 0},
         {
-            key: dict(counter.most_common(MAX_COUNT_VALUES))
+            key: dict(counter.most_common())
             for key, counter in candidate_property_counts.items()
             if counter
         },
@@ -1590,7 +1590,9 @@ def _format_candidate_property_counts(requirement: Mapping[str, object]) -> str:
         value_counts = counts.get(key)
         if not isinstance(value_counts, dict) or not value_counts:
             continue
-        values = ", ".join(f"{value}={int(count)}" for value, count in value_counts.items())
+        values = ", ".join(
+            f"{value}={int(count)}" for value, count in list(value_counts.items())[:MAX_COUNT_VALUES]
+        )
         formatted.append(f"{key}: {values}")
     return "; ".join(formatted)
 

@@ -8,6 +8,7 @@ from tests import _path  # noqa: F401
 
 from qfit.validation.mapbox_outdoors_source_crop_overlap import (
     SourceCropOverlapConfig,
+    _candidate_missing_filter_property_summary,
     _combined_filter_property_requirements,
     _comparison_membership_contains,
     _mapbox_expression_value,
@@ -393,6 +394,31 @@ class MapboxOutdoorsSourceCropOverlapTests(unittest.TestCase):
         self.assertEqual(requirement["candidate_missing_feature_counts"], {"class": 1})
         self.assertEqual(requirement["candidate_property_counts"], {"type": {"park": 1}})
         self.assertEqual(requirement["matched_feature_count"], 0)
+
+    def test_candidate_property_summary_keeps_all_values_for_combined_aggregation(self):
+        features = [
+            _feature(
+                "Polygon",
+                [[[index, 0], [index + 0.5, 0], [index + 0.5, 0.5], [index, 0.5], [index, 0]]],
+                {"class": f"class-{index}"},
+            )
+            for index in range(9)
+        ]
+
+        missing_counts, candidate_property_counts = _candidate_missing_filter_property_summary(
+            features,
+            ["class", "sizerank"],
+            [
+                "all",
+                [">=", ["to-number", ["get", "sizerank"]], 0],
+                ["!=", ["get", "class"], "excluded"],
+            ],
+            camera_zoom=18.0,
+        )
+
+        self.assertEqual(missing_counts, {"sizerank": 9})
+        self.assertEqual(len(candidate_property_counts["class"]), 9)
+        self.assertEqual(candidate_property_counts["class"]["class-8"], 1)
 
     def test_combined_candidate_counts_follow_displayed_missing_properties(self):
         missing_counts = {f"p{index}": 20 for index in range(8)}
