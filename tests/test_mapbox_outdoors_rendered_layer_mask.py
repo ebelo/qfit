@@ -1,13 +1,16 @@
 import datetime as dt
+import io
 import json
 import subprocess
 import tempfile
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
 from unittest.mock import patch
 
 from tests import _path  # noqa: F401
 
+from qfit.validation import mapbox_outdoors_rendered_layer_mask as mask_module
 from qfit.validation.mapbox_outdoors_rendered_layer_mask import (
     RenderedLayerMaskConfig,
     RenderedLayerMaskVariant,
@@ -108,11 +111,6 @@ class MapboxOutdoorsRenderedLayerMaskTests(unittest.TestCase):
             )
 
     def test_build_report_uses_existing_manifest_and_masks_variants(self):
-        try:
-            from PIL import Image
-        except ImportError:  # pragma: no cover - local dependency guard
-            self.skipTest("Pillow is not available")
-
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir)
             baseline_dir = root / "baseline"
@@ -121,8 +119,8 @@ class MapboxOutdoorsRenderedLayerMaskTests(unittest.TestCase):
             qgis_path = baseline_dir / "qgis-vector-render.png"
             style_path = baseline_dir / "qgis-preprocessed-style.json"
             manifest_path = baseline_dir / "manifest.json"
-            Image.new("RGB", (3, 1), (10, 20, 30)).save(browser_path)
-            Image.new("RGB", (3, 1), (10, 20, 30)).save(qgis_path)
+            browser_path.write_bytes(b"browser")
+            qgis_path.write_bytes(b"baseline-qgis")
             style_path.write_text(json.dumps(STYLE), encoding="utf-8")
             manifest_path.write_text(
                 json.dumps({
@@ -154,29 +152,69 @@ class MapboxOutdoorsRenderedLayerMaskTests(unittest.TestCase):
             def fake_renderer(**kwargs):
                 output_path = kwargs["output_path"]
                 style_definition = kwargs["style_definition"]
-                Image.new("RGB", (3, 1), (10, 20, 30)).save(output_path)
                 layers = {layer["id"]: layer for layer in style_definition["layers"]}
                 if layers["landuse-cemetery"]["paint"].get("fill-opacity") == 0.0:
-                    with Image.open(output_path) as rendered:
-                        rendered.putpixel((2, 0), (20, 20, 30))
-                        rendered.save(output_path)
+                    output_path.write_bytes(b"masked-cemetery")
+                else:
+                    output_path.write_bytes(b"rerender-control")
 
             def fake_diff_builder(*, reference_path, candidate_path, output_path):
-                Image.new("RGB", (3, 1), (0, 0, 0)).save(output_path)
-                return image_delta_metrics(reference_path=reference_path, candidate_path=candidate_path)
+                output_path.write_bytes(b"diff")
+                if candidate_path.read_bytes() == b"masked-cemetery":
+                    return {
+                        "changed_pixel_count": 1,
+                        "mean_absolute_channel_delta": 10.0 / 9.0,
+                        "normalized_mean_absolute_channel_delta": 0.02,
+                        "normalized_rms_channel_delta": 0.03,
+                        "rms_channel_delta": 1.0,
+                    }
+                return {
+                    "changed_pixel_count": 0,
+                    "mean_absolute_channel_delta": 0.0,
+                    "normalized_mean_absolute_channel_delta": 0.0,
+                    "normalized_rms_channel_delta": 0.0,
+                    "rms_channel_delta": 0.0,
+                }
 
-            report = build_rendered_layer_mask_report(
-                RenderedLayerMaskConfig(
-                    baseline_manifest=manifest_path,
-                    output_root=root / "mask-output",
-                    variants=(RenderedLayerMaskVariant("cemetery", ("landuse-cemetery",)),),
-                    crop_boxes=((2, 0, 3, 1),),
-                    token="test-token",
-                    now=dt.datetime(2026, 5, 22, 7, 30, tzinfo=dt.timezone.utc),
-                ),
-                qgis_renderer=fake_renderer,
-                diff_builder=fake_diff_builder,
-            )
+            def fake_image_delta_metrics(*, candidate_path, crop_box, **_kwargs):
+                if candidate_path.read_bytes() == b"masked-cemetery":
+                    return {
+                        "box": list(crop_box),
+                        "mean_absolute_channel_delta": 10.0 / 3.0,
+                        "mean_luminance_delta": 2.0,
+                        "rms_channel_delta": 4.0,
+                    }
+                return {
+                    "box": list(crop_box),
+                    "mean_absolute_channel_delta": 0.0,
+                    "mean_luminance_delta": 0.0,
+                    "rms_channel_delta": 0.0,
+                }
+
+            def fake_changed_bbox(*, candidate_path, **_kwargs):
+                if candidate_path.read_bytes() == b"masked-cemetery":
+                    return [2, 0, 3, 1]
+                return None
+
+            with patch(
+                "qfit.validation.mapbox_outdoors_rendered_layer_mask.image_delta_metrics",
+                fake_image_delta_metrics,
+            ), patch(
+                "qfit.validation.mapbox_outdoors_rendered_layer_mask.image_changed_bbox",
+                fake_changed_bbox,
+            ):
+                report = build_rendered_layer_mask_report(
+                    RenderedLayerMaskConfig(
+                        baseline_manifest=manifest_path,
+                        output_root=root / "mask-output",
+                        variants=(RenderedLayerMaskVariant("cemetery", ("landuse-cemetery",)),),
+                        crop_boxes=((2, 0, 3, 1),),
+                        token="test-token",
+                        now=dt.datetime(2026, 5, 22, 7, 30, tzinfo=dt.timezone.utc),
+                    ),
+                    qgis_renderer=fake_renderer,
+                    diff_builder=fake_diff_builder,
+                )
 
             control = report["variants"][0]
             variant = report["variants"][1]
@@ -271,6 +309,47 @@ class MapboxOutdoorsRenderedLayerMaskTests(unittest.TestCase):
         self.assertEqual(captured["env"]["MAPBOX_ACCESS_TOKEN"], "test-token")
         self.assertNotIn("test-token", " ".join(str(part) for part in captured["command"]))
         self.assertTrue(str(captured["cwd"]).endswith("qfit"))
+
+    def test_main_builds_config_and_prints_latest_summary(self):
+        captured = {}
+
+        def fake_report_builder(config):
+            captured["config"] = config
+            return {"inputs": {"baseline_manifest": "debug/manifest.json"}}
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            output_root = root / "rendered-layer-mask"
+            run_dir = output_root / "comparison-camera" / "20260522T080000Z"
+            run_dir.mkdir(parents=True)
+            stdout = io.StringIO()
+            with patch.object(mask_module, "DEFAULT_OUTPUT_ROOT", output_root):
+                with patch.object(mask_module, "resolve_mapbox_token", return_value="resolved-token"):
+                    with patch.object(mask_module, "build_rendered_layer_mask_report", fake_report_builder):
+                        with redirect_stdout(stdout):
+                            result = mask_module.main([
+                                "--baseline-manifest",
+                                str(root / "manifest.json"),
+                                "--variant",
+                                "cemetery=landuse-cemetery,landuse-z10-cemetery",
+                                "--crop-box",
+                                "1,2,5,8",
+                                "--no-rerender-control",
+                            ])
+
+        config = captured["config"]
+        self.assertEqual(result, 0)
+        self.assertIsInstance(config, RenderedLayerMaskConfig)
+        self.assertEqual(config.baseline_manifest, root / "manifest.json")
+        self.assertEqual(config.output_root, output_root)
+        self.assertEqual(config.token, "resolved-token")
+        self.assertFalse(config.include_rerender_control)
+        self.assertEqual(config.crop_boxes, ((1, 2, 5, 8),))
+        self.assertEqual(config.variants[0].name, "cemetery")
+        self.assertEqual(config.variants[0].layer_ids, ("landuse-cemetery", "landuse-z10-cemetery"))
+        self.assertIn("Baseline manifest: debug/manifest.json", stdout.getvalue())
+        self.assertIn("Run directory:", stdout.getvalue())
+        self.assertIn("Summary:", stdout.getvalue())
 
 
 if __name__ == "__main__":
