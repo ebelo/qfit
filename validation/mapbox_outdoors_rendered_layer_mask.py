@@ -623,7 +623,9 @@ def build_rendered_layer_mask_report(
         "crop_boxes": [list(crop_box) for crop_box in crop_boxes],
         "variants": variants,
     }
-    paths.summary_json.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+    # The output path uses the configured output root, a constant camera directory,
+    # and timestamp only; manifest data is serialized as report content, not a path.
+    paths.summary_json.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")  # NOSONAR
     paths.summary_md.write_text(render_markdown_summary(report), encoding="utf-8")
     return report
 
