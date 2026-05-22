@@ -3739,6 +3739,10 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
             "landuse",
         )
         self.assertEqual(
+            mapbox_config.base_mapbox_style_layer_id_for_qfit("landuse-other-z10-plus-airport-z15-plus"),
+            "landuse",
+        )
+        self.assertEqual(
             mapbox_config.base_mapbox_style_layer_id_for_qfit("landuse-other-z10-plus-rock-high-zoom"),
             "landuse",
         )

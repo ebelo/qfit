@@ -1502,6 +1502,16 @@ class MapboxOutdoorsStyleAuditTests(unittest.TestCase):
 
         self.assertEqual(audit["summary"]["airport_special_landuse_candidates"], [])
 
+    def test_airport_special_landuse_omits_qfit_split_layer_with_non_class_airport_segment(self):
+        self.assertFalse(
+            mapbox_outdoors_style_audit._is_qfit_split_airport_special_landuse_variant(
+                {
+                    "id": "landuse-other-z10-plus-no-airport-overlay",
+                    "qfit_split_variant": True,
+                },
+            )
+        )
+
     def test_build_style_audit_reports_icon_sprite_candidates(self):
         audit = build_style_audit(
             {
