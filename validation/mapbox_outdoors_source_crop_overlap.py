@@ -445,8 +445,11 @@ def _comparison_result(operator: object, left: object, right: object) -> bool:
             "<=": left_number <= right_number,
         }[operator]
     if operator in {"in", "!in"}:
-        haystack = right if isinstance(right, list) else [right]
-        contains = left in haystack
+        if isinstance(right, str):
+            contains = isinstance(left, str) and left in right
+        else:
+            haystack = right if isinstance(right, list) else [right]
+            contains = left in haystack
         return contains if operator == "in" else not contains
     return False
 
@@ -584,6 +587,9 @@ def _mapbox_filter_matches(expression: object, properties: Mapping[str, object])
 
 
 def _style_layer_active_at_zoom(layer: Mapping[str, object], zoom: float) -> bool:
+    layout = layer.get("layout")
+    if isinstance(layout, Mapping) and layout.get("visibility") == "none":
+        return False
     minzoom = _numeric_value(layer.get("minzoom"))
     maxzoom = _numeric_value(layer.get("maxzoom"))
     if minzoom is not None and zoom < minzoom:
