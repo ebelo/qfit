@@ -5,6 +5,7 @@ import datetime as dt
 import gzip
 import json
 import math
+import operator as py_operator
 import os
 import sys
 from collections import Counter
@@ -34,6 +35,12 @@ COMPARISON_OPERATORS = frozenset(("==", "!=", ">", ">=", "<", "<=", "in", "!in")
 BOOLEAN_OPERATORS = frozenset(("all", "any", "!"))
 GEOMETRY_TYPE_PROPERTY = "$geometry_type"
 ZOOM_PROPERTY = "$zoom"
+NUMERIC_COMPARISONS = {
+    ">": py_operator.gt,
+    ">=": py_operator.ge,
+    "<": py_operator.lt,
+    "<=": py_operator.le,
+}
 STYLE_LAYER_PAINT_KEYS = (
     "fill-color",
     "fill-opacity",
@@ -430,26 +437,27 @@ def _numeric_value(value: object) -> float | None:
     return None
 
 
+def _comparison_membership_contains(left: object, right: object) -> bool:
+    if isinstance(right, str):
+        return isinstance(left, str) and left in right
+    haystack = right if isinstance(right, list) else [right]
+    return left in haystack
+
+
 def _comparison_result(operator: object, left: object, right: object) -> bool:
-    if operator in {"==", "!="}:
-        return left == right if operator == "==" else left != right
-    if operator in {">", ">=", "<", "<="}:
+    if operator == "==":
+        return left == right
+    if operator == "!=":
+        return left != right
+    numeric_comparison = NUMERIC_COMPARISONS.get(operator)
+    if numeric_comparison is not None:
         left_number = _numeric_value(left)
         right_number = _numeric_value(right)
         if left_number is None or right_number is None:
             return False
-        return {
-            ">": left_number > right_number,
-            ">=": left_number >= right_number,
-            "<": left_number < right_number,
-            "<=": left_number <= right_number,
-        }[operator]
+        return numeric_comparison(left_number, right_number)
     if operator in {"in", "!in"}:
-        if isinstance(right, str):
-            contains = isinstance(left, str) and left in right
-        else:
-            haystack = right if isinstance(right, list) else [right]
-            contains = left in haystack
+        contains = _comparison_membership_contains(left, right)
         return contains if operator == "in" else not contains
     return False
 

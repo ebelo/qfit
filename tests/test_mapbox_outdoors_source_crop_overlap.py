@@ -8,6 +8,7 @@ from tests import _path  # noqa: F401
 
 from qfit.validation.mapbox_outdoors_source_crop_overlap import (
     SourceCropOverlapConfig,
+    _comparison_membership_contains,
     _mapbox_expression_value,
     _mapbox_filter_matches,
     _style_layer_active_at_zoom,
@@ -198,6 +199,9 @@ class MapboxOutdoorsSourceCropOverlapTests(unittest.TestCase):
         properties = {"class": "park", "type": "garden", "sizerank": "3", "index": 10}
         context_properties = {**properties, "$geometry_type": "Polygon", "$zoom": 18.0}
 
+        self.assertTrue(_comparison_membership_contains("ark", "parkland"))
+        self.assertFalse(_comparison_membership_contains(1, "123"))
+        self.assertTrue(_comparison_membership_contains("park", ["park", "cemetery"]))
         self.assertEqual(_mapbox_expression_value(["get", "class"], properties), "park")
         self.assertEqual(_mapbox_expression_value(["literal", ["park", "cemetery"]], properties), ["park", "cemetery"])
         self.assertTrue(_mapbox_expression_value(["has", "class"], properties))
