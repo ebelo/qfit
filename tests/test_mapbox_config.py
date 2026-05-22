@@ -5480,12 +5480,14 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
         for layer_id in ("road-path-bg", "bridge-path-bg"):
             for band in ("below-z16", "z16-to-z18", "z18-plus"):
                 self.assertEqual(by_id[f"{layer_id}-{band}-piste"]["paint"]["line-color"], "hsl(215, 80%, 48%)")
+                self.assertNotIn("line-opacity", by_id[f"{layer_id}-{band}-piste"]["paint"])
                 self.assertEqual(by_id[f"{layer_id}-{band}-outdoor"]["paint"]["line-color"], "hsl(35, 80%, 48%)")
                 self.assertEqual(
                     by_id[f"{layer_id}-{band}-outdoor"]["paint"]["line-opacity"],
                     mapbox_config._PATH_BACKGROUND_OUTDOOR_LINE_OPACITY,
                 )
                 self.assertEqual(by_id[f"{layer_id}-{band}-remaining"]["paint"]["line-color"], "hsl(60, 1%, 64%)")
+                self.assertNotIn("line-opacity", by_id[f"{layer_id}-{band}-remaining"]["paint"])
             for suffix in ("piste", "outdoor", "remaining"):
                 self.assertEqual(by_id[f"{layer_id}-below-z16-{suffix}"]["maxzoom"], 16.0)
                 self.assertEqual(by_id[f"{layer_id}-z16-to-z18-{suffix}"]["minzoom"], 16.0)
