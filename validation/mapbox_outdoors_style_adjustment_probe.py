@@ -4,7 +4,6 @@ import argparse
 import dataclasses
 import datetime as dt
 import json
-import sys
 from collections.abc import Callable, Mapping, Sequence
 from copy import deepcopy
 from dataclasses import dataclass
@@ -956,4 +955,4 @@ def main(argv: Sequence[str] | None = None) -> None:
 
 
 if __name__ == "__main__":  # pragma: no cover - CLI entry point
-    sys.exit(main())
+    main()

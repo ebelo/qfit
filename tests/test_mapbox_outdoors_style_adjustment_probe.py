@@ -341,6 +341,9 @@ class MapboxOutdoorsStyleAdjustmentProbeTests(unittest.TestCase):
                     "variants": [
                         {
                             "name": "landcover-opacity-70",
+                            "metric_delta_vs_rerender_control": {
+                                "normalized_mean_absolute_channel_delta": -0.0002,
+                            },
                             "metric_delta_vs_baseline": {
                                 "normalized_mean_absolute_channel_delta": -0.0003,
                                 "normalized_rms_channel_delta": -0.0004,
