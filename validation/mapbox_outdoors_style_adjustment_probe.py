@@ -549,22 +549,25 @@ def build_style_adjustment_probe_report(
 
 
 def _metric_delta_improves_both(delta: Mapping[str, object]) -> bool:
-    mean_delta = delta.get("normalized_mean_absolute_channel_delta")
-    rms_delta = delta.get("normalized_rms_channel_delta")
-    return isinstance(mean_delta, (int, float)) and mean_delta < 0 and isinstance(rms_delta, (int, float)) and rms_delta < 0
+    mean_delta = _numeric_metric_value(delta, "normalized_mean_absolute_channel_delta")
+    rms_delta = _numeric_metric_value(delta, "normalized_rms_channel_delta")
+    return mean_delta is not None and mean_delta < 0 and rms_delta is not None and rms_delta < 0
 
 
 def _metric_delta_worsens_both(delta: Mapping[str, object]) -> bool:
-    mean_delta = delta.get("normalized_mean_absolute_channel_delta")
-    rms_delta = delta.get("normalized_rms_channel_delta")
-    return isinstance(mean_delta, (int, float)) and mean_delta > 0 and isinstance(rms_delta, (int, float)) and rms_delta > 0
+    mean_delta = _numeric_metric_value(delta, "normalized_mean_absolute_channel_delta")
+    rms_delta = _numeric_metric_value(delta, "normalized_rms_channel_delta")
+    return mean_delta is not None and mean_delta > 0 and rms_delta is not None and rms_delta > 0
 
 
-def _preferred_aggregate_delta(row: Mapping[str, object]) -> tuple[str, Mapping[str, object]]:
+def _preferred_aggregate_delta(row: Mapping[str, object]) -> tuple[str | None, Mapping[str, object]]:
     control_delta = _mapping_value(row.get("metric_delta_vs_rerender_control"))
-    if any(key in control_delta for key in AGGREGATE_METRIC_KEYS):
+    if _has_aggregate_metric_pair(control_delta):
         return "rerender_control", control_delta
-    return "baseline", _mapping_value(row.get("metric_delta_vs_baseline"))
+    baseline_delta = _mapping_value(row.get("metric_delta_vs_baseline"))
+    if _has_aggregate_metric_pair(baseline_delta):
+        return "baseline", baseline_delta
+    return None, {}
 
 
 def _numeric_metric_values(rows: Sequence[Mapping[str, object]], key: str) -> list[float]:
@@ -633,7 +636,7 @@ def _aggregate_delta_entries(
         if variant.get("is_rerender_control") is True or variant_name == control_variant_name:
             continue
         delta_source, delta = _preferred_aggregate_delta(variant)
-        if _has_aggregate_metric_pair(delta):
+        if delta_source is not None:
             entries.append((variant_name, camera_name, delta_source, delta))
     return _repo_relative(report_path), entries
 
