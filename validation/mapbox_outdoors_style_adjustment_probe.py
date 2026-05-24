@@ -229,6 +229,27 @@ def _update_mapping_property(
     layer[key] = target
 
 
+def _apply_adjustment_to_layer(layer: dict[str, object], adjustment: StyleAdjustment) -> None:
+    if adjustment.paint:
+        _update_mapping_property(layer, "paint", adjustment.paint)
+    if adjustment.layout:
+        _update_mapping_property(layer, "layout", adjustment.layout)
+    if adjustment.minzoom is not None:
+        layer["minzoom"] = adjustment.minzoom
+    if adjustment.maxzoom is not None:
+        layer["maxzoom"] = adjustment.maxzoom
+    if adjustment.filter is not None:
+        layer["filter"] = adjustment.filter
+
+
+def _matching_layers(layers: Sequence[object], layer_id: str) -> list[dict[str, object]]:
+    return [
+        layer
+        for layer_value in layers
+        if (layer := _ensure_layer_mapping(layer_value)) is not None and layer.get("id") == layer_id
+    ]
+
+
 def apply_style_adjustments(
     style: Mapping[str, object],
     *,
@@ -241,23 +262,10 @@ def apply_style_adjustments(
     matched_ids: list[str] = []
     missing_ids: list[str] = []
     for adjustment in adjustments:
-        matched = False
-        for layer_value in layers:
-            layer = _ensure_layer_mapping(layer_value)
-            if layer is None or layer.get("id") != adjustment.layer_id:
-                continue
-            matched = True
-            if adjustment.paint:
-                _update_mapping_property(layer, "paint", adjustment.paint)
-            if adjustment.layout:
-                _update_mapping_property(layer, "layout", adjustment.layout)
-            if adjustment.minzoom is not None:
-                layer["minzoom"] = adjustment.minzoom
-            if adjustment.maxzoom is not None:
-                layer["maxzoom"] = adjustment.maxzoom
-            if adjustment.filter is not None:
-                layer["filter"] = adjustment.filter
-        if matched:
+        matches = _matching_layers(layers, adjustment.layer_id)
+        if matches:
+            for layer in matches:
+                _apply_adjustment_to_layer(layer, adjustment)
             matched_ids.append(adjustment.layer_id)
         else:
             missing_ids.append(adjustment.layer_id)
