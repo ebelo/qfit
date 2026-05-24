@@ -602,6 +602,61 @@ def _aggregate_metric_rows(rows: Sequence[Mapping[str, object]]) -> dict[str, ob
     }
 
 
+def _aggregate_other_runs(aggregate: Mapping[str, object]) -> int:
+    return int(aggregate["runs"]) - int(aggregate["improving_runs"]) - int(aggregate["worsening_runs"])
+
+
+def _aggregate_delta_entries(
+    report_path_value: Path,
+) -> tuple[str, list[tuple[str, str, str, Mapping[str, object]]]]:
+    report_path = report_path_value.expanduser().resolve()
+    report = load_json_object(report_path)
+    camera = _mapping_value(report.get("camera"))
+    camera_name = str(camera.get("name") or "(unknown camera)")
+    control_variant_name = report.get("rerender_control_variant")
+    entries: list[tuple[str, str, str, Mapping[str, object]]] = []
+    for variant in _list_of_mappings(report.get("variants")):
+        variant_name = variant.get("name")
+        if not isinstance(variant_name, str) or not variant_name:
+            continue
+        if variant.get("is_rerender_control") is True or variant_name == control_variant_name:
+            continue
+        delta_source, delta = _preferred_aggregate_delta(variant)
+        if any(key in delta for key in AGGREGATE_METRIC_KEYS):
+            entries.append((variant_name, camera_name, delta_source, delta))
+    return _repo_relative(report_path), entries
+
+
+def _aggregate_camera_rows(
+    grouped_rows: Mapping[tuple[str, str, str], Sequence[Mapping[str, object]]],
+) -> list[dict[str, object]]:
+    rows = []
+    for variant_name, camera_name, delta_source in sorted(grouped_rows):
+        aggregate = _aggregate_metric_rows(grouped_rows[(variant_name, camera_name, delta_source)])
+        aggregate["variant"] = variant_name
+        aggregate["camera"] = camera_name
+        aggregate["delta_source"] = delta_source
+        aggregate["other_runs"] = _aggregate_other_runs(aggregate)
+        rows.append(aggregate)
+    return rows
+
+
+def _aggregate_variant_totals(
+    grouped_totals: Mapping[tuple[str, str], Sequence[Mapping[str, object]]],
+    total_cameras: Mapping[tuple[str, str], set[str]],
+) -> list[dict[str, object]]:
+    totals = []
+    for variant_name, delta_source in sorted(grouped_totals):
+        total_key = (variant_name, delta_source)
+        aggregate = _aggregate_metric_rows(grouped_totals[total_key])
+        aggregate["variant"] = variant_name
+        aggregate["delta_source"] = delta_source
+        aggregate["camera_count"] = len(total_cameras[total_key])
+        aggregate["other_runs"] = _aggregate_other_runs(aggregate)
+        totals.append(aggregate)
+    return totals
+
+
 def build_style_adjustment_aggregate_report(
     report_paths: Sequence[Path],
     *,
@@ -612,54 +667,20 @@ def build_style_adjustment_aggregate_report(
     total_cameras: dict[tuple[str, str], set[str]] = {}
     input_paths: list[str] = []
     for report_path_value in report_paths:
-        report_path = report_path_value.expanduser().resolve()
-        report = load_json_object(report_path)
-        input_paths.append(_repo_relative(report_path))
-        camera = _mapping_value(report.get("camera"))
-        camera_name = str(camera.get("name") or "(unknown camera)")
-        control_variant_name = report.get("rerender_control_variant")
-        for variant in _list_of_mappings(report.get("variants")):
-            variant_name = variant.get("name")
-            if not isinstance(variant_name, str) or not variant_name:
-                continue
-            if variant.get("is_rerender_control") is True or variant_name == control_variant_name:
-                continue
-            delta_source, delta = _preferred_aggregate_delta(variant)
-            if not any(key in delta for key in AGGREGATE_METRIC_KEYS):
-                continue
+        input_path, entries = _aggregate_delta_entries(report_path_value)
+        input_paths.append(input_path)
+        for variant_name, camera_name, delta_source, delta in entries:
             grouped_rows.setdefault((variant_name, camera_name, delta_source), []).append(delta)
             total_key = (variant_name, delta_source)
             grouped_totals.setdefault(total_key, []).append(delta)
             total_cameras.setdefault(total_key, set()).add(camera_name)
 
     generated_at = now or dt.datetime.now(dt.timezone.utc)
-    rows = []
-    for variant_name, camera_name, delta_source in sorted(grouped_rows):
-        deltas = grouped_rows[(variant_name, camera_name, delta_source)]
-        aggregate = _aggregate_metric_rows(deltas)
-        aggregate["variant"] = variant_name
-        aggregate["camera"] = camera_name
-        aggregate["delta_source"] = delta_source
-        aggregate["other_runs"] = (
-            aggregate["runs"] - aggregate["improving_runs"] - aggregate["worsening_runs"]
-        )
-        rows.append(aggregate)
-    totals = []
-    for variant_name, delta_source in sorted(grouped_totals):
-        deltas = grouped_totals[(variant_name, delta_source)]
-        aggregate = _aggregate_metric_rows(deltas)
-        aggregate["variant"] = variant_name
-        aggregate["delta_source"] = delta_source
-        aggregate["camera_count"] = len(total_cameras[(variant_name, delta_source)])
-        aggregate["other_runs"] = (
-            aggregate["runs"] - aggregate["improving_runs"] - aggregate["worsening_runs"]
-        )
-        totals.append(aggregate)
     return {
         "generated": generated_at.isoformat(timespec="seconds"),
         "input_reports": input_paths,
-        "rows": rows,
-        "variant_totals": totals,
+        "rows": _aggregate_camera_rows(grouped_rows),
+        "variant_totals": _aggregate_variant_totals(grouped_totals, total_cameras),
     }
 
 
@@ -880,7 +901,7 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main(argv: Sequence[str] | None = None) -> int:
+def main(argv: Sequence[str] | None = None) -> None:
     parser = build_parser()
     args = parser.parse_args(argv)
     if args.aggregate_report:
@@ -893,7 +914,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             print(f"Aggregate summary: {_repo_relative(output_path)}")
         else:
             print(markdown_summary)
-        return 0
+        return
     if args.baseline_manifest is None or args.variant_json is None:
         parser.error("--baseline-manifest and --variant-json are required unless --aggregate-report is provided.")
     token = resolve_mapbox_token(provided_token=args.mapbox_token)
@@ -918,7 +939,6 @@ def main(argv: Sequence[str] | None = None) -> int:
     if newest is not None:
         print(f"Run directory: {_repo_relative(newest)}")
         print(f"Summary: {_repo_relative(newest / SUMMARY_OUTPUT)}")
-    return 0
 
 
 if __name__ == "__main__":  # pragma: no cover - CLI entry point

@@ -493,7 +493,7 @@ class MapboxOutdoorsStyleAdjustmentProbeTests(unittest.TestCase):
                             ])
 
         config = captured["config"]
-        self.assertEqual(result, 0)
+        self.assertIsNone(result)
         self.assertIsInstance(config, StyleAdjustmentProbeConfig)
         self.assertEqual(config.baseline_manifest, root / "manifest.json")
         self.assertEqual(config.output_root, output_root)
@@ -537,7 +537,7 @@ class MapboxOutdoorsStyleAdjustmentProbeTests(unittest.TestCase):
                 ])
             output_markdown = output_path.read_text(encoding="utf-8")
 
-        self.assertEqual(result, 0)
+        self.assertIsNone(result)
         self.assertIn("Aggregate summary:", stdout.getvalue())
         self.assertIn("landcover-opacity-70", output_markdown)
 
