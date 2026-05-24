@@ -571,7 +571,7 @@ def _numeric_metric_values(rows: Sequence[Mapping[str, object]], key: str) -> li
     values: list[float] = []
     for row in rows:
         value = row.get(key)
-        if isinstance(value, (int, float)):
+        if isinstance(value, (int, float)) and not isinstance(value, bool):
             values.append(float(value))
     return values
 

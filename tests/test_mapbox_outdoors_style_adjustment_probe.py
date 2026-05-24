@@ -382,6 +382,34 @@ class MapboxOutdoorsStyleAdjustmentProbeTests(unittest.TestCase):
         self.assertEqual(valais_total["camera_count"], 1)
         self.assertAlmostEqual(valais_total["mean_delta_range"], 0.00015)
 
+    def test_aggregate_report_ignores_boolean_metric_values(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            report_path = root / "style-adjustment-probe.json"
+            report_path.write_text(
+                json.dumps({
+                    "camera": {"name": "unit-camera"},
+                    "variants": [
+                        {
+                            "name": "boolean-noise",
+                            "metric_delta_vs_baseline": {
+                                "normalized_mean_absolute_channel_delta": False,
+                                "normalized_rms_channel_delta": True,
+                            },
+                        }
+                    ],
+                }),
+                encoding="utf-8",
+            )
+
+            aggregate = build_style_adjustment_aggregate_report((report_path,))
+
+        row = aggregate["rows"][0]
+        self.assertIsNone(row["mean_delta_average"])
+        self.assertIsNone(row["rms_delta_average"])
+        self.assertEqual(row["improving_runs"], 0)
+        self.assertEqual(row["worsening_runs"], 0)
+
     def test_aggregate_markdown_summary_surfaces_mixed_signal(self):
         markdown = render_aggregate_markdown_summary({
             "generated": "2026-05-24T15:00:00+00:00",
