@@ -14,15 +14,21 @@ try:
     from .mapbox_outdoors_comparison import (
         DEFAULT_OUTPUT_ROOT as COMPARISON_DEFAULT_OUTPUT_ROOT,
         ImageMetrics,
-        MapboxComparisonCamera,
         build_image_diff,
         load_style_definition,
         redact_sensitive_text,
         resolve_mapbox_token,
     )
     from .mapbox_outdoors_rendered_layer_mask import (
+        RenderedLayerMaskContext as StyleAdjustmentProbeContext,
+        RenderedLayerMaskPaths as StyleAdjustmentProbePaths,
+        _first_crop_lines,
+        _format_number,
+        _list_of_mappings,
         _manifest_output_path,
+        _mapping_value,
         _repo_relative,
+        _utc_timestamp,
         camera_from_manifest,
         image_changed_bbox,
         image_delta_metrics,
@@ -36,15 +42,21 @@ except ImportError:  # pragma: no cover - direct script execution
     from mapbox_outdoors_comparison import (  # type: ignore[no-redef]
         DEFAULT_OUTPUT_ROOT as COMPARISON_DEFAULT_OUTPUT_ROOT,
         ImageMetrics,
-        MapboxComparisonCamera,
         build_image_diff,
         load_style_definition,
         redact_sensitive_text,
         resolve_mapbox_token,
     )
     from mapbox_outdoors_rendered_layer_mask import (  # type: ignore[no-redef]
+        RenderedLayerMaskContext as StyleAdjustmentProbeContext,
+        RenderedLayerMaskPaths as StyleAdjustmentProbePaths,
+        _first_crop_lines,
+        _format_number,
+        _list_of_mappings,
         _manifest_output_path,
+        _mapping_value,
         _repo_relative,
+        _utc_timestamp,
         camera_from_manifest,
         image_changed_bbox,
         image_delta_metrics,
@@ -98,32 +110,6 @@ class StyleAdjustmentProbeConfig:
     crop_boxes: tuple[tuple[int, int, int, int], ...] = ()
     include_rerender_control: bool = True
     now: dt.datetime | None = None
-
-
-@dataclass(frozen=True)
-class StyleAdjustmentProbePaths:
-    run_dir: Path
-    summary_json: Path
-    summary_md: Path
-
-
-@dataclass(frozen=True)
-class StyleAdjustmentProbeContext:
-    run_dir: Path
-    camera: MapboxComparisonCamera
-    token: str
-    base_style: Mapping[str, object]
-    browser_reference_path: Path
-    baseline_qgis_path: Path
-    baseline_metrics: Mapping[str, object]
-    baseline_crop_metrics: Sequence[Mapping[str, object]]
-    crop_boxes: Sequence[tuple[int, int, int, int]]
-    qgis_renderer: Callable[..., None]
-    diff_builder: Callable[..., ImageMetrics | None]
-
-
-def _utc_timestamp(now: dt.datetime | None = None) -> str:
-    return (now or dt.datetime.now(dt.timezone.utc)).strftime("%Y%m%dT%H%M%SZ")
 
 
 def _require_mapping(value: object, *, label: str) -> Mapping[str, object]:
@@ -284,6 +270,69 @@ def _variant_target_layer_ids(variant: StyleAdjustmentVariant) -> list[str]:
     return [adjustment.layer_id for adjustment in variant.adjustments]
 
 
+def _variant_artifact_paths(variant_dir: Path) -> dict[str, Path]:
+    return {
+        "style": variant_dir / STYLE_ADJUSTMENT_OUTPUT,
+        "qgis": variant_dir / QGIS_RENDER_OUTPUT,
+        "mapbox_diff": variant_dir / MAPBOX_DIFF_OUTPUT,
+        "movement_diff": variant_dir / QGIS_MOVEMENT_DIFF_OUTPUT,
+        "control_movement_diff": variant_dir / CONTROL_MOVEMENT_DIFF_OUTPUT,
+    }
+
+
+def _render_adjusted_style(
+    *,
+    context: StyleAdjustmentProbeContext,
+    style: Mapping[str, object],
+    style_path: Path,
+    qgis_path: Path,
+) -> None:
+    _write_variant_style(style_path, style, token=context.token)
+    context.qgis_renderer(
+        camera=context.camera,
+        token=context.token,
+        output_path=qgis_path,
+        style_definition=style,
+        qgis_preprocessed_style_path=None,
+        qgis_label_styles_path=None,
+    )
+
+
+def _variant_image_metrics(
+    *,
+    context: StyleAdjustmentProbeContext,
+    qgis_path: Path,
+    mapbox_diff_path: Path,
+    movement_diff_path: Path,
+) -> tuple[Mapping[str, object], Mapping[str, object]]:
+    mapbox_metrics = context.diff_builder(
+        reference_path=context.browser_reference_path,
+        candidate_path=qgis_path,
+        output_path=mapbox_diff_path,
+    ) or {}
+    qgis_movement_metrics = context.diff_builder(
+        reference_path=context.baseline_qgis_path,
+        candidate_path=qgis_path,
+        output_path=movement_diff_path,
+    ) or {}
+    return mapbox_metrics, qgis_movement_metrics
+
+
+def _variant_crop_metrics(
+    *,
+    context: StyleAdjustmentProbeContext,
+    qgis_path: Path,
+) -> list[Mapping[str, object]]:
+    return [
+        image_delta_metrics(
+            reference_path=context.browser_reference_path,
+            candidate_path=qgis_path,
+            crop_box=crop_box,
+        )
+        for crop_box in context.crop_boxes
+    ]
+
+
 def _render_variant_report(
     *,
     variant: StyleAdjustmentVariant,
@@ -294,42 +343,24 @@ def _render_variant_report(
 ) -> dict[str, object]:
     variant_dir = _variant_directory(context.run_dir, variant.name)
     variant_dir.mkdir(parents=True, exist_ok=True)
-    variant_style_path = variant_dir / STYLE_ADJUSTMENT_OUTPUT
-    qgis_path = variant_dir / QGIS_RENDER_OUTPUT
-    mapbox_diff_path = variant_dir / MAPBOX_DIFF_OUTPUT
-    movement_diff_path = variant_dir / QGIS_MOVEMENT_DIFF_OUTPUT
-    control_movement_diff_path = variant_dir / CONTROL_MOVEMENT_DIFF_OUTPUT
+    paths = _variant_artifact_paths(variant_dir)
     variant_style, matched_ids, missing_ids = apply_style_adjustments(
         context.base_style,
         adjustments=variant.adjustments,
     )
-    _write_variant_style(variant_style_path, variant_style, token=context.token)
-    context.qgis_renderer(
-        camera=context.camera,
-        token=context.token,
-        output_path=qgis_path,
-        style_definition=variant_style,
-        qgis_preprocessed_style_path=None,
-        qgis_label_styles_path=None,
+    _render_adjusted_style(
+        context=context,
+        style=variant_style,
+        style_path=paths["style"],
+        qgis_path=paths["qgis"],
     )
-    metrics = context.diff_builder(
-        reference_path=context.browser_reference_path,
-        candidate_path=qgis_path,
-        output_path=mapbox_diff_path,
-    ) or {}
-    qgis_movement_metrics = context.diff_builder(
-        reference_path=context.baseline_qgis_path,
-        candidate_path=qgis_path,
-        output_path=movement_diff_path,
-    ) or {}
-    crop_metrics = [
-        image_delta_metrics(
-            reference_path=context.browser_reference_path,
-            candidate_path=qgis_path,
-            crop_box=crop_box,
-        )
-        for crop_box in context.crop_boxes
-    ]
+    metrics, qgis_movement_metrics = _variant_image_metrics(
+        context=context,
+        qgis_path=paths["qgis"],
+        mapbox_diff_path=paths["mapbox_diff"],
+        movement_diff_path=paths["movement_diff"],
+    )
+    crop_metrics = _variant_crop_metrics(context=context, qgis_path=paths["qgis"])
     report: dict[str, object] = {
         "name": variant.name,
         "target_layer_ids": _variant_target_layer_ids(variant),
@@ -337,10 +368,10 @@ def _render_variant_report(
         "missing_layer_ids": missing_ids,
         "adjustments": [dataclasses.asdict(adjustment) for adjustment in variant.adjustments],
         "directory": _repo_relative(variant_dir),
-        "style_json": _repo_relative(variant_style_path),
-        "qgis_vector_render": _repo_relative(qgis_path),
-        "mapbox_diff": _repo_relative(mapbox_diff_path),
-        "qgis_movement_diff": _repo_relative(movement_diff_path),
+        "style_json": _repo_relative(paths["style"]),
+        "qgis_vector_render": _repo_relative(paths["qgis"]),
+        "mapbox_diff": _repo_relative(paths["mapbox_diff"]),
+        "qgis_movement_diff": _repo_relative(paths["movement_diff"]),
         "metrics": metrics,
         "metric_delta_vs_baseline": metric_delta(
             metrics,
@@ -350,7 +381,7 @@ def _render_variant_report(
         "qgis_movement_metrics": qgis_movement_metrics,
         "diff_bbox_vs_baseline_qgis": image_changed_bbox(
             reference_path=context.baseline_qgis_path,
-            candidate_path=qgis_path,
+            candidate_path=paths["qgis"],
         ),
         "crop_metrics": crop_metrics,
         "crop_delta_vs_baseline": [
@@ -362,13 +393,13 @@ def _render_variant_report(
         report["metric_delta_vs_rerender_control"] = metric_delta(metrics, control_metrics, keys=METRIC_KEYS)
         report["qgis_movement_vs_rerender_control_metrics"] = context.diff_builder(
             reference_path=control_qgis_path,
-            candidate_path=qgis_path,
-            output_path=control_movement_diff_path,
+            candidate_path=paths["qgis"],
+            output_path=paths["control_movement_diff"],
         ) or {}
-        report["qgis_movement_vs_rerender_control_diff"] = _repo_relative(control_movement_diff_path)
+        report["qgis_movement_vs_rerender_control_diff"] = _repo_relative(paths["control_movement_diff"])
         report["diff_bbox_vs_rerender_control_qgis"] = image_changed_bbox(
             reference_path=control_qgis_path,
-            candidate_path=qgis_path,
+            candidate_path=paths["qgis"],
         )
         report["crop_delta_vs_rerender_control"] = [
             metric_delta(crop_metrics[index], control_crop_metrics[index], keys=CROP_METRIC_KEYS)
@@ -508,24 +539,6 @@ def build_style_adjustment_probe_report(
     return report
 
 
-def _format_number(value: object) -> str:
-    if isinstance(value, (int, float)):
-        return f"{value:.9f}"
-    if value is None:
-        return ""
-    return str(value)
-
-
-def _mapping_value(value: object) -> Mapping[str, object]:
-    return value if isinstance(value, Mapping) else {}
-
-
-def _list_of_mappings(value: object) -> list[Mapping[str, object]]:
-    if not isinstance(value, list):
-        return []
-    return [item for item in value if isinstance(item, Mapping)]
-
-
 def _metric_delta_improves_both(delta: Mapping[str, object]) -> bool:
     mean_delta = delta.get("normalized_mean_absolute_channel_delta")
     rms_delta = delta.get("normalized_rms_channel_delta")
@@ -579,46 +592,6 @@ def _whole_image_lines(
             f"{_format_number(baseline_metrics.get('normalized_rms_channel_delta'))} |  |  |  |  |"
         ),
         *[_whole_image_row(row) for row in variant_rows],
-    ]
-
-
-def _first_crop_delta(variant: Mapping[str, object], key: str) -> object:
-    crop_deltas = variant.get("crop_delta_vs_baseline")
-    if not isinstance(crop_deltas, list) or not crop_deltas:
-        return None
-    first = crop_deltas[0]
-    if not isinstance(first, Mapping):
-        return None
-    return first.get(key)
-
-
-def _first_control_crop_delta(row: Mapping[str, object]) -> Mapping[str, object]:
-    control_crop_delta = row.get("crop_delta_vs_rerender_control")
-    if not isinstance(control_crop_delta, list) or not control_crop_delta:
-        return {}
-    return _mapping_value(control_crop_delta[0])
-
-
-def _first_crop_row(row: Mapping[str, object]) -> str:
-    first_control_crop_delta = _first_control_crop_delta(row)
-    return (
-        f"| `{row.get('name')}` | "
-        f"{_format_number(_first_crop_delta(row, 'mean_absolute_channel_delta'))} | "
-        f"{_format_number(_first_crop_delta(row, 'rms_channel_delta'))} | "
-        f"{_format_number(_first_crop_delta(row, 'mean_luminance_delta'))} | "
-        f"{_format_number(first_control_crop_delta.get('mean_absolute_channel_delta'))} | "
-        f"{_format_number(first_control_crop_delta.get('rms_channel_delta'))} |"
-    )
-
-
-def _first_crop_lines(variant_rows: Sequence[Mapping[str, object]]) -> list[str]:
-    return [
-        "",
-        "## First crop movement",
-        "",
-        "| Variant | Mean abs delta vs baseline | RMS delta vs baseline | Luminance delta vs baseline | Mean abs delta vs control | RMS delta vs control |",
-        "| --- | ---: | ---: | ---: | ---: | ---: |",
-        *[_first_crop_row(row) for row in variant_rows],
     ]
 
 
