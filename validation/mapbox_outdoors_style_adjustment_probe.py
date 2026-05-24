@@ -570,10 +570,21 @@ def _preferred_aggregate_delta(row: Mapping[str, object]) -> tuple[str, Mapping[
 def _numeric_metric_values(rows: Sequence[Mapping[str, object]], key: str) -> list[float]:
     values: list[float] = []
     for row in rows:
-        value = row.get(key)
-        if isinstance(value, (int, float)) and not isinstance(value, bool):
-            values.append(float(value))
+        value = _numeric_metric_value(row, key)
+        if value is not None:
+            values.append(value)
     return values
+
+
+def _numeric_metric_value(row: Mapping[str, object], key: str) -> float | None:
+    value = row.get(key)
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return None
+    return float(value)
+
+
+def _has_aggregate_metric_pair(delta: Mapping[str, object]) -> bool:
+    return all(_numeric_metric_value(delta, key) is not None for key in AGGREGATE_METRIC_KEYS)
 
 
 def _mean_value(values: Sequence[float]) -> float | None:
@@ -622,7 +633,7 @@ def _aggregate_delta_entries(
         if variant.get("is_rerender_control") is True or variant_name == control_variant_name:
             continue
         delta_source, delta = _preferred_aggregate_delta(variant)
-        if any(key in delta for key in AGGREGATE_METRIC_KEYS):
+        if _has_aggregate_metric_pair(delta):
             entries.append((variant_name, camera_name, delta_source, delta))
     return _repo_relative(report_path), entries
 
@@ -753,7 +764,7 @@ def render_aggregate_markdown_summary(report: Mapping[str, object]) -> str:
         lines.append("| _none_ |  |  | 0 |  |  |  |  | 0 | 0 | 0 |")
     lines.extend([
         "",
-        "## Read",
+        "## Key",
         "",
         "- Deltas are grouped by variant and camera, preferring rerender-control deltas when present.",
         "- Negative mean/RMS averages indicate the variant moved closer to the Mapbox GL reference on average.",

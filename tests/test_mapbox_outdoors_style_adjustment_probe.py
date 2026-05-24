@@ -404,11 +404,8 @@ class MapboxOutdoorsStyleAdjustmentProbeTests(unittest.TestCase):
 
             aggregate = build_style_adjustment_aggregate_report((report_path,))
 
-        row = aggregate["rows"][0]
-        self.assertIsNone(row["mean_delta_average"])
-        self.assertIsNone(row["rms_delta_average"])
-        self.assertEqual(row["improving_runs"], 0)
-        self.assertEqual(row["worsening_runs"], 0)
+        self.assertEqual(aggregate["rows"], [])
+        self.assertEqual(aggregate["variant_totals"], [])
 
     def test_aggregate_markdown_summary_surfaces_mixed_signal(self):
         markdown = render_aggregate_markdown_summary({
@@ -450,6 +447,7 @@ class MapboxOutdoorsStyleAdjustmentProbeTests(unittest.TestCase):
         self.assertIn("`landcover-opacity-70`", markdown)
         self.assertIn("| `landcover-opacity-70` | `valais-geneva-outdoors` |", markdown)
         self.assertIn("0.000300000", markdown)
+        self.assertIn("## Key", markdown)
 
     def test_main_builds_config_and_prints_latest_summary(self):
         captured = {}
