@@ -229,7 +229,9 @@ class MapboxOutdoorsStyleAdjustmentProbeTests(unittest.TestCase):
 
             control = report["variants"][0]
             variant = report["variants"][1]
+            self.assertEqual(report["generated"], "2026-05-24T14:30:00+00:00")
             self.assertTrue(control["is_rerender_control"])
+            self.assertFalse(variant["is_rerender_control"])
             self.assertEqual(variant["matched_layer_ids"], ["contour-minor"])
             self.assertEqual(variant["diff_bbox_vs_baseline_qgis"], [1, 0, 2, 1])
             self.assertAlmostEqual(

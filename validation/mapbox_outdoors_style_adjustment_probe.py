@@ -415,12 +415,12 @@ def _rerender_control_variant() -> StyleAdjustmentVariant:
 def _build_probe_context(
     *,
     config: StyleAdjustmentProbeConfig,
+    manifest_path: Path,
+    manifest: Mapping[str, object],
     paths: StyleAdjustmentProbePaths,
     qgis_renderer: Callable[..., None],
     diff_builder: Callable[..., ImageMetrics | None],
 ) -> StyleAdjustmentProbeContext:
-    manifest_path = config.baseline_manifest.expanduser().resolve()
-    manifest = load_json_object(manifest_path)
     camera = camera_from_manifest(manifest)
     browser_reference_path = _manifest_output_path(
         manifest,
@@ -479,6 +479,8 @@ def build_style_adjustment_probe_report(
     paths.run_dir.mkdir(parents=True, exist_ok=True)
     context = _build_probe_context(
         config=config,
+        manifest_path=manifest_path,
+        manifest=manifest,
         paths=paths,
         qgis_renderer=qgis_renderer,
         diff_builder=diff_builder,
@@ -514,11 +516,14 @@ def build_style_adjustment_probe_report(
                 if isinstance(variant_report.get("crop_metrics"), list)
                 else ()
             )
+        else:
+            variant_report["is_rerender_control"] = False
         variants.append(variant_report)
 
     qgis_style_path = _manifest_output_path(manifest, manifest_path=manifest_path, key="qgis_preprocessed_style")
+    generated_at = config.now or dt.datetime.now(dt.timezone.utc)
     report: dict[str, object] = {
-        "generated": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
+        "generated": generated_at.isoformat(timespec="seconds"),
         "camera": dataclasses.asdict(camera),
         "rerender_control_variant": control_name if config.include_rerender_control else None,
         "inputs": {
