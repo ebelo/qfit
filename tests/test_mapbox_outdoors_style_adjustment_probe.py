@@ -336,7 +336,7 @@ class MapboxOutdoorsStyleAdjustmentProbeTests(unittest.TestCase):
             second_report = root / "second-style-adjustment-probe.json"
             third_report = root / "third-style-adjustment-probe.json"
             legacy_report = root / "legacy-style-adjustment-probe.json"
-            unrecognized_runtime_report = root / "unrecognized-runtime-style-adjustment-probe.json"
+            release_name_runtime_report = root / "release-name-runtime-style-adjustment-probe.json"
             first_report.write_text(
                 json.dumps({
                     "camera": {"name": "valais-geneva-outdoors"},
@@ -421,7 +421,7 @@ class MapboxOutdoorsStyleAdjustmentProbeTests(unittest.TestCase):
                 }),
                 encoding="utf-8",
             )
-            unrecognized_runtime_report.write_text(
+            release_name_runtime_report.write_text(
                 json.dumps({
                     "camera": {"name": "future-camera"},
                     "qgis_runtime": {"qgis_release_name": "Future"},
@@ -436,7 +436,7 @@ class MapboxOutdoorsStyleAdjustmentProbeTests(unittest.TestCase):
                     second_report,
                     third_report,
                     legacy_report,
-                    unrecognized_runtime_report,
+                    release_name_runtime_report,
                 ),
                 now=dt.datetime(2026, 5, 24, 15, 0, tzinfo=dt.timezone.utc),
             )
