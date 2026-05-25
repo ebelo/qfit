@@ -74,6 +74,9 @@ class MapboxOutdoorsStyleAdjustmentProbeTests(unittest.TestCase):
     def test_format_qgis_runtime_keeps_zero_version_int(self):
         self.assertEqual(probe_module._format_qgis_runtime({"qgis_version_int": 0}), "0")
 
+    def test_format_qgis_runtime_falls_back_to_release_name(self):
+        self.assertEqual(probe_module._format_qgis_runtime({"qgis_release_name": "Future"}), "Future")
+
     def test_load_style_adjustment_variants_rejects_empty_adjustments(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             path = Path(tmpdir) / "variants.json"
@@ -444,7 +447,7 @@ class MapboxOutdoorsStyleAdjustmentProbeTests(unittest.TestCase):
         }
         valais_row = rows[("landcover-opacity-70", "valais-geneva-outdoors", "rerender_control")]
         self.assertEqual(aggregate["generated"], "2026-05-24T15:00:00+00:00")
-        self.assertEqual(aggregate["qgis_runtimes"], ["(not captured)", "3.44.0-Solothurn", "33404"])
+        self.assertEqual(aggregate["qgis_runtimes"], ["(not captured)", "3.44.0-Solothurn", "33404", "Future"])
         self.assertEqual(valais_row["runs"], 2)
         self.assertEqual(valais_row["improving_runs"], 1)
         self.assertEqual(valais_row["worsening_runs"], 1)
