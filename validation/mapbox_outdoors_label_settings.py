@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Callable, Iterable
 
 from qfit.validation.mapbox_outdoors_runtime import format_qgis_runtime_label
+from qfit.validation.mapbox_outdoors_runtime import qgis_runtime_snapshot
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PACKAGE_PARENT = REPO_ROOT.parent
@@ -634,14 +635,6 @@ def _qgis_duplicate_label_controls(qgs_pal_layer_settings) -> dict[str, object]:
             key: hasattr(qgs_pal_layer_settings, property_name)
             for key, property_name in _QGIS_DUPLICATE_LABEL_CONTROL_PROPERTIES
         },
-    }
-
-
-def _qgis_runtime_snapshot(qgis_api: object) -> dict[str, object]:
-    return {
-        "qgis_version": getattr(qgis_api, "QGIS_VERSION", None),
-        "qgis_version_int": getattr(qgis_api, "QGIS_VERSION_INT", None),
-        "qgis_release_name": getattr(qgis_api, "QGIS_RELEASE_NAME", None),
     }
 
 
@@ -2013,7 +2006,7 @@ def collect_label_settings(config: LabelSettingsConfig) -> dict[str, object]:
             records=records,
             source_label_layers=source_label_layers,
             qgis_duplicate_label_controls=_qgis_duplicate_label_controls(QgsPalLayerSettings),
-            qgis_runtime=_qgis_runtime_snapshot(Qgis),
+            qgis_runtime=qgis_runtime_snapshot(Qgis),
         )
     finally:
         if created_app:

@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import Any, Callable, Iterable, TypeAlias
 
 from qfit.validation.mapbox_outdoors_runtime import format_qgis_runtime_label
+from qfit.validation.mapbox_outdoors_runtime import qgis_runtime_snapshot as _runtime_snapshot
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PACKAGE_PARENT = REPO_ROOT.parent
@@ -716,12 +717,7 @@ def write_qgis_label_styles_snapshot(*, layer: object, output_path: Path, token:
 
 def qgis_runtime_snapshot(qgis_api: object) -> dict[str, object]:
     """Return token-free QGIS runtime metadata for version-sensitive render probes."""
-
-    return {
-        "qgis_version": getattr(qgis_api, "QGIS_VERSION", None),
-        "qgis_version_int": getattr(qgis_api, "QGIS_VERSION_INT", None),
-        "qgis_release_name": getattr(qgis_api, "QGIS_RELEASE_NAME", None),
-    }
+    return _runtime_snapshot(qgis_api)
 
 
 def write_qgis_runtime_snapshot(*, qgis_api: object, output_path: Path | None) -> None:
