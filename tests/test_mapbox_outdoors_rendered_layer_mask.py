@@ -553,9 +553,9 @@ class MapboxOutdoorsRenderedLayerMaskTests(unittest.TestCase):
             )
             markdown = render_aggregate_markdown_summary(aggregate)
 
-        self.assertEqual(aggregate["qgis_runtimes"], ["(not captured)", "3.44.0-Solothurn"])
+        self.assertEqual(aggregate["qgis_runtimes"], ["3.44.0-Solothurn", "Future"])
         self.assertIn("rendered-layer mask aggregate", markdown)
-        self.assertIn("QGIS runtimes: `(not captured), 3.44.0-Solothurn`", markdown)
+        self.assertIn("QGIS runtimes: `3.44.0-Solothurn, Future`", markdown)
         self.assertIn("| `contour-z13-lines` | 2 | 2 | 1 | 1 | 0 | 0 |", markdown)
         self.assertIn("| `park-grass-fills` | 2 | 2 | 1 | 0 | 0 | 1 |", markdown)
         self.assertIn(
