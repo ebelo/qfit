@@ -1921,7 +1921,7 @@ class MapboxOutdoorsVisualCropsTest(unittest.TestCase):
             "Comparison summary run: `debug/comparison/summary.json` "
             "(generated_at=2026-05-20T20:00:00+00:00, "
             "style_url=mapbox://styles/mapbox/outdoors-v12, "
-            "qgis_runtimes=3.44.0-Solothurn, 3.44.1-Solothurn)",
+            "qgis_runtimes=3.44.0-Solothurn | 3.44.1-Solothurn)",
             markdown,
         )
         self.assertIn("zermatt-trails-z18-outdoors", markdown)

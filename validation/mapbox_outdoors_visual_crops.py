@@ -2137,7 +2137,7 @@ def _comparison_summary_run_markdown(value: object) -> str:
     if isinstance(qgis_runtimes, list):
         runtime_labels = [str(runtime) for runtime in qgis_runtimes if runtime is not None]
         if runtime_labels:
-            details.append(f"qgis_runtimes={', '.join(runtime_labels)}")
+            details.append(f"qgis_runtimes={' | '.join(runtime_labels)}")
     suffix = f" ({', '.join(details)})" if details else ""
     return f"`{path_value}`{suffix}"
 
