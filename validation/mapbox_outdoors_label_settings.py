@@ -11,6 +11,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, Iterable
 
+from qfit.validation.mapbox_outdoors_runtime import format_qgis_runtime_label
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PACKAGE_PARENT = REPO_ROOT.parent
 DEFAULT_OUTPUT_ROOT = REPO_ROOT / "debug" / "mapbox-outdoors-label-settings"
@@ -626,9 +628,8 @@ def _ensure_qgis_application(qgs_application):
     return app, created_app
 
 
-def _qgis_duplicate_label_controls(qgs_pal_layer_settings, qgis_api) -> dict[str, object]:
+def _qgis_duplicate_label_controls(qgs_pal_layer_settings) -> dict[str, object]:
     return {
-        "qgis_version": getattr(qgis_api, "QGIS_VERSION", None),
         **{
             key: hasattr(qgs_pal_layer_settings, property_name)
             for key, property_name in _QGIS_DUPLICATE_LABEL_CONTROL_PROPERTIES
@@ -2011,7 +2012,7 @@ def collect_label_settings(config: LabelSettingsConfig) -> dict[str, object]:
             sprite_count=sprite_count,
             records=records,
             source_label_layers=source_label_layers,
-            qgis_duplicate_label_controls=_qgis_duplicate_label_controls(QgsPalLayerSettings, Qgis),
+            qgis_duplicate_label_controls=_qgis_duplicate_label_controls(QgsPalLayerSettings),
             qgis_runtime=_qgis_runtime_snapshot(Qgis),
         )
     finally:
@@ -2141,18 +2142,7 @@ def _qgis_duplicate_label_controls_markdown_value(value: object) -> str:
 
 
 def _format_qgis_runtime(value: object) -> str:
-    if not isinstance(value, dict):
-        return "(not captured)"
-    qgis_version = value.get("qgis_version")
-    if qgis_version:
-        return str(qgis_version)
-    qgis_version_int = value.get("qgis_version_int")
-    if qgis_version_int is not None:
-        return str(qgis_version_int)
-    qgis_release_name = value.get("qgis_release_name")
-    if qgis_release_name:
-        return str(qgis_release_name)
-    return "(not captured)"
+    return format_qgis_runtime_label(value, missing_label="(not captured)")
 
 
 def _zoom_range_markdown_value(minzoom: object, maxzoom: object) -> str:
