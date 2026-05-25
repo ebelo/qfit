@@ -636,6 +636,14 @@ def _qgis_duplicate_label_controls(qgs_pal_layer_settings, qgis_api) -> dict[str
     }
 
 
+def _qgis_runtime_snapshot(qgis_api: object) -> dict[str, object]:
+    return {
+        "qgis_version": getattr(qgis_api, "QGIS_VERSION", None),
+        "qgis_version_int": getattr(qgis_api, "QGIS_VERSION_INT", None),
+        "qgis_release_name": getattr(qgis_api, "QGIS_RELEASE_NAME", None),
+    }
+
+
 def _load_original_style(config: LabelSettingsConfig, fetch_mapbox_style_definition) -> dict[str, object]:
     if config.style_json_path is not None:
         return load_style_definition(config.style_json_path)
@@ -1908,12 +1916,14 @@ def _label_settings_report(
     records: list[dict[str, object]],
     source_label_layers: list[dict[str, object]] | None = None,
     qgis_duplicate_label_controls: dict[str, object] | None = None,
+    qgis_runtime: dict[str, object] | None = None,
 ) -> dict[str, object]:
     source_label_layer_rows = source_label_layers or []
     return {
         "style_owner": config.style_owner,
         "style_id": config.style_id,
         "generated": dt.datetime.now(dt.timezone.utc).isoformat(),
+        "qgis_runtime": qgis_runtime or {},
         "qgis_converter_result": result,
         "sprite_context_requested": config.include_sprite_context,
         "sprite_context_loaded": sprite_loaded,
@@ -2002,6 +2012,7 @@ def collect_label_settings(config: LabelSettingsConfig) -> dict[str, object]:
             records=records,
             source_label_layers=source_label_layers,
             qgis_duplicate_label_controls=_qgis_duplicate_label_controls(QgsPalLayerSettings, Qgis),
+            qgis_runtime=_qgis_runtime_snapshot(Qgis),
         )
     finally:
         if created_app:
@@ -2127,6 +2138,21 @@ def _qgis_duplicate_label_controls_markdown_value(value: object) -> str:
     if qgis_version:
         controls.insert(0, f"QGIS {_markdown_value(qgis_version)}")
     return "; ".join(controls)
+
+
+def _format_qgis_runtime(value: object) -> str:
+    if not isinstance(value, dict):
+        return "(not captured)"
+    qgis_version = value.get("qgis_version")
+    if qgis_version:
+        return str(qgis_version)
+    qgis_version_int = value.get("qgis_version_int")
+    if qgis_version_int is not None:
+        return str(qgis_version_int)
+    qgis_release_name = value.get("qgis_release_name")
+    if qgis_release_name:
+        return str(qgis_release_name)
+    return "(not captured)"
 
 
 def _zoom_range_markdown_value(minzoom: object, maxzoom: object) -> str:
@@ -2590,6 +2616,7 @@ def build_summary_markdown(report: dict[str, object]) -> str:
         f"# Mapbox Outdoors QGIS label settings — {report.get('style_owner')}/{report.get('style_id')}",
         "",
         f"Generated: {report.get('generated')}",
+        f"QGIS runtime: `{_format_qgis_runtime(report.get('qgis_runtime'))}`",
         f"Converted label styles: {report.get('label_count', len(rows))}",
         f"Sprite context loaded: {_markdown_value(report.get('sprite_context_loaded'))}",
         f"Sprite definitions: {_markdown_value(report.get('sprite_definition_count'))}",
