@@ -27,6 +27,8 @@ class FakeIface:
         self.toolbar_actions: list[object] = []
         self.removed_menu_actions: list[tuple[str, object]] = []
         self.removed_toolbar_actions: list[object] = []
+        self.dock_widgets: list[tuple[object, object]] = []
+        self.removed_dock_widgets: list[object] = []
 
     def mainWindow(self):
         return self._main_window
@@ -44,10 +46,10 @@ class FakeIface:
         self.removed_toolbar_actions.append(action)
 
     def addDockWidget(self, area, widget):
-        pass
+        self.dock_widgets.append((area, widget))
 
     def removeDockWidget(self, widget):
-        pass
+        self.removed_dock_widgets.append(widget)
 
     def mapCanvas(self):
         return None
@@ -58,14 +60,14 @@ class FakeIface:
     "PyQGIS is not available in this environment: {error}".format(error=QGIS_IMPORT_ERROR),
 )
 class TestQfitPluginMenuStructure(unittest.TestCase):
-    """Verify that initGui registers two menu entries under &qfit."""
+    """Verify that initGui registers menu entries under &qfit."""
 
     def _make_plugin(self):
         iface = FakeIface()
         plugin = QfitPlugin(iface)
         return plugin, iface
 
-    def test_init_gui_registers_activities_and_configuration_menu_entries(self):
+    def test_init_gui_registers_activities_configuration_and_about_menu_entries(self):
         plugin, iface = self._make_plugin()
         plugin.initGui()
 
@@ -73,6 +75,7 @@ class TestQfitPluginMenuStructure(unittest.TestCase):
         self.assertEqual(menu_labels, [
             ("&qfit", "Activities"),
             ("&qfit", "Configuration"),
+            ("&qfit", "About"),
         ])
 
     def test_init_gui_adds_toolbar_icon_for_activities_only(self):
@@ -90,6 +93,7 @@ class TestQfitPluginMenuStructure(unittest.TestCase):
         removed_labels = [(name, action.text()) for name, action in iface.removed_menu_actions]
         self.assertIn(("&qfit", "Activities"), removed_labels)
         self.assertIn(("&qfit", "Configuration"), removed_labels)
+        self.assertIn(("&qfit", "About"), removed_labels)
 
     def test_unload_removes_toolbar_icon(self):
         plugin, iface = self._make_plugin()
@@ -106,7 +110,35 @@ class TestQfitPluginMenuStructure(unittest.TestCase):
 
         self.assertIsNone(plugin.activities_action)
         self.assertIsNone(plugin.config_action)
+        self.assertIsNone(plugin.about_action)
         self.assertIsNone(plugin.dockwidget)
+        self.assertIsNone(plugin._about_dock)
+
+    def test_show_about_creates_floating_about_dock(self):
+        plugin, iface = self._make_plugin()
+
+        class FakeAboutDock:
+            created = []
+
+            def __init__(self, parent=None):
+                self.parent = parent
+                self.setFloating = MagicMock()
+                self.show = MagicMock()
+                self.raise_ = MagicMock()
+                self.deleteLater = MagicMock()
+                FakeAboutDock.created.append(self)
+
+        with patch("qfit.qfit_plugin.QfitAboutDock", FakeAboutDock):
+            plugin.show_about()
+            plugin.show_about()
+
+        dock = FakeAboutDock.created[-1]
+        self.assertIs(plugin._about_dock, dock)
+        self.assertEqual(len(FakeAboutDock.created), 1)
+        self.assertEqual(len(iface.dock_widgets), 1)
+        dock.setFloating.assert_called_once_with(True)
+        self.assertEqual(dock.show.call_count, 2)
+        self.assertEqual(dock.raise_.call_count, 2)
 
     def test_config_dialog_save_signal_refreshes_existing_dock(self):
         plugin, _iface = self._make_plugin()
