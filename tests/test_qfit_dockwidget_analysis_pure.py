@@ -388,6 +388,16 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
         dock.project_hygiene_service.remove_stale_qfit_layers.assert_called_once_with()
 
+    def test_ensure_project_crs_delegates_to_layer_gateway(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.layer_gateway = MagicMock()
+
+        self.module.QfitDockWidget._ensure_project_crs(dock)
+
+        dock.layer_gateway.ensure_project_crs.assert_called_once_with(
+            preserve_extent=True,
+        )
+
     def test_local_first_progress_facts_reads_live_dock_runtime(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._runtime_state_store = self.module.DockRuntimeStore()

@@ -2,7 +2,7 @@ import importlib
 import sys
 import unittest
 from types import ModuleType
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, call, patch
 
 from tests import _path  # noqa: F401
 from qfit.visualization.application.layer_gateway import LayerGateway
@@ -157,10 +157,15 @@ class LayerGatewayBoundaryTests(unittest.TestCase):
             )
 
             background_service = MagicMock(name="background_service")
+            canvas_service = MagicMock(name="canvas_service")
             filter_service = MagicMock(name="filter_service")
             style_service = MagicMock(name="style_service")
             temporal_service = MagicMock(name="temporal_service")
             with patch.object(adapter_module, "_build_background_service", return_value=background_service), patch.object(
+                adapter_module,
+                "_build_map_canvas_service",
+                return_value=canvas_service,
+            ), patch.object(
                 adapter_module,
                 "_build_layer_filter_service",
                 return_value=filter_service,
@@ -193,6 +198,10 @@ class LayerGatewayBoundaryTests(unittest.TestCase):
 
         self.assertIs(background_result, background_service.ensure_background_layer.return_value)
         self.assertIs(temporal_result, temporal_service.apply_temporal_configuration.return_value)
+        canvas_service.ensure_working_crs.assert_called_once_with(
+            gateway.iface,
+            preserve_extent=True,
+        )
         background_service.ensure_background_layer.assert_called_once_with(
             enabled=True,
             preset_name="Outdoor",
@@ -251,7 +260,12 @@ class LayerGatewayBoundaryTests(unittest.TestCase):
         modules["qfit.visualization.infrastructure.background_map_service"].BackgroundMapService.assert_not_called()
         modules["qfit.visualization.infrastructure.map_canvas_service"].MapCanvasService.assert_not_called()
         modules["qfit.visualization.infrastructure.project_layer_loader"].ProjectLayerLoader.assert_not_called()
-        gateway._canvas_service.ensure_working_crs.assert_called_once_with(gateway.iface, preserve_extent=False)
+        gateway._canvas_service.ensure_working_crs.assert_has_calls(
+            [
+                call(gateway.iface, preserve_extent=False),
+                call(gateway.iface, preserve_extent=True),
+            ]
+        )
         gateway._project_layer_loader.load_output_layers.assert_called_once_with("/tmp/override.gpkg")
         gateway._background_service.ensure_background_layer.assert_called_once()
 

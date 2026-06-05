@@ -17,6 +17,8 @@ class LayerGateway(Protocol):
 
     def has_features(self, layer): ...
 
+    def ensure_project_crs(self, preserve_extent: bool = True): ...
+
     def ensure_background_layer(
         self,
         enabled,

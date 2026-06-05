@@ -50,6 +50,9 @@ class DockStartupCoordinator:
         dock._remove_stale_qfit_layers()
         performed_steps.append("remove_stale_qfit_layers")
 
+        dock._ensure_project_crs()
+        performed_steps.append("ensure_project_crs")
+
         dock._apply_contextual_help()
         performed_steps.append("apply_contextual_help")
 

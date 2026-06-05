@@ -445,6 +445,10 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         """Remove stale qfit project layers before startup signals begin firing."""
         self.project_hygiene_service.remove_stale_qfit_layers()
 
+    def _ensure_project_crs(self):
+        """Keep the QGIS project in qfit's Web Mercator working CRS."""
+        self.layer_gateway.ensure_project_crs(preserve_extent=True)
+
     def _apply_contextual_help(self):
         for name in [
             "backgroundHelpLabel",

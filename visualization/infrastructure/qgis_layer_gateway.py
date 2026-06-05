@@ -128,7 +128,14 @@ class QgisLayerGateway:
         except (AttributeError, RuntimeError, TypeError):
             return False
 
+    def ensure_project_crs(self, preserve_extent: bool = True):
+        self._get_canvas_service().ensure_working_crs(
+            self.iface,
+            preserve_extent=preserve_extent,
+        )
+
     def ensure_background_layer(self, enabled, preset_name, access_token, style_owner="", style_id="", tile_mode=TILE_MODE_RASTER):
+        self.ensure_project_crs(preserve_extent=True)
         return self._get_background_service().ensure_background_layer(
             enabled=enabled,
             preset_name=preset_name,
