@@ -4,7 +4,7 @@ import unittest
 
 from tests import _path  # noqa: F401
 
-from qfit.about_info import (
+from qfit.ui.about_info import (
     DEFAULT_DISCUSSIONS_URL,
     AboutInfo,
     build_about_html,

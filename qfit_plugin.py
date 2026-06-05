@@ -4,9 +4,9 @@ from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtWidgets import QAction
 
-from .qfit_about_dock import QfitAboutDock
 from .qfit_config_dialog import QfitConfigDialog
 from .qfit_dockwidget import QfitDockWidget
+from .ui.about_dock import QfitAboutDock
 
 MENU_NAME = "&qfit"
 

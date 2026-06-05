@@ -29,7 +29,7 @@ class AboutInfo:
 
 
 def _default_metadata_path() -> str:
-    return os.path.join(os.path.dirname(__file__), "metadata.txt")
+    return os.path.join(os.path.dirname(os.path.dirname(__file__)), "metadata.txt")
 
 
 def read_about_info(metadata_path: str | None = None) -> AboutInfo:
