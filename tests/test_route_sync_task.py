@@ -183,7 +183,7 @@ class RouteSyncTaskTests(unittest.TestCase):
         provider.fetch_route_detail.assert_not_called()
         self.assertEqual(writer.write_routes.call_args.args[0], [route])
 
-    def test_pauses_gpx_enrichment_when_rate_limit_headroom_is_low(self):
+    def test_pauses_gpx_enrichment_when_short_window_headroom_is_below_route_reserve(self):
         routes = [
             SimpleNamespace(source_route_id="42", details_json={}),
             SimpleNamespace(source_route_id="43", details_json={}),
@@ -193,7 +193,7 @@ class RouteSyncTaskTests(unittest.TestCase):
         provider.last_fetch_notice = None
         provider.last_rate_limit = {
             "short_limit": 200,
-            "short_remaining": 99,
+            "short_remaining": 120,
             "long_limit": 2000,
             "long_remaining": 1797,
         }
@@ -258,7 +258,7 @@ class RouteSyncTaskTests(unittest.TestCase):
         provider.last_fetch_notice = None
         provider.last_rate_limit = {
             "short_limit": 200,
-            "short_remaining": 150,
+            "short_remaining": 170,
             "long_limit": 2000,
             "long_remaining": 1800,
         }

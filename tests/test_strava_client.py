@@ -848,6 +848,26 @@ class StravaClientTests(unittest.TestCase):
 
         self.assertTrue(ctx.exception.is_rate_limit)
 
+    def test_request_json_explains_rate_limit_with_positive_remaining_headers(self):
+        client = StravaClient()
+
+        class _FakeResponse:
+            status_code = 429
+            text = '{"message":"Rate Limit Exceeded"}'
+            headers = {"X-RateLimit-Limit": "200,2000", "X-RateLimit-Usage": "101,615"}
+            url = "https://example.test"
+
+        response = _FakeResponse()
+        http_error = requests.HTTPError(response=response)
+
+        with patch.object(client.session, "request", side_effect=http_error):
+            with self.assertRaises(StravaClientError) as ctx:
+                client._request_json("https://example.test", operation="Fetching Strava activities page 1")
+
+        self.assertTrue(ctx.exception.is_rate_limit)
+        self.assertIn("remaining short=99, long=1385", str(ctx.exception))
+        self.assertIn("headers still show remaining quota", str(ctx.exception))
+
 
 if __name__ == "__main__":
     unittest.main()

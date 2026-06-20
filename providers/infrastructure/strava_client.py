@@ -1025,6 +1025,11 @@ class StravaClient:
             return "The daily quota looks exhausted; wait until Strava resets the day limit before retrying."
         if short_remaining is not None and short_remaining <= 0:
             return "Wait about 15 minutes before retrying the full sync."
+        if short_remaining is not None or long_remaining is not None:
+            return (
+                "Strava returned a rate-limit response even though the rate-limit headers still show remaining quota; "
+                "wait a few minutes before retrying."
+            )
         return "Retry with a smaller window or wait a bit before continuing the full sync."
 
     def _format_network_error(self, operation, exc, attempts):
