@@ -349,7 +349,9 @@ class StravaClientTests(unittest.TestCase):
                 return {"id": 999}
             if idx == 2:
                 return [{"id": 1, "name": "Route 1"}, {"id": 2, "name": "Route 2"}]
-            return [{"id": 3, "name": "Route 3"}]
+            if idx == 3:
+                return [{"id": 3, "name": "Route 3"}]
+            return []
 
         client._request_json = fake_request_json
 
@@ -360,6 +362,42 @@ class StravaClientTests(unittest.TestCase):
         self.assertIn("/athlete", seen_urls[0])
         self.assertIn("/athletes/999/routes?page=1&per_page=2", seen_urls[1])
         self.assertIn("/athletes/999/routes?page=2&per_page=2", seen_urls[2])
+        self.assertIn("/athletes/999/routes?page=3&per_page=2", seen_urls[3])
+
+    def test_fetch_routes_continues_until_empty_when_strava_returns_short_pages(self):
+        client = StravaClient(client_id="123", client_secret="abc", refresh_token="tok")
+        seen_urls = []
+        page_one = [{"id": route_id, "name": "Route {0}".format(route_id)} for route_id in range(1, 91)]
+        page_two = [{"id": route_id, "name": "Route {0}".format(route_id)} for route_id in range(91, 180)]
+        page_three = [{"id": 180, "name": "Route 180"}, {"id": 181, "name": "Route 181"}]
+        call_count = [0]
+
+        def fake_request_json(request, operation=None, **kwargs):
+            idx = call_count[0]
+            call_count[0] += 1
+            if idx == 0:
+                return {"access_token": "fake_token"}
+            seen_urls.append(request)
+            if idx == 1:
+                return {"id": 999}
+            if idx == 2:
+                return page_one
+            if idx == 3:
+                return page_two
+            if idx == 4:
+                return page_three
+            return []
+
+        client._request_json = fake_request_json
+
+        with patch("qfit.providers.infrastructure.strava_client.time.sleep"):
+            routes = client.fetch_routes(per_page=200, max_pages=0)
+
+        self.assertEqual([route.source_route_id for route in routes], [str(route_id) for route_id in range(1, 182)])
+        self.assertIn("/athletes/999/routes?page=1&per_page=200", seen_urls[1])
+        self.assertIn("/athletes/999/routes?page=2&per_page=200", seen_urls[2])
+        self.assertIn("/athletes/999/routes?page=3&per_page=200", seen_urls[3])
+        self.assertIn("/athletes/999/routes?page=4&per_page=200", seen_urls[4])
 
     def test_fetch_routes_accepts_known_athlete_id(self):
         client = StravaClient(client_id="123", client_secret="abc", refresh_token="tok")

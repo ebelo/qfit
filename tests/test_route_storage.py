@@ -96,6 +96,31 @@ class RouteStorageTests(unittest.TestCase):
             {("strava", "keep"), ("komoot", "other")},
         )
 
+    def test_full_sync_with_fetch_notice_does_not_prune_missing_routes(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            store = GeoPackageRouteStore(os.path.join(tmpdir, "routes.gpkg"))
+            store.ensure_schema()
+            store.upsert_routes([
+                SavedRoute(source="strava", source_route_id="keep", name="Keep"),
+                SavedRoute(source="strava", source_route_id="preserve", name="Preserve"),
+            ])
+
+            stats = store.upsert_routes(
+                [SavedRoute(source="strava", source_route_id="keep", name="Keep")],
+                sync_metadata={
+                    "is_full_sync": True,
+                    "provider": "strava",
+                    "fetch_notice": "Stopped early while fetching Strava routes.",
+                },
+            )
+            records = store.load_all_route_records()
+
+        self.assertEqual(stats.total_count, 2)
+        self.assertEqual(
+            {record["source_route_id"] for record in records},
+            {"keep", "preserve"},
+        )
+
     def test_empty_full_sync_without_provider_does_not_prune_any_provider(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             store = GeoPackageRouteStore(os.path.join(tmpdir, "routes.gpkg"))
