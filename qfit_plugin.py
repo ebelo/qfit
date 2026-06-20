@@ -93,6 +93,7 @@ class QfitPlugin:
             self._about_dock.setFloating(True)
         self._about_dock.show()
         self._about_dock.raise_()
+        self._about_dock.activateWindow()
 
     def _refresh_dock_configuration(self) -> None:
         if self.dockwidget is not None:

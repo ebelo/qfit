@@ -188,6 +188,7 @@ class TestQfitPluginMenuStructure(unittest.TestCase):
                 self.setFloating = MagicMock()
                 self.show = MagicMock()
                 self.raise_ = MagicMock()
+                self.activateWindow = MagicMock()
                 self.deleteLater = MagicMock()
                 FakeAboutDock.created.append(self)
 
@@ -202,6 +203,7 @@ class TestQfitPluginMenuStructure(unittest.TestCase):
         dock.setFloating.assert_called_once_with(True)
         self.assertEqual(dock.show.call_count, 2)
         self.assertEqual(dock.raise_.call_count, 2)
+        self.assertEqual(dock.activateWindow.call_count, 2)
 
     def test_show_dock_creates_activities_dock_once(self):
         plugin, iface = self._make_plugin()

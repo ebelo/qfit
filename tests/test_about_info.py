@@ -81,6 +81,35 @@ class AboutInfoTests(unittest.TestCase):
         self.assertIn("https://x.com/Emmanuel_Belo", html)
         self.assertIn("https://ch.linkedin.com/in/emmanuelbelo", html)
 
+    def test_build_about_html_escapes_metadata_values(self):
+        info = AboutInfo(
+            name='qfit <demo>',
+            version='1.0 "beta"',
+            author="Emmanuel & contributors",
+            repository_url='https://github.com/ebelo/qfit?x="demo"',
+            issues_url='https://github.com/ebelo/qfit/issues?tag=<bug>',
+            discussions_url="https://github.com/ebelo/qfit/discussions?a=1&b=2",
+            mastodon_url='https://mastodon.social/@ebelo?name="qfit"',
+            x_url="https://x.com/Emmanuel_Belo?topic=qfit&kind=feedback",
+            linkedin_url="https://ch.linkedin.com/in/emmanuelbelo?x=<profile>",
+        )
+
+        html = build_about_html(info)
+
+        self.assertIn("qfit &lt;demo&gt;", html)
+        self.assertIn("1.0 &quot;beta&quot;", html)
+        self.assertIn("Emmanuel &amp; contributors", html)
+        self.assertIn('href="https://github.com/ebelo/qfit?x=&quot;demo&quot;"', html)
+        self.assertIn(
+            'href="https://github.com/ebelo/qfit/issues?tag=&lt;bug&gt;"',
+            html,
+        )
+        self.assertIn(
+            'href="https://github.com/ebelo/qfit/discussions?a=1&amp;b=2"',
+            html,
+        )
+        self.assertNotIn("<demo>", html)
+
 
 class QfitAboutDockTests(unittest.TestCase):
     @classmethod
