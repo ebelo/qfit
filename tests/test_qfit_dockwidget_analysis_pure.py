@@ -2903,6 +2903,51 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._update_loaded_activities_summary.assert_called_once_with(12)
         dock._set_status.assert_called_once_with("Loaded 12 activities Styled layers")
 
+    def test_on_load_layers_clicked_restores_user_crs_after_visual_configuration(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._save_settings = MagicMock()
+        dock.outputPathLineEdit = _FakeLineEdit("/tmp/qfit.gpkg")
+        dock._populate_activity_types_from_layer = MagicMock()
+        events = []
+        dock._apply_visual_configuration = MagicMock(
+            side_effect=lambda apply_subset_filters: events.append("visual") or "Styled layers"
+        )
+        dock._update_loaded_activities_summary = MagicMock()
+        dock._set_status = MagicMock()
+        dock._atlas_export_completed = True
+        workflow = MagicMock()
+        workflow.build_load_existing_request.return_value = "load-request"
+        result = SimpleNamespace(
+            output_path="/tmp/qfit.gpkg",
+            activities_layer="activities-layer",
+            starts_layer="starts-layer",
+            points_layer="points-layer",
+            atlas_layer="atlas-layer",
+            total_stored=12,
+            status="Loaded 12 activities",
+        )
+        workflow.load_existing_request.return_value = result
+        dock.dataset_load_workflow = workflow
+        canvas = MagicMock()
+        dock.iface = SimpleNamespace(mapCanvas=lambda: canvas)
+        project = MagicMock()
+        user_crs = MagicMock(name="user_crs")
+        user_crs.isValid.return_value = True
+        project.crs.return_value = user_crs
+        project.setCrs.side_effect = lambda crs: events.append(("restore", crs))
+        self.module.QTimer.singleShot.reset_mock()
+
+        with patch.object(self.module.QgsProject, "instance", return_value=project):
+            self.module.QfitDockWidget.on_load_layers_clicked(dock)
+
+        self.assertEqual(events, ["visual", ("restore", user_crs)])
+        project.setCrs.assert_called_once_with(user_crs)
+        canvas.setDestinationCrs.assert_called_once_with(user_crs)
+        self.module.QTimer.singleShot.assert_called_once()
+        delay, callback = self.module.QTimer.singleShot.call_args.args
+        self.assertEqual(delay, 0)
+        self.assertTrue(callable(callback))
+
     def test_on_generate_atlas_pdf_clicked_cancels_existing_export_task(self):
         dock = object.__new__(self.module.QfitDockWidget)
         running_task = MagicMock()
