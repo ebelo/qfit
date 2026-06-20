@@ -102,6 +102,9 @@ class StravaClient:
     MIN_ACTIVITY_PAGE_SIZE = 5
     FULL_SYNC_MIN_SHORT_REMAINING = 3
     FULL_SYNC_MIN_LONG_REMAINING = 15
+    STREAM_ENRICHMENT_SHORT_WINDOW_FRACTION = 0.75
+    STREAM_ENRICHMENT_MIN_SHORT_REMAINING = 5
+    STREAM_ENRICHMENT_MIN_LONG_REMAINING = 25
     PAGE_REQUEST_DELAY_SECONDS = 0.2
     RETRYABLE_ERRNOS = {104}
     RETRYABLE_WINERRORS = {10054}
@@ -487,7 +490,7 @@ class StravaClient:
             candidates.append(activity)
 
         stats["missing_before"] = len(candidates)
-        limit = self._stream_request_limit(candidates, max_activities)
+        limit = self._stream_request_limit(candidates, max_activities, apply_rate_limit_budget=True)
         stats["requested"] = limit
 
         for activity in candidates[:limit]:
@@ -499,11 +502,35 @@ class StravaClient:
         self.last_stream_enrichment_stats = stats
         return activities
 
-    @staticmethod
-    def _stream_request_limit(activities, max_activities):
+    def _stream_request_limit(self, activities, max_activities, *, apply_rate_limit_budget=False):
         if max_activities is None or max_activities <= 0:
-            return len(activities)
-        return min(int(max_activities), len(activities))
+            limit = len(activities)
+        else:
+            limit = min(int(max_activities), len(activities))
+        if not apply_rate_limit_budget:
+            return limit
+        rate_limit_budget = self._stream_enrichment_rate_limit_budget()
+        if rate_limit_budget is None:
+            return limit
+        return min(limit, rate_limit_budget)
+
+    def _stream_enrichment_rate_limit_budget(self):
+        if not self.last_rate_limit:
+            return None
+        budgets = []
+        short_remaining = self.last_rate_limit.get("short_remaining")
+        if short_remaining is not None:
+            short_remaining = int(short_remaining)
+            short_budget = int(short_remaining * self.STREAM_ENRICHMENT_SHORT_WINDOW_FRACTION)
+            short_headroom = max(0, short_remaining - self.STREAM_ENRICHMENT_MIN_SHORT_REMAINING)
+            budgets.append(min(short_budget, short_headroom))
+        long_remaining = self.last_rate_limit.get("long_remaining")
+        if long_remaining is not None:
+            long_remaining = int(long_remaining)
+            budgets.append(max(0, long_remaining - self.STREAM_ENRICHMENT_MIN_LONG_REMAINING))
+        if not budgets:
+            return None
+        return min(budgets)
 
     def _enrich_single_activity_with_streams(self, activity, stats):
         if self._approaching_rate_limit():
@@ -724,9 +751,9 @@ class StravaClient:
             return False
         short_remaining = self.last_rate_limit.get("short_remaining")
         long_remaining = self.last_rate_limit.get("long_remaining")
-        if short_remaining is not None and short_remaining <= 5:
+        if short_remaining is not None and short_remaining <= self.STREAM_ENRICHMENT_MIN_SHORT_REMAINING:
             return True
-        if long_remaining is not None and long_remaining <= 25:
+        if long_remaining is not None and long_remaining <= self.STREAM_ENRICHMENT_MIN_LONG_REMAINING:
             return True
         return False
 
