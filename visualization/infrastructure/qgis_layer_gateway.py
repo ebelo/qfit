@@ -91,10 +91,13 @@ class QgisLayerGateway:
     def load_output_layers(self, gpkg_path):
         canvas_service = self._get_canvas_service()
         project_layer_loader = self._get_project_layer_loader()
-        canvas_service.ensure_working_crs(self.iface, preserve_extent=False)
-        activities_layer, starts_layer, points_layer, atlas_layer = (
-            project_layer_loader.load_output_layers(gpkg_path)
-        )
+        project_crs = self._current_project_crs()
+        try:
+            activities_layer, starts_layer, points_layer, atlas_layer = (
+                project_layer_loader.load_output_layers(gpkg_path)
+            )
+        finally:
+            self._restore_project_crs(project_crs)
         self._move_background_layers_to_bottom()
         canvas_service.zoom_to_layers(
             self.iface, [activities_layer, starts_layer, points_layer, atlas_layer]
@@ -104,8 +107,11 @@ class QgisLayerGateway:
     def load_route_layers(self, gpkg_path):
         canvas_service = self._get_canvas_service()
         project_layer_loader = self._get_project_layer_loader()
-        canvas_service.ensure_working_crs(self.iface, preserve_extent=False)
-        route_layers = project_layer_loader.load_route_layers(gpkg_path)
+        project_crs = self._current_project_crs()
+        try:
+            route_layers = project_layer_loader.load_route_layers(gpkg_path)
+        finally:
+            self._restore_project_crs(project_crs)
         self._get_style_service().apply_route_style(*route_layers)
         self._move_background_layers_to_bottom()
         canvas_service.zoom_to_layers(self.iface, route_layers)
@@ -178,3 +184,41 @@ class QgisLayerGateway:
 
     def _move_background_layers_to_bottom(self):
         self._get_background_service().move_background_layers_to_bottom()
+
+    def _current_project_crs(self):
+        try:
+            crs = QgsProject.instance().crs()
+        except RuntimeError:
+            logger.debug("Failed to read current project CRS", exc_info=True)
+            return None
+        if crs is None:
+            return None
+        try:
+            if not crs.isValid():
+                return None
+        except (AttributeError, RuntimeError):
+            return None
+        return crs
+
+    def _restore_project_crs(self, crs):
+        if crs is None:
+            return
+        try:
+            if not crs.isValid():
+                return
+        except (AttributeError, RuntimeError):
+            return
+
+        try:
+            QgsProject.instance().setCrs(crs)
+        except RuntimeError:
+            logger.debug("Failed to restore project CRS after loading layers", exc_info=True)
+            return
+
+        canvas = self.iface.mapCanvas() if self.iface is not None else None
+        if canvas is None:
+            return
+        try:
+            canvas.setDestinationCrs(crs)
+        except RuntimeError:
+            logger.debug("Failed to restore canvas CRS after loading layers", exc_info=True)
