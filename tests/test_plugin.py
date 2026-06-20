@@ -1,21 +1,12 @@
 import os
+import sys
 import unittest
+from types import ModuleType, SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 from tests import _path  # noqa: F401
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
-
-try:
-    from qgis.PyQt.QtWidgets import QAction
-    from qfit.qfit_plugin import QfitPlugin
-
-    QGIS_AVAILABLE = True
-    QGIS_IMPORT_ERROR = None
-except Exception as exc:
-    QfitPlugin = None
-    QGIS_AVAILABLE = False
-    QGIS_IMPORT_ERROR = exc
 
 
 class FakeIface:
@@ -55,16 +46,88 @@ class FakeIface:
         return None
 
 
-@unittest.skipUnless(
-    QGIS_AVAILABLE,
-    "PyQGIS is not available in this environment: {error}".format(error=QGIS_IMPORT_ERROR),
-)
 class TestQfitPluginMenuStructure(unittest.TestCase):
     """Verify that initGui registers menu entries under &qfit."""
 
+    @classmethod
+    def setUpClass(cls):
+        cls._module_names = cls._plugin_module_names() | set(cls._stub_modules())
+        cls._saved_modules = {
+            name: sys.modules.get(name) for name in cls._module_names
+        }
+        for name, module in cls._stub_modules().items():
+            sys.modules[name] = module
+        sys.modules.pop("qfit.qfit_plugin", None)
+        from qfit.qfit_plugin import QfitPlugin
+
+        cls.QfitPlugin = QfitPlugin
+
+    @classmethod
+    def tearDownClass(cls):
+        for name in cls._module_names:
+            original = cls._saved_modules.get(name)
+            if original is None:
+                sys.modules.pop(name, None)
+            else:
+                sys.modules[name] = original
+
+    @staticmethod
+    def _plugin_module_names():
+        return {
+            "qfit.qfit_plugin",
+            "qfit.qfit_config_dialog",
+            "qfit.qfit_dockwidget",
+            "qfit.ui.about_dock",
+        }
+
+    @staticmethod
+    def _stub_modules():
+        qgis = ModuleType("qgis")
+        qgis_pyqt = ModuleType("qgis.PyQt")
+        qgis_qtcore = ModuleType("qgis.PyQt.QtCore")
+        qgis_qtcore.Qt = SimpleNamespace(RightDockWidgetArea="right")
+        qgis_qtgui = ModuleType("qgis.PyQt.QtGui")
+        qgis_qtgui.QIcon = lambda path: ("icon", path)
+        qgis_qtwidgets = ModuleType("qgis.PyQt.QtWidgets")
+
+        class FakeSignal:
+            def __init__(self):
+                self.connected_slot = None
+
+            def connect(self, slot):
+                self.connected_slot = slot
+
+        class FakeAction:
+            def __init__(self, _icon, text, _parent=None):
+                self._text = text
+                self.triggered = FakeSignal()
+
+            def text(self):
+                return self._text
+
+        qgis_qtwidgets.QAction = FakeAction
+
+        config_dialog = ModuleType("qfit.qfit_config_dialog")
+        config_dialog.QfitConfigDialog = object
+        dockwidget = ModuleType("qfit.qfit_dockwidget")
+        dockwidget.QfitDockWidget = object
+        about_dock = ModuleType("qfit.ui.about_dock")
+        about_dock.QfitAboutDock = object
+
+        return {
+            "qgis": qgis,
+            "qgis.PyQt": qgis_pyqt,
+            "qgis.PyQt.QtCore": qgis_qtcore,
+            "qgis.PyQt.QtGui": qgis_qtgui,
+            "qgis.PyQt.QtWidgets": qgis_qtwidgets,
+            "qfit.qfit_config_dialog": config_dialog,
+            "qfit.qfit_dockwidget": dockwidget,
+            "qfit.ui.about_dock": about_dock,
+        }
+
     def _make_plugin(self):
         iface = FakeIface()
-        plugin = QfitPlugin(iface)
+        plugin = self.QfitPlugin(iface)
         return plugin, iface
 
     def test_init_gui_registers_activities_configuration_and_about_menu_entries(self):
@@ -140,6 +203,55 @@ class TestQfitPluginMenuStructure(unittest.TestCase):
         self.assertEqual(dock.show.call_count, 2)
         self.assertEqual(dock.raise_.call_count, 2)
 
+    def test_show_dock_creates_activities_dock_once(self):
+        plugin, iface = self._make_plugin()
+
+        class FakeDockWidget:
+            created = []
+
+            def __init__(self, iface, parent=None, open_configuration=None):
+                self.iface = iface
+                self.parent = parent
+                self.open_configuration = open_configuration
+                self.show = MagicMock()
+                self.raise_ = MagicMock()
+                self.deleteLater = MagicMock()
+                FakeDockWidget.created.append(self)
+
+        with patch("qfit.qfit_plugin.QfitDockWidget", FakeDockWidget):
+            plugin.show_dock()
+            plugin.show_dock()
+
+        dock = FakeDockWidget.created[-1]
+        self.assertIs(plugin.dockwidget, dock)
+        self.assertIs(dock.iface, iface)
+        self.assertIs(dock.open_configuration.__self__, plugin)
+        self.assertIs(dock.open_configuration.__func__, self.QfitPlugin.show_config)
+        self.assertEqual(len(FakeDockWidget.created), 1)
+        self.assertEqual(len(iface.dock_widgets), 1)
+        self.assertEqual(dock.show.call_count, 2)
+        self.assertEqual(dock.raise_.call_count, 2)
+
+    def test_unload_removes_existing_docks_and_config_dialog(self):
+        plugin, iface = self._make_plugin()
+        dockwidget = MagicMock()
+        about_dock = MagicMock()
+        config_dialog = MagicMock()
+        plugin.dockwidget = dockwidget
+        plugin._about_dock = about_dock
+        plugin._config_dialog = config_dialog
+
+        plugin.unload()
+
+        self.assertEqual(iface.removed_dock_widgets, [dockwidget, about_dock])
+        dockwidget.deleteLater.assert_called_once_with()
+        about_dock.deleteLater.assert_called_once_with()
+        config_dialog.close.assert_called_once_with()
+        config_dialog.deleteLater.assert_called_once_with()
+        self.assertIsNone(plugin.dockwidget)
+        self.assertIsNone(plugin._about_dock)
+        self.assertIsNone(plugin._config_dialog)
+
     def test_config_dialog_save_signal_refreshes_existing_dock(self):
         plugin, _iface = self._make_plugin()
         plugin.dockwidget = MagicMock()
@@ -172,7 +284,7 @@ class TestQfitPluginMenuStructure(unittest.TestCase):
         )
         self.assertIs(
             dialog.settingsSaved.connected_slot.__func__,
-            QfitPlugin._refresh_dock_configuration,
+            self.QfitPlugin._refresh_dock_configuration,
         )
 
         dialog.settingsSaved.connected_slot()
