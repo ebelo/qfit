@@ -465,6 +465,107 @@ class GeoPackagePackageUnitTests(unittest.TestCase):
             if os.path.exists(path):
                 os.unlink(path)
 
+    def test_spatial_index_helpers_quote_and_name_gpkg_objects(self):
+        moved = self._import_gpkg_write_orchestration_with_stubs()
+
+        self.assertEqual(moved._quote_gpkg_identifier("activity's"), "'activity''s'")
+        self.assertEqual(
+            moved._spatial_index_table_names("activity_tracks", "geom"),
+            {
+                "rtree_activity_tracks_geom",
+                "rtree_activity_tracks_geom_rowid",
+                "rtree_activity_tracks_geom_node",
+                "rtree_activity_tracks_geom_parent",
+            },
+        )
+
+    def test_create_spatial_index_with_ogr_executes_gpkg_sql_and_releases_result(self):
+        moved = self._import_gpkg_write_orchestration_with_stubs()
+        calls = []
+
+        class _DataSource:
+            def ExecuteSQL(self, statement):
+                calls.append(("sql", statement))
+                return "result"
+
+            def ReleaseResultSet(self, result):
+                calls.append(("release", result))
+
+        class _Ogr:
+            def Open(self, path, update=0):
+                calls.append(("open", path, update))
+                return _DataSource()
+
+        with patch.object(moved, "_import_ogr_spatial_index_api", return_value=_Ogr()):
+            moved._create_spatial_index_with_ogr("/tmp/full.gpkg", "activity's", "geom")
+
+        self.assertEqual(calls[0], ("open", "/tmp/full.gpkg", 1))
+        self.assertEqual(
+            calls[1],
+            (
+                "sql",
+                "SELECT CreateSpatialIndex('activity''s', 'geom')",
+            ),
+        )
+        self.assertEqual(calls[2], ("release", "result"))
+
+    def test_create_spatial_index_with_ogr_reports_open_failure(self):
+        moved = self._import_gpkg_write_orchestration_with_stubs()
+
+        class _Ogr:
+            def Open(self, path, update=0):
+                return None
+
+        with patch.object(moved, "_import_ogr_spatial_index_api", return_value=_Ogr()):
+            with self.assertRaisesRegex(RuntimeError, "Failed to open GeoPackage"):
+                moved._create_spatial_index_with_ogr("/tmp/full.gpkg", "activity_tracks", "geom")
+
+    def test_create_spatial_index_falls_back_to_qgis_when_ogr_fails(self):
+        moved = self._import_gpkg_write_orchestration_with_stubs()
+
+        with patch.object(moved, "_create_spatial_index_with_ogr", side_effect=RuntimeError("ogr failed")) as ogr_create, \
+                patch.object(moved, "_create_spatial_index_with_qgis") as qgis_create:
+            moved._create_spatial_index("/tmp/full.gpkg", "activity_tracks", "geom")
+
+        ogr_create.assert_called_once_with("/tmp/full.gpkg", "activity_tracks", "geom")
+        qgis_create.assert_called_once_with("/tmp/full.gpkg", "activity_tracks")
+
+    def test_create_spatial_index_with_qgis_keeps_provider_fallback(self):
+        moved = self._import_gpkg_write_orchestration_with_stubs()
+        create_calls = []
+
+        class _VectorDataProvider:
+            CreateSpatialIndex = 1
+
+        class _Provider:
+            def capabilities(self):
+                return _VectorDataProvider.CreateSpatialIndex
+
+            def createSpatialIndex(self):
+                create_calls.append("create")
+                return True
+
+        class _Layer:
+            def __init__(self, uri, layer_name, provider_key):
+                self.uri = uri
+                self.layer_name = layer_name
+                self.provider_key = provider_key
+
+            def isValid(self):
+                return True
+
+            def dataProvider(self):
+                return _Provider()
+
+        with patch.object(
+            moved,
+            "_import_qgis_spatial_index_api",
+            return_value=(None, _VectorDataProvider, _Layer),
+        ):
+            moved._create_spatial_index_with_qgis("/tmp/full.gpkg", "activity_tracks")
+
+        self.assertEqual(create_calls, ["create"])
+
     def _create_minimal_geometry_metadata(self, connection, layer_name, geometry_column):
         connection.execute(
             "CREATE TABLE IF NOT EXISTS gpkg_geometry_columns (table_name TEXT, column_name TEXT)"
