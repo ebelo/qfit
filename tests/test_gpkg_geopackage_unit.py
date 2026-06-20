@@ -19,6 +19,54 @@ class GeoPackagePackageUnitTests(unittest.TestCase):
             setattr(module, key, value)
         return module
 
+    def _import_gpkg_write_orchestration_with_stubs(self):
+        module_overrides = {
+            "qfit.activities.infrastructure.geopackage.gpkg_io": self._module(
+                "qfit.activities.infrastructure.geopackage.gpkg_io",
+                write_layer_to_gpkg=MagicMock(),
+            ),
+            "qfit.activities.infrastructure.geopackage.gpkg_layer_builders": self._module(
+                "qfit.activities.infrastructure.geopackage.gpkg_layer_builders",
+                build_track_layer=MagicMock(),
+                build_start_layer=MagicMock(),
+            ),
+            "qfit.activities.infrastructure.geopackage.gpkg_point_layer_builder": self._module(
+                "qfit.activities.infrastructure.geopackage.gpkg_point_layer_builder",
+                build_point_layer=MagicMock(),
+            ),
+            "qfit.activities.infrastructure.geopackage.gpkg_route_layer_builders": self._module(
+                "qfit.activities.infrastructure.geopackage.gpkg_route_layer_builders",
+                build_route_track_layer=MagicMock(),
+                build_route_point_layer=MagicMock(),
+                build_route_profile_sample_layer=MagicMock(),
+            ),
+            "qfit.activities.infrastructure.geopackage.gpkg_atlas_page_builder": self._module(
+                "qfit.activities.infrastructure.geopackage.gpkg_atlas_page_builder",
+                build_atlas_layer=MagicMock(),
+            ),
+            "qfit.activities.infrastructure.geopackage.gpkg_atlas_table_builders": self._module(
+                "qfit.activities.infrastructure.geopackage.gpkg_atlas_table_builders",
+                build_cover_highlight_layer=MagicMock(),
+                build_document_summary_layer=MagicMock(),
+                build_page_detail_item_layer=MagicMock(),
+                build_profile_sample_layer=MagicMock(),
+                build_toc_layer=MagicMock(),
+            ),
+            "qfit.atlas.publish_atlas": self._module(
+                "qfit.atlas.publish_atlas",
+                build_atlas_page_plans=MagicMock(return_value=[]),
+            ),
+        }
+
+        with patch.dict(sys.modules, module_overrides):
+            sys.modules.pop(
+                "qfit.activities.infrastructure.geopackage.gpkg_write_orchestration",
+                None,
+            )
+            return importlib.import_module(
+                "qfit.activities.infrastructure.geopackage.gpkg_write_orchestration"
+            )
+
     def test_moved_gpkg_writer_and_root_shim_share_same_class(self):
         normalize_settings = MagicMock(return_value={"margin_percent": 12})
         bootstrap_empty_gpkg = MagicMock()
@@ -362,9 +410,7 @@ class GeoPackagePackageUnitTests(unittest.TestCase):
                 ensure_spatial_indexes.assert_called_once_with("/tmp/full.gpkg")
 
     def test_ensure_spatial_indexes_skips_qgis_provider_when_rtree_exists(self):
-        moved = importlib.import_module(
-            "qfit.activities.infrastructure.geopackage.gpkg_write_orchestration"
-        )
+        moved = self._import_gpkg_write_orchestration_with_stubs()
         fd, path = tempfile.mkstemp(suffix=".gpkg")
         os.close(fd)
         try:
@@ -380,9 +426,7 @@ class GeoPackagePackageUnitTests(unittest.TestCase):
                 os.unlink(path)
 
     def test_ensure_spatial_indexes_creates_only_missing_rtree(self):
-        moved = importlib.import_module(
-            "qfit.activities.infrastructure.geopackage.gpkg_write_orchestration"
-        )
+        moved = self._import_gpkg_write_orchestration_with_stubs()
         fd, path = tempfile.mkstemp(suffix=".gpkg")
         os.close(fd)
         try:
@@ -405,9 +449,7 @@ class GeoPackagePackageUnitTests(unittest.TestCase):
                 os.unlink(path)
 
     def test_ensure_spatial_indexes_requires_geometry_metadata(self):
-        moved = importlib.import_module(
-            "qfit.activities.infrastructure.geopackage.gpkg_write_orchestration"
-        )
+        moved = self._import_gpkg_write_orchestration_with_stubs()
         fd, path = tempfile.mkstemp(suffix=".gpkg")
         os.close(fd)
         try:
