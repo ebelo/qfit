@@ -28,6 +28,8 @@ class WorkflowProgressFacts:
     preferred_current_key: str | None = None
     fetched_activity_count: int | None = None
     activity_count: int | None = None
+    detailed_route_count: int | None = None
+    detailed_route_total_count: int | None = None
     output_name: str | None = None
     analysis_output_name: str | None = None
     atlas_output_name: str | None = None
@@ -76,6 +78,8 @@ def build_workflow_progress_facts_from_runtime_state(
         preferred_current_key=preferred_current_key,
         fetched_activity_count=len(state.activities) if state.activities else None,
         activity_count=_stored_activity_count(state),
+        detailed_route_count=_optional_count(state.detailed_route_count),
+        detailed_route_total_count=_optional_count(state.detailed_route_total_count),
         output_name=output_name,
         analysis_output_name=analysis_output_name,
         atlas_output_name=atlas_output_name,
@@ -115,6 +119,12 @@ def _has_sync_task(state: DockRuntimeState) -> bool:
 
 def _stored_activity_count(state: DockRuntimeState) -> int | None:
     count = state.stored_activity_count
+    if count is None:
+        return None
+    return max(int(count), 0)
+
+
+def _optional_count(count: int | None) -> int | None:
     if count is None:
         return None
     return max(int(count), 0)

@@ -12,6 +12,7 @@ from qfit.ui.application.local_first_progress_facts import (
     current_local_first_atlas_output_path,
     current_local_first_background_facts,
     current_local_first_connection_configured,
+    current_local_first_detailed_route_count,
     current_local_first_last_sync_date,
     current_local_first_visual_temporal_mode,
     runtime_state_with_local_first_output_path,
@@ -69,7 +70,11 @@ class _FakeRuntimeState:
 class TestLocalFirstProgressFacts(unittest.TestCase):
     def test_current_progress_facts_assemble_live_local_first_state(self):
         dock = SimpleNamespace(
-            runtime_state=DockRuntimeState(output_path="stored.gpkg"),
+            runtime_state=DockRuntimeState(
+                output_path="stored.gpkg",
+                detailed_route_count=4,
+                detailed_route_total_count=12,
+            ),
             outputPathLineEdit=_FakeLineEdit(" selected.gpkg "),
             atlasPdfPathLineEdit=_FakeLineEdit("draft.pdf"),
             backgroundMapCheckBox=_FakeCheckBox(False),
@@ -97,6 +102,8 @@ class TestLocalFirstProgressFacts(unittest.TestCase):
         self.assertEqual(facts.activity_style_preset, "Simple lines")
         self.assertIsInstance(facts, LocalFirstProgressFacts)
         self.assertEqual(facts.last_sync_date, "2026-05-09")
+        self.assertEqual(facts.detailed_route_count, 4)
+        self.assertEqual(facts.detailed_route_total_count, 12)
 
     def test_connection_configured_requires_persisted_credential_text(self):
         configured_dock = SimpleNamespace(
@@ -242,6 +249,17 @@ class TestLocalFirstProgressFacts(unittest.TestCase):
         self.assertIsNone(current_local_first_last_sync_date(object()))
         self.assertIsNone(current_local_first_last_sync_date({"last_sync_date": None}))
         self.assertIsNone(current_local_first_last_sync_date({"last_sync_date": "   "}))
+
+    def test_detailed_route_count_reads_cached_count(self):
+        self.assertEqual(
+            current_local_first_detailed_route_count(SimpleNamespace(_detailed_route_count="4")),
+            4,
+        )
+        self.assertEqual(
+            current_local_first_detailed_route_count(SimpleNamespace(_detailed_route_count=-2)),
+            0,
+        )
+        self.assertIsNone(current_local_first_detailed_route_count(SimpleNamespace()))
 
     def test_runtime_state_with_output_path_preserves_matching_or_blank_path(self):
         runtime_state = _FakeRuntimeState(output_path="stored.gpkg")

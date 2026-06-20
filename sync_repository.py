@@ -35,6 +35,14 @@ class ActivitySyncState:
         return self.last_success_status == "ok" and self.updated_at is not None
 
 
+@dataclass(frozen=True)
+class DetailedRouteCoverage:
+    """Stored detailed-route coverage for activity stream backfill status."""
+
+    detailed_count: int = 0
+    total_count: int = 0
+
+
 SYNC_STATE_COLUMNS = [
     "provider",
     "last_incremental_sync_at",
@@ -359,6 +367,38 @@ class SyncRepository:
             **dict(zip(SYNC_STATE_COLUMNS, state_row)),
             stored_activity_count=int(activity_row["stored_activity_count"]),
             latest_activity_start_date=activity_row["latest_activity_start_date"],
+        )
+
+    def load_detailed_route_coverage(self, provider="strava") -> DetailedRouteCoverage:
+        """Return stored detailed activity-route coverage for *provider*."""
+
+        if not self._database_exists():
+            return DetailedRouteCoverage()
+        try:
+            with self._connect() as connection:
+                row = connection.execute(
+                    """
+                    SELECT
+                        COUNT(*) AS total_count,
+                        SUM(
+                            CASE
+                                WHEN geometry_source = 'stream' THEN 1
+                                ELSE 0
+                            END
+                        ) AS detailed_count
+                    FROM activity_registry
+                    WHERE source = ?
+                    """,
+                    (provider,),
+                ).fetchone()
+        except sqlite3.OperationalError as exc:
+            if _is_missing_sync_schema_error(exc):
+                return DetailedRouteCoverage()
+            raise
+
+        return DetailedRouteCoverage(
+            detailed_count=int(row["detailed_count"] or 0),
+            total_count=int(row["total_count"] or 0),
         )
 
     def has_completed_activity_sync(self, provider="strava") -> bool:

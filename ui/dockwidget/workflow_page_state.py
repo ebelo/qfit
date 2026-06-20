@@ -92,6 +92,8 @@ def completed_prefix_facts(facts: WorkflowProgressFacts) -> WorkflowProgressFact
         preferred_current_key=facts.preferred_current_key,
         fetched_activity_count=facts.fetched_activity_count,
         activity_count=facts.activity_count,
+        detailed_route_count=facts.detailed_route_count,
+        detailed_route_total_count=facts.detailed_route_total_count,
         output_name=facts.output_name,
         analysis_output_name=facts.analysis_output_name,
         atlas_output_name=facts.atlas_output_name,
@@ -265,7 +267,22 @@ def _stored_activity_summary(facts: WorkflowProgressFacts) -> str:
         noun = "activity" if facts.activity_count == 1 else "activities"
         activity_summary = f"{max(facts.activity_count, 0)} {noun}"
     output_summary = facts.output_name or "GeoPackage"
-    return f"{activity_summary} stored in {output_summary}"
+    summary = f"{activity_summary} stored in {output_summary}"
+    detailed_summary = _detailed_route_summary(facts)
+    if detailed_summary:
+        return f"{summary} · {detailed_summary}"
+    return summary
+
+
+def _detailed_route_summary(facts: WorkflowProgressFacts) -> str | None:
+    if (
+        facts.detailed_route_count is None
+        or facts.detailed_route_total_count is None
+    ):
+        return None
+    detailed_count = max(int(facts.detailed_route_count), 0)
+    total_count = max(int(facts.detailed_route_total_count), 0)
+    return f"Detailed routes: {min(detailed_count, total_count)} / {total_count}"
 
 
 def _fetched_activity_summary(facts: WorkflowProgressFacts) -> str:

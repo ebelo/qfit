@@ -2209,6 +2209,24 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "12 activities stored in database (last sync: 2026-04-12)",
         )
 
+    def test_refresh_detailed_route_coverage_reads_storage_summary(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._runtime_state_store = self.module.DockRuntimeStore()
+        dock.outputPathLineEdit = _FakeLineEdit("/tmp/qfit.gpkg")
+        coverage = SimpleNamespace(detailed_count=4, total_count=12)
+        repository = MagicMock()
+        repository.load_detailed_route_coverage.return_value = coverage
+
+        with patch.object(self.module, "SyncRepository", return_value=repository) as repo_cls:
+            result = self.module.QfitDockWidget._refresh_detailed_route_coverage_from_storage(dock)
+
+        repo_cls.assert_called_once_with("/tmp/qfit.gpkg")
+        repository.load_detailed_route_coverage.assert_called_once_with(provider="strava")
+        self.assertEqual(result, coverage)
+        self.assertEqual(dock._detailed_route_count, 4)
+        self.assertEqual(dock.runtime_state.detailed_route_count, 4)
+        self.assertEqual(dock.runtime_state.detailed_route_total_count, 12)
+
     def test_apply_analysis_configuration_delegates_current_mode_and_layer(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock.analysisModeComboBox = _FakeComboBox(current_text="Most frequent starting points")

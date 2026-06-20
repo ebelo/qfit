@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 from tests import _path  # noqa: F401
 from qfit.activities.domain.models import Activity
-from qfit.sync_repository import ActivitySyncState, SyncRepository
+from qfit.sync_repository import ActivitySyncState, DetailedRouteCoverage, SyncRepository
 
 
 class SyncRepositoryTests(unittest.TestCase):
@@ -320,6 +320,33 @@ class SyncUnchangedBehaviorTests(unittest.TestCase):
 
             self.assertEqual(result.updated, 1)
             self.assertEqual(result.unchanged, 0)
+
+    def test_load_detailed_route_coverage_counts_stream_geometry(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = SyncRepository(str(Path(tmpdir) / "qfit.sqlite"))
+            repo.ensure_schema()
+
+            repo.upsert_activities([
+                self._activity(source_activity_id="stream", geometry_source="stream"),
+                self._activity(source_activity_id="summary", geometry_source="summary_polyline"),
+                self._activity(source_activity_id="empty", geometry_source="summary_polyline", details_json={
+                    "detailed_route_status": "empty",
+                }),
+            ])
+
+            self.assertEqual(
+                repo.load_detailed_route_coverage(provider="strava"),
+                DetailedRouteCoverage(detailed_count=1, total_count=3),
+            )
+
+    def test_load_detailed_route_coverage_returns_zero_for_missing_database(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = SyncRepository(str(Path(tmpdir) / "missing.sqlite"))
+
+            self.assertEqual(
+                repo.load_detailed_route_coverage(provider="strava"),
+                DetailedRouteCoverage(),
+            )
 
     def test_non_volatile_detail_change_triggers_update(self):
         """Changing a non-volatile detail key triggers an update."""
