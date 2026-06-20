@@ -193,6 +193,67 @@ class StravaClientTests(unittest.TestCase):
         self.assertEqual(client.last_stream_enrichment_stats["downloaded"], 1)
         self.assertEqual(client.last_stream_enrichment_stats["remaining_missing"], 1)
 
+    def test_missing_route_enrichment_uses_short_window_budget(self):
+        client = StravaClient()
+        client.last_rate_limit = {"short_remaining": 20, "long_remaining": 1000}
+        activities = [client.normalize_activity({"id": i, "name": f"Missing {i}"}) for i in range(20)]
+
+        with (
+            patch.object(client, "_load_cached_stream_bundle", return_value=None),
+            patch.object(
+                client,
+                "fetch_activity_stream_bundle",
+                return_value={"latlng": [[46.0, 6.0], [46.1, 6.1]]},
+            ) as fetch_mock,
+            patch.object(client, "_save_cached_stream_bundle"),
+        ):
+            client.enrich_activities_with_streams(activities, max_activities=25)
+
+        self.assertEqual(fetch_mock.call_count, 15)
+        self.assertEqual(client.last_stream_enrichment_stats["requested"], 15)
+        self.assertEqual(client.last_stream_enrichment_stats["downloaded"], 15)
+        self.assertEqual(client.last_stream_enrichment_stats["remaining_missing"], 5)
+
+    def test_missing_route_enrichment_keeps_ui_cap_below_rate_budget(self):
+        client = StravaClient()
+        client.last_rate_limit = {"short_remaining": 100, "long_remaining": 1000}
+        activities = [client.normalize_activity({"id": i, "name": f"Missing {i}"}) for i in range(50)]
+
+        with (
+            patch.object(client, "_load_cached_stream_bundle", return_value=None),
+            patch.object(
+                client,
+                "fetch_activity_stream_bundle",
+                return_value={"latlng": [[46.0, 6.0], [46.1, 6.1]]},
+            ) as fetch_mock,
+            patch.object(client, "_save_cached_stream_bundle"),
+        ):
+            client.enrich_activities_with_streams(activities, max_activities=25)
+
+        self.assertEqual(fetch_mock.call_count, 25)
+        self.assertEqual(client.last_stream_enrichment_stats["requested"], 25)
+        self.assertEqual(client.last_stream_enrichment_stats["remaining_missing"], 25)
+
+    def test_missing_route_enrichment_uses_ui_cap_without_rate_limit_headers(self):
+        client = StravaClient()
+        client.last_rate_limit = None
+        activities = [client.normalize_activity({"id": i, "name": f"Missing {i}"}) for i in range(10)]
+
+        with (
+            patch.object(client, "_load_cached_stream_bundle", return_value=None),
+            patch.object(
+                client,
+                "fetch_activity_stream_bundle",
+                return_value={"latlng": [[46.0, 6.0], [46.1, 6.1]]},
+            ) as fetch_mock,
+            patch.object(client, "_save_cached_stream_bundle"),
+        ):
+            client.enrich_activities_with_streams(activities, max_activities=3)
+
+        self.assertEqual(fetch_mock.call_count, 3)
+        self.assertEqual(client.last_stream_enrichment_stats["requested"], 3)
+        self.assertEqual(client.last_stream_enrichment_stats["remaining_missing"], 7)
+
     def test_recent_fetch_strategy_keeps_old_first_n_behavior(self):
         client = StravaClient()
         cached = client.normalize_activity({"id": 1, "name": "Cached"})
