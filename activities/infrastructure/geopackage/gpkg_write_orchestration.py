@@ -112,6 +112,16 @@ def _import_qgis_spatial_index_api():
     return QgsFeatureSource, QgsVectorDataProvider, QgsVectorLayer
 
 
+def _import_ogr_spatial_index_api():
+    try:
+        from osgeo import ogr
+    except ImportError as exc:  # pragma: no cover
+        raise RuntimeError("GDAL Python bindings are required to create GeoPackage spatial indexes") from exc
+
+    ogr.UseExceptions()
+    return ogr
+
+
 def ensure_spatial_indexes(output_path):
     """Create derived-layer spatial indexes inside *output_path* if missing."""
     _ensure_spatial_indexes(output_path, DERIVED_LAYER_ATTRIBUTE_INDEXES)
@@ -122,23 +132,106 @@ def ensure_route_spatial_indexes(output_path):
     _ensure_spatial_indexes(output_path, {"route_tracks": None, "route_points": None})
 
 
+def _quote_gpkg_identifier(value):
+    return "'" + str(value).replace("'", "''") + "'"
+
+
+def _spatial_index_table_names(layer_name, geometry_column):
+    prefix = f"rtree_{layer_name}_{geometry_column}"
+    return {
+        prefix,
+        f"{prefix}_rowid",
+        f"{prefix}_node",
+        f"{prefix}_parent",
+    }
+
+
+def _geometry_column_name(connection, layer_name):
+    row = connection.execute(
+        "SELECT column_name FROM gpkg_geometry_columns WHERE table_name = ?",
+        (layer_name,),
+    ).fetchone()
+    if row is None:
+        return None
+    return row[0]
+
+
+def _has_spatial_index(connection, layer_name, geometry_column):
+    extension_row = connection.execute(
+        """
+        SELECT 1
+        FROM gpkg_extensions
+        WHERE table_name = ?
+          AND column_name = ?
+          AND extension_name = 'gpkg_rtree_index'
+        """,
+        (layer_name, geometry_column),
+    ).fetchone()
+    if extension_row is None:
+        return False
+
+    expected_tables = _spatial_index_table_names(layer_name, geometry_column)
+    rows = connection.execute(
+        "SELECT name FROM sqlite_master WHERE type = 'table'"
+    ).fetchall()
+    existing_tables = {row[0] for row in rows}
+    return expected_tables.issubset(existing_tables)
+
+
+def _create_spatial_index_with_ogr(output_path, layer_name, geometry_column):
+    ogr = _import_ogr_spatial_index_api()
+    data_source = ogr.Open(str(output_path), update=1)
+    if data_source is None:
+        raise RuntimeError(f"Failed to open GeoPackage {output_path} for spatial index creation")
+
+    result = None
+    try:
+        result = data_source.ExecuteSQL(
+            "SELECT CreateSpatialIndex("
+            f"{_quote_gpkg_identifier(layer_name)}, "
+            f"{_quote_gpkg_identifier(geometry_column)})"
+        )
+    finally:
+        if result is not None:
+            data_source.ReleaseResultSet(result)
+        data_source = None
+
+
+def _create_spatial_index_with_qgis(output_path, layer_name):
+    _, qgs_vector_data_provider, qgs_vector_layer = _import_qgis_spatial_index_api()
+    layer = qgs_vector_layer(f"{output_path}|layername={layer_name}", layer_name, "ogr")
+    if not layer.isValid():
+        raise RuntimeError(f"Failed to load GeoPackage layer {layer_name!r} from {output_path}")
+
+    provider = layer.dataProvider()
+    if not provider.capabilities() & qgs_vector_data_provider.CreateSpatialIndex:
+        raise RuntimeError(f"Layer {layer_name!r} does not support spatial index creation")
+
+    if not provider.createSpatialIndex():
+        raise RuntimeError(f"Failed to create spatial index for layer {layer_name!r}")
+
+
+def _create_spatial_index(output_path, layer_name, geometry_column):
+    try:
+        _create_spatial_index_with_ogr(output_path, layer_name, geometry_column)
+    except RuntimeError:
+        _create_spatial_index_with_qgis(output_path, layer_name)
+
+
 def _ensure_spatial_indexes(output_path, index_groups):
-    qgs_feature_source, qgs_vector_data_provider, qgs_vector_layer = _import_qgis_spatial_index_api()
-
     for layer_name in index_groups:
-        layer = qgs_vector_layer(f"{output_path}|layername={layer_name}", layer_name, "ogr")
-        if not layer.isValid():
-            raise RuntimeError(f"Failed to load GeoPackage layer {layer_name!r} from {output_path}")
+        with sqlite3.connect(output_path) as connection:
+            geometry_column = _geometry_column_name(connection, layer_name)
+            if geometry_column is None:
+                raise RuntimeError(f"Layer {layer_name!r} has no GeoPackage geometry metadata")
+            if _has_spatial_index(connection, layer_name, geometry_column):
+                continue
 
-        provider = layer.dataProvider()
-        if not provider.capabilities() & qgs_vector_data_provider.CreateSpatialIndex:
-            raise RuntimeError(f"Layer {layer_name!r} does not support spatial index creation")
+        _create_spatial_index(output_path, layer_name, geometry_column)
 
-        if provider.hasSpatialIndex() == qgs_feature_source.SpatialIndexPresent:
-            continue
-
-        if not provider.createSpatialIndex():
-            raise RuntimeError(f"Failed to create spatial index for layer {layer_name!r}")
+        with sqlite3.connect(output_path) as connection:
+            if not _has_spatial_index(connection, layer_name, geometry_column):
+                raise RuntimeError(f"Failed to create spatial index for layer {layer_name!r}")
 
 
 def bootstrap_empty_gpkg(output_path, atlas_page_settings):

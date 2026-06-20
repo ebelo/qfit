@@ -1,6 +1,8 @@
 import importlib
 import os
+import sqlite3
 import sys
+import tempfile
 import unittest
 from types import ModuleType
 from unittest.mock import MagicMock, call, patch
@@ -16,6 +18,54 @@ class GeoPackagePackageUnitTests(unittest.TestCase):
         for key, value in attrs.items():
             setattr(module, key, value)
         return module
+
+    def _import_gpkg_write_orchestration_with_stubs(self):
+        module_overrides = {
+            "qfit.activities.infrastructure.geopackage.gpkg_io": self._module(
+                "qfit.activities.infrastructure.geopackage.gpkg_io",
+                write_layer_to_gpkg=MagicMock(),
+            ),
+            "qfit.activities.infrastructure.geopackage.gpkg_layer_builders": self._module(
+                "qfit.activities.infrastructure.geopackage.gpkg_layer_builders",
+                build_track_layer=MagicMock(),
+                build_start_layer=MagicMock(),
+            ),
+            "qfit.activities.infrastructure.geopackage.gpkg_point_layer_builder": self._module(
+                "qfit.activities.infrastructure.geopackage.gpkg_point_layer_builder",
+                build_point_layer=MagicMock(),
+            ),
+            "qfit.activities.infrastructure.geopackage.gpkg_route_layer_builders": self._module(
+                "qfit.activities.infrastructure.geopackage.gpkg_route_layer_builders",
+                build_route_track_layer=MagicMock(),
+                build_route_point_layer=MagicMock(),
+                build_route_profile_sample_layer=MagicMock(),
+            ),
+            "qfit.activities.infrastructure.geopackage.gpkg_atlas_page_builder": self._module(
+                "qfit.activities.infrastructure.geopackage.gpkg_atlas_page_builder",
+                build_atlas_layer=MagicMock(),
+            ),
+            "qfit.activities.infrastructure.geopackage.gpkg_atlas_table_builders": self._module(
+                "qfit.activities.infrastructure.geopackage.gpkg_atlas_table_builders",
+                build_cover_highlight_layer=MagicMock(),
+                build_document_summary_layer=MagicMock(),
+                build_page_detail_item_layer=MagicMock(),
+                build_profile_sample_layer=MagicMock(),
+                build_toc_layer=MagicMock(),
+            ),
+            "qfit.atlas.publish_atlas": self._module(
+                "qfit.atlas.publish_atlas",
+                build_atlas_page_plans=MagicMock(return_value=[]),
+            ),
+        }
+
+        with patch.dict(sys.modules, module_overrides):
+            sys.modules.pop(
+                "qfit.activities.infrastructure.geopackage.gpkg_write_orchestration",
+                None,
+            )
+            return importlib.import_module(
+                "qfit.activities.infrastructure.geopackage.gpkg_write_orchestration"
+            )
 
     def test_moved_gpkg_writer_and_root_shim_share_same_class(self):
         normalize_settings = MagicMock(return_value={"margin_percent": 12})
@@ -321,47 +371,8 @@ class GeoPackagePackageUnitTests(unittest.TestCase):
                 def __exit__(self, exc_type, exc, tb):
                     return False
 
-            spatial_index_calls = []
-
-            class _FeatureSource:
-                SpatialIndexNotPresent = 1
-                SpatialIndexPresent = 2
-
-            class _VectorDataProvider:
-                CreateSpatialIndex = 1
-
-            class _Provider:
-                def __init__(self, layer_name):
-                    self.layer_name = layer_name
-
-                def capabilities(self):
-                    return _VectorDataProvider.CreateSpatialIndex
-
-                def hasSpatialIndex(self):
-                    return _FeatureSource.SpatialIndexPresent
-
-                def createSpatialIndex(self):
-                    spatial_index_calls.append(self.layer_name)
-                    return True
-
-            class _Layer:
-                def __init__(self, uri, layer_name, provider_key):
-                    self.uri = uri
-                    self.layer_name = layer_name
-                    self.provider_key = provider_key
-
-                def isValid(self):
-                    return True
-
-                def dataProvider(self):
-                    return _Provider(self.layer_name)
-
             with patch.object(moved.sqlite3, "connect", return_value=_Connection()) as sqlite_connect, \
-                    patch.object(
-                        moved,
-                        "_import_qgis_spatial_index_api",
-                        return_value=(_FeatureSource, _VectorDataProvider, lambda uri, layer_name, provider_key: _Layer(uri, layer_name, provider_key)),
-                    ):
+                    patch.object(moved, "ensure_spatial_indexes") as ensure_spatial_indexes:
                 layers = moved.build_and_write_all_layers(
                     [{"name": "Evening Run"}],
                     "/tmp/full.gpkg",
@@ -396,125 +407,192 @@ class GeoPackagePackageUnitTests(unittest.TestCase):
                     executed_sql,
                 )
                 self.assertEqual(executed_sql[-1], "COMMIT")
-                self.assertEqual(spatial_index_calls, [])
+                ensure_spatial_indexes.assert_called_once_with("/tmp/full.gpkg")
 
-            present = _FeatureSource.SpatialIndexPresent
-            missing = _FeatureSource.SpatialIndexNotPresent
-            loaded_layers = []
+    def test_ensure_spatial_indexes_skips_qgis_provider_when_rtree_exists(self):
+        moved = self._import_gpkg_write_orchestration_with_stubs()
+        fd, path = tempfile.mkstemp(suffix=".gpkg")
+        os.close(fd)
+        try:
+            with sqlite3.connect(path) as connection:
+                self._create_minimal_spatial_index_metadata(connection, "activity_tracks", "geom")
 
-            class _SpatialProvider:
-                def __init__(self, state):
-                    self.state = state
-                    self.create_calls = 0
+            with patch.object(moved, "_create_spatial_index") as create_spatial_index:
+                moved._ensure_spatial_indexes(path, {"activity_tracks": None})
 
-                def capabilities(self):
-                    return _VectorDataProvider.CreateSpatialIndex
+            create_spatial_index.assert_not_called()
+        finally:
+            if os.path.exists(path):
+                os.unlink(path)
 
-                def hasSpatialIndex(self):
-                    return self.state
+    def test_ensure_spatial_indexes_creates_only_missing_rtree(self):
+        moved = self._import_gpkg_write_orchestration_with_stubs()
+        fd, path = tempfile.mkstemp(suffix=".gpkg")
+        os.close(fd)
+        try:
+            with sqlite3.connect(path) as connection:
+                self._create_minimal_geometry_metadata(connection, "activity_tracks", "geom")
 
-                def createSpatialIndex(self):
-                    self.create_calls += 1
-                    self.state = present
-                    return True
+            def create_spatial_index(output_path, layer_name, geometry_column):
+                self.assertEqual(output_path, path)
+                self.assertEqual(layer_name, "activity_tracks")
+                self.assertEqual(geometry_column, "geom")
+                with sqlite3.connect(output_path) as connection:
+                    self._create_minimal_spatial_index_metadata(connection, layer_name, geometry_column)
 
-            providers = {
-                "activity_tracks": _SpatialProvider(missing),
-                "activity_starts": _SpatialProvider(present),
-                "activity_points": _SpatialProvider(missing),
-                "activity_atlas_pages": _SpatialProvider(present),
-            }
+            with patch.object(moved, "_create_spatial_index", side_effect=create_spatial_index) as create:
+                moved._ensure_spatial_indexes(path, {"activity_tracks": None})
 
-            class _SpatialLayer:
-                def __init__(self, uri, layer_name, provider_key):
-                    loaded_layers.append((uri, layer_name, provider_key))
-                    self.layer_name = layer_name
+            create.assert_called_once_with(path, "activity_tracks", "geom")
+        finally:
+            if os.path.exists(path):
+                os.unlink(path)
 
-                def isValid(self):
-                    return True
+    def test_ensure_spatial_indexes_requires_geometry_metadata(self):
+        moved = self._import_gpkg_write_orchestration_with_stubs()
+        fd, path = tempfile.mkstemp(suffix=".gpkg")
+        os.close(fd)
+        try:
+            with sqlite3.connect(path) as connection:
+                connection.execute(
+                    "CREATE TABLE gpkg_geometry_columns (table_name TEXT, column_name TEXT)"
+                )
+                connection.commit()
 
-                def dataProvider(self):
-                    return providers[self.layer_name]
+            with self.assertRaisesRegex(RuntimeError, "has no GeoPackage geometry metadata"):
+                moved._ensure_spatial_indexes(path, {"activity_tracks": None})
+        finally:
+            if os.path.exists(path):
+                os.unlink(path)
 
-            with patch.object(
-                moved,
-                "_import_qgis_spatial_index_api",
-                return_value=(_FeatureSource, _VectorDataProvider, lambda uri, layer_name, provider_key: _SpatialLayer(uri, layer_name, provider_key)),
-            ):
-                moved.ensure_spatial_indexes("/tmp/full.gpkg")
+    def test_spatial_index_helpers_quote_and_name_gpkg_objects(self):
+        moved = self._import_gpkg_write_orchestration_with_stubs()
 
-            self.assertEqual(
-                loaded_layers,
-                [
-                    ("/tmp/full.gpkg|layername=activity_tracks", "activity_tracks", "ogr"),
-                    ("/tmp/full.gpkg|layername=activity_starts", "activity_starts", "ogr"),
-                    ("/tmp/full.gpkg|layername=activity_points", "activity_points", "ogr"),
-                    ("/tmp/full.gpkg|layername=activity_atlas_pages", "activity_atlas_pages", "ogr"),
-                ],
-            )
-            self.assertEqual(providers["activity_tracks"].create_calls, 1)
-            self.assertEqual(providers["activity_starts"].create_calls, 0)
-            self.assertEqual(providers["activity_points"].create_calls, 1)
-            self.assertEqual(providers["activity_atlas_pages"].create_calls, 0)
+        self.assertEqual(moved._quote_gpkg_identifier("activity's"), "'activity''s'")
+        self.assertEqual(
+            moved._spatial_index_table_names("activity_tracks", "geom"),
+            {
+                "rtree_activity_tracks_geom",
+                "rtree_activity_tracks_geom_rowid",
+                "rtree_activity_tracks_geom_node",
+                "rtree_activity_tracks_geom_parent",
+            },
+        )
 
-            class _InvalidLayer:
-                def isValid(self):
-                    return False
+    def test_create_spatial_index_with_ogr_executes_gpkg_sql_and_releases_result(self):
+        moved = self._import_gpkg_write_orchestration_with_stubs()
+        calls = []
 
-            with patch.object(
-                moved,
-                "_import_qgis_spatial_index_api",
-                return_value=(_FeatureSource, _VectorDataProvider, lambda uri, layer_name, provider_key: _InvalidLayer()),
-            ):
-                with self.assertRaisesRegex(RuntimeError, "Failed to load GeoPackage layer 'activity_tracks'"):
-                    moved.ensure_spatial_indexes("/tmp/full.gpkg")
+        class _DataSource:
+            def ExecuteSQL(self, statement):
+                calls.append(("sql", statement))
+                return "result"
 
-            class _NoCapabilityProvider:
-                def capabilities(self):
-                    return 0
+            def ReleaseResultSet(self, result):
+                calls.append(("release", result))
 
-                def hasSpatialIndex(self):
-                    return missing
+        class _Ogr:
+            def Open(self, path, update=0):
+                calls.append(("open", path, update))
+                return _DataSource()
 
-            class _NoCapabilityLayer:
-                def isValid(self):
-                    return True
+        with patch.object(moved, "_import_ogr_spatial_index_api", return_value=_Ogr()):
+            moved._create_spatial_index_with_ogr("/tmp/full.gpkg", "activity's", "geom")
 
-                def dataProvider(self):
-                    return _NoCapabilityProvider()
+        self.assertEqual(calls[0], ("open", "/tmp/full.gpkg", 1))
+        self.assertEqual(
+            calls[1],
+            (
+                "sql",
+                "SELECT CreateSpatialIndex('activity''s', 'geom')",
+            ),
+        )
+        self.assertEqual(calls[2], ("release", "result"))
 
-            with patch.object(
-                moved,
-                "_import_qgis_spatial_index_api",
-                return_value=(_FeatureSource, _VectorDataProvider, lambda uri, layer_name, provider_key: _NoCapabilityLayer()),
-            ):
-                with self.assertRaisesRegex(RuntimeError, "does not support spatial index creation"):
-                    moved.ensure_spatial_indexes("/tmp/full.gpkg")
+    def test_create_spatial_index_with_ogr_reports_open_failure(self):
+        moved = self._import_gpkg_write_orchestration_with_stubs()
 
-            class _CreateFailureProvider:
-                def capabilities(self):
-                    return _VectorDataProvider.CreateSpatialIndex
+        class _Ogr:
+            def Open(self, path, update=0):
+                return None
 
-                def hasSpatialIndex(self):
-                    return missing
+        with patch.object(moved, "_import_ogr_spatial_index_api", return_value=_Ogr()):
+            with self.assertRaisesRegex(RuntimeError, "Failed to open GeoPackage"):
+                moved._create_spatial_index_with_ogr("/tmp/full.gpkg", "activity_tracks", "geom")
 
-                def createSpatialIndex(self):
-                    return False
+    def test_create_spatial_index_falls_back_to_qgis_when_ogr_fails(self):
+        moved = self._import_gpkg_write_orchestration_with_stubs()
 
-            class _CreateFailureLayer:
-                def isValid(self):
-                    return True
+        with patch.object(moved, "_create_spatial_index_with_ogr", side_effect=RuntimeError("ogr failed")) as ogr_create, \
+                patch.object(moved, "_create_spatial_index_with_qgis") as qgis_create:
+            moved._create_spatial_index("/tmp/full.gpkg", "activity_tracks", "geom")
 
-                def dataProvider(self):
-                    return _CreateFailureProvider()
+        ogr_create.assert_called_once_with("/tmp/full.gpkg", "activity_tracks", "geom")
+        qgis_create.assert_called_once_with("/tmp/full.gpkg", "activity_tracks")
 
-            with patch.object(
-                moved,
-                "_import_qgis_spatial_index_api",
-                return_value=(_FeatureSource, _VectorDataProvider, lambda uri, layer_name, provider_key: _CreateFailureLayer()),
-            ):
-                with self.assertRaisesRegex(RuntimeError, "Failed to create spatial index for layer 'activity_tracks'"):
-                    moved.ensure_spatial_indexes("/tmp/full.gpkg")
+    def test_create_spatial_index_with_qgis_keeps_provider_fallback(self):
+        moved = self._import_gpkg_write_orchestration_with_stubs()
+        create_calls = []
+
+        class _VectorDataProvider:
+            CreateSpatialIndex = 1
+
+        class _Provider:
+            def capabilities(self):
+                return _VectorDataProvider.CreateSpatialIndex
+
+            def createSpatialIndex(self):
+                create_calls.append("create")
+                return True
+
+        class _Layer:
+            def __init__(self, uri, layer_name, provider_key):
+                self.uri = uri
+                self.layer_name = layer_name
+                self.provider_key = provider_key
+
+            def isValid(self):
+                return True
+
+            def dataProvider(self):
+                return _Provider()
+
+        with patch.object(
+            moved,
+            "_import_qgis_spatial_index_api",
+            return_value=(None, _VectorDataProvider, _Layer),
+        ):
+            moved._create_spatial_index_with_qgis("/tmp/full.gpkg", "activity_tracks")
+
+        self.assertEqual(create_calls, ["create"])
+
+    def _create_minimal_geometry_metadata(self, connection, layer_name, geometry_column):
+        connection.execute(
+            "CREATE TABLE IF NOT EXISTS gpkg_geometry_columns (table_name TEXT, column_name TEXT)"
+        )
+        connection.execute(
+            "CREATE TABLE IF NOT EXISTS gpkg_extensions (table_name TEXT, column_name TEXT, extension_name TEXT)"
+        )
+        connection.execute(
+            "INSERT INTO gpkg_geometry_columns (table_name, column_name) VALUES (?, ?)",
+            (layer_name, geometry_column),
+        )
+        connection.commit()
+
+    def _create_minimal_spatial_index_metadata(self, connection, layer_name, geometry_column):
+        self._create_minimal_geometry_metadata(connection, layer_name, geometry_column)
+        connection.execute(
+            "INSERT INTO gpkg_extensions (table_name, column_name, extension_name) VALUES (?, ?, 'gpkg_rtree_index')",
+            (layer_name, geometry_column),
+        )
+        for table_name in (
+            f"rtree_{layer_name}_{geometry_column}",
+            f"rtree_{layer_name}_{geometry_column}_rowid",
+            f"rtree_{layer_name}_{geometry_column}_node",
+            f"rtree_{layer_name}_{geometry_column}_parent",
+        ):
+            connection.execute(f"CREATE TABLE {table_name} (id INTEGER)")
+        connection.commit()
 
 
 if __name__ == "__main__":
