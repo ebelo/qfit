@@ -172,6 +172,88 @@ class LayerGatewayBoundaryTests(unittest.TestCase):
 
         project.setCrs.assert_called_once_with(project_crs)
 
+    def test_qgis_gateway_current_project_crs_handles_unavailable_project(self):
+        modules = self._qgis_gateway_modules()
+
+        with patch.dict(sys.modules, modules, clear=False):
+            self._reset_qgis_gateway_imports()
+            adapter_module = importlib.import_module(
+                "qfit.visualization.infrastructure.qgis_layer_gateway"
+            )
+
+            gateway = adapter_module.QgisLayerGateway(MagicMock(name="iface"))
+            modules["qgis.core"].QgsProject.instance.return_value.crs.side_effect = RuntimeError("closed")
+
+            self.assertIsNone(gateway._current_project_crs())
+
+    def test_qgis_gateway_current_project_crs_handles_missing_or_broken_crs(self):
+        modules = self._qgis_gateway_modules()
+
+        with patch.dict(sys.modules, modules, clear=False):
+            self._reset_qgis_gateway_imports()
+            adapter_module = importlib.import_module(
+                "qfit.visualization.infrastructure.qgis_layer_gateway"
+            )
+
+            gateway = adapter_module.QgisLayerGateway(MagicMock(name="iface"))
+            project = modules["qgis.core"].QgsProject.instance.return_value
+
+            project.crs.return_value = None
+            self.assertIsNone(gateway._current_project_crs())
+
+            broken_crs = MagicMock(name="broken_crs")
+            broken_crs.isValid.side_effect = RuntimeError("invalid")
+            project.crs.return_value = broken_crs
+            self.assertIsNone(gateway._current_project_crs())
+
+    def test_qgis_gateway_restore_project_crs_handles_invalid_and_broken_crs(self):
+        modules = self._qgis_gateway_modules()
+
+        with patch.dict(sys.modules, modules, clear=False):
+            self._reset_qgis_gateway_imports()
+            adapter_module = importlib.import_module(
+                "qfit.visualization.infrastructure.qgis_layer_gateway"
+            )
+
+            gateway = adapter_module.QgisLayerGateway(MagicMock(name="iface"))
+            project = modules["qgis.core"].QgsProject.instance.return_value
+
+            gateway._restore_project_crs(None)
+
+            invalid_crs = MagicMock(name="invalid_crs")
+            invalid_crs.isValid.return_value = False
+            gateway._restore_project_crs(invalid_crs)
+
+            broken_crs = MagicMock(name="broken_crs")
+            broken_crs.isValid.side_effect = AttributeError("missing")
+            gateway._restore_project_crs(broken_crs)
+
+        project.setCrs.assert_not_called()
+
+    def test_qgis_gateway_restore_project_crs_handles_restore_failures(self):
+        modules = self._qgis_gateway_modules()
+
+        with patch.dict(sys.modules, modules, clear=False):
+            self._reset_qgis_gateway_imports()
+            adapter_module = importlib.import_module(
+                "qfit.visualization.infrastructure.qgis_layer_gateway"
+            )
+
+            gateway = adapter_module.QgisLayerGateway(MagicMock(name="iface"))
+            project = modules["qgis.core"].QgsProject.instance.return_value
+            project_crs = project.crs.return_value
+
+            project.setCrs.side_effect = RuntimeError("project closed")
+            gateway._restore_project_crs(project_crs)
+            gateway.iface.mapCanvas.return_value.setDestinationCrs.assert_not_called()
+
+            project.setCrs.side_effect = None
+            gateway.iface.mapCanvas.return_value.setDestinationCrs.side_effect = RuntimeError("canvas closed")
+            gateway._restore_project_crs(project_crs)
+
+        self.assertEqual(project.setCrs.call_count, 2)
+        gateway.iface.mapCanvas.return_value.setDestinationCrs.assert_called_once_with(project_crs)
+
     def test_qgis_gateway_remove_layers_delegates_to_qgsproject(self):
         modules = self._qgis_gateway_modules()
 
