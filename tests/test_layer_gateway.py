@@ -67,8 +67,12 @@ class LayerGatewayBoundaryTests(unittest.TestCase):
         self.assertIsInstance(gateway, LayerGateway)
         canvas = gateway._canvas_service
         loader = gateway._project_layer_loader
-        canvas.ensure_working_crs.assert_called_once_with(gateway.iface, preserve_extent=False)
+        project = modules["qgis.core"].QgsProject.instance.return_value
+        project_crs = project.crs.return_value
+        canvas.ensure_working_crs.assert_not_called()
         loader.load_output_layers.assert_called_once_with("/tmp/out.gpkg")
+        project.setCrs.assert_called_once_with(project_crs)
+        gateway.iface.mapCanvas.return_value.setDestinationCrs.assert_called_once_with(project_crs)
         canvas.zoom_to_layers.assert_called_once_with(
             gateway.iface,
             [result[0], result[1], result[2], result[3]],
@@ -99,8 +103,12 @@ class LayerGatewayBoundaryTests(unittest.TestCase):
         self.assertIsInstance(gateway, LayerGateway)
         canvas = gateway._canvas_service
         loader = gateway._project_layer_loader
-        canvas.ensure_working_crs.assert_called_once_with(gateway.iface, preserve_extent=False)
+        project = modules["qgis.core"].QgsProject.instance.return_value
+        project_crs = project.crs.return_value
+        canvas.ensure_working_crs.assert_not_called()
         loader.load_route_layers.assert_called_once_with("/tmp/out.gpkg")
+        project.setCrs.assert_called_once_with(project_crs)
+        gateway.iface.mapCanvas.return_value.setDestinationCrs.assert_called_once_with(project_crs)
         gateway._style_service.apply_route_style.assert_called_once_with(*result)
         canvas.zoom_to_layers.assert_called_once_with(gateway.iface, result)
         gateway._move_background_layers_to_bottom.assert_called_once_with()
@@ -251,8 +259,12 @@ class LayerGatewayBoundaryTests(unittest.TestCase):
         modules["qfit.visualization.infrastructure.background_map_service"].BackgroundMapService.assert_not_called()
         modules["qfit.visualization.infrastructure.map_canvas_service"].MapCanvasService.assert_not_called()
         modules["qfit.visualization.infrastructure.project_layer_loader"].ProjectLayerLoader.assert_not_called()
-        gateway._canvas_service.ensure_working_crs.assert_called_once_with(gateway.iface, preserve_extent=False)
+        project = modules["qgis.core"].QgsProject.instance.return_value
+        project_crs = project.crs.return_value
+        gateway._canvas_service.ensure_working_crs.assert_not_called()
         gateway._project_layer_loader.load_output_layers.assert_called_once_with("/tmp/override.gpkg")
+        project.setCrs.assert_called_once_with(project_crs)
+        gateway.iface.mapCanvas.return_value.setDestinationCrs.assert_called_once_with(project_crs)
         gateway._background_service.ensure_background_layer.assert_called_once()
 
     @staticmethod
