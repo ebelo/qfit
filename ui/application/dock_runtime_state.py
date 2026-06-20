@@ -109,6 +109,8 @@ class DockRuntimeState:
     activities: tuple[object, ...] = field(default_factory=tuple)
     output_path: str | None = None
     stored_activity_count: int | None = None
+    detailed_route_count: int | None = None
+    detailed_route_total_count: int | None = None
     last_fetch_context: dict[str, Any] = field(default_factory=dict)
     layers: DockRuntimeLayers = field(default_factory=DockRuntimeLayers)
     tasks: DockRuntimeTasks = field(default_factory=DockRuntimeTasks)
@@ -198,11 +200,30 @@ class DockRuntimeStore:
         return self._replace_state(
             output_path=selected_path,
             stored_activity_count=None,
+            detailed_route_count=None,
+            detailed_route_total_count=None,
             layers=self._state.layers.clear_dataset().clear_routes(),
         )
 
     def set_last_fetch_context(self, last_fetch_context: dict[str, Any] | None) -> DockRuntimeState:
         return self._replace_state(last_fetch_context=dict(last_fetch_context or {}))
+
+    def set_detailed_route_coverage(
+        self,
+        *,
+        detailed_count: int | None,
+        total_count: int | None,
+    ) -> DockRuntimeState:
+        detailed_route_count = None if detailed_count is None else max(int(detailed_count), 0)
+        detailed_route_total_count = None if total_count is None else max(int(total_count), 0)
+        return self._replace_state(
+            detailed_route_count=detailed_route_count,
+            detailed_route_total_count=detailed_route_total_count,
+        )
+
+    def set_detailed_route_count(self, count: int | None) -> DockRuntimeState:
+        detailed_route_count = None if count is None else max(int(count), 0)
+        return self._replace_state(detailed_route_count=detailed_route_count)
 
     def set_dataset_layers(
         self,
@@ -364,6 +385,8 @@ class DockRuntimeStore:
             activities=(),
             output_path=None,
             stored_activity_count=None,
+            detailed_route_count=None,
+            detailed_route_total_count=None,
             last_fetch_context={},
             layers=self._state.layers.clear_dataset().clear_routes(),
         )

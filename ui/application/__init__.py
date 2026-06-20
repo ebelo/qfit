@@ -110,6 +110,7 @@ from .local_first_filter_summary import build_local_first_filter_description
 
 from .local_first_progress_facts import (
     LocalFirstProgressFacts,
+    current_local_first_detailed_route_count,
     current_local_first_last_sync_date,
     runtime_state_with_local_first_output_path,
 )
@@ -332,6 +333,7 @@ __all__ = [
     "build_stepper_items",
     "build_stepper_states",
     "build_startup_workflow_progress_facts",
+    "current_local_first_detailed_route_count",
     "current_local_first_last_sync_date",
     "build_workflow_footer_facts_from_progress_facts",
     "build_workflow_footer_status",

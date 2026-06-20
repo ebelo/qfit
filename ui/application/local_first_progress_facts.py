@@ -101,6 +101,18 @@ def current_local_first_activity_style_preset(dock) -> str | None:
     return stripped or None
 
 
+def current_local_first_detailed_route_count(dock) -> int | None:
+    """Return the last stored detailed-route coverage count for summaries."""
+
+    value = getattr(dock, "_detailed_route_count", None)
+    if value is None:
+        return None
+    try:
+        return max(int(value), 0)
+    except (TypeError, ValueError):
+        return None
+
+
 def current_local_first_visual_temporal_mode(dock) -> str:
     """Return qfit's internal non-dynamic temporal mode for visual actions."""
 
@@ -279,6 +291,7 @@ __all__ = [
     "current_local_first_atlas_output_path",
     "current_local_first_background_facts",
     "current_local_first_connection_configured",
+    "current_local_first_detailed_route_count",
     "current_local_first_filter_facts",
     "current_local_first_last_sync_date",
     "current_local_first_visual_temporal_mode",

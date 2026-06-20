@@ -150,6 +150,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self._atlas_export_completed = False
         self._atlas_export_output_path = None
         self._atlas_export_task_output_path = None
+        self._detailed_route_count = None
         self._dependencies = dependencies or build_dockwidget_dependencies(iface)
         self._bind_dependencies(self._dependencies)
         self.setupUi(self)
@@ -181,6 +182,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         """Keep live local-load actions in sync with the selected GeoPackage path."""
 
         self._runtime_store().select_output_path((value or "").strip() or None)
+        self._refresh_detailed_route_coverage_from_storage()
         self._refresh_live_dock_navigation_from_runtime()
 
     def _build_local_first_dock_from_runtime(self, *, parent=None):
@@ -824,6 +826,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             stored_activity_count=result.total_stored,
         )
         self._mark_atlas_export_stale()
+        self._refresh_detailed_route_coverage_from_storage()
         self._update_stored_activities_summary(result.total_stored)
         self._set_status(result.status)
 
@@ -980,6 +983,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._populate_activity_types_from_layer()
             visual_status = self._apply_visual_configuration(apply_subset_filters=False)
 
+            self._refresh_detailed_route_coverage_from_storage()
             self._update_loaded_activities_summary(result.total_stored)
             status = result.status
             if visual_status:
@@ -1297,6 +1301,32 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             )
         )
         self._refresh_summary_status()
+
+    def _refresh_detailed_route_coverage_from_storage(self):
+        output_path = self._widget_text("outputPathLineEdit").strip()
+        if not output_path:
+            self._detailed_route_count = None
+            self._runtime_store().set_detailed_route_coverage(
+                detailed_count=None,
+                total_count=None,
+            )
+            return None
+        try:
+            coverage = SyncRepository(output_path).load_detailed_route_coverage(provider="strava")
+        except (OSError, RuntimeError, sqlite3.Error):
+            logger.warning("Could not read detailed-route coverage from GeoPackage", exc_info=True)
+            self._detailed_route_count = None
+            self._runtime_store().set_detailed_route_coverage(
+                detailed_count=None,
+                total_count=None,
+            )
+            return None
+        self._detailed_route_count = coverage.detailed_count
+        self._runtime_store().set_detailed_route_coverage(
+            detailed_count=coverage.detailed_count,
+            total_count=coverage.total_count,
+        )
+        return coverage
 
     def _strava_credentials(self):
         return _StravaCredentials(

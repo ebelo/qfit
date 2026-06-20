@@ -775,6 +775,40 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertEqual(assembled.shell.footer_bar.sync_pill.text(), "sync 2026-04-16")
         self.assertEqual(assembled.shell.footer_bar.path_label.text(), "qfit.gpkg")
 
+    def test_sync_page_summary_reports_detailed_route_coverage(self):
+        facts = WorkflowProgressFacts(
+            connection_configured=True,
+            activities_stored=True,
+            activity_count=200,
+            detailed_route_count=4,
+            detailed_route_total_count=200,
+            output_name="qfit.gpkg",
+        )
+
+        assembled = self.composition.build_placeholder_wizard_shell(progress_facts=facts)
+
+        self.assertEqual(
+            assembled.sync_content.activity_summary_label.text(),
+            "200 activities stored in qfit.gpkg · Detailed routes: 4 / 200",
+        )
+
+    def test_sync_page_summary_uses_detailed_route_total_for_coverage(self):
+        facts = WorkflowProgressFacts(
+            connection_configured=True,
+            activities_stored=True,
+            activity_count=150,
+            detailed_route_count=120,
+            detailed_route_total_count=200,
+            output_name="qfit.gpkg",
+        )
+
+        assembled = self.composition.build_placeholder_wizard_shell(progress_facts=facts)
+
+        self.assertEqual(
+            assembled.sync_content.activity_summary_label.text(),
+            "150 activities stored in qfit.gpkg · Detailed routes: 120 / 200",
+        )
+
     def test_sync_page_summary_uses_singular_activity_count(self):
         facts = WorkflowProgressFacts(
             connection_configured=True,
