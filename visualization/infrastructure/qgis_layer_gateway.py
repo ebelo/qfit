@@ -47,8 +47,6 @@ def _build_layer_style_service():
 class QgisLayerGateway:
     """QGIS-backed adapter for loading, filtering, styling, and map wiring."""
 
-    WORKING_CRS = "EPSG:3857"
-
     def __init__(self, iface):
         self.iface = iface
         self._style_service = SimpleNamespace()
@@ -64,7 +62,7 @@ class QgisLayerGateway:
         return self._background_service
 
     def _get_canvas_service(self):
-        if not hasattr(self._canvas_service, "ensure_working_crs"):
+        if not hasattr(self._canvas_service, "zoom_to_layers"):
             self._canvas_service = _build_map_canvas_service(self._get_background_service())
         return self._canvas_service
 

@@ -132,7 +132,7 @@ def ensure_route_spatial_indexes(output_path):
     _ensure_spatial_indexes(output_path, {"route_tracks": None, "route_points": None})
 
 
-def _quote_gpkg_identifier(value):
+def _quote_sql_string_literal(value):
     return "'" + str(value).replace("'", "''") + "'"
 
 
@@ -157,6 +157,12 @@ def _geometry_column_name(connection, layer_name):
 
 
 def _has_spatial_index(connection, layer_name, geometry_column):
+    extensions_table = connection.execute(
+        "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'gpkg_extensions'"
+    ).fetchone()
+    if extensions_table is None:
+        return False
+
     extension_row = connection.execute(
         """
         SELECT 1
@@ -188,8 +194,8 @@ def _create_spatial_index_with_ogr(output_path, layer_name, geometry_column):
     try:
         result = data_source.ExecuteSQL(
             "SELECT CreateSpatialIndex("
-            f"{_quote_gpkg_identifier(layer_name)}, "
-            f"{_quote_gpkg_identifier(geometry_column)})"
+            f"{_quote_sql_string_literal(layer_name)}, "
+            f"{_quote_sql_string_literal(geometry_column)})"
         )
     finally:
         if result is not None:
@@ -214,8 +220,17 @@ def _create_spatial_index_with_qgis(output_path, layer_name):
 def _create_spatial_index(output_path, layer_name, geometry_column):
     try:
         _create_spatial_index_with_ogr(output_path, layer_name, geometry_column)
-    except RuntimeError:
-        _create_spatial_index_with_qgis(output_path, layer_name)
+    except RuntimeError as ogr_error:
+        try:
+            _create_spatial_index_with_qgis(output_path, layer_name)
+        except RuntimeError as qgis_error:
+            combined_error = RuntimeError(
+                "Failed to create spatial index with OGR "
+                f"({ogr_error}) and QGIS fallback ({qgis_error})"
+            )
+            if hasattr(combined_error, "add_note"):
+                combined_error.add_note(f"OGR error: {ogr_error!r}")
+            raise combined_error from qgis_error
 
 
 def _ensure_spatial_indexes(output_path, index_groups):

@@ -368,6 +368,55 @@ class MapCanvasServiceMockTests(unittest.TestCase):
         canvas.setExtent.assert_called_once()
         canvas.refresh.assert_called_once()
 
+    def test_zoom_to_layers_transforms_layer_extent_to_canvas_crs(self):
+        iface, canvas = _make_iface()
+        layer, extent = _make_layer((0, 0, 1, 1))
+        source_crs = MagicMock(name="source_crs")
+        source_crs.isValid.return_value = True
+        destination_crs = MagicMock(name="destination_crs")
+        destination_crs.isValid.return_value = True
+        layer.crs.return_value = source_crs
+        canvas.mapSettings.return_value.destinationCrs.return_value = destination_crs
+        self._bg.snap_extent_to_background_tile_zoom.side_effect = lambda e, c: e
+
+        transformed = MagicMock(name="transformed_extent")
+        transformed.isEmpty.return_value = False
+        transform = MagicMock(name="transform")
+        transform.transformBoundingBox.return_value = transformed
+        _def_service_module.QgsCoordinateTransform.reset_mock()
+        _def_service_module.QgsCoordinateTransform.return_value = transform
+
+        self.service.zoom_to_layers(iface, [layer])
+
+        _def_service_module.QgsCoordinateTransform.assert_called_once_with(
+            source_crs,
+            destination_crs,
+            _def_service_module.QgsProject.instance.return_value,
+        )
+        transform.transformBoundingBox.assert_called_once_with(extent)
+        canvas.setExtent.assert_called_once_with(transformed)
+
+    def test_zoom_to_layers_falls_back_when_extent_transform_raises_qgs_exception(self):
+        iface, canvas = _make_iface()
+        layer, extent = _make_layer((0, 0, 1, 1))
+        source_crs = MagicMock(name="source_crs")
+        source_crs.isValid.return_value = True
+        destination_crs = MagicMock(name="destination_crs")
+        destination_crs.isValid.return_value = True
+        layer.crs.return_value = source_crs
+        canvas.mapSettings.return_value.destinationCrs.return_value = destination_crs
+        self._bg.snap_extent_to_background_tile_zoom.side_effect = lambda e, c: e
+
+        transform = MagicMock(name="transform")
+        transform.transformBoundingBox.side_effect = _def_service_module.QgsCsException("boom")
+        _def_service_module.QgsCoordinateTransform.reset_mock()
+        _def_service_module.QgsCoordinateTransform.return_value = transform
+
+        self.service.zoom_to_layers(iface, [layer])
+
+        transform.transformBoundingBox.assert_called_once_with(extent)
+        canvas.setExtent.assert_called_once_with(extent)
+
     def test_zoom_to_layers_noop_when_all_extents_empty(self):
         iface, canvas = _make_iface()
         layer, _ = _make_layer()
