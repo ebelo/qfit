@@ -56,10 +56,11 @@ Routes are intentionally kept separate from completed activities so planning
 data does not get mixed into activity history.
 
 Saved routes use Strava's route-list, route-detail, and GPX export endpoints
-through the same OAuth refresh-token flow as activity imports. Private routes
-may require Strava's `read_all` scope. If you authorized qfit before route
-catalog support and Strava later denies route access, re-authorize qfit with a
-token that includes the additional route visibility you need.
+through the same OAuth refresh-token flow as activity imports. Strava filters
+private routes from the route-list endpoint unless the token has the `read_all`
+scope, and private-route GPX export has the same requirement. qfit's OAuth
+helper requests `read_all`; if you authorized qfit before that scope was added,
+re-authorize qfit from Settings before syncing private saved routes.
 
 When route records are written to a qfit GeoPackage, they use dedicated route
 objects:
