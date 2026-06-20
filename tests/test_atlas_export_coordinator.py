@@ -3,7 +3,11 @@ from unittest.mock import MagicMock, patch
 
 from tests import _path  # noqa: F401
 
-from qfit.atlas.export_coordinator import AtlasExportCoordinator, AtlasExportExecutionResult
+from qfit.atlas.export_coordinator import (
+    _REQUIRED_ATLAS_FIELDS,
+    AtlasExportCoordinator,
+    AtlasExportExecutionResult,
+)
 from qfit.atlas.infrastructure import AtlasPdfAssemblyCancelled
 
 
@@ -11,6 +15,13 @@ class AtlasExportCoordinatorTests(unittest.TestCase):
     def _make_coordinator(self, *, feature_count=2, canceled=False):
         atlas_layer = MagicMock(name="atlas_layer")
         atlas_layer.featureCount.return_value = feature_count
+        fields = MagicMock(name="fields")
+        fields.indexOf.side_effect = (
+            lambda name: _REQUIRED_ATLAS_FIELDS.index(name)
+            if name in _REQUIRED_ATLAS_FIELDS
+            else -1
+        )
+        atlas_layer.fields.return_value = fields
 
         layout = object()
         exporter_instance = object()
@@ -57,6 +68,28 @@ class AtlasExportCoordinatorTests(unittest.TestCase):
             "assemble_output_pdf": assemble_output_pdf,
             "logger": logger,
         }
+
+    def test_execute_resolves_unknown_filtered_feature_count(self):
+        parts = self._make_coordinator(feature_count=-1)
+        parts["atlas_layer"].getFeatures.return_value = iter([object(), object(), object()])
+
+        result = parts["coordinator"].execute()
+
+        self.assertEqual(result, AtlasExportExecutionResult(success=True, page_count=3, error=None))
+
+    def test_execute_rejects_incomplete_legacy_atlas_layer(self):
+        parts = self._make_coordinator()
+        parts["atlas_layer"].fields.return_value.indexOf.side_effect = (
+            lambda name: 0 if name in {"page_number", "page_sort_key"} else -1
+        )
+
+        result = parts["coordinator"].execute()
+
+        self.assertFalse(result.success)
+        self.assertEqual(result.page_count, 2)
+        self.assertIn("Atlas layer is incomplete for PDF export", result.error)
+        self.assertIn("page_title", result.error)
+        parts["build_layout"].assert_not_called()
 
     def test_execute_returns_empty_layer_error(self):
         parts = self._make_coordinator(feature_count=0)
@@ -127,6 +160,52 @@ class AtlasExportCoordinatorTests(unittest.TestCase):
         self.assertEqual(result, AtlasExportExecutionResult(success=False, page_count=2))
         parts["export_cover_page"].assert_called_once()
         parts["export_toc_page"].assert_not_called()
+        parts["assemble_output_pdf"].assert_not_called()
+        self.assertEqual(
+            [call.args[0] for call in remove.call_args_list],
+            ["/tmp/cover.pdf", "/tmp/page-0.pdf"],
+        )
+
+    def test_execute_fails_when_cover_page_is_missing(self):
+        parts = self._make_coordinator()
+        parts["export_cover_page"].return_value = None
+
+        with patch("qfit.atlas.export_coordinator.os.remove") as remove:
+            result = parts["coordinator"].execute()
+
+        self.assertEqual(
+            result,
+            AtlasExportExecutionResult(
+                success=False,
+                page_count=2,
+                error=(
+                    "Cover page export failed. Store and reload the activity "
+                    "map layers, then export again."
+                ),
+            ),
+        )
+        parts["export_toc_page"].assert_not_called()
+        parts["assemble_output_pdf"].assert_not_called()
+        remove.assert_called_once_with("/tmp/page-0.pdf")
+
+    def test_execute_fails_when_contents_page_is_missing(self):
+        parts = self._make_coordinator()
+        parts["export_toc_page"].return_value = None
+
+        with patch("qfit.atlas.export_coordinator.os.remove") as remove:
+            result = parts["coordinator"].execute()
+
+        self.assertEqual(
+            result,
+            AtlasExportExecutionResult(
+                success=False,
+                page_count=2,
+                error=(
+                    "Contents page export failed. Store and reload the activity "
+                    "map layers, then export again."
+                ),
+            ),
+        )
         parts["assemble_output_pdf"].assert_not_called()
         self.assertEqual(
             [call.args[0] for call in remove.call_args_list],
