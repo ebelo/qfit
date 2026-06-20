@@ -55,7 +55,6 @@ _ACTION_SURFACES = (
             "syncRequested",
             "storeRequested",
             "syncRoutesRequested",
-            "clearDatabaseRequested",
             "loadActivitiesRequested",
         ),
     ),

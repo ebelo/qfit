@@ -429,11 +429,6 @@ def _connect_action_callbacks(
         callbacks.load_activity_layers,
     )
     _connect_optional_signal(
-        sync_content,
-        "clearDatabaseRequested",
-        callbacks.clear_database,
-    )
-    _connect_optional_signal(
         map_content,
         "loadLayersRequested",
         callbacks.load_activity_layers,
