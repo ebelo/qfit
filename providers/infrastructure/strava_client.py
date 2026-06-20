@@ -118,7 +118,7 @@ class StravaClient:
         "temp",
         "grade_smooth",
     ]
-    DEFAULT_SCOPE = "read,activity:read_all"
+    DEFAULT_SCOPE = "read,read_all,activity:read_all"
     DEFAULT_REDIRECT_URI = "http://localhost/exchange_token"
 
     def __init__(

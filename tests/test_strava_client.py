@@ -16,7 +16,7 @@ class StravaClientTests(unittest.TestCase):
         self.assertIn("client_id=123", url)
         self.assertIn("response_type=code", url)
         self.assertIn("approval_prompt=force", url)
-        self.assertIn("scope=read%2Cactivity%3Aread_all", url)
+        self.assertIn("scope=read%2Cread_all%2Cactivity%3Aread_all", url)
 
     def test_normalize_activity_maps_core_fields(self):
         client = StravaClient()
