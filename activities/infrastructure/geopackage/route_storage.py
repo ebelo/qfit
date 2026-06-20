@@ -215,6 +215,8 @@ class GeoPackageRouteStore:
     def _prune_missing_routes(self, cursor, routes, sync_metadata):
         if not sync_metadata.get("is_full_sync"):
             return
+        if sync_metadata.get("fetch_notice"):
+            return
 
         provider = sync_metadata.get("provider") or self._infer_single_provider(routes)
         if provider is None:

@@ -282,7 +282,7 @@ class StravaClient:
                 )
 
             routes.extend(self.normalize_route(item) for item in payload)
-            if len(payload) < current_per_page:
+            if not payload:
                 break
             if max_pages == 0 and self._should_pause_full_sync_for_rate_limit():
                 self.last_fetch_notice = self._rate_limit_pause_notice()
