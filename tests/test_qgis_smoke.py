@@ -17,6 +17,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 try:
     from qgis.core import (
         QgsApplication,
+        QgsCoordinateReferenceSystem,
         QgsCoordinateTransform,
         QgsFeature,
         QgsLayoutExporter,
@@ -71,6 +72,7 @@ try:
     QGIS_IMPORT_ERROR = None
 except Exception as exc:  # pragma: no cover - exercised only when QGIS is unavailable
     QgsApplication = None
+    QgsCoordinateReferenceSystem = None
     QgsFeature = None
     QgsLayoutExporter = None
     QgsProject = None
@@ -1069,6 +1071,10 @@ class QgisSmokeTests(unittest.TestCase):
             background = self.layer_manager.ensure_background_layer(True, "Outdoor", "test-token")
             background_name = background.name()
             self.assertTrue(background.isValid())
+
+            user_selected_crs = QgsCoordinateReferenceSystem("EPSG:3857")
+            QgsProject.instance().setCrs(user_selected_crs)
+            self.iface.mapCanvas().setDestinationCrs(user_selected_crs)
 
             activities_layer, starts_layer, points_layer, atlas_layer = self.layer_manager.load_output_layers(output_path)
             self.layer_manager.apply_style(
