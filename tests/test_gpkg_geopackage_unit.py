@@ -448,6 +448,36 @@ class GeoPackagePackageUnitTests(unittest.TestCase):
             if os.path.exists(path):
                 os.unlink(path)
 
+    def test_ensure_spatial_indexes_treats_missing_extensions_table_as_unindexed(self):
+        moved = self._import_gpkg_write_orchestration_with_stubs()
+        fd, path = tempfile.mkstemp(suffix=".gpkg")
+        os.close(fd)
+        try:
+            with sqlite3.connect(path) as connection:
+                connection.execute(
+                    "CREATE TABLE gpkg_geometry_columns (table_name TEXT, column_name TEXT)"
+                )
+                connection.execute(
+                    "INSERT INTO gpkg_geometry_columns (table_name, column_name) VALUES (?, ?)",
+                    ("activity_tracks", "geom"),
+                )
+                connection.commit()
+
+            def create_spatial_index(output_path, layer_name, geometry_column):
+                self.assertEqual(output_path, path)
+                self.assertEqual(layer_name, "activity_tracks")
+                self.assertEqual(geometry_column, "geom")
+                with sqlite3.connect(output_path) as connection:
+                    self._create_minimal_spatial_index_metadata(connection, layer_name, geometry_column)
+
+            with patch.object(moved, "_create_spatial_index", side_effect=create_spatial_index) as create:
+                moved._ensure_spatial_indexes(path, {"activity_tracks": None})
+
+            create.assert_called_once_with(path, "activity_tracks", "geom")
+        finally:
+            if os.path.exists(path):
+                os.unlink(path)
+
     def test_ensure_spatial_indexes_requires_geometry_metadata(self):
         moved = self._import_gpkg_write_orchestration_with_stubs()
         fd, path = tempfile.mkstemp(suffix=".gpkg")
@@ -468,7 +498,7 @@ class GeoPackagePackageUnitTests(unittest.TestCase):
     def test_spatial_index_helpers_quote_and_name_gpkg_objects(self):
         moved = self._import_gpkg_write_orchestration_with_stubs()
 
-        self.assertEqual(moved._quote_gpkg_identifier("activity's"), "'activity''s'")
+        self.assertEqual(moved._quote_sql_string_literal("activity's"), "'activity''s'")
         self.assertEqual(
             moved._spatial_index_table_names("activity_tracks", "geom"),
             {
@@ -529,6 +559,29 @@ class GeoPackagePackageUnitTests(unittest.TestCase):
 
         ogr_create.assert_called_once_with("/tmp/full.gpkg", "activity_tracks", "geom")
         qgis_create.assert_called_once_with("/tmp/full.gpkg", "activity_tracks")
+
+    def test_create_spatial_index_reports_ogr_and_qgis_failures(self):
+        moved = self._import_gpkg_write_orchestration_with_stubs()
+
+        with patch.object(
+            moved,
+            "_create_spatial_index_with_ogr",
+            side_effect=RuntimeError("ogr failed"),
+        ), patch.object(
+            moved,
+            "_create_spatial_index_with_qgis",
+            side_effect=RuntimeError("qgis failed"),
+        ):
+            with self.assertRaisesRegex(
+                RuntimeError,
+                "OGR \\(ogr failed\\).*QGIS fallback \\(qgis failed\\)",
+            ) as cm:
+                moved._create_spatial_index("/tmp/full.gpkg", "activity_tracks", "geom")
+            if hasattr(RuntimeError(), "add_note"):
+                self.assertEqual(
+                    getattr(cm.exception, "__notes__", []),
+                    ["OGR error: RuntimeError('ogr failed')"],
+                )
 
     def test_create_spatial_index_with_qgis_keeps_provider_fallback(self):
         moved = self._import_gpkg_write_orchestration_with_stubs()

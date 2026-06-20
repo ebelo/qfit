@@ -3,11 +3,18 @@ import logging
 from qgis.core import (
     QgsCoordinateReferenceSystem,
     QgsCoordinateTransform,
+    QgsCsException,
     QgsProject,
     QgsRectangle,
 )
 
 logger = logging.getLogger(__name__)
+
+try:
+    if not issubclass(QgsCsException, Exception):
+        QgsCsException = Exception
+except TypeError:
+    QgsCsException = Exception
 
 WORKING_CRS = "EPSG:3857"
 
@@ -58,11 +65,16 @@ class MapCanvasService:
 
     def zoom_to_layers(self, iface, layers):
         """Combine layer extents, snap to tile zoom, and set canvas extent."""
+        canvas = iface.mapCanvas() if iface is not None else None
+        if canvas is None:
+            return
+
+        destination_crs = self._canvas_destination_crs(canvas)
         extents = None
         for layer in layers:
             if layer is None or not layer.isValid():
                 continue
-            layer_extent = layer.extent()
+            layer_extent = self._layer_extent_in_canvas_crs(layer, destination_crs)
             if layer_extent.isEmpty():
                 continue
             if extents is None:
@@ -73,10 +85,48 @@ class MapCanvasService:
         if extents is None or extents.isEmpty():
             return
 
-        canvas = iface.mapCanvas() if iface is not None else None
-        if canvas is None:
-            return
-
         extents = self._background_service.snap_extent_to_background_tile_zoom(extents, canvas)
         canvas.setExtent(extents)
         canvas.refresh()
+
+    def _canvas_destination_crs(self, canvas):
+        try:
+            return canvas.mapSettings().destinationCrs()
+        except (AttributeError, RuntimeError):
+            try:
+                return QgsProject.instance().crs()
+            except RuntimeError:
+                logger.debug("Failed to read canvas destination CRS", exc_info=True)
+                return None
+
+    def _layer_extent_in_canvas_crs(self, layer, destination_crs):
+        layer_extent = layer.extent()
+        if layer_extent.isEmpty():
+            return layer_extent
+
+        try:
+            source_crs = layer.crs()
+            if (
+                source_crs is None
+                or destination_crs is None
+                or not self._is_coordinate_reference_system(source_crs)
+                or not self._is_coordinate_reference_system(destination_crs)
+                or not source_crs.isValid()
+                or not destination_crs.isValid()
+                or source_crs == destination_crs
+            ):
+                return QgsRectangle(layer_extent)
+            transform = QgsCoordinateTransform(source_crs, destination_crs, QgsProject.instance())
+            transformed = transform.transformBoundingBox(layer_extent)
+            if not transformed.isEmpty():
+                return transformed
+        except (AttributeError, RuntimeError, TypeError, QgsCsException):
+            logger.debug("Layer extent transform failed", exc_info=True)
+
+        return QgsRectangle(layer_extent)
+
+    def _is_coordinate_reference_system(self, crs):
+        try:
+            return isinstance(crs, QgsCoordinateReferenceSystem)
+        except TypeError:
+            return hasattr(crs, "isValid")

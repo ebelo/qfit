@@ -113,6 +113,31 @@ class LayerGatewayBoundaryTests(unittest.TestCase):
         canvas.zoom_to_layers.assert_called_once_with(gateway.iface, result)
         gateway._move_background_layers_to_bottom.assert_called_once_with()
 
+    def test_qgis_gateway_canvas_service_lazy_init_uses_zoom_contract(self):
+        modules = self._qgis_gateway_modules()
+
+        with patch.dict(sys.modules, modules, clear=False):
+            self._reset_qgis_gateway_imports()
+            adapter_module = importlib.import_module(
+                "qfit.visualization.infrastructure.qgis_layer_gateway"
+            )
+
+            gateway = adapter_module.QgisLayerGateway(MagicMock(name="iface"))
+            stale_placeholder = MagicMock(name="stale_canvas_placeholder")
+            del stale_placeholder.zoom_to_layers
+            gateway._canvas_service = stale_placeholder
+            gateway._background_service = MagicMock(name="background_service")
+            replacement = MagicMock(name="canvas_service")
+
+            with patch.object(
+                adapter_module,
+                "_build_map_canvas_service",
+                return_value=replacement,
+            ) as build:
+                self.assertIs(gateway._get_canvas_service(), replacement)
+
+        build.assert_called_once()
+
     def test_qgis_gateway_restores_project_crs_when_layer_loading_fails(self):
         modules = self._qgis_gateway_modules()
 
