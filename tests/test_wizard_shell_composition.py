@@ -503,7 +503,6 @@ class WizardShellCompositionTest(unittest.TestCase):
             sync_activities=lambda: calls.append("sync"),
             store_activities=lambda: calls.append("store"),
             sync_saved_routes=lambda: calls.append("routes"),
-            clear_database=lambda: calls.append("clear"),
             load_activity_layers=lambda: calls.append("load"),
             apply_map_filters=lambda: calls.append("filter"),
             run_analysis=lambda: calls.append("analysis"),
@@ -523,7 +522,6 @@ class WizardShellCompositionTest(unittest.TestCase):
         assembled.connection_content.configure_button.clicked.emit()
         assembled.sync_content.sync_button.clicked.emit()
         assembled.sync_content.routes_button.clicked.emit()
-        assembled.sync_content.clear_button.clicked.emit()
         assembled.sync_content.load_button.clicked.emit()
         assembled.map_content.load_layers_button.clicked.emit()
         assembled.map_content.apply_filters_button.clicked.emit()
@@ -540,7 +538,6 @@ class WizardShellCompositionTest(unittest.TestCase):
                 "configure",
                 "sync",
                 "routes",
-                "clear",
                 "load",
                 "load",
                 "filter",
@@ -695,7 +692,6 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertEqual(assembled.sync_content.status_label.text(), "Activities stored")
         self.assertFalse(assembled.sync_content.sync_button.isEnabled())
         self.assertTrue(assembled.sync_content.load_button.isEnabled())
-        self.assertTrue(assembled.sync_content.clear_button.isEnabled())
         self.assertEqual(
             assembled.map_content.status_label.text(),
             "Stored map layers ready to load",
@@ -836,30 +832,6 @@ class WizardShellCompositionTest(unittest.TestCase):
         self.assertEqual(
             assembled.sync_content.activity_summary_label.text(),
             "Activities stored in qfit.gpkg",
-        )
-
-    def test_sync_page_enables_clear_database_when_output_path_is_selected(self):
-        assembled = self.composition.build_placeholder_wizard_shell(
-            progress_facts=WorkflowProgressFacts(
-                output_name="qfit.gpkg",
-            ),
-        )
-
-        self.assertTrue(assembled.sync_content.clear_button.isEnabled())
-        self.assertEqual(assembled.sync_content.clear_button.toolTip(), "")
-
-    def test_sync_page_blocks_clear_database_while_route_sync_is_running(self):
-        assembled = self.composition.build_placeholder_wizard_shell(
-            progress_facts=WorkflowProgressFacts(
-                output_name="qfit.gpkg",
-                route_sync_in_progress=True,
-            ),
-        )
-
-        self.assertFalse(assembled.sync_content.clear_button.isEnabled())
-        self.assertEqual(
-            assembled.sync_content.clear_button.toolTip(),
-            "Wait for the current synchronization to finish.",
         )
 
     def test_sync_page_shows_fetched_activities_ready_to_finish_sync(self):

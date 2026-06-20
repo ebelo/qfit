@@ -839,7 +839,6 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "sync_activities": "on_refresh_clicked",
             "store_activities": "on_load_clicked",
             "sync_saved_routes": "on_sync_routes_clicked",
-            "clear_database": "on_clear_database_clicked",
             "load_activity_layers": "on_load_layers_clicked",
             "apply_map_filters": "on_apply_filters_clicked",
             "run_analysis": "on_run_analysis_clicked",
@@ -3302,6 +3301,22 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._show_error.assert_called_once_with(
             "No database path",
             "Set a GeoPackage output path first.",
+        )
+
+    def test_on_clear_database_clicked_blocks_while_sync_task_is_active(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock.outputPathLineEdit = _FakeLineEdit("/tmp/qfit.gpkg")
+        dock._store_task = object()
+        dock._set_status = MagicMock()
+        dock._show_error = MagicMock()
+
+        with patch.object(self.module.QMessageBox, "question", create=True) as question:
+            self.module.QfitDockWidget.on_clear_database_clicked(dock)
+
+        question.assert_not_called()
+        dock._show_error.assert_not_called()
+        dock._set_status.assert_called_once_with(
+            "Wait for the current synchronization to finish before clearing the database."
         )
 
     def test_on_clear_database_clicked_uses_confirmation_helpers(self):

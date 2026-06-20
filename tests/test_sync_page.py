@@ -93,33 +93,8 @@ class SyncPageContentTest(unittest.TestCase):
         )
         self.assertTrue(content.routes_button.isEnabled())
         self.assertEqual(content.routes_button.toolTip(), "")
-        self.assertEqual(
-            content.clear_button.objectName(),
-            "qfitWizardSyncClearDatabaseButton",
-        )
-        self.assertEqual(content.clear_button.text(), "Clear local database…")
-        self.assertEqual(
-            content.clear_button.property("destructiveAction"),
-            "clear_database",
-        )
-        self.assertEqual(
-            content.clear_button.property("wizardActionRole"),
-            "destructive",
-        )
-        self.assertNotEqual(
-            content.clear_button.styleSheet(),
-            content.sync_button.styleSheet(),
-        )
-        self.assertNotIn("#589632", content.clear_button.styleSheet())
-        self.assertFalse(content.clear_button.isEnabled())
-        self.assertEqual(
-            content.clear_button.property("wizardActionAvailability"),
-            "blocked",
-        )
-        self.assertEqual(
-            content.clear_button.toolTip(),
-            "Select a GeoPackage before clearing local data.",
-        )
+        self.assertFalse(hasattr(content, "clear_button"))
+        self.assertFalse(hasattr(content, "clear_action_row"))
         self.assertEqual(content.action_row.objectName(), "qfitWizardSyncActionRow")
         self.assertEqual(
             content.action_row.outer_layout().widgets,
@@ -130,21 +105,12 @@ class SyncPageContentTest(unittest.TestCase):
             ],
         )
         self.assertEqual(
-            content.clear_action_row.objectName(),
-            "qfitWizardSyncDestructiveActionRow",
-        )
-        self.assertEqual(
-            content.clear_action_row.outer_layout().widgets,
-            [content.clear_button],
-        )
-        self.assertEqual(
             content.outer_layout().widgets,
             [
                 content.status_label,
                 content.detail_label,
                 content.action_row,
                 content.activity_summary_label,
-                content.clear_action_row,
             ],
         )
 
@@ -157,7 +123,6 @@ class SyncPageContentTest(unittest.TestCase):
             activity_summary_text="42 activities stored · 40 detailed routes",
             primary_action_label="Fetch latest activities",
             local_action_enabled=True,
-            clear_action_enabled=True,
         )
 
         content.set_state(state)
@@ -177,8 +142,6 @@ class SyncPageContentTest(unittest.TestCase):
         self.assertEqual(content.sync_button.text(), "Fetch latest activities")
         self.assertTrue(content.load_button.isEnabled())
         self.assertEqual(content.load_button.toolTip(), "")
-        self.assertTrue(content.clear_button.isEnabled())
-        self.assertEqual(content.clear_button.toolTip(), "")
 
     def test_presentation_copy_wraps_without_forcing_panel_width(self):
         content = self.sync_page.SyncPageContent()
@@ -271,17 +234,6 @@ class SyncPageContentTest(unittest.TestCase):
         content.routes_button.clicked.emit()
 
         self.assertEqual(calls, ["routes"])
-
-    def test_clear_database_button_emits_reusable_page_signal(self):
-        content = self.sync_page.SyncPageContent(
-            self.sync_page.SyncPageState(clear_action_enabled=True)
-        )
-        calls = []
-        content.clearDatabaseRequested.connect(lambda: calls.append("clear"))
-
-        content.clear_button.clicked.emit()
-
-        self.assertEqual(calls, ["clear"])
 
     def test_installs_only_on_sync_wizard_page_body(self):
         sync_spec = next(

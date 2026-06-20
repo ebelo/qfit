@@ -246,10 +246,6 @@ class QgisSmokeTests(unittest.TestCase):
             )
             self.assertEqual(dock._local_first_live_shell.page_count(), 5)
             self.assertEqual(dock._local_first_live_shell.current_key(), "data")
-            self.assertEqual(
-                dock._local_first_dock_composition.sync_content.clear_button.text(),
-                "Clear local database…",
-            )
             self.assertTrue(dock.scrollArea.isHidden())
             self.assertTrue(dock.summaryStatusLabel.isHidden())
             self.assertGreaterEqual(
@@ -621,8 +617,8 @@ class QgisSmokeTests(unittest.TestCase):
         try:
             fake_task = MagicMock(name="store_task")
             dock._save_settings = MagicMock()
-            dock.activities = [{"id": 1}]
-            dock.load_workflow.build_write_request = MagicMock(return_value="store-request")
+            dock._runtime_store().set_activities([{"id": 1}])
+            dock.store_workflow.build_write_request = MagicMock(return_value="store-request")
 
             with (
                 patch("qfit.qfit_dockwidget.build_store_task", return_value=fake_task) as build_store_task,
@@ -631,9 +627,9 @@ class QgisSmokeTests(unittest.TestCase):
                 task_manager.return_value.addTask = MagicMock()
                 dock.on_load_clicked()
 
-            dock.load_workflow.build_write_request.assert_called_once()
+            dock.store_workflow.build_write_request.assert_called_once()
             build_store_task.assert_called_once()
-            self.assertEqual(build_store_task.call_args.args[:2], (dock.load_workflow, "store-request"))
+            self.assertEqual(build_store_task.call_args.args[:2], (dock.store_workflow, "store-request"))
             self.assertIs(build_store_task.call_args.kwargs["on_finished"].__self__, dock)
             task_manager.return_value.addTask.assert_called_once_with(fake_task)
             self.assertIs(dock._store_task, fake_task)

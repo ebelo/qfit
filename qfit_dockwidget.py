@@ -223,7 +223,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
                 sync_activities=self.on_refresh_clicked,
                 store_activities=self.on_load_clicked,
                 sync_saved_routes=self.on_sync_routes_clicked,
-                clear_database=self.on_clear_database_clicked,
                 load_activity_layers=self.on_load_layers_clicked,
                 apply_map_filters=self.on_apply_filters_clicked,
                 run_analysis=self.on_run_analysis_clicked,
@@ -994,6 +993,16 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
     def on_clear_database_clicked(self):
         """Delete the GeoPackage, clear loaded layers, and reset status."""
+        if (
+            self._fetch_task is not None
+            or self._store_task is not None
+            or self._route_sync_task is not None
+        ):
+            self._set_status(
+                "Wait for the current synchronization to finish before clearing the database."
+            )
+            return
+
         output_path = self.outputPathLineEdit.text().strip()
         if not output_path:
             self._show_error(*build_missing_output_path_error())

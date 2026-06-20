@@ -128,7 +128,6 @@ class LocalFirstDockCompositionTests(unittest.TestCase):
             sync_activities=lambda: calls.append("sync"),
             store_activities=lambda: calls.append("store"),
             sync_saved_routes=lambda: calls.append("routes"),
-            clear_database=lambda: calls.append("clear"),
             load_activity_layers=lambda: calls.append("layers"),
             apply_map_filters=lambda: calls.append("apply"),
             run_analysis=lambda: calls.append("analysis"),
@@ -145,7 +144,6 @@ class LocalFirstDockCompositionTests(unittest.TestCase):
         composition.sync_content.syncRequested.emit()
         composition.sync_content.storeRequested.emit()
         composition.sync_content.syncRoutesRequested.emit()
-        composition.sync_content.clearDatabaseRequested.emit()
         composition.sync_content.loadActivitiesRequested.emit()
         composition.map_content.loadLayersRequested.emit()
         composition.map_content.applyFiltersRequested.emit()
@@ -163,7 +161,6 @@ class LocalFirstDockCompositionTests(unittest.TestCase):
                 "sync",
                 "store",
                 "routes",
-                "clear",
                 "layers",
                 "layers",
                 "apply",

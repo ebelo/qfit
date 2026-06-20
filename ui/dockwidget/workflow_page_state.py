@@ -29,7 +29,6 @@ class DockWorkflowActionCallbacks:
     sync_activities: Callable[[], None] | None = None
     store_activities: Callable[[], None] | None = None
     sync_saved_routes: Callable[[], None] | None = None
-    clear_database: Callable[[], None] | None = None
     load_activity_layers: Callable[[], None] | None = None
     apply_map_filters: Callable[[], None] | None = None
     run_analysis: Callable[[], None] | None = None
@@ -191,12 +190,6 @@ def _sync_state_from_facts(facts: WorkflowProgressFacts) -> SyncPageState:
             or (facts.connection_configured and not facts.sync_in_progress)
         ),
         routes_action_blocked_tooltip=_sync_routes_action_blocked_tooltip(facts, default),
-        clear_action_enabled=(
-            bool(facts.output_name)
-            and not facts.sync_in_progress
-            and not facts.route_sync_in_progress
-        ),
-        clear_action_blocked_tooltip=_sync_clear_action_blocked_tooltip(facts, default),
     )
 
 
@@ -221,17 +214,6 @@ def _sync_routes_action_blocked_tooltip(
         return _SYNC_IN_PROGRESS_TOOLTIP
     if not facts.connection_configured:
         return default.routes_action_blocked_tooltip
-    return ""
-
-
-def _sync_clear_action_blocked_tooltip(
-    facts: WorkflowProgressFacts,
-    default: SyncPageState,
-) -> str:
-    if facts.sync_in_progress or facts.route_sync_in_progress:
-        return _SYNC_IN_PROGRESS_TOOLTIP
-    if not facts.output_name:
-        return default.clear_action_blocked_tooltip
     return ""
 
 
