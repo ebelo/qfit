@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 from qgis.core import QgsApplication, QgsProject
 from qgis.PyQt import uic
-from qgis.PyQt.QtCore import QDate, Qt
+from qgis.PyQt.QtCore import QDate, Qt, QTimer
 from qgis.PyQt.QtWidgets import (
     QFileDialog,
     QDockWidget,
@@ -943,46 +943,50 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
     def on_load_layers_clicked(self):
         """Load an existing GeoPackage into QGIS without fetching from Strava."""
-        self._save_settings()
-        workflow = self._dataset_load_workflow_service()
+        project_crs = self._current_project_crs()
         try:
-            request = workflow.build_load_existing_request(
-                self.outputPathLineEdit.text().strip(),
+            self._save_settings()
+            workflow = self._dataset_load_workflow_service()
+            try:
+                request = workflow.build_load_existing_request(
+                    self.outputPathLineEdit.text().strip(),
+                )
+                result = workflow.load_existing_request(request)
+            except LoadWorkflowError as exc:
+                self._show_error("GeoPackage not found", str(exc))
+                return
+            except (RuntimeError, OSError) as exc:
+                _msg = "Load stored map layers failed"
+                logger.exception(_msg)
+                self._show_error(_msg, str(exc))
+                self._set_status(_msg)
+                return
+
+            self._runtime_store().load_dataset(
+                output_path=result.output_path,
+                stored_activity_count=result.total_stored,
+                activities_layer=result.activities_layer,
+                starts_layer=result.starts_layer,
+                points_layer=result.points_layer,
+                atlas_layer=result.atlas_layer,
             )
-            result = workflow.load_existing_request(request)
-        except LoadWorkflowError as exc:
-            self._show_error("GeoPackage not found", str(exc))
-            return
-        except (RuntimeError, OSError) as exc:
-            _msg = "Load stored map layers failed"
-            logger.exception(_msg)
-            self._show_error(_msg, str(exc))
-            self._set_status(_msg)
-            return
+            self._runtime_store().set_route_layers(
+                route_tracks_layer=getattr(result, "route_tracks_layer", None),
+                route_points_layer=getattr(result, "route_points_layer", None),
+                route_profile_samples_layer=getattr(result, "route_profile_samples_layer", None),
+            )
+            self._mark_atlas_export_stale()
 
-        self._runtime_store().load_dataset(
-            output_path=result.output_path,
-            stored_activity_count=result.total_stored,
-            activities_layer=result.activities_layer,
-            starts_layer=result.starts_layer,
-            points_layer=result.points_layer,
-            atlas_layer=result.atlas_layer,
-        )
-        self._runtime_store().set_route_layers(
-            route_tracks_layer=getattr(result, "route_tracks_layer", None),
-            route_points_layer=getattr(result, "route_points_layer", None),
-            route_profile_samples_layer=getattr(result, "route_profile_samples_layer", None),
-        )
-        self._mark_atlas_export_stale()
+            self._populate_activity_types_from_layer()
+            visual_status = self._apply_visual_configuration(apply_subset_filters=False)
 
-        self._populate_activity_types_from_layer()
-        visual_status = self._apply_visual_configuration(apply_subset_filters=False)
-
-        self._update_loaded_activities_summary(result.total_stored)
-        status = result.status
-        if visual_status:
-            status = "{status} {visual_status}".format(status=status, visual_status=visual_status)
-        self._set_status(status)
+            self._update_loaded_activities_summary(result.total_stored)
+            status = result.status
+            if visual_status:
+                status = "{status} {visual_status}".format(status=status, visual_status=visual_status)
+            self._set_status(status)
+        finally:
+            self._restore_project_crs(project_crs, schedule_delayed=True)
 
     def on_clear_database_clicked(self):
         """Delete the GeoPackage, clear loaded layers, and reset status."""
@@ -1190,6 +1194,56 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._mark_atlas_export_stale()
             self._refresh_map_canvas()
         return analysis_removed
+
+    def _current_project_crs(self):
+        try:
+            crs = QgsProject.instance().crs()
+        except RuntimeError:
+            logger.debug("Failed to read current project CRS", exc_info=True)
+            return None
+        if crs is None:
+            return None
+        try:
+            if not crs.isValid():
+                return None
+        except (AttributeError, RuntimeError):
+            return None
+        return crs
+
+    def _restore_project_crs(self, crs, *, schedule_delayed=False):
+        if crs is None:
+            return
+        try:
+            if not crs.isValid():
+                return
+        except (AttributeError, RuntimeError):
+            return
+
+        try:
+            QgsProject.instance().setCrs(crs)
+        except RuntimeError:
+            logger.debug("Failed to restore project CRS after loading layers", exc_info=True)
+            # Project is already gone; a delayed retry would hit the same deleted object.
+            return
+
+        iface = getattr(self, "iface", None)
+        canvas_getter = getattr(iface, "mapCanvas", None)
+        canvas = canvas_getter() if callable(canvas_getter) else None
+        if canvas is None:
+            return
+        set_destination_crs = getattr(canvas, "setDestinationCrs", None)
+        if not callable(set_destination_crs):
+            return
+        try:
+            set_destination_crs(crs)
+        except RuntimeError:
+            logger.debug("Failed to restore canvas CRS after loading layers", exc_info=True)
+
+        if schedule_delayed:
+            try:
+                QTimer.singleShot(0, lambda: self._restore_project_crs(crs))
+            except (AttributeError, RuntimeError, TypeError):
+                logger.debug("Failed to schedule delayed CRS restore", exc_info=True)
 
     def _refresh_map_canvas(self) -> None:
         """Force QGIS to repaint the map canvas after direct layer mutations."""
