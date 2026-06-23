@@ -111,6 +111,18 @@ class _FakeLabel(_FakeWidget):
         self._text = text
 
 
+class _FakePlainTextEdit(_FakeWidget):
+    def __init__(self, text="", parent=None):
+        super().__init__(parent)
+        self._text = text
+
+    def toPlainText(self):  # noqa: N802
+        return self._text
+
+    def setPlainText(self, text):  # noqa: N802
+        self._text = text
+
+
 class _FakeComboBox(_FakeWidget):
     def __init__(self, parent=None, current_text=None):
         super().__init__(parent)
@@ -2918,6 +2930,46 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._populate_activity_types_from_layer.assert_called_once_with()
         dock._apply_visual_configuration.assert_called_once_with(apply_subset_filters=False)
         dock._update_loaded_activities_summary.assert_called_once_with(12)
+        dock._set_status.assert_called_once_with("Loaded 12 activities Styled layers")
+
+    def test_on_load_layers_clicked_preserves_fetched_activity_preview(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._save_settings = MagicMock()
+        dock.outputPathLineEdit = _FakeLineEdit("/tmp/qfit.gpkg")
+        dock.querySummaryLabel = _FakeLabel("6 recent activities")
+        dock.activityPreviewPlainTextEdit = _FakePlainTextEdit("Morning Run\nEvening Ride")
+        dock._populate_activity_types_from_layer = MagicMock()
+        dock._update_loaded_activities_summary = MagicMock()
+        dock._set_status = MagicMock()
+        dock._atlas_export_completed = True
+
+        def clear_preview(*_args, **_kwargs):
+            dock.querySummaryLabel.setText("Fetch activities to preview")
+            dock.activityPreviewPlainTextEdit.setPlainText("")
+            return "Styled layers"
+
+        dock._apply_visual_configuration = MagicMock(side_effect=clear_preview)
+        workflow = MagicMock()
+        workflow.build_load_existing_request.return_value = "load-request"
+        result = SimpleNamespace(
+            output_path="/tmp/qfit.gpkg",
+            activities_layer="activities-layer",
+            starts_layer="starts-layer",
+            points_layer="points-layer",
+            atlas_layer="atlas-layer",
+            total_stored=12,
+            status="Loaded 12 activities",
+        )
+        workflow.load_existing_request.return_value = result
+        dock.dataset_load_workflow = workflow
+
+        self.module.QfitDockWidget.on_load_layers_clicked(dock)
+
+        self.assertEqual(dock.querySummaryLabel.text(), "6 recent activities")
+        self.assertEqual(
+            dock.activityPreviewPlainTextEdit.toPlainText(),
+            "Morning Run\nEvening Ride",
+        )
         dock._set_status.assert_called_once_with("Loaded 12 activities Styled layers")
 
     def test_on_load_layers_clicked_restores_user_crs_after_visual_configuration(self):

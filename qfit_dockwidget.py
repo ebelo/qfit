@@ -946,6 +946,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def on_load_layers_clicked(self):
         """Load an existing GeoPackage into QGIS without fetching from Strava."""
         project_crs = self._current_project_crs()
+        preview_snapshot = self._activity_preview_snapshot()
         try:
             self._save_settings()
             workflow = self._dataset_load_workflow_service()
@@ -984,12 +985,42 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
             self._refresh_detailed_route_coverage_from_storage()
             self._update_loaded_activities_summary(result.total_stored)
+            self._restore_activity_preview_snapshot(preview_snapshot)
             status = result.status
             if visual_status:
                 status = "{status} {visual_status}".format(status=status, visual_status=visual_status)
             self._set_status(status)
         finally:
             self._restore_project_crs(project_crs, schedule_delayed=True)
+
+    def _activity_preview_snapshot(self):
+        preview_widget = getattr(self, "activityPreviewPlainTextEdit", None)
+        to_plain_text = getattr(preview_widget, "toPlainText", None)
+        if not callable(to_plain_text):
+            return None
+
+        preview_text = to_plain_text()
+        if not preview_text:
+            return None
+
+        return {
+            "preview_text": preview_text,
+            "query_summary": self._label_text("querySummaryLabel"),
+        }
+
+    def _restore_activity_preview_snapshot(self, snapshot) -> None:
+        if not snapshot:
+            return
+
+        preview_widget = getattr(self, "activityPreviewPlainTextEdit", None)
+        set_plain_text = getattr(preview_widget, "setPlainText", None)
+        if callable(set_plain_text):
+            set_plain_text(snapshot["preview_text"])
+
+        query_label = getattr(self, "querySummaryLabel", None)
+        set_query_text = getattr(query_label, "setText", None)
+        if callable(set_query_text):
+            set_query_text(snapshot["query_summary"])
 
     def on_clear_database_clicked(self):
         """Delete the GeoPackage, clear loaded layers, and reset status."""
