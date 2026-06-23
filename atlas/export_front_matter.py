@@ -2,6 +2,10 @@ from __future__ import annotations
 
 from typing import Callable
 
+ACTIVITY_LAYER_NAME = "qfit activities"
+POINTS_LAYER_NAME = "qfit activity points"
+STARTS_LAYER_NAME = "qfit activity starts"
+
 
 def export_cover_page(
     atlas_layer,
@@ -117,6 +121,7 @@ def _build_cover_map_layers(
     if not visible_layers:
         return None
 
+    activities_layer = None
     points_layer = None
     starts_layer = None
     background_layers: list = []
@@ -125,51 +130,149 @@ def _build_cover_map_layers(
             name = layer.name()
         except (RuntimeError, AttributeError):
             continue
-        if name == "qfit activity points":
+        if name == ACTIVITY_LAYER_NAME:
+            activities_layer = layer
+        elif name == POINTS_LAYER_NAME:
             points_layer = layer
-        elif name == "qfit activity starts":
+        elif name == STARTS_LAYER_NAME:
             starts_layer = layer
-        elif name == "qfit activities":
-            pass
         else:
             background_layers.append(layer)
+
+    activity_ids = cover_data.get("_atlas_activity_ids", [])
+    if activities_layer is not None and _layer_has_field(activities_layer, "source_activity_id"):
+        _save_layer_state(saved_state, activities_layer)
+        _filter_layer_to_activity_ids(activities_layer, activity_ids)
+        _apply_activity_route_render_order(activities_layer)
+        return [activities_layer] + background_layers
 
     heatmap_target = points_layer or starts_layer
     if heatmap_target is None:
         return None
 
-    try:
-        old_renderer = heatmap_target.renderer().clone()
-    except (RuntimeError, AttributeError):
-        old_renderer = None
-    saved_state.append({
-        "layer": heatmap_target,
-        "renderer": old_renderer,
-        "opacity": heatmap_target.opacity(),
-        "subset": heatmap_target.subsetString(),
-    })
+    _save_layer_state(saved_state, heatmap_target)
 
     apply_cover_heatmap_renderer(heatmap_target)
 
-    activity_ids = cover_data.get("_atlas_activity_ids", [])
-    if activity_ids:
-        safe_ids = ", ".join(
-            "'" + str(activity_id).replace("'", "''") + "'"
-            for activity_id in activity_ids
-        )
-        heatmap_target.setSubsetString(f'"source_activity_id" IN ({safe_ids})')
+    _filter_layer_to_activity_ids(heatmap_target, activity_ids)
 
     if heatmap_target is points_layer and starts_layer is not None:
-        saved_state.append({
-            "layer": starts_layer,
-            "renderer": None,
-            "opacity": starts_layer.opacity(),
-            "subset": starts_layer.subsetString(),
-        })
+        _save_layer_state(saved_state, starts_layer, save_renderer=False)
         starts_layer.setOpacity(0.0)
 
     return [heatmap_target] + background_layers
 
+
+
+def _save_layer_state(saved_state: list[dict], layer, *, save_renderer: bool = True) -> None:
+    old_renderer = None
+    renderer = None
+    renderer_order_by = None
+    renderer_order_by_enabled = None
+    if save_renderer:
+        try:
+            renderer = layer.renderer()
+            old_renderer = renderer.clone()
+        except (RuntimeError, AttributeError):
+            old_renderer = None
+        if renderer is not None:
+            try:
+                renderer_order_by = renderer.orderBy()
+            except (RuntimeError, AttributeError):
+                renderer_order_by = None
+            try:
+                renderer_order_by_enabled = renderer.orderByEnabled()
+            except (RuntimeError, AttributeError):
+                renderer_order_by_enabled = None
+    saved_state.append({
+        "layer": layer,
+        "renderer": old_renderer,
+        "renderer_ref": renderer,
+        "renderer_order_by": renderer_order_by,
+        "renderer_order_by_enabled": renderer_order_by_enabled,
+        "opacity": layer.opacity(),
+        "subset": layer.subsetString(),
+    })
+
+
+def _filter_layer_to_activity_ids(layer, activity_ids: list[str]) -> None:
+    if not activity_ids or not _layer_has_field(layer, "source_activity_id"):
+        return
+    safe_ids = ", ".join(
+        "'" + str(activity_id).replace("'", "''") + "'"
+        for activity_id in activity_ids
+    )
+    layer.setSubsetString(f'"source_activity_id" IN ({safe_ids})')
+
+
+def _layer_has_field(layer, field_name: str) -> bool:
+    try:
+        return layer.fields().indexOf(field_name) >= 0
+    except (RuntimeError, AttributeError):
+        return False
+
+
+def _apply_activity_route_render_order(layer) -> None:
+    """Draw older cover routes first so newer selected routes remain visible."""
+    if not (
+        _layer_has_field(layer, "start_date_local")
+        or _layer_has_field(layer, "start_date")
+        or _layer_has_field(layer, "source_activity_id")
+    ):
+        return
+
+    try:
+        from qgis.core import QgsFeatureRequest  # noqa: PLC0415
+    except ImportError:
+        return
+
+    try:
+        renderer = layer.renderer()
+    except (RuntimeError, AttributeError):
+        return
+    if renderer is None:
+        return
+
+    clauses = []
+    if _layer_has_field(layer, "start_date_local") and _layer_has_field(layer, "start_date"):
+        clauses.append(
+            QgsFeatureRequest.OrderByClause(
+                'coalesce(nullif("start_date_local", \'\'), nullif("start_date", \'\'), \'\')',
+                True,
+            )
+        )
+    elif _layer_has_field(layer, "start_date_local"):
+        clauses.append(
+            QgsFeatureRequest.OrderByClause(
+                'coalesce(nullif("start_date_local", \'\'), \'\')',
+                True,
+            )
+        )
+    elif _layer_has_field(layer, "start_date"):
+        clauses.append(
+            QgsFeatureRequest.OrderByClause(
+                'coalesce(nullif("start_date", \'\'), \'\')',
+                True,
+            )
+        )
+
+    if _layer_has_field(layer, "source_activity_id"):
+        clauses.append(QgsFeatureRequest.OrderByClause('"source_activity_id"', True))
+
+    if not clauses:
+        return
+
+    set_order_by = getattr(renderer, "setOrderBy", None)
+    set_order_by_enabled = getattr(renderer, "setOrderByEnabled", None)
+    if not callable(set_order_by):
+        return
+
+    try:
+        set_order_by(QgsFeatureRequest.OrderBy(clauses))
+        if callable(set_order_by_enabled):
+            set_order_by_enabled(True)
+    except (RuntimeError, AttributeError, TypeError):
+        return
 
 
 def _restore_layer_state(saved_state: list[dict]) -> None:
@@ -178,6 +281,12 @@ def _restore_layer_state(saved_state: list[dict]) -> None:
             layer = state["layer"]
             if state.get("renderer") is not None:
                 layer.setRenderer(state["renderer"])
+            elif state.get("renderer_ref") is not None:
+                renderer = state["renderer_ref"]
+                if state.get("renderer_order_by") is not None:
+                    renderer.setOrderBy(state["renderer_order_by"])
+                if state.get("renderer_order_by_enabled") is not None:
+                    renderer.setOrderByEnabled(state["renderer_order_by_enabled"])
             layer.setOpacity(state["opacity"])
             layer.setSubsetString(state["subset"])
         except (RuntimeError, AttributeError):
