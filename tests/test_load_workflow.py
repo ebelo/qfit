@@ -108,6 +108,53 @@ class LoadDatasetWorkflowTests(unittest.TestCase):
         )
         self.assertNotIn("profile samples", result.status)
 
+    def test_load_existing_uses_stored_registry_count_not_loaded_layer_count(self):
+        layer_gateway = MagicMock()
+        activities_layer = MagicMock()
+        activities_layer.featureCount.return_value = 1732
+        layer_gateway.load_output_layers.return_value = (
+            activities_layer,
+            MagicMock(name="starts"),
+            MagicMock(name="points"),
+            MagicMock(name="atlas"),
+        )
+        layer_gateway.load_route_layers.return_value = (None, None, None)
+        workflow = LoadDatasetWorkflow(
+            layer_gateway,
+            path_exists=lambda _path: True,
+            stored_activity_count_loader=lambda _path: 2889,
+        )
+
+        result = workflow.load_existing_request(
+            workflow.build_load_existing_request("/tmp/existing.gpkg")
+        )
+
+        self.assertEqual(result.total_stored, 2889)
+        activities_layer.featureCount.assert_not_called()
+
+    def test_load_existing_falls_back_to_layer_count_without_stored_registry_count(self):
+        layer_gateway = MagicMock()
+        activities_layer = MagicMock()
+        activities_layer.featureCount.return_value = 42
+        layer_gateway.load_output_layers.return_value = (
+            activities_layer,
+            MagicMock(name="starts"),
+            MagicMock(name="points"),
+            MagicMock(name="atlas"),
+        )
+        layer_gateway.load_route_layers.return_value = (None, None, None)
+        workflow = LoadDatasetWorkflow(
+            layer_gateway,
+            path_exists=lambda _path: True,
+            stored_activity_count_loader=lambda _path: 0,
+        )
+
+        result = workflow.load_existing_request(
+            workflow.build_load_existing_request("/tmp/existing.gpkg")
+        )
+
+        self.assertEqual(result.total_stored, 42)
+
     def test_load_existing_status_explains_when_route_layers_are_missing(self):
         layer_gateway = MagicMock()
         activities_layer = MagicMock()

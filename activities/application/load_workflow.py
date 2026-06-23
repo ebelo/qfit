@@ -8,7 +8,7 @@ from ...atlas.publish_atlas import (
     DEFAULT_ATLAS_TARGET_ASPECT_RATIO,
     DEFAULT_MIN_EXTENT_DEGREES,
 )
-from ...sync_repository import SyncStats
+from ...sync_repository import SyncRepository, SyncStats
 from ...visualization.application.layer_gateway import LayerGateway
 
 logger = logging.getLogger(__name__)
@@ -276,9 +276,11 @@ class LoadDatasetWorkflow:
         self,
         layer_gateway: LayerGateway,
         path_exists: Callable[[str], bool] | None = None,
+        stored_activity_count_loader: Callable[[str], int] | None = None,
     ):
         self.layer_gateway = layer_gateway
         self._path_exists = path_exists
+        self._stored_activity_count_loader = stored_activity_count_loader
 
     @staticmethod
     def build_load_existing_request(output_path) -> LoadDatasetRequest:
@@ -312,7 +314,7 @@ class LoadDatasetWorkflow:
         route_tracks_layer, route_points_layer, route_profile_samples_layer = (
             self.layer_gateway.load_route_layers(request.output_path)
         )
-        total = activities_layer.featureCount() if activities_layer else 0
+        total = self._stored_activity_count(request.output_path, activities_layer)
 
         return LoadDatasetResult(
             output_path=request.output_path,
@@ -335,6 +337,15 @@ class LoadDatasetWorkflow:
 
     def load_existing_request(self, request: LoadDatasetRequest) -> LoadDatasetResult:
         return self.load_existing(request)
+
+    def _stored_activity_count(self, output_path: str, activities_layer) -> int:
+        if self._stored_activity_count_loader is not None:
+            total = self._stored_activity_count_loader(output_path)
+        else:
+            total = SyncRepository(output_path).load_detailed_route_coverage().total_count
+        if total > 0:
+            return total
+        return _safe_feature_count(activities_layer)
 
 
 class ClearDatabaseWorkflow:
