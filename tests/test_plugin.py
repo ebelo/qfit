@@ -293,6 +293,42 @@ class TestQfitPluginMenuStructure(unittest.TestCase):
 
         plugin.dockwidget.refresh_configuration_from_settings.assert_called_once_with()
 
+    def test_show_config_restores_and_raises_existing_dialog(self):
+        plugin, _iface = self._make_plugin()
+        plugin_module = sys.modules["qfit.qfit_plugin"]
+        plugin_module.Qt.WindowMinimized = 0x01
+        plugin_module.Qt.WindowActive = 0x02
+
+        class FakeSignal:
+            def connect(self, _slot):
+                pass
+
+        class FakeConfigDialog:
+            created = []
+
+            def __init__(self, parent=None):
+                self.parent = parent
+                self.settingsSaved = FakeSignal()
+                self.show = MagicMock()
+                self.raise_ = MagicMock()
+                self.activateWindow = MagicMock()
+                self.windowState = MagicMock(
+                    return_value=plugin_module.Qt.WindowMinimized
+                )
+                self.setWindowState = MagicMock()
+                FakeConfigDialog.created.append(self)
+
+        with patch("qfit.qfit_plugin.QfitConfigDialog", FakeConfigDialog):
+            plugin.show_config()
+            plugin.show_config()
+
+        dialog = FakeConfigDialog.created[-1]
+        self.assertEqual(len(FakeConfigDialog.created), 1)
+        dialog.setWindowState.assert_called_with(plugin_module.Qt.WindowActive)
+        self.assertEqual(dialog.show.call_count, 2)
+        self.assertEqual(dialog.raise_.call_count, 2)
+        self.assertEqual(dialog.activateWindow.call_count, 2)
+
 
 if __name__ == "__main__":
     unittest.main()
