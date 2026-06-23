@@ -213,7 +213,7 @@ def _layer_has_field(layer, field_name: str) -> bool:
 
 
 def _apply_activity_route_render_order(layer) -> None:
-    """Draw older cover routes first so newer selected routes remain visible."""
+    """Prefer chronological cover-route drawing, with activity ID as fallback."""
     feature_request_cls = _qgs_feature_request_cls()
     if feature_request_cls is None:
         return
@@ -279,6 +279,7 @@ def _restore_layer_state(saved_state: list[dict]) -> None:
             if state.get("renderer") is not None:
                 layer.setRenderer(state["renderer"])
             elif state.get("renderer_ref") is not None:
+                # Best-effort restoration for in-place renderer order changes.
                 renderer = state["renderer_ref"]
                 if state.get("renderer_order_by") is not None:
                     renderer.setOrderBy(state["renderer_order_by"])
