@@ -393,6 +393,7 @@ class ContextualHelpTests(unittest.TestCase):
         self.assertEqual(root.distanceSpinBoxContextHelpLabel.text(), "New helper")
         self.assertEqual(root.distanceSpinBoxContextHelpLabel.tooltip, "New helper")
         self.assertEqual(root.distanceSpinBoxContextHelpLabel.whats_this, "New helper")
+        self.assertEqual(root.distanceSpinBoxContextHelpLabel.status_tip, "New helper")
         self.assertTrue(root.distanceSpinBoxContextHelpLabel.isVisible())
         self.assertIs(anchor.parentWidget(), wrapper)
 
