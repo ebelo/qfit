@@ -4530,6 +4530,48 @@ class TestExportCoverPageHeatmap(unittest.TestCase):
         self.assertTrue(order_clauses[0][1])
         self.assertEqual(order_clauses[1], ('"source_activity_id"', True))
 
+    def test_activity_route_date_order_expression_uses_available_timestamp_fields(self):
+        """Route order expression handles local-only, UTC-only, and missing dates."""
+        from qfit.atlas import export_front_matter
+
+        layer = self._make_points_layer(name="qfit activities")
+        fields = MagicMock()
+        field_names = {"source_activity_id", "start_date_local"}
+        fields.indexOf = lambda n: 0 if n in field_names else -1
+        layer.fields.return_value = fields
+        self.assertEqual(
+            export_front_matter._activity_route_date_order_expression(layer),
+            'coalesce(nullif("start_date_local", \'\'), \'\')',
+        )
+
+        field_names = {"source_activity_id", "start_date"}
+        self.assertEqual(
+            export_front_matter._activity_route_date_order_expression(layer),
+            'coalesce(nullif("start_date", \'\'), \'\')',
+        )
+
+        field_names = {"source_activity_id"}
+        self.assertIsNone(export_front_matter._activity_route_date_order_expression(layer))
+
+    def test_activity_route_order_by_clauses_can_use_activity_id_only(self):
+        """Routes without timestamps still get deterministic activity-id ordering."""
+        from qfit.atlas import export_front_matter
+
+        layer = self._make_points_layer(name="qfit activities")
+        fields = MagicMock()
+        fields.indexOf = lambda n: 0 if n == "source_activity_id" else -1
+        layer.fields.return_value = fields
+        feature_request = MagicMock()
+        feature_request.OrderByClause.side_effect = lambda expression, ascending=True: (
+            expression,
+            ascending,
+        )
+
+        self.assertEqual(
+            export_front_matter._activity_route_order_by_clauses(layer, feature_request),
+            [('"source_activity_id"', True)],
+        )
+
     def test_activity_route_layer_without_activity_id_falls_back_to_heatmap(self):
         """An unfilterable route layer is not used for the selected-activity cover."""
         atlas_layer = _make_cover_atlas_layer_with_extents()
@@ -4599,10 +4641,10 @@ class TestExportCoverPageHeatmap(unittest.TestCase):
              patch.object(sys.modules["qgis.core"], "QgsFeatureRequest", feature_request, create=True):
             AtlasExportTask._export_cover_page(
                 atlas_layer, "/tmp/atlas.pdf", project=project,
-            )
+        )
 
         self.assertEqual(renderer.setOrderBy.call_args_list[-1][0][0], original_order)
-        self.assertEqual(renderer.setOrderByEnabled.call_args_list[-1][0][0], False)
+        self.assertFalse(renderer.setOrderByEnabled.call_args_list[-1][0][0])
 
     def test_layer_state_restored_after_export(self):
         """Original renderer, opacity, and subset are restored after export."""

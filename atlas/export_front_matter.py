@@ -2,11 +2,6 @@ from __future__ import annotations
 
 from typing import Callable
 
-try:  # pragma: no cover - availability depends on QGIS/test stubs
-    from qgis.core import QgsFeatureRequest as _QgsFeatureRequest
-except ImportError:  # pragma: no cover - exercised outside QGIS
-    _QgsFeatureRequest = None
-
 ACTIVITY_LAYER_NAME = "qfit activities"
 POINTS_LAYER_NAME = "qfit activity points"
 STARTS_LAYER_NAME = "qfit activity starts"
@@ -219,20 +214,7 @@ def _layer_has_field(layer, field_name: str) -> bool:
 
 def _apply_activity_route_render_order(layer) -> None:
     """Draw older cover routes first so newer selected routes remain visible."""
-    if not (
-        _layer_has_field(layer, "start_date_local")
-        or _layer_has_field(layer, "start_date")
-        or _layer_has_field(layer, "source_activity_id")
-    ):
-        return
-
-    feature_request_cls = _QgsFeatureRequest
-    if feature_request_cls is None:
-        try:
-            from qgis.core import QgsFeatureRequest as feature_request_cls  # noqa: PLC0415
-        except ImportError:
-            return
-
+    feature_request_cls = _qgs_feature_request_cls()
     if feature_request_cls is None:
         return
 
@@ -243,32 +225,7 @@ def _apply_activity_route_render_order(layer) -> None:
     if renderer is None:
         return
 
-    clauses = []
-    if _layer_has_field(layer, "start_date_local") and _layer_has_field(layer, "start_date"):
-        clauses.append(
-            feature_request_cls.OrderByClause(
-                'coalesce(nullif("start_date_local", \'\'), nullif("start_date", \'\'), \'\')',
-                True,
-            )
-        )
-    elif _layer_has_field(layer, "start_date_local"):
-        clauses.append(
-            feature_request_cls.OrderByClause(
-                'coalesce(nullif("start_date_local", \'\'), \'\')',
-                True,
-            )
-        )
-    elif _layer_has_field(layer, "start_date"):
-        clauses.append(
-            feature_request_cls.OrderByClause(
-                'coalesce(nullif("start_date", \'\'), \'\')',
-                True,
-            )
-        )
-
-    if _layer_has_field(layer, "source_activity_id"):
-        clauses.append(feature_request_cls.OrderByClause('"source_activity_id"', True))
-
+    clauses = _activity_route_order_by_clauses(layer, feature_request_cls)
     if not clauses:
         return
 
@@ -283,6 +240,36 @@ def _apply_activity_route_render_order(layer) -> None:
             set_order_by_enabled(True)
     except (RuntimeError, AttributeError, TypeError):
         return
+
+
+def _qgs_feature_request_cls():
+    try:
+        from qgis.core import QgsFeatureRequest  # noqa: PLC0415
+    except ImportError:
+        return None
+    return QgsFeatureRequest
+
+
+def _activity_route_order_by_clauses(layer, feature_request_cls) -> list:
+    clauses = []
+    date_expression = _activity_route_date_order_expression(layer)
+    if date_expression is not None:
+        clauses.append(feature_request_cls.OrderByClause(date_expression, True))
+    if _layer_has_field(layer, "source_activity_id"):
+        clauses.append(feature_request_cls.OrderByClause('"source_activity_id"', True))
+    return clauses
+
+
+def _activity_route_date_order_expression(layer) -> str | None:
+    has_local_date = _layer_has_field(layer, "start_date_local")
+    has_utc_date = _layer_has_field(layer, "start_date")
+    if has_local_date and has_utc_date:
+        return 'coalesce(nullif("start_date_local", \'\'), nullif("start_date", \'\'), \'\')'
+    if has_local_date:
+        return 'coalesce(nullif("start_date_local", \'\'), \'\')'
+    if has_utc_date:
+        return 'coalesce(nullif("start_date", \'\'), \'\')'
+    return None
 
 
 def _restore_layer_state(saved_state: list[dict]) -> None:
