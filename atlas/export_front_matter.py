@@ -2,6 +2,11 @@ from __future__ import annotations
 
 from typing import Callable
 
+try:  # pragma: no cover - availability depends on QGIS/test stubs
+    from qgis.core import QgsFeatureRequest as _QgsFeatureRequest
+except ImportError:  # pragma: no cover - exercised outside QGIS
+    _QgsFeatureRequest = None
+
 ACTIVITY_LAYER_NAME = "qfit activities"
 POINTS_LAYER_NAME = "qfit activity points"
 STARTS_LAYER_NAME = "qfit activity starts"
@@ -221,9 +226,14 @@ def _apply_activity_route_render_order(layer) -> None:
     ):
         return
 
-    try:
-        from qgis.core import QgsFeatureRequest  # noqa: PLC0415
-    except ImportError:
+    feature_request_cls = _QgsFeatureRequest
+    if feature_request_cls is None:
+        try:
+            from qgis.core import QgsFeatureRequest as feature_request_cls  # noqa: PLC0415
+        except ImportError:
+            return
+
+    if feature_request_cls is None:
         return
 
     try:
@@ -236,28 +246,28 @@ def _apply_activity_route_render_order(layer) -> None:
     clauses = []
     if _layer_has_field(layer, "start_date_local") and _layer_has_field(layer, "start_date"):
         clauses.append(
-            QgsFeatureRequest.OrderByClause(
+            feature_request_cls.OrderByClause(
                 'coalesce(nullif("start_date_local", \'\'), nullif("start_date", \'\'), \'\')',
                 True,
             )
         )
     elif _layer_has_field(layer, "start_date_local"):
         clauses.append(
-            QgsFeatureRequest.OrderByClause(
+            feature_request_cls.OrderByClause(
                 'coalesce(nullif("start_date_local", \'\'), \'\')',
                 True,
             )
         )
     elif _layer_has_field(layer, "start_date"):
         clauses.append(
-            QgsFeatureRequest.OrderByClause(
+            feature_request_cls.OrderByClause(
                 'coalesce(nullif("start_date", \'\'), \'\')',
                 True,
             )
         )
 
     if _layer_has_field(layer, "source_activity_id"):
-        clauses.append(QgsFeatureRequest.OrderByClause('"source_activity_id"', True))
+        clauses.append(feature_request_cls.OrderByClause('"source_activity_id"', True))
 
     if not clauses:
         return
@@ -268,7 +278,7 @@ def _apply_activity_route_render_order(layer) -> None:
         return
 
     try:
-        set_order_by(QgsFeatureRequest.OrderBy(clauses))
+        set_order_by(feature_request_cls.OrderBy(clauses))
         if callable(set_order_by_enabled):
             set_order_by_enabled(True)
     except (RuntimeError, AttributeError, TypeError):
