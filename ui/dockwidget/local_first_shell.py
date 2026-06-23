@@ -166,6 +166,7 @@ class LocalFirstDockShell(QWidget):
         self.pages_stack = self._build_pages_stack()
         self.main_container = self._build_main_container()
         self.footer_bar = self._build_footer_bar(footer_text)
+        self.footer_bar.hide()
         self._outer_layout = self._build_outer_layout()
         self._install_navigation_items(self._navigation_state.pages)
         self.set_navigation_state(self._navigation_state)
@@ -306,7 +307,6 @@ class LocalFirstDockShell(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
         layout.addWidget(self.main_container)
-        layout.addWidget(self.footer_bar)
         return layout
 
     def _build_pages_stack(self):

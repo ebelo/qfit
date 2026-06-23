@@ -89,11 +89,11 @@ class LocalFirstDockShellTests(unittest.TestCase):
             )
         )
 
-    def test_outer_layout_keeps_navigation_content_and_footer_separate(self):
+    def test_outer_layout_keeps_navigation_content_only(self):
         shell = self.shell_module.LocalFirstDockShell()
 
         self.assertEqual(shell.outer_layout().object_name, "qfitLocalFirstDockOuterLayout")
-        self.assertEqual(shell.outer_layout().widgets, [shell.main_container, shell.footer_bar])
+        self.assertEqual(shell.outer_layout().widgets, [shell.main_container])
         self.assertEqual(
             shell.main_layout().widgets,
             [shell.navigation_container, shell.separator, shell.pages_stack],

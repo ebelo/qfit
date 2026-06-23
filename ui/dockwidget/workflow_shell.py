@@ -30,9 +30,9 @@ class WorkflowShell(QWidget):
     """Reusable dock shell for the local-first workflow structure.
 
     The shell intentionally owns only the structural chrome: stepper, separator,
-    scrollable stacked pages, and compact footer. Page content remains external
-    so workflow pages can migrate one page at a time. Stable ``qfitWizard*``
-    object names are preserved for QSS and compatibility.
+    and scrollable stacked pages. Page content remains external so workflow
+    pages can migrate one page at a time. Stable ``qfitWizard*`` object names
+    are preserved for QSS and compatibility.
     """
 
     def __init__(self, parent=None, *, footer_text: str = "") -> None:
@@ -43,6 +43,7 @@ class WorkflowShell(QWidget):
         self.content_scroll = self._build_content_scroll()
         self.pages_stack = self._build_pages_stack()
         self.footer_bar = self._build_footer_bar(footer_text)
+        self.footer_bar.hide()
         self.content_scroll.setWidget(self.pages_stack)
         self._outer_layout = self._build_layout()
         self._responsive_mode = "wide"
@@ -129,7 +130,6 @@ class WorkflowShell(QWidget):
         layout.addWidget(self.stepper_bar)
         layout.addWidget(self.separator)
         layout.addWidget(self.content_scroll)
-        layout.addWidget(self.footer_bar)
         return layout
 
     def _build_separator(self):
