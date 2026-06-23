@@ -82,9 +82,32 @@ class QfitPlugin:
         if self._config_dialog is None:
             self._config_dialog = QfitConfigDialog(parent=self.iface.mainWindow())
             self._config_dialog.settingsSaved.connect(self._refresh_dock_configuration)
-        self._config_dialog.show()
-        self._config_dialog.raise_()
-        self._config_dialog.activateWindow()
+        self._present_config_dialog()
+
+    def _present_config_dialog(self) -> None:
+        dialog = self._config_dialog
+        if dialog is None:
+            return
+
+        self._restore_dialog_window_state(dialog)
+        dialog.show()
+        dialog.raise_()
+        dialog.activateWindow()
+
+    def _restore_dialog_window_state(self, dialog) -> None:
+        window_state = getattr(dialog, "windowState", None)
+        set_window_state = getattr(dialog, "setWindowState", None)
+        minimized = getattr(Qt, "WindowMinimized", None)
+        active = getattr(Qt, "WindowActive", None)
+        if (
+            not callable(window_state)
+            or not callable(set_window_state)
+            or minimized is None
+            or active is None
+        ):
+            return
+
+        set_window_state((window_state() & ~minimized) | active)
 
     def show_about(self):
         if self._about_dock is None:
