@@ -66,6 +66,12 @@ def _make_qgis_stub():
     qgis_core.QgsHeatmapRenderer = MagicMock()
     qgis_core.QgsStyle = MagicMock()
     qgis_core.QgsGradientColorRamp = MagicMock()
+    qgis_core.QgsFeatureRequest = MagicMock()
+    qgis_core.QgsFeatureRequest.OrderByClause.side_effect = lambda expression, ascending=True: (
+        expression,
+        ascending,
+    )
+    qgis_core.QgsFeatureRequest.OrderBy.side_effect = lambda clauses: list(clauses)
 
     qgis_pyt = ModuleType("qgis.PyQt")
     qgis_pyt_core = ModuleType("qgis.PyQt.QtCore")
@@ -4387,12 +4393,12 @@ class TestBuildCoverLayoutWithMap(unittest.TestCase):
 class TestExportCoverPageHeatmap(unittest.TestCase):
     """Tests for heatmap layer discovery and state restoration in _export_cover_page."""
 
-    def _make_project_with_layers(self, points_layer=None, starts_layer=None,
-                                   background_layer=None):
+    def _make_project_with_layers(self, activities_layer=None, points_layer=None,
+                                   starts_layer=None, background_layer=None):
         """Build a mock project whose layer tree contains the given layers."""
         project = MagicMock()
         nodes = []
-        for lyr in [points_layer, starts_layer, background_layer]:
+        for lyr in [activities_layer, points_layer, starts_layer, background_layer]:
             if lyr is not None:
                 node = MagicMock()
                 node.isVisible.return_value = True
@@ -4415,11 +4421,12 @@ class TestExportCoverPageHeatmap(unittest.TestCase):
         layer.fields.return_value = fields
         return layer
 
-    def test_heatmap_renderer_applied_to_points_layer(self):
-        """When a points layer exists, _export_cover_page applies heatmap renderer."""
+    def test_activity_route_layer_is_preferred_for_cover_map(self):
+        """Cover map uses selected activity routes with their existing renderer."""
         atlas_layer = _make_cover_atlas_layer_with_extents()
+        activities = self._make_points_layer(name="qfit activities")
         pts = self._make_points_layer()
-        project = self._make_project_with_layers(points_layer=pts)
+        project = self._make_project_with_layers(activities_layer=activities, points_layer=pts)
 
         cover_layout = MagicMock()
         exporter_instance = MagicMock()
@@ -4438,17 +4445,18 @@ class TestExportCoverPageHeatmap(unittest.TestCase):
             )
 
         self.assertIsNotNone(result)
-        heatmap_mock.assert_called_once_with(pts)
-        # build_cover_layout should have received map_layers containing the points layer
+        heatmap_mock.assert_not_called()
+        # build_cover_layout should have received map_layers containing the route layer.
         _, kwargs = build_mock.call_args
         self.assertIsNotNone(kwargs.get("map_layers"))
-        self.assertIn(pts, kwargs["map_layers"])
+        self.assertIn(activities, kwargs["map_layers"])
+        self.assertNotIn(pts, kwargs["map_layers"])
 
     def test_subset_filter_applied_for_atlas_activity_ids(self):
-        """Points layer gets filtered to the atlas subset's activity IDs."""
+        """Activity route layer gets filtered to the atlas subset's activity IDs."""
         atlas_layer = _make_cover_atlas_layer_with_extents()
-        pts = self._make_points_layer()
-        project = self._make_project_with_layers(points_layer=pts)
+        activities = self._make_points_layer(name="qfit activities")
+        project = self._make_project_with_layers(activities_layer=activities)
 
         cover_layout = MagicMock()
         exporter_instance = MagicMock()
@@ -4468,12 +4476,175 @@ class TestExportCoverPageHeatmap(unittest.TestCase):
 
         # The subset string should reference the activity IDs.
         # call_args_list[0] is the filter, call_args_list[-1] is the restore.
-        subset_calls = pts.setSubsetString.call_args_list
+        subset_calls = activities.setSubsetString.call_args_list
         self.assertGreaterEqual(len(subset_calls), 2)
         filter_str = subset_calls[0][0][0]
         self.assertIn("act_1", filter_str)
         self.assertIn("act_2", filter_str)
         self.assertIn("source_activity_id", filter_str)
+
+    def test_activity_route_layer_render_order_is_time_ascending(self):
+        """Older selected activities are configured to render below newer ones."""
+        atlas_layer = _make_cover_atlas_layer_with_extents()
+        activities = self._make_points_layer(name="qfit activities")
+        feature_request = MagicMock()
+        feature_request.OrderByClause.side_effect = lambda expression, ascending=True: (
+            expression,
+            ascending,
+        )
+        feature_request.OrderBy.side_effect = lambda clauses: list(clauses)
+        fields = MagicMock()
+        fields.indexOf = lambda n: {
+            "source_activity_id": 0,
+            "start_date": 1,
+            "start_date_local": 2,
+        }.get(n, -1)
+        activities.fields.return_value = fields
+        renderer = activities.renderer.return_value
+        project = self._make_project_with_layers(activities_layer=activities)
+
+        cover_layout = MagicMock()
+        exporter_instance = MagicMock()
+        exporter_instance.exportToPdf.return_value = 0
+
+        exporter_cls = MagicMock()
+        exporter_cls.return_value = exporter_instance
+        exporter_cls.Success = 0
+        exporter_cls.PdfExportSettings = MagicMock(return_value=MagicMock())
+
+        with patch("qfit.atlas.export_task.build_cover_layout", return_value=cover_layout), \
+             patch("qfit.atlas.export_task.QgsLayoutExporter", exporter_cls), \
+             patch("qfit.atlas.export_task._apply_cover_heatmap_renderer"), \
+             patch.object(sys.modules["qgis.core"], "QgsFeatureRequest", feature_request, create=True):
+            AtlasExportTask._export_cover_page(
+                atlas_layer, "/tmp/atlas.pdf", project=project,
+            )
+
+        renderer.setOrderBy.assert_called_once()
+        renderer.setOrderByEnabled.assert_called_once_with(True)
+        order_clauses = renderer.setOrderBy.call_args[0][0]
+        self.assertEqual(
+            order_clauses[0][0],
+            'coalesce(nullif("start_date_local", \'\'), nullif("start_date", \'\'), \'\')',
+        )
+        self.assertTrue(order_clauses[0][1])
+        self.assertEqual(order_clauses[1], ('"source_activity_id"', True))
+
+    def test_activity_route_date_order_expression_uses_available_timestamp_fields(self):
+        """Route order expression handles local-only, UTC-only, and missing dates."""
+        from qfit.atlas import export_front_matter
+
+        layer = self._make_points_layer(name="qfit activities")
+        fields = MagicMock()
+        field_names = {"source_activity_id", "start_date_local"}
+        fields.indexOf = lambda n: 0 if n in field_names else -1
+        layer.fields.return_value = fields
+        self.assertEqual(
+            export_front_matter._activity_route_date_order_expression(layer),
+            'coalesce(nullif("start_date_local", \'\'), \'\')',
+        )
+
+        field_names = {"source_activity_id", "start_date"}
+        self.assertEqual(
+            export_front_matter._activity_route_date_order_expression(layer),
+            'coalesce(nullif("start_date", \'\'), \'\')',
+        )
+
+        field_names = {"source_activity_id"}
+        self.assertIsNone(export_front_matter._activity_route_date_order_expression(layer))
+
+    def test_activity_route_order_by_clauses_can_use_activity_id_only(self):
+        """Routes without timestamps still get deterministic activity-id ordering."""
+        from qfit.atlas import export_front_matter
+
+        layer = self._make_points_layer(name="qfit activities")
+        fields = MagicMock()
+        fields.indexOf = lambda n: 0 if n == "source_activity_id" else -1
+        layer.fields.return_value = fields
+        feature_request = MagicMock()
+        feature_request.OrderByClause.side_effect = lambda expression, ascending=True: (
+            expression,
+            ascending,
+        )
+
+        self.assertEqual(
+            export_front_matter._activity_route_order_by_clauses(layer, feature_request),
+            [('"source_activity_id"', True)],
+        )
+
+    def test_activity_route_layer_without_activity_id_falls_back_to_heatmap(self):
+        """An unfilterable route layer is not used for the selected-activity cover."""
+        atlas_layer = _make_cover_atlas_layer_with_extents()
+        activities = self._make_points_layer(name="qfit activities")
+        fields = MagicMock()
+        fields.indexOf.return_value = -1
+        activities.fields.return_value = fields
+        pts = self._make_points_layer()
+        project = self._make_project_with_layers(activities_layer=activities, points_layer=pts)
+
+        cover_layout = MagicMock()
+        exporter_instance = MagicMock()
+        exporter_instance.exportToPdf.return_value = 0
+
+        exporter_cls = MagicMock()
+        exporter_cls.return_value = exporter_instance
+        exporter_cls.Success = 0
+        exporter_cls.PdfExportSettings = MagicMock(return_value=MagicMock())
+
+        with patch("qfit.atlas.export_task.build_cover_layout", return_value=cover_layout) as build_mock, \
+             patch("qfit.atlas.export_task.QgsLayoutExporter", exporter_cls), \
+             patch("qfit.atlas.export_task._apply_cover_heatmap_renderer") as heatmap_mock:
+            AtlasExportTask._export_cover_page(
+                atlas_layer, "/tmp/atlas.pdf", project=project,
+            )
+
+        heatmap_mock.assert_called_once_with(pts)
+        _, kwargs = build_mock.call_args
+        self.assertIn(pts, kwargs["map_layers"])
+        self.assertNotIn(activities, kwargs["map_layers"])
+
+    def test_activity_route_renderer_order_restored_when_renderer_cannot_be_cloned(self):
+        """Render ordering is restored even if the renderer itself cannot be cloned."""
+        atlas_layer = _make_cover_atlas_layer_with_extents()
+        activities = self._make_points_layer(name="qfit activities")
+        feature_request = MagicMock()
+        feature_request.OrderByClause.side_effect = lambda expression, ascending=True: (
+            expression,
+            ascending,
+        )
+        feature_request.OrderBy.side_effect = lambda clauses: list(clauses)
+        fields = MagicMock()
+        fields.indexOf = lambda n: {
+            "source_activity_id": 0,
+            "start_date": 1,
+        }.get(n, -1)
+        activities.fields.return_value = fields
+        renderer = activities.renderer.return_value
+        original_order = MagicMock(name="original_order")
+        renderer.clone.side_effect = RuntimeError("clone unavailable")
+        renderer.orderBy.return_value = original_order
+        renderer.orderByEnabled.return_value = False
+        project = self._make_project_with_layers(activities_layer=activities)
+
+        cover_layout = MagicMock()
+        exporter_instance = MagicMock()
+        exporter_instance.exportToPdf.return_value = 0
+
+        exporter_cls = MagicMock()
+        exporter_cls.return_value = exporter_instance
+        exporter_cls.Success = 0
+        exporter_cls.PdfExportSettings = MagicMock(return_value=MagicMock())
+
+        with patch("qfit.atlas.export_task.build_cover_layout", return_value=cover_layout), \
+             patch("qfit.atlas.export_task.QgsLayoutExporter", exporter_cls), \
+             patch("qfit.atlas.export_task._apply_cover_heatmap_renderer"), \
+             patch.object(sys.modules["qgis.core"], "QgsFeatureRequest", feature_request, create=True):
+            AtlasExportTask._export_cover_page(
+                atlas_layer, "/tmp/atlas.pdf", project=project,
+        )
+
+        self.assertEqual(renderer.setOrderBy.call_args_list[-1][0][0], original_order)
+        self.assertFalse(renderer.setOrderByEnabled.call_args_list[-1][0][0])
 
     def test_layer_state_restored_after_export(self):
         """Original renderer, opacity, and subset are restored after export."""
