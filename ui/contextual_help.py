@@ -276,11 +276,47 @@ class ContextualHelpBinder:
         button.setToolTip(text)
         button.setWhatsThis(text)
         button.setStatusTip(text)
+        if hasattr(button, "setAccessibleName"):
+            button.setAccessibleName("Show help")
+        if hasattr(button, "setAccessibleDescription"):
+            button.setAccessibleDescription(text)
         button.setCursor(self._qtcore().Qt.WhatsThisCursor)
         button.setFocusPolicy(self._qtcore().Qt.NoFocus)
         button.setStyleSheet("font-weight: bold; padding: 0 4px;")
+        self._connect_help_button(button, text)
         layout.addWidget(button)
         layout.setStretch(0, 1)
+
+    def _connect_help_button(self, button: Any, text: str) -> None:
+        clicked = getattr(button, "clicked", None)
+        connect = getattr(clicked, "connect", None)
+        if callable(connect):
+            connect(
+                lambda _checked=False, button=button, text=text: self._show_help_text(
+                    button,
+                    text,
+                )
+            )
+
+    def _show_help_text(self, button: Any, text: str) -> None:
+        qtwidgets = self._qtwidgets()
+        whats_this = getattr(qtwidgets, "QWhatsThis", None)
+        show_text = getattr(whats_this, "showText", None)
+        if callable(show_text):
+            show_text(self._help_popup_position(button), text, button)
+
+    def _help_popup_position(self, button: Any) -> Any:
+        try:
+            if hasattr(button, "mapToGlobal") and hasattr(button, "rect"):
+                rect = button.rect()
+                if hasattr(rect, "bottomLeft"):
+                    return button.mapToGlobal(rect.bottomLeft())
+        except RuntimeError:
+            pass
+
+        qtcore = self._qtcore()
+        point = getattr(qtcore, "QPoint", None)
+        return point(0, 0) if callable(point) else None
 
     def _insert_after_anchor(self, anchor: Any, helper: Any) -> None:
         qtwidgets = self._qtwidgets()
