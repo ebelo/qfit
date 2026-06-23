@@ -1,5 +1,6 @@
 import sys
 import unittest
+import sqlite3
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
@@ -152,6 +153,58 @@ class LoadDatasetWorkflowTests(unittest.TestCase):
         result = workflow.load_existing_request(
             workflow.build_load_existing_request("/tmp/existing.gpkg")
         )
+
+        self.assertEqual(result.total_stored, 42)
+
+    def test_load_existing_falls_back_to_layer_count_when_count_loader_fails(self):
+        layer_gateway = MagicMock()
+        activities_layer = MagicMock()
+        activities_layer.featureCount.return_value = 42
+        layer_gateway.load_output_layers.return_value = (
+            activities_layer,
+            MagicMock(name="starts"),
+            MagicMock(name="points"),
+            MagicMock(name="atlas"),
+        )
+        layer_gateway.load_route_layers.return_value = (None, None, None)
+        workflow = LoadDatasetWorkflow(
+            layer_gateway,
+            path_exists=lambda _path: True,
+            stored_activity_count_loader=MagicMock(
+                side_effect=sqlite3.OperationalError("database is locked")
+            ),
+        )
+
+        result = workflow.load_existing_request(
+            workflow.build_load_existing_request("/tmp/existing.gpkg")
+        )
+
+        self.assertEqual(result.total_stored, 42)
+
+    def test_load_existing_falls_back_when_repository_count_read_fails(self):
+        layer_gateway = MagicMock()
+        activities_layer = MagicMock()
+        activities_layer.featureCount.return_value = 42
+        layer_gateway.load_output_layers.return_value = (
+            activities_layer,
+            MagicMock(name="starts"),
+            MagicMock(name="points"),
+            MagicMock(name="atlas"),
+        )
+        layer_gateway.load_route_layers.return_value = (None, None, None)
+        repository = MagicMock()
+        repository.load_detailed_route_coverage.side_effect = sqlite3.DatabaseError(
+            "file is not a database"
+        )
+
+        with patch(
+            "qfit.activities.application.load_workflow.SyncRepository",
+            return_value=repository,
+        ):
+            workflow = LoadDatasetWorkflow(layer_gateway, path_exists=lambda _path: True)
+            result = workflow.load_existing_request(
+                workflow.build_load_existing_request("/tmp/existing.gpkg")
+            )
 
         self.assertEqual(result.total_stored, 42)
 
