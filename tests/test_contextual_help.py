@@ -321,6 +321,9 @@ class _TestBinder(ContextualHelpBinder):
 
 
 class ContextualHelpTests(unittest.TestCase):
+    def setUp(self):
+        _FakeQWhatsThis.reset()
+
     def test_dock_help_entries_cover_high_value_confusing_controls(self):
         entries = {entry.anchor_name: entry for entry in build_dock_help_entries()}
 
@@ -364,7 +367,6 @@ class ContextualHelpTests(unittest.TestCase):
         self.assertIsNotNone(binder)
 
     def test_apply_updates_label_target_tooltips_and_creates_helper_and_help_button(self):
-        _FakeQWhatsThis.reset()
         root = _FakeRoot()
         form = _FakeQFormLayout(root)
         root._children.append(form)
