@@ -83,6 +83,9 @@ class _FakeWidget:
     def setVisible(self, value):  # noqa: N802
         self._visible = value
 
+    def hide(self):
+        self.setVisible(False)
+
     def isVisible(self):  # noqa: N802
         return self._visible
 
@@ -484,7 +487,7 @@ class WizardShellTest(unittest.TestCase):
         self.assertEqual(layout.spacing, 0)
         self.assertEqual(
             layout.widgets,
-            [shell.stepper_bar, shell.separator, shell.content_scroll, shell.footer_bar],
+            [shell.stepper_bar, shell.separator, shell.content_scroll],
         )
 
     def test_delegates_stepper_state_and_page_selection(self):
