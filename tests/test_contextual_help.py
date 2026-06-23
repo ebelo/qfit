@@ -17,6 +17,41 @@ class _FakeQt:
     NoFocus = "no-focus"
 
 
+class _FakePoint:
+    def __init__(self, x=0, y=0):
+        self.x = x
+        self.y = y
+
+
+class _FakeRect:
+    def bottomLeft(self):  # noqa: N802
+        return _FakePoint(1, 2)
+
+
+class _FakeSignal:
+    def __init__(self):
+        self.callback = None
+
+    def connect(self, callback):
+        self.callback = callback
+
+    def emit(self, checked=False):
+        if self.callback is not None:
+            self.callback(checked)
+
+
+class _FakeQWhatsThis:
+    calls = []
+
+    @classmethod
+    def reset(cls):
+        cls.calls = []
+
+    @classmethod
+    def showText(cls, position, text, widget):  # noqa: N802
+        cls.calls.append((position, text, widget))
+
+
 class _FakeWidgetItem:
     def __init__(self, widget=None, layout=None):
         self._widget = widget
@@ -141,6 +176,8 @@ class _FakeWidget:
         self.visible = False
         self.cursor = None
         self.focus_policy = None
+        self.accessible_name = None
+        self.accessible_description = None
         self._minimum_width = None
         self.size_policy = None
         self.auto_raise = False
@@ -169,6 +206,12 @@ class _FakeWidget:
 
     def setStatusTip(self, text):
         self.status_tip = text
+
+    def setAccessibleName(self, text):  # noqa: N802
+        self.accessible_name = text
+
+    def setAccessibleDescription(self, text):  # noqa: N802
+        self.accessible_description = text
 
     def setWordWrap(self, value):
         self.word_wrap = value
@@ -205,6 +248,12 @@ class _FakeWidget:
     def parentWidget(self):
         return self._parent
 
+    def rect(self):
+        return _FakeRect()
+
+    def mapToGlobal(self, point):  # noqa: N802
+        return ("global", point.x, point.y)
+
     def setLayout(self, layout):
         self.layout_obj = layout
 
@@ -226,6 +275,10 @@ class _FakeLabel(_FakeWidget):
 
 
 class _FakeQToolButton(_FakeWidget):
+    def __init__(self, text="", parent=None, object_name=""):
+        super().__init__(text=text, parent=parent, object_name=object_name)
+        self.clicked = _FakeSignal()
+
     def setAutoRaise(self, value):
         self.auto_raise = value
 
@@ -250,6 +303,7 @@ class _FakeQtWidgetsModule:
         Ignored = 3
         Preferred = 4
 
+    QWhatsThis = _FakeQWhatsThis
     QWidget = _FakeWidget
     QLabel = _FakeLabel
     QToolButton = _FakeQToolButton
@@ -263,7 +317,7 @@ class _TestBinder(ContextualHelpBinder):
         return _FakeQtWidgetsModule
 
     def _qtcore(self):
-        return SimpleNamespace(Qt=_FakeQt)
+        return SimpleNamespace(Qt=_FakeQt, QPoint=_FakePoint)
 
 
 class ContextualHelpTests(unittest.TestCase):
@@ -310,6 +364,7 @@ class ContextualHelpTests(unittest.TestCase):
         self.assertIsNotNone(binder)
 
     def test_apply_updates_label_target_tooltips_and_creates_helper_and_help_button(self):
+        _FakeQWhatsThis.reset()
         root = _FakeRoot()
         form = _FakeQFormLayout(root)
         root._children.append(form)
@@ -369,6 +424,17 @@ class ContextualHelpTests(unittest.TestCase):
         self.assertEqual(help_button.cursor, _FakeQt.WhatsThisCursor)
         self.assertEqual(help_button.focus_policy, _FakeQt.NoFocus)
         self.assertEqual(help_button.tooltip, "Explains the field")
+        self.assertEqual(help_button.whats_this, "Explains the field")
+        self.assertEqual(help_button.status_tip, "Explains the field")
+        self.assertEqual(help_button.accessible_name, "Show help")
+        self.assertEqual(help_button.accessible_description, "Explains the field")
+
+        help_button.clicked.emit()
+
+        self.assertEqual(
+            _FakeQWhatsThis.calls,
+            [(("global", 1, 2), "Explains the field", help_button)],
+        )
 
     def test_apply_reuses_existing_helper_label_and_skips_second_help_wrapper(self):
         root = _FakeRoot()
