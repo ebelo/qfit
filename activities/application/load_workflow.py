@@ -1,5 +1,6 @@
 import logging
 import os
+import sqlite3
 from dataclasses import dataclass, field
 from typing import Callable
 
@@ -339,10 +340,14 @@ class LoadDatasetWorkflow:
         return self.load_existing(request)
 
     def _stored_activity_count(self, output_path: str, activities_layer) -> int:
-        if self._stored_activity_count_loader is not None:
-            total = self._stored_activity_count_loader(output_path)
-        else:
-            total = SyncRepository(output_path).load_detailed_route_coverage().total_count
+        try:
+            if self._stored_activity_count_loader is not None:
+                total = self._stored_activity_count_loader(output_path)
+            else:
+                total = SyncRepository(output_path).load_detailed_route_coverage().total_count
+        except (sqlite3.DatabaseError, RuntimeError, OSError, TypeError, ValueError):
+            logger.debug("Failed to read stored activity count", exc_info=True)
+            total = 0
         if total > 0:
             return total
         return _safe_feature_count(activities_layer)
