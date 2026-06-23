@@ -4487,6 +4487,12 @@ class TestExportCoverPageHeatmap(unittest.TestCase):
         """Older selected activities are configured to render below newer ones."""
         atlas_layer = _make_cover_atlas_layer_with_extents()
         activities = self._make_points_layer(name="qfit activities")
+        feature_request = MagicMock()
+        feature_request.OrderByClause.side_effect = lambda expression, ascending=True: (
+            expression,
+            ascending,
+        )
+        feature_request.OrderBy.side_effect = lambda clauses: list(clauses)
         fields = MagicMock()
         fields.indexOf = lambda n: {
             "source_activity_id": 0,
@@ -4508,7 +4514,8 @@ class TestExportCoverPageHeatmap(unittest.TestCase):
 
         with patch("qfit.atlas.export_task.build_cover_layout", return_value=cover_layout), \
              patch("qfit.atlas.export_task.QgsLayoutExporter", exporter_cls), \
-             patch("qfit.atlas.export_task._apply_cover_heatmap_renderer"):
+             patch("qfit.atlas.export_task._apply_cover_heatmap_renderer"), \
+             patch.object(sys.modules["qgis.core"], "QgsFeatureRequest", feature_request, create=True):
             AtlasExportTask._export_cover_page(
                 atlas_layer, "/tmp/atlas.pdf", project=project,
             )
@@ -4558,6 +4565,12 @@ class TestExportCoverPageHeatmap(unittest.TestCase):
         """Render ordering is restored even if the renderer itself cannot be cloned."""
         atlas_layer = _make_cover_atlas_layer_with_extents()
         activities = self._make_points_layer(name="qfit activities")
+        feature_request = MagicMock()
+        feature_request.OrderByClause.side_effect = lambda expression, ascending=True: (
+            expression,
+            ascending,
+        )
+        feature_request.OrderBy.side_effect = lambda clauses: list(clauses)
         fields = MagicMock()
         fields.indexOf = lambda n: {
             "source_activity_id": 0,
@@ -4582,7 +4595,8 @@ class TestExportCoverPageHeatmap(unittest.TestCase):
 
         with patch("qfit.atlas.export_task.build_cover_layout", return_value=cover_layout), \
              patch("qfit.atlas.export_task.QgsLayoutExporter", exporter_cls), \
-             patch("qfit.atlas.export_task._apply_cover_heatmap_renderer"):
+             patch("qfit.atlas.export_task._apply_cover_heatmap_renderer"), \
+             patch.object(sys.modules["qgis.core"], "QgsFeatureRequest", feature_request, create=True):
             AtlasExportTask._export_cover_page(
                 atlas_layer, "/tmp/atlas.pdf", project=project,
             )
