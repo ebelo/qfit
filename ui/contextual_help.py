@@ -229,6 +229,7 @@ class ContextualHelpBinder:
         existing = getattr(self.root, helper_name, None)
         if existing is not None:
             existing.setText(text)
+            self._apply_tooltip(existing, text)
             existing.show()
             return
 
@@ -245,6 +246,7 @@ class ContextualHelpBinder:
                 qtwidgets.QSizePolicy.Preferred,
             )
         helper.setTextInteractionFlags(self._qtcore().Qt.TextSelectableByMouse)
+        self._apply_tooltip(helper, text)
         helper.setStyleSheet("color: palette(mid); margin-top: 2px; margin-bottom: 4px;")
         self._insert_after_anchor(anchor, helper)
         setattr(self.root, helper_name, helper)
