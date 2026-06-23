@@ -107,7 +107,9 @@ class QfitPlugin:
         ):
             return
 
-        set_window_state((window_state() & ~minimized) | active)
+        state = window_state()
+        if state & minimized:
+            set_window_state((state & ~minimized) | active)
 
     def show_about(self):
         if self._about_dock is None:

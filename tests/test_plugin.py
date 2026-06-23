@@ -313,7 +313,10 @@ class TestQfitPluginMenuStructure(unittest.TestCase):
                 self.raise_ = MagicMock()
                 self.activateWindow = MagicMock()
                 self.windowState = MagicMock(
-                    return_value=plugin_module.Qt.WindowMinimized
+                    side_effect=[
+                        plugin_module.Qt.WindowMinimized,
+                        plugin_module.Qt.WindowActive,
+                    ]
                 )
                 self.setWindowState = MagicMock()
                 FakeConfigDialog.created.append(self)
@@ -324,7 +327,7 @@ class TestQfitPluginMenuStructure(unittest.TestCase):
 
         dialog = FakeConfigDialog.created[-1]
         self.assertEqual(len(FakeConfigDialog.created), 1)
-        dialog.setWindowState.assert_called_with(plugin_module.Qt.WindowActive)
+        dialog.setWindowState.assert_called_once_with(plugin_module.Qt.WindowActive)
         self.assertEqual(dialog.show.call_count, 2)
         self.assertEqual(dialog.raise_.call_count, 2)
         self.assertEqual(dialog.activateWindow.call_count, 2)
