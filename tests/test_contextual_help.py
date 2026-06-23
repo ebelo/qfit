@@ -346,6 +346,9 @@ class ContextualHelpTests(unittest.TestCase):
         self.assertEqual(helper.minimumWidth(), 0)
         self.assertEqual(helper.size_policy, (3, 4))
         self.assertEqual(helper.interaction_flags, _FakeQt.TextSelectableByMouse)
+        self.assertEqual(helper.tooltip, "Inline helper copy")
+        self.assertEqual(helper.whats_this, "Inline helper copy")
+        self.assertEqual(helper.status_tip, "Inline helper copy")
         self.assertIn("palette(mid)", helper.style_sheet)
 
         wrapper = anchor.parentWidget()
@@ -388,6 +391,8 @@ class ContextualHelpTests(unittest.TestCase):
         )
 
         self.assertEqual(root.distanceSpinBoxContextHelpLabel.text(), "New helper")
+        self.assertEqual(root.distanceSpinBoxContextHelpLabel.tooltip, "New helper")
+        self.assertEqual(root.distanceSpinBoxContextHelpLabel.whats_this, "New helper")
         self.assertTrue(root.distanceSpinBoxContextHelpLabel.isVisible())
         self.assertIs(anchor.parentWidget(), wrapper)
 
