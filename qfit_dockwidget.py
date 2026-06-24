@@ -995,7 +995,17 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         finally:
             self._restore_project_crs(project_crs, schedule_delayed=True)
             if loaded_activities_layer is not None:
-                self._zoom_to_loaded_activity_extent(loaded_activities_layer)
+                self._schedule_zoom_to_loaded_activity_extent(loaded_activities_layer)
+
+    def _schedule_zoom_to_loaded_activity_extent(self, activities_layer) -> None:
+        try:
+            QTimer.singleShot(
+                0,
+                lambda layer=activities_layer: self._zoom_to_loaded_activity_extent(layer),
+            )
+        except (AttributeError, RuntimeError, TypeError):
+            logger.debug("Failed to schedule loaded activity extent zoom", exc_info=True)
+            self._zoom_to_loaded_activity_extent(activities_layer)
 
     def _zoom_to_loaded_activity_extent(self, activities_layer) -> None:
         zoom_to_layers = getattr(getattr(self, "layer_gateway", None), "zoom_to_layers", None)
