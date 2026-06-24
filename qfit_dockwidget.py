@@ -947,6 +947,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         """Load an existing GeoPackage into QGIS without fetching from Strava."""
         project_crs = self._current_project_crs()
         preview_snapshot = self._activity_preview_snapshot()
+        loaded_activities_layer = None
         try:
             self._save_settings()
             workflow = self._dataset_load_workflow_service()
@@ -986,12 +987,24 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._refresh_detailed_route_coverage_from_storage()
             self._update_loaded_activities_summary(result.total_stored)
             self._restore_activity_preview_snapshot(preview_snapshot)
+            loaded_activities_layer = result.activities_layer
             status = result.status
             if visual_status:
                 status = "{status} {visual_status}".format(status=status, visual_status=visual_status)
             self._set_status(status)
         finally:
             self._restore_project_crs(project_crs, schedule_delayed=True)
+            if loaded_activities_layer is not None:
+                self._zoom_to_loaded_activity_extent(loaded_activities_layer)
+
+    def _zoom_to_loaded_activity_extent(self, activities_layer) -> None:
+        zoom_to_layers = getattr(getattr(self, "layer_gateway", None), "zoom_to_layers", None)
+        if not callable(zoom_to_layers):
+            return
+        try:
+            zoom_to_layers([activities_layer])
+        except Exception:  # noqa: BLE001 - best-effort canvas update must not abort load
+            logger.debug("Failed to zoom canvas to loaded activity layer", exc_info=True)
 
     def _activity_preview_snapshot(self):
         preview_widget = getattr(self, "activityPreviewPlainTextEdit", None)

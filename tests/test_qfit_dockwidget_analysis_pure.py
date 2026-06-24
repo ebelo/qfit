@@ -2905,6 +2905,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._update_loaded_activities_summary = MagicMock()
         dock._set_status = MagicMock()
         dock._atlas_export_completed = True
+        dock.layer_gateway = MagicMock()
         workflow = MagicMock()
         workflow.build_load_existing_request.return_value = "load-request"
         result = SimpleNamespace(
@@ -2930,6 +2931,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._populate_activity_types_from_layer.assert_called_once_with()
         dock._apply_visual_configuration.assert_called_once_with(apply_subset_filters=False)
         dock._update_loaded_activities_summary.assert_called_once_with(12)
+        dock.layer_gateway.zoom_to_layers.assert_called_once_with(["activities-layer"])
         dock._set_status.assert_called_once_with("Loaded 12 activities Styled layers")
 
     def test_on_load_layers_clicked_preserves_fetched_activity_preview(self):
@@ -2972,6 +2974,35 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         )
         dock._set_status.assert_called_once_with("Loaded 12 activities Styled layers")
 
+    def test_on_load_layers_clicked_keeps_status_when_activity_zoom_fails(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._save_settings = MagicMock()
+        dock.outputPathLineEdit = _FakeLineEdit("/tmp/qfit.gpkg")
+        dock._populate_activity_types_from_layer = MagicMock()
+        dock._apply_visual_configuration = MagicMock(return_value="Styled layers")
+        dock._update_loaded_activities_summary = MagicMock()
+        dock._set_status = MagicMock()
+        dock._atlas_export_completed = True
+        dock.layer_gateway = MagicMock()
+        dock.layer_gateway.zoom_to_layers.side_effect = ValueError("canvas unavailable")
+        workflow = MagicMock()
+        workflow.build_load_existing_request.return_value = "load-request"
+        workflow.load_existing_request.return_value = SimpleNamespace(
+            output_path="/tmp/qfit.gpkg",
+            activities_layer="activities-layer",
+            starts_layer="starts-layer",
+            points_layer="points-layer",
+            atlas_layer="atlas-layer",
+            total_stored=12,
+            status="Loaded 12 activities",
+        )
+        dock.dataset_load_workflow = workflow
+
+        self.module.QfitDockWidget.on_load_layers_clicked(dock)
+
+        dock.layer_gateway.zoom_to_layers.assert_called_once_with(["activities-layer"])
+        dock._set_status.assert_called_once_with("Loaded 12 activities Styled layers")
+
     def test_on_load_layers_clicked_restores_user_crs_after_visual_configuration(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._save_settings = MagicMock()
@@ -2997,6 +3028,8 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         )
         workflow.load_existing_request.return_value = result
         dock.dataset_load_workflow = workflow
+        dock.layer_gateway = MagicMock()
+        dock.layer_gateway.zoom_to_layers.side_effect = lambda layers: events.append(("zoom", layers))
         canvas = MagicMock()
         dock.iface = SimpleNamespace(mapCanvas=lambda: canvas)
         project = MagicMock()
@@ -3009,7 +3042,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         with patch.object(self.module.QgsProject, "instance", return_value=project):
             self.module.QfitDockWidget.on_load_layers_clicked(dock)
 
-        self.assertEqual(events, ["visual", ("restore", user_crs)])
+        self.assertEqual(events, ["visual", ("restore", user_crs), ("zoom", ["activities-layer"])])
         project.setCrs.assert_called_once_with(user_crs)
         canvas.setDestinationCrs.assert_called_once_with(user_crs)
         self.module.QTimer.singleShot.assert_called_once()
