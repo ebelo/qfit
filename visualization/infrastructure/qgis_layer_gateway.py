@@ -115,6 +115,9 @@ class QgisLayerGateway:
         canvas_service.zoom_to_layers(self.iface, route_layers)
         return route_layers
 
+    def zoom_to_layers(self, layers):
+        self._get_canvas_service().zoom_to_layers(self.iface, layers)
+
     def remove_layers(self, layers):
         for layer in layers or []:
             if layer is None:
