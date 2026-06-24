@@ -63,8 +63,13 @@ class MapCanvasService:
                 except RuntimeError:
                     logger.debug("Extent transform in CRS switch failed", exc_info=True)
 
-    def zoom_to_layers(self, iface, layers):
-        """Combine layer extents, snap to tile zoom, and set canvas extent."""
+    def zoom_to_layers(self, iface, layers, *, snap_to_background: bool = True):
+        """Combine layer extents and set the canvas extent.
+
+        By default, the combined extent is expanded to align with the
+        background tile zoom level. Pass ``snap_to_background=False`` when the
+        raw layer extent should drive the canvas view directly.
+        """
         canvas = iface.mapCanvas() if iface is not None else None
         if canvas is None:
             return
@@ -85,7 +90,8 @@ class MapCanvasService:
         if extents is None or extents.isEmpty():
             return
 
-        extents = self._background_service.snap_extent_to_background_tile_zoom(extents, canvas)
+        if snap_to_background:
+            extents = self._background_service.snap_extent_to_background_tile_zoom(extents, canvas)
         canvas.setExtent(extents)
         canvas.refresh()
 

@@ -1002,7 +1002,7 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         if not callable(zoom_to_layers):
             return
         try:
-            zoom_to_layers([activities_layer])
+            zoom_to_layers([activities_layer], snap_to_background=False)
         except Exception:  # noqa: BLE001 - best-effort canvas update must not abort load
             logger.debug("Failed to zoom canvas to loaded activity layer", exc_info=True)
 
