@@ -349,9 +349,18 @@ class ContextualHelpTests(unittest.TestCase):
             entries["writeActivityPointsCheckBox"].target_text,
             "Write sampled activity points from detailed tracks",
         )
-        self.assertIn("activity_points layer", entries["writeActivityPointsCheckBox"].helper_text)
+        self.assertEqual(
+            entries["writeActivityPointsCheckBox"].helper_text,
+            "Writes sampled track points to activity_points when detailed Strava streams are available.",
+        )
+        self.assertLessEqual(len(entries["writeActivityPointsCheckBox"].helper_text), 90)
         self.assertEqual(entries["pointSamplingStrideSpinBox"].label_text, "Keep every Nth point")
         self.assertEqual(entries["backgroundPresetComboBox"].label_text, "Basemap preset")
+        self.assertEqual(
+            entries["backgroundPresetComboBox"].helper_text,
+            "Pick a built-in style, or use Winter/Custom for a Mapbox Studio style.",
+        )
+        self.assertLessEqual(len(entries["backgroundPresetComboBox"].helper_text), 80)
         self.assertEqual(entries["atlasTitleLineEdit"].label_text, "Atlas title")
         self.assertEqual(entries["atlasSubtitleLineEdit"].label_text, "Atlas subtitle")
         self.assertEqual(entries["refreshButton"].target_text, "Fetch activities")
