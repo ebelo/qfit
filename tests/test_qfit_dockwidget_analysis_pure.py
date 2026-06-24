@@ -2931,7 +2931,10 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._populate_activity_types_from_layer.assert_called_once_with()
         dock._apply_visual_configuration.assert_called_once_with(apply_subset_filters=False)
         dock._update_loaded_activities_summary.assert_called_once_with(12)
-        dock.layer_gateway.zoom_to_layers.assert_called_once_with(["activities-layer"])
+        dock.layer_gateway.zoom_to_layers.assert_called_once_with(
+            ["activities-layer"],
+            snap_to_background=False,
+        )
         dock._set_status.assert_called_once_with("Loaded 12 activities Styled layers")
 
     def test_on_load_layers_clicked_preserves_fetched_activity_preview(self):
@@ -3000,7 +3003,10 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
         self.module.QfitDockWidget.on_load_layers_clicked(dock)
 
-        dock.layer_gateway.zoom_to_layers.assert_called_once_with(["activities-layer"])
+        dock.layer_gateway.zoom_to_layers.assert_called_once_with(
+            ["activities-layer"],
+            snap_to_background=False,
+        )
         dock._set_status.assert_called_once_with("Loaded 12 activities Styled layers")
 
     def test_on_load_layers_clicked_restores_user_crs_after_visual_configuration(self):
@@ -3029,7 +3035,9 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         workflow.load_existing_request.return_value = result
         dock.dataset_load_workflow = workflow
         dock.layer_gateway = MagicMock()
-        dock.layer_gateway.zoom_to_layers.side_effect = lambda layers: events.append(("zoom", layers))
+        dock.layer_gateway.zoom_to_layers.side_effect = (
+            lambda layers, **kwargs: events.append(("zoom", layers, kwargs))
+        )
         canvas = MagicMock()
         dock.iface = SimpleNamespace(mapCanvas=lambda: canvas)
         project = MagicMock()
@@ -3042,7 +3050,14 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         with patch.object(self.module.QgsProject, "instance", return_value=project):
             self.module.QfitDockWidget.on_load_layers_clicked(dock)
 
-        self.assertEqual(events, ["visual", ("restore", user_crs), ("zoom", ["activities-layer"])])
+        self.assertEqual(
+            events,
+            [
+                "visual",
+                ("restore", user_crs),
+                ("zoom", ["activities-layer"], {"snap_to_background": False}),
+            ],
+        )
         project.setCrs.assert_called_once_with(user_crs)
         canvas.setDestinationCrs.assert_called_once_with(user_crs)
         self.module.QTimer.singleShot.assert_called_once()

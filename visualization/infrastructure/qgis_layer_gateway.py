@@ -115,8 +115,12 @@ class QgisLayerGateway:
         canvas_service.zoom_to_layers(self.iface, route_layers)
         return route_layers
 
-    def zoom_to_layers(self, layers):
-        self._get_canvas_service().zoom_to_layers(self.iface, layers)
+    def zoom_to_layers(self, layers, *, snap_to_background: bool = True):
+        self._get_canvas_service().zoom_to_layers(
+            self.iface,
+            layers,
+            snap_to_background=snap_to_background,
+        )
 
     def remove_layers(self, layers):
         for layer in layers or []:

@@ -128,7 +128,32 @@ class LayerGatewayBoundaryTests(unittest.TestCase):
 
             gateway.zoom_to_layers(layers)
 
-        gateway._canvas_service.zoom_to_layers.assert_called_once_with(gateway.iface, layers)
+        gateway._canvas_service.zoom_to_layers.assert_called_once_with(
+            gateway.iface,
+            layers,
+            snap_to_background=True,
+        )
+
+    def test_qgis_gateway_zoom_to_layers_can_skip_background_snap(self):
+        modules = self._qgis_gateway_modules()
+
+        with patch.dict(sys.modules, modules, clear=False):
+            self._reset_qgis_gateway_imports()
+            adapter_module = importlib.import_module(
+                "qfit.visualization.infrastructure.qgis_layer_gateway"
+            )
+
+            gateway = adapter_module.QgisLayerGateway(MagicMock(name="iface"))
+            gateway._canvas_service = MagicMock(name="canvas_service")
+            layers = [MagicMock(name="activities")]
+
+            gateway.zoom_to_layers(layers, snap_to_background=False)
+
+        gateway._canvas_service.zoom_to_layers.assert_called_once_with(
+            gateway.iface,
+            layers,
+            snap_to_background=False,
+        )
 
     def test_qgis_gateway_canvas_service_lazy_init_uses_zoom_contract(self):
         modules = self._qgis_gateway_modules()

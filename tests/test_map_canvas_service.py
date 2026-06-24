@@ -243,6 +243,15 @@ class MapCanvasServiceRealTests(unittest.TestCase):
         self._bg.snap_extent_to_background_tile_zoom.assert_called_once()
         canvas.setExtent.assert_called_once_with(snapped)
 
+    def test_zoom_to_layers_can_skip_background_snap(self):
+        iface, canvas = _make_iface()
+        layer, extent = _make_layer((0, 0, 1, 1))
+
+        self.service.zoom_to_layers(iface, [layer], snap_to_background=False)
+
+        self._bg.snap_extent_to_background_tile_zoom.assert_not_called()
+        canvas.setExtent.assert_called_once_with(extent)
+
 
 # ---------------------------------------------------------------------------
 # Mock-QGIS tests (for CI without real QGIS)
@@ -367,6 +376,15 @@ class MapCanvasServiceMockTests(unittest.TestCase):
 
         canvas.setExtent.assert_called_once()
         canvas.refresh.assert_called_once()
+
+    def test_zoom_to_layers_can_skip_background_snap(self):
+        iface, canvas = _make_iface()
+        layer, extent = _make_layer((0, 0, 1, 1))
+
+        self.service.zoom_to_layers(iface, [layer], snap_to_background=False)
+
+        self._bg.snap_extent_to_background_tile_zoom.assert_not_called()
+        canvas.setExtent.assert_called_once_with(extent)
 
     def test_zoom_to_layers_transforms_layer_extent_to_canvas_crs(self):
         iface, canvas = _make_iface()
