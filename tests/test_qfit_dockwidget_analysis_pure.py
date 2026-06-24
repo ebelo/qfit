@@ -2919,6 +2919,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         )
         workflow.load_existing_request.return_value = result
         dock.dataset_load_workflow = workflow
+        self.module.QTimer.singleShot.reset_mock()
 
         self.module.QfitDockWidget.on_load_layers_clicked(dock)
 
@@ -2931,6 +2932,11 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock._populate_activity_types_from_layer.assert_called_once_with()
         dock._apply_visual_configuration.assert_called_once_with(apply_subset_filters=False)
         dock._update_loaded_activities_summary.assert_called_once_with(12)
+        dock.layer_gateway.zoom_to_layers.assert_not_called()
+        self.module.QTimer.singleShot.assert_called_once()
+        delay, callback = self.module.QTimer.singleShot.call_args.args
+        self.assertEqual(delay, 0)
+        callback()
         dock.layer_gateway.zoom_to_layers.assert_called_once_with(
             ["activities-layer"],
             snap_to_background=False,
@@ -3000,9 +3006,15 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             status="Loaded 12 activities",
         )
         dock.dataset_load_workflow = workflow
+        self.module.QTimer.singleShot.reset_mock()
 
         self.module.QfitDockWidget.on_load_layers_clicked(dock)
 
+        dock.layer_gateway.zoom_to_layers.assert_not_called()
+        self.module.QTimer.singleShot.assert_called_once()
+        delay, callback = self.module.QTimer.singleShot.call_args.args
+        self.assertEqual(delay, 0)
+        callback()
         dock.layer_gateway.zoom_to_layers.assert_called_once_with(
             ["activities-layer"],
             snap_to_background=False,
@@ -3045,25 +3057,43 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         user_crs.isValid.return_value = True
         project.crs.return_value = user_crs
         project.setCrs.side_effect = lambda crs: events.append(("restore", crs))
+        scheduled_callbacks = []
         self.module.QTimer.singleShot.reset_mock()
-
-        with patch.object(self.module.QgsProject, "instance", return_value=project):
-            self.module.QfitDockWidget.on_load_layers_clicked(dock)
-
-        self.assertEqual(
-            events,
-            [
-                "visual",
-                ("restore", user_crs),
-                ("zoom", ["activities-layer"], {"snap_to_background": False}),
-            ],
+        self.module.QTimer.singleShot.side_effect = (
+            lambda _delay, callback: scheduled_callbacks.append(callback)
         )
-        project.setCrs.assert_called_once_with(user_crs)
-        canvas.setDestinationCrs.assert_called_once_with(user_crs)
-        self.module.QTimer.singleShot.assert_called_once()
-        delay, callback = self.module.QTimer.singleShot.call_args.args
-        self.assertEqual(delay, 0)
-        self.assertTrue(callable(callback))
+
+        try:
+            with patch.object(self.module.QgsProject, "instance", return_value=project):
+                self.module.QfitDockWidget.on_load_layers_clicked(dock)
+
+                self.assertEqual(events, ["visual", ("restore", user_crs)])
+                project.setCrs.assert_called_once_with(user_crs)
+                canvas.setDestinationCrs.assert_called_once_with(user_crs)
+                self.assertEqual(self.module.QTimer.singleShot.call_count, 2)
+                self.assertEqual(
+                    [
+                        call_args.args[0]
+                        for call_args in self.module.QTimer.singleShot.call_args_list
+                    ],
+                    [0, 0],
+                )
+                self.assertEqual(len(scheduled_callbacks), 2)
+
+                scheduled_callbacks[0]()
+                scheduled_callbacks[1]()
+
+                self.assertEqual(
+                    events,
+                    [
+                        "visual",
+                        ("restore", user_crs),
+                        ("restore", user_crs),
+                        ("zoom", ["activities-layer"], {"snap_to_background": False}),
+                    ],
+                )
+        finally:
+            self.module.QTimer.singleShot.side_effect = None
 
     def test_on_generate_atlas_pdf_clicked_cancels_existing_export_task(self):
         dock = object.__new__(self.module.QfitDockWidget)
