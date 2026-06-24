@@ -41,8 +41,7 @@ DOCK_HELP_ENTRIES: tuple[HelpEntry, ...] = (
             "default Mapbox owner/style fields; Winter and Custom expect your own Mapbox Studio style."
         ),
         helper_text=(
-            "Built-in presets are the quickest path. Use Winter or Custom when you want your own Mapbox Studio "
-            "style instead of qfit's default examples."
+            "Pick a built-in style, or use Winter/Custom for a Mapbox Studio style."
         ),
         help_button=True,
     ),
@@ -80,9 +79,7 @@ DOCK_HELP_ENTRIES: tuple[HelpEntry, ...] = (
             "sampled stream data in QGIS."
         ),
         helper_text=(
-            "Best when detailed tracks are enabled. qfit writes this data to the activity_points layer, which can "
-            "include sampled distance, time, elevation, speed, heart rate, cadence, power, temperature, and "
-            "moving-state values when Strava provides them."
+            "Writes sampled track points to activity_points when detailed Strava streams are available."
         ),
     ),
     HelpEntry(
