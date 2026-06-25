@@ -66,7 +66,11 @@ class PackagePluginTests(unittest.TestCase):
             (root / "packaging").mkdir()
             packaged_flake8_config = root / "packaging" / "qgis-flake8.cfg"
             packaged_flake8_config.write_text(
-                "[flake8]\nextend-exclude = vendor/*\nextend-ignore = W503\n",
+                "[flake8]\n"
+                "extend-exclude = vendor/*\n"
+                "extend-ignore = W503\n"
+                "per-file-ignores =\n"
+                "    qfit_dockwidget.py: E402\n",
                 encoding="utf-8",
             )
             (root / "validation").mkdir()
@@ -95,6 +99,7 @@ class PackagePluginTests(unittest.TestCase):
             self.assertNotIn("qfit/packaging/qgis-flake8.cfg", names)
             self.assertIn("extend-exclude = vendor/*", packaged_config)
             self.assertIn("extend-ignore = W503", packaged_config)
+            self.assertIn("qfit_dockwidget.py: E402", packaged_config)
             self.assertFalse(any(name.startswith("qfit/tests/") for name in names))
             self.assertFalse(any(name.startswith("qfit/.pytest_cache/") for name in names))
             self.assertFalse(any(name.startswith("qfit/.venv/") for name in names))
