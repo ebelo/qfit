@@ -51,35 +51,42 @@ ROUTE_LAYER_ATTRIBUTE_INDEXES = {
         "CREATE INDEX IF NOT EXISTS idx_route_points_distance_m ON route_points(distance_m)",
     ),
     "route_profile_samples": (
-        "CREATE INDEX IF NOT EXISTS idx_route_profile_samples_source_route_id ON route_profile_samples(source, source_route_id)",
-        "CREATE INDEX IF NOT EXISTS idx_route_profile_samples_point_index ON route_profile_samples(source, source_route_id, point_index)",
+        "CREATE INDEX IF NOT EXISTS idx_route_profile_samples_source_route_id "
+        "ON route_profile_samples(source, source_route_id)",
+        "CREATE INDEX IF NOT EXISTS idx_route_profile_samples_point_index "
+        "ON route_profile_samples(source, source_route_id, point_index)",
         "CREATE INDEX IF NOT EXISTS idx_route_profile_samples_distance_m ON route_profile_samples(distance_m)",
     ),
 }
 
 DERIVED_LAYER_ATTRIBUTE_INDEXES = {
     "activity_tracks": (
-        "CREATE INDEX IF NOT EXISTS idx_activity_tracks_source_activity_id ON activity_tracks(source, source_activity_id)",
+        "CREATE INDEX IF NOT EXISTS idx_activity_tracks_source_activity_id "
+        "ON activity_tracks(source, source_activity_id)",
         "CREATE INDEX IF NOT EXISTS idx_activity_tracks_activity_type ON activity_tracks(activity_type)",
         "CREATE INDEX IF NOT EXISTS idx_activity_tracks_start_date ON activity_tracks(start_date)",
         "CREATE INDEX IF NOT EXISTS idx_activity_tracks_sport_type ON activity_tracks(sport_type)",
     ),
     "activity_starts": (
-        "CREATE INDEX IF NOT EXISTS idx_activity_starts_source_activity_id ON activity_starts(source, source_activity_id)",
+        "CREATE INDEX IF NOT EXISTS idx_activity_starts_source_activity_id "
+        "ON activity_starts(source, source_activity_id)",
         "CREATE INDEX IF NOT EXISTS idx_activity_starts_activity_type ON activity_starts(activity_type)",
         "CREATE INDEX IF NOT EXISTS idx_activity_starts_start_date ON activity_starts(start_date)",
     ),
     "activity_points": (
-        "CREATE INDEX IF NOT EXISTS idx_activity_points_source_activity_id ON activity_points(source, source_activity_id)",
+        "CREATE INDEX IF NOT EXISTS idx_activity_points_source_activity_id "
+        "ON activity_points(source, source_activity_id)",
         "CREATE INDEX IF NOT EXISTS idx_activity_points_activity_type ON activity_points(activity_type)",
         "CREATE INDEX IF NOT EXISTS idx_activity_points_start_date ON activity_points(start_date)",
-        "CREATE INDEX IF NOT EXISTS idx_activity_points_point_timestamp_local ON activity_points(point_timestamp_local)",
+        "CREATE INDEX IF NOT EXISTS idx_activity_points_point_timestamp_local "
+        "ON activity_points(point_timestamp_local)",
         "CREATE INDEX IF NOT EXISTS idx_activity_points_point_timestamp_utc ON activity_points(point_timestamp_utc)",
     ),
     "activity_atlas_pages": (
         "CREATE INDEX IF NOT EXISTS idx_activity_atlas_pages_page_number ON activity_atlas_pages(page_number)",
         "CREATE INDEX IF NOT EXISTS idx_activity_atlas_pages_page_sort_key ON activity_atlas_pages(page_sort_key)",
-        "CREATE INDEX IF NOT EXISTS idx_activity_atlas_pages_source_activity_id ON activity_atlas_pages(source, source_activity_id)",
+        "CREATE INDEX IF NOT EXISTS idx_activity_atlas_pages_source_activity_id "
+        "ON activity_atlas_pages(source, source_activity_id)",
     ),
 }
 
