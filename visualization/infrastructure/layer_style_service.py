@@ -213,7 +213,12 @@ class LayerStyleService:
             categories.append(QgsRendererCategory(value, symbol, value or "Unknown"))
 
         renderer = QgsCategorizedSymbolRenderer(field_name, categories)
-        renderer.setSourceSymbol(self._build_line_symbol(resolve_activity_color(OTHER_ACTIVITY_LABEL, basemap_preset_name), line_style))
+        renderer.setSourceSymbol(
+            self._build_line_symbol(
+                resolve_activity_color(OTHER_ACTIVITY_LABEL, basemap_preset_name),
+                line_style,
+            )
+        )
         layer.setRenderer(renderer)
         layer.setOpacity(line_style.opacity)
         layer.triggerRepaint()
