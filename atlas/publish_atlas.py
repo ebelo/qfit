@@ -219,7 +219,11 @@ def build_atlas_page_plans(
 
     document_summary = build_atlas_document_summary(record for _, record, _, _ in candidates)
     plans = []
-    for page_number, (sort_key, record, geometry_source, bounds) in enumerate(sorted(candidates, key=lambda item: item[0]), start=1):
+    sorted_candidates = sorted(candidates, key=lambda item: item[0])
+    for page_number, (sort_key, record, geometry_source, bounds) in enumerate(
+        sorted_candidates,
+        start=1,
+    ):
         min_lon, min_lat, max_lon, max_lat = expand_bounds(
             bounds,
             margin_percent=atlas_settings.margin_percent,
@@ -244,7 +248,11 @@ def build_atlas_page_plans(
                 source=record.get("source"),
                 source_activity_id=record.get("source_activity_id"),
                 name=page_title,
-                activity_type=(canonical_activity_label(record.get("activity_type"), record.get("sport_type")) or "Activity").strip() or "Activity",
+                activity_type=(
+                    canonical_activity_label(record.get("activity_type"), record.get("sport_type"))
+                    or "Activity"
+                ).strip()
+                or "Activity",
                 sport_type=record.get("sport_type"),
                 start_date=record.get("start_date"),
                 distance_m=_safe_float(record.get("distance_m")),
@@ -456,8 +464,16 @@ def build_atlas_document_summary(records: Iterable[dict]) -> AtlasDocumentSummar
         )
         if activity_date
     ]
-    total_distance_m = sum(distance_m for distance_m in (_safe_float(record.get("distance_m")) for record in record_list) if distance_m is not None)
-    total_moving_time_s = sum(moving_time_s for moving_time_s in (_safe_int(record.get("moving_time_s")) for record in record_list) if moving_time_s is not None)
+    total_distance_m = sum(
+        distance_m
+        for distance_m in (_safe_float(record.get("distance_m")) for record in record_list)
+        if distance_m is not None
+    )
+    total_moving_time_s = sum(
+        moving_time_s
+        for moving_time_s in (_safe_int(record.get("moving_time_s")) for record in record_list)
+        if moving_time_s is not None
+    )
     total_elevation_gain_m = sum(
         elevation_gain_m
         for elevation_gain_m in (_safe_float(record.get("total_elevation_gain_m")) for record in record_list)
@@ -490,7 +506,11 @@ def build_atlas_document_summary_from_plans(plans: list[AtlasPagePlan]) -> Atlas
     activity_dates = [plan.page_date for plan in plans if plan.page_date]
     total_distance_m = sum(plan.distance_m for plan in plans if plan.distance_m is not None)
     total_moving_time_s = sum(plan.moving_time_s for plan in plans if plan.moving_time_s is not None)
-    total_elevation_gain_m = sum(plan.total_elevation_gain_m for plan in plans if plan.total_elevation_gain_m is not None)
+    total_elevation_gain_m = sum(
+        plan.total_elevation_gain_m
+        for plan in plans
+        if plan.total_elevation_gain_m is not None
+    )
 
     ordered_activity_types: list[str] = []
     for plan in plans:
@@ -559,7 +579,11 @@ def _assemble_document_summary(
         total_moving_time_s=total_moving_time_s,
         total_duration_label=format_duration_label(total_moving_time_s) if total_moving_time_s > 0 else None,
         total_elevation_gain_m=total_elevation_gain_m,
-        total_elevation_gain_label=format_elevation_label(total_elevation_gain_m) if total_elevation_gain_m > 0 else None,
+        total_elevation_gain_label=(
+            format_elevation_label(total_elevation_gain_m)
+            if total_elevation_gain_m > 0
+            else None
+        ),
         activity_types_label=", ".join(ordered_activity_types) if ordered_activity_types else None,
     )
     return AtlasDocumentSummary(
@@ -638,26 +662,44 @@ def normalize_sort_text(value: str | None) -> str:
     return " ".join(text.split())
 
 
-def activity_bounds(record: dict, min_extent_degrees: float = DEFAULT_MIN_EXTENT_DEGREES) -> tuple[tuple[float, float, float, float] | None, str]:
+def activity_bounds(
+    record: dict,
+    min_extent_degrees: float = DEFAULT_MIN_EXTENT_DEGREES,
+) -> tuple[tuple[float, float, float, float] | None, str]:
     points = record.get("geometry_points") or []
     if len(points) >= 2:
-        return bounds_from_points(points, min_extent_degrees=min_extent_degrees), (record.get("geometry_source") or "stream")
+        return (
+            bounds_from_points(points, min_extent_degrees=min_extent_degrees),
+            (record.get("geometry_source") or "stream"),
+        )
 
     polyline_points = decode_polyline(record.get("summary_polyline"))
     if len(polyline_points) >= 2:
-        return bounds_from_points(polyline_points, min_extent_degrees=min_extent_degrees), (record.get("geometry_source") or "summary_polyline")
+        return (
+            bounds_from_points(polyline_points, min_extent_degrees=min_extent_degrees),
+            (record.get("geometry_source") or "summary_polyline"),
+        )
 
     start_lat = _safe_float(record.get("start_lat"))
     start_lon = _safe_float(record.get("start_lon"))
     end_lat = _safe_float(record.get("end_lat"))
     end_lon = _safe_float(record.get("end_lon"))
     if None not in (start_lat, start_lon, end_lat, end_lon):
-        return bounds_from_points([(start_lat, start_lon), (end_lat, end_lon)], min_extent_degrees=min_extent_degrees), (record.get("geometry_source") or "start_end")
+        return (
+            bounds_from_points(
+                [(start_lat, start_lon), (end_lat, end_lon)],
+                min_extent_degrees=min_extent_degrees,
+            ),
+            (record.get("geometry_source") or "start_end"),
+        )
 
     return None, record.get("geometry_source") or "unknown"
 
 
-def bounds_from_points(points: Iterable[tuple[float, float]], min_extent_degrees: float = DEFAULT_MIN_EXTENT_DEGREES) -> tuple[float, float, float, float]:
+def bounds_from_points(
+    points: Iterable[tuple[float, float]],
+    min_extent_degrees: float = DEFAULT_MIN_EXTENT_DEGREES,
+) -> tuple[float, float, float, float]:
     lats = []
     lons = []
     for lat, lon in points:
@@ -796,7 +838,10 @@ def build_page_name(record: dict) -> str:
 
 def build_page_subtitle(record: dict) -> str:
     parts = []
-    activity_type = (canonical_activity_label(record.get("activity_type"), record.get("sport_type")) or "Activity").strip() or "Activity"
+    activity_type = (
+        canonical_activity_label(record.get("activity_type"), record.get("sport_type"))
+        or "Activity"
+    ).strip() or "Activity"
     parts.append(activity_type)
 
     distance_label = format_distance_label(record.get("distance_m"))
@@ -995,7 +1040,12 @@ def format_speed_label(value) -> str | None:
     return f"{speed_mps * 3.6:.1f} km/h"
 
 
-def format_pace_label(distance_value, moving_time_value, activity_type: str | None = None, sport_type: str | None = None) -> str | None:
+def format_pace_label(
+    distance_value,
+    moving_time_value,
+    activity_type: str | None = None,
+    sport_type: str | None = None,
+) -> str | None:
     if not _activity_type_prefers_pace(activity_type, sport_type):
         return None
 
