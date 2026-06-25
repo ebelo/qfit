@@ -53,7 +53,12 @@ class MapCanvasService:
         project.setCrs(working_crs)
         if canvas is not None:
             canvas.setDestinationCrs(working_crs)
-            if preserve_extent and current_extent is not None and current_crs.isValid() and not current_extent.isEmpty():
+            if (
+                preserve_extent
+                and current_extent is not None
+                and current_crs.isValid()
+                and not current_extent.isEmpty()
+            ):
                 transform = QgsCoordinateTransform(current_crs, working_crs, project)
                 try:
                     transformed = transform.transformBoundingBox(current_extent)

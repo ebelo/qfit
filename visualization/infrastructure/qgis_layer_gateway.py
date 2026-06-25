@@ -139,7 +139,15 @@ class QgisLayerGateway:
         except (AttributeError, RuntimeError, TypeError):
             return False
 
-    def ensure_background_layer(self, enabled, preset_name, access_token, style_owner="", style_id="", tile_mode=TILE_MODE_RASTER):
+    def ensure_background_layer(
+        self,
+        enabled,
+        preset_name,
+        access_token,
+        style_owner="",
+        style_id="",
+        tile_mode=TILE_MODE_RASTER,
+    ):
         return self._get_background_service().ensure_background_layer(
             enabled=enabled,
             preset_name=preset_name,
@@ -149,7 +157,18 @@ class QgisLayerGateway:
             tile_mode=tile_mode,
         )
 
-    def apply_filters(self, layer, activity_type=None, date_from=None, date_to=None, min_distance_km=None, max_distance_km=None, search_text=None, detailed_only=False, detailed_route_filter=None):
+    def apply_filters(
+        self,
+        layer,
+        activity_type=None,
+        date_from=None,
+        date_to=None,
+        min_distance_km=None,
+        max_distance_km=None,
+        search_text=None,
+        detailed_only=False,
+        detailed_route_filter=None,
+    ):
         self._get_filter_service().apply_filters(
             layer,
             activity_type=activity_type,
