@@ -185,7 +185,10 @@ class GeoPackageRouteStore:
                     summary_polyline=record.get("summary_polyline"),
                     geometry_source=record.get("geometry_source"),
                     geometry_points=record.get("geometry_points") or [],
-                    profile_points=[self._profile_point_from_mapping(point) for point in record.get("profile_points") or []],
+                    profile_points=[
+                        self._profile_point_from_mapping(point)
+                        for point in record.get("profile_points") or []
+                    ],
                     details_json=record.get("details_json") or {},
                 )
             )
@@ -231,7 +234,10 @@ class GeoPackageRouteStore:
         }
 
         if incoming_ids:
-            cursor.execute("CREATE TEMP TABLE IF NOT EXISTS incoming_route_sync_ids (source_route_id TEXT PRIMARY KEY)")
+            cursor.execute(
+                "CREATE TEMP TABLE IF NOT EXISTS incoming_route_sync_ids "
+                "(source_route_id TEXT PRIMARY KEY)"
+            )
             cursor.execute("DELETE FROM incoming_route_sync_ids")
             cursor.executemany(
                 "INSERT INTO incoming_route_sync_ids (source_route_id) VALUES (?)",
@@ -287,7 +293,10 @@ class GeoPackageRouteStore:
             "summary_polyline": record.get("summary_polyline"),
             "geometry_source": record.get("geometry_source"),
             "geometry_points_json": json.dumps(record.get("geometry_points") or [], sort_keys=True),
-            "profile_points_json": json.dumps(self._profile_points_as_mappings(record.get("profile_points") or []), sort_keys=True),
+            "profile_points_json": json.dumps(
+                self._profile_points_as_mappings(record.get("profile_points") or []),
+                sort_keys=True,
+            ),
             "details_json": json.dumps(record.get("details_json") or {}, sort_keys=True),
             "summary_hash": summary_hash,
             "first_seen_at": first_seen_at,
@@ -339,7 +348,11 @@ class GeoPackageRouteStore:
                     "lon": round(float(mapping.get("lon")), 7),
                     "distance_m": round(float(mapping.get("distance_m") or 0.0), 3),
                     "segment_index": int(mapping.get("segment_index") or 0),
-                    "altitude_m": None if mapping.get("altitude_m") is None else round(float(mapping.get("altitude_m")), 3),
+                    "altitude_m": (
+                        None
+                        if mapping.get("altitude_m") is None
+                        else round(float(mapping.get("altitude_m")), 3)
+                    ),
                 }
             )
         return stable
