@@ -358,7 +358,8 @@ class SyncController:
             )
         return (
             "Fetched {activity_count} activities from {source}, detailed tracks: {detailed_count}, "
-            "cached streams: {cached}, downloaded streams: {downloaded}, rate-limit skips: {skipped}{progress}.{rate_note}{fetch_notice}"
+            "cached streams: {cached}, downloaded streams: {downloaded}, rate-limit skips: "
+            "{skipped}{progress}.{rate_note}{fetch_notice}"
         ).format(
             activity_count=activity_count,
             source=provider.source_name,

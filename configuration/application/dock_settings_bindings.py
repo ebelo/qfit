@@ -17,7 +17,12 @@ def build_dock_settings_bindings(dock) -> list[UIFieldBinding]:
     """
 
     return [
-        UIFieldBinding("output_path", dock._default_output_path(), lambda: dock.outputPathLineEdit.text().strip(), dock.outputPathLineEdit.setText),
+        UIFieldBinding(
+            "output_path",
+            dock._default_output_path(),
+            lambda: dock.outputPathLineEdit.text().strip(),
+            dock.outputPathLineEdit.setText,
+        ),
         UIFieldBinding(
             "write_activity_points",
             True,

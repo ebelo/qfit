@@ -1428,7 +1428,10 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             return
         current_value = self.activityTypeComboBox.currentText() or "All"
         try:
-            field_names = [self.activities_layer.fields().at(i).name() for i in range(self.activities_layer.fields().count())]
+            field_names = [
+                self.activities_layer.fields().at(i).name()
+                for i in range(self.activities_layer.fields().count())
+            ]
             result = build_activity_type_options_from_records(
                 self.activities_layer.getFeatures(),
                 field_names,
