@@ -13,14 +13,14 @@ ACTIVITY_LABEL_FIELDS: tuple[str, ...] = ("sport_type", "activity_type")
 
 # Resolution order matters: first matching family wins.
 _FAMILY_TOKENS: tuple[tuple[str, tuple[str, ...]], ...] = (
-    ("machine",  ("virtual", "trainer", "commute", "ebike", "machine")),
-    ("winter",   ("ski", "snow", "sled")),
-    ("water",    ("swim", "surf", "paddle", "row", "kayak", "canoe", "sup")),
+    ("machine", ("virtual", "trainer", "commute", "ebike", "machine")),
+    ("winter", ("ski", "snow", "sled")),
+    ("water", ("swim", "surf", "paddle", "row", "kayak", "canoe", "sup")),
     ("mountain", ("iceclimb", "climb", "mountain", "boulder", "alpinism")),
-    ("running",  ("run", "jog")),
-    ("walking",  ("walk", "hike", "trek", "backpack")),
-    ("fitness",  ("crossfit", "workout", "yoga", "weight", "gym", "pilates")),
-    ("cycling",  ("ride", "bike", "cycle")),
+    ("running", ("run", "jog")),
+    ("walking", ("walk", "hike", "trek", "backpack")),
+    ("fitness", ("crossfit", "workout", "yoga", "weight", "gym", "pilates")),
+    ("cycling", ("ride", "bike", "cycle")),
 )
 
 
