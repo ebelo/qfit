@@ -30,6 +30,7 @@ class PackagePluginTests(unittest.TestCase):
                 root / ".pytest_cache" / "v" / "cache" / "nodeids",
                 root / ".venv" / "lib" / "python3.12" / "site-packages" / "sample.py",
                 root / "debug" / "plugin-security-scan" / "summary.txt",
+                root / "packaging" / "qgis-flake8.cfg",
                 root / "validation" / "sample.txt",
                 root / "validation_artifacts" / "artifact.txt",
             ]
@@ -62,6 +63,9 @@ class PackagePluginTests(unittest.TestCase):
             (root / ".venv" / "lib" / "python3.12" / "site-packages" / "sample.py").write_text("# venv\n", encoding="utf-8")
             (root / "debug" / "plugin-security-scan").mkdir(parents=True)
             (root / "debug" / "plugin-security-scan" / "summary.txt").write_text("summary\n", encoding="utf-8")
+            (root / "packaging").mkdir()
+            packaged_flake8_config = root / "packaging" / "qgis-flake8.cfg"
+            packaged_flake8_config.write_text("[flake8]\nextend-exclude = vendor/*\n", encoding="utf-8")
             (root / "validation").mkdir()
             (root / "validation" / "sample.txt").write_text("validation\n", encoding="utf-8")
             (root / "validation_artifacts").mkdir()
@@ -70,6 +74,7 @@ class PackagePluginTests(unittest.TestCase):
             with (
                 patch.object(package_plugin, "ROOT", root),
                 patch.object(package_plugin, "DIST_DIR", dist),
+                patch.object(package_plugin, "PACKAGED_FLAKE8_CONFIG", packaged_flake8_config),
                 patch.object(package_plugin, "_vendor_runtime_dependencies"),
             ):
                 archive_path = package_plugin.build_zip()
@@ -77,18 +82,38 @@ class PackagePluginTests(unittest.TestCase):
             self.assertEqual(archive_path, dist / "qfit-1.2.3.zip")
             with zipfile.ZipFile(archive_path) as archive:
                 names = set(archive.namelist())
+                packaged_config = archive.read("qfit/.flake8").decode("utf-8")
 
             self.assertIn("qfit/metadata.txt", names)
             self.assertIn("qfit/__init__.py", names)
             self.assertIn("qfit/core.py", names)
             self.assertIn("qfit/.bandit", names)
-            self.assertNotIn("qfit/.flake8", names)
+            self.assertIn("qfit/.flake8", names)
+            self.assertNotIn("qfit/packaging/qgis-flake8.cfg", names)
+            self.assertIn("extend-exclude = vendor/*", packaged_config)
             self.assertFalse(any(name.startswith("qfit/tests/") for name in names))
             self.assertFalse(any(name.startswith("qfit/.pytest_cache/") for name in names))
             self.assertFalse(any(name.startswith("qfit/.venv/") for name in names))
             self.assertFalse(any(name.startswith("qfit/debug/") for name in names))
             self.assertFalse(any(name.startswith("qfit/validation/") for name in names))
             self.assertFalse(any(name.startswith("qfit/validation_artifacts/") for name in names))
+
+    def test_build_zip_fails_when_packaged_flake8_config_is_missing(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir) / "src"
+            dist = Path(temp_dir) / "dist"
+            root.mkdir()
+            (root / "metadata.txt").write_text("[general]\nname=qfit\nversion=1.2.3\n", encoding="utf-8")
+            (root / "__init__.py").write_text("# init\n", encoding="utf-8")
+
+            with (
+                patch.object(package_plugin, "ROOT", root),
+                patch.object(package_plugin, "DIST_DIR", dist),
+                patch.object(package_plugin, "PACKAGED_FLAKE8_CONFIG", root / "missing-flake8.cfg"),
+                patch.object(package_plugin, "_vendor_runtime_dependencies"),
+            ):
+                with self.assertRaisesRegex(RuntimeError, "Packaged Flake8 config not found"):
+                    package_plugin.build_zip()
 
 
 if __name__ == "__main__":
