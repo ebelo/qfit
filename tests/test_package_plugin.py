@@ -65,7 +65,10 @@ class PackagePluginTests(unittest.TestCase):
             (root / "debug" / "plugin-security-scan" / "summary.txt").write_text("summary\n", encoding="utf-8")
             (root / "packaging").mkdir()
             packaged_flake8_config = root / "packaging" / "qgis-flake8.cfg"
-            packaged_flake8_config.write_text("[flake8]\nextend-exclude = vendor/*\n", encoding="utf-8")
+            packaged_flake8_config.write_text(
+                "[flake8]\nextend-exclude = vendor/*\nextend-ignore = W503\n",
+                encoding="utf-8",
+            )
             (root / "validation").mkdir()
             (root / "validation" / "sample.txt").write_text("validation\n", encoding="utf-8")
             (root / "validation_artifacts").mkdir()
@@ -91,6 +94,7 @@ class PackagePluginTests(unittest.TestCase):
             self.assertIn("qfit/.flake8", names)
             self.assertNotIn("qfit/packaging/qgis-flake8.cfg", names)
             self.assertIn("extend-exclude = vendor/*", packaged_config)
+            self.assertIn("extend-ignore = W503", packaged_config)
             self.assertFalse(any(name.startswith("qfit/tests/") for name in names))
             self.assertFalse(any(name.startswith("qfit/.pytest_cache/") for name in names))
             self.assertFalse(any(name.startswith("qfit/.venv/") for name in names))
