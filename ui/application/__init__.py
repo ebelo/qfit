@@ -371,6 +371,7 @@ __all__ = [
     "local_first_widget_move_keys",
     "preferred_current_key_from_workflow_settings",
     "missing_issue805_local_first_areas",
+    "RefreshVisualizationStyleAction",
     "refresh_local_first_conditional_control_visibility",
     "refresh_local_first_control_visibility",
     "remove_widget_from_current_layout",

@@ -16,8 +16,9 @@ from qgis.PyQt.QtWidgets import (
     QMessageBox,
 )
 
-from .activities.application import (
-    ActivitySelectionState,
+# Keep selected imported names available as legacy direct dockwidget aliases.
+from .activities.application import (  # noqa: F401
+    ActivitySelectionState as ActivitySelectionState,
     ActivityTypeOptionsResult,
     build_activity_preview_selection_state,
     build_activity_type_options_from_activities,
@@ -51,9 +52,9 @@ from .analysis.infrastructure.frequent_start_points_layer import (
 )
 from .analysis.infrastructure.power_output_layer import POWER_OUTPUT_LAYER_NAME
 from .analysis.infrastructure.slope_grade_layer import SLOPE_GRADE_LAYER_NAME
-from .atlas.export_service import (
-    AtlasExportResult,
-    AtlasExportService,
+from .atlas.export_service import (  # noqa: F401
+    AtlasExportResult as AtlasExportResult,
+    AtlasExportService as AtlasExportService,
 )
 from .atlas.profile_style import build_native_profile_plot_style_from_settings
 from .ui.application import (
@@ -93,8 +94,8 @@ from .ui.application.local_first_progress_facts import (
 from .ui.contextual_help import ContextualHelpBinder, build_dock_help_entries
 from .detailed_route_strategy import DEFAULT_DETAILED_ROUTE_STRATEGY, DETAILED_ROUTE_STRATEGY_MISSING
 from .mapbox_config import MapboxConfigError
-from .visualization.application import (
-    LayerRefs,
+from .visualization.application import (  # noqa: F401
+    LayerRefs as LayerRefs,
     build_background_map_failure_status,
     build_background_map_failure_title,
 )

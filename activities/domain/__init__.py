@@ -21,3 +21,23 @@ from .activity_query import (
     summarize_activities,
 )
 from .models import Activity
+
+__all__ = [
+    "ACTIVITY_LABEL_FIELDS",
+    "Activity",
+    "ActivityQuery",
+    "ActivitySummary",
+    "activity_prefers_pace",
+    "build_preview_lines",
+    "build_subset_string",
+    "canonical_activity_label",
+    "filter_activities",
+    "format_duration",
+    "format_summary_text",
+    "normalize_activity_type",
+    "ordered_canonical_activity_labels",
+    "preferred_activity_field",
+    "resolve_activity_family",
+    "sort_activities",
+    "summarize_activities",
+]

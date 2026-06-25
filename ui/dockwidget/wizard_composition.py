@@ -33,24 +33,25 @@ from .workflow_composition import (
     connect_wizard_action_callbacks,
     refresh_wizard_shell_composition,
 )
-from .workflow_composition import (
-    DockWorkflowActionCallbacks,
-    DockWorkflowPageSpec,
-    DockWorkflowProgress,
-    WorkflowCompositionPage,
-    WorkflowPage,
-    WorkflowPageStateSnapshots,
-    WorkflowSettingsSnapshot,
-    WorkflowShell,
-    WorkflowShellComposition,
-    WorkflowShellPresenter,
-    WorkflowProgressFacts,
-    WorkflowStepPage,
-    build_default_workflow_page_specs,
-    build_placeholder_workflow_shell,
-    build_workflow_page_states_from_facts,
-    connect_workflow_action_callbacks,
-    refresh_workflow_shell_composition,
+# Workflow names remain direct aliases but are intentionally excluded from star exports.
+from .workflow_composition import (  # noqa: F401
+    DockWorkflowActionCallbacks as DockWorkflowActionCallbacks,
+    DockWorkflowPageSpec as DockWorkflowPageSpec,
+    DockWorkflowProgress as DockWorkflowProgress,
+    WorkflowCompositionPage as WorkflowCompositionPage,
+    WorkflowPage as WorkflowPage,
+    WorkflowPageStateSnapshots as WorkflowPageStateSnapshots,
+    WorkflowSettingsSnapshot as WorkflowSettingsSnapshot,
+    WorkflowShell as WorkflowShell,
+    WorkflowShellComposition as WorkflowShellComposition,
+    WorkflowShellPresenter as WorkflowShellPresenter,
+    WorkflowProgressFacts as WorkflowProgressFacts,
+    WorkflowStepPage as WorkflowStepPage,
+    build_default_workflow_page_specs as build_default_workflow_page_specs,
+    build_placeholder_workflow_shell as build_placeholder_workflow_shell,
+    build_workflow_page_states_from_facts as build_workflow_page_states_from_facts,
+    connect_workflow_action_callbacks as connect_workflow_action_callbacks,
+    refresh_workflow_shell_composition as refresh_workflow_shell_composition,
 )
 
 __all__ = [

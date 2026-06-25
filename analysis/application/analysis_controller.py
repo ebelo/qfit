@@ -46,3 +46,12 @@ class AnalysisController:
 
     def run_request(self, request: RunAnalysisRequest) -> RunAnalysisResult:
         return self.run(request=request)
+
+
+__all__ = [
+    "AnalysisController",
+    "FREQUENT_STARTING_POINTS_MODE",
+    "HEATMAP_MODE",
+    "POWER_OUTPUT_MODE",
+    "SLOPE_GRADE_MODE",
+]

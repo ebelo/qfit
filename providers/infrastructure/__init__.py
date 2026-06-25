@@ -2,3 +2,9 @@
 
 from .strava_client import StravaClient, StravaClientError
 from .strava_provider import StravaProvider
+
+__all__ = [
+    "StravaClient",
+    "StravaClientError",
+    "StravaProvider",
+]
