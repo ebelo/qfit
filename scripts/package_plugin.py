@@ -29,7 +29,13 @@ EXCLUDED_DIRS = {
     "validation_artifacts",
 }
 EXCLUDED_SUFFIXES = {".pyc", ".pyo", ".zip"}
-EXCLUDED_FILES = {".coverage", ".gitignore", "sonar-project.properties", "symbology-style.db"}
+EXCLUDED_FILES = {
+    ".coverage",
+    ".flake8",
+    ".gitignore",
+    "sonar-project.properties",
+    "symbology-style.db",
+}
 
 
 def read_metadata() -> tuple[str, str]:
