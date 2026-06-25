@@ -195,8 +195,14 @@ class SyncRepository:
             for statement in (
                 "CREATE INDEX IF NOT EXISTS idx_activity_registry_start_date ON activity_registry(start_date)",
                 "CREATE INDEX IF NOT EXISTS idx_activity_registry_type ON activity_registry(activity_type)",
-                "CREATE INDEX IF NOT EXISTS idx_activity_registry_source_start_date ON activity_registry(source, start_date)",
-                "CREATE INDEX IF NOT EXISTS idx_activity_registry_start_date_local ON activity_registry(start_date_local)",
+                (
+                    "CREATE INDEX IF NOT EXISTS idx_activity_registry_source_start_date "
+                    "ON activity_registry(source, start_date)"
+                ),
+                (
+                    "CREATE INDEX IF NOT EXISTS idx_activity_registry_start_date_local "
+                    "ON activity_registry(start_date_local)"
+                ),
                 "CREATE INDEX IF NOT EXISTS idx_activity_registry_sport_type ON activity_registry(sport_type)",
                 "CREATE INDEX IF NOT EXISTS idx_activity_registry_distance_m ON activity_registry(distance_m)",
                 "CREATE INDEX IF NOT EXISTS idx_activity_registry_last_synced_at ON activity_registry(last_synced_at)",
@@ -217,7 +223,10 @@ class SyncRepository:
                 record = self._normalize_record(activity)
                 summary_hash = self._compute_summary_hash(record)
                 existing = cursor.execute(
-                    "SELECT summary_hash, first_seen_at FROM activity_registry WHERE source = ? AND source_activity_id = ?",
+                    (
+                        "SELECT summary_hash, first_seen_at FROM activity_registry "
+                        "WHERE source = ? AND source_activity_id = ?"
+                    ),
                     (record.get("source"), record.get("source_activity_id")),
                 ).fetchone()
 
@@ -251,11 +260,15 @@ class SyncRepository:
             return
 
         provider = sync_metadata.get("provider") or (activities[0].source if activities else "strava")
+
+        def activity_field(activity, field_name):
+            return getattr(activity, field_name) if hasattr(activity, field_name) else activity.get(field_name)
+
         incoming_ids = {
-            str(activity.source_activity_id if hasattr(activity, "source_activity_id") else activity.get("source_activity_id"))
+            str(activity_field(activity, "source_activity_id"))
             for activity in activities
-            if (activity.source if hasattr(activity, "source") else activity.get("source")) == provider
-            and (activity.source_activity_id if hasattr(activity, "source_activity_id") else activity.get("source_activity_id")) is not None
+            if activity_field(activity, "source") == provider
+            and activity_field(activity, "source_activity_id") is not None
         }
 
         if incoming_ids:
