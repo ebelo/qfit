@@ -79,16 +79,28 @@ _EXPORTS = {
     "StoreActivitiesWorkflow": (".load_workflow", "StoreActivitiesWorkflow"),
     "SyncController": (".sync_controller", "SyncController"),
     "build_activity_preview": (_ACTIVITY_PREVIEW_MODULE, "build_activity_preview"),
-    "build_activity_preview_filtered_activities": (_ACTIVITY_PREVIEW_MODULE, "build_activity_preview_filtered_activities"),
-    "build_filtered_activity_preview_activities": (_ACTIVITY_PREVIEW_MODULE, "build_filtered_activity_preview_activities"),
+    "build_activity_preview_filtered_activities": (
+        _ACTIVITY_PREVIEW_MODULE,
+        "build_activity_preview_filtered_activities",
+    ),
+    "build_filtered_activity_preview_activities": (
+        _ACTIVITY_PREVIEW_MODULE,
+        "build_filtered_activity_preview_activities",
+    ),
     "build_activity_preview_query": (_ACTIVITY_PREVIEW_MODULE, "build_activity_preview_query"),
     "build_activity_preview_request": (_ACTIVITY_PREVIEW_MODULE, "build_activity_preview_request"),
     "build_activity_preview_selection_state": (_ACTIVITY_PREVIEW_MODULE, "build_activity_preview_selection_state"),
     "build_activity_query": (_ACTIVITY_PREVIEW_MODULE, "build_activity_query"),
     "build_activity_selection_state": (_ACTIVITY_PREVIEW_MODULE, "build_activity_selection_state"),
     "build_activity_type_options": (_ACTIVITY_TYPE_OPTIONS_MODULE, "build_activity_type_options"),
-    "build_activity_type_options_from_activities": (_ACTIVITY_TYPE_OPTIONS_MODULE, "build_activity_type_options_from_activities"),
-    "build_activity_type_options_from_records": (_ACTIVITY_TYPE_OPTIONS_MODULE, "build_activity_type_options_from_records"),
+    "build_activity_type_options_from_activities": (
+        _ACTIVITY_TYPE_OPTIONS_MODULE,
+        "build_activity_type_options_from_activities",
+    ),
+    "build_activity_type_options_from_records": (
+        _ACTIVITY_TYPE_OPTIONS_MODULE,
+        "build_activity_type_options_from_records",
+    ),
     "build_route_sync_task": (".route_sync_task", "build_route_sync_task"),
 }
 
