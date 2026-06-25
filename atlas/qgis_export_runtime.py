@@ -13,7 +13,8 @@ class QgisAtlasExportRuntime(AtlasExportRuntime):
         except ImportError:
             return (
                 "Atlas PDF export requires the bundled 'pypdf' runtime for qfit's current PDF assembly pipeline. "
-                "Install qfit with scripts/install_plugin.py --mode copy or use the packaged plugin zip so runtime dependencies are vendored."
+                "Install qfit with scripts/install_plugin.py --mode copy or use the packaged plugin zip so "
+                "runtime dependencies are vendored."
             )
         return None
 

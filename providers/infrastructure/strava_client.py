@@ -1019,7 +1019,8 @@ class StravaClient:
         long_remaining = rate_limit.get("long_remaining")
         guidance = self._rate_limit_retry_guidance(rate_limit)
         return (
-            "Stopped early to avoid hitting the Strava rate limit. Remaining read quota: short={short}, long={long}. {guidance}"
+            "Stopped early to avoid hitting the Strava rate limit. Remaining read quota: "
+            "short={short}, long={long}. {guidance}"
         ).format(
             short=short_remaining if short_remaining is not None else "?",
             long=long_remaining if long_remaining is not None else "?",
@@ -1035,7 +1036,9 @@ class StravaClient:
         short_remaining = rate_limit.get("short_remaining")
         long_remaining = rate_limit.get("long_remaining")
         return (
-            "{operation} hit the Strava rate limit (read limit {short_limit}/15 min, {long_limit}/day; remaining short={short_remaining}, long={long_remaining}). {guidance}"
+            "{operation} hit the Strava rate limit (read limit {short_limit}/15 min, "
+            "{long_limit}/day; remaining short={short_remaining}, long={long_remaining}). "
+            "{guidance}"
         ).format(
             operation=operation,
             short_limit=short_limit if short_limit is not None else "?",

@@ -126,7 +126,8 @@ class QfitConfigDialog(QDialog):
         form.addRow("Redirect URI:", self._redirect_uri_edit)
 
         self._oauth_help_label = QLabel(
-            "Use qfit's OAuth helper below to generate the refresh token. Do not paste the token shown on the Strava API application page."
+            "Use qfit's OAuth helper below to generate the refresh token. Do not paste the token shown on "
+            "the Strava API application page."
         )
         self._oauth_help_label.setObjectName("stravaOAuthHelpLabel")
         self._oauth_help_label.setWordWrap(True)
@@ -280,7 +281,10 @@ class QfitConfigDialog(QDialog):
                     clipboard.setText(url)
                 self._show_info(
                     "Open Strava authorize page manually",
-                    "qfit could not open the browser automatically. The authorization URL was copied to your clipboard.\n\nOpen this URL in a browser and continue the flow there:\n\n{url}".format(
+                    (
+                        "qfit could not open the browser automatically. The authorization URL was copied "
+                        "to your clipboard.\n\nOpen this URL in a browser and continue the flow there:\n\n{url}"
+                    ).format(
                         url=url
                     ),
                 )
@@ -289,7 +293,8 @@ class QfitConfigDialog(QDialog):
                 )
                 return
             self._strava_oauth_status_label.setText(
-                "Strava authorization opened in your browser. Approve access, copy the returned code, then paste it here and click Exchange code."
+                "Strava authorization opened in your browser. Approve access, copy the returned code, "
+                "then paste it here and click Exchange code."
             )
         except ProviderError as exc:
             self._show_error("Strava authorization failed", str(exc))

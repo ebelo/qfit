@@ -616,7 +616,11 @@ _ROAD_CLASS_LINE_COLOR_VARIANTS_BY_LAYER_ID = {
 }
 _ROAD_CLASS_LINE_COLOR_SUFFIXES = tuple(
     sorted(
-        {suffix for variants in _ROAD_CLASS_LINE_COLOR_VARIANTS_BY_LAYER_ID.values() for _class_value, suffix in variants},
+        {
+            suffix
+            for variants in _ROAD_CLASS_LINE_COLOR_VARIANTS_BY_LAYER_ID.values()
+            for _class_value, suffix in variants
+        },
         key=len,
         reverse=True,
     )
@@ -768,7 +772,8 @@ _ROAD_LABEL_FILTER_ZOOM_BANDS: tuple[tuple[str, float | None, float | None, obje
     (_ROAD_LABEL_HIGH_ZOOM_SUFFIX, 15.0, None, _ROAD_LABEL_HIGH_ZOOM_CLASS_FILTER),
 )
 _ROAD_LABEL_FILTER_ZOOM_VARIANT_IDS = {
-    f"{_ROAD_LABEL_LAYER_ID}-{suffix}" for suffix, _band_minzoom, _band_maxzoom, _class_filter in _ROAD_LABEL_FILTER_ZOOM_BANDS
+    f"{_ROAD_LABEL_LAYER_ID}-{suffix}"
+    for suffix, _band_minzoom, _band_maxzoom, _class_filter in _ROAD_LABEL_FILTER_ZOOM_BANDS
 }
 _ROAD_LABEL_HIGH_ZOOM_SYMBOL_SPACING = 400.0
 _ROAD_LABEL_HIGH_ZOOM_TEXT_COLOR = "hsl(0, 0%, 38%)"
@@ -972,7 +977,13 @@ _SETTLEMENT_DOT_ICON_IMAGE_EXPRESSION = [
     _SETTLEMENT_DOT_ICON_SPLIT_ZOOM,
     "",
 ]
-_SETTLEMENT_DOT_TEXT_ANCHOR_EXPRESSION = ["step", ["zoom"], ["get", "text_anchor"], _SETTLEMENT_DOT_ICON_SPLIT_ZOOM, "center"]
+_SETTLEMENT_DOT_TEXT_ANCHOR_EXPRESSION = [
+    "step",
+    ["zoom"],
+    ["get", "text_anchor"],
+    _SETTLEMENT_DOT_ICON_SPLIT_ZOOM,
+    "center",
+]
 _SETTLEMENT_DOT_TEXT_RADIAL_OFFSET_EXPRESSION = [
     "step",
     ["zoom"],
@@ -2853,12 +2864,16 @@ def _is_country_label_layer_id(layer_id: object) -> bool:
 
 def _is_settlement_major_label_layer_id(layer_id: object) -> bool:
     normalized = str(layer_id or "")
-    return normalized == _SETTLEMENT_MAJOR_LABEL_LAYER_ID or normalized.startswith(f"{_SETTLEMENT_MAJOR_LABEL_LAYER_ID}-")
+    return normalized == _SETTLEMENT_MAJOR_LABEL_LAYER_ID or normalized.startswith(
+        f"{_SETTLEMENT_MAJOR_LABEL_LAYER_ID}-"
+    )
 
 
 def _is_settlement_minor_label_layer_id(layer_id: object) -> bool:
     normalized = str(layer_id or "")
-    return normalized == _SETTLEMENT_MINOR_LABEL_LAYER_ID or normalized.startswith(f"{_SETTLEMENT_MINOR_LABEL_LAYER_ID}-")
+    return normalized == _SETTLEMENT_MINOR_LABEL_LAYER_ID or normalized.startswith(
+        f"{_SETTLEMENT_MINOR_LABEL_LAYER_ID}-"
+    )
 
 
 def _landcover_fill_opacity_base_layer_id(layer_id: object) -> str | None:
@@ -6936,7 +6951,11 @@ def build_mapbox_vector_tiles_url(
     token, owner, resolved_style_id = _validated_mapbox_style_parts(access_token, style_owner, style_id)
 
     if tileset_ids:
-        joined_tilesets = ",".join(quote(tileset_id.strip(), safe=".,-_") for tileset_id in tileset_ids if tileset_id.strip())
+        joined_tilesets = ",".join(
+            quote(tileset_id.strip(), safe=".,-_")
+            for tileset_id in tileset_ids
+            if tileset_id.strip()
+        )
     else:
         joined_tilesets = "{owner}.{style_id}".format(
             owner=quote(owner, safe=""),
