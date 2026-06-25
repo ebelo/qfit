@@ -14,6 +14,7 @@ from importlib import metadata
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 DIST_DIR = ROOT / "dist"
+PACKAGED_FLAKE8_CONFIG = ROOT / "packaging" / "qgis-flake8.cfg"
 EXCLUDED_DIRS = {
     ".git",
     ".github",
@@ -23,6 +24,7 @@ EXCLUDED_DIRS = {
     "debug",
     "dist",
     "docs",
+    "packaging",
     "scripts",
     "tests",
     "validation",
@@ -112,11 +114,18 @@ def _vendor_runtime_dependencies(plugin_dir: pathlib.Path) -> None:
         shutil.copy2(license_path, licenses_dir / "pypdf_LICENSE.txt")
 
 
+def _copy_packaged_flake8_config(plugin_dir: pathlib.Path) -> None:
+    if not PACKAGED_FLAKE8_CONFIG.is_file():
+        raise RuntimeError(f"Packaged Flake8 config not found: {PACKAGED_FLAKE8_CONFIG}")
+    shutil.copy2(PACKAGED_FLAKE8_CONFIG, plugin_dir / ".flake8")
+
+
 def _build_staging_tree(plugin_name: str) -> pathlib.Path:
     staging_root = pathlib.Path(tempfile.mkdtemp(prefix="qfit-package-"))
     plugin_dir = staging_root / plugin_name
     _copy_project_tree(plugin_dir)
     _vendor_runtime_dependencies(plugin_dir)
+    _copy_packaged_flake8_config(plugin_dir)
     return staging_root
 
 
