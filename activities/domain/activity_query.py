@@ -21,6 +21,7 @@ class ActivitySummary:
     by_type: dict[str, int]
     latest_date: str | None
 
+
 DETAILED_ROUTE_FILTER_ANY = "any"
 DETAILED_ROUTE_FILTER_PRESENT = "present"
 DETAILED_ROUTE_FILTER_MISSING = "missing"

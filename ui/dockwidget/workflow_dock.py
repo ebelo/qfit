@@ -25,12 +25,10 @@ WORKFLOW_DOCK_FEATURES = (
 )
 
 
-
 class WorkflowShellCompositionLike(Protocol):
     """Small structural protocol for dock-hostable workflow compositions."""
 
     shell: QWidget
-
 
 
 class WorkflowDockWidget(QDockWidget):
@@ -64,7 +62,6 @@ class WorkflowDockWidget(QDockWidget):
         self.composition = composition
 
 
-
 def build_workflow_dock_widget(
     composition: WorkflowShellCompositionLike,
     *,
@@ -74,7 +71,6 @@ def build_workflow_dock_widget(
     """Build the dock-level container for a reusable workflow composition."""
 
     return WorkflowDockWidget(composition, parent=parent, title=title)
-
 
 
 def _composition_shell(composition: WorkflowShellCompositionLike):
