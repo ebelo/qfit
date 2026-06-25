@@ -278,7 +278,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             if widget is not None and hasattr(widget, "hide"):
                 widget.hide()
 
-
     def _refresh_local_first_dock_from_runtime(self):
         """Refresh an optional #748 local-first dock composition from runtime facts."""
 
@@ -595,7 +594,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
     def _save_settings(self):
         save_bindings(build_dock_settings_bindings(self), self.settings)
-
 
     def _set_default_dates(self):
         today = QDate.currentDate()
@@ -1441,7 +1439,6 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         if result is None:
             return
         self._apply_activity_type_options(result)
-
 
     def _update_connection_status(self):
         credentials = self._strava_credentials()

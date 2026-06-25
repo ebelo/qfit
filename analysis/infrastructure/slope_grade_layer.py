@@ -83,6 +83,7 @@ def _build_memory_layer(source_layer):
         "memory",
     )
 
+
 def _layer_crs(layer):
     crs = getattr(layer, "crs", None)
     return crs() if callable(crs) else None

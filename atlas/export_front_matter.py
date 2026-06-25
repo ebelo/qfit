@@ -59,7 +59,6 @@ def export_cover_page(
         _restore_layer_state(saved_state)
 
 
-
 def export_toc_page(
     atlas_layer,
     output_path: str,
@@ -85,7 +84,6 @@ def export_toc_page(
     except (RuntimeError, OSError):
         logger.exception("TOC page export failed")
         return None
-
 
 
 def _build_cover_map_layers(
@@ -161,7 +159,6 @@ def _build_cover_map_layers(
         starts_layer.setOpacity(0.0)
 
     return [heatmap_target] + background_layers
-
 
 
 def _save_layer_state(saved_state: list[dict], layer, *, save_renderer: bool = True) -> None:
@@ -289,7 +286,6 @@ def _restore_layer_state(saved_state: list[dict]) -> None:
             layer.setSubsetString(state["subset"])
         except (RuntimeError, AttributeError):
             pass
-
 
 
 def _build_pdf_export_settings(layout_exporter_cls):

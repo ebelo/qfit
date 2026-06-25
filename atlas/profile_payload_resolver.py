@@ -91,7 +91,6 @@ def feature_attribute(feature, field_name: str):
         return None
 
 
-
 def load_profile_points_from_feature(feature) -> list[tuple[float, float]] | None:
     raw_value = feature_attribute(feature, "details_json")
     if isinstance(raw_value, str):

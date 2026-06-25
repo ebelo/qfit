@@ -42,6 +42,7 @@ def _format_unexpected_export_error(exc: Exception) -> str:
         return f"Unexpected atlas export failure ({exc.__class__.__name__}): {detail}"
     return f"Unexpected atlas export failure ({exc.__class__.__name__})"
 
+
 from qgis.core import (
     QgsCoordinateReferenceSystem,
     QgsLayoutExporter,
@@ -124,6 +125,7 @@ class PageProfilePayload:
             None,
         )
 
+
 # ---------------------------------------------------------------------------
 # Page geometry (mm, A4 portrait with square map)
 # ---------------------------------------------------------------------------
@@ -175,6 +177,7 @@ _DETAIL_ITEM_FIELDS = [
     ("page_average_pace_label", "Pace"),
     ("page_elevation_gain_label", "Climbing"),
 ]
+
 
 def _render_page_profile_svg(page_points, *, output_path: str) -> str | None:
     return AtlasPageProfileWorkflow(
