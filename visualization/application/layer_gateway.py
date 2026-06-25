@@ -9,15 +9,20 @@ from .render_plan import RenderPlan
 class LayerGateway(Protocol):
     """Application-facing boundary for qfit layer and map operations."""
 
-    def load_output_layers(self, gpkg_path): ...
+    def load_output_layers(self, gpkg_path):
+        ...
 
-    def load_route_layers(self, gpkg_path): ...
+    def load_route_layers(self, gpkg_path):
+        ...
 
-    def zoom_to_layers(self, layers, *, snap_to_background: bool = True): ...
+    def zoom_to_layers(self, layers, *, snap_to_background: bool = True):
+        ...
 
-    def remove_layers(self, layers): ...
+    def remove_layers(self, layers):
+        ...
 
-    def has_features(self, layer): ...
+    def has_features(self, layer):
+        ...
 
     def ensure_background_layer(
         self,
@@ -27,7 +32,8 @@ class LayerGateway(Protocol):
         style_owner="",
         style_id="",
         tile_mode="raster",
-    ): ...
+    ):
+        ...
 
     def apply_filters(
         self,
@@ -40,7 +46,8 @@ class LayerGateway(Protocol):
         search_text=None,
         detailed_only=False,
         detailed_route_filter=None,
-    ): ...
+    ):
+        ...
 
     def apply_style(
         self,
@@ -51,7 +58,8 @@ class LayerGateway(Protocol):
         preset=None,
         background_preset_name=None,
         render_plan: RenderPlan | None = None,
-    ): ...
+    ):
+        ...
 
     def apply_temporal_configuration(
         self,
@@ -60,4 +68,5 @@ class LayerGateway(Protocol):
         points_layer,
         atlas_layer,
         mode_label,
-    ): ...
+    ):
+        ...
