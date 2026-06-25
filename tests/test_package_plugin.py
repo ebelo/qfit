@@ -21,6 +21,25 @@ _SPEC.loader.exec_module(package_plugin)
 
 
 class PackagePluginTests(unittest.TestCase):
+    def test_packaged_flake8_config_documents_qgis_import_bootstrap_ignores(self):
+        config = package_plugin.PACKAGED_FLAKE8_CONFIG.read_text(encoding="utf-8")
+
+        expected_e402_ignores = (
+            "*/activities/application/fetch_task.py: E402",
+            "*/activities/infrastructure/geopackage/gpkg_writer.py: E402",
+            "*/atlas/export_service.py: E402",
+            "*/atlas/export_task.py: E402",
+            "*/providers/infrastructure/strava_client.py: E402",
+            "qfit_dockwidget.py: E402",
+            "*/visualization/infrastructure/background_map_service.py: E402",
+            "*/visualization/infrastructure/layer_style_service.py: E402",
+            "*/visualization/infrastructure/qgis_layer_gateway.py: E402",
+        )
+
+        self.assertIn("per-file-ignores =", config)
+        for expected_ignore in expected_e402_ignores:
+            self.assertIn(expected_ignore, config)
+
     def test_should_include_excludes_packaging_noise_directories(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
@@ -66,7 +85,11 @@ class PackagePluginTests(unittest.TestCase):
             (root / "packaging").mkdir()
             packaged_flake8_config = root / "packaging" / "qgis-flake8.cfg"
             packaged_flake8_config.write_text(
-                "[flake8]\nextend-exclude = vendor/*\nextend-ignore = W503\n",
+                "[flake8]\n"
+                "extend-exclude = vendor/*\n"
+                "extend-ignore = W503\n"
+                "per-file-ignores =\n"
+                "    qfit_dockwidget.py: E402\n",
                 encoding="utf-8",
             )
             (root / "validation").mkdir()
@@ -95,6 +118,7 @@ class PackagePluginTests(unittest.TestCase):
             self.assertNotIn("qfit/packaging/qgis-flake8.cfg", names)
             self.assertIn("extend-exclude = vendor/*", packaged_config)
             self.assertIn("extend-ignore = W503", packaged_config)
+            self.assertIn("qfit_dockwidget.py: E402", packaged_config)
             self.assertFalse(any(name.startswith("qfit/tests/") for name in names))
             self.assertFalse(any(name.startswith("qfit/.pytest_cache/") for name in names))
             self.assertFalse(any(name.startswith("qfit/.venv/") for name in names))
