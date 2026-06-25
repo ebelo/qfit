@@ -121,7 +121,14 @@ def filter_activities(activities: Iterable[object], query: ActivityQuery) -> lis
 
 
 def sort_activities(activities: Sequence[object]) -> list[object]:
-    return sorted(activities, key=lambda activity: (_sort_datetime(activity) or datetime.min, (getattr(activity, "name", None) or "").casefold()), reverse=True)
+    return sorted(
+        activities,
+        key=lambda activity: (
+            _sort_datetime(activity) or datetime.min,
+            (getattr(activity, "name", None) or "").casefold(),
+        ),
+        reverse=True,
+    )
 
 
 def summarize_activities(activities: Sequence[object]) -> ActivitySummary:
@@ -162,7 +169,11 @@ def summarize_activities(activities: Sequence[object]) -> ActivitySummary:
 def build_preview_lines(activities: Sequence[object], limit: int = 8) -> list[str]:
     lines = []
     for activity in list(activities)[: max(limit, 0)]:
-        date_label = _activity_date(activity).isoformat() if _activity_date(activity) is not None else "unknown date"
+        date_label = (
+            _activity_date(activity).isoformat()
+            if _activity_date(activity) is not None
+            else "unknown date"
+        )
         activity_type = canonical_activity_label(
             getattr(activity, "activity_type", None),
             getattr(activity, "sport_type", None),
@@ -172,7 +183,10 @@ def build_preview_lines(activities: Sequence[object], limit: int = 8) -> list[st
         moving_time_label = format_duration(getattr(activity, "moving_time_s", None))
         detail_label = "detailed" if getattr(activity, "geometry_source", None) == "stream" else "summary"
         name = getattr(activity, "name", None) or "Untitled activity"
-        lines.append(f"{date_label} — {name} · {activity_type} · {distance_label} · {moving_time_label} · {detail_label}")
+        lines.append(
+            f"{date_label} — {name} · {activity_type} · "
+            f"{distance_label} · {moving_time_label} · {detail_label}"
+        )
     return lines
 
 
@@ -195,7 +209,10 @@ def build_subset_string(query: ActivityQuery) -> str:
         clauses.append(f'"distance_m" <= {query.max_distance_km * 1000.0}')
     if query.search_text:
         search_text = _escape_sql_literal(query.search_text.lower())
-        search_clauses = [f"lower(coalesce(\"{field_name}\", '')) LIKE '%{search_text}%'" for field_name in ("name", *reversed(ACTIVITY_LABEL_FIELDS))]
+        search_clauses = [
+            f"lower(coalesce(\"{field_name}\", '')) LIKE '%{search_text}%'"
+            for field_name in ("name", *reversed(ACTIVITY_LABEL_FIELDS))
+        ]
         clauses.append(f"({' OR '.join(search_clauses)})")
     if query.detailed_route_filter == DETAILED_ROUTE_FILTER_PRESENT:
         clauses.append("LOWER(COALESCE(\"geometry_source\", '')) = 'stream'")
