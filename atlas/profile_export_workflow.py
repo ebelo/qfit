@@ -9,7 +9,6 @@ from qgis.core import QgsCoordinateReferenceSystem, QgsProfileRequest
 
 from .profile_backend_policy import DEFAULT_PROFILE_BACKEND_POLICY
 from .profile_item import (
-    build_native_profile_curve,
     build_native_profile_curve_from_feature,
     configure_native_profile_plot_range,
 )
