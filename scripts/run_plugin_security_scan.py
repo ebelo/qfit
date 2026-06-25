@@ -162,11 +162,28 @@ def write_summary(
     summary_path.write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8")
 
 
+def _flake8_command(plugin_root: Path) -> list[str]:
+    command = [
+        sys.executable,
+        "-m",
+        "flake8",
+        "--max-line-length=120",
+        "--select=E,F,W",
+    ]
+    flake8_config = plugin_root / ".flake8"
+    if flake8_config.is_file():
+        command.extend(["--config", str(flake8_config)])
+    else:
+        command.append("--isolated")
+    command.append(str(plugin_root))
+    return command
+
+
 def build_scan_commands(plugin_root: Path, reports_dir: Path) -> list[tuple[str, list[str], Path, object | None]]:
     return [
         (
             "bandit",
-            [sys.executable, "-m", "bandit", "-r", str(plugin_root), "-f", "json", "-q"],
+            [sys.executable, "-m", "bandit", "-r", str(plugin_root), "-f", "json", "-q", "-ll"],
             reports_dir / "bandit.json",
             exit_code_one_is_findings,
         ),
@@ -185,13 +202,7 @@ def build_scan_commands(plugin_root: Path, reports_dir: Path) -> list[tuple[str,
         ),
         (
             "flake8",
-            [
-                sys.executable,
-                "-m",
-                "flake8",
-                "--extend-exclude=vendor/",
-                str(plugin_root),
-            ],
+            _flake8_command(plugin_root),
             reports_dir / "flake8.txt",
             exit_code_one_is_findings,
         ),

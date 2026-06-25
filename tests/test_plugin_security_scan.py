@@ -123,14 +123,43 @@ class PrepareScanTreeTests(unittest.TestCase):
 
 
 class BuildScanCommandsTests(unittest.TestCase):
-    def test_flake8_command_excludes_vendor_tree(self):
+    def test_bandit_command_matches_qgis_medium_high_filter(self):
+        commands = plugin_security_scan.build_scan_commands(
+            Path("/tmp/plugin-root"),
+            Path("/tmp/reports"),
+        )
+
+        bandit_entry = next(command for command in commands if command[0] == "bandit")
+        self.assertIn("-ll", bandit_entry[1])
+
+    def test_flake8_command_scans_packaged_tree_without_repo_config(self):
         commands = plugin_security_scan.build_scan_commands(
             Path("/tmp/plugin-root"),
             Path("/tmp/reports"),
         )
 
         flake8_entry = next(command for command in commands if command[0] == "flake8")
-        self.assertIn("--extend-exclude=vendor/", flake8_entry[1])
+        self.assertIn("--isolated", flake8_entry[1])
+        self.assertIn("--max-line-length=120", flake8_entry[1])
+        self.assertIn("--select=E,F,W", flake8_entry[1])
+        self.assertNotIn("--extend-exclude=vendor/", flake8_entry[1])
+
+    def test_flake8_command_uses_packaged_config_when_present(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            plugin_root = Path(temp_dir) / "qfit"
+            plugin_root.mkdir()
+            config = plugin_root / ".flake8"
+            config.write_text("[flake8]\n", encoding="utf-8")
+
+            commands = plugin_security_scan.build_scan_commands(
+                plugin_root,
+                Path("/tmp/reports"),
+            )
+
+        flake8_entry = next(command for command in commands if command[0] == "flake8")
+        self.assertIn("--config", flake8_entry[1])
+        self.assertIn(str(config), flake8_entry[1])
+        self.assertNotIn("--isolated", flake8_entry[1])
 
 
 if __name__ == "__main__":
