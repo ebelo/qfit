@@ -21,6 +21,25 @@ _SPEC.loader.exec_module(package_plugin)
 
 
 class PackagePluginTests(unittest.TestCase):
+    def test_packaged_flake8_config_documents_qgis_import_bootstrap_ignores(self):
+        config = package_plugin.PACKAGED_FLAKE8_CONFIG.read_text(encoding="utf-8")
+
+        expected_e402_ignores = (
+            "*/activities/application/fetch_task.py: E402",
+            "*/activities/infrastructure/geopackage/gpkg_writer.py: E402",
+            "*/atlas/export_service.py: E402",
+            "*/atlas/export_task.py: E402",
+            "*/providers/infrastructure/strava_client.py: E402",
+            "qfit_dockwidget.py: E402",
+            "*/visualization/infrastructure/background_map_service.py: E402",
+            "*/visualization/infrastructure/layer_style_service.py: E402",
+            "*/visualization/infrastructure/qgis_layer_gateway.py: E402",
+        )
+
+        self.assertIn("per-file-ignores =", config)
+        for expected_ignore in expected_e402_ignores:
+            self.assertIn(expected_ignore, config)
+
     def test_should_include_excludes_packaging_noise_directories(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
