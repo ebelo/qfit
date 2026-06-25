@@ -249,7 +249,8 @@ def _button_stylesheet(state: str, *, compact: bool = False) -> str:
         f"font-weight: {font_weight}; "
         f"font-size: {'9pt' if compact else '9.5pt'}; "
         "} "
-        f"QToolButton:hover:enabled {{ background: {COLOR_HOVER}; color: {COLOR_TEXT}; }}"    )
+        f"QToolButton:hover:enabled {{ background: {COLOR_HOVER}; color: {COLOR_TEXT}; }}"
+    )
 
 
 __all__ = [

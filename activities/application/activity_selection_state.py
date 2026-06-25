@@ -24,4 +24,3 @@ class ActivitySelectionState:
             query=normalized_query,
             filtered_count=len(filter_activities(activities, normalized_query)),
         )
-

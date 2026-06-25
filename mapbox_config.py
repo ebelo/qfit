@@ -393,7 +393,6 @@ def resolve_background_style(
     style_owner: str = "",
     style_id: str = "",
 ) -> tuple[str, str]:
-    preset = get_background_preset(preset_name)
     if not preset_requires_custom_style(preset_name):
         return preset_defaults(preset_name)
 
