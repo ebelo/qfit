@@ -112,7 +112,8 @@ DOCK_HELP_ENTRIES: tuple[HelpEntry, ...] = (
             "Overrides the cover-page subtitle. Leave it blank to keep qfit's generated activity/date summary."
         ),
         helper_text=(
-            "Atlas layout framing stays on qfit's internal defaults. These fields only affect the exported PDF cover text."
+            "Atlas layout framing stays on qfit's internal defaults. These fields only affect the exported PDF "
+            "cover text."
         ),
         help_button=True,
     ),
@@ -135,8 +136,8 @@ DOCK_HELP_ENTRIES: tuple[HelpEntry, ...] = (
         anchor_name="loadButton",
         target_text="Store activities",
         tooltip=(
-            "Writes the full fetched result to the GeoPackage only. Use Load stored map layers in Visualize when you want to "
-            "bring the stored qfit layers into QGIS."
+            "Writes the full fetched result to the GeoPackage only. Use Load stored map layers in Visualize when "
+            "you want to bring the stored qfit layers into QGIS."
         ),
     ),
     HelpEntry(
@@ -151,8 +152,8 @@ DOCK_HELP_ENTRIES: tuple[HelpEntry, ...] = (
         anchor_name="loadLayersButton",
         target_text="Load stored map layers",
         tooltip=(
-            "Loads the stored qfit layers from the selected GeoPackage into QGIS. Use this after syncing activities or routes, "
-            "or when reopening an existing qfit database."
+            "Loads the stored qfit layers from the selected GeoPackage into QGIS. Use this after syncing "
+            "activities or routes, or when reopening an existing qfit database."
         ),
     ),
     HelpEntry(
@@ -166,9 +167,9 @@ DOCK_HELP_ENTRIES: tuple[HelpEntry, ...] = (
     HelpEntry(
         anchor_name="buttonLayout",
         helper_text=(
-            "Use Store activities to update the GeoPackage database. Then use Load stored map layers in Visualize when you want "
-            "the stored dataset in QGIS. Use Apply filters only when you want loaded layers and tables to match "
-            "the current dock query."
+            "Use Store activities to update the GeoPackage database. Then use Load stored map layers in Visualize "
+            "when you want the stored dataset in QGIS. Use Apply filters only when you want loaded layers and "
+            "tables to match the current dock query."
         ),
     ),
 )
