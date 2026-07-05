@@ -39,6 +39,11 @@ from .activities.application.layer_summary import (
     build_stored_activities_summary,
 )
 from .activities.application.load_workflow import LoadWorkflowError
+from .activities.application.storage_selection import (
+    StorageSelectionResult,
+    normalize_storage_path,
+    resolve_storage_selection,
+)
 from .activities.application.sync_strategy import ActivitySyncMode, plan_activity_sync
 from .activities.application.store_task import build_store_task
 from .analysis.infrastructure.activity_heatmap_layer import (
@@ -125,6 +130,12 @@ def _fetch_status_for_sync_plan(status_text, sync_plan):
     return "Fetching recent activities from Strava with GeoPackage sync overlap…"
 
 
+def _storage_selection_message(result: StorageSelectionResult) -> str:
+    if result.validation_reason:
+        return result.validation_reason
+    return result.status_text
+
+
 class QfitDockWidget(QDockWidget, FORM_CLASS):
     SETTINGS_PREFIX = "qfit"
     LEGACY_SETTINGS_PREFIX = "QFIT"
@@ -183,8 +194,48 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         """Keep live local-load actions in sync with the selected GeoPackage path."""
 
         self._runtime_store().select_output_path((value or "").strip() or None)
-        self._refresh_detailed_route_coverage_from_storage()
         self._refresh_live_dock_navigation_from_runtime()
+
+    def _on_output_path_editing_finished(self) -> None:
+        """Commit typed storage-path edits once the user leaves the field."""
+
+        self._commit_output_path_selection(self.outputPathLineEdit.text())
+
+    def _commit_output_path_selection(
+        self,
+        raw_path: str,
+        *,
+        show_error: bool = False,
+    ) -> StorageSelectionResult:
+        loaded_dataset_path = None
+        if self.activities_layer is not None:
+            loaded_dataset_path = self.output_path
+        result = resolve_storage_selection(
+            raw_path,
+            loaded_dataset_path=loaded_dataset_path,
+        )
+        self._apply_storage_selection_result(result)
+        if show_error and not result.can_store:
+            self._show_error("Invalid database path", _storage_selection_message(result))
+        return result
+
+    def _apply_storage_selection_result(
+        self,
+        result: StorageSelectionResult,
+    ) -> None:
+        current_path = self.outputPathLineEdit.text().strip()
+        if result.normalized_path and result.normalized_path != current_path:
+            self.outputPathLineEdit.setText(result.normalized_path)
+        self._runtime_store().select_output_path(result.normalized_path or None)
+        if result.can_load:
+            self._refresh_detailed_route_coverage_from_storage()
+        self._set_storage_status(result.status_text)
+        self._refresh_live_dock_navigation_from_runtime()
+
+    def _set_storage_status(self, text: str) -> None:
+        label = getattr(self, "outputStatusLabel", None)
+        if label is not None:
+            label.setText(text)
 
     def _build_local_first_dock_from_runtime(self, *, parent=None):
         """Build the #748 local-first dock composition from live runtime facts.
@@ -460,6 +511,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
 
     def _wire_events(self):
         self.browseButton.clicked.connect(self.on_browse_clicked)
+        open_existing_button = getattr(self, "openExistingButton", None)
+        if open_existing_button is not None:
+            open_existing_button.clicked.connect(self.on_open_existing_clicked)
         self.refreshButton.clicked.connect(self.on_refresh_clicked)
         self.backfillMissingDetailedRoutesButton.clicked.connect(self.on_backfill_missing_detailed_routes_clicked)
         self.loadButton.clicked.connect(self.on_load_clicked)
@@ -477,6 +531,9 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         self.atlasPdfPathLineEdit.textChanged.connect(self._on_atlas_pdf_path_changed)
         self.generateAtlasPdfButton.clicked.connect(self.on_generate_atlas_pdf_clicked)
         self.outputPathLineEdit.textChanged.connect(self._on_output_path_changed)
+        editing_finished = getattr(self.outputPathLineEdit, "editingFinished", None)
+        if editing_finished is not None:
+            editing_finished.connect(self._on_output_path_editing_finished)
 
         preview_inputs = [
             self.activityTypeComboBox.currentTextChanged,
@@ -624,14 +681,22 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     def on_browse_clicked(self):
         path, _selected = QFileDialog.getSaveFileName(
             self,
-            "Choose GeoPackage output",
+            "Choose new GeoPackage",
             self.outputPathLineEdit.text(),
             "GeoPackage (*.gpkg)",
         )
         if path:
-            if not path.lower().endswith(".gpkg"):
-                path = "{path}.gpkg".format(path=path)
-            self.outputPathLineEdit.setText(path)
+            self._commit_output_path_selection(path)
+
+    def on_open_existing_clicked(self):
+        path, _selected = QFileDialog.getOpenFileName(
+            self,
+            "Open existing GeoPackage",
+            self.outputPathLineEdit.text(),
+            "GeoPackage (*.gpkg)",
+        )
+        if path:
+            self._commit_output_path_selection(path)
 
     def on_refresh_clicked(self):
         # If a fetch is already running, cancel it.
@@ -769,12 +834,19 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
             self._set_status("Store already in progress...")
             return None
 
+        storage_result = self._commit_output_path_selection(
+            self.outputPathLineEdit.text(),
+            show_error=True,
+        )
+        if not storage_result.can_store:
+            return False
+
         self._save_settings()
         workflow = self._store_activities_workflow()
         try:
             request = workflow.build_write_request(
                 activities=self.runtime_state.activities,
-                output_path=self.outputPathLineEdit.text().strip(),
+                output_path=storage_result.normalized_path,
                 write_activity_points=self.writeActivityPointsCheckBox.isChecked(),
                 point_stride=self.pointSamplingStrideSpinBox.value(),
                 sync_metadata=self.last_fetch_context,
@@ -948,11 +1020,20 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         preview_snapshot = self._activity_preview_snapshot()
         loaded_activities_layer = None
         try:
+            storage_result = self._commit_output_path_selection(
+                self.outputPathLineEdit.text(),
+            )
+            if not storage_result.can_load:
+                self._show_error(
+                    "GeoPackage cannot be loaded",
+                    _storage_selection_message(storage_result),
+                )
+                return
             self._save_settings()
             workflow = self._dataset_load_workflow_service()
             try:
                 request = workflow.build_load_existing_request(
-                    self.outputPathLineEdit.text().strip(),
+                    storage_result.normalized_path,
                 )
                 result = workflow.load_existing_request(request)
             except LoadWorkflowError as exc:

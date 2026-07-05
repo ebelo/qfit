@@ -91,7 +91,11 @@ class LoadDatasetWorkflowTests(unittest.TestCase):
             MagicMock(name="atlas"),
         )
         layer_gateway.load_route_layers.return_value = route_layers
-        workflow = LoadDatasetWorkflow(layer_gateway, path_exists=lambda _path: True)
+        workflow = LoadDatasetWorkflow(
+            layer_gateway,
+            path_exists=lambda _path: True,
+            qfit_schema_exists=lambda _path: True,
+        )
 
         result = workflow.load_existing_request(
             workflow.build_load_existing_request("/tmp/existing.gpkg")
@@ -124,6 +128,7 @@ class LoadDatasetWorkflowTests(unittest.TestCase):
             layer_gateway,
             path_exists=lambda _path: True,
             stored_activity_count_loader=lambda _path: 2889,
+            qfit_schema_exists=lambda _path: True,
         )
 
         result = workflow.load_existing_request(
@@ -148,6 +153,7 @@ class LoadDatasetWorkflowTests(unittest.TestCase):
             layer_gateway,
             path_exists=lambda _path: True,
             stored_activity_count_loader=lambda _path: 0,
+            qfit_schema_exists=lambda _path: True,
         )
 
         result = workflow.load_existing_request(
@@ -173,6 +179,7 @@ class LoadDatasetWorkflowTests(unittest.TestCase):
             stored_activity_count_loader=MagicMock(
                 side_effect=sqlite3.OperationalError("database is locked")
             ),
+            qfit_schema_exists=lambda _path: True,
         )
 
         result = workflow.load_existing_request(
@@ -201,7 +208,11 @@ class LoadDatasetWorkflowTests(unittest.TestCase):
             "qfit.activities.application.load_workflow.SyncRepository",
             return_value=repository,
         ):
-            workflow = LoadDatasetWorkflow(layer_gateway, path_exists=lambda _path: True)
+            workflow = LoadDatasetWorkflow(
+                layer_gateway,
+                path_exists=lambda _path: True,
+                qfit_schema_exists=lambda _path: True,
+            )
             result = workflow.load_existing_request(
                 workflow.build_load_existing_request("/tmp/existing.gpkg")
             )
@@ -219,7 +230,11 @@ class LoadDatasetWorkflowTests(unittest.TestCase):
             MagicMock(name="atlas"),
         )
         layer_gateway.load_route_layers.return_value = (None, None, None)
-        workflow = LoadDatasetWorkflow(layer_gateway, path_exists=lambda _path: True)
+        workflow = LoadDatasetWorkflow(
+            layer_gateway,
+            path_exists=lambda _path: True,
+            qfit_schema_exists=lambda _path: True,
+        )
 
         result = workflow.load_existing_request(
             workflow.build_load_existing_request("/tmp/existing.gpkg")
@@ -247,7 +262,11 @@ class LoadDatasetWorkflowTests(unittest.TestCase):
             BrokenFeatureCountLayer(),
             None,
         )
-        workflow = LoadDatasetWorkflow(layer_gateway, path_exists=lambda _path: True)
+        workflow = LoadDatasetWorkflow(
+            layer_gateway,
+            path_exists=lambda _path: True,
+            qfit_schema_exists=lambda _path: True,
+        )
 
         result = workflow.load_existing_request(
             workflow.build_load_existing_request("/tmp/existing.gpkg")
@@ -255,6 +274,21 @@ class LoadDatasetWorkflowTests(unittest.TestCase):
 
         self.assertIn("Loaded saved route layers: 0 route tracks", result.status)
         self.assertIn("0 route points", result.status)
+
+    def test_load_existing_rejects_non_qfit_geopackage_before_layer_loading(self):
+        layer_gateway = MagicMock()
+        workflow = LoadDatasetWorkflow(
+            layer_gateway,
+            path_exists=lambda _path: True,
+            qfit_schema_exists=lambda _path: False,
+        )
+
+        with self.assertRaisesRegex(LoadWorkflowError, "qfit's activity schema"):
+            workflow.load_existing_request(
+                workflow.build_load_existing_request("/tmp/other.gpkg")
+            )
+
+        layer_gateway.load_output_layers.assert_not_called()
 
 
 class ClearDatabaseWorkflowTests(unittest.TestCase):
@@ -549,7 +583,13 @@ class LoadExistingValidationTests(unittest.TestCase):
 class LoadExistingSuccessTests(unittest.TestCase):
     def setUp(self):
         self.layer_manager = MagicMock()
-        self.service = LoadWorkflowService(self.layer_manager)
+        self.service = LoadWorkflowService(
+            self.layer_manager,
+            dataset_load_workflow=LoadDatasetWorkflow(
+                self.layer_manager,
+                qfit_schema_exists=lambda _path: True,
+            ),
+        )
 
     @patch("qfit.activities.application.load_workflow.os.path.exists", return_value=True)
     def test_returns_load_result(self, mock_exists):
@@ -718,7 +758,13 @@ class LoadRequestContractTests(unittest.TestCase):
         layer_manager = MagicMock()
         layer_manager.load_output_layers.return_value = (None, None, None, None)
         layer_manager.load_route_layers.return_value = (None, None, None)
-        service = LoadWorkflowService(layer_manager)
+        service = LoadWorkflowService(
+            layer_manager,
+            dataset_load_workflow=LoadDatasetWorkflow(
+                layer_manager,
+                qfit_schema_exists=lambda _path: True,
+            ),
+        )
 
         request = service.build_load_existing_request("/tmp/existing.gpkg")
         via_request = service.load_existing_request(request)

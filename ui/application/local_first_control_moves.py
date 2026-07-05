@@ -142,6 +142,8 @@ LOCAL_FIRST_CONTROL_MOVES: tuple[LocalFirstControlMove, ...] = (
         required_widget_attrs=(
             "outputPathLineEdit",
             "browseButton",
+            "openExistingButton",
+            "outputStatusLabel",
             "writeActivityPointsCheckBox",
             "pointSamplingStrideSpinBox",
         ),

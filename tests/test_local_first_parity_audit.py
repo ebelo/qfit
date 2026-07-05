@@ -73,6 +73,8 @@ class LocalFirstParityAuditTests(unittest.TestCase):
             storage.required_widget_attrs,
         )
         self.assertIn("browseButton", surfaces["storage"].required_widget_attrs)
+        self.assertIn("openExistingButton", surfaces["storage"].required_widget_attrs)
+        self.assertIn("outputStatusLabel", surfaces["storage"].required_widget_attrs)
 
     def test_audit_includes_loose_widget_and_local_first_action_surfaces(self):
         surfaces = {
