@@ -90,6 +90,8 @@ class LocalFirstControlMoveTests(unittest.TestCase):
                 "storage": (
                     "outputPathLineEdit",
                     "browseButton",
+                    "openExistingButton",
+                    "outputStatusLabel",
                     "writeActivityPointsCheckBox",
                     "pointSamplingStrideSpinBox",
                 ),

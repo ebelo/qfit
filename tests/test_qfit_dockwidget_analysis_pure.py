@@ -264,6 +264,8 @@ class _FakeSubsetLayer:
 class _FakeLineEdit:
     def __init__(self, text=""):
         self._text = text
+        self.textChanged = _FakeSignal()
+        self.editingFinished = _FakeSignal()
 
     def text(self):
         return self._text
@@ -327,6 +329,21 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         move = local_first_control_move_for_key(key)
         for attr in move.required_widget_attrs:
             setattr(dock, attr, MagicMock(name=attr))
+
+    def _storage_selection_result(
+        self,
+        path="/tmp/qfit.gpkg",
+        *,
+        can_load=True,
+        can_store=True,
+    ):
+        return self.module.StorageSelectionResult(
+            normalized_path=path,
+            intent="existing",
+            can_load=can_load,
+            can_store=can_store,
+            status_text="Existing qfit database selected",
+        )
 
     @staticmethod
     def _import_module_with_stubs():
@@ -732,6 +749,36 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertEqual(dock.runtime_state.output_path, "/tmp/local-qfit.gpkg")
         dock._refresh_live_dock_navigation_from_runtime.assert_called_once_with()
 
+    def test_output_path_text_change_does_not_read_storage_coverage(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._runtime_state_store = self.module.DockRuntimeStore()
+        dock._refresh_live_dock_navigation_from_runtime = MagicMock()
+        dock._refresh_detailed_route_coverage_from_storage = MagicMock()
+
+        self.module.QfitDockWidget._on_output_path_changed(
+            dock,
+            "/tmp/local-qfit.gpkg",
+        )
+
+        dock._refresh_detailed_route_coverage_from_storage.assert_not_called()
+
+    def test_output_path_commit_refreshes_existing_storage_coverage(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._runtime_state_store = self.module.DockRuntimeStore()
+        dock.outputPathLineEdit = _FakeLineEdit("/tmp/local-qfit.gpkg")
+        dock.outputStatusLabel = _FakeLabel("")
+        dock._refresh_live_dock_navigation_from_runtime = MagicMock()
+        dock._refresh_detailed_route_coverage_from_storage = MagicMock()
+
+        with patch.object(
+            self.module,
+            "resolve_storage_selection",
+            return_value=self._storage_selection_result("/tmp/local-qfit.gpkg"),
+        ):
+            self.module.QfitDockWidget._on_output_path_editing_finished(dock)
+
+        dock._refresh_detailed_route_coverage_from_storage.assert_called_once_with()
+
     def test_output_path_change_clears_stale_loaded_dataset_state(self):
         dock = object.__new__(self.module.QfitDockWidget)
         dock._runtime_state_store = self.module.DockRuntimeStore()
@@ -751,6 +798,65 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         self.assertIsNone(dock.runtime_state.stored_activity_count)
         self.assertIsNone(dock.runtime_state.activities_layer)
         dock._refresh_live_dock_navigation_from_runtime.assert_called_once_with()
+
+    def test_on_browse_clicked_uses_save_dialog_for_new_geopackage(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._runtime_state_store = self.module.DockRuntimeStore()
+        dock.outputPathLineEdit = _FakeLineEdit("/tmp/old.gpkg")
+        dock.outputStatusLabel = _FakeLabel("")
+        dock._refresh_live_dock_navigation_from_runtime = MagicMock()
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            selected_path = "{directory}/qfit_test".format(directory=tmpdir)
+            with patch.object(
+                self.module.QFileDialog,
+                "getSaveFileName",
+                return_value=(selected_path, "GeoPackage (*.gpkg)"),
+                create=True,
+            ) as save_dialog, patch.object(
+                self.module.QFileDialog,
+                "getOpenFileName",
+                create=True,
+            ) as open_dialog:
+                self.module.QfitDockWidget.on_browse_clicked(dock)
+
+        save_dialog.assert_called_once()
+        self.assertEqual(save_dialog.call_args.args[1], "Choose new GeoPackage")
+        open_dialog.assert_not_called()
+        self.assertTrue(dock.outputPathLineEdit.text().endswith("qfit_test.gpkg"))
+        self.assertEqual(dock.outputStatusLabel.text(), "New database will be created")
+
+    def test_on_open_existing_clicked_uses_open_dialog_for_qfit_geopackage(self):
+        dock = object.__new__(self.module.QfitDockWidget)
+        dock._runtime_state_store = self.module.DockRuntimeStore()
+        dock.outputPathLineEdit = _FakeLineEdit("/tmp/old.gpkg")
+        dock.outputStatusLabel = _FakeLabel("")
+        dock._refresh_live_dock_navigation_from_runtime = MagicMock()
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            selected_path = "{directory}/existing.gpkg".format(directory=tmpdir)
+            with sqlite3.connect(selected_path) as connection:
+                connection.execute("CREATE TABLE activity_registry (id TEXT)")
+            with patch.object(
+                self.module.QFileDialog,
+                "getOpenFileName",
+                return_value=(selected_path, "GeoPackage (*.gpkg)"),
+                create=True,
+            ) as open_dialog, patch.object(
+                self.module.QFileDialog,
+                "getSaveFileName",
+                create=True,
+            ) as save_dialog:
+                self.module.QfitDockWidget.on_open_existing_clicked(dock)
+
+        open_dialog.assert_called_once()
+        self.assertEqual(open_dialog.call_args.args[1], "Open existing GeoPackage")
+        save_dialog.assert_not_called()
+        self.assertEqual(dock.outputPathLineEdit.text(), selected_path)
+        self.assertEqual(
+            dock.outputStatusLabel.text(),
+            "Existing qfit database selected",
+        )
 
     def test_local_first_progress_facts_reflect_existing_visible_geopackage_path(self):
         dock = object.__new__(self.module.QfitDockWidget)
@@ -1022,6 +1128,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.syncRoutesButton = SimpleNamespace(clicked=_FakeSignal())
         dock.loadLayersButton = SimpleNamespace(clicked=_FakeSignal())
         dock.clearDatabaseButton = SimpleNamespace(clicked=_FakeSignal())
+        dock.openExistingButton = SimpleNamespace(clicked=_FakeSignal())
         dock.applyFiltersButton = SimpleNamespace(clicked=_FakeSignal())
         dock.runAnalysisButton = SimpleNamespace(clicked=_FakeSignal())
         dock.loadBackgroundButton = SimpleNamespace(clicked=_FakeSignal())
@@ -1033,7 +1140,10 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.atlasPdfBrowseButton = SimpleNamespace(clicked=_FakeSignal())
         dock.atlasPdfPathLineEdit = SimpleNamespace(textChanged=_FakeSignal())
         dock.generateAtlasPdfButton = SimpleNamespace(clicked=_FakeSignal())
-        dock.outputPathLineEdit = SimpleNamespace(textChanged=_FakeSignal())
+        dock.outputPathLineEdit = SimpleNamespace(
+            textChanged=_FakeSignal(),
+            editingFinished=_FakeSignal(),
+        )
         dock.activityTypeComboBox = SimpleNamespace(currentTextChanged=_FakeSignal())
         dock.activitySearchLineEdit = SimpleNamespace(textChanged=_FakeSignal())
         dock.dateFromEdit = SimpleNamespace(dateChanged=_FakeSignal())
@@ -1045,6 +1155,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         )
         for name in (
             "on_browse_clicked",
+            "on_open_existing_clicked",
             "on_refresh_clicked",
             "on_backfill_missing_detailed_routes_clicked",
             "on_load_clicked",
@@ -1060,6 +1171,7 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
             "on_generate_atlas_pdf_clicked",
             "_update_connection_status",
             "_on_output_path_changed",
+            "_on_output_path_editing_finished",
             "_refresh_activity_preview",
         ):
             setattr(dock, name, MagicMock(name=name))
@@ -2868,9 +2980,10 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
         self.assertFalse(started)
         dock._show_error.assert_called_once_with(
-            "Missing input",
-            "Choose a GeoPackage output path first.",
+            "Invalid database path",
+            "Choose a GeoPackage path first.",
         )
+        dock.load_workflow.build_write_request.assert_not_called()
 
     def test_start_store_activities_returns_false_for_write_request_error(self):
         dock = object.__new__(self.module.QfitDockWidget)
@@ -2921,7 +3034,12 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.dataset_load_workflow = workflow
         self.module.QTimer.singleShot.reset_mock()
 
-        self.module.QfitDockWidget.on_load_layers_clicked(dock)
+        with patch.object(
+            self.module,
+            "resolve_storage_selection",
+            return_value=self._storage_selection_result(),
+        ):
+            self.module.QfitDockWidget.on_load_layers_clicked(dock)
 
         self.assertEqual(dock.output_path, "/tmp/qfit.gpkg")
         self.assertEqual(dock.activities_layer, "activities-layer")
@@ -2974,7 +3092,12 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         workflow.load_existing_request.return_value = result
         dock.dataset_load_workflow = workflow
 
-        self.module.QfitDockWidget.on_load_layers_clicked(dock)
+        with patch.object(
+            self.module,
+            "resolve_storage_selection",
+            return_value=self._storage_selection_result(),
+        ):
+            self.module.QfitDockWidget.on_load_layers_clicked(dock)
 
         self.assertEqual(dock.querySummaryLabel.text(), "6 recent activities")
         self.assertEqual(
@@ -3008,7 +3131,12 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
         dock.dataset_load_workflow = workflow
         self.module.QTimer.singleShot.reset_mock()
 
-        self.module.QfitDockWidget.on_load_layers_clicked(dock)
+        with patch.object(
+            self.module,
+            "resolve_storage_selection",
+            return_value=self._storage_selection_result(),
+        ):
+            self.module.QfitDockWidget.on_load_layers_clicked(dock)
 
         dock.layer_gateway.zoom_to_layers.assert_not_called()
         self.module.QTimer.singleShot.assert_called_once()
@@ -3065,7 +3193,12 @@ class TestQfitDockWidgetAnalysisPure(unittest.TestCase):
 
         try:
             with patch.object(self.module.QgsProject, "instance", return_value=project):
-                self.module.QfitDockWidget.on_load_layers_clicked(dock)
+                with patch.object(
+                    self.module,
+                    "resolve_storage_selection",
+                    return_value=self._storage_selection_result(),
+                ):
+                    self.module.QfitDockWidget.on_load_layers_clicked(dock)
 
                 self.assertEqual(events, ["visual", ("restore", user_crs)])
                 project.setCrs.assert_called_once_with(user_crs)

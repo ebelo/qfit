@@ -4,6 +4,7 @@ import sqlite3
 from dataclasses import dataclass, field
 from typing import Callable
 
+from .storage_selection import default_has_qfit_schema
 from ...atlas.publish_atlas import (
     DEFAULT_ATLAS_MARGIN_PERCENT,
     DEFAULT_ATLAS_TARGET_ASPECT_RATIO,
@@ -278,10 +279,12 @@ class LoadDatasetWorkflow:
         layer_gateway: LayerGateway,
         path_exists: Callable[[str], bool] | None = None,
         stored_activity_count_loader: Callable[[str], int] | None = None,
+        qfit_schema_exists: Callable[[str], bool] | None = None,
     ):
         self.layer_gateway = layer_gateway
         self._path_exists = path_exists
         self._stored_activity_count_loader = stored_activity_count_loader
+        self._qfit_schema_exists = qfit_schema_exists
 
     @staticmethod
     def build_load_existing_request(output_path) -> LoadDatasetRequest:
@@ -291,6 +294,11 @@ class LoadDatasetWorkflow:
         if self._path_exists is not None:
             return self._path_exists(output_path)
         return os.path.exists(output_path)
+
+    def _has_qfit_schema(self, output_path: str) -> bool:
+        if self._qfit_schema_exists is not None:
+            return self._qfit_schema_exists(output_path)
+        return default_has_qfit_schema(output_path)
 
     def load_existing(self, request: LoadDatasetRequest | str) -> LoadDatasetResult:
         """Load layers from an existing GeoPackage without writing.
@@ -307,6 +315,11 @@ class LoadDatasetWorkflow:
             raise LoadWorkflowError(
                 "No database found at:\n  {path}\n\n"
                 "Store activities first to create it.".format(path=request.output_path)
+            )
+        if not self._has_qfit_schema(request.output_path):
+            raise LoadWorkflowError(
+                "The selected GeoPackage does not contain qfit's activity "
+                "schema. Choose a qfit database or a new file path."
             )
 
         activities_layer, starts_layer, points_layer, atlas_layer = (

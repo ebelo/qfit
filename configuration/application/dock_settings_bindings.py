@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from .ui_settings_binding import UIFieldBinding
+from ...activities.application.storage_selection import normalize_storage_path
 from ...activities.domain.activity_query import DETAILED_ROUTE_FILTER_ANY
 from ...mapbox_config import DEFAULT_BACKGROUND_PRESET, TILE_MODE_RASTER
 
@@ -20,7 +21,7 @@ def build_dock_settings_bindings(dock) -> list[UIFieldBinding]:
         UIFieldBinding(
             "output_path",
             dock._default_output_path(),
-            lambda: dock.outputPathLineEdit.text().strip(),
+            lambda: normalize_storage_path(dock.outputPathLineEdit.text()),
             dock.outputPathLineEdit.setText,
         ),
         UIFieldBinding(

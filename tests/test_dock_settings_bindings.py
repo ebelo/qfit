@@ -250,6 +250,15 @@ class DockSettingsBindingsTests(unittest.TestCase):
         self.assertEqual(settings.get("analysis_mode"), "Most frequent starting points")
         self.assertEqual(settings.get("style_preset"), "By activity type")
 
+    def test_save_normalizes_bare_output_path_to_geopackage(self):
+        dock = FakeDock()
+        dock.outputPathLineEdit.setText("qfit_test")
+        settings = _settings()
+
+        save_bindings(build_dock_settings_bindings(dock), settings)
+
+        self.assertEqual(settings.get("output_path"), "qfit_test.gpkg")
+
 
 if __name__ == "__main__":
     unittest.main()
