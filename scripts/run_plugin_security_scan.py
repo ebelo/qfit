@@ -170,9 +170,10 @@ def _flake8_command(plugin_root: Path) -> list[str]:
         "--max-line-length=120",
         "--select=E,F,W",
     ]
-    flake8_config = plugin_root / ".flake8"
-    if flake8_config.is_file():
-        command.extend(["--config", str(flake8_config)])
+    flake8_configs = (plugin_root / ".flake8", plugin_root / "setup.cfg")
+    packaged_config = next((path for path in flake8_configs if path.is_file()), None)
+    if packaged_config is not None:
+        command.extend(["--config", str(packaged_config)])
     else:
         command.append("--isolated")
     command.append(str(plugin_root))

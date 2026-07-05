@@ -117,7 +117,7 @@ def _vendor_runtime_dependencies(plugin_dir: pathlib.Path) -> None:
 def _copy_packaged_flake8_config(plugin_dir: pathlib.Path) -> None:
     if not PACKAGED_FLAKE8_CONFIG.is_file():
         raise RuntimeError(f"Packaged Flake8 config not found: {PACKAGED_FLAKE8_CONFIG}")
-    shutil.copy2(PACKAGED_FLAKE8_CONFIG, plugin_dir / ".flake8")
+    shutil.copy2(PACKAGED_FLAKE8_CONFIG, plugin_dir / "setup.cfg")
 
 
 def _build_staging_tree(plugin_name: str) -> pathlib.Path:

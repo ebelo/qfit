@@ -164,6 +164,23 @@ class BuildScanCommandsTests(unittest.TestCase):
             self.assertIn(str(config), flake8_entry[1])
             self.assertNotIn("--isolated", flake8_entry[1])
 
+    def test_flake8_command_uses_packaged_setup_cfg_when_present(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            plugin_root = Path(temp_dir) / "qfit"
+            plugin_root.mkdir()
+            config = plugin_root / "setup.cfg"
+            config.write_text("[flake8]\n", encoding="utf-8")
+
+            commands = plugin_security_scan.build_scan_commands(
+                plugin_root,
+                Path(temp_dir) / "reports",
+            )
+
+            flake8_entry = next(command for command in commands if command[0] == "flake8")
+            self.assertIn("--config", flake8_entry[1])
+            self.assertIn(str(config), flake8_entry[1])
+            self.assertNotIn("--isolated", flake8_entry[1])
+
 
 if __name__ == "__main__":
     unittest.main()
