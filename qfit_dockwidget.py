@@ -41,7 +41,6 @@ from .activities.application.layer_summary import (
 from .activities.application.load_workflow import LoadWorkflowError
 from .activities.application.storage_selection import (
     StorageSelectionResult,
-    normalize_storage_path,
     resolve_storage_selection,
 )
 from .activities.application.sync_strategy import ActivitySyncMode, plan_activity_sync
