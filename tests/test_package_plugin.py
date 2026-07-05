@@ -108,13 +108,14 @@ class PackagePluginTests(unittest.TestCase):
             self.assertEqual(archive_path, dist / "qfit-1.2.3.zip")
             with zipfile.ZipFile(archive_path) as archive:
                 names = set(archive.namelist())
-                packaged_config = archive.read("qfit/.flake8").decode("utf-8")
+                packaged_config = archive.read("qfit/setup.cfg").decode("utf-8")
 
             self.assertIn("qfit/metadata.txt", names)
             self.assertIn("qfit/__init__.py", names)
             self.assertIn("qfit/core.py", names)
             self.assertIn("qfit/.bandit", names)
-            self.assertIn("qfit/.flake8", names)
+            self.assertIn("qfit/setup.cfg", names)
+            self.assertNotIn("qfit/.flake8", names)
             self.assertNotIn("qfit/packaging/qgis-flake8.cfg", names)
             self.assertIn("extend-exclude = vendor/*", packaged_config)
             self.assertIn("extend-ignore = W503", packaged_config)
