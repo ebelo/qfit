@@ -50,6 +50,12 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help=f"Directory where local scan reports are written (default: {DEFAULT_REPORTS_DIR})",
     )
     parser.add_argument(
+        "--qgis-major",
+        type=int,
+        choices=sorted(package_plugin.QGIS_PACKAGE_PROFILES),
+        help="Build and scan the QGIS-major-specific package.",
+    )
+    parser.add_argument(
         "--allow-findings",
         action="store_true",
         help="Return success even when scanners report findings, while still failing on execution errors.",
@@ -57,10 +63,10 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     return parser.parse_args(argv)
 
 
-def prepare_scan_tree(reports_dir: Path) -> tuple[Path, Path]:
+def prepare_scan_tree(reports_dir: Path, qgis_major: int | None = None) -> tuple[Path, Path]:
     if reports_dir.exists():
         shutil.rmtree(reports_dir)
-    archive_path = package_plugin.build_zip()
+    archive_path = package_plugin.build_zip(qgis_major=qgis_major)
     extracted_dir = reports_dir / "extracted"
     extracted_dir.mkdir(parents=True, exist_ok=True)
 
@@ -212,7 +218,7 @@ def build_scan_commands(plugin_root: Path, reports_dir: Path) -> list[tuple[str,
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
-    archive_path, plugin_root = prepare_scan_tree(args.reports_dir)
+    archive_path, plugin_root = prepare_scan_tree(args.reports_dir, qgis_major=args.qgis_major)
 
     results = [
         run_scan(name, command, report_path, findings_checker=findings_checker)
