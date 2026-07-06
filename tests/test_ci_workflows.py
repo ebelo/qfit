@@ -32,6 +32,11 @@ class BuildWorkflowTests(unittest.TestCase):
     def test_runs_package_script(self):
         self.assertIn("scripts/package_plugin.py", self.text)
 
+    def test_builds_and_uploads_qgis_major_packages(self):
+        self.assertIn("scripts/package_plugin.py --qgis-major 3", self.text)
+        self.assertIn("scripts/package_plugin.py --qgis-major 4", self.text)
+        self.assertIn("dist/*-qgis*.zip", self.text)
+
 
 class ReleaseWorkflowTests(unittest.TestCase):
     def setUp(self):
@@ -70,6 +75,22 @@ class ReleaseWorkflowTests(unittest.TestCase):
 
     def test_runs_unit_tests(self):
         self.assertIn("unittest discover", self.text)
+
+    def test_releases_qgis_major_packages(self):
+        self.assertIn("scripts/package_plugin.py --qgis-major 3", self.text)
+        self.assertIn("scripts/package_plugin.py --qgis-major 4", self.text)
+        self.assertIn("dist/*-qgis*.zip", self.text)
+
+
+class PluginSecurityScanWorkflowTests(unittest.TestCase):
+    def setUp(self):
+        self.text = _read_workflow("plugin-security-scan.yml")
+
+    def test_scans_both_qgis_major_packages(self):
+        self.assertIn("--qgis-major 3", self.text)
+        self.assertIn("--qgis-major 4", self.text)
+        self.assertIn("debug/plugin-security-scan/qgis3", self.text)
+        self.assertIn("debug/plugin-security-scan/qgis4", self.text)
 
 
 class MetadataTests(unittest.TestCase):

@@ -32,6 +32,17 @@ qfit currently supports:
 - running analysis workflows such as frequent starting points and activity heatmaps
 - generating atlas-ready publish layers and exporting a PDF atlas from the dock
 
+### QGIS version support
+
+qfit is shipped as two QGIS-major-specific plugin ZIPs built from the same source commit:
+
+- `qfit-<version>-qgis3.zip` for QGIS 3.28 through QGIS 3.x
+- `qfit-<version>-qgis4.zip` for QGIS 4.x
+
+These are packaging targets, not separate products. New qfit feature work should land in shared domain, application, UI, and infrastructure code by default. QGIS 3 / QGIS 4 differences should stay limited to package metadata, compatibility helpers, or narrow QGIS adapter paths when the host API genuinely differs.
+
+Install the ZIP that matches your QGIS major version. Do not install both packages into the same QGIS profile at the same time because both expose the same plugin name, `qfit`.
+
 ### Main outputs
 
 qfit uses a GeoPackage as both local sync store and QGIS data source.
@@ -260,13 +271,33 @@ python -m pip install pypdf
 python3 scripts/package_plugin.py
 ```
 
-The release ZIP is written to `dist/`.
+Build the QGIS-major release archives with:
+
+```bash
+python -m pip install pypdf
+python3 scripts/package_plugin.py --qgis-major 3
+python3 scripts/package_plugin.py --qgis-major 4
+```
+
+The release ZIPs are written to `dist/`:
+
+- `qfit-<version>-qgis3.zip` has `qgisMinimumVersion=3.28` and `qgisMaximumVersion=3.99`
+- `qfit-<version>-qgis4.zip` has `qgisMinimumVersion=4.0`
+
+Check eager PyQGIS / Qt import exposure with:
+
+```bash
+python3 validation/qgis_import_compat_probe.py
+```
+
+Runtime QGIS API differences belong behind compatibility helpers or infrastructure adapters. Module-scope QGIS/Qt imports are riskier because they can fail before runtime compatibility code executes.
 
 ### CI and review expectations
 
 Before treating a change as done:
 
 - run the relevant tests
+- verify both QGIS-major packages build
 - keep SonarCloud green
 - keep CodeQL/CI green
 - address meaningful review feedback

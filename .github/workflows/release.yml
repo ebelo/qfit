@@ -26,17 +26,16 @@ jobs:
       - name: Run unit tests
         run: python -m unittest discover -s tests -v
 
-      - name: Build plugin ZIP
-        id: package
+      - name: Build QGIS-major plugin ZIPs
         run: |
-          python scripts/package_plugin.py
-          echo "zip=$(ls dist/*.zip)" >> "$GITHUB_OUTPUT"
+          python scripts/package_plugin.py --qgis-major 3
+          python scripts/package_plugin.py --qgis-major 4
 
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release create "${{ github.ref_name }}" \
-            "${{ steps.package.outputs.zip }}" \
+            dist/*-qgis*.zip \
             --title "${{ github.ref_name }}" \
             --generate-notes

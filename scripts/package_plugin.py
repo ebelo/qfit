@@ -7,10 +7,13 @@ import configparser
 import importlib.util
 import pathlib
 import shutil
+import sys
 import tempfile
 import zipfile
 
+from argparse import ArgumentParser
 from importlib import metadata
+from typing import NamedTuple
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 DIST_DIR = ROOT / "dist"
@@ -37,6 +40,32 @@ EXCLUDED_FILES = {
     ".gitignore",
     "sonar-project.properties",
     "symbology-style.db",
+}
+
+
+class QgisPackageProfile(NamedTuple):
+    major: int
+    archive_suffix: str
+    metadata_overrides: dict[str, str | None]
+
+
+QGIS_PACKAGE_PROFILES = {
+    3: QgisPackageProfile(
+        major=3,
+        archive_suffix="qgis3",
+        metadata_overrides={
+            "qgisMinimumVersion": "3.28",
+            "qgisMaximumVersion": "3.99",
+        },
+    ),
+    4: QgisPackageProfile(
+        major=4,
+        archive_suffix="qgis4",
+        metadata_overrides={
+            "qgisMinimumVersion": "4.0",
+            "qgisMaximumVersion": None,
+        },
+    ),
 }
 
 
@@ -120,21 +149,55 @@ def _copy_packaged_flake8_config(plugin_dir: pathlib.Path) -> None:
     shutil.copy2(PACKAGED_FLAKE8_CONFIG, plugin_dir / "setup.cfg")
 
 
-def _build_staging_tree(plugin_name: str) -> pathlib.Path:
+def _apply_metadata_profile(plugin_dir: pathlib.Path, profile: QgisPackageProfile | None) -> None:
+    if profile is None:
+        return
+
+    metadata_path = plugin_dir / "metadata.txt"
+    parser = configparser.ConfigParser()
+    parser.optionxform = str
+    parser.read(metadata_path)
+    if not parser.has_section("general"):
+        parser.add_section("general")
+
+    for key, value in profile.metadata_overrides.items():
+        if value is None:
+            parser.remove_option("general", key)
+        else:
+            parser.set("general", key, value)
+
+    with metadata_path.open("w", encoding="utf-8") as handle:
+        parser.write(handle)
+
+
+def _package_profile(qgis_major: int | None) -> QgisPackageProfile | None:
+    if qgis_major is None:
+        return None
+    try:
+        return QGIS_PACKAGE_PROFILES[qgis_major]
+    except KeyError as exc:
+        supported = ", ".join(str(major) for major in sorted(QGIS_PACKAGE_PROFILES))
+        raise ValueError(f"Unsupported QGIS major version {qgis_major}. Supported: {supported}") from exc
+
+
+def _build_staging_tree(plugin_name: str, profile: QgisPackageProfile | None = None) -> pathlib.Path:
     staging_root = pathlib.Path(tempfile.mkdtemp(prefix="qfit-package-"))
     plugin_dir = staging_root / plugin_name
     _copy_project_tree(plugin_dir)
     _vendor_runtime_dependencies(plugin_dir)
     _copy_packaged_flake8_config(plugin_dir)
+    _apply_metadata_profile(plugin_dir, profile)
     return staging_root
 
 
-def build_zip() -> pathlib.Path:
+def build_zip(qgis_major: int | None = None) -> pathlib.Path:
     plugin_name, version = read_metadata()
+    profile = _package_profile(qgis_major)
     DIST_DIR.mkdir(exist_ok=True)
-    archive_path = DIST_DIR / f"{plugin_name.lower()}-{version}.zip"
+    suffix = f"-{profile.archive_suffix}" if profile is not None else ""
+    archive_path = DIST_DIR / f"{plugin_name.lower()}-{version}{suffix}.zip"
 
-    staging_root = _build_staging_tree(plugin_name)
+    staging_root = _build_staging_tree(plugin_name, profile)
     try:
         with zipfile.ZipFile(archive_path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
             for path in sorted(staging_root.rglob("*")):
@@ -147,11 +210,25 @@ def build_zip() -> pathlib.Path:
     return archive_path
 
 
-def main() -> int:
-    archive_path = build_zip()
+def parse_args(argv: list[str] | None = None):
+    parser = ArgumentParser(description="Build a distributable QGIS plugin zip for qfit.")
+    parser.add_argument(
+        "--qgis-major",
+        type=int,
+        choices=sorted(QGIS_PACKAGE_PROFILES),
+        help="Build a QGIS-major-specific package with metadata version bounds.",
+    )
+    return parser.parse_args(argv)
+
+
+def main(argv: list[str] | None = None) -> int:
+    if argv is None:
+        argv = []
+    args = parse_args(argv)
+    archive_path = build_zip(qgis_major=args.qgis_major)
     print(f"Built {archive_path}")
     return 0
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(main(sys.argv[1:]))

@@ -25,11 +25,10 @@ jobs:
       - name: Install packaging dependencies
         run: python -m pip install --upgrade pypdf
 
-      - name: Build plugin ZIP
-        id: package
+      - name: Build QGIS-major plugin ZIPs
         run: |
-          python scripts/package_plugin.py
-          echo "zip=$(ls dist/*.zip)" >> "$GITHUB_OUTPUT"
+          python scripts/package_plugin.py --qgis-major 3
+          python scripts/package_plugin.py --qgis-major 4
 
       - name: Build artifact metadata
         id: artifact
@@ -46,10 +45,10 @@ jobs:
             echo "name=qfit-plugin-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Upload plugin ZIP
+      - name: Upload plugin ZIPs
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.artifact.outputs.name }}
-          path: ${{ steps.package.outputs.zip }}
+          path: dist/*-qgis*.zip
           if-no-files-found: error
           retention-days: 14

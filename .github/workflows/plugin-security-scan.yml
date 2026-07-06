@@ -24,5 +24,16 @@ jobs:
       - name: Install scan dependencies
         run: python -m pip install --upgrade pypdf bandit detect-secrets flake8
 
-      - name: Build packaged plugin and run local-style scans
-        run: python scripts/run_plugin_security_scan.py --allow-findings
+      - name: Build QGIS 3 package and run local-style scans
+        run: >
+          python scripts/run_plugin_security_scan.py
+          --qgis-major 3
+          --reports-dir debug/plugin-security-scan/qgis3
+          --allow-findings
+
+      - name: Build QGIS 4 package and run local-style scans
+        run: >
+          python scripts/run_plugin_security_scan.py
+          --qgis-major 4
+          --reports-dir debug/plugin-security-scan/qgis4
+          --allow-findings

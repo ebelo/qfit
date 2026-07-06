@@ -1,4 +1,5 @@
 import importlib.util
+import configparser
 import sys
 import tempfile
 import unittest
@@ -126,6 +127,92 @@ class PackagePluginTests(unittest.TestCase):
             self.assertFalse(any(name.startswith("qfit/debug/") for name in names))
             self.assertFalse(any(name.startswith("qfit/validation/") for name in names))
             self.assertFalse(any(name.startswith("qfit/validation_artifacts/") for name in names))
+
+    def test_build_zip_can_apply_qgis3_metadata_profile(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir) / "src"
+            dist = Path(temp_dir) / "dist"
+            root.mkdir()
+            (root / "metadata.txt").write_text(
+                "[general]\nname=qfit\nversion=1.2.3\nqgisMinimumVersion=3.28\n",
+                encoding="utf-8",
+            )
+            (root / "__init__.py").write_text("# init\n", encoding="utf-8")
+            (root / "packaging").mkdir()
+            packaged_flake8_config = root / "packaging" / "qgis-flake8.cfg"
+            packaged_flake8_config.write_text("[flake8]\n", encoding="utf-8")
+
+            with (
+                patch.object(package_plugin, "ROOT", root),
+                patch.object(package_plugin, "DIST_DIR", dist),
+                patch.object(package_plugin, "PACKAGED_FLAKE8_CONFIG", packaged_flake8_config),
+                patch.object(package_plugin, "_vendor_runtime_dependencies"),
+            ):
+                archive_path = package_plugin.build_zip(qgis_major=3)
+
+            self.assertEqual(archive_path, dist / "qfit-1.2.3-qgis3.zip")
+            with zipfile.ZipFile(archive_path) as archive:
+                metadata_text = archive.read("qfit/metadata.txt").decode("utf-8")
+
+            parser = configparser.ConfigParser()
+            parser.read_string(metadata_text)
+            self.assertEqual(parser.get("general", "qgisMinimumVersion"), "3.28")
+            self.assertEqual(parser.get("general", "qgisMaximumVersion"), "3.99")
+
+    def test_build_zip_can_apply_qgis4_metadata_profile(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir) / "src"
+            dist = Path(temp_dir) / "dist"
+            root.mkdir()
+            (root / "metadata.txt").write_text(
+                "[general]\n"
+                "name=qfit\n"
+                "version=1.2.3\n"
+                "qgisMinimumVersion=3.28\n"
+                "qgisMaximumVersion=3.99\n",
+                encoding="utf-8",
+            )
+            (root / "__init__.py").write_text("# init\n", encoding="utf-8")
+            (root / "packaging").mkdir()
+            packaged_flake8_config = root / "packaging" / "qgis-flake8.cfg"
+            packaged_flake8_config.write_text("[flake8]\n", encoding="utf-8")
+
+            with (
+                patch.object(package_plugin, "ROOT", root),
+                patch.object(package_plugin, "DIST_DIR", dist),
+                patch.object(package_plugin, "PACKAGED_FLAKE8_CONFIG", packaged_flake8_config),
+                patch.object(package_plugin, "_vendor_runtime_dependencies"),
+            ):
+                archive_path = package_plugin.build_zip(qgis_major=4)
+
+            self.assertEqual(archive_path, dist / "qfit-1.2.3-qgis4.zip")
+            with zipfile.ZipFile(archive_path) as archive:
+                metadata_text = archive.read("qfit/metadata.txt").decode("utf-8")
+
+            parser = configparser.ConfigParser()
+            parser.read_string(metadata_text)
+            self.assertEqual(parser.get("general", "qgisMinimumVersion"), "4.0")
+            self.assertFalse(parser.has_option("general", "qgisMaximumVersion"))
+
+    def test_build_zip_rejects_unknown_qgis_major_profile(self):
+        with self.assertRaisesRegex(ValueError, "Unsupported QGIS major version 5"):
+            package_plugin.build_zip(qgis_major=5)
+
+    def test_parse_args_accepts_qgis_major(self):
+        args = package_plugin.parse_args(["--qgis-major", "4"])
+
+        self.assertEqual(args.qgis_major, 4)
+
+    def test_main_passes_qgis_major_to_build_zip(self):
+        archive_path = Path("/tmp/qfit-1.2.3-qgis4.zip")
+
+        with patch.object(package_plugin, "build_zip", return_value=archive_path) as build_zip, \
+             patch("builtins.print") as mock_print:
+            result = package_plugin.main(["--qgis-major", "4"])
+
+        self.assertEqual(result, 0)
+        build_zip.assert_called_once_with(qgis_major=4)
+        mock_print.assert_called_once_with(f"Built {archive_path}")
 
     def test_build_zip_fails_when_packaged_flake8_config_is_missing(self):
         with tempfile.TemporaryDirectory() as temp_dir:

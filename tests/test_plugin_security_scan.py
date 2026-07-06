@@ -88,7 +88,7 @@ class PrepareScanTreeTests(unittest.TestCase):
 
             reports_dir = temp_path / "debug" / "plugin-security-scan"
             original_build_zip = plugin_security_scan.package_plugin.build_zip
-            plugin_security_scan.package_plugin.build_zip = lambda: archive_path
+            plugin_security_scan.package_plugin.build_zip = lambda qgis_major=None: archive_path
             try:
                 built_archive, plugin_root = plugin_security_scan.prepare_scan_tree(reports_dir)
             finally:
@@ -107,7 +107,8 @@ class PrepareScanTreeTests(unittest.TestCase):
             stale_report = reports_dir / "summary.txt"
             stale_report.write_text("old\n", encoding="utf-8")
 
-            def fake_build_zip():
+            def fake_build_zip(qgis_major=None):
+                self.assertIsNone(qgis_major)
                 self.assertFalse(stale_report.exists())
                 with zipfile.ZipFile(archive_path, "w") as archive:
                     archive.writestr("qfit/__init__.py", "# plugin\n")
@@ -120,6 +121,41 @@ class PrepareScanTreeTests(unittest.TestCase):
             self.assertEqual(built_archive, archive_path)
             self.assertEqual(plugin_root, reports_dir / "extracted" / "qfit")
             self.assertFalse(stale_report.exists())
+
+    def test_prepare_scan_tree_passes_qgis_major_to_packager(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_path = Path(temp_dir)
+            archive_path = temp_path / "qfit-1.2.3-qgis4.zip"
+            reports_dir = temp_path / "debug" / "plugin-security-scan"
+
+            def fake_build_zip(*, qgis_major=None):
+                self.assertEqual(qgis_major, 4)
+                with zipfile.ZipFile(archive_path, "w") as archive:
+                    archive.writestr("qfit/__init__.py", "# plugin\n")
+                    archive.writestr("qfit/metadata.txt", "[general]\nname=qfit\n")
+                return archive_path
+
+            with patch.object(plugin_security_scan.package_plugin, "build_zip", side_effect=fake_build_zip):
+                built_archive, plugin_root = plugin_security_scan.prepare_scan_tree(
+                    reports_dir,
+                    qgis_major=4,
+                )
+
+            self.assertEqual(built_archive, archive_path)
+            self.assertEqual(plugin_root, reports_dir / "extracted" / "qfit")
+
+
+class CliTests(unittest.TestCase):
+    def test_parse_args_accepts_qgis_major(self):
+        args = plugin_security_scan.parse_args([
+            "--qgis-major",
+            "3",
+            "--reports-dir",
+            "/tmp/qfit-scan",
+        ])
+
+        self.assertEqual(args.qgis_major, 3)
+        self.assertEqual(args.reports_dir, Path("/tmp/qfit-scan"))
 
 
 class BuildScanCommandsTests(unittest.TestCase):
