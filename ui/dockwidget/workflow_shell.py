@@ -6,6 +6,7 @@ from ._qt_compat import import_qt_module
 from .footer_status_bar import FooterStatusBar
 from .step_page import STEP_PAGE_NARROW_WIDTH
 from .stepper_bar import STEPPER_COMPACT_WIDTH, STEPPER_LABELS, StepperBar
+from qfit.ui.qt_enum_compat import qt_class_enum_value
 
 _qtwidgets = import_qt_module(
     "qgis.PyQt.QtWidgets",
@@ -20,6 +21,9 @@ _qtwidgets = import_qt_module(
 )
 
 QFrame = _qtwidgets.QFrame
+QT_FRAME_HLINE = qt_class_enum_value(QFrame, "Shape", "HLine")
+QT_FRAME_PLAIN = qt_class_enum_value(QFrame, "Shadow", "Plain")
+QT_FRAME_NO_FRAME = qt_class_enum_value(QFrame, "Shape", "NoFrame")
 QScrollArea = _qtwidgets.QScrollArea
 QStackedWidget = _qtwidgets.QStackedWidget
 QVBoxLayout = _qtwidgets.QVBoxLayout
@@ -135,8 +139,8 @@ class WorkflowShell(QWidget):
     def _build_separator(self):
         separator = QFrame(self)
         separator.setObjectName("qfitWizardShellSeparator")
-        separator.setFrameShape(QFrame.HLine)
-        separator.setFrameShadow(QFrame.Plain)
+        separator.setFrameShape(QT_FRAME_HLINE)
+        separator.setFrameShadow(QT_FRAME_PLAIN)
         separator.setFixedHeight(1)
         return separator
 
@@ -144,7 +148,7 @@ class WorkflowShell(QWidget):
         scroll = QScrollArea(self)
         scroll.setObjectName("qfitWizardContentScroll")
         scroll.setWidgetResizable(True)
-        scroll.setFrameShape(QFrame.NoFrame)
+        scroll.setFrameShape(QT_FRAME_NO_FRAME)
         return scroll
 
     def _build_pages_stack(self):

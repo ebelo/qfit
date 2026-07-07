@@ -28,8 +28,24 @@ All PRs must pass the following before merging:
 - Run tests: `python3 -m pytest tests/ -x -q`
 - Tests live in `tests/` and must not import QGIS (mock it where needed).
 
+### Docker QGIS tests (mandatory)
+
+qfit supports QGIS 3 and QGIS 4 from one source tree. Unit tests without QGIS
+**cannot** catch Qt 5 / Qt 6 import-surface differences. The Docker QGIS
+runtime suite must pass in both host versions before merge.
+
+- QGIS 3: `scripts/docker_test.sh 3`
+- QGIS 4: `scripts/docker_test.sh 4`
+- CI runs both as required checks — see `docs/testing-policy.md` for details.
+- Docker runs the real-QGIS smoke/probe suite. The full pure unit suite remains
+  covered by `python3 -m pytest tests/ -x -q`.
+- Any change touching Qt enums, class-body expressions, or `classFactory()`
+  import paths must pass Docker QGIS 4.
+- Smoke import failures inside Docker are **hard errors**, not silent skips.
+
 ### Tests must pass
 - `python3 -m pytest tests/ -x -q` must be green before opening a PR.
+- `scripts/docker_test.sh 3` and `scripts/docker_test.sh 4` must be green before merging.
 
 ### Rendering-proof checklist (mandatory for export-sensitive PRs)
 For changes that affect rendered/exported output — especially atlas PDFs, cover pages, table-of-contents pages, profiles, charts, or packaging/runtime-dependent export behaviour — green CI alone is **not** enough.

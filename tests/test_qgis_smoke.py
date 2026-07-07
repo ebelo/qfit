@@ -14,6 +14,20 @@ from tests.qgis_app import get_shared_qgis_app
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
+# When Docker QGIS tests run, they set QFIT_REQUIRE_QGIS=1 so that import
+# failures are hard errors instead of silent skips.  This prevents Qt 6
+# enum-migration crashes from hiding behind a broad try/except guard.
+_REQUIRE_QGIS = os.environ.get("QFIT_REQUIRE_QGIS") == "1"
+
+if _REQUIRE_QGIS:
+    # Several pure unit tests install fake qgis modules during collection so
+    # they can import QGIS-facing code without a real QGIS runtime. Docker
+    # smoke tests must not inherit those fakes; reset QGIS modules before
+    # importing the real plugin stack.
+    for module_name in list(sys.modules):
+        if module_name == "qgis" or module_name.startswith("qgis."):
+            sys.modules.pop(module_name, None)
+
 try:
     from qgis.core import (
         QgsApplication,
@@ -30,6 +44,8 @@ try:
     from qgis.PyQt.QtCore import QDate, Qt
     from qgis.PyQt.QtGui import QImage
     from qgis.PyQt.QtWidgets import QFormLayout
+
+    from qfit.ui.qt_enum_compat import qt_class_enum_value, qt_enum_value
 
     from qfit.activities.domain.activity_query import ActivityQuery, build_subset_string
     from qfit.analysis.infrastructure.frequent_start_points_layer import (
@@ -70,7 +86,12 @@ try:
 
     QGIS_AVAILABLE = True
     QGIS_IMPORT_ERROR = None
-except Exception as exc:  # pragma: no cover - exercised only when QGIS is unavailable
+except Exception as exc:
+    if _REQUIRE_QGIS:
+        # Inside Docker QGIS tests, import failures must crash, not skip.
+        # This is what catches Qt 6 enum-migration issues that a broad
+        # try/except would otherwise swallow into a silent skip.
+        raise
     QgsApplication = None
     QgsCoordinateReferenceSystem = None
     QgsFeature = None
@@ -282,8 +303,22 @@ class QgisSmokeTests(unittest.TestCase):
             ):
                 with self.subTest(removed_attr=removed_attr):
                     self.assertFalse(hasattr(dock, removed_attr))
-            self.assertTrue(bool(dock.features() & dock.DockWidgetMovable))
-            self.assertTrue(bool(dock.features() & dock.DockWidgetFloatable))
+            self.assertTrue(
+                bool(
+                    dock.features()
+                    & qt_class_enum_value(
+                        type(dock), "DockWidgetFeature", "DockWidgetMovable"
+                    )
+                )
+            )
+            self.assertTrue(
+                bool(
+                    dock.features()
+                    & qt_class_enum_value(
+                        type(dock), "DockWidgetFeature", "DockWidgetFloatable"
+                    )
+                )
+            )
             self.assertEqual(dock.activitiesGroupBox.title(), "")
             self.assertFalse(hasattr(dock, "activitiesSectionToggleButton"))
             self.assertFalse(hasattr(dock, "activitiesSectionContentWidget"))
@@ -809,8 +844,14 @@ class QgisSmokeTests(unittest.TestCase):
 
             form = dialog._oauth_help_label.parentWidget().layout()
             _row, role = form.getWidgetPosition(dialog._oauth_help_label)
-            self.assertEqual(role, QFormLayout.SpanningRole)
-            self.assertEqual(form.rowWrapPolicy(), QFormLayout.WrapLongRows)
+            self.assertEqual(
+                role,
+                qt_class_enum_value(QFormLayout, "ItemRole", "SpanningRole"),
+            )
+            self.assertEqual(
+                form.rowWrapPolicy(),
+                qt_class_enum_value(QFormLayout, "RowWrapPolicy", "WrapLongRows"),
+            )
         finally:
             dialog.close()
             dialog.deleteLater()
@@ -1548,7 +1589,6 @@ class QgisSmokeTests(unittest.TestCase):
             from pathlib import Path
 
             os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
-            sys.path.insert(0, "/home/ebelo/.openclaw/workspace")
 
             from qgis.core import QgsApplication, QgsLayoutExporter, QgsProject, QgsRectangle
             from qgis.PyQt.QtGui import QImage
@@ -1764,12 +1804,26 @@ class QgisSmokeTests(unittest.TestCase):
             """
         )
 
+        import qgis as _qgis_mod
+        _qgis_python_path = os.path.dirname(list(_qgis_mod.__path__)[0])
+        _qfit_parent_path = str(REPO_ROOT.parent)
+        _pythonpath_parts = [
+            _qfit_parent_path,
+            _qgis_python_path,
+            os.environ.get("PYTHONPATH", ""),
+        ]
+        _pythonpath_parts = [p for p in _pythonpath_parts if p]
+
         result = subprocess.run(
             [sys.executable, "-c", script],
             capture_output=True,
             text=True,
             cwd=REPO_ROOT,
-            env={**os.environ, "QT_QPA_PLATFORM": "offscreen"},
+            env={
+                **os.environ,
+                "QT_QPA_PLATFORM": "offscreen",
+                "PYTHONPATH": os.pathsep.join(_pythonpath_parts),
+            },
             timeout=180,
         )
 
@@ -1905,8 +1959,14 @@ class QgisSmokeTests(unittest.TestCase):
     def _render_layers_to_image(self, layers, extent, width=800, height=800):
         settings = QgsMapSettings()
         settings.setLayers(layers)
-        settings.setOutputSize(QImage(width, height, QImage.Format_ARGB32).size())
-        settings.setBackgroundColor(Qt.white)
+        settings.setOutputSize(
+            QImage(
+                width,
+                height,
+                qt_class_enum_value(QImage, "Format", "Format_ARGB32"),
+            ).size()
+        )
+        settings.setBackgroundColor(qt_enum_value(Qt, "GlobalColor", "white"))
 
         destination_crs = QgsProject.instance().crs()
         if destination_crs.isValid():

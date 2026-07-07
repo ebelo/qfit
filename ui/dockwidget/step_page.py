@@ -25,7 +25,7 @@ from qfit.ui.widgets.tokens import (
     COLOR_PANEL,
     COLOR_TEXT,
 )
-from qfit.ui.qt_enum_compat import qt_enum_value
+from qfit.ui.qt_enum_compat import qt_class_enum_value, qt_enum_value
 
 _qtcore = import_qt_module("qgis.PyQt.QtCore", "PyQt5.QtCore", ("Qt", "pyqtSignal"))
 _qtwidgets = import_qt_module(
@@ -60,6 +60,13 @@ QT_TOOL_BUTTON_TEXT_BESIDE_ICON = qt_enum_value(
     "ToolButtonStyle",
     "ToolButtonTextBesideIcon",
 )
+QT_SIZE_POLICY_IGNORED = qt_class_enum_value(
+    QSizePolicy, "Policy", "Ignored"
+)
+QT_SIZE_POLICY_PREFERRED = qt_class_enum_value(
+    QSizePolicy, "Policy", "Preferred"
+)
+QT_SIZE_POLICY_FIXED = qt_class_enum_value(QSizePolicy, "Policy", "Fixed")
 
 
 class StepPage(QWidget):
@@ -478,7 +485,7 @@ def _allow_horizontal_shrink(widget) -> None:
     if hasattr(widget, "setMinimumWidth"):
         widget.setMinimumWidth(0)
     if hasattr(widget, "setSizePolicy"):
-        widget.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)
+        widget.setSizePolicy(QT_SIZE_POLICY_IGNORED, QT_SIZE_POLICY_PREFERRED)
 
 
 def _allow_label_wrap(label) -> None:
@@ -493,7 +500,7 @@ def _configure_responsive_button(button) -> None:
     if hasattr(button, "setMinimumWidth"):
         button.setMinimumWidth(0)
     if hasattr(button, "setSizePolicy"):
-        button.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Fixed)
+        button.setSizePolicy(QT_SIZE_POLICY_IGNORED, QT_SIZE_POLICY_FIXED)
 
 
 def _apply_workflow_navigation_cursor(button) -> None:

@@ -22,7 +22,47 @@ jobs:
           python-version: '3.12'
 
       - name: Install test dependencies
-        run: python -m pip install --upgrade pyyaml pypdf
+        run: python -m pip install --upgrade pytest pyyaml pypdf
 
       - name: Run unit tests
-        run: python -m unittest discover -s tests -v
+        run: python -m pytest tests/ -x -q --tb=short
+
+  docker-qgis3:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Run tests in QGIS 3 Docker image
+        run: |
+          docker run -dt \
+            --name qfit-test-qgis3 \
+            -v "${{ github.workspace }}:/tests_directory/qfit" \
+            -e QT_QPA_PLATFORM=offscreen \
+            qgis/qgis:3.44.11
+
+          docker exec qfit-test-qgis3 bash -c "qgis_setup.sh qfit"
+          docker exec qfit-test-qgis3 bash -c "pip3 install --quiet --break-system-packages pytest pytest-cov pytest-qt pypdf 2>/dev/null || true"
+          docker exec -e QT_QPA_PLATFORM=offscreen -e QFIT_REQUIRE_QGIS=1 qfit-test-qgis3 \
+            bash -c "cd /tests_directory/qfit && python3 -m pytest tests/test_qgis_smoke.py tests/test_qt6_class_enum_probe.py -q --tb=short"
+
+  docker-qgis4:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Run tests in QGIS 4 Docker image
+        run: |
+          docker run -dt \
+            --name qfit-test-qgis4 \
+            -v "${{ github.workspace }}:/tests_directory/qfit" \
+            -e QT_QPA_PLATFORM=offscreen \
+            qgis/qgis:4.2.0
+
+          docker exec qfit-test-qgis4 bash -c "qgis_setup.sh qfit"
+          docker exec qfit-test-qgis4 bash -c "pip3 install --quiet --break-system-packages pytest pytest-cov pytest-qt pypdf 2>/dev/null || true"
+          docker exec -e QT_QPA_PLATFORM=offscreen -e QFIT_REQUIRE_QGIS=1 qfit-test-qgis4 \
+            bash -c "cd /tests_directory/qfit && python3 -m pytest tests/test_qgis_smoke.py tests/test_qt6_class_enum_probe.py -q --tb=short"

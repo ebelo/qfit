@@ -10,6 +10,7 @@ from qfit.ui.tokens import (
 )
 
 from ._qt_compat import import_qt_module
+from qfit.ui.qt_enum_compat import qt_class_enum_value
 
 _qtwidgets = import_qt_module(
     "qgis.PyQt.QtWidgets",
@@ -23,6 +24,12 @@ _qtcore = import_qt_module(
 )
 
 QSizePolicy = _qtwidgets.QSizePolicy
+QT_SIZE_POLICY_IGNORED = qt_class_enum_value(
+    QSizePolicy, "Policy", "Ignored"
+)
+QT_SIZE_POLICY_PREFERRED = qt_class_enum_value(
+    QSizePolicy, "Policy", "Preferred"
+)
 Qt = _qtcore.Qt
 
 PAGE_CONTENT_MARGINS = (0, 0, 0, 0)
@@ -83,7 +90,7 @@ def configure_fluid_text_label(label) -> None:
     if hasattr(label, "setMinimumWidth"):
         label.setMinimumWidth(0)
     if hasattr(label, "setSizePolicy"):
-        label.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)
+        label.setSizePolicy(QT_SIZE_POLICY_IGNORED, QT_SIZE_POLICY_PREFERRED)
 
 
 def configure_top_aligned_panel_layout(

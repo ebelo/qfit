@@ -303,6 +303,10 @@ class _FakeQtWidgetsModule:
         Ignored = 3
         Preferred = 4
 
+        class Policy:
+            Ignored = 3
+            Preferred = 4
+
     QWhatsThis = _FakeQWhatsThis
     QWidget = _FakeWidget
     QLabel = _FakeLabel

@@ -12,7 +12,7 @@ from qfit.ui.application.stepper_presenter import (
     step_key_for_index,
 )
 from qfit.ui.tokens import COLOR_ACCENT, COLOR_HOVER, COLOR_MUTED, COLOR_SEPARATOR, COLOR_TEXT
-from qfit.ui.qt_enum_compat import qt_enum_value
+from qfit.ui.qt_enum_compat import qt_class_enum_value, qt_enum_value
 
 from ._qt_compat import import_qt_module
 
@@ -54,6 +54,12 @@ QT_TOOL_BUTTON_TEXT_BESIDE_ICON = qt_enum_value(
     "ToolButtonStyle",
     "ToolButtonTextBesideIcon",
 )
+QT_SIZE_POLICY_IGNORED = qt_class_enum_value(
+    QSizePolicy, "Policy", "Ignored"
+)
+QT_SIZE_POLICY_FIXED = qt_class_enum_value(QSizePolicy, "Policy", "Fixed")
+QT_FRAME_HLINE = qt_class_enum_value(QFrame, "Shape", "HLine")
+QT_FRAME_PLAIN = qt_class_enum_value(QFrame, "Shadow", "Plain")
 
 
 class StepperBar(QWidget):
@@ -139,7 +145,7 @@ class StepperBar(QWidget):
             button = QToolButton(self)
             button.setObjectName(f"qfitStepperStep{index + 1}")
             button.setToolButtonStyle(QT_TOOL_BUTTON_TEXT_BESIDE_ICON)
-            button.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Fixed)
+            button.setSizePolicy(QT_SIZE_POLICY_IGNORED, QT_SIZE_POLICY_FIXED)
             if hasattr(button, "setMinimumWidth"):
                 button.setMinimumWidth(0)
             button.clicked.connect(
@@ -150,8 +156,8 @@ class StepperBar(QWidget):
             if index < len(STEPPER_LABELS) - 1:
                 connector = QFrame(self)
                 connector.setObjectName(f"qfitStepperConnector{index + 1}")
-                connector.setFrameShape(QFrame.HLine)
-                connector.setFrameShadow(QFrame.Plain)
+                connector.setFrameShape(QT_FRAME_HLINE)
+                connector.setFrameShadow(QT_FRAME_PLAIN)
                 connector.setFixedWidth(8)
                 connector.setFixedHeight(1)
                 self._connectors.append(connector)
