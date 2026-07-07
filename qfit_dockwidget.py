@@ -91,6 +91,7 @@ from .ui.application import (
     build_visual_workflow_selection_state_handoff,
     build_visual_workflow_settings_snapshot,
 )
+from .ui.qt_enum_compat import qt_enum_value
 from .ui.application.local_first_progress_facts import (
     build_current_local_first_progress_facts,
     current_local_first_visual_temporal_mode,
@@ -143,7 +144,15 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
         | QDockWidget.DockWidgetMovable
         | QDockWidget.DockWidgetFloatable
     )
-    STARTUP_ALLOWED_AREAS = Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea
+    STARTUP_ALLOWED_AREAS = qt_enum_value(
+        Qt,
+        "DockWidgetArea",
+        "LeftDockWidgetArea",
+    ) | qt_enum_value(
+        Qt,
+        "DockWidgetArea",
+        "RightDockWidgetArea",
+    )
 
     def __init__(
         self,

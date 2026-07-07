@@ -1,3 +1,4 @@
+import importlib
 import sys
 import types
 import unittest
@@ -333,6 +334,22 @@ class _FakeListWidgetItem:
         return self._data[role]
 
 
+class _FakeNestedQt:
+    class CheckState:
+        Checked = 2
+        Unchecked = 0
+
+    class ItemDataRole:
+        UserRole = 256
+
+    class ItemFlag:
+        ItemIsUserCheckable = 16
+
+    class Orientation:
+        Horizontal = 1
+        Vertical = 2
+
+
 def _fake_qgis_gui(
     *,
     collapsible_group_box=None,
@@ -371,6 +388,31 @@ def _fake_qt_widgets():
 
 
 class UiWidgetCompatTests(unittest.TestCase):
+    def test_imports_with_qgis4_nested_qt_enums(self):
+        module_name = "qfit.ui.widgets.compat"
+        original_module = sys.modules.pop(module_name, None)
+        widgets_package = sys.modules.get("qfit.ui.widgets")
+        original_package_attr = (
+            getattr(widgets_package, "compat", None) if widgets_package is not None else None
+        )
+        if widgets_package is not None and hasattr(widgets_package, "compat"):
+            delattr(widgets_package, "compat")
+
+        fake_qtcore = types.ModuleType("qgis.PyQt.QtCore")
+        fake_qtcore.Qt = _FakeNestedQt
+        try:
+            with patch.dict(sys.modules, {"qgis.PyQt.QtCore": fake_qtcore}):
+                reimported = importlib.import_module(module_name)
+        finally:
+            sys.modules.pop(module_name, None)
+            if original_module is not None:
+                sys.modules[module_name] = original_module
+            if widgets_package is not None and original_package_attr is not None:
+                widgets_package.compat = original_package_attr
+
+        self.assertEqual(reimported.QT_HORIZONTAL, _FakeNestedQt.Orientation.Horizontal)
+        self.assertEqual(reimported.QT_USER_ROLE, _FakeNestedQt.ItemDataRole.UserRole)
+
     def test_uses_native_collapsible_group_box_when_qgis_provides_it(self):
         parent = object()
         with patch.dict(

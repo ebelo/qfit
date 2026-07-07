@@ -15,6 +15,7 @@ from qfit.ui.tokens import (
 
 from ._qt_compat import import_qt_module
 from .footer_status_bar import FooterStatusBar
+from qfit.ui.qt_enum_compat import optional_qt_enum_value, qt_enum_value
 
 _qtcore = import_qt_module(
     "qgis.PyQt.QtCore",
@@ -44,6 +45,18 @@ QSizePolicy = _qtwidgets.QSizePolicy
 QStackedWidget = _qtwidgets.QStackedWidget
 QVBoxLayout = _qtwidgets.QVBoxLayout
 QWidget = _qtwidgets.QWidget
+QT_FORBIDDEN_CURSOR = qt_enum_value(Qt, "CursorShape", "ForbiddenCursor")
+QT_KEY_ENTER = qt_enum_value(Qt, "Key", "Key_Enter")
+QT_KEY_RETURN = qt_enum_value(Qt, "Key", "Key_Return")
+QT_KEY_SPACE = qt_enum_value(Qt, "Key", "Key_Space")
+QT_LEFT_BUTTON = qt_enum_value(Qt, "MouseButton", "LeftButton")
+QT_POINTING_HAND_CURSOR = qt_enum_value(Qt, "CursorShape", "PointingHandCursor")
+QT_STRONG_FOCUS = qt_enum_value(Qt, "FocusPolicy", "StrongFocus")
+QT_STYLED_BACKGROUND = optional_qt_enum_value(
+    Qt,
+    "WidgetAttribute",
+    "WA_StyledBackground",
+)
 
 
 class LocalFirstNavigationItem(QWidget):
@@ -65,10 +78,10 @@ class LocalFirstNavigationItem(QWidget):
         self._layout.addWidget(self._label)
         if hasattr(self, "setSizePolicy"):
             self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-        if hasattr(self, "setAttribute") and hasattr(Qt, "WA_StyledBackground"):
-            self.setAttribute(Qt.WA_StyledBackground, True)
+        if hasattr(self, "setAttribute") and QT_STYLED_BACKGROUND is not None:
+            self.setAttribute(QT_STYLED_BACKGROUND, True)
         if hasattr(self, "setFocusPolicy"):
-            self.setFocusPolicy(Qt.StrongFocus)
+            self.setFocusPolicy(QT_STRONG_FOCUS)
 
     def setText(self, value: str) -> None:  # noqa: N802
         self._label.setText(value)
@@ -122,7 +135,7 @@ class LocalFirstNavigationItem(QWidget):
     def mousePressEvent(self, event) -> None:  # noqa: N802
         self._pressed_inside = (
             self.isEnabled()
-            and _event_button(event) == Qt.LeftButton
+            and _event_button(event) == QT_LEFT_BUTTON
             and _event_position_inside_widget(event, self)
         )
         parent_press = getattr(super(), "mousePressEvent", None)
@@ -133,7 +146,7 @@ class LocalFirstNavigationItem(QWidget):
         should_activate = (
             self.isEnabled()
             and self._pressed_inside
-            and _event_button(event) == Qt.LeftButton
+            and _event_button(event) == QT_LEFT_BUTTON
             and _event_position_inside_widget(event, self)
         )
         self._pressed_inside = False
@@ -272,7 +285,7 @@ class LocalFirstDockShell(QWidget):
         item.setProperty("navTone", tone)
         item.setProperty("qfitNavItem", True)
         item.setToolTip(f"{page_state.title}: {page_state.status_text}")
-        item.setCursor(Qt.PointingHandCursor if page_state.enabled else Qt.ForbiddenCursor)
+        item.setCursor(QT_POINTING_HAND_CURSOR if page_state.enabled else QT_FORBIDDEN_CURSOR)
         if hasattr(item, "setStyleSheet"):
             item.setStyleSheet(_navigation_item_stylesheet(tone, item.objectName()))
         _refresh_dynamic_qss(item)
@@ -386,7 +399,7 @@ def _event_position_inside_widget(event, widget) -> bool:
 
 
 def _is_activation_key(key) -> bool:
-    return key in (Qt.Key_Return, Qt.Key_Enter, Qt.Key_Space)
+    return key in (QT_KEY_RETURN, QT_KEY_ENTER, QT_KEY_SPACE)
 
 
 def _nav_tone(page_state: LocalFirstDockPageState) -> str:

@@ -42,19 +42,25 @@ from .configuration.application.ui_settings_binding import (
 )
 from .providers.domain.provider import ProviderError
 from .providers.infrastructure.strava_client import StravaClient
+from .ui.qt_enum_compat import qt_enum_value
 from .ui.widgets import make_password_line_edit
 
 logger = logging.getLogger(__name__)
 
 _NOT_TESTED_LABEL = "Not tested"
 _OAUTH_NOT_STARTED_LABEL = "Not started"
+QT_TEXT_SELECTABLE_BY_MOUSE = qt_enum_value(
+    Qt,
+    "TextInteractionFlag",
+    "TextSelectableByMouse",
+)
 
 
 def _configure_wrapping_status_label(label: QLabel) -> QLabel:
     """Keep long connection/test messages inside the dialog content width."""
 
     label.setWordWrap(True)
-    label.setTextInteractionFlags(Qt.TextSelectableByMouse)
+    label.setTextInteractionFlags(QT_TEXT_SELECTABLE_BY_MOUSE)
     return label
 
 
@@ -131,7 +137,7 @@ class QfitConfigDialog(QDialog):
         )
         self._oauth_help_label.setObjectName("stravaOAuthHelpLabel")
         self._oauth_help_label.setWordWrap(True)
-        self._oauth_help_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        self._oauth_help_label.setTextInteractionFlags(QT_TEXT_SELECTABLE_BY_MOUSE)
         form.addRow(self._oauth_help_label)
 
         self._authorization_code_edit = QLineEdit()

@@ -7,7 +7,15 @@ from importlib import import_module
 
 from qgis.PyQt.QtCore import Qt
 
+from qfit.ui.qt_enum_compat import qt_enum_value
+
 CheckableListOption = str | tuple[str, str]
+
+QT_CHECKED = qt_enum_value(Qt, "CheckState", "Checked")
+QT_HORIZONTAL = qt_enum_value(Qt, "Orientation", "Horizontal")
+QT_ITEM_IS_USER_CHECKABLE = qt_enum_value(Qt, "ItemFlag", "ItemIsUserCheckable")
+QT_UNCHECKED = qt_enum_value(Qt, "CheckState", "Unchecked")
+QT_USER_ROLE = qt_enum_value(Qt, "ItemDataRole", "UserRole")
 
 
 @dataclass
@@ -104,9 +112,9 @@ def make_checkable_list(
     for option in options:
         value, label = _normalise_checkable_list_option(option)
         item = widgets.QListWidgetItem(label)
-        item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
-        item.setData(Qt.UserRole, value)
-        item.setCheckState(Qt.Checked if value in checked else Qt.Unchecked)
+        item.setFlags(item.flags() | QT_ITEM_IS_USER_CHECKABLE)
+        item.setData(QT_USER_ROLE, value)
+        item.setCheckState(QT_CHECKED if value in checked else QT_UNCHECKED)
         list_widget.addItem(item)
 
     return list_widget
@@ -118,8 +126,8 @@ def checked_list_values(list_widget) -> list[str]:
     values = []
     for index in range(list_widget.count()):
         item = list_widget.item(index)
-        if item.checkState() == Qt.Checked:
-            values.append(item.data(Qt.UserRole))
+        if item.checkState() == QT_CHECKED:
+            values.append(item.data(QT_USER_ROLE))
     return values
 
 
@@ -420,7 +428,7 @@ def make_range_slider(
     lower: float | None = None,
     upper: float | None = None,
     decimals: int = 1,
-    orientation: Qt.Orientation = Qt.Horizontal,
+    orientation=QT_HORIZONTAL,
     parent=None,
 ):
     """Create a double range slider with a QGIS-version-safe fallback.
@@ -491,7 +499,7 @@ def _bind_base_signal(signal_owner, signal_name: str, instance):
 @lru_cache(maxsize=None)
 def _build_scaled_range_slider(range_slider_class):
     class ScaledRangeSlider(range_slider_class):
-        def __init__(self, orientation=Qt.Horizontal, parent=None, *, decimals: int = 1):
+        def __init__(self, orientation=QT_HORIZONTAL, parent=None, *, decimals: int = 1):
             self._scale = 10 ** decimals
             try:
                 super().__init__(orientation, parent)

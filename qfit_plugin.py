@@ -7,8 +7,10 @@ from qgis.PyQt.QtWidgets import QAction
 from .qfit_config_dialog import QfitConfigDialog
 from .qfit_dockwidget import QfitDockWidget
 from .ui.about_dock import QfitAboutDock
+from .ui.qt_enum_compat import optional_qt_enum_value, qt_enum_value
 
 MENU_NAME = "&qfit"
+QT_RIGHT_DOCK_WIDGET_AREA = qt_enum_value(Qt, "DockWidgetArea", "RightDockWidgetArea")
 
 
 class QfitPlugin:
@@ -74,7 +76,7 @@ class QfitPlugin:
                 parent=self.iface.mainWindow(),
                 open_configuration=self.show_config,
             )
-            self.iface.addDockWidget(Qt.RightDockWidgetArea, self.dockwidget)
+            self.iface.addDockWidget(QT_RIGHT_DOCK_WIDGET_AREA, self.dockwidget)
         self.dockwidget.show()
         self.dockwidget.raise_()
 
@@ -97,8 +99,8 @@ class QfitPlugin:
     def _restore_dialog_window_state(self, dialog) -> None:
         window_state = getattr(dialog, "windowState", None)
         set_window_state = getattr(dialog, "setWindowState", None)
-        minimized = getattr(Qt, "WindowMinimized", None)
-        active = getattr(Qt, "WindowActive", None)
+        minimized = optional_qt_enum_value(Qt, "WindowState", "WindowMinimized")
+        active = optional_qt_enum_value(Qt, "WindowState", "WindowActive")
         if (
             not callable(window_state)
             or not callable(set_window_state)
@@ -114,7 +116,7 @@ class QfitPlugin:
     def show_about(self):
         if self._about_dock is None:
             self._about_dock = QfitAboutDock(parent=self.iface.mainWindow())
-            self.iface.addDockWidget(Qt.RightDockWidgetArea, self._about_dock)
+            self.iface.addDockWidget(QT_RIGHT_DOCK_WIDGET_AREA, self._about_dock)
             self._about_dock.setFloating(True)
         self._about_dock.show()
         self._about_dock.raise_()

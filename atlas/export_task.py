@@ -60,6 +60,8 @@ from qgis.core import (
 from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QColor, QFont
 
+from qfit.ui.qt_enum_compat import qt_enum_value
+
 from .layout_metrics import BUILTIN_ATLAS_MAP_TARGET_ASPECT_RATIO
 from .profile_item import (
     NativeProfileItemConfig,
@@ -84,6 +86,10 @@ _COVER_SUMMARY_ROW_FIELDS = (
     "extent_height_m",
     "source_activity_id",
 )
+QT_ALIGN_LEFT = qt_enum_value(Qt, "AlignmentFlag", "AlignLeft")
+QT_ALIGN_RIGHT = qt_enum_value(Qt, "AlignmentFlag", "AlignRight")
+QT_ALIGN_TOP = qt_enum_value(Qt, "AlignmentFlag", "AlignTop")
+QT_ALIGN_VCENTER = qt_enum_value(Qt, "AlignmentFlag", "AlignVCenter")
 from .export_coordinator import AtlasExportCoordinator
 from .export_front_matter import export_cover_page, export_toc_page
 from .export_page_runtime_builder import AtlasPageRuntimeBuilder
@@ -438,9 +444,9 @@ def _add_label(
     label.setFont(font)
     if color is not None:
         label.setFontColor(color)
-    h_align = Qt.AlignRight if align_right else Qt.AlignLeft
+    h_align = QT_ALIGN_RIGHT if align_right else QT_ALIGN_LEFT
     label.setHAlign(h_align)
-    label.setVAlign(Qt.AlignTop if v_align_top else Qt.AlignVCenter)
+    label.setVAlign(QT_ALIGN_TOP if v_align_top else QT_ALIGN_VCENTER)
     label.attemptMove(QgsLayoutPoint(x, y, QgsUnitTypes.LayoutMillimeters))
     label.attemptResize(QgsLayoutSize(w, h, QgsUnitTypes.LayoutMillimeters))
     layout.addLayoutItem(label)

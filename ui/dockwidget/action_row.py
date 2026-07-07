@@ -10,6 +10,7 @@ from qfit.ui.tokens import (
     COLOR_SEPARATOR,
     pill_tone_palette,
 )
+from qfit.ui.qt_enum_compat import qt_enum_value
 
 from ._qt_compat import import_qt_module
 
@@ -33,6 +34,12 @@ WORKFLOW_ACTION_ROLE_PROPERTY = "workflowActionRole"
 WIZARD_ACTION_ROLE_PROPERTY = "wizardActionRole"
 WORKFLOW_ACTION_AVAILABILITY_PROPERTY = "workflowActionAvailability"
 WIZARD_ACTION_AVAILABILITY_PROPERTY = "wizardActionAvailability"
+QT_POINTING_HAND_CURSOR = qt_enum_value(Qt, "CursorShape", "PointingHandCursor")
+QT_TOOL_BUTTON_TEXT_BESIDE_ICON = qt_enum_value(
+    Qt,
+    "ToolButtonStyle",
+    "ToolButtonTextBesideIcon",
+)
 
 
 class WorkflowActionRow(QWidget):
@@ -212,10 +219,10 @@ def _allow_button_shrink(button: QToolButton) -> None:
 
 def _apply_button_chrome(button: QToolButton, *, role: str = "primary") -> None:
     if hasattr(button, "setToolButtonStyle"):
-        button.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        button.setToolButtonStyle(QT_TOOL_BUTTON_TEXT_BESIDE_ICON)
     _allow_button_shrink(button)
     if hasattr(button, "setCursor"):
-        button.setCursor(Qt.PointingHandCursor)
+        button.setCursor(QT_POINTING_HAND_CURSOR)
     if hasattr(button, "setStyleSheet"):
         button.setStyleSheet(_button_stylesheet(role=role))
 
