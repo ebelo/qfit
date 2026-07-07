@@ -12,6 +12,7 @@ from qfit.ui.application.stepper_presenter import (
     step_key_for_index,
 )
 from qfit.ui.tokens import COLOR_ACCENT, COLOR_HOVER, COLOR_MUTED, COLOR_SEPARATOR, COLOR_TEXT
+from qfit.ui.qt_enum_compat import qt_enum_value
 
 from ._qt_compat import import_qt_module
 
@@ -46,6 +47,13 @@ STEPPER_WIDE_HEIGHT = 36
 STEPPER_COMPACT_HEIGHT = 32
 WORKFLOW_STEPPER_STATE_PROPERTY = "workflowState"
 WIZARD_STEPPER_STATE_PROPERTY = "wizardState"
+QT_FORBIDDEN_CURSOR = qt_enum_value(Qt, "CursorShape", "ForbiddenCursor")
+QT_POINTING_HAND_CURSOR = qt_enum_value(Qt, "CursorShape", "PointingHandCursor")
+QT_TOOL_BUTTON_TEXT_BESIDE_ICON = qt_enum_value(
+    Qt,
+    "ToolButtonStyle",
+    "ToolButtonTextBesideIcon",
+)
 
 
 class StepperBar(QWidget):
@@ -130,7 +138,7 @@ class StepperBar(QWidget):
         for index, _label in enumerate(STEPPER_LABELS):
             button = QToolButton(self)
             button.setObjectName(f"qfitStepperStep{index + 1}")
-            button.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+            button.setToolButtonStyle(QT_TOOL_BUTTON_TEXT_BESIDE_ICON)
             button.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Fixed)
             if hasattr(button, "setMinimumWidth"):
                 button.setMinimumWidth(0)
@@ -157,7 +165,7 @@ class StepperBar(QWidget):
         button.setProperty("responsiveMode", "compact" if self._compact else "wide")
         button.setEnabled(state != "locked")
         button.setCursor(
-            Qt.ForbiddenCursor if state == "locked" else Qt.PointingHandCursor
+            QT_FORBIDDEN_CURSOR if state == "locked" else QT_POINTING_HAND_CURSOR
         )
         button.setToolTip(_button_tooltip(index, state))
         button.setStyleSheet(_button_stylesheet(state, compact=self._compact))

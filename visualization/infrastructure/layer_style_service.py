@@ -20,6 +20,7 @@ from qgis.core import (
 )
 
 from ...mapbox_config import BACKGROUND_LAYER_PREFIX
+from qfit.ui.qt_enum_compat import qt_enum_value
 from ..application.render_plan import (
     DEFAULT_RENDER_PRESET,
     RENDERER_ATLAS_PAGE,
@@ -44,6 +45,9 @@ HEATMAP_VISUALIZE_RADIUS_M = 1000
 HEATMAP_VISUALIZE_MAXIMUM = 25
 ROUTE_LINE_HEX = "#8e44ad"
 ROUTE_POINT_RGB = "142,68,173"
+QT_DASH_LINE = qt_enum_value(Qt, "PenStyle", "DashLine")
+QT_ROUND_CAP = qt_enum_value(Qt, "PenCapStyle", "RoundCap")
+QT_ROUND_JOIN = qt_enum_value(Qt, "PenJoinStyle", "RoundJoin")
 
 
 def build_qfit_heatmap_renderer(*, maximum_value=None):
@@ -262,15 +266,15 @@ class LayerStyleService:
             outline_layer = QgsSimpleLineSymbolLayer()
             outline_layer.setColor(QColor(line_style.outline_color))
             outline_layer.setWidth(line_style.line_width + (line_style.outline_width * 2.0))
-            outline_layer.setPenCapStyle(Qt.RoundCap)
-            outline_layer.setPenJoinStyle(Qt.RoundJoin)
+            outline_layer.setPenCapStyle(QT_ROUND_CAP)
+            outline_layer.setPenJoinStyle(QT_ROUND_JOIN)
             symbol.appendSymbolLayer(outline_layer)
 
         line_layer = QgsSimpleLineSymbolLayer()
         line_layer.setColor(QColor(color_hex))
         line_layer.setWidth(line_style.line_width)
-        line_layer.setPenCapStyle(Qt.RoundCap)
-        line_layer.setPenJoinStyle(Qt.RoundJoin)
+        line_layer.setPenCapStyle(QT_ROUND_CAP)
+        line_layer.setPenJoinStyle(QT_ROUND_JOIN)
         symbol.appendSymbolLayer(line_layer)
         return symbol
 
@@ -319,9 +323,9 @@ class LayerStyleService:
         line_layer = QgsSimpleLineSymbolLayer()
         line_layer.setColor(QColor(ROUTE_LINE_HEX))
         line_layer.setWidth(0.65)
-        line_layer.setPenCapStyle(Qt.RoundCap)
-        line_layer.setPenJoinStyle(Qt.RoundJoin)
-        line_layer.setPenStyle(Qt.DashLine)
+        line_layer.setPenCapStyle(QT_ROUND_CAP)
+        line_layer.setPenJoinStyle(QT_ROUND_JOIN)
+        line_layer.setPenStyle(QT_DASH_LINE)
         symbol.appendSymbolLayer(line_layer)
 
         layer.setRenderer(QgsSingleSymbolRenderer(symbol))

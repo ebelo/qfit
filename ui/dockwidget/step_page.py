@@ -25,6 +25,7 @@ from qfit.ui.widgets.tokens import (
     COLOR_PANEL,
     COLOR_TEXT,
 )
+from qfit.ui.qt_enum_compat import qt_enum_value
 
 _qtcore = import_qt_module("qgis.PyQt.QtCore", "PyQt5.QtCore", ("Qt", "pyqtSignal"))
 _qtwidgets = import_qt_module(
@@ -52,6 +53,13 @@ QVBoxLayout = _qtwidgets.QVBoxLayout
 QWidget = _qtwidgets.QWidget
 
 STEP_PAGE_NARROW_WIDTH = 360
+QT_ALIGN_CENTER = qt_enum_value(Qt, "AlignmentFlag", "AlignCenter")
+QT_POINTING_HAND_CURSOR = qt_enum_value(Qt, "CursorShape", "PointingHandCursor")
+QT_TOOL_BUTTON_TEXT_BESIDE_ICON = qt_enum_value(
+    Qt,
+    "ToolButtonStyle",
+    "ToolButtonTextBesideIcon",
+)
 
 
 class StepPage(QWidget):
@@ -240,7 +248,7 @@ class StepPage(QWidget):
     def _build_status_pill(self):
         label = QLabel("", self)
         label.setObjectName("qfitWizardStepStatusPill")
-        label.setAlignment(Qt.AlignCenter)
+        label.setAlignment(QT_ALIGN_CENTER)
         label.setMinimumHeight(18)
         _allow_horizontal_shrink(label)
         return label
@@ -481,7 +489,7 @@ def _allow_label_wrap(label) -> None:
 
 def _configure_responsive_button(button) -> None:
     if hasattr(button, "setToolButtonStyle"):
-        button.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        button.setToolButtonStyle(QT_TOOL_BUTTON_TEXT_BESIDE_ICON)
     if hasattr(button, "setMinimumWidth"):
         button.setMinimumWidth(0)
     if hasattr(button, "setSizePolicy"):
@@ -490,7 +498,7 @@ def _configure_responsive_button(button) -> None:
 
 def _apply_workflow_navigation_cursor(button) -> None:
     if hasattr(button, "setCursor"):
-        button.setCursor(Qt.PointingHandCursor)
+        button.setCursor(QT_POINTING_HAND_CURSOR)
 
 
 def _button_text(label: str, icon: str) -> str:

@@ -140,6 +140,8 @@ def _move_clear_database_to_actions_menu(dock) -> None:
     from qgis.PyQt.QtCore import Qt
     from qgis.PyQt.QtWidgets import QMenu, QToolButton
 
+    from qfit.ui.qt_enum_compat import qt_enum_value
+
     menu = QMenu(getattr(dock, "outputGroupBox", None))
     if hasattr(menu, "setObjectName"):
         menu.setObjectName("databaseActionsMenu")
@@ -155,7 +157,7 @@ def _move_clear_database_to_actions_menu(dock) -> None:
     menu_button.setToolTip(
         "Less common database operations; destructive actions ask for confirmation."
     )
-    menu_button.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+    menu_button.setToolButtonStyle(qt_enum_value(Qt, "ToolButtonStyle", "ToolButtonTextBesideIcon"))
     menu_button.setPopupMode(QToolButton.InstantPopup)
     menu_button.setMenu(menu)
 

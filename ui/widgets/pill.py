@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from importlib import import_module
 
+from qfit.ui.qt_enum_compat import qt_enum_value
+
 from .tokens import pill_tone_palette
 
 DEFAULT_PILL_OBJECT_NAME = "qfitPill"
@@ -39,7 +41,7 @@ def configure_pill(
 
     qtcore = _import_qtcore()
     widget.setObjectName(object_name)
-    widget.setAlignment(qtcore.Qt.AlignCenter)
+    widget.setAlignment(qt_enum_value(qtcore.Qt, "AlignmentFlag", "AlignCenter"))
     widget.setMinimumHeight(18)
     set_pill_tone(widget, tone, object_name=object_name)
 

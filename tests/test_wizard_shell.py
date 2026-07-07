@@ -49,8 +49,10 @@ class _FakeCursor:
 class _FakeQt:
     AlignTop = 8
     AlignCenter = 9
+    Checked = 21
     ForbiddenCursor = 10
     Horizontal = 13
+    ItemIsUserCheckable = 22
     Key_Enter = 16
     Key_Return = 17
     Key_Space = 18
@@ -60,6 +62,8 @@ class _FakeQt:
     StrongFocus = 20
     ToolButtonTextBesideIcon = 12
     ToolButtonTextOnly = 15
+    Unchecked = 23
+    UserRole = 24
     Vertical = 14
 
 

@@ -4,6 +4,18 @@ from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtWidgets import QLabel, QDockWidget, QVBoxLayout, QWidget
 
 from .about_info import AboutInfo, build_about_html, read_about_info
+from .qt_enum_compat import qt_enum_value
+
+QT_TEXT_BROWSER_INTERACTION = qt_enum_value(
+    Qt,
+    "TextInteractionFlag",
+    "TextBrowserInteraction",
+)
+QT_TEXT_SELECTABLE_BY_MOUSE = qt_enum_value(
+    Qt,
+    "TextInteractionFlag",
+    "TextSelectableByMouse",
+)
 
 
 class QfitAboutDock(QDockWidget):
@@ -33,7 +45,7 @@ class QfitAboutDock(QDockWidget):
         self._content_label.setWordWrap(True)
         self._content_label.setOpenExternalLinks(True)
         self._content_label.setTextInteractionFlags(
-            Qt.TextBrowserInteraction | Qt.TextSelectableByMouse
+            QT_TEXT_BROWSER_INTERACTION | QT_TEXT_SELECTABLE_BY_MOUSE
         )
         layout.addWidget(self._content_label)
         layout.addStretch(1)

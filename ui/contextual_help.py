@@ -3,6 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Iterable
 
+from qfit.ui.qt_enum_compat import qt_enum_value
+
 
 @dataclass(frozen=True)
 class HelpEntry:
@@ -243,7 +245,13 @@ class ContextualHelpBinder:
                 qtwidgets.QSizePolicy.Ignored,
                 qtwidgets.QSizePolicy.Preferred,
             )
-        helper.setTextInteractionFlags(self._qtcore().Qt.TextSelectableByMouse)
+        helper.setTextInteractionFlags(
+            qt_enum_value(
+                self._qtcore().Qt,
+                "TextInteractionFlag",
+                "TextSelectableByMouse",
+            )
+        )
         self._apply_tooltip(helper, text)
         helper.setStyleSheet("color: palette(mid); margin-top: 2px; margin-bottom: 4px;")
         self._insert_after_anchor(anchor, helper)
@@ -278,8 +286,8 @@ class ContextualHelpBinder:
             button.setAccessibleName("Show help")
         if hasattr(button, "setAccessibleDescription"):
             button.setAccessibleDescription(text)
-        button.setCursor(self._qtcore().Qt.WhatsThisCursor)
-        button.setFocusPolicy(self._qtcore().Qt.NoFocus)
+        button.setCursor(qt_enum_value(self._qtcore().Qt, "CursorShape", "WhatsThisCursor"))
+        button.setFocusPolicy(qt_enum_value(self._qtcore().Qt, "FocusPolicy", "NoFocus"))
         button.setStyleSheet("font-weight: bold; padding: 0 4px;")
         self._connect_help_button(button, text)
         layout.addWidget(button)
