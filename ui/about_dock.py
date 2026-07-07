@@ -4,7 +4,7 @@ from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtWidgets import QLabel, QDockWidget, QVBoxLayout, QWidget
 
 from .about_info import AboutInfo, build_about_html, read_about_info
-from .qt_enum_compat import qt_enum_value
+from .qt_enum_compat import qt_class_enum_value, qt_enum_value
 
 QT_TEXT_BROWSER_INTERACTION = qt_enum_value(
     Qt,
@@ -22,9 +22,21 @@ class QfitAboutDock(QDockWidget):
     """Small floating dock showing qfit version, project, and contact links."""
 
     DEFAULT_DOCK_FEATURES = (
-        QDockWidget.DockWidgetClosable
-        | QDockWidget.DockWidgetMovable
-        | QDockWidget.DockWidgetFloatable
+        qt_class_enum_value(
+            QDockWidget,
+            "DockWidgetFeature",
+            "DockWidgetClosable",
+        )
+        | qt_class_enum_value(
+            QDockWidget,
+            "DockWidgetFeature",
+            "DockWidgetMovable",
+        )
+        | qt_class_enum_value(
+            QDockWidget,
+            "DockWidgetFeature",
+            "DockWidgetFloatable",
+        )
     )
 
     def __init__(self, info: AboutInfo | None = None, parent: QWidget | None = None):

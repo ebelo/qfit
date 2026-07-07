@@ -91,7 +91,7 @@ from .ui.application import (
     build_visual_workflow_selection_state_handoff,
     build_visual_workflow_settings_snapshot,
 )
-from .ui.qt_enum_compat import qt_enum_value
+from .ui.qt_enum_compat import qt_class_enum_value, qt_enum_value
 from .ui.application.local_first_progress_facts import (
     build_current_local_first_progress_facts,
     current_local_first_visual_temporal_mode,
@@ -140,9 +140,21 @@ class QfitDockWidget(QDockWidget, FORM_CLASS):
     SETTINGS_PREFIX = "qfit"
     LEGACY_SETTINGS_PREFIX = "QFIT"
     DEFAULT_DOCK_FEATURES = (
-        QDockWidget.DockWidgetClosable
-        | QDockWidget.DockWidgetMovable
-        | QDockWidget.DockWidgetFloatable
+        qt_class_enum_value(
+            QDockWidget,
+            "DockWidgetFeature",
+            "DockWidgetClosable",
+        )
+        | qt_class_enum_value(
+            QDockWidget,
+            "DockWidgetFeature",
+            "DockWidgetMovable",
+        )
+        | qt_class_enum_value(
+            QDockWidget,
+            "DockWidgetFeature",
+            "DockWidgetFloatable",
+        )
     )
     STARTUP_ALLOWED_AREAS = qt_enum_value(
         Qt,
