@@ -2,7 +2,12 @@ from __future__ import annotations
 
 
 def qt_enum_value(qt, enum_name: str, member_name: str):
-    """Return a Qt enum value across Qt 5 flat and Qt 6 nested enum APIs."""
+    """Return a Qt enum value across Qt 5 flat and Qt 6 nested enum APIs.
+
+    Uses ``is not None`` rather than truthiness so that zero-valued enum
+    members (e.g. ``QDockWidget.NoDockWidgetFeatures = 0``) are returned
+    correctly rather than falling through to the nested lookup.
+    """
 
     direct_value = getattr(qt, member_name, None)
     if direct_value is not None:
@@ -23,6 +28,10 @@ def qt_class_enum_value(cls, enum_name: str, member_name: str):
     Qt 5 exposes ``QDockWidget.DockWidgetClosable`` as a flat attribute.
     Qt 6 nests it under ``QDockWidget.DockWidgetFeature.DockWidgetClosable``.
     This helper resolves both shapes so class-body expressions work on either Qt version.
+
+    Uses ``is not None`` rather than truthiness so that zero-valued enum
+    members (e.g. ``QDockWidget.NoDockWidgetFeatures = 0``) are returned
+    correctly rather than falling through to the nested lookup.
     """
     direct_value = getattr(cls, member_name, None)
     if direct_value is not None:

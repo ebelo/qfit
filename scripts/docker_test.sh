@@ -52,6 +52,9 @@ sudo docker run -dt \
   -e QT_QPA_PLATFORM=offscreen \
   "$IMAGE"
 
+# Ensure container is always cleaned up, even on test failure
+trap "sudo docker rm -f \"$CONTAINER_NAME\" > /dev/null 2>&1 || true" EXIT
+
 # Set up QGIS profile and link the plugin
 echo "--- Setting up QGIS profile and linking plugin ---"
 sudo docker exec "$CONTAINER_NAME" bash -c "qgis_setup.sh qfit"
@@ -60,15 +63,13 @@ sudo docker exec "$CONTAINER_NAME" bash -c "qgis_setup.sh qfit"
 echo "--- Installing test dependencies ---"
 sudo docker exec "$CONTAINER_NAME" bash -c "pip3 install --quiet --break-system-packages pytest pytest-cov pytest-qt pypdf 2>/dev/null || true"
 
-# Run pytest
-echo "--- Running pytest ---"
+# Run pytest (capture exit code without triggering set -e)
+EXIT_CODE=0
 sudo docker exec -e QT_QPA_PLATFORM=offscreen "$CONTAINER_NAME" \
-  bash -c "cd /tests_directory/qfit && python3 -m pytest $*"
+  bash -c "cd /tests_directory/qfit && python3 -m pytest $*" || EXIT_CODE=$?
 
-EXIT_CODE=$?
-
-# Clean up
-sudo docker rm -f "$CONTAINER_NAME" > /dev/null
+# Clean up (also handled by trap, but keep explicit for clarity)
+sudo docker rm -f "$CONTAINER_NAME" > /dev/null 2>&1 || true
 
 echo
 echo "=== Done (exit code: $EXIT_CODE) ==="
