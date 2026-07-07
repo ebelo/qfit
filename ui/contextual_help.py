@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Iterable
 
-from qfit.ui.qt_enum_compat import qt_enum_value
+from qfit.ui.qt_enum_compat import qt_class_enum_value, qt_enum_value
 
 
 @dataclass(frozen=True)
@@ -242,8 +242,12 @@ class ContextualHelpBinder:
             helper.setMinimumWidth(0)
         if hasattr(helper, "setSizePolicy"):
             helper.setSizePolicy(
-                qtwidgets.QSizePolicy.Ignored,
-                qtwidgets.QSizePolicy.Preferred,
+                qt_class_enum_value(
+                    qtwidgets.QSizePolicy, "Policy", "Ignored"
+                ),
+                qt_class_enum_value(
+                    qtwidgets.QSizePolicy, "Policy", "Preferred"
+                ),
             )
         helper.setTextInteractionFlags(
             qt_enum_value(

@@ -10,7 +10,7 @@ from qfit.ui.tokens import (
     COLOR_SEPARATOR,
     pill_tone_palette,
 )
-from qfit.ui.qt_enum_compat import qt_enum_value
+from qfit.ui.qt_enum_compat import qt_class_enum_value, qt_enum_value
 
 from ._qt_compat import import_qt_module
 
@@ -40,6 +40,10 @@ QT_TOOL_BUTTON_TEXT_BESIDE_ICON = qt_enum_value(
     "ToolButtonStyle",
     "ToolButtonTextBesideIcon",
 )
+QT_SIZE_POLICY_IGNORED = qt_class_enum_value(
+    QSizePolicy, "Policy", "Ignored"
+)
+QT_SIZE_POLICY_FIXED = qt_class_enum_value(QSizePolicy, "Policy", "Fixed")
 
 
 class WorkflowActionRow(QWidget):
@@ -214,7 +218,7 @@ def _allow_button_shrink(button: QToolButton) -> None:
     if hasattr(button, "setMinimumWidth"):
         button.setMinimumWidth(0)
     if hasattr(button, "setSizePolicy"):
-        button.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Fixed)
+        button.setSizePolicy(QT_SIZE_POLICY_IGNORED, QT_SIZE_POLICY_FIXED)
 
 
 def _apply_button_chrome(button: QToolButton, *, role: str = "primary") -> None:

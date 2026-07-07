@@ -142,7 +142,17 @@ class _FakeToolButton(_FakeWidget):
 
 class _FakeFrame(_FakeWidget):
     HLine = 1
+    VLine = 1
     Plain = 2
+    NoFrame = 0
+
+    class Shape:
+        HLine = 1
+        VLine = 1
+        NoFrame = 0
+
+    class Shadow:
+        Plain = 2
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -182,6 +192,12 @@ class _FakeSizePolicy:
     Fixed = 2
     Ignored = 3
     Preferred = 4
+
+    class Policy:
+        Expanding = 1
+        Fixed = 2
+        Ignored = 3
+        Preferred = 4
 
 
 def _fake_qt_modules():

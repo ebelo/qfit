@@ -42,13 +42,23 @@ from .configuration.application.ui_settings_binding import (
 )
 from .providers.domain.provider import ProviderError
 from .providers.infrastructure.strava_client import StravaClient
-from .ui.qt_enum_compat import qt_enum_value
+from .ui.qt_enum_compat import qt_class_enum_value, qt_enum_value
 from .ui.widgets import make_password_line_edit
 
 logger = logging.getLogger(__name__)
 
+QT_BUTTON_SAVE = qt_class_enum_value(
+    QDialogButtonBox, "StandardButton", "Save"
+)
+QT_BUTTON_CLOSE = qt_class_enum_value(
+    QDialogButtonBox, "StandardButton", "Close"
+)
+
 _NOT_TESTED_LABEL = "Not tested"
 _OAUTH_NOT_STARTED_LABEL = "Not started"
+QT_FORM_WRAP_LONG_ROWS = qt_class_enum_value(
+    QFormLayout, "RowWrapPolicy", "WrapLongRows"
+)
 QT_TEXT_SELECTABLE_BY_MOUSE = qt_enum_value(
     Qt,
     "TextInteractionFlag",
@@ -100,16 +110,16 @@ class QfitConfigDialog(QDialog):
         layout.addWidget(self._build_mapbox_group())
 
         self._button_box = QDialogButtonBox(
-            QDialogButtonBox.Save | QDialogButtonBox.Close,
+            QT_BUTTON_SAVE | QT_BUTTON_CLOSE,
         )
-        self._button_box.button(QDialogButtonBox.Save).clicked.connect(self._save)
+        self._button_box.button(QT_BUTTON_SAVE).clicked.connect(self._save)
         self._button_box.rejected.connect(self.close)
         layout.addWidget(self._button_box)
 
     def _build_strava_group(self) -> QGroupBox:
         group = QGroupBox("Strava connection")
         form = QFormLayout(group)
-        form.setRowWrapPolicy(QFormLayout.WrapLongRows)
+        form.setRowWrapPolicy(QT_FORM_WRAP_LONG_ROWS)
 
         self._strava_status_label = QLabel()
         self._strava_status_label.setObjectName("stravaStatusLabel")
@@ -190,7 +200,7 @@ class QfitConfigDialog(QDialog):
     def _build_mapbox_group(self) -> QGroupBox:
         group = QGroupBox("Mapbox connection")
         form = QFormLayout(group)
-        form.setRowWrapPolicy(QFormLayout.WrapLongRows)
+        form.setRowWrapPolicy(QT_FORM_WRAP_LONG_ROWS)
 
         self._mapbox_status_label = QLabel()
         self._mapbox_status_label.setObjectName("mapboxStatusLabel")

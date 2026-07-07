@@ -116,7 +116,11 @@ def _build_project_hygiene_service() -> ProjectHygienePort:
 def _writable_app_data_location() -> str:
     from qgis.PyQt.QtCore import QStandardPaths
 
-    return QStandardPaths.writableLocation(QStandardPaths.AppDataLocation)
+    from qfit.ui.qt_enum_compat import qt_class_enum_value
+
+    return QStandardPaths.writableLocation(
+        qt_class_enum_value(QStandardPaths, "StandardLocation", "AppDataLocation")
+    )
 
 
 def _build_cache() -> QfitCache:

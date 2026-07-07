@@ -15,7 +15,7 @@ from qfit.ui.tokens import (
 
 from ._qt_compat import import_qt_module
 from .footer_status_bar import FooterStatusBar
-from qfit.ui.qt_enum_compat import optional_qt_enum_value, qt_enum_value
+from qfit.ui.qt_enum_compat import optional_qt_enum_value, qt_class_enum_value, qt_enum_value
 
 _qtcore = import_qt_module(
     "qgis.PyQt.QtCore",
@@ -57,6 +57,13 @@ QT_STYLED_BACKGROUND = optional_qt_enum_value(
     "WidgetAttribute",
     "WA_StyledBackground",
 )
+QT_SIZE_POLICY_EXPANDING = qt_class_enum_value(
+    QSizePolicy, "Policy", "Expanding"
+)
+QT_SIZE_POLICY_FIXED = qt_class_enum_value(QSizePolicy, "Policy", "Fixed")
+QT_FRAME_VLINE = qt_class_enum_value(QFrame, "Shape", "VLine")
+QT_FRAME_HLINE = qt_class_enum_value(QFrame, "Shape", "HLine")
+QT_FRAME_PLAIN = qt_class_enum_value(QFrame, "Shadow", "Plain")
 
 
 class LocalFirstNavigationItem(QWidget):
@@ -77,7 +84,7 @@ class LocalFirstNavigationItem(QWidget):
             self._layout.setSpacing(0)
         self._layout.addWidget(self._label)
         if hasattr(self, "setSizePolicy"):
-            self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+            self.setSizePolicy(QT_SIZE_POLICY_EXPANDING, QT_SIZE_POLICY_FIXED)
         if hasattr(self, "setAttribute") and QT_STYLED_BACKGROUND is not None:
             self.setAttribute(QT_STYLED_BACKGROUND, True)
         if hasattr(self, "setFocusPolicy"):
@@ -330,8 +337,8 @@ class LocalFirstDockShell(QWidget):
     def _build_separator(self):
         separator = QFrame(self)
         separator.setObjectName("qfitLocalFirstDockSeparator")
-        separator.setFrameShape(getattr(QFrame, "VLine", QFrame.HLine))
-        separator.setFrameShadow(QFrame.Plain)
+        separator.setFrameShape(QT_FRAME_VLINE)
+        separator.setFrameShadow(QT_FRAME_PLAIN)
         separator.setFixedWidth(1)
         return separator
 

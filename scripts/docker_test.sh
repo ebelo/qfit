@@ -5,8 +5,8 @@
 #   scripts/docker_test.sh [3|4] [pytest args...]
 #
 # Examples:
-#   scripts/docker_test.sh 3                    # run all tests on QGIS 3
-#   scripts/docker_test.sh 4                    # run all tests on QGIS 4
+#   scripts/docker_test.sh 3                    # run QGIS runtime tests on QGIS 3
+#   scripts/docker_test.sh 4                    # run QGIS runtime tests on QGIS 4
 #   scripts/docker_test.sh 3 -x -q              # fast fail, quiet
 #   scripts/docker_test.sh 4 tests/test_activity_query.py  # specific file
 #
@@ -18,6 +18,10 @@ set -euo pipefail
 
 QGIS_VERSION="${1:-3}"
 shift || true
+
+if [[ "$#" -eq 0 ]]; then
+  set -- tests/test_qgis_smoke.py tests/test_qt6_class_enum_probe.py -q --tb=short
+fi
 
 case "$QGIS_VERSION" in
   3)
@@ -65,8 +69,8 @@ sudo docker exec "$CONTAINER_NAME" bash -c "pip3 install --quiet --break-system-
 
 # Run pytest (capture exit code without triggering set -e)
 EXIT_CODE=0
-sudo docker exec -e QT_QPA_PLATFORM=offscreen "$CONTAINER_NAME" \
-  bash -c "cd /tests_directory/qfit && python3 -m pytest $*" || EXIT_CODE=$?
+sudo docker exec -e QT_QPA_PLATFORM=offscreen -e QFIT_REQUIRE_QGIS=1 "$CONTAINER_NAME" \
+  bash -c 'cd /tests_directory/qfit && python3 -m pytest "$@"' bash "$@" || EXIT_CODE=$?
 
 # Clean up (also handled by trap, but keep explicit for clarity)
 sudo docker rm -f "$CONTAINER_NAME" > /dev/null 2>&1 || true
