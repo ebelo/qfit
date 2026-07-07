@@ -131,11 +131,21 @@ class QfitAboutDockTests(unittest.TestCase):
         from qgis.PyQt.QtCore import Qt
         from qgis.PyQt.QtWidgets import QLabel, QDockWidget
         from qfit.ui.about_dock import QfitAboutDock
+        from qfit.ui.qt_enum_compat import qt_class_enum_value
 
         cls.QfitAboutDock = QfitAboutDock
         cls.QLabel = QLabel
         cls.QDockWidget = QDockWidget
         cls.Qt = Qt
+        cls.DockWidgetClosable = qt_class_enum_value(
+            QDockWidget, "DockWidgetFeature", "DockWidgetClosable"
+        )
+        cls.DockWidgetMovable = qt_class_enum_value(
+            QDockWidget, "DockWidgetFeature", "DockWidgetMovable"
+        )
+        cls.DockWidgetFloatable = qt_class_enum_value(
+            QDockWidget, "DockWidgetFeature", "DockWidgetFloatable"
+        )
 
     @classmethod
     def tearDownClass(cls):
@@ -298,9 +308,9 @@ class QfitAboutDockTests(unittest.TestCase):
         self.assertEqual(dock.objectName(), "qfitAboutDock")
         self.assertIn("qfit", dock.windowTitle())
         self.assertIn("About", dock.windowTitle())
-        self.assertTrue(dock.features() & self.QDockWidget.DockWidgetClosable)
-        self.assertTrue(dock.features() & self.QDockWidget.DockWidgetMovable)
-        self.assertTrue(dock.features() & self.QDockWidget.DockWidgetFloatable)
+        self.assertTrue(dock.features() & self.DockWidgetClosable)
+        self.assertTrue(dock.features() & self.DockWidgetMovable)
+        self.assertTrue(dock.features() & self.DockWidgetFloatable)
         self.assertGreaterEqual(dock.minimumWidth(), 420)
 
         label = dock.findChild(self.QLabel, "qfitAboutContentLabel")

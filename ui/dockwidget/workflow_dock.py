@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Protocol
 
 from ._qt_compat import import_qt_module
-from qfit.ui.qt_enum_compat import qt_enum_value
+from qfit.ui.qt_enum_compat import qt_class_enum_value, qt_enum_value
 
 _qtcore = import_qt_module("qgis.PyQt.QtCore", "PyQt5.QtCore", ("Qt",))
 _qtwidgets = import_qt_module(
@@ -28,9 +28,21 @@ WORKFLOW_DOCK_ALLOWED_AREAS = qt_enum_value(
     "RightDockWidgetArea",
 )
 WORKFLOW_DOCK_FEATURES = (
-    QDockWidget.DockWidgetClosable
-    | QDockWidget.DockWidgetMovable
-    | QDockWidget.DockWidgetFloatable
+    qt_class_enum_value(
+        QDockWidget,
+        "DockWidgetFeature",
+        "DockWidgetClosable",
+    )
+    | qt_class_enum_value(
+        QDockWidget,
+        "DockWidgetFeature",
+        "DockWidgetMovable",
+    )
+    | qt_class_enum_value(
+        QDockWidget,
+        "DockWidgetFeature",
+        "DockWidgetFloatable",
+    )
 )
 
 
