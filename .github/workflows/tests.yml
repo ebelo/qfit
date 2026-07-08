@@ -9,6 +9,23 @@ on:
 permissions:
   contents: read
 
+env:
+  REAL_QGIS_TESTS: >-
+    tests/test_qgis_smoke.py
+    tests/test_qt6_class_enum_probe.py
+    tests/test_background_map_service.py
+    tests/test_gpkg_io.py
+    tests/test_gpkg_layer_builders.py
+    tests/test_gpkg_point_layer_builder.py
+    tests/test_gpkg_route_layer_builders.py
+    tests/test_gpkg_route_writer.py
+    tests/test_gpkg_schema.py
+    tests/test_gpkg_write_orchestration.py
+    tests/test_gpkg_writer.py
+    tests/test_layer_style_service.py
+    tests/test_map_canvas_service.py
+    tests/test_project_layer_loader.py
+
 jobs:
   unit-tests:
     runs-on: ubuntu-latest
@@ -45,7 +62,7 @@ jobs:
           docker exec qfit-test-qgis3 bash -c "qgis_setup.sh qfit"
           docker exec qfit-test-qgis3 bash -c "pip3 install --quiet --break-system-packages pytest pytest-cov pytest-qt pypdf 2>/dev/null || true"
           docker exec -e QT_QPA_PLATFORM=offscreen -e QFIT_REQUIRE_QGIS=1 qfit-test-qgis3 \
-            bash -c "cd /tests_directory/qfit && python3 -m pytest tests/test_qgis_smoke.py tests/test_qt6_class_enum_probe.py -q --tb=short"
+            bash -c "cd /tests_directory/qfit && python3 -m pytest ${REAL_QGIS_TESTS} -q --tb=short"
 
   docker-qgis4:
     runs-on: ubuntu-latest
@@ -65,4 +82,4 @@ jobs:
           docker exec qfit-test-qgis4 bash -c "qgis_setup.sh qfit"
           docker exec qfit-test-qgis4 bash -c "pip3 install --quiet --break-system-packages pytest pytest-cov pytest-qt pypdf 2>/dev/null || true"
           docker exec -e QT_QPA_PLATFORM=offscreen -e QFIT_REQUIRE_QGIS=1 qfit-test-qgis4 \
-            bash -c "cd /tests_directory/qfit && python3 -m pytest tests/test_qgis_smoke.py tests/test_qt6_class_enum_probe.py -q --tb=short"
+            bash -c "cd /tests_directory/qfit && python3 -m pytest ${REAL_QGIS_TESTS} -q --tb=short"

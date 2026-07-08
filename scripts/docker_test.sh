@@ -20,7 +20,22 @@ QGIS_VERSION="${1:-3}"
 shift || true
 
 if [[ "$#" -eq 0 ]]; then
-  set -- tests/test_qgis_smoke.py tests/test_qt6_class_enum_probe.py -q --tb=short
+  set -- \
+    tests/test_qgis_smoke.py \
+    tests/test_qt6_class_enum_probe.py \
+    tests/test_background_map_service.py \
+    tests/test_gpkg_io.py \
+    tests/test_gpkg_layer_builders.py \
+    tests/test_gpkg_point_layer_builder.py \
+    tests/test_gpkg_route_layer_builders.py \
+    tests/test_gpkg_route_writer.py \
+    tests/test_gpkg_schema.py \
+    tests/test_gpkg_write_orchestration.py \
+    tests/test_gpkg_writer.py \
+    tests/test_layer_style_service.py \
+    tests/test_map_canvas_service.py \
+    tests/test_project_layer_loader.py \
+    -q --tb=short
 fi
 
 case "$QGIS_VERSION" in
