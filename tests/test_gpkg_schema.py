@@ -12,7 +12,6 @@ except (ImportError, ModuleNotFoundError):  # pragma: no cover
     QgsApplication = None
 
 if QgsApplication is not None:
-    from qfit import gpkg_schema as legacy_gpkg_schema
     from qfit.activities.infrastructure.geopackage.gpkg_schema import (
         ATLAS_FIELDS,
         COVER_HIGHLIGHT_FIELDS,
@@ -26,6 +25,7 @@ if QgsApplication is not None:
         TRACK_FIELDS,
         make_qgs_fields,
     )
+    from qfit.activities.infrastructure.geopackage import gpkg_schema as gpkg_schema_module
     from qfit.sync_repository import REGISTRY_TABLE, SYNC_STATE_TABLE
 else:  # pragma: no cover
     ATLAS_FIELDS = None
@@ -48,8 +48,8 @@ def _ensure_qgis_app():
 
 @unittest.skipIf(QgsApplication is None, "QGIS Python bindings are not available")
 class GpkgSchemaFieldsTests(unittest.TestCase):
-    def test_legacy_gpkg_schema_shim_exports_same_constant(self):
-        self.assertEqual(legacy_gpkg_schema.TRACK_FIELDS, TRACK_FIELDS)
+    def test_geopackage_schema_module_exports_same_constant(self):
+        self.assertEqual(gpkg_schema_module.TRACK_FIELDS, TRACK_FIELDS)
 
     @classmethod
     def setUpClass(cls):

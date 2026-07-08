@@ -37,8 +37,8 @@ runtime suite must pass in both host versions before merge.
 - QGIS 3: `scripts/docker_test.sh 3`
 - QGIS 4: `scripts/docker_test.sh 4`
 - CI runs both as required checks — see `docs/testing-policy.md` for details.
-- Docker runs the real-QGIS smoke/probe suite. The full pure unit suite remains
-  covered by `python3 -m pytest tests/ -x -q`.
+- Docker runs the real-QGIS suite. The full pure unit suite remains covered by
+  `python3 -m pytest tests/ -x -q`.
 - Any change touching Qt enums, class-body expressions, or `classFactory()`
   import paths must pass Docker QGIS 4.
 - Smoke import failures inside Docker are **hard errors**, not silent skips.

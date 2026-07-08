@@ -94,7 +94,11 @@ class TestsWorkflowTests(unittest.TestCase):
         self.assertIn("qgis/qgis:3.44.11", self.text)
         self.assertIn("qgis/qgis:4.2.0", self.text)
         self.assertIn("QFIT_REQUIRE_QGIS=1", self.text)
-        self.assertIn("tests/test_qgis_smoke.py tests/test_qt6_class_enum_probe.py", self.text)
+        self.assertIn("REAL_QGIS_TESTS", self.text)
+        self.assertIn("tests/test_qgis_smoke.py", self.text)
+        self.assertIn("tests/test_qt6_class_enum_probe.py", self.text)
+        self.assertIn("tests/test_gpkg_schema.py", self.text)
+        self.assertIn("tests/test_layer_style_service.py", self.text)
 
 
 class PluginSecurityScanWorkflowTests(unittest.TestCase):

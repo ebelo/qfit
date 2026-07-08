@@ -25,18 +25,18 @@ All three must pass before merge.
 The `tests.yml` workflow runs three jobs:
 
 1. `unit-tests` — no QGIS (fast, catches logic/architecture)
-2. `docker-qgis3` — runtime smoke/probe tests inside `qgis/qgis:3.44.11`
-3. `docker-qgis4` — runtime smoke/probe tests inside `qgis/qgis:4.2.0`
+2. `docker-qgis3` — real-QGIS tests inside `qgis/qgis:3.44.11`
+3. `docker-qgis4` — real-QGIS tests inside `qgis/qgis:4.2.0`
 
 The Docker jobs are **required** checks. A PR cannot merge if any of the
 three fail.
 
-The Docker jobs intentionally run the QGIS runtime suite, not every pure
-unit test. Many pure unit tests install fake `qgis` modules or Qt 5-shaped
-stubs so they can run in the no-QGIS job; those tests are covered by
-`unit-tests`. The Docker jobs focus on what no-QGIS tests cannot prove:
-real plugin imports, QGIS-backed smoke workflows, and Qt/PyQGIS enum
-compatibility.
+The Docker jobs intentionally run the real-QGIS suite, not every pure unit
+test. Many pure unit tests install fake `qgis` modules or Qt 5-shaped stubs
+so they can run in the no-QGIS job; those tests are covered by `unit-tests`.
+The Docker jobs cover what no-QGIS tests cannot prove: real plugin imports,
+QGIS-backed smoke workflows, GeoPackage/layer/service behavior against real
+PyQGIS bindings, and Qt/PyQGIS enum compatibility.
 
 ## Smoke import failures are hard errors
 
@@ -62,8 +62,8 @@ fails.
 ## Running Docker tests locally
 
 ```bash
-scripts/docker_test.sh 3            # runtime smoke/probe suite on QGIS 3
-scripts/docker_test.sh 4            # runtime smoke/probe suite on QGIS 4
+scripts/docker_test.sh 3            # real-QGIS suite on QGIS 3
+scripts/docker_test.sh 4            # real-QGIS suite on QGIS 4
 scripts/docker_test.sh 3 -x -q      # custom pytest args on QGIS 3
 scripts/docker_test.sh 4 tests/test_qgis_smoke.py  # specific file
 ```
