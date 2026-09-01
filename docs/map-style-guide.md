@@ -330,7 +330,7 @@ QGIS, but this remains an approximation: QGIS and Mapbox GL JS differ in
 expression support, label placement and collision behavior, symbol/sprite
 handling, font substitution, antialiasing, and zoom-stop interpolation.
 
-For Mapbox Outdoors specifically:
+For Mapbox Outdoors and Mapbox Light specifically:
 
 - raster mode is the user-facing choice for highest visual fidelity;
 - vector mode is intended to be a useful QGIS-native approximation, not a

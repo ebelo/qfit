@@ -1,6 +1,10 @@
-# Mapbox Outdoors visual comparison harness
+# Mapbox Outdoors and Light visual comparison harness
 
-qfit includes a dev-only harness for comparing Mapbox Outdoors rendered by Mapbox GL JS in a browser with qfit's native QGIS vector-tile rendering.
+qfit includes a dev-only harness for comparing Mapbox Outdoors or Mapbox Light
+rendered by Mapbox GL JS in a browser with qfit's native QGIS vector-tile
+rendering. Outdoors remains the default preset for backward compatibility; pass
+`--preset light` to select `mapbox/light-v11` and its representative Light
+camera matrix.
 
 The harness is a **manual visual QA aid**, not a CI gate. Pixel-perfect parity is not expected because Mapbox GL JS and QGIS differ in expression support, label placement, sprites, fonts, antialiasing, and zoom interpolation.
 
@@ -10,6 +14,7 @@ Run outputs are written under the ignored debug tree:
 
 ```text
 debug/mapbox-outdoors-comparison/<camera>/<UTC timestamp>/
+debug/mapbox-light-comparison/<camera>/<UTC timestamp>/
 ```
 
 A complete run writes:
@@ -25,11 +30,18 @@ A complete run writes:
 
 ## Cameras
 
-List supported cameras:
+List supported Outdoors or Light cameras:
 
 ```bash
 python3 validation/mapbox_outdoors_comparison.py --list-cameras
+python3 validation/mapbox_outdoors_comparison.py --preset light --list-cameras
 ```
+
+Each preset has its own z5-z18 matrix. The Light matrix emphasizes z8-z14 as the
+main fit range, includes Swiss/Alpine and urban extents around Zurich, Lausanne,
+Bern, and Geneva, and retains z5 plus z17-z18 as guardrails. Camera names end in
+`-outdoors` or `-light` so manifests and follow-up reports remain
+unambiguous.
 
 Recommended z5-z18 inspection matrix:
 
@@ -42,6 +54,18 @@ Recommended z5-z18 inspection matrix:
 | `chamonix-trails-z14-outdoors` | z13-z14 | Local outdoor detail: paths/trails, minor roads, POIs, label emphasis. |
 | `zermatt-piste-z17-outdoors` | z17 | Ski-piste stress target: colored path casings, cycleway/piste overlays, contour density, and high-zoom outdoor route legibility. |
 | `zermatt-trails-z18-outdoors` | z18 | Street/trail-level stress test: casing, widths, local labels, POIs, high-detail symbols. |
+
+Mapbox Light z5-z18 inspection matrix:
+
+| Camera | Band | Purpose |
+| --- | --- | --- |
+| `switzerland-alps-z5-light` | z5 | Country-wide palette, water, major roads, and label-density guardrail. |
+| `zurich-region-z8-light` | z8 | Regional settlement, road, water, and landuse balance. |
+| `lausanne-lavaux-z10-light` | z10 | Primary activity-area fit target for roads, labels, density, and overlay contrast. |
+| `bern-urban-z12-light` | z12 | Urban roads, rail/transit, POIs, buildings, and labels. |
+| `geneva-urban-z14-light` | z14 | Dense local detail, minor roads, buildings, transit, and POIs. |
+| `zurich-streets-z17-light` | z17 | Street-level casing, width, symbol, and label guardrail. |
+| `geneva-streets-z18-light` | z18 | High-detail road, symbol, POI, and local-label stress test. |
 
 ## Required local tools
 
@@ -59,7 +83,25 @@ For a complete browser + QGIS + diff run, install or run from an environment wit
 - QGIS/Qt support for the `offscreen` platform when running headlessly; the harness sets `QT_QPA_PLATFORM=offscreen` by default unless you provide a different value
 - `xvfb-run` or another virtual display when your local Chromium/QGIS build cannot render headlessly without an X server
 
-Keep tokens out of shell history where practical by exporting an environment variable instead of passing `--mapbox-token` directly.
+Keep tokens out of shell history by using `--mapbox-token-file /path/to/token.txt`,
+which reads the credential inside Python, or by exporting an environment variable.
+Avoid passing `--mapbox-token` directly.
+
+## Run a Mapbox Light baseline
+
+Use the same protected/local token environment already used by the Outdoors
+harness, then run:
+
+```bash
+python3 validation/mapbox_outdoors_comparison.py \
+  --preset light \
+  --all-cameras \
+  --mapbox-token-file /path/to/token.txt
+```
+
+The default output root is `debug/mapbox-light-comparison/`. The aggregate
+`summary.json`, `summary.md`, and `contact-sheet.jpg` record the Light
+preset and `mapbox://styles/mapbox/light-v11` provenance without token values.
 
 ## Run a complete comparison
 

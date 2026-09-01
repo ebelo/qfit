@@ -26,9 +26,12 @@ except ImportError:  # pragma: no cover - direct script execution
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PACKAGE_PARENT = REPO_ROOT.parent
 DEFAULT_OUTPUT_ROOT = REPO_ROOT / "debug" / "mapbox-outdoors-comparison"
+LIGHT_OUTPUT_ROOT = REPO_ROOT / "debug" / "mapbox-light-comparison"
 DEFAULT_MAPBOX_STYLE_OWNER = "mapbox"
 DEFAULT_MAPBOX_STYLE_ID = "outdoors-v12"
 DEFAULT_MAPBOX_STYLE_URL = f"mapbox://styles/{DEFAULT_MAPBOX_STYLE_OWNER}/{DEFAULT_MAPBOX_STYLE_ID}"
+LIGHT_MAPBOX_STYLE_ID = "light-v11"
+LIGHT_MAPBOX_STYLE_URL = f"mapbox://styles/{DEFAULT_MAPBOX_STYLE_OWNER}/{LIGHT_MAPBOX_STYLE_ID}"
 DEFAULT_QT_QPA_PLATFORM = "offscreen"
 WEB_MERCATOR_HALF_WORLD = 20037508.342789244
 WEB_MERCATOR_TILE_SIZE = 512
@@ -107,7 +110,7 @@ class ComparisonCaptureError(RuntimeError):
 
 @dataclass(frozen=True)
 class MapboxComparisonCamera:
-    """Camera used by the manual Mapbox Outdoors comparison harness."""
+    """Camera used by the manual Mapbox browser-vs-QGIS comparison harness."""
 
     name: str
     description: str
@@ -213,6 +216,117 @@ CAMERAS: dict[str, MapboxComparisonCamera] = {
     ),
 }
 
+LIGHT_CAMERAS: dict[str, MapboxComparisonCamera] = {
+    "switzerland-alps-z5-light": MapboxComparisonCamera(
+        name="switzerland-alps-z5-light",
+        description=(
+            "z5 country-wide Switzerland/Alps guardrail for background, water, major "
+            "roads, and label density."
+        ),
+        longitude=8.20,
+        latitude=46.80,
+        zoom=5.35,
+        style_id=LIGHT_MAPBOX_STYLE_ID,
+    ),
+    "zurich-region-z8-light": MapboxComparisonCamera(
+        name="zurich-region-z8-light",
+        description=(
+            "z8 regional context around Zurich for settlement hierarchy, major roads, "
+            "water, and landuse balance."
+        ),
+        longitude=8.54,
+        latitude=47.38,
+        zoom=8.20,
+        style_id=LIGHT_MAPBOX_STYLE_ID,
+    ),
+    "lausanne-lavaux-z10-light": MapboxComparisonCamera(
+        name="lausanne-lavaux-z10-light",
+        description=(
+            "z10 primary qfit activity-area target around Lausanne/Lavaux for roads, "
+            "labels, feature density, and activity-line contrast."
+        ),
+        longitude=6.72,
+        latitude=46.49,
+        zoom=10.25,
+        style_id=LIGHT_MAPBOX_STYLE_ID,
+    ),
+    "bern-urban-z12-light": MapboxComparisonCamera(
+        name="bern-urban-z12-light",
+        description=(
+            "z12 urban fit target around Bern for road hierarchy, rail/transit, POIs, "
+            "buildings, and label emphasis."
+        ),
+        longitude=7.447,
+        latitude=46.948,
+        zoom=12.25,
+        style_id=LIGHT_MAPBOX_STYLE_ID,
+    ),
+    "geneva-urban-z14-light": MapboxComparisonCamera(
+        name="geneva-urban-z14-light",
+        description=(
+            "z14 dense urban detail around Geneva for minor roads, buildings, transit, "
+            "POIs, and local label hierarchy."
+        ),
+        longitude=6.143,
+        latitude=46.204,
+        zoom=14.25,
+        style_id=LIGHT_MAPBOX_STYLE_ID,
+    ),
+    "zurich-streets-z17-light": MapboxComparisonCamera(
+        name="zurich-streets-z17-light",
+        description=(
+            "z17 street-level guardrail in central Zurich for casings, widths, symbols, "
+            "buildings, and local labels."
+        ),
+        longitude=8.5417,
+        latitude=47.3769,
+        zoom=17.0,
+        style_id=LIGHT_MAPBOX_STYLE_ID,
+    ),
+    "geneva-streets-z18-light": MapboxComparisonCamera(
+        name="geneva-streets-z18-light",
+        description=(
+            "z18 street-level stress test in central Geneva for fine road hierarchy, "
+            "symbols, POIs, and high-detail label behavior."
+        ),
+        longitude=6.147,
+        latitude=46.202,
+        zoom=18.0,
+        style_id=LIGHT_MAPBOX_STYLE_ID,
+    ),
+}
+
+
+@dataclass(frozen=True)
+class MapboxComparisonPreset:
+    name: str
+    display_name: str
+    style_url: str
+    cameras: dict[str, MapboxComparisonCamera]
+    default_camera_name: str
+    output_root: Path
+
+
+PRESETS: dict[str, MapboxComparisonPreset] = {
+    "outdoors": MapboxComparisonPreset(
+        name="outdoors",
+        display_name="Mapbox Outdoors",
+        style_url=DEFAULT_MAPBOX_STYLE_URL,
+        cameras=CAMERAS,
+        default_camera_name="valais-geneva-outdoors",
+        output_root=DEFAULT_OUTPUT_ROOT,
+    ),
+    "light": MapboxComparisonPreset(
+        name="light",
+        display_name="Mapbox Light",
+        style_url=LIGHT_MAPBOX_STYLE_URL,
+        cameras=LIGHT_CAMERAS,
+        default_camera_name="lausanne-lavaux-z10-light",
+        output_root=LIGHT_OUTPUT_ROOT,
+    ),
+}
+ALL_CAMERAS = {name: camera for preset in PRESETS.values() for name, camera in preset.cameras.items()}
+
 
 @dataclass(frozen=True)
 class ComparisonPaths:
@@ -315,9 +429,10 @@ def camera_extent_web_mercator(camera: MapboxComparisonCamera) -> tuple[float, f
     )
 
 
-def list_cameras() -> str:
+def list_cameras(preset_name: str = "outdoors") -> str:
     lines: list[str] = []
-    for camera in CAMERAS.values():
+    preset = PRESETS[preset_name]
+    for camera in preset.cameras.values():
         lines.append(
             f"- {camera.name}: {camera.description} "
             f"({camera.longitude:.4f}, {camera.latitude:.4f}, z{camera.zoom:g}, "
@@ -326,12 +441,26 @@ def list_cameras() -> str:
     return "\n".join(lines)
 
 
-def resolve_mapbox_token(*, provided_token: str | None, environ: dict[str, str] | None = None) -> str:
+def resolve_mapbox_token(
+    *,
+    provided_token: str | None,
+    token_file: Path | None = None,
+    environ: dict[str, str] | None = None,
+) -> str:
     env = os.environ if environ is None else environ
-    token = provided_token or env.get("MAPBOX_ACCESS_TOKEN") or env.get("QFIT_MAPBOX_ACCESS_TOKEN")
+    token = provided_token
+    if token_file is not None:
+        try:
+            token = token_file.expanduser().read_text(encoding="utf-8").strip()
+        except OSError as exc:
+            raise ValueError(f"Mapbox token file could not be read: {token_file}") from exc
+        if not token:
+            raise ValueError(f"Mapbox token file is empty: {token_file}")
+    token = token or env.get("MAPBOX_ACCESS_TOKEN") or env.get("QFIT_MAPBOX_ACCESS_TOKEN")
     if not token:
         raise ValueError(
-            "Mapbox token required via --mapbox-token, MAPBOX_ACCESS_TOKEN, or QFIT_MAPBOX_ACCESS_TOKEN."
+            "Mapbox token required via --mapbox-token-file, --mapbox-token, "
+            "MAPBOX_ACCESS_TOKEN, or QFIT_MAPBOX_ACCESS_TOKEN."
         )
     return token
 
@@ -416,7 +545,7 @@ def build_mapbox_gl_html(
 <head>
   <meta charset=\"utf-8\">
   <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
-  <title>qfit Mapbox Outdoors comparison reference</title>
+  <title>qfit Mapbox comparison reference</title>
   <link href=\"https://api.mapbox.com/mapbox-gl-js/v3.10.0/mapbox-gl.css\" rel=\"stylesheet\">
   <script src=\"https://api.mapbox.com/mapbox-gl-js/v3.10.0/mapbox-gl.js\"></script>
   <style>
@@ -477,7 +606,7 @@ const timeout = Number.parseInt(timeoutText, 10);
     const page = await browser.newPage({ viewport: { width, height }, deviceScaleFactor: 1 });
     await page.setContent(html, { waitUntil: 'domcontentloaded', timeout });
     await page.evaluate((value) => window.startQfitMapboxComparison(value), credential);
-    await page.waitForFunction('window.qfitMapboxReady === true', { timeout });
+    await page.waitForFunction('window.qfitMapboxReady === true', undefined, { timeout });
     await page.screenshot({ path: outputPath, fullPage: false });
   } finally {
     await browser.close();
@@ -1193,21 +1322,27 @@ def run_comparison(
 
 def _parse_camera(value: str) -> MapboxComparisonCamera:
     try:
-        return CAMERAS[value]
+        return ALL_CAMERAS[value]
     except KeyError as exc:
-        known = ", ".join(sorted(CAMERAS))
+        known = ", ".join(sorted(ALL_CAMERAS))
         raise argparse.ArgumentTypeError(f"Unknown camera '{value}'. Known cameras: {known}") from exc
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Capture manual Mapbox Outdoors browser-vs-QGIS visual comparison artifacts.",
+        description="Capture manual Mapbox browser-vs-QGIS visual comparison artifacts.",
+    )
+    parser.add_argument(
+        "--preset",
+        choices=tuple(PRESETS),
+        default="outdoors",
+        help="Mapbox preset and camera matrix to capture. Defaults to outdoors.",
     )
     parser.add_argument(
         "camera",
         nargs="?",
         type=_parse_camera,
-        help="Comparison camera to capture. Defaults to valais-geneva-outdoors.",
+        help="Comparison camera to capture. Defaults to the preset's primary fit camera.",
     )
     parser.add_argument(
         "--list-cameras",
@@ -1219,9 +1354,15 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Capture the full recommended z5-z18 inspection camera matrix.",
     )
-    parser.add_argument(
+    token_source = parser.add_mutually_exclusive_group()
+    token_source.add_argument(
         "--mapbox-token",
         help="Mapbox access token. Prefer MAPBOX_ACCESS_TOKEN to avoid shell history exposure.",
+    )
+    token_source.add_argument(
+        "--mapbox-token-file",
+        type=Path,
+        help="Read the Mapbox access token from a local file without placing it on argv.",
     )
     parser.add_argument(
         "--style-json",
@@ -1233,8 +1374,8 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--output-root",
-        default=str(DEFAULT_OUTPUT_ROOT),
-        help="Ignored/debug root where comparison artifacts are written.",
+        default=None,
+        help="Ignored/debug root where comparison artifacts are written. Defaults by preset.",
     )
     parser.add_argument(
         "--skip-browser",
@@ -1317,9 +1458,14 @@ def _print_result(result: ComparisonResult, *, camera_name: str | None = None) -
 
 
 def _selected_cameras(args: argparse.Namespace) -> list[MapboxComparisonCamera]:
+    preset = PRESETS[args.preset]
     if args.all_cameras:
-        return list(CAMERAS.values())
-    return [args.camera or CAMERAS["valais-geneva-outdoors"]]
+        return list(preset.cameras.values())
+    if args.camera is not None and args.camera.name not in preset.cameras:
+        raise ValueError(
+            f"Camera '{args.camera.name}' does not belong to the '{preset.name}' preset."
+        )
+    return [args.camera or preset.cameras[preset.default_camera_name]]
 
 
 def _comparison_config(
@@ -1355,8 +1501,9 @@ def _comparison_config(
 
 
 def _run_and_print_configured_comparisons(args: argparse.Namespace) -> None:
-    token = resolve_mapbox_token(provided_token=args.mapbox_token)
-    output_root = Path(args.output_root).expanduser().resolve()
+    token = resolve_mapbox_token(provided_token=args.mapbox_token, token_file=args.mapbox_token_file)
+    configured_output_root = args.output_root or PRESETS[args.preset].output_root
+    output_root = Path(configured_output_root).expanduser().resolve()
     cameras = _selected_cameras(args)
     if args.all_cameras:
         _run_all_cameras_in_subprocesses(args=args, cameras=cameras, token=token, output_root=output_root)
@@ -1380,7 +1527,7 @@ def _single_camera_subprocess_command(
     camera: MapboxComparisonCamera,
     output_root: Path,
 ) -> list[str]:
-    command = [sys.executable, str(Path(__file__).resolve()), camera.name]
+    command = [sys.executable, str(Path(__file__).resolve()), camera.name, "--preset", args.preset]
     if args.style_json is not None:
         command.extend(["--style-json", str(args.style_json.expanduser().resolve())])
     command.extend(["--output-root", str(output_root)])
@@ -1751,7 +1898,7 @@ def build_all_cameras_contact_sheet(
 def _all_cameras_summary_markdown(summary: dict[str, object]) -> str:
     base_dir = _all_cameras_summary_markdown_base_dir(summary)
     lines = [
-        "# Mapbox Outdoors all-camera comparison summary",
+        f"# {summary.get('style_name', 'Mapbox Outdoors')} all-camera comparison summary",
         "",
         f"Generated: `{summary['generated_at']}`",
         "",
@@ -1817,6 +1964,7 @@ def _write_all_cameras_summary(
     token: str,
 ) -> tuple[Path, Path]:
     generated_at = _utc_timestamp()
+    preset = PRESETS[args.preset]
     run_dir = output_root / "all-cameras" / generated_at
     _ensure_output_directory(run_dir)
     counts = {
@@ -1825,7 +1973,9 @@ def _write_all_cameras_summary(
     }
     summary: dict[str, object] = {
         "generated_at": generated_at,
-        "style_url": None if args.style_json is not None else DEFAULT_MAPBOX_STYLE_URL,
+        "preset": preset.name,
+        "style_name": preset.display_name,
+        "style_url": None if args.style_json is not None else preset.style_url,
         "style_json_path": (
             redact_sensitive_text(str(args.style_json.expanduser().resolve()), token)
             if args.style_json is not None
@@ -1943,7 +2093,7 @@ def main(argv: Iterable[str] | None = None) -> int:
     args = parser.parse_args(list(argv) if argv is not None else None)
 
     if args.list_cameras:
-        _write_stdout_line(list_cameras())
+        _write_stdout_line(list_cameras(args.preset))
         return 0
     if args.all_cameras and args.camera is not None:
         print("error: pass either a single camera or --all-cameras, not both.", file=sys.stderr)
