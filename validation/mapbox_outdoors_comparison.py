@@ -2029,7 +2029,7 @@ def _run_all_cameras_in_subprocesses(
     for camera in cameras:
         timeout_seconds = _camera_subprocess_timeout_seconds(args)
         try:
-            completed = subprocess.run(  # noqa: S603 - command is built from this script and static camera names.
+            completed = subprocess.run(  # noqa: S603  # NOSONAR S8705 -- fixed executable/script, shell=False, allowlisted camera preset.
                 _single_camera_subprocess_command(args=args, camera=camera, output_root=output_root),
                 cwd=REPO_ROOT,
                 env=_single_camera_subprocess_environment(token=token),
