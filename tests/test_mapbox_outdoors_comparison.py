@@ -19,6 +19,10 @@ from qfit.validation.mapbox_outdoors_comparison import (
     CONTACT_SHEET_COLUMNS,
     CONTACT_SHEET_THUMBNAIL_WIDTH,
     ComparisonConfig,
+    LIGHT_CAMERAS,
+    LIGHT_MAPBOX_STYLE_URL,
+    LIGHT_OUTPUT_ROOT,
+    PRESETS,
     DEFAULT_OUTPUT_ROOT,
     MapboxComparisonCamera,
     QGIS_CONTOUR_BBOX_EDGE_DIFFERENCE_LABEL_PROBE_EXPRESSION,
@@ -48,6 +52,8 @@ from qfit.validation.mapbox_outdoors_comparison import (
     _append_qgis_contour_polygon_label_probe,
     _format_qgis_runtime,
     _label_setting_value,
+    _preset_name_for_camera,
+    _selected_cameras,
     _label_value,
     _load_optional_qgis_runtime_snapshot,
     build_all_cameras_contact_sheet,
@@ -119,6 +125,47 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         listed = list_cameras()
         for camera_name in CAMERAS:
             self.assertIn(camera_name, listed)
+
+    def test_light_preset_targets_light_v11_across_required_zoom_bands(self):
+        self.assertEqual(PRESETS["light"].style_url, LIGHT_MAPBOX_STYLE_URL)
+        self.assertEqual(PRESETS["light"].default_camera_name, "lausanne-lavaux-z10-light")
+        self.assertTrue(5.0 <= LIGHT_CAMERAS["switzerland-alps-z5-light"].zoom <= 5.5)
+        self.assertTrue(7.0 <= LIGHT_CAMERAS["zurich-region-z8-light"].zoom <= 8.5)
+        self.assertTrue(9.0 <= LIGHT_CAMERAS["lausanne-lavaux-z10-light"].zoom <= 11.0)
+        self.assertTrue(12.0 <= LIGHT_CAMERAS["bern-urban-z12-light"].zoom <= 13.0)
+        self.assertTrue(13.0 <= LIGHT_CAMERAS["geneva-urban-z14-light"].zoom <= 14.5)
+        self.assertTrue(16.5 <= LIGHT_CAMERAS["zurich-streets-z17-light"].zoom <= 17.5)
+        self.assertGreaterEqual(LIGHT_CAMERAS["geneva-streets-z18-light"].zoom, 18.0)
+        self.assertEqual(
+            {camera.style_url for camera in LIGHT_CAMERAS.values()},
+            {"mapbox://styles/mapbox/light-v11"},
+        )
+        self.assertGreaterEqual(
+            len({(camera.longitude, camera.latitude) for camera in LIGHT_CAMERAS.values()}),
+            5,
+        )
+
+    def test_list_cameras_can_select_light_matrix_without_changing_outdoors_default(self):
+        outdoors_text = list_cameras()
+        light_text = list_cameras("light")
+
+        self.assertIn("valais-geneva-outdoors", outdoors_text)
+        self.assertNotIn("lausanne-lavaux-z10-light", outdoors_text)
+        self.assertIn("lausanne-lavaux-z10-light", light_text)
+        self.assertIn("mapbox/light-v11", light_text)
+        self.assertNotIn("mapbox/outdoors-v12", light_text)
+
+    def test_light_preset_selects_its_default_and_rejects_outdoors_camera(self):
+        parser = build_parser()
+        default_args = parser.parse_args(["--preset", "light"])
+        mismatched_args = parser.parse_args(["--preset", "light", "valais-geneva-outdoors"])
+
+        self.assertEqual(_selected_cameras(default_args), [LIGHT_CAMERAS["lausanne-lavaux-z10-light"]])
+        with self.assertRaisesRegex(ValueError, "does not belong"):
+            _selected_cameras(mismatched_args)
+
+        self.assertEqual(_preset_name_for_camera(LIGHT_CAMERAS["bern-urban-z12-light"]), "light")
+        self.assertEqual(_preset_name_for_camera(CAMERAS["valais-geneva-outdoors"]), "outdoors")
 
     def test_build_run_directory_uses_timestamped_debug_layout(self):
         run_dir = build_run_directory(
@@ -273,6 +320,29 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             resolve_mapbox_token(provided_token=None, environ={})
 
+    def test_resolve_token_reads_local_file_before_environment(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            token_file = Path(tmpdir) / "mapbox-token.txt"
+            token_file.write_text("file-token\n", encoding="utf-8")
+
+            with token_file.open("r", encoding="utf-8") as token_handle:
+                token = resolve_mapbox_token(
+                    provided_token=None,
+                    token_file=token_handle,
+                    environ={"MAPBOX_ACCESS_TOKEN": "env-token"},
+                )
+
+        self.assertEqual(token, "file-token")
+
+    def test_resolve_token_rejects_empty_local_file(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            token_file = Path(tmpdir) / "mapbox-token.txt"
+            token_file.write_text(" \n", encoding="utf-8")
+
+            with token_file.open("r", encoding="utf-8") as token_handle:
+                with self.assertRaisesRegex(ValueError, "token file is empty"):
+                    resolve_mapbox_token(provided_token=None, token_file=token_handle, environ={})
+
     def test_camera_extent_is_web_mercator_bounds_around_center(self):
         camera = MapboxComparisonCamera(
             name="small",
@@ -318,6 +388,7 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         self.assertIn("startQfitMapboxComparison", script)
         self.assertIn("window.qfitMapboxReady", script)
         self.assertIn("JSON.parse", script)
+        self.assertIn("undefined, { timeout }", script)
         self.assertIn("readFileSync(0", script)
         self.assertNotIn("Buffer.from", script)
         self.assertNotIn("accessToken", script)
@@ -1679,6 +1750,7 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
 
         self.assertEqual(args.camera.name, "valais-geneva-outdoors")
         self.assertEqual(args.mapbox_token, "test-mapbox-token")
+        self.assertIsNone(args.mapbox_token_file)
         self.assertEqual(args.output_root, "/tmp/qfit-mapbox")
         self.assertEqual(args.style_json, Path("/tmp/mapbox-outdoors-v12.json"))
         self.assertTrue(args.skip_qgis)
@@ -2134,6 +2206,26 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         self.assertIn("comparison capture failed", stderr_text)
         self.assertNotIn("test-mapbox-token", stderr_text)
 
+    def test_main_token_file_redacts_runtime_failures(self):
+        from qfit.validation import mapbox_outdoors_comparison
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            token_file = Path(tmpdir) / "mapbox-token.txt"
+            token_file.write_text("token-file-secret\n", encoding="utf-8")
+            with patch("qfit.validation.mapbox_outdoors_comparison.run_comparison") as run_mock:
+                run_mock.side_effect = RuntimeError("failed for token-file-secret")
+                with patch("sys.stderr") as stderr_mock:
+                    result = mapbox_outdoors_comparison.main([
+                        "valais-geneva-outdoors",
+                        "--mapbox-token-file",
+                        str(token_file),
+                    ])
+
+        stderr_text = "".join(call.args[0] for call in stderr_mock.write.call_args_list)
+        self.assertEqual(result, 2)
+        self.assertIn("comparison capture failed", stderr_text)
+        self.assertNotIn("token-file-secret", stderr_text)
+
     def test_main_uses_generic_error_for_network_failures(self):
         from qfit.validation import mapbox_outdoors_comparison
 
@@ -2153,6 +2245,9 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
 
     def test_default_output_root_stays_under_ignored_debug_directory(self):
         self.assertEqual(DEFAULT_OUTPUT_ROOT, Path(__file__).resolve().parents[1] / "debug" / "mapbox-outdoors-comparison")
+        self.assertEqual(
+            LIGHT_OUTPUT_ROOT, Path(__file__).resolve().parents[1] / "debug" / "mapbox-light-comparison"
+        )
 
 
 if __name__ == "__main__":
