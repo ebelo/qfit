@@ -14,7 +14,7 @@ import tempfile
 from collections.abc import MutableMapping
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Callable, Iterable, TypeAlias
+from typing import Any, Callable, Iterable, TextIO, TypeAlias
 
 try:
     from qfit.validation.mapbox_outdoors_runtime import format_qgis_runtime_label
@@ -444,18 +444,15 @@ def list_cameras(preset_name: str = "outdoors") -> str:
 def resolve_mapbox_token(
     *,
     provided_token: str | None,
-    token_file: Path | None = None,
+    token_file: TextIO | None = None,
     environ: dict[str, str] | None = None,
 ) -> str:
     env = os.environ if environ is None else environ
     token = provided_token
     if token_file is not None:
-        try:
-            token = token_file.expanduser().read_text(encoding="utf-8").strip()
-        except OSError as exc:
-            raise ValueError(f"Mapbox token file could not be read: {token_file}") from exc
+        token = token_file.read().strip()
         if not token:
-            raise ValueError(f"Mapbox token file is empty: {token_file}")
+            raise ValueError(f"Mapbox token file is empty: {token_file.name}")
     token = token or env.get("MAPBOX_ACCESS_TOKEN") or env.get("QFIT_MAPBOX_ACCESS_TOKEN")
     if not token:
         raise ValueError(
@@ -1361,7 +1358,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     token_source.add_argument(
         "--mapbox-token-file",
-        type=Path,
+        type=argparse.FileType("r", encoding="utf-8"),
         help="Read the Mapbox access token from a local file without placing it on argv.",
     )
     parser.add_argument(

@@ -321,11 +321,12 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
             token_file = Path(tmpdir) / "mapbox-token.txt"
             token_file.write_text("file-token\n", encoding="utf-8")
 
-            token = resolve_mapbox_token(
-                provided_token=None,
-                token_file=token_file,
-                environ={"MAPBOX_ACCESS_TOKEN": "env-token"},
-            )
+            with token_file.open("r", encoding="utf-8") as token_handle:
+                token = resolve_mapbox_token(
+                    provided_token=None,
+                    token_file=token_handle,
+                    environ={"MAPBOX_ACCESS_TOKEN": "env-token"},
+                )
 
         self.assertEqual(token, "file-token")
 
@@ -334,19 +335,9 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
             token_file = Path(tmpdir) / "mapbox-token.txt"
             token_file.write_text(" \n", encoding="utf-8")
 
-            with self.assertRaisesRegex(ValueError, "token file is empty"):
-                resolve_mapbox_token(provided_token=None, token_file=token_file, environ={})
-
-    def test_resolve_token_file_read_error_does_not_fall_back_to_environment(self):
-        with tempfile.TemporaryDirectory() as tmpdir:
-            token_file = Path(tmpdir) / "missing-token.txt"
-
-            with self.assertRaisesRegex(ValueError, "token file could not be read"):
-                resolve_mapbox_token(
-                    provided_token=None,
-                    token_file=token_file,
-                    environ={"MAPBOX_ACCESS_TOKEN": "environment-secret"},
-                )
+            with token_file.open("r", encoding="utf-8") as token_handle:
+                with self.assertRaisesRegex(ValueError, "token file is empty"):
+                    resolve_mapbox_token(provided_token=None, token_file=token_handle, environ={})
 
     def test_camera_extent_is_web_mercator_bounds_around_center(self):
         camera = MapboxComparisonCamera(
