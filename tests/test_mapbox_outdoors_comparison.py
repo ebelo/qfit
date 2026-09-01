@@ -52,6 +52,7 @@ from qfit.validation.mapbox_outdoors_comparison import (
     _append_qgis_contour_polygon_label_probe,
     _format_qgis_runtime,
     _label_setting_value,
+    _preset_name_for_camera,
     _selected_cameras,
     _label_value,
     _load_optional_qgis_runtime_snapshot,
@@ -162,6 +163,9 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         self.assertEqual(_selected_cameras(default_args), [LIGHT_CAMERAS["lausanne-lavaux-z10-light"]])
         with self.assertRaisesRegex(ValueError, "does not belong"):
             _selected_cameras(mismatched_args)
+
+        self.assertEqual(_preset_name_for_camera(LIGHT_CAMERAS["bern-urban-z12-light"]), "light")
+        self.assertEqual(_preset_name_for_camera(CAMERAS["valais-geneva-outdoors"]), "outdoors")
 
     def test_build_run_directory_uses_timestamped_debug_layout(self):
         run_dir = build_run_directory(

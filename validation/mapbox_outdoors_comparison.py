@@ -1518,13 +1518,27 @@ def _run_and_print_configured_comparisons(args: argparse.Namespace) -> None:
         _print_result(result, camera_name=camera.name if multiple_results else None)
 
 
+def _preset_name_for_camera(camera: MapboxComparisonCamera) -> str:
+    if camera.name in LIGHT_CAMERAS:
+        return "light"
+    if camera.name in CAMERAS:
+        return "outdoors"
+    raise ValueError(f"Camera '{camera.name}' does not belong to a comparison preset.")
+
+
 def _single_camera_subprocess_command(
     *,
     args: argparse.Namespace,
     camera: MapboxComparisonCamera,
     output_root: Path,
 ) -> list[str]:
-    command = [sys.executable, str(Path(__file__).resolve()), camera.name, "--preset", args.preset]
+    command = [
+        sys.executable,
+        str(Path(__file__).resolve()),
+        camera.name,
+        "--preset",
+        _preset_name_for_camera(camera),
+    ]
     if args.style_json is not None:
         command.extend(["--style-json", str(args.style_json.expanduser().resolve())])
     command.extend(["--output-root", str(output_root)])
