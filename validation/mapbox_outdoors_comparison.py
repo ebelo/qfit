@@ -1290,7 +1290,10 @@ def run_comparison(
             config.token, config.camera.style_owner, config.camera.style_id
         )
     )
-    write_redacted_style(paths.mapbox_source_style_json, style_definition, token=config.token)
+    paths.mapbox_source_style_json.write_text(
+        redact_sensitive_text(json.dumps(style_definition, indent=2), config.token) + "\n",
+        encoding="utf-8",
+    )
     mapbox_source_style_captured = paths.mapbox_source_style_json.exists()
 
     if config.browser:
