@@ -742,8 +742,9 @@ class MapboxOutdoorsStyleAdjustmentProbeTests(unittest.TestCase):
 
         self.assertEqual(result, 2)
         self.assertIn("style-adjustment probe failed", stderr.getvalue())
+        parser = probe_module.build_parser()
         with self.assertRaises(SystemExit):
-            probe_module.build_parser().parse_args([
+            parser.parse_args([
                 "--mapbox-token",
                 "direct-token",
                 "--mapbox-token-file",
