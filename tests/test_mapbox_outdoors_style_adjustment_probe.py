@@ -38,6 +38,29 @@ STYLE = {
 }
 
 
+def _write_camera_manifest(
+    path: Path,
+    *,
+    name: str = "unit-camera",
+    style_owner: str = "mapbox",
+    style_id: str = "outdoors-v12",
+) -> Path:
+    path.write_text(json.dumps({
+        "camera": {
+            "name": name,
+            "description": f"{name} description",
+            "longitude": 7.0,
+            "latitude": 46.0,
+            "zoom": 12.0,
+            "width": 1280,
+            "height": 960,
+            "style_owner": style_owner,
+            "style_id": style_id,
+        }
+    }), encoding="utf-8")
+    return path
+
+
 class MapboxOutdoorsStyleAdjustmentProbeTests(unittest.TestCase):
     def test_load_style_adjustment_variants_reads_structured_plan(self):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -671,20 +694,11 @@ class MapboxOutdoorsStyleAdjustmentProbeTests(unittest.TestCase):
             root = Path(tmpdir)
             token_path = root / "mapbox.txt"
             token_path.write_text("file-token-secret\n", encoding="utf-8")
-            manifest_path = root / "manifest.json"
-            manifest_path.write_text(json.dumps({
-                "camera": {
-                    "name": "unit-light",
-                    "description": "Unit Light camera",
-                    "longitude": 7.0,
-                    "latitude": 46.0,
-                    "zoom": 12.0,
-                    "width": 1280,
-                    "height": 960,
-                    "style_owner": "mapbox",
-                    "style_id": "light-v11",
-                }
-            }), encoding="utf-8")
+            manifest_path = _write_camera_manifest(
+                root / "manifest.json",
+                name="unit-light",
+                style_id="light-v11",
+            )
             variant_path = root / "variants.json"
             variant_path.write_text(json.dumps({
                 "variants": [{
@@ -774,20 +788,7 @@ class MapboxOutdoorsStyleAdjustmentProbeTests(unittest.TestCase):
                 }),
                 encoding="utf-8",
             )
-            manifest_path = root / "manifest.json"
-            manifest_path.write_text(json.dumps({
-                "camera": {
-                    "name": "unit-camera",
-                    "description": "Unit camera",
-                    "longitude": 7.0,
-                    "latitude": 46.0,
-                    "zoom": 12.0,
-                    "width": 1280,
-                    "height": 960,
-                    "style_owner": "mapbox",
-                    "style_id": "outdoors-v12",
-                }
-            }), encoding="utf-8")
+            manifest_path = _write_camera_manifest(root / "manifest.json")
             output_root = root / "style-adjustment-probe"
             run_dir = output_root / "comparison-camera" / "20260524T143000Z"
             run_dir.mkdir(parents=True)
