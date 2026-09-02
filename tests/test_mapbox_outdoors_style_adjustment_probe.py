@@ -276,6 +276,7 @@ class MapboxOutdoorsStyleAdjustmentProbeTests(unittest.TestCase):
             self.assertEqual(report["generated"], "2026-05-24T14:30:00+00:00")
             self.assertEqual(report["qgis_runtime"]["qgis_version"], "3.44.0-Solothurn")
             self.assertEqual(len(report["baseline_style_sha256"]), 64)
+            self.assertEqual(len(report["baseline_qgis_preprocessed_style_sha256"]), 64)
             self.assertTrue(control["is_rerender_control"])
             self.assertFalse(variant["is_rerender_control"])
             self.assertEqual(variant["matched_layer_ids"], ["contour-minor"])
@@ -591,6 +592,29 @@ class MapboxOutdoorsStyleAdjustmentProbeTests(unittest.TestCase):
             ):
                 build_style_adjustment_aggregate_report(report_paths)
 
+    def test_aggregate_rejects_mixed_preprocessed_style_fingerprints(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            report_paths = []
+            for index, fingerprint in enumerate(("c" * 64, "d" * 64)):
+                report_path = root / f"report-{index}.json"
+                report_path.write_text(
+                    json.dumps({
+                        "camera": {"name": f"camera-{index}"},
+                        "baseline_style_sha256": "a" * 64,
+                        "baseline_qgis_preprocessed_style_sha256": fingerprint,
+                        "variants": [],
+                    }),
+                    encoding="utf-8",
+                )
+                report_paths.append(report_path)
+
+            with self.assertRaisesRegex(
+                ValueError,
+                "different baseline style fingerprints",
+            ):
+                build_style_adjustment_aggregate_report(report_paths)
+
     def test_aggregate_rejects_fingerprinted_and_legacy_reports(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir)
@@ -617,6 +641,7 @@ class MapboxOutdoorsStyleAdjustmentProbeTests(unittest.TestCase):
         markdown = render_aggregate_markdown_summary(
             {
                 "baseline_style_sha256": "a" * 64,
+                "baseline_qgis_preprocessed_style_sha256": "b" * 64,
                 "input_reports": [],
                 "qgis_runtimes": [],
                 "rows": [],
@@ -625,6 +650,7 @@ class MapboxOutdoorsStyleAdjustmentProbeTests(unittest.TestCase):
             }
         )
 
+        self.assertIn(f"Baseline QGIS-preprocessed style SHA-256: `{'b' * 64}`", markdown)
         self.assertIn(f"Baseline style SHA-256: `{'a' * 64}`", markdown)
 
     def test_aggregate_report_ignores_boolean_metric_values(self):
