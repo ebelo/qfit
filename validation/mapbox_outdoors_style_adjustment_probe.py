@@ -23,6 +23,7 @@ try:
         resolve_mapbox_token,
     )
     from .mapbox_outdoors_rendered_layer_mask import (
+        MIXED_OR_UNKNOWN_STYLE_ID,
         RenderedLayerMaskContext as StyleAdjustmentProbeContext,
         RenderedLayerMaskPaths as StyleAdjustmentProbePaths,
         _extend_crop_movement_lines,
@@ -31,6 +32,7 @@ try:
         _manifest_output_path,
         _mapping_value,
         _repo_relative,
+        _style_display_name,
         _utc_timestamp,
         camera_from_manifest,
         image_changed_bbox,
@@ -54,6 +56,7 @@ except ImportError:  # pragma: no cover - direct script execution
         resolve_mapbox_token,
     )
     from mapbox_outdoors_rendered_layer_mask import (  # type: ignore[no-redef]
+        MIXED_OR_UNKNOWN_STYLE_ID,
         RenderedLayerMaskContext as StyleAdjustmentProbeContext,
         RenderedLayerMaskPaths as StyleAdjustmentProbePaths,
         _extend_crop_movement_lines,
@@ -62,6 +65,7 @@ except ImportError:  # pragma: no cover - direct script execution
         _manifest_output_path,
         _mapping_value,
         _repo_relative,
+        _style_display_name,
         _utc_timestamp,
         camera_from_manifest,
         image_changed_bbox,
@@ -95,21 +99,6 @@ METRIC_KEYS = (
     "normalized_rms_channel_delta",
 )
 CROP_METRIC_KEYS = ("mean_absolute_channel_delta", "rms_channel_delta", "mean_luminance_delta")
-
-
-def _style_display_name(style_owner: object, style_id: object) -> str:
-    if style_owner == DEFAULT_MAPBOX_STYLE_OWNER and style_id == LIGHT_MAPBOX_STYLE_ID:
-        return "Mapbox Light"
-    if style_owner == DEFAULT_MAPBOX_STYLE_OWNER and style_id == DEFAULT_MAPBOX_STYLE_ID:
-        return "Mapbox Outdoors"
-    if (
-        isinstance(style_owner, str)
-        and style_owner != MIXED_OR_UNKNOWN_STYLE_ID
-        and isinstance(style_id, str)
-        and style_id != MIXED_OR_UNKNOWN_STYLE_ID
-    ):
-        return "Mapbox custom style"
-    return "Mapbox mixed/unknown styles"
 
 
 def output_root_for_style(style_owner: str, style_id: str) -> Path:
