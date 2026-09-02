@@ -66,6 +66,7 @@ from qfit.validation.mapbox_outdoors_comparison import (
     camera_center_web_mercator,
     camera_extent_web_mercator,
     encode_browser_capture_html,
+    fetch_comparison_style_definition,
     is_valid_qgis_vector_tile_layer,
     list_cameras,
     load_style_definition,
@@ -444,7 +445,26 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
             bad_path = Path(tmpdir) / "bad-style.json"
             bad_path.write_text("[]", encoding="utf-8")
             with self.assertRaises(ValueError):
+
                 load_style_definition(bad_path)
+    def test_fetch_comparison_style_definition_delegates_to_mapbox_config(self):
+        captured = {}
+        fake_mapbox_config = types.ModuleType("qfit.mapbox_config")
+
+        def fake_fetch(token, style_owner, style_id):
+            captured["args"] = (token, style_owner, style_id)
+            return SAMPLE_STYLE
+
+        fake_mapbox_config.fetch_mapbox_style_definition = fake_fetch
+        with patch.dict(sys.modules, {"qfit.mapbox_config": fake_mapbox_config}):
+            result = fetch_comparison_style_definition(
+                "test-mapbox-token", "mapbox", "light-v11"
+            )
+
+        self.assertEqual(result, SAMPLE_STYLE)
+        self.assertEqual(captured["args"], ("test-mapbox-token", "mapbox", "light-v11"))
+
+
 
     def test_qgis_vector_tile_guard_rejects_raster_or_invalid_layers(self):
         class FakeVectorTileLayer:
