@@ -12,12 +12,14 @@ from collections import Counter
 from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import TextIO
 from urllib.request import urlopen
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PACKAGE_PARENT = REPO_ROOT.parent
 DEFAULT_OUTPUT_ROOT = REPO_ROOT / "debug" / "mapbox-outdoors-source-crop-overlap"
 DEFAULT_CAMERA_NAME = "zermatt-trails-z18-outdoors"
+DEFAULT_LIGHT_CAMERA_NAME = "bern-urban-z12-light"
 DEFAULT_MAPBOX_STYLE_OWNER = "mapbox"
 DEFAULT_MAPBOX_STYLE_ID = "outdoors-v12"
 DEFAULT_TILE_EXTENT = 4096
@@ -28,6 +30,17 @@ DEFAULT_SOURCE_LAYERS = (
     "contour",
     "aeroway",
     "airport_label",
+)
+LIGHT_MAPBOX_STYLE_ID = "light-v11"
+MIXED_OR_UNKNOWN_STYLE_ID = "(mixed-or-unknown)"
+LIGHT_OUTPUT_ROOT = REPO_ROOT / "debug" / "mapbox-light-source-crop-overlap"
+LIGHT_SOURCE_LAYERS = (
+    "road",
+    "admin",
+    "place_label",
+    "poi_label",
+    "water",
+    "waterway",
 )
 PROPERTY_COUNT_KEYS = ("class", "type", "index", "structure", "maki")
 MAX_COUNT_VALUES = 8
@@ -106,9 +119,50 @@ def _ensure_package_parent_on_path() -> None:
         sys.path.insert(0, package_parent)
 
 
-def resolve_mapbox_token(*, provided_token: str | None, environ: Mapping[str, str] | None = None) -> str | None:
+def resolve_mapbox_token(
+    *,
+    provided_token: str | None,
+    token_file: TextIO | None = None,
+    environ: Mapping[str, str] | None = None,
+) -> str | None:
     env = os.environ if environ is None else environ
-    return provided_token or env.get("MAPBOX_ACCESS_TOKEN") or env.get("QFIT_MAPBOX_ACCESS_TOKEN")
+    token = provided_token
+    if token_file is not None:
+        token = token_file.read().strip()
+        if not token:
+            raise ValueError(f"Mapbox token file is empty: {token_file.name}")
+    return token or env.get("MAPBOX_ACCESS_TOKEN") or env.get("QFIT_MAPBOX_ACCESS_TOKEN")
+
+
+def _style_display_name(style_owner: object, style_id: object) -> str:
+    if style_owner == DEFAULT_MAPBOX_STYLE_OWNER and style_id == LIGHT_MAPBOX_STYLE_ID:
+        return "Mapbox Light"
+    if style_owner == DEFAULT_MAPBOX_STYLE_OWNER and style_id == DEFAULT_MAPBOX_STYLE_ID:
+        return "Mapbox Outdoors"
+    if (
+        isinstance(style_owner, str)
+        and style_owner != MIXED_OR_UNKNOWN_STYLE_ID
+        and isinstance(style_id, str)
+        and style_id != MIXED_OR_UNKNOWN_STYLE_ID
+    ):
+        return "Mapbox custom style"
+    return "Mapbox mixed/unknown styles"
+
+
+def _validated_manifest_style(
+    camera: Mapping[str, object],
+    *,
+    configured_owner: str,
+    configured_style_id: str,
+) -> None:
+    manifest_owner = str(camera.get("style_owner") or DEFAULT_MAPBOX_STYLE_OWNER)
+    manifest_style_id = str(camera.get("style_id") or DEFAULT_MAPBOX_STYLE_ID)
+    if (configured_owner, configured_style_id) != (manifest_owner, manifest_style_id):
+        raise ValueError(
+            "Configured Mapbox style "
+            f"{configured_owner}/{configured_style_id} does not match comparison manifest "
+            f"{manifest_owner}/{manifest_style_id}."
+        )
 
 
 def _utc_timestamp(now: dt.datetime | None = None) -> str:
@@ -1609,6 +1663,11 @@ def collect_source_crop_overlap_report(
     )
     manifest = load_json_object(manifest_path)
     camera = _validated_camera(manifest)
+    _validated_manifest_style(
+        camera,
+        configured_owner=config.style_owner,
+        configured_style_id=config.style_id,
+    )
     trusted_roots = _trusted_artifact_roots(visual_crop_path, comparison_summary_path, manifest_path)
     style_path = _style_path_from_manifest(
         manifest,
@@ -1667,6 +1726,8 @@ def collect_source_crop_overlap_report(
         "tile_zoom": tile_zoom,
         "decoded_tile_count": len(decoded_tile_cache),
         "tileset_ids": tileset_ids,
+        "style_owner": config.style_owner,
+        "style_id": config.style_id,
         "visual_crop_json": _repo_relative_path(visual_crop_path),
         "comparison_summary_json": _repo_relative_path(comparison_summary_path),
         "comparison_summary_run": _comparison_summary_run_metadata(visual_crop_report),
@@ -1994,7 +2055,7 @@ def _summary_read_lines(report: Mapping[str, object]) -> list[str]:
 
 def build_summary_markdown(report: Mapping[str, object]) -> str:
     lines = [
-        "# Mapbox Outdoors source/crop overlap",
+        f"# {_style_display_name(report.get('style_owner'), report.get('style_id'))} source/crop overlap",
         "",
         f"Generated: {report['generated']}",
         (
@@ -2284,12 +2345,19 @@ def _aggregate_one_source_crop_report(
     camera_rows: list[dict[str, object]],
     camera_class_rows: list[dict[str, object]],
     qgis_runtimes: set[str],
+    style_identities: set[tuple[str | None, str | None]],
 ) -> str:
     resolved_path = report_path.expanduser().resolve()
     report = load_json_object(resolved_path)
     input_report = _repo_relative_path(resolved_path)
     camera_name = str(report.get("camera") or MISSING_VALUE)
     qgis_runtimes.update(_report_qgis_runtimes(report))
+    report_style_owner = report.get("style_owner")
+    report_style_id = report.get("style_id")
+    style_identities.add((
+        str(report_style_owner) if isinstance(report_style_owner, str) else None,
+        str(report_style_id) if isinstance(report_style_id, str) else None,
+    ))
     for record in _list_of_mappings(report.get("combined_source_layers")):
         source_layer = str(record.get("source_layer") or MISSING_VALUE)
         total = source_totals.setdefault(source_layer, _AggregateSourceLayerTotal(source_layer=source_layer))
@@ -2389,6 +2457,7 @@ def build_source_crop_overlap_aggregate_report(
     camera_rows: list[dict[str, object]] = []
     camera_class_rows: list[dict[str, object]] = []
     qgis_runtimes: set[str] = set()
+    style_identities: set[tuple[str | None, str | None]] = set()
     input_reports = [
         _aggregate_one_source_crop_report(
             report_path,
@@ -2397,12 +2466,20 @@ def build_source_crop_overlap_aggregate_report(
             camera_rows=camera_rows,
             camera_class_rows=camera_class_rows,
             qgis_runtimes=qgis_runtimes,
+            style_identities=style_identities,
         )
         for report_path in deduplicated_report_paths
     ]
     generated = now or dt.datetime.now(dt.timezone.utc)
+    style_owner, style_id = (
+        next(iter(style_identities))
+        if len(style_identities) == 1 and None not in next(iter(style_identities))
+        else (MIXED_OR_UNKNOWN_STYLE_ID, MIXED_OR_UNKNOWN_STYLE_ID)
+    )
     return {
         "generated": generated.astimezone(dt.timezone.utc).isoformat(timespec="seconds"),
+        "style_owner": style_owner,
+        "style_id": style_id,
         "input_reports": input_reports,
         "qgis_runtimes": sorted(qgis_runtimes),
         "source_layer_rows": _sorted_source_layer_rows(source_totals),
@@ -2583,7 +2660,7 @@ def render_aggregate_markdown_summary(report: Mapping[str, object]) -> str:
     camera_rows = _list_of_mappings(report.get("camera_source_rows"))
     camera_class_rows = _list_of_mappings(report.get("camera_class_rows"))
     lines = [
-        "# Mapbox Outdoors source/crop overlap aggregate",
+        f"# {_style_display_name(report.get('style_owner'), report.get('style_id'))} source/crop overlap aggregate",
         "",
         f"Generated: `{report.get('generated')}`",
         f"Input reports: `{len(input_reports)}`",
@@ -2645,15 +2722,22 @@ def write_report(report: Mapping[str, object], paths: SourceCropOverlapPaths) ->
 
 def _parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Count live Mapbox vector source features overlapping Mapbox Outdoors visual crop boxes.",
+        description="Count live Mapbox vector source features overlapping visual crop boxes.",
     )
+    parser.add_argument("--preset", choices=("outdoors", "light"), default="outdoors")
     parser.add_argument("--visual-crop-json", type=Path)
-    parser.add_argument("--camera", default=DEFAULT_CAMERA_NAME)
-    parser.add_argument("--mapbox-token")
+    parser.add_argument("--camera")
+    token_source = parser.add_mutually_exclusive_group()
+    token_source.add_argument("--mapbox-token")
+    token_source.add_argument(
+        "--mapbox-token-file",
+        type=argparse.FileType("r", encoding="utf-8"),
+        help="Read the Mapbox token from a file without exposing it in process arguments.",
+    )
     parser.add_argument("--style-owner", default=DEFAULT_MAPBOX_STYLE_OWNER)
-    parser.add_argument("--style-id", default=DEFAULT_MAPBOX_STYLE_ID)
+    parser.add_argument("--style-id")
     parser.add_argument("--tile-zoom", type=int)
-    parser.add_argument("--output-root", type=Path, default=DEFAULT_OUTPUT_ROOT)
+    parser.add_argument("--output-root", type=Path)
     parser.add_argument(
         "--aggregate-report",
         action="append",
@@ -2695,28 +2779,47 @@ def _run_aggregate_mode(args: argparse.Namespace) -> int:
     return 0
 
 
-def main(argv: Sequence[str] | None = None) -> int:
+def _main(argv: Sequence[str] | None = None) -> int:
     args = _parse_args(argv)
     if args.aggregate_report:
         return _run_aggregate_mode(args)
-    source_layers = tuple(args.source_layers) if args.source_layers else DEFAULT_SOURCE_LAYERS
+    light_preset = args.preset == "light"
+    default_source_layers = LIGHT_SOURCE_LAYERS if light_preset else DEFAULT_SOURCE_LAYERS
+    camera_name = args.camera or (
+        DEFAULT_LIGHT_CAMERA_NAME if light_preset else DEFAULT_CAMERA_NAME
+    )
+    source_layers = tuple(args.source_layers) if args.source_layers else default_source_layers
+    output_root = args.output_root or (LIGHT_OUTPUT_ROOT if light_preset else DEFAULT_OUTPUT_ROOT)
+    style_id = args.style_id or (LIGHT_MAPBOX_STYLE_ID if light_preset else DEFAULT_MAPBOX_STYLE_ID)
+    token = resolve_mapbox_token(
+        provided_token=args.mapbox_token,
+        token_file=args.mapbox_token_file,
+    )
     config = SourceCropOverlapConfig(
-        token=args.mapbox_token,
+        token=token,
         visual_crop_json_path=args.visual_crop_json,
-        output_root=args.output_root,
-        camera_name=args.camera,
+        output_root=output_root,
+        camera_name=camera_name,
         style_owner=args.style_owner,
-        style_id=args.style_id,
+        style_id=style_id,
         source_layers=source_layers,
         tile_zoom=args.tile_zoom,
     )
     report = collect_source_crop_overlap_report(config)
     paths = build_source_crop_overlap_paths(
-        build_run_directory(output_root=args.output_root, camera_name=args.camera, now=config.now)
+        build_run_directory(output_root=output_root, camera_name=camera_name, now=config.now)
     )
     write_report(report, paths)
     print(f"Wrote {paths.summary_path}")
     return 0
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    try:
+        return _main(argv)
+    except (OSError, RuntimeError, ValueError):
+        print("Mapbox source/crop overlap failed; inspect the local runtime and inputs.", file=sys.stderr)
+        return 2
 
 
 if __name__ == "__main__":  # pragma: no cover - CLI entry point
