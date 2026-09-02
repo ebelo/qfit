@@ -19,6 +19,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 PACKAGE_PARENT = REPO_ROOT.parent
 DEFAULT_OUTPUT_ROOT = REPO_ROOT / "debug" / "mapbox-outdoors-source-crop-overlap"
 DEFAULT_CAMERA_NAME = "zermatt-trails-z18-outdoors"
+DEFAULT_LIGHT_CAMERA_NAME = "bern-urban-z12-light"
 DEFAULT_MAPBOX_STYLE_OWNER = "mapbox"
 DEFAULT_MAPBOX_STYLE_ID = "outdoors-v12"
 DEFAULT_TILE_EXTENT = 4096
@@ -2714,7 +2715,7 @@ def _parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument("--preset", choices=("outdoors", "light"), default="outdoors")
     parser.add_argument("--visual-crop-json", type=Path)
-    parser.add_argument("--camera", default=DEFAULT_CAMERA_NAME)
+    parser.add_argument("--camera")
     token_source = parser.add_mutually_exclusive_group()
     token_source.add_argument("--mapbox-token")
     token_source.add_argument(
@@ -2773,6 +2774,9 @@ def _main(argv: Sequence[str] | None = None) -> int:
         return _run_aggregate_mode(args)
     light_preset = args.preset == "light"
     default_source_layers = LIGHT_SOURCE_LAYERS if light_preset else DEFAULT_SOURCE_LAYERS
+    camera_name = args.camera or (
+        DEFAULT_LIGHT_CAMERA_NAME if light_preset else DEFAULT_CAMERA_NAME
+    )
     source_layers = tuple(args.source_layers) if args.source_layers else default_source_layers
     output_root = args.output_root or (LIGHT_OUTPUT_ROOT if light_preset else DEFAULT_OUTPUT_ROOT)
     style_id = args.style_id or (LIGHT_MAPBOX_STYLE_ID if light_preset else DEFAULT_MAPBOX_STYLE_ID)
@@ -2784,7 +2788,7 @@ def _main(argv: Sequence[str] | None = None) -> int:
         token=token,
         visual_crop_json_path=args.visual_crop_json,
         output_root=output_root,
-        camera_name=args.camera,
+        camera_name=camera_name,
         style_owner=args.style_owner,
         style_id=style_id,
         source_layers=source_layers,
@@ -2792,7 +2796,7 @@ def _main(argv: Sequence[str] | None = None) -> int:
     )
     report = collect_source_crop_overlap_report(config)
     paths = build_source_crop_overlap_paths(
-        build_run_directory(output_root=output_root, camera_name=args.camera, now=config.now)
+        build_run_directory(output_root=output_root, camera_name=camera_name, now=config.now)
     )
     write_report(report, paths)
     print(f"Wrote {paths.summary_path}")

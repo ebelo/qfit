@@ -493,17 +493,19 @@ class MapboxOutdoorsRenderedLayerMaskTests(unittest.TestCase):
             )
 
         self.assertEqual(token, "file-token-secret")
+        parser = mask_module.build_parser()
+        ambiguous_token_args = [
+            "--baseline-manifest",
+            "manifest.json",
+            "--variant",
+            "roads=road-simple",
+            "--mapbox-token",
+            "direct-token",
+            "--mapbox-token-file",
+            "token.txt",
+        ]
         with self.assertRaises(SystemExit):
-            mask_module.build_parser().parse_args([
-                "--baseline-manifest",
-                "manifest.json",
-                "--variant",
-                "roads=road-simple",
-                "--mapbox-token",
-                "direct-token",
-                "--mapbox-token-file",
-                "token.txt",
-            ])
+            parser.parse_args(ambiguous_token_args)
         self.assertNotIn("file-token-secret", " ".join([
             "--baseline-manifest",
             str(Path(tmpdir) / "manifest.json"),

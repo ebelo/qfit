@@ -98,8 +98,6 @@ class MapboxOutdoorsSourceCropOverlapTests(unittest.TestCase):
                     "light",
                     "--visual-crop-json",
                     str(Path(tmp) / "visual-crops.json"),
-                    "--camera",
-                    "bern-urban-z12-light",
                     "--mapbox-token-file",
                     str(token_path),
                 ])
@@ -107,6 +105,7 @@ class MapboxOutdoorsSourceCropOverlapTests(unittest.TestCase):
         self.assertEqual(result, 0)
         config = captured["config"]
         self.assertEqual(config.style_id, "light-v11")
+        self.assertEqual(config.camera_name, "bern-urban-z12-light")
         self.assertEqual(config.source_layers, source_overlap_module.LIGHT_SOURCE_LAYERS)
         self.assertEqual(config.output_root, source_overlap_module.LIGHT_OUTPUT_ROOT)
         self.assertEqual(config.token, "file-token-secret")
@@ -1002,13 +1001,14 @@ class MapboxOutdoorsSourceCropOverlapTests(unittest.TestCase):
             manifest["camera"]["style_id"] = "light-v11"
             manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
 
+            config = SourceCropOverlapConfig(
+                token="test-token",
+                visual_crop_json_path=visual_crop_json,
+                camera_name="test-camera",
+            )
             with self.assertRaisesRegex(ValueError, "does not match comparison manifest"):
                 collect_source_crop_overlap_report(
-                    SourceCropOverlapConfig(
-                        token="test-token",
-                        visual_crop_json_path=visual_crop_json,
-                        camera_name="test-camera",
-                    ),
+                    config,
                     tile_fetcher=lambda _url: b"",
                     tile_decoder=lambda _payload, _tile: {},
                 )
