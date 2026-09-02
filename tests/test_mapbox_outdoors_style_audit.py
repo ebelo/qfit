@@ -1,3 +1,5 @@
+import contextlib
+import io
 import copy
 import datetime as dt
 import json
@@ -4992,6 +4994,80 @@ class MapboxOutdoorsStyleAuditTests(unittest.TestCase):
         self.assertTrue(args.include_qgis_property_removal_impact)
         self.assertTrue(args.include_qgis_filter_parse_support)
 
+
+    def test_resolve_mapbox_token_reads_file_without_environment_fallback(self):
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            token_path = Path(tmp_dir) / "token.txt"
+            token_path.write_text("file-token\n", encoding="utf-8")
+
+            with token_path.open("r", encoding="utf-8") as token_file:
+                token = resolve_mapbox_token(
+                    provided_token=None,
+                    token_file=token_file,
+                    environ={"MAPBOX_ACCESS_TOKEN": "environment-token"},
+                )
+
+        self.assertEqual(token, "file-token")
+
+    def test_resolve_mapbox_token_rejects_empty_file(self):
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            token_path = Path(tmp_dir) / "token.txt"
+            token_path.write_text(" \n", encoding="utf-8")
+
+            with token_path.open("r", encoding="utf-8") as token_file:
+                with self.assertRaisesRegex(ValueError, "token file is empty"):
+                    resolve_mapbox_token(
+                        provided_token=None,
+                        token_file=token_file,
+                        environ={},
+                    )
+
+    def test_main_light_preset_keeps_light_label_for_custom_style_id(self):
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            style_path = root / "style.json"
+            style_path.write_text(json.dumps(SAMPLE_STYLE), encoding="utf-8")
+            output_root = root / "light-audit"
+
+            with patch.object(
+                mapbox_outdoors_style_audit,
+                "LIGHT_OUTPUT_ROOT",
+                output_root,
+            ), patch("builtins.print") as print_mock:
+                result = main(
+                    [
+                        "--preset",
+                        "light",
+                        "--style-id",
+                        "custom-light",
+                        "--style-json",
+                        str(style_path),
+                    ]
+                )
+
+            output_path = print_mock.call_args.args[0]
+            markdown = output_path.read_text(encoding="utf-8")
+
+        self.assertEqual(result, 0)
+        self.assertTrue(output_path.is_relative_to(output_root))
+        self.assertIn("mapbox-custom-light", str(output_path))
+        self.assertIn("# Mapbox Light style audit — mapbox/custom-light", markdown)
+
+    def test_main_redacts_token_file_value_from_fetch_failure(self):
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            token_path = Path(tmp_dir) / "token.txt"
+            token_path.write_text("token-file-secret\n", encoding="utf-8")
+            stderr = io.StringIO()
+
+            with patch.object(
+                mapbox_outdoors_style_audit,
+                "fetch_mapbox_style_definition",
+                side_effect=RuntimeError("failed for token-file-secret"),
+            ), contextlib.redirect_stderr(stderr), self.assertRaises(SystemExit):
+                main(["--mapbox-token-file", str(token_path)])
+
+        self.assertIn("failed for [REDACTED]", stderr.getvalue())
+        self.assertNotIn("token-file-secret", stderr.getvalue())
 
 if __name__ == "__main__":
     unittest.main()
