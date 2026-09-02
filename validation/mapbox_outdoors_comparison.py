@@ -4,6 +4,7 @@ import argparse
 import base64
 import dataclasses
 import datetime as dt
+import hashlib
 import json
 import math
 import os
@@ -470,6 +471,15 @@ def load_style_definition(path: Path) -> dict[str, object]:
     return loaded
 
 
+def sha256_file(path: Path) -> str:
+    """Return a stable content fingerprint for a captured comparison artifact."""
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(65536), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
 def _ensure_output_directory(path: Path) -> None:
     path.mkdir(parents=True, exist_ok=True)
 
@@ -479,6 +489,11 @@ def _redacted_manifest(
     camera: MapboxComparisonCamera,
     result: ComparisonResult,
 ) -> dict[str, object]:
+    style_sha256 = (
+        sha256_file(result.paths.qgis_preprocessed_style_json)
+        if result.qgis_preprocessed_style_captured
+        else None
+    )
     return {
         "camera": dataclasses.asdict(camera),
         "style_url": None if result.style_json_path is not None else camera.style_url,
@@ -515,6 +530,7 @@ def _redacted_manifest(
         },
         "metrics": result.image_metrics,
         "qgis_runtime": result.qgis_runtime,
+        "qgis_preprocessed_style_sha256": style_sha256,
         "notes": [
             "Mapbox tokens are intentionally excluded from this manifest.",
             "This is a manual visual QA aid, not a CI gate.",

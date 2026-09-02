@@ -352,6 +352,8 @@ python3 validation/mapbox_outdoors_style_adjustment_probe.py \
 
 Light runs are written under `debug/mapbox-light-style-adjustment-probe/comparison-camera/<timestamp>/`. Aggregate only reports with coherent owner/style provenance; mixed or legacy-missing provenance is labeled explicitly instead of being attributed to Light or Outdoors. Compare z8, z12, and z14 first, then retain z5/z18 and an Outdoors camera as guardrails before promoting a production change.
 
+Comparison manifests and style-adjustment reports record the SHA-256 fingerprint of the captured, token-redacted QGIS preprocessed style. This distinguishes live Mapbox style revisions that share the same `mapbox/light-v11` identifier. Aggregation rejects reports with different captured-style fingerprints; regenerate the full camera matrix from one source-style revision instead of combining stale and current evidence.
+
 The focus cues are triage context only. Candidate-backed rows, source-capped rows, and zero-candidate dash rows still need visual inspection before becoming a rendering change.
 
 ## Style audit before tuning
