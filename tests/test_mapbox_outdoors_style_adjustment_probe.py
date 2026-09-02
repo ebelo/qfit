@@ -46,6 +46,8 @@ def _write_camera_manifest(
     style_owner: str = "mapbox",
     style_id: str = "outdoors-v12",
 ) -> Path:
+    source_style_path = path.parent / "mapbox-source-style.json"
+    source_style_path.write_text(json.dumps(STYLE), encoding="utf-8")
     path.write_text(json.dumps({
         "camera": {
             "name": name,
@@ -57,7 +59,9 @@ def _write_camera_manifest(
             "height": 960,
             "style_owner": style_owner,
             "style_id": style_id,
-        }
+        },
+        "outputs": {"mapbox_source_style": str(source_style_path)},
+        "mapbox_source_style_sha256": probe_module.sha256_file(source_style_path),
     }), encoding="utf-8")
     return path
 
@@ -153,10 +157,12 @@ class MapboxOutdoorsStyleAdjustmentProbeTests(unittest.TestCase):
             baseline_dir.mkdir()
             browser_path = baseline_dir / "mapbox-gl-reference.png"
             qgis_path = baseline_dir / "qgis-vector-render.png"
+            source_style_path = baseline_dir / "mapbox-source-style.json"
             style_path = baseline_dir / "qgis-preprocessed-style.json"
             manifest_path = baseline_dir / "manifest.json"
             browser_path.write_bytes(b"browser")
             qgis_path.write_bytes(b"baseline-qgis")
+            source_style_path.write_text(json.dumps(STYLE), encoding="utf-8")
             style_path.write_text(json.dumps(STYLE), encoding="utf-8")
             manifest_path.write_text(
                 json.dumps({
@@ -174,6 +180,7 @@ class MapboxOutdoorsStyleAdjustmentProbeTests(unittest.TestCase):
                     "outputs": {
                         "browser_reference": str(browser_path),
                         "qgis_vector_render": str(qgis_path),
+                        "mapbox_source_style": str(source_style_path),
                         "qgis_preprocessed_style": str(style_path),
                     },
                     "metrics": {
@@ -533,8 +540,8 @@ class MapboxOutdoorsStyleAdjustmentProbeTests(unittest.TestCase):
             style_path.write_text(json.dumps(STYLE), encoding="utf-8")
             manifest_path = _write_camera_manifest(root / "manifest.json")
             manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-            manifest["outputs"] = {"qgis_preprocessed_style": str(style_path)}
-            manifest["qgis_preprocessed_style_sha256"] = "0" * 64
+            manifest["outputs"]["qgis_preprocessed_style"] = str(style_path)
+            manifest["mapbox_source_style_sha256"] = "0" * 64
             manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
             output_root = root / "style-adjustment-probe"
 

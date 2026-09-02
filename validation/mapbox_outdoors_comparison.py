@@ -336,6 +336,7 @@ class ComparisonPaths:
     qgis_png: Path
     diff_png: Path
     metrics_json: Path
+    mapbox_source_style_json: Path
     qgis_preprocessed_style_json: Path
     qgis_label_styles_json: Path
     qgis_runtime_json: Path
@@ -366,6 +367,7 @@ class ComparisonResult:
     browser_captured: bool
     qgis_captured: bool
     diff_captured: bool
+    mapbox_source_style_captured: bool = False
     qgis_preprocessed_style_captured: bool = False
     qgis_label_styles_captured: bool = False
     qgis_runtime_captured: bool = False
@@ -399,6 +401,7 @@ def build_comparison_paths(*, run_dir: Path) -> ComparisonPaths:
         qgis_png=run_dir / "qgis-vector-render.png",
         diff_png=run_dir / "mapbox-gl-vs-qgis-diff.png",
         metrics_json=run_dir / "metrics.json",
+        mapbox_source_style_json=run_dir / "mapbox-source-style.json",
         qgis_preprocessed_style_json=run_dir / "qgis-preprocessed-style.json",
         qgis_label_styles_json=run_dir / "qgis-label-styles.json",
         qgis_runtime_json=run_dir / "qgis-runtime.json",
@@ -480,6 +483,25 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def fetch_comparison_style_definition(
+    token: str,
+    style_owner: str,
+    style_id: str,
+) -> dict[str, object]:
+    """Fetch the single source style shared by both comparison renderers."""
+    _ensure_package_parent_on_path()
+    from qfit.mapbox_config import fetch_mapbox_style_definition
+
+    return fetch_mapbox_style_definition(token, style_owner, style_id)
+
+
+def write_redacted_style(path: Path, style: dict[str, object], *, token: str) -> None:
+    path.write_text(
+        redact_sensitive_text(json.dumps(style, indent=2), token) + "\n",
+        encoding="utf-8",
+    )
+
+
 def _ensure_output_directory(path: Path) -> None:
     path.mkdir(parents=True, exist_ok=True)
 
@@ -489,6 +511,11 @@ def _redacted_manifest(
     camera: MapboxComparisonCamera,
     result: ComparisonResult,
 ) -> dict[str, object]:
+    source_style_sha256 = (
+        sha256_file(result.paths.mapbox_source_style_json)
+        if result.mapbox_source_style_captured
+        else None
+    )
     style_sha256 = (
         sha256_file(result.paths.qgis_preprocessed_style_json)
         if result.qgis_preprocessed_style_captured
@@ -502,6 +529,7 @@ def _redacted_manifest(
             "qgis_vector_render": str(result.paths.qgis_png),
             "diff": str(result.paths.diff_png),
             "metrics": str(result.paths.metrics_json),
+            "mapbox_source_style": str(result.paths.mapbox_source_style_json),
             "qgis_preprocessed_style": str(result.paths.qgis_preprocessed_style_json),
             "qgis_label_styles": str(result.paths.qgis_label_styles_json),
             "qgis_runtime": str(result.paths.qgis_runtime_json),
@@ -523,6 +551,7 @@ def _redacted_manifest(
         "captured": {
             "browser_reference": result.browser_captured,
             "qgis_vector_render": result.qgis_captured,
+            "mapbox_source_style": result.mapbox_source_style_captured,
             "diff": result.diff_captured,
             "qgis_preprocessed_style": result.qgis_preprocessed_style_captured,
             "qgis_label_styles": result.qgis_label_styles_captured,
@@ -530,6 +559,7 @@ def _redacted_manifest(
         },
         "metrics": result.image_metrics,
         "qgis_runtime": result.qgis_runtime,
+        "mapbox_source_style_sha256": source_style_sha256,
         "qgis_preprocessed_style_sha256": style_sha256,
         "notes": [
             "Mapbox tokens are intentionally excluded from this manifest.",
@@ -1232,6 +1262,9 @@ def run_comparison(
     browser_renderer: Callable[..., None] = render_browser_reference,
     qgis_renderer: Callable[..., None] = render_qgis_vector,
     diff_builder: Callable[..., ImageMetrics | None] = build_image_diff,
+    style_fetcher: Callable[
+        [str, str, str], dict[str, object]
+    ] = fetch_comparison_style_definition,
 ) -> ComparisonResult:
     run_dir = build_run_directory(
         output_root=config.output_root,
@@ -1244,6 +1277,7 @@ def run_comparison(
     browser_captured = False
     qgis_captured = False
     diff_captured = False
+    mapbox_source_style_captured = False
     qgis_preprocessed_style_captured = False
     qgis_label_styles_captured = False
     qgis_runtime_captured = False
@@ -1252,8 +1286,12 @@ def run_comparison(
     style_definition = (
         load_style_definition(config.style_json_path)
         if config.style_json_path is not None
-        else None
+        else style_fetcher(
+            config.token, config.camera.style_owner, config.camera.style_id
+        )
     )
+    write_redacted_style(paths.mapbox_source_style_json, style_definition, token=config.token)
+    mapbox_source_style_captured = paths.mapbox_source_style_json.exists()
 
     if config.browser:
         browser_renderer(
@@ -1309,6 +1347,7 @@ def run_comparison(
         browser_captured=browser_captured,
         qgis_captured=qgis_captured,
         diff_captured=diff_captured,
+        mapbox_source_style_captured=mapbox_source_style_captured,
         qgis_preprocessed_style_captured=qgis_preprocessed_style_captured,
         qgis_label_styles_captured=qgis_label_styles_captured,
         qgis_runtime_captured=qgis_runtime_captured,

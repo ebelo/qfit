@@ -184,6 +184,7 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         self.assertEqual(paths.qgis_png, Path("/tmp/run/qgis-vector-render.png"))
         self.assertEqual(paths.diff_png, Path("/tmp/run/mapbox-gl-vs-qgis-diff.png"))
         self.assertEqual(paths.metrics_json, Path("/tmp/run/metrics.json"))
+        self.assertEqual(paths.mapbox_source_style_json, Path("/tmp/run/mapbox-source-style.json"))
         self.assertEqual(paths.qgis_preprocessed_style_json, Path("/tmp/run/qgis-preprocessed-style.json"))
         self.assertEqual(paths.qgis_label_styles_json, Path("/tmp/run/qgis-label-styles.json"))
         self.assertEqual(paths.qgis_runtime_json, Path("/tmp/run/qgis-runtime.json"))
@@ -1567,19 +1568,23 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
                 browser_renderer=fake_browser_renderer,
                 qgis_renderer=fake_qgis_renderer,
                 diff_builder=fake_diff_builder,
+                style_fetcher=lambda *_args: SAMPLE_STYLE,
             )
 
             manifest_text = result.paths.manifest_json.read_text(encoding="utf-8")
             manifest = json.loads(manifest_text)
             metrics = json.loads(result.paths.metrics_json.read_text(encoding="utf-8"))
+            source_style = json.loads(result.paths.mapbox_source_style_json.read_text(encoding="utf-8"))
             preprocessed_style = json.loads(result.paths.qgis_preprocessed_style_json.read_text(encoding="utf-8"))
             label_styles = json.loads(result.paths.qgis_label_styles_json.read_text(encoding="utf-8"))
             qgis_runtime = json.loads(result.paths.qgis_runtime_json.read_text(encoding="utf-8"))
+            expected_source_sha256 = sha256_file(result.paths.mapbox_source_style_json)
             expected_style_sha256 = sha256_file(result.paths.qgis_preprocessed_style_json)
 
         self.assertTrue(result.browser_captured)
         self.assertTrue(result.qgis_captured)
         self.assertTrue(result.diff_captured)
+        self.assertTrue(result.mapbox_source_style_captured)
         self.assertTrue(result.qgis_preprocessed_style_captured)
         self.assertTrue(result.qgis_label_styles_captured)
         self.assertTrue(result.qgis_runtime_captured)
@@ -1589,22 +1594,56 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         self.assertTrue(manifest["captured"]["browser_reference"])
         self.assertTrue(manifest["captured"]["qgis_vector_render"])
         self.assertTrue(manifest["captured"]["diff"])
+        self.assertTrue(manifest["captured"]["mapbox_source_style"])
         self.assertTrue(manifest["captured"]["qgis_preprocessed_style"])
         self.assertTrue(manifest["captured"]["qgis_label_styles"])
         self.assertTrue(manifest["captured"]["qgis_runtime"])
+        self.assertTrue(manifest["outputs"]["mapbox_source_style"].endswith("mapbox-source-style.json"))
         self.assertTrue(manifest["outputs"]["qgis_preprocessed_style"].endswith("qgis-preprocessed-style.json"))
         self.assertTrue(manifest["outputs"]["qgis_label_styles"].endswith("qgis-label-styles.json"))
         self.assertTrue(manifest["outputs"]["qgis_runtime"].endswith("qgis-runtime.json"))
         self.assertEqual(manifest["metrics"]["changed_pixel_ratio"], 0.25)
         self.assertEqual(manifest["qgis_runtime"]["qgis_version"], "3.44.0-Solothurn")
         self.assertEqual(
+            manifest["mapbox_source_style_sha256"],
+            expected_source_sha256,
+        )
+        self.assertEqual(
             manifest["qgis_preprocessed_style_sha256"],
             expected_style_sha256,
         )
         self.assertEqual(metrics["changed_pixel_ratio"], 0.25)
+        self.assertEqual(source_style, SAMPLE_STYLE)
         self.assertEqual(preprocessed_style, SAMPLE_STYLE)
         self.assertEqual(label_styles, [{"style_name": "contour-label"}])
         self.assertEqual(qgis_runtime["qgis_version_int"], 34400)
+
+    def test_run_comparison_redacts_source_style_before_fingerprinting(self):
+        source_style = {"version": 8, "metadata": {"token": "test-mapbox-token"}}
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            result = run_comparison(
+                ComparisonConfig(
+                    camera=CAMERAS["valais-geneva-outdoors"],
+                    token="test-mapbox-token",
+                    output_root=Path(tmpdir),
+                    browser=False,
+                    qgis=False,
+                    diff=False,
+                ),
+                style_fetcher=lambda *_args: source_style,
+            )
+            source_text = result.paths.mapbox_source_style_json.read_text(encoding="utf-8")
+            manifest = json.loads(result.paths.manifest_json.read_text(encoding="utf-8"))
+            expected_source_sha256 = sha256_file(result.paths.mapbox_source_style_json)
+
+        self.assertTrue(result.mapbox_source_style_captured)
+        self.assertNotIn("test-mapbox-token", source_text)
+        self.assertIn("<redacted>", source_text)
+        self.assertEqual(
+            manifest["mapbox_source_style_sha256"],
+            expected_source_sha256,
+        )
 
     def test_run_comparison_records_qgis_contour_label_probe_options(self):
         captured = {}
@@ -1646,6 +1685,7 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
                     now=dt.datetime(2026, 5, 10, 19, 45, tzinfo=dt.timezone.utc),
                 ),
                 qgis_renderer=fake_qgis_renderer,
+                style_fetcher=lambda *_args: SAMPLE_STYLE,
             )
 
             manifest = json.loads(result.paths.manifest_json.read_text(encoding="utf-8"))
@@ -1727,6 +1767,7 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
                 ),
                 qgis_renderer=fake_qgis_renderer,
                 diff_builder=fake_diff_builder,
+                style_fetcher=lambda *_args: SAMPLE_STYLE,
             )
 
         self.assertFalse(result.browser_captured)

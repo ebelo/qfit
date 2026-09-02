@@ -535,12 +535,21 @@ def build_style_adjustment_probe_report(
     manifest_path = config.baseline_manifest.expanduser().resolve()
     manifest = load_json_object(manifest_path)
     camera = camera_from_manifest(manifest)
+    source_style_path = _manifest_output_path(
+        manifest,
+        manifest_path=manifest_path,
+        key="mapbox_source_style",
+    )
+    baseline_style_sha256 = verified_style_sha256(
+        source_style_path,
+        manifest.get("mapbox_source_style_sha256"),
+    )
     qgis_style_path = _manifest_output_path(
         manifest,
         manifest_path=manifest_path,
         key="qgis_preprocessed_style",
     )
-    baseline_style_sha256 = verified_style_sha256(
+    verified_style_sha256(
         qgis_style_path,
         manifest.get("qgis_preprocessed_style_sha256"),
     )
@@ -604,6 +613,7 @@ def build_style_adjustment_probe_report(
             "baseline_manifest": _repo_relative(manifest_path),
             "browser_reference": _repo_relative(context.browser_reference_path),
             "baseline_qgis": _repo_relative(context.baseline_qgis_path),
+            "mapbox_source_style": _repo_relative(source_style_path),
             "qgis_preprocessed_style": _repo_relative(qgis_style_path),
         },
         "baseline": {
