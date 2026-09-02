@@ -41,6 +41,7 @@ except ImportError:  # pragma: no cover - direct script execution
     from mapbox_outdoors_runtime import format_qgis_runtime_label  # type: ignore[no-redef]
 
 DEFAULT_OUTPUT_ROOT = REPO_ROOT / "debug" / "mapbox-outdoors-visual-crops"
+LIGHT_OUTPUT_ROOT = REPO_ROOT / "debug" / "mapbox-light-visual-crops"
 DEFAULT_CROP_SIZE = (320, 240)
 DEFAULT_CROPS_PER_CAMERA = 3
 DEFAULT_FOCUS_DASH_CUE_LIMIT = 2
@@ -140,6 +141,17 @@ def build_run_directory(
 ) -> Path:
     root = DEFAULT_OUTPUT_ROOT if output_root is None else output_root
     return _build_focus_run_directory(output_root=root, now=now)
+
+
+def _comparison_output_root(comparison_summary: Mapping[str, object]) -> Path:
+    return LIGHT_OUTPUT_ROOT if comparison_summary.get("preset") == "light" else DEFAULT_OUTPUT_ROOT
+
+
+def _comparison_style_name(comparison_summary: Mapping[str, object]) -> str:
+    style_name = comparison_summary.get("style_name")
+    if isinstance(style_name, str) and style_name.strip():
+        return style_name.strip()
+    return "Mapbox Light" if comparison_summary.get("preset") == "light" else "Mapbox Outdoors"
 
 
 def build_visual_crop_paths(run_dir: Path) -> VisualCropPaths:
@@ -1858,6 +1870,7 @@ def generate_visual_crop_report(
     generated = generated_at or dt.datetime.now(dt.timezone.utc)
     report = {
         "generated": generated.astimezone(dt.timezone.utc).isoformat(),
+        "style_name": _comparison_style_name(comparison_summary),
         "comparison_summary_json": _display_input_path(comparison_summary_path),
         "comparison_summary_run": _comparison_summary_run_metadata(
             comparison_summary,
@@ -1911,7 +1924,7 @@ def _comparison_summary_run_metadata(
     comparison_summary_path: Path,
 ) -> dict[str, object]:
     run_metadata: dict[str, object] = {"path": _display_input_path(comparison_summary_path)}
-    for key in ("generated_at", "style_url"):
+    for key in ("preset", "style_name", "generated_at", "style_url"):
         value = comparison_summary.get(key)
         if isinstance(value, str) and value:
             run_metadata[key] = value
@@ -2073,8 +2086,9 @@ def _manual_crop_boxes_label(value: object) -> str:
 
 
 def _summary_header_lines(report: Mapping[str, object]) -> list[str]:
+    style_name = report.get("style_name") or "Mapbox Outdoors"
     lines = [
-        "# Mapbox Outdoors visual crop report",
+        f"# {style_name} visual crop report",
         "",
         f"Generated: {report.get('generated')}",
         f"Comparison summary input: `{report.get('comparison_summary_json')}`",
@@ -2130,7 +2144,7 @@ def _comparison_summary_run_markdown(value: object) -> str:
         return ""
     details = [
         f"{key}={detail_value}"
-        for key in ("generated_at", "style_url")
+        for key in ("preset", "style_name", "generated_at", "style_url")
         if isinstance((detail_value := value.get(key)), str) and detail_value
     ]
     qgis_runtimes = value.get("qgis_runtimes")
@@ -2246,6 +2260,7 @@ def _summary_read_lines(report: Mapping[str, object]) -> list[str]:
                 _joined_summary_labels(active_area_fill_labels),
             ]
         )
+    style_name = report.get("style_name") or "Mapbox Outdoors"
     if not rows:
         return []
     lines = [
@@ -2254,7 +2269,7 @@ def _summary_read_lines(report: Mapping[str, object]) -> list[str]:
         "",
         (
             "Condenses the runtime, repeated crop tint families, and style-audit area-fill "
-            "cues that are most useful before choosing a follow-up Mapbox Outdoors style slice."
+            f"cues that are most useful before choosing a follow-up {style_name} style slice."
         ),
         "",
         "| Signal | Read |",
@@ -3525,7 +3540,7 @@ def write_report(
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Crop the highest-delta regions from existing Mapbox Outdoors comparison artifacts."
+        description="Crop the highest-delta regions from existing Mapbox comparison artifacts."
     )
     parser.add_argument(
         "--comparison-summary-json",
@@ -3634,7 +3649,8 @@ def main(argv: list[str] | None = None) -> int:
             args.style_audit_json,
             label="Style audit JSON",
         )
-    paths = build_visual_crop_paths(build_run_directory())
+    output_root = _comparison_output_root(comparison_summary)
+    paths = build_visual_crop_paths(build_run_directory(output_root=output_root))
     try:
         report = generate_visual_crop_report(
             comparison_summary,
@@ -3651,6 +3667,7 @@ def main(argv: list[str] | None = None) -> int:
             crop_size=args.crop_size,
             crops_per_camera=args.crops_per_camera,
             manual_crop_boxes_by_camera=_manual_crop_boxes_by_camera(args.crop_box),
+            trusted_output_root=output_root,
         )
         if comparison_delta_report is not None and args.comparison_delta_json is not None:
             report = annotate_visual_crop_report_with_comparison_delta(
@@ -3661,7 +3678,7 @@ def main(argv: list[str] | None = None) -> int:
             )
     except (OSError, RuntimeError, ValueError) as error:
         parser.error(str(error))
-    write_report(report, paths)
+    write_report(report, paths, trusted_output_root=output_root)
     print(paths.summary_path)
     return 0
 

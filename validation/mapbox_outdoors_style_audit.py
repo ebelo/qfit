@@ -11,14 +11,15 @@ import sys
 from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable
+from typing import Iterable, TextIO
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PACKAGE_PARENT = REPO_ROOT.parent
 DEFAULT_OUTPUT_ROOT = REPO_ROOT / "debug" / "mapbox-outdoors-style-audit"
+LIGHT_OUTPUT_ROOT = REPO_ROOT / "debug" / "mapbox-light-style-audit"
 DEFAULT_MAPBOX_STYLE_OWNER = "mapbox"
 DEFAULT_MAPBOX_STYLE_ID = "outdoors-v12"
-_DEFAULT_OUTPUT_STYLE_SLUG = "mapbox-outdoors-v12"
+LIGHT_MAPBOX_STYLE_ID = "light-v11"
 _MARKDOWN_THREE_COLUMN_COUNT_SEPARATOR = "| --- | --- | ---: |"
 _MARKDOWN_LAYER_GROUP_LABEL = "Layer group"
 _MARKDOWN_MESSAGE_LABEL = "Message"
@@ -439,14 +440,30 @@ def _utc_timestamp(now: dt.datetime | None = None) -> str:
     return (now or dt.datetime.now(dt.timezone.utc)).strftime("%Y%m%dT%H%M%SZ")
 
 
-def resolve_mapbox_token(*, provided_token: str | None, environ: dict[str, str] | None = None) -> str:
+def resolve_mapbox_token(
+    *,
+    provided_token: str | None,
+    token_file: TextIO | None = None,
+    environ: dict[str, str] | None = None,
+) -> str:
     env = os.environ if environ is None else environ
     token = provided_token or env.get("MAPBOX_ACCESS_TOKEN") or env.get("QFIT_MAPBOX_ACCESS_TOKEN")
+    if token_file is not None:
+        token = token_file.read().strip()
+        if not token:
+            raise ValueError(f"Mapbox token file is empty: {token_file.name}")
     if not token:
         raise ValueError(
-            "Mapbox token required via --mapbox-token, MAPBOX_ACCESS_TOKEN, or QFIT_MAPBOX_ACCESS_TOKEN."
+            "Mapbox token required via --mapbox-token-file, --mapbox-token, "
+            "MAPBOX_ACCESS_TOKEN, or QFIT_MAPBOX_ACCESS_TOKEN."
         )
     return token
+
+
+def _redact_sensitive_text(value: str, token: str | None) -> str:
+    return value.replace(token, "[REDACTED]") if token else value
+
+
 
 
 def _compact_json(value: object, *, max_length: int = 220) -> str:
@@ -6045,8 +6062,10 @@ def build_audit_markdown(audit: dict[str, object]) -> str:
     style = audit["style"] if isinstance(audit.get("style"), dict) else {}
     layers = audit.get("layers") if isinstance(audit.get("layers"), list) else []
     summary = audit.get("summary") if isinstance(audit.get("summary"), dict) else {}
+    style_id = style.get("id")
+    style_name = "Mapbox Light" if style_id == LIGHT_MAPBOX_STYLE_ID else "Mapbox Outdoors"
     lines = [
-        f"# Mapbox Outdoors style audit — {style.get('label', 'mapbox/outdoors-v12')}",
+        f"# {style_name} style audit — {style.get('label', 'mapbox/outdoors-v12')}",
         "",
         f"Generated: {audit.get('generated_at', '')}",
         f"Layers: {audit.get('layer_count', len(layers))}",
@@ -6068,9 +6087,16 @@ def build_audit_markdown(audit: dict[str, object]) -> str:
     return "\n".join(lines)
 
 
-def _default_output_path(*, output_format: str) -> Path:
+def _default_output_path(
+    *,
+    output_format: str,
+    output_root: Path,
+    style_owner: str,
+    style_id: str,
+) -> Path:
     extension = "md" if output_format == "markdown" else "json"
-    return DEFAULT_OUTPUT_ROOT / _DEFAULT_OUTPUT_STYLE_SLUG / _utc_timestamp() / f"audit.{extension}"
+    style_slug = re.sub(r"[^A-Za-z0-9_.-]+", "-", f"{style_owner}-{style_id}").strip(".-")
+    return output_root / style_slug / _utc_timestamp() / f"audit.{extension}"
 
 
 def load_style_definition(path: Path) -> dict[str, object]:
@@ -6087,17 +6113,29 @@ def render_audit(audit: dict[str, object], *, output_format: str) -> str:
     return build_audit_markdown(audit)
 
 
-def _assert_default_output_path(output_path: Path) -> None:
-    root = DEFAULT_OUTPUT_ROOT.resolve()
+def _assert_default_output_path(output_path: Path, *, output_root: Path) -> None:
+    root = output_root.resolve()
     parent = output_path.parent.resolve()
     if not parent.is_relative_to(root):
-        raise ValueError(f"Audit output must stay under {DEFAULT_OUTPUT_ROOT}")
+        raise ValueError(f"Audit output must stay under {output_root}")
 
 
-def write_audit(content: str, *, output_format: str) -> Path:
-    output_path = _default_output_path(output_format=output_format)
-    _assert_default_output_path(output_path)
-    # Safe: output_path is built from DEFAULT_OUTPUT_ROOT and a constant Mapbox Outdoors slug.
+def write_audit(
+    content: str,
+    *,
+    output_format: str,
+    output_root: Path,
+    style_owner: str,
+    style_id: str,
+) -> Path:
+    output_path = _default_output_path(
+        output_format=output_format,
+        output_root=output_root,
+        style_owner=style_owner,
+        style_id=style_id,
+    )
+    _assert_default_output_path(output_path, output_root=output_root)
+    # Safe: output path is built beneath the selected trusted debug report root.
     output_path.parent.mkdir(parents=True, exist_ok=True)  # NOSONAR
     output_path.write_text(content, encoding="utf-8")  # NOSONAR
     return output_path
@@ -6105,19 +6143,31 @@ def write_audit(content: str, *, output_format: str) -> Path:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Generate a developer audit of Mapbox Outdoors style rules and qfit/QGIS preprocessing.",
+        description="Generate a developer audit of Mapbox style rules and qfit/QGIS preprocessing.",
+    )
+    parser.add_argument(
+        "--preset",
+        choices=("outdoors", "light"),
+        default="outdoors",
+        help="Mapbox preset to audit. Defaults to outdoors.",
     )
     parser.add_argument(
         "--style-json",
         type=Path,
         help="Read an already downloaded Mapbox style JSON file instead of fetching live style JSON.",
     )
-    parser.add_argument("--style-owner", default=DEFAULT_MAPBOX_STYLE_OWNER)
-    parser.add_argument("--style-id", default=DEFAULT_MAPBOX_STYLE_ID)
-    parser.add_argument(
+    parser.add_argument("--style-owner")
+    parser.add_argument("--style-id")
+    token_source = parser.add_mutually_exclusive_group()
+    token_source.add_argument(
         "--mapbox-token",
         default=None,
         help="Mapbox token for live style fetch. Prefer MAPBOX_ACCESS_TOKEN or QFIT_MAPBOX_ACCESS_TOKEN.",
+    )
+    token_source.add_argument(
+        "--mapbox-token-file",
+        type=argparse.FileType("r", encoding="utf-8"),
+        help="Read the Mapbox access token from a local file without placing it on argv.",
     )
     parser.add_argument(
         "--format",
@@ -6153,22 +6203,42 @@ def build_parser() -> argparse.ArgumentParser:
     )
     return parser
 
+def _preset_style_settings(args: argparse.Namespace) -> tuple[str, str, Path]:
+    style_owner = args.style_owner or DEFAULT_MAPBOX_STYLE_OWNER
+    default_style_id = LIGHT_MAPBOX_STYLE_ID if args.preset == "light" else DEFAULT_MAPBOX_STYLE_ID
+    style_id = args.style_id or default_style_id
+    output_root = LIGHT_OUTPUT_ROOT if args.preset == "light" else DEFAULT_OUTPUT_ROOT
+    return style_owner, style_id, output_root
+
+
 
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
 
+    style_owner, style_id, output_root = _preset_style_settings(args)
     token = None
-    if args.style_json is not None:
-        style_definition = load_style_definition(args.style_json)
-        token = (
-            args.mapbox_token
-            or os.environ.get("MAPBOX_ACCESS_TOKEN")
-            or os.environ.get("QFIT_MAPBOX_ACCESS_TOKEN")
-        )
-    else:
-        token = resolve_mapbox_token(provided_token=args.mapbox_token)
-        style_definition = fetch_mapbox_style_definition(token, args.style_owner, args.style_id)
+    try:
+        if args.style_json is not None:
+            style_definition = load_style_definition(args.style_json)
+            if (
+                args.mapbox_token_file is not None
+                or args.mapbox_token
+                or os.environ.get("MAPBOX_ACCESS_TOKEN")
+                or os.environ.get("QFIT_MAPBOX_ACCESS_TOKEN")
+            ):
+                token = resolve_mapbox_token(
+                    provided_token=args.mapbox_token,
+                    token_file=args.mapbox_token_file,
+                )
+        else:
+            token = resolve_mapbox_token(
+                provided_token=args.mapbox_token,
+                token_file=args.mapbox_token_file,
+            )
+            style_definition = fetch_mapbox_style_definition(token, style_owner, style_id)
+    except (json.JSONDecodeError, KeyError, OSError, RuntimeError, ValueError) as error:
+        parser.error(_redact_sensitive_text(str(error), token))
 
     include_qgis_converter_warnings = (
         args.include_qgis_converter_warnings
@@ -6182,8 +6252,8 @@ def main(argv: list[str] | None = None) -> int:
         try:
             sprite_resources = fetch_mapbox_sprite_resources(
                 token,
-                args.style_owner,
-                args.style_id,
+                style_owner,
+                style_id,
                 sprite_url=sprite_url,
             )
         except (RuntimeError, KeyError, ValueError, OSError):
@@ -6192,8 +6262,8 @@ def main(argv: list[str] | None = None) -> int:
     audit = build_style_audit(
         style_definition,
         config=StyleAuditConfig(
-            style_owner=args.style_owner,
-            style_id=args.style_id,
+            style_owner=style_owner,
+            style_id=style_id,
             include_qgis_converter_warnings=include_qgis_converter_warnings,
             include_qgis_property_removal_impact=args.include_qgis_property_removal_impact,
             include_qgis_filter_parse_support=args.include_qgis_filter_parse_support,
@@ -6201,7 +6271,13 @@ def main(argv: list[str] | None = None) -> int:
         ),
     )
     content = render_audit(audit, output_format=args.format)
-    output_path = write_audit(content, output_format=args.format)
+    output_path = write_audit(
+        content,
+        output_format=args.format,
+        output_root=output_root,
+        style_owner=style_owner,
+        style_id=style_id,
+    )
     print(output_path)
     return 0
 

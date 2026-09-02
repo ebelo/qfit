@@ -103,6 +103,24 @@ The default output root is `debug/mapbox-light-comparison/`. The aggregate
 `summary.json`, `summary.md`, and `contact-sheet.jpg` record the Light
 preset and `mapbox://styles/mapbox/light-v11` provenance without token values.
 
+To generate the matching Light style audit and z8/z14 hotspot crops without
+putting a credential on the command line:
+
+```bash
+python3 validation/mapbox_outdoors_style_audit.py \
+  --preset light \
+  --mapbox-token-file /path/to/token.txt \
+  --format json
+
+python3 validation/mapbox_outdoors_visual_crops.py \
+  --comparison-summary-json debug/mapbox-light-comparison/all-cameras/<timestamp>/summary.json \
+  --style-audit-json debug/mapbox-light-style-audit/mapbox-light-v11/<timestamp>/audit.json \
+  --camera zurich-region-z8-light \
+  --camera geneva-urban-z14-light
+```
+
+These reports default to `debug/mapbox-light-style-audit/` and `debug/mapbox-light-visual-crops/`.
+
 ## Run a complete comparison
 
 ```bash
@@ -313,13 +331,13 @@ The focus cues are triage context only. Candidate-backed rows, source-capped row
 
 ## Style audit before tuning
 
-Before choosing another rendering-tuning slice, generate a style audit so the work is tied to the actual Mapbox Outdoors layer rules and qfit's current QGIS preprocessing choices.
+Before choosing another rendering-tuning slice, generate a style audit so the work is tied to the selected Mapbox preset's layer rules and qfit's current QGIS preprocessing choices.
 
 From the live Mapbox style JSON:
 
 ```bash
-export MAPBOX_ACCESS_TOKEN="***"
-python3 validation/mapbox_outdoors_style_audit.py
+python3 validation/mapbox_outdoors_style_audit.py \
+  --mapbox-token-file /path/to/token.txt
 ```
 
 From an already downloaded style JSON, which is useful for offline review and credential-free test fixtures:
@@ -334,6 +352,7 @@ Default audit outputs are written under:
 
 ```text
 debug/mapbox-outdoors-style-audit/<style>/<UTC timestamp>/audit.md
+debug/mapbox-light-style-audit/<style>/<UTC timestamp>/audit.md
 ```
 
 The audit summarizes each relevant style layer's source layer, filter, zoom band, paint/layout symbology, properties qfit preserves, properties qfit simplifies or substitutes before handing the style to QGIS, and cues that remain QGIS-dependent such as Mapbox filter expressions, sprites, patterns, non-fallback fonts, or still-live paint/layout expressions. It also records simplified and unresolved properties by layer group, expression operators, filter-operator signatures, visible label-density candidate layers by visual layer group, visible road/trail hierarchy candidate layers, visible terrain/landcover palette candidate layers, visible water surface/flow candidate layers, visible sprite/icon candidate layers, and visible route overlay candidate layers with source/type/property summaries. qfit simplifies supported `layout.text-field` expressions, including nested `case`, `match`, and `step` outputs, to the best simple label field reference QGIS can resolve, drops literal empty `layout.icon-image` placeholders that represent no sprite, reduces literal non-empty zoom-step `layout.icon-image` expressions to a representative sprite name, moves exact zero-to-full zoom-step `paint.line-opacity` and `paint.fill-opacity` gates to layer `minzoom`, and scalarizes conservative full-opacity paint expressions, including zoom-step opacity that is full for a layer's visible zoom range, to QGIS' equivalent default opacity while leaving data-driven partial opacity branches unresolved. Use those focused sections so follow-up work can distinguish broad buckets such as filters from concrete Mapbox operators like `match`, `step`, or `interpolate` and see whether repeated filter, label-density, road/path casing, dash, opacity, color, width, landcover palette, contour, hillshade, waterway, depth, sprite, shield, POI icon, ferry, ferry_auto, aerialway, piste, ski, golf, or transit controls concentrate in roads/trails, terrain/landcover, water, labels, or other groups.

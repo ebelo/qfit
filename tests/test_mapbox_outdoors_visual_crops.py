@@ -2909,5 +2909,53 @@ class MapboxOutdoorsVisualCropsTest(unittest.TestCase):
         self.assertNotIn("Traceback", stderr.getvalue())
 
 
+    def test_main_routes_light_summary_to_light_output_and_title(self):
+        image_module, image_stat_module = _fake_image_modules()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            comparison_summary, summary_path = _write_visual_triplet(
+                root,
+                image_module,
+                camera_name="geneva-urban-z14-light",
+            )
+            comparison_summary.update(
+                {
+                    "preset": "light",
+                    "style_name": "Mapbox Light",
+                    "style_url": "mapbox://styles/mapbox/light-v11",
+                }
+            )
+            summary_path.write_text(json.dumps(comparison_summary), encoding="utf-8")
+            output_root = root / "light-crops"
+            stdout = io.StringIO()
+
+            with patch(
+                "qfit.validation.mapbox_outdoors_visual_crops.LIGHT_OUTPUT_ROOT",
+                output_root,
+            ), patch(
+                "qfit.validation.mapbox_outdoors_visual_crops._image_modules",
+                return_value=(image_module, image_stat_module),
+            ), patch(
+                "qfit.validation.mapbox_outdoors_visual_crops.build_all_cameras_contact_sheet",
+                side_effect=_fake_contact_sheet,
+            ), contextlib.redirect_stdout(stdout):
+                result = main(
+                    [
+                        "--comparison-summary-json",
+                        str(summary_path),
+                        "--crops-per-camera",
+                        "1",
+                        "--crop-size",
+                        "4x4",
+                    ]
+                )
+
+            summary_output = Path(stdout.getvalue().strip())
+            markdown = summary_output.read_text(encoding="utf-8")
+
+        self.assertEqual(result, 0)
+        self.assertTrue(summary_output.is_relative_to(output_root))
+        self.assertIn("# Mapbox Light visual crop report", markdown)
+        self.assertIn("follow-up Mapbox Light style slice", markdown)
 if __name__ == "__main__":
     unittest.main()
