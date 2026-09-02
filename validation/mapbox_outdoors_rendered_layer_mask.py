@@ -57,10 +57,17 @@ VARIANT_SPEC_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]*=[^=]+$")
 SAFE_PATH_SEGMENT_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]*$")
 LUMINANCE_WEIGHTS = (0.2126, 0.7152, 0.0722)
 QGIS_RUNTIME_NOT_CAPTURED = "(not captured)"
+MIXED_OR_UNKNOWN_STYLE_ID = "(mixed-or-unknown)"
 
 
 def _style_display_name(style_id: object) -> str:
-    return "Mapbox Light" if style_id == "light-v11" else "Mapbox Outdoors"
+    if style_id == "light-v11":
+        return "Mapbox Light"
+    if style_id == "outdoors-v12":
+        return "Mapbox Outdoors"
+    if isinstance(style_id, str) and style_id != MIXED_OR_UNKNOWN_STYLE_ID:
+        return "Mapbox custom style"
+    return "Mapbox mixed/unknown styles"
 
 
 def output_root_for_style_id(style_id: str) -> Path:
@@ -1134,7 +1141,7 @@ def build_rendered_layer_mask_aggregate_report(
     qgis_runtimes: set[str] = set()
     variant_entries: list[dict[str, object]] = []
     crop_entries: list[dict[str, object]] = []
-    style_ids: set[str] = set()
+    style_ids: set[str | None] = set()
     for report_path in report_paths:
         (
             input_path,
@@ -1145,14 +1152,17 @@ def build_rendered_layer_mask_aggregate_report(
         ) = _aggregate_mask_entries(report_path)
         input_reports.append(input_path)
         qgis_runtimes.add(qgis_runtime_label)
-        if style_id is not None:
-            style_ids.add(style_id)
+        style_ids.add(style_id)
         variant_entries.extend(report_variant_entries)
         crop_entries.extend(report_crop_entries)
     generated = now or dt.datetime.now(dt.timezone.utc)
     return {
         "generated": generated.isoformat(timespec="seconds"),
-        "style_id": next(iter(style_ids)) if len(style_ids) == 1 else None,
+        "style_id": (
+            next(iter(style_ids))
+            if len(style_ids) == 1 and None not in style_ids
+            else MIXED_OR_UNKNOWN_STYLE_ID
+        ),
         "input_reports": input_reports,
         "qgis_runtimes": sorted(qgis_runtimes),
         "variant_totals": _aggregate_mask_totals(variant_entries),
@@ -1322,11 +1332,12 @@ def build_parser() -> argparse.ArgumentParser:
         default=[],
         help="Optional crop box as x_min,y_min,x_max,y_max. Repeat for multiple crops.",
     )
-    parser.add_argument(
+    token_source = parser.add_mutually_exclusive_group()
+    token_source.add_argument(
         "--mapbox-token",
         help="Mapbox access token. Prefer MAPBOX_ACCESS_TOKEN to avoid shell history exposure.",
     )
-    parser.add_argument(
+    token_source.add_argument(
         "--mapbox-token-file",
         type=argparse.FileType("r", encoding="utf-8"),
         help="Read the Mapbox token from a file without exposing it in process arguments.",

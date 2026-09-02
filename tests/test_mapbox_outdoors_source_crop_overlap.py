@@ -133,6 +133,17 @@ class MapboxOutdoorsSourceCropOverlapTests(unittest.TestCase):
         self.assertIn("source/crop overlap failed", stderr.getvalue())
         self.assertNotIn("file-token-secret", stderr.getvalue())
 
+    def test_parser_rejects_ambiguous_token_sources(self):
+        with self.assertRaises(SystemExit):
+            source_overlap_module._parse_args([
+                "--visual-crop-json",
+                "visual-crops.json",
+                "--mapbox-token",
+                "direct-token",
+                "--mapbox-token-file",
+                "token.txt",
+            ])
+
     def test_build_paths_are_predictable(self):
         run_dir = build_run_directory(
             output_root=Path("/tmp/source-overlap"),
@@ -698,6 +709,7 @@ class MapboxOutdoorsSourceCropOverlapTests(unittest.TestCase):
             paths = build_source_crop_overlap_paths(run_dir)
             report = {
                 "generated": "2026-05-21T21:45:00+00:00",
+                "style_id": "outdoors-v12",
                 "camera": "test-camera",
                 "camera_zoom": 18.0,
                 "tile_zoom": 18,
@@ -847,6 +859,38 @@ class MapboxOutdoorsSourceCropOverlapTests(unittest.TestCase):
             markdown,
         )
 
+    def test_aggregate_reports_mixed_style_provenance_explicitly(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            outdoors_report = _write_aggregate_source_overlap_report(
+                root / "outdoors.json",
+                camera="outdoors-camera",
+                camera_zoom=8.0,
+                qgis_runtimes=[],
+                source_layers=[],
+            )
+            light_report = _write_aggregate_source_overlap_report(
+                root / "light.json",
+                camera="light-camera",
+                camera_zoom=12.0,
+                qgis_runtimes=[],
+                source_layers=[],
+            )
+            light_data = json.loads(light_report.read_text(encoding="utf-8"))
+            light_data["style_id"] = "light-v11"
+            light_report.write_text(json.dumps(light_data), encoding="utf-8")
+
+            aggregate = build_source_crop_overlap_aggregate_report(
+                (outdoors_report, light_report)
+            )
+            markdown = render_aggregate_markdown_summary(aggregate)
+
+        self.assertEqual(
+            aggregate["style_id"],
+            source_overlap_module.MIXED_OR_UNKNOWN_STYLE_ID,
+        )
+        self.assertIn("# Mapbox mixed/unknown styles source/crop overlap aggregate", markdown)
+
     def test_main_aggregate_mode_writes_markdown_summary(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -948,6 +992,27 @@ class MapboxOutdoorsSourceCropOverlapTests(unittest.TestCase):
                     tile_decoder=lambda _payload, _tile: {},
                 )
 
+    def test_collect_report_rejects_style_provenance_mismatch(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            visual_crop_json = _write_source_overlap_fixture(root)
+            manifest_path = root / "manifest.json"
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            manifest["camera"]["style_owner"] = "mapbox"
+            manifest["camera"]["style_id"] = "light-v11"
+            manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+            with self.assertRaisesRegex(ValueError, "does not match comparison manifest"):
+                collect_source_crop_overlap_report(
+                    SourceCropOverlapConfig(
+                        token="test-token",
+                        visual_crop_json_path=visual_crop_json,
+                        camera_name="test-camera",
+                    ),
+                    tile_fetcher=lambda _url: b"",
+                    tile_decoder=lambda _payload, _tile: {},
+                )
+
     def test_collect_report_rejects_untrusted_nested_artifact_paths(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -1012,6 +1077,7 @@ def _write_aggregate_source_overlap_report(
         json.dumps(
             {
                 "generated": "2026-05-25T12:30:00+00:00",
+                "style_id": "outdoors-v12",
                 "camera": camera,
                 "camera_zoom": camera_zoom,
                 "comparison_summary_run": {"qgis_runtimes": qgis_runtimes},

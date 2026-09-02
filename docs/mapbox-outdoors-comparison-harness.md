@@ -281,7 +281,7 @@ python3 validation/mapbox_outdoors_source_crop_overlap.py \
   --mapbox-token-file /path/to/mapbox-token.txt
 ```
 
-The Light preset targets `mapbox/light-v11`, writes under `debug/mapbox-light-source-crop-overlap/`, and defaults to the `road`, `admin`, `place_label`, `poi_label`, `water`, and `waterway` sources. Repeat the probe for several cameras before interpreting the aggregate. The token-file path is also supported by the rendered-layer mask probe; empty files and runtime failures are reported without printing the token value.
+The Light preset targets `mapbox/light-v11`, writes under `debug/mapbox-light-source-crop-overlap/`, and defaults to the `road`, `admin`, `place_label`, `poi_label`, `water`, and `waterway` sources. The probe rejects a preset/style identity that does not match the comparison manifest, and aggregate headings explicitly identify mixed or missing style provenance. Repeat the probe for several cameras before interpreting the aggregate. The token-file path is also supported by the rendered-layer mask probe; direct-token and token-file arguments are mutually exclusive, and empty files or runtime failures are reported without printing the token value.
 
 When source/crop overlap points at a possible rendered owner, run QGIS-only transparent layer masks against an existing comparison manifest before changing production paint:
 

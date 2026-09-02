@@ -31,6 +31,7 @@ DEFAULT_SOURCE_LAYERS = (
     "airport_label",
 )
 LIGHT_MAPBOX_STYLE_ID = "light-v11"
+MIXED_OR_UNKNOWN_STYLE_ID = "(mixed-or-unknown)"
 LIGHT_OUTPUT_ROOT = REPO_ROOT / "debug" / "mapbox-light-source-crop-overlap"
 LIGHT_SOURCE_LAYERS = (
     "road",
@@ -133,7 +134,29 @@ def resolve_mapbox_token(
 
 
 def _style_display_name(style_id: object) -> str:
-    return "Mapbox Light" if style_id == LIGHT_MAPBOX_STYLE_ID else "Mapbox Outdoors"
+    if style_id == LIGHT_MAPBOX_STYLE_ID:
+        return "Mapbox Light"
+    if style_id == DEFAULT_MAPBOX_STYLE_ID:
+        return "Mapbox Outdoors"
+    if isinstance(style_id, str) and style_id != MIXED_OR_UNKNOWN_STYLE_ID:
+        return "Mapbox custom style"
+    return "Mapbox mixed/unknown styles"
+
+
+def _validated_manifest_style(
+    camera: Mapping[str, object],
+    *,
+    configured_owner: str,
+    configured_style_id: str,
+) -> None:
+    manifest_owner = str(camera.get("style_owner") or DEFAULT_MAPBOX_STYLE_OWNER)
+    manifest_style_id = str(camera.get("style_id") or DEFAULT_MAPBOX_STYLE_ID)
+    if (configured_owner, configured_style_id) != (manifest_owner, manifest_style_id):
+        raise ValueError(
+            "Configured Mapbox style "
+            f"{configured_owner}/{configured_style_id} does not match comparison manifest "
+            f"{manifest_owner}/{manifest_style_id}."
+        )
 
 
 def _utc_timestamp(now: dt.datetime | None = None) -> str:
@@ -1634,6 +1657,11 @@ def collect_source_crop_overlap_report(
     )
     manifest = load_json_object(manifest_path)
     camera = _validated_camera(manifest)
+    _validated_manifest_style(
+        camera,
+        configured_owner=config.style_owner,
+        configured_style_id=config.style_id,
+    )
     trusted_roots = _trusted_artifact_roots(visual_crop_path, comparison_summary_path, manifest_path)
     style_path = _style_path_from_manifest(
         manifest,
@@ -2311,15 +2339,15 @@ def _aggregate_one_source_crop_report(
     camera_rows: list[dict[str, object]],
     camera_class_rows: list[dict[str, object]],
     qgis_runtimes: set[str],
-    style_ids: set[str],
+    style_ids: set[str | None],
 ) -> str:
     resolved_path = report_path.expanduser().resolve()
     report = load_json_object(resolved_path)
     input_report = _repo_relative_path(resolved_path)
     camera_name = str(report.get("camera") or MISSING_VALUE)
     qgis_runtimes.update(_report_qgis_runtimes(report))
-    if isinstance(report.get("style_id"), str):
-        style_ids.add(str(report["style_id"]))
+    report_style_id = report.get("style_id")
+    style_ids.add(str(report_style_id) if isinstance(report_style_id, str) else None)
     for record in _list_of_mappings(report.get("combined_source_layers")):
         source_layer = str(record.get("source_layer") or MISSING_VALUE)
         total = source_totals.setdefault(source_layer, _AggregateSourceLayerTotal(source_layer=source_layer))
@@ -2419,7 +2447,7 @@ def build_source_crop_overlap_aggregate_report(
     camera_rows: list[dict[str, object]] = []
     camera_class_rows: list[dict[str, object]] = []
     qgis_runtimes: set[str] = set()
-    style_ids: set[str] = set()
+    style_ids: set[str | None] = set()
     input_reports = [
         _aggregate_one_source_crop_report(
             report_path,
@@ -2435,7 +2463,11 @@ def build_source_crop_overlap_aggregate_report(
     generated = now or dt.datetime.now(dt.timezone.utc)
     return {
         "generated": generated.astimezone(dt.timezone.utc).isoformat(timespec="seconds"),
-        "style_id": next(iter(style_ids)) if len(style_ids) == 1 else None,
+        "style_id": (
+            next(iter(style_ids))
+            if len(style_ids) == 1 and None not in style_ids
+            else MIXED_OR_UNKNOWN_STYLE_ID
+        ),
         "input_reports": input_reports,
         "qgis_runtimes": sorted(qgis_runtimes),
         "source_layer_rows": _sorted_source_layer_rows(source_totals),
@@ -2683,8 +2715,9 @@ def _parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--preset", choices=("outdoors", "light"), default="outdoors")
     parser.add_argument("--visual-crop-json", type=Path)
     parser.add_argument("--camera", default=DEFAULT_CAMERA_NAME)
-    parser.add_argument("--mapbox-token")
-    parser.add_argument(
+    token_source = parser.add_mutually_exclusive_group()
+    token_source.add_argument("--mapbox-token")
+    token_source.add_argument(
         "--mapbox-token-file",
         type=argparse.FileType("r", encoding="utf-8"),
         help="Read the Mapbox token from a file without exposing it in process arguments.",

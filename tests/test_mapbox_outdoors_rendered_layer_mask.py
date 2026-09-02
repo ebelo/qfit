@@ -493,6 +493,17 @@ class MapboxOutdoorsRenderedLayerMaskTests(unittest.TestCase):
             )
 
         self.assertEqual(token, "file-token-secret")
+        with self.assertRaises(SystemExit):
+            mask_module.build_parser().parse_args([
+                "--baseline-manifest",
+                "manifest.json",
+                "--variant",
+                "roads=road-simple",
+                "--mapbox-token",
+                "direct-token",
+                "--mapbox-token-file",
+                "token.txt",
+            ])
         self.assertNotIn("file-token-secret", " ".join([
             "--baseline-manifest",
             str(Path(tmpdir) / "manifest.json"),
@@ -543,7 +554,10 @@ class MapboxOutdoorsRenderedLayerMaskTests(unittest.TestCase):
             chamonix_report = root / "chamonix.json"
             geneva_report.write_text(
                 json.dumps({
-                    "camera": {"name": "geneva-airport-motorway-z14-outdoors"},
+                    "camera": {
+                        "name": "geneva-airport-motorway-z14-outdoors",
+                        "style_id": "outdoors-v12",
+                    },
                     "qgis_runtime": {"qgis_version": "3.44.0-Solothurn"},
                     "rerender_control_variant": "qgis-rerender-control",
                     "crop_boxes": [[0, 0, 1, 1]],
@@ -598,7 +612,10 @@ class MapboxOutdoorsRenderedLayerMaskTests(unittest.TestCase):
             )
             chamonix_report.write_text(
                 json.dumps({
-                    "camera": {"name": "chamonix-trails-z14-outdoors"},
+                    "camera": {
+                        "name": "chamonix-trails-z14-outdoors",
+                        "style_id": "outdoors-v12",
+                    },
                     "qgis_runtime": {"qgis_release_name": "Future"},
                     "rerender_control_variant": "qgis-rerender-control",
                     "crop_boxes": [[0, 0, 1, 1]],
@@ -667,6 +684,31 @@ class MapboxOutdoorsRenderedLayerMaskTests(unittest.TestCase):
             "`contour-labels` on `geneva-airport-motorway-z14-outdoors` crop 1.",
             markdown,
         )
+
+    def test_aggregate_reports_mixed_style_provenance_explicitly(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            outdoors_report = root / "outdoors.json"
+            light_report = root / "light.json"
+            outdoors_report.write_text(json.dumps({
+                "camera": {"name": "outdoors", "style_id": "outdoors-v12"},
+                "variants": [],
+            }), encoding="utf-8")
+            light_report.write_text(json.dumps({
+                "camera": {"name": "light", "style_id": "light-v11"},
+                "variants": [],
+            }), encoding="utf-8")
+
+            aggregate = build_rendered_layer_mask_aggregate_report(
+                (outdoors_report, light_report)
+            )
+            markdown = render_aggregate_markdown_summary(aggregate)
+
+        self.assertEqual(
+            aggregate["style_id"],
+            mask_module.MIXED_OR_UNKNOWN_STYLE_ID,
+        )
+        self.assertIn("# Mapbox mixed/unknown styles rendered-layer mask aggregate", markdown)
 
     def test_main_aggregate_mode_writes_markdown_summary(self):
         with tempfile.TemporaryDirectory() as tmpdir:
