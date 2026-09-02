@@ -1304,31 +1304,17 @@ def render_markdown_summary(report: Mapping[str, object]) -> str:
     return "\n".join(lines)
 
 
-def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(
-        description=(
-            "Render QGIS-only transparent layer masks from an existing Mapbox "
-            "comparison manifest and compare each variant with the baseline artifacts."
-        ),
-    )
-    parser.add_argument(
-        "--baseline-manifest",
-        type=Path,
-        help="Existing comparison manifest with Mapbox reference, QGIS render, and preprocessed style paths.",
-    )
-    parser.add_argument(
-        "--variant",
-        action="append",
-        type=parse_variant_spec,
-        default=[],
-        help="Mask variant as NAME=LAYER_ID[,LAYER_ID...]. Repeat for multiple variants.",
-    )
+def add_comparison_probe_arguments(
+    parser: argparse.ArgumentParser,
+    *,
+    aggregate_report_help: str,
+) -> None:
     parser.add_argument(
         "--aggregate-report",
         action="append",
         type=Path,
         default=[],
-        help="Existing rendered-layer mask summary.json report to aggregate. Repeat for multiple reports.",
+        help=aggregate_report_help,
     )
     parser.add_argument(
         "--aggregate-output",
@@ -1356,6 +1342,31 @@ def build_parser() -> argparse.ArgumentParser:
         "--no-rerender-control",
         action="store_true",
         help="Skip the automatic same-style QGIS rerender control.",
+    )
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        description=(
+            "Render QGIS-only transparent layer masks from an existing Mapbox "
+            "comparison manifest and compare each variant with the baseline artifacts."
+        ),
+    )
+    parser.add_argument(
+        "--baseline-manifest",
+        type=Path,
+        help="Existing comparison manifest with Mapbox reference, QGIS render, and preprocessed style paths.",
+    )
+    parser.add_argument(
+        "--variant",
+        action="append",
+        type=parse_variant_spec,
+        default=[],
+        help="Mask variant as NAME=LAYER_ID[,LAYER_ID...]. Repeat for multiple variants.",
+    )
+    add_comparison_probe_arguments(
+        parser,
+        aggregate_report_help="Existing rendered-layer mask summary.json report to aggregate. Repeat for multiple reports.",
     )
     return parser
 
