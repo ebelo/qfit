@@ -2340,15 +2340,19 @@ def _aggregate_one_source_crop_report(
     camera_rows: list[dict[str, object]],
     camera_class_rows: list[dict[str, object]],
     qgis_runtimes: set[str],
-    style_ids: set[str | None],
+    style_identities: set[tuple[str | None, str | None]],
 ) -> str:
     resolved_path = report_path.expanduser().resolve()
     report = load_json_object(resolved_path)
     input_report = _repo_relative_path(resolved_path)
     camera_name = str(report.get("camera") or MISSING_VALUE)
     qgis_runtimes.update(_report_qgis_runtimes(report))
+    report_style_owner = report.get("style_owner")
     report_style_id = report.get("style_id")
-    style_ids.add(str(report_style_id) if isinstance(report_style_id, str) else None)
+    style_identities.add((
+        str(report_style_owner) if isinstance(report_style_owner, str) else None,
+        str(report_style_id) if isinstance(report_style_id, str) else None,
+    ))
     for record in _list_of_mappings(report.get("combined_source_layers")):
         source_layer = str(record.get("source_layer") or MISSING_VALUE)
         total = source_totals.setdefault(source_layer, _AggregateSourceLayerTotal(source_layer=source_layer))
@@ -2448,7 +2452,7 @@ def build_source_crop_overlap_aggregate_report(
     camera_rows: list[dict[str, object]] = []
     camera_class_rows: list[dict[str, object]] = []
     qgis_runtimes: set[str] = set()
-    style_ids: set[str | None] = set()
+    style_identities: set[tuple[str | None, str | None]] = set()
     input_reports = [
         _aggregate_one_source_crop_report(
             report_path,
@@ -2457,18 +2461,20 @@ def build_source_crop_overlap_aggregate_report(
             camera_rows=camera_rows,
             camera_class_rows=camera_class_rows,
             qgis_runtimes=qgis_runtimes,
-            style_ids=style_ids,
+            style_identities=style_identities,
         )
         for report_path in deduplicated_report_paths
     ]
     generated = now or dt.datetime.now(dt.timezone.utc)
+    style_owner, style_id = (
+        next(iter(style_identities))
+        if len(style_identities) == 1 and None not in next(iter(style_identities))
+        else (MIXED_OR_UNKNOWN_STYLE_ID, MIXED_OR_UNKNOWN_STYLE_ID)
+    )
     return {
         "generated": generated.astimezone(dt.timezone.utc).isoformat(timespec="seconds"),
-        "style_id": (
-            next(iter(style_ids))
-            if len(style_ids) == 1 and None not in style_ids
-            else MIXED_OR_UNKNOWN_STYLE_ID
-        ),
+        "style_owner": style_owner,
+        "style_id": style_id,
         "input_reports": input_reports,
         "qgis_runtimes": sorted(qgis_runtimes),
         "source_layer_rows": _sorted_source_layer_rows(source_totals),

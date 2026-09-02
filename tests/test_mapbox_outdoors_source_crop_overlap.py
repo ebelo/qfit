@@ -890,6 +890,40 @@ class MapboxOutdoorsSourceCropOverlapTests(unittest.TestCase):
         )
         self.assertIn("# Mapbox mixed/unknown styles source/crop overlap aggregate", markdown)
 
+    def test_aggregate_reports_same_style_id_different_owners_as_mixed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            mapbox_report = _write_aggregate_source_overlap_report(
+                root / "mapbox.json",
+                camera="mapbox-camera",
+                camera_zoom=12.0,
+                qgis_runtimes=[],
+                source_layers=[],
+            )
+            custom_report = _write_aggregate_source_overlap_report(
+                root / "custom.json",
+                camera="custom-camera",
+                camera_zoom=12.0,
+                qgis_runtimes=[],
+                source_layers=[],
+            )
+            custom_data = json.loads(custom_report.read_text(encoding="utf-8"))
+            custom_data["style_owner"] = "another-owner"
+            custom_report.write_text(json.dumps(custom_data), encoding="utf-8")
+
+            aggregate = build_source_crop_overlap_aggregate_report(
+                (mapbox_report, custom_report)
+            )
+
+        self.assertEqual(
+            aggregate["style_owner"],
+            source_overlap_module.MIXED_OR_UNKNOWN_STYLE_ID,
+        )
+        self.assertEqual(
+            aggregate["style_id"],
+            source_overlap_module.MIXED_OR_UNKNOWN_STYLE_ID,
+        )
+
     def test_main_aggregate_mode_writes_markdown_summary(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -1077,6 +1111,7 @@ def _write_aggregate_source_overlap_report(
         json.dumps(
             {
                 "generated": "2026-05-25T12:30:00+00:00",
+                "style_owner": "mapbox",
                 "style_id": "outdoors-v12",
                 "camera": camera,
                 "camera_zoom": camera_zoom,

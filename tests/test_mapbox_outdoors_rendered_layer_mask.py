@@ -712,6 +712,41 @@ class MapboxOutdoorsRenderedLayerMaskTests(unittest.TestCase):
         )
         self.assertIn("# Mapbox mixed/unknown styles rendered-layer mask aggregate", markdown)
 
+    def test_aggregate_reports_same_style_id_different_owners_as_mixed(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            mapbox_report = root / "mapbox.json"
+            custom_report = root / "custom.json"
+            mapbox_report.write_text(json.dumps({
+                "camera": {
+                    "name": "mapbox",
+                    "style_owner": "mapbox",
+                    "style_id": "light-v11",
+                },
+                "variants": [],
+            }), encoding="utf-8")
+            custom_report.write_text(json.dumps({
+                "camera": {
+                    "name": "custom",
+                    "style_owner": "another-owner",
+                    "style_id": "light-v11",
+                },
+                "variants": [],
+            }), encoding="utf-8")
+
+            aggregate = build_rendered_layer_mask_aggregate_report(
+                (mapbox_report, custom_report)
+            )
+
+        self.assertEqual(
+            aggregate["style_owner"],
+            mask_module.MIXED_OR_UNKNOWN_STYLE_ID,
+        )
+        self.assertEqual(
+            aggregate["style_id"],
+            mask_module.MIXED_OR_UNKNOWN_STYLE_ID,
+        )
+
     def test_main_aggregate_mode_writes_markdown_summary(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir)

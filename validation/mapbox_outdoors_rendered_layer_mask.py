@@ -1075,7 +1075,7 @@ def _aggregate_mask_crop_entries(
 
 def _aggregate_mask_entries(
     report_path_value: Path,
-) -> tuple[str, str, str | None, list[dict[str, object]], list[dict[str, object]]]:
+) -> tuple[str, str, str | None, str | None, list[dict[str, object]], list[dict[str, object]]]:
     report_path = report_path_value.expanduser().resolve()
     report = load_json_object(report_path)
     camera = _mapping_value(report.get("camera"))
@@ -1100,10 +1100,12 @@ def _aggregate_mask_entries(
                 crop_boxes=crop_boxes,
             )
         )
+    style_owner = camera.get("style_owner")
     style_id = camera.get("style_id")
     return (
         _repo_relative(report_path),
         qgis_runtime_label,
+        str(style_owner) if isinstance(style_owner, str) else None,
         str(style_id) if isinstance(style_id, str) else None,
         variant_entries,
         crop_entries,
@@ -1141,28 +1143,31 @@ def build_rendered_layer_mask_aggregate_report(
     qgis_runtimes: set[str] = set()
     variant_entries: list[dict[str, object]] = []
     crop_entries: list[dict[str, object]] = []
-    style_ids: set[str | None] = set()
+    style_identities: set[tuple[str | None, str | None]] = set()
     for report_path in report_paths:
         (
             input_path,
             qgis_runtime_label,
+            style_owner,
             style_id,
             report_variant_entries,
             report_crop_entries,
         ) = _aggregate_mask_entries(report_path)
         input_reports.append(input_path)
         qgis_runtimes.add(qgis_runtime_label)
-        style_ids.add(style_id)
+        style_identities.add((style_owner, style_id))
         variant_entries.extend(report_variant_entries)
         crop_entries.extend(report_crop_entries)
     generated = now or dt.datetime.now(dt.timezone.utc)
+    style_owner, style_id = (
+        next(iter(style_identities))
+        if len(style_identities) == 1 and None not in next(iter(style_identities))
+        else (MIXED_OR_UNKNOWN_STYLE_ID, MIXED_OR_UNKNOWN_STYLE_ID)
+    )
     return {
         "generated": generated.isoformat(timespec="seconds"),
-        "style_id": (
-            next(iter(style_ids))
-            if len(style_ids) == 1 and None not in style_ids
-            else MIXED_OR_UNKNOWN_STYLE_ID
-        ),
+        "style_owner": style_owner,
+        "style_id": style_id,
         "input_reports": input_reports,
         "qgis_runtimes": sorted(qgis_runtimes),
         "variant_totals": _aggregate_mask_totals(variant_entries),
