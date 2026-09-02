@@ -2739,9 +2739,8 @@ def _main(argv: Sequence[str] | None = None) -> int:
     if args.aggregate_report:
         return _run_aggregate_mode(args)
     light_preset = args.preset == "light"
-    source_layers = tuple(args.source_layers) if args.source_layers else (
-        LIGHT_SOURCE_LAYERS if light_preset else DEFAULT_SOURCE_LAYERS
-    )
+    default_source_layers = LIGHT_SOURCE_LAYERS if light_preset else DEFAULT_SOURCE_LAYERS
+    source_layers = tuple(args.source_layers) if args.source_layers else default_source_layers
     output_root = args.output_root or (LIGHT_OUTPUT_ROOT if light_preset else DEFAULT_OUTPUT_ROOT)
     style_id = args.style_id or (LIGHT_MAPBOX_STYLE_ID if light_preset else DEFAULT_MAPBOX_STYLE_ID)
     token = resolve_mapbox_token(
