@@ -47,6 +47,7 @@ except ImportError:  # pragma: no cover - direct script execution
 
 
 DEFAULT_OUTPUT_ROOT = COMPARISON_DEFAULT_OUTPUT_ROOT.parent / "mapbox-outdoors-rendered-layer-mask"
+LIGHT_OUTPUT_ROOT = COMPARISON_DEFAULT_OUTPUT_ROOT.parent / "mapbox-light-rendered-layer-mask"
 STYLE_MASK_OUTPUT = "qgis-mask-style.json"
 QGIS_RENDER_OUTPUT = "qgis-vector-render.png"
 MAPBOX_DIFF_OUTPUT = "mapbox-gl-vs-qgis-diff.png"
@@ -56,6 +57,14 @@ VARIANT_SPEC_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]*=[^=]+$")
 SAFE_PATH_SEGMENT_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]*$")
 LUMINANCE_WEIGHTS = (0.2126, 0.7152, 0.0722)
 QGIS_RUNTIME_NOT_CAPTURED = "(not captured)"
+
+
+def _style_display_name(style_id: object) -> str:
+    return "Mapbox Light" if style_id == "light-v11" else "Mapbox Outdoors"
+
+
+def output_root_for_style_id(style_id: str) -> Path:
+    return LIGHT_OUTPUT_ROOT if style_id == "light-v11" else DEFAULT_OUTPUT_ROOT
 
 
 @dataclass(frozen=True)
@@ -718,7 +727,7 @@ def _summary_header_lines(report: Mapping[str, object]) -> list[str]:
     camera = _mapping_value(report.get("camera"))
     inputs = _mapping_value(report.get("inputs"))
     lines = [
-        "# Mapbox Outdoors rendered-layer mask probe",
+        f"# {_style_display_name(camera.get('style_id'))} rendered-layer mask probe",
         "",
         f"Generated: `{report.get('generated')}`",
         f"Camera: `{camera.get('name')}`",
@@ -1059,7 +1068,7 @@ def _aggregate_mask_crop_entries(
 
 def _aggregate_mask_entries(
     report_path_value: Path,
-) -> tuple[str, str, list[dict[str, object]], list[dict[str, object]]]:
+) -> tuple[str, str, str | None, list[dict[str, object]], list[dict[str, object]]]:
     report_path = report_path_value.expanduser().resolve()
     report = load_json_object(report_path)
     camera = _mapping_value(report.get("camera"))
@@ -1084,7 +1093,14 @@ def _aggregate_mask_entries(
                 crop_boxes=crop_boxes,
             )
         )
-    return _repo_relative(report_path), qgis_runtime_label, variant_entries, crop_entries
+    style_id = camera.get("style_id")
+    return (
+        _repo_relative(report_path),
+        qgis_runtime_label,
+        str(style_id) if isinstance(style_id, str) else None,
+        variant_entries,
+        crop_entries,
+    )
 
 
 def _aggregate_mask_totals(variant_entries: Sequence[Mapping[str, object]]) -> list[dict[str, object]]:
@@ -1118,17 +1134,25 @@ def build_rendered_layer_mask_aggregate_report(
     qgis_runtimes: set[str] = set()
     variant_entries: list[dict[str, object]] = []
     crop_entries: list[dict[str, object]] = []
+    style_ids: set[str] = set()
     for report_path in report_paths:
-        input_path, qgis_runtime_label, report_variant_entries, report_crop_entries = _aggregate_mask_entries(
-            report_path
-        )
+        (
+            input_path,
+            qgis_runtime_label,
+            style_id,
+            report_variant_entries,
+            report_crop_entries,
+        ) = _aggregate_mask_entries(report_path)
         input_reports.append(input_path)
         qgis_runtimes.add(qgis_runtime_label)
+        if style_id is not None:
+            style_ids.add(style_id)
         variant_entries.extend(report_variant_entries)
         crop_entries.extend(report_crop_entries)
     generated = now or dt.datetime.now(dt.timezone.utc)
     return {
         "generated": generated.isoformat(timespec="seconds"),
+        "style_id": next(iter(style_ids)) if len(style_ids) == 1 else None,
         "input_reports": input_reports,
         "qgis_runtimes": sorted(qgis_runtimes),
         "variant_totals": _aggregate_mask_totals(variant_entries),
@@ -1209,7 +1233,7 @@ def render_aggregate_markdown_summary(report: Mapping[str, object]) -> str:
     variant_rows = _list_of_mappings(report.get("variant_rows"))
     crop_rows = _list_of_mappings(report.get("crop_rows"))
     lines = [
-        "# Mapbox Outdoors rendered-layer mask aggregate",
+        f"# {_style_display_name(report.get('style_id'))} rendered-layer mask aggregate",
         "",
         f"Generated: `{report.get('generated')}`",
         f"Input reports: `{len(input_reports)}`",
@@ -1263,7 +1287,7 @@ def render_markdown_summary(report: Mapping[str, object]) -> str:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description=(
-            "Render QGIS-only transparent layer masks from an existing Mapbox Outdoors "
+            "Render QGIS-only transparent layer masks from an existing Mapbox "
             "comparison manifest and compare each variant with the baseline artifacts."
         ),
     )
@@ -1303,6 +1327,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="Mapbox access token. Prefer MAPBOX_ACCESS_TOKEN to avoid shell history exposure.",
     )
     parser.add_argument(
+        "--mapbox-token-file",
+        type=argparse.FileType("r", encoding="utf-8"),
+        help="Read the Mapbox token from a file without exposing it in process arguments.",
+    )
+    parser.add_argument(
         "--no-rerender-control",
         action="store_true",
         help="Skip the automatic same-style QGIS rerender control.",
@@ -1326,11 +1355,17 @@ def _run_aggregate_mode(args: argparse.Namespace) -> int:
 def _run_mask_mode(args: argparse.Namespace) -> int:
     if args.baseline_manifest is None or not args.variant:
         raise SystemExit("--baseline-manifest and at least one --variant are required unless --aggregate-report is provided.")
-    token = resolve_mapbox_token(provided_token=args.mapbox_token)
+    token = resolve_mapbox_token(
+        provided_token=args.mapbox_token,
+        token_file=args.mapbox_token_file,
+    )
+    manifest = load_json_object(args.baseline_manifest.expanduser().resolve())
+    camera = camera_from_manifest(manifest)
+    output_root = output_root_for_style_id(camera.style_id)
     report = build_rendered_layer_mask_report(
         RenderedLayerMaskConfig(
             baseline_manifest=args.baseline_manifest,
-            output_root=DEFAULT_OUTPUT_ROOT,
+            output_root=output_root,
             variants=tuple(args.variant),
             crop_boxes=tuple(args.crop_box),
             token=token,
@@ -1340,7 +1375,7 @@ def _run_mask_mode(args: argparse.Namespace) -> int:
     inputs = report.get("inputs")
     if isinstance(inputs, Mapping):
         print(f"Baseline manifest: {inputs.get('baseline_manifest')}")
-    output_root = DEFAULT_OUTPUT_ROOT.expanduser().resolve()
+    output_root = output_root.expanduser().resolve()
     newest = max(
         (path for path in (output_root / REPORT_CAMERA_DIRECTORY).glob("*") if path.is_dir()),
         default=None,
@@ -1351,11 +1386,19 @@ def _run_mask_mode(args: argparse.Namespace) -> int:
     return 0
 
 
-def main(argv: Sequence[str] | None = None) -> int:
+def _main(argv: Sequence[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     if args.aggregate_report:
         return _run_aggregate_mode(args)
     return _run_mask_mode(args)
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    try:
+        return _main(argv)
+    except (OSError, RuntimeError, ValueError):
+        print("Mapbox rendered-layer mask probe failed; inspect the local runtime and inputs.", file=sys.stderr)
+        return 2
 
 
 if __name__ == "__main__":  # pragma: no cover - CLI entry point

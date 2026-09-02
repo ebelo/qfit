@@ -3,8 +3,9 @@ import io
 import json
 import tempfile
 import unittest
-from contextlib import redirect_stdout
+from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
+from unittest.mock import patch
 
 from tests import _path  # noqa: F401
 
@@ -54,6 +55,83 @@ class MapboxOutdoorsSourceCropOverlapTests(unittest.TestCase):
             "qfit-token",
         )
         self.assertIsNone(resolve_mapbox_token(provided_token=None, environ={}))
+
+    def test_token_file_resolution_and_empty_file_validation(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            token_path = Path(tmp) / "mapbox-token.txt"
+            token_path.write_text("file-token\n", encoding="utf-8")
+            with token_path.open("r", encoding="utf-8") as token_file:
+                self.assertEqual(
+                    resolve_mapbox_token(
+                        provided_token=None,
+                        token_file=token_file,
+                        environ={},
+                    ),
+                    "file-token",
+                )
+            token_path.write_text("  \n", encoding="utf-8")
+            with token_path.open("r", encoding="utf-8") as token_file:
+                with self.assertRaisesRegex(ValueError, "Mapbox token file is empty"):
+                    resolve_mapbox_token(
+                        provided_token=None,
+                        token_file=token_file,
+                        environ={},
+                    )
+
+    def test_main_light_preset_uses_light_defaults_and_does_not_print_token(self):
+        captured = {}
+        with tempfile.TemporaryDirectory() as tmp:
+            token_path = Path(tmp) / "mapbox-token.txt"
+            token_path.write_text("file-token-secret\n", encoding="utf-8")
+
+            def fake_collect(config):
+                captured["config"] = config
+                return {}
+
+            stdout = io.StringIO()
+            with patch.object(source_overlap_module, "collect_source_crop_overlap_report", fake_collect), patch.object(
+                source_overlap_module,
+                "write_report",
+            ), redirect_stdout(stdout):
+                result = source_overlap_module.main([
+                    "--preset",
+                    "light",
+                    "--visual-crop-json",
+                    str(Path(tmp) / "visual-crops.json"),
+                    "--camera",
+                    "bern-urban-z12-light",
+                    "--mapbox-token-file",
+                    str(token_path),
+                ])
+
+        self.assertEqual(result, 0)
+        config = captured["config"]
+        self.assertEqual(config.style_id, "light-v11")
+        self.assertEqual(config.source_layers, source_overlap_module.LIGHT_SOURCE_LAYERS)
+        self.assertEqual(config.output_root, source_overlap_module.LIGHT_OUTPUT_ROOT)
+        self.assertEqual(config.token, "file-token-secret")
+        self.assertNotIn("file-token-secret", stdout.getvalue())
+
+    def test_main_redacts_token_file_value_from_runtime_failure(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            token_path = Path(tmp) / "mapbox-token.txt"
+            token_path.write_text("file-token-secret\n", encoding="utf-8")
+            stderr = io.StringIO()
+            with patch.object(
+                source_overlap_module,
+                "collect_source_crop_overlap_report",
+                side_effect=RuntimeError("failed for file-token-secret"),
+            ), redirect_stderr(stderr):
+                result = source_overlap_module.main([
+                    "--visual-crop-json",
+                    str(Path(tmp) / "visual-crops.json"),
+                    "--mapbox-token-file",
+                    str(token_path),
+                ])
+
+        self.assertEqual(result, 2)
+        self.assertIn("source/crop overlap failed", stderr.getvalue())
+        self.assertNotIn("file-token-secret", stderr.getvalue())
 
     def test_build_paths_are_predictable(self):
         run_dir = build_run_directory(
@@ -218,6 +296,10 @@ class MapboxOutdoorsSourceCropOverlapTests(unittest.TestCase):
 
         markdown = build_summary_markdown(report)
         self.assertIn("Bbox coverage is a summed upper-bound attribution aid", markdown)
+        self.assertIn(
+            "# Mapbox Light source/crop overlap",
+            build_summary_markdown({**report, "style_id": "light-v11"}),
+        )
         self.assertIn("QGIS style-layer coverage evaluates camera-zoom-active filters", markdown)
         self.assertIn("QGIS filter missing props reports active style-layer filter properties", markdown)
         self.assertIn("## Report read", markdown)

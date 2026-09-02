@@ -4,7 +4,7 @@ import json
 import subprocess
 import tempfile
 import unittest
-from contextlib import redirect_stdout
+from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 from unittest.mock import patch
 
@@ -416,6 +416,19 @@ class MapboxOutdoorsRenderedLayerMaskTests(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir)
+            (root / "manifest.json").write_text(
+                json.dumps({
+                    "camera": {
+                        "name": "unit-camera",
+                        "longitude": 7.0,
+                        "latitude": 46.0,
+                        "zoom": 14.0,
+                        "style_owner": "mapbox",
+                        "style_id": "outdoors-v12",
+                    }
+                }),
+                encoding="utf-8",
+            )
             output_root = root / "rendered-layer-mask"
             run_dir = output_root / "comparison-camera" / "20260522T080000Z"
             run_dir.mkdir(parents=True)
@@ -447,6 +460,81 @@ class MapboxOutdoorsRenderedLayerMaskTests(unittest.TestCase):
         self.assertIn("Baseline manifest: debug/manifest.json", stdout.getvalue())
         self.assertIn("Run directory:", stdout.getvalue())
         self.assertIn("Summary:", stdout.getvalue())
+
+    def test_light_manifest_uses_light_output_root_and_heading(self):
+        self.assertEqual(
+            mask_module.output_root_for_style_id("light-v11"),
+            mask_module.LIGHT_OUTPUT_ROOT,
+        )
+        markdown = render_markdown_summary({
+            "camera": {"name": "unit-light", "style_id": "light-v11"},
+            "baseline": {"metrics": {}},
+            "variants": [],
+            "rerender_control_variant": None,
+        })
+        self.assertIn("# Mapbox Light rendered-layer mask probe", markdown)
+
+    def test_parser_reads_token_file_without_putting_value_in_arguments(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            token_path = Path(tmpdir) / "mapbox-token.txt"
+            token_path.write_text("file-token-secret\n", encoding="utf-8")
+            args = mask_module.build_parser().parse_args([
+                "--baseline-manifest",
+                str(Path(tmpdir) / "manifest.json"),
+                "--variant",
+                "roads=road-simple",
+                "--mapbox-token-file",
+                str(token_path),
+            ])
+            token = mask_module.resolve_mapbox_token(
+                provided_token=args.mapbox_token,
+                token_file=args.mapbox_token_file,
+                environ={},
+            )
+
+        self.assertEqual(token, "file-token-secret")
+        self.assertNotIn("file-token-secret", " ".join([
+            "--baseline-manifest",
+            str(Path(tmpdir) / "manifest.json"),
+            "--variant",
+            "roads=road-simple",
+            "--mapbox-token-file",
+            str(token_path),
+        ]))
+
+    def test_main_redacts_token_file_value_from_runtime_failure(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            token_path = root / "mapbox-token.txt"
+            token_path.write_text("file-token-secret\n", encoding="utf-8")
+            manifest_path = root / "manifest.json"
+            manifest_path.write_text(json.dumps({
+                "camera": {
+                    "name": "unit-light",
+                    "longitude": 7.0,
+                    "latitude": 46.0,
+                    "zoom": 12.0,
+                    "style_id": "light-v11",
+                }
+            }), encoding="utf-8")
+            stderr = io.StringIO()
+            with patch.object(
+                mask_module,
+                "build_rendered_layer_mask_report",
+                side_effect=RuntimeError("failed for file-token-secret"),
+            ), redirect_stderr(stderr):
+                result = mask_module.main([
+                    "--baseline-manifest",
+                    str(manifest_path),
+                    "--variant",
+                    "roads=road-simple",
+                    "--mapbox-token-file",
+                    str(token_path),
+                ])
+
+        self.assertEqual(result, 2)
+        self.assertIn("rendered-layer mask probe failed", stderr.getvalue())
+        self.assertNotIn("file-token-secret", stderr.getvalue())
 
     def test_aggregate_report_summarizes_camera_and_crop_signals(self):
         with tempfile.TemporaryDirectory() as tmpdir:
