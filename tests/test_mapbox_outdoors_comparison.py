@@ -76,6 +76,7 @@ from qfit.validation.mapbox_outdoors_comparison import (
     render_qgis_vector,
     resolve_mapbox_token,
     run_comparison,
+    sha256_file,
     write_qgis_label_styles_snapshot,
     write_qgis_core_runtime_snapshot,
     write_qgis_runtime_snapshot,
@@ -1574,6 +1575,7 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
             preprocessed_style = json.loads(result.paths.qgis_preprocessed_style_json.read_text(encoding="utf-8"))
             label_styles = json.loads(result.paths.qgis_label_styles_json.read_text(encoding="utf-8"))
             qgis_runtime = json.loads(result.paths.qgis_runtime_json.read_text(encoding="utf-8"))
+            expected_style_sha256 = sha256_file(result.paths.qgis_preprocessed_style_json)
 
         self.assertTrue(result.browser_captured)
         self.assertTrue(result.qgis_captured)
@@ -1595,6 +1597,10 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         self.assertTrue(manifest["outputs"]["qgis_runtime"].endswith("qgis-runtime.json"))
         self.assertEqual(manifest["metrics"]["changed_pixel_ratio"], 0.25)
         self.assertEqual(manifest["qgis_runtime"]["qgis_version"], "3.44.0-Solothurn")
+        self.assertEqual(
+            manifest["qgis_preprocessed_style_sha256"],
+            expected_style_sha256,
+        )
         self.assertEqual(metrics["changed_pixel_ratio"], 0.25)
         self.assertEqual(preprocessed_style, SAMPLE_STYLE)
         self.assertEqual(label_styles, [{"style_name": "contour-label"}])

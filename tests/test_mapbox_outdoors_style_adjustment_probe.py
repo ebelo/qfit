@@ -19,6 +19,7 @@ from qfit.validation.mapbox_outdoors_style_adjustment_probe import (
     load_style_adjustment_variants,
     render_aggregate_markdown_summary,
     render_markdown_summary,
+    verified_style_sha256,
 )
 
 
@@ -267,6 +268,7 @@ class MapboxOutdoorsStyleAdjustmentProbeTests(unittest.TestCase):
             variant = report["variants"][1]
             self.assertEqual(report["generated"], "2026-05-24T14:30:00+00:00")
             self.assertEqual(report["qgis_runtime"]["qgis_version"], "3.44.0-Solothurn")
+            self.assertEqual(len(report["baseline_style_sha256"]), 64)
             self.assertTrue(control["is_rerender_control"])
             self.assertFalse(variant["is_rerender_control"])
             self.assertEqual(variant["matched_layer_ids"], ["contour-minor"])
@@ -509,6 +511,62 @@ class MapboxOutdoorsStyleAdjustmentProbeTests(unittest.TestCase):
         self.assertAlmostEqual(second_crop["luminance_delta_average"], 3.0)
         self.assertEqual(second_crop["improving_runs"], 0)
         self.assertEqual(second_crop["worsening_runs"], 1)
+
+    def test_style_fingerprint_rejects_manifest_artifact_mismatch(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            style_path = Path(tmpdir) / "style.json"
+            style_path.write_text(json.dumps(STYLE), encoding="utf-8")
+
+            fingerprint = verified_style_sha256(style_path)
+
+            self.assertEqual(len(fingerprint), 64)
+            with self.assertRaisesRegex(
+                ValueError,
+                "fingerprint does not match",
+            ):
+                verified_style_sha256(style_path, "0" * 64)
+
+    def test_aggregate_rejects_mixed_baseline_style_fingerprints(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            report_paths = []
+            for index, fingerprint in enumerate(("a" * 64, "b" * 64)):
+                report_path = root / f"report-{index}.json"
+                report_path.write_text(
+                    json.dumps(
+                        {
+                            "camera": {
+                                "name": f"camera-{index}",
+                                "style_owner": "mapbox",
+                                "style_id": "light-v11",
+                            },
+                            "baseline_style_sha256": fingerprint,
+                            "variants": [],
+                        }
+                    ),
+                    encoding="utf-8",
+                )
+                report_paths.append(report_path)
+
+            with self.assertRaisesRegex(
+                ValueError,
+                "different baseline style fingerprints",
+            ):
+                build_style_adjustment_aggregate_report(report_paths)
+
+    def test_aggregate_report_surfaces_baseline_style_fingerprint(self):
+        markdown = render_aggregate_markdown_summary(
+            {
+                "baseline_style_sha256": "a" * 64,
+                "input_reports": [],
+                "qgis_runtimes": [],
+                "rows": [],
+                "variant_totals": [],
+                "crop_rows": [],
+            }
+        )
+
+        self.assertIn(f"Baseline style SHA-256: `{'a' * 64}`", markdown)
 
     def test_aggregate_report_ignores_boolean_metric_values(self):
         with tempfile.TemporaryDirectory() as tmpdir:
