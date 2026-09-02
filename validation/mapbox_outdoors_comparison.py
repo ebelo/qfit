@@ -1290,7 +1290,7 @@ def run_comparison(
             config.token, config.camera.style_owner, config.camera.style_id
         )
     )
-    paths.mapbox_source_style_json.write_text(
+    paths.mapbox_source_style_json.write_text(  # NOSONAR - fixed artifact inside timestamped run dir
         redact_sensitive_text(json.dumps(style_definition, indent=2), config.token) + "\n",
         encoding="utf-8",
     )
