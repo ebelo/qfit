@@ -541,15 +541,16 @@ class MapboxOutdoorsStyleAdjustmentProbeTests(unittest.TestCase):
             def fail_if_rendered(**_kwargs):
                 self.fail("invalid provenance must be rejected before rendering")
 
+            config = StyleAdjustmentProbeConfig(
+                baseline_manifest=manifest_path,
+                output_root=output_root,
+                variants=(),
+                crop_boxes=(),
+                token="test-token",
+            )
             with self.assertRaisesRegex(ValueError, "fingerprint does not match"):
                 build_style_adjustment_probe_report(
-                    StyleAdjustmentProbeConfig(
-                        baseline_manifest=manifest_path,
-                        output_root=output_root,
-                        variants=(),
-                        crop_boxes=(),
-                        token="test-token",
-                    ),
+                    config,
                     qgis_renderer=fail_if_rendered,
                 )
 
