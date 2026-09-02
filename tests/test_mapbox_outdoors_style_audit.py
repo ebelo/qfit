@@ -5022,7 +5022,7 @@ class MapboxOutdoorsStyleAuditTests(unittest.TestCase):
                         environ={},
                     )
 
-    def test_main_light_preset_uses_light_style_and_output_root(self):
+    def test_main_light_preset_keeps_light_label_for_custom_style_id(self):
         with tempfile.TemporaryDirectory() as tmp_dir:
             root = Path(tmp_dir)
             style_path = root / "style.json"
@@ -5034,15 +5034,24 @@ class MapboxOutdoorsStyleAuditTests(unittest.TestCase):
                 "LIGHT_OUTPUT_ROOT",
                 output_root,
             ), patch("builtins.print") as print_mock:
-                result = main(["--preset", "light", "--style-json", str(style_path)])
+                result = main(
+                    [
+                        "--preset",
+                        "light",
+                        "--style-id",
+                        "custom-light",
+                        "--style-json",
+                        str(style_path),
+                    ]
+                )
 
             output_path = print_mock.call_args.args[0]
             markdown = output_path.read_text(encoding="utf-8")
 
         self.assertEqual(result, 0)
         self.assertTrue(output_path.is_relative_to(output_root))
-        self.assertIn("mapbox-light-v11", str(output_path))
-        self.assertIn("# Mapbox Light style audit — mapbox/light-v11", markdown)
+        self.assertIn("mapbox-custom-light", str(output_path))
+        self.assertIn("# Mapbox Light style audit — mapbox/custom-light", markdown)
 
     def test_main_redacts_token_file_value_from_fetch_failure(self):
         with tempfile.TemporaryDirectory() as tmp_dir:

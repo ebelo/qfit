@@ -19,7 +19,9 @@ DEFAULT_OUTPUT_ROOT = REPO_ROOT / "debug" / "mapbox-outdoors-style-audit"
 LIGHT_OUTPUT_ROOT = REPO_ROOT / "debug" / "mapbox-light-style-audit"
 DEFAULT_MAPBOX_STYLE_OWNER = "mapbox"
 DEFAULT_MAPBOX_STYLE_ID = "outdoors-v12"
+DEFAULT_MAPBOX_STYLE_NAME = "Mapbox Outdoors"
 LIGHT_MAPBOX_STYLE_ID = "light-v11"
+LIGHT_MAPBOX_STYLE_NAME = "Mapbox Light"
 _MARKDOWN_THREE_COLUMN_COUNT_SEPARATOR = "| --- | --- | ---: |"
 _MARKDOWN_LAYER_GROUP_LABEL = "Layer group"
 _MARKDOWN_MESSAGE_LABEL = "Message"
@@ -427,6 +429,7 @@ _MAPBOX_FILTER_OPERATORS = _MAPBOX_EXPRESSION_OPERATORS | _LEGACY_MAPBOX_FILTER_
 
 @dataclass(frozen=True)
 class StyleAuditConfig:
+    style_name: str = DEFAULT_MAPBOX_STYLE_NAME
     style_owner: str = DEFAULT_MAPBOX_STYLE_OWNER
     style_id: str = DEFAULT_MAPBOX_STYLE_ID
     generated_at: dt.datetime | None = None
@@ -3670,6 +3673,7 @@ def build_style_audit(
     generated_at = resolved_config.generated_at or dt.datetime.now(dt.timezone.utc)
     audit = {
         "style": {
+            "display_name": resolved_config.style_name,
             "owner": resolved_config.style_owner,
             "id": resolved_config.style_id,
             "label": _style_label(owner=resolved_config.style_owner, style_id=resolved_config.style_id),
@@ -6062,8 +6066,7 @@ def build_audit_markdown(audit: dict[str, object]) -> str:
     style = audit["style"] if isinstance(audit.get("style"), dict) else {}
     layers = audit.get("layers") if isinstance(audit.get("layers"), list) else []
     summary = audit.get("summary") if isinstance(audit.get("summary"), dict) else {}
-    style_id = style.get("id")
-    style_name = "Mapbox Light" if style_id == LIGHT_MAPBOX_STYLE_ID else "Mapbox Outdoors"
+    style_name = style.get("display_name") or DEFAULT_MAPBOX_STYLE_NAME
     lines = [
         f"# {style_name} style audit — {style.get('label', 'mapbox/outdoors-v12')}",
         "",
@@ -6203,12 +6206,15 @@ def build_parser() -> argparse.ArgumentParser:
     )
     return parser
 
-def _preset_style_settings(args: argparse.Namespace) -> tuple[str, str, Path]:
+def _preset_style_settings(args: argparse.Namespace) -> tuple[str, str, str, Path]:
     style_owner = args.style_owner or DEFAULT_MAPBOX_STYLE_OWNER
     default_style_id = LIGHT_MAPBOX_STYLE_ID if args.preset == "light" else DEFAULT_MAPBOX_STYLE_ID
     style_id = args.style_id or default_style_id
+    style_name = (
+        LIGHT_MAPBOX_STYLE_NAME if args.preset == "light" else DEFAULT_MAPBOX_STYLE_NAME
+    )
     output_root = LIGHT_OUTPUT_ROOT if args.preset == "light" else DEFAULT_OUTPUT_ROOT
-    return style_owner, style_id, output_root
+    return style_owner, style_id, style_name, output_root
 
 
 
@@ -6216,7 +6222,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
 
-    style_owner, style_id, output_root = _preset_style_settings(args)
+    style_owner, style_id, style_name, output_root = _preset_style_settings(args)
     token = None
     try:
         if args.style_json is not None:
@@ -6264,6 +6270,7 @@ def main(argv: list[str] | None = None) -> int:
         config=StyleAuditConfig(
             style_owner=style_owner,
             style_id=style_id,
+            style_name=style_name,
             include_qgis_converter_warnings=include_qgis_converter_warnings,
             include_qgis_property_removal_impact=args.include_qgis_property_removal_impact,
             include_qgis_filter_parse_support=args.include_qgis_filter_parse_support,
