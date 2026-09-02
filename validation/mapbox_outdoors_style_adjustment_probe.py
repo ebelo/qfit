@@ -42,6 +42,7 @@ try:
         parse_crop_box,
         render_qgis_vector_in_subprocess,
         safe_path_segment,
+        add_comparison_probe_arguments,
     )
 except ImportError:  # pragma: no cover - direct script execution
     from mapbox_outdoors_comparison import (  # type: ignore[no-redef]
@@ -75,6 +76,7 @@ except ImportError:  # pragma: no cover - direct script execution
         parse_crop_box,
         render_qgis_vector_in_subprocess,
         safe_path_segment,
+        add_comparison_probe_arguments,
     )
 
 
@@ -1263,39 +1265,9 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         help="JSON plan containing variants and per-layer paint/layout/zoom/filter adjustments.",
     )
-    parser.add_argument(
-        "--aggregate-report",
-        action="append",
-        type=Path,
-        default=[],
-        help="Existing style-adjustment-probe.json report to aggregate. Repeat for multiple reports.",
-    )
-    parser.add_argument(
-        "--aggregate-output",
-        type=Path,
-        help="Optional Markdown output path for --aggregate-report mode. Defaults to stdout.",
-    )
-    parser.add_argument(
-        "--crop-box",
-        action="append",
-        type=parse_crop_box,
-        default=[],
-        help="Optional crop box as x_min,y_min,x_max,y_max. Repeat for multiple crops.",
-    )
-    token_source = parser.add_mutually_exclusive_group()
-    token_source.add_argument(
-        "--mapbox-token",
-        help="Mapbox access token. Prefer MAPBOX_ACCESS_TOKEN to avoid shell history exposure.",
-    )
-    token_source.add_argument(
-        "--mapbox-token-file",
-        type=argparse.FileType("r", encoding="utf-8"),
-        help="Read the Mapbox token from a file without exposing it in process arguments.",
-    )
-    parser.add_argument(
-        "--no-rerender-control",
-        action="store_true",
-        help="Skip the automatic same-style QGIS rerender control.",
+    add_comparison_probe_arguments(
+        parser,
+        aggregate_report_help="Existing style-adjustment-probe.json report to aggregate. Repeat for multiple reports.",
     )
     return parser
 
