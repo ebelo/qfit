@@ -42,6 +42,7 @@ except ImportError:  # pragma: no cover - direct script execution
 
 DEFAULT_OUTPUT_ROOT = REPO_ROOT / "debug" / "mapbox-outdoors-visual-crops"
 LIGHT_OUTPUT_ROOT = REPO_ROOT / "debug" / "mapbox-light-visual-crops"
+DEFAULT_STYLE_NAME = "Mapbox Outdoors"
 DEFAULT_CROP_SIZE = (320, 240)
 DEFAULT_CROPS_PER_CAMERA = 3
 DEFAULT_FOCUS_DASH_CUE_LIMIT = 2
@@ -151,7 +152,7 @@ def _comparison_style_name(comparison_summary: Mapping[str, object]) -> str:
     style_name = comparison_summary.get("style_name")
     if isinstance(style_name, str) and style_name.strip():
         return style_name.strip()
-    return "Mapbox Light" if comparison_summary.get("preset") == "light" else "Mapbox Outdoors"
+    return "Mapbox Light" if comparison_summary.get("preset") == "light" else DEFAULT_STYLE_NAME
 
 
 def build_visual_crop_paths(run_dir: Path) -> VisualCropPaths:
@@ -2086,7 +2087,7 @@ def _manual_crop_boxes_label(value: object) -> str:
 
 
 def _summary_header_lines(report: Mapping[str, object]) -> list[str]:
-    style_name = report.get("style_name") or "Mapbox Outdoors"
+    style_name = report.get("style_name") or DEFAULT_STYLE_NAME
     lines = [
         f"# {style_name} visual crop report",
         "",
@@ -2260,7 +2261,7 @@ def _summary_read_lines(report: Mapping[str, object]) -> list[str]:
                 _joined_summary_labels(active_area_fill_labels),
             ]
         )
-    style_name = report.get("style_name") or "Mapbox Outdoors"
+    style_name = report.get("style_name") or DEFAULT_STYLE_NAME
     if not rows:
         return []
     lines = [

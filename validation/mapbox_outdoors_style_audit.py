@@ -6237,7 +6237,7 @@ def main(argv: list[str] | None = None) -> int:
                 token_file=args.mapbox_token_file,
             )
             style_definition = fetch_mapbox_style_definition(token, style_owner, style_id)
-    except (json.JSONDecodeError, KeyError, OSError, RuntimeError, ValueError) as error:
+    except (KeyError, OSError, RuntimeError, ValueError) as error:
         parser.error(_redact_sensitive_text(str(error), token))
 
     include_qgis_converter_warnings = (
