@@ -467,12 +467,23 @@ class MapboxOutdoorsRenderedLayerMaskTests(unittest.TestCase):
             mask_module.LIGHT_OUTPUT_ROOT,
         )
         markdown = render_markdown_summary({
-            "camera": {"name": "unit-light", "style_id": "light-v11"},
+            "camera": {"name": "unit-light", "style_owner": "mapbox", "style_id": "light-v11"},
             "baseline": {"metrics": {}},
             "variants": [],
             "rerender_control_variant": None,
         })
         self.assertIn("# Mapbox Light rendered-layer mask probe", markdown)
+        custom_markdown = render_markdown_summary({
+            "camera": {
+                "name": "unit-custom",
+                "style_owner": "another-owner",
+                "style_id": "light-v11",
+            },
+            "baseline": {"metrics": {}},
+            "variants": [],
+            "rerender_control_variant": None,
+        })
+        self.assertIn("# Mapbox custom style rendered-layer mask probe", custom_markdown)
 
     def test_parser_reads_token_file_without_putting_value_in_arguments(self):
         with tempfile.TemporaryDirectory() as tmpdir:

@@ -60,12 +60,17 @@ QGIS_RUNTIME_NOT_CAPTURED = "(not captured)"
 MIXED_OR_UNKNOWN_STYLE_ID = "(mixed-or-unknown)"
 
 
-def _style_display_name(style_id: object) -> str:
-    if style_id == "light-v11":
+def _style_display_name(style_owner: object, style_id: object) -> str:
+    if style_owner == DEFAULT_MAPBOX_STYLE_OWNER and style_id == "light-v11":
         return "Mapbox Light"
-    if style_id == "outdoors-v12":
+    if style_owner == DEFAULT_MAPBOX_STYLE_OWNER and style_id == "outdoors-v12":
         return "Mapbox Outdoors"
-    if isinstance(style_id, str) and style_id != MIXED_OR_UNKNOWN_STYLE_ID:
+    if (
+        isinstance(style_owner, str)
+        and style_owner != MIXED_OR_UNKNOWN_STYLE_ID
+        and isinstance(style_id, str)
+        and style_id != MIXED_OR_UNKNOWN_STYLE_ID
+    ):
         return "Mapbox custom style"
     return "Mapbox mixed/unknown styles"
 
@@ -734,7 +739,7 @@ def _summary_header_lines(report: Mapping[str, object]) -> list[str]:
     camera = _mapping_value(report.get("camera"))
     inputs = _mapping_value(report.get("inputs"))
     lines = [
-        f"# {_style_display_name(camera.get('style_id'))} rendered-layer mask probe",
+        f"# {_style_display_name(camera.get('style_owner'), camera.get('style_id'))} rendered-layer mask probe",
         "",
         f"Generated: `{report.get('generated')}`",
         f"Camera: `{camera.get('name')}`",
@@ -1248,7 +1253,7 @@ def render_aggregate_markdown_summary(report: Mapping[str, object]) -> str:
     variant_rows = _list_of_mappings(report.get("variant_rows"))
     crop_rows = _list_of_mappings(report.get("crop_rows"))
     lines = [
-        f"# {_style_display_name(report.get('style_id'))} rendered-layer mask aggregate",
+        f"# {_style_display_name(report.get('style_owner'), report.get('style_id'))} rendered-layer mask aggregate",
         "",
         f"Generated: `{report.get('generated')}`",
         f"Input reports: `{len(input_reports)}`",

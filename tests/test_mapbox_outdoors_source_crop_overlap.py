@@ -308,7 +308,15 @@ class MapboxOutdoorsSourceCropOverlapTests(unittest.TestCase):
         self.assertIn("Bbox coverage is a summed upper-bound attribution aid", markdown)
         self.assertIn(
             "# Mapbox Light source/crop overlap",
-            build_summary_markdown({**report, "style_id": "light-v11"}),
+            build_summary_markdown({**report, "style_owner": "mapbox", "style_id": "light-v11"}),
+        )
+        self.assertIn(
+            "# Mapbox custom style source/crop overlap",
+            build_summary_markdown({
+                **report,
+                "style_owner": "another-owner",
+                "style_id": "light-v11",
+            }),
         )
         self.assertIn("QGIS style-layer coverage evaluates camera-zoom-active filters", markdown)
         self.assertIn("QGIS filter missing props reports active style-layer filter properties", markdown)
@@ -708,6 +716,7 @@ class MapboxOutdoorsSourceCropOverlapTests(unittest.TestCase):
             paths = build_source_crop_overlap_paths(run_dir)
             report = {
                 "generated": "2026-05-21T21:45:00+00:00",
+                "style_owner": "mapbox",
                 "style_id": "outdoors-v12",
                 "camera": "test-camera",
                 "camera_zoom": 18.0,

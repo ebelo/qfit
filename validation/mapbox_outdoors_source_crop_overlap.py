@@ -134,12 +134,17 @@ def resolve_mapbox_token(
     return token or env.get("MAPBOX_ACCESS_TOKEN") or env.get("QFIT_MAPBOX_ACCESS_TOKEN")
 
 
-def _style_display_name(style_id: object) -> str:
-    if style_id == LIGHT_MAPBOX_STYLE_ID:
+def _style_display_name(style_owner: object, style_id: object) -> str:
+    if style_owner == DEFAULT_MAPBOX_STYLE_OWNER and style_id == LIGHT_MAPBOX_STYLE_ID:
         return "Mapbox Light"
-    if style_id == DEFAULT_MAPBOX_STYLE_ID:
+    if style_owner == DEFAULT_MAPBOX_STYLE_OWNER and style_id == DEFAULT_MAPBOX_STYLE_ID:
         return "Mapbox Outdoors"
-    if isinstance(style_id, str) and style_id != MIXED_OR_UNKNOWN_STYLE_ID:
+    if (
+        isinstance(style_owner, str)
+        and style_owner != MIXED_OR_UNKNOWN_STYLE_ID
+        and isinstance(style_id, str)
+        and style_id != MIXED_OR_UNKNOWN_STYLE_ID
+    ):
         return "Mapbox custom style"
     return "Mapbox mixed/unknown styles"
 
@@ -2050,7 +2055,7 @@ def _summary_read_lines(report: Mapping[str, object]) -> list[str]:
 
 def build_summary_markdown(report: Mapping[str, object]) -> str:
     lines = [
-        f"# {_style_display_name(report.get('style_id'))} source/crop overlap",
+        f"# {_style_display_name(report.get('style_owner'), report.get('style_id'))} source/crop overlap",
         "",
         f"Generated: {report['generated']}",
         (
@@ -2655,7 +2660,7 @@ def render_aggregate_markdown_summary(report: Mapping[str, object]) -> str:
     camera_rows = _list_of_mappings(report.get("camera_source_rows"))
     camera_class_rows = _list_of_mappings(report.get("camera_class_rows"))
     lines = [
-        f"# {_style_display_name(report.get('style_id'))} source/crop overlap aggregate",
+        f"# {_style_display_name(report.get('style_owner'), report.get('style_id'))} source/crop overlap aggregate",
         "",
         f"Generated: `{report.get('generated')}`",
         f"Input reports: `{len(input_reports)}`",
