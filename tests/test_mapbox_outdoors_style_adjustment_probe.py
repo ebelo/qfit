@@ -526,6 +526,35 @@ class MapboxOutdoorsStyleAdjustmentProbeTests(unittest.TestCase):
             ):
                 verified_style_sha256(style_path, "0" * 64)
 
+    def test_probe_rejects_manifest_artifact_mismatch_before_rendering(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            style_path = root / "style.json"
+            style_path.write_text(json.dumps(STYLE), encoding="utf-8")
+            manifest_path = _write_camera_manifest(root / "manifest.json")
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            manifest["outputs"] = {"qgis_preprocessed_style": str(style_path)}
+            manifest["qgis_preprocessed_style_sha256"] = "0" * 64
+            manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+            output_root = root / "style-adjustment-probe"
+
+            def fail_if_rendered(**_kwargs):
+                self.fail("invalid provenance must be rejected before rendering")
+
+            with self.assertRaisesRegex(ValueError, "fingerprint does not match"):
+                build_style_adjustment_probe_report(
+                    StyleAdjustmentProbeConfig(
+                        baseline_manifest=manifest_path,
+                        output_root=output_root,
+                        variants=(),
+                        crop_boxes=(),
+                        token="test-token",
+                    ),
+                    qgis_renderer=fail_if_rendered,
+                )
+
+            self.assertFalse(output_root.exists())
+
     def test_aggregate_rejects_mixed_baseline_style_fingerprints(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir)
@@ -552,6 +581,28 @@ class MapboxOutdoorsStyleAdjustmentProbeTests(unittest.TestCase):
                 ValueError,
                 "different baseline style fingerprints",
             ):
+                build_style_adjustment_aggregate_report(report_paths)
+
+    def test_aggregate_rejects_fingerprinted_and_legacy_reports(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            report_paths = []
+            for index, fingerprint in enumerate(("a" * 64, None)):
+                report = {
+                    "camera": {
+                        "name": f"camera-{index}",
+                        "style_owner": "mapbox",
+                        "style_id": "light-v11",
+                    },
+                    "variants": [],
+                }
+                if fingerprint is not None:
+                    report["baseline_style_sha256"] = fingerprint
+                report_path = root / f"report-{index}.json"
+                report_path.write_text(json.dumps(report), encoding="utf-8")
+                report_paths.append(report_path)
+
+            with self.assertRaisesRegex(ValueError, "fingerprinted and legacy"):
                 build_style_adjustment_aggregate_report(report_paths)
 
     def test_aggregate_report_surfaces_baseline_style_fingerprint(self):

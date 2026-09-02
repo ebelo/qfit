@@ -535,6 +535,15 @@ def build_style_adjustment_probe_report(
     manifest_path = config.baseline_manifest.expanduser().resolve()
     manifest = load_json_object(manifest_path)
     camera = camera_from_manifest(manifest)
+    qgis_style_path = _manifest_output_path(
+        manifest,
+        manifest_path=manifest_path,
+        key="qgis_preprocessed_style",
+    )
+    baseline_style_sha256 = verified_style_sha256(
+        qgis_style_path,
+        manifest.get("qgis_preprocessed_style_sha256"),
+    )
     paths = build_style_adjustment_probe_paths(
         output_root=config.output_root.expanduser().resolve(),
         camera_name=REPORT_CAMERA_DIRECTORY,
@@ -584,10 +593,6 @@ def build_style_adjustment_probe_report(
             variant_report["is_rerender_control"] = False
         variants.append(variant_report)
 
-    qgis_style_path = _manifest_output_path(manifest, manifest_path=manifest_path, key="qgis_preprocessed_style")
-    baseline_style_sha256 = verified_style_sha256(
-        qgis_style_path, manifest.get("qgis_preprocessed_style_sha256")
-    )
     generated_at = config.now or dt.datetime.now(dt.timezone.utc)
     report: dict[str, object] = {
         "generated": generated_at.isoformat(timespec="seconds"),
@@ -893,7 +898,7 @@ def build_style_adjustment_aggregate_report(
     input_paths: list[str] = []
     qgis_runtimes: set[str] = set()
     style_identities: set[tuple[str | None, str | None]] = set()
-    baseline_style_sha256_values: set[str] = set()
+    baseline_style_sha256_values: set[str | None] = set()
     for report_path_value in report_paths:
         (
             input_path,
@@ -905,8 +910,7 @@ def build_style_adjustment_aggregate_report(
             crop_entries,
         ) = _aggregate_delta_entries(report_path_value)
         style_identities.add((style_owner, style_id))
-        if baseline_style_sha256:
-            baseline_style_sha256_values.add(baseline_style_sha256)
+        baseline_style_sha256_values.add(baseline_style_sha256)
         input_paths.append(input_path)
         if qgis_runtime_label is not None:
             qgis_runtimes.add(qgis_runtime_label)
@@ -923,8 +927,9 @@ def build_style_adjustment_aggregate_report(
 
     if len(baseline_style_sha256_values) > 1:
         raise ValueError(
-            "Style-adjustment reports use different baseline style fingerprints; "
-            "aggregate only a coherent source-style matrix."
+            "Style-adjustment reports use different baseline style fingerprints "
+            "or mix fingerprinted and legacy reports; aggregate only a coherent "
+            "source-style matrix."
         )
     generated_at = now or dt.datetime.now(dt.timezone.utc)
     style_owner, style_id = (
