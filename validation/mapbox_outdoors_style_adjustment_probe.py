@@ -4,6 +4,7 @@ import argparse
 import dataclasses
 import datetime as dt
 import json
+import sys
 from collections.abc import Callable, Mapping, Sequence
 from copy import deepcopy
 from dataclasses import dataclass
@@ -11,7 +12,10 @@ from pathlib import Path
 
 try:
     from .mapbox_outdoors_comparison import (
+        DEFAULT_MAPBOX_STYLE_ID,
+        DEFAULT_MAPBOX_STYLE_OWNER,
         DEFAULT_OUTPUT_ROOT as COMPARISON_DEFAULT_OUTPUT_ROOT,
+        LIGHT_MAPBOX_STYLE_ID,
         ImageMetrics,
         build_image_diff,
         load_style_definition,
@@ -39,7 +43,10 @@ try:
     )
 except ImportError:  # pragma: no cover - direct script execution
     from mapbox_outdoors_comparison import (  # type: ignore[no-redef]
+        DEFAULT_MAPBOX_STYLE_ID,
+        DEFAULT_MAPBOX_STYLE_OWNER,
         DEFAULT_OUTPUT_ROOT as COMPARISON_DEFAULT_OUTPUT_ROOT,
+        LIGHT_MAPBOX_STYLE_ID,
         ImageMetrics,
         build_image_diff,
         load_style_definition,
@@ -68,6 +75,8 @@ except ImportError:  # pragma: no cover - direct script execution
 
 
 DEFAULT_OUTPUT_ROOT = COMPARISON_DEFAULT_OUTPUT_ROOT.parent / "mapbox-outdoors-style-adjustment-probe"
+LIGHT_OUTPUT_ROOT = COMPARISON_DEFAULT_OUTPUT_ROOT.parent / "mapbox-light-style-adjustment-probe"
+MIXED_OR_UNKNOWN_STYLE_ID = "(mixed-or-unknown)"
 REPORT_CAMERA_DIRECTORY = "comparison-camera"
 STYLE_ADJUSTMENT_OUTPUT = "qgis-adjusted-style.json"
 QGIS_RENDER_OUTPUT = "qgis-vector-render.png"
@@ -86,6 +95,27 @@ METRIC_KEYS = (
     "normalized_rms_channel_delta",
 )
 CROP_METRIC_KEYS = ("mean_absolute_channel_delta", "rms_channel_delta", "mean_luminance_delta")
+
+
+def _style_display_name(style_owner: object, style_id: object) -> str:
+    if style_owner == DEFAULT_MAPBOX_STYLE_OWNER and style_id == LIGHT_MAPBOX_STYLE_ID:
+        return "Mapbox Light"
+    if style_owner == DEFAULT_MAPBOX_STYLE_OWNER and style_id == DEFAULT_MAPBOX_STYLE_ID:
+        return "Mapbox Outdoors"
+    if (
+        isinstance(style_owner, str)
+        and style_owner != MIXED_OR_UNKNOWN_STYLE_ID
+        and isinstance(style_id, str)
+        and style_id != MIXED_OR_UNKNOWN_STYLE_ID
+    ):
+        return "Mapbox custom style"
+    return "Mapbox mixed/unknown styles"
+
+
+def output_root_for_style(style_owner: str, style_id: str) -> Path:
+    if (style_owner, style_id) == (DEFAULT_MAPBOX_STYLE_OWNER, LIGHT_MAPBOX_STYLE_ID):
+        return LIGHT_OUTPUT_ROOT
+    return DEFAULT_OUTPUT_ROOT
 
 
 @dataclass(frozen=True)
@@ -745,7 +775,9 @@ def _aggregate_delta_entries(
     report_path_value: Path,
 ) -> tuple[
     str,
-    str,
+    str | None,
+    str | None,
+    str | None,
     list[tuple[str, str, str, Mapping[str, object]]],
     list[tuple[str, str, str, int, str, Mapping[str, object]]],
 ]:
@@ -777,7 +809,16 @@ def _aggregate_delta_entries(
                 variant=variant,
             )
         )
-    return _repo_relative(report_path), qgis_runtime_label, entries, crop_entries
+    style_owner = camera.get("style_owner")
+    style_id = camera.get("style_id")
+    return (
+        _repo_relative(report_path),
+        qgis_runtime_label,
+        str(style_owner) if isinstance(style_owner, str) else None,
+        str(style_id) if isinstance(style_id, str) else None,
+        entries,
+        crop_entries,
+    )
 
 
 def _aggregate_camera_rows(
@@ -839,8 +880,17 @@ def build_style_adjustment_aggregate_report(
     total_cameras: dict[tuple[str, str], set[str]] = {}
     input_paths: list[str] = []
     qgis_runtimes: set[str] = set()
+    style_identities: set[tuple[str | None, str | None]] = set()
     for report_path_value in report_paths:
-        input_path, qgis_runtime_label, entries, crop_entries = _aggregate_delta_entries(report_path_value)
+        (
+            input_path,
+            qgis_runtime_label,
+            style_owner,
+            style_id,
+            entries,
+            crop_entries,
+        ) = _aggregate_delta_entries(report_path_value)
+        style_identities.add((style_owner, style_id))
         input_paths.append(input_path)
         if qgis_runtime_label is not None:
             qgis_runtimes.add(qgis_runtime_label)
@@ -856,8 +906,15 @@ def build_style_adjustment_aggregate_report(
             ).append(crop_delta)
 
     generated_at = now or dt.datetime.now(dt.timezone.utc)
+    style_owner, style_id = (
+        next(iter(style_identities))
+        if len(style_identities) == 1 and None not in next(iter(style_identities))
+        else (MIXED_OR_UNKNOWN_STYLE_ID, MIXED_OR_UNKNOWN_STYLE_ID)
+    )
     return {
         "generated": generated_at.isoformat(timespec="seconds"),
+        "style_owner": style_owner,
+        "style_id": style_id,
         "input_reports": input_paths,
         "qgis_runtimes": sorted(qgis_runtimes),
         "rows": _aggregate_camera_rows(grouped_rows),
@@ -870,7 +927,7 @@ def _aggregate_summary_header_lines(report: Mapping[str, object]) -> list[str]:
     input_reports = [str(path) for path in report.get("input_reports") or []]
     qgis_runtimes = [str(runtime) for runtime in report.get("qgis_runtimes") or []]
     lines = [
-        "# Mapbox Outdoors style-adjustment aggregate",
+        f"# {_style_display_name(report.get('style_owner'), report.get('style_id'))} style-adjustment aggregate",
         "",
         f"Generated: `{report.get('generated')}`",
         f"Input reports: `{len(input_reports)}`",
@@ -1114,7 +1171,7 @@ def _summary_header_lines(report: Mapping[str, object]) -> list[str]:
     camera = _mapping_value(report.get("camera"))
     inputs = _mapping_value(report.get("inputs"))
     lines = [
-        "# Mapbox Outdoors style-adjustment probe",
+        f"# {_style_display_name(camera.get('style_owner'), camera.get('style_id'))} style-adjustment probe",
         "",
         f"Generated: `{report.get('generated')}`",
         f"Camera: `{camera.get('name')}`",
@@ -1203,7 +1260,7 @@ def render_markdown_summary(report: Mapping[str, object]) -> str:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description=(
-            "Render diagnostic QGIS style-adjustment variants from an existing Mapbox Outdoors "
+            "Render diagnostic QGIS style-adjustment variants from an existing Mapbox "
             "comparison manifest and compare each variant with the baseline artifacts."
         ),
     )
@@ -1236,9 +1293,15 @@ def build_parser() -> argparse.ArgumentParser:
         default=[],
         help="Optional crop box as x_min,y_min,x_max,y_max. Repeat for multiple crops.",
     )
-    parser.add_argument(
+    token_source = parser.add_mutually_exclusive_group()
+    token_source.add_argument(
         "--mapbox-token",
         help="Mapbox access token. Prefer MAPBOX_ACCESS_TOKEN to avoid shell history exposure.",
+    )
+    token_source.add_argument(
+        "--mapbox-token-file",
+        type=argparse.FileType("r", encoding="utf-8"),
+        help="Read the Mapbox token from a file without exposing it in process arguments.",
     )
     parser.add_argument(
         "--no-rerender-control",
@@ -1248,27 +1311,33 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main(argv: Sequence[str] | None = None) -> None:
-    parser = build_parser()
-    args = parser.parse_args(argv)
-    if args.aggregate_report:
-        aggregate_report = build_style_adjustment_aggregate_report(tuple(args.aggregate_report))
-        markdown_summary = render_aggregate_markdown_summary(aggregate_report)
-        if args.aggregate_output is not None:
-            output_path = args.aggregate_output.expanduser().resolve()
-            output_path.parent.mkdir(parents=True, exist_ok=True)
-            output_path.write_text(markdown_summary, encoding="utf-8")
-            print(f"Aggregate summary: {_repo_relative(output_path)}")
-        else:
-            print(markdown_summary)
-        return
+def _run_aggregate_mode(args: argparse.Namespace) -> int:
+    aggregate_report = build_style_adjustment_aggregate_report(tuple(args.aggregate_report))
+    markdown_summary = render_aggregate_markdown_summary(aggregate_report)
+    if args.aggregate_output is not None:
+        output_path = args.aggregate_output.expanduser().resolve()
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(markdown_summary, encoding="utf-8")
+        print(f"Aggregate summary: {_repo_relative(output_path)}")
+    else:
+        print(markdown_summary)
+    return 0
+
+
+def _run_probe_mode(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     if args.baseline_manifest is None or args.variant_json is None:
         parser.error("--baseline-manifest and --variant-json are required unless --aggregate-report is provided.")
-    token = resolve_mapbox_token(provided_token=args.mapbox_token)
+    token = resolve_mapbox_token(
+        provided_token=args.mapbox_token,
+        token_file=args.mapbox_token_file,
+    )
+    manifest = load_json_object(args.baseline_manifest.expanduser().resolve())
+    camera = camera_from_manifest(manifest)
+    output_root = output_root_for_style(camera.style_owner, camera.style_id)
     report = build_style_adjustment_probe_report(
         StyleAdjustmentProbeConfig(
             baseline_manifest=args.baseline_manifest,
-            output_root=DEFAULT_OUTPUT_ROOT,
+            output_root=output_root,
             variants=load_style_adjustment_variants(args.variant_json),
             crop_boxes=tuple(args.crop_box),
             token=token,
@@ -1278,15 +1347,32 @@ def main(argv: Sequence[str] | None = None) -> None:
     inputs = report.get("inputs")
     if isinstance(inputs, Mapping):
         print(f"Baseline manifest: {inputs.get('baseline_manifest')}")
-    output_root = DEFAULT_OUTPUT_ROOT.expanduser().resolve()
+    resolved_output_root = output_root.expanduser().resolve()
     newest = max(
-        (path for path in (output_root / REPORT_CAMERA_DIRECTORY).glob("*") if path.is_dir()),
+        (path for path in (resolved_output_root / REPORT_CAMERA_DIRECTORY).glob("*") if path.is_dir()),
         default=None,
     )
     if newest is not None:
         print(f"Run directory: {_repo_relative(newest)}")
         print(f"Summary: {_repo_relative(newest / SUMMARY_OUTPUT)}")
+    return 0
+
+
+def _main(argv: Sequence[str] | None = None) -> int:
+    parser = build_parser()
+    args = parser.parse_args(argv)
+    if args.aggregate_report:
+        return _run_aggregate_mode(args)
+    return _run_probe_mode(args, parser)
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    try:
+        return _main(argv)
+    except (OSError, RuntimeError, ValueError):
+        print("Mapbox style-adjustment probe failed; inspect the local runtime and inputs.", file=sys.stderr)
+        return 2
 
 
 if __name__ == "__main__":  # pragma: no cover - CLI entry point
-    main()
+    raise SystemExit(main())

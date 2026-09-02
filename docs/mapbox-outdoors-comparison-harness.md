@@ -329,8 +329,8 @@ When removal masks prove ownership but not a safe fix, run a style-adjustment pr
 ```
 
 ```bash
-export MAPBOX_ACCESS_TOKEN="***"
 python3 validation/mapbox_outdoors_style_adjustment_probe.py \
+  --mapbox-token-file /path/to/mapbox-token.txt \
   --baseline-manifest debug/mapbox-outdoors-comparison/zermatt-trails-z18-outdoors/<timestamp>/manifest.json \
   --variant-json /tmp/zermatt-style-adjustments.json \
   --crop-box 210,600,630,900 \
@@ -338,6 +338,19 @@ python3 validation/mapbox_outdoors_style_adjustment_probe.py \
 ```
 
 Outputs are written under `debug/mapbox-outdoors-style-adjustment-probe/comparison-camera/<timestamp>/`. The probe report copies QGIS runtime metadata from the baseline comparison manifest, and each variant records the adjusted style JSON, fresh QGIS render, Mapbox-vs-QGIS diff, QGIS-baseline movement diff, whole-image metric deltas against both the baseline and rerender control, crop metric deltas, matched/missing adjusted layer IDs, and changed-pixel bounding boxes. Aggregate style-adjustment summaries list the distinct QGIS runtimes from their input reports so before/after evidence stays comparable across local QGIS upgrades. Treat this as diagnostic-only evidence; promote a variant only after all-camera validation shows a real improvement without unacceptable regressions.
+
+The same probe derives Light provenance and its dedicated artifact root directly from a `mapbox/light-v11` comparison manifest. Use the safe token-file input and repeat the same variant plan across representative cameras:
+
+```bash
+python3 validation/mapbox_outdoors_style_adjustment_probe.py \
+  --mapbox-token-file /path/to/mapbox-token.txt \
+  --baseline-manifest debug/mapbox-light-comparison/bern-urban-z12-light/<timestamp>/manifest.json \
+  --variant-json /tmp/light-road-adjustments.json \
+  --crop-box 800,600,1120,840 \
+  --crop-box 640,240,960,480
+```
+
+Light runs are written under `debug/mapbox-light-style-adjustment-probe/comparison-camera/<timestamp>/`. Aggregate only reports with coherent owner/style provenance; mixed or legacy-missing provenance is labeled explicitly instead of being attributed to Light or Outdoors. Compare z8, z12, and z14 first, then retain z5/z18 and an Outdoors camera as guardrails before promoting a production change.
 
 The focus cues are triage context only. Candidate-backed rows, source-capped rows, and zero-candidate dash rows still need visual inspection before becoming a rendering change.
 

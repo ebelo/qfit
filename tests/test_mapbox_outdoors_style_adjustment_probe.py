@@ -3,7 +3,7 @@ import io
 import json
 import tempfile
 import unittest
-from contextlib import redirect_stdout
+from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 from unittest.mock import patch
 
@@ -621,6 +621,135 @@ class MapboxOutdoorsStyleAdjustmentProbeTests(unittest.TestCase):
         self.assertIn("0.000300000", markdown)
         self.assertIn("## Key", markdown)
 
+    def test_light_and_custom_headings_follow_full_style_identity(self):
+        light_report = {
+            "camera": {"style_owner": "mapbox", "style_id": "light-v11"},
+            "baseline": {"metrics": {}},
+            "variants": [],
+        }
+        custom_report = {
+            **light_report,
+            "camera": {"style_owner": "another-owner", "style_id": "light-v11"},
+        }
+
+        self.assertIn("# Mapbox Light style-adjustment probe", render_markdown_summary(light_report))
+        self.assertIn("# Mapbox custom style style-adjustment probe", render_markdown_summary(custom_report))
+
+    def test_aggregate_reports_same_id_different_owners_as_mixed(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            mapbox_report = root / "mapbox.json"
+            custom_report = root / "custom.json"
+            mapbox_report.write_text(json.dumps({
+                "camera": {"name": "mapbox", "style_owner": "mapbox", "style_id": "light-v11"},
+                "variants": [],
+            }), encoding="utf-8")
+            custom_report.write_text(json.dumps({
+                "camera": {
+                    "name": "custom",
+                    "style_owner": "another-owner",
+                    "style_id": "light-v11",
+                },
+                "variants": [],
+            }), encoding="utf-8")
+
+            aggregate = build_style_adjustment_aggregate_report((mapbox_report, custom_report))
+            markdown = render_aggregate_markdown_summary(aggregate)
+
+        self.assertEqual(aggregate["style_owner"], probe_module.MIXED_OR_UNKNOWN_STYLE_ID)
+        self.assertEqual(aggregate["style_id"], probe_module.MIXED_OR_UNKNOWN_STYLE_ID)
+        self.assertIn("# Mapbox mixed/unknown styles style-adjustment aggregate", markdown)
+
+    def test_main_reads_light_token_file_routes_output_and_redacts_failure(self):
+        captured = {}
+
+        def fake_report_builder(config):
+            captured["config"] = config
+            return {"inputs": {"baseline_manifest": "debug/light-manifest.json"}}
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            token_path = root / "mapbox.txt"
+            token_path.write_text("file-token-secret\n", encoding="utf-8")
+            manifest_path = root / "manifest.json"
+            manifest_path.write_text(json.dumps({
+                "camera": {
+                    "name": "unit-light",
+                    "description": "Unit Light camera",
+                    "longitude": 7.0,
+                    "latitude": 46.0,
+                    "zoom": 12.0,
+                    "width": 1280,
+                    "height": 960,
+                    "style_owner": "mapbox",
+                    "style_id": "light-v11",
+                }
+            }), encoding="utf-8")
+            variant_path = root / "variants.json"
+            variant_path.write_text(json.dumps({
+                "variants": [{
+                    "name": "road-width",
+                    "adjustments": [{"layer_id": "road-simple", "paint": {"line-width": 0.5}}],
+                }]
+            }), encoding="utf-8")
+            output_root = root / "light-probes"
+            (output_root / "comparison-camera" / "20260902T070000Z").mkdir(parents=True)
+            args = [
+                "--baseline-manifest",
+                str(manifest_path),
+                "--variant-json",
+                str(variant_path),
+                "--mapbox-token-file",
+                str(token_path),
+            ]
+            stdout = io.StringIO()
+            with patch.object(probe_module, "LIGHT_OUTPUT_ROOT", output_root), patch.object(
+                probe_module,
+                "build_style_adjustment_probe_report",
+                fake_report_builder,
+            ), redirect_stdout(stdout):
+                result = probe_module.main(args)
+
+            stderr = io.StringIO()
+            with patch.object(probe_module, "LIGHT_OUTPUT_ROOT", output_root), patch.object(
+                probe_module,
+                "build_style_adjustment_probe_report",
+                side_effect=RuntimeError("failed for file-token-secret"),
+            ), redirect_stderr(stderr):
+                failure_result = probe_module.main(args)
+
+        self.assertEqual(result, 0)
+        self.assertEqual(failure_result, 2)
+        self.assertEqual(captured["config"].token, "file-token-secret")
+        self.assertEqual(captured["config"].output_root, output_root)
+        self.assertNotIn("file-token-secret", stdout.getvalue())
+        self.assertNotIn("file-token-secret", stderr.getvalue())
+
+    def test_main_rejects_empty_token_file_and_ambiguous_sources(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            token_path = Path(tmpdir) / "mapbox.txt"
+            token_path.write_text("", encoding="utf-8")
+            stderr = io.StringIO()
+            with redirect_stderr(stderr):
+                result = probe_module.main([
+                    "--baseline-manifest",
+                    "manifest.json",
+                    "--variant-json",
+                    "variants.json",
+                    "--mapbox-token-file",
+                    str(token_path),
+                ])
+
+        self.assertEqual(result, 2)
+        self.assertIn("style-adjustment probe failed", stderr.getvalue())
+        with self.assertRaises(SystemExit):
+            probe_module.build_parser().parse_args([
+                "--mapbox-token",
+                "direct-token",
+                "--mapbox-token-file",
+                "mapbox.txt",
+            ])
+
     def test_main_builds_config_and_prints_latest_summary(self):
         captured = {}
 
@@ -644,6 +773,20 @@ class MapboxOutdoorsStyleAdjustmentProbeTests(unittest.TestCase):
                 }),
                 encoding="utf-8",
             )
+            manifest_path = root / "manifest.json"
+            manifest_path.write_text(json.dumps({
+                "camera": {
+                    "name": "unit-camera",
+                    "description": "Unit camera",
+                    "longitude": 7.0,
+                    "latitude": 46.0,
+                    "zoom": 12.0,
+                    "width": 1280,
+                    "height": 960,
+                    "style_owner": "mapbox",
+                    "style_id": "outdoors-v12",
+                }
+            }), encoding="utf-8")
             output_root = root / "style-adjustment-probe"
             run_dir = output_root / "comparison-camera" / "20260524T143000Z"
             run_dir.mkdir(parents=True)
@@ -663,7 +806,7 @@ class MapboxOutdoorsStyleAdjustmentProbeTests(unittest.TestCase):
                             ])
 
         config = captured["config"]
-        self.assertIsNone(result)
+        self.assertEqual(result, 0)
         self.assertIsInstance(config, StyleAdjustmentProbeConfig)
         self.assertEqual(config.baseline_manifest, root / "manifest.json")
         self.assertEqual(config.output_root, output_root)
@@ -707,7 +850,7 @@ class MapboxOutdoorsStyleAdjustmentProbeTests(unittest.TestCase):
                 ])
             output_markdown = output_path.read_text(encoding="utf-8")
 
-        self.assertIsNone(result)
+        self.assertEqual(result, 0)
         self.assertIn("Aggregate summary:", stdout.getvalue())
         self.assertIn("landcover-opacity-70", output_markdown)
 
