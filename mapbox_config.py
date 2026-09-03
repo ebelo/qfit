@@ -2587,6 +2587,13 @@ def _numeric_match_filter_with_offset(value: object, offset: float) -> object | 
     return adjusted
 
 
+def _numeric_filterrank_threshold_with_offset(value: object, offset: float) -> object | None:
+    numeric_value = _numeric_expression_value(value)
+    if numeric_value is not None:
+        return numeric_value + offset
+    return _numeric_match_filter_with_offset(value, offset)
+
+
 def _poi_filterrank_components(filter_value: object) -> tuple[object, object] | None:
     if (
         not isinstance(filter_value, list)
@@ -2635,20 +2642,20 @@ def _apply_zoom_band_bounds(
 
 
 def _poi_label_filter_layer_variants(layer: dict[str, object]) -> list[dict[str, object]] | None:
-    """Split the audited Outdoors POI filterrank zoom bump into QGIS-safe bands."""
+    """Split an audited POI filterrank zoom bump into QGIS-safe bands."""
     if str(layer.get("id") or "") != _POI_LABEL_LAYER_ID or layer.get("type") != "symbol":
         return None
     components = _poi_filterrank_components(layer.get("filter"))
     if components is None:
         return None
-    _, class_rank_match = components
+    _, base_rank_threshold = components
     existing_minzoom = _numeric_zoom_bound(layer.get("minzoom"))
     existing_maxzoom = _numeric_zoom_bound(layer.get("maxzoom"))
     variants_with_suffixes: list[tuple[str, dict[str, object]]] = []
     for suffix, band_minzoom, band_maxzoom, rank_offset in _POI_FILTER_RANK_ZOOM_BANDS:
         if not _zoom_ranges_overlap(existing_minzoom, existing_maxzoom, band_minzoom, band_maxzoom):
             continue
-        adjusted_rank_match = _numeric_match_filter_with_offset(class_rank_match, rank_offset)
+        adjusted_rank_match = _numeric_filterrank_threshold_with_offset(base_rank_threshold, rank_offset)
         if adjusted_rank_match is None:
             return None
         variant = _apply_zoom_band_bounds(layer, band_minzoom, band_maxzoom)
