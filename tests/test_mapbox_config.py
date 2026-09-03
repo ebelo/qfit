@@ -6606,6 +6606,25 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
         for layer in style["layers"]:
             self.assertEqual(layer["filter"], original_poi_filter)
 
+    def test_filter_simplification_splits_numeric_poi_filterrank_offset_by_zoom_band(self):
+        poi_filter = [
+            "<=",
+            ["get", "filterrank"],
+            ["+", ["step", ["zoom"], 0, 16, 1, 17, 2], 1],
+        ]
+        style = {
+            "layers": [{"id": "poi-label", "type": "symbol", "minzoom": 6, "filter": poi_filter}]
+        }
+
+        result = simplify_mapbox_style_expressions(style)
+
+        self.assertEqual(
+            [layer["id"] for layer in result["layers"]],
+            ["poi-label-below-z16", "poi-label-z16-to-z17", "poi-label-z17-plus"],
+        )
+        self.assertEqual([layer["filter"][2] for layer in result["layers"]], [1.0, 2.0, 3.0])
+        self.assertEqual(style["layers"][0]["filter"], poi_filter)
+
     def test_filter_simplification_replaces_poi_filter_without_split_outside_thresholds(self):
         class_rank_match = ["match", ["get", "class"], "historic", 3, 2]
         poi_filter = [
