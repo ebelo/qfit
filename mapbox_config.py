@@ -778,6 +778,9 @@ _ROAD_LABEL_FILTER_ZOOM_VARIANT_IDS = {
 _ROAD_LABEL_HIGH_ZOOM_SYMBOL_SPACING = 400.0
 _ROAD_LABEL_HIGH_ZOOM_TEXT_COLOR = "hsl(0, 0%, 38%)"
 _ROAD_LABEL_MID_ZOOM_TEXT_COLOR = _ROAD_LABEL_HIGH_ZOOM_TEXT_COLOR
+_OUTDOORS_STYLE_OWNER = "mapbox"
+_OUTDOORS_STYLE_ID = "outdoors-v12"
+_OUTDOORS_ROAD_LABEL_MID_ZOOM_TEXT_SIZE = 12.0
 _LIGHT_STYLE_OWNER = "mapbox"
 _LIGHT_STYLE_ID = "light-v11"
 _LIGHT_ROAD_LABEL_LAYER_ID = "road-label-simple"
@@ -2415,6 +2418,13 @@ def _is_mapbox_light_style(style_definition: dict[str, object]) -> bool:
     return (
         style_definition.get("owner") == _LIGHT_STYLE_OWNER
         and style_definition.get("id") == _LIGHT_STYLE_ID
+    )
+
+
+def _is_mapbox_outdoors_style(style_definition: dict[str, object]) -> bool:
+    return (
+        style_definition.get("owner") == _OUTDOORS_STYLE_OWNER
+        and style_definition.get("id") == _OUTDOORS_STYLE_ID
     )
 
 
@@ -6942,7 +6952,14 @@ def simplify_mapbox_style_expressions(style_definition: dict[str, object]) -> di
                 elif prop == "text-font" and _is_text_font_stack(val):
                     props[prop] = [QGIS_TEXT_FONT_FALLBACK]
                 elif prop == "text-size":
-                    override = _TEXT_SIZE_OVERRIDES.get(base_layer_id)
+                    if (
+                        _is_mapbox_outdoors_style(style)
+                        and layer_id
+                        == f"{_ROAD_LABEL_LAYER_ID}-{_ROAD_LABEL_MID_ZOOM_SUFFIX}"
+                    ):
+                        override = _OUTDOORS_ROAD_LABEL_MID_ZOOM_TEXT_SIZE
+                    else:
+                        override = _TEXT_SIZE_OVERRIDES.get(base_layer_id)
                     if override is not None:
                         props[prop] = override
                     else:
