@@ -713,7 +713,8 @@ _OUTDOORS_STREET_WIDTH_PROPS_BY_LAYER_ID = {
     "road-street": "line-width",
     "road-street-case": "line-gap-width",
 }
-_OUTDOORS_STREET_WIDTH_BAND_SUFFIX = "z14-to-z15"
+_OUTDOORS_STREET_WIDTH_LOW_BAND_SUFFIX = "below-z14"
+_OUTDOORS_STREET_WIDTH_MID_BAND_SUFFIX = "z14-to-z15"
 _OUTDOORS_STREET_WIDTH_BAND_MIN_ZOOM = 14.0
 _OUTDOORS_STREET_WIDTH_BAND_MAX_ZOOM = 15.0
 _OUTDOORS_STREET_WIDTH_SAMPLE_ZOOM = 14.25
@@ -3113,12 +3114,15 @@ def _aeroway_line_width_base_layer_id(layer_id: object) -> str | None:
 
 def _outdoors_street_width_base_layer_id(layer_id: object) -> str | None:
     normalized = str(layer_id or "")
-    suffix = f"-{_OUTDOORS_STREET_WIDTH_BAND_SUFFIX}"
-    if not normalized.endswith(suffix):
-        return None
-    base_layer_id = normalized[: -len(suffix)]
-    if base_layer_id in _OUTDOORS_STREET_WIDTH_PROPS_BY_LAYER_ID:
-        return base_layer_id
+    for suffix in (
+        _OUTDOORS_STREET_WIDTH_LOW_BAND_SUFFIX,
+        _OUTDOORS_STREET_WIDTH_MID_BAND_SUFFIX,
+    ):
+        suffix_text = f"-{suffix}"
+        if normalized.endswith(suffix_text):
+            base_layer_id = normalized[: -len(suffix_text)]
+            if base_layer_id in _OUTDOORS_STREET_WIDTH_PROPS_BY_LAYER_ID:
+                return base_layer_id
     return None
 
 
@@ -3334,6 +3338,12 @@ def _outdoors_street_width_layer_variants(
 
     existing_minzoom = _numeric_zoom_bound(layer.get("minzoom"))
     existing_maxzoom = _numeric_zoom_bound(layer.get("maxzoom"))
+    low_zoom_band = _effective_zoom_band(
+        existing_minzoom,
+        existing_maxzoom,
+        None,
+        _OUTDOORS_STREET_WIDTH_BAND_MIN_ZOOM,
+    )
     mid_zoom_band = _effective_zoom_band(
         existing_minzoom,
         existing_maxzoom,
@@ -3359,16 +3369,38 @@ def _outdoors_street_width_layer_variants(
     if width_mm is None:
         return None
 
+    variants: list[dict[str, object]] = []
+    if low_zoom_band is not None:
+        low_zoom_layer = copy.deepcopy(layer)
+        low_zoom_layer["id"] = f"{layer_id}-{_OUTDOORS_STREET_WIDTH_LOW_BAND_SUFFIX}"
+        _set_zoom_bounds(low_zoom_layer, *low_zoom_band)
+        low_zoom_paint = low_zoom_layer["paint"]
+        assert isinstance(low_zoom_paint, dict)
+        visibility_minzoom = _zoom_step_full_opacity_minzoom(
+            paint.get("line-opacity"),
+            existing_minzoom,
+            existing_maxzoom,
+        )
+        if (
+            visibility_minzoom is not None
+            and abs(visibility_minzoom - _OUTDOORS_STREET_WIDTH_BAND_MIN_ZOOM)
+            <= _ZOOM_BOUND_EPSILON
+        ):
+            low_zoom_paint["line-opacity"] = 0.0
+        variants.append(low_zoom_layer)
+
     mid_zoom_layer = copy.deepcopy(layer)
-    mid_zoom_layer["id"] = f"{layer_id}-{_OUTDOORS_STREET_WIDTH_BAND_SUFFIX}"
+    mid_zoom_layer["id"] = f"{layer_id}-{_OUTDOORS_STREET_WIDTH_MID_BAND_SUFFIX}"
     _set_zoom_bounds(mid_zoom_layer, *mid_zoom_band)
     mid_zoom_paint = mid_zoom_layer["paint"]
     assert isinstance(mid_zoom_paint, dict)
     mid_zoom_paint[width_prop] = width_mm
+    variants.append(mid_zoom_layer)
 
     high_zoom_layer = copy.deepcopy(layer)
     _set_zoom_bounds(high_zoom_layer, *high_zoom_band)
-    return [mid_zoom_layer, high_zoom_layer]
+    variants.append(high_zoom_layer)
+    return variants
 
 
 def _split_outdoors_street_width_layers_for_qgis(

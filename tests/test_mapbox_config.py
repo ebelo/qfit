@@ -5948,7 +5948,10 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
                     "id": "road-street",
                     "type": "line",
                     "minzoom": 13,
-                    "paint": {"line-width": copy.deepcopy(width_expression)},
+                    "paint": {
+                        "line-width": copy.deepcopy(width_expression),
+                        "line-opacity": ["step", ["zoom"], 0, 14, 1],
+                    },
                 },
             ],
         }
@@ -5964,6 +5967,7 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
             * mapbox_config._MAPBOX_PIXEL_TO_MM
         )
         case_mid = by_id["road-street-case-z14-to-z15"]
+        street_low = by_id["road-street-below-z14"]
         street_mid = by_id["road-street-z14-to-z15"]
         self.assertEqual(case_mid["minzoom"], 14)
         self.assertEqual(case_mid["maxzoom"], 15)
@@ -5971,6 +5975,13 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
         self.assertEqual(street_mid["minzoom"], 14)
         self.assertEqual(street_mid["maxzoom"], 15)
         self.assertAlmostEqual(street_mid["paint"]["line-width"], expected_width_mm)
+        self.assertEqual(street_low["minzoom"], 13)
+        self.assertEqual(street_low["maxzoom"], 14)
+        self.assertAlmostEqual(
+            street_low["paint"]["line-width"],
+            0.5 * mapbox_config._MAPBOX_PIXEL_TO_MM,
+        )
+        self.assertEqual(street_low["paint"]["line-opacity"], 0.0)
         self.assertEqual(by_id["road-street-case"]["minzoom"], 15)
         self.assertEqual(by_id["road-street"]["minzoom"], 15)
         self.assertEqual(
@@ -5979,6 +5990,10 @@ class SimplifyMapboxStyleTests(unittest.TestCase):
         )
         self.assertEqual(
             mapbox_config.base_mapbox_style_layer_id_for_qfit(street_mid["id"]),
+            "road-street",
+        )
+        self.assertEqual(
+            mapbox_config.base_mapbox_style_layer_id_for_qfit(street_low["id"]),
             "road-street",
         )
 
