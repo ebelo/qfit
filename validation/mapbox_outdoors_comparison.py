@@ -354,6 +354,7 @@ class ComparisonConfig:
     qgis_contour_bbox_edge_difference_label_probe: bool = False
     qgis_contour_bbox_edge_difference_source_style_label_probe: bool = False
     qgis_contour_bbox_edge_difference_source_style_high_zoom_label_probe: bool = False
+    activity_overlay: bool = False
     browser: bool = True
     qgis: bool = True
     diff: bool = True
@@ -376,6 +377,7 @@ class ComparisonResult:
     qgis_contour_bbox_edge_difference_label_probe: bool = False
     qgis_contour_bbox_edge_difference_source_style_label_probe: bool = False
     qgis_contour_bbox_edge_difference_source_style_high_zoom_label_probe: bool = False
+    activity_overlay: bool = False
     image_metrics: dict[str, object] = dataclasses.field(default_factory=dict)
     qgis_runtime: dict[str, object] = dataclasses.field(default_factory=dict)
     style_json_path: str | None = None
@@ -548,6 +550,7 @@ def _redacted_manifest(
         "qgis_contour_bbox_edge_difference_source_style_high_zoom_label_probe": (
             result.qgis_contour_bbox_edge_difference_source_style_high_zoom_label_probe
         ),
+        "activity_overlay": result.activity_overlay,
         "captured": {
             "browser_reference": result.browser_captured,
             "qgis_vector_render": result.qgis_captured,
@@ -578,11 +581,25 @@ def build_mapbox_gl_html(
     *,
     camera: MapboxComparisonCamera,
     style_definition: dict[str, object] | None = None,
+    activity_overlay: bool = False,
 ) -> str:
     """Return token-free temporary HTML for the browser reference capture."""
 
     style_json = json.dumps(style_definition if style_definition is not None else camera.style_url)
     center_json = json.dumps([camera.longitude, camera.latitude])
+    activity_overlay_script = ""
+    if activity_overlay:
+        _ensure_package_parent_on_path()
+        from qfit.validation.mapbox_activity_overlay import (
+            activity_overlay_geojson,
+            activity_overlay_mapbox_layers,
+        )
+        overlay_geojson = json.dumps(activity_overlay_geojson(camera))
+        overlay_layers = json.dumps(activity_overlay_mapbox_layers())
+        activity_overlay_script = f"""map.once('load', () => {{
+        map.addSource('qfit-activity-overlay', {{ type: 'geojson', data: {overlay_geojson} }});
+        for (const layer of {overlay_layers}) map.addLayer(layer);
+      }});"""
     return f"""<!doctype html>
 <html>
 <head>
@@ -612,6 +629,7 @@ def build_mapbox_gl_html(
         preserveDrawingBuffer: true,
         fadeDuration: 0,
       }});
+      {activity_overlay_script}
       map.once('idle', () => {{ window.qfitMapboxReady = true; }});
     }};
   </script>
@@ -707,6 +725,7 @@ def render_browser_reference(  # pragma: no cover - depends on optional Node/Chr
     output_path: Path,
     timeout_ms: int,
     style_definition: dict[str, object] | None = None,
+    activity_overlay: bool = False,
 ) -> None:
     node_binary = shutil.which("node")
     if not node_binary:
@@ -734,7 +753,11 @@ def render_browser_reference(  # pragma: no cover - depends on optional Node/Chr
             env=_node_capture_environment(),
             input=json.dumps({
                 "credential": token,
-                "html": build_mapbox_gl_html(camera=camera, style_definition=style_definition),
+                "html": build_mapbox_gl_html(
+                    camera=camera,
+                    style_definition=style_definition,
+                    activity_overlay=activity_overlay,
+                ),
             }),
             capture_output=True,
             text=True,
@@ -1094,6 +1117,7 @@ def render_qgis_vector(  # pragma: no cover - depends on optional PyQGIS runtime
     qgis_contour_bbox_edge_difference_label_probe: bool = False,
     qgis_contour_bbox_edge_difference_source_style_label_probe: bool = False,
     qgis_contour_bbox_edge_difference_source_style_high_zoom_label_probe: bool = False,
+    activity_overlay: bool = False,
 ) -> None:
     _ensure_package_parent_on_path()
     _ensure_headless_qt_platform()
@@ -1183,7 +1207,36 @@ def render_qgis_vector(  # pragma: no cover - depends on optional PyQGIS runtime
 
         destination_crs = QgsCoordinateReferenceSystem("EPSG:3857")
         settings = QgsMapSettings()
-        settings.setLayers([layer])
+        render_layers = [layer]
+        if activity_overlay:
+            from qgis.core import QgsFeature, QgsGeometry, QgsPointXY, QgsVectorLayer
+
+            from qfit.validation.mapbox_activity_overlay import (
+                ACTIVITY_TYPE_FIELD,
+                activity_overlay_routes_web_mercator,
+            )
+            from qfit.visualization.infrastructure.layer_style_service import (
+                LayerStyleService,
+            )
+            overlay_layer = QgsVectorLayer(
+                f"LineString?crs=EPSG:3857&field={ACTIVITY_TYPE_FIELD}:string",
+                "qfit activity overlay",
+                "memory",
+            )
+            overlay_features = []
+            for route in activity_overlay_routes_web_mercator(camera):
+                feature = QgsFeature(overlay_layer.fields())
+                feature.setAttribute(ACTIVITY_TYPE_FIELD, route.activity_type)
+                feature.setGeometry(
+                    QgsGeometry.fromPolylineXY([QgsPointXY(x, y) for x, y in route.coordinates])
+                )
+                overlay_features.append(feature)
+            overlay_layer.dataProvider().addFeatures(overlay_features)
+            LayerStyleService().apply_style(
+                overlay_layer, None, None, None, "By activity type", "Light"
+            )
+            render_layers.insert(0, overlay_layer)
+        settings.setLayers(render_layers)
         settings.setDestinationCrs(destination_crs)
         settings.setExtent(QgsRectangle(*camera_extent_web_mercator(camera)))
         settings.setOutputSize(QSize(camera.width, camera.height))
@@ -1303,6 +1356,7 @@ def run_comparison(
             output_path=paths.browser_png,
             timeout_ms=config.browser_timeout_ms,
             style_definition=style_definition,
+            activity_overlay=config.activity_overlay,
         )
         browser_captured = True
 
@@ -1328,6 +1382,7 @@ def run_comparison(
             qgis_contour_bbox_edge_difference_source_style_high_zoom_label_probe=(
                 config.qgis_contour_bbox_edge_difference_source_style_high_zoom_label_probe
             ),
+            activity_overlay=config.activity_overlay,
         )
         qgis_captured = True
         qgis_preprocessed_style_captured = paths.qgis_preprocessed_style_json.exists()
@@ -1367,6 +1422,7 @@ def run_comparison(
         qgis_contour_bbox_edge_difference_source_style_high_zoom_label_probe=(
             config.qgis_contour_bbox_edge_difference_source_style_high_zoom_label_probe
         ),
+        activity_overlay=config.activity_overlay,
         image_metrics=image_metrics,
         qgis_runtime=qgis_runtime,
         style_json_path=str(config.style_json_path) if config.style_json_path is not None else None,
@@ -1486,6 +1542,14 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument(
+        "--activity-overlay",
+        action="store_true",
+        help=(
+            "Render representative Run, Ride, and Hike lines with qfit's production "
+            "Light activity styling in both browser and QGIS captures."
+        ),
+    )
+    parser.add_argument(
         "--skip-diff",
         action="store_true",
         help="Skip diff image generation.",
@@ -1548,6 +1612,7 @@ def _comparison_config(
         qgis_contour_bbox_edge_difference_source_style_high_zoom_label_probe=(
             args.qgis_contour_bbox_edge_difference_source_style_high_zoom_label_probe
         ),
+        activity_overlay=args.activity_overlay,
         browser=not args.skip_browser,
         qgis=not args.skip_qgis,
         diff=not args.skip_diff,
@@ -1614,6 +1679,8 @@ def _single_camera_subprocess_command(
         command.append("--qgis-contour-bbox-edge-difference-source-style-label-probe")
     if args.qgis_contour_bbox_edge_difference_source_style_high_zoom_label_probe:
         command.append("--qgis-contour-bbox-edge-difference-source-style-high-zoom-label-probe")
+    if args.activity_overlay:
+        command.append("--activity-overlay")
     if args.skip_diff:
         command.append("--skip-diff")
     command.extend(["--browser-timeout-ms", str(args.browser_timeout_ms)])
@@ -2051,6 +2118,7 @@ def _write_all_cameras_summary(
             else None
         ),
         "output_root": redact_sensitive_text(str(output_root), token),
+        "activity_overlay": args.activity_overlay,
         "counts": counts,
         "cameras": entries,
         "notes": [
