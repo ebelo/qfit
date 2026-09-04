@@ -328,6 +328,13 @@ When removal masks prove ownership but not a safe fix, run a style-adjustment pr
 }
 ```
 
+To probe a zoom-banded candidate without changing production preprocessing,
+set `clone_from_layer_id` on an adjustment. The probe copies that source layer
+to the requested `layer_id`, applies the overrides, and keeps later
+adjustments available to narrow the original layer's zoom range. Clone targets
+must be new layer IDs; a missing source is reported with the other unmatched
+adjustments.
+
 ```bash
 python3 validation/mapbox_outdoors_style_adjustment_probe.py \
   --mapbox-token-file /path/to/mapbox-token.txt \
