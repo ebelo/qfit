@@ -305,6 +305,28 @@ def _matching_layers(layers: Sequence[object], layer_id: str) -> list[dict[str, 
     ]
 
 
+def _clone_adjusted_layers(
+    layers: list[object], adjustment: StyleAdjustment
+) -> bool:
+    if _matching_layers(layers, adjustment.layer_id):
+        raise ValueError(
+            f"Cannot clone style layer to existing layer id {adjustment.layer_id}."
+        )
+    source_layer_id = adjustment.clone_from_layer_id
+    if source_layer_id is None:
+        return False
+    source_matches = _matching_layers(layers, source_layer_id)
+    if not source_matches:
+        return False
+    for source_layer in source_matches:
+        cloned_layer = deepcopy(source_layer)
+        cloned_layer["id"] = adjustment.layer_id
+        _apply_adjustment_to_layer(cloned_layer, adjustment)
+        source_index = layers.index(source_layer)
+        layers.insert(source_index + 1, cloned_layer)
+    return True
+
+
 def apply_style_adjustments(
     style: Mapping[str, object],
     *,
@@ -318,21 +340,11 @@ def apply_style_adjustments(
     missing_ids: list[str] = []
     for adjustment in adjustments:
         if adjustment.clone_from_layer_id is not None:
-            if _matching_layers(layers, adjustment.layer_id):
-                raise ValueError(
-                    f"Cannot clone style layer to existing layer id {adjustment.layer_id}."
-                )
-            source_matches = _matching_layers(layers, adjustment.clone_from_layer_id)
-            if not source_matches:
-                missing_ids.append(adjustment.layer_id)
-                continue
-            for source_layer in source_matches:
-                cloned_layer = deepcopy(source_layer)
-                cloned_layer["id"] = adjustment.layer_id
-                _apply_adjustment_to_layer(cloned_layer, adjustment)
-                source_index = layers.index(source_layer)
-                layers.insert(source_index + 1, cloned_layer)
-            matched_ids.append(adjustment.layer_id)
+            if _clone_adjusted_layers(layers, adjustment):
+                target_ids = matched_ids
+            else:
+                target_ids = missing_ids
+            target_ids.append(adjustment.layer_id)
             continue
         matches = _matching_layers(layers, adjustment.layer_id)
         if matches:
