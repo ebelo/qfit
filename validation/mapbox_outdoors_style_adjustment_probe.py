@@ -114,6 +114,7 @@ def output_root_for_style(style_owner: str, style_id: str) -> Path:
 @dataclass(frozen=True)
 class StyleAdjustment:
     layer_id: str
+    clone_from_layer_id: str | None = None
     paint: Mapping[str, object] = dataclasses.field(default_factory=dict)
     layout: Mapping[str, object] = dataclasses.field(default_factory=dict)
     minzoom: float | None = None
@@ -192,15 +193,30 @@ def _style_adjustment_from_json(value: object, *, variant_name: str) -> StyleAdj
     layer_id = adjustment.get("layer_id")
     if not isinstance(layer_id, str) or not layer_id:
         raise ValueError(f"Variant {variant_name} adjustment must include layer_id.")
+    clone_from_layer_id = adjustment.get("clone_from_layer_id")
+    if clone_from_layer_id is not None and (
+        not isinstance(clone_from_layer_id, str) or not clone_from_layer_id
+    ):
+        raise ValueError(
+            f"Variant {variant_name} clone_from_layer_id must be a non-empty string when provided."
+        )
     paint = _optional_mapping(adjustment.get("paint"), label=f"variant {variant_name} paint")
     layout = _optional_mapping(adjustment.get("layout"), label=f"variant {variant_name} layout")
     minzoom = _optional_zoom(adjustment.get("minzoom"), label=f"variant {variant_name} minzoom")
     maxzoom = _optional_zoom(adjustment.get("maxzoom"), label=f"variant {variant_name} maxzoom")
     filter_expression = adjustment.get("filter") if "filter" in adjustment else None
-    if not paint and not layout and minzoom is None and maxzoom is None and filter_expression is None:
+    if (
+        clone_from_layer_id is None
+        and not paint
+        and not layout
+        and minzoom is None
+        and maxzoom is None
+        and filter_expression is None
+    ):
         raise ValueError(f"Variant {variant_name} adjustment for {layer_id} does not change anything.")
     return StyleAdjustment(
         layer_id=layer_id,
+        clone_from_layer_id=clone_from_layer_id,
         paint=dict(paint),
         layout=dict(layout),
         minzoom=minzoom,
@@ -301,6 +317,23 @@ def apply_style_adjustments(
     matched_ids: list[str] = []
     missing_ids: list[str] = []
     for adjustment in adjustments:
+        if adjustment.clone_from_layer_id is not None:
+            if _matching_layers(layers, adjustment.layer_id):
+                raise ValueError(
+                    f"Cannot clone style layer to existing layer id {adjustment.layer_id}."
+                )
+            source_matches = _matching_layers(layers, adjustment.clone_from_layer_id)
+            if not source_matches:
+                missing_ids.append(adjustment.layer_id)
+                continue
+            for source_layer in source_matches:
+                cloned_layer = deepcopy(source_layer)
+                cloned_layer["id"] = adjustment.layer_id
+                _apply_adjustment_to_layer(cloned_layer, adjustment)
+                source_index = layers.index(source_layer)
+                layers.insert(source_index + 1, cloned_layer)
+            matched_ids.append(adjustment.layer_id)
+            continue
         matches = _matching_layers(layers, adjustment.layer_id)
         if matches:
             for layer in matches:

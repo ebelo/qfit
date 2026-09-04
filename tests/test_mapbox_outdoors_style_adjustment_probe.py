@@ -81,6 +81,7 @@ class MapboxOutdoorsStyleAdjustmentProbeTests(unittest.TestCase):
                                     "paint": {"line-opacity": 0.68},
                                     "layout": {"line-cap": "round"},
                                     "minzoom": 16,
+                                    "clone_from_layer_id": "road-label",
                                 }
                             ],
                         }
@@ -95,6 +96,7 @@ class MapboxOutdoorsStyleAdjustmentProbeTests(unittest.TestCase):
         self.assertEqual(variants[0].name, "contour-strong")
         adjustment = variants[0].adjustments[0]
         self.assertEqual(adjustment.layer_id, "contour-minor")
+        self.assertEqual(adjustment.clone_from_layer_id, "road-label")
         self.assertEqual(adjustment.paint["line-opacity"], 0.68)
         self.assertEqual(adjustment.layout["line-cap"], "round")
         self.assertEqual(adjustment.minzoom, 16.0)
@@ -149,6 +151,50 @@ class MapboxOutdoorsStyleAdjustmentProbeTests(unittest.TestCase):
         self.assertEqual(layers["road-label"]["layout"]["text-size"], 11)
         self.assertEqual(layers["road-label"]["filter"], ["==", ["get", "class"], "path"])
         self.assertNotIn("line-opacity", STYLE["layers"][1]["paint"])
+
+    def test_apply_style_adjustments_can_clone_a_layer_for_a_zoom_band(self):
+        adjusted, matched, missing = apply_style_adjustments(
+            STYLE,
+            adjustments=(
+                StyleAdjustment(
+                    layer_id="road-label-z12-to-z15",
+                    clone_from_layer_id="road-label",
+                    layout={"text-size": 11.5},
+                    maxzoom=15.0,
+                ),
+                StyleAdjustment(layer_id="road-label", minzoom=15.0),
+            ),
+        )
+
+        road_layers = [
+            layer for layer in adjusted["layers"] if str(layer.get("id", "")).startswith("road-label")
+        ]
+        self.assertEqual(
+            [layer["id"] for layer in road_layers],
+            ["road-label", "road-label-z12-to-z15"],
+        )
+        self.assertEqual(road_layers[0]["minzoom"], 15.0)
+        self.assertEqual(road_layers[0]["layout"]["text-size"], 10)
+        self.assertEqual(road_layers[1]["maxzoom"], 15.0)
+        self.assertEqual(road_layers[1]["layout"]["text-size"], 11.5)
+        self.assertEqual(matched, ["road-label-z12-to-z15", "road-label"])
+        self.assertEqual(missing, [])
+        self.assertEqual(STYLE["layers"][2]["layout"]["text-size"], 10)
+
+    def test_apply_style_adjustments_reports_missing_clone_source(self):
+        adjusted, matched, missing = apply_style_adjustments(
+            STYLE,
+            adjustments=(
+                StyleAdjustment(
+                    layer_id="road-label-copy",
+                    clone_from_layer_id="missing-road-label",
+                ),
+            ),
+        )
+
+        self.assertEqual(adjusted, STYLE)
+        self.assertEqual(matched, [])
+        self.assertEqual(missing, ["road-label-copy"])
 
     def test_build_report_uses_existing_manifest_and_adjusts_variants(self):
         with tempfile.TemporaryDirectory() as tmpdir:
