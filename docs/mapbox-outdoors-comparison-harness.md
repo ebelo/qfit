@@ -103,6 +103,27 @@ The default output root is `debug/mapbox-light-comparison/`. The aggregate
 `summary.json`, `summary.md`, and `contact-sheet.jpg` record the Light
 preset and `mapbox://styles/mapbox/light-v11` provenance without token values.
 
+To verify qfit's production Light activity styling across the same matrix, add
+`--activity-overlay` and use a distinct ignored output root:
+
+```bash
+python3 validation/mapbox_outdoors_comparison.py \
+  --preset light \
+  --all-cameras \
+  --activity-overlay \
+  --output-root debug/mapbox-light-activity-overlay \
+  --mapbox-token-file /path/to/token.txt
+```
+
+The opt-in probe draws representative Run, Ride, and Hike routes at stable
+viewport-relative positions in both renderers. The browser uses a pixel
+equivalent of qfit's production millimetre widths, colors, opacity, outline,
+round caps, and round joins; QGIS uses the real `LayerStyleService` categorized
+line renderer. Manifests and aggregate summaries record
+`"activity_overlay": true`. Inspect z8, z12, and z14 as the primary legibility
+targets and z5, z17, and z18 as guardrails. The generated routes are diagnostic
+geometry, not real activity data.
+
 To generate the matching Light style audit and z8/z14 hotspot crops without
 putting a credential on the command line:
 

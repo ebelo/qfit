@@ -1726,6 +1726,36 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         self.assertTrue(manifest["qgis_contour_bbox_edge_difference_source_style_label_probe"])
         self.assertTrue(manifest["qgis_contour_bbox_edge_difference_source_style_high_zoom_label_probe"])
 
+    def test_run_comparison_records_activity_overlay_for_both_renderers(self):
+        captured = []
+
+        def fake_browser_renderer(*, output_path, activity_overlay, **_kwargs):
+            captured.append(("browser", activity_overlay))
+            output_path.write_bytes(PNG_PLACEHOLDER)
+
+        def fake_qgis_renderer(*, output_path, activity_overlay, **_kwargs):
+            captured.append(("qgis", activity_overlay))
+            output_path.write_bytes(PNG_PLACEHOLDER)
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            result = run_comparison(
+                ComparisonConfig(
+                    camera=LIGHT_CAMERAS["bern-urban-z12-light"],
+                    token="test-mapbox-token",
+                    output_root=Path(tmpdir),
+                    activity_overlay=True,
+                    diff=False,
+                ),
+                browser_renderer=fake_browser_renderer,
+                qgis_renderer=fake_qgis_renderer,
+                style_fetcher=lambda *_args: SAMPLE_STYLE,
+            )
+            manifest = json.loads(result.paths.manifest_json.read_text(encoding="utf-8"))
+
+        self.assertEqual(captured, [("browser", True), ("qgis", True)])
+        self.assertTrue(result.activity_overlay)
+        self.assertTrue(manifest["activity_overlay"])
+
     def test_run_comparison_passes_downloaded_style_json_to_renderers(self):
         captured_style_definitions = []
 
@@ -1811,6 +1841,7 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
             "--qgis-contour-bbox-edge-difference-label-probe",
             "--qgis-contour-bbox-edge-difference-source-style-label-probe",
             "--qgis-contour-bbox-edge-difference-source-style-high-zoom-label-probe",
+            "--activity-overlay",
             "--browser-timeout-ms",
             "5000",
         ])
@@ -1826,6 +1857,7 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         self.assertTrue(args.qgis_contour_bbox_edge_difference_label_probe)
         self.assertTrue(args.qgis_contour_bbox_edge_difference_source_style_label_probe)
         self.assertTrue(args.qgis_contour_bbox_edge_difference_source_style_high_zoom_label_probe)
+        self.assertTrue(args.activity_overlay)
         self.assertEqual(args.browser_timeout_ms, 5000)
 
     def test_main_all_cameras_runs_full_inspection_matrix(self):
@@ -1855,6 +1887,7 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
                         "--qgis-contour-bbox-edge-difference-label-probe",
                         "--qgis-contour-bbox-edge-difference-source-style-label-probe",
                         "--qgis-contour-bbox-edge-difference-source-style-high-zoom-label-probe",
+                        "--activity-overlay",
                         "--skip-diff",
                         "--browser-timeout-ms",
                         "5000",
@@ -1875,6 +1908,7 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
             self.assertIn("--qgis-contour-bbox-edge-difference-label-probe", command)
             self.assertIn("--qgis-contour-bbox-edge-difference-source-style-label-probe", command)
             self.assertIn("--qgis-contour-bbox-edge-difference-source-style-high-zoom-label-probe", command)
+            self.assertIn("--activity-overlay", command)
             self.assertIn("--skip-diff", command)
             self.assertEqual(kwargs["env"]["MAPBOX_ACCESS_TOKEN"], "test-mapbox-token")
             self.assertEqual(kwargs["cwd"], mapbox_outdoors_comparison.REPO_ROOT)
