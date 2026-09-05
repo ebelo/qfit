@@ -83,6 +83,13 @@ For a complete browser + QGIS + diff run, install or run from an environment wit
 - QGIS/Qt support for the `offscreen` platform when running headlessly; the harness sets `QT_QPA_PLATFORM=offscreen` by default unless you provide a different value
 - `xvfb-run` or another virtual display when your local Chromium/QGIS build cannot render headlessly without an X server
 
+When `HTTPS_PROXY` or `HTTP_PROXY` is present, the harness configures the
+disposable Playwright browser and the isolated QGIS network manager to use it.
+Authenticated proxy URLs are split into server and credential fields without
+being logged. If `SSL_CERT_FILE` is also present, its certificates are trusted
+only for the QGIS capture and the previous Qt/QGIS network state is restored
+afterward.
+
 Keep tokens out of shell history by using `--mapbox-token-file /path/to/token.txt`,
 which reads the credential inside Python, or by exporting an environment variable.
 Avoid passing `--mapbox-token` directly.

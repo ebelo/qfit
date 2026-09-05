@@ -65,6 +65,7 @@ from qfit.validation.mapbox_outdoors_comparison import (
     build_run_directory,
     camera_center_web_mercator,
     camera_extent_web_mercator,
+    configure_qt_network_from_environment,
     encode_browser_capture_html,
     fetch_comparison_style_definition,
     is_valid_qgis_vector_tile_layer,
@@ -76,6 +77,7 @@ from qfit.validation.mapbox_outdoors_comparison import (
     render_browser_reference,
     render_qgis_vector,
     resolve_mapbox_token,
+    restore_qt_network,
     run_comparison,
     sha256_file,
     write_qgis_label_styles_snapshot,
@@ -393,10 +395,184 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         self.assertIn("JSON.parse", script)
         self.assertIn("undefined, { timeout }", script)
         self.assertIn("readFileSync(0", script)
+        self.assertIn("process.env.HTTPS_PROXY || process.env.HTTP_PROXY", script)
+        self.assertIn("launchOptions.proxy", script)
+        self.assertIn("new URL(proxyServer)", script)
+        self.assertIn("decodeURIComponent(parsedProxy.password)", script)
+        self.assertIn("ignoreHTTPSErrors: Boolean(proxyServer)", script)
         self.assertNotIn("Buffer.from", script)
         self.assertNotIn("accessToken", script)
         self.assertNotIn("MAPBOX_ACCESS_TOKEN", script)
         self.assertNotIn("pk.", script)
+
+    def test_configure_and_restore_qt_network_from_authenticated_proxy(self):
+        previous_application_proxy = object()
+        previous_fallback_proxy = object()
+        previous_ssl_configuration = object()
+
+        class FakeProxy:
+            HttpProxy = "http-proxy"
+            application_proxy = previous_application_proxy
+
+            def __init__(self, *args):
+                self.args = args
+
+            @classmethod
+            def applicationProxy(cls):
+                return cls.application_proxy
+
+            @classmethod
+            def setApplicationProxy(cls, proxy):
+                cls.application_proxy = proxy
+
+        class FakeSslConfiguration:
+            default_configuration = previous_ssl_configuration
+
+            def __init__(self, _source):
+                self.certificates = ["system-ca"]
+
+            @classmethod
+            def defaultConfiguration(cls):
+                return cls.default_configuration
+
+            @classmethod
+            def setDefaultConfiguration(cls, configuration):
+                cls.default_configuration = configuration
+
+            def caCertificates(self):
+                return self.certificates
+
+            def setCaCertificates(self, certificates):
+                self.certificates = certificates
+
+        class FakeCertificate:
+            @staticmethod
+            def fromPath(path):
+                self.assertEqual(path, "/gateway/ca.pem")
+                return ["gateway-ca"]
+
+        class FakeNetworkManager:
+            def __init__(self):
+                self.proxy = previous_fallback_proxy
+                self.excludes = ["exclude"]
+                self.no_proxy_urls = ["no-proxy"]
+
+            def fallbackProxy(self):
+                return self.proxy
+
+            def excludeList(self):
+                return self.excludes
+
+            def noProxyList(self):
+                return self.no_proxy_urls
+
+            def setFallbackProxyAndExcludes(self, proxy, excludes, no_proxy_urls):
+                self.proxy = proxy
+                self.excludes = list(excludes)
+                self.no_proxy_urls = list(no_proxy_urls)
+
+        manager = FakeNetworkManager()
+        state = configure_qt_network_from_environment(
+            proxy_class=FakeProxy,
+            ssl_certificate_class=FakeCertificate,
+            ssl_configuration_class=FakeSslConfiguration,
+            network_manager=manager,
+            environ={
+                "HTTPS_PROXY": "http://proxy-user:proxy-pass@127.0.0.1:8080",
+                "SSL_CERT_FILE": "/gateway/ca.pem",
+            },
+        )
+
+        configured_proxy = FakeProxy.application_proxy
+        self.assertEqual(
+            configured_proxy.args,
+            ("http-proxy", "127.0.0.1", 8080, "proxy-user", "proxy-pass"),
+        )
+        self.assertIs(manager.proxy, configured_proxy)
+        self.assertEqual(manager.excludes, [])
+        self.assertEqual(manager.no_proxy_urls, [])
+        self.assertEqual(
+            FakeSslConfiguration.default_configuration.certificates,
+            ["system-ca", "gateway-ca"],
+        )
+
+        restore_qt_network(
+            proxy_class=FakeProxy,
+            ssl_configuration_class=FakeSslConfiguration,
+            network_manager=manager,
+            state=state,
+        )
+
+        self.assertIs(FakeProxy.application_proxy, previous_application_proxy)
+        self.assertIs(manager.proxy, previous_fallback_proxy)
+        self.assertEqual(manager.excludes, ["exclude"])
+        self.assertEqual(manager.no_proxy_urls, ["no-proxy"])
+        self.assertIs(
+            FakeSslConfiguration.default_configuration,
+            previous_ssl_configuration,
+        )
+
+    def test_configure_qt_network_handles_nested_proxy_enum_without_ca(self):
+        class FakeProxy:
+            class ProxyType:
+                HttpProxy = "nested-http-proxy"
+
+            @staticmethod
+            def applicationProxy():
+                return object()
+
+            @staticmethod
+            def setApplicationProxy(_proxy):
+                pass
+
+            def __init__(self, *args):
+                self.args = args
+
+        class FakeSslConfiguration:
+            @staticmethod
+            def defaultConfiguration():
+                return object()
+
+        class FakeNetworkManager:
+            fallbackProxy = staticmethod(object)
+            excludeList = staticmethod(list)
+            noProxyList = staticmethod(list)
+
+            @staticmethod
+            def setFallbackProxyAndExcludes(_proxy, _excludes, _no_proxy_urls):
+                pass
+
+        state = configure_qt_network_from_environment(
+            proxy_class=FakeProxy,
+            ssl_certificate_class=object,
+            ssl_configuration_class=FakeSslConfiguration,
+            network_manager=FakeNetworkManager(),
+            environ={"HTTP_PROXY": "http://localhost"},
+        )
+
+        self.assertIsNotNone(state)
+
+    def test_configure_and_restore_qt_network_are_noops_without_valid_proxy(self):
+        kwargs = {
+            "proxy_class": object,
+            "ssl_certificate_class": object,
+            "ssl_configuration_class": object,
+            "network_manager": object(),
+        }
+        self.assertIsNone(
+            configure_qt_network_from_environment(environ={}, **kwargs)
+        )
+        self.assertIsNone(
+            configure_qt_network_from_environment(
+                environ={"HTTPS_PROXY": "socks5://localhost:1080"},
+                **kwargs,
+            )
+        )
+        restore_qt_network(state=None, **{
+            "proxy_class": object,
+            "ssl_configuration_class": object,
+            "network_manager": object(),
+        })
 
     def test_encode_browser_capture_html_keeps_reference_page_token_free(self):
         encoded_html = encode_browser_capture_html(camera=CAMERAS["valais-geneva-outdoors"])
@@ -570,6 +746,9 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         fake_core.QgsCoordinateReferenceSystem = lambda value: value
         fake_core.QgsMapRendererParallelJob = FakeQgsMapRendererParallelJob
         fake_core.QgsMapSettings = FakeQgsMapSettings
+        fake_core.QgsNetworkAccessManager = types.SimpleNamespace(
+            instance=lambda: object()
+        )
         fake_core.QgsRectangle = lambda *values: values
         fake_core.QgsVectorTileLayer = FakeQgsVectorTileLayer
 
@@ -577,6 +756,10 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         fake_qt_core.QSize = lambda width, height: (width, height)
         fake_qt_gui = types.ModuleType("qgis.PyQt.QtGui")
         fake_qt_gui.QColor = lambda *values: values
+        fake_qt_network = types.ModuleType("qgis.PyQt.QtNetwork")
+        fake_qt_network.QNetworkProxy = object
+        fake_qt_network.QSslCertificate = object
+        fake_qt_network.QSslConfiguration = object
 
         fake_mapbox_config = types.ModuleType("qfit.mapbox_config")
 
@@ -595,7 +778,11 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         fake_background_service = types.ModuleType("qfit.visualization.infrastructure.background_map_service")
         fake_background_service.BackgroundMapService = FakeBackgroundMapService
 
-        with tempfile.TemporaryDirectory() as tmpdir, patch.dict(os.environ, {}, clear=False), patch.dict(
+        with tempfile.TemporaryDirectory() as tmpdir, patch.dict(
+            os.environ,
+            {"HTTPS_PROXY": "", "HTTP_PROXY": ""},
+            clear=False,
+        ), patch.dict(
             sys.modules,
             {
                 "qgis": types.ModuleType("qgis"),
@@ -603,6 +790,7 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
                 "qgis.PyQt": types.ModuleType("qgis.PyQt"),
                 "qgis.PyQt.QtCore": fake_qt_core,
                 "qgis.PyQt.QtGui": fake_qt_gui,
+                "qgis.PyQt.QtNetwork": fake_qt_network,
                 "qfit.mapbox_config": fake_mapbox_config,
                 "qfit.visualization.infrastructure.background_map_service": fake_background_service,
             },

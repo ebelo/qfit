@@ -16,6 +16,7 @@ from collections.abc import MutableMapping
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable, Iterable, TextIO, TypeAlias
+from urllib.parse import unquote, urlsplit
 
 try:
     from qfit.validation.mapbox_outdoors_runtime import format_qgis_runtime_label
@@ -662,9 +663,22 @@ const timeout = Number.parseInt(timeoutText, 10);
   if (executablePath) {
     launchOptions.executablePath = executablePath;
   }
+  const proxyServer = process.env.HTTPS_PROXY || process.env.HTTP_PROXY;
+  if (proxyServer) {
+    const parsedProxy = new URL(proxyServer);
+    launchOptions.proxy = {
+      server: `${parsedProxy.protocol}//${parsedProxy.hostname}${parsedProxy.port ? `:${parsedProxy.port}` : ''}`,
+    };
+    if (parsedProxy.username) launchOptions.proxy.username = decodeURIComponent(parsedProxy.username);
+    if (parsedProxy.password) launchOptions.proxy.password = decodeURIComponent(parsedProxy.password);
+  }
   const browser = await chromium.launch(launchOptions);
   try {
-    const page = await browser.newPage({ viewport: { width, height }, deviceScaleFactor: 1 });
+    const page = await browser.newPage({
+      viewport: { width, height },
+      deviceScaleFactor: 1,
+      ignoreHTTPSErrors: Boolean(proxyServer),
+    });
     await page.setContent(html, { waitUntil: 'domcontentloaded', timeout });
     await page.evaluate((value) => window.startQfitMapboxComparison(value), credential);
     await page.waitForFunction('window.qfitMapboxReady === true', undefined, { timeout });
@@ -783,6 +797,76 @@ def _ensure_headless_qt_platform(environ: MutableMapping[str, str] | None = None
     """Default QGIS validation captures to Qt's offscreen platform unless callers override it."""
     target = os.environ if environ is None else environ
     target.setdefault("QT_QPA_PLATFORM", DEFAULT_QT_QPA_PLATFORM)
+
+
+def configure_qt_network_from_environment(
+    *,
+    proxy_class: type,
+    ssl_certificate_class: type,
+    ssl_configuration_class: type,
+    network_manager: object,
+    environ: MutableMapping[str, str] | None = None,
+) -> tuple[object, object, object, list[str], list[str]] | None:
+    """Apply proxy and CA environment settings for one isolated QGIS render."""
+
+    target = os.environ if environ is None else environ
+    proxy_url = (target.get("HTTPS_PROXY") or target.get("HTTP_PROXY") or "").strip()
+    if not proxy_url:
+        return None
+    parsed = urlsplit(proxy_url)
+    if parsed.scheme not in {"http", "https"} or not parsed.hostname:
+        return None
+
+    proxy_type = getattr(proxy_class, "HttpProxy", None)
+    if proxy_type is None:
+        proxy_type = proxy_class.ProxyType.HttpProxy
+    configured_proxy = proxy_class(
+        proxy_type,
+        parsed.hostname,
+        parsed.port or 80,
+        unquote(parsed.username or ""),
+        unquote(parsed.password or ""),
+    )
+    previous_application_proxy = proxy_class.applicationProxy()
+    previous_ssl_configuration = ssl_configuration_class.defaultConfiguration()
+    previous_fallback_proxy = network_manager.fallbackProxy()
+    previous_excludes = list(network_manager.excludeList())
+    previous_no_proxy_urls = list(network_manager.noProxyList())
+
+    ca_path = (target.get("SSL_CERT_FILE") or "").strip()
+    if ca_path:
+        certificates = list(ssl_certificate_class.fromPath(ca_path))
+        if certificates:
+            configured_ssl = ssl_configuration_class(previous_ssl_configuration)
+            configured_ssl.setCaCertificates(
+                [*configured_ssl.caCertificates(), *certificates]
+            )
+            ssl_configuration_class.setDefaultConfiguration(configured_ssl)
+
+    proxy_class.setApplicationProxy(configured_proxy)
+    network_manager.setFallbackProxyAndExcludes(configured_proxy, [], [])
+    return (
+        previous_application_proxy,
+        previous_ssl_configuration,
+        previous_fallback_proxy,
+        previous_excludes,
+        previous_no_proxy_urls,
+    )
+
+
+def restore_qt_network(
+    *,
+    proxy_class: type,
+    ssl_configuration_class: type,
+    network_manager: object,
+    state: tuple[object, object, object, list[str], list[str]] | None,
+) -> None:
+    if state is None:
+        return
+    application_proxy, ssl_configuration, fallback_proxy, excludes, no_proxy_urls = state
+    network_manager.setFallbackProxyAndExcludes(fallback_proxy, excludes, no_proxy_urls)
+    proxy_class.setApplicationProxy(application_proxy)
+    ssl_configuration_class.setDefaultConfiguration(ssl_configuration)
 
 
 def is_valid_qgis_vector_tile_layer(*, layer: object, vector_tile_layer_type: type) -> bool:
@@ -1124,11 +1208,17 @@ def render_qgis_vector(  # pragma: no cover - depends on optional PyQGIS runtime
     try:
         from qgis.PyQt.QtCore import QSize  # type: ignore[import-not-found]
         from qgis.PyQt.QtGui import QColor  # type: ignore[import-not-found]
+        from qgis.PyQt.QtNetwork import (  # type: ignore[import-not-found]
+            QNetworkProxy,
+            QSslCertificate,
+            QSslConfiguration,
+        )
         from qgis.core import (  # type: ignore[import-not-found]
             QgsApplication,
             QgsCoordinateReferenceSystem,
             QgsMapRendererParallelJob,
             QgsMapSettings,
+            QgsNetworkAccessManager,
             QgsRectangle,
             QgsVectorTileLayer,
         )
@@ -1154,6 +1244,13 @@ def render_qgis_vector(  # pragma: no cover - depends on optional PyQGIS runtime
         app = QgsApplication([], False)
         app.initQgis()
 
+    network_manager = QgsNetworkAccessManager.instance()
+    network_state = configure_qt_network_from_environment(
+        proxy_class=QNetworkProxy,
+        ssl_certificate_class=QSslCertificate,
+        ssl_configuration_class=QSslConfiguration,
+        network_manager=network_manager,
+    )
     try:
         write_qgis_core_runtime_snapshot(output_path=qgis_runtime_path)
 
@@ -1251,6 +1348,12 @@ def render_qgis_vector(  # pragma: no cover - depends on optional PyQGIS runtime
         if not image.save(str(output_path), "PNG"):
             raise RuntimeError(f"QGIS failed to write render output: {output_path}")
     finally:
+        restore_qt_network(
+            proxy_class=QNetworkProxy,
+            ssl_configuration_class=QSslConfiguration,
+            network_manager=network_manager,
+            state=network_state,
+        )
         if created_app:
             app.exitQgis()
 
