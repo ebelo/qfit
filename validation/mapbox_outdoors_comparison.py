@@ -16,6 +16,7 @@ from collections.abc import MutableMapping
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable, Iterable, TextIO, TypeAlias
+from urllib.parse import unquote, urlsplit
 
 try:
     from qfit.validation.mapbox_outdoors_runtime import format_qgis_runtime_label
@@ -641,6 +642,10 @@ def build_mapbox_gl_html(
 def build_node_playwright_capture_script() -> str:
     return r"""
 const fs = require('fs');
+const crypto = require('crypto');
+const http = require('http');
+const https = require('https');
+const tls = require('tls');
 const { chromium } = require('playwright');
 
 const [outputPath, widthText, heightText, timeoutText, executablePath] = process.argv.slice(2);
@@ -649,6 +654,95 @@ const html = payload.html;
 const width = Number.parseInt(widthText, 10);
 const height = Number.parseInt(heightText, 10);
 const timeout = Number.parseInt(timeoutText, 10);
+
+function proxyPeerSpkiHashes(proxyServer, caPath, targetHost) {
+  return new Promise((resolve, reject) => {
+    const parsedProxy = new URL(proxyServer);
+    const proxyClient = parsedProxy.protocol === 'https:' ? https : http;
+    const proxyAuthorization = parsedProxy.username || parsedProxy.password
+      ? `Basic ${btoa(`${decodeURIComponent(parsedProxy.username)}:${decodeURIComponent(parsedProxy.password)}`)}`
+      : null;
+    const ca = caPath ? fs.readFileSync(caPath) : undefined;
+    const request = proxyClient.request({
+      protocol: parsedProxy.protocol,
+      hostname: parsedProxy.hostname,
+      port: parsedProxy.port || (parsedProxy.protocol === 'https:' ? 443 : 80),
+      method: 'CONNECT',
+      path: `${targetHost}:443`,
+      headers: proxyAuthorization ? { 'Proxy-Authorization': proxyAuthorization } : {},
+      ca,
+      rejectUnauthorized: true,
+    });
+    request.once('connect', (response, socket) => {
+      if (response.statusCode !== 200) {
+        socket.destroy();
+        reject(new Error(`Proxy CONNECT failed with HTTP ${response.statusCode}.`));
+        return;
+      }
+      const secureSocket = tls.connect({ socket, servername: targetHost, ca, rejectUnauthorized: true });
+      secureSocket.once('secureConnect', () => {
+        try {
+          const hashes = new Set();
+          let certificate = secureSocket.getPeerCertificate(true);
+          while (certificate && certificate.raw) {
+            const x509 = new crypto.X509Certificate(certificate.raw);
+            const spki = x509.publicKey.export({ type: 'spki', format: 'der' });
+            hashes.add(crypto.createHash('sha256').update(spki).digest('base64'));
+            if (!certificate.issuerCertificate || certificate.issuerCertificate === certificate) break;
+            certificate = certificate.issuerCertificate;
+          }
+          secureSocket.end();
+          resolve([...hashes]);
+        } catch (error) {
+          secureSocket.destroy();
+          reject(error);
+        }
+      });
+      secureSocket.once('error', reject);
+    });
+    request.once('error', reject);
+    request.end();
+  });
+}
+
+function proxyBypassMatchesHost(proxyBypass, targetHost, targetPort) {
+  const host = targetHost.toLowerCase().replace(/\.$/, '');
+  return String(proxyBypass || '').split(',').some((rawEntry) => {
+    let entry = rawEntry.trim().toLowerCase();
+    let entryPort = '';
+    if (!entry) return false;
+    if (entry === '*') return true;
+    if (entry.includes('://')) {
+      try {
+        const parsedEntry = new URL(entry);
+        entry = parsedEntry.hostname;
+        entryPort = parsedEntry.port;
+      } catch {
+        return false;
+      }
+    } else {
+      const portMatch = entry.match(/^(.*):(\d+)$/);
+      if (portMatch) {
+        entry = portMatch[1];
+        entryPort = portMatch[2];
+      }
+    }
+    entry = entry.replace(/^\*?\./, '').replace(/\.$/, '');
+    const portMatches = !entryPort || Number.parseInt(entryPort, 10) === targetPort;
+    return portMatches && Boolean(entry) && (host === entry || host.endsWith(`.${entry}`));
+  });
+}
+
+function environmentValueWithLowercasePrecedence(lowercaseName, uppercaseName) {
+  return Object.prototype.hasOwnProperty.call(process.env, lowercaseName)
+    ? process.env[lowercaseName]
+    : process.env[uppercaseName];
+}
+
+function environmentVariableIsConfigured(lowercaseName, uppercaseName) {
+  return Object.prototype.hasOwnProperty.call(process.env, lowercaseName)
+    || Object.prototype.hasOwnProperty.call(process.env, uppercaseName);
+}
 
 (async () => {
   const credential = String(payload.credential || '').trim();
@@ -662,9 +756,31 @@ const timeout = Number.parseInt(timeoutText, 10);
   if (executablePath) {
     launchOptions.executablePath = executablePath;
   }
+  const proxyServer = environmentVariableIsConfigured('https_proxy', 'HTTPS_PROXY')
+    ? environmentValueWithLowercasePrecedence('https_proxy', 'HTTPS_PROXY')
+    : environmentValueWithLowercasePrecedence('http_proxy', 'HTTP_PROXY');
+  if (proxyServer) {
+    const parsedProxy = new URL(proxyServer);
+    launchOptions.proxy = {
+      server: `${parsedProxy.protocol}//${parsedProxy.hostname}${parsedProxy.port ? `:${parsedProxy.port}` : ''}`,
+    };
+    if (parsedProxy.username) launchOptions.proxy.username = decodeURIComponent(parsedProxy.username);
+    if (parsedProxy.password) launchOptions.proxy.password = decodeURIComponent(parsedProxy.password);
+    const proxyBypass = environmentValueWithLowercasePrecedence('no_proxy', 'NO_PROXY');
+    if (proxyBypass) launchOptions.proxy.bypass = proxyBypass;
+    if (process.env.SSL_CERT_FILE && !proxyBypassMatchesHost(proxyBypass, 'api.mapbox.com', 443)) {
+      const spkiHashes = await proxyPeerSpkiHashes(proxyServer, process.env.SSL_CERT_FILE, 'api.mapbox.com');
+      if (spkiHashes.length) {
+        launchOptions.args.push(`--ignore-certificate-errors-spki-list=${spkiHashes.join(',')}`);
+      }
+    }
+  }
   const browser = await chromium.launch(launchOptions);
   try {
-    const page = await browser.newPage({ viewport: { width, height }, deviceScaleFactor: 1 });
+    const page = await browser.newPage({
+      viewport: { width, height },
+      deviceScaleFactor: 1,
+    });
     await page.setContent(html, { waitUntil: 'domcontentloaded', timeout });
     await page.evaluate((value) => window.startQfitMapboxComparison(value), credential);
     await page.waitForFunction('window.qfitMapboxReady === true', undefined, { timeout });
@@ -783,6 +899,217 @@ def _ensure_headless_qt_platform(environ: MutableMapping[str, str] | None = None
     """Default QGIS validation captures to Qt's offscreen platform unless callers override it."""
     target = os.environ if environ is None else environ
     target.setdefault("QT_QPA_PLATFORM", DEFAULT_QT_QPA_PLATFORM)
+
+
+def _qt_proxy_components_from_environment(
+    environ: MutableMapping[str, str],
+) -> tuple[str, int, str, str] | None:
+    if "https_proxy" in environ or "HTTPS_PROXY" in environ:
+        proxy_url = _environment_value_with_lowercase_precedence(
+            environ, lowercase_name="https_proxy", uppercase_name="HTTPS_PROXY"
+        )
+    else:
+        proxy_url = _environment_value_with_lowercase_precedence(
+            environ, lowercase_name="http_proxy", uppercase_name="HTTP_PROXY"
+        )
+    proxy_url = proxy_url.strip()
+    if not proxy_url:
+        return None
+    parsed = urlsplit(proxy_url)
+    if parsed.scheme not in {"http", "https"} or not parsed.hostname:
+        return None
+    if parsed.scheme == "https":
+        raise ValueError(
+            "QGIS capture does not support TLS-wrapped HTTPS proxy endpoints; "
+            "use an HTTP CONNECT proxy URL instead."
+        )
+    try:
+        proxy_port = parsed.port
+    except ValueError as exc:
+        raise ValueError("Proxy URL contains an invalid port.") from exc
+    return (
+        parsed.hostname,
+        proxy_port if proxy_port is not None else 80,
+        unquote(parsed.username or ""),
+        unquote(parsed.password or ""),
+    )
+
+
+def _merged_qt_no_proxy_urls(
+    *,
+    previous_no_proxy_urls: list[str],
+    environ: MutableMapping[str, str],
+) -> list[str]:
+    merged = [*previous_no_proxy_urls]
+    bypass_value = _environment_value_with_lowercase_precedence(
+        environ,
+        lowercase_name="no_proxy",
+        uppercase_name="NO_PROXY",
+    )
+    for entry in bypass_value.split(","):
+        for prefix in _qt_no_proxy_url_prefixes(entry):
+            if prefix not in merged:
+                merged.append(prefix)
+    return merged
+
+
+def _environment_value_with_lowercase_precedence(
+    environ: MutableMapping[str, str],
+    *,
+    lowercase_name: str,
+    uppercase_name: str,
+) -> str:
+    if lowercase_name in environ:
+        return environ.get(lowercase_name) or ""
+    return environ.get(uppercase_name) or ""
+
+
+def _qt_no_proxy_url_prefixes(entry: str) -> list[str]:
+    entry = entry.strip()
+    if not entry:
+        return []
+    if entry == "*":
+        return _qt_url_prefixes("")
+    if "://" in entry:
+        return [entry]
+
+    host_and_port = entry.removeprefix("*").removeprefix(".")
+    if not host_and_port:
+        return []
+    prefixes = _qt_url_prefixes(host_and_port)
+    host_rule = host_and_port.lower()
+    port_suffix = ""
+    possible_host, separator, possible_port = host_and_port.rpartition(":")
+    if separator and possible_port.isdigit():
+        host_rule = possible_host.lower()
+        port_suffix = f":{possible_port}"
+    for target_host in ("api.mapbox.com",):
+        if target_host != host_rule and target_host.endswith(f".{host_rule}"):
+            prefixes.extend(_qt_url_prefixes(f"{target_host}{port_suffix}"))
+    return prefixes
+
+
+def _qt_url_prefixes(host: str) -> list[str]:
+    scheme_separator = ":" + "//"
+    return [f"{scheme}{scheme_separator}{host}" for scheme in ("http", "https")]
+
+
+def _qt_ssl_configuration_from_environment(
+    *,
+    previous_ssl_configuration: object,
+    ssl_certificate_class: type,
+    ssl_configuration_class: type,
+    environ: MutableMapping[str, str],
+) -> object | None:
+    ca_path = (environ.get("SSL_CERT_FILE") or "").strip()
+    if not ca_path:
+        return None
+    certificates = list(ssl_certificate_class.fromPath(ca_path))
+    if not certificates:
+        return None
+    configured_ssl = ssl_configuration_class(previous_ssl_configuration)
+    configured_ssl.setCaCertificates([*configured_ssl.caCertificates(), *certificates])
+    return configured_ssl
+
+
+def configure_qt_network_from_environment(
+    *,
+    proxy_class: type,
+    ssl_certificate_class: type,
+    ssl_configuration_class: type,
+    network_manager: object,
+    environ: MutableMapping[str, str] | None = None,
+) -> tuple[object, object, object, list[str], list[str]] | None:
+    """Apply proxy and CA environment settings for one isolated QGIS render."""
+
+    target = os.environ if environ is None else environ
+    proxy_components = _qt_proxy_components_from_environment(target)
+    if proxy_components is None:
+        return None
+    proxy_host, proxy_port, proxy_username, proxy_password = proxy_components
+
+    proxy_type = getattr(proxy_class, "HttpProxy", None)
+    if proxy_type is None:
+        proxy_type = proxy_class.ProxyType.HttpProxy
+    configured_proxy = proxy_class(
+        proxy_type,
+        proxy_host,
+        proxy_port,
+        proxy_username,
+        proxy_password,
+    )
+    previous_application_proxy = proxy_class.applicationProxy()
+    previous_ssl_configuration = ssl_configuration_class.defaultConfiguration()
+    previous_fallback_proxy = network_manager.fallbackProxy()
+    previous_excludes = list(network_manager.excludeList())
+    previous_no_proxy_urls = list(network_manager.noProxyList())
+    configured_no_proxy_urls = _merged_qt_no_proxy_urls(
+        previous_no_proxy_urls=previous_no_proxy_urls,
+        environ=target,
+    )
+    configured_ssl = _qt_ssl_configuration_from_environment(
+        previous_ssl_configuration=previous_ssl_configuration,
+        ssl_certificate_class=ssl_certificate_class,
+        ssl_configuration_class=ssl_configuration_class,
+        environ=target,
+    )
+
+    state = (
+        previous_application_proxy,
+        previous_ssl_configuration,
+        previous_fallback_proxy,
+        previous_excludes,
+        previous_no_proxy_urls,
+    )
+    try:
+        if configured_ssl is not None:
+            ssl_configuration_class.setDefaultConfiguration(configured_ssl)
+        proxy_class.setApplicationProxy(configured_proxy)
+        network_manager.setFallbackProxyAndExcludes(
+            configured_proxy,
+            previous_excludes,
+            configured_no_proxy_urls,
+        )
+    except Exception:
+        try:
+            restore_qt_network(
+                proxy_class=proxy_class,
+                ssl_configuration_class=ssl_configuration_class,
+                network_manager=network_manager,
+                state=state,
+            )
+        except Exception as restore_error:
+            raise RuntimeError(
+                "Proxy configuration failed and the prior Qt network state could not be restored."
+            ) from restore_error
+        raise
+    return state
+
+
+def restore_qt_network(
+    *,
+    proxy_class: type,
+    ssl_configuration_class: type,
+    network_manager: object,
+    state: tuple[object, object, object, list[str], list[str]] | None,
+) -> None:
+    if state is None:
+        return
+    application_proxy, ssl_configuration, fallback_proxy, excludes, no_proxy_urls = state
+    restore_errors = []
+    for restore_action in (
+        lambda: network_manager.setFallbackProxyAndExcludes(
+            fallback_proxy, excludes, no_proxy_urls
+        ),
+        lambda: proxy_class.setApplicationProxy(application_proxy),
+        lambda: ssl_configuration_class.setDefaultConfiguration(ssl_configuration),
+    ):
+        try:
+            restore_action()
+        except Exception as exc:
+            restore_errors.append(exc)
+    if restore_errors:
+        raise RuntimeError("Unable to restore all prior Qt network settings.") from restore_errors[0]
 
 
 def is_valid_qgis_vector_tile_layer(*, layer: object, vector_tile_layer_type: type) -> bool:
@@ -1124,11 +1451,17 @@ def render_qgis_vector(  # pragma: no cover - depends on optional PyQGIS runtime
     try:
         from qgis.PyQt.QtCore import QSize  # type: ignore[import-not-found]
         from qgis.PyQt.QtGui import QColor  # type: ignore[import-not-found]
+        from qgis.PyQt.QtNetwork import (  # type: ignore[import-not-found]
+            QNetworkProxy,
+            QSslCertificate,
+            QSslConfiguration,
+        )
         from qgis.core import (  # type: ignore[import-not-found]
             QgsApplication,
             QgsCoordinateReferenceSystem,
             QgsMapRendererParallelJob,
             QgsMapSettings,
+            QgsNetworkAccessManager,
             QgsRectangle,
             QgsVectorTileLayer,
         )
@@ -1148,13 +1481,24 @@ def render_qgis_vector(  # pragma: no cover - depends on optional PyQGIS runtime
     )
     from qfit.visualization.infrastructure.background_map_service import BackgroundMapService
 
-    app = QgsApplication.instance()
-    created_app = app is None
-    if created_app:
-        app = QgsApplication([], False)
-        app.initQgis()
-
+    app = None
+    created_app = False
+    network_manager = None
+    network_state = None
     try:
+        app = QgsApplication.instance()
+        created_app = app is None
+        if created_app:
+            app = QgsApplication([], False)
+            app.initQgis()
+
+        network_manager = QgsNetworkAccessManager.instance()
+        network_state = configure_qt_network_from_environment(
+            proxy_class=QNetworkProxy,
+            ssl_certificate_class=QSslCertificate,
+            ssl_configuration_class=QSslConfiguration,
+            network_manager=network_manager,
+        )
         write_qgis_core_runtime_snapshot(output_path=qgis_runtime_path)
 
         resolved_style_definition = (
@@ -1251,8 +1595,17 @@ def render_qgis_vector(  # pragma: no cover - depends on optional PyQGIS runtime
         if not image.save(str(output_path), "PNG"):
             raise RuntimeError(f"QGIS failed to write render output: {output_path}")
     finally:
-        if created_app:
-            app.exitQgis()
+        try:
+            if network_manager is not None:
+                restore_qt_network(
+                    proxy_class=QNetworkProxy,
+                    ssl_configuration_class=QSslConfiguration,
+                    network_manager=network_manager,
+                    state=network_state,
+                )
+        finally:
+            if created_app and app is not None:
+                app.exitQgis()
 
 
 def build_image_diff(*, reference_path: Path, candidate_path: Path, output_path: Path) -> ImageMetrics:  # pragma: no cover

@@ -83,6 +83,24 @@ For a complete browser + QGIS + diff run, install or run from an environment wit
 - QGIS/Qt support for the `offscreen` platform when running headlessly; the harness sets `QT_QPA_PLATFORM=offscreen` by default unless you provide a different value
 - `xvfb-run` or another virtual display when your local Chromium/QGIS build cannot render headlessly without an X server
 
+When `HTTPS_PROXY`/`https_proxy` or `HTTP_PROXY`/`http_proxy` is present, the harness configures the
+disposable Playwright browser and the isolated QGIS network manager to use it.
+Authenticated proxy URLs are split into server and credential fields without
+being logged. `NO_PROXY`/`no_proxy` bypass entries are preserved for both
+captures; hostname rules are converted to the URL prefixes required by QGIS.
+As in Python's standard URL tooling, lowercase variables override uppercase
+variants when both are present, including an explicitly empty lowercase value.
+If `SSL_CERT_FILE` is also present, Playwright pins only certificate
+public keys first verified against that CA bundle, while QGIS temporarily adds
+the bundle's certificates. The previous Qt/QGIS proxy, bypass, and TLS state is
+restored afterward, including when setup or rendering fails. Restoration
+attempts every affected Qt setting even if an earlier restore step fails.
+
+Playwright supports both HTTP and TLS-wrapped HTTPS proxy endpoints. QGIS's Qt
+proxy API supports HTTP CONNECT proxies but cannot represent a TLS-wrapped
+proxy transport, so the QGIS capture rejects an `https://` proxy URL explicitly
+instead of silently treating it as plaintext.
+
 Keep tokens out of shell history by using `--mapbox-token-file /path/to/token.txt`,
 which reads the credential inside Python, or by exporting an environment variable.
 Avoid passing `--mapbox-token` directly.
