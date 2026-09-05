@@ -705,6 +705,26 @@ function proxyPeerSpkiHashes(proxyServer, caPath, targetHost) {
   });
 }
 
+function proxyBypassMatchesHost(proxyBypass, targetHost) {
+  const host = targetHost.toLowerCase().replace(/\.$/, '');
+  return String(proxyBypass || '').split(',').some((rawEntry) => {
+    let entry = rawEntry.trim().toLowerCase();
+    if (!entry) return false;
+    if (entry === '*') return true;
+    if (entry.includes('://')) {
+      try {
+        entry = new URL(entry).hostname;
+      } catch {
+        return false;
+      }
+    } else {
+      entry = entry.split(':', 1)[0];
+    }
+    entry = entry.replace(/^\*?\./, '').replace(/\.$/, '');
+    return Boolean(entry) && (host === entry || host.endsWith(`.${entry}`));
+  });
+}
+
 (async () => {
   const credential = String(payload.credential || '').trim();
   if (!credential) {
@@ -727,7 +747,7 @@ function proxyPeerSpkiHashes(proxyServer, caPath, targetHost) {
     if (parsedProxy.password) launchOptions.proxy.password = decodeURIComponent(parsedProxy.password);
     const proxyBypass = process.env.NO_PROXY || process.env.no_proxy;
     if (proxyBypass) launchOptions.proxy.bypass = proxyBypass;
-    if (process.env.SSL_CERT_FILE) {
+    if (process.env.SSL_CERT_FILE && !proxyBypassMatchesHost(proxyBypass, 'api.mapbox.com')) {
       const spkiHashes = await proxyPeerSpkiHashes(proxyServer, process.env.SSL_CERT_FILE, 'api.mapbox.com');
       if (spkiHashes.length) {
         launchOptions.args.push(`--ignore-certificate-errors-spki-list=${spkiHashes.join(',')}`);

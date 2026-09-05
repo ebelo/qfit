@@ -401,6 +401,8 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         self.assertIn("decodeURIComponent(parsedProxy.password)", script)
         self.assertIn("process.env.NO_PROXY || process.env.no_proxy", script)
         self.assertIn("launchOptions.proxy.bypass", script)
+        self.assertIn("proxyBypassMatchesHost", script)
+        self.assertIn("!proxyBypassMatchesHost(proxyBypass, 'api.mapbox.com')", script)
         self.assertIn("proxyPeerSpkiHashes", script)
         self.assertIn("rejectUnauthorized: true", script)
         self.assertIn("--ignore-certificate-errors-spki-list=", script)
