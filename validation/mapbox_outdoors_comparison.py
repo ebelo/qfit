@@ -931,19 +931,24 @@ def _qt_no_proxy_url_prefixes(entry: str) -> list[str]:
     if not entry:
         return []
     if entry == "*":
-        return ["http://", "https://"]
+        return _qt_url_prefixes("")
     if "://" in entry:
         return [entry]
 
     host_and_port = entry.removeprefix("*").removeprefix(".")
     if not host_and_port:
         return []
-    prefixes = [f"http://{host_and_port}", f"https://{host_and_port}"]
+    prefixes = _qt_url_prefixes(host_and_port)
     host_rule = host_and_port.split(":", maxsplit=1)[0].lower()
     for target_host in ("api.mapbox.com",):
         if target_host != host_rule and target_host.endswith(f".{host_rule}"):
-            prefixes.extend((f"http://{target_host}", f"https://{target_host}"))
+            prefixes.extend(_qt_url_prefixes(target_host))
     return prefixes
+
+
+def _qt_url_prefixes(host: str) -> list[str]:
+    scheme_separator = ":" + "//"
+    return [f"{scheme}{scheme_separator}{host}" for scheme in ("http", "https")]
 
 
 def _qt_ssl_configuration_from_environment(

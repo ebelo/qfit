@@ -551,18 +551,20 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
             def setFallbackProxyAndExcludes(_proxy, _excludes, _no_proxy_urls):
                 raise RuntimeError("network restore failed")
 
+        manager = FailingNetworkManager()
+        state = (
+            previous_application_proxy,
+            previous_ssl_configuration,
+            object(),
+            ["exclude"],
+            ["no-proxy"],
+        )
         with self.assertRaisesRegex(RuntimeError, "Unable to restore all"):
             restore_qt_network(
                 proxy_class=FakeProxy,
                 ssl_configuration_class=FakeSslConfiguration,
-                network_manager=FailingNetworkManager(),
-                state=(
-                    previous_application_proxy,
-                    previous_ssl_configuration,
-                    object(),
-                    ["exclude"],
-                    ["no-proxy"],
-                ),
+                network_manager=manager,
+                state=state,
             )
 
         self.assertIs(FakeProxy.application_proxy, previous_application_proxy)
