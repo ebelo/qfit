@@ -395,7 +395,8 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         self.assertIn("JSON.parse", script)
         self.assertIn("undefined, { timeout }", script)
         self.assertIn("readFileSync(0", script)
-        self.assertIn("process.env.HTTPS_PROXY || process.env.HTTP_PROXY", script)
+        self.assertIn("process.env.HTTPS_PROXY || process.env.https_proxy", script)
+        self.assertIn("process.env.HTTP_PROXY || process.env.http_proxy", script)
         self.assertIn("launchOptions.proxy", script)
         self.assertIn("new URL(proxyServer)", script)
         self.assertIn("decodeURIComponent(parsedProxy.password)", script)
@@ -561,7 +562,7 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
             ssl_certificate_class=object,
             ssl_configuration_class=FakeSslConfiguration,
             network_manager=FakeNetworkManager(),
-            environ={"HTTP_PROXY": "http://localhost"},
+            environ={"http_proxy": "http://localhost"},
         )
 
         self.assertIsNotNone(state)

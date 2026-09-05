@@ -737,7 +737,8 @@ function proxyBypassMatchesHost(proxyBypass, targetHost) {
   if (executablePath) {
     launchOptions.executablePath = executablePath;
   }
-  const proxyServer = process.env.HTTPS_PROXY || process.env.HTTP_PROXY;
+  const proxyServer = process.env.HTTPS_PROXY || process.env.https_proxy
+    || process.env.HTTP_PROXY || process.env.http_proxy;
   if (proxyServer) {
     const parsedProxy = new URL(proxyServer);
     launchOptions.proxy = {
@@ -883,7 +884,13 @@ def _ensure_headless_qt_platform(environ: MutableMapping[str, str] | None = None
 def _qt_proxy_components_from_environment(
     environ: MutableMapping[str, str],
 ) -> tuple[str, int, str, str] | None:
-    proxy_url = (environ.get("HTTPS_PROXY") or environ.get("HTTP_PROXY") or "").strip()
+    proxy_url = (
+        environ.get("HTTPS_PROXY")
+        or environ.get("https_proxy")
+        or environ.get("HTTP_PROXY")
+        or environ.get("http_proxy")
+        or ""
+    ).strip()
     if not proxy_url:
         return None
     parsed = urlsplit(proxy_url)

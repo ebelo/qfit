@@ -83,7 +83,7 @@ For a complete browser + QGIS + diff run, install or run from an environment wit
 - QGIS/Qt support for the `offscreen` platform when running headlessly; the harness sets `QT_QPA_PLATFORM=offscreen` by default unless you provide a different value
 - `xvfb-run` or another virtual display when your local Chromium/QGIS build cannot render headlessly without an X server
 
-When `HTTPS_PROXY` or `HTTP_PROXY` is present, the harness configures the
+When `HTTPS_PROXY`/`https_proxy` or `HTTP_PROXY`/`http_proxy` is present, the harness configures the
 disposable Playwright browser and the isolated QGIS network manager to use it.
 Authenticated proxy URLs are split into server and credential fields without
 being logged. `NO_PROXY`/`no_proxy` bypass entries are preserved for both
