@@ -50,6 +50,7 @@ from qfit.validation.mapbox_outdoors_comparison import (
     _append_qgis_contour_boundary_generator_label_probe,
     _append_enabled_qgis_contour_label_probes,
     _append_qgis_contour_polygon_label_probe,
+    _environment_value_with_lowercase_precedence,
     _format_qgis_runtime,
     _label_setting_value,
     _preset_name_for_camera,
@@ -100,6 +101,15 @@ SAMPLE_STYLE = {
 
 
 class MapboxOutdoorsComparisonTests(unittest.TestCase):
+    def test_lowercase_environment_value_overrides_uppercase_even_when_empty(self):
+        value = _environment_value_with_lowercase_precedence(
+            {"NO_PROXY": "stale.example", "no_proxy": ""},
+            lowercase_name="no_proxy",
+            uppercase_name="NO_PROXY",
+        )
+
+        self.assertEqual(value, "")
+
     def test_default_camera_targets_mapbox_outdoors(self):
         camera = CAMERAS["valais-geneva-outdoors"]
 
@@ -395,12 +405,13 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         self.assertIn("JSON.parse", script)
         self.assertIn("undefined, { timeout }", script)
         self.assertIn("readFileSync(0", script)
-        self.assertIn("process.env.https_proxy || process.env.HTTPS_PROXY", script)
-        self.assertIn("process.env.http_proxy || process.env.HTTP_PROXY", script)
+        self.assertIn("environmentValueWithLowercasePrecedence", script)
+        self.assertIn("'https_proxy', 'HTTPS_PROXY'", script)
+        self.assertIn("'http_proxy', 'HTTP_PROXY'", script)
+        self.assertIn("'no_proxy', 'NO_PROXY'", script)
         self.assertIn("launchOptions.proxy", script)
         self.assertIn("new URL(proxyServer)", script)
         self.assertIn("decodeURIComponent(parsedProxy.password)", script)
-        self.assertIn("process.env.NO_PROXY || process.env.no_proxy", script)
         self.assertIn("launchOptions.proxy.bypass", script)
         self.assertIn("proxyBypassMatchesHost", script)
         self.assertIn("!proxyBypassMatchesHost(proxyBypass, 'api.mapbox.com')", script)
@@ -487,7 +498,8 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
             network_manager=manager,
             environ={
                 "HTTPS_PROXY": "http://proxy-user:proxy-pass@proxy.example:8080",
-                "NO_PROXY": "localhost, .mapbox.com",
+                "NO_PROXY": "stale.example",
+                "no_proxy": "localhost, .mapbox.com",
                 "SSL_CERT_FILE": "/gateway/ca.pem",
             },
         )

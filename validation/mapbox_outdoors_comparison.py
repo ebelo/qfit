@@ -725,6 +725,12 @@ function proxyBypassMatchesHost(proxyBypass, targetHost) {
   });
 }
 
+function environmentValueWithLowercasePrecedence(lowercaseName, uppercaseName) {
+  return Object.prototype.hasOwnProperty.call(process.env, lowercaseName)
+    ? process.env[lowercaseName]
+    : process.env[uppercaseName];
+}
+
 (async () => {
   const credential = String(payload.credential || '').trim();
   if (!credential) {
@@ -737,8 +743,8 @@ function proxyBypassMatchesHost(proxyBypass, targetHost) {
   if (executablePath) {
     launchOptions.executablePath = executablePath;
   }
-  const proxyServer = process.env.https_proxy || process.env.HTTPS_PROXY
-    || process.env.http_proxy || process.env.HTTP_PROXY;
+  const proxyServer = environmentValueWithLowercasePrecedence('https_proxy', 'HTTPS_PROXY')
+    || environmentValueWithLowercasePrecedence('http_proxy', 'HTTP_PROXY');
   if (proxyServer) {
     const parsedProxy = new URL(proxyServer);
     launchOptions.proxy = {
@@ -746,7 +752,7 @@ function proxyBypassMatchesHost(proxyBypass, targetHost) {
     };
     if (parsedProxy.username) launchOptions.proxy.username = decodeURIComponent(parsedProxy.username);
     if (parsedProxy.password) launchOptions.proxy.password = decodeURIComponent(parsedProxy.password);
-    const proxyBypass = process.env.NO_PROXY || process.env.no_proxy;
+    const proxyBypass = environmentValueWithLowercasePrecedence('no_proxy', 'NO_PROXY');
     if (proxyBypass) launchOptions.proxy.bypass = proxyBypass;
     if (process.env.SSL_CERT_FILE && !proxyBypassMatchesHost(proxyBypass, 'api.mapbox.com')) {
       const spkiHashes = await proxyPeerSpkiHashes(proxyServer, process.env.SSL_CERT_FILE, 'api.mapbox.com');
@@ -885,11 +891,12 @@ def _qt_proxy_components_from_environment(
     environ: MutableMapping[str, str],
 ) -> tuple[str, int, str, str] | None:
     proxy_url = (
-        environ.get("https_proxy")
-        or environ.get("HTTPS_PROXY")
-        or environ.get("http_proxy")
-        or environ.get("HTTP_PROXY")
-        or ""
+        _environment_value_with_lowercase_precedence(
+            environ, lowercase_name="https_proxy", uppercase_name="HTTPS_PROXY"
+        )
+        or _environment_value_with_lowercase_precedence(
+            environ, lowercase_name="http_proxy", uppercase_name="HTTP_PROXY"
+        )
     ).strip()
     if not proxy_url:
         return None
@@ -919,11 +926,27 @@ def _merged_qt_no_proxy_urls(
     environ: MutableMapping[str, str],
 ) -> list[str]:
     merged = [*previous_no_proxy_urls]
-    for entry in (environ.get("NO_PROXY") or environ.get("no_proxy") or "").split(","):
+    bypass_value = _environment_value_with_lowercase_precedence(
+        environ,
+        lowercase_name="no_proxy",
+        uppercase_name="NO_PROXY",
+    )
+    for entry in bypass_value.split(","):
         for prefix in _qt_no_proxy_url_prefixes(entry):
             if prefix not in merged:
                 merged.append(prefix)
     return merged
+
+
+def _environment_value_with_lowercase_precedence(
+    environ: MutableMapping[str, str],
+    *,
+    lowercase_name: str,
+    uppercase_name: str,
+) -> str:
+    if lowercase_name in environ:
+        return environ.get(lowercase_name) or ""
+    return environ.get(uppercase_name) or ""
 
 
 def _qt_no_proxy_url_prefixes(entry: str) -> list[str]:

@@ -88,6 +88,8 @@ disposable Playwright browser and the isolated QGIS network manager to use it.
 Authenticated proxy URLs are split into server and credential fields without
 being logged. `NO_PROXY`/`no_proxy` bypass entries are preserved for both
 captures; hostname rules are converted to the URL prefixes required by QGIS.
+As in Python's standard URL tooling, lowercase variables override uppercase
+variants when both are present, including an explicitly empty lowercase value.
 If `SSL_CERT_FILE` is also present, Playwright pins only certificate
 public keys first verified against that CA bundle, while QGIS temporarily adds
 the bundle's certificates. The previous Qt/QGIS proxy, bypass, and TLS state is
