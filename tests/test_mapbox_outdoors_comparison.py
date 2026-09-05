@@ -483,7 +483,7 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
             ssl_configuration_class=FakeSslConfiguration,
             network_manager=manager,
             environ={
-                "HTTPS_PROXY": "https://proxy-user:proxy-pass@proxy.example",
+                "HTTPS_PROXY": "http://proxy-user:proxy-pass@proxy.example:8080",
                 "NO_PROXY": "localhost, .internal.example",
                 "SSL_CERT_FILE": "/gateway/ca.pem",
             },
@@ -492,7 +492,7 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         configured_proxy = FakeProxy.application_proxy
         self.assertEqual(
             configured_proxy.args,
-            ("http-proxy", "proxy.example", 443, "proxy-user", "proxy-pass"),
+            ("http-proxy", "proxy.example", 8080, "proxy-user", "proxy-pass"),
         )
         self.assertIs(manager.proxy, configured_proxy)
         self.assertEqual(manager.excludes, ["exclude"])
@@ -673,6 +673,11 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "invalid port"):
             configure_qt_network_from_environment(
                 environ={"HTTPS_PROXY": "http://localhost:not-a-port"},
+                **kwargs,
+            )
+        with self.assertRaisesRegex(ValueError, "TLS-wrapped HTTPS proxy"):
+            configure_qt_network_from_environment(
+                environ={"HTTPS_PROXY": "https://proxy.example"},
                 **kwargs,
             )
         restore_qt_network(state=None, **{

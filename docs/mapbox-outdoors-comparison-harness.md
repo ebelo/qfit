@@ -92,6 +92,11 @@ public keys first verified against that CA bundle, while QGIS temporarily adds
 the bundle's certificates. The previous Qt/QGIS proxy, bypass, and TLS state is
 restored afterward, including when setup or rendering fails.
 
+Playwright supports both HTTP and TLS-wrapped HTTPS proxy endpoints. QGIS's Qt
+proxy API supports HTTP CONNECT proxies but cannot represent a TLS-wrapped
+proxy transport, so the QGIS capture rejects an `https://` proxy URL explicitly
+instead of silently treating it as plaintext.
+
 Keep tokens out of shell history by using `--mapbox-token-file /path/to/token.txt`,
 which reads the credential inside Python, or by exporting an environment variable.
 Avoid passing `--mapbox-token` directly.

@@ -877,13 +877,18 @@ def configure_qt_network_from_environment(
     parsed = urlsplit(proxy_url)
     if parsed.scheme not in {"http", "https"} or not parsed.hostname:
         return None
+    if parsed.scheme == "https":
+        raise ValueError(
+            "QGIS capture does not support TLS-wrapped HTTPS proxy endpoints; "
+            "use an HTTP CONNECT proxy URL instead."
+        )
 
     try:
         proxy_port = parsed.port
     except ValueError as exc:
         raise ValueError("Proxy URL contains an invalid port.") from exc
     if proxy_port is None:
-        proxy_port = 443 if parsed.scheme == "https" else 80
+        proxy_port = 80
 
     proxy_type = getattr(proxy_class, "HttpProxy", None)
     if proxy_type is None:
