@@ -51,6 +51,7 @@ from qfit.validation.mapbox_outdoors_comparison import (
     _append_enabled_qgis_contour_label_probes,
     _append_qgis_contour_polygon_label_probe,
     _environment_value_with_lowercase_precedence,
+    _qt_no_proxy_url_prefixes,
     _format_qgis_runtime,
     _label_setting_value,
     _preset_name_for_camera,
@@ -109,6 +110,12 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         )
 
         self.assertEqual(value, "")
+
+    def test_qgis_no_proxy_suffix_preserves_port_qualifier(self):
+        prefixes = _qt_no_proxy_url_prefixes(".mapbox.com:8443")
+
+        self.assertIn("https://api.mapbox.com:8443", prefixes)
+        self.assertNotIn("https://api.mapbox.com", prefixes)
 
     def test_default_camera_targets_mapbox_outdoors(self):
         camera = CAMERAS["valais-geneva-outdoors"]
@@ -406,6 +413,7 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         self.assertIn("undefined, { timeout }", script)
         self.assertIn("readFileSync(0", script)
         self.assertIn("environmentValueWithLowercasePrecedence", script)
+        self.assertIn("environmentVariableIsConfigured", script)
         self.assertIn("'https_proxy', 'HTTPS_PROXY'", script)
         self.assertIn("'http_proxy', 'HTTP_PROXY'", script)
         self.assertIn("'no_proxy', 'NO_PROXY'", script)
@@ -414,7 +422,7 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         self.assertIn("decodeURIComponent(parsedProxy.password)", script)
         self.assertIn("launchOptions.proxy.bypass", script)
         self.assertIn("proxyBypassMatchesHost", script)
-        self.assertIn("!proxyBypassMatchesHost(proxyBypass, 'api.mapbox.com')", script)
+        self.assertIn("!proxyBypassMatchesHost(proxyBypass, 'api.mapbox.com', 443)", script)
         self.assertIn("proxyPeerSpkiHashes", script)
         self.assertIn("rejectUnauthorized: true", script)
         self.assertIn("--ignore-certificate-errors-spki-list=", script)
@@ -735,6 +743,16 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         self.assertIsNone(
             configure_qt_network_from_environment(
                 environ={"HTTPS_PROXY": "socks5://localhost:1080"},
+                **kwargs,
+            )
+        )
+        self.assertIsNone(
+            configure_qt_network_from_environment(
+                environ={
+                    "https_proxy": "",
+                    "HTTPS_PROXY": "http://stale.example:8080",
+                    "HTTP_PROXY": "http://fallback.example:8080",
+                },
                 **kwargs,
             )
         )

@@ -705,23 +705,31 @@ function proxyPeerSpkiHashes(proxyServer, caPath, targetHost) {
   });
 }
 
-function proxyBypassMatchesHost(proxyBypass, targetHost) {
+function proxyBypassMatchesHost(proxyBypass, targetHost, targetPort) {
   const host = targetHost.toLowerCase().replace(/\.$/, '');
   return String(proxyBypass || '').split(',').some((rawEntry) => {
     let entry = rawEntry.trim().toLowerCase();
+    let entryPort = '';
     if (!entry) return false;
     if (entry === '*') return true;
     if (entry.includes('://')) {
       try {
-        entry = new URL(entry).hostname;
+        const parsedEntry = new URL(entry);
+        entry = parsedEntry.hostname;
+        entryPort = parsedEntry.port;
       } catch {
         return false;
       }
     } else {
-      entry = entry.split(':', 1)[0];
+      const portMatch = entry.match(/^(.*):(\d+)$/);
+      if (portMatch) {
+        entry = portMatch[1];
+        entryPort = portMatch[2];
+      }
     }
     entry = entry.replace(/^\*?\./, '').replace(/\.$/, '');
-    return Boolean(entry) && (host === entry || host.endsWith(`.${entry}`));
+    const portMatches = !entryPort || Number.parseInt(entryPort, 10) === targetPort;
+    return portMatches && Boolean(entry) && (host === entry || host.endsWith(`.${entry}`));
   });
 }
 
@@ -729,6 +737,11 @@ function environmentValueWithLowercasePrecedence(lowercaseName, uppercaseName) {
   return Object.prototype.hasOwnProperty.call(process.env, lowercaseName)
     ? process.env[lowercaseName]
     : process.env[uppercaseName];
+}
+
+function environmentVariableIsConfigured(lowercaseName, uppercaseName) {
+  return Object.prototype.hasOwnProperty.call(process.env, lowercaseName)
+    || Object.prototype.hasOwnProperty.call(process.env, uppercaseName);
 }
 
 (async () => {
@@ -743,8 +756,9 @@ function environmentValueWithLowercasePrecedence(lowercaseName, uppercaseName) {
   if (executablePath) {
     launchOptions.executablePath = executablePath;
   }
-  const proxyServer = environmentValueWithLowercasePrecedence('https_proxy', 'HTTPS_PROXY')
-    || environmentValueWithLowercasePrecedence('http_proxy', 'HTTP_PROXY');
+  const proxyServer = environmentVariableIsConfigured('https_proxy', 'HTTPS_PROXY')
+    ? environmentValueWithLowercasePrecedence('https_proxy', 'HTTPS_PROXY')
+    : environmentValueWithLowercasePrecedence('http_proxy', 'HTTP_PROXY');
   if (proxyServer) {
     const parsedProxy = new URL(proxyServer);
     launchOptions.proxy = {
@@ -754,7 +768,7 @@ function environmentValueWithLowercasePrecedence(lowercaseName, uppercaseName) {
     if (parsedProxy.password) launchOptions.proxy.password = decodeURIComponent(parsedProxy.password);
     const proxyBypass = environmentValueWithLowercasePrecedence('no_proxy', 'NO_PROXY');
     if (proxyBypass) launchOptions.proxy.bypass = proxyBypass;
-    if (process.env.SSL_CERT_FILE && !proxyBypassMatchesHost(proxyBypass, 'api.mapbox.com')) {
+    if (process.env.SSL_CERT_FILE && !proxyBypassMatchesHost(proxyBypass, 'api.mapbox.com', 443)) {
       const spkiHashes = await proxyPeerSpkiHashes(proxyServer, process.env.SSL_CERT_FILE, 'api.mapbox.com');
       if (spkiHashes.length) {
         launchOptions.args.push(`--ignore-certificate-errors-spki-list=${spkiHashes.join(',')}`);
@@ -890,14 +904,15 @@ def _ensure_headless_qt_platform(environ: MutableMapping[str, str] | None = None
 def _qt_proxy_components_from_environment(
     environ: MutableMapping[str, str],
 ) -> tuple[str, int, str, str] | None:
-    proxy_url = (
-        _environment_value_with_lowercase_precedence(
+    if "https_proxy" in environ or "HTTPS_PROXY" in environ:
+        proxy_url = _environment_value_with_lowercase_precedence(
             environ, lowercase_name="https_proxy", uppercase_name="HTTPS_PROXY"
         )
-        or _environment_value_with_lowercase_precedence(
+    else:
+        proxy_url = _environment_value_with_lowercase_precedence(
             environ, lowercase_name="http_proxy", uppercase_name="HTTP_PROXY"
         )
-    ).strip()
+    proxy_url = proxy_url.strip()
     if not proxy_url:
         return None
     parsed = urlsplit(proxy_url)
@@ -962,10 +977,15 @@ def _qt_no_proxy_url_prefixes(entry: str) -> list[str]:
     if not host_and_port:
         return []
     prefixes = _qt_url_prefixes(host_and_port)
-    host_rule = host_and_port.split(":", maxsplit=1)[0].lower()
+    host_rule = host_and_port.lower()
+    port_suffix = ""
+    possible_host, separator, possible_port = host_and_port.rpartition(":")
+    if separator and possible_port.isdigit():
+        host_rule = possible_host.lower()
+        port_suffix = f":{possible_port}"
     for target_host in ("api.mapbox.com",):
         if target_host != host_rule and target_host.endswith(f".{host_rule}"):
-            prefixes.extend(_qt_url_prefixes(target_host))
+            prefixes.extend(_qt_url_prefixes(f"{target_host}{port_suffix}"))
     return prefixes
 
 
