@@ -86,9 +86,11 @@ For a complete browser + QGIS + diff run, install or run from an environment wit
 When `HTTPS_PROXY` or `HTTP_PROXY` is present, the harness configures the
 disposable Playwright browser and the isolated QGIS network manager to use it.
 Authenticated proxy URLs are split into server and credential fields without
-being logged. If `SSL_CERT_FILE` is also present, its certificates are trusted
-only for the QGIS capture and the previous Qt/QGIS network state is restored
-afterward.
+being logged. `NO_PROXY`/`no_proxy` bypass entries are preserved for both
+captures. If `SSL_CERT_FILE` is also present, Playwright pins only certificate
+public keys first verified against that CA bundle, while QGIS temporarily adds
+the bundle's certificates. The previous Qt/QGIS proxy, bypass, and TLS state is
+restored afterward, including when setup or rendering fails.
 
 Keep tokens out of shell history by using `--mapbox-token-file /path/to/token.txt`,
 which reads the credential inside Python, or by exporting an environment variable.

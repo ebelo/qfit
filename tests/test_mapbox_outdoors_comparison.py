@@ -399,7 +399,12 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         self.assertIn("launchOptions.proxy", script)
         self.assertIn("new URL(proxyServer)", script)
         self.assertIn("decodeURIComponent(parsedProxy.password)", script)
-        self.assertIn("ignoreHTTPSErrors: Boolean(proxyServer)", script)
+        self.assertIn("process.env.NO_PROXY || process.env.no_proxy", script)
+        self.assertIn("launchOptions.proxy.bypass", script)
+        self.assertIn("proxyPeerSpkiHashes", script)
+        self.assertIn("rejectUnauthorized: true", script)
+        self.assertIn("--ignore-certificate-errors-spki-list=", script)
+        self.assertNotIn("ignoreHTTPSErrors", script)
         self.assertNotIn("Buffer.from", script)
         self.assertNotIn("accessToken", script)
         self.assertNotIn("MAPBOX_ACCESS_TOKEN", script)
@@ -478,7 +483,8 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
             ssl_configuration_class=FakeSslConfiguration,
             network_manager=manager,
             environ={
-                "HTTPS_PROXY": "http://proxy-user:proxy-pass@127.0.0.1:8080",
+                "HTTPS_PROXY": "https://proxy-user:proxy-pass@proxy.example",
+                "NO_PROXY": "localhost, .internal.example",
                 "SSL_CERT_FILE": "/gateway/ca.pem",
             },
         )
@@ -486,11 +492,14 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         configured_proxy = FakeProxy.application_proxy
         self.assertEqual(
             configured_proxy.args,
-            ("http-proxy", "127.0.0.1", 8080, "proxy-user", "proxy-pass"),
+            ("http-proxy", "proxy.example", 443, "proxy-user", "proxy-pass"),
         )
         self.assertIs(manager.proxy, configured_proxy)
-        self.assertEqual(manager.excludes, [])
-        self.assertEqual(manager.no_proxy_urls, [])
+        self.assertEqual(manager.excludes, ["exclude"])
+        self.assertEqual(
+            manager.no_proxy_urls,
+            ["no-proxy", "localhost", ".internal.example"],
+        )
         self.assertEqual(
             FakeSslConfiguration.default_configuration.certificates,
             ["system-ca", "gateway-ca"],
@@ -514,6 +523,8 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
 
     def test_configure_qt_network_handles_nested_proxy_enum_without_ca(self):
         class FakeProxy:
+            instances = []
+
             class ProxyType:
                 HttpProxy = "nested-http-proxy"
 
@@ -527,6 +538,7 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
 
             def __init__(self, *args):
                 self.args = args
+                self.instances.append(self)
 
         class FakeSslConfiguration:
             @staticmethod
@@ -551,6 +563,96 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         )
 
         self.assertIsNotNone(state)
+        self.assertEqual(
+            FakeProxy.instances[-1].args,
+            ("nested-http-proxy", "localhost", 80, "", ""),
+        )
+
+    def test_configure_qt_network_restores_partial_mutation_after_failure(self):
+        previous_application_proxy = object()
+        previous_fallback_proxy = object()
+        previous_ssl_configuration = object()
+
+        class FakeProxy:
+            HttpProxy = "http-proxy"
+            application_proxy = previous_application_proxy
+
+            def __init__(self, *_args):
+                pass
+
+            @classmethod
+            def applicationProxy(cls):
+                return cls.application_proxy
+
+            @classmethod
+            def setApplicationProxy(cls, proxy):
+                cls.application_proxy = proxy
+
+        class FakeSslConfiguration:
+            default_configuration = previous_ssl_configuration
+
+            def __init__(self, _source):
+                self.certificates = []
+
+            @classmethod
+            def defaultConfiguration(cls):
+                return cls.default_configuration
+
+            @classmethod
+            def setDefaultConfiguration(cls, configuration):
+                cls.default_configuration = configuration
+
+            def caCertificates(self):
+                return self.certificates
+
+            def setCaCertificates(self, certificates):
+                self.certificates = certificates
+
+        class FakeCertificate:
+            @staticmethod
+            def fromPath(_path):
+                return ["gateway-ca"]
+
+        class FailingNetworkManager:
+            def __init__(self):
+                self.proxy = previous_fallback_proxy
+                self.excludes = ["exclude"]
+                self.no_proxy_urls = ["no-proxy"]
+
+            def fallbackProxy(self):
+                return self.proxy
+
+            def excludeList(self):
+                return self.excludes
+
+            def noProxyList(self):
+                return self.no_proxy_urls
+
+            def setFallbackProxyAndExcludes(self, proxy, excludes, no_proxy_urls):
+                if proxy is not previous_fallback_proxy:
+                    raise RuntimeError("proxy mutation failed")
+                self.proxy = proxy
+                self.excludes = list(excludes)
+                self.no_proxy_urls = list(no_proxy_urls)
+
+        manager = FailingNetworkManager()
+        with self.assertRaisesRegex(RuntimeError, "proxy mutation failed"):
+            configure_qt_network_from_environment(
+                proxy_class=FakeProxy,
+                ssl_certificate_class=FakeCertificate,
+                ssl_configuration_class=FakeSslConfiguration,
+                network_manager=manager,
+                environ={
+                    "HTTPS_PROXY": "http://proxy.example:8080",
+                    "SSL_CERT_FILE": "/gateway/ca.pem",
+                },
+            )
+
+        self.assertIs(FakeProxy.application_proxy, previous_application_proxy)
+        self.assertIs(FakeSslConfiguration.default_configuration, previous_ssl_configuration)
+        self.assertIs(manager.proxy, previous_fallback_proxy)
+        self.assertEqual(manager.excludes, ["exclude"])
+        self.assertEqual(manager.no_proxy_urls, ["no-proxy"])
 
     def test_configure_and_restore_qt_network_are_noops_without_valid_proxy(self):
         kwargs = {
@@ -568,6 +670,11 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
                 **kwargs,
             )
         )
+        with self.assertRaisesRegex(ValueError, "invalid port"):
+            configure_qt_network_from_environment(
+                environ={"HTTPS_PROXY": "http://localhost:not-a-port"},
+                **kwargs,
+            )
         restore_qt_network(state=None, **{
             "proxy_class": object,
             "ssl_configuration_class": object,
