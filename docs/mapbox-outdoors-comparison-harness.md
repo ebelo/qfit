@@ -87,10 +87,12 @@ When `HTTPS_PROXY`/`https_proxy` or `HTTP_PROXY`/`http_proxy` is present, the ha
 disposable Playwright browser and the isolated QGIS network manager to use it.
 Authenticated proxy URLs are split into server and credential fields without
 being logged. `NO_PROXY`/`no_proxy` bypass entries are preserved for both
-captures. If `SSL_CERT_FILE` is also present, Playwright pins only certificate
+captures; hostname rules are converted to the URL prefixes required by QGIS.
+If `SSL_CERT_FILE` is also present, Playwright pins only certificate
 public keys first verified against that CA bundle, while QGIS temporarily adds
 the bundle's certificates. The previous Qt/QGIS proxy, bypass, and TLS state is
-restored afterward, including when setup or rendering fails.
+restored afterward, including when setup or rendering fails. Restoration
+attempts every affected Qt setting even if an earlier restore step fails.
 
 Playwright supports both HTTP and TLS-wrapped HTTPS proxy endpoints. QGIS's Qt
 proxy API supports HTTP CONNECT proxies but cannot represent a TLS-wrapped

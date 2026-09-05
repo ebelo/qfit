@@ -920,10 +920,30 @@ def _merged_qt_no_proxy_urls(
 ) -> list[str]:
     merged = [*previous_no_proxy_urls]
     for entry in (environ.get("NO_PROXY") or environ.get("no_proxy") or "").split(","):
-        entry = entry.strip()
-        if entry and entry not in merged:
-            merged.append(entry)
+        for prefix in _qt_no_proxy_url_prefixes(entry):
+            if prefix not in merged:
+                merged.append(prefix)
     return merged
+
+
+def _qt_no_proxy_url_prefixes(entry: str) -> list[str]:
+    entry = entry.strip()
+    if not entry:
+        return []
+    if entry == "*":
+        return ["http://", "https://"]
+    if "://" in entry:
+        return [entry]
+
+    host_and_port = entry.removeprefix("*").removeprefix(".")
+    if not host_and_port:
+        return []
+    prefixes = [f"http://{host_and_port}", f"https://{host_and_port}"]
+    host_rule = host_and_port.split(":", maxsplit=1)[0].lower()
+    for target_host in ("api.mapbox.com",):
+        if target_host != host_rule and target_host.endswith(f".{host_rule}"):
+            prefixes.extend((f"http://{target_host}", f"https://{target_host}"))
+    return prefixes
 
 
 def _qt_ssl_configuration_from_environment(
@@ -1028,9 +1048,20 @@ def restore_qt_network(
     if state is None:
         return
     application_proxy, ssl_configuration, fallback_proxy, excludes, no_proxy_urls = state
-    network_manager.setFallbackProxyAndExcludes(fallback_proxy, excludes, no_proxy_urls)
-    proxy_class.setApplicationProxy(application_proxy)
-    ssl_configuration_class.setDefaultConfiguration(ssl_configuration)
+    restore_errors = []
+    for restore_action in (
+        lambda: network_manager.setFallbackProxyAndExcludes(
+            fallback_proxy, excludes, no_proxy_urls
+        ),
+        lambda: proxy_class.setApplicationProxy(application_proxy),
+        lambda: ssl_configuration_class.setDefaultConfiguration(ssl_configuration),
+    ):
+        try:
+            restore_action()
+        except Exception as exc:
+            restore_errors.append(exc)
+    if restore_errors:
+        raise RuntimeError("Unable to restore all prior Qt network settings.") from restore_errors[0]
 
 
 def is_valid_qgis_vector_tile_layer(*, layer: object, vector_tile_layer_type: type) -> bool:

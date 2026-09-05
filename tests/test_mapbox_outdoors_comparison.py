@@ -487,7 +487,7 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
             network_manager=manager,
             environ={
                 "HTTPS_PROXY": "http://proxy-user:proxy-pass@proxy.example:8080",
-                "NO_PROXY": "localhost, .internal.example",
+                "NO_PROXY": "localhost, .mapbox.com",
                 "SSL_CERT_FILE": "/gateway/ca.pem",
             },
         )
@@ -501,7 +501,15 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         self.assertEqual(manager.excludes, ["exclude"])
         self.assertEqual(
             manager.no_proxy_urls,
-            ["no-proxy", "localhost", ".internal.example"],
+            [
+                "no-proxy",
+                "http://localhost",
+                "https://localhost",
+                "http://mapbox.com",
+                "https://mapbox.com",
+                "http://api.mapbox.com",
+                "https://api.mapbox.com",
+            ],
         )
         self.assertEqual(
             FakeSslConfiguration.default_configuration.certificates,
@@ -519,6 +527,46 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         self.assertIs(manager.proxy, previous_fallback_proxy)
         self.assertEqual(manager.excludes, ["exclude"])
         self.assertEqual(manager.no_proxy_urls, ["no-proxy"])
+
+    def test_restore_qt_network_attempts_every_step_after_failure(self):
+        previous_application_proxy = object()
+        previous_ssl_configuration = object()
+
+        class FakeProxy:
+            application_proxy = object()
+
+            @classmethod
+            def setApplicationProxy(cls, proxy):
+                cls.application_proxy = proxy
+
+        class FakeSslConfiguration:
+            default_configuration = object()
+
+            @classmethod
+            def setDefaultConfiguration(cls, configuration):
+                cls.default_configuration = configuration
+
+        class FailingNetworkManager:
+            @staticmethod
+            def setFallbackProxyAndExcludes(_proxy, _excludes, _no_proxy_urls):
+                raise RuntimeError("network restore failed")
+
+        with self.assertRaisesRegex(RuntimeError, "Unable to restore all"):
+            restore_qt_network(
+                proxy_class=FakeProxy,
+                ssl_configuration_class=FakeSslConfiguration,
+                network_manager=FailingNetworkManager(),
+                state=(
+                    previous_application_proxy,
+                    previous_ssl_configuration,
+                    object(),
+                    ["exclude"],
+                    ["no-proxy"],
+                ),
+            )
+
+        self.assertIs(FakeProxy.application_proxy, previous_application_proxy)
+        self.assertIs(FakeSslConfiguration.default_configuration, previous_ssl_configuration)
         self.assertIs(
             FakeSslConfiguration.default_configuration,
             previous_ssl_configuration,
