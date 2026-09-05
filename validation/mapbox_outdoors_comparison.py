@@ -860,6 +860,63 @@ def _ensure_headless_qt_platform(environ: MutableMapping[str, str] | None = None
     target.setdefault("QT_QPA_PLATFORM", DEFAULT_QT_QPA_PLATFORM)
 
 
+def _qt_proxy_components_from_environment(
+    environ: MutableMapping[str, str],
+) -> tuple[str, int, str, str] | None:
+    proxy_url = (environ.get("HTTPS_PROXY") or environ.get("HTTP_PROXY") or "").strip()
+    if not proxy_url:
+        return None
+    parsed = urlsplit(proxy_url)
+    if parsed.scheme not in {"http", "https"} or not parsed.hostname:
+        return None
+    if parsed.scheme == "https":
+        raise ValueError(
+            "QGIS capture does not support TLS-wrapped HTTPS proxy endpoints; "
+            "use an HTTP CONNECT proxy URL instead."
+        )
+    try:
+        proxy_port = parsed.port
+    except ValueError as exc:
+        raise ValueError("Proxy URL contains an invalid port.") from exc
+    return (
+        parsed.hostname,
+        proxy_port if proxy_port is not None else 80,
+        unquote(parsed.username or ""),
+        unquote(parsed.password or ""),
+    )
+
+
+def _merged_qt_no_proxy_urls(
+    *,
+    previous_no_proxy_urls: list[str],
+    environ: MutableMapping[str, str],
+) -> list[str]:
+    merged = [*previous_no_proxy_urls]
+    for entry in (environ.get("NO_PROXY") or environ.get("no_proxy") or "").split(","):
+        entry = entry.strip()
+        if entry and entry not in merged:
+            merged.append(entry)
+    return merged
+
+
+def _qt_ssl_configuration_from_environment(
+    *,
+    previous_ssl_configuration: object,
+    ssl_certificate_class: type,
+    ssl_configuration_class: type,
+    environ: MutableMapping[str, str],
+) -> object | None:
+    ca_path = (environ.get("SSL_CERT_FILE") or "").strip()
+    if not ca_path:
+        return None
+    certificates = list(ssl_certificate_class.fromPath(ca_path))
+    if not certificates:
+        return None
+    configured_ssl = ssl_configuration_class(previous_ssl_configuration)
+    configured_ssl.setCaCertificates([*configured_ssl.caCertificates(), *certificates])
+    return configured_ssl
+
+
 def configure_qt_network_from_environment(
     *,
     proxy_class: type,
@@ -871,45 +928,36 @@ def configure_qt_network_from_environment(
     """Apply proxy and CA environment settings for one isolated QGIS render."""
 
     target = os.environ if environ is None else environ
-    proxy_url = (target.get("HTTPS_PROXY") or target.get("HTTP_PROXY") or "").strip()
-    if not proxy_url:
+    proxy_components = _qt_proxy_components_from_environment(target)
+    if proxy_components is None:
         return None
-    parsed = urlsplit(proxy_url)
-    if parsed.scheme not in {"http", "https"} or not parsed.hostname:
-        return None
-    if parsed.scheme == "https":
-        raise ValueError(
-            "QGIS capture does not support TLS-wrapped HTTPS proxy endpoints; "
-            "use an HTTP CONNECT proxy URL instead."
-        )
-
-    try:
-        proxy_port = parsed.port
-    except ValueError as exc:
-        raise ValueError("Proxy URL contains an invalid port.") from exc
-    if proxy_port is None:
-        proxy_port = 80
+    proxy_host, proxy_port, proxy_username, proxy_password = proxy_components
 
     proxy_type = getattr(proxy_class, "HttpProxy", None)
     if proxy_type is None:
         proxy_type = proxy_class.ProxyType.HttpProxy
     configured_proxy = proxy_class(
         proxy_type,
-        parsed.hostname,
+        proxy_host,
         proxy_port,
-        unquote(parsed.username or ""),
-        unquote(parsed.password or ""),
+        proxy_username,
+        proxy_password,
     )
     previous_application_proxy = proxy_class.applicationProxy()
     previous_ssl_configuration = ssl_configuration_class.defaultConfiguration()
     previous_fallback_proxy = network_manager.fallbackProxy()
     previous_excludes = list(network_manager.excludeList())
     previous_no_proxy_urls = list(network_manager.noProxyList())
-    configured_no_proxy_urls = [*previous_no_proxy_urls]
-    for entry in (target.get("NO_PROXY") or target.get("no_proxy") or "").split(","):
-        entry = entry.strip()
-        if entry and entry not in configured_no_proxy_urls:
-            configured_no_proxy_urls.append(entry)
+    configured_no_proxy_urls = _merged_qt_no_proxy_urls(
+        previous_no_proxy_urls=previous_no_proxy_urls,
+        environ=target,
+    )
+    configured_ssl = _qt_ssl_configuration_from_environment(
+        previous_ssl_configuration=previous_ssl_configuration,
+        ssl_certificate_class=ssl_certificate_class,
+        ssl_configuration_class=ssl_configuration_class,
+        environ=target,
+    )
 
     state = (
         previous_application_proxy,
@@ -919,16 +967,8 @@ def configure_qt_network_from_environment(
         previous_no_proxy_urls,
     )
     try:
-        ca_path = (target.get("SSL_CERT_FILE") or "").strip()
-        if ca_path:
-            certificates = list(ssl_certificate_class.fromPath(ca_path))
-            if certificates:
-                configured_ssl = ssl_configuration_class(previous_ssl_configuration)
-                configured_ssl.setCaCertificates(
-                    [*configured_ssl.caCertificates(), *certificates]
-                )
-                ssl_configuration_class.setDefaultConfiguration(configured_ssl)
-
+        if configured_ssl is not None:
+            ssl_configuration_class.setDefaultConfiguration(configured_ssl)
         proxy_class.setApplicationProxy(configured_proxy)
         network_manager.setFallbackProxyAndExcludes(
             configured_proxy,
