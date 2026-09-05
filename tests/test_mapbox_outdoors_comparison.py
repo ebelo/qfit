@@ -395,8 +395,8 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         self.assertIn("JSON.parse", script)
         self.assertIn("undefined, { timeout }", script)
         self.assertIn("readFileSync(0", script)
-        self.assertIn("process.env.HTTPS_PROXY || process.env.https_proxy", script)
-        self.assertIn("process.env.HTTP_PROXY || process.env.http_proxy", script)
+        self.assertIn("process.env.https_proxy || process.env.HTTPS_PROXY", script)
+        self.assertIn("process.env.http_proxy || process.env.HTTP_PROXY", script)
         self.assertIn("launchOptions.proxy", script)
         self.assertIn("new URL(proxyServer)", script)
         self.assertIn("decodeURIComponent(parsedProxy.password)", script)
@@ -612,7 +612,10 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
             ssl_certificate_class=object,
             ssl_configuration_class=FakeSslConfiguration,
             network_manager=FakeNetworkManager(),
-            environ={"http_proxy": "http://localhost"},
+            environ={
+                "http_proxy": "http://localhost",
+                "HTTP_PROXY": "http://stale.example:8080",
+            },
         )
 
         self.assertIsNotNone(state)
@@ -945,7 +948,12 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as tmpdir, patch.dict(
             os.environ,
-            {"HTTPS_PROXY": "", "HTTP_PROXY": ""},
+            {
+                "HTTPS_PROXY": "",
+                "https_proxy": "",
+                "HTTP_PROXY": "",
+                "http_proxy": "",
+            },
             clear=False,
         ), patch.dict(
             sys.modules,
