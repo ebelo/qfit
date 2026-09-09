@@ -53,15 +53,17 @@ jobs:
 
       - name: Run tests in QGIS 3 Docker image
         run: |
+          docker build --build-arg QGIS_IMAGE=qgis/qgis:3.44.11 \
+            -t qfit/qgis:3.44.11-fonts scripts/docker
           docker run -dt \
             --name qfit-test-qgis3 \
             -v "${{ github.workspace }}:/tests_directory/qfit" \
             -e QT_QPA_PLATFORM=offscreen \
-            qgis/qgis:3.44.11
+            qfit/qgis:3.44.11-fonts
 
           docker exec qfit-test-qgis3 bash -c "qgis_setup.sh qfit"
-          docker exec qfit-test-qgis3 bash -c "pip3 install --quiet --break-system-packages pytest pytest-cov pytest-qt pypdf 2>/dev/null || true"
-          docker exec -e QT_QPA_PLATFORM=offscreen -e QFIT_REQUIRE_QGIS=1 qfit-test-qgis3 \
+          docker exec --user root qfit-test-qgis3 bash -c "pip3 install --quiet --break-system-packages pytest pytest-cov pytest-qt pypdf 2>/dev/null || true"
+          docker exec -e QT_QPA_PLATFORM=offscreen -e QFIT_REQUIRE_QGIS=1 -e QFIT_REQUIRE_OPEN_FONTS=1 qfit-test-qgis3 \
             bash -c "cd /tests_directory/qfit && python3 -m pytest ${REAL_QGIS_TESTS} -q --tb=short"
 
   docker-qgis4:
@@ -73,13 +75,15 @@ jobs:
 
       - name: Run tests in QGIS 4 Docker image
         run: |
+          docker build --build-arg QGIS_IMAGE=qgis/qgis:4.2.0 \
+            -t qfit/qgis:4.2.0-fonts scripts/docker
           docker run -dt \
             --name qfit-test-qgis4 \
             -v "${{ github.workspace }}:/tests_directory/qfit" \
             -e QT_QPA_PLATFORM=offscreen \
-            qgis/qgis:4.2.0
+            qfit/qgis:4.2.0-fonts
 
           docker exec qfit-test-qgis4 bash -c "qgis_setup.sh qfit"
-          docker exec qfit-test-qgis4 bash -c "pip3 install --quiet --break-system-packages pytest pytest-cov pytest-qt pypdf 2>/dev/null || true"
-          docker exec -e QT_QPA_PLATFORM=offscreen -e QFIT_REQUIRE_QGIS=1 qfit-test-qgis4 \
+          docker exec --user root qfit-test-qgis4 bash -c "pip3 install --quiet --break-system-packages pytest pytest-cov pytest-qt pypdf 2>/dev/null || true"
+          docker exec -e QT_QPA_PLATFORM=offscreen -e QFIT_REQUIRE_QGIS=1 -e QFIT_REQUIRE_OPEN_FONTS=1 qfit-test-qgis4 \
             bash -c "cd /tests_directory/qfit && python3 -m pytest ${REAL_QGIS_TESTS} -q --tb=short"
