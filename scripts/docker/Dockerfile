@@ -8,11 +8,10 @@ RUN apt-get update \
 
 # Unmodified open font files, licence and pinned upstream provenance.
 COPY fonts/barlow/ /usr/local/share/fonts/qfit/barlow/
-RUN fc-cache -f
-
 # Runtime rendering/tests do not need root. Only dependency installation in
 # the test runner explicitly selects root; the QGIS profile belongs to qfit.
-RUN useradd --create-home --shell /bin/bash qfit \
+RUN fc-cache -f \
+    && useradd --create-home --shell /bin/bash qfit \
     && sed -i 's|/root/|${HOME}/|g' /usr/bin/qgis_setup.sh
 ENV HOME=/home/qfit
 USER qfit
