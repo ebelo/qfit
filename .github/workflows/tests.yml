@@ -62,7 +62,7 @@ jobs:
             qfit/qgis:3.44.11-fonts
 
           docker exec qfit-test-qgis3 bash -c "qgis_setup.sh qfit"
-          docker exec qfit-test-qgis3 bash -c "pip3 install --quiet --break-system-packages pytest pytest-cov pytest-qt pypdf 2>/dev/null || true"
+          docker exec --user root qfit-test-qgis3 bash -c "pip3 install --quiet --break-system-packages pytest pytest-cov pytest-qt pypdf 2>/dev/null || true"
           docker exec -e QT_QPA_PLATFORM=offscreen -e QFIT_REQUIRE_QGIS=1 -e QFIT_REQUIRE_OPEN_FONTS=1 qfit-test-qgis3 \
             bash -c "cd /tests_directory/qfit && python3 -m pytest ${REAL_QGIS_TESTS} -q --tb=short"
 
@@ -84,6 +84,6 @@ jobs:
             qfit/qgis:4.2.0-fonts
 
           docker exec qfit-test-qgis4 bash -c "qgis_setup.sh qfit"
-          docker exec qfit-test-qgis4 bash -c "pip3 install --quiet --break-system-packages pytest pytest-cov pytest-qt pypdf 2>/dev/null || true"
+          docker exec --user root qfit-test-qgis4 bash -c "pip3 install --quiet --break-system-packages pytest pytest-cov pytest-qt pypdf 2>/dev/null || true"
           docker exec -e QT_QPA_PLATFORM=offscreen -e QFIT_REQUIRE_QGIS=1 -e QFIT_REQUIRE_OPEN_FONTS=1 qfit-test-qgis4 \
             bash -c "cd /tests_directory/qfit && python3 -m pytest ${REAL_QGIS_TESTS} -q --tb=short"

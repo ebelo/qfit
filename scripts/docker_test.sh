@@ -85,7 +85,7 @@ sudo docker exec "$CONTAINER_NAME" bash -c "qgis_setup.sh qfit"
 
 # Install test dependencies inside the container
 echo "--- Installing test dependencies ---"
-sudo docker exec "$CONTAINER_NAME" bash -c "pip3 install --quiet --break-system-packages pytest pytest-cov pytest-qt pypdf 2>/dev/null || true"
+sudo docker exec --user root "$CONTAINER_NAME" bash -c "pip3 install --quiet --break-system-packages pytest pytest-cov pytest-qt pypdf 2>/dev/null || true"
 
 # Run pytest (capture exit code without triggering set -e)
 EXIT_CODE=0

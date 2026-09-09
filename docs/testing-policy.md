@@ -21,7 +21,10 @@ That gap has shipped real crashes. Docker QGIS images close it.
 The QGIS tags above are the base images. Both Docker lanes build
 `scripts/docker/Dockerfile` into matching `qfit/qgis:<version>-fonts` images
 with pinned Barlow faces and `fonts-noto-core`. The local runner uses the same
-Dockerfile and retains those images after container cleanup.
+Dockerfile and retains those images after container cleanup. QGIS and pytest
+run as the unprivileged `qfit` user with its own home/profile. Only dependency
+installation explicitly uses root; the upstream profile helper is adjusted to
+use the active home instead of a hard-coded root directory.
 
 All three must pass before merge.
 

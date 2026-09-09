@@ -640,6 +640,7 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
     def test_docker_open_fonts_resolve_and_preserve_source_styles(self):
         if os.environ.get("QFIT_REQUIRE_OPEN_FONTS") != "1":
             self.skipTest("Pinned open-font environment required")
+        self.assertNotEqual(os.getuid(), 0, "Font-enabled Docker tests must run as the unprivileged qfit user")
         from qgis.PyQt.QtGui import QFont, QFontInfo, QTextLayout
         from qfit.mapbox_config import simplify_mapbox_style_expressions
         from qfit.visualization.infrastructure import mapbox_open_fonts as fonts
