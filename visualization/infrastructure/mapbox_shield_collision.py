@@ -45,7 +45,8 @@ def _background_sprite(marker):
         if not expression or not _INLINE_IMAGE.search(expression):
             raise ValueError("Unsupported shield sprite selector")
         expression = _INLINE_IMAGE.sub(lambda match: _svg_wrapped_sprite(match.group()), expression)
-        return "", QgsProperty.fromExpression(expression)
+        fallback = _svg_wrapped_sprite(marker.path()) if marker.path() else ""
+        return fallback, QgsProperty.fromExpression(expression)
     return _svg_wrapped_sprite(marker.path()), QgsProperty()
 
 
