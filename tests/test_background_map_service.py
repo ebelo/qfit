@@ -697,6 +697,72 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
                     self.assertTrue(ok)
                     self.assertEqual(color.name(), expected)
 
+    def test_low_zoom_shield_sprite_joins_label_collision_lifecycle(self):
+        import base64
+        import xml.etree.ElementTree as ET
+        from qgis.PyQt.QtCore import QBuffer, QByteArray, QIODevice
+        from qgis.PyQt.QtGui import QColor, QImage
+        from qgis.core import QgsExpressionContext, QgsFeature, QgsField, QgsFields, QgsPalLayerSettings
+        from qfit.mapbox_config import MapboxSpriteResources
+
+        image = QImage(24, 8, QImage.Format.Format_ARGB32)
+        image.fill(QColor('red'))
+        data = QByteArray()
+        buffer = QBuffer(data)
+        buffer.open(QIODevice.OpenModeFlag.WriteOnly)
+        self.assertTrue(image.save(buffer, 'PNG'))
+        resources = MapboxSpriteResources(
+            definitions={name: {'x': x, 'y': 0, 'width': 12, 'height': 8, 'pixelRatio': 1}
+                         for name, x in [('rectangle-red-3', 0), ('rectangle-blue-3', 12)]},
+            image_bytes=bytes(data),
+        )
+        names = ['road-number-shield-3-known-icons-below-z11',
+                 'road-number-shield-3-known-icons-z11-plus']
+        source = {
+            'version': 8, 'owner': 'mapbox', 'id': 'outdoors-v12',
+            'sources': {'composite': {'type': 'vector'}},
+            'layers': [{'id': name, 'type': 'symbol', 'source': 'composite',
+                        'source-layer': 'road', 'minzoom': lo, 'maxzoom': hi,
+                        'layout': {'text-field': ['get', 'ref'], 'icon-image': '{shield}-3',
+                                   'symbol-placement': 'point'},
+                        'paint': {'text-color': '#ffffff'}}
+                       for name, lo, hi in [(names[0], 6, 11), (names[1], 11, 24)]],
+        }
+        fields = QgsFields()
+        fields.append(QgsField('shield'))
+        feature = QgsFeature(fields)
+        feature.setAttributes(['rectangle-red'])
+        context = QgsExpressionContext()
+        context.setFields(fields)
+        context.setFeature(feature)
+        for style_id in ['outdoors-v12', 'light-v11', 'custom']:
+            with self.subTest(style_id=style_id):
+                source['id'] = style_id
+                layer = MagicMock()
+                self.service._apply_mapbox_gl_style(layer, source, sprite_resources=resources)
+                renderer = layer.setRenderer.call_args.args[0]
+                labeling = layer.setLabeling.call_args.args[0]
+                owners = {item.styleName(): item for item in renderer.styles()}
+                labels = {item.styleName(): item for item in labeling.styles()}
+                for name in names:
+                    settings = labels[name].labelSettings()
+                    text_format = settings.format()
+                    background = text_format.background()
+                    coupled = style_id == 'outdoors-v12' and name == names[0]
+                    self.assertEqual(background.enabled(), coupled)
+                    self.assertEqual(owners[name].isEnabled(), not coupled)
+                    self.assertEqual(text_format.color().name(), '#ffffff')
+                    if not coupled:
+                        continue
+                    prop = settings.dataDefinedProperties().property(QgsPalLayerSettings.Property.ShapeSVGFile)
+                    svg, ok = prop.valueAsString(context)
+                    self.assertTrue(ok)
+                    document = ET.fromstring(base64.b64decode(svg.removeprefix('base64:')))
+                    embedded = next(iter(document)).attrib['{http://www.w3.org/1999/xlink}href']
+                    decoded = QImage.fromData(base64.b64decode(embedded.split(',', 1)[1]), 'PNG')
+                    self.assertEqual((decoded.width(), decoded.height()), (12, 8))
+                    self.assertEqual(decoded.pixelColor(6, 4), QColor('red'))
+
     def test_outdoors_colored_shield_color_match_evaluates_in_qgis(self):
         from qgis.core import (
             QgsExpressionContext, QgsFeature, QgsField, QgsFields,
