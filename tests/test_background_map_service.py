@@ -676,6 +676,7 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
             audit = _qgis_font_snapshot(fmt)
             self.assertEqual(audit["resolved_font_family"], fonts.OPEN_FONT_FAMILY)
             self.assertEqual(audit["resolved_font_style"], face)
+            self.assertEqual(fmt.font().families(), [fonts.OPEN_FONT_FAMILY, "Noto Sans"])
             self.assertEqual(fmt.color().name(), "#123456")
             self.assertAlmostEqual(fmt.size(), 16 * 25.4 / 96)
             self.assertTrue(fmt.buffer().enabled())

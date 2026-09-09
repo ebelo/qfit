@@ -72,8 +72,8 @@ def apply_available_outdoors_fonts(labeling, source_style: dict) -> int:
         font = text_format.font()
         # Qt 5 can retain the converter's family list even after setFamily().
         # Replace that list too, otherwise QFontInfo still resolves Noto Sans.
-        font.setFamilies([OPEN_FONT_FAMILY, "Noto Sans"])
         font.setFamily(OPEN_FONT_FAMILY)
+        font.setFamilies([OPEN_FONT_FAMILY, "Noto Sans"])
         font.setStyleName(mapping[owner])
         text_format.setFont(font)
         settings.setFormat(text_format)
