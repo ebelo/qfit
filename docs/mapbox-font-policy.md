@@ -76,7 +76,10 @@ existing Noto fallback; qfit never assumes the requested face was selected.
 Validation label audits now include both requested and resolved family/style.
 
 `scripts/docker/Dockerfile` builds the QGIS 3/4 test environments with four
-unmodified Barlow faces and Debian/Ubuntu's `fonts-noto-core`. Font files are
+unmodified Barlow faces, `fonts-noto-core=20201225-2` and
+`fontconfig=2.15.0-2.3ubuntu1` (verified in both base images). Missing pinned
+package versions fail the build rather than silently changing rendering.
+Font files are
 pinned by upstream commit and SHA-256 in
 [`scripts/docker/fonts/barlow/provenance.json`](../scripts/docker/fonts/barlow/provenance.json),
 with the complete SIL OFL 1.1 notice alongside them. Qt 5's retained family list
