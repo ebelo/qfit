@@ -54,20 +54,79 @@ style changes; this snapshot is not a permanent upstream contract.
   commercial typefaces. qfit's default distribution will follow the open-font
   decision rather than depend on such an installation.
 
-## Current implementation versus target
+## Current implementation and Docker fonts
 
-`mapbox_config.py` currently substitutes literal source font stacks with the
-single `QGIS_TEXT_FONT_FALLBACK` value, **Noto Sans**. That discards the source
-style distinctions and does not guarantee the requested font is installed.
+The QGIS-safe JSON transformation still uses `Noto Sans` for literal stacks.
+At the QGIS adapter boundary, qfit also retains the **original source style**
+and restores the following distinctions for the exact `mapbox/outdoors-v12`
+preset when the selected faces resolve correctly:
 
-The Geneva capture resolved `Noto Sans` to **DejaVu Sans Book**, confirmed with
-`QFontInfo`, because Noto Sans was missing on that machine. The observed mismatch
-was therefore between different font families, not merely two styles of DIN.
+| Original primary face | Open face | Fallback |
+|---|---|---|
+| DIN Pro Regular | Barlow Regular | Noto Sans, then installed script fallbacks |
+| DIN Pro Medium | Barlow Medium | Noto Sans, then installed script fallbacks |
+| DIN Pro Italic | Barlow Italic | Noto Sans, then installed script fallbacks |
+| DIN Pro Bold | Barlow Bold | Noto Sans, then installed script fallbacks |
 
-Liberation Sans and narrower DejaVu variants improved diagnostic Geneva and
-Lausanne crops. They are **candidates, not approved final mappings**. Installing
-Noto Sans alone did not resolve the Geneva mismatch. No font bundle, new runtime
-font mapping or font-specific width correction is introduced by this document.
+This covers all 25 literal Outdoors stacks inventoried above, including source
+owners whose rules are split by zoom or filter during conversion. Unknown or
+expression-based stacks keep the existing conversion path. Light and custom
+styles do not receive this Outdoors mapping. Missing Barlow faces retain the
+existing Noto fallback; qfit never assumes the requested face was selected.
+Validation label audits now include both requested and resolved family/style.
+
+`scripts/docker/Dockerfile` builds the QGIS 3/4 test environments with four
+unmodified Barlow faces and Debian/Ubuntu's `fonts-noto-core`. Font files are
+pinned by upstream commit and SHA-256 in
+[`scripts/docker/fonts/barlow/provenance.json`](../scripts/docker/fonts/barlow/provenance.json),
+with the complete SIL OFL 1.1 notice alongside them. Qt 5's retained family list
+is explicitly replaced as well as its primary family, preventing an apparently
+successful switch which actually still renders Noto Sans.
+
+Run `bash scripts/docker_test.sh 3` and `bash scripts/docker_test.sh 4` to build
+and retain `qfit/qgis:3.44.11-fonts` and `qfit/qgis:4.2.0-fonts` locally. CI builds
+the identical Dockerfile. `QFIT_REQUIRE_OPEN_FONTS=1` makes missing/substituted
+faces a test failure. Real Qt glyph shaping also checks accented Latin, Greek,
+Cyrillic and Arabic samples. This is not a claim of universal Unicode or CJK
+coverage; additional script packages require explicit validation.
+
+This installation is **Docker-scoped**. The plugin ZIP does not install fonts
+on a user's Windows/Linux desktop. A desktop needs the same licensed open faces
+installed separately to activate this mapping; automatic cross-platform font
+provisioning remains a separate distribution decision. No commercial font is
+included or required.
+
+### Why Barlow rather than D-DIN or DINish?
+
+The earlier Geneva capture requested Noto Sans but resolved **DejaVu Sans Book**
+because Noto was absent. Installing Noto alone did not fix the mismatch.
+D-DIN and DINish were subsequently compared using actual QGIS renders with
+`QFontInfo` verification, unchanged label sizes and the same Mapbox reference.
+
+- **D-DIN**: a valid OFL alternative with DIN proportions, but the original
+  Datto v1.0 distribution has Regular, Bold and Italic, **not Medium**. Regular
+  was lighter and Bold heavier than the Mapbox city labels.
+- **[DINish](https://github.com/playbeing/dinish)**: an OFL derivative of
+  Altinn-DIN/D-DIN with real Medium, multiple widths, and expanded language
+  support. Static Medium at upstream commit
+  `a5f3b2a3b932336225815bf9005e3b72cc3de71c` was tested, not a synthesized weight
+  or an unverified variable-font instance. It remained lighter than the
+  reference in the Geneva and Lausanne captures.
+- **Barlow Medium**: the strongest of these candidates on both city crops for
+  combined width and weight, with real Regular/Italic/Bold companion faces.
+
+| QGIS candidate | Geneva crop MAE | Lausanne crop MAE |
+|---|---:|---:|
+| Previous DejaVu Sans Book fallback | 0.09626 | 0.07902 |
+| D-DIN Regular | 0.08084 | 0.05907 |
+| DINish Medium | 0.09029 | 0.07118 |
+| Barlow Medium | **0.06684** | **0.03689** |
+
+These are normalized RGB errors for fixed crops, not a universal typeface
+ranking. Host candidate probes changed only the settlement label face; Docker
+before/after evidence separately validates the production mapping across all
+seven cameras, source weights, and QGIS generations. No city-specific stretch
+or letter-spacing correction is introduced.
 
 ## Selection and implementation requirements
 

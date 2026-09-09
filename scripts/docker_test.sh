@@ -40,11 +40,13 @@ fi
 
 case "$QGIS_VERSION" in
   3)
-    IMAGE="qgis/qgis:3.44.11"
+    BASE_IMAGE="qgis/qgis:3.44.11"
+    IMAGE="qfit/qgis:3.44.11-fonts"
     CONTAINER_NAME="qfit-test-qgis3"
     ;;
   4)
-    IMAGE="qgis/qgis:4.2.0"
+    BASE_IMAGE="qgis/qgis:4.2.0"
+    IMAGE="qfit/qgis:4.2.0-fonts"
     CONTAINER_NAME="qfit-test-qgis4"
     ;;
   *)
@@ -60,6 +62,9 @@ echo "QGIS image:  $IMAGE"
 echo "Repo:        $REPO_DIR"
 echo "Pytest args: $*"
 echo
+
+# Build/cache the same open-font environment used by CI. Images remain installed.
+sudo docker build --build-arg "QGIS_IMAGE=$BASE_IMAGE" -t "$IMAGE" "$REPO_DIR/scripts/docker"
 
 # Clean up any previous container with the same name
 sudo docker rm -f "$CONTAINER_NAME" 2>/dev/null || true
@@ -84,7 +89,7 @@ sudo docker exec "$CONTAINER_NAME" bash -c "pip3 install --quiet --break-system-
 
 # Run pytest (capture exit code without triggering set -e)
 EXIT_CODE=0
-sudo docker exec -e QT_QPA_PLATFORM=offscreen -e QFIT_REQUIRE_QGIS=1 "$CONTAINER_NAME" \
+sudo docker exec -e QT_QPA_PLATFORM=offscreen -e QFIT_REQUIRE_QGIS=1 -e QFIT_REQUIRE_OPEN_FONTS=1 "$CONTAINER_NAME" \
   bash -c 'cd /tests_directory/qfit && python3 -m pytest "$@"' bash "$@" || EXIT_CODE=$?
 
 # Clean up (also handled by trap, but keep explicit for clarity)

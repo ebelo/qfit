@@ -18,6 +18,11 @@ That gap has shipped real crashes. Docker QGIS images close it.
 | QGIS 3 Docker | `qgis/qgis:3.44.11` | Qt 5 / PyQt5 | QGIS 3 plugin import + runtime smoke + enum probe |
 | QGIS 4 Docker | `qgis/qgis:4.2.0` | Qt 6 / PyQt6 | QGIS 4 plugin import + runtime smoke + Qt 6 enum probe |
 
+The QGIS tags above are the base images. Both Docker lanes build
+`scripts/docker/Dockerfile` into matching `qfit/qgis:<version>-fonts` images
+with pinned Barlow faces and `fonts-noto-core`. The local runner uses the same
+Dockerfile and retains those images after container cleanup.
+
 All three must pass before merge.
 
 ## CI enforcement
@@ -69,7 +74,10 @@ scripts/docker_test.sh 4 tests/test_qgis_smoke.py  # specific file
 ```
 
 The script handles container lifecycle, plugin linking, and cleanup. It
-requires Docker on the host.
+requires Docker on the host. Docker builds need package-repository access on
+the first run; subsequent runs reuse the image layers. Font resolution is
+mandatory (`QFIT_REQUIRE_OPEN_FONTS=1`): silently substituting DejaVu for a
+required face fails the runtime test. See [font policy](mapbox-font-policy.md).
 
 ## When to add a Docker test
 

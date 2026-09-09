@@ -86,6 +86,13 @@ class TestsWorkflowTests(unittest.TestCase):
     def setUp(self):
         self.text = _read_workflow("tests.yml")
 
+    def test_docker_jobs_use_the_verified_open_font_images(self):
+        self.assertEqual(self.text.count("QFIT_REQUIRE_OPEN_FONTS=1"), 2)
+        for version in ("3.44.11", "4.2.0"):
+            self.assertIn(f"--build-arg QGIS_IMAGE=qgis/qgis:{version}", self.text)
+            self.assertIn(f"-t qfit/qgis:{version}-fonts scripts/docker", self.text)
+            self.assertIn(f"qfit/qgis:{version}-fonts\n", self.text)
+
     def test_unit_job_uses_pytest(self):
         self.assertIn("python -m pip install --upgrade pytest", self.text)
         self.assertIn("python -m pytest tests/ -x -q --tb=short", self.text)
