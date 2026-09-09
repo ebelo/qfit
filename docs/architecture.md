@@ -263,6 +263,20 @@ For atlas/export/chart/rendering work, reviewers should expect a short PR note t
 
 The contributor-facing checklist for this lives in `CONTRIBUTING.md`. This section exists to make the same rule visible during architectural review: output-sensitive changes need artifact proof, not only passing tests and apparently-correct object construction.
 
+### 8.1. Basemap typography and open-font policy
+
+Mapbox font names are reference typography, not a dependency qfit may assume is
+installed or licensed for redistribution. qfit will use the closest suitable
+**openly licensed alternatives for every map-label font/style**, including
+regular, medium, bold, italic and multilingual fallback text. Preserve their
+different roles rather than flattening the map to one regular face.
+
+The [Mapbox font policy](mapbox-font-policy.md) records the audited Outdoors font
+inventory, commercial licensing constraint, current substitution gap and the
+selection/validation requirements. It is the architectural reference for future
+font-mapping changes; the current Noto Sans fallback is not a completed
+implementation of that policy.
+
 ## 9. Contributor rules
 
 Short version:

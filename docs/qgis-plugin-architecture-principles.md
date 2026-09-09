@@ -158,6 +158,15 @@ If native rendering is elegant but not deterministic enough, qfit should prefer:
 2. export-safe generated artifacts (SVG/image/etc.)
 3. a stable fallback path over a fragile native-only path
 
+### Basemap fonts are an explicit rendering dependency
+
+Use openly licensed font alternatives as close as practical to the original
+Mapbox typography across all label families and styles. A Mapbox token or font
+name does not grant a licence to redistribute commercial desktop fonts. Font
+resolution must be explicit and validated, not left to undocumented OS fallback.
+See the [Mapbox font policy](mapbox-font-policy.md) for the source inventory,
+licensing boundary and acceptance criteria.
+
 ## 9. Validation rules for rendering/export features
 
 For rendering-sensitive features, green unit tests and correct object construction are **not sufficient**.
