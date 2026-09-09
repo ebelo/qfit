@@ -7,6 +7,7 @@ import re
 
 from ...mapbox_config import _is_mapbox_outdoors_style
 
+_INLINE_PREFIX = "base64:"
 _INLINE_IMAGE = re.compile(r"base64:[A-Za-z0-9+/=]+")
 
 
@@ -15,9 +16,9 @@ def _svg_wrapped_sprite(path: str) -> str:
     """Wrap the unchanged inline PNG in an SVG usable by PAL label backgrounds."""
     from qgis.PyQt.QtGui import QImage
 
-    if not path.startswith("base64:"):
+    if not path.startswith(_INLINE_PREFIX):
         raise ValueError("Shield background requires an inline sprite")
-    encoded = path[len("base64:"):]
+    encoded = path[len(_INLINE_PREFIX):]
     try:
         data = base64.b64decode(encoded, validate=True)
     except binascii.Error as exc:
@@ -33,7 +34,7 @@ def _svg_wrapped_sprite(path: str) -> str:
         f'<image width="{width}" height="{height}" '
         f'xlink:href="data:image/png;base64,{encoded}"/></svg>'
     )
-    return "base64:" + base64.b64encode(svg.encode("utf-8")).decode("ascii")
+    return _INLINE_PREFIX + base64.b64encode(svg.encode("utf-8")).decode("ascii")
 
 
 def _background_sprite(marker):
