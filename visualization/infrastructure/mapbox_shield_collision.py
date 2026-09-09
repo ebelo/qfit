@@ -62,6 +62,8 @@ def _coupled_settings(settings, symbol):
     background.setType(QgsTextBackgroundSettings.ShapeSVG)
     background.setSvgFile(path)
     background.setSizeType(QgsTextBackgroundSettings.SizeFixed)
+    # ShapeSVG consumes only X; the wrapped sprite viewBox supplies its aspect
+    # ratio (including for data-defined widths). Y is not a collision rectangle.
     background.setSize(QSizeF(symbol.size(), symbol.size()))
     background.setSizeUnit(symbol.sizeUnit())
     background.setSizeMapUnitScale(symbol.sizeMapUnitScale())

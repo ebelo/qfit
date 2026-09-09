@@ -763,6 +763,52 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
                     self.assertEqual((decoded.width(), decoded.height()), (12, 8))
                     self.assertEqual(decoded.pixelColor(6, 4), QColor('red'))
 
+    def test_coupled_svg_background_keeps_non_square_sprite_rendered_extent(self):
+        import base64
+        from qgis.PyQt.QtCore import QBuffer, QByteArray, QIODevice, QPointF
+        from qgis.PyQt.QtGui import QColor, QImage, QPainter
+        from qgis.core import (
+            Qgis, QgsMarkerSymbol, QgsPalLayerSettings, QgsRasterMarkerSymbolLayer,
+            QgsRenderContext, QgsTextRenderer,
+        )
+        from qfit.visualization.infrastructure.mapbox_shield_collision import _coupled_settings
+
+        sprite = QImage(12, 8, QImage.Format.Format_ARGB32)
+        sprite.fill(QColor('red'))
+        data = QByteArray()
+        buffer = QBuffer(data)
+        buffer.open(QIODevice.OpenModeFlag.WriteOnly)
+        self.assertTrue(sprite.save(buffer, 'PNG'))
+        marker = QgsRasterMarkerSymbolLayer('base64:' + base64.b64encode(bytes(data)).decode())
+        symbol = QgsMarkerSymbol([marker])
+        symbol.setSizeUnit(Qgis.RenderUnit.Pixels)
+        # SVG backgrounds use width only, deriving height from the SVG viewBox.
+        # Test two widths and inspect painted pixels, not just the encoded image.
+        for width in [36, 60]:
+            with self.subTest(width=width):
+                symbol.setSize(width)
+                settings = _coupled_settings(QgsPalLayerSettings(), symbol)
+                text_format = settings.format()
+                text_format.setColor(QColor('white'))
+                canvas = QImage(180, 180, QImage.Format.Format_ARGB32)
+                canvas.fill(QColor('white'))
+                painter = QPainter(canvas)
+                context = QgsRenderContext.fromQPainter(painter)
+                try:
+                    QgsTextRenderer.drawText(QPointF(90, 90), 0,
+                                             Qgis.TextHorizontalAlignment.Center,
+                                             ['1'], context, text_format)
+                finally:
+                    painter.end()
+                red = [(x, y) for x in range(180) for y in range(180)
+                       if canvas.pixelColor(x, y).red() > 200
+                       and canvas.pixelColor(x, y).green() < 50]
+                self.assertTrue(red)
+                extent_width = max(x for x, y in red) - min(x for x, y in red) + 1
+                extent_height = max(y for x, y in red) - min(y for x, y in red) + 1
+                self.assertAlmostEqual(extent_width, width, delta=1)
+                self.assertAlmostEqual(extent_height, width * 8 / 12, delta=1)
+
     def test_outdoors_colored_shield_color_match_evaluates_in_qgis(self):
         from qgis.core import (
             QgsExpressionContext, QgsFeature, QgsField, QgsFields,
