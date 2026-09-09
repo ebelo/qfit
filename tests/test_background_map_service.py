@@ -637,6 +637,45 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
         style.labelSettings.return_value = settings
         return style, settings
 
+    def test_outdoors_blue_shield_color_match_evaluates_in_qgis(self):
+        from qgis.core import (
+            QgsExpressionContext, QgsFeature, QgsField, QgsFields,
+            QgsMapBoxGlStyleConverter, QgsPalLayerSettings,
+        )
+        from qfit.mapbox_config import simplify_mapbox_style_expressions
+
+        fields = QgsFields()
+        fields.append(QgsField("shield"))
+        fields.append(QgsField("shield_beta"))
+        for field_name, suffix in (("shield", ""), ("shield_beta", "beta-")):
+            with self.subTest(field_name=field_name):
+                source = {
+                    "version": 8, "owner": "mapbox", "id": "outdoors-v12",
+                    "sources": {"composite": {"type": "vector"}},
+                    "layers": [{
+                        "id": f"road-number-shield-2-{suffix}known-icons",
+                        "type": "symbol", "source": "composite", "source-layer": "road",
+                        "layout": {"text-field": ["get", "ref"], "text-font": ["Noto Sans"]},
+                        "paint": {"text-color": "#222222"},
+                    }],
+                }
+                converter = QgsMapBoxGlStyleConverter()
+                converter.convert(simplify_mapbox_style_expressions(source))
+                labeling = converter.labeling()
+                self.assertIsNotNone(labeling)
+                settings = labeling.styles()[0].labelSettings()
+                prop = settings.dataDefinedProperties().property(QgsPalLayerSettings.Property.Color)
+                self.assertTrue(prop.isActive())
+                context = QgsExpressionContext()
+                context.setFields(fields)
+                for shield, expected in (("rectangle-blue", "#ffffff"), ("rectangle-yellow", "#222222"), (None, "#222222")):
+                    feature = QgsFeature(fields)
+                    feature.setAttribute(field_name, shield)
+                    context.setFeature(feature)
+                    color, ok = prop.valueAsColor(context)
+                    self.assertTrue(ok)
+                    self.assertEqual(color.name(), expected)
+
     def test_priority_uses_qgis_style_name_not_tile_source_layer(self):
         labeling = MagicMock()
         style, settings = self._make_style("place_label", "settlement-major-label")
