@@ -1,0 +1,570 @@
+{
+  "baseline_commit": "0e79b0e8b034a29edf3cb53f08998cdb213b04d9",
+  "candidate_commit": "864d27502a95e2cf46c463698b10ba1275fcba33",
+  "preset": "mapbox/light-v11",
+  "dimensions": [
+    1280,
+    900
+  ],
+  "source_sha256": "87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32",
+  "matrix": [
+    {
+      "qgis_major": "3",
+      "camera": "bern-urban-z12-light",
+      "before_mae": 0.007756740196078431,
+      "after_mae": 0.007732605982207697,
+      "delta": -2.413421387073393e-05,
+      "production_matches_probe": true
+    },
+    {
+      "qgis_major": "3",
+      "camera": "geneva-streets-z18-light",
+      "before_mae": 0.009628744553376907,
+      "after_mae": 0.009129291485112564,
+      "delta": -0.0004994530682643425,
+      "production_matches_probe": true
+    },
+    {
+      "qgis_major": "3",
+      "camera": "geneva-urban-z14-light",
+      "before_mae": 0.01242674632352941,
+      "after_mae": 0.01241580314996369,
+      "delta": -1.0943173565720193e-05,
+      "production_matches_probe": true
+    },
+    {
+      "qgis_major": "3",
+      "camera": "lausanne-lavaux-z10-light",
+      "before_mae": 0.0080269244734931,
+      "after_mae": 0.007977166167392883,
+      "delta": -4.9758306100216795e-05,
+      "production_matches_probe": true
+    },
+    {
+      "qgis_major": "3",
+      "camera": "switzerland-alps-z5-light",
+      "before_mae": 0.032411268836238204,
+      "after_mae": 0.032401579520697166,
+      "delta": -9.689315541037968e-06,
+      "production_matches_probe": true
+    },
+    {
+      "qgis_major": "3",
+      "camera": "zurich-region-z8-light",
+      "before_mae": 0.0210929216594045,
+      "after_mae": 0.020994008714596953,
+      "delta": -9.891294480754778e-05,
+      "production_matches_probe": true
+    },
+    {
+      "qgis_major": "3",
+      "camera": "zurich-streets-z17-light",
+      "before_mae": 0.013194110838779955,
+      "after_mae": 0.012483391203703703,
+      "delta": -0.0007107196350762523,
+      "production_matches_probe": true
+    },
+    {
+      "qgis_major": "4",
+      "camera": "bern-urban-z12-light",
+      "before_mae": 0.007741045978576617,
+      "after_mae": 0.007722429874727667,
+      "delta": -1.861610384894935e-05,
+      "production_matches_probe": true
+    },
+    {
+      "qgis_major": "4",
+      "camera": "geneva-streets-z18-light",
+      "before_mae": 0.009648351261801016,
+      "after_mae": 0.009101107480029048,
+      "delta": -0.0005472437817719677,
+      "production_matches_probe": true
+    },
+    {
+      "qgis_major": "4",
+      "camera": "geneva-urban-z14-light",
+      "before_mae": 0.01245476579520697,
+      "after_mae": 0.01245476579520697,
+      "delta": 0.0,
+      "production_matches_probe": true
+    },
+    {
+      "qgis_major": "4",
+      "camera": "lausanne-lavaux-z10-light",
+      "before_mae": 0.008519187999273783,
+      "after_mae": 0.008523960602759624,
+      "delta": 4.77260348584127e-06,
+      "production_matches_probe": true
+    },
+    {
+      "qgis_major": "4",
+      "camera": "switzerland-alps-z5-light",
+      "before_mae": 0.0319627371550472,
+      "after_mae": 0.031952873093681916,
+      "delta": -9.86406136528617e-06,
+      "production_matches_probe": true
+    },
+    {
+      "qgis_major": "4",
+      "camera": "zurich-region-z8-light",
+      "before_mae": 0.021635381490559186,
+      "after_mae": 0.02146297998366013,
+      "delta": -0.00017240150689905656,
+      "production_matches_probe": true
+    },
+    {
+      "qgis_major": "4",
+      "camera": "zurich-streets-z17-light",
+      "before_mae": 0.01309430487472767,
+      "after_mae": 0.012539913534858387,
+      "delta": -0.0005543913398692833,
+      "production_matches_probe": true
+    }
+  ],
+  "probes": [
+    {
+      "qgis_major": "3",
+      "camera": "bern-urban-z12-light",
+      "candidate": "production",
+      "mae": 0.007732605982207697
+    },
+    {
+      "qgis_major": "3",
+      "camera": "bern-urban-z12-light",
+      "candidate": "barlow",
+      "mae": 0.008166713189905592
+    },
+    {
+      "qgis_major": "3",
+      "camera": "bern-urban-z12-light",
+      "candidate": "barlow-medium",
+      "mae": 0.007732605982207697
+    },
+    {
+      "qgis_major": "3",
+      "camera": "bern-urban-z12-light",
+      "candidate": "barlow-bold",
+      "mae": 0.007756740196078431
+    },
+    {
+      "qgis_major": "3",
+      "camera": "bern-urban-z12-light",
+      "candidate": "barlow-regular",
+      "mae": 0.008193593409586059
+    },
+    {
+      "qgis_major": "3",
+      "camera": "bern-urban-z12-light",
+      "candidate": "tuned",
+      "mae": 0.007732605982207697
+    },
+    {
+      "qgis_major": "3",
+      "camera": "bern-urban-z12-light",
+      "candidate": "control",
+      "mae": 0.007756740196078431
+    },
+    {
+      "qgis_major": "3",
+      "camera": "bern-urban-z12-light",
+      "candidate": "barlow-italic",
+      "mae": 0.007773716639433551
+    },
+    {
+      "qgis_major": "3",
+      "camera": "geneva-streets-z18-light",
+      "candidate": "production",
+      "mae": 0.009129291485112564
+    },
+    {
+      "qgis_major": "3",
+      "camera": "geneva-streets-z18-light",
+      "candidate": "barlow",
+      "mae": 0.009129291485112564
+    },
+    {
+      "qgis_major": "3",
+      "camera": "geneva-streets-z18-light",
+      "candidate": "alternative",
+      "mae": 0.009696461964415395
+    },
+    {
+      "qgis_major": "3",
+      "camera": "geneva-streets-z18-light",
+      "candidate": "tuned",
+      "mae": 0.009129291485112564
+    },
+    {
+      "qgis_major": "3",
+      "camera": "geneva-streets-z18-light",
+      "candidate": "control",
+      "mae": 0.009628744553376907
+    },
+    {
+      "qgis_major": "3",
+      "camera": "geneva-urban-z14-light",
+      "candidate": "production",
+      "mae": 0.01241580314996369
+    },
+    {
+      "qgis_major": "3",
+      "camera": "geneva-urban-z14-light",
+      "candidate": "barlow",
+      "mae": 0.012258095043572986
+    },
+    {
+      "qgis_major": "3",
+      "camera": "geneva-urban-z14-light",
+      "candidate": "tuned",
+      "mae": 0.01241580314996369
+    },
+    {
+      "qgis_major": "3",
+      "camera": "geneva-urban-z14-light",
+      "candidate": "control",
+      "mae": 0.01242674632352941
+    },
+    {
+      "qgis_major": "3",
+      "camera": "lausanne-lavaux-z10-light",
+      "candidate": "repeat",
+      "mae": 0.0080269244734931
+    },
+    {
+      "qgis_major": "3",
+      "camera": "lausanne-lavaux-z10-light",
+      "candidate": "production",
+      "mae": 0.007977166167392883
+    },
+    {
+      "qgis_major": "3",
+      "camera": "lausanne-lavaux-z10-light",
+      "candidate": "barlow",
+      "mae": 0.007974652777777778
+    },
+    {
+      "qgis_major": "3",
+      "camera": "lausanne-lavaux-z10-light",
+      "candidate": "alternative",
+      "mae": 0.007992524509803922
+    },
+    {
+      "qgis_major": "3",
+      "camera": "lausanne-lavaux-z10-light",
+      "candidate": "tuned",
+      "mae": 0.007977166167392883
+    },
+    {
+      "qgis_major": "3",
+      "camera": "lausanne-lavaux-z10-light",
+      "candidate": "control",
+      "mae": 0.0080269244734931
+    },
+    {
+      "qgis_major": "3",
+      "camera": "lausanne-lavaux-z10-light",
+      "candidate": "noto",
+      "mae": 0.008025996278140886
+    },
+    {
+      "qgis_major": "3",
+      "camera": "switzerland-alps-z5-light",
+      "candidate": "repeat",
+      "mae": 0.032411268836238204
+    },
+    {
+      "qgis_major": "3",
+      "camera": "switzerland-alps-z5-light",
+      "candidate": "production",
+      "mae": 0.032401579520697166
+    },
+    {
+      "qgis_major": "3",
+      "camera": "switzerland-alps-z5-light",
+      "candidate": "barlow",
+      "mae": 0.03268475626361656
+    },
+    {
+      "qgis_major": "3",
+      "camera": "switzerland-alps-z5-light",
+      "candidate": "countries",
+      "mae": 0.03258701093863472
+    },
+    {
+      "qgis_major": "3",
+      "camera": "switzerland-alps-z5-light",
+      "candidate": "barlow-medium",
+      "mae": 0.032694445579157586
+    },
+    {
+      "qgis_major": "3",
+      "camera": "switzerland-alps-z5-light",
+      "candidate": "barlow-bold",
+      "mae": 0.032411268836238204
+    },
+    {
+      "qgis_major": "3",
+      "camera": "switzerland-alps-z5-light",
+      "candidate": "barlow-regular",
+      "mae": 0.032411268836238204
+    },
+    {
+      "qgis_major": "3",
+      "camera": "switzerland-alps-z5-light",
+      "candidate": "tuned",
+      "mae": 0.032401579520697166
+    },
+    {
+      "qgis_major": "3",
+      "camera": "switzerland-alps-z5-light",
+      "candidate": "control",
+      "mae": 0.032411268836238204
+    },
+    {
+      "qgis_major": "3",
+      "camera": "switzerland-alps-z5-light",
+      "candidate": "cities",
+      "mae": 0.03253293277959332
+    },
+    {
+      "qgis_major": "3",
+      "camera": "switzerland-alps-z5-light",
+      "candidate": "barlow-italic",
+      "mae": 0.032401579520697166
+    },
+    {
+      "qgis_major": "3",
+      "camera": "zurich-region-z8-light",
+      "candidate": "repeat",
+      "mae": 0.0210929216594045
+    },
+    {
+      "qgis_major": "3",
+      "camera": "zurich-region-z8-light",
+      "candidate": "production",
+      "mae": 0.020994008714596953
+    },
+    {
+      "qgis_major": "3",
+      "camera": "zurich-region-z8-light",
+      "candidate": "barlow",
+      "mae": 0.02095736201888163
+    },
+    {
+      "qgis_major": "3",
+      "camera": "zurich-region-z8-light",
+      "candidate": "alternative",
+      "mae": 0.02098275462962963
+    },
+    {
+      "qgis_major": "3",
+      "camera": "zurich-region-z8-light",
+      "candidate": "tuned",
+      "mae": 0.020994008714596953
+    },
+    {
+      "qgis_major": "3",
+      "camera": "zurich-region-z8-light",
+      "candidate": "control",
+      "mae": 0.0210929216594045
+    },
+    {
+      "qgis_major": "3",
+      "camera": "zurich-region-z8-light",
+      "candidate": "noto",
+      "mae": 0.02110928422294844
+    },
+    {
+      "qgis_major": "3",
+      "camera": "zurich-streets-z17-light",
+      "candidate": "production",
+      "mae": 0.012483391203703703
+    },
+    {
+      "qgis_major": "3",
+      "camera": "zurich-streets-z17-light",
+      "candidate": "barlow",
+      "mae": 0.012483391203703703
+    },
+    {
+      "qgis_major": "3",
+      "camera": "zurich-streets-z17-light",
+      "candidate": "tuned",
+      "mae": 0.012483391203703703
+    },
+    {
+      "qgis_major": "3",
+      "camera": "zurich-streets-z17-light",
+      "candidate": "control",
+      "mae": 0.013194110838779955
+    },
+    {
+      "qgis_major": "4",
+      "camera": "bern-urban-z12-light",
+      "candidate": "production",
+      "mae": 0.007722429874727667
+    },
+    {
+      "qgis_major": "4",
+      "camera": "bern-urban-z12-light",
+      "candidate": "barlow",
+      "mae": 0.008215964279230211
+    },
+    {
+      "qgis_major": "4",
+      "camera": "bern-urban-z12-light",
+      "candidate": "barlow-medium",
+      "mae": 0.007722429874727667
+    },
+    {
+      "qgis_major": "4",
+      "camera": "bern-urban-z12-light",
+      "candidate": "tuned",
+      "mae": 0.007722429874727667
+    },
+    {
+      "qgis_major": "4",
+      "camera": "bern-urban-z12-light",
+      "candidate": "control",
+      "mae": 0.007741045978576617
+    },
+    {
+      "qgis_major": "4",
+      "camera": "bern-urban-z12-light",
+      "candidate": "barlow-italic",
+      "mae": 0.007659946895424837
+    },
+    {
+      "qgis_major": "4",
+      "camera": "geneva-streets-z18-light",
+      "candidate": "production",
+      "mae": 0.009101107480029048
+    },
+    {
+      "qgis_major": "4",
+      "camera": "geneva-streets-z18-light",
+      "candidate": "tuned",
+      "mae": 0.009101107480029048
+    },
+    {
+      "qgis_major": "4",
+      "camera": "geneva-streets-z18-light",
+      "candidate": "control",
+      "mae": 0.009648351261801016
+    },
+    {
+      "qgis_major": "4",
+      "camera": "geneva-urban-z14-light",
+      "candidate": "production",
+      "mae": 0.01245476579520697
+    },
+    {
+      "qgis_major": "4",
+      "camera": "geneva-urban-z14-light",
+      "candidate": "tuned",
+      "mae": 0.01245476579520697
+    },
+    {
+      "qgis_major": "4",
+      "camera": "geneva-urban-z14-light",
+      "candidate": "control",
+      "mae": 0.01245476579520697
+    },
+    {
+      "qgis_major": "4",
+      "camera": "lausanne-lavaux-z10-light",
+      "candidate": "repeat",
+      "mae": 0.008519187999273783
+    },
+    {
+      "qgis_major": "4",
+      "camera": "lausanne-lavaux-z10-light",
+      "candidate": "production",
+      "mae": 0.008523960602759624
+    },
+    {
+      "qgis_major": "4",
+      "camera": "lausanne-lavaux-z10-light",
+      "candidate": "barlow-medium",
+      "mae": 0.008520221722948439
+    },
+    {
+      "qgis_major": "4",
+      "camera": "lausanne-lavaux-z10-light",
+      "candidate": "barlow-regular",
+      "mae": 0.008519187999273783
+    },
+    {
+      "qgis_major": "4",
+      "camera": "lausanne-lavaux-z10-light",
+      "candidate": "tuned",
+      "mae": 0.008523960602759624
+    },
+    {
+      "qgis_major": "4",
+      "camera": "lausanne-lavaux-z10-light",
+      "candidate": "control",
+      "mae": 0.008519187999273783
+    },
+    {
+      "qgis_major": "4",
+      "camera": "lausanne-lavaux-z10-light",
+      "candidate": "barlow-italic",
+      "mae": 0.008516226397966595
+    },
+    {
+      "qgis_major": "4",
+      "camera": "switzerland-alps-z5-light",
+      "candidate": "production",
+      "mae": 0.031952873093681916
+    },
+    {
+      "qgis_major": "4",
+      "camera": "switzerland-alps-z5-light",
+      "candidate": "tuned",
+      "mae": 0.031952873093681916
+    },
+    {
+      "qgis_major": "4",
+      "camera": "switzerland-alps-z5-light",
+      "candidate": "control",
+      "mae": 0.0319627371550472
+    },
+    {
+      "qgis_major": "4",
+      "camera": "zurich-region-z8-light",
+      "candidate": "production",
+      "mae": 0.02146297998366013
+    },
+    {
+      "qgis_major": "4",
+      "camera": "zurich-region-z8-light",
+      "candidate": "tuned",
+      "mae": 0.02146297998366013
+    },
+    {
+      "qgis_major": "4",
+      "camera": "zurich-region-z8-light",
+      "candidate": "control",
+      "mae": 0.021635381490559186
+    },
+    {
+      "qgis_major": "4",
+      "camera": "zurich-streets-z17-light",
+      "candidate": "production",
+      "mae": 0.012539913534858387
+    },
+    {
+      "qgis_major": "4",
+      "camera": "zurich-streets-z17-light",
+      "candidate": "tuned",
+      "mae": 0.012539913534858387
+    },
+    {
+      "qgis_major": "4",
+      "camera": "zurich-streets-z17-light",
+      "candidate": "control",
+      "mae": 0.01309430487472767
+    }
+  ]
+}
