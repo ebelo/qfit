@@ -708,9 +708,9 @@ class BackgroundMapService:
                 renderer = converter.renderer()
                 labeling = converter.labeling()
                 if labeling is not None:
-                    from .mapbox_open_fonts import apply_available_outdoors_fonts
+                    from .mapbox_open_fonts import apply_available_mapbox_fonts
 
-                    apply_available_outdoors_fonts(
+                    apply_available_mapbox_fonts(
                         labeling, source_style_definition if source_style_definition is not None else style_definition,
                     )
                     self._apply_label_priority(labeling)

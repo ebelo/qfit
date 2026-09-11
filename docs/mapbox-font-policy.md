@@ -70,8 +70,8 @@ preset when the selected faces resolve correctly:
 
 This covers all 25 literal Outdoors stacks inventoried above, including source
 owners whose rules are split by zoom or filter during conversion. Unknown or
-expression-based stacks keep the existing conversion path. Light and custom
-styles do not receive this Outdoors mapping. Missing Barlow faces retain the
+expression-based stacks keep the existing conversion path. Light uses the narrower mapping documented below; custom
+styles do not receive the built-in preset mappings. Missing Barlow faces retain the
 existing Noto fallback; qfit never assumes the requested face was selected.
 Validation label audits now include both requested and resolved family/style.
 
@@ -171,3 +171,47 @@ other built-in presets as regression guards.
 Runtime changes require relevant unit tests, both real-QGIS Docker lanes and
 the normal CI/SonarCloud/review gates. A successful screenshot on a machine with
 privately installed fonts is not sufficient evidence of a portable qfit fix.
+
+## Light v11 typography follow-up
+
+The **2026-09-11** live `mapbox/light-v11` audit contains 14 literal stacks:
+
+| Primary face | Fallback | Source label layers |
+|---|---|---|
+| DIN Pro Regular | Arial Unicode MS Regular | `road-label-simple`, `settlement-subdivision-label`, `settlement-minor-label` |
+| DIN Pro Medium | Arial Unicode MS Regular | `natural-line-label`, `natural-point-label`, `airport-label`, `settlement-major-label`, `country-label`, `continent-label` |
+| DIN Pro Italic | Arial Unicode MS Regular | `waterway-label`, `water-line-label`, `water-point-label`, `poi-label` |
+| DIN Pro Bold | Arial Unicode MS Bold | `state-label` |
+
+The existing open-font Docker installation is reused, but **Light does not use
+an unconditional copy of the Outdoors mapping**. A full Barlow substitution
+increased road-label density at Bern z12 and worsened the z5 overview. Paired
+controls and role-isolation probes in both QGIS generations instead support:
+
+| Light label role | Selected open face | Validated range |
+|---|---|---|
+| Water lines/points and waterways | Barlow Italic | Existing visible ranges |
+| Major settlements, natural features, airports | Barlow Medium | z8 and above, within each original rule's range |
+| Minor settlements and subdivisions | Barlow Regular | z8 and above, within each original rule's range |
+| Roads | Barlow Regular | z15 and above |
+| POIs | Barlow Italic | z16 and above |
+| State, country, continent; other bands | Existing Noto conversion | No new substitution retained |
+
+These bounds reuse the regional and high-detail bands exercised by the Light
+matrix and the existing road/POI conversion boundaries. The adapter splits a
+label rule only when needed, preserving its original filter, inclusive zoom
+limits, priority, size, color and collision settings. Lower bands keep their
+original font and cannot overlap the new band. Unknown font stacks and missing
+Barlow faces are left untouched. The Outdoors mapping and custom styles are
+unchanged. The source font inventory is not a claim that every role has a
+promotable replacement.
+
+The seven-camera before/after matrix runs on both QGIS 3 and 4 with verified
+resolved faces. It includes a small QGIS 4 Lausanne trade-off (approximately
++0.0000048 normalized whole-image MAE, +0.056% relative); the corresponding
+QGIS 3 view improves. Do not describe this as pixel-perfect or a uniform
+metric improvement. The chosen mapping improves regional/high-detail views
+without introducing the blanket candidate's excess mid-zoom road labels.
+Font-family work does not resolve existing label-language, size, color,
+placement or terrain-renderer differences. Those need their own evidence and
+must not be hidden by font-specific stretch or per-city compensation.
