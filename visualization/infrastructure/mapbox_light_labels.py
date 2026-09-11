@@ -37,7 +37,11 @@ def apply_light_road_duplicate_spacing(labeling, source_style: dict) -> int:
     spacing = _road_symbol_spacing(source_style)
     if spacing is None:
         return 0
-    from qgis.core import Qgis, QgsLabelThinningSettings
+    try:
+        from qgis.core import Qgis, QgsLabelThinningSettings
+    except ImportError:
+        # Some supported versions predate the thinning settings class itself.
+        return 0
 
     if not hasattr(QgsLabelThinningSettings, "setAllowDuplicateRemoval"):
         return 0
