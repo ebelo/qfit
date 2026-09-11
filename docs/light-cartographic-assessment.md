@@ -279,4 +279,4 @@ explicitly agreed scope reduction with follow-up ownership for excluded work.
 [name-fallback]: https://github.com/ebelo/qfit/tree/d007ecd7fe19542d89e733cd3b701f085461de31/docs/visual-evidence/issue-1462/light-name-fallback
 [name-fallback-metrics]: https://github.com/ebelo/qfit/blob/d007ecd7fe19542d89e733cd3b701f085461de31/docs/visual-evidence/issue-1462/light-name-fallback/metrics.json
 
-[capture-context]: https://github.com/ebelo/qfit/tree/f8aef75056f82b5ba2ea87f93388e9de094c9e59/docs/visual-evidence/issue-1462/light-capture-context
+[capture-context]: https://github.com/ebelo/qfit/tree/cc7ecd4ace62e3eb484dfe5dc7dedfc0195e0c3d/docs/visual-evidence/issue-1462/light-capture-context
