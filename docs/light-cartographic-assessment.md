@@ -65,12 +65,24 @@ is responsible**.
 ### 3. Label language and content — C19
 
 The recorded original `country-label` and `settlement-major-label` request
-`coalesce(get(name_en), get(name))`. The inspected QGIS label snapshots instead
-use the expression `"name"`. Regional images show local names where the source
-requests English-first names. This is a concrete conversion divergence, distinct
-from font width or weight. Test nonempty, missing and empty localized fields and
-the exact output strings. Do not silently choose a new product language policy;
-if localization is intentional, document that decision separately from fidelity.
+`coalesce(get(name_en), get(name))`. Inspecting a single QGIS `"name"` rule is
+**not** sufficient proof of lost fallback: qfit already has a
+`_name_en_fallback_text_field_variants` helper which creates English and local
+companion rules when its caller's layout matcher applies.
+
+For this particular Light source, however, both the country-layout and
+settlement-dot layout matchers return false. Reprocessing the recorded source
+produces only `get(name)` for these two layer IDs, and the **complete matching
+rule inventory in both Docker snapshots contains no `name_en` companion**.
+The [label-content audit][content-audit] records the matcher results, source and
+processed expressions, rule filters, snapshot hashes and code revision. Thus
+the open finding is Light-specific helper applicability, not an assertion that
+qfit never implemented name fallback. Regional local-name differences support
+investigating the resulting strings but do not replace this rule-level check.
+
+Test nonempty, missing and empty localized fields and the exact output strings.
+Do not silently choose a new product language policy; if localization is
+intentional, document that decision separately from fidelity.
 
 ### 4. Typography, selection and density — C17–C22
 
@@ -108,7 +120,7 @@ focused investigation before broad completion, not an assertion of a root cause.
 | C16 | PARTIAL | Source symbol inventory available; sprite applicability, anchors, collision lifecycle and high-DPI behavior require dedicated checks. | — |
 | C17 | PARTIAL | Font-enabled Docker roles have earlier scoped validation. Desktop font distribution and multilingual fallback are not certified by these captures. | — |
 | C18 | OPEN | Text width, weight, wrapping and relative hierarchy remain visibly different. Blanket size probes were rejected, not accepted as a fix. | Minor |
-| C19 | OPEN | Source English-first expression versus QGIS local `name` expression is confirmed. Validate content/null behavior and intended locale contract. | Major |
+| C19 | OPEN (recorded Light source) | Existing fallback helper's callers do not match this source layout; processed output and both full matching rule inventories lack English companions. See label-content audit; validate content/null behavior and locale contract. | Major |
 | C20 | PARTIAL | Some named-road crops inspected during duplicate work; systematic association, rotation and curved-line placement remain. | — |
 | C21 | PARTIAL | Current dense views are available; survival/priority decisions and symbol/halo collision extents are not comprehensively audited. | — |
 | C22 | PARTIAL; targeted road repeats PASS | PR #1463 validates nearby repeated road-name removal in its seven-camera/two-runtime scope. Settlement/POI density and other repetition mechanisms remain open. | — |
@@ -151,3 +163,4 @@ explicitly agreed scope reduction with follow-up ownership for excluded work.
 [inventory]: https://github.com/ebelo/qfit/blob/f1b3101995ee3a4e3dbba539ca57b42d51d83302/docs/visual-evidence/issue-1462/holistic-audit/source-inventory.json
 [geneva]: https://raw.githubusercontent.com/ebelo/qfit/f1b3101995ee3a4e3dbba539ca57b42d51d83302/docs/visual-evidence/issue-1462/holistic-audit/geneva-urban-z14-light.png
 [lausanne]: https://raw.githubusercontent.com/ebelo/qfit/f1b3101995ee3a4e3dbba539ca57b42d51d83302/docs/visual-evidence/issue-1462/holistic-audit/lausanne-lavaux-z10-light.png
+[content-audit]: https://github.com/ebelo/qfit/blob/bff40b6b35db33d74646319f119b5cb17ebab51d/docs/visual-evidence/issue-1462/holistic-audit/label-content-audit.json

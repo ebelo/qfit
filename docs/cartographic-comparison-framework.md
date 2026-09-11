@@ -71,12 +71,21 @@ Before interpreting a discrepancy:
 
 ## 3. Inspection matrix
 
-Use the seven Light cameras in the harness: Switzerland z5, Zurich z8,
-Lausanne/Lavaux z10, Bern z12, Geneva z14, Zurich z17, Geneva z18. Give z8–z14
-priority without dropping the z5/z17/z18 guardrails. Inspect each in both
-font-enabled Docker generations; consult the current testing policy for tags.
+Use the harness's **camera matrix for the preset being changed**:
 
-The seven Swiss views **do not cover all cartographic cases**. Add targeted
+- **Light:** Switzerland z5, Zurich z8, Lausanne/Lavaux z10, Bern z12, Geneva
+  z14, Zurich z17, Geneva z18 (`--preset light`).
+- **Outdoors:** Switzerland z5, Valais/Geneva z7–z8, Lausanne/Lavaux z9–z11,
+  Geneva airport/motorway z14, Chamonix trails z13–z14, Zermatt piste z17 and
+  Zermatt trails z18 (`--preset outdoors`).
+
+Use `--list-cameras` with the selected preset for current identifiers. Give
+z8–z14 priority without dropping low/high-zoom guardrails. Inspect each in both
+font-enabled Docker generations; consult the current testing policy for tags.
+The other preset is an isolation guardrail, never a substitute for capturing
+the changed preset. Shared changes require both matrices.
+
+These default views **do not cover all cartographic cases**. Add targeted
 fixtures or real extents for:
 
 - sparse/rural and dense urban areas, mountains, coast/islands, complex river
