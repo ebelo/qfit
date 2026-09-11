@@ -691,6 +691,7 @@ class BackgroundMapService:
         sprite_resources: MapboxSpriteResources | None = None,
         source_style_definition: dict | None = None,
     ) -> None:
+        label_source = source_style_definition if source_style_definition is not None else style_definition
         try:
             from qgis.core import (  # noqa: PLC0415
                 QgsMapBoxGlStyleConversionContext,
@@ -708,14 +709,14 @@ class BackgroundMapService:
                 renderer = converter.renderer()
                 labeling = converter.labeling()
                 if labeling is not None:
+                    from .mapbox_light_labels import apply_light_road_duplicate_spacing
                     from .mapbox_open_fonts import apply_available_mapbox_fonts
 
                     # Resolve source-name-dependent priority/placement first so
                     # generated font zoom bands inherit the complete settings.
                     self._apply_label_priority(labeling)
-                    apply_available_mapbox_fonts(
-                        labeling, source_style_definition if source_style_definition is not None else style_definition,
-                    )
+                    apply_light_road_duplicate_spacing(labeling, label_source)
+                    apply_available_mapbox_fonts(labeling, label_source)
                     apply_outdoors_green_shield_text_colors(labeling, style_definition)
                     if renderer is not None:
                         from .mapbox_shield_collision import couple_outdoors_shield_backgrounds

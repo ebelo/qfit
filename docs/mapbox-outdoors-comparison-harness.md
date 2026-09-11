@@ -566,3 +566,24 @@ For rendering-sensitive Mapbox vector-style changes, include a concise validatio
 - Checked: browser reference, QGIS vector render, and diff image
 - Result: summarize visible improvements and any accepted QGIS/Mapbox GL limitations
 ```
+
+### Light duplicate road labels (QGIS 3.44+)
+
+The built-in `mapbox/light-v11` road label rules use cross-feature duplicate
+removal to approximate the source `symbol-spacing` (250 px when omitted).
+This addresses repeated names on separate road fragments; it is not QGIS's
+per-line `repeatDistance`, which produced worse matched street-level captures.
+The rule preserves existing fonts, road sizes, line merging and colors.
+
+Only the audited `road-label-simple` and its qfit mid-zoom rule are adapted,
+using the original Light source definition before font-band splitting.
+Custom styles, Outdoors and unrelated labels are untouched. Explicit
+converter duplicate-removal settings are retained; expression-based spacing
+is not guessed. QGIS versions before 3.44 lack this API and keep the previous
+behavior. No minimum supported QGIS version is raised.
+
+Validation should pair unchanged controls and final production captures over
+all seven Light cameras in both font-enabled QGIS Docker images. Check actual
+street-name repetition, not only whole-image error; do not interpret blanker
+maps as automatically better. See issue #1462 for the candidate comparison
+and reviewable before/after evidence.
