@@ -123,7 +123,7 @@ focused investigation before broad completion, not an assertion of a root cause.
 | C19 | OPEN (recorded Light source) | Existing fallback helper's callers do not match this source layout; processed output and both full matching rule inventories lack English companions. See label-content audit; validate content/null behavior and locale contract. | Major |
 | C20 | PARTIAL | Some named-road crops inspected during duplicate work; systematic association, rotation and curved-line placement remain. | — |
 | C21 | PARTIAL | Current dense views are available; survival/priority decisions and symbol/halo collision extents are not comprehensively audited. | — |
-| C22 | PARTIAL; targeted road repeats PASS | PR #1463 validates nearby repeated road-name removal in its seven-camera/two-runtime scope. Settlement/POI density and other repetition mechanisms remain open. | — |
+| C22 | PARTIAL | Road duplicate removal has a scoped pass; the criterion as a whole is not passed. See the separate coverage-cell verdicts below. | — |
 | C23 | NOT ASSESSED | Fixed zooms do not test interval edges or fractional zoom continuity. Add boundary triplets and zoom sequences. | — |
 | C24 | NOT ASSESSED | No deliberate tile-edge, clipping, adjacent-pan or world-wrap fixtures. | — |
 | C25 | NOT ASSESSED | These captures contain no current qfit activity overlays or UI state. Historical checks are not current certification. | — |
@@ -132,6 +132,14 @@ focused investigation before broad completion, not an assertion of a root cause.
 | C28 | PARTIAL | Two Docker PNG runtimes checked. Windows/macOS, older supported QGIS, interactive canvas, high-DPI and PDF require separate cells. | — |
 | C29 | PARTIAL | Unchanged repeat controls passed in the prior capture matrix. Cold/warm cache, interactive responsiveness and pan/zoom stability are untested. | — |
 | C30 | NOT ASSESSED | Cropped basemap evidence does not validate complete user-facing attribution, legend, scale or north/context requirements. | — |
+
+### C22: separate coverage-cell results
+
+| Coverage cell | Verdict | Evidence / outstanding action |
+| --- | --- | --- |
+| Nearby cross-feature road-name duplicates; seven Light cameras, QGIS 3.44.11 and 4.2.0, headless PNG | PASS (scoped) | [PR #1463](https://github.com/ebelo/qfit/pull/1463): source-backed duplicate spacing, repeated unchanged controls, retained label coverage and final-artifact equivalence. |
+| Settlement/POI density and other repetition mechanisms; existing baseline cameras | PARTIAL | Baseline images allow inspection, but no systematic per-class counts or inter-label-distance acceptance check. Attribute each remaining density difference and validate its population separately. |
+| Repetition across deliberate tile-edge pans, fractional zoom sequences and desktop/PDF output | NOT ASSESSED | Dedicated fixtures/output captures are absent; do not inherit the road-removal PNG pass. |
 
 ## Coverage backlog and completion gate
 
