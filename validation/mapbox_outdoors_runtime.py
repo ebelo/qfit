@@ -24,6 +24,16 @@ def format_qgis_runtime_label(value: object, *, missing_label: str) -> str:
     return missing_label
 
 
+def _integer_tile_zooms(matrix, scale: float) -> tuple[int, int]:
+    try:
+        return matrix.scaleToZoomLevel(scale, False), matrix.scaleToZoomLevel(scale, True)
+    except TypeError:
+        # QGIS 3.28/3.30 expose only the inherited, matrix-clamped overload.
+        # Their renderer uses that same integer zoom for rendering and fetching.
+        zoom = matrix.scaleToZoomLevel(scale)
+        return zoom, zoom
+
+
 def qgis_render_context_snapshot(*, settings, layer, image, camera_zoom: float) -> dict[str, object]:
     """Record actual capture scale/DPI without calibrating or mutating rendering.
 
@@ -34,6 +44,7 @@ def qgis_render_context_snapshot(*, settings, layer, image, camera_zoom: float) 
     scale = settings.scale()
     matrix = layer.tileMatrixSet()
     extent = settings.visibleExtent()
+    render_zoom, fetch_zoom = _integer_tile_zooms(matrix, scale)
     return {
         "requested_camera_zoom": camera_zoom,
         "map_settings_output_dpi": settings.outputDpi(),
@@ -45,6 +56,6 @@ def qgis_render_context_snapshot(*, settings, layer, image, camera_zoom: float) 
         "visible_extent": [extent.xMinimum(), extent.yMinimum(), extent.xMaximum(), extent.yMaximum()],
         "map_scale": scale,
         "vector_tile_zoom": matrix.scaleToZoom(scale),
-        "integer_render_zoom": matrix.scaleToZoomLevel(scale, False),
-        "integer_fetch_zoom": matrix.scaleToZoomLevel(scale, True),
+        "integer_render_zoom": render_zoom,
+        "integer_fetch_zoom": fetch_zoom,
     }

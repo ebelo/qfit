@@ -1291,6 +1291,19 @@ def write_qgis_core_runtime_snapshot(
         print(f"warning: QGIS runtime metadata was not written: {exc}", file=sys.stderr)
 
 
+def write_qgis_capture_runtime_snapshot(
+    *, output_path: Path | None, settings, layer, image, camera_zoom: float,
+) -> None:
+    if output_path is None:
+        return
+    write_qgis_core_runtime_snapshot(
+        output_path=output_path,
+        render_context=qgis_render_context_snapshot(
+            settings=settings, layer=layer, image=image, camera_zoom=camera_zoom,
+        ),
+    )
+
+
 def _load_optional_qgis_runtime_snapshot(path: Path) -> dict[str, object]:
     try:
         loaded = json.loads(path.read_text(encoding="utf-8"))
@@ -1623,13 +1636,10 @@ def render_qgis_vector(  # pragma: no cover - depends on optional PyQGIS runtime
             raise RuntimeError("QGIS returned an empty image for the vector tile render.")
         if not image.save(str(output_path), "PNG"):
             raise RuntimeError(f"QGIS failed to write render output: {output_path}")
-        if qgis_runtime_path is not None:
-            write_qgis_core_runtime_snapshot(
-                output_path=qgis_runtime_path,
-                render_context=qgis_render_context_snapshot(
-                    settings=settings, layer=layer, image=image, camera_zoom=camera.zoom,
-                ),
-            )
+        write_qgis_capture_runtime_snapshot(
+            output_path=qgis_runtime_path,
+            settings=settings, layer=layer, image=image, camera_zoom=camera.zoom,
+        )
     finally:
         try:
             if network_manager is not None:

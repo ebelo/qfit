@@ -84,6 +84,7 @@ from qfit.validation.mapbox_outdoors_comparison import (
     sha256_file,
     write_qgis_label_styles_snapshot,
     write_qgis_core_runtime_snapshot,
+    write_qgis_capture_runtime_snapshot,
     write_qgis_runtime_snapshot,
 )
 
@@ -327,6 +328,31 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
             with patch.dict(sys.modules, {"qgis.core": types.SimpleNamespace(Qgis=types.SimpleNamespace(QGIS_VERSION="test"))}):
                 write_qgis_core_runtime_snapshot(output_path=path, render_context=result)
             self.assertEqual(json.loads(path.read_text())["render_context"], result)
+
+    def test_capture_context_supports_legacy_inherited_matrix_api(self):
+        from unittest.mock import MagicMock
+        from qfit.validation.mapbox_outdoors_runtime import qgis_render_context_snapshot
+
+        class LegacyTileMatrix:
+            def scaleToZoom(self, scale):
+                return 19.25
+
+            def scaleToZoomLevel(self, scale):
+                return 14  # Legacy renderer/fetch both clamp to the matrix maximum.
+
+        settings, image = MagicMock(), MagicMock()
+        layer = types.SimpleNamespace(tileMatrixSet=lambda: LegacyTileMatrix())
+        result = qgis_render_context_snapshot(settings=settings, layer=layer, image=image, camera_zoom=19.0)
+        self.assertEqual(result["vector_tile_zoom"], 19.25)
+        self.assertEqual(result["integer_render_zoom"], 14)
+        self.assertEqual(result["integer_fetch_zoom"], 14)
+
+    def test_capture_runtime_writer_without_path_does_not_inspect_qgis_objects(self):
+        with patch("qfit.validation.mapbox_outdoors_comparison.qgis_render_context_snapshot") as snapshot:
+            write_qgis_capture_runtime_snapshot(
+                output_path=None, settings=None, layer=None, image=None, camera_zoom=13.0,
+            )
+        snapshot.assert_not_called()
 
     def test_format_qgis_runtime_keeps_zero_version_int(self):
         self.assertEqual(_format_qgis_runtime({"qgis_version_int": 0}), "0")
@@ -2011,6 +2037,14 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
             self.assertFalse(output_path.exists())
 
     def test_run_comparison_writes_manifest_without_token(self):
+        expected_context = {
+            "requested_camera_zoom": 13.0, "map_settings_output_dpi": 100.0,
+            "image_logical_dpi": [100, 100], "image_device_pixel_ratio": 1.0,
+            "image_size_pixels": [1280, 900], "map_settings_size_pixels": [1280, 900],
+            "map_crs": "EPSG:3857", "visible_extent": [1, 2, 3, 4],
+            "map_scale": 37616.647778, "vector_tile_zoom": 12.8976378,
+            "integer_render_zoom": 13, "integer_fetch_zoom": 13,
+        }
         def fake_browser_renderer(*, output_path, **_kwargs):
             output_path.write_bytes(PNG_PLACEHOLDER)
 
@@ -2031,6 +2065,7 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
                         "qgis_version": "3.44.0-Solothurn",
                         "qgis_version_int": 34400,
                         "qgis_release_name": "Solothurn",
+                        "render_context": expected_context,
                     }
                 ),
                 encoding="utf-8",
@@ -2087,6 +2122,8 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         self.assertTrue(manifest["outputs"]["qgis_runtime"].endswith("qgis-runtime.json"))
         self.assertEqual(manifest["metrics"]["changed_pixel_ratio"], 0.25)
         self.assertEqual(manifest["qgis_runtime"]["qgis_version"], "3.44.0-Solothurn")
+        self.assertEqual(manifest["qgis_runtime"]["render_context"], expected_context)
+        self.assertEqual(qgis_runtime["render_context"], expected_context)
         self.assertEqual(
             manifest["mapbox_source_style_sha256"],
             expected_source_sha256,
