@@ -747,6 +747,42 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
                     if owner == "natural-line-label":
                         self.assertEqual(matching[0].labelSettings().priority, 4)
 
+    def test_capture_context_measures_actual_dpi_and_native_zoom(self):
+        import json
+        from types import SimpleNamespace
+        from qgis.core import QgsMapSettings, QgsCoordinateReferenceSystem, QgsRectangle, QgsVectorTileMatrixSet
+        from qgis.PyQt.QtCore import QSize
+        from qgis.PyQt.QtGui import QImage
+        from qfit.validation.mapbox_outdoors_comparison import LIGHT_CAMERAS, camera_extent_web_mercator
+        from qfit.validation.mapbox_outdoors_runtime import qgis_render_context_snapshot
+
+        camera = LIGHT_CAMERAS["geneva-urban-z14-light"]
+        settings = QgsMapSettings()
+        settings.setDestinationCrs(QgsCoordinateReferenceSystem("EPSG:3857"))
+        settings.setExtent(QgsRectangle(*camera_extent_web_mercator(camera)))
+        settings.setOutputSize(QSize(camera.width, camera.height))
+        matrix = QgsVectorTileMatrixSet.fromWebMercator(0, 14)
+        layer = SimpleNamespace(tileMatrixSet=lambda: matrix)
+        image = QImage(camera.width, camera.height, QImage.Format.Format_ARGB32)
+        records = []
+        for dpi in (72, 144):
+            settings.setOutputDpi(dpi)
+            image.setDotsPerMeterX(round(dpi / 0.0254))
+            image.setDotsPerMeterY(round(dpi / 0.0254))
+            record = qgis_render_context_snapshot(settings=settings, layer=layer, image=image, camera_zoom=camera.zoom)
+            self.assertEqual(record["map_settings_output_dpi"], dpi)
+            self.assertEqual(record["image_logical_dpi"], [dpi, dpi])
+            self.assertEqual(record["image_size_pixels"], [1280, 900])
+            self.assertEqual(record["map_crs"], "EPSG:3857")
+            self.assertEqual(record["requested_camera_zoom"], camera.zoom)
+            self.assertEqual(record["integer_render_zoom"], matrix.scaleToZoomLevel(settings.scale(), False))
+            self.assertEqual(record["integer_fetch_zoom"], matrix.scaleToZoomLevel(settings.scale(), True))
+            self.assertEqual(json.loads(json.dumps(record)), record)
+            self.assertEqual(settings.outputDpi(), dpi)
+            records.append(record)
+        self.assertAlmostEqual(records[0]["vector_tile_zoom"] - records[1]["vector_tile_zoom"], 1)
+        self.assertEqual(records[1]["map_scale"] / records[0]["map_scale"], 2)
+
     def test_light_name_fallback_requests_fields_and_preserves_null_empty_semantics(self):
         import json
         from pathlib import Path
