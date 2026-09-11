@@ -19,10 +19,10 @@ from typing import Any, Callable, Iterable, TextIO, TypeAlias
 from urllib.parse import unquote, urlsplit
 
 try:
-    from qfit.validation.mapbox_outdoors_runtime import format_qgis_runtime_label
+    from qfit.validation.mapbox_outdoors_runtime import format_qgis_runtime_label, qgis_render_context_snapshot
     from qfit.validation.mapbox_outdoors_runtime import qgis_runtime_snapshot as _runtime_snapshot
 except ImportError:  # pragma: no cover - direct script execution
-    from mapbox_outdoors_runtime import format_qgis_runtime_label  # type: ignore[no-redef]
+    from mapbox_outdoors_runtime import format_qgis_runtime_label, qgis_render_context_snapshot  # type: ignore[no-redef]
     from mapbox_outdoors_runtime import qgis_runtime_snapshot as _runtime_snapshot  # type: ignore[no-redef]
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -1266,22 +1266,42 @@ def qgis_runtime_snapshot(qgis_api: object) -> dict[str, object]:
     return _runtime_snapshot(qgis_api)
 
 
-def write_qgis_runtime_snapshot(*, qgis_api: object, output_path: Path | None) -> None:
+def write_qgis_runtime_snapshot(
+    *, qgis_api: object, output_path: Path | None, render_context: dict[str, object] | None = None,
+) -> None:
     if output_path is None:
         return
+    snapshot = qgis_runtime_snapshot(qgis_api)
+    if render_context is not None:
+        snapshot["render_context"] = render_context
     output_path.write_text(
-        json.dumps(qgis_runtime_snapshot(qgis_api), indent=2, default=str) + "\n",
+        json.dumps(snapshot, indent=2, default=str) + "\n",
         encoding="utf-8",
     )
 
 
-def write_qgis_core_runtime_snapshot(*, output_path: Path | None) -> None:
+def write_qgis_core_runtime_snapshot(
+    *, output_path: Path | None, render_context: dict[str, object] | None = None,
+) -> None:
     qgis_core_module = sys.modules.get("qgis.core")
     qgis_api = getattr(qgis_core_module, "Qgis", qgis_core_module)
     try:
-        write_qgis_runtime_snapshot(qgis_api=qgis_api, output_path=output_path)
+        write_qgis_runtime_snapshot(qgis_api=qgis_api, output_path=output_path, render_context=render_context)
     except OSError as exc:
         print(f"warning: QGIS runtime metadata was not written: {exc}", file=sys.stderr)
+
+
+def write_qgis_capture_runtime_snapshot(
+    *, output_path: Path | None, settings, layer, image, camera_zoom: float,
+) -> None:
+    if output_path is None:
+        return
+    write_qgis_core_runtime_snapshot(
+        output_path=output_path,
+        render_context=qgis_render_context_snapshot(
+            settings=settings, layer=layer, image=image, camera_zoom=camera_zoom,
+        ),
+    )
 
 
 def _load_optional_qgis_runtime_snapshot(path: Path) -> dict[str, object]:
@@ -1519,7 +1539,6 @@ def render_qgis_vector(  # pragma: no cover - depends on optional PyQGIS runtime
             ssl_configuration_class=QSslConfiguration,
             network_manager=network_manager,
         )
-        write_qgis_core_runtime_snapshot(output_path=qgis_runtime_path)
 
         resolved_style_definition = (
             style_definition
@@ -1617,6 +1636,10 @@ def render_qgis_vector(  # pragma: no cover - depends on optional PyQGIS runtime
             raise RuntimeError("QGIS returned an empty image for the vector tile render.")
         if not image.save(str(output_path), "PNG"):
             raise RuntimeError(f"QGIS failed to write render output: {output_path}")
+        write_qgis_capture_runtime_snapshot(
+            output_path=qgis_runtime_path,
+            settings=settings, layer=layer, image=image, camera_zoom=camera.zoom,
+        )
     finally:
         try:
             if network_manager is not None:

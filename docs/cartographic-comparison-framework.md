@@ -51,6 +51,8 @@ Before interpreting a discrepancy:
 
 - Match source/data revision, camera center/extent, zoom, bearing, pitch, CRS,
   dimensions, pixel ratio, scale/DPI, background, language, and activity data.
+  Record actual QGIS map/image DPI and continuous/integer render zoom; a
+  converter pixel-to-mm constant or requested camera zoom is not that evidence.
   Record source **and** QGIS-preprocessed fingerprints and code commits.
 - Record QGIS/Qt/browser versions, font files/faces and actual `QFontInfo`
   resolution, fallback glyph coverage, and output path (interactive/PNG/PDF).
