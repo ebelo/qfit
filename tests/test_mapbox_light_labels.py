@@ -76,3 +76,71 @@ class LightRoadDuplicateTests(unittest.TestCase):
             labeling.styles.return_value = rules[2:]
             self.assertEqual(labels.apply_light_road_duplicate_spacing(labeling, source()), 0)
             labeling.setStyles.assert_not_called()
+
+
+class LightNameFallbackTests(unittest.TestCase):
+    @staticmethod
+    def source_style():
+        import json
+        from pathlib import Path
+        return json.loads((Path(__file__).parent / "fixtures/mapbox/light-place-name-source.json").read_text())
+
+    @staticmethod
+    def rule(name="country-label", layer="place_label", field='"name"'):
+        rule = MagicMock()
+        rule.styleName.return_value = name
+        rule.layerName.return_value = layer
+        rule.labelSettings().fieldName = field
+        rule.labelSettings().isExpression = True
+        return rule
+
+    def test_restores_only_exact_source_owned_unsplit_rules(self):
+        import copy
+        source_style = self.source_style()
+        before = copy.deepcopy(source_style)
+        owned = [self.rule(), self.rule("settlement-major-label")]
+        literal_field = self.rule()
+        literal_field.labelSettings().isExpression = False
+        untouched = [literal_field, self.rule("country-label-name-en"), self.rule("country-label-custom"),
+                     self.rule("poi-label"), self.rule(layer="road"),
+                     self.rule(field='"custom_name"')]
+        labeling = MagicMock()
+        labeling.styles.return_value = owned + untouched
+        self.assertEqual(labels.apply_light_name_fallback(labeling, source_style), 2)
+        for rule in owned:
+            settings = rule.labelSettings()
+            self.assertEqual(settings.fieldName,
+                             'coalesce("name_en", "name")' )
+            self.assertTrue(settings.isExpression)
+            rule.setLabelSettings.assert_called_once_with(settings)
+        for rule in untouched:
+            rule.setLabelSettings.assert_not_called()
+        self.assertEqual(source_style, before)
+        labeling.setStyles.assert_called_once_with(owned + untouched)
+
+    def test_other_presets_and_changed_source_contract_remain_untouched(self):
+        import copy
+        source_style = self.source_style()
+        variants = [{}, {**source_style, "owner": "custom"},
+                    {**source_style, "id": "outdoors-v12"}, {**source_style, "id": "light-v10"},
+                    {**source_style, "layers": [None, {"id": "unrelated"}]}]
+        for field, value in (("type", "line"), ("source-layer", "road"), ("layout", {})):
+            changed = copy.deepcopy(source_style)
+            for layer in changed["layers"]:
+                layer[field] = value
+            variants.append(changed)
+        changed = copy.deepcopy(source_style)
+        for layer in changed["layers"]:
+            layer["layout"]["text-field"] = ["coalesce", ["get", "name_fr"], ["get", "name"]]
+        variants.append(changed)
+        for style in variants:
+            with self.subTest(style=style):
+                labeling = MagicMock()
+                self.assertEqual(labels.apply_light_name_fallback(labeling, style), 0)
+                labeling.setStyles.assert_not_called()
+
+    def test_no_owned_converted_rule_is_a_noop(self):
+        labeling = MagicMock()
+        labeling.styles.return_value = [self.rule("country-label-name-en")]
+        self.assertEqual(labels.apply_light_name_fallback(labeling, self.source_style()), 0)
+        labeling.setStyles.assert_not_called()

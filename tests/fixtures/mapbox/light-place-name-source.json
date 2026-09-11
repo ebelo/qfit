@@ -1,0 +1,421 @@
+{
+  "version": 8,
+  "owner": "mapbox",
+  "id": "light-v11",
+  "sources": {
+    "composite": {
+      "type": "vector"
+    }
+  },
+  "metadata": {
+    "qfit:fixture": "Original Light country/major-settlement layouts; source fetched 2026-09-11; no tiles or credentials",
+    "qfit:source-sha256": "87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32"
+  },
+  "layers": [
+    {
+      "minzoom": 2,
+      "layout": {
+        "text-line-height": 1.1,
+        "text-size": [
+          "interpolate",
+          [
+            "cubic-bezier",
+            0.2,
+            0,
+            0.9,
+            1
+          ],
+          [
+            "zoom"
+          ],
+          3,
+          [
+            "step",
+            [
+              "get",
+              "symbolrank"
+            ],
+            13,
+            6,
+            11
+          ],
+          6,
+          [
+            "step",
+            [
+              "get",
+              "symbolrank"
+            ],
+            18,
+            6,
+            16,
+            7,
+            14
+          ],
+          8,
+          [
+            "step",
+            [
+              "get",
+              "symbolrank"
+            ],
+            20,
+            9,
+            16,
+            10,
+            14
+          ],
+          15,
+          [
+            "step",
+            [
+              "get",
+              "symbolrank"
+            ],
+            24,
+            9,
+            20,
+            12,
+            16,
+            15,
+            14
+          ]
+        ],
+        "text-radial-offset": [
+          "step",
+          [
+            "zoom"
+          ],
+          [
+            "match",
+            [
+              "get",
+              "capital"
+            ],
+            2,
+            0.6,
+            0.55
+          ],
+          8,
+          0
+        ],
+        "symbol-sort-key": [
+          "get",
+          "symbolrank"
+        ],
+        "icon-image": "",
+        "text-font": [
+          "DIN Pro Medium",
+          "Arial Unicode MS Regular"
+        ],
+        "text-anchor": [
+          "step",
+          [
+            "zoom"
+          ],
+          "center",
+          8,
+          "center"
+        ],
+        "text-field": [
+          "coalesce",
+          [
+            "get",
+            "name_en"
+          ],
+          [
+            "get",
+            "name"
+          ]
+        ],
+        "text-max-width": 7
+      },
+      "maxzoom": 15,
+      "filter": [
+        "all",
+        [
+          "<=",
+          [
+            "get",
+            "filterrank"
+          ],
+          2
+        ],
+        [
+          "match",
+          [
+            "get",
+            "class"
+          ],
+          [
+            "settlement",
+            "disputed_settlement"
+          ],
+          [
+            "match",
+            [
+              "get",
+              "worldview"
+            ],
+            [
+              "all",
+              "US"
+            ],
+            true,
+            false
+          ],
+          false
+        ],
+        [
+          "step",
+          [
+            "zoom"
+          ],
+          false,
+          2,
+          [
+            "<=",
+            [
+              "get",
+              "symbolrank"
+            ],
+            6
+          ],
+          4,
+          [
+            "<",
+            [
+              "get",
+              "symbolrank"
+            ],
+            7
+          ],
+          6,
+          [
+            "<",
+            [
+              "get",
+              "symbolrank"
+            ],
+            8
+          ],
+          7,
+          [
+            "<",
+            [
+              "get",
+              "symbolrank"
+            ],
+            10
+          ],
+          10,
+          [
+            "<",
+            [
+              "get",
+              "symbolrank"
+            ],
+            11
+          ],
+          11,
+          [
+            "<",
+            [
+              "get",
+              "symbolrank"
+            ],
+            13
+          ],
+          12,
+          [
+            "<",
+            [
+              "get",
+              "symbolrank"
+            ],
+            15
+          ],
+          13,
+          [
+            ">=",
+            [
+              "get",
+              "symbolrank"
+            ],
+            11
+          ],
+          14,
+          [
+            ">=",
+            [
+              "get",
+              "symbolrank"
+            ],
+            15
+          ]
+        ]
+      ],
+      "type": "symbol",
+      "source": "composite",
+      "id": "settlement-major-label",
+      "paint": {
+        "text-color": [
+          "step",
+          [
+            "get",
+            "symbolrank"
+          ],
+          "hsl(220, 1%, 49%)",
+          11,
+          "hsl(220, 1%, 62%)",
+          16,
+          "hsl(220, 1%, 71%)"
+        ],
+        "text-halo-color": "hsl(220, 0%, 100%)",
+        "text-halo-width": 1,
+        "icon-opacity": [
+          "step",
+          [
+            "zoom"
+          ],
+          1,
+          8,
+          0
+        ],
+        "text-halo-blur": 1
+      },
+      "source-layer": "place_label",
+      "metadata": {
+        "mapbox:featureComponent": "place-labels",
+        "mapbox:group": "Place labels, place-labels"
+      }
+    },
+    {
+      "minzoom": 1,
+      "layout": {
+        "text-line-height": 1.1,
+        "text-size": [
+          "interpolate",
+          [
+            "cubic-bezier",
+            0.2,
+            0,
+            0.7,
+            1
+          ],
+          [
+            "zoom"
+          ],
+          1,
+          [
+            "step",
+            [
+              "get",
+              "symbolrank"
+            ],
+            11,
+            4,
+            9,
+            5,
+            8
+          ],
+          9,
+          [
+            "step",
+            [
+              "get",
+              "symbolrank"
+            ],
+            22,
+            4,
+            19,
+            5,
+            17
+          ]
+        ],
+        "text-radial-offset": [
+          "step",
+          [
+            "zoom"
+          ],
+          0.6,
+          8,
+          0
+        ],
+        "icon-image": "",
+        "text-font": [
+          "DIN Pro Medium",
+          "Arial Unicode MS Regular"
+        ],
+        "text-field": [
+          "coalesce",
+          [
+            "get",
+            "name_en"
+          ],
+          [
+            "get",
+            "name"
+          ]
+        ],
+        "text-max-width": 6
+      },
+      "maxzoom": 10,
+      "filter": [
+        "match",
+        [
+          "get",
+          "class"
+        ],
+        [
+          "country",
+          "disputed_country"
+        ],
+        [
+          "match",
+          [
+            "get",
+            "worldview"
+          ],
+          [
+            "all",
+            "US"
+          ],
+          true,
+          false
+        ],
+        false
+      ],
+      "type": "symbol",
+      "source": "composite",
+      "id": "country-label",
+      "paint": {
+        "icon-opacity": [
+          "step",
+          [
+            "zoom"
+          ],
+          [
+            "case",
+            [
+              "has",
+              "text_anchor"
+            ],
+            1,
+            0
+          ],
+          7,
+          0
+        ],
+        "text-color": "hsl(220, 1%, 49%)",
+        "text-halo-color": "hsl(220, 0%, 100%)",
+        "text-halo-width": 1.25
+      },
+      "source-layer": "place_label",
+      "metadata": {
+        "mapbox:featureComponent": "place-labels",
+        "mapbox:group": "Place labels, place-labels"
+      }
+    }
+  ]
+}

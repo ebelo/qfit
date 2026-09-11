@@ -4,7 +4,8 @@ Assessment date: **2026-09-11**. Tracking issue:
 [#1462](https://github.com/ebelo/qfit/issues/1462).
 Protocol: [cartographic comparison framework](cartographic-comparison-framework.md).
 
-This is a baseline audit, **not a declaration that Light passes all criteria**.
+This document retains the historical baseline and adds evidence-scoped updates.
+It is **not a declaration that Light passes all criteria**.
 The latest road-label improvement is real, but does not settle road hierarchy,
 geographic semantics, typography or the untested user-facing output paths.
 
@@ -62,7 +63,7 @@ disputed status and worldview are semantic filters, not decorative options.
 The screenshot establishes a discrepancy, **not which political classification
 is responsible**.
 
-### 3. Label language and content — C19
+### 3. Label language and content — C19 (baseline diagnosis)
 
 The recorded original `country-label` and `settlement-major-label` request
 `coalesce(get(name_en), get(name))`. Inspecting a single QGIS `"name"` rule is
@@ -80,9 +81,10 @@ the open finding is Light-specific helper applicability, not an assertion that
 qfit never implemented name fallback. Regional local-name differences support
 investigating the resulting strings but do not replace this rule-level check.
 
-Test nonempty, missing and empty localized fields and the exact output strings.
-Do not silently choose a new product language policy; if localization is
-intentional, document that decision separately from fidelity.
+The scoped update below addresses those two source owners at the native QGIS
+adapter boundary. Preprocessed JSON still contains `get(name)`; inspect the final
+QGIS expression rather than treating preprocessing alone as the complete path.
+This follows the original source language request, not a new product locale policy.
 
 ### 4. Typography, selection and density — C17–C22
 
@@ -120,7 +122,7 @@ focused investigation before broad completion, not an assertion of a root cause.
 | C16 | PARTIAL | Source symbol inventory available; sprite applicability, anchors, collision lifecycle and high-DPI behavior require dedicated checks. | — |
 | C17 | PARTIAL | Font-enabled Docker roles have earlier scoped validation. Desktop font distribution and multilingual fallback are not certified by these captures. | — |
 | C18 | OPEN | Text width, weight, wrapping and relative hierarchy remain visibly different. Blanket size probes were rejected, not accepted as a fix. | Minor |
-| C19 | OPEN (recorded Light source) | Existing fallback helper's callers do not match this source layout; processed output and both full matching rule inventories lack English companions. See label-content audit; validate content/null behavior and locale contract. | Major |
+| C19 | OPEN (remaining scope) | Country/major-settlement English/local fallback now has scoped native-expression and matched-PNG passes below. Other source roles, multilingual/RTL rendering, long names and desktop/export coverage remain open. | Major baseline finding scoped below; remaining severity not established |
 | C20 | PARTIAL | Some named-road crops inspected during duplicate work; systematic association, rotation and curved-line placement remain. | — |
 | C21 | PARTIAL | Current dense views are available; survival/priority decisions and symbol/halo collision extents are not comprehensively audited. | — |
 | C22 | PARTIAL | Road duplicate removal has a scoped pass; the criterion as a whole is not passed. See the separate coverage-cell verdicts below. | — |
@@ -132,6 +134,48 @@ focused investigation before broad completion, not an assertion of a root cause.
 | C28 | PARTIAL | Two Docker PNG runtimes checked. Windows/macOS, older supported QGIS, interactive canvas, high-DPI and PDF require separate cells. | — |
 | C29 | PARTIAL | Unchanged repeat controls passed in the prior capture matrix. Cold/warm cache, interactive responsiveness and pan/zoom stability are untested. | — |
 | C30 | NOT ASSESSED | Cropped basemap evidence does not validate complete user-facing attribution, legend, scale or north/context requirements. | — |
+
+### C19: native source-name fallback — 2026-09-11 scoped update
+
+Runtime implementation: `ef136b9956e4ad4d241f707f8fa0e2d3b90659b7`.
+[Fresh maps, complete matching label inventories and source][name-fallback]
+([hashes, controls, camera/runtime settings and metrics][name-fallback-metrics]).
+Baseline: `75131a5a1ebb9dcfa42f5fcf8fd7ac9345d3b917`.
+
+The fresh source reproduces the baseline matcher gap. For **exact Light v11**,
+only the unsplit `country-label` and `settlement-major-label` rules using
+`place_label` and the original `coalesce(get(name_en), get(name))` contract are
+adapted. QGIS now receives `coalesce("name_en", "name")` before font-band
+splitting. No new companion rule, feature filter or language preference is added;
+Outdoors, custom styles, other source roles and changed source contracts retain
+their existing behavior.
+
+Explicit field references matter: QGIS constructs the vector-tile field schema
+from requested columns and initializes absent MVT values to NULL. The rejected
+`attribute(@feature, ...)` probe did not request `name_en`, was neutral in 12/14
+images, and cannot establish fallback correctness. A standalone expression on a
+schema without the column also fails, but is not the actual decoder path. Native
+regressions use the expression's requested field schema and valid feature geometry.
+
+| Coverage cell | Verdict | Evidence / outstanding action |
+| --- | --- | --- |
+| The two audited owners: English, NULL/missing English, empty English, missing local or both values; QGIS 3.34.4 host, 3.44.11 and 4.2.0 Docker native expressions | PASS (scoped) | Recorded source fixture and real-converter tests verify both requested fields and exact strings. Empty English stays empty; only NULL/missing falls back. Accented Latin, Cyrillic and Arabic strings survive expression evaluation; this is not glyph/RTL rendering proof. |
+| Same two owners: seven Light cameras, both Docker generations, 1280×900 headless PNG | PASS (scoped) | Zurich/Lucerne, Munich/Milan and Geneva now follow source-requested names. All 14 controls and all 14 production-versus-probe pairs are byte-identical. Complete matching inventories preserve all settings except the three original/derived `field_name` values. |
+| Other source label roles and unsupported/coalesce variants | NOT ASSESSED by this slice | Audit each remaining source expression and actual strings; do not inherit the two-owner pass. |
+| Long names, actual multilingual/RTL shaping/placement, missing-script fonts, pan/zoom transitions, desktop/PDF paths | NOT ASSESSED by this slice | Retain the existing required fixture/output backlog. |
+
+**Independent dimensions:** source-name semantics pass in the stated cells.
+Reference MAE improves at z5/z8 in both runtimes; Lausanne z10, Bern z12 and both
+street views remain byte-identical. Geneva z14 has a tiny MAE increase
+(+0.0000003472 in QGIS3; +0.0000000318 in QGIS4) because QGIS shows a city label
+absent from the reference, now spelled Geneva rather than Genève. This remaining
+placement discrepancy is not dismissed as control noise. Font weight, density,
+road hierarchy and the broader usability findings are not resolved by this fix.
+No renderer or product limitation is being accepted on Emman's behalf.
+
+C02/C17/C20–C22 guardrails here are **settings-preservation checks**, not new
+criterion-wide passes. C01 retains the unarchived upstream tile revision caveat;
+C28 remains runtime/output-scoped. C19 as a whole remains OPEN.
 
 ### C22: separate coverage-cell results
 
@@ -172,3 +216,6 @@ explicitly agreed scope reduction with follow-up ownership for excluded work.
 [geneva]: https://raw.githubusercontent.com/ebelo/qfit/f1b3101995ee3a4e3dbba539ca57b42d51d83302/docs/visual-evidence/issue-1462/holistic-audit/geneva-urban-z14-light.png
 [lausanne]: https://raw.githubusercontent.com/ebelo/qfit/f1b3101995ee3a4e3dbba539ca57b42d51d83302/docs/visual-evidence/issue-1462/holistic-audit/lausanne-lavaux-z10-light.png
 [content-audit]: https://github.com/ebelo/qfit/blob/bff40b6b35db33d74646319f119b5cb17ebab51d/docs/visual-evidence/issue-1462/holistic-audit/label-content-audit.json
+
+[name-fallback]: https://github.com/ebelo/qfit/tree/d007ecd7fe19542d89e733cd3b701f085461de31/docs/visual-evidence/issue-1462/light-name-fallback
+[name-fallback-metrics]: https://github.com/ebelo/qfit/blob/d007ecd7fe19542d89e733cd3b701f085461de31/docs/visual-evidence/issue-1462/light-name-fallback/metrics.json
