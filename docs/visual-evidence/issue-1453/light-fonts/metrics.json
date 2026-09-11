@@ -1,6 +1,6 @@
 {
   "baseline_commit": "0e79b0e8b034a29edf3cb53f08998cdb213b04d9",
-  "candidate_commit": "864d27502a95e2cf46c463698b10ba1275fcba33",
+  "candidate_commit": "a60b7466f75d2b41a26fbea746d9d02923488b24",
   "preset": "mapbox/light-v11",
   "dimensions": [
     1280,
