@@ -35,7 +35,7 @@ class OpenFontTests(unittest.TestCase):
         self.assertEqual(fonts.source_font_styles(style), {
             "road": "Regular", "city": "Medium", "water": "Italic", "shield": "Bold",
         })
-        for owner, identity in [("custom", "outdoors-v12"), ("mapbox", "light-v11")]:
+        for owner, identity in [("custom", "outdoors-v12"), ("mapbox", "light-v10"), ("custom", "light-v11")]:
             with self.subTest(owner=owner, identity=identity):
                 style.update(owner=owner, id=identity)
                 self.assertEqual(fonts.source_font_styles(style), {})
@@ -81,6 +81,82 @@ class OpenFontTests(unittest.TestCase):
             self.assertEqual(fonts.apply_available_outdoors_fonts(labeling, source([layer("city", ["DIN Pro Medium"])])), 0)
             self.assertEqual(fonts.apply_available_outdoors_fonts(labeling, {"layers": []}), 0)
         labeling.setStyles.assert_not_called()
+
+    def test_light_inventory_and_compatibility_entry_point(self):
+        style = {"owner": "mapbox", "id": "light-v11", "layers": [
+            layer("poi-label", ["DIN Pro Italic"]),
+            layer("country-label", ["DIN Pro Medium"]),
+        ]}
+        self.assertEqual(fonts.source_font_styles(style), {
+            "poi-label": "Italic", "country-label": "Medium",
+        })
+        labeling = MagicMock()
+        self.assertEqual(fonts.apply_available_outdoors_fonts(labeling, style), 0)
+        labeling.styles.assert_not_called()
+
+    def test_light_zoom_splits_preserve_baseline_and_supported_roles(self):
+        import copy
+
+        class Label:
+            def __init__(self, name, minimum, maximum):
+                self.name, self.minimum, self.maximum = name, minimum, maximum
+            def styleName(self):
+                return self.name
+            def minZoomLevel(self):
+                return self.minimum
+            def maxZoomLevel(self):
+                return self.maximum
+            def setStyleName(self, name):
+                self.name = name
+            def setMinZoomLevel(self, value):
+                self.minimum = value
+            def setMaxZoomLevel(self, value):
+                self.maximum = value
+
+        style = {"owner": "mapbox", "id": "light-v11", "layers": [
+            layer("settlement-major-label", ["DIN Pro Medium"]),
+            layer("road-label-simple", ["DIN Pro Regular"]),
+            layer("water-line-label", ["DIN Pro Italic"]),
+            layer("country-label", ["DIN Pro Medium"]),
+            layer("poi-label", ["DIN Pro Italic"]),
+            layer("road-label-simple-unknown", ["Unknown"]),
+        ]}
+        labels = [Label(*args) for args in [
+            ("settlement-major-label", 2, 14),
+            ("road-label-simple-z12-to-z15", 12, 14),
+            ("road-label-simple", 15, -1),
+            ("water-line-label-ocean", 1, -1),
+            ("country-label", 1, 9),
+            ("poi-label-below-z16", 6, 15),
+            ("poi-label-z16-to-z17", 16, 16),
+            ("road-label-simple-unknown", 15, -1),
+        ]]
+        labeling = MagicMock()
+        labeling.styles.return_value = labels
+        core = SimpleNamespace(QgsVectorTileBasicLabelingStyle=copy.deepcopy)
+        with patch.dict(sys.modules, {"qgis.core": core}), \
+             patch.object(fonts, "_available_styles", return_value=set(fonts.DIN_STYLES.values())), \
+             patch.object(fonts, "_set_open_font") as apply:
+            self.assertEqual(fonts.apply_available_mapbox_fonts(labeling, style), 4)
+        result = labeling.setStyles.call_args.args[0]
+        self.assertEqual([(x.minimum, x.maximum) for x in result[:2]], [(2, 7), (8, 14)])
+        self.assertIs(result[0], labels[0])
+        self.assertIsNot(result[1], labels[0])
+        self.assertEqual([c.args[1] for c in apply.call_args_list], ["Medium", "Regular", "Italic", "Italic"])
+        self.assertEqual([c.args[0] for c in apply.call_args_list], [result[1], labels[2], labels[3], labels[6]])
+
+    def test_missing_light_face_does_not_split_or_mutate_rules(self):
+        labeling = MagicMock()
+        label = MagicMock()
+        label.styleName.return_value = "settlement-major-label"
+        labeling.styles.return_value = [label]
+        style = {"owner": "mapbox", "id": "light-v11", "layers": [
+            layer("settlement-major-label", ["DIN Pro Medium"]),
+        ]}
+        with patch.object(fonts, "_available_styles", return_value=set()):
+            self.assertEqual(fonts.apply_available_mapbox_fonts(labeling, style), 0)
+        labeling.setStyles.assert_not_called()
+        label.setMaxZoomLevel.assert_not_called()
 
     def test_vendored_font_bytes_match_pinned_provenance_and_include_license(self):
         directory = Path(__file__).resolve().parents[1] / "scripts/docker/fonts/barlow"

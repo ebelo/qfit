@@ -693,6 +693,60 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
         self.assertTrue(runs)
         self.assertTrue(all(0 not in run.glyphIndexes() for run in runs))
 
+    def test_light_open_fonts_keep_zoom_guards_in_real_converter(self):
+        if os.environ.get("QFIT_REQUIRE_OPEN_FONTS") != "1":
+            self.skipTest("Pinned open-font environment required")
+        from qgis.PyQt.QtGui import QFontInfo
+        from qfit.mapbox_config import simplify_mapbox_style_expressions
+        source = {
+            "version": 8, "owner": "mapbox", "id": "light-v11",
+            "sources": {"composite": {"type": "vector"}},
+            "layers": [{
+                "id": name, "type": "symbol", "source": "composite",
+                "source-layer": "place_label", "minzoom": 2, "maxzoom": 18,
+                "layout": {"text-field": ["get", "name"], "text-font": [face], "text-size": 16},
+                "paint": {"text-color": "#123456"},
+            } for name, face in [
+                ("settlement-major-label", "DIN Pro Medium"),
+                ("road-label-simple", "DIN Pro Regular"),
+                ("water-line-label", "DIN Pro Italic"),
+                ("country-label", "DIN Pro Medium"),
+                ("natural-line-label", "DIN Pro Medium"),
+            ]],
+        }
+        layer = MagicMock()
+        self.service._apply_mapbox_gl_style(
+            layer, simplify_mapbox_style_expressions(source), source_style_definition=source,
+        )
+        # Keep labeling alive while accessing SIP-owned style objects.
+        labeling = layer.setLabeling.call_args.args[0]
+        labels = list(labeling.styles())
+        for zoom in (5, 8, 12, 14, 15, 17):
+            active = [x for x in labels if x.minZoomLevel() <= zoom and
+                      (x.maxZoomLevel() < 0 or x.maxZoomLevel() >= zoom)]
+            for owner, face, minimum in [
+                ("settlement-major-label", "Medium", 8),
+                ("road-label-simple", "Regular", 15),
+                ("water-line-label", "Italic", 0),
+                ("country-label", "Regular", 99),
+                ("natural-line-label", "Medium", 8),
+            ]:
+                matching = [x for x in active if x.styleName().startswith(owner)]
+                if not matching:
+                    continue
+                with self.subTest(zoom=zoom, owner=owner):
+                    self.assertEqual(len(matching), 1, "Font splitting must not duplicate labels")
+                    font = matching[0].labelSettings().format().font()
+                    info = QFontInfo(font)
+                    if zoom >= minimum:
+                        self.assertEqual((info.family(), info.styleName()), ("Barlow", face))
+                        self.assertEqual(font.families(), ["Barlow", "Noto Sans"])
+                    else:
+                        self.assertEqual(info.family(), "Noto Sans")
+                    self.assertEqual(matching[0].labelSettings().format().color().name(), "#123456")
+                    if owner == "natural-line-label":
+                        self.assertEqual(matching[0].labelSettings().priority, 4)
+
     def test_outdoors_green_shield_native_colors_and_fallbacks(self):
         from qgis.core import (
             QgsExpressionContext, QgsFeature, QgsField, QgsFields,

@@ -708,12 +708,14 @@ class BackgroundMapService:
                 renderer = converter.renderer()
                 labeling = converter.labeling()
                 if labeling is not None:
-                    from .mapbox_open_fonts import apply_available_outdoors_fonts
+                    from .mapbox_open_fonts import apply_available_mapbox_fonts
 
-                    apply_available_outdoors_fonts(
+                    # Resolve source-name-dependent priority/placement first so
+                    # generated font zoom bands inherit the complete settings.
+                    self._apply_label_priority(labeling)
+                    apply_available_mapbox_fonts(
                         labeling, source_style_definition if source_style_definition is not None else style_definition,
                     )
-                    self._apply_label_priority(labeling)
                     apply_outdoors_green_shield_text_colors(labeling, style_definition)
                     if renderer is not None:
                         from .mapbox_shield_collision import couple_outdoors_shield_backgrounds
