@@ -8,6 +8,11 @@ camera matrix.
 
 The harness is a **manual visual QA aid**, not a CI gate. Pixel-perfect parity is not expected because Mapbox GL JS and QGIS differ in expression support, label placement, sprites, fonts, antialiasing, and zoom interpolation.
 
+Use the [cartographic comparison framework](cartographic-comparison-framework.md)
+to interpret the captures, and the [Light assessment](light-cartographic-assessment.md)
+to track existing coverage and gaps. The harness does not automatically validate
+feature semantics, label content, accessibility or all user-facing output paths.
+
 ## What it captures
 
 Run outputs are written under the ignored debug tree:

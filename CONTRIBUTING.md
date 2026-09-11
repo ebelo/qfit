@@ -71,6 +71,14 @@ Use a concise PR note such as:
 
 If the change is **not** rendering-sensitive, say so briefly in the PR rather than leaving the question ambiguous.
 
+For basemap or activity-map changes, also use the
+[cartographic comparison framework](docs/cartographic-comparison-framework.md).
+Name the affected criterion IDs, expected outcome and coupled guardrails in the
+PR, with matched full maps and detail crops. Record scoped verdicts and remaining
+gaps; metrics alone are not semantic validation. The
+[Light assessment](docs/light-cartographic-assessment.md) shows how to maintain
+that ledger without marking untested categories as passed.
+
 ## Architecture rules
 
 Keep these rules lightweight and practical:
