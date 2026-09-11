@@ -750,7 +750,7 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
     def test_capture_context_measures_actual_dpi_and_native_zoom(self):
         import json
         from types import SimpleNamespace
-        from qgis.core import QgsMapSettings, QgsCoordinateReferenceSystem, QgsRectangle, QgsVectorTileMatrixSet
+        from qgis.core import Qgis, QgsMapSettings, QgsCoordinateReferenceSystem, QgsRectangle, QgsVectorTileMatrixSet
         from qgis.PyQt.QtCore import QSize
         from qgis.PyQt.QtGui import QImage
         from qfit.validation.mapbox_outdoors_comparison import LIGHT_CAMERAS, camera_extent_web_mercator
@@ -775,8 +775,11 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
             self.assertEqual(record["image_size_pixels"], [1280, 900])
             self.assertEqual(record["map_crs"], "EPSG:3857")
             self.assertEqual(record["requested_camera_zoom"], camera.zoom)
-            self.assertEqual(record["integer_render_zoom"], matrix.scaleToZoomLevel(settings.scale(), False))
-            self.assertEqual(record["integer_fetch_zoom"], matrix.scaleToZoomLevel(settings.scale(), True))
+            # The one-argument inherited API exists on every supported release.
+            fetch_zoom = matrix.scaleToZoomLevel(settings.scale())
+            render_zoom = round(record["vector_tile_zoom"]) if Qgis.QGIS_VERSION_INT >= 33200 else fetch_zoom
+            self.assertEqual(record["integer_render_zoom"], render_zoom)
+            self.assertEqual(record["integer_fetch_zoom"], fetch_zoom)
             self.assertEqual(json.loads(json.dumps(record)), record)
             self.assertEqual(settings.outputDpi(), dpi)
             records.append(record)

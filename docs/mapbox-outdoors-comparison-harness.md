@@ -52,6 +52,11 @@ PNG density has pixels-per-metre quantization and is distinct from logical DPI.
 See the [Light context audit](light-cartographic-assessment.md) for corrections,
 rejected rank probes and remaining scale-alignment work.
 
+On supported QGIS 3.28/3.30, the inherited tile-matrix API supplies the continuous
+zoom and a single matrix-clamped integer zoom. The capture snapshot reports that
+same integer for rendering and fetching, matching those versions’ renderer.
+Newer runtimes expose separate unclamped render and matrix-clamped fetch values.
+
 ## Cameras
 
 List supported Outdoors or Light cameras:
@@ -622,8 +627,3 @@ inspect final `qgis-label-styles.json` for `coalesce("name_en", "name")` and ver
 both fields are requested by QGIS. Missing/NULL English falls back; empty English
 does not. See the [C19 scoped assessment](light-cartographic-assessment.md) for
 matched evidence, the rejected attribute-only probe and remaining language/output gaps.
-
-On supported QGIS 3.28/3.30, the inherited tile-matrix API supplies the continuous
-zoom and a single matrix-clamped integer zoom. The capture snapshot reports that
-same integer for rendering and fetching, matching those versions’ renderer.
-Newer runtimes expose separate unclamped render and matrix-clamped fetch values.
