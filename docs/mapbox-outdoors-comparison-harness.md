@@ -592,3 +592,14 @@ all seven Light cameras in both font-enabled QGIS Docker images. Check actual
 street-name repetition, not only whole-image error; do not interpret blanker
 maps as automatically better. See issue #1462 for the candidate comparison
 and reviewable before/after evidence.
+
+
+## Light country and major-settlement language fallback
+
+For the audited unsplit `country-label` and `settlement-major-label` rules in
+exact Light v11, the native adapter restores the source's English/local-name
+coalesce before font-band splitting. Preprocessed JSON still contains `get(name)`;
+inspect final `qgis-label-styles.json` for `coalesce("name_en", "name")` and verify
+both fields are requested by QGIS. Missing/NULL English falls back; empty English
+does not. See the [C19 scoped assessment](light-cartographic-assessment.md) for
+matched evidence, the rejected attribute-only probe and remaining language/output gaps.
