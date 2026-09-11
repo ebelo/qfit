@@ -747,6 +747,61 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
                     if owner == "natural-line-label":
                         self.assertEqual(matching[0].labelSettings().priority, 4)
 
+    def test_light_name_fallback_requests_fields_and_preserves_null_empty_semantics(self):
+        import json
+        from pathlib import Path
+        from qgis.core import (
+            NULL, QgsExpression, QgsExpressionContext, QgsFeature, QgsField,
+            QgsFields, QgsGeometry, QgsRenderContext,
+        )
+        from qfit.mapbox_config import simplify_mapbox_style_expressions
+
+        source = json.loads((Path(__file__).parent / "fixtures/mapbox/light-place-name-source.json").read_text())
+        converted = simplify_mapbox_style_expressions(source)
+        self.assertEqual({layer["id"] for layer in converted["layers"]},
+                         {"country-label", "settlement-major-label"})
+        self.assertTrue(all(layer["layout"]["text-field"] == ["get", "name"]
+                            for layer in converted["layers"]))
+        layer = MagicMock()
+        self.service._apply_mapbox_gl_style(layer, converted, source_style_definition=source)
+        labeling = layer.setLabeling.call_args.args[0]
+        styles = list(labeling.styles())
+        self.assertTrue(styles)
+        cases = [
+            ({"name_en": "Geneva", "name": "Genève"}, "Geneva"),
+            ({"name_en": None, "name": "Genève"}, "Genève"),
+            ({"name": "Genève"}, "Genève"),
+            ({"name_en": "", "name": "Genève"}, ""),
+            ({"name_en": "Zürich — Москва", "name": "local"}, "Zürich — Москва"),
+            ({"name": "القاهرة"}, "القاهرة"),
+            ({"name_en": "L’Aquila"}, "L’Aquila"),
+            ({}, None),
+        ]
+        for style in styles:
+            settings = style.labelSettings()
+            self.assertTrue(settings.isExpression)
+            # Vector-tile decoding builds its field schema from these requests;
+            # absent MVT properties then remain NULL, rather than unknown columns.
+            fields = QgsFields()
+            requested = settings.referencedFields(QgsRenderContext())
+            self.assertTrue({"name_en", "name"}.issubset(requested))
+            for name in sorted(requested):
+                fields.append(QgsField(name))
+            for properties, expected in cases:
+                with self.subTest(rule=style.styleName(), properties=properties):
+                    feature = QgsFeature(fields)
+                    feature.setGeometry(QgsGeometry.fromWkt("POINT (0 0)"))
+                    for name, value in properties.items():
+                        feature.setAttribute(name, value)
+                    context = QgsExpressionContext()
+                    context.setFields(fields)
+                    context.setFeature(feature)
+                    expression = QgsExpression(settings.fieldName)
+                    self.assertTrue(expression.prepare(context))
+                    result = expression.evaluate(context)
+                    self.assertFalse(expression.hasEvalError(), expression.evalErrorString())
+                    self.assertEqual(None if result == NULL else result, expected)
+
     def test_light_duplicate_spacing_survives_real_conversion_and_font_bands(self):
         try:
             from qgis.core import Qgis, QgsLabelThinningSettings
