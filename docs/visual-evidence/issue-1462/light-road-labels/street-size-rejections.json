@@ -1,0 +1,66 @@
+[
+  {
+    "qgis_major": "3",
+    "camera": "geneva-streets-z18-light",
+    "size_px": 12,
+    "mae_delta": 0.00030307166848220733,
+    "rms_delta": 0.002231588529412496,
+    "decision": "rejected"
+  },
+  {
+    "qgis_major": "3",
+    "camera": "geneva-streets-z18-light",
+    "size_px": 14,
+    "mae_delta": 0.0009340822440087135,
+    "rms_delta": 0.0062907906622947825,
+    "decision": "rejected"
+  },
+  {
+    "qgis_major": "3",
+    "camera": "zurich-streets-z17-light",
+    "size_px": 12,
+    "mae_delta": 0.00041770265976761277,
+    "rms_delta": 0.0025295394516154923,
+    "decision": "rejected"
+  },
+  {
+    "qgis_major": "3",
+    "camera": "zurich-streets-z17-light",
+    "size_px": 14,
+    "mae_delta": 0.0011630378540305013,
+    "rms_delta": 0.006717973549636581,
+    "decision": "rejected"
+  },
+  {
+    "qgis_major": "4",
+    "camera": "geneva-streets-z18-light",
+    "size_px": 12,
+    "mae_delta": 0.00025849786673928614,
+    "rms_delta": 0.0018847445374149084,
+    "decision": "rejected"
+  },
+  {
+    "qgis_major": "4",
+    "camera": "geneva-streets-z18-light",
+    "size_px": 14,
+    "mae_delta": 0.0006549325980392141,
+    "rms_delta": 0.004478677843267356,
+    "decision": "rejected"
+  },
+  {
+    "qgis_major": "4",
+    "camera": "zurich-streets-z17-light",
+    "size_px": 12,
+    "mae_delta": 0.0003675619553376915,
+    "rms_delta": 0.0022269994656106407,
+    "decision": "rejected"
+  },
+  {
+    "qgis_major": "4",
+    "camera": "zurich-streets-z17-light",
+    "size_px": 14,
+    "mae_delta": 0.0008538829883805391,
+    "rms_delta": 0.005040024945900418,
+    "decision": "rejected"
+  }
+]

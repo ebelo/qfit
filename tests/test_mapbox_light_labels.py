@@ -39,6 +39,8 @@ class LightRoadDuplicateTests(unittest.TestCase):
         self.assertEqual(labels.apply_light_road_duplicate_spacing(labeling, {}), 0)
         with patch.dict(sys.modules, {"qgis.core": SimpleNamespace(Qgis=object, QgsLabelThinningSettings=object)}):
             self.assertEqual(labels.apply_light_road_duplicate_spacing(labeling, source()), 0)
+        with patch.dict(sys.modules, {"qgis.core": SimpleNamespace(Qgis=object)}):
+            self.assertEqual(labels.apply_light_road_duplicate_spacing(labeling, source()), 0)
         labeling.styles.assert_not_called()
         labeling.setStyles.assert_not_called()
 

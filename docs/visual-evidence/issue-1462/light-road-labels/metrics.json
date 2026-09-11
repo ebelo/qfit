@@ -1,6 +1,6 @@
 {
   "baseline_commit": "ce5e5fc8669106d1f4ecaca3084e1e554ff72bfa",
-  "candidate_commit": "9eb62db0dc590ede05e07980963ca7f17f5e6d3d",
+  "candidate_commit": "73aafa6a697e4d41b015c0994fb239df9c557991",
   "preset": "mapbox/light-v11",
   "dimensions": [
     1280,
@@ -297,6 +297,18 @@
     {
       "qgis_major": "3",
       "camera": "geneva-streets-z18-light",
+      "candidate": "size-12",
+      "mae": 0.008237224264705882
+    },
+    {
+      "qgis_major": "3",
+      "camera": "geneva-streets-z18-light",
+      "candidate": "size-14",
+      "mae": 0.008868234840232388
+    },
+    {
+      "qgis_major": "3",
+      "camera": "geneva-streets-z18-light",
       "candidate": "dedup-150",
       "mae": 0.008162990196078431
     },
@@ -453,6 +465,18 @@
     {
       "qgis_major": "3",
       "camera": "zurich-streets-z17-light",
+      "candidate": "size-12",
+      "mae": 0.010600580973129995
+    },
+    {
+      "qgis_major": "3",
+      "camera": "zurich-streets-z17-light",
+      "candidate": "size-14",
+      "mae": 0.011345916167392884
+    },
+    {
+      "qgis_major": "3",
+      "camera": "zurich-streets-z17-light",
       "candidate": "dedup-150",
       "mae": 0.010421594725853306
     },
@@ -515,6 +539,18 @@
       "camera": "geneva-streets-z18-light",
       "candidate": "dedup-250",
       "mae": 0.00797408769063181
+    },
+    {
+      "qgis_major": "4",
+      "camera": "geneva-streets-z18-light",
+      "candidate": "size-12",
+      "mae": 0.008232585557371096
+    },
+    {
+      "qgis_major": "4",
+      "camera": "geneva-streets-z18-light",
+      "candidate": "size-14",
+      "mae": 0.008629020288671024
     },
     {
       "qgis_major": "4",
@@ -635,6 +671,18 @@
       "camera": "zurich-streets-z17-light",
       "candidate": "dedup-250",
       "mae": 0.010260258941539578
+    },
+    {
+      "qgis_major": "4",
+      "camera": "zurich-streets-z17-light",
+      "candidate": "size-12",
+      "mae": 0.01062782089687727
+    },
+    {
+      "qgis_major": "4",
+      "camera": "zurich-streets-z17-light",
+      "candidate": "size-14",
+      "mae": 0.011114141929920118
     },
     {
       "qgis_major": "4",
