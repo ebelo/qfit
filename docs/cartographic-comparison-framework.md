@@ -54,8 +54,16 @@ Before interpreting a discrepancy:
   Record source **and** QGIS-preprocessed fingerprints and code commits.
 - Record QGIS/Qt/browser versions, font files/faces and actual `QFontInfo`
   resolution, fallback glyph coverage, and output path (interactive/PNG/PDF).
-- Use the workspace's protected Gateway capture preflight and same-run lifecycle;
-  validate access inside containers too. Never expose credentials or disable TLS.
+- Use the credential route supported by the capture environment; validate
+  access inside containers too. Never expose credentials or disable TLS.
+  **OpenClaw-managed qfit runs only:** follow that workspace's protected Gateway
+  preflight and same-run lifecycle instructions. Require an authorized HTTP 200
+  result before capture and keep the run alive until its captures finish; this
+  service and its workspace preflight script are not repository dependencies.
+  **Other contributors:** OpenClaw/Gateway is not required. Use the existing
+  [harness credential setup](mapbox-outdoors-comparison-harness.md), with an
+  authorized local token-file or environment-variable input, and check actual
+  capture loading/errors. Do not commit credentials or record them in evidence.
 - Require complete, nonblank output: an idle event, successful process, or low
   image error alone does not prove tiles, glyphs or sprites loaded correctly.
 - Render unchanged controls repeatedly. Preserve fixed seeds where supported,
