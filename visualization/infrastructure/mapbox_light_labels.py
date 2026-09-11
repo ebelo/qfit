@@ -1,4 +1,4 @@
-"""Preserve source-specific Light label content, eligibility and spacing."""
+"""Preserve source-specific Light label content and cross-feature spacing."""
 
 import math
 
@@ -104,80 +104,6 @@ def apply_light_name_fallback(labeling, source_style: dict) -> int:
             continue
         settings.fieldName = 'coalesce("name_en", "name")'
         label.setLabelSettings(settings)
-        changed += 1
-    if changed:
-        labeling.setStyles(styles)
-    return changed
-
-
-_MAJOR_LABEL_ID = "settlement-major-label"
-_MAJOR_SOURCE_FILTER = [
-    "all", ["<=", ["get", "filterrank"], 2],
-    ["match", ["get", "class"], ["settlement", "disputed_settlement"],
-     ["match", ["get", "worldview"], ["all", "US"], True, False], False],
-    ["step", ["zoom"], False,
-     2, ["<=", ["get", "symbolrank"], 6],
-     4, ["<", ["get", "symbolrank"], 7],
-     6, ["<", ["get", "symbolrank"], 8],
-     7, ["<", ["get", "symbolrank"], 10],
-     10, ["<", ["get", "symbolrank"], 11],
-     11, ["<", ["get", "symbolrank"], 13],
-     12, ["<", ["get", "symbolrank"], 15],
-     13, [">=", ["get", "symbolrank"], 11],
-     14, [">=", ["get", "symbolrank"], 15]],
-]
-_MAJOR_NATIVE_RANK = '("symbolrank" < 15)'
-_MAJOR_NATIVE_FILTER = (
-    '(("filterrank" <= 2) AND (CASE WHEN "class" IN '
-    "('settlement', 'disputed_settlement') THEN \"worldview\" IN "
-    "('all', 'US') ELSE FALSE END) AND "
-    + _MAJOR_NATIVE_RANK + ') AND ("type" = \'city\')'
-)
-
-_MAJOR_DYNAMIC_RANK = (
-    '(CASE WHEN @vector_tile_zoom >= 14 THEN "symbolrank" >= 15 '
-    'WHEN @vector_tile_zoom >= 13 THEN "symbolrank" >= 11 '
-    'ELSE "symbolrank" < 15 END)'
-)
-
-
-def _has_light_major_rank_contract(source_style):
-    if not _is_mapbox_light_style(source_style):
-        return False
-    return any(
-        isinstance(layer, dict)
-        and layer.get("id") == _MAJOR_LABEL_ID
-        and layer.get("type") == "symbol"
-        and layer.get("source-layer") == "place_label"
-        and layer.get("minzoom") == 2 and layer.get("maxzoom") == 15
-        and layer.get("filter") == _MAJOR_SOURCE_FILTER
-        for layer in source_style.get("layers", [])
-    )
-
-
-def apply_light_major_rank_filter(labeling, source_style: dict) -> int:
-    """Restore z13/z14 ranks using the native fractional render zoom.
-
-    QGIS rounds its integer rule zoom, switching static bands prematurely.
-    Its vector_tile_zoom variable is continuous across each integer boundary.
-    Below z13 preserve existing major/minor eligibility: repairing only major
-    ranks there removes valid labels whose minor-role city gate is still wrong.
-    Run after name fallback and before font-band splitting. Other predicates,
-    including the existing city-only restriction, remain unchanged.
-    """
-    if not _has_light_major_rank_contract(source_style):
-        return 0
-    styles = list(labeling.styles())
-    changed = 0
-    for label in styles:
-        if (label.styleName() != _MAJOR_LABEL_ID
-                or label.layerName() != "place_label"
-                or label.minZoomLevel() != 2 or label.maxZoomLevel() != 14
-                or label.filterExpression() != _MAJOR_NATIVE_FILTER):
-            continue
-        label.setFilterExpression(label.filterExpression().replace(
-            _MAJOR_NATIVE_RANK, _MAJOR_DYNAMIC_RANK,
-        ))
         changed += 1
     if changed:
         labeling.setStyles(styles)
