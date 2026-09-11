@@ -1,0 +1,467 @@
+{
+  "scope": "Recorded Light source; no fresh capture. Existing fallback helper applicability and complete matching label-rule inventory.",
+  "code_commit": "211e8b482b1736174fbe8a0836cb26ad6ac85d8a",
+  "source_sha256": "87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32",
+  "source": [
+    {
+      "id": "settlement-major-label",
+      "text_field": [
+        "coalesce",
+        [
+          "get",
+          "name_en"
+        ],
+        [
+          "get",
+          "name"
+        ]
+      ],
+      "matches_country_layout_split": false,
+      "matches_settlement_dot_split": false
+    },
+    {
+      "id": "country-label",
+      "text_field": [
+        "coalesce",
+        [
+          "get",
+          "name_en"
+        ],
+        [
+          "get",
+          "name"
+        ]
+      ],
+      "matches_country_layout_split": false,
+      "matches_settlement_dot_split": false
+    }
+  ],
+  "processed": [
+    {
+      "id": "settlement-major-label",
+      "layout": {
+        "text-line-height": 1.1,
+        "text-size": 14.0,
+        "text-radial-offset": [
+          "step",
+          [
+            "zoom"
+          ],
+          [
+            "match",
+            [
+              "get",
+              "capital"
+            ],
+            2,
+            0.6,
+            0.55
+          ],
+          8,
+          0
+        ],
+        "text-font": [
+          "Noto Sans"
+        ],
+        "text-anchor": [
+          "step",
+          [
+            "zoom"
+          ],
+          "center",
+          8,
+          "center"
+        ],
+        "text-field": [
+          "get",
+          "name"
+        ],
+        "text-max-width": 7
+      },
+      "filter": [
+        "all",
+        [
+          "all",
+          [
+            "<=",
+            [
+              "get",
+              "filterrank"
+            ],
+            2
+          ],
+          [
+            "match",
+            [
+              "get",
+              "class"
+            ],
+            [
+              "settlement",
+              "disputed_settlement"
+            ],
+            [
+              "match",
+              [
+                "get",
+                "worldview"
+              ],
+              [
+                "all",
+                "US"
+              ],
+              true,
+              false
+            ],
+            false
+          ],
+          [
+            "<",
+            [
+              "get",
+              "symbolrank"
+            ],
+            15
+          ]
+        ],
+        [
+          "match",
+          [
+            "get",
+            "type"
+          ],
+          [
+            "city"
+          ],
+          true,
+          false
+        ]
+      ]
+    },
+    {
+      "id": "country-label",
+      "layout": {
+        "text-line-height": 1.1,
+        "text-size": 16.0,
+        "text-radial-offset": [
+          "step",
+          [
+            "zoom"
+          ],
+          0.6,
+          8,
+          0
+        ],
+        "text-font": [
+          "Noto Sans"
+        ],
+        "text-field": [
+          "get",
+          "name"
+        ],
+        "text-max-width": 6
+      },
+      "filter": [
+        "match",
+        [
+          "get",
+          "class"
+        ],
+        [
+          "country",
+          "disputed_country"
+        ],
+        [
+          "match",
+          [
+            "get",
+            "worldview"
+          ],
+          [
+            "all",
+            "US"
+          ],
+          true,
+          false
+        ],
+        false
+      ]
+    }
+  ],
+  "captured_rules": {
+    "3": {
+      "snapshot_sha256": "7f9c90f2a2440a9b888f64269c767a69f48ea2434a7ba741bf1c69c68de38752",
+      "rules": [
+        {
+          "style_name": "settlement-major-label",
+          "layer_name": "place_label",
+          "geometry_type": 0,
+          "filter_expression": "((\"filterrank\" <= 2) AND (CASE WHEN \"class\" IN ('settlement', 'disputed_settlement') THEN \"worldview\" IN ('all', 'US') ELSE FALSE END) AND (\"symbolrank\" < 15)) AND (\"type\" = 'city')",
+          "min_zoom_level": 2,
+          "max_zoom_level": 7,
+          "label_settings": {
+            "field_name": "\"name\"",
+            "is_expression": true,
+            "placement": 1,
+            "priority": 8,
+            "repeat_distance": 0.0,
+            "repeat_distance_unit": 0,
+            "label_per_part": false,
+            "merge_lines": false,
+            "geometry_generator": "",
+            "geometry_generator_enabled": false,
+            "geometry_generator_type": 0,
+            "requested_font_family": "Noto Sans",
+            "requested_font_style": "",
+            "resolved_font_family": "Noto Sans",
+            "resolved_font_style": "Regular",
+            "text_size": 3.7041666666666666,
+            "text_size_unit": 0,
+            "text_color": "#b4b5b6",
+            "text_opacity": 1.0,
+            "buffer_enabled": true,
+            "buffer_size": 0.5291666666666667,
+            "buffer_size_unit": 0,
+            "buffer_color": "#ffffff",
+            "buffer_opacity": 1.0,
+            "thinning_settings": {
+              "limit_number_of_labels_enabled": false,
+              "maximum_number_labels": 2000,
+              "minimum_feature_size": 0.0,
+              "allow_duplicate_removal": false,
+              "minimum_distance_to_duplicate": 20.0,
+              "minimum_distance_to_duplicate_unit": 0,
+              "label_margin_distance": 0.0,
+              "label_margin_distance_unit": 0
+            }
+          }
+        },
+        {
+          "style_name": "settlement-major-label-qfit-open-fonts-z8-plus",
+          "layer_name": "place_label",
+          "geometry_type": 0,
+          "filter_expression": "((\"filterrank\" <= 2) AND (CASE WHEN \"class\" IN ('settlement', 'disputed_settlement') THEN \"worldview\" IN ('all', 'US') ELSE FALSE END) AND (\"symbolrank\" < 15)) AND (\"type\" = 'city')",
+          "min_zoom_level": 8,
+          "max_zoom_level": 14,
+          "label_settings": {
+            "field_name": "\"name\"",
+            "is_expression": true,
+            "placement": 1,
+            "priority": 8,
+            "repeat_distance": 0.0,
+            "repeat_distance_unit": 0,
+            "label_per_part": false,
+            "merge_lines": false,
+            "geometry_generator": "",
+            "geometry_generator_enabled": false,
+            "geometry_generator_type": 0,
+            "requested_font_family": "Barlow",
+            "requested_font_style": "Medium",
+            "resolved_font_family": "Barlow",
+            "resolved_font_style": "Medium",
+            "text_size": 3.7041666666666666,
+            "text_size_unit": 0,
+            "text_color": "#b4b5b6",
+            "text_opacity": 1.0,
+            "buffer_enabled": true,
+            "buffer_size": 0.5291666666666667,
+            "buffer_size_unit": 0,
+            "buffer_color": "#ffffff",
+            "buffer_opacity": 1.0,
+            "thinning_settings": {
+              "limit_number_of_labels_enabled": false,
+              "maximum_number_labels": 2000,
+              "minimum_feature_size": 0.0,
+              "allow_duplicate_removal": false,
+              "minimum_distance_to_duplicate": 20.0,
+              "minimum_distance_to_duplicate_unit": 0,
+              "label_margin_distance": 0.0,
+              "label_margin_distance_unit": 0
+            }
+          }
+        },
+        {
+          "style_name": "country-label",
+          "layer_name": "place_label",
+          "geometry_type": 0,
+          "filter_expression": "CASE WHEN \"class\" IN ('country', 'disputed_country') THEN \"worldview\" IN ('all', 'US') ELSE FALSE END",
+          "min_zoom_level": 1,
+          "max_zoom_level": 9,
+          "label_settings": {
+            "field_name": "\"name\"",
+            "is_expression": true,
+            "placement": 1,
+            "priority": 10,
+            "repeat_distance": 0.0,
+            "repeat_distance_unit": 0,
+            "label_per_part": false,
+            "merge_lines": false,
+            "geometry_generator": "",
+            "geometry_generator_enabled": false,
+            "geometry_generator_type": 0,
+            "requested_font_family": "Noto Sans",
+            "requested_font_style": "",
+            "resolved_font_family": "Noto Sans",
+            "resolved_font_style": "Regular",
+            "text_size": 4.233333333333333,
+            "text_size_unit": 0,
+            "text_color": "#7b7c7d",
+            "text_opacity": 1.0,
+            "buffer_enabled": true,
+            "buffer_size": 0.6614583333333334,
+            "buffer_size_unit": 0,
+            "buffer_color": "#ffffff",
+            "buffer_opacity": 1.0,
+            "thinning_settings": {
+              "limit_number_of_labels_enabled": false,
+              "maximum_number_labels": 2000,
+              "minimum_feature_size": 0.0,
+              "allow_duplicate_removal": false,
+              "minimum_distance_to_duplicate": 20.0,
+              "minimum_distance_to_duplicate_unit": 0,
+              "label_margin_distance": 0.0,
+              "label_margin_distance_unit": 0
+            }
+          }
+        }
+      ]
+    },
+    "4": {
+      "snapshot_sha256": "55ff03a6b3b8ee1a081f07f11c59f1a40a1c8dd3c7f1ae90a1126bb5ee894963",
+      "rules": [
+        {
+          "style_name": "settlement-major-label",
+          "layer_name": "place_label",
+          "geometry_type": 0,
+          "filter_expression": "((\"filterrank\" <= 2) AND (CASE WHEN \"class\" IN ('settlement', 'disputed_settlement') THEN \"worldview\" IN ('all', 'US') ELSE FALSE END) AND (\"symbolrank\" < 15)) AND (\"type\" = 'city')",
+          "min_zoom_level": 2,
+          "max_zoom_level": 7,
+          "label_settings": {
+            "field_name": "\"name\"",
+            "is_expression": true,
+            "placement": 1,
+            "priority": 8,
+            "repeat_distance": 0.0,
+            "repeat_distance_unit": 0,
+            "label_per_part": false,
+            "merge_lines": false,
+            "geometry_generator": "",
+            "geometry_generator_enabled": false,
+            "geometry_generator_type": 0,
+            "requested_font_family": "Noto Sans",
+            "requested_font_style": "",
+            "resolved_font_family": "Noto Sans",
+            "resolved_font_style": "Regular",
+            "text_size": 3.7041666666666666,
+            "text_size_unit": 0,
+            "text_color": "#b4b5b6",
+            "text_opacity": 1.0,
+            "buffer_enabled": true,
+            "buffer_size": 0.5291666666666667,
+            "buffer_size_unit": 0,
+            "buffer_color": "#ffffff",
+            "buffer_opacity": 1.0,
+            "thinning_settings": {
+              "limit_number_of_labels_enabled": false,
+              "maximum_number_labels": 2000,
+              "minimum_feature_size": 0.0,
+              "allow_duplicate_removal": false,
+              "minimum_distance_to_duplicate": 20.0,
+              "minimum_distance_to_duplicate_unit": 0,
+              "label_margin_distance": 0.0,
+              "label_margin_distance_unit": 0
+            }
+          }
+        },
+        {
+          "style_name": "settlement-major-label-qfit-open-fonts-z8-plus",
+          "layer_name": "place_label",
+          "geometry_type": 0,
+          "filter_expression": "((\"filterrank\" <= 2) AND (CASE WHEN \"class\" IN ('settlement', 'disputed_settlement') THEN \"worldview\" IN ('all', 'US') ELSE FALSE END) AND (\"symbolrank\" < 15)) AND (\"type\" = 'city')",
+          "min_zoom_level": 8,
+          "max_zoom_level": 14,
+          "label_settings": {
+            "field_name": "\"name\"",
+            "is_expression": true,
+            "placement": 1,
+            "priority": 8,
+            "repeat_distance": 0.0,
+            "repeat_distance_unit": 0,
+            "label_per_part": false,
+            "merge_lines": false,
+            "geometry_generator": "",
+            "geometry_generator_enabled": false,
+            "geometry_generator_type": 0,
+            "requested_font_family": "Barlow",
+            "requested_font_style": "Medium",
+            "resolved_font_family": "Barlow",
+            "resolved_font_style": "Medium",
+            "text_size": 3.7041666666666666,
+            "text_size_unit": 0,
+            "text_color": "#b4b5b6",
+            "text_opacity": 1.0,
+            "buffer_enabled": true,
+            "buffer_size": 0.5291666666666667,
+            "buffer_size_unit": 0,
+            "buffer_color": "#ffffff",
+            "buffer_opacity": 1.0,
+            "thinning_settings": {
+              "limit_number_of_labels_enabled": false,
+              "maximum_number_labels": 2000,
+              "minimum_feature_size": 0.0,
+              "allow_duplicate_removal": false,
+              "minimum_distance_to_duplicate": 20.0,
+              "minimum_distance_to_duplicate_unit": 0,
+              "label_margin_distance": 0.0,
+              "label_margin_distance_unit": 0
+            }
+          }
+        },
+        {
+          "style_name": "country-label",
+          "layer_name": "place_label",
+          "geometry_type": 0,
+          "filter_expression": "CASE WHEN \"class\" IN ('country', 'disputed_country') THEN \"worldview\" IN ('all', 'US') ELSE FALSE END",
+          "min_zoom_level": 1,
+          "max_zoom_level": 9,
+          "label_settings": {
+            "field_name": "\"name\"",
+            "is_expression": true,
+            "placement": 1,
+            "priority": 10,
+            "repeat_distance": 0.0,
+            "repeat_distance_unit": 0,
+            "label_per_part": false,
+            "merge_lines": false,
+            "geometry_generator": "",
+            "geometry_generator_enabled": false,
+            "geometry_generator_type": 0,
+            "requested_font_family": "Noto Sans",
+            "requested_font_style": "",
+            "resolved_font_family": "Noto Sans",
+            "resolved_font_style": "Regular",
+            "text_size": 4.233333333333333,
+            "text_size_unit": 0,
+            "text_color": "#7b7c7d",
+            "text_opacity": 1.0,
+            "buffer_enabled": true,
+            "buffer_size": 0.6614583333333334,
+            "buffer_size_unit": 0,
+            "buffer_color": "#ffffff",
+            "buffer_opacity": 1.0,
+            "thinning_settings": {
+              "limit_number_of_labels_enabled": false,
+              "maximum_number_labels": 2000,
+              "minimum_feature_size": 0.0,
+              "allow_duplicate_removal": false,
+              "minimum_distance_to_duplicate": 20.0,
+              "minimum_distance_to_duplicate_unit": 0,
+              "label_margin_distance": 0.0,
+              "label_margin_distance_unit": 0
+            }
+          }
+        }
+      ]
+    }
+  }
+}
