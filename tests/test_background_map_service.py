@@ -747,6 +747,41 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
                     if owner == "natural-line-label":
                         self.assertEqual(matching[0].labelSettings().priority, 4)
 
+    def test_light_duplicate_spacing_survives_real_conversion_and_font_bands(self):
+        from qgis.core import Qgis, QgsLabelThinningSettings
+        from qfit.mapbox_config import simplify_mapbox_style_expressions
+        if not hasattr(QgsLabelThinningSettings, "setAllowDuplicateRemoval"):
+            self.skipTest("Cross-feature duplicate suppression requires QGIS 3.44")
+        for owner, identity in (("mapbox", "light-v11"), ("mapbox", "outdoors-v12"), ("custom", "light-v11")):
+            source = {
+                "version": 8, "owner": owner, "id": identity,
+                "sources": {"composite": {"type": "vector"}},
+                "layers": [{
+                    "id": "road-label-simple", "type": "symbol", "source": "composite",
+                    "source-layer": "road", "minzoom": 12,
+                    "layout": {"text-field": ["get", "name"], "text-font": ["DIN Pro Regular"],
+                               "text-size": 14, "symbol-placement": "line"},
+                    "paint": {"text-color": "#123456"},
+                }],
+            }
+            layer = MagicMock()
+            self.service._apply_mapbox_gl_style(
+                layer, simplify_mapbox_style_expressions(source), source_style_definition=source,
+            )
+            labeling = layer.setLabeling.call_args.args[0]
+            for label in labeling.styles():
+                settings = label.labelSettings()
+                thinning = settings.thinningSettings()
+                expected = owner == "mapbox" and identity == "light-v11"
+                with self.subTest(owner=owner, identity=identity, rule=label.styleName()):
+                    self.assertEqual(thinning.allowDuplicateRemoval(), expected)
+                    if expected:
+                        self.assertAlmostEqual(thinning.minimumDistanceToDuplicate(), 250 * 25.4 / 96)
+                        self.assertEqual(thinning.minimumDistanceToDuplicateUnit(), Qgis.RenderUnit.Millimeters)
+                    self.assertEqual(settings.format().color().name(), "#123456")
+                    self.assertEqual(settings.repeatDistance, 0)
+                    self.assertFalse(settings.mergeLines)
+
     def test_outdoors_green_shield_native_colors_and_fallbacks(self):
         from qgis.core import (
             QgsExpressionContext, QgsFeature, QgsField, QgsFields,

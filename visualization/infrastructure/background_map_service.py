@@ -708,11 +708,15 @@ class BackgroundMapService:
                 renderer = converter.renderer()
                 labeling = converter.labeling()
                 if labeling is not None:
+                    from .mapbox_light_labels import apply_light_road_duplicate_spacing
                     from .mapbox_open_fonts import apply_available_mapbox_fonts
 
                     # Resolve source-name-dependent priority/placement first so
                     # generated font zoom bands inherit the complete settings.
                     self._apply_label_priority(labeling)
+                    apply_light_road_duplicate_spacing(
+                        labeling, source_style_definition if source_style_definition is not None else style_definition,
+                    )
                     apply_available_mapbox_fonts(
                         labeling, source_style_definition if source_style_definition is not None else style_definition,
                     )
