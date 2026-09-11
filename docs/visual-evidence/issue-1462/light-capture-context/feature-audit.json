@@ -1,0 +1,630 @@
+{
+  "source_sha256": "87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32",
+  "note": "Selected live public place_label properties from anchor-containing tiles; not a full view or renderer request trace. Tile bytes not archived. Empty samples are not semantic passes.",
+  "tiles": [
+    {
+      "anchor": "Munich",
+      "tile": {
+        "x": 17,
+        "y": 11,
+        "z": 5
+      },
+      "tile_sha256": "8bbc88cd6adb15d4900037092c115dff6030951b49ec3be9a365fe5b3d2c039a",
+      "named_features": [
+        {
+          "properties": {
+            "name": "M\u00fcnchen",
+            "name_en": "Munich",
+            "symbolrank": 8,
+            "filterrank": 1,
+            "class": "settlement",
+            "type": "city",
+            "worldview": "all"
+          },
+          "source_eligibility": {
+            "5.35": {
+              "settlement-minor-label": true,
+              "settlement-major-label": false
+            },
+            "12.9": {
+              "settlement-minor-label": false,
+              "settlement-major-label": true
+            },
+            "13": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "13.1": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "13.9": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "14": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "14.1": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "anchor": "Munich",
+      "tile": {
+        "x": 34,
+        "y": 22,
+        "z": 6
+      },
+      "tile_sha256": "49845bfe748063ea4518f9d3aebc551364dd6c9dd0af8a13c32625e68131ed85",
+      "named_features": [
+        {
+          "properties": {
+            "name": "M\u00fcnchen",
+            "name_en": "Munich",
+            "symbolrank": 8,
+            "filterrank": 1,
+            "class": "settlement",
+            "type": "city",
+            "worldview": "all"
+          },
+          "source_eligibility": {
+            "5.35": {
+              "settlement-minor-label": true,
+              "settlement-major-label": false
+            },
+            "12.9": {
+              "settlement-minor-label": false,
+              "settlement-major-label": true
+            },
+            "13": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "13.1": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "13.9": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "14": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "14.1": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "anchor": "Milan",
+      "tile": {
+        "x": 16,
+        "y": 11,
+        "z": 5
+      },
+      "tile_sha256": "09a25610c2fcc8c7315ca841f039ce00c056a96663216cb5f67dddf343a4ffe7",
+      "named_features": [
+        {
+          "properties": {
+            "name": "Milano",
+            "name_en": "Milan",
+            "symbolrank": 7,
+            "filterrank": 1,
+            "class": "settlement",
+            "type": "city",
+            "worldview": "all"
+          },
+          "source_eligibility": {
+            "5.35": {
+              "settlement-minor-label": true,
+              "settlement-major-label": false
+            },
+            "12.9": {
+              "settlement-minor-label": false,
+              "settlement-major-label": true
+            },
+            "13": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "13.1": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "13.9": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "14": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "14.1": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "anchor": "Milan",
+      "tile": {
+        "x": 33,
+        "y": 22,
+        "z": 6
+      },
+      "tile_sha256": "866af5bb8a3b4d9cb4d794a7c9e0329dc14d854576e593fdf589d46fa0fc0eb3",
+      "named_features": [
+        {
+          "properties": {
+            "name": "Milano",
+            "name_en": "Milan",
+            "symbolrank": 7,
+            "filterrank": 1,
+            "class": "settlement",
+            "type": "city",
+            "worldview": "all"
+          },
+          "source_eligibility": {
+            "5.35": {
+              "settlement-minor-label": true,
+              "settlement-major-label": false
+            },
+            "12.9": {
+              "settlement-minor-label": false,
+              "settlement-major-label": true
+            },
+            "13": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "13.1": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "13.9": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "14": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "14.1": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "anchor": "Geneva",
+      "tile": {
+        "x": 2117,
+        "y": 1453,
+        "z": 12
+      },
+      "tile_sha256": "cfcc4d0cd1a13c5222c00aaa629ae567371a66c2613dd04f5d626ee9c7e83411",
+      "named_features": [
+        {
+          "properties": {
+            "name": "Gen\u00e8ve",
+            "name_en": "Geneva",
+            "symbolrank": 9,
+            "filterrank": 1,
+            "class": "settlement",
+            "type": "city",
+            "worldview": "all"
+          },
+          "source_eligibility": {
+            "5.35": {
+              "settlement-minor-label": true,
+              "settlement-major-label": false
+            },
+            "12.9": {
+              "settlement-minor-label": false,
+              "settlement-major-label": true
+            },
+            "13": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "13.1": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "13.9": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "14": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "14.1": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "anchor": "Geneva",
+      "tile": {
+        "x": 4235,
+        "y": 2907,
+        "z": 13
+      },
+      "tile_sha256": "c0994838941a3ee3683be572bd8ed0259a9b822e86a37863eafc4f4c7b7068a8",
+      "named_features": [
+        {
+          "properties": {
+            "name": "Gen\u00e8ve",
+            "name_en": "Geneva",
+            "symbolrank": 9,
+            "filterrank": 1,
+            "class": "settlement",
+            "type": "city",
+            "worldview": "all"
+          },
+          "source_eligibility": {
+            "5.35": {
+              "settlement-minor-label": true,
+              "settlement-major-label": false
+            },
+            "12.9": {
+              "settlement-minor-label": false,
+              "settlement-major-label": true
+            },
+            "13": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "13.1": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "13.9": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "14": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "14.1": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "anchor": "Geneva",
+      "tile": {
+        "x": 8471,
+        "y": 5815,
+        "z": 14
+      },
+      "tile_sha256": "d89415e05808db9759b0f4c33e91d677f79198e7aebcac24b937f562d2c6de39",
+      "named_features": [
+        {
+          "properties": {
+            "name": "Gen\u00e8ve",
+            "name_en": "Geneva",
+            "symbolrank": 9,
+            "filterrank": 1,
+            "class": "settlement",
+            "type": "city",
+            "worldview": "all"
+          },
+          "source_eligibility": {
+            "5.35": {
+              "settlement-minor-label": true,
+              "settlement-major-label": false
+            },
+            "12.9": {
+              "settlement-minor-label": false,
+              "settlement-major-label": true
+            },
+            "13": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "13.1": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "13.9": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "14": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "14.1": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "anchor": "Geneva",
+      "tile": {
+        "x": 16943,
+        "y": 11630,
+        "z": 15
+      },
+      "tile_sha256": "fa08ad757c9660ef60c629a95d005554e3c50e3a5b241496ebb9c1e4f80ca345",
+      "named_features": [
+        {
+          "properties": {
+            "name": "Gen\u00e8ve",
+            "name_en": "Geneva",
+            "symbolrank": 9,
+            "filterrank": 1,
+            "class": "settlement",
+            "type": "city",
+            "worldview": "all"
+          },
+          "source_eligibility": {
+            "5.35": {
+              "settlement-minor-label": true,
+              "settlement-major-label": false
+            },
+            "12.9": {
+              "settlement-minor-label": false,
+              "settlement-major-label": true
+            },
+            "13": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "13.1": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "13.9": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "14": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "14.1": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "anchor": "Bern",
+      "tile": {
+        "x": 2132,
+        "y": 1441,
+        "z": 12
+      },
+      "tile_sha256": "4e504927b3217fefb9bc68b6b4341e7b4481524dfa221b02ad1f90ce886e171f",
+      "named_features": [
+        {
+          "properties": {
+            "name": "Bern",
+            "name_en": "Bern",
+            "symbolrank": 9,
+            "filterrank": 1,
+            "class": "settlement",
+            "type": "city",
+            "worldview": "all"
+          },
+          "source_eligibility": {
+            "5.35": {
+              "settlement-minor-label": true,
+              "settlement-major-label": false
+            },
+            "12.9": {
+              "settlement-minor-label": false,
+              "settlement-major-label": true
+            },
+            "13": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "13.1": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "13.9": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "14": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "14.1": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "anchor": "Bern",
+      "tile": {
+        "x": 4265,
+        "y": 2883,
+        "z": 13
+      },
+      "tile_sha256": "60e4a35a5f419fbe312e50656c9bc3c5ef04c251b1de1f488d7b49fa7b2e35ef",
+      "named_features": [
+        {
+          "properties": {
+            "name": "Bern",
+            "name_en": "Bern",
+            "symbolrank": 9,
+            "filterrank": 1,
+            "class": "settlement",
+            "type": "city",
+            "worldview": "all"
+          },
+          "source_eligibility": {
+            "5.35": {
+              "settlement-minor-label": true,
+              "settlement-major-label": false
+            },
+            "12.9": {
+              "settlement-minor-label": false,
+              "settlement-major-label": true
+            },
+            "13": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "13.1": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "13.9": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "14": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "14.1": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "anchor": "Bern",
+      "tile": {
+        "x": 8530,
+        "y": 5766,
+        "z": 14
+      },
+      "tile_sha256": "62b1ecc675564a8a5fd5e582cf1c3aa8738e73c7913bd7ca15a3c824ab317dc2",
+      "named_features": [
+        {
+          "properties": {
+            "name": "Bern",
+            "name_en": "Bern",
+            "symbolrank": 9,
+            "filterrank": 1,
+            "class": "settlement",
+            "type": "city",
+            "worldview": "all"
+          },
+          "source_eligibility": {
+            "5.35": {
+              "settlement-minor-label": true,
+              "settlement-major-label": false
+            },
+            "12.9": {
+              "settlement-minor-label": false,
+              "settlement-major-label": true
+            },
+            "13": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "13.1": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "13.9": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "14": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "14.1": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "anchor": "Bern",
+      "tile": {
+        "x": 17061,
+        "y": 11532,
+        "z": 15
+      },
+      "tile_sha256": "73705fd6f8f6d9e1521128ce961e6c1c7fbab699f05bbe0a06dbc6c025b244e9",
+      "named_features": [
+        {
+          "properties": {
+            "name": "Bern",
+            "name_en": "Bern",
+            "symbolrank": 9,
+            "filterrank": 1,
+            "class": "settlement",
+            "type": "city",
+            "worldview": "all"
+          },
+          "source_eligibility": {
+            "5.35": {
+              "settlement-minor-label": true,
+              "settlement-major-label": false
+            },
+            "12.9": {
+              "settlement-minor-label": false,
+              "settlement-major-label": true
+            },
+            "13": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "13.1": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "13.9": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "14": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            },
+            "14.1": {
+              "settlement-minor-label": false,
+              "settlement-major-label": false
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
