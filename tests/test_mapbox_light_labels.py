@@ -144,3 +144,69 @@ class LightNameFallbackTests(unittest.TestCase):
         labeling.styles.return_value = [self.rule("country-label-name-en")]
         self.assertEqual(labels.apply_light_name_fallback(labeling, self.source_style()), 0)
         labeling.setStyles.assert_not_called()
+
+
+class LightMajorRankTests(unittest.TestCase):
+    def test_only_recorded_source_contract_applies(self):
+        import copy
+        style = LightNameFallbackTests.source_style()
+        self.assertTrue(labels._has_light_major_rank_contract(style))
+        variants = [{}, {**style, "owner": "custom"}, {**style, "id": "outdoors-v12"},
+                    {**style, "layers": [None, {"id": "other"}]}]
+        for key, value in (("type", "line"), ("source-layer", "road"),
+                           ("minzoom", 3), ("maxzoom", 16), ("filter", ["has", "name"])):
+            changed = copy.deepcopy(style)
+            next(x for x in changed["layers"] if x["id"] == "settlement-major-label")[key] = value
+            variants.append(changed)
+        for variant in variants:
+            with self.subTest(variant=variant):
+                labeling = MagicMock()
+                self.assertEqual(labels.apply_light_major_rank_bands(labeling, variant), 0)
+                labeling.styles.assert_not_called()
+
+    def test_native_bands_preserve_non_rank_settings_and_decline_changed_rules(self):
+        import copy
+        from dataclasses import dataclass, field
+
+        @dataclass
+        class Rule:
+            name: str = "settlement-major-label"
+            layer: str = "place_label"
+            minimum: int = 2
+            maximum: int = 14
+            expression: str = labels._MAJOR_NATIVE_FILTER
+            settings: dict = field(default_factory=lambda: {"field": 'coalesce("name_en", "name")', "priority": 8})
+
+            def styleName(self): return self.name
+            def layerName(self): return self.layer
+            def minZoomLevel(self): return self.minimum
+            def maxZoomLevel(self): return self.maximum
+            def filterExpression(self): return self.expression
+            def setStyleName(self, value): self.name = value
+            def setMinZoomLevel(self, value): self.minimum = value
+            def setMaxZoomLevel(self, value): self.maximum = value
+            def setFilterExpression(self, value): self.expression = value
+
+        original = Rule()
+        untouched = [Rule(name="other"), Rule(layer="road"), Rule(minimum=3),
+                     Rule(maximum=13), Rule(expression='"rank" < 15')]
+        labeling = MagicMock()
+        labeling.styles.return_value = [original, *untouched]
+        with patch.dict(sys.modules, {"qgis.core": SimpleNamespace(QgsVectorTileBasicLabelingStyle=copy.deepcopy)}):
+            self.assertEqual(labels.apply_light_major_rank_bands(labeling, LightNameFallbackTests.source_style()), 1)
+            result = labeling.setStyles.call_args.args[0]
+            self.assertEqual(result[9:], untouched)
+            self.assertEqual([(r.minimum, r.maximum) for r in result[:9]],
+                             [(2, 3), (4, 5), (6, 6), (7, 9), (10, 10), (11, 11), (12, 12), (13, 13), (14, 14)])
+            self.assertIn('"symbolrank" >= 11', result[7].expression)
+            self.assertIn('"symbolrank" >= 15', result[8].expression)
+            for rule in result[:9]:
+                self.assertEqual(rule.settings, original.settings)
+                self.assertIn('"type" = \'city\'', rule.expression)
+                self.assertIn('"worldview" IN (\'all\', \'US\')', rule.expression)
+                self.assertIn('"filterrank" <= 2', rule.expression)
+            self.assertEqual(original, Rule())
+            labeling.reset_mock()
+            labeling.styles.return_value = result
+            self.assertEqual(labels.apply_light_major_rank_bands(labeling, LightNameFallbackTests.source_style()), 0)
+            labeling.setStyles.assert_not_called()

@@ -710,7 +710,8 @@ class BackgroundMapService:
                 labeling = converter.labeling()
                 if labeling is not None:
                     from .mapbox_light_labels import (
-                        apply_light_name_fallback, apply_light_road_duplicate_spacing,
+                        apply_light_major_rank_bands, apply_light_name_fallback,
+                        apply_light_road_duplicate_spacing,
                     )
                     from .mapbox_open_fonts import apply_available_mapbox_fonts
 
@@ -718,6 +719,7 @@ class BackgroundMapService:
                     # generated font zoom bands inherit the complete settings.
                     self._apply_label_priority(labeling)
                     apply_light_name_fallback(labeling, label_source)
+                    apply_light_major_rank_bands(labeling, label_source)
                     apply_light_road_duplicate_spacing(labeling, label_source)
                     apply_available_mapbox_fonts(labeling, label_source)
                     apply_outdoors_green_shield_text_colors(labeling, style_definition)

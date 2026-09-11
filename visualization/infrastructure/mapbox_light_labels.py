@@ -108,3 +108,83 @@ def apply_light_name_fallback(labeling, source_style: dict) -> int:
     if changed:
         labeling.setStyles(styles)
     return changed
+
+
+_MAJOR_LABEL_ID = "settlement-major-label"
+_MAJOR_RANK_BANDS = (
+    (2, 3, "<=", 6), (4, 5, "<", 7), (6, 6, "<", 8),
+    (7, 9, "<", 10), (10, 10, "<", 11), (11, 11, "<", 13),
+    (12, 12, "<", 15), (13, 13, ">=", 11), (14, 14, ">=", 15),
+)
+_MAJOR_SOURCE_FILTER = [
+    "all", ["<=", ["get", "filterrank"], 2],
+    ["match", ["get", "class"], ["settlement", "disputed_settlement"],
+     ["match", ["get", "worldview"], ["all", "US"], True, False], False],
+    ["step", ["zoom"], False,
+     2, ["<=", ["get", "symbolrank"], 6],
+     4, ["<", ["get", "symbolrank"], 7],
+     6, ["<", ["get", "symbolrank"], 8],
+     7, ["<", ["get", "symbolrank"], 10],
+     10, ["<", ["get", "symbolrank"], 11],
+     11, ["<", ["get", "symbolrank"], 13],
+     12, ["<", ["get", "symbolrank"], 15],
+     13, [">=", ["get", "symbolrank"], 11],
+     14, [">=", ["get", "symbolrank"], 15]],
+]
+_MAJOR_NATIVE_RANK = '("symbolrank" < 15)'
+_MAJOR_NATIVE_FILTER = (
+    '(("filterrank" <= 2) AND (CASE WHEN "class" IN '
+    "('settlement', 'disputed_settlement') THEN \"worldview\" IN "
+    "('all', 'US') ELSE FALSE END) AND "
+    + _MAJOR_NATIVE_RANK + ') AND ("type" = \'city\')'
+)
+
+
+def _has_light_major_rank_contract(source_style):
+    if not _is_mapbox_light_style(source_style):
+        return False
+    return any(
+        isinstance(layer, dict)
+        and layer.get("id") == _MAJOR_LABEL_ID
+        and layer.get("type") == "symbol"
+        and layer.get("source-layer") == "place_label"
+        and layer.get("minzoom") == 2 and layer.get("maxzoom") == 15
+        and layer.get("filter") == _MAJOR_SOURCE_FILTER
+        for layer in source_style.get("layers", [])
+    )
+
+
+def apply_light_major_rank_bands(labeling, source_style: dict) -> int:
+    """Restore the audited rank stops without changing other eligibility policy.
+
+    Mapbox filters evaluate at integer zooms; native QGIS bounds are inclusive.
+    Keep the existing city-only restriction and class/worldview/filterrank gates.
+    Their broader source-semantic audit is independent of this rank repair.
+    Run after name fallback and before font-band splitting.
+    """
+    if not _has_light_major_rank_contract(source_style):
+        return 0
+    from qgis.core import QgsVectorTileBasicLabelingStyle
+
+    result = []
+    changed = 0
+    for label in labeling.styles():
+        if (label.styleName() != _MAJOR_LABEL_ID
+                or label.layerName() != "place_label"
+                or label.minZoomLevel() != 2 or label.maxZoomLevel() != 14
+                or label.filterExpression() != _MAJOR_NATIVE_FILTER):
+            result.append(label)
+            continue
+        for minimum, maximum, operator, rank in _MAJOR_RANK_BANDS:
+            variant = QgsVectorTileBasicLabelingStyle(label)
+            variant.setStyleName(f"{_MAJOR_LABEL_ID}-qfit-rank-z{minimum}")
+            variant.setMinZoomLevel(minimum)
+            variant.setMaxZoomLevel(maximum)
+            variant.setFilterExpression(label.filterExpression().replace(
+                _MAJOR_NATIVE_RANK, f'("symbolrank" {operator} {rank})',
+            ))
+            result.append(variant)
+        changed += 1
+    if changed:
+        labeling.setStyles(result)
+    return changed
