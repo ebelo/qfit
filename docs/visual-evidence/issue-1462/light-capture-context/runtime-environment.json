@@ -1,0 +1,23 @@
+{
+  "observed": "2026-09-11 after capture completion; read-only environment query, not an independent capture",
+  "browser": "Chromium 152.0.7977.64 snap",
+  "node": "v24.16.0",
+  "runtimes": [
+    {
+      "qgis": "3.44.11-Solothurn",
+      "qt": "5.15.17",
+      "pyqt": "5.15.11",
+      "architecture": "x86_64",
+      "image_tag": "qfit/qgis:3.44.11-fonts",
+      "image_id": "sha256:c2b0d57b645231295835a310f678a345761c59abd6042e44a0fbec2f74312b12"
+    },
+    {
+      "qgis": "4.2.0-Bel\u00e9m do Par\u00e1",
+      "qt": "6.9.2",
+      "pyqt": "6.9.1",
+      "architecture": "x86_64",
+      "image_tag": "qfit/qgis:4.2.0-fonts",
+      "image_id": "sha256:cfca8b80aab1851816ad063adad7cbe591e4ad4e67f29cc6770854e6d26c3b66"
+    }
+  ]
+}
