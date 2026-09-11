@@ -711,6 +711,7 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
                 ("road-label-simple", "DIN Pro Regular"),
                 ("water-line-label", "DIN Pro Italic"),
                 ("country-label", "DIN Pro Medium"),
+                ("natural-line-label", "DIN Pro Medium"),
             ]],
         }
         layer = MagicMock()
@@ -728,6 +729,7 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
                 ("road-label-simple", "Regular", 15),
                 ("water-line-label", "Italic", 0),
                 ("country-label", "Regular", 99),
+                ("natural-line-label", "Medium", 8),
             ]:
                 matching = [x for x in active if x.styleName().startswith(owner)]
                 if not matching:
@@ -742,6 +744,8 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
                     else:
                         self.assertEqual(info.family(), "Noto Sans")
                     self.assertEqual(matching[0].labelSettings().format().color().name(), "#123456")
+                    if owner == "natural-line-label":
+                        self.assertEqual(matching[0].labelSettings().priority, 4)
 
     def test_outdoors_green_shield_native_colors_and_fallbacks(self):
         from qgis.core import (
