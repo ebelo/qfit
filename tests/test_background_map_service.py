@@ -822,7 +822,7 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
         )
         rules = [rule for rule in layer.setLabeling.call_args.args[0].styles()
                  if rule.styleName().startswith("settlement-major-label")]
-        self.assertGreaterEqual(len(rules), 9)
+        self.assertGreaterEqual(len(rules), 3)
         fields = QgsFields()
         for name in ("symbolrank", "filterrank", "class", "worldview", "type"):
             kind = QVariant.Double if name in ("symbolrank", "filterrank") else QVariant.String
@@ -835,16 +835,19 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
         for key, value in (("symbolrank", None), ("filterrank", 3), ("filterrank", None),
                            ("class", "country"), ("worldview", "CN"), ("type", "town")):
             cases.append({**valid, key: value})
-        # Every source boundary, including the layer's exclusive upper edge.
-        zooms = [stop + delta for stop in (2, 4, 6, 7, 10, 11, 12, 13, 14, 15)
+        # Changed source boundaries, low-band/font guardrails and exclusive upper edge.
+        zooms = [stop + delta for stop in (2, 8, 13, 14, 15)
                  for delta in (-0.1, 0, 0.1)]
         for zoom in zooms:
             active = [r for r in rules if r.minZoomLevel() <= math.floor(zoom) <= r.maxZoomLevel()]
             self.assertEqual(len(active), int(2 <= zoom < 15), zoom)
             for properties in cases:
                 with self.subTest(zoom=zoom, properties=properties):
+                    # Below z13 preserve the previous z12 snapshot, not a
+                    # falsely claimed full source-role fix.
+                    source_zoom = zoom if zoom >= 13 else 12
                     expected = (2 <= zoom < 15 and properties["type"] == "city"
-                                and bool(_mapbox_filter_value(owner["filter"], {**properties, "zoom": zoom})))
+                                and bool(_mapbox_filter_value(owner["filter"], {**properties, "zoom": source_zoom})))
                     observed = False
                     for rule in active:
                         feature = QgsFeature(fields)

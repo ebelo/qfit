@@ -112,9 +112,7 @@ def apply_light_name_fallback(labeling, source_style: dict) -> int:
 
 _MAJOR_LABEL_ID = "settlement-major-label"
 _MAJOR_RANK_BANDS = (
-    (2, 3, "<=", 6), (4, 5, "<", 7), (6, 6, "<", 8),
-    (7, 9, "<", 10), (10, 10, "<", 11), (11, 11, "<", 13),
-    (12, 12, "<", 15), (13, 13, ">=", 11), (14, 14, ">=", 15),
+    (2, 12, "<", 15), (13, 13, ">=", 11), (14, 14, ">=", 15),
 )
 _MAJOR_SOURCE_FILTER = [
     "all", ["<=", ["get", "filterrank"], 2],
@@ -155,11 +153,12 @@ def _has_light_major_rank_contract(source_style):
 
 
 def apply_light_major_rank_bands(labeling, source_style: dict) -> int:
-    """Restore the audited rank stops without changing other eligibility policy.
+    """Restore z13/z14 rank stops without changing lower-zoom eligibility.
 
     Mapbox filters evaluate at integer zooms; native QGIS bounds are inclusive.
     Keep the existing city-only restriction and class/worldview/filterrank gates.
-    Their broader source-semantic audit is independent of this rank repair.
+    Below z13, major/minor role handoff needs a coordinated repair; changing
+    major ranks alone removes valid labels. Preserve that baseline for now.
     Run after name fallback and before font-band splitting.
     """
     if not _has_light_major_rank_contract(source_style):

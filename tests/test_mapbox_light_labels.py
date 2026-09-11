@@ -195,16 +195,17 @@ class LightMajorRankTests(unittest.TestCase):
         with patch.dict(sys.modules, {"qgis.core": SimpleNamespace(QgsVectorTileBasicLabelingStyle=copy.deepcopy)}):
             self.assertEqual(labels.apply_light_major_rank_bands(labeling, LightNameFallbackTests.source_style()), 1)
             result = labeling.setStyles.call_args.args[0]
-            self.assertEqual(result[9:], untouched)
-            self.assertEqual([(r.minimum, r.maximum) for r in result[:9]],
-                             [(2, 3), (4, 5), (6, 6), (7, 9), (10, 10), (11, 11), (12, 12), (13, 13), (14, 14)])
-            self.assertIn('"symbolrank" >= 11', result[7].expression)
-            self.assertIn('"symbolrank" >= 15', result[8].expression)
-            for rule in result[:9]:
+            self.assertEqual(result[3:], untouched)
+            self.assertEqual([(r.minimum, r.maximum) for r in result[:3]],
+                             [(2, 12), (13, 13), (14, 14)])
+            self.assertIn('"symbolrank" >= 11', result[1].expression)
+            self.assertIn('"symbolrank" >= 15', result[2].expression)
+            for rule in result[:3]:
                 self.assertEqual(rule.settings, original.settings)
                 self.assertIn('"type" = \'city\'', rule.expression)
                 self.assertIn('"worldview" IN (\'all\', \'US\')', rule.expression)
                 self.assertIn('"filterrank" <= 2', rule.expression)
+            self.assertEqual(result[0].expression, original.expression)
             self.assertEqual(original, Rule())
             labeling.reset_mock()
             labeling.styles.return_value = result
