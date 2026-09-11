@@ -277,6 +277,19 @@ selection/validation requirements. It is the architectural reference for future
 font-mapping changes; the current Noto Sans fallback is not a completed
 implementation of that policy.
 
+### 8.2. Cartographic semantics and holistic comparison
+
+Use the [cartographic comparison framework](cartographic-comparison-framework.md)
+for basemap and activity-map work. Assess semantic correctness, cartographic
+usability, reference fidelity and operational consistency separately: aggregate
+pixel similarity cannot compensate for wrong names, missing roads or misleading
+symbol hierarchy. Record scoped verdicts against its stable criterion IDs and
+preserve untested coverage explicitly.
+
+The [Light assessment](light-cartographic-assessment.md) is the initial coverage
+ledger for #1462. A successful narrow rendering PR is not a complete basemap
+certification; broad closure needs the framework's completion review.
+
 ## 9. Contributor rules
 
 Short version:
