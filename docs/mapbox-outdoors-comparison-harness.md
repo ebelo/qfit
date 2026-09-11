@@ -29,9 +29,28 @@ A complete run writes:
 - `mapbox-gl-vs-qgis-diff.png` — pixel diff for quick drift inspection
 - `metrics.json` — simple image-diff metrics such as changed-pixel ratio when diff generation runs
 - `qgis-label-styles.json` — token-free QGIS vector-tile label rule and label-setting snapshot when QGIS capture runs
-- `qgis-runtime.json` — token-free QGIS version and release metadata when QGIS capture runs
+- `qgis-runtime.json` — token-free QGIS version/release and actual render-context metadata after a successful PNG capture
 - `manifest.json` — camera, output paths, capture status, metrics, and QGIS runtime metadata without any token values
 - `contact-sheet.jpg` — all-camera side-by-side thumbnail sheet when running the matrix mode
+
+## Actual render context, not assumed scale/DPI
+
+`qgis-runtime.json` now includes `render_context`: requested browser camera zoom,
+actual map-settings output DPI, image logical DPI and device pixel ratio, both
+output sizes, visible extent/CRS, map scale, continuous `vector_tile_zoom`, native
+integer render zoom and matrix-clamped fetch zoom. The same object propagates
+into the comparison manifest through `qgis_runtime`. Old captures without this
+object do not establish these values.
+
+The harness intentionally records existing rendering without changing DPI or
+zoom policy. Do not infer map DPI from the converter's 96-DPI pixel-to-millimetre
+constant or substitute requested camera zoom for native activation zoom. The
+Light audit measured 100-DPI map settings in QGIS 3.44.11 and 96 in QGIS 4.2.0;
+QGIS rounds integer rule zooms and interpolates continuous zoom in scale space.
+Inspect the actual per-capture values before claiming a matched boundary test.
+PNG density has pixels-per-metre quantization and is distinct from logical DPI.
+See the [Light context audit](light-cartographic-assessment.md) for corrections,
+rejected rank probes and remaining scale-alignment work.
 
 ## Cameras
 

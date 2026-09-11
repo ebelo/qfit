@@ -104,8 +104,8 @@ focused investigation before broad completion, not an assertion of a root cause.
 
 | ID | Current verdict | Observation / coverage and next validation | Finding severity |
 | --- | --- | --- | --- |
-| C01 | PARTIAL | Matched dimensions, style/code hashes and repeated controls are available for these PNGs. Tile payloads are not archived; extended outputs and load completeness need their own evidence. | — |
-| C02 | PARTIAL | Source-layer inventory exists; feature-by-feature filter/type/null equivalence is not audited. Build class eligibility fixtures before paint changes. | — |
+| C01 | OPEN | Actual context is now measured below: QGIS 3/4 use different DPI, and requested camera zoom differs from native zoom. Earlier shared-DPI provenance is corrected. Tile payloads and extended outputs remain unvalidated. | Major validation gap |
+| C02 | OPEN | Live place features and rejected rank probes expose a major/minor role-handoff defect in inherited city/town gates and fixed rank eligibility. Other classes, types and null cases still need systematic fixtures. | Major |
 | C03 | NOT ASSESSED | No generalization, sparse-geometry or false-connection fixture audit. | — |
 | C04 | OPEN | Full-map review shows weak QGIS road figure–ground separation and different text prominence, especially Geneva z14. | Major |
 | C05 | PARTIAL | Road hierarchy has visible differences; class-to-visual-variable semantics have not been checked systematically. | — |
@@ -126,7 +126,7 @@ focused investigation before broad completion, not an assertion of a root cause.
 | C20 | PARTIAL | Some named-road crops inspected during duplicate work; systematic association, rotation and curved-line placement remain. | — |
 | C21 | PARTIAL | Current dense views are available; survival/priority decisions and symbol/halo collision extents are not comprehensively audited. | — |
 | C22 | PARTIAL | Road duplicate removal has a scoped pass; the criterion as a whole is not passed. See the separate coverage-cell verdicts below. | — |
-| C23 | NOT ASSESSED | Fixed zooms do not test interval edges or fractional zoom continuity. Add boundary triplets and zoom sequences. | — |
+| C23 | OPEN | Two-city z13/z14 triplets expose native rounding and requested/native zoom mismatch; no rank repair retained. Other intervals, outer bounds, size/width changes and interactive sequences remain unassessed. | Observed city-label mismatch; broader severity unestablished |
 | C24 | NOT ASSESSED | No deliberate tile-edge, clipping, adjacent-pan or world-wrap fixtures. | — |
 | C25 | NOT ASSESSED | These captures contain no current qfit activity overlays or UI state. Historical checks are not current certification. | — |
 | C26 | NOT ASSESSED | No current sparse/dense activity-on-road/water/forest comparisons. | — |
@@ -134,6 +134,65 @@ focused investigation before broad completion, not an assertion of a root cause.
 | C28 | PARTIAL | Two Docker PNG runtimes checked. Windows/macOS, older supported QGIS, interactive canvas, high-DPI and PDF require separate cells. | — |
 | C29 | PARTIAL | Unchanged repeat controls passed in the prior capture matrix. Cold/warm cache, interactive responsiveness and pan/zoom stability are untested. | — |
 | C30 | NOT ASSESSED | Cropped basemap evidence does not validate complete user-facing attribution, legend, scale or north/context requirements. | — |
+
+### C01/C02/C23: capture-context audit and rejected rank repairs — 2026-09-11
+
+The [measured context, source features, full maps and rejected probes][capture-context]
+use baseline `70fd68dd690035e9bdb43e8d9c87f434a0946070`. The retained change is
+**validation metadata only**: production style/adapter files and both packaged
+plugin payloads are unchanged. It records actual map/image DPI, device pixel
+ratio, output size, extent/CRS, scale, continuous native zoom and rounded render/
+matrix-clamped fetch zoom after successful PNG creation. It does not calibrate them.
+
+The current matrix adds Geneva and Bern at **12.9/13/13.1 and 13.9/14/14.1** to
+all seven Light cameras. Both Docker generations have 38 matched unchanged
+control repeats and 38 metadata-head renders byte-identical to their baseline;
+complete label inventories are identical too. This is a **runtime baseline
+audit**, not a before/after cartographic improvement or an interactive sequence.
+
+**DPI correction:** current QGIS 3.44.11 map settings use **100 DPI**, while
+QGIS 4.2.0 uses **96 DPI**. The earlier C19 evidence manifest's shared `dpi: 96`
+was an assumption, not a captured setting. Those immutable historical PNGs encode
+approximately 99.9744 and 95.9866 DPI respectively (integer pixels-per-metre
+quantization); their hashes and density correction are in the new manifest.
+Do not rewrite old evidence or call it freshly captured. Same-runtime controlled
+C19 name-fallback results still stand; a cross-runtime matched-DPI or exact
+source-zoom claim does not follow from them.
+
+At requested Geneva z13, QGIS 3's continuous native zoom is about **12.8976**,
+while its integer render zoom is **13**. The renderer rounds its integer zoom;
+its continuous zoom is interpolated in scale space. Neither quantity is an
+interchangeable alias for the browser's requested camera zoom. Actual values for
+both cities/runtimes are recorded per capture, not inferred from camera names.
+
+| Coverage cell | Verdict | Evidence / outstanding action |
+| --- | --- | --- |
+| C01: actual context recorded for 19 cameras × 2 Docker PNG runtimes | PASS (scoped measurement) | Actual settings/image/matrix values are present; unchanged images and full label inventories prove this metadata addition does not alter rendering. This is not a comparability/parity pass. |
+| C01: matched physical DPI and camera/native style-zoom alignment | OPEN | The measured mismatch must be resolved or explicitly dispositioned before claiming equivalent scale-boundary coverage. No limitation is accepted here. |
+| C02: major/minor settlement role handoff below z13 | OPEN | Source rank ranges are complementary; inherited qfit city/town gates are not. Live Munich rank 8 and Milan rank 7, both cities with filterrank 1, belong to the minor source owner at z5.35 but are excluded by its town-only gate. |
+| C02/C23: Geneva/Bern rank eligibility at z13/z14 | OPEN | Both sampled cities have symbolrank 9 in z12–z15 anchor tiles. The source excludes them at z13; native converted rules retain a fixed upper-rank predicate. Actual zoom alignment defeats the tested naive fixes. |
+| C23: other rank classes/roles, outer layer ranges, width/size transitions and interactive sequences | NOT ASSESSED by this slice | Boundary PNGs and native expression tests do not establish complete continuity or feature coverage. |
+
+**Rejected candidates (none shipped):**
+
+1. All-stop major-rank restoration removes useful low-zoom Munich/Milan and
+   other reference labels because the complementary minor owner remains city-
+   restricted. Lower whole-image error is not a semantic improvement; QGIS 4
+   Zurich also worsens. A coordinated role repair is required.
+2. Static z13/z14 native bands switch prematurely at requested z12.9 because
+   QGIS rounds the integer activation zoom. A completed QGIS 3 capture proves
+   the regression; the remaining queued probe was stopped, not counted passed.
+3. A fractional `@vector_tile_zoom` predicate avoids that early switch, but
+   still misses the exact requested z13 boundary. A native test that injects
+   camera zoom directly would conceal this difference. No rank change is retained.
+
+The [feature audit][capture-context] contains selected public place properties
+and tile hashes, not a full renderer request trace; tile bytes were not archived.
+Road hierarchy (C04/C11/C12), boundary ownership (C15), all other label roles and
+the required activity/accessibility/desktop/PDF fixtures remain open. The next
+slice must address measured capture-scale alignment before another transition
+repair, and preserve the major/minor handoff guardrail. No product decision or
+renderer limitation is accepted on Emman's behalf.
 
 ### C19: native source-name fallback — 2026-09-11 scoped update
 
@@ -219,3 +278,5 @@ explicitly agreed scope reduction with follow-up ownership for excluded work.
 
 [name-fallback]: https://github.com/ebelo/qfit/tree/d007ecd7fe19542d89e733cd3b701f085461de31/docs/visual-evidence/issue-1462/light-name-fallback
 [name-fallback-metrics]: https://github.com/ebelo/qfit/blob/d007ecd7fe19542d89e733cd3b701f085461de31/docs/visual-evidence/issue-1462/light-name-fallback/metrics.json
+
+[capture-context]: https://github.com/ebelo/qfit/tree/f8aef75056f82b5ba2ea87f93388e9de094c9e59/docs/visual-evidence/issue-1462/light-capture-context
