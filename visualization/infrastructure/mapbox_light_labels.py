@@ -1,4 +1,4 @@
-"""Preserve source-specific Light label content and cross-feature spacing."""
+"""Preserve source-specific Light label content, eligibility and spacing."""
 
 import math
 
@@ -111,9 +111,6 @@ def apply_light_name_fallback(labeling, source_style: dict) -> int:
 
 
 _MAJOR_LABEL_ID = "settlement-major-label"
-_MAJOR_RANK_BANDS = (
-    (2, 12, "<", 15), (13, 13, ">=", 11), (14, 14, ">=", 15),
-)
 _MAJOR_SOURCE_FILTER = [
     "all", ["<=", ["get", "filterrank"], 2],
     ["match", ["get", "class"], ["settlement", "disputed_settlement"],
@@ -137,6 +134,12 @@ _MAJOR_NATIVE_FILTER = (
     + _MAJOR_NATIVE_RANK + ') AND ("type" = \'city\')'
 )
 
+_MAJOR_DYNAMIC_RANK = (
+    '(CASE WHEN @vector_tile_zoom >= 14 THEN "symbolrank" >= 15 '
+    'WHEN @vector_tile_zoom >= 13 THEN "symbolrank" >= 11 '
+    'ELSE "symbolrank" < 15 END)'
+)
+
 
 def _has_light_major_rank_contract(source_style):
     if not _is_mapbox_light_style(source_style):
@@ -152,38 +155,30 @@ def _has_light_major_rank_contract(source_style):
     )
 
 
-def apply_light_major_rank_bands(labeling, source_style: dict) -> int:
-    """Restore z13/z14 rank stops without changing lower-zoom eligibility.
+def apply_light_major_rank_filter(labeling, source_style: dict) -> int:
+    """Restore z13/z14 ranks using the native fractional render zoom.
 
-    Mapbox filters evaluate at integer zooms; native QGIS bounds are inclusive.
-    Keep the existing city-only restriction and class/worldview/filterrank gates.
-    Below z13, major/minor role handoff needs a coordinated repair; changing
-    major ranks alone removes valid labels. Preserve that baseline for now.
-    Run after name fallback and before font-band splitting.
+    QGIS rounds its integer rule zoom, switching static bands prematurely.
+    Its vector_tile_zoom variable is continuous across each integer boundary.
+    Below z13 preserve existing major/minor eligibility: repairing only major
+    ranks there removes valid labels whose minor-role city gate is still wrong.
+    Run after name fallback and before font-band splitting. Other predicates,
+    including the existing city-only restriction, remain unchanged.
     """
     if not _has_light_major_rank_contract(source_style):
         return 0
-    from qgis.core import QgsVectorTileBasicLabelingStyle
-
-    result = []
+    styles = list(labeling.styles())
     changed = 0
-    for label in labeling.styles():
+    for label in styles:
         if (label.styleName() != _MAJOR_LABEL_ID
                 or label.layerName() != "place_label"
                 or label.minZoomLevel() != 2 or label.maxZoomLevel() != 14
                 or label.filterExpression() != _MAJOR_NATIVE_FILTER):
-            result.append(label)
             continue
-        for minimum, maximum, operator, rank in _MAJOR_RANK_BANDS:
-            variant = QgsVectorTileBasicLabelingStyle(label)
-            variant.setStyleName(f"{_MAJOR_LABEL_ID}-qfit-rank-z{minimum}")
-            variant.setMinZoomLevel(minimum)
-            variant.setMaxZoomLevel(maximum)
-            variant.setFilterExpression(label.filterExpression().replace(
-                _MAJOR_NATIVE_RANK, f'("symbolrank" {operator} {rank})',
-            ))
-            result.append(variant)
+        label.setFilterExpression(label.filterExpression().replace(
+            _MAJOR_NATIVE_RANK, _MAJOR_DYNAMIC_RANK,
+        ))
         changed += 1
     if changed:
-        labeling.setStyles(result)
+        labeling.setStyles(styles)
     return changed

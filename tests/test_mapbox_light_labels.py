@@ -161,11 +161,10 @@ class LightMajorRankTests(unittest.TestCase):
         for variant in variants:
             with self.subTest(variant=variant):
                 labeling = MagicMock()
-                self.assertEqual(labels.apply_light_major_rank_bands(labeling, variant), 0)
+                self.assertEqual(labels.apply_light_major_rank_filter(labeling, variant), 0)
                 labeling.styles.assert_not_called()
 
-    def test_native_bands_preserve_non_rank_settings_and_decline_changed_rules(self):
-        import copy
+    def test_native_filter_preserves_settings_and_declines_changed_rules(self):
         from dataclasses import dataclass, field
 
         @dataclass
@@ -182,9 +181,6 @@ class LightMajorRankTests(unittest.TestCase):
             def minZoomLevel(self): return self.minimum
             def maxZoomLevel(self): return self.maximum
             def filterExpression(self): return self.expression
-            def setStyleName(self, value): self.name = value
-            def setMinZoomLevel(self, value): self.minimum = value
-            def setMaxZoomLevel(self, value): self.maximum = value
             def setFilterExpression(self, value): self.expression = value
 
         original = Rule()
@@ -192,22 +188,14 @@ class LightMajorRankTests(unittest.TestCase):
                      Rule(maximum=13), Rule(expression='"rank" < 15')]
         labeling = MagicMock()
         labeling.styles.return_value = [original, *untouched]
-        with patch.dict(sys.modules, {"qgis.core": SimpleNamespace(QgsVectorTileBasicLabelingStyle=copy.deepcopy)}):
-            self.assertEqual(labels.apply_light_major_rank_bands(labeling, LightNameFallbackTests.source_style()), 1)
-            result = labeling.setStyles.call_args.args[0]
-            self.assertEqual(result[3:], untouched)
-            self.assertEqual([(r.minimum, r.maximum) for r in result[:3]],
-                             [(2, 12), (13, 13), (14, 14)])
-            self.assertIn('"symbolrank" >= 11', result[1].expression)
-            self.assertIn('"symbolrank" >= 15', result[2].expression)
-            for rule in result[:3]:
-                self.assertEqual(rule.settings, original.settings)
-                self.assertIn('"type" = \'city\'', rule.expression)
-                self.assertIn('"worldview" IN (\'all\', \'US\')', rule.expression)
-                self.assertIn('"filterrank" <= 2', rule.expression)
-            self.assertEqual(result[0].expression, original.expression)
-            self.assertEqual(original, Rule())
-            labeling.reset_mock()
-            labeling.styles.return_value = result
-            self.assertEqual(labels.apply_light_major_rank_bands(labeling, LightNameFallbackTests.source_style()), 0)
-            labeling.setStyles.assert_not_called()
+        self.assertEqual(labels.apply_light_major_rank_filter(labeling, LightNameFallbackTests.source_style()), 1)
+        labeling.setStyles.assert_called_once_with([original, *untouched])
+        self.assertEqual((original.minimum, original.maximum), (2, 14))
+        self.assertEqual(original.settings, Rule().settings)
+        self.assertIn('@vector_tile_zoom >= 13 THEN "symbolrank" >= 11', original.expression)
+        self.assertIn('@vector_tile_zoom >= 14 THEN "symbolrank" >= 15', original.expression)
+        self.assertEqual(original.expression.replace(labels._MAJOR_DYNAMIC_RANK, labels._MAJOR_NATIVE_RANK),
+                         labels._MAJOR_NATIVE_FILTER)
+        labeling.reset_mock()
+        self.assertEqual(labels.apply_light_major_rank_filter(labeling, LightNameFallbackTests.source_style()), 0)
+        labeling.setStyles.assert_not_called()

@@ -808,7 +808,7 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
         from pathlib import Path
         from qgis.PyQt.QtCore import QVariant
         from qgis.core import (
-            NULL, QgsExpression, QgsExpressionContext, QgsFeature, QgsField,
+            NULL, QgsExpression, QgsExpressionContext, QgsExpressionContextScope, QgsFeature, QgsField,
             QgsFields, QgsGeometry,
         )
         from qfit.mapbox_config import simplify_mapbox_style_expressions
@@ -822,7 +822,7 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
         )
         rules = [rule for rule in layer.setLabeling.call_args.args[0].styles()
                  if rule.styleName().startswith("settlement-major-label")]
-        self.assertGreaterEqual(len(rules), 3)
+        self.assertGreaterEqual(len(rules), 1)
         fields = QgsFields()
         for name in ("symbolrank", "filterrank", "class", "worldview", "type"):
             kind = QVariant.Double if name in ("symbolrank", "filterrank") else QVariant.String
@@ -835,9 +835,9 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
         for key, value in (("symbolrank", None), ("filterrank", 3), ("filterrank", None),
                            ("class", "country"), ("worldview", "CN"), ("type", "town")):
             cases.append({**valid, key: value})
-        # Changed source boundaries, low-band/font guardrails and exclusive upper edge.
-        zooms = [stop + delta for stop in (2, 8, 13, 14, 15)
-                 for delta in (-0.1, 0, 0.1)]
+        # Source high-rank boundaries and representative unchanged lower bands.
+        # Outer rule min/max and other role transitions retain their prior policy.
+        zooms = [5.35, 8.2, 12.25, 12.9, 13, 13.1, 13.9, 14, 14.1]
         for zoom in zooms:
             active = [r for r in rules if r.minZoomLevel() <= math.floor(zoom) <= r.maxZoomLevel()]
             self.assertEqual(len(active), int(2 <= zoom < 15), zoom)
@@ -855,6 +855,9 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
                         for key, value in properties.items():
                             feature.setAttribute(key, value)
                         context = QgsExpressionContext()
+                        scope = QgsExpressionContextScope()
+                        scope.setVariable("vector_tile_zoom", zoom)
+                        context.appendScope(scope)
                         context.setFields(fields)
                         context.setFeature(feature)
                         expression = QgsExpression(rule.filterExpression())
