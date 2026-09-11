@@ -748,7 +748,10 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
                         self.assertEqual(matching[0].labelSettings().priority, 4)
 
     def test_light_duplicate_spacing_survives_real_conversion_and_font_bands(self):
-        from qgis.core import Qgis, QgsLabelThinningSettings
+        try:
+            from qgis.core import Qgis, QgsLabelThinningSettings
+        except ImportError:
+            self.skipTest("QGIS does not expose label thinning settings")
         from qfit.mapbox_config import simplify_mapbox_style_expressions
         if not hasattr(QgsLabelThinningSettings, "setAllowDuplicateRemoval"):
             self.skipTest("Cross-feature duplicate suppression requires QGIS 3.44")
