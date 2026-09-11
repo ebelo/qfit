@@ -1,0 +1,155 @@
+{
+  "assessment_date": "2026-09-11",
+  "capture_reuse": true,
+  "capture_code_commit": "73aafa6a697e4d41b015c0994fb239df9c557991",
+  "merged_baseline_commit": "3f4e50d9247166a755685b88f6d8f2a8df7fc5da",
+  "source_sha256": "87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32",
+  "qgis_preprocessed_sha256": "969ea65a877d6708a2b8d8cafaf01e93957ecbd969131f657a494b87cb8df8c7",
+  "data_revision_note": "Source style is fingerprinted. Individual upstream vector-tile payloads were not archived; do not assume these captures represent future upstream revisions.",
+  "panels": [
+    "Mapbox GL reference",
+    "QGIS 3.44.11 current baseline",
+    "QGIS 4.2.0 current baseline"
+  ],
+  "panel_dimensions": [
+    1280,
+    900
+  ],
+  "font_environment": "Pinned Barlow faces plus Noto; native Light zoom/role guards from PR1461",
+  "output": "headless PNG, offscreen, hash seed 0",
+  "cameras": [
+    {
+      "camera": "bern-urban-z12-light",
+      "artifact": "bern-urban-z12-light.png",
+      "artifact_sha256": "92fd1235a50e6b96e53364deac8556feae001b058b34bb72b36f5bd26c2c52e4",
+      "inputs": [
+        {
+          "kind": "reference",
+          "sha256": "d68bb301cc345c6415680496d1e3f1a273f02b3f59cc063c436f8e6d852e95ba"
+        },
+        {
+          "kind": "qgis3",
+          "sha256": "0f19b29be790ce517e00894a8eb7818a784215c2442f636289e99c62bbf11fc6"
+        },
+        {
+          "kind": "qgis4",
+          "sha256": "de0e83b19d09eabcf5e01654be1ac00c4a49c890288f2baf14a7a201d896b255"
+        }
+      ]
+    },
+    {
+      "camera": "geneva-streets-z18-light",
+      "artifact": "geneva-streets-z18-light.png",
+      "artifact_sha256": "14c4bc7b8069144dc687d913ed700198f9b9d775b16303992ed36ce5dfac8b9e",
+      "inputs": [
+        {
+          "kind": "reference",
+          "sha256": "09edd5148a12727ac7899cb962cc984e0ca0da61dd07d60477af080dd25e6ffc"
+        },
+        {
+          "kind": "qgis3",
+          "sha256": "b1d3a12799ffdeb5e895e6f427ba99787b5606d0d01c1d26d82b5bc67313dbaf"
+        },
+        {
+          "kind": "qgis4",
+          "sha256": "b66ad2e4efe59cf554b9f12f3aaf3cd0e347588879d2d6c3dc55d4c1ec88cbc9"
+        }
+      ]
+    },
+    {
+      "camera": "geneva-urban-z14-light",
+      "artifact": "geneva-urban-z14-light.png",
+      "artifact_sha256": "6c73319a72b24f48a7e12e603ba1bd6c9ef1d986c84a3a4036916c7758186f39",
+      "inputs": [
+        {
+          "kind": "reference",
+          "sha256": "d269fcac8e29223d07f48f3ca503f32da950b47d64cfd7fbb36856a51960fced"
+        },
+        {
+          "kind": "qgis3",
+          "sha256": "f31584261faf0298ab589ac0f39543864b0a243b610bd5b4a47ac3a9a69b1646"
+        },
+        {
+          "kind": "qgis4",
+          "sha256": "847f8e7898f17c8515d11fdc6a4d927b9cad537f677cc7647f24b1aad85cd388"
+        }
+      ]
+    },
+    {
+      "camera": "lausanne-lavaux-z10-light",
+      "artifact": "lausanne-lavaux-z10-light.png",
+      "artifact_sha256": "17883c966d9887f312b94784029ea0b9165dd7813976746aa2b52857e4ef7896",
+      "inputs": [
+        {
+          "kind": "reference",
+          "sha256": "9360e77b61ce57a69defdfdd535b0f24ff3f743236f6556ac7007374e6a546b4"
+        },
+        {
+          "kind": "qgis3",
+          "sha256": "19710abd5e4c212c98eca146e260219a241a2cb4e9dbec184779e1167610456a"
+        },
+        {
+          "kind": "qgis4",
+          "sha256": "4d7e10151df560044513dd5df31ffd0caf3196ef2d1db9ba2aab79573e97f9b1"
+        }
+      ]
+    },
+    {
+      "camera": "switzerland-alps-z5-light",
+      "artifact": "switzerland-alps-z5-light.png",
+      "artifact_sha256": "1647ca5817a36c9f224830c60cc2d3254e94771df6f7a11c4e9020ff49b178d4",
+      "inputs": [
+        {
+          "kind": "reference",
+          "sha256": "61295a9c979b7abbaf33104150c3bd7aec3d0b4e5ff28e13bed1282be505612c"
+        },
+        {
+          "kind": "qgis3",
+          "sha256": "109180924f6dfa7e106767099c503b1efc3ebf922852f48b540cb066eb38a78a"
+        },
+        {
+          "kind": "qgis4",
+          "sha256": "1af0f623cd20dc450103d85e4e1b813818fa938897b3ad35e23d8e58bb263629"
+        }
+      ]
+    },
+    {
+      "camera": "zurich-region-z8-light",
+      "artifact": "zurich-region-z8-light.png",
+      "artifact_sha256": "b0615e53ba4de7c3a459fed4abd2043945e8d0ef0deeebe06ebb9e76f61e76b4",
+      "inputs": [
+        {
+          "kind": "reference",
+          "sha256": "f5643fa161c8da0e3bf17ab6ea7a56f9427cba4dc83b50e717f3d4fbfe6d1c1d"
+        },
+        {
+          "kind": "qgis3",
+          "sha256": "877c6358b4e05ce9511aa152e6da6c1581ecdec8668fb424851fbf403c20332a"
+        },
+        {
+          "kind": "qgis4",
+          "sha256": "39737a9af8b3691d5573e23954d0055e1cb0a96d35533db2188e2002a6e734ea"
+        }
+      ]
+    },
+    {
+      "camera": "zurich-streets-z17-light",
+      "artifact": "zurich-streets-z17-light.png",
+      "artifact_sha256": "73ef7fcdb89d6e959e21ca021a5ca207a6e540754d52f5acf51f7ff94f1437ee",
+      "inputs": [
+        {
+          "kind": "reference",
+          "sha256": "abca923b79ccea72baf4cf4c407f3a0a48b3958d3aa9455f80b4ed78e7bde3ab"
+        },
+        {
+          "kind": "qgis3",
+          "sha256": "5977f829e93baa0955e48db080ec5799c517eeee2d81c1b8c337b3c63ad52a83"
+        },
+        {
+          "kind": "qgis4",
+          "sha256": "eab383caa2914af8d6d657d8f564d4692209e4c4e809dd64d824707b052497d6"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1069 @@
+[
+  {
+    "id": "land",
+    "type": "background",
+    "minzoom": 0
+  },
+  {
+    "id": "national-park",
+    "type": "fill",
+    "source-layer": "landuse_overlay",
+    "minzoom": 5
+  },
+  {
+    "id": "landuse",
+    "type": "fill",
+    "source-layer": "landuse",
+    "minzoom": 5
+  },
+  {
+    "id": "waterway",
+    "type": "line",
+    "source-layer": "waterway",
+    "minzoom": 8
+  },
+  {
+    "id": "water",
+    "type": "fill",
+    "source-layer": "water",
+    "minzoom": 0
+  },
+  {
+    "id": "land-structure-polygon",
+    "type": "fill",
+    "source-layer": "structure",
+    "minzoom": 13
+  },
+  {
+    "id": "land-structure-line",
+    "type": "line",
+    "source-layer": "structure",
+    "minzoom": 13
+  },
+  {
+    "id": "aeroway-polygon",
+    "type": "fill",
+    "source-layer": "aeroway",
+    "minzoom": 11
+  },
+  {
+    "id": "aeroway-line",
+    "type": "line",
+    "source-layer": "aeroway",
+    "minzoom": 9
+  },
+  {
+    "id": "building",
+    "type": "fill",
+    "source-layer": "building",
+    "minzoom": 15
+  },
+  {
+    "id": "tunnel-path-trail",
+    "type": "line",
+    "source-layer": "road",
+    "minzoom": 14
+  },
+  {
+    "id": "tunnel-path-cycleway-piste",
+    "type": "line",
+    "source-layer": "road",
+    "minzoom": 12
+  },
+  {
+    "id": "tunnel-path",
+    "type": "line",
+    "source-layer": "road",
+    "minzoom": 14
+  },
+  {
+    "id": "tunnel-steps",
+    "type": "line",
+    "source-layer": "road",
+    "minzoom": 14
+  },
+  {
+    "id": "tunnel-pedestrian",
+    "type": "line",
+    "source-layer": "road",
+    "minzoom": 13
+  },
+  {
+    "id": "tunnel-simple",
+    "type": "line",
+    "source-layer": "road",
+    "minzoom": 13
+  },
+  {
+    "id": "road-path-trail",
+    "type": "line",
+    "source-layer": "road",
+    "minzoom": 12
+  },
+  {
+    "id": "road-path-cycleway-piste",
+    "type": "line",
+    "source-layer": "road",
+    "minzoom": 12
+  },
+  {
+    "id": "road-path",
+    "type": "line",
+    "source-layer": "road",
+    "minzoom": 12
+  },
+  {
+    "id": "road-steps",
+    "type": "line",
+    "source-layer": "road",
+    "minzoom": 14
+  },
+  {
+    "id": "road-pedestrian",
+    "type": "line",
+    "source-layer": "road",
+    "minzoom": 12
+  },
+  {
+    "id": "road-simple",
+    "type": "line",
+    "source-layer": "road",
+    "minzoom": 5,
+    "layout": {
+      "line-cap": [
+        "step",
+        [
+          "zoom"
+        ],
+        "butt",
+        14,
+        "round"
+      ],
+      "line-join": [
+        "step",
+        [
+          "zoom"
+        ],
+        "miter",
+        14,
+        "round"
+      ]
+    },
+    "paint": {
+      "line-width": [
+        "interpolate",
+        [
+          "exponential",
+          1.5
+        ],
+        [
+          "zoom"
+        ],
+        5,
+        [
+          "match",
+          [
+            "get",
+            "class"
+          ],
+          [
+            "motorway",
+            "trunk",
+            "primary"
+          ],
+          0.44999999999999996,
+          [
+            "secondary",
+            "tertiary"
+          ],
+          0.06,
+          0
+        ],
+        13,
+        [
+          "match",
+          [
+            "get",
+            "class"
+          ],
+          [
+            "motorway",
+            "trunk",
+            "primary"
+          ],
+          2.4,
+          [
+            "secondary",
+            "tertiary"
+          ],
+          1.5,
+          [
+            "motorway_link",
+            "trunk_link",
+            "primary_link",
+            "street",
+            "street_limited"
+          ],
+          0.6,
+          0.3
+        ],
+        18,
+        [
+          "match",
+          [
+            "get",
+            "class"
+          ],
+          [
+            "motorway",
+            "trunk",
+            "primary"
+          ],
+          19.2,
+          [
+            "secondary",
+            "tertiary"
+          ],
+          15.6,
+          [
+            "motorway_link",
+            "trunk_link",
+            "primary_link",
+            "street",
+            "street_limited"
+          ],
+          10.799999999999999,
+          6
+        ],
+        22,
+        [
+          "match",
+          [
+            "get",
+            "class"
+          ],
+          [
+            "motorway",
+            "trunk",
+            "primary"
+          ],
+          192,
+          [
+            "secondary",
+            "tertiary"
+          ],
+          156,
+          [
+            "motorway_link",
+            "trunk_link",
+            "primary_link",
+            "street",
+            "street_limited"
+          ],
+          108,
+          60
+        ]
+      ],
+      "line-color": "hsl(220, 1%, 100%)"
+    },
+    "filter": [
+      "all",
+      [
+        "step",
+        [
+          "zoom"
+        ],
+        [
+          "match",
+          [
+            "get",
+            "class"
+          ],
+          [
+            "motorway",
+            "trunk"
+          ],
+          true,
+          false
+        ],
+        6,
+        [
+          "match",
+          [
+            "get",
+            "class"
+          ],
+          [
+            "motorway",
+            "trunk",
+            "primary"
+          ],
+          true,
+          false
+        ],
+        8,
+        [
+          "match",
+          [
+            "get",
+            "class"
+          ],
+          [
+            "motorway",
+            "trunk",
+            "primary",
+            "secondary"
+          ],
+          true,
+          false
+        ],
+        10,
+        [
+          "match",
+          [
+            "get",
+            "class"
+          ],
+          [
+            "motorway",
+            "trunk",
+            "primary",
+            "secondary",
+            "tertiary",
+            "motorway_link",
+            "trunk_link"
+          ],
+          true,
+          false
+        ],
+        11,
+        [
+          "match",
+          [
+            "get",
+            "class"
+          ],
+          [
+            "motorway",
+            "motorway_link",
+            "trunk",
+            "trunk_link",
+            "primary",
+            "secondary",
+            "tertiary",
+            "street"
+          ],
+          true,
+          false
+        ],
+        12,
+        [
+          "match",
+          [
+            "get",
+            "class"
+          ],
+          [
+            "motorway",
+            "motorway_link",
+            "trunk",
+            "trunk_link",
+            "primary",
+            "secondary",
+            "tertiary",
+            "street",
+            "street_limited",
+            "primary_link"
+          ],
+          true,
+          false
+        ],
+        13,
+        [
+          "match",
+          [
+            "get",
+            "class"
+          ],
+          [
+            "motorway",
+            "motorway_link",
+            "trunk",
+            "trunk_link",
+            "primary",
+            "secondary",
+            "tertiary",
+            "street",
+            "street_limited",
+            "primary_link",
+            "track"
+          ],
+          true,
+          false
+        ],
+        14,
+        [
+          "match",
+          [
+            "get",
+            "class"
+          ],
+          [
+            "motorway",
+            "motorway_link",
+            "trunk",
+            "trunk_link",
+            "primary",
+            "primary_link",
+            "secondary",
+            "secondary_link",
+            "tertiary",
+            "tertiary_link",
+            "street",
+            "street_limited",
+            "service",
+            "track"
+          ],
+          true,
+          false
+        ]
+      ],
+      [
+        "match",
+        [
+          "get",
+          "structure"
+        ],
+        [
+          "none",
+          "ford"
+        ],
+        true,
+        false
+      ],
+      [
+        "==",
+        [
+          "geometry-type"
+        ],
+        "LineString"
+      ]
+    ]
+  },
+  {
+    "id": "road-rail",
+    "type": "line",
+    "source-layer": "road",
+    "minzoom": 13
+  },
+  {
+    "id": "bridge-path-trail",
+    "type": "line",
+    "source-layer": "road",
+    "minzoom": 14
+  },
+  {
+    "id": "bridge-path-cycleway-piste",
+    "type": "line",
+    "source-layer": "road",
+    "minzoom": 14
+  },
+  {
+    "id": "bridge-path",
+    "type": "line",
+    "source-layer": "road",
+    "minzoom": 14
+  },
+  {
+    "id": "bridge-steps",
+    "type": "line",
+    "source-layer": "road",
+    "minzoom": 14
+  },
+  {
+    "id": "bridge-pedestrian",
+    "type": "line",
+    "source-layer": "road",
+    "minzoom": 13
+  },
+  {
+    "id": "bridge-case-simple",
+    "type": "line",
+    "source-layer": "road",
+    "minzoom": 13
+  },
+  {
+    "id": "bridge-simple",
+    "type": "line",
+    "source-layer": "road",
+    "minzoom": 13
+  },
+  {
+    "id": "bridge-rail",
+    "type": "line",
+    "source-layer": "road",
+    "minzoom": 13
+  },
+  {
+    "id": "admin-1-boundary-bg",
+    "type": "line",
+    "source-layer": "admin",
+    "minzoom": 7
+  },
+  {
+    "id": "admin-0-boundary-bg",
+    "type": "line",
+    "source-layer": "admin",
+    "minzoom": 1
+  },
+  {
+    "id": "admin-1-boundary",
+    "type": "line",
+    "source-layer": "admin",
+    "minzoom": 2
+  },
+  {
+    "id": "admin-0-boundary",
+    "type": "line",
+    "source-layer": "admin",
+    "minzoom": 1,
+    "layout": {},
+    "paint": {
+      "line-color": "hsl(220, 0%, 70%)",
+      "line-width": [
+        "interpolate",
+        [
+          "linear"
+        ],
+        [
+          "zoom"
+        ],
+        3,
+        0.65,
+        12,
+        2.6
+      ],
+      "line-dasharray": [
+        10,
+        0
+      ]
+    },
+    "filter": [
+      "all",
+      [
+        "==",
+        [
+          "get",
+          "admin_level"
+        ],
+        0
+      ],
+      [
+        "==",
+        [
+          "get",
+          "disputed"
+        ],
+        "false"
+      ],
+      [
+        "==",
+        [
+          "get",
+          "maritime"
+        ],
+        "false"
+      ],
+      [
+        "match",
+        [
+          "get",
+          "worldview"
+        ],
+        [
+          "all",
+          "US"
+        ],
+        true,
+        false
+      ]
+    ]
+  },
+  {
+    "id": "admin-0-boundary-disputed",
+    "type": "line",
+    "source-layer": "admin",
+    "minzoom": 1
+  },
+  {
+    "id": "road-label-simple",
+    "type": "symbol",
+    "source-layer": "road",
+    "minzoom": 12
+  },
+  {
+    "id": "waterway-label",
+    "type": "symbol",
+    "source-layer": "natural_label",
+    "minzoom": 13
+  },
+  {
+    "id": "natural-line-label",
+    "type": "symbol",
+    "source-layer": "natural_label",
+    "minzoom": 4
+  },
+  {
+    "id": "natural-point-label",
+    "type": "symbol",
+    "source-layer": "natural_label",
+    "minzoom": 4
+  },
+  {
+    "id": "water-line-label",
+    "type": "symbol",
+    "source-layer": "natural_label",
+    "minzoom": 1
+  },
+  {
+    "id": "water-point-label",
+    "type": "symbol",
+    "source-layer": "natural_label",
+    "minzoom": 1
+  },
+  {
+    "id": "poi-label",
+    "type": "symbol",
+    "source-layer": "poi_label",
+    "minzoom": 6
+  },
+  {
+    "id": "airport-label",
+    "type": "symbol",
+    "source-layer": "airport_label",
+    "minzoom": 8
+  },
+  {
+    "id": "settlement-subdivision-label",
+    "type": "symbol",
+    "source-layer": "place_label",
+    "minzoom": 10,
+    "maxzoom": 15
+  },
+  {
+    "id": "settlement-minor-label",
+    "type": "symbol",
+    "source-layer": "place_label",
+    "minzoom": 2,
+    "maxzoom": 13
+  },
+  {
+    "id": "settlement-major-label",
+    "type": "symbol",
+    "source-layer": "place_label",
+    "minzoom": 2,
+    "maxzoom": 15,
+    "layout": {
+      "text-line-height": 1.1,
+      "text-size": [
+        "interpolate",
+        [
+          "cubic-bezier",
+          0.2,
+          0,
+          0.9,
+          1
+        ],
+        [
+          "zoom"
+        ],
+        3,
+        [
+          "step",
+          [
+            "get",
+            "symbolrank"
+          ],
+          13,
+          6,
+          11
+        ],
+        6,
+        [
+          "step",
+          [
+            "get",
+            "symbolrank"
+          ],
+          18,
+          6,
+          16,
+          7,
+          14
+        ],
+        8,
+        [
+          "step",
+          [
+            "get",
+            "symbolrank"
+          ],
+          20,
+          9,
+          16,
+          10,
+          14
+        ],
+        15,
+        [
+          "step",
+          [
+            "get",
+            "symbolrank"
+          ],
+          24,
+          9,
+          20,
+          12,
+          16,
+          15,
+          14
+        ]
+      ],
+      "text-radial-offset": [
+        "step",
+        [
+          "zoom"
+        ],
+        [
+          "match",
+          [
+            "get",
+            "capital"
+          ],
+          2,
+          0.6,
+          0.55
+        ],
+        8,
+        0
+      ],
+      "symbol-sort-key": [
+        "get",
+        "symbolrank"
+      ],
+      "icon-image": "",
+      "text-font": [
+        "DIN Pro Medium",
+        "Arial Unicode MS Regular"
+      ],
+      "text-anchor": [
+        "step",
+        [
+          "zoom"
+        ],
+        "center",
+        8,
+        "center"
+      ],
+      "text-field": [
+        "coalesce",
+        [
+          "get",
+          "name_en"
+        ],
+        [
+          "get",
+          "name"
+        ]
+      ],
+      "text-max-width": 7
+    },
+    "paint": {
+      "text-color": [
+        "step",
+        [
+          "get",
+          "symbolrank"
+        ],
+        "hsl(220, 1%, 49%)",
+        11,
+        "hsl(220, 1%, 62%)",
+        16,
+        "hsl(220, 1%, 71%)"
+      ],
+      "text-halo-color": "hsl(220, 0%, 100%)",
+      "text-halo-width": 1,
+      "icon-opacity": [
+        "step",
+        [
+          "zoom"
+        ],
+        1,
+        8,
+        0
+      ],
+      "text-halo-blur": 1
+    },
+    "filter": [
+      "all",
+      [
+        "<=",
+        [
+          "get",
+          "filterrank"
+        ],
+        2
+      ],
+      [
+        "match",
+        [
+          "get",
+          "class"
+        ],
+        [
+          "settlement",
+          "disputed_settlement"
+        ],
+        [
+          "match",
+          [
+            "get",
+            "worldview"
+          ],
+          [
+            "all",
+            "US"
+          ],
+          true,
+          false
+        ],
+        false
+      ],
+      [
+        "step",
+        [
+          "zoom"
+        ],
+        false,
+        2,
+        [
+          "<=",
+          [
+            "get",
+            "symbolrank"
+          ],
+          6
+        ],
+        4,
+        [
+          "<",
+          [
+            "get",
+            "symbolrank"
+          ],
+          7
+        ],
+        6,
+        [
+          "<",
+          [
+            "get",
+            "symbolrank"
+          ],
+          8
+        ],
+        7,
+        [
+          "<",
+          [
+            "get",
+            "symbolrank"
+          ],
+          10
+        ],
+        10,
+        [
+          "<",
+          [
+            "get",
+            "symbolrank"
+          ],
+          11
+        ],
+        11,
+        [
+          "<",
+          [
+            "get",
+            "symbolrank"
+          ],
+          13
+        ],
+        12,
+        [
+          "<",
+          [
+            "get",
+            "symbolrank"
+          ],
+          15
+        ],
+        13,
+        [
+          ">=",
+          [
+            "get",
+            "symbolrank"
+          ],
+          11
+        ],
+        14,
+        [
+          ">=",
+          [
+            "get",
+            "symbolrank"
+          ],
+          15
+        ]
+      ]
+    ]
+  },
+  {
+    "id": "state-label",
+    "type": "symbol",
+    "source-layer": "place_label",
+    "minzoom": 3,
+    "maxzoom": 9
+  },
+  {
+    "id": "country-label",
+    "type": "symbol",
+    "source-layer": "place_label",
+    "minzoom": 1,
+    "maxzoom": 10,
+    "layout": {
+      "text-line-height": 1.1,
+      "text-size": [
+        "interpolate",
+        [
+          "cubic-bezier",
+          0.2,
+          0,
+          0.7,
+          1
+        ],
+        [
+          "zoom"
+        ],
+        1,
+        [
+          "step",
+          [
+            "get",
+            "symbolrank"
+          ],
+          11,
+          4,
+          9,
+          5,
+          8
+        ],
+        9,
+        [
+          "step",
+          [
+            "get",
+            "symbolrank"
+          ],
+          22,
+          4,
+          19,
+          5,
+          17
+        ]
+      ],
+      "text-radial-offset": [
+        "step",
+        [
+          "zoom"
+        ],
+        0.6,
+        8,
+        0
+      ],
+      "icon-image": "",
+      "text-font": [
+        "DIN Pro Medium",
+        "Arial Unicode MS Regular"
+      ],
+      "text-field": [
+        "coalesce",
+        [
+          "get",
+          "name_en"
+        ],
+        [
+          "get",
+          "name"
+        ]
+      ],
+      "text-max-width": 6
+    },
+    "paint": {
+      "icon-opacity": [
+        "step",
+        [
+          "zoom"
+        ],
+        [
+          "case",
+          [
+            "has",
+            "text_anchor"
+          ],
+          1,
+          0
+        ],
+        7,
+        0
+      ],
+      "text-color": "hsl(220, 1%, 49%)",
+      "text-halo-color": "hsl(220, 0%, 100%)",
+      "text-halo-width": 1.25
+    },
+    "filter": [
+      "match",
+      [
+        "get",
+        "class"
+      ],
+      [
+        "country",
+        "disputed_country"
+      ],
+      [
+        "match",
+        [
+          "get",
+          "worldview"
+        ],
+        [
+          "all",
+          "US"
+        ],
+        true,
+        false
+      ],
+      false
+    ]
+  },
+  {
+    "id": "continent-label",
+    "type": "symbol",
+    "source-layer": "natural_label",
+    "minzoom": 0.75,
+    "maxzoom": 3
+  }
+]
