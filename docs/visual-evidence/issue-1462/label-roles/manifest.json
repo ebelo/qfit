@@ -91,6 +91,7 @@
   "cairo-nile-z14-full.png": "bd8db73a4083b8b516b5e41be18432aa7f91d3bf143fa8c9183c24df4eec1d1e",
   "cairo-region-z8-crop.png": "058ff234dfeb093c4f7305716bb22ea621f0d97144fac6d6be39ef762a30980f",
   "cairo-region-z8-full.png": "fb455b5e6db045cc1dc04bc83a1421ad3b5db014964e353d1de293b8d8feaa9d",
+  "final-head-verification.json": "a04fe3dc68d3285604108e48fa571a942a00a79b004a94024a502703c5ffaf7f",
   "generator-provenance.json": "93e48bd6896fe70ef0e4f1d1bbfdcad8f22f359ea6545276a037e61922d6886d",
   "jerusalem-city-z14-crop.png": "8b4e9fa410039508c1a15609d3be58080766393f35c1c31f14272020e5f33700",
   "jerusalem-city-z14-full.png": "b0e3b68d075f65477969efdd68060388ad4145835005a1a30e99149fd92625c5",
@@ -147,6 +148,7 @@
   "reference-repeat/jerusalem-region-z8/runtime.json": "3452e5caa13dd8f96245809aba8dc04abcd75e39b9b56771d1563edf864ed8b3",
   "registration.json": "d7eed044417aacd5dad3ba7c927bc81f522464c5830b2ab9dae81687b10b9721",
   "repeat-controls.json": "970ca0230e11ee872462143f67f7dca909634fe54f0cf608186459b3407b5f91",
+  "runtime-images.json": "41c3bd9af2112dd65f1deb3521a520ac489959ddf9df3bdc8d07dde04385ae85",
   "source.json": "87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32",
   "summary.json": "5ad948988febb127c7e9104b62d43a79de27924c52216937818ae98c12b1ba6c"
 }

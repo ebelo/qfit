@@ -1,0 +1,56 @@
+[
+  {
+    "lane": "3",
+    "image_id": "sha256:972966ed5fd62ce415714160d6e11d1c36d5e846e57ad8e49ad24b4a198dc28d",
+    "rootfs": {
+      "Type": "layers",
+      "Layers": [
+        "sha256:f3e19efe7a6e0d7ab914ba1ee295a0e04c1da384b50879a9cad95057a6f6473a",
+        "sha256:169f6ab772499c00108abe9535abc01cbffda8dc38e3672775d7d4a228fbb352",
+        "sha256:4cc72b11c75eaf2d55c39c5373b9f97d5ab3eca15fd537169ecf5419636f4114",
+        "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+        "sha256:a09015890d5935a8f3f194a1328084e3cd9bcac355956539b7c661b965845b55",
+        "sha256:ba28574312e29ce7e3720699d421732d95e632e3c1f7c16d9e6196cfb8aa754c",
+        "sha256:4948ce8f836285761a8e9a579dacf756a8e712062b92469615d05d0e9691e932",
+        "sha256:06378aad2a6ee0ce561076f25736cb95b9eb700480b8ebe67b8a7bb9aeec944e",
+        "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+        "sha256:304ecc02c9903af0b768adaed4c6f3ce5a2c3d0d42ae1fe38e508a52e0f73ae6",
+        "sha256:6b99dc268d583aa637866d5f52214f849e657bd5dbf1568ed9ebced06e501f85",
+        "sha256:60579439da1477592bdc8897bd2a6fcc0551f791a5b8731ff30f6a7473bee92a"
+      ]
+    },
+    "versions": {
+      "qgis": "3.44.11-Solothurn",
+      "development": "f8f5812197f",
+      "qt": "5.15.17",
+      "pyqt": "5.15.11"
+    }
+  },
+  {
+    "lane": "4",
+    "image_id": "sha256:65b70025d024f32c1b24bbf610412ba790f8f0aab03672f1e6b297018204049f",
+    "rootfs": {
+      "Type": "layers",
+      "Layers": [
+        "sha256:1d1c82473c17444199f4532c41cbef0230ce338f3ad5a35d482d05ab1ddeb782",
+        "sha256:2a10612657d5d12338428fc663e7bad35a5755d68a54defff69b541ec4c5bb7c",
+        "sha256:2a13029b808c48669a460f76a7642184e53512fe4fa5c6896dcbfc1950e60e3e",
+        "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+        "sha256:04f64be05716e456fcba1b989750b8b277011da6e0fbc32629e5f05427917e23",
+        "sha256:c7820bbd459e1d361d67cb65e523e1395dcca38da31fff5f47a51f9c0cd054a5",
+        "sha256:7630ce39704190fdbe33139f6e9d229f7021b1ad7725713f5d50d0ee78e82945",
+        "sha256:407d2f4c7b1bcb7ea66e8ea9ff500d51e6d0f20e142d05b9c1406607f5ef9a04",
+        "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+        "sha256:904c80359e9effef0e6f82124e1457ccca05ae704f47f8baf9d8eac6e6ff9bc2",
+        "sha256:fabdc46dc548158de58476225ef4e4d4e7d853abbc2e300f504a5e6e0fcd8cbf",
+        "sha256:dbbac5f803c7dbae34e78562682349dfc9346d15b53b113e9134b480c29580ab"
+      ]
+    },
+    "versions": {
+      "qgis": "4.2.0-Bel\u00e9m do Par\u00e1",
+      "development": "ec9a7f91d0f",
+      "qt": "6.9.2",
+      "pyqt": "6.9.1"
+    }
+  }
+]

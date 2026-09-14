@@ -1,0 +1,21 @@
+{
+  "final_head": "eab653f22c0acdafc87c9e1307dd2cad61d1d4ee",
+  "captured_baseline": "bdc741cf38caf47e25cf1809055f506bb865efb9",
+  "all_runtime_sources_byte_identical": true,
+  "runtime_python_file_count": 233,
+  "only_tests_docs_changed": [
+    "docs/light-cartographic-assessment.md",
+    "tests/fixtures/mapbox/light-label-content-source.json",
+    "tests/test_background_map_service.py"
+  ],
+  "fixture_all_14_source_layers_exactly_match": true,
+  "fresh_final_head_recapture_claimed": false,
+  "validation": {
+    "local": "2675 passed / 190 skipped / 299 subtests",
+    "docker3": "215 passed / 82 skipped",
+    "docker4": "215 passed / 82 skipped",
+    "legacy": "QGIS3.34.4: one test / 80 cases passes",
+    "diff_check": "pass",
+    "packaging": "unchanged production inputs; no ZIP build needed"
+  }
+}
