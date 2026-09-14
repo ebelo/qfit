@@ -157,14 +157,14 @@ successful screenshot. Error payloads/URLs are not retained in that snapshot.
 | --- | --- | --- |
 | C01: browser context, both seven-camera presets, source and explicit planar modes | PASS (scoped measurement) | 70 fresh browser captures: all 14 default Before/After/Repeat PNGs and all 14 Mercator repeat pairs are byte-identical. Actual context and zero map errors recorded; nonblank maps inspected. This is not class-completeness or matched-scale certification. |
 | C01: source intent versus planar diagnostic | PASS (scoped separation); geographic/product scope OPEN | Original globe reference remains separate. Only the two overview PNGs change between modes; the other 12 views are byte-identical. `getProjection()` still reports configured globe at high zoom, not its per-pixel planar blend. Earlier overview anchor registration remains the explicitly dated diagnostic above, not a new all-camera registration claim. |
-| C28/C29: native isolation and repeated settled PNGs | PASS (scoped unchanged output) | 28 camera/runtime cells × Before/Repeat/After = 84 PNGs in QGIS3.44.11/Qt5.15.17 and4.2.0/Qt6.9.2. Every cell's PNG, full labels, preprocessed style and actual native context is byte-identical. Both278-entry plugin ZIP payloads equal baseline. No desktop/PDF, activity UI, performance or temporal-pan pass. |
+| C28/C29: native isolation and repeated settled PNGs | PASS (scoped unchanged output) | 28 camera/runtime cells × Before/Repeat/After = 84 PNGs in QGIS 3.44.11/Qt 5.15.17 and 4.2.0/Qt 6.9.2. Every cell's PNG, full labels, preprocessed style and actual native context is byte-identical. Both 278-entry plugin ZIP payloads equal baseline. No desktop/PDF, activity UI, performance or temporal-pan pass. |
 | C01/C02/C23: physical DPI, native style-zoom and role handoff | OPEN | Mercator reference selection does not resolve native100/96-DPI differences or continuous/integer source-rule activation. No new rank/filter candidate is promoted. |
 
-Both complete Docker suites pass211/82; full pytest2672/186 with299 subtests;
-additional isolated unittest2854/186; nine package tests pass. Generated browser
+Both complete Docker suites pass 211/82; full pytest 2672/186 with 299 subtests;
+additional isolated unittest 2854/186; nine package tests pass. Generated browser
 JavaScript is exercised by Node regressions (actual-context recording, projection
 preservation, incomplete-map rejection and artifact ordering); manifest/CLI
-propagation is tested through the normal configuration path. All16 changed Python
+propagation is tested through the normal configuration path. All 16 changed Python
 statements are covered. These gates do not close C01 or the holistic ledger.
 Source/planar metrics are recorded separately, not called native rendering gains.
 Live tile payloads remain unarchived; no limitation is accepted on Emman's behalf.

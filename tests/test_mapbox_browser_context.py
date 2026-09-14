@@ -136,6 +136,6 @@ class BrowserContextTests(unittest.TestCase):
 
     def test_default_projection_and_invalid_api_value(self):
         self.assertEqual(comparison.build_parser().parse_args([]).reference_projection, 'source')
+        camera = next(iter(comparison.LIGHT_CAMERAS.values()))
         with self.assertRaisesRegex(ValueError, 'Reference projection'):
-            comparison.build_mapbox_gl_html(camera=next(iter(comparison.LIGHT_CAMERAS.values())),
-                                           reference_projection='guess')
+            comparison.build_mapbox_gl_html(camera=camera, reference_projection='guess')
