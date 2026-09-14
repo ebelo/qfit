@@ -786,6 +786,65 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
         self.assertAlmostEqual(records[0]["vector_tile_zoom"] - records[1]["vector_tile_zoom"], 1)
         self.assertEqual(records[1]["map_scale"] / records[0]["map_scale"], 2)
 
+    def test_light_road_native_widths_match_source_class_and_exponential_zoom(self):
+        import json
+        from pathlib import Path
+        from qgis.core import (
+            QgsExpression, QgsExpressionContext, QgsExpressionContextScope,
+            QgsFeature, QgsField, QgsFields, QgsSymbolLayer,
+        )
+        from qfit.mapbox_config import simplify_mapbox_style_expressions
+
+        source = json.loads((Path(__file__).parent / "fixtures/mapbox/light-road-width-source.json").read_text())
+        layer = MagicMock()
+        self.service._apply_mapbox_gl_style(layer, simplify_mapbox_style_expressions(source), source_style_definition=source)
+        renderer = layer.setRenderer.call_args.args[0]
+        rules = {rule.styleName(): rule for rule in renderer.styles()}
+        self.assertEqual(set(rules), {item["id"] for item in source["layers"]})
+        fields = QgsFields()
+        fields.append(QgsField("class"))
+        for item in source["layers"]:
+            rule = rules[item["id"]]
+            symbol = rule.symbol()
+            self.assertEqual(symbol.symbolLayerCount(), 1)
+            stroke = symbol.symbolLayer(0)
+            prop = stroke.dataDefinedProperties().property(QgsSymbolLayer.PropertyStrokeWidth)
+            self.assertTrue(prop.isActive(), "A fixed width erases class/zoom hierarchy")
+            expression = QgsExpression(prop.asExpression())
+            self.assertIn("class", expression.referencedColumns())
+            width = item["paint"]["line-width"]
+            stops = list(zip(width[3::2], width[4::2]))
+            for road_class in ("motorway", "primary", "secondary", "street", "trunk_link", "service", "unknown", None):
+                values = []
+                for zoom, match in stops:
+                    value = match[-1]
+                    for group, output in zip(match[2:-1:2], match[3:-1:2]):
+                        if road_class in group:
+                            value = output
+                            break
+                    values.append((zoom, value))
+                for zoom in (4.9, 5, 8, 12.9, 13, 13.1, 14, 17, 17.9, 18, 18.1, 21.9, 22, 22.1):
+                    expected = values[0][1] if zoom <= values[0][0] else values[-1][1]
+                    for (low, start), (high, end) in zip(values, values[1:]):
+                        if low < zoom <= high:
+                            # Mapbox exponential BASE interpolation, independently evaluated.
+                            factor = (1.5 ** (zoom - low) - 1) / (1.5 ** (high - low) - 1)
+                            expected = start + (end - start) * factor
+                    feature = QgsFeature(fields)
+                    feature.setAttribute("class", road_class)
+                    scope = QgsExpressionContextScope()
+                    scope.setVariable("vector_tile_zoom", zoom)
+                    context = QgsExpressionContext()
+                    context.appendScope(scope)
+                    context.setFields(fields)
+                    context.setFeature(feature)
+                    with self.subTest(owner=item["id"], road_class=road_class, zoom=zoom):
+                        self.assertTrue(expression.prepare(context))
+                        actual = expression.evaluate(context)
+                        self.assertFalse(expression.hasEvalError(), expression.evalErrorString())
+                        # Unit conversion occurs once, after source interpolation.
+                        self.assertAlmostEqual(actual, expected * 25.4 / 96, delta=1e-10)
+
     def test_light_name_fallback_requests_fields_and_preserves_null_empty_semantics(self):
         import json
         from pathlib import Path
