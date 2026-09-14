@@ -135,6 +135,60 @@ focused investigation before broad completion, not an assertion of a root cause.
 | C29 | PARTIAL; PDF repeat cells OPEN | Prior width-matrix and fresh density PNG repeats are byte-identical. Ten of12 PDF cells have identical rasterized repeats; both QGIS4 production150-DPI cells show small, unclassified variation. Cold/warm performance and interactive stability remain untested. | PDF variability severity unestablished |
 | C30 | NOT ASSESSED | Cropped basemap evidence does not validate complete user-facing attribution, legend, scale or north/context requirements. | — |
 
+### C01/C28: offline native mechanism and rejected matrix calibration — 2026-09-14
+
+The [credential-free native reproduction](https://github.com/ebelo/qfit/tree/59b1de40f4297a776f535c3ce6687fedf8d7e6cc/docs/visual-evidence/issue-1462/offline-density) removes live Mapbox data,
+fonts, labels, qfit conversion and browser registration from the density diagnosis.
+Both exact Docker builds run with **network disabled**, using the same archived
+synthetic MBTiles SHA256
+`331aae17f15dabad61a63a32cacea8047f799ca1b5ae09599de5b2ba1a0dedf4`.
+Baseline is `75c6fdfad279d0eda11c5faad2c91e61753787c3`; this update changes only
+documentation. No fresh real-Light reference or product rendering fix is claimed.
+
+Three synthetic bent lines have independent roles: persistent red, native
+minimum-zoom13 blue, and native zoom-dependent green width. At fixed EPSG:3857
+extent,169.3333×127mm page and scale60732.872199, QGIS4 PNG and PDF zoom changes
+**12.318207 →12.923653 →13.318207** at96/150/192DPI; blue is absent at96 and
+present at150/192. QGIS3 stays12.220213/integer12. These actual untraced outputs
+establish that native activation changes without qfit or live-provider inputs.
+They do not certify Light geometry, labels, full atlas, desktop or accessibility.
+
+The final baseline has24 native PNGs and24 actual PDFs. All72 explicitly named
+plain/traced/repeated RGB comparisons are identical; PDFs are viewed at96DPI.
+No PDF-file identity claim is made. Synthetic repeat stability does **not** explain
+or close the two real-label QGIS4/PDF150 variation cells from#1471. PDF scopes
+again supply `@map_scale`, while parallel PNG scopes lack it.
+
+**Candidate rejected as-is:** switch the fixture layer's matrix to Esri mode and
+scale denominators by `96 ×0.00028 /0.0254 /2`. This makes native zoom
+DPI-invariant over12.25/12.9/13/13.1 in both runtimes, but:
+
+- At nominal13, floating-point extent/scale produces12.999999999999988; flooring
+  activates12 and hides the minimum-zoom13 feature in actual PNG/PDF output.
+  It returns at13.1. No epsilon or logarithmic-zoom correction is validated.
+- `layer.tileMatrixSet()` is **mutable** in these builds despite no layer setter.
+  Native `layer.clone()` loses the calibrated method/scales; project save/reload
+  preserves them. This is an independently probed native lifecycle limitation,
+  not a claim that the current qfit atlas clones the basemap.
+
+The candidate has96 native PNGs and96 PDFs, with288 named within-cell pairs
+pixel-identical. Four zooms, three densities and both output paths/runtimes are
+covered, not other CRSs or older native builds. The public evidence contains
+exact generators, the shared tile fixture, original PDFs, fixed-DPI rasters,
+mode/triplet panels, actual scope traces and clone/save/reload probes. Initial
+blank/invalid fixture attempts are excluded. All final processes completed.
+
+| Coverage cell | Verdict | Next action / boundary |
+| --- | --- | --- |
+| C01/C28: native density mechanism independent of provider/conversion | PASS (scoped reproduction); product defect OPEN | QGIS4 source normalizes scale before fetch/render zoom and style scope; a label-expression-only patch cannot coordinate them. |
+| C01/C23/C28: simple layer-local matrix calibration | OPEN (candidate rejected) | Resolve exact-boundary handling, source fractional zoom, native clone lifecycle and actual product scopes before promotion. |
+| C29: synthetic repeat controls | PASS (scoped synthetic repeats only) | Does not close real-Light PDF150 variation, labels or interactive stability. |
+| Remaining C01–C30 real-map/output cells | Unchanged | No additional real geographic, language, topology, activity, UI, atlas or desktop coverage is inferred. |
+
+The lack of a setter is **not** an established API blocker. No workaround or
+limitation is accepted; future robust matrix calibration remains investigable.
+Continue source-role/handoff and the remaining major semantic/fixture gaps.
+
 ### C01/C28/C29: logical-density versus actual PDF output — 2026-09-14
 
 The [fresh two-city output audit][density-output] extends the density finding to

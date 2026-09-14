@@ -708,3 +708,15 @@ inspect final `qgis-label-styles.json` for `coalesce("name_en", "name")` and ver
 both fields are requested by QGIS. Missing/NULL English falls back; empty English
 does not. See the [C19 scoped assessment](light-cartographic-assessment.md) for
 matched evidence, the rejected attribute-only probe and remaining language/output gaps.
+
+## Offline native density reproduction (Light #1462 diagnosis)
+
+The [standalone synthetic reproduction](https://github.com/ebelo/qfit/tree/59b1de40f4297a776f535c3ce6687fedf8d7e6cc/docs/visual-evidence/issue-1462/offline-density)
+is runnable without a qfit checkout, Mapbox credentials, fonts or network access.
+It archives identical MBTiles data, PNG/PDF controls, scope traces and rejected
+layer-matrix calibration evidence in both native generations. Its README gives
+exact network-disabled replay commands and named-pair audits. This isolates the
+C28 native rule-activation mechanism; it is **not** a Light reference matrix or
+a shipped density fix. Native clone loses the candidate calibration even though
+project save/reload preserves it; exact-boundary activation also remains open.
+See the [coverage ledger](light-cartographic-assessment.md) for scope and next work.
