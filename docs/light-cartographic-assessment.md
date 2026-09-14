@@ -171,6 +171,14 @@ each repeated:48 actual PDFs, rasterized by Poppler at a fixed96DPI for inspecti
 This exercises production PDF settings, **not the complete atlas builder/task,
 cover/TOC/activities, packaged installation, map-context UI or another platform**.
 
+The [executable generator][density-generator] retains the original rendering/PDF
+worker byte-for-byte and exposes the production helper invocation; only private
+paths/bootstrap are replaced by explicit arguments. Its [same-run replay][density-replay]
+in both runtimes and both cities produces four identical supporting PNGs and24
+additional PDFs with matching contexts. The20 predeclared stable rasterizations
+match; the QGIS4/150DPI category retains the disclosed variability. Commands,
+prerequisites and worker hashes accompany the generator, not just settings claims.
+
 | Output / same physical map scale | QGIS3 Bern / Geneva native zoom | QGIS4 Bern / Geneva native zoom |
 | --- | --- | --- |
 | PDF96DPI | 12.220213 /14.220213 | 12.318207 /14.318207 |
@@ -188,8 +196,13 @@ zoom alone does not establish output consistency in either runtime.
 **Measured repeats, not presumed noise.** Ten of12 PDF cells (all QGIS3 and
 QGIS4 at96/192DPI) have identical decoded raster output across all four exports,
 including trace isolation. At QGIS4/150DPI, the unwrapped Bern and Geneva repeats
-change280 and145 pixels; traced repeats change240 and246. Traced/unwrapped
-comparisons also vary. These low-amplitude changes are retained and quantified,
+change280 and145 pixels; traced-initial versus traced-repeat changes240 and246.
+The [named-pair audit][density-pairs] identifies both operand filenames and hashes
+for every comparison. The older `pdf-trace-isolation.json` uses **unwrapped initial
+as the reference for every row**: its `trace-repeat` row therefore reports280/145
+for unwrapped-initial versus traced-repeat, not for the within-trace repeat pair.
+No metric values were corrected; the new audit makes the differing pairs explicit.
+Traced/unwrapped comparisons also vary. These low-amplitude changes are retained and quantified,
 not classified as established noise or a C29 pass. PDF timestamps also differ:
 no PDF-file byte-identity claim is made. Native trace values repeat exactly,
 but strict pixel-isolation at150DPI is **not** certified; the96/192PDF and DPR2
@@ -634,4 +647,8 @@ explicitly agreed scope reduction with follow-up ownership for excluded work.
 
 [scale-calibration]: https://github.com/ebelo/qfit/tree/82482c430e71b6cc78b4d58cac003d1f669675c7/docs/visual-evidence/issue-1462/scale-calibration
 
-[density-output]: https://github.com/ebelo/qfit/tree/1339e85dd9e4bc4165e21f6101b0464ab5082191/docs/visual-evidence/issue-1462/density-output
+[density-output]: https://github.com/ebelo/qfit/tree/d52b956d51819039bc8fdd0ab9535a9776ba9354/docs/visual-evidence/issue-1462/density-output
+
+[density-generator]: https://github.com/ebelo/qfit/blob/d52b956d51819039bc8fdd0ab9535a9776ba9354/docs/visual-evidence/issue-1462/density-output/density_capture.py
+[density-replay]: https://github.com/ebelo/qfit/blob/d52b956d51819039bc8fdd0ab9535a9776ba9354/docs/visual-evidence/issue-1462/density-output/generator-replay.json
+[density-pairs]: https://github.com/ebelo/qfit/blob/d52b956d51819039bc8fdd0ab9535a9776ba9354/docs/visual-evidence/issue-1462/density-output/pdf-pair-metrics.json
