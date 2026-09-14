@@ -156,26 +156,26 @@ native class, geometry, zoom or feature eligibility.
 
 | Coverage cell | Verdict | Evidence / outstanding action |
 | --- | --- | --- |
-| C19: all 14 original symbol owners and all 39 native rules, QGIS3.44.11/Qt5.15.17 and QGIS4.2.0/Qt6.9.2 | PASS (scoped inventory) | Every native rule maps to one source owner; original text/transform, processed expression, native field requests, complete settings and explicit case results are public. Inventory completeness is not content correctness. |
+| C19: all 14 original symbol owners and all 39 native rules, QGIS 3.44.11/Qt 5.15.17 and QGIS 4.2.0/Qt 6.9.2 | PASS (scoped inventory) | Every native rule maps to one source owner; original text/transform, processed expression, native field requests, complete settings and explicit case results are public. Inventory completeness is not content correctness. |
 | C19: country and major settlements; water-line and water-point companion populations | PASS (scoped content) | Four owner families preserve tested English, NULL/missing, empty, accented, mixed-script and English-only values. The existing two-owner native repair remains intact; water uses 16 complementary English/local rules, not a missing fallback. |
-| C19/C02: native water companion selection, five classes × two geometry populations × eight name cases | PASS (scoped regression) | 80 cases in QGIS3.34.4, 3.44.11 and 4.2.0 assert the ordered 16-rule population before lookup, include predicate/text field requests, and require exactly one matching arm with the expected string. This is not a new scale/worldview/geographic coverage pass. |
+| C19/C02: native water companion selection, five classes × two geometry populations × eight name cases | PASS (scoped regression) | 80 cases in QGIS 3.34.4, 3.44.11 and 4.2.0 assert the ordered 16-rule population before lookup, include predicate/text field requests, and require exactly one matching arm with the expected string. This is not a new scale/worldview/geographic coverage pass. |
 | C19: road, waterway, natural line/point, POI, subdivision, minor settlement, state and continent | OPEN | All nine owner families retain local-name-only expressions, sometimes uppercased; English-present/empty/English-only cases differ from source. Exact owner/derived-rule and existing-override guards are needed before repair. Other eligibility defects remain independent. |
-| C19: airport code/name contract | OPEN | At sizerank15 the source requires ref, not name. Cairo's observed feature has refCAI and renders CAI in the reference; both native maps show the local airport name. Lower-rank ref/name composition also differs in native evaluation. A generic coalesce-only repair is insufficient. |
-| C19: Cairo/Jerusalem regionz8 and urbanz14, both Docker PNG runtimes | OPEN (geographic corroboration) | Matched native-size crops show local Arabic/Hebrew roads versus source-requested English/transliterated names. Major settlement names retain the earlier repair. These extents are new; they are not a fresh seven-preset sweep. |
+| C19: airport code/name contract | OPEN | At sizerank 15 the source requires ref, not name. Cairo's observed feature has `ref: CAI` and renders CAI in the reference; both native maps show the local airport name. Lower-rank ref/name composition also differs in native evaluation. A generic coalesce-only repair is insufficient. |
+| C19: Cairo/Jerusalem region z8 and urban z14, both Docker PNG runtimes | OPEN (geographic corroboration) | Matched native-size crops show local Arabic/Hebrew roads versus source-requested English/transliterated names. Major settlement names retain the earlier repair. These extents are new; they are not a fresh seven-preset sweep. |
 | C17/C19/C20/C21: actual RTL glyph shaping, bidi/curved-line association, fallback fonts and collisions | PARTIAL observation; correctness NOT ASSESSED | Arabic/Hebrew glyphs appear in the native PNGs. Neither exact string evaluation nor visible glyph presence establishes contextual joining, ordering, per-glyph font resolution or correct placement. No forced-local browser or RTL-plugin diagnostic is claimed. |
-| C01/C29: four cameras, source and separate Mercator references, two native builds | PASS (scoped controls/registration) | All eight browser and eight native PNG repeat pairs are byte-identical. Native settings/context repeat too; each runtime's four label inventories equal its offline audit. Forty actual Mercator anchor comparisons are within1e-6px. |
-| C01/C23/C28 and remaining C19 output/edge cases | OPEN / NOT ASSESSED | QGIS3 uses100DPI, QGIS4 uses96DPI; requested/native style zoom remains different. No long-name, missing-font, actual desktop, PDF, pan/zoom or source-globe equivalence pass. |
+| C01/C29: four cameras, source and separate Mercator references, two native builds | PASS (scoped controls/registration) | All eight browser and eight native PNG repeat pairs are byte-identical. Native settings/context repeat too; each runtime's four label inventories equal its offline audit. Forty actual Mercator anchor comparisons are within 1e-6px. |
+| C01/C23/C28 and remaining C19 output/edge cases | OPEN / NOT ASSESSED | QGIS 3 uses 100 DPI, QGIS 4 uses 96 DPI; requested/native style zoom remains different. No long-name, missing-font, actual desktop, PDF, pan/zoom or source-globe equivalence pass. |
 
-The fresh inventory contains **16 browser PNGs and16 native PNGs**. Browser
+The fresh inventory contains **16 browser PNGs and 16 native PNGs**. Browser
 source properties are from queryRenderedFeatures, not a native decoder trace;
-live tile bytes remain unarchived. Full maps, unscaled380×300 crops, original
+live tile bytes remain unarchived. Full maps, unscaled 380×300 crops, original
 source-projection references, primary requested/resolved font settings and
 per-frame runtime metadata are retained. Source-language fidelity and common
 road/airport reader tasks remain OPEN; no aggregate error score or extra local
 labels compensates for the missing source content.
 
-Full local tests pass2675/190skips with299subtests; both complete Docker suites
-pass215/82skips. The legacy native companion test passes80cases. All runtime,
+Full local tests pass 2675 / 190 skips with 299 subtests; both complete Docker suites
+pass 215 / 82 skips. The legacy native companion test passes 80 cases. All runtime,
 activity, font and packaging inputs are unchanged, so no new ZIP or output
 behavior is asserted. Next: repair a bounded audited content owner population,
 keeping water companions, source transforms and role/zoom gates intact; audit
