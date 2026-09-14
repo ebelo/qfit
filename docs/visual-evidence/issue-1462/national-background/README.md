@@ -85,7 +85,7 @@ Run native commands with the selected QGIS Python. `background_pdf_capture.py` r
 
 No whole-criterion promotion: C15 OPEN, C12/C23 PARTIAL, C01/C28 OPEN, C29 PDF150 OPEN. Remaining work includes disputed/admin1/background blur and texture, source/native zoom and density, mixed fidelity, broader maritime/worldviews, topology/seams, multilingual/RTL typography, real sparse/dense/shared activities, accessibility, desktop/full-atlas/raster output and operational/performance coverage. No absent fixture is marked PASS. Outdoors/custom-style/raster/activities behavior is guarded by exact-style isolation and existing tests, not new broad visual certification.
 
-Local guarded-code checks:2675 passed/189 skipped/299 subtests; complete Docker3 and4 each214 passed/82 skipped; both plugin packages built,9 package tests passed; stroke module147/147 statements covered. Native legacy focused paint:2 passed/256 subtests. CI/review status belongs to the implementation PR, not this pre-publication evidence snapshot.
+Local guarded-code checks:2675 passed/189 skipped/299 subtests; complete Docker3 and4 each214 passed/82 skipped; both plugin packages built,9 package tests passed; stroke module147/147 statements covered. Native legacy focused paint:2 passed/256 subtests. [PR #1474](https://github.com/ebelo/qfit/pull/1474) is now verified MERGED. All 11 exact-head checks pass, Codex completed without findings and Greptile scored 5/5; Sonar reports zero unresolved issues/hotspots and 100% new-code coverage. [Final-head proof](final-head-proof.json) and [merged gates](merged-gates.json) establish all 233 runtime files and the entire merged tracked tree match the reviewed/captured code. No additional merged-head capture is claimed.
 
 ## Complete camera gallery
 
