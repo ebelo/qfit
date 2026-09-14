@@ -81,22 +81,42 @@ def _light_name_fallback_owners(source_style):
     }
 
 
-def apply_light_name_fallback(labeling, source_style: dict) -> int:
-    """Restore the audited Light place-name coalesce before font-band splitting.
+def _light_road_name_fallback_rules(source_style):
+    if not _is_mapbox_light_style(source_style):
+        return set()
+    owners = [layer for layer in source_style.get("layers", [])
+              if isinstance(layer, dict) and layer.get("id") == _ROAD_LABEL_ID]
+    if len(owners) != 1:
+        return set()
+    owner = owners[0]
+    layout = owner.get("layout", {})
+    if (owner.get("type") != "symbol" or owner.get("source-layer") != "road"
+            or layout.get("symbol-placement") != "line"
+            or layout.get("text-field") != _NAME_EN_FALLBACK
+            or layout.get("text-transform", "none") != "none"):
+        return set()
+    return _ROAD_LABEL_RULES
 
-    These unsplit source layouts miss the preprocessing helper's layout guards.
+
+def apply_light_name_fallback(labeling, source_style: dict) -> int:
+    """Restore audited Light place/road content before font-band splitting.
+
+    These source layouts miss the preprocessing helper's layout guards.
+    Road rules include only the original and the known derived size band;
+    source feature eligibility (including has(name)) stays unchanged.
     A native expression retains NULL/missing fallback and an intentional empty
     English name without adding companion rules or changing feature filters.
     Explicit column references are necessary: vector-tile decoding builds its
     requested field schema from them and leaves missing MVT values NULL.
     """
-    owners = _light_name_fallback_owners(source_style)
+    owners = dict.fromkeys(_light_name_fallback_owners(source_style), "place_label")
+    owners.update(dict.fromkeys(_light_road_name_fallback_rules(source_style), "road"))
     if not owners:
         return 0
     styles = list(labeling.styles())
     changed = 0
     for label in styles:
-        if label.styleName() not in owners or label.layerName() != "place_label":
+        if label.styleName() not in owners or label.layerName() != owners[label.styleName()]:
             continue
         settings = label.labelSettings()
         # Do not overwrite a native converter fix or an explicit text override.
