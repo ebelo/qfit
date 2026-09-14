@@ -202,6 +202,13 @@ that missing variable as NULL and changed widths; it is **invalid evidence** and
 excluded. The retained pass-through trace handles the missing value explicitly
 without changing original width results.
 
+Shared-metadata isolation also covers all seven Outdoors cameras:14 fresh
+source-preserving browser PNGs and42 native Before/Repeat/After PNGs across both
+runtimes. Native image, complete label and preprocessed-style bytes are unchanged;
+only metadata is corrected. This is a shared-harness guardrail, not Outdoors
+product work or a projection/parity pass. Both278-entry plugin ZIP payloads equal
+main; both package builds and nine package checks pass.
+
 Full local tests pass2672/187; both complete Docker suites pass212/82. Source
 runtime behavior and capture defaults remain unchanged. The numerical geometry
 fixture also passes285 cases on native QGIS3.34.4. Live tile payloads remain
@@ -541,4 +548,4 @@ explicitly agreed scope reduction with follow-up ownership for excluded work.
 
 [browser-projection]: https://github.com/ebelo/qfit/tree/9270b210cd624ddf0eaaa5ddbffe6c8dd29d374b/docs/visual-evidence/issue-1462/browser-projection
 
-[scale-calibration]: https://github.com/ebelo/qfit/tree/708f6b9276ee049f2f1d2d65abea1f8b102c632d/docs/visual-evidence/issue-1462/scale-calibration
+[scale-calibration]: https://github.com/ebelo/qfit/tree/82482c430e71b6cc78b4d58cac003d1f669675c7/docs/visual-evidence/issue-1462/scale-calibration
