@@ -143,3 +143,58 @@ The PDF page is960×675points. View full files and native-size crops, not just m
 Fonts remain the existing openly licensed Docker installation, with actual resolved
 faces in the complete label inventories; no ZIP font provisioning is added. No source
 semantics/usability/reference-fidelity PASS follows from a density comparison alone.
+
+## Review clarification: executable generator and exact metric operands
+
+[density_capture.py](density_capture.py) retains the **exact byte-identical audited
+rendering/PDF worker**, with repository/source/output locations supplied by arguments
+instead of private machine paths. It visibly calls
+`AtlasExportTask._build_pdf_export_settings()` before varying DPI and exporting.
+[Worker provenance](generator-provenance.json) and a [fresh same-run executable
+replay](generator-replay.json) cover both cities and both exact Docker runtimes:
+four supporting PNGs and24 additional PDFs. All contexts match;20 PDF rasterizations
+are identical, while the four QGIS4/150DPI replay files retain the disclosed variation.
+These replay artifacts do not replace the original48 PDF records.
+
+Run inside a configured PyQGIS/open-font environment with authorized inherited capture
+access, following the repository harness and any environment-owned preflight rules.
+`QFIT_REPO` is the qfit checkout and `QFIT_OUTPUT` is a new output directory; neither
+variable is a credential. The source file below is the published Light snapshot:
+
+```bash
+python3 density_capture.py --repo "$QFIT_REPO" --output-root "$QFIT_OUTPUT" \
+  --source-style light-v11.json --version 4 \
+  --camera bern-urban-z12-light --variant pdfs-control
+```
+
+Repeat for both cameras and the actual QGIS3/4 runtimes; `--version` labels artifacts,
+not the interpreter selection. Use `pdfs-trace` for the original pass-through trace,
+or `dpi96`, `dpr2`, `dpi192` for native image modes. The generator refuses an existing
+variant directory. Container setup/protected credentials are environment prerequisites,
+not copied into this portable generator. The worker uses existing production capture
+network setup, font mapping and output routines unchanged.
+
+### Pair labels resolve the apparent metric conflict
+
+[pdf-pair-metrics.json](pdf-pair-metrics.json) is the authoritative **named-pair**
+view of all72 comparisons, with exact operand paths and SHA256 values. Recompute it:
+
+```bash
+python3 pdf_pair_metrics.py --evidence-root . --output recomputed-pairs.json
+```
+
+| QGIS4 PDF150 pair | Bern changed RGB pixels | Geneva changed RGB pixels |
+| --- | ---: | ---: |
+| unwrapped initial → unwrapped repeat | 280 | 145 |
+| traced initial → traced repeat | 240 | 246 |
+| unwrapped initial → traced repeat | 280 | 145 |
+
+There is no numeric correction: the original `pdf-trace-isolation.json` deliberately
+compares **every row against the unwrapped initial image**, including its `trace-repeat`
+row. It therefore reports280/145 for that cross-mode pair, not for a within-trace repeat.
+`pdf-repeat-audit.json` compares traced initial against traced repeat and reports240/246.
+The manifest's original six pair rows follow combinations(unwrapped initial,unwrapped
+repeat,traced initial,traced repeat); the new named-pair file makes each operand explicit.
+All original immutable artifacts remain unchanged. The clarified labels do not reclassify
+variation as noise or certify C29/150DPI. These are decoded RGB raster metrics, not PDF
+byte comparisons, label counts or semantic quality scores.

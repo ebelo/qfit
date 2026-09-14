@@ -1,0 +1,6 @@
+{
+  "original_worker_sha256": "6893c45ea7f9e8d3134031df2a07e35f2058e32629afa89a013b6fcda7f89b2f",
+  "published_worker_sha256": "6893c45ea7f9e8d3134031df2a07e35f2058e32629afa89a013b6fcda7f89b2f",
+  "worker_body_identical": true,
+  "wrapper_changes": "Replaces private checkout/output/source paths and container bootstrap with explicit path arguments; adds overwrite rejection and sanitized top-level error handling. Rendering/PDF worker is byte-identical to the worker used for this audit."
+}

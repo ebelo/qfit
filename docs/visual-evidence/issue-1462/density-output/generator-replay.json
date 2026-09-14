@@ -1,0 +1,272 @@
+{
+  "generator_sha256": "8ce81f9e676f301a8ac163fded0a3c83f8276fcfdc4347cac23929f9574a0619",
+  "fresh_same_run_container_preflights_authorized": true,
+  "all_four_supporting_pngs_identical": true,
+  "pdf_rows": [
+    {
+      "runtime": "3",
+      "camera": "bern-urban-z12-light",
+      "filename": "pdf150-repeat.pdf",
+      "replay_pdf_sha256": "51a647170344387a51422dc2fdb3e8ae91cff281f8ef278f80a1b01acd2543c4",
+      "replay_png_sha256": "0dc7473ffa117f363c2ec4e7ee44f654e163f96aaf53dbc221a7a9c4251f783c",
+      "original_png_sha256": "0dc7473ffa117f363c2ec4e7ee44f654e163f96aaf53dbc221a7a9c4251f783c",
+      "context_identical": true,
+      "changed_pixels": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "3",
+      "camera": "bern-urban-z12-light",
+      "filename": "pdf150.pdf",
+      "replay_pdf_sha256": "921ad6079e789ae8910e5fd73f3f4c7ff787a3bd4e49884a62c5cc5a06022f4e",
+      "replay_png_sha256": "0dc7473ffa117f363c2ec4e7ee44f654e163f96aaf53dbc221a7a9c4251f783c",
+      "original_png_sha256": "0dc7473ffa117f363c2ec4e7ee44f654e163f96aaf53dbc221a7a9c4251f783c",
+      "context_identical": true,
+      "changed_pixels": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "3",
+      "camera": "bern-urban-z12-light",
+      "filename": "pdf192-repeat.pdf",
+      "replay_pdf_sha256": "0d7bce4ea8f6a12c964aa5cd5bbaa93e83808d550c2156b1fb5614e79744c6e7",
+      "replay_png_sha256": "acd0332af8e6786b232907e643cafa18246910c5f3e0624f0b9c56f404168141",
+      "original_png_sha256": "acd0332af8e6786b232907e643cafa18246910c5f3e0624f0b9c56f404168141",
+      "context_identical": true,
+      "changed_pixels": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "3",
+      "camera": "bern-urban-z12-light",
+      "filename": "pdf192.pdf",
+      "replay_pdf_sha256": "ecdf1847de5afb80ab6732696241f2b421df54390e67325d273260f83d73ab01",
+      "replay_png_sha256": "acd0332af8e6786b232907e643cafa18246910c5f3e0624f0b9c56f404168141",
+      "original_png_sha256": "acd0332af8e6786b232907e643cafa18246910c5f3e0624f0b9c56f404168141",
+      "context_identical": true,
+      "changed_pixels": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "3",
+      "camera": "bern-urban-z12-light",
+      "filename": "pdf96-repeat.pdf",
+      "replay_pdf_sha256": "0c0dcb1155704d2aa552203b0084aab4db704d2beddde17ea36e48ebc5d903cc",
+      "replay_png_sha256": "abf214d185fc0d1d7619652a8d0bc8dff19b762d9d4bb8f5bb00c22d4dd62902",
+      "original_png_sha256": "abf214d185fc0d1d7619652a8d0bc8dff19b762d9d4bb8f5bb00c22d4dd62902",
+      "context_identical": true,
+      "changed_pixels": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "3",
+      "camera": "bern-urban-z12-light",
+      "filename": "pdf96.pdf",
+      "replay_pdf_sha256": "2fbb65615fb404ead92845809c827bf394ea9cc6d528f0b37b176ab6f86503de",
+      "replay_png_sha256": "abf214d185fc0d1d7619652a8d0bc8dff19b762d9d4bb8f5bb00c22d4dd62902",
+      "original_png_sha256": "abf214d185fc0d1d7619652a8d0bc8dff19b762d9d4bb8f5bb00c22d4dd62902",
+      "context_identical": true,
+      "changed_pixels": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "3",
+      "camera": "geneva-urban-z14-light",
+      "filename": "pdf150-repeat.pdf",
+      "replay_pdf_sha256": "8db8256761d74309a2372ee58129b038ef1fc354e8539a3bf5d6111bb6da4eb2",
+      "replay_png_sha256": "2b943082b3ea1f686de84422136952729d5558edb812d428e7efb8cf5cf42e84",
+      "original_png_sha256": "2b943082b3ea1f686de84422136952729d5558edb812d428e7efb8cf5cf42e84",
+      "context_identical": true,
+      "changed_pixels": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "3",
+      "camera": "geneva-urban-z14-light",
+      "filename": "pdf150.pdf",
+      "replay_pdf_sha256": "89beb2d236a9112e93d6be2c8a246d236184186297d29ab325c990dde8233e57",
+      "replay_png_sha256": "2b943082b3ea1f686de84422136952729d5558edb812d428e7efb8cf5cf42e84",
+      "original_png_sha256": "2b943082b3ea1f686de84422136952729d5558edb812d428e7efb8cf5cf42e84",
+      "context_identical": true,
+      "changed_pixels": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "3",
+      "camera": "geneva-urban-z14-light",
+      "filename": "pdf192-repeat.pdf",
+      "replay_pdf_sha256": "fe5b424d5a7c2414a58ca2f9053bb5bcc4c53d6673ed7857b3c21766f9b0101e",
+      "replay_png_sha256": "ee7f80996c74f131561bcf2c207ac4c3f926aa0d5600ea43be3c510c71f0a3ea",
+      "original_png_sha256": "ee7f80996c74f131561bcf2c207ac4c3f926aa0d5600ea43be3c510c71f0a3ea",
+      "context_identical": true,
+      "changed_pixels": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "3",
+      "camera": "geneva-urban-z14-light",
+      "filename": "pdf192.pdf",
+      "replay_pdf_sha256": "703008e3d578d34a014caba8af63619ffbce4820f42e1fca211cad6ccd261d51",
+      "replay_png_sha256": "ee7f80996c74f131561bcf2c207ac4c3f926aa0d5600ea43be3c510c71f0a3ea",
+      "original_png_sha256": "ee7f80996c74f131561bcf2c207ac4c3f926aa0d5600ea43be3c510c71f0a3ea",
+      "context_identical": true,
+      "changed_pixels": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "3",
+      "camera": "geneva-urban-z14-light",
+      "filename": "pdf96-repeat.pdf",
+      "replay_pdf_sha256": "84693836e889d1d8fcdd6e65bbb344ca40ff8634abfc0aaaeabc776c7d0dfeab",
+      "replay_png_sha256": "e36641ad333e54017d81ea13656e66adeaf3d2b3cc602026e08a154482ede0dc",
+      "original_png_sha256": "e36641ad333e54017d81ea13656e66adeaf3d2b3cc602026e08a154482ede0dc",
+      "context_identical": true,
+      "changed_pixels": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "3",
+      "camera": "geneva-urban-z14-light",
+      "filename": "pdf96.pdf",
+      "replay_pdf_sha256": "6c4aeb52bb68a64e99f105c84919e5cc31036de6f54332ac073c8ef40e62e9ec",
+      "replay_png_sha256": "e36641ad333e54017d81ea13656e66adeaf3d2b3cc602026e08a154482ede0dc",
+      "original_png_sha256": "e36641ad333e54017d81ea13656e66adeaf3d2b3cc602026e08a154482ede0dc",
+      "context_identical": true,
+      "changed_pixels": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "4",
+      "camera": "bern-urban-z12-light",
+      "filename": "pdf150-repeat.pdf",
+      "replay_pdf_sha256": "8913373b6b17b30adc96593fdf1ccac1f030457616b9f99f5f53a1867c424dbe",
+      "replay_png_sha256": "f07db44b0ff87df7be8558ed4b639e068193ceda364b320d5313e9520664e5c4",
+      "original_png_sha256": "f07db44b0ff87df7be8558ed4b639e068193ceda364b320d5313e9520664e5c4",
+      "context_identical": true,
+      "changed_pixels": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "4",
+      "camera": "bern-urban-z12-light",
+      "filename": "pdf150.pdf",
+      "replay_pdf_sha256": "77bc04c5166998059f4086edbb66935b3cd3a5b89e0eca7debfc48da839b5b41",
+      "replay_png_sha256": "4186dfa8d056ee829969c8e226db3e8b65cfa3c70c1046b55c299f6b1484ad70",
+      "original_png_sha256": "a3a3c701abf23d5d665a634ca1ad5243632d2770df22b2ff66f4c28d689c2601",
+      "context_identical": true,
+      "changed_pixels": 189,
+      "normalized_mae": 5.219680464778504e-07
+    },
+    {
+      "runtime": "4",
+      "camera": "bern-urban-z12-light",
+      "filename": "pdf192-repeat.pdf",
+      "replay_pdf_sha256": "6c9dbfe6222002ac32f7ef5e9aa75c21c24b48ae508c5082326660ab9333ccc6",
+      "replay_png_sha256": "5a28cafff4acb33793b3c81eded5a09e03b7c660b2824ec99bbd347c2c346de9",
+      "original_png_sha256": "5a28cafff4acb33793b3c81eded5a09e03b7c660b2824ec99bbd347c2c346de9",
+      "context_identical": true,
+      "changed_pixels": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "4",
+      "camera": "bern-urban-z12-light",
+      "filename": "pdf192.pdf",
+      "replay_pdf_sha256": "00c63bee8b92d9025d655b17c789d68bc0cb1c0fbf0fcea076bdc333a76cb411",
+      "replay_png_sha256": "5a28cafff4acb33793b3c81eded5a09e03b7c660b2824ec99bbd347c2c346de9",
+      "original_png_sha256": "5a28cafff4acb33793b3c81eded5a09e03b7c660b2824ec99bbd347c2c346de9",
+      "context_identical": true,
+      "changed_pixels": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "4",
+      "camera": "bern-urban-z12-light",
+      "filename": "pdf96-repeat.pdf",
+      "replay_pdf_sha256": "8e071c89c0cebfc28a8085c902c5b57ab0881a08d2d7dca97bc7d1b4236548d7",
+      "replay_png_sha256": "5dbb3584f5c762139e97c031059fa1b4cd6d6377e279b667fb9ecdfa8e1f07f1",
+      "original_png_sha256": "5dbb3584f5c762139e97c031059fa1b4cd6d6377e279b667fb9ecdfa8e1f07f1",
+      "context_identical": true,
+      "changed_pixels": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "4",
+      "camera": "bern-urban-z12-light",
+      "filename": "pdf96.pdf",
+      "replay_pdf_sha256": "eaa933ed0fbfaa08b59da1ea45498ceb24f8a4ee8a577ac94c4f6ffd95351735",
+      "replay_png_sha256": "5dbb3584f5c762139e97c031059fa1b4cd6d6377e279b667fb9ecdfa8e1f07f1",
+      "original_png_sha256": "5dbb3584f5c762139e97c031059fa1b4cd6d6377e279b667fb9ecdfa8e1f07f1",
+      "context_identical": true,
+      "changed_pixels": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "4",
+      "camera": "geneva-urban-z14-light",
+      "filename": "pdf150-repeat.pdf",
+      "replay_pdf_sha256": "ec37477afcaf1b4c329604e9f3d6cb95119795bf15deab1e29065540229d3d92",
+      "replay_png_sha256": "f79743db715edf0150f3ee32638f96a34f540a14ffe097da9ed898ab42476d7a",
+      "original_png_sha256": "f79743db715edf0150f3ee32638f96a34f540a14ffe097da9ed898ab42476d7a",
+      "context_identical": true,
+      "changed_pixels": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "4",
+      "camera": "geneva-urban-z14-light",
+      "filename": "pdf150.pdf",
+      "replay_pdf_sha256": "99e34566290d18408cee5437fef6709099b41d19242b8d0b4640e6aab3607caf",
+      "replay_png_sha256": "9ec69fc5b5808900bf165f540cc7c61da8816f1b388baea92e5f3c8b7490ea7c",
+      "original_png_sha256": "1e97b61c53c41b73e5fecb0334bbb148b028d3712060c789a340764679471b41",
+      "context_identical": true,
+      "changed_pixels": 51,
+      "normalized_mae": 2.1219135802469135e-07
+    },
+    {
+      "runtime": "4",
+      "camera": "geneva-urban-z14-light",
+      "filename": "pdf192-repeat.pdf",
+      "replay_pdf_sha256": "8b3e72c8925d7601d4edffb2e747f700f1818dc339037b5d0e5335a14e9e193a",
+      "replay_png_sha256": "174491db76eb8faa7c290f8062873ff9e60c06d76cff6d051bb21fc35d06c410",
+      "original_png_sha256": "174491db76eb8faa7c290f8062873ff9e60c06d76cff6d051bb21fc35d06c410",
+      "context_identical": true,
+      "changed_pixels": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "4",
+      "camera": "geneva-urban-z14-light",
+      "filename": "pdf192.pdf",
+      "replay_pdf_sha256": "f705099979df7654835073e872c093fdf5e741c2cc0fcee97179e5bc0a90a0d4",
+      "replay_png_sha256": "174491db76eb8faa7c290f8062873ff9e60c06d76cff6d051bb21fc35d06c410",
+      "original_png_sha256": "174491db76eb8faa7c290f8062873ff9e60c06d76cff6d051bb21fc35d06c410",
+      "context_identical": true,
+      "changed_pixels": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "4",
+      "camera": "geneva-urban-z14-light",
+      "filename": "pdf96-repeat.pdf",
+      "replay_pdf_sha256": "185dfccf3a89bc6af408c81a840b05accd390c021a4a87b0af9ea4328afea31a",
+      "replay_png_sha256": "b3240c8b2401e8a0982e425c999add621b58e31bdcf9d33533801baee051b464",
+      "original_png_sha256": "b3240c8b2401e8a0982e425c999add621b58e31bdcf9d33533801baee051b464",
+      "context_identical": true,
+      "changed_pixels": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "4",
+      "camera": "geneva-urban-z14-light",
+      "filename": "pdf96.pdf",
+      "replay_pdf_sha256": "6b0c077b0bd623c475043e7257d8eb469688c666ce0f2342b1ab6305f5281b6d",
+      "replay_png_sha256": "b3240c8b2401e8a0982e425c999add621b58e31bdcf9d33533801baee051b464",
+      "original_png_sha256": "b3240c8b2401e8a0982e425c999add621b58e31bdcf9d33533801baee051b464",
+      "context_identical": true,
+      "changed_pixels": 0,
+      "normalized_mae": 0.0
+    }
+  ],
+  "claim": "Published executable ran in both exact Docker runtimes for both cameras and reproduced the audited settings/context. Twenty96/192/QGIS3 PDF rasterizations are byte-identical; QGIS4/150 variability is retained, not hidden. No production code changed."
+}

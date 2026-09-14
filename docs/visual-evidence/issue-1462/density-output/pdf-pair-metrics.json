@@ -1,0 +1,931 @@
+{
+  "method": "Every unordered pair of the four published fixed96DPI Poppler RGB rasterizations; count a pixel once if any RGB channel differs. Filenames and SHA256 identify the exact operands.",
+  "rows": [
+    {
+      "runtime": "3",
+      "camera": "bern-urban-z12-light",
+      "pdf_export_dpi": 96,
+      "pairs": [
+        {
+          "left": "unwrapped_initial",
+          "right": "unwrapped_repeat",
+          "left_file": "3/bern-urban-z12-light/pdfs-control/pdf96.png",
+          "right_file": "3/bern-urban-z12-light/pdfs-control/pdf96-repeat.png",
+          "left_sha256": "abf214d185fc0d1d7619652a8d0bc8dff19b762d9d4bb8f5bb00c22d4dd62902",
+          "right_sha256": "abf214d185fc0d1d7619652a8d0bc8dff19b762d9d4bb8f5bb00c22d4dd62902",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "unwrapped_initial",
+          "right": "traced_initial",
+          "left_file": "3/bern-urban-z12-light/pdfs-control/pdf96.png",
+          "right_file": "3/bern-urban-z12-light/pdfs-trace/pdf96.png",
+          "left_sha256": "abf214d185fc0d1d7619652a8d0bc8dff19b762d9d4bb8f5bb00c22d4dd62902",
+          "right_sha256": "abf214d185fc0d1d7619652a8d0bc8dff19b762d9d4bb8f5bb00c22d4dd62902",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "unwrapped_initial",
+          "right": "traced_repeat",
+          "left_file": "3/bern-urban-z12-light/pdfs-control/pdf96.png",
+          "right_file": "3/bern-urban-z12-light/pdfs-trace/pdf96-repeat.png",
+          "left_sha256": "abf214d185fc0d1d7619652a8d0bc8dff19b762d9d4bb8f5bb00c22d4dd62902",
+          "right_sha256": "abf214d185fc0d1d7619652a8d0bc8dff19b762d9d4bb8f5bb00c22d4dd62902",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "unwrapped_repeat",
+          "right": "traced_initial",
+          "left_file": "3/bern-urban-z12-light/pdfs-control/pdf96-repeat.png",
+          "right_file": "3/bern-urban-z12-light/pdfs-trace/pdf96.png",
+          "left_sha256": "abf214d185fc0d1d7619652a8d0bc8dff19b762d9d4bb8f5bb00c22d4dd62902",
+          "right_sha256": "abf214d185fc0d1d7619652a8d0bc8dff19b762d9d4bb8f5bb00c22d4dd62902",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "unwrapped_repeat",
+          "right": "traced_repeat",
+          "left_file": "3/bern-urban-z12-light/pdfs-control/pdf96-repeat.png",
+          "right_file": "3/bern-urban-z12-light/pdfs-trace/pdf96-repeat.png",
+          "left_sha256": "abf214d185fc0d1d7619652a8d0bc8dff19b762d9d4bb8f5bb00c22d4dd62902",
+          "right_sha256": "abf214d185fc0d1d7619652a8d0bc8dff19b762d9d4bb8f5bb00c22d4dd62902",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "traced_initial",
+          "right": "traced_repeat",
+          "left_file": "3/bern-urban-z12-light/pdfs-trace/pdf96.png",
+          "right_file": "3/bern-urban-z12-light/pdfs-trace/pdf96-repeat.png",
+          "left_sha256": "abf214d185fc0d1d7619652a8d0bc8dff19b762d9d4bb8f5bb00c22d4dd62902",
+          "right_sha256": "abf214d185fc0d1d7619652a8d0bc8dff19b762d9d4bb8f5bb00c22d4dd62902",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        }
+      ]
+    },
+    {
+      "runtime": "3",
+      "camera": "bern-urban-z12-light",
+      "pdf_export_dpi": 150,
+      "pairs": [
+        {
+          "left": "unwrapped_initial",
+          "right": "unwrapped_repeat",
+          "left_file": "3/bern-urban-z12-light/pdfs-control/pdf150.png",
+          "right_file": "3/bern-urban-z12-light/pdfs-control/pdf150-repeat.png",
+          "left_sha256": "0dc7473ffa117f363c2ec4e7ee44f654e163f96aaf53dbc221a7a9c4251f783c",
+          "right_sha256": "0dc7473ffa117f363c2ec4e7ee44f654e163f96aaf53dbc221a7a9c4251f783c",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "unwrapped_initial",
+          "right": "traced_initial",
+          "left_file": "3/bern-urban-z12-light/pdfs-control/pdf150.png",
+          "right_file": "3/bern-urban-z12-light/pdfs-trace/pdf150.png",
+          "left_sha256": "0dc7473ffa117f363c2ec4e7ee44f654e163f96aaf53dbc221a7a9c4251f783c",
+          "right_sha256": "0dc7473ffa117f363c2ec4e7ee44f654e163f96aaf53dbc221a7a9c4251f783c",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "unwrapped_initial",
+          "right": "traced_repeat",
+          "left_file": "3/bern-urban-z12-light/pdfs-control/pdf150.png",
+          "right_file": "3/bern-urban-z12-light/pdfs-trace/pdf150-repeat.png",
+          "left_sha256": "0dc7473ffa117f363c2ec4e7ee44f654e163f96aaf53dbc221a7a9c4251f783c",
+          "right_sha256": "0dc7473ffa117f363c2ec4e7ee44f654e163f96aaf53dbc221a7a9c4251f783c",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "unwrapped_repeat",
+          "right": "traced_initial",
+          "left_file": "3/bern-urban-z12-light/pdfs-control/pdf150-repeat.png",
+          "right_file": "3/bern-urban-z12-light/pdfs-trace/pdf150.png",
+          "left_sha256": "0dc7473ffa117f363c2ec4e7ee44f654e163f96aaf53dbc221a7a9c4251f783c",
+          "right_sha256": "0dc7473ffa117f363c2ec4e7ee44f654e163f96aaf53dbc221a7a9c4251f783c",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "unwrapped_repeat",
+          "right": "traced_repeat",
+          "left_file": "3/bern-urban-z12-light/pdfs-control/pdf150-repeat.png",
+          "right_file": "3/bern-urban-z12-light/pdfs-trace/pdf150-repeat.png",
+          "left_sha256": "0dc7473ffa117f363c2ec4e7ee44f654e163f96aaf53dbc221a7a9c4251f783c",
+          "right_sha256": "0dc7473ffa117f363c2ec4e7ee44f654e163f96aaf53dbc221a7a9c4251f783c",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "traced_initial",
+          "right": "traced_repeat",
+          "left_file": "3/bern-urban-z12-light/pdfs-trace/pdf150.png",
+          "right_file": "3/bern-urban-z12-light/pdfs-trace/pdf150-repeat.png",
+          "left_sha256": "0dc7473ffa117f363c2ec4e7ee44f654e163f96aaf53dbc221a7a9c4251f783c",
+          "right_sha256": "0dc7473ffa117f363c2ec4e7ee44f654e163f96aaf53dbc221a7a9c4251f783c",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        }
+      ]
+    },
+    {
+      "runtime": "3",
+      "camera": "bern-urban-z12-light",
+      "pdf_export_dpi": 192,
+      "pairs": [
+        {
+          "left": "unwrapped_initial",
+          "right": "unwrapped_repeat",
+          "left_file": "3/bern-urban-z12-light/pdfs-control/pdf192.png",
+          "right_file": "3/bern-urban-z12-light/pdfs-control/pdf192-repeat.png",
+          "left_sha256": "acd0332af8e6786b232907e643cafa18246910c5f3e0624f0b9c56f404168141",
+          "right_sha256": "acd0332af8e6786b232907e643cafa18246910c5f3e0624f0b9c56f404168141",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "unwrapped_initial",
+          "right": "traced_initial",
+          "left_file": "3/bern-urban-z12-light/pdfs-control/pdf192.png",
+          "right_file": "3/bern-urban-z12-light/pdfs-trace/pdf192.png",
+          "left_sha256": "acd0332af8e6786b232907e643cafa18246910c5f3e0624f0b9c56f404168141",
+          "right_sha256": "acd0332af8e6786b232907e643cafa18246910c5f3e0624f0b9c56f404168141",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "unwrapped_initial",
+          "right": "traced_repeat",
+          "left_file": "3/bern-urban-z12-light/pdfs-control/pdf192.png",
+          "right_file": "3/bern-urban-z12-light/pdfs-trace/pdf192-repeat.png",
+          "left_sha256": "acd0332af8e6786b232907e643cafa18246910c5f3e0624f0b9c56f404168141",
+          "right_sha256": "acd0332af8e6786b232907e643cafa18246910c5f3e0624f0b9c56f404168141",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "unwrapped_repeat",
+          "right": "traced_initial",
+          "left_file": "3/bern-urban-z12-light/pdfs-control/pdf192-repeat.png",
+          "right_file": "3/bern-urban-z12-light/pdfs-trace/pdf192.png",
+          "left_sha256": "acd0332af8e6786b232907e643cafa18246910c5f3e0624f0b9c56f404168141",
+          "right_sha256": "acd0332af8e6786b232907e643cafa18246910c5f3e0624f0b9c56f404168141",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "unwrapped_repeat",
+          "right": "traced_repeat",
+          "left_file": "3/bern-urban-z12-light/pdfs-control/pdf192-repeat.png",
+          "right_file": "3/bern-urban-z12-light/pdfs-trace/pdf192-repeat.png",
+          "left_sha256": "acd0332af8e6786b232907e643cafa18246910c5f3e0624f0b9c56f404168141",
+          "right_sha256": "acd0332af8e6786b232907e643cafa18246910c5f3e0624f0b9c56f404168141",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "traced_initial",
+          "right": "traced_repeat",
+          "left_file": "3/bern-urban-z12-light/pdfs-trace/pdf192.png",
+          "right_file": "3/bern-urban-z12-light/pdfs-trace/pdf192-repeat.png",
+          "left_sha256": "acd0332af8e6786b232907e643cafa18246910c5f3e0624f0b9c56f404168141",
+          "right_sha256": "acd0332af8e6786b232907e643cafa18246910c5f3e0624f0b9c56f404168141",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        }
+      ]
+    },
+    {
+      "runtime": "3",
+      "camera": "geneva-urban-z14-light",
+      "pdf_export_dpi": 96,
+      "pairs": [
+        {
+          "left": "unwrapped_initial",
+          "right": "unwrapped_repeat",
+          "left_file": "3/geneva-urban-z14-light/pdfs-control/pdf96.png",
+          "right_file": "3/geneva-urban-z14-light/pdfs-control/pdf96-repeat.png",
+          "left_sha256": "e36641ad333e54017d81ea13656e66adeaf3d2b3cc602026e08a154482ede0dc",
+          "right_sha256": "e36641ad333e54017d81ea13656e66adeaf3d2b3cc602026e08a154482ede0dc",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "unwrapped_initial",
+          "right": "traced_initial",
+          "left_file": "3/geneva-urban-z14-light/pdfs-control/pdf96.png",
+          "right_file": "3/geneva-urban-z14-light/pdfs-trace/pdf96.png",
+          "left_sha256": "e36641ad333e54017d81ea13656e66adeaf3d2b3cc602026e08a154482ede0dc",
+          "right_sha256": "e36641ad333e54017d81ea13656e66adeaf3d2b3cc602026e08a154482ede0dc",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "unwrapped_initial",
+          "right": "traced_repeat",
+          "left_file": "3/geneva-urban-z14-light/pdfs-control/pdf96.png",
+          "right_file": "3/geneva-urban-z14-light/pdfs-trace/pdf96-repeat.png",
+          "left_sha256": "e36641ad333e54017d81ea13656e66adeaf3d2b3cc602026e08a154482ede0dc",
+          "right_sha256": "e36641ad333e54017d81ea13656e66adeaf3d2b3cc602026e08a154482ede0dc",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "unwrapped_repeat",
+          "right": "traced_initial",
+          "left_file": "3/geneva-urban-z14-light/pdfs-control/pdf96-repeat.png",
+          "right_file": "3/geneva-urban-z14-light/pdfs-trace/pdf96.png",
+          "left_sha256": "e36641ad333e54017d81ea13656e66adeaf3d2b3cc602026e08a154482ede0dc",
+          "right_sha256": "e36641ad333e54017d81ea13656e66adeaf3d2b3cc602026e08a154482ede0dc",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "unwrapped_repeat",
+          "right": "traced_repeat",
+          "left_file": "3/geneva-urban-z14-light/pdfs-control/pdf96-repeat.png",
+          "right_file": "3/geneva-urban-z14-light/pdfs-trace/pdf96-repeat.png",
+          "left_sha256": "e36641ad333e54017d81ea13656e66adeaf3d2b3cc602026e08a154482ede0dc",
+          "right_sha256": "e36641ad333e54017d81ea13656e66adeaf3d2b3cc602026e08a154482ede0dc",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "traced_initial",
+          "right": "traced_repeat",
+          "left_file": "3/geneva-urban-z14-light/pdfs-trace/pdf96.png",
+          "right_file": "3/geneva-urban-z14-light/pdfs-trace/pdf96-repeat.png",
+          "left_sha256": "e36641ad333e54017d81ea13656e66adeaf3d2b3cc602026e08a154482ede0dc",
+          "right_sha256": "e36641ad333e54017d81ea13656e66adeaf3d2b3cc602026e08a154482ede0dc",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        }
+      ]
+    },
+    {
+      "runtime": "3",
+      "camera": "geneva-urban-z14-light",
+      "pdf_export_dpi": 150,
+      "pairs": [
+        {
+          "left": "unwrapped_initial",
+          "right": "unwrapped_repeat",
+          "left_file": "3/geneva-urban-z14-light/pdfs-control/pdf150.png",
+          "right_file": "3/geneva-urban-z14-light/pdfs-control/pdf150-repeat.png",
+          "left_sha256": "2b943082b3ea1f686de84422136952729d5558edb812d428e7efb8cf5cf42e84",
+          "right_sha256": "2b943082b3ea1f686de84422136952729d5558edb812d428e7efb8cf5cf42e84",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "unwrapped_initial",
+          "right": "traced_initial",
+          "left_file": "3/geneva-urban-z14-light/pdfs-control/pdf150.png",
+          "right_file": "3/geneva-urban-z14-light/pdfs-trace/pdf150.png",
+          "left_sha256": "2b943082b3ea1f686de84422136952729d5558edb812d428e7efb8cf5cf42e84",
+          "right_sha256": "2b943082b3ea1f686de84422136952729d5558edb812d428e7efb8cf5cf42e84",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "unwrapped_initial",
+          "right": "traced_repeat",
+          "left_file": "3/geneva-urban-z14-light/pdfs-control/pdf150.png",
+          "right_file": "3/geneva-urban-z14-light/pdfs-trace/pdf150-repeat.png",
+          "left_sha256": "2b943082b3ea1f686de84422136952729d5558edb812d428e7efb8cf5cf42e84",
+          "right_sha256": "2b943082b3ea1f686de84422136952729d5558edb812d428e7efb8cf5cf42e84",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "unwrapped_repeat",
+          "right": "traced_initial",
+          "left_file": "3/geneva-urban-z14-light/pdfs-control/pdf150-repeat.png",
+          "right_file": "3/geneva-urban-z14-light/pdfs-trace/pdf150.png",
+          "left_sha256": "2b943082b3ea1f686de84422136952729d5558edb812d428e7efb8cf5cf42e84",
+          "right_sha256": "2b943082b3ea1f686de84422136952729d5558edb812d428e7efb8cf5cf42e84",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "unwrapped_repeat",
+          "right": "traced_repeat",
+          "left_file": "3/geneva-urban-z14-light/pdfs-control/pdf150-repeat.png",
+          "right_file": "3/geneva-urban-z14-light/pdfs-trace/pdf150-repeat.png",
+          "left_sha256": "2b943082b3ea1f686de84422136952729d5558edb812d428e7efb8cf5cf42e84",
+          "right_sha256": "2b943082b3ea1f686de84422136952729d5558edb812d428e7efb8cf5cf42e84",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "traced_initial",
+          "right": "traced_repeat",
+          "left_file": "3/geneva-urban-z14-light/pdfs-trace/pdf150.png",
+          "right_file": "3/geneva-urban-z14-light/pdfs-trace/pdf150-repeat.png",
+          "left_sha256": "2b943082b3ea1f686de84422136952729d5558edb812d428e7efb8cf5cf42e84",
+          "right_sha256": "2b943082b3ea1f686de84422136952729d5558edb812d428e7efb8cf5cf42e84",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        }
+      ]
+    },
+    {
+      "runtime": "3",
+      "camera": "geneva-urban-z14-light",
+      "pdf_export_dpi": 192,
+      "pairs": [
+        {
+          "left": "unwrapped_initial",
+          "right": "unwrapped_repeat",
+          "left_file": "3/geneva-urban-z14-light/pdfs-control/pdf192.png",
+          "right_file": "3/geneva-urban-z14-light/pdfs-control/pdf192-repeat.png",
+          "left_sha256": "ee7f80996c74f131561bcf2c207ac4c3f926aa0d5600ea43be3c510c71f0a3ea",
+          "right_sha256": "ee7f80996c74f131561bcf2c207ac4c3f926aa0d5600ea43be3c510c71f0a3ea",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "unwrapped_initial",
+          "right": "traced_initial",
+          "left_file": "3/geneva-urban-z14-light/pdfs-control/pdf192.png",
+          "right_file": "3/geneva-urban-z14-light/pdfs-trace/pdf192.png",
+          "left_sha256": "ee7f80996c74f131561bcf2c207ac4c3f926aa0d5600ea43be3c510c71f0a3ea",
+          "right_sha256": "ee7f80996c74f131561bcf2c207ac4c3f926aa0d5600ea43be3c510c71f0a3ea",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "unwrapped_initial",
+          "right": "traced_repeat",
+          "left_file": "3/geneva-urban-z14-light/pdfs-control/pdf192.png",
+          "right_file": "3/geneva-urban-z14-light/pdfs-trace/pdf192-repeat.png",
+          "left_sha256": "ee7f80996c74f131561bcf2c207ac4c3f926aa0d5600ea43be3c510c71f0a3ea",
+          "right_sha256": "ee7f80996c74f131561bcf2c207ac4c3f926aa0d5600ea43be3c510c71f0a3ea",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "unwrapped_repeat",
+          "right": "traced_initial",
+          "left_file": "3/geneva-urban-z14-light/pdfs-control/pdf192-repeat.png",
+          "right_file": "3/geneva-urban-z14-light/pdfs-trace/pdf192.png",
+          "left_sha256": "ee7f80996c74f131561bcf2c207ac4c3f926aa0d5600ea43be3c510c71f0a3ea",
+          "right_sha256": "ee7f80996c74f131561bcf2c207ac4c3f926aa0d5600ea43be3c510c71f0a3ea",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "unwrapped_repeat",
+          "right": "traced_repeat",
+          "left_file": "3/geneva-urban-z14-light/pdfs-control/pdf192-repeat.png",
+          "right_file": "3/geneva-urban-z14-light/pdfs-trace/pdf192-repeat.png",
+          "left_sha256": "ee7f80996c74f131561bcf2c207ac4c3f926aa0d5600ea43be3c510c71f0a3ea",
+          "right_sha256": "ee7f80996c74f131561bcf2c207ac4c3f926aa0d5600ea43be3c510c71f0a3ea",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "traced_initial",
+          "right": "traced_repeat",
+          "left_file": "3/geneva-urban-z14-light/pdfs-trace/pdf192.png",
+          "right_file": "3/geneva-urban-z14-light/pdfs-trace/pdf192-repeat.png",
+          "left_sha256": "ee7f80996c74f131561bcf2c207ac4c3f926aa0d5600ea43be3c510c71f0a3ea",
+          "right_sha256": "ee7f80996c74f131561bcf2c207ac4c3f926aa0d5600ea43be3c510c71f0a3ea",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        }
+      ]
+    },
+    {
+      "runtime": "4",
+      "camera": "bern-urban-z12-light",
+      "pdf_export_dpi": 96,
+      "pairs": [
+        {
+          "left": "unwrapped_initial",
+          "right": "unwrapped_repeat",
+          "left_file": "4/bern-urban-z12-light/pdfs-control/pdf96.png",
+          "right_file": "4/bern-urban-z12-light/pdfs-control/pdf96-repeat.png",
+          "left_sha256": "5dbb3584f5c762139e97c031059fa1b4cd6d6377e279b667fb9ecdfa8e1f07f1",
+          "right_sha256": "5dbb3584f5c762139e97c031059fa1b4cd6d6377e279b667fb9ecdfa8e1f07f1",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "unwrapped_initial",
+          "right": "traced_initial",
+          "left_file": "4/bern-urban-z12-light/pdfs-control/pdf96.png",
+          "right_file": "4/bern-urban-z12-light/pdfs-trace/pdf96.png",
+          "left_sha256": "5dbb3584f5c762139e97c031059fa1b4cd6d6377e279b667fb9ecdfa8e1f07f1",
+          "right_sha256": "5dbb3584f5c762139e97c031059fa1b4cd6d6377e279b667fb9ecdfa8e1f07f1",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "unwrapped_initial",
+          "right": "traced_repeat",
+          "left_file": "4/bern-urban-z12-light/pdfs-control/pdf96.png",
+          "right_file": "4/bern-urban-z12-light/pdfs-trace/pdf96-repeat.png",
+          "left_sha256": "5dbb3584f5c762139e97c031059fa1b4cd6d6377e279b667fb9ecdfa8e1f07f1",
+          "right_sha256": "5dbb3584f5c762139e97c031059fa1b4cd6d6377e279b667fb9ecdfa8e1f07f1",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "unwrapped_repeat",
+          "right": "traced_initial",
+          "left_file": "4/bern-urban-z12-light/pdfs-control/pdf96-repeat.png",
+          "right_file": "4/bern-urban-z12-light/pdfs-trace/pdf96.png",
+          "left_sha256": "5dbb3584f5c762139e97c031059fa1b4cd6d6377e279b667fb9ecdfa8e1f07f1",
+          "right_sha256": "5dbb3584f5c762139e97c031059fa1b4cd6d6377e279b667fb9ecdfa8e1f07f1",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "unwrapped_repeat",
+          "right": "traced_repeat",
+          "left_file": "4/bern-urban-z12-light/pdfs-control/pdf96-repeat.png",
+          "right_file": "4/bern-urban-z12-light/pdfs-trace/pdf96-repeat.png",
+          "left_sha256": "5dbb3584f5c762139e97c031059fa1b4cd6d6377e279b667fb9ecdfa8e1f07f1",
+          "right_sha256": "5dbb3584f5c762139e97c031059fa1b4cd6d6377e279b667fb9ecdfa8e1f07f1",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "traced_initial",
+          "right": "traced_repeat",
+          "left_file": "4/bern-urban-z12-light/pdfs-trace/pdf96.png",
+          "right_file": "4/bern-urban-z12-light/pdfs-trace/pdf96-repeat.png",
+          "left_sha256": "5dbb3584f5c762139e97c031059fa1b4cd6d6377e279b667fb9ecdfa8e1f07f1",
+          "right_sha256": "5dbb3584f5c762139e97c031059fa1b4cd6d6377e279b667fb9ecdfa8e1f07f1",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        }
+      ]
+    },
+    {
+      "runtime": "4",
+      "camera": "bern-urban-z12-light",
+      "pdf_export_dpi": 150,
+      "pairs": [
+        {
+          "left": "unwrapped_initial",
+          "right": "unwrapped_repeat",
+          "left_file": "4/bern-urban-z12-light/pdfs-control/pdf150.png",
+          "right_file": "4/bern-urban-z12-light/pdfs-control/pdf150-repeat.png",
+          "left_sha256": "a3a3c701abf23d5d665a634ca1ad5243632d2770df22b2ff66f4c28d689c2601",
+          "right_sha256": "f07db44b0ff87df7be8558ed4b639e068193ceda364b320d5313e9520664e5c4",
+          "changed_pixels": 280,
+          "normalized_mae": 1.0552832244008715e-06,
+          "bbox": [
+            146,
+            134,
+            805,
+            900
+          ]
+        },
+        {
+          "left": "unwrapped_initial",
+          "right": "traced_initial",
+          "left_file": "4/bern-urban-z12-light/pdfs-control/pdf150.png",
+          "right_file": "4/bern-urban-z12-light/pdfs-trace/pdf150.png",
+          "left_sha256": "a3a3c701abf23d5d665a634ca1ad5243632d2770df22b2ff66f4c28d689c2601",
+          "right_sha256": "a3eac0ec6691938d7a4518ba9ff9beb66771955198b5c2722dd1c497948f4b34",
+          "changed_pixels": 50,
+          "normalized_mae": 1.7020697167755993e-07,
+          "bbox": [
+            146,
+            426,
+            805,
+            900
+          ]
+        },
+        {
+          "left": "unwrapped_initial",
+          "right": "traced_repeat",
+          "left_file": "4/bern-urban-z12-light/pdfs-control/pdf150.png",
+          "right_file": "4/bern-urban-z12-light/pdfs-trace/pdf150-repeat.png",
+          "left_sha256": "a3a3c701abf23d5d665a634ca1ad5243632d2770df22b2ff66f4c28d689c2601",
+          "right_sha256": "f07db44b0ff87df7be8558ed4b639e068193ceda364b320d5313e9520664e5c4",
+          "changed_pixels": 280,
+          "normalized_mae": 1.0552832244008715e-06,
+          "bbox": [
+            146,
+            134,
+            805,
+            900
+          ]
+        },
+        {
+          "left": "unwrapped_repeat",
+          "right": "traced_initial",
+          "left_file": "4/bern-urban-z12-light/pdfs-control/pdf150-repeat.png",
+          "right_file": "4/bern-urban-z12-light/pdfs-trace/pdf150.png",
+          "left_sha256": "f07db44b0ff87df7be8558ed4b639e068193ceda364b320d5313e9520664e5c4",
+          "right_sha256": "a3eac0ec6691938d7a4518ba9ff9beb66771955198b5c2722dd1c497948f4b34",
+          "changed_pixels": 240,
+          "normalized_mae": 1.0393972403776324e-06,
+          "bbox": [
+            198,
+            134,
+            805,
+            892
+          ]
+        },
+        {
+          "left": "unwrapped_repeat",
+          "right": "traced_repeat",
+          "left_file": "4/bern-urban-z12-light/pdfs-control/pdf150-repeat.png",
+          "right_file": "4/bern-urban-z12-light/pdfs-trace/pdf150-repeat.png",
+          "left_sha256": "f07db44b0ff87df7be8558ed4b639e068193ceda364b320d5313e9520664e5c4",
+          "right_sha256": "f07db44b0ff87df7be8558ed4b639e068193ceda364b320d5313e9520664e5c4",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "traced_initial",
+          "right": "traced_repeat",
+          "left_file": "4/bern-urban-z12-light/pdfs-trace/pdf150.png",
+          "right_file": "4/bern-urban-z12-light/pdfs-trace/pdf150-repeat.png",
+          "left_sha256": "a3eac0ec6691938d7a4518ba9ff9beb66771955198b5c2722dd1c497948f4b34",
+          "right_sha256": "f07db44b0ff87df7be8558ed4b639e068193ceda364b320d5313e9520664e5c4",
+          "changed_pixels": 240,
+          "normalized_mae": 1.0393972403776324e-06,
+          "bbox": [
+            198,
+            134,
+            805,
+            892
+          ]
+        }
+      ]
+    },
+    {
+      "runtime": "4",
+      "camera": "bern-urban-z12-light",
+      "pdf_export_dpi": 192,
+      "pairs": [
+        {
+          "left": "unwrapped_initial",
+          "right": "unwrapped_repeat",
+          "left_file": "4/bern-urban-z12-light/pdfs-control/pdf192.png",
+          "right_file": "4/bern-urban-z12-light/pdfs-control/pdf192-repeat.png",
+          "left_sha256": "5a28cafff4acb33793b3c81eded5a09e03b7c660b2824ec99bbd347c2c346de9",
+          "right_sha256": "5a28cafff4acb33793b3c81eded5a09e03b7c660b2824ec99bbd347c2c346de9",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "unwrapped_initial",
+          "right": "traced_initial",
+          "left_file": "4/bern-urban-z12-light/pdfs-control/pdf192.png",
+          "right_file": "4/bern-urban-z12-light/pdfs-trace/pdf192.png",
+          "left_sha256": "5a28cafff4acb33793b3c81eded5a09e03b7c660b2824ec99bbd347c2c346de9",
+          "right_sha256": "5a28cafff4acb33793b3c81eded5a09e03b7c660b2824ec99bbd347c2c346de9",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "unwrapped_initial",
+          "right": "traced_repeat",
+          "left_file": "4/bern-urban-z12-light/pdfs-control/pdf192.png",
+          "right_file": "4/bern-urban-z12-light/pdfs-trace/pdf192-repeat.png",
+          "left_sha256": "5a28cafff4acb33793b3c81eded5a09e03b7c660b2824ec99bbd347c2c346de9",
+          "right_sha256": "5a28cafff4acb33793b3c81eded5a09e03b7c660b2824ec99bbd347c2c346de9",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "unwrapped_repeat",
+          "right": "traced_initial",
+          "left_file": "4/bern-urban-z12-light/pdfs-control/pdf192-repeat.png",
+          "right_file": "4/bern-urban-z12-light/pdfs-trace/pdf192.png",
+          "left_sha256": "5a28cafff4acb33793b3c81eded5a09e03b7c660b2824ec99bbd347c2c346de9",
+          "right_sha256": "5a28cafff4acb33793b3c81eded5a09e03b7c660b2824ec99bbd347c2c346de9",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "unwrapped_repeat",
+          "right": "traced_repeat",
+          "left_file": "4/bern-urban-z12-light/pdfs-control/pdf192-repeat.png",
+          "right_file": "4/bern-urban-z12-light/pdfs-trace/pdf192-repeat.png",
+          "left_sha256": "5a28cafff4acb33793b3c81eded5a09e03b7c660b2824ec99bbd347c2c346de9",
+          "right_sha256": "5a28cafff4acb33793b3c81eded5a09e03b7c660b2824ec99bbd347c2c346de9",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "traced_initial",
+          "right": "traced_repeat",
+          "left_file": "4/bern-urban-z12-light/pdfs-trace/pdf192.png",
+          "right_file": "4/bern-urban-z12-light/pdfs-trace/pdf192-repeat.png",
+          "left_sha256": "5a28cafff4acb33793b3c81eded5a09e03b7c660b2824ec99bbd347c2c346de9",
+          "right_sha256": "5a28cafff4acb33793b3c81eded5a09e03b7c660b2824ec99bbd347c2c346de9",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        }
+      ]
+    },
+    {
+      "runtime": "4",
+      "camera": "geneva-urban-z14-light",
+      "pdf_export_dpi": 96,
+      "pairs": [
+        {
+          "left": "unwrapped_initial",
+          "right": "unwrapped_repeat",
+          "left_file": "4/geneva-urban-z14-light/pdfs-control/pdf96.png",
+          "right_file": "4/geneva-urban-z14-light/pdfs-control/pdf96-repeat.png",
+          "left_sha256": "b3240c8b2401e8a0982e425c999add621b58e31bdcf9d33533801baee051b464",
+          "right_sha256": "b3240c8b2401e8a0982e425c999add621b58e31bdcf9d33533801baee051b464",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "unwrapped_initial",
+          "right": "traced_initial",
+          "left_file": "4/geneva-urban-z14-light/pdfs-control/pdf96.png",
+          "right_file": "4/geneva-urban-z14-light/pdfs-trace/pdf96.png",
+          "left_sha256": "b3240c8b2401e8a0982e425c999add621b58e31bdcf9d33533801baee051b464",
+          "right_sha256": "b3240c8b2401e8a0982e425c999add621b58e31bdcf9d33533801baee051b464",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "unwrapped_initial",
+          "right": "traced_repeat",
+          "left_file": "4/geneva-urban-z14-light/pdfs-control/pdf96.png",
+          "right_file": "4/geneva-urban-z14-light/pdfs-trace/pdf96-repeat.png",
+          "left_sha256": "b3240c8b2401e8a0982e425c999add621b58e31bdcf9d33533801baee051b464",
+          "right_sha256": "b3240c8b2401e8a0982e425c999add621b58e31bdcf9d33533801baee051b464",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "unwrapped_repeat",
+          "right": "traced_initial",
+          "left_file": "4/geneva-urban-z14-light/pdfs-control/pdf96-repeat.png",
+          "right_file": "4/geneva-urban-z14-light/pdfs-trace/pdf96.png",
+          "left_sha256": "b3240c8b2401e8a0982e425c999add621b58e31bdcf9d33533801baee051b464",
+          "right_sha256": "b3240c8b2401e8a0982e425c999add621b58e31bdcf9d33533801baee051b464",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "unwrapped_repeat",
+          "right": "traced_repeat",
+          "left_file": "4/geneva-urban-z14-light/pdfs-control/pdf96-repeat.png",
+          "right_file": "4/geneva-urban-z14-light/pdfs-trace/pdf96-repeat.png",
+          "left_sha256": "b3240c8b2401e8a0982e425c999add621b58e31bdcf9d33533801baee051b464",
+          "right_sha256": "b3240c8b2401e8a0982e425c999add621b58e31bdcf9d33533801baee051b464",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "traced_initial",
+          "right": "traced_repeat",
+          "left_file": "4/geneva-urban-z14-light/pdfs-trace/pdf96.png",
+          "right_file": "4/geneva-urban-z14-light/pdfs-trace/pdf96-repeat.png",
+          "left_sha256": "b3240c8b2401e8a0982e425c999add621b58e31bdcf9d33533801baee051b464",
+          "right_sha256": "b3240c8b2401e8a0982e425c999add621b58e31bdcf9d33533801baee051b464",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        }
+      ]
+    },
+    {
+      "runtime": "4",
+      "camera": "geneva-urban-z14-light",
+      "pdf_export_dpi": 150,
+      "pairs": [
+        {
+          "left": "unwrapped_initial",
+          "right": "unwrapped_repeat",
+          "left_file": "4/geneva-urban-z14-light/pdfs-control/pdf150.png",
+          "right_file": "4/geneva-urban-z14-light/pdfs-control/pdf150-repeat.png",
+          "left_sha256": "1e97b61c53c41b73e5fecb0334bbb148b028d3712060c789a340764679471b41",
+          "right_sha256": "f79743db715edf0150f3ee32638f96a34f540a14ffe097da9ed898ab42476d7a",
+          "changed_pixels": 145,
+          "normalized_mae": 5.344498910675381e-07,
+          "bbox": [
+            594,
+            199,
+            1215,
+            880
+          ]
+        },
+        {
+          "left": "unwrapped_initial",
+          "right": "traced_initial",
+          "left_file": "4/geneva-urban-z14-light/pdfs-control/pdf150.png",
+          "right_file": "4/geneva-urban-z14-light/pdfs-trace/pdf150.png",
+          "left_sha256": "1e97b61c53c41b73e5fecb0334bbb148b028d3712060c789a340764679471b41",
+          "right_sha256": "17078c0c8748cf630b480e120a65517f0ba7aaf017562be4d05109bd3e037e47",
+          "changed_pixels": 325,
+          "normalized_mae": 8.964233841684822e-07,
+          "bbox": [
+            289,
+            199,
+            899,
+            898
+          ]
+        },
+        {
+          "left": "unwrapped_initial",
+          "right": "traced_repeat",
+          "left_file": "4/geneva-urban-z14-light/pdfs-control/pdf150.png",
+          "right_file": "4/geneva-urban-z14-light/pdfs-trace/pdf150-repeat.png",
+          "left_sha256": "1e97b61c53c41b73e5fecb0334bbb148b028d3712060c789a340764679471b41",
+          "right_sha256": "f79743db715edf0150f3ee32638f96a34f540a14ffe097da9ed898ab42476d7a",
+          "changed_pixels": 145,
+          "normalized_mae": 5.344498910675381e-07,
+          "bbox": [
+            594,
+            199,
+            1215,
+            880
+          ]
+        },
+        {
+          "left": "unwrapped_repeat",
+          "right": "traced_initial",
+          "left_file": "4/geneva-urban-z14-light/pdfs-control/pdf150-repeat.png",
+          "right_file": "4/geneva-urban-z14-light/pdfs-trace/pdf150.png",
+          "left_sha256": "f79743db715edf0150f3ee32638f96a34f540a14ffe097da9ed898ab42476d7a",
+          "right_sha256": "17078c0c8748cf630b480e120a65517f0ba7aaf017562be4d05109bd3e037e47",
+          "changed_pixels": 246,
+          "normalized_mae": 5.934549745824256e-07,
+          "bbox": [
+            289,
+            504,
+            1215,
+            898
+          ]
+        },
+        {
+          "left": "unwrapped_repeat",
+          "right": "traced_repeat",
+          "left_file": "4/geneva-urban-z14-light/pdfs-control/pdf150-repeat.png",
+          "right_file": "4/geneva-urban-z14-light/pdfs-trace/pdf150-repeat.png",
+          "left_sha256": "f79743db715edf0150f3ee32638f96a34f540a14ffe097da9ed898ab42476d7a",
+          "right_sha256": "f79743db715edf0150f3ee32638f96a34f540a14ffe097da9ed898ab42476d7a",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "traced_initial",
+          "right": "traced_repeat",
+          "left_file": "4/geneva-urban-z14-light/pdfs-trace/pdf150.png",
+          "right_file": "4/geneva-urban-z14-light/pdfs-trace/pdf150-repeat.png",
+          "left_sha256": "17078c0c8748cf630b480e120a65517f0ba7aaf017562be4d05109bd3e037e47",
+          "right_sha256": "f79743db715edf0150f3ee32638f96a34f540a14ffe097da9ed898ab42476d7a",
+          "changed_pixels": 246,
+          "normalized_mae": 5.934549745824256e-07,
+          "bbox": [
+            289,
+            504,
+            1215,
+            898
+          ]
+        }
+      ]
+    },
+    {
+      "runtime": "4",
+      "camera": "geneva-urban-z14-light",
+      "pdf_export_dpi": 192,
+      "pairs": [
+        {
+          "left": "unwrapped_initial",
+          "right": "unwrapped_repeat",
+          "left_file": "4/geneva-urban-z14-light/pdfs-control/pdf192.png",
+          "right_file": "4/geneva-urban-z14-light/pdfs-control/pdf192-repeat.png",
+          "left_sha256": "174491db76eb8faa7c290f8062873ff9e60c06d76cff6d051bb21fc35d06c410",
+          "right_sha256": "174491db76eb8faa7c290f8062873ff9e60c06d76cff6d051bb21fc35d06c410",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "unwrapped_initial",
+          "right": "traced_initial",
+          "left_file": "4/geneva-urban-z14-light/pdfs-control/pdf192.png",
+          "right_file": "4/geneva-urban-z14-light/pdfs-trace/pdf192.png",
+          "left_sha256": "174491db76eb8faa7c290f8062873ff9e60c06d76cff6d051bb21fc35d06c410",
+          "right_sha256": "174491db76eb8faa7c290f8062873ff9e60c06d76cff6d051bb21fc35d06c410",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "unwrapped_initial",
+          "right": "traced_repeat",
+          "left_file": "4/geneva-urban-z14-light/pdfs-control/pdf192.png",
+          "right_file": "4/geneva-urban-z14-light/pdfs-trace/pdf192-repeat.png",
+          "left_sha256": "174491db76eb8faa7c290f8062873ff9e60c06d76cff6d051bb21fc35d06c410",
+          "right_sha256": "174491db76eb8faa7c290f8062873ff9e60c06d76cff6d051bb21fc35d06c410",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "unwrapped_repeat",
+          "right": "traced_initial",
+          "left_file": "4/geneva-urban-z14-light/pdfs-control/pdf192-repeat.png",
+          "right_file": "4/geneva-urban-z14-light/pdfs-trace/pdf192.png",
+          "left_sha256": "174491db76eb8faa7c290f8062873ff9e60c06d76cff6d051bb21fc35d06c410",
+          "right_sha256": "174491db76eb8faa7c290f8062873ff9e60c06d76cff6d051bb21fc35d06c410",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "unwrapped_repeat",
+          "right": "traced_repeat",
+          "left_file": "4/geneva-urban-z14-light/pdfs-control/pdf192-repeat.png",
+          "right_file": "4/geneva-urban-z14-light/pdfs-trace/pdf192-repeat.png",
+          "left_sha256": "174491db76eb8faa7c290f8062873ff9e60c06d76cff6d051bb21fc35d06c410",
+          "right_sha256": "174491db76eb8faa7c290f8062873ff9e60c06d76cff6d051bb21fc35d06c410",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "left": "traced_initial",
+          "right": "traced_repeat",
+          "left_file": "4/geneva-urban-z14-light/pdfs-trace/pdf192.png",
+          "right_file": "4/geneva-urban-z14-light/pdfs-trace/pdf192-repeat.png",
+          "left_sha256": "174491db76eb8faa7c290f8062873ff9e60c06d76cff6d051bb21fc35d06c410",
+          "right_sha256": "174491db76eb8faa7c290f8062873ff9e60c06d76cff6d051bb21fc35d06c410",
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        }
+      ]
+    }
+  ]
+}
