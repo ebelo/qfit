@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import json
+import math
 from dataclasses import dataclass
 from typing import Iterable
 from urllib.parse import parse_qsl, quote, urlencode, unquote, urlparse, urlunparse
@@ -2434,6 +2435,54 @@ def _is_mapbox_light_style(style_definition: dict[str, object]) -> bool:
         style_definition.get("owner") == _LIGHT_STYLE_OWNER
         and style_definition.get("id") == _LIGHT_STYLE_ID
     )
+
+
+def _is_literal_class_width_match(value: object) -> bool:
+    """Only the audited numeric class-match shape is delegated to QGIS."""
+    if not isinstance(value, list) or len(value) < 5 or len(value) % 2 != 1:
+        return False
+    if value[:2] != ["match", ["get", "class"]]:
+        return False
+    labels = value[2:-1:2]
+    outputs = [*value[3:-1:2], value[-1]]
+    return all(
+        isinstance(group, list) and group
+        and all(isinstance(name, str) for name in group)
+        for group in labels
+    ) and all(
+        not isinstance(width, bool) and isinstance(width, (int, float))
+        and math.isfinite(width) and 0 <= width <= 300
+        for width in outputs
+    )
+
+
+def _light_native_road_widths(style: dict[str, object]) -> dict[str, list]:
+    """Preserve tested Light class/zoom widths in pixels for ONE native conversion.
+
+    QGIS handles these nested matches and exponential interpolation. The generic
+    fallback loses both dimensions and its millimetre scalar is converted again.
+    An equal-output stop at zero supplies Mapbox's below-first-stop clamping:
+    QGIS otherwise yields NULL just below the first stop at rounded layer entry.
+    Unknown owners, expression shapes and presets retain the existing fallback.
+    """
+    if not _is_mapbox_light_style(style):
+        return {}
+    owners = {"road-simple", "tunnel-simple", "bridge-simple", "bridge-case-simple"}
+    widths = {}
+    for layer in style.get("layers", []):
+        if (layer.get("id") not in owners or layer.get("type") != "line"
+                or layer.get("source-layer") != "road"):
+            continue
+        width = layer.get("paint", {}).get("line-width")
+        stops = [5, 13, 18, 22] if layer["id"] == "road-simple" else [13, 18, 22]
+        if (not isinstance(width, list)
+                or width[:3] != ["interpolate", ["exponential", 1.5], ["zoom"]]
+                or len(width) != 3 + 2 * len(stops)
+                or width[3::2] != stops
+                or not all(_is_literal_class_width_match(output) for output in width[4::2])):
+            continue
+        widths[layer["id"]] = [*width[:3], 0, copy.deepcopy(width[4]), *copy.deepcopy(width[3:])]
+    return widths
 
 
 def _is_mapbox_outdoors_style(style_definition: dict[str, object]) -> bool:
@@ -6812,6 +6861,7 @@ def simplify_mapbox_style_expressions(style_definition: dict[str, object]) -> di
     simplified.  Literal strings (``hsl(...)``, ``#rrggbb``) are kept as-is.
     """
     style = copy.deepcopy(style_definition)
+    light_road_widths = _light_native_road_widths(style)
     style["layers"] = _split_regional_major_road_width_layers_for_qgis(style.get("layers"))
     style["layers"] = _split_major_link_width_layers_for_qgis(style.get("layers"))
     style["layers"] = _split_outdoors_street_width_layers_for_qgis(
@@ -7003,6 +7053,9 @@ def simplify_mapbox_style_expressions(style_definition: dict[str, object]) -> di
                     if layout_value is not _LAYOUT_SIMPLIFICATION_NOT_AVAILABLE:
                         props[prop] = layout_value
                         continue
+                if section == "paint" and prop == "line-width" and layer_id in light_road_widths:
+                    props[prop] = light_road_widths[layer_id]
+                    continue
                 if not isinstance(val, list):
                     continue
                 if prop in color_props:
