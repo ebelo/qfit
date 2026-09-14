@@ -750,9 +750,9 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
     def test_capture_context_measures_actual_dpi_and_native_zoom(self):
         import json
         from types import SimpleNamespace
-        from qgis.core import Qgis, QgsMapSettings, QgsCoordinateReferenceSystem, QgsRectangle, QgsVectorTileMatrixSet
+        from qgis.core import Qgis, QgsMapSettings, QgsCoordinateReferenceSystem, QgsRectangle, QgsVectorTileMatrixSet, QgsRenderContext, QgsCoordinateTransform, QgsProject
         from qgis.PyQt.QtCore import QSize
-        from qgis.PyQt.QtGui import QImage
+        from qgis.PyQt.QtGui import QImage, QPainter
         from qfit.validation.mapbox_outdoors_comparison import LIGHT_CAMERAS, camera_extent_web_mercator
         from qfit.validation.mapbox_outdoors_runtime import qgis_render_context_snapshot
 
@@ -775,15 +775,26 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
             self.assertEqual(record["image_size_pixels"], [1280, 900])
             self.assertEqual(record["map_crs"], "EPSG:3857")
             self.assertEqual(record["requested_camera_zoom"], camera.zoom)
-            # The one-argument inherited API exists on every supported release.
-            fetch_zoom = matrix.scaleToZoomLevel(settings.scale())
+            # Check against the renderer-context API, not the helper's scalar API.
+            context = QgsRenderContext.fromMapSettings(settings)
+            context.setCoordinateTransform(QgsCoordinateTransform(
+                settings.destinationCrs(), settings.destinationCrs(), QgsProject.instance(),
+            ))
+            painter = QPainter(image)
+            try:
+                context.setPainter(painter)
+                native_scale = matrix.scaleForRenderContext(context)
+            finally:
+                painter.end()
+            self.assertEqual(record["tile_render_scale"], native_scale)
+            self.assertEqual(record["vector_tile_zoom"], matrix.scaleToZoom(native_scale))
+            fetch_zoom = matrix.scaleToZoomLevel(native_scale)
             render_zoom = round(record["vector_tile_zoom"]) if Qgis.QGIS_VERSION_INT >= 33200 else fetch_zoom
             self.assertEqual(record["integer_render_zoom"], render_zoom)
             self.assertEqual(record["integer_fetch_zoom"], fetch_zoom)
             self.assertEqual(json.loads(json.dumps(record)), record)
             self.assertEqual(settings.outputDpi(), dpi)
             records.append(record)
-        self.assertAlmostEqual(records[0]["vector_tile_zoom"] - records[1]["vector_tile_zoom"], 1)
         self.assertEqual(records[1]["map_scale"] / records[0]["map_scale"], 2)
 
     def test_capture_camera_geometry_survives_physical_density_scaling(self):
@@ -791,7 +802,7 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
         import math
         from qgis.core import (
             QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsMapSettings,
-            QgsPointXY, QgsProject, QgsRectangle, QgsVectorTileMatrixSet,
+            QgsPointXY, QgsProject, QgsRectangle,
         )
         from qgis.PyQt.QtCore import QSize
         from qfit.validation.mapbox_outdoors_comparison import LIGHT_CAMERAS, camera_extent_web_mercator
@@ -801,7 +812,6 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
             cameras.extend(replace(LIGHT_CAMERAS[name], zoom=z) for z in (12.9, 13, 13.1, 13.9, 14, 14.1))
         crs = QgsCoordinateReferenceSystem("EPSG:3857")
         transform = QgsCoordinateTransform(QgsCoordinateReferenceSystem("EPSG:4326"), crs, QgsProject.instance())
-        matrix = QgsVectorTileMatrixSet.fromWebMercator(0, 14)
         for camera in cameras:
             center = transform.transform(QgsPointXY(camera.longitude, camera.latitude))
             for width, height in ((1280, 900), (900, 1280), (640, 480)):
@@ -826,7 +836,6 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
                         self.assertAlmostEqual(actual_extent.width() / extent.width(), 1, places=10)
                         self.assertAlmostEqual(actual_extent.height() / extent.height(), 1, places=10)
                         self.assertAlmostEqual(settings.scale() / baseline.scale(), 1, places=10)
-                        self.assertAlmostEqual(matrix.scaleToZoom(settings.scale()), matrix.scaleToZoom(baseline.scale()), places=9)
                         pixel = settings.mapToPixel().transform(center)
                         self.assertAlmostEqual(pixel.x(), physical.width / 2, delta=1e-6)
                         self.assertAlmostEqual(pixel.y(), physical.height / 2, delta=1e-6)
