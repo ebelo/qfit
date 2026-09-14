@@ -1,0 +1,151 @@
+{
+  "verified_utc": "2026-09-14T17:26:52.057514+00:00",
+  "head": "f74d535bfa1aeef625129c328ba317cf71e13d32",
+  "checks": [
+    {
+      "name": "SonarCloud Code Analysis",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "f74d535bfa1aeef625129c328ba317cf71e13d32",
+      "completed_at": "2026-09-14T17:23:05Z",
+      "details_url": "https://sonarcloud.io/dashboard?id=ebelo_qfit&pullRequest=1475",
+      "html_url": "https://github.com/ebelo/qfit/runs/104077945130"
+    },
+    {
+      "name": "Greptile Review",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "f74d535bfa1aeef625129c328ba317cf71e13d32",
+      "completed_at": "2026-09-14T17:24:52Z",
+      "details_url": "https://greptile.com/",
+      "html_url": "https://github.com/ebelo/qfit/runs/104077855674"
+    },
+    {
+      "name": "CodeQL",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "f74d535bfa1aeef625129c328ba317cf71e13d32",
+      "completed_at": "2026-09-14T17:22:07Z",
+      "details_url": "https://github.com/ebelo/qfit/runs/104077604638",
+      "html_url": "https://github.com/ebelo/qfit/runs/104077604638"
+    },
+    {
+      "name": "docker-qgis3",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "f74d535bfa1aeef625129c328ba317cf71e13d32",
+      "completed_at": "2026-09-14T17:22:39Z",
+      "details_url": "https://github.com/ebelo/qfit/actions/runs/34874257056/job/104077411902",
+      "html_url": "https://github.com/ebelo/qfit/actions/runs/34874257056/job/104077411902"
+    },
+    {
+      "name": "unit-tests",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "f74d535bfa1aeef625129c328ba317cf71e13d32",
+      "completed_at": "2026-09-14T17:22:01Z",
+      "details_url": "https://github.com/ebelo/qfit/actions/runs/34874257056/job/104077411833",
+      "html_url": "https://github.com/ebelo/qfit/actions/runs/34874257056/job/104077411833"
+    },
+    {
+      "name": "plugin-security-scan",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "f74d535bfa1aeef625129c328ba317cf71e13d32",
+      "completed_at": "2026-09-14T17:21:53Z",
+      "details_url": "https://github.com/ebelo/qfit/actions/runs/34874257134/job/104077411717",
+      "html_url": "https://github.com/ebelo/qfit/actions/runs/34874257134/job/104077411717"
+    },
+    {
+      "name": "build",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "f74d535bfa1aeef625129c328ba317cf71e13d32",
+      "completed_at": "2026-09-14T17:21:45Z",
+      "details_url": "https://github.com/ebelo/qfit/actions/runs/34874257122/job/104077411401",
+      "html_url": "https://github.com/ebelo/qfit/actions/runs/34874257122/job/104077411401"
+    },
+    {
+      "name": "docker-qgis4",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "f74d535bfa1aeef625129c328ba317cf71e13d32",
+      "completed_at": "2026-09-14T17:22:51Z",
+      "details_url": "https://github.com/ebelo/qfit/actions/runs/34874257056/job/104077411368",
+      "html_url": "https://github.com/ebelo/qfit/actions/runs/34874257056/job/104077411368"
+    },
+    {
+      "name": "sonarcloud",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "f74d535bfa1aeef625129c328ba317cf71e13d32",
+      "completed_at": "2026-09-14T17:23:07Z",
+      "details_url": "https://github.com/ebelo/qfit/actions/runs/34874257207/job/104077411363",
+      "html_url": "https://github.com/ebelo/qfit/actions/runs/34874257207/job/104077411363"
+    },
+    {
+      "name": "Analyze (actions)",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "f74d535bfa1aeef625129c328ba317cf71e13d32",
+      "completed_at": "2026-09-14T17:22:13Z",
+      "details_url": "https://github.com/ebelo/qfit/actions/runs/34874252663/job/104077400521",
+      "html_url": "https://github.com/ebelo/qfit/actions/runs/34874252663/job/104077400521"
+    },
+    {
+      "name": "Analyze (python)",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "f74d535bfa1aeef625129c328ba317cf71e13d32",
+      "completed_at": "2026-09-14T17:22:32Z",
+      "details_url": "https://github.com/ebelo/qfit/actions/runs/34874252663/job/104077400265",
+      "html_url": "https://github.com/ebelo/qfit/actions/runs/34874252663/job/104077400265"
+    }
+  ],
+  "codex": {
+    "html_url": "https://github.com/ebelo/qfit/pull/1475#issuecomment-5667823204",
+    "body": "<!-- codex-pull-request-review-summary -->\n\n## Codex Review Summary\n\nThis comment shows the latest Codex review activity on this pull request.\n\n| Review | Status | Commit | Review trigger |\n| --- | --- | --- | --- |\n| \ud83d\udcdd **Code Review** | \u2705 **Completed** <relative-time datetime=\"2026-09-14T17:25:36.202105Z\">2026-09-14T17:25:36.202105Z</relative-time> | `f74d535` | New commits |\n\n\n\n<details> <summary>\u2139\ufe0f About Codex in GitHub</summary>\n<br/>\n\n[Your team has set up Codex to review pull requests in this repo](https://chatgpt.com/codex/cloud/settings/general). Reviews are triggered when you\n- Open a pull request for review\n- Mark a draft as ready\n- Comment \"@codex review\" or \"@codex security review\".\n\nCodex reacts with \ud83d\udc40 while any review is running, comments if it has suggestions, and reacts with \ud83d\udc4d once all reviews finish with no findings.\n\n</details>",
+    "updated_at": "2026-09-14T17:25:37Z"
+  },
+  "greptile": {
+    "html_url": "https://github.com/ebelo/qfit/pull/1475#issuecomment-5667859111",
+    "body": "<!-- greptile_summary -->\n\n<h2><a href=\"https://app.greptile.com/api/retrigger?id=64030540\"><picture><source media=\"(prefers-color-scheme: dark)\" srcset=\"https://greptile-static-assets.s3.amazonaws.com/badges/RetriggerDark.svg?v=1\"><source media=\"(prefers-color-scheme: light)\" srcset=\"https://greptile-static-assets.s3.amazonaws.com/badges/Retrigger.svg?v=1\"><img alt=\"Retrigger\" src=\"https://greptile-static-assets.s3.amazonaws.com/badges/Retrigger.svg?v=1\" align=\"right\"></picture></a>Confidence Score: 5/5</h2>\n\nThe PR appears safe to merge; no actionable defects or outstanding previous findings remain.\n\n<details><summary><h3>Summary</h3></summary>\n\n- Adds a complete 14-owner Light source fixture with pinned provenance, ordered ownership, and canonical content identity.\n- Adds real-QGIS coverage for both water-label companion populations across 80 content cases.\n- Documents scoped audit results, preserved behavior, known mismatches, and remaining rendering limitations.\n- The previous fixture-drift finding is fully addressed by independent ordered-roster and canonical-hash assertions.\n</details>\n\n<sub>Reviews (2) \u00b7 Last reviewed commit: [\"test: pin complete Light label fixture p...\"](https://github.com/ebelo/qfit/commit/f74d535bfa1aeef625129c328ba317cf71e13d32)</sub>",
+    "updated_at": "2026-09-14T17:24:50Z"
+  },
+  "threads": [
+    {
+      "id": "PRRT_kwDORsgCKs6iNSaN",
+      "isResolved": true
+    }
+  ],
+  "sonar_unresolved": 0,
+  "sonar_checked_utc": "2026-09-14T17:24:30.145Z",
+  "sonar_http_status": 200,
+  "final_inline_images": [
+    {
+      "complete": true,
+      "width": 1140,
+      "height": 335
+    },
+    {
+      "complete": true,
+      "width": 1140,
+      "height": 335
+    },
+    {
+      "complete": true,
+      "width": 1140,
+      "height": 335
+    }
+  ],
+  "final_public_proof_byte_verified": true,
+  "merge": {
+    "headRefOid": "f74d535bfa1aeef625129c328ba317cf71e13d32",
+    "mergeCommit": {
+      "oid": "c1987b8134065e657b348fb9241d6c5dfbd8d96b"
+    },
+    "mergedAt": "2026-09-14T17:26:54Z",
+    "state": "MERGED"
+  },
+  "main_tree_equals_reviewed_head": true
+}
