@@ -1,0 +1,2527 @@
+{
+  "baseline_commit": "2985c8247eb05490dd4d26936c3b003a17a1de4d",
+  "implementation_commit": "5ebb6ead8740c63971b273f278726aad9b399021",
+  "date_utc": "2026-09-14",
+  "source_sha256": "87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32",
+  "preprocessed_sha256": "969ea65a877d6708a2b8d8cafaf01e93957ecbd969131f657a494b87cb8df8c7",
+  "code_sha256": {
+    "mapbox_config.py": "a2bdb887cbc4663e96a5a282dcdacb4c2477a4bfcfc3f1bfd6569f155c7a89db",
+    "visualization/infrastructure/background_map_service.py": "0a846c0355821cc4dce7360b456dfb989c95343c0384ec894c0f26745cf69264",
+    "visualization/infrastructure/mapbox_light_strokes.py": "6b70749efac8f2377be2ef03901423cd031ca7db4d53e39fbe62c7563f9db15e",
+    "visualization/infrastructure/mapbox_light_labels.py": "5b2310bce51a53b072e7a3932adb9abdea991116c29ef032de37d25151765cce",
+    "visualization/infrastructure/mapbox_open_fonts.py": "f1e94b2b42be6a6ddce758c0b2904cca66526e583bed3ee9b33580b37359b737",
+    "visualization/infrastructure/layer_style_service.py": "35383965327ea27c2a8e602b7716904de1adeadd0b0eed21227c053db03d283a",
+    "validation/mapbox_outdoors_comparison.py": "b746a1d2f2ebb24da62edb80ea9ad323e781edcbb389874d3b1c674ca79275cf",
+    "validation/mapbox_outdoors_runtime.py": "d38930e57ecb9c9c547973f032dd072d68ac70bcb475aae46e0b1627562e45a4",
+    "validation/mapbox_activity_overlay.py": "1bff513d9cb2bdd32ffc476aa92a7cc1270052a5182dcc6db06eb42a7cbfd6a2"
+  },
+  "preprocessing_changed": false,
+  "dimensions": [
+    1280,
+    900
+  ],
+  "access": "Same active run: protected Gateway and per-container preflights authorized HTTP200; verified TLS. No credential or proxy/CA overrides.",
+  "output": "Headless PNG and native line painting; not desktop or PDF",
+  "data_limitation": "Fresh source and browser queryRenderedFeatures snapshots. Live upstream tile payloads not archived. Not a future-data guarantee.",
+  "context_limitation": "Matched before/after within each runtime. QGIS3 uses100 DPI and QGIS4 uses96; requested camera zoom differs from native style zoom. C01 remains OPEN.",
+  "environment": {
+    "browser": "Chromium 152.0.7977.64",
+    "runtimes": [
+      {
+        "qgis_major": "3",
+        "qgis": "3.44.11-Solothurn",
+        "qt_compiled": "5.15.17",
+        "qt_runtime": "5.15.17",
+        "pyqt": "5.15.11",
+        "python": "3.13.7",
+        "current_run_cached_rebuild": {
+          "manifest": "sha256:144a796cb4ed7c3722d17dd37e555ad21cb3ca1deb5b0e50c21a1f2ac31da688",
+          "config": "sha256:5cd2836ff61cb273c7f9f4ce5845f258ee78b82a55b8313aa85db962405b086f",
+          "manifest list": "sha256:ae5a523e0db00dd8ea20dcd41cc6913d530f59239d6a16c481bf6d4e8badb7f6"
+        },
+        "runtime_content_unchanged": true
+      },
+      {
+        "qgis_major": "4",
+        "qgis": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qt_compiled": "6.9.2",
+        "qt_runtime": "6.9.2",
+        "pyqt": "6.9.1",
+        "python": "3.13.7",
+        "current_run_cached_rebuild": {
+          "manifest": "sha256:9c9312211a5f672241b2e2b1f81541e439ea8e128c4e95dc65b2167fef6453f7",
+          "config": "sha256:60104c9df516742351cf67c60a03f50cc3b65483c9725ecc774f4a22ce223106",
+          "manifest list": "sha256:d8c6e81ab1bb7c6c4230f549c7f48fd2905a1ff1257a763c744a0977bed43dcf"
+        },
+        "runtime_content_unchanged": true
+      }
+    ]
+  },
+  "matrix": [
+    {
+      "qgis_major": "3",
+      "camera": {
+        "name": "switzerland-alps-z5-light",
+        "description": "z5 country-wide Switzerland/Alps guardrail for background, water, major roads, and label density.",
+        "longitude": 8.2,
+        "latitude": 46.8,
+        "zoom": 5.35,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "light-v11"
+      },
+      "activity_overlay": false,
+      "runtime": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 5.35,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            -315391.9260596817,
+            5045903.47656141,
+            2141031.575069368,
+            6773076.250792773
+          ],
+          "map_scale": 7555436.457705,
+          "vector_tile_zoom": 5.270208288101648,
+          "integer_render_zoom": 5,
+          "integer_fetch_zoom": 5
+        }
+      },
+      "before_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 1150244,
+        "changed_pixel_ratio": 0.9984756944444444,
+        "mean_absolute_channel_delta": 8.235772280092592,
+        "normalized_mean_absolute_channel_delta": 0.032297146196441535,
+        "rms_channel_delta": 15.390247309970981,
+        "normalized_rms_channel_delta": 0.06035391101949404,
+        "ssim_status": "unavailable"
+      },
+      "after_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 1150246,
+        "changed_pixel_ratio": 0.9984774305555556,
+        "mean_absolute_channel_delta": 8.436700810185185,
+        "normalized_mean_absolute_channel_delta": 0.03308510121641249,
+        "rms_channel_delta": 15.88069652811898,
+        "normalized_rms_channel_delta": 0.0622772412867411,
+        "ssim_status": "unavailable"
+      },
+      "mae_relative_percent": 2.4397047812780848,
+      "control_repeat_byte_identical": true,
+      "labels_byte_identical": true,
+      "native_boundary_filters_and_other_paint_identical": true,
+      "native_context_identical": true,
+      "reference_sha256": "f82803bd3fac15796284956d8b9b7e26568ab8ecb274ef87baa756f085628803",
+      "before_sha256": "2bf1de28a2a101acfa5b8c10bc9c77a27dc85a1d346eff083658a1b16efc04d3",
+      "after_sha256": "6a9d22710d2a67b183823581f41c787df1ebab339bf6a76814d2e36cc0cb3a41",
+      "labels_sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "visible_reference_national_boundary_fragments": 51
+    },
+    {
+      "qgis_major": "3",
+      "camera": {
+        "name": "zurich-region-z8-light",
+        "description": "z8 regional context around Zurich for settlement hierarchy, major roads, water, and landuse balance.",
+        "longitude": 8.54,
+        "latitude": 47.38,
+        "zoom": 8.2,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "light-v11"
+      },
+      "activity_overlay": false,
+      "runtime": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 8.2,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            780320.1684168805,
+            5884545.688159028,
+            1121016.734332232,
+            6124097.96106826
+          ],
+          "map_scale": 1047910.2052022377,
+          "vector_tile_zoom": 8.080675923441609,
+          "integer_render_zoom": 8,
+          "integer_fetch_zoom": 8
+        }
+      },
+      "before_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 1145856,
+        "changed_pixel_ratio": 0.9946666666666667,
+        "mean_absolute_channel_delta": 5.419131655092593,
+        "normalized_mean_absolute_channel_delta": 0.02125149668663762,
+        "rms_channel_delta": 8.551700467978636,
+        "normalized_rms_channel_delta": 0.033536080266582884,
+        "ssim_status": "unavailable"
+      },
+      "after_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 1145313,
+        "changed_pixel_ratio": 0.9941953125,
+        "mean_absolute_channel_delta": 5.2098417245370365,
+        "normalized_mean_absolute_channel_delta": 0.020430751860929554,
+        "rms_channel_delta": 8.12277290456863,
+        "normalized_rms_channel_delta": 0.03185401139046521,
+        "ssim_status": "unavailable"
+      },
+      "mae_relative_percent": -3.8620565779921234,
+      "control_repeat_byte_identical": true,
+      "labels_byte_identical": true,
+      "native_boundary_filters_and_other_paint_identical": true,
+      "native_context_identical": true,
+      "reference_sha256": "553784ddbf6e8f5ff1cc419667bab13ccebcda0f6606f92100cc53b0d4627313",
+      "before_sha256": "e953a658f066ac128c008c0b4436335b8c0d42955df9b6036eccc568afc41288",
+      "after_sha256": "90e976950e21bb60cc6a1d6575a156541e8da52b76bc2e9acad9f10b81e64f28",
+      "labels_sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "visible_reference_national_boundary_fragments": 13
+    },
+    {
+      "qgis_major": "3",
+      "camera": {
+        "name": "lausanne-lavaux-z10-light",
+        "description": "z10 primary qfit activity-area target around Lausanne/Lavaux for roads, labels, feature density, and activity-line contrast.",
+        "longitude": 6.72,
+        "latitude": 46.49,
+        "zoom": 10.25,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "light-v11"
+      },
+      "activity_overlay": false,
+      "runtime": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 10.25,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            706930.5793611014,
+            5830298.7658473775,
+            789203.3769004953,
+            5888146.826617263
+          ],
+          "map_scale": 253053.63416398215,
+          "vector_tile_zoom": 10.146055147472122,
+          "integer_render_zoom": 10,
+          "integer_fetch_zoom": 10
+        }
+      },
+      "before_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 1142392,
+        "changed_pixel_ratio": 0.9916597222222222,
+        "mean_absolute_channel_delta": 2.024543402777778,
+        "normalized_mean_absolute_channel_delta": 0.007939385893246187,
+        "rms_channel_delta": 4.860245343122415,
+        "normalized_rms_channel_delta": 0.019059785659303587,
+        "ssim_status": "unavailable"
+      },
+      "after_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 1142302,
+        "changed_pixel_ratio": 0.9915815972222223,
+        "mean_absolute_channel_delta": 1.9412821180555555,
+        "normalized_mean_absolute_channel_delta": 0.007612871051198257,
+        "rms_channel_delta": 4.541690574792066,
+        "normalized_rms_channel_delta": 0.017810551273694377,
+        "ssim_status": "unavailable"
+      },
+      "mae_relative_percent": -4.112595689871778,
+      "control_repeat_byte_identical": true,
+      "labels_byte_identical": true,
+      "native_boundary_filters_and_other_paint_identical": true,
+      "native_context_identical": true,
+      "reference_sha256": "1ae4bde1af23b8c80015b7d51499b2672e65313d076573fc88b65e293c3d0b97",
+      "before_sha256": "e814592856c0b478c46cf4da551ef5307f1492fdd39a01eda22dd9b8d46e504b",
+      "after_sha256": "dace51c1a2239544b2827425b395c741dbd7f47d782804b81df5dbe0bead4522",
+      "labels_sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "visible_reference_national_boundary_fragments": 3
+    },
+    {
+      "qgis_major": "3",
+      "camera": {
+        "name": "bern-urban-z12-light",
+        "description": "z12 urban fit target around Bern for road hierarchy, rail/transit, POIs, buildings, and label emphasis.",
+        "longitude": 7.447,
+        "latitude": 46.948,
+        "zoom": 12.25,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "light-v11"
+      },
+      "activity_overlay": false,
+      "runtime": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 12.25,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            818712.148245084,
+            5926359.467815783,
+            839280.3476299326,
+            5940821.483008254
+          ],
+          "map_scale": 63263.4085409959,
+          "vector_tile_zoom": 12.146055147472111,
+          "integer_render_zoom": 12,
+          "integer_fetch_zoom": 12
+        }
+      },
+      "before_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 763013,
+        "changed_pixel_ratio": 0.6623376736111111,
+        "mean_absolute_channel_delta": 1.8339094328703702,
+        "normalized_mean_absolute_channel_delta": 0.007191801697530863,
+        "rms_channel_delta": 8.714706808280367,
+        "normalized_rms_channel_delta": 0.03417532081678575,
+        "ssim_status": "unavailable"
+      },
+      "after_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 763013,
+        "changed_pixel_ratio": 0.6623376736111111,
+        "mean_absolute_channel_delta": 1.8339094328703702,
+        "normalized_mean_absolute_channel_delta": 0.007191801697530863,
+        "rms_channel_delta": 8.714706808280367,
+        "normalized_rms_channel_delta": 0.03417532081678575,
+        "ssim_status": "unavailable"
+      },
+      "mae_relative_percent": 0.0,
+      "control_repeat_byte_identical": true,
+      "labels_byte_identical": true,
+      "native_boundary_filters_and_other_paint_identical": true,
+      "native_context_identical": true,
+      "reference_sha256": "d683cf7c463166f75478d860ff4b8489a559b2c5425247bbe880a396d8ea80c1",
+      "before_sha256": "be889599f5b5efda75b11be40c2242cbec8958dd3e931a0f592fd45b71f58c8d",
+      "after_sha256": "be889599f5b5efda75b11be40c2242cbec8958dd3e931a0f592fd45b71f58c8d",
+      "labels_sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "visible_reference_national_boundary_fragments": 0
+    },
+    {
+      "qgis_major": "3",
+      "camera": {
+        "name": "geneva-urban-z14-light",
+        "description": "z14 dense urban detail around Geneva for minor roads, buildings, transit, POIs, and local label hierarchy.",
+        "longitude": 6.143,
+        "latitude": 46.204,
+        "zoom": 14.25,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "light-v11"
+      },
+      "activity_overlay": false,
+      "runtime": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 14.25,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            681264.6070199735,
+            5811293.095022159,
+            686406.6568661856,
+            5814908.598820277
+          ],
+          "map_scale": 15815.852135248975,
+          "vector_tile_zoom": 14.146055147472111,
+          "integer_render_zoom": 14,
+          "integer_fetch_zoom": 14
+        }
+      },
+      "before_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 450150,
+        "changed_pixel_ratio": 0.3907552083333333,
+        "mean_absolute_channel_delta": 2.684947337962963,
+        "normalized_mean_absolute_channel_delta": 0.010529205246913581,
+        "rms_channel_delta": 11.679349691160366,
+        "normalized_rms_channel_delta": 0.04580137133788379,
+        "ssim_status": "unavailable"
+      },
+      "after_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 450150,
+        "changed_pixel_ratio": 0.3907552083333333,
+        "mean_absolute_channel_delta": 2.684947337962963,
+        "normalized_mean_absolute_channel_delta": 0.010529205246913581,
+        "rms_channel_delta": 11.679349691160366,
+        "normalized_rms_channel_delta": 0.04580137133788379,
+        "ssim_status": "unavailable"
+      },
+      "mae_relative_percent": 0.0,
+      "control_repeat_byte_identical": true,
+      "labels_byte_identical": true,
+      "native_boundary_filters_and_other_paint_identical": true,
+      "native_context_identical": true,
+      "reference_sha256": "a1088191221cd6083a1369d37d7608756c76cd19b96278f31dd73c608255cc76",
+      "before_sha256": "bc11e49289db93790122cceec967133a73212c6c0ece3debf1c7bb3d56bfe9d3",
+      "after_sha256": "bc11e49289db93790122cceec967133a73212c6c0ece3debf1c7bb3d56bfe9d3",
+      "labels_sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "visible_reference_national_boundary_fragments": 0
+    },
+    {
+      "qgis_major": "3",
+      "camera": {
+        "name": "zurich-streets-z17-light",
+        "description": "z17 street-level guardrail in central Zurich for casings, widths, symbols, buildings, and local labels.",
+        "longitude": 8.5417,
+        "latitude": 47.3769,
+        "zoom": 17.0,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "light-v11"
+      },
+      "activity_overlay": false,
+      "runtime": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 17.0,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            950475.5093674791,
+            6003543.480950285,
+            951239.879650331,
+            6004080.928805415
+          ],
+          "map_scale": 2351.040486133914,
+          "vector_tile_zoom": 16.89763779527545,
+          "integer_render_zoom": 17,
+          "integer_fetch_zoom": 17
+        }
+      },
+      "before_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 337406,
+        "changed_pixel_ratio": 0.29288715277777777,
+        "mean_absolute_channel_delta": 2.0702103587962966,
+        "normalized_mean_absolute_channel_delta": 0.008118471995279593,
+        "rms_channel_delta": 8.870762848956543,
+        "normalized_rms_channel_delta": 0.03478730529002566,
+        "ssim_status": "unavailable"
+      },
+      "after_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 337406,
+        "changed_pixel_ratio": 0.29288715277777777,
+        "mean_absolute_channel_delta": 2.0702103587962966,
+        "normalized_mean_absolute_channel_delta": 0.008118471995279593,
+        "rms_channel_delta": 8.870762848956543,
+        "normalized_rms_channel_delta": 0.03478730529002566,
+        "ssim_status": "unavailable"
+      },
+      "mae_relative_percent": 0.0,
+      "control_repeat_byte_identical": true,
+      "labels_byte_identical": true,
+      "native_boundary_filters_and_other_paint_identical": true,
+      "native_context_identical": true,
+      "reference_sha256": "abca923b79ccea72baf4cf4c407f3a0a48b3958d3aa9455f80b4ed78e7bde3ab",
+      "before_sha256": "87f065071da31fb6bca580413e5e1aa3006c1294126235b35f55aea2430e37ee",
+      "after_sha256": "87f065071da31fb6bca580413e5e1aa3006c1294126235b35f55aea2430e37ee",
+      "labels_sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "visible_reference_national_boundary_fragments": 0
+    },
+    {
+      "qgis_major": "3",
+      "camera": {
+        "name": "geneva-streets-z18-light",
+        "description": "z18 street-level stress test in central Geneva for fine road hierarchy, symbols, POIs, and high-detail label behavior.",
+        "longitude": 6.147,
+        "latitude": 46.202,
+        "zoom": 18.0,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "light-v11"
+      },
+      "activity_overlay": false,
+      "runtime": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 18.0,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            684089.8173355398,
+            5812644.801312825,
+            684472.0024769657,
+            5812913.52524039
+          ],
+          "map_scale": 1175.5202430665988,
+          "vector_tile_zoom": 17.897637795275788,
+          "integer_render_zoom": 18,
+          "integer_fetch_zoom": 18
+        }
+      },
+      "before_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 165193,
+        "changed_pixel_ratio": 0.14339670138888888,
+        "mean_absolute_channel_delta": 1.7659033564814814,
+        "normalized_mean_absolute_channel_delta": 0.006925111201888163,
+        "rms_channel_delta": 7.862202049690183,
+        "normalized_rms_channel_delta": 0.030832164900745817,
+        "ssim_status": "unavailable"
+      },
+      "after_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 165193,
+        "changed_pixel_ratio": 0.14339670138888888,
+        "mean_absolute_channel_delta": 1.7659033564814814,
+        "normalized_mean_absolute_channel_delta": 0.006925111201888163,
+        "rms_channel_delta": 7.862202049690183,
+        "normalized_rms_channel_delta": 0.030832164900745817,
+        "ssim_status": "unavailable"
+      },
+      "mae_relative_percent": 0.0,
+      "control_repeat_byte_identical": true,
+      "labels_byte_identical": true,
+      "native_boundary_filters_and_other_paint_identical": true,
+      "native_context_identical": true,
+      "reference_sha256": "09edd5148a12727ac7899cb962cc984e0ca0da61dd07d60477af080dd25e6ffc",
+      "before_sha256": "08ccd959983dda84dc2a219cb9229c4e62731b9c9389ce5877941af316c3d318",
+      "after_sha256": "08ccd959983dda84dc2a219cb9229c4e62731b9c9389ce5877941af316c3d318",
+      "labels_sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "visible_reference_national_boundary_fragments": 0
+    },
+    {
+      "qgis_major": "3",
+      "camera": {
+        "name": "lausanne-boundary-z11.9",
+        "description": "z10 primary qfit activity-area target around Lausanne/Lavaux for roads, labels, feature density, and activity-line contrast.",
+        "longitude": 6.72,
+        "latitude": 46.49,
+        "zoom": 11.9,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "light-v11"
+      },
+      "activity_overlay": false,
+      "runtime": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 11.9,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            734959.2695754083,
+            5850006.438654312,
+            761174.6866861883,
+            5868439.153810329
+          ],
+          "map_scale": 80633.04967636571,
+          "vector_tile_zoom": 11.81851744287338,
+          "integer_render_zoom": 12,
+          "integer_fetch_zoom": 12
+        }
+      },
+      "before_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 733010,
+        "changed_pixel_ratio": 0.6362934027777778,
+        "mean_absolute_channel_delta": 1.119923900462963,
+        "normalized_mean_absolute_channel_delta": 0.004391858433188091,
+        "rms_channel_delta": 6.050280718374332,
+        "normalized_rms_channel_delta": 0.023726591052448363,
+        "ssim_status": "unavailable"
+      },
+      "after_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 732828,
+        "changed_pixel_ratio": 0.6361354166666666,
+        "mean_absolute_channel_delta": 1.0463214699074073,
+        "normalized_mean_absolute_channel_delta": 0.004103221450617284,
+        "rms_channel_delta": 5.837548039017257,
+        "normalized_rms_channel_delta": 0.022892345251048066,
+        "ssim_status": "unavailable"
+      },
+      "mae_relative_percent": -6.572092132789509,
+      "control_repeat_byte_identical": true,
+      "labels_byte_identical": true,
+      "native_boundary_filters_and_other_paint_identical": true,
+      "native_context_identical": true,
+      "reference_sha256": "7899e703a445a58eddfd4e11afce6178bf36ad751f736fc04819b00ddb4968d1",
+      "before_sha256": "987f1afd93e8b6d1f078b6361b2636a42648715a344b9462aafd3e33e1febabc",
+      "after_sha256": "a972b345300d642015aa4995e19f7a124b75c624ad611dd833d6afa68b853e2a",
+      "labels_sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "visible_reference_national_boundary_fragments": 3
+    },
+    {
+      "qgis_major": "3",
+      "camera": {
+        "name": "lausanne-boundary-z12.0",
+        "description": "z10 primary qfit activity-area target around Lausanne/Lavaux for roads, labels, feature density, and activity-line contrast.",
+        "longitude": 6.72,
+        "latitude": 46.49,
+        "zoom": 12.0,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "light-v11"
+      },
+      "activity_overlay": false,
+      "runtime": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 12.0,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            735837.0536051701,
+            5850623.630550238,
+            760296.9026564265,
+            5867821.961914402
+          ],
+          "map_scale": 75233.29555627593,
+          "vector_tile_zoom": 11.897637795275587,
+          "integer_render_zoom": 12,
+          "integer_fetch_zoom": 12
+        }
+      },
+      "before_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 999926,
+        "changed_pixel_ratio": 0.8679913194444444,
+        "mean_absolute_channel_delta": 1.2821195023148146,
+        "normalized_mean_absolute_channel_delta": 0.005027919616920842,
+        "rms_channel_delta": 6.39226158182455,
+        "normalized_rms_channel_delta": 0.025067692477743334,
+        "ssim_status": "unavailable"
+      },
+      "after_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 999955,
+        "changed_pixel_ratio": 0.8680164930555555,
+        "mean_absolute_channel_delta": 1.2125535300925925,
+        "normalized_mean_absolute_channel_delta": 0.004755111882716049,
+        "rms_channel_delta": 6.203855972106336,
+        "normalized_rms_channel_delta": 0.02432884694943661,
+        "ssim_status": "unavailable"
+      },
+      "mae_relative_percent": -5.425857113679633,
+      "control_repeat_byte_identical": true,
+      "labels_byte_identical": true,
+      "native_boundary_filters_and_other_paint_identical": true,
+      "native_context_identical": true,
+      "reference_sha256": "a53ac2cb23707e09cf449edc119501223a5d7aa7c3eff298eb72e6f0d74eb2d1",
+      "before_sha256": "dd049ab0d0e3e2865241cf7856d728f2179bd4fa0daaadebcb91b7553cbc129e",
+      "after_sha256": "c6ef1b6cdd7368d7aa6e736515dae265d5712561b63f3f991dcd07afd372e200",
+      "labels_sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "visible_reference_national_boundary_fragments": 5
+    },
+    {
+      "qgis_major": "3",
+      "camera": {
+        "name": "lausanne-boundary-z12.1",
+        "description": "z10 primary qfit activity-area target around Lausanne/Lavaux for roads, labels, feature density, and activity-line contrast.",
+        "longitude": 6.72,
+        "latitude": 46.49,
+        "zoom": 12.1,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "light-v11"
+      },
+      "activity_overlay": false,
+      "runtime": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 12.1,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            736656.055064382,
+            5851199.490951247,
+            759477.9011972146,
+            5867246.101513394
+          ],
+          "map_scale": 70195.14681604509,
+          "vector_tile_zoom": 11.971459694368868,
+          "integer_render_zoom": 12,
+          "integer_fetch_zoom": 12
+        }
+      },
+      "before_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 997748,
+        "changed_pixel_ratio": 0.8661006944444445,
+        "mean_absolute_channel_delta": 1.2553541666666665,
+        "normalized_mean_absolute_channel_delta": 0.004922957516339869,
+        "rms_channel_delta": 6.518576520537512,
+        "normalized_rms_channel_delta": 0.025563045178578478,
+        "ssim_status": "unavailable"
+      },
+      "after_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 997784,
+        "changed_pixel_ratio": 0.8661319444444444,
+        "mean_absolute_channel_delta": 1.1927847222222223,
+        "normalized_mean_absolute_channel_delta": 0.004677587145969499,
+        "rms_channel_delta": 6.352701046611848,
+        "normalized_rms_channel_delta": 0.024912553123968034,
+        "ssim_status": "unavailable"
+      },
+      "mae_relative_percent": -4.9842065375530265,
+      "control_repeat_byte_identical": true,
+      "labels_byte_identical": true,
+      "native_boundary_filters_and_other_paint_identical": true,
+      "native_context_identical": true,
+      "reference_sha256": "6953c8a3a8d99f42dce52af095213cc5a5e35e145d992b4004157f42555257dd",
+      "before_sha256": "e7094bae0d8dbe2e81dc8472e152847fca1dc5b6de8da082b9d212eee3047e25",
+      "after_sha256": "bdd091cfa0883865c10402eebf3e01bf526c42a7d4dd19e3c0c453e18030e7a0",
+      "labels_sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "visible_reference_national_boundary_fragments": 2
+    },
+    {
+      "qgis_major": "3",
+      "camera": {
+        "name": "lausanne-lavaux-z10-light-activity",
+        "description": "z10 primary qfit activity-area target around Lausanne/Lavaux for roads, labels, feature density, and activity-line contrast.",
+        "longitude": 6.72,
+        "latitude": 46.49,
+        "zoom": 10.25,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "light-v11"
+      },
+      "activity_overlay": true,
+      "runtime": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 10.25,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            706930.5793611014,
+            5830298.7658473775,
+            789203.3769004953,
+            5888146.826617263
+          ],
+          "map_scale": 253053.63416398215,
+          "vector_tile_zoom": 10.146055147472122,
+          "integer_render_zoom": 10,
+          "integer_fetch_zoom": 10
+        }
+      },
+      "before_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 1141721,
+        "changed_pixel_ratio": 0.9910772569444445,
+        "mean_absolute_channel_delta": 2.583413483796296,
+        "normalized_mean_absolute_channel_delta": 0.010131033269789397,
+        "rms_channel_delta": 6.175457168900214,
+        "normalized_rms_channel_delta": 0.02421747909372633,
+        "ssim_status": "unavailable"
+      },
+      "after_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 1141630,
+        "changed_pixel_ratio": 0.9909982638888889,
+        "mean_absolute_channel_delta": 2.501255787037037,
+        "normalized_mean_absolute_channel_delta": 0.009808846223674655,
+        "rms_channel_delta": 5.931074450011663,
+        "normalized_rms_channel_delta": 0.023259115490241816,
+        "ssim_status": "unavailable"
+      },
+      "mae_relative_percent": -3.1801992702511384,
+      "control_repeat_byte_identical": true,
+      "labels_byte_identical": true,
+      "native_boundary_filters_and_other_paint_identical": true,
+      "native_context_identical": true,
+      "reference_sha256": "d2e3f4a6d244068b80abd0ebd99e156cce07a8d1139188cd37dfaed8b77bf310",
+      "before_sha256": "904ee3ea3083acb232ec9f4268814bca6b296c1acc3d22863df47d70f994d1f0",
+      "after_sha256": "44a63e52f8eb9f160ed4351c8909f98256c2d07fa0c237309ba7ec30824cf8f9",
+      "labels_sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "visible_reference_national_boundary_fragments": 3
+    },
+    {
+      "qgis_major": "3",
+      "camera": {
+        "name": "zurich-region-z8-light-activity",
+        "description": "z8 regional context around Zurich for settlement hierarchy, major roads, water, and landuse balance.",
+        "longitude": 8.54,
+        "latitude": 47.38,
+        "zoom": 8.2,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "light-v11"
+      },
+      "activity_overlay": true,
+      "runtime": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 8.2,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            780320.1684168805,
+            5884545.688159028,
+            1121016.734332232,
+            6124097.96106826
+          ],
+          "map_scale": 1047910.2052022377,
+          "vector_tile_zoom": 8.080675923441609,
+          "integer_render_zoom": 8,
+          "integer_fetch_zoom": 8
+        }
+      },
+      "before_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 1145167,
+        "changed_pixel_ratio": 0.9940685763888889,
+        "mean_absolute_channel_delta": 5.927223668981482,
+        "normalized_mean_absolute_channel_delta": 0.023244014388162676,
+        "rms_channel_delta": 9.717721084622335,
+        "normalized_rms_channel_delta": 0.03810871013577386,
+        "ssim_status": "unavailable"
+      },
+      "after_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 1144641,
+        "changed_pixel_ratio": 0.9936119791666667,
+        "mean_absolute_channel_delta": 5.728451388888889,
+        "normalized_mean_absolute_channel_delta": 0.022464515250544662,
+        "rms_channel_delta": 9.363151971684069,
+        "normalized_rms_channel_delta": 0.03671824302621203,
+        "ssim_status": "unavailable"
+      },
+      "mae_relative_percent": -3.3535478192397994,
+      "control_repeat_byte_identical": true,
+      "labels_byte_identical": true,
+      "native_boundary_filters_and_other_paint_identical": true,
+      "native_context_identical": true,
+      "reference_sha256": "36152db116d5d66fd708fa884fcf33b7c9024747f543b6e8204c90b01f78e7ba",
+      "before_sha256": "eafdf7f2094c76d5ac5ee2298d1827241c1200c8d9e3c7dc9d59704ddc62404d",
+      "after_sha256": "d14b41bea94938dd346d495299e76a57684c86554fc4c5860eb4a3fa08a53798",
+      "labels_sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "visible_reference_national_boundary_fragments": 13
+    },
+    {
+      "qgis_major": "4",
+      "camera": {
+        "name": "switzerland-alps-z5-light",
+        "description": "z5 country-wide Switzerland/Alps guardrail for background, water, major roads, and label density.",
+        "longitude": 8.2,
+        "latitude": 46.8,
+        "zoom": 5.35,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "light-v11"
+      },
+      "activity_overlay": false,
+      "runtime": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 5.35,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            -315391.9260596817,
+            5045903.47656141,
+            2141031.575069368,
+            6773076.250792773
+          ],
+          "map_scale": 7253218.9993968,
+          "vector_tile_zoom": 5.339399956577582,
+          "integer_render_zoom": 5,
+          "integer_fetch_zoom": 5
+        }
+      },
+      "before_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 1150245,
+        "changed_pixel_ratio": 0.9984765625,
+        "mean_absolute_channel_delta": 8.109640914351852,
+        "normalized_mean_absolute_channel_delta": 0.0318025133896151,
+        "rms_channel_delta": 15.044829006295492,
+        "normalized_rms_channel_delta": 0.05899932943645291,
+        "ssim_status": "unavailable"
+      },
+      "after_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 1150237,
+        "changed_pixel_ratio": 0.9984696180555556,
+        "mean_absolute_channel_delta": 8.313153645833333,
+        "normalized_mean_absolute_channel_delta": 0.03260060253267974,
+        "rms_channel_delta": 15.551155129434123,
+        "normalized_rms_channel_delta": 0.06098492207621225,
+        "ssim_status": "unavailable"
+      },
+      "mae_relative_percent": 2.5095159407282797,
+      "control_repeat_byte_identical": true,
+      "labels_byte_identical": true,
+      "native_boundary_filters_and_other_paint_identical": true,
+      "native_context_identical": true,
+      "reference_sha256": "f82803bd3fac15796284956d8b9b7e26568ab8ecb274ef87baa756f085628803",
+      "before_sha256": "288923024303f0033a2cb3d21ef7c47a11e4dec10694317df19a12180b4c08d5",
+      "after_sha256": "a5832479d37bd5bcb57b753a752b1eed2c8668ca80ace52db1f8edc2e4a77c15",
+      "labels_sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "visible_reference_national_boundary_fragments": 51
+    },
+    {
+      "qgis_major": "4",
+      "camera": {
+        "name": "zurich-region-z8-light",
+        "description": "z8 regional context around Zurich for settlement hierarchy, major roads, water, and landuse balance.",
+        "longitude": 8.54,
+        "latitude": 47.38,
+        "zoom": 8.2,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "light-v11"
+      },
+      "activity_overlay": false,
+      "runtime": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 8.2,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            780320.1684168805,
+            5884545.688159028,
+            1121016.734332232,
+            6124097.96106826
+          ],
+          "map_scale": 1005993.7969941482,
+          "vector_tile_zoom": 8.157448886503945,
+          "integer_render_zoom": 8,
+          "integer_fetch_zoom": 8
+        }
+      },
+      "before_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 1149094,
+        "changed_pixel_ratio": 0.9974774305555556,
+        "mean_absolute_channel_delta": 5.538325231481482,
+        "normalized_mean_absolute_channel_delta": 0.02171892247639797,
+        "rms_channel_delta": 8.470177460804367,
+        "normalized_rms_channel_delta": 0.03321638219923281,
+        "ssim_status": "unavailable"
+      },
+      "after_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 1148357,
+        "changed_pixel_ratio": 0.9968376736111111,
+        "mean_absolute_channel_delta": 5.3234574652777775,
+        "normalized_mean_absolute_channel_delta": 0.02087630378540305,
+        "rms_channel_delta": 8.025076172060983,
+        "normalized_rms_channel_delta": 0.03147088694925876,
+        "ssim_status": "unavailable"
+      },
+      "mae_relative_percent": -3.8796523718457876,
+      "control_repeat_byte_identical": true,
+      "labels_byte_identical": true,
+      "native_boundary_filters_and_other_paint_identical": true,
+      "native_context_identical": true,
+      "reference_sha256": "553784ddbf6e8f5ff1cc419667bab13ccebcda0f6606f92100cc53b0d4627313",
+      "before_sha256": "8bb8ba3a76f2afe5c4eb44b5301d2a180c83dcea879ad9de6ad9f94855b14662",
+      "after_sha256": "71f413a84e334d33ee5d0e99f569d309c7bed229171eaaea6d41b40593233a68",
+      "labels_sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "visible_reference_national_boundary_fragments": 13
+    },
+    {
+      "qgis_major": "4",
+      "camera": {
+        "name": "lausanne-lavaux-z10-light",
+        "description": "z10 primary qfit activity-area target around Lausanne/Lavaux for roads, labels, feature density, and activity-line contrast.",
+        "longitude": 6.72,
+        "latitude": 46.49,
+        "zoom": 10.25,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "light-v11"
+      },
+      "activity_overlay": false,
+      "runtime": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 10.25,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            706930.5793611014,
+            5830298.7658473775,
+            789203.3769004953,
+            5888146.826617263
+          ],
+          "map_scale": 242931.48879742288,
+          "vector_tile_zoom": 10.220212941573237,
+          "integer_render_zoom": 10,
+          "integer_fetch_zoom": 10
+        }
+      },
+      "before_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 1139164,
+        "changed_pixel_ratio": 0.9888576388888889,
+        "mean_absolute_channel_delta": 2.1609785879629633,
+        "normalized_mean_absolute_channel_delta": 0.008474425835148876,
+        "rms_channel_delta": 4.97803320653675,
+        "normalized_rms_channel_delta": 0.019521698849163726,
+        "ssim_status": "unavailable"
+      },
+      "after_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 1138857,
+        "changed_pixel_ratio": 0.9885911458333333,
+        "mean_absolute_channel_delta": 2.076193865740741,
+        "normalized_mean_absolute_channel_delta": 0.008141936728395062,
+        "rms_channel_delta": 4.669901856149729,
+        "normalized_rms_channel_delta": 0.01831334061235188,
+        "ssim_status": "unavailable"
+      },
+      "mae_relative_percent": -3.92344110647318,
+      "control_repeat_byte_identical": true,
+      "labels_byte_identical": true,
+      "native_boundary_filters_and_other_paint_identical": true,
+      "native_context_identical": true,
+      "reference_sha256": "1ae4bde1af23b8c80015b7d51499b2672e65313d076573fc88b65e293c3d0b97",
+      "before_sha256": "f8bed1bcba13a50bf34c47ffd53b2d33e2a140feb8047d60aceb3a190ed12943",
+      "after_sha256": "c28a3a7a6d27609b5844c12d77ca468399122bd4cf275afa2c6c6772b7370f46",
+      "labels_sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "visible_reference_national_boundary_fragments": 3
+    },
+    {
+      "qgis_major": "4",
+      "camera": {
+        "name": "bern-urban-z12-light",
+        "description": "z12 urban fit target around Bern for road hierarchy, rail/transit, POIs, buildings, and label emphasis.",
+        "longitude": 7.447,
+        "latitude": 46.948,
+        "zoom": 12.25,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "light-v11"
+      },
+      "activity_overlay": false,
+      "runtime": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 12.25,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            818712.148245084,
+            5926359.467815783,
+            839280.3476299326,
+            5940821.483008254
+          ],
+          "map_scale": 60732.87219935607,
+          "vector_tile_zoom": 12.220212941573227,
+          "integer_render_zoom": 12,
+          "integer_fetch_zoom": 12
+        }
+      },
+      "before_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 764659,
+        "changed_pixel_ratio": 0.6637664930555556,
+        "mean_absolute_channel_delta": 1.8625503472222222,
+        "normalized_mean_absolute_channel_delta": 0.007304119008714597,
+        "rms_channel_delta": 8.854311964548705,
+        "normalized_rms_channel_delta": 0.03472279201783806,
+        "ssim_status": "unavailable"
+      },
+      "after_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 764659,
+        "changed_pixel_ratio": 0.6637664930555556,
+        "mean_absolute_channel_delta": 1.8625503472222222,
+        "normalized_mean_absolute_channel_delta": 0.007304119008714597,
+        "rms_channel_delta": 8.854311964548705,
+        "normalized_rms_channel_delta": 0.03472279201783806,
+        "ssim_status": "unavailable"
+      },
+      "mae_relative_percent": 0.0,
+      "control_repeat_byte_identical": true,
+      "labels_byte_identical": true,
+      "native_boundary_filters_and_other_paint_identical": true,
+      "native_context_identical": true,
+      "reference_sha256": "d683cf7c463166f75478d860ff4b8489a559b2c5425247bbe880a396d8ea80c1",
+      "before_sha256": "b2f1f44db6aeb8e56078253828089941d2f647ad8f9d735993ae12a33808a51b",
+      "after_sha256": "b2f1f44db6aeb8e56078253828089941d2f647ad8f9d735993ae12a33808a51b",
+      "labels_sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "visible_reference_national_boundary_fragments": 0
+    },
+    {
+      "qgis_major": "4",
+      "camera": {
+        "name": "geneva-urban-z14-light",
+        "description": "z14 dense urban detail around Geneva for minor roads, buildings, transit, POIs, and local label hierarchy.",
+        "longitude": 6.143,
+        "latitude": 46.204,
+        "zoom": 14.25,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "light-v11"
+      },
+      "activity_overlay": false,
+      "runtime": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 14.25,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            681264.6070199735,
+            5811293.095022159,
+            686406.6568661856,
+            5814908.598820277
+          ],
+          "map_scale": 15183.218049839017,
+          "vector_tile_zoom": 14.220212941573227,
+          "integer_render_zoom": 14,
+          "integer_fetch_zoom": 14
+        }
+      },
+      "before_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 457113,
+        "changed_pixel_ratio": 0.3967994791666667,
+        "mean_absolute_channel_delta": 2.6958260995370367,
+        "normalized_mean_absolute_channel_delta": 0.010571867057007987,
+        "rms_channel_delta": 11.691931111153254,
+        "normalized_rms_channel_delta": 0.04585071023981668,
+        "ssim_status": "unavailable"
+      },
+      "after_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 457113,
+        "changed_pixel_ratio": 0.3967994791666667,
+        "mean_absolute_channel_delta": 2.6958260995370367,
+        "normalized_mean_absolute_channel_delta": 0.010571867057007987,
+        "rms_channel_delta": 11.691931111153254,
+        "normalized_rms_channel_delta": 0.04585071023981668,
+        "ssim_status": "unavailable"
+      },
+      "mae_relative_percent": 0.0,
+      "control_repeat_byte_identical": true,
+      "labels_byte_identical": true,
+      "native_boundary_filters_and_other_paint_identical": true,
+      "native_context_identical": true,
+      "reference_sha256": "a1088191221cd6083a1369d37d7608756c76cd19b96278f31dd73c608255cc76",
+      "before_sha256": "9fa6f062a723a65a86e31b9d1161a5ed9f534f6feac09caef0c921a0a961f4d1",
+      "after_sha256": "9fa6f062a723a65a86e31b9d1161a5ed9f534f6feac09caef0c921a0a961f4d1",
+      "labels_sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "visible_reference_national_boundary_fragments": 0
+    },
+    {
+      "qgis_major": "4",
+      "camera": {
+        "name": "zurich-streets-z17-light",
+        "description": "z17 street-level guardrail in central Zurich for casings, widths, symbols, buildings, and local labels.",
+        "longitude": 8.5417,
+        "latitude": 47.3769,
+        "zoom": 17.0,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "light-v11"
+      },
+      "activity_overlay": false,
+      "runtime": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 17.0,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            950475.5093674791,
+            6003543.480950285,
+            951239.879650331,
+            6004080.928805415
+          ],
+          "map_scale": 2256.9988666885574,
+          "vector_tile_zoom": 16.941732283464432,
+          "integer_render_zoom": 17,
+          "integer_fetch_zoom": 17
+        }
+      },
+      "before_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 336526,
+        "changed_pixel_ratio": 0.2921232638888889,
+        "mean_absolute_channel_delta": 2.089370949074074,
+        "normalized_mean_absolute_channel_delta": 0.008193611564996369,
+        "rms_channel_delta": 8.963244629454783,
+        "normalized_rms_channel_delta": 0.035149978939038366,
+        "ssim_status": "unavailable"
+      },
+      "after_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 336526,
+        "changed_pixel_ratio": 0.2921232638888889,
+        "mean_absolute_channel_delta": 2.089370949074074,
+        "normalized_mean_absolute_channel_delta": 0.008193611564996369,
+        "rms_channel_delta": 8.963244629454783,
+        "normalized_rms_channel_delta": 0.035149978939038366,
+        "ssim_status": "unavailable"
+      },
+      "mae_relative_percent": 0.0,
+      "control_repeat_byte_identical": true,
+      "labels_byte_identical": true,
+      "native_boundary_filters_and_other_paint_identical": true,
+      "native_context_identical": true,
+      "reference_sha256": "abca923b79ccea72baf4cf4c407f3a0a48b3958d3aa9455f80b4ed78e7bde3ab",
+      "before_sha256": "0b2fb957571220b6e2703e426c53f3d670412aed5052b35b5c36c0ab88bc7122",
+      "after_sha256": "0b2fb957571220b6e2703e426c53f3d670412aed5052b35b5c36c0ab88bc7122",
+      "labels_sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "visible_reference_national_boundary_fragments": 0
+    },
+    {
+      "qgis_major": "4",
+      "camera": {
+        "name": "geneva-streets-z18-light",
+        "description": "z18 street-level stress test in central Geneva for fine road hierarchy, symbols, POIs, and high-detail label behavior.",
+        "longitude": 6.147,
+        "latitude": 46.202,
+        "zoom": 18.0,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "light-v11"
+      },
+      "activity_overlay": false,
+      "runtime": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 18.0,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            684089.8173355398,
+            5812644.801312825,
+            684472.0024769657,
+            5812913.52524039
+          ],
+          "map_scale": 1128.499433343935,
+          "vector_tile_zoom": 17.941732283464756,
+          "integer_render_zoom": 18,
+          "integer_fetch_zoom": 18
+        }
+      },
+      "before_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 165578,
+        "changed_pixel_ratio": 0.14373090277777778,
+        "mean_absolute_channel_delta": 1.778322337962963,
+        "normalized_mean_absolute_channel_delta": 0.0069738130900508346,
+        "rms_channel_delta": 7.918084998499116,
+        "normalized_rms_channel_delta": 0.031051313719604377,
+        "ssim_status": "unavailable"
+      },
+      "after_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 165578,
+        "changed_pixel_ratio": 0.14373090277777778,
+        "mean_absolute_channel_delta": 1.778322337962963,
+        "normalized_mean_absolute_channel_delta": 0.0069738130900508346,
+        "rms_channel_delta": 7.918084998499116,
+        "normalized_rms_channel_delta": 0.031051313719604377,
+        "ssim_status": "unavailable"
+      },
+      "mae_relative_percent": 0.0,
+      "control_repeat_byte_identical": true,
+      "labels_byte_identical": true,
+      "native_boundary_filters_and_other_paint_identical": true,
+      "native_context_identical": true,
+      "reference_sha256": "09edd5148a12727ac7899cb962cc984e0ca0da61dd07d60477af080dd25e6ffc",
+      "before_sha256": "b8f175e538c415a385ffc97b1b77aae6116232543ca6861766cbc30911c8fc8d",
+      "after_sha256": "b8f175e538c415a385ffc97b1b77aae6116232543ca6861766cbc30911c8fc8d",
+      "labels_sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "visible_reference_national_boundary_fragments": 0
+    },
+    {
+      "qgis_major": "4",
+      "camera": {
+        "name": "lausanne-boundary-z11.9",
+        "description": "z10 primary qfit activity-area target around Lausanne/Lavaux for roads, labels, feature density, and activity-line contrast.",
+        "longitude": 6.72,
+        "latitude": 46.49,
+        "zoom": 11.9,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "light-v11"
+      },
+      "activity_overlay": false,
+      "runtime": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 11.9,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            734959.2695754083,
+            5850006.438654312,
+            761174.6866861883,
+            5868439.153810329
+          ],
+          "map_scale": 77407.72768931108,
+          "vector_tile_zoom": 11.865776745158445,
+          "integer_render_zoom": 12,
+          "integer_fetch_zoom": 12
+        }
+      },
+      "before_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 1000462,
+        "changed_pixel_ratio": 0.8684565972222222,
+        "mean_absolute_channel_delta": 1.3077427662037038,
+        "normalized_mean_absolute_channel_delta": 0.005128403004720407,
+        "rms_channel_delta": 6.1942857294747435,
+        "normalized_rms_channel_delta": 0.024291316586175466,
+        "ssim_status": "unavailable"
+      },
+      "after_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 1000209,
+        "changed_pixel_ratio": 0.8682369791666666,
+        "mean_absolute_channel_delta": 1.2322349537037036,
+        "normalized_mean_absolute_channel_delta": 0.004832293936092955,
+        "rms_channel_delta": 5.984171755833036,
+        "normalized_rms_channel_delta": 0.02346734021895308,
+        "ssim_status": "unavailable"
+      },
+      "mae_relative_percent": -5.7739040468329,
+      "control_repeat_byte_identical": true,
+      "labels_byte_identical": true,
+      "native_boundary_filters_and_other_paint_identical": true,
+      "native_context_identical": true,
+      "reference_sha256": "7899e703a445a58eddfd4e11afce6178bf36ad751f736fc04819b00ddb4968d1",
+      "before_sha256": "d5344e3ad8143692495f6071d8545ad72a472b3b5734971f7d6077bbe055f195",
+      "after_sha256": "5aa8c7f62d268aba5d2fe535600dc892b8bb0a900a00728c945a23dd51a51494",
+      "labels_sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "visible_reference_national_boundary_fragments": 3
+    },
+    {
+      "qgis_major": "4",
+      "camera": {
+        "name": "lausanne-boundary-z12.0",
+        "description": "z10 primary qfit activity-area target around Lausanne/Lavaux for roads, labels, feature density, and activity-line contrast.",
+        "longitude": 6.72,
+        "latitude": 46.49,
+        "zoom": 12.0,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "light-v11"
+      },
+      "activity_overlay": false,
+      "runtime": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 12.0,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            735837.0536051701,
+            5850623.630550238,
+            760296.9026564265,
+            5867821.961914402
+          ],
+          "map_scale": 72223.96373402489,
+          "vector_tile_zoom": 11.941732283464564,
+          "integer_render_zoom": 12,
+          "integer_fetch_zoom": 12
+        }
+      },
+      "before_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 993443,
+        "changed_pixel_ratio": 0.8623637152777778,
+        "mean_absolute_channel_delta": 1.2576322337962964,
+        "normalized_mean_absolute_channel_delta": 0.004931891112926652,
+        "rms_channel_delta": 6.407112912794152,
+        "normalized_rms_channel_delta": 0.025125932991349617,
+        "ssim_status": "unavailable"
+      },
+      "after_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 992851,
+        "changed_pixel_ratio": 0.8618498263888889,
+        "mean_absolute_channel_delta": 1.1848995949074075,
+        "normalized_mean_absolute_channel_delta": 0.004646665078068265,
+        "rms_channel_delta": 6.217423031558688,
+        "normalized_rms_channel_delta": 0.02438205110415172,
+        "ssim_status": "unavailable"
+      },
+      "mae_relative_percent": -5.783299515895646,
+      "control_repeat_byte_identical": true,
+      "labels_byte_identical": true,
+      "native_boundary_filters_and_other_paint_identical": true,
+      "native_context_identical": true,
+      "reference_sha256": "a53ac2cb23707e09cf449edc119501223a5d7aa7c3eff298eb72e6f0d74eb2d1",
+      "before_sha256": "d2ab7e2a6879bc658d1624c9bec3715f92f9493fb1fc086928738b97c848ca42",
+      "after_sha256": "cbbd534dfb35a6c01149ceb37545be1af9972c9fc0956cdadc9c8c76b7bee20b",
+      "labels_sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "visible_reference_national_boundary_fragments": 5
+    },
+    {
+      "qgis_major": "4",
+      "camera": {
+        "name": "lausanne-boundary-z12.1",
+        "description": "z10 primary qfit activity-area target around Lausanne/Lavaux for roads, labels, feature density, and activity-line contrast.",
+        "longitude": 6.72,
+        "latitude": 46.49,
+        "zoom": 12.1,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "light-v11"
+      },
+      "activity_overlay": false,
+      "runtime": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 12.1,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            736656.055064382,
+            5851199.490951247,
+            759477.9011972146,
+            5867246.101513394
+          ],
+          "map_scale": 67387.34094340328,
+          "vector_tile_zoom": 12.025202613188227,
+          "integer_render_zoom": 12,
+          "integer_fetch_zoom": 12
+        }
+      },
+      "before_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 996273,
+        "changed_pixel_ratio": 0.8648203125,
+        "mean_absolute_channel_delta": 1.2394571759259259,
+        "normalized_mean_absolute_channel_delta": 0.004860616376180102,
+        "rms_channel_delta": 6.516572704269106,
+        "normalized_rms_channel_delta": 0.025555187075565124,
+        "ssim_status": "unavailable"
+      },
+      "after_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 995834,
+        "changed_pixel_ratio": 0.8644392361111111,
+        "mean_absolute_channel_delta": 1.1736889467592593,
+        "normalized_mean_absolute_channel_delta": 0.0046027017519970955,
+        "rms_channel_delta": 6.348783181768893,
+        "normalized_rms_channel_delta": 0.024897188948113307,
+        "ssim_status": "unavailable"
+      },
+      "mae_relative_percent": -5.3062123035864435,
+      "control_repeat_byte_identical": true,
+      "labels_byte_identical": true,
+      "native_boundary_filters_and_other_paint_identical": true,
+      "native_context_identical": true,
+      "reference_sha256": "6953c8a3a8d99f42dce52af095213cc5a5e35e145d992b4004157f42555257dd",
+      "before_sha256": "ab2fbff8119cebbafd9bb6a45f7f40908522290d4d392beb5f184dd42b1944ed",
+      "after_sha256": "e2f85991a88948a5b731a5c3e300700f83890d7093f92602feab43d723056548",
+      "labels_sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "visible_reference_national_boundary_fragments": 2
+    },
+    {
+      "qgis_major": "4",
+      "camera": {
+        "name": "lausanne-lavaux-z10-light-activity",
+        "description": "z10 primary qfit activity-area target around Lausanne/Lavaux for roads, labels, feature density, and activity-line contrast.",
+        "longitude": 6.72,
+        "latitude": 46.49,
+        "zoom": 10.25,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "light-v11"
+      },
+      "activity_overlay": true,
+      "runtime": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 10.25,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            706930.5793611014,
+            5830298.7658473775,
+            789203.3769004953,
+            5888146.826617263
+          ],
+          "map_scale": 242931.48879742288,
+          "vector_tile_zoom": 10.220212941573237,
+          "integer_render_zoom": 10,
+          "integer_fetch_zoom": 10
+        }
+      },
+      "before_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 1137763,
+        "changed_pixel_ratio": 0.9876414930555556,
+        "mean_absolute_channel_delta": 2.4826061921296296,
+        "normalized_mean_absolute_channel_delta": 0.009735710557371097,
+        "rms_channel_delta": 5.464626409774302,
+        "normalized_rms_channel_delta": 0.021429907489310986,
+        "ssim_status": "unavailable"
+      },
+      "after_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 1137457,
+        "changed_pixel_ratio": 0.9873758680555556,
+        "mean_absolute_channel_delta": 2.3987242476851853,
+        "normalized_mean_absolute_channel_delta": 0.009406761755628178,
+        "rms_channel_delta": 5.188274517260621,
+        "normalized_rms_channel_delta": 0.02034617457749263,
+        "ssim_status": "unavailable"
+      },
+      "mae_relative_percent": -3.378785757901004,
+      "control_repeat_byte_identical": true,
+      "labels_byte_identical": true,
+      "native_boundary_filters_and_other_paint_identical": true,
+      "native_context_identical": true,
+      "reference_sha256": "d2e3f4a6d244068b80abd0ebd99e156cce07a8d1139188cd37dfaed8b77bf310",
+      "before_sha256": "dad294d8391c233a9fb58142f0ac71a50bb7d92b9c4afa26a4154147b59d6321",
+      "after_sha256": "a9e43dce6e35e46d79f41e50f75431680447165d227c47d6668a9bc0303b2838",
+      "labels_sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "visible_reference_national_boundary_fragments": 3
+    },
+    {
+      "qgis_major": "4",
+      "camera": {
+        "name": "zurich-region-z8-light-activity",
+        "description": "z8 regional context around Zurich for settlement hierarchy, major roads, water, and landuse balance.",
+        "longitude": 8.54,
+        "latitude": 47.38,
+        "zoom": 8.2,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "light-v11"
+      },
+      "activity_overlay": true,
+      "runtime": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 8.2,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            780320.1684168805,
+            5884545.688159028,
+            1121016.734332232,
+            6124097.96106826
+          ],
+          "map_scale": 1005993.7969941482,
+          "vector_tile_zoom": 8.157448886503945,
+          "integer_render_zoom": 8,
+          "integer_fetch_zoom": 8
+        }
+      },
+      "before_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 1147586,
+        "changed_pixel_ratio": 0.9961684027777777,
+        "mean_absolute_channel_delta": 5.802254050925925,
+        "normalized_mean_absolute_channel_delta": 0.022753937454611472,
+        "rms_channel_delta": 9.040162355758099,
+        "normalized_rms_channel_delta": 0.03545161708140431,
+        "ssim_status": "unavailable"
+      },
+      "after_metrics": {
+        "pixel_count": 1152000,
+        "changed_pixel_count": 1146853,
+        "changed_pixel_ratio": 0.9955321180555555,
+        "mean_absolute_channel_delta": 5.595609664351852,
+        "normalized_mean_absolute_channel_delta": 0.021943567311183736,
+        "rms_channel_delta": 8.641329642094162,
+        "normalized_rms_channel_delta": 0.03388756722389867,
+        "ssim_status": "unavailable"
+      },
+      "mae_relative_percent": -3.5614501667864173,
+      "control_repeat_byte_identical": true,
+      "labels_byte_identical": true,
+      "native_boundary_filters_and_other_paint_identical": true,
+      "native_context_identical": true,
+      "reference_sha256": "36152db116d5d66fd708fa884fcf33b7c9024747f543b6e8204c90b01f78e7ba",
+      "before_sha256": "21d1ad573e3e39e661541ab7c0251b18f72a06885c35565c764f58018608e380",
+      "after_sha256": "1676949fbb326ca41d5b81e43b2a3367958912d85d9364c18f0d3eb2ef3738bd",
+      "labels_sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "visible_reference_national_boundary_fragments": 13
+    }
+  ],
+  "crops": [
+    {
+      "file": "qgis3-lausanne-lavaux-z10-light-crop.png",
+      "camera": "lausanne-lavaux-z10-light",
+      "qgis_major": "3",
+      "box": [
+        160,
+        470,
+        540,
+        770
+      ],
+      "rescaled": false,
+      "panels": [
+        "Mapbox reference",
+        "Before: QGIS 3",
+        "After: QGIS 3"
+      ]
+    },
+    {
+      "file": "qgis4-lausanne-lavaux-z10-light-crop.png",
+      "camera": "lausanne-lavaux-z10-light",
+      "qgis_major": "4",
+      "box": [
+        160,
+        470,
+        540,
+        770
+      ],
+      "rescaled": false,
+      "panels": [
+        "Mapbox reference",
+        "Before: QGIS 4",
+        "After: QGIS 4"
+      ]
+    },
+    {
+      "file": "qgis3-zurich-region-z8-light-crop.png",
+      "camera": "zurich-region-z8-light",
+      "qgis_major": "3",
+      "box": [
+        180,
+        140,
+        560,
+        440
+      ],
+      "rescaled": false,
+      "panels": [
+        "Mapbox reference",
+        "Before: QGIS 3",
+        "After: QGIS 3"
+      ]
+    },
+    {
+      "file": "qgis4-zurich-region-z8-light-crop.png",
+      "camera": "zurich-region-z8-light",
+      "qgis_major": "4",
+      "box": [
+        180,
+        140,
+        560,
+        440
+      ],
+      "rescaled": false,
+      "panels": [
+        "Mapbox reference",
+        "Before: QGIS 4",
+        "After: QGIS 4"
+      ]
+    },
+    {
+      "file": "qgis3-switzerland-alps-z5-light-crop.png",
+      "camera": "switzerland-alps-z5-light",
+      "qgis_major": "3",
+      "box": [
+        490,
+        280,
+        870,
+        580
+      ],
+      "rescaled": false,
+      "panels": [
+        "Mapbox globe (unaligned)",
+        "Before: QGIS 3",
+        "After: QGIS 3"
+      ]
+    },
+    {
+      "file": "qgis4-lausanne-lavaux-z10-light-activity-crop.png",
+      "camera": "lausanne-lavaux-z10-light-activity",
+      "qgis_major": "4",
+      "box": [
+        490,
+        280,
+        870,
+        580
+      ],
+      "rescaled": false,
+      "panels": [
+        "Mapbox reference",
+        "Before: QGIS 4",
+        "After: QGIS 4"
+      ]
+    }
+  ],
+  "projection_diagnostic": {
+    "camera": "switzerland-alps-z5-light",
+    "source_projection": "globe",
+    "diagnostic_projection": "mercator",
+    "production_or_source_style_modified": false,
+    "rows": [
+      {
+        "projection_mode": "source-globe",
+        "qgis_major": "3",
+        "reference_sha256": "f82803bd3fac15796284956d8b9b7e26568ab8ecb274ef87baa756f085628803",
+        "unchanged_reference_repeat_byte_identical": true,
+        "observed_browser_camera": {
+          "projection": {
+            "name": "globe",
+            "center": [
+              0,
+              0
+            ]
+          },
+          "zoom": 5.35,
+          "center": [
+            8.2,
+            46.8
+          ],
+          "bounds": [
+            [
+              -4.740609080079167,
+              40.66727704460254
+            ],
+            [
+              21.140609080080537,
+              52.20340357690284
+            ]
+          ],
+          "canvas_pixels": [
+            1280,
+            900
+          ],
+          "map_errors": 0
+        },
+        "anchors": [
+          {
+            "name": "Geneva",
+            "lon": 6.1432,
+            "lat": 46.2044,
+            "pixel": [
+              519.5591580358631,
+              498.82745625553235
+            ],
+            "qgis_mercator_pixel": [
+              520.6918804698337,
+              500.1931318353844
+            ],
+            "pixel_distance": 1.7742970162361353
+          },
+          {
+            "name": "Paris",
+            "lon": 2.3522,
+            "lat": 48.8566,
+            "pixel": [
+              317.9961581911069,
+              265.6299593740513
+            ],
+            "qgis_mercator_pixel": [
+              300.78859325724085,
+              272.27195688859786
+            ],
+            "pixel_distance": 18.444956544715915
+          },
+          {
+            "name": "Vienna",
+            "lon": 16.3738,
+            "lat": 48.2082,
+            "pixel": [
+              1091.9952404701,
+              309.2237697934372
+            ],
+            "qgis_mercator_pixel": [
+              1114.1349219251624,
+              329.0711764925229
+            ],
+            "pixel_distance": 29.733567690584064
+          }
+        ],
+        "metrics": {
+          "control": {
+            "pixel_count": 1152000,
+            "changed_pixel_count": 1150244,
+            "changed_pixel_ratio": 0.9984756944444444,
+            "mean_absolute_channel_delta": 8.235772280092592,
+            "normalized_mean_absolute_channel_delta": 0.032297146196441535,
+            "rms_channel_delta": 15.390247309970981,
+            "normalized_rms_channel_delta": 0.06035391101949404,
+            "ssim_status": "unavailable"
+          },
+          "candidate": {
+            "pixel_count": 1152000,
+            "changed_pixel_count": 1150246,
+            "changed_pixel_ratio": 0.9984774305555556,
+            "mean_absolute_channel_delta": 8.436700810185185,
+            "normalized_mean_absolute_channel_delta": 0.03308510121641249,
+            "rms_channel_delta": 15.88069652811898,
+            "normalized_rms_channel_delta": 0.0622772412867411,
+            "ssim_status": "unavailable"
+          }
+        },
+        "mae_relative_percent": 2.4397047812780848
+      },
+      {
+        "projection_mode": "source-globe",
+        "qgis_major": "4",
+        "reference_sha256": "f82803bd3fac15796284956d8b9b7e26568ab8ecb274ef87baa756f085628803",
+        "unchanged_reference_repeat_byte_identical": true,
+        "observed_browser_camera": {
+          "projection": {
+            "name": "globe",
+            "center": [
+              0,
+              0
+            ]
+          },
+          "zoom": 5.35,
+          "center": [
+            8.2,
+            46.8
+          ],
+          "bounds": [
+            [
+              -4.740609080079167,
+              40.66727704460254
+            ],
+            [
+              21.140609080080537,
+              52.20340357690284
+            ]
+          ],
+          "canvas_pixels": [
+            1280,
+            900
+          ],
+          "map_errors": 0
+        },
+        "anchors": [
+          {
+            "name": "Geneva",
+            "lon": 6.1432,
+            "lat": 46.2044,
+            "pixel": [
+              519.5591580358631,
+              498.82745625553235
+            ],
+            "qgis_mercator_pixel": [
+              520.6918804698337,
+              500.1931318353844
+            ],
+            "pixel_distance": 1.7742970162361353
+          },
+          {
+            "name": "Paris",
+            "lon": 2.3522,
+            "lat": 48.8566,
+            "pixel": [
+              317.9961581911069,
+              265.6299593740513
+            ],
+            "qgis_mercator_pixel": [
+              300.78859325724085,
+              272.27195688859786
+            ],
+            "pixel_distance": 18.444956544715915
+          },
+          {
+            "name": "Vienna",
+            "lon": 16.3738,
+            "lat": 48.2082,
+            "pixel": [
+              1091.9952404701,
+              309.2237697934372
+            ],
+            "qgis_mercator_pixel": [
+              1114.1349219251624,
+              329.0711764925229
+            ],
+            "pixel_distance": 29.733567690584064
+          }
+        ],
+        "metrics": {
+          "control": {
+            "pixel_count": 1152000,
+            "changed_pixel_count": 1150245,
+            "changed_pixel_ratio": 0.9984765625,
+            "mean_absolute_channel_delta": 8.109640914351852,
+            "normalized_mean_absolute_channel_delta": 0.0318025133896151,
+            "rms_channel_delta": 15.044829006295492,
+            "normalized_rms_channel_delta": 0.05899932943645291,
+            "ssim_status": "unavailable"
+          },
+          "candidate": {
+            "pixel_count": 1152000,
+            "changed_pixel_count": 1150237,
+            "changed_pixel_ratio": 0.9984696180555556,
+            "mean_absolute_channel_delta": 8.313153645833333,
+            "normalized_mean_absolute_channel_delta": 0.03260060253267974,
+            "rms_channel_delta": 15.551155129434123,
+            "normalized_rms_channel_delta": 0.06098492207621225,
+            "ssim_status": "unavailable"
+          }
+        },
+        "mae_relative_percent": 2.5095159407282797
+      },
+      {
+        "projection_mode": "matched-mercator",
+        "qgis_major": "3",
+        "reference_sha256": "d44444381b991e897900645c06eeb3b0b0e887e4920208963320bc69ddcc9e0d",
+        "unchanged_reference_repeat_byte_identical": true,
+        "observed_browser_camera": {
+          "projection": {
+            "name": "mercator",
+            "center": [
+              0,
+              0
+            ]
+          },
+          "zoom": 5.35,
+          "center": [
+            8.2,
+            46.8
+          ],
+          "bounds": [
+            [
+              -2.8332138766738524,
+              41.22714516939652
+            ],
+            [
+              19.233213876672238,
+              51.85015210683707
+            ]
+          ],
+          "canvas_pixels": [
+            1280,
+            900
+          ],
+          "map_errors": 0
+        },
+        "anchors": [
+          {
+            "name": "Geneva",
+            "lon": 6.1432,
+            "lat": 46.2044,
+            "pixel": [
+              520.6918804698327,
+              500.193131835382
+            ],
+            "qgis_mercator_pixel": [
+              520.6918804698337,
+              500.1931318353844
+            ],
+            "pixel_distance": 2.5974394836329936e-12
+          },
+          {
+            "name": "Paris",
+            "lon": 2.3522,
+            "lat": 48.8566,
+            "pixel": [
+              300.78859325724346,
+              272.27195688859456
+            ],
+            "qgis_mercator_pixel": [
+              300.78859325724085,
+              272.27195688859786
+            ],
+            "pixel_distance": 4.207949023867001e-12
+          },
+          {
+            "name": "Vienna",
+            "lon": 16.3738,
+            "lat": 48.2082,
+            "pixel": [
+              1114.134921925163,
+              329.0711764925208
+            ],
+            "qgis_mercator_pixel": [
+              1114.1349219251624,
+              329.0711764925229
+            ],
+            "pixel_distance": 2.211055554968962e-12
+          }
+        ],
+        "metrics": {
+          "control": {
+            "pixel_count": 1152000,
+            "changed_pixel_count": 1148844,
+            "changed_pixel_ratio": 0.9972604166666666,
+            "mean_absolute_channel_delta": 5.560613136574074,
+            "normalized_mean_absolute_channel_delta": 0.02180632602578068,
+            "rms_channel_delta": 11.819176676250969,
+            "normalized_rms_channel_delta": 0.04634971245588615,
+            "ssim_status": "unavailable"
+          },
+          "candidate": {
+            "pixel_count": 1152000,
+            "changed_pixel_count": 1147624,
+            "changed_pixel_ratio": 0.9962013888888889,
+            "mean_absolute_channel_delta": 5.340046875,
+            "normalized_mean_absolute_channel_delta": 0.020941360294117646,
+            "rms_channel_delta": 11.543766407151287,
+            "normalized_rms_channel_delta": 0.045269672184907,
+            "ssim_status": "unavailable"
+          }
+        },
+        "mae_relative_percent": -3.966581672861458
+      },
+      {
+        "projection_mode": "matched-mercator",
+        "qgis_major": "4",
+        "reference_sha256": "d44444381b991e897900645c06eeb3b0b0e887e4920208963320bc69ddcc9e0d",
+        "unchanged_reference_repeat_byte_identical": true,
+        "observed_browser_camera": {
+          "projection": {
+            "name": "mercator",
+            "center": [
+              0,
+              0
+            ]
+          },
+          "zoom": 5.35,
+          "center": [
+            8.2,
+            46.8
+          ],
+          "bounds": [
+            [
+              -2.8332138766738524,
+              41.22714516939652
+            ],
+            [
+              19.233213876672238,
+              51.85015210683707
+            ]
+          ],
+          "canvas_pixels": [
+            1280,
+            900
+          ],
+          "map_errors": 0
+        },
+        "anchors": [
+          {
+            "name": "Geneva",
+            "lon": 6.1432,
+            "lat": 46.2044,
+            "pixel": [
+              520.6918804698327,
+              500.193131835382
+            ],
+            "qgis_mercator_pixel": [
+              520.6918804698337,
+              500.1931318353844
+            ],
+            "pixel_distance": 2.5974394836329936e-12
+          },
+          {
+            "name": "Paris",
+            "lon": 2.3522,
+            "lat": 48.8566,
+            "pixel": [
+              300.78859325724346,
+              272.27195688859456
+            ],
+            "qgis_mercator_pixel": [
+              300.78859325724085,
+              272.27195688859786
+            ],
+            "pixel_distance": 4.207949023867001e-12
+          },
+          {
+            "name": "Vienna",
+            "lon": 16.3738,
+            "lat": 48.2082,
+            "pixel": [
+              1114.134921925163,
+              329.0711764925208
+            ],
+            "qgis_mercator_pixel": [
+              1114.1349219251624,
+              329.0711764925229
+            ],
+            "pixel_distance": 2.211055554968962e-12
+          }
+        ],
+        "metrics": {
+          "control": {
+            "pixel_count": 1152000,
+            "changed_pixel_count": 1148964,
+            "changed_pixel_ratio": 0.9973645833333333,
+            "mean_absolute_channel_delta": 5.43940943287037,
+            "normalized_mean_absolute_channel_delta": 0.021331017383805374,
+            "rms_channel_delta": 11.322191545411963,
+            "normalized_rms_channel_delta": 0.04440075115847829,
+            "ssim_status": "unavailable"
+          },
+          "candidate": {
+            "pixel_count": 1152000,
+            "changed_pixel_count": 1147520,
+            "changed_pixel_ratio": 0.9961111111111111,
+            "mean_absolute_channel_delta": 5.203980034722222,
+            "normalized_mean_absolute_channel_delta": 0.02040776484204793,
+            "rms_channel_delta": 11.010139539182061,
+            "normalized_rms_channel_delta": 0.043177017800713965,
+            "ssim_status": "unavailable"
+          }
+        },
+        "mae_relative_percent": -4.328216161214993
+      }
+    ],
+    "scope": "Explicit planar diagnostic: same original source/unchanged QGIS images, runtime Mapbox projection override only. Original globe evidence preserved separately. Anchor registration is geometric only; native style zoom/DPI, other cameras and interactive projection are not certified."
+  },
+  "native_regression": {
+    "runtimes": [
+      "QGIS3.34.4 host",
+      "QGIS3.44.11 Qt5 Docker",
+      "QGIS4.2.0 Qt6 Docker"
+    ],
+    "width_values": 14,
+    "width_tolerance_mm": 1e-10,
+    "status_cases": 72,
+    "status_fields": [
+      "admin_level",
+      "disputed",
+      "maritime",
+      "worldview"
+    ],
+    "render_proof": "Actual native horizontal stroke: baseline zero-gap custom dash has white breaks, candidate continuous at source width. Filters and all other boundary paint settings preserved."
+  },
+  "hypotheses": {
+    "solid-admin0": "VALID source-semantic repair; weaker fidelity gain without source width.",
+    "width-v2-admin0": "VALID source-width improvement; source zero-gap custom pattern retained natively, tiny pixel differences versus explicit solid.",
+    "solid-width-v2-admin0": "RETAINED ordinary national boundary source width + explicit solid texture; production captures compared separately.",
+    "width-admin0": "INVALID DIAGNOSTIC: least/greatest functions not recognized by QGIS. Unchanged pixels are not neutral evidence.",
+    "solid-width-admin0": "INVALID WIDTH DIAGNOSTIC: only solid toggle acted; not a valid combined candidate."
+  }
+}

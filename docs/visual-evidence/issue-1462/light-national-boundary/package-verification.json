@@ -1,0 +1,16 @@
+[
+  {
+    "qgis_major": 3,
+    "zip_sha256": "740079d3ca48ed07eb2f74074d5bf90bcd0ee2655f054eaeaf70c0401f10942c",
+    "entries": 278,
+    "changed_adapter_payload_matches": true,
+    "bundled_fonts": []
+  },
+  {
+    "qgis_major": 4,
+    "zip_sha256": "4aabb8089c4379f3e30d6aad0a9ee0f7ef7f974d7d44404b51224bef7320fda3",
+    "entries": 278,
+    "changed_adapter_payload_matches": true,
+    "bundled_fonts": []
+  }
+]

@@ -1,0 +1,126 @@
+[
+  {
+    "qgis_major": "3",
+    "camera": "lausanne-lavaux-z10-light",
+    "removed_owner": "admin-0-boundary",
+    "changed_bbox": [
+      0,
+      534,
+      824,
+      898
+    ],
+    "byte_identical": false
+  },
+  {
+    "qgis_major": "3",
+    "camera": "lausanne-lavaux-z10-light",
+    "removed_owner": "admin-1-boundary",
+    "changed_bbox": [
+      769,
+      1,
+      1280,
+      900
+    ],
+    "byte_identical": false
+  },
+  {
+    "qgis_major": "3",
+    "camera": "lausanne-lavaux-z10-light",
+    "removed_owner": "admin-0-boundary-disputed",
+    "changed_bbox": null,
+    "byte_identical": true
+  },
+  {
+    "qgis_major": "3",
+    "camera": "zurich-region-z8-light",
+    "removed_owner": "admin-0-boundary",
+    "changed_bbox": [
+      0,
+      0,
+      1280,
+      770
+    ],
+    "byte_identical": false
+  },
+  {
+    "qgis_major": "3",
+    "camera": "zurich-region-z8-light",
+    "removed_owner": "admin-1-boundary",
+    "changed_bbox": [
+      0,
+      197,
+      1280,
+      900
+    ],
+    "byte_identical": false
+  },
+  {
+    "qgis_major": "3",
+    "camera": "zurich-region-z8-light",
+    "removed_owner": "admin-0-boundary-disputed",
+    "changed_bbox": null,
+    "byte_identical": true
+  },
+  {
+    "qgis_major": "4",
+    "camera": "lausanne-lavaux-z10-light",
+    "removed_owner": "admin-0-boundary",
+    "changed_bbox": [
+      0,
+      534,
+      824,
+      900
+    ],
+    "byte_identical": false
+  },
+  {
+    "qgis_major": "4",
+    "camera": "lausanne-lavaux-z10-light",
+    "removed_owner": "admin-1-boundary",
+    "changed_bbox": [
+      769,
+      1,
+      1279,
+      899
+    ],
+    "byte_identical": false
+  },
+  {
+    "qgis_major": "4",
+    "camera": "lausanne-lavaux-z10-light",
+    "removed_owner": "admin-0-boundary-disputed",
+    "changed_bbox": null,
+    "byte_identical": true
+  },
+  {
+    "qgis_major": "4",
+    "camera": "zurich-region-z8-light",
+    "removed_owner": "admin-0-boundary",
+    "changed_bbox": [
+      0,
+      0,
+      1280,
+      770
+    ],
+    "byte_identical": false
+  },
+  {
+    "qgis_major": "4",
+    "camera": "zurich-region-z8-light",
+    "removed_owner": "admin-1-boundary",
+    "changed_bbox": [
+      0,
+      196,
+      1280,
+      900
+    ],
+    "byte_identical": false
+  },
+  {
+    "qgis_major": "4",
+    "camera": "zurich-region-z8-light",
+    "removed_owner": "admin-0-boundary-disputed",
+    "changed_bbox": null,
+    "byte_identical": true
+  }
+]

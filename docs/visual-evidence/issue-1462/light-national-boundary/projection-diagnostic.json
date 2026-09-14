@@ -1,0 +1,417 @@
+{
+  "camera": "switzerland-alps-z5-light",
+  "source_projection": "globe",
+  "diagnostic_projection": "mercator",
+  "production_or_source_style_modified": false,
+  "rows": [
+    {
+      "projection_mode": "source-globe",
+      "qgis_major": "3",
+      "reference_sha256": "f82803bd3fac15796284956d8b9b7e26568ab8ecb274ef87baa756f085628803",
+      "unchanged_reference_repeat_byte_identical": true,
+      "observed_browser_camera": {
+        "projection": {
+          "name": "globe",
+          "center": [
+            0,
+            0
+          ]
+        },
+        "zoom": 5.35,
+        "center": [
+          8.2,
+          46.8
+        ],
+        "bounds": [
+          [
+            -4.740609080079167,
+            40.66727704460254
+          ],
+          [
+            21.140609080080537,
+            52.20340357690284
+          ]
+        ],
+        "canvas_pixels": [
+          1280,
+          900
+        ],
+        "map_errors": 0
+      },
+      "anchors": [
+        {
+          "name": "Geneva",
+          "lon": 6.1432,
+          "lat": 46.2044,
+          "pixel": [
+            519.5591580358631,
+            498.82745625553235
+          ],
+          "qgis_mercator_pixel": [
+            520.6918804698337,
+            500.1931318353844
+          ],
+          "pixel_distance": 1.7742970162361353
+        },
+        {
+          "name": "Paris",
+          "lon": 2.3522,
+          "lat": 48.8566,
+          "pixel": [
+            317.9961581911069,
+            265.6299593740513
+          ],
+          "qgis_mercator_pixel": [
+            300.78859325724085,
+            272.27195688859786
+          ],
+          "pixel_distance": 18.444956544715915
+        },
+        {
+          "name": "Vienna",
+          "lon": 16.3738,
+          "lat": 48.2082,
+          "pixel": [
+            1091.9952404701,
+            309.2237697934372
+          ],
+          "qgis_mercator_pixel": [
+            1114.1349219251624,
+            329.0711764925229
+          ],
+          "pixel_distance": 29.733567690584064
+        }
+      ],
+      "metrics": {
+        "control": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1150244,
+          "changed_pixel_ratio": 0.9984756944444444,
+          "mean_absolute_channel_delta": 8.235772280092592,
+          "normalized_mean_absolute_channel_delta": 0.032297146196441535,
+          "rms_channel_delta": 15.390247309970981,
+          "normalized_rms_channel_delta": 0.06035391101949404,
+          "ssim_status": "unavailable"
+        },
+        "candidate": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1150246,
+          "changed_pixel_ratio": 0.9984774305555556,
+          "mean_absolute_channel_delta": 8.436700810185185,
+          "normalized_mean_absolute_channel_delta": 0.03308510121641249,
+          "rms_channel_delta": 15.88069652811898,
+          "normalized_rms_channel_delta": 0.0622772412867411,
+          "ssim_status": "unavailable"
+        }
+      },
+      "mae_relative_percent": 2.4397047812780848
+    },
+    {
+      "projection_mode": "source-globe",
+      "qgis_major": "4",
+      "reference_sha256": "f82803bd3fac15796284956d8b9b7e26568ab8ecb274ef87baa756f085628803",
+      "unchanged_reference_repeat_byte_identical": true,
+      "observed_browser_camera": {
+        "projection": {
+          "name": "globe",
+          "center": [
+            0,
+            0
+          ]
+        },
+        "zoom": 5.35,
+        "center": [
+          8.2,
+          46.8
+        ],
+        "bounds": [
+          [
+            -4.740609080079167,
+            40.66727704460254
+          ],
+          [
+            21.140609080080537,
+            52.20340357690284
+          ]
+        ],
+        "canvas_pixels": [
+          1280,
+          900
+        ],
+        "map_errors": 0
+      },
+      "anchors": [
+        {
+          "name": "Geneva",
+          "lon": 6.1432,
+          "lat": 46.2044,
+          "pixel": [
+            519.5591580358631,
+            498.82745625553235
+          ],
+          "qgis_mercator_pixel": [
+            520.6918804698337,
+            500.1931318353844
+          ],
+          "pixel_distance": 1.7742970162361353
+        },
+        {
+          "name": "Paris",
+          "lon": 2.3522,
+          "lat": 48.8566,
+          "pixel": [
+            317.9961581911069,
+            265.6299593740513
+          ],
+          "qgis_mercator_pixel": [
+            300.78859325724085,
+            272.27195688859786
+          ],
+          "pixel_distance": 18.444956544715915
+        },
+        {
+          "name": "Vienna",
+          "lon": 16.3738,
+          "lat": 48.2082,
+          "pixel": [
+            1091.9952404701,
+            309.2237697934372
+          ],
+          "qgis_mercator_pixel": [
+            1114.1349219251624,
+            329.0711764925229
+          ],
+          "pixel_distance": 29.733567690584064
+        }
+      ],
+      "metrics": {
+        "control": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1150245,
+          "changed_pixel_ratio": 0.9984765625,
+          "mean_absolute_channel_delta": 8.109640914351852,
+          "normalized_mean_absolute_channel_delta": 0.0318025133896151,
+          "rms_channel_delta": 15.044829006295492,
+          "normalized_rms_channel_delta": 0.05899932943645291,
+          "ssim_status": "unavailable"
+        },
+        "candidate": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1150237,
+          "changed_pixel_ratio": 0.9984696180555556,
+          "mean_absolute_channel_delta": 8.313153645833333,
+          "normalized_mean_absolute_channel_delta": 0.03260060253267974,
+          "rms_channel_delta": 15.551155129434123,
+          "normalized_rms_channel_delta": 0.06098492207621225,
+          "ssim_status": "unavailable"
+        }
+      },
+      "mae_relative_percent": 2.5095159407282797
+    },
+    {
+      "projection_mode": "matched-mercator",
+      "qgis_major": "3",
+      "reference_sha256": "d44444381b991e897900645c06eeb3b0b0e887e4920208963320bc69ddcc9e0d",
+      "unchanged_reference_repeat_byte_identical": true,
+      "observed_browser_camera": {
+        "projection": {
+          "name": "mercator",
+          "center": [
+            0,
+            0
+          ]
+        },
+        "zoom": 5.35,
+        "center": [
+          8.2,
+          46.8
+        ],
+        "bounds": [
+          [
+            -2.8332138766738524,
+            41.22714516939652
+          ],
+          [
+            19.233213876672238,
+            51.85015210683707
+          ]
+        ],
+        "canvas_pixels": [
+          1280,
+          900
+        ],
+        "map_errors": 0
+      },
+      "anchors": [
+        {
+          "name": "Geneva",
+          "lon": 6.1432,
+          "lat": 46.2044,
+          "pixel": [
+            520.6918804698327,
+            500.193131835382
+          ],
+          "qgis_mercator_pixel": [
+            520.6918804698337,
+            500.1931318353844
+          ],
+          "pixel_distance": 2.5974394836329936e-12
+        },
+        {
+          "name": "Paris",
+          "lon": 2.3522,
+          "lat": 48.8566,
+          "pixel": [
+            300.78859325724346,
+            272.27195688859456
+          ],
+          "qgis_mercator_pixel": [
+            300.78859325724085,
+            272.27195688859786
+          ],
+          "pixel_distance": 4.207949023867001e-12
+        },
+        {
+          "name": "Vienna",
+          "lon": 16.3738,
+          "lat": 48.2082,
+          "pixel": [
+            1114.134921925163,
+            329.0711764925208
+          ],
+          "qgis_mercator_pixel": [
+            1114.1349219251624,
+            329.0711764925229
+          ],
+          "pixel_distance": 2.211055554968962e-12
+        }
+      ],
+      "metrics": {
+        "control": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1148844,
+          "changed_pixel_ratio": 0.9972604166666666,
+          "mean_absolute_channel_delta": 5.560613136574074,
+          "normalized_mean_absolute_channel_delta": 0.02180632602578068,
+          "rms_channel_delta": 11.819176676250969,
+          "normalized_rms_channel_delta": 0.04634971245588615,
+          "ssim_status": "unavailable"
+        },
+        "candidate": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1147624,
+          "changed_pixel_ratio": 0.9962013888888889,
+          "mean_absolute_channel_delta": 5.340046875,
+          "normalized_mean_absolute_channel_delta": 0.020941360294117646,
+          "rms_channel_delta": 11.543766407151287,
+          "normalized_rms_channel_delta": 0.045269672184907,
+          "ssim_status": "unavailable"
+        }
+      },
+      "mae_relative_percent": -3.966581672861458
+    },
+    {
+      "projection_mode": "matched-mercator",
+      "qgis_major": "4",
+      "reference_sha256": "d44444381b991e897900645c06eeb3b0b0e887e4920208963320bc69ddcc9e0d",
+      "unchanged_reference_repeat_byte_identical": true,
+      "observed_browser_camera": {
+        "projection": {
+          "name": "mercator",
+          "center": [
+            0,
+            0
+          ]
+        },
+        "zoom": 5.35,
+        "center": [
+          8.2,
+          46.8
+        ],
+        "bounds": [
+          [
+            -2.8332138766738524,
+            41.22714516939652
+          ],
+          [
+            19.233213876672238,
+            51.85015210683707
+          ]
+        ],
+        "canvas_pixels": [
+          1280,
+          900
+        ],
+        "map_errors": 0
+      },
+      "anchors": [
+        {
+          "name": "Geneva",
+          "lon": 6.1432,
+          "lat": 46.2044,
+          "pixel": [
+            520.6918804698327,
+            500.193131835382
+          ],
+          "qgis_mercator_pixel": [
+            520.6918804698337,
+            500.1931318353844
+          ],
+          "pixel_distance": 2.5974394836329936e-12
+        },
+        {
+          "name": "Paris",
+          "lon": 2.3522,
+          "lat": 48.8566,
+          "pixel": [
+            300.78859325724346,
+            272.27195688859456
+          ],
+          "qgis_mercator_pixel": [
+            300.78859325724085,
+            272.27195688859786
+          ],
+          "pixel_distance": 4.207949023867001e-12
+        },
+        {
+          "name": "Vienna",
+          "lon": 16.3738,
+          "lat": 48.2082,
+          "pixel": [
+            1114.134921925163,
+            329.0711764925208
+          ],
+          "qgis_mercator_pixel": [
+            1114.1349219251624,
+            329.0711764925229
+          ],
+          "pixel_distance": 2.211055554968962e-12
+        }
+      ],
+      "metrics": {
+        "control": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1148964,
+          "changed_pixel_ratio": 0.9973645833333333,
+          "mean_absolute_channel_delta": 5.43940943287037,
+          "normalized_mean_absolute_channel_delta": 0.021331017383805374,
+          "rms_channel_delta": 11.322191545411963,
+          "normalized_rms_channel_delta": 0.04440075115847829,
+          "ssim_status": "unavailable"
+        },
+        "candidate": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1147520,
+          "changed_pixel_ratio": 0.9961111111111111,
+          "mean_absolute_channel_delta": 5.203980034722222,
+          "normalized_mean_absolute_channel_delta": 0.02040776484204793,
+          "rms_channel_delta": 11.010139539182061,
+          "normalized_rms_channel_delta": 0.043177017800713965,
+          "ssim_status": "unavailable"
+        }
+      },
+      "mae_relative_percent": -4.328216161214993
+    }
+  ],
+  "scope": "Explicit planar diagnostic: same original source/unchanged QGIS images, runtime Mapbox projection override only. Original globe evidence preserved separately. Anchor registration is geometric only; native style zoom/DPI, other cameras and interactive projection are not certified."
+}
