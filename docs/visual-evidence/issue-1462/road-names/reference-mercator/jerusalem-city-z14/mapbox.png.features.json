@@ -1,0 +1,5641 @@
+{
+  "features": [
+    {
+      "id": 2784706440,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "type": "suburb",
+        "filterrank": 2,
+        "name_ja": "ギバ・シャウル",
+        "symbolrank": 16,
+        "disputed": "false",
+        "iso_3166_2": "IL-JM",
+        "name_zh-Hans": "扫罗山",
+        "iso_3166_1": "IL",
+        "name_ar": "غفعات شاؤول",
+        "name_en": "Givat Shaul",
+        "name_fr": "Givat Shaul",
+        "name_script": "Hebrew",
+        "name_zh-Hant": "掃羅山",
+        "text_anchor": "bottom",
+        "class": "settlement_subdivision",
+        "name": "גבעת שאול",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.193103551864624,
+          31.79112040347286
+        ]
+      }
+    },
+    {
+      "id": 2784777720,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "suburb",
+        "name_script": "Hebrew",
+        "name_pt": "Kiryat Moshe",
+        "name_fr": "Kiryat Moshe",
+        "name_en": "Kiryat Moshe",
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "disputed": "false",
+        "symbolrank": 13,
+        "name_es": "Kiryat Moshé",
+        "filterrank": 1,
+        "class": "settlement_subdivision",
+        "name": "קרית משה",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.19439101219177,
+          31.785060472907432
+        ]
+      }
+    },
+    {
+      "id": 20815256100,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "suburb",
+        "name_script": "Hebrew",
+        "name_ru": "Бухарский квартал",
+        "name_fr": "Quartier Bukharim",
+        "name_en": "HaBukharim",
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "disputed": "false",
+        "symbolrank": 13,
+        "filterrank": 3,
+        "class": "settlement_subdivision",
+        "name": "הבוכרים",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.218788385391235,
+          31.792506516868883
+        ]
+      }
+    },
+    {
+      "id": 119351745490,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "suburb",
+        "name_script": "Hebrew",
+        "disputed": "false",
+        "symbolrank": 16,
+        "filterrank": 3,
+        "iso_3166_1": "IL",
+        "iso_3166_2": "IL-JM",
+        "name_en": "Tel Arza",
+        "class": "settlement_subdivision",
+        "name": "תל ארזה",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.215569734573364,
+          31.794909368146236
+        ]
+      }
+    },
+    {
+      "id": 119351745480,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "neighbourhood",
+        "symbolrank": 17,
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "IL",
+        "iso_3166_2": "IL-JM",
+        "name_en": "Sha’arei Yerushalayim",
+        "name_script": "Hebrew",
+        "class": "settlement_subdivision",
+        "name": "אבו בסל",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.21037697792053,
+          31.787199049062366
+        ]
+      }
+    },
+    {
+      "id": 20815256090,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "type": "suburb",
+        "filterrank": 2,
+        "symbolrank": 13,
+        "disputed": "false",
+        "name_it": "Geula",
+        "name_es": "Geula",
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "name_ar": "جئولا",
+        "name_ru": "Геула",
+        "name_en": "Geula",
+        "name_fr": "Geoulah",
+        "name_script": "Hebrew",
+        "text_anchor": "bottom",
+        "class": "settlement_subdivision",
+        "name": "גאולה",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.21722197532654,
+          31.790185677113527
+        ]
+      }
+    },
+    {
+      "id": 2784771340,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "suburb",
+        "name_script": "Hebrew",
+        "name_fr": "Romema",
+        "name_en": "Romema",
+        "name_ru": "Ромема",
+        "name_ar": "روميما",
+        "iso_3166_2": "IL-JM",
+        "disputed": "false",
+        "symbolrank": 13,
+        "filterrank": 1,
+        "iso_3166_1": "IL",
+        "class": "settlement_subdivision",
+        "name": "רוממה",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.20368218421936,
+          31.791653877207338
+        ]
+      }
+    },
+    {
+      "id": 20815256170,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "type": "suburb",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "百門區",
+        "name_script": "Hebrew",
+        "name_ru": "Меа Шеарим",
+        "name_de": "Me'a Sche'arim",
+        "symbolrank": 12,
+        "name_ja": "メーアー・シェアーリーム",
+        "name_es": "Mea Shearim",
+        "disputed": "false",
+        "name_it": "Mea Shearim",
+        "filterrank": 1,
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "name_ar": "مئة شعاريم",
+        "name_en": "Meah Shearim",
+        "name_fr": "Méa Shéarim",
+        "name_zh-Hans": "百门区",
+        "name_pt": "Mea Shearim",
+        "class": "settlement_subdivision",
+        "name": "מאה שערים",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.220805406570435,
+          31.786560673299675
+        ]
+      }
+    },
+    {
+      "id": 22704466730,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "neighbourhood",
+        "name_script": "Hebrew",
+        "name_fr": "Kiryat Mattersdorf",
+        "name_en": "Kiryat Mattersdorf",
+        "disputed": "false",
+        "iso_3166_2": "IL-JM",
+        "symbolrank": 13,
+        "name_ja": "キリヤト・マテルスドルフ",
+        "name_de": "Kirjat Mattersdorf",
+        "filterrank": 1,
+        "iso_3166_1": "IL",
+        "class": "settlement_subdivision",
+        "name": "קריית מטרסדורף",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.20047962665558,
+          31.795360750695693
+        ]
+      }
+    },
+    {
+      "id": 20815256160,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "suburb",
+        "name_script": "Hebrew",
+        "name_fr": "Ma'alot Dafna",
+        "name_en": "Maalot Dafna",
+        "name_ar": "معالوت دفנה",
+        "disputed": "false",
+        "symbolrank": 13,
+        "filterrank": 3,
+        "iso_3166_1": "IL",
+        "iso_3166_2": "IL-JM",
+        "class": "settlement_subdivision",
+        "name": "מעלות דפנה",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.22467851638794,
+          31.79337282718653
+        ]
+      }
+    },
+    {
+      "id": 20815256050,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "suburb",
+        "name_script": "Hebrew",
+        "name_fr": "Beit Yisrael",
+        "name_en": "Beit Yisroel",
+        "name_ar": "بيت اسرائيل",
+        "disputed": "false",
+        "symbolrank": 13,
+        "filterrank": 2,
+        "name_zh-Hant": "以色列之家",
+        "iso_3166_1": "IL",
+        "name_zh-Hans": "以色列之家",
+        "iso_3166_2": "IL-JM",
+        "class": "settlement_subdivision",
+        "name": "בית ישראל",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.22272050380707,
+          31.78930109809845
+        ]
+      }
+    },
+    {
+      "id": 27109416460,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "suburb",
+        "name_script": "Hebrew",
+        "name_fr": "Mont Scopus",
+        "name_en": "Mount Scopus",
+        "name_ar": "جبل المشارف",
+        "disputed": "false",
+        "symbolrank": 16,
+        "name_de": "Skopusberg",
+        "filterrank": 2,
+        "iso_3166_1": "IL",
+        "iso_3166_2": "IL-JM",
+        "class": "settlement_subdivision",
+        "name": "הר הצופים",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.242536664009094,
+          31.794768025682572
+        ]
+      }
+    },
+    {
+      "id": 117449635050,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "neighbourhood",
+        "name_script": "Hebrew",
+        "name_en": "Batei Ungarin",
+        "name_zh-Hans": "匈牙利之家",
+        "iso_3166_2": "IL-JM",
+        "name_it": "Batei Ungarin",
+        "disputed": "false",
+        "symbolrank": 13,
+        "filterrank": 1,
+        "name_zh-Hant": "匈牙利之家",
+        "iso_3166_1": "IL",
+        "class": "settlement_subdivision",
+        "name": "בתי אונגרין",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.22388994693756,
+          31.787007536796395
+        ]
+      }
+    },
+    {
+      "id": 20310591590,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "filterrank": 1,
+        "name_de": "Wadi al-Joz",
+        "symbolrank": 13,
+        "name_es": "Wadi al-Joz",
+        "disputed": "false",
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "name_ar": "وادي الجوز‎",
+        "name_ru": "Вади-эль-Яуз",
+        "name_en": "Wadi al-Joz",
+        "name_fr": "Wadi al-Joz",
+        "name_script": "Hebrew",
+        "type": "suburb",
+        "text_anchor": "bottom",
+        "class": "settlement_subdivision",
+        "name": "ואדי ג'וז",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.23669481277466,
+          31.789989611360923
+        ]
+      }
+    },
+    {
+      "id": 20310591600,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "type": "suburb",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "謝赫賈拉",
+        "name_script": "Hebrew",
+        "name_ru": "Шейх-Джаррах",
+        "name_zh-Hans": "谢赫贾拉",
+        "name_pt": "Sheikh Jarrah",
+        "symbolrank": 11,
+        "name_ja": "シェイフヤラ",
+        "name_it": "Sheikh Jarrah",
+        "disputed": "false",
+        "iso_3166_1": "IL",
+        "name_de": "Scheich Dscharrah",
+        "name_es": "Sheij Jarrah",
+        "filterrank": 1,
+        "iso_3166_2": "IL-JM",
+        "name_ar": "الشيخ جراح",
+        "name_en": "Sheikh Jarrah",
+        "name_fr": "Sheikh Jarrah",
+        "class": "settlement_subdivision",
+        "name": "שייח' ג'ראח",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.23090660572052,
+          31.794772585120285
+        ]
+      }
+    },
+    {
+      "id": 2784771230,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "suburb",
+        "name_script": "Hebrew",
+        "name_fr": "Beit HaKerem",
+        "name_en": "Beit HaKerem",
+        "name_ru": "Бейт ха-Керем",
+        "name_ar": "بيت هكيريم",
+        "disputed": "false",
+        "symbolrank": 13,
+        "filterrank": 2,
+        "name_zh-Hant": "哈克雷姆",
+        "iso_3166_1": "IL",
+        "name_zh-Hans": "哈克雷姆",
+        "iso_3166_2": "IL-JM",
+        "class": "settlement_subdivision",
+        "name": "בית הכרם",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.18942356109619,
+          31.77900014515197
+        ]
+      }
+    },
+    {
+      "id": 20815256230,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "suburb",
+        "name_script": "Hebrew",
+        "name_fr": "Ramat Beit HaKerem",
+        "name_en": "Ramat Beit HaKerem",
+        "name_ar": "بيت هاكريم",
+        "disputed": "false",
+        "symbolrank": 13,
+        "filterrank": 1,
+        "iso_3166_1": "IL",
+        "iso_3166_2": "IL-JM",
+        "class": "settlement_subdivision",
+        "name": "רמת בית הכרם",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.19095242023468,
+          31.771926980540215
+        ]
+      }
+    },
+    {
+      "id": 2784772790,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "type": "suburb",
+        "text_anchor": "bottom",
+        "symbolrank": 12,
+        "name_zh-Hant": "吉瓦特拉姆",
+        "name_de": "Givat Ram",
+        "name_es": "Givat Ram",
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_2": "IL-JM",
+        "name_zh-Hans": "吉瓦特拉姆",
+        "iso_3166_1": "IL",
+        "name_ar": "تلة الشيخ بدر",
+        "name_ru": "Гиват Рам",
+        "name_en": "Givat Ram",
+        "name_fr": "Guivat Ram",
+        "name_script": "Hebrew",
+        "class": "settlement_subdivision",
+        "name": "גבעת רם",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.19691228866577,
+          31.777887445888098
+        ]
+      }
+    },
+    {
+      "id": 20815256150,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "suburb",
+        "name_script": "Hebrew",
+        "name_fr": "Kiryat Shmuel",
+        "name_en": "Kiryat Shmuel",
+        "disputed": "false",
+        "symbolrank": 13,
+        "filterrank": 3,
+        "iso_3166_1": "IL",
+        "iso_3166_2": "IL-JM",
+        "class": "settlement_subdivision",
+        "name": "קרית שמואל",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.21142840385437,
+          31.768871352077
+        ]
+      }
+    },
+    {
+      "id": 20815256270,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "suburb",
+        "name_script": "Hebrew",
+        "name_fr": "Shaarei Hesed",
+        "name_en": "Shaarei Hesed",
+        "name_ar": "شعاري حسد",
+        "disputed": "false",
+        "symbolrank": 13,
+        "filterrank": 3,
+        "iso_3166_1": "IL",
+        "iso_3166_2": "IL-JM",
+        "class": "settlement_subdivision",
+        "name": "שערי חסד",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.21164298057556,
+          31.777413176559165
+        ]
+      }
+    },
+    {
+      "id": 20815256210,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "suburb",
+        "name_script": "Hebrew",
+        "name_it": "Nayot",
+        "name_fr": "Nayot",
+        "name_en": "Nayot",
+        "disputed": "false",
+        "symbolrank": 13,
+        "filterrank": 2,
+        "iso_3166_1": "IL",
+        "iso_3166_2": "IL-JM",
+        "class": "settlement_subdivision",
+        "name": "ניות",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.20244300365448,
+          31.769373029346156
+        ]
+      }
+    },
+    {
+      "id": 5626645580,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "type": "suburb",
+        "text_anchor": "bottom",
+        "symbolrank": 13,
+        "name_de": "Rehavia",
+        "filterrank": 2,
+        "disputed": "false",
+        "iso_3166_2": "IL-JM",
+        "name_zh-Hans": "里哈维亚",
+        "iso_3166_1": "IL",
+        "name_ar": "رحافيا‎",
+        "name_ru": "Рехавия",
+        "name_en": "Rehavia",
+        "name_fr": "Réhavia",
+        "name_script": "Hebrew",
+        "name_zh-Hant": "里哈維亞",
+        "class": "settlement_subdivision",
+        "name": "רחביה",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.212077498435974,
+          31.774800091356752
+        ]
+      }
+    },
+    {
+      "id": 91078187680,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "neighbourhood",
+        "name_script": "Hebrew",
+        "name_en": "Nahalat Shiva",
+        "name_ar": "نحلات شيفع",
+        "name_zh-Hans": "那哈拉特斯瓦",
+        "iso_3166_2": "IL-JM",
+        "disputed": "false",
+        "symbolrank": 13,
+        "filterrank": 2,
+        "name_zh-Hant": "那哈拉特斯瓦",
+        "iso_3166_1": "IL",
+        "class": "settlement_subdivision",
+        "name": "נחלת שבעה",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.22044062614441,
+          31.78079229246036
+        ]
+      }
+    },
+    {
+      "id": 20815256220,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "type": "suburb",
+        "text_anchor": "bottom",
+        "symbolrank": 13,
+        "name_ja": "カタモン",
+        "disputed": "false",
+        "name_it": "Katamon",
+        "filterrank": 1,
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "name_fr": "Katamon",
+        "name_ar": "القطمون",
+        "name_en": "Old Katamon",
+        "name_script": "Hebrew",
+        "class": "settlement_subdivision",
+        "name": "קטמון הישנה",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.209330916404724,
+          31.76602086141105
+        ]
+      }
+    },
+    {
+      "id": 20815256280,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "type": "suburb",
+        "filterrank": 1,
+        "symbolrank": 13,
+        "disputed": "false",
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "name_ar": "الطالبية‎",
+        "name_en": "Talbiyeh",
+        "name_fr": "Talbiya",
+        "name_zh-Hans": "塔尔比亚",
+        "name_pt": "Talbiya",
+        "name_script": "Hebrew",
+        "name_zh-Hant": "塔爾比亞",
+        "text_anchor": "bottom",
+        "class": "settlement_subdivision",
+        "name": "טלביה",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.21767795085907,
+          31.770814196187317
+        ]
+      }
+    },
+    {
+      "id": 20815256200,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "type": "suburb",
+        "filterrank": 1,
+        "symbolrank": 13,
+        "disputed": "false",
+        "iso_3166_2": "IL-JM",
+        "name_zh-Hans": "纳克拉沃",
+        "iso_3166_1": "IL",
+        "name_ar": "ناحلائوت",
+        "name_en": "Nahlaot",
+        "name_fr": "Nahalaot",
+        "name_script": "Hebrew",
+        "name_zh-Hant": "納克拉沃",
+        "text_anchor": "bottom",
+        "class": "settlement_subdivision",
+        "name": "נחלאות",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.21239936351776,
+          31.783145288099448
+        ]
+      }
+    },
+    {
+      "id": 20815256140,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "suburb",
+        "name_script": "Hebrew",
+        "name_ru": "Правительственный квартал Иерусалима",
+        "name_pt": "Kiryat HaMemshala",
+        "name_fr": "Kiryat HaMemshala",
+        "name_en": "Kiryat HaMemshalah",
+        "disputed": "false",
+        "symbolrank": 13,
+        "name_es": "Kiryat HaMemshalá",
+        "filterrank": 1,
+        "name_zh-Hant": "政府建築群",
+        "iso_3166_1": "IL",
+        "name_zh-Hans": "政府建筑群",
+        "iso_3166_2": "IL-JM",
+        "class": "settlement_subdivision",
+        "name": "קרית הממשלה",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.202807784080505,
+          31.779948665102026
+        ]
+      }
+    },
+    {
+      "id": 116077971370,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "suburb",
+        "name_script": "Hebrew",
+        "name_en": "Silwan",
+        "name_ar": "سلوان",
+        "disputed": "false",
+        "symbolrank": 16,
+        "filterrank": 3,
+        "iso_3166_1": "IL",
+        "iso_3166_2": "IL-JM",
+        "class": "settlement_subdivision",
+        "name": "סילוואן",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.23695766925812,
+          31.77060440747367
+        ]
+      }
+    },
+    {
+      "id": 27107835990,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "type": "neighbourhood",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "亞美尼亞區",
+        "name_script": "Hebrew",
+        "name_ru": "Армянский квартал",
+        "name_zh-Hans": "亚美尼亚区",
+        "name_pt": "Bairro Armênio",
+        "symbolrank": 10,
+        "name_ja": "アルメニア人地区",
+        "name_it": "Quartiere Armeno",
+        "name_en": "Armenian Quarter",
+        "name_de": "Armenisches Viertel",
+        "name_es": "Barrio Armenio",
+        "disputed": "false",
+        "filterrank": 3,
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "name_fr": "Quartier arménien",
+        "name_ar": "حارة الأرمن",
+        "class": "settlement_subdivision",
+        "name": "הרובע הארמני",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.22908270359039,
+          31.77501899137951
+        ]
+      }
+    },
+    {
+      "id": 24175193730,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "neighbourhood",
+        "name_script": "Hebrew",
+        "name_fr": "Ma'ale ha-Zeitim",
+        "name_en": "Maale HaZeitim",
+        "name_ar": "معاليه هزيتيم",
+        "disputed": "false",
+        "symbolrank": 13,
+        "filterrank": 2,
+        "iso_3166_1": "IL",
+        "iso_3166_2": "IL-JM",
+        "class": "settlement_subdivision",
+        "name": "מעלה הזיתים",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.240777134895325,
+          31.772346551493428
+        ]
+      }
+    },
+    {
+      "id": 3903055430,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "type": "suburb",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "耶路撒冷舊城",
+        "name_script": "Hebrew",
+        "name_ru": "Старый Город",
+        "name_zh-Hans": "耶路撒冷旧城",
+        "name_pt": "Cidade Antiga de Jerusalém",
+        "name_ko": "예루살렘 구시가",
+        "symbolrank": 9,
+        "name_ja": "エルサレム旧市街",
+        "name_it": "Città Vecchia",
+        "name_en": "Old City",
+        "name_de": "Altstadt",
+        "name_ar": "البلدة القديمة",
+        "name_fr": "Vieille ville de Jérusalem",
+        "iso_3166_1": "IL",
+        "disputed": "false",
+        "name_vi": "Thành cổ Jerusalem",
+        "name_es": "Ciudad Vieja de Jerusalén",
+        "iso_3166_2": "IL-JM",
+        "filterrank": 2,
+        "class": "settlement_subdivision",
+        "name": "העיר העתיקה",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.23195266723633,
+          31.778288748805323
+        ]
+      }
+    },
+    {
+      "id": 37586523810,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "suburb",
+        "name_script": "Hebrew",
+        "name_fr": "Yemin Moshé",
+        "name_en": "Yemin Moshe",
+        "name_ru": "Йемин-Моше",
+        "name_ar": "يمين موشيه",
+        "disputed": "false",
+        "symbolrank": 16,
+        "name_de": "Jemin Mosche",
+        "filterrank": 1,
+        "iso_3166_1": "IL",
+        "iso_3166_2": "IL-JM",
+        "class": "settlement_subdivision",
+        "name": "ימין משה",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.22495746612549,
+          31.77214132680841
+        ]
+      }
+    },
+    {
+      "id": 83014769190,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "neighbourhood",
+        "name_script": "Hebrew",
+        "name_it": "Quartiere arabo",
+        "disputed": "false",
+        "symbolrank": 18,
+        "filterrank": 1,
+        "iso_3166_1": "IL",
+        "iso_3166_2": "IL-JM",
+        "name_en": "Muslim Quarter",
+        "class": "settlement_subdivision",
+        "name": "הרובע המוסלמי",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.23406624794006,
+          31.78134406619131
+        ]
+      }
+    },
+    {
+      "id": 2784764710,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "suburb",
+        "name_script": "Hebrew",
+        "name_fr": "Bayit VeGan",
+        "name_en": "Bayit Wegan",
+        "name_ar": "بييت فيغان",
+        "disputed": "false",
+        "iso_3166_2": "IL-JM",
+        "symbolrank": 13,
+        "filterrank": 1,
+        "iso_3166_1": "IL",
+        "class": "settlement_subdivision",
+        "name": "בית וגן",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.186687707901,
+          31.764141769940608
+        ]
+      }
+    },
+    {
+      "id": 20815256080,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "type": "suburb",
+        "text_anchor": "bottom",
+        "symbolrank": 13,
+        "name_de": "Deutsche Kolonie",
+        "filterrank": 1,
+        "name_es": "Colonia Alemana",
+        "disputed": "false",
+        "iso_3166_2": "IL-JM",
+        "name_zh-Hans": "德国殖民地",
+        "iso_3166_1": "IL",
+        "name_ar": "المستعمرة الألمانية",
+        "name_en": "German Colony",
+        "name_fr": "Colonie allemande",
+        "name_script": "Hebrew",
+        "name_zh-Hant": "德國殖民地",
+        "class": "settlement_subdivision",
+        "name": "המושבה הגרמנית",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.220553278923035,
+          31.764392621737088
+        ]
+      }
+    },
+    {
+      "id": 119156852380,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "suburb",
+        "name_script": "Hebrew",
+        "disputed": "false",
+        "symbolrank": 16,
+        "filterrank": 1,
+        "iso_3166_1": "IL",
+        "iso_3166_2": "IL-JM",
+        "name_en": "Rassco",
+        "class": "settlement_subdivision",
+        "name": "רסקו",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.202571749687195,
+          31.763667430139563
+        ]
+      }
+    },
+    {
+      "id": 94938568260,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "suburb",
+        "name_script": "Hebrew",
+        "disputed": "false",
+        "symbolrank": 18,
+        "filterrank": 2,
+        "iso_3166_1": "IL",
+        "iso_3166_2": "IL-JM",
+        "name_en": "Givat Hananya",
+        "class": "settlement_subdivision",
+        "name": "גבעת חנניה",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.227811336517334,
+          31.765158855740836
+        ]
+      }
+    },
+    {
+      "id": 2784758690,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "suburb",
+        "name_script": "Hebrew",
+        "name_fr": "Abu Tor",
+        "name_en": "Abu Tor",
+        "name_ar": "أبو طور",
+        "iso_3166_2": "IL-JM",
+        "name_it": "Abu Tor",
+        "disputed": "false",
+        "symbolrank": 13,
+        "name_es": "Abu Tor",
+        "filterrank": 1,
+        "iso_3166_1": "IL",
+        "class": "settlement_subdivision",
+        "name": "אבו טור",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.23244619369507,
+          31.764515766915565
+        ]
+      }
+    },
+    {
+      "id": 1628738921,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Place Of Worship",
+        "name_script": "Hebrew",
+        "name_en": "Yeshivat Mercaz HaRav",
+        "name_de": "Jaschlaz",
+        "category_en": "Synagogue",
+        "maki": "religious-jewish",
+        "category_zh-Hans": "犹太教堂",
+        "filterrank": 1,
+        "iso_3166_1": "IL",
+        "iso_3166_2": "IL-JM",
+        "class": "religion",
+        "name": "ישיבת מרכז הרב"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.196826457977295,
+          31.787800942172893
+        ]
+      }
+    },
+    {
+      "id": 82440131110,
+      "owner": "poi-label",
+      "properties": {
+        "type": "Ruins",
+        "name_script": "Arabic",
+        "name_en": "Lifta",
+        "sizerank": 16,
+        "name_ar": "لفتا‎",
+        "category_en": "Ruins",
+        "maki": "marker",
+        "category_zh-Hans": "遗迹",
+        "filterrank": 1,
+        "iso_3166_1": "IL",
+        "iso_3166_2": "IL-JM",
+        "class": "historic",
+        "name": "لفتا‎"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.196311473846436,
+          31.79646412098063
+        ]
+      }
+    },
+    {
+      "id": 7127746260,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Museum",
+        "name_script": "Hebrew",
+        "name_en": "Gush Katif Museum",
+        "category_en": "Museum",
+        "maki": "museum",
+        "category_zh-Hans": "博物馆",
+        "filterrank": 1,
+        "iso_3166_1": "IL",
+        "iso_3166_2": "IL-JM",
+        "class": "arts_and_entertainment",
+        "name": "מוזיאון גוש קטיף"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.20914852619171,
+          31.786049969515915
+        ]
+      }
+    },
+    {
+      "id": 10785675191,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 15,
+        "type": "Marketplace",
+        "name_script": "Hebrew",
+        "name_en": "Machane Yehuda Shuk",
+        "category_en": "Marketplace",
+        "maki": "grocery",
+        "category_zh-Hans": "市场",
+        "filterrank": 1,
+        "iso_3166_1": "IL",
+        "iso_3166_2": "IL-JM",
+        "class": "food_and_drink_stores",
+        "name": "שוק מחנה יהודה"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.21251738071442,
+          31.784859836359146
+        ]
+      }
+    },
+    {
+      "id": 1560594681,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 15,
+        "type": "Place Of Worship",
+        "name_script": "Hebrew",
+        "name_en": "Great Synagogue of Belz",
+        "name_de": "Große Belzer Synagoge",
+        "category_en": "Synagogue",
+        "maki": "religious-jewish",
+        "category_zh-Hans": "犹太教堂",
+        "filterrank": 1,
+        "iso_3166_1": "IL",
+        "iso_3166_2": "IL-JM",
+        "class": "religion",
+        "name": "בית כנסת הגדול בעלז"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.20749092102051,
+          31.7969702079031
+        ]
+      }
+    },
+    {
+      "id": 16063264810,
+      "owner": "poi-label",
+      "properties": {
+        "type": "Theatre",
+        "category_zh-Hans": "剧院",
+        "iso_3166_1": "IL",
+        "filterrank": 1,
+        "iso_3166_2": "IL-JM",
+        "maki": "theatre",
+        "category_en": "Theater",
+        "name_es": "Teatro Nacional Palestino",
+        "name_zh-Hans": "巴勒斯坦民族剧院",
+        "name_ar": "المسرح الوطني الفلسطيني / الحكواتي",
+        "sizerank": 16,
+        "name_en": "Palestinian national theater / Al-Hakawati",
+        "name_fr": "Théâtre national palestinien",
+        "name_script": "Arabic",
+        "name_zh-Hant": "巴勒斯坦民族劇院",
+        "class": "arts_and_entertainment",
+        "name": "المسرح الوطني الفلسطيني / الحكواتي"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.22937774658203,
+          31.78833899481822
+        ]
+      }
+    },
+    {
+      "id": 55820064,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 15,
+        "type": "Museum",
+        "name_script": "Hebrew",
+        "name_en": "Rockefeller Museum",
+        "category_en": "Museum",
+        "maki": "museum",
+        "category_zh-Hans": "博物馆",
+        "filterrank": 1,
+        "iso_3166_1": "IL",
+        "iso_3166_2": "IL-JM",
+        "class": "arts_and_entertainment",
+        "name": "מוזיאון רוקפלר"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.23606717586517,
+          31.784330883372277
+        ]
+      }
+    },
+    {
+      "id": 441397611,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 10,
+        "type": "University",
+        "name_script": "Hebrew",
+        "name_en": "Hebrew University – Givat Ram Campus",
+        "name_de": "Hebräische Universität",
+        "maki": "college",
+        "category_en": "University",
+        "category_zh-Hans": "大学",
+        "filterrank": 1,
+        "iso_3166_1": "IL",
+        "iso_3166_2": "IL-JM",
+        "class": "education",
+        "name": "האוניברסיטה העברית – גבעת רם"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.1973682641983,
+          31.77344563594707
+        ]
+      }
+    },
+    {
+      "id": 405938861,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 15,
+        "type": "Stadium",
+        "name_script": "Hebrew",
+        "maki": "stadium",
+        "category_en": "Stadium",
+        "category_zh-Hans": "体育场",
+        "filterrank": 1,
+        "iso_3166_1": "IL",
+        "iso_3166_2": "IL-JM",
+        "class": "arts_and_entertainment",
+        "name": "איצטדיון גבעת רם"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.20015776157379,
+          31.775794258127092
+        ]
+      }
+    },
+    {
+      "id": 443079091,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 14,
+        "type": "Museum",
+        "name_script": "Hebrew",
+        "name_en": "Israel Museum",
+        "name_de": "Israel Museum",
+        "maki": "museum",
+        "category_en": "Museum",
+        "category_zh-Hans": "博物馆",
+        "filterrank": 1,
+        "iso_3166_1": "IL",
+        "iso_3166_2": "IL-JM",
+        "class": "arts_and_entertainment",
+        "name": "מוזיאון ישראל"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.203328132629395,
+          31.772287264408973
+        ]
+      }
+    },
+    {
+      "id": 46052844,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 15,
+        "type": "Hospital",
+        "name_script": "Hebrew",
+        "name_en": "Bikur Cholim",
+        "category_en": "Hospital",
+        "maki": "hospital",
+        "category_zh-Hans": "医院",
+        "filterrank": 1,
+        "iso_3166_1": "IL",
+        "iso_3166_2": "IL-JM",
+        "class": "medical",
+        "name": "ביקור חולים"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.21862208843231,
+          31.78392960667408
+        ]
+      }
+    },
+    {
+      "id": 10568068721,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 15,
+        "type": "Library",
+        "name_script": "Hebrew",
+        "name_fr": "Bibliothèque Nationale d'Israël",
+        "name_en": "The National Library",
+        "category_en": "Library",
+        "maki": "library",
+        "category_zh-Hans": "图书馆",
+        "filterrank": 1,
+        "iso_3166_1": "IL",
+        "iso_3166_2": "IL-JM",
+        "class": "public_facilities",
+        "name": "הספרייה הלאומית"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.20321547985077,
+          31.77672000931915
+        ]
+      }
+    },
+    {
+      "id": 385487471,
+      "owner": "poi-label",
+      "properties": {
+        "type": "Hotel",
+        "name_script": "Hebrew",
+        "name_en": "King David Hotel",
+        "sizerank": 16,
+        "name_ar": "فندق الملك داود",
+        "maki": "lodging",
+        "category_en": "Hotel",
+        "category_zh-Hans": "宾馆",
+        "filterrank": 1,
+        "iso_3166_1": "IL",
+        "iso_3166_2": "IL-JM",
+        "class": "lodging",
+        "name": "מלון המלך דוד"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.22263467311859,
+          31.77437597108853
+        ]
+      }
+    },
+    {
+      "id": 2273631881,
+      "owner": "poi-label",
+      "properties": {
+        "type": "Residential",
+        "category_zh-Hans": "居民区",
+        "filterrank": 1,
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "category_en": "Residential Area",
+        "maki": "marker",
+        "name_ar": "سلوان",
+        "name_ru": "Город Давида",
+        "name_de": "Davidsstadt",
+        "sizerank": 14,
+        "name_en": "City of David",
+        "name_fr": "Cité de David",
+        "name_script": "Hebrew",
+        "class": "place_like",
+        "name": "עיר דוד"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.23556292057037,
+          31.772629304758127
+        ]
+      }
+    },
+    {
+      "id": 2803093311,
+      "owner": "poi-label",
+      "properties": {
+        "type": "Place Of Worship",
+        "sizerank": 15,
+        "category_zh-Hans": "清真寺",
+        "category_en": "Mosque",
+        "filterrank": 1,
+        "name_en": "Al-Aqsa Mosque",
+        "name_it": "Moschea al-Aqsa",
+        "name_de": "Al-Aqsa-Moschee",
+        "name_es": "Mezquita de Al-Aqsa",
+        "iso_3166_1": "IL",
+        "iso_3166_2": "IL-JM",
+        "maki": "religious-muslim",
+        "name_ar": "المسجد الأقصى",
+        "name_ru": "мечеть Аль-Акса",
+        "name_fr": "Mosquée al-Aqsa",
+        "name_script": "Hebrew",
+        "class": "religion",
+        "name": "מסגד אל אקצא"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.23558437824249,
+          31.776127164795057
+        ]
+      }
+    },
+    {
+      "id": 25987216270,
+      "owner": "natural-point-label",
+      "properties": {
+        "sizerank": 16,
+        "elevation_m": 765,
+        "name_de": "Berg Zion",
+        "name_es": "Monte Sión",
+        "disputed": "false",
+        "elevation_ft": 2510,
+        "name_en": "Mount Zion",
+        "filterrank": 1,
+        "iso_3166_2": "IL-JM",
+        "maki": "mountain",
+        "iso_3166_1": "IL",
+        "name_ar": "جبل صهيون‎",
+        "name_ru": "гора Сион",
+        "name_fr": "Mont Sion",
+        "name_it": "Monte Sion",
+        "name_script": "Hebrew",
+        "class": "landform",
+        "name": "הר ציון",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.22865891456604,
+          31.771621422235427
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "tertiary",
+        "surface": "paved",
+        "structure": "none",
+        "oneway": "true",
+        "len": 540,
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "name_en": "Farbstein",
+        "name_script": "Hebrew",
+        "class": "tertiary",
+        "name": "פרבשטיין"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              35.192116498947144,
+              31.784754957990202
+            ],
+            [
+              35.19290506839752,
+              31.787317604075866
+            ],
+            [
+              35.193049907684326,
+              31.78753647447057
+            ],
+            [
+              35.19301235675812,
+              31.787691507353344
+            ]
+          ],
+          [
+            [
+              35.192583203315735,
+              31.786597152033423
+            ],
+            [
+              35.192105770111084,
+              31.78511063197648
+            ]
+          ],
+          [
+            [
+              35.19315719604492,
+              31.787691507353344
+            ],
+            [
+              35.19303917884827,
+              31.78763223010533
+            ],
+            [
+              35.192808508872986,
+              31.787317604075866
+            ],
+            [
+              35.19263684749603,
+              31.786765865989793
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "tertiary",
+        "surface": "paved",
+        "structure": "none",
+        "oneway": "true",
+        "len": 2340,
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "name_en": "Kanfei Nesharim",
+        "name_script": "Hebrew",
+        "class": "tertiary",
+        "name": "כנפי נשרים"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              35.19301235675812,
+              31.787691507353344
+            ],
+            [
+              35.18771767616272,
+              31.78770062692658
+            ],
+            [
+              35.18449366092682,
+              31.78773710521058
+            ],
+            [
+              35.18394649028778,
+              31.78770518671287
+            ],
+            [
+              35.18129110336304,
+              31.787367761920407
+            ],
+            [
+              35.18094778060913,
+              31.787344962903532
+            ],
+            [
+              35.18044888973236,
+              31.787417919737763
+            ],
+            [
+              35.18014311790466,
+              31.78752735488115
+            ]
+          ],
+          [
+            [
+              35.18001437187195,
+              31.78735864231433
+            ],
+            [
+              35.18066883087158,
+              31.78719448925112
+            ],
+            [
+              35.18123209476471,
+              31.787167130378933
+            ],
+            [
+              35.183876752853394,
+              31.787499996107456
+            ],
+            [
+              35.184558033943176,
+              31.78752735488115
+            ],
+            [
+              35.1895147562027,
+              31.787499996107456
+            ],
+            [
+              35.19295871257782,
+              31.78753647447057
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "structure": "none",
+        "oneway": "false",
+        "len": 160,
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "name_en": "Pik",
+        "name_script": "Hebrew",
+        "class": "street",
+        "name": "פיק"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.19628465175629,
+            31.785739897985238
+          ],
+          [
+            35.19618272781372,
+            31.785347747207254
+          ],
+          [
+            35.19613981246948,
+            31.784645519565316
+          ],
+          [
+            35.19619882106781,
+            31.784504161408137
+          ],
+          [
+            35.196349024772644,
+            31.78438104283711
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "structure": "none",
+        "oneway": "false",
+        "len": 250,
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "name_en": "Azriel",
+        "name_script": "Hebrew",
+        "class": "street",
+        "name": "עזריאל"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.19174098968506,
+            31.792880399159756
+          ],
+          [
+            35.19226670265198,
+            31.792702577283166
+          ],
+          [
+            35.192545652389526,
+            31.792643303248312
+          ],
+          [
+            35.19324839115143,
+            31.792647862790787
+          ],
+          [
+            35.19398331642151,
+            31.792725374978787
+          ],
+          [
+            35.19419252872467,
+            31.79268433912266
+          ],
+          [
+            35.19437491893768,
+            31.792606826900254
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "structure": "none",
+        "oneway": "false",
+        "len": 460,
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "name_en": "Mei Niftoah",
+        "name_script": "Hebrew",
+        "class": "street",
+        "name": "מי נפתוח"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.19816756248474,
+            31.792082477806375
+          ],
+          [
+            35.198081731796265,
+            31.79313117301973
+          ],
+          [
+            35.19788861274719,
+            31.794006596434073
+          ],
+          [
+            35.19750237464905,
+            31.794877452124936
+          ],
+          [
+            35.19749164581299,
+            31.795032472696533
+          ],
+          [
+            35.1972770690918,
+            31.795693586921132
+          ],
+          [
+            35.19720196723938,
+            31.79611760941738
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "structure": "none",
+        "oneway": "false",
+        "len": 370,
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "name_en": "Haim Vittel",
+        "name_script": "Hebrew",
+        "class": "street",
+        "name": "חיים ויטל"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.19240081310272,
+            31.791248072681
+          ],
+          [
+            35.19145667552948,
+            31.78788301820255
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "tertiary",
+        "structure": "none",
+        "oneway": "true",
+        "len": 460,
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "name_en": "Shamgar",
+        "name_script": "Hebrew",
+        "class": "tertiary",
+        "name": "שמגר"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              35.208295583724976,
+              31.794371353743003
+            ],
+            [
+              35.208091735839844,
+              31.794936724727123
+            ],
+            [
+              35.207802057266235,
+              31.79558872084243
+            ],
+            [
+              35.20768404006958,
+              31.795757418389044
+            ]
+          ],
+          [
+            [
+              35.20749628543854,
+              31.795807571654322
+            ],
+            [
+              35.20775377750397,
+              31.795442820013307
+            ],
+            [
+              35.20798981189728,
+              31.7949048087153
+            ],
+            [
+              35.2083545923233,
+              31.793755824949187
+            ],
+            [
+              35.20847260951996,
+              31.793035423080767
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "tertiary",
+        "surface": "paved",
+        "structure": "none",
+        "oneway": "false",
+        "len": 40,
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "name_en": "Zefanya",
+        "name_script": "Hebrew",
+        "class": "tertiary",
+        "name": "צפניה"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.21519958972931,
+            31.793564326266235
+          ],
+          [
+            35.21534442901611,
+            31.793236041886686
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "tertiary",
+        "structure": "none",
+        "oneway": "false",
+        "len": 400,
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "name_en": "Petah Tikva",
+        "name_script": "Hebrew",
+        "class": "tertiary",
+        "name": "פתח תקוה"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.20241618156433,
+            31.793432100753606
+          ],
+          [
+            35.20268440246582,
+            31.793436660257186
+          ],
+          [
+            35.203070640563965,
+            31.7935141717837
+          ],
+          [
+            35.20417034626007,
+            31.794061310122174
+          ],
+          [
+            35.20452439785004,
+            31.79418897526847
+          ],
+          [
+            35.204819440841675,
+            31.794220891527488
+          ],
+          [
+            35.205779671669006,
+            31.794143380593624
+          ],
+          [
+            35.206037163734436,
+            31.794147940062118
+          ],
+          [
+            35.20640194416046,
+            31.794225450992172
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "tertiary",
+        "surface": "paved",
+        "structure": "none",
+        "oneway": "false",
+        "len": 210,
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "name_en": "Malkhei Israel",
+        "name_script": "Hebrew",
+        "class": "tertiary",
+        "name": "מלכי ישראל"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              35.21072566509247,
+              31.790691798413107
+            ],
+            [
+              35.21119773387909,
+              31.79061884416248
+            ],
+            [
+              35.21170198917389,
+              31.790491174085304
+            ]
+          ],
+          [
+            [
+              35.21551072597504,
+              31.789136948484185
+            ],
+            [
+              35.21610081195831,
+              31.7890047166385
+            ]
+          ],
+          [
+            [
+              35.20916998386383,
+              31.790915220447545
+            ],
+            [
+              35.210076570510864,
+              31.790782991145434
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "tertiary",
+        "structure": "none",
+        "oneway": "true",
+        "iso_3166_1": "IL",
+        "len": 60,
+        "iso_3166_2": "IL-JM",
+        "name_en": "Yirmiyahu",
+        "name_ar": "ارميا",
+        "name_ru": "Иеремия",
+        "name_script": "Hebrew",
+        "class": "tertiary",
+        "name": "ירמיהו"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.20312428474426,
+            31.791248072681
+          ],
+          [
+            35.20293116569519,
+            31.79114320155867
+          ],
+          [
+            35.20247519016266,
+            31.791029211073393
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "tertiary",
+        "surface": "paved",
+        "structure": "none",
+        "oneway": "false",
+        "name_script": "Hebrew",
+        "name_en": "HaNeviim",
+        "iso_3166_1": "IL",
+        "len": 400,
+        "iso_3166_2": "IL-JM",
+        "name_ar": "التعابير",
+        "name_ru": "ХаНевиим",
+        "class": "tertiary",
+        "name": "הנביאים"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              35.21865963935852,
+              31.78439928263576
+            ],
+            [
+              35.221508145332336,
+              31.783719847706962
+            ]
+          ],
+          [
+            [
+              35.22223234176636,
+              31.78371072774108
+            ],
+            [
+              35.22260785102844,
+              31.783820167272367
+            ],
+            [
+              35.22285461425781,
+              31.783852087111242
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "structure": "none",
+        "oneway": "true",
+        "iso_3166_1": "IL",
+        "len": 220,
+        "iso_3166_2": "IL-JM",
+        "name_en": "Rashi",
+        "name_ar": "راشد",
+        "name_ru": "Раши",
+        "name_script": "Hebrew",
+        "class": "street",
+        "name": "רש\"י"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.207576751708984,
+            31.789816343605537
+          ],
+          [
+            35.20742118358612,
+            31.78975250803485
+          ],
+          [
+            35.207292437553406,
+            31.78959747860823
+          ],
+          [
+            35.20724952220917,
+            31.789410531012706
+          ],
+          [
+            35.20727097988129,
+            31.789164306773458
+          ],
+          [
+            35.20737826824188,
+            31.788854245687475
+          ],
+          [
+            35.20749628543854,
+            31.788708334228346
+          ],
+          [
+            35.20794689655304,
+            31.78831163628469
+          ],
+          [
+            35.20810782909393,
+            31.788229560635557
+          ],
+          [
+            35.20819902420044,
+            31.78826603871083
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "structure": "none",
+        "oneway": "true",
+        "iso_3166_1": "IL",
+        "len": 60,
+        "iso_3166_2": "IL-JM",
+        "name_en": "Ezra",
+        "name_ar": "عِزرا",
+        "name_ru": "Эзра",
+        "name_script": "Hebrew",
+        "class": "street",
+        "name": "עזרא"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.22072494029999,
+            31.78985282105471
+          ],
+          [
+            35.22014021873474,
+            31.790203915767023
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "structure": "none",
+        "oneway": "true",
+        "len": 280,
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "name_en": "Hagai",
+        "name_script": "Hebrew",
+        "class": "street",
+        "name": "חגי"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              35.21700739860535,
+              31.789305657805784
+            ],
+            [
+              35.21760284900665,
+              31.789200784479917
+            ]
+          ],
+          [
+            [
+              35.21996855735779,
+              31.788594340740673
+            ],
+            [
+              35.21888494491577,
+              31.78901839580371
+            ],
+            [
+              35.21860063076019,
+              31.78908223188131
+            ],
+            [
+              35.21760284900665,
+              31.789200784479917
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "structure": "none",
+        "oneway": "true",
+        "len": 10,
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "name_en": "HaTurim",
+        "name_script": "Hebrew",
+        "class": "street",
+        "name": "הטורים"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.210586190223694,
+            31.790746514063315
+          ],
+          [
+            35.21050572395325,
+            31.790728275516827
+          ],
+          [
+            35.21048426628113,
+            31.790696358051875
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "structure": "none",
+        "oneway": "true",
+        "iso_3166_1": "IL",
+        "len": 130,
+        "iso_3166_2": "IL-JM",
+        "name_en": "Ariel",
+        "name_ar": "ارييل",
+        "name_ru": "Ариэль",
+        "name_script": "Hebrew",
+        "class": "street",
+        "name": "אריאל"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.202577114105225,
+            31.790021529069918
+          ],
+          [
+            35.20399868488312,
+            31.79017199812101
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "structure": "none",
+        "oneway": "false",
+        "len": 380,
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "name_en": "Even HaEzel",
+        "name_script": "Hebrew",
+        "class": "street",
+        "name": "אבן האזל"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.21344542503357,
+            31.797307597645144
+          ],
+          [
+            35.213552713394165,
+            31.797198174079966
+          ],
+          [
+            35.21361172199249,
+            31.797043157140877
+          ],
+          [
+            35.213584899902344,
+            31.796742241163926
+          ],
+          [
+            35.21323621273041,
+            31.795716383879025
+          ],
+          [
+            35.21288216114044,
+            31.79480450117775
+          ],
+          [
+            35.212807059288025,
+            31.794676836881635
+          ],
+          [
+            35.212549567222595,
+            31.794403269939053
+          ],
+          [
+            35.21239399909973,
+            31.794321199698402
+          ],
+          [
+            35.21218478679657,
+            31.794312080778255
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "secondary",
+        "surface": "paved",
+        "shield_text_color_beta": "black",
+        "shield_text_hsl": "hsl(230, 18%, 13%)",
+        "shield_image": "il-highway-black-4",
+        "shield": "default",
+        "structure": "none",
+        "oneway": "true",
+        "shield_text_color": "black",
+        "shield_beta": "il-highway-black",
+        "reflen": 4,
+        "iso_3166_1": "IL",
+        "len": 1970,
+        "iso_3166_2": "IL-JM",
+        "name_en": "Itzhak HaNadiv",
+        "name_script": "Hebrew",
+        "ref": "4177",
+        "class": "secondary",
+        "name": "יצחק הנדיב"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              35.236013531684875,
+              31.79524220599717
+            ],
+            [
+              35.236281752586365,
+              31.79480906061366
+            ],
+            [
+              35.2366304397583,
+              31.794385032114107
+            ],
+            [
+              35.23690402507782,
+              31.79416617793386
+            ],
+            [
+              35.23732244968414,
+              31.793933644799566
+            ],
+            [
+              35.23784816265106,
+              31.79376038443681
+            ],
+            [
+              35.23939847946167,
+              31.79351873128323
+            ],
+            [
+              35.239736437797546,
+              31.79337282718653
+            ],
+            [
+              35.239993929862976,
+              31.793185887226016
+            ],
+            [
+              35.24022459983826,
+              31.792916875399854
+            ],
+            [
+              35.24034798145294,
+              31.792670660499894
+            ],
+            [
+              35.24043381214142,
+              31.79231045603875
+            ],
+            [
+              35.2405571937561,
+              31.79127543034552
+            ],
+            [
+              35.24064302444458,
+              31.791052009181698
+            ],
+            [
+              35.240755677223206,
+              31.79087874341758
+            ],
+            [
+              35.24094879627228,
+              31.790691798413107
+            ],
+            [
+              35.241249203681946,
+              31.790491174085304
+            ],
+            [
+              35.241485238075256,
+              31.79038630210431
+            ],
+            [
+              35.241737365722656,
+              31.79031790727001
+            ],
+            [
+              35.24217188358307,
+              31.790263191366122
+            ],
+            [
+              35.24314820766449,
+              31.79024951238509
+            ],
+            [
+              35.24340033531189,
+              31.79021759475482
+            ]
+          ],
+          [
+            [
+              35.24342715740204,
+              31.790377182795993
+            ],
+            [
+              35.24217188358307,
+              31.79036350383184
+            ],
+            [
+              35.24189293384552,
+              31.790390861758127
+            ],
+            [
+              35.241528153419495,
+              31.790482054787347
+            ],
+            [
+              35.24130821228027,
+              31.79057780737118
+            ],
+            [
+              35.241039991378784,
+              31.790760192970808
+            ],
+            [
+              35.24085760116577,
+              31.790938018583958
+            ],
+            [
+              35.24069130420685,
+              31.791248072681
+            ],
+            [
+              35.24063229560852,
+              31.791507970167018
+            ],
+            [
+              35.240530371665955,
+              31.792470040466867
+            ],
+            [
+              35.2404659986496,
+              31.792702577283166
+            ],
+            [
+              35.24033188819885,
+              31.79296703020647
+            ],
+            [
+              35.24007976055145,
+              31.7932588394507
+            ],
+            [
+              35.239806175231934,
+              31.793459457771732
+            ],
+            [
+              35.23943603038788,
+              31.793619040216143
+            ],
+            [
+              35.23788034915924,
+              31.793860693107476
+            ],
+            [
+              35.237531661987305,
+              31.79396556114675
+            ],
+            [
+              35.23697912693024,
+              31.794248248312172
+            ],
+            [
+              35.23664116859436,
+              31.794540053511554
+            ],
+            [
+              35.23638904094696,
+              31.79485921439354
+            ],
+            [
+              35.23616373538971,
+              31.79527412189249
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "tertiary",
+        "surface": "paved",
+        "structure": "none",
+        "oneway": "false",
+        "iso_3166_1": "IL",
+        "len": 250,
+        "name_de": "Sichemstraße",
+        "iso_3166_2": "IL-JM",
+        "name_en": "Shechem",
+        "name_script": "Hebrew",
+        "class": "tertiary",
+        "name": "שכם"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.22916853427887,
+            31.792638743705567
+          ],
+          [
+            35.228814482688904,
+            31.791644758024063
+          ],
+          [
+            35.228771567344666,
+            31.791430456958196
+          ],
+          [
+            35.22890567779541,
+            31.790404540718242
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "structure": "none",
+        "oneway": "false",
+        "iso_3166_1": "IL",
+        "len": 470,
+        "iso_3166_2": "IL-JM",
+        "name_en": "Mahal",
+        "name_ar": "محل",
+        "name_ru": "Махал",
+        "name_script": "Hebrew",
+        "class": "street",
+        "name": "מח\"ל"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              35.22560119628906,
+              31.796341018337216
+            ],
+            [
+              35.226271748542786,
+              31.796258949817187
+            ],
+            [
+              35.22648632526398,
+              31.79627718727238
+            ],
+            [
+              35.22671699523926,
+              31.796350137057146
+            ],
+            [
+              35.228015184402466,
+              31.797011241856453
+            ],
+            [
+              35.22807419300079,
+              31.79709330970846
+            ],
+            [
+              35.228058099746704,
+              31.797380546616623
+            ]
+          ],
+          [
+            [
+              35.22973716259003,
+              31.796436764851805
+            ],
+            [
+              35.23038625717163,
+              31.796122168788486
+            ]
+          ],
+          [
+            [
+              35.228068828582764,
+              31.79706595376588
+            ],
+            [
+              35.22848725318909,
+              31.796951970584672
+            ],
+            [
+              35.22920072078705,
+              31.796651054310786
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "structure": "none",
+        "oneway": "true",
+        "iso_3166_1": "IL",
+        "len": 70,
+        "iso_3166_2": "IL-JM",
+        "name_en": "Yosef Karo",
+        "name_ar": "كارو",
+        "name_ru": "Йосеф Каро",
+        "name_script": "Hebrew",
+        "class": "street",
+        "name": "יוסף קארו"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.22218406200409,
+            31.791745068990593
+          ],
+          [
+            35.222554206848145,
+            31.791476052971262
+          ],
+          [
+            35.22283852100372,
+            31.79133926486456
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "structure": "none",
+        "oneway": "true",
+        "len": 330,
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "name_en": "Al Zahra",
+        "name_script": "Hebrew",
+        "class": "street",
+        "name": "אל זהרא"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.231040716171265,
+            31.785890374005007
+          ],
+          [
+            35.23207604885101,
+            31.786109247778413
+          ],
+          [
+            35.23246765136719,
+            31.78608188858506
+          ],
+          [
+            35.234028697013855,
+            31.785853894992385
+          ],
+          [
+            35.23432910442352,
+            31.785808296206397
+          ],
+          [
+            35.23447930812836,
+            31.785753577633514
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "structure": "none",
+        "oneway": "false",
+        "name_ar": "إخوان الصفا",
+        "iso_3166_1": "IL",
+        "len": 700,
+        "iso_3166_2": "IL-JM",
+        "name_en": "Ikhwan Al-Safa",
+        "name_script": "Hebrew",
+        "class": "street",
+        "name": "אח'ואן אל צפא"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.23716151714325,
+            31.78607276885215
+          ],
+          [
+            35.23709714412689,
+            31.78614116682705
+          ],
+          [
+            35.237032771110535,
+            31.78661539139489
+          ],
+          [
+            35.23694694042206,
+            31.78687074207778
+          ],
+          [
+            35.236802101135254,
+            31.787094173346787
+          ],
+          [
+            35.23670017719269,
+            31.787180809816036
+          ],
+          [
+            35.23635685443878,
+            31.78735864231433
+          ],
+          [
+            35.23565948009491,
+            31.787627670315445
+          ],
+          [
+            35.2344685792923,
+            31.788193082545888
+          ],
+          [
+            35.234039425849915,
+            31.788334435063206
+          ],
+          [
+            35.23363709449768,
+            31.788411950868024
+          ],
+          [
+            35.233052372932434,
+            31.788439309371853
+          ],
+          [
+            35.23286461830139,
+            31.78841651061923
+          ],
+          [
+            35.23240864276886,
+            31.788252359434296
+          ],
+          [
+            35.23211359977722,
+            31.788083648190508
+          ],
+          [
+            35.23187756538391,
+            31.78786021931272
+          ],
+          [
+            35.23174345493317,
+            31.787613990944465
+          ],
+          [
+            35.23167908191681,
+            31.787354082510973
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "motorway",
+        "surface": "paved",
+        "shield_text_color_beta": "blue",
+        "shield_text_hsl": "hsl(230, 57%, 44%)",
+        "shield_image": "il-highway-blue-2",
+        "shield": "default",
+        "structure": "none",
+        "oneway": "true",
+        "shield_text_color": "black",
+        "shield_beta": "il-highway-blue",
+        "reflen": 2,
+        "iso_3166_1": "IL",
+        "len": 4540,
+        "iso_3166_2": "IL-JM",
+        "name_en": "Menachem Begin",
+        "name_script": "Hebrew",
+        "ref": "50",
+        "class": "motorway",
+        "name": "מנחם בגין"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              35.19889712333679,
+              31.784800557295682
+            ],
+            [
+              35.1962149143219,
+              31.78142614795263
+            ],
+            [
+              35.19491136074066,
+              31.779843781162853
+            ],
+            [
+              35.194578766822815,
+              31.779346720876987
+            ],
+            [
+              35.19412279129028,
+              31.77839819475328
+            ],
+            [
+              35.193849205970764,
+              31.77745877948493
+            ],
+            [
+              35.19373655319214,
+              31.776592320050412
+            ],
+            [
+              35.19372045993805,
+              31.77603139724623
+            ],
+            [
+              35.193806290626526,
+              31.775178605652854
+            ],
+            [
+              35.19469678401947,
+              31.77082331742494
+            ],
+            [
+              35.194852352142334,
+              31.76990662854699
+            ],
+            [
+              35.194830894470215,
+              31.769186040863843
+            ],
+            [
+              35.19469141960144,
+              31.768511054905332
+            ],
+            [
+              35.19451975822449,
+              31.76806866278818
+            ],
+            [
+              35.19426763057709,
+              31.767562417667165
+            ]
+          ],
+          [
+            [
+              35.19442856311798,
+              31.76749400595186
+            ],
+            [
+              35.19476652145386,
+              31.768173560079433
+            ],
+            [
+              35.19497573375702,
+              31.768880473506172
+            ],
+            [
+              35.195045471191406,
+              31.76960106356924
+            ],
+            [
+              35.19504010677338,
+              31.7700206450712
+            ],
+            [
+              35.19494891166687,
+              31.770668256262965
+            ],
+            [
+              35.194101333618164,
+              31.774654157720462
+            ],
+            [
+              35.19393503665924,
+              31.775899146658602
+            ],
+            [
+              35.19396185874939,
+              31.777057472966476
+            ],
+            [
+              35.194079875946045,
+              31.77767311293485
+            ],
+            [
+              35.194251537323,
+              31.778234025782794
+            ],
+            [
+              35.1945036649704,
+              31.77883141702631
+            ],
+            [
+              35.19504010677338,
+              31.779743457283644
+            ],
+            [
+              35.199041962623596,
+              31.784800557295682
+            ]
+          ],
+          [
+            [
+              35.19299626350403,
+              31.76504027232191
+            ],
+            [
+              35.19298553466797,
+              31.76495361511195
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "trunk",
+        "surface": "paved",
+        "shield_text_color_beta": "red",
+        "shield_text_hsl": "hsl(0, 87%, 59%)",
+        "shield_image": "il-highway-red-2",
+        "shield": "default",
+        "structure": "none",
+        "oneway": "true",
+        "shield_text_color": "black",
+        "shield_beta": "il-highway-red",
+        "reflen": 2,
+        "iso_3166_1": "IL",
+        "len": 1740,
+        "iso_3166_2": "IL-JM",
+        "name_en": "Derekh Ariel Sharon",
+        "name_script": "Hebrew",
+        "ref": "16",
+        "class": "trunk",
+        "name": "דרך אריאל שרון"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              35.17866253852844,
+              31.780641808144182
+            ],
+            [
+              35.179118514060974,
+              31.78016299278174
+            ]
+          ],
+          [
+            [
+              35.17938673496246,
+              31.78029067712079
+            ],
+            [
+              35.179123878479004,
+              31.780518684430604
+            ]
+          ],
+          [
+            [
+              35.17990708351135,
+              31.779497207300537
+            ],
+            [
+              35.18049716949463,
+              31.77902294622642
+            ]
+          ],
+          [
+            [
+              35.18074929714203,
+              31.779187113796524
+            ],
+            [
+              35.1801860332489,
+              31.779647693479248
+            ]
+          ],
+          [
+            [
+              35.19573748111725,
+              31.766791642749453
+            ],
+            [
+              35.19438564777374,
+              31.767151946616693
+            ],
+            [
+              35.19366145133972,
+              31.767151946616693
+            ],
+            [
+              35.19320547580719,
+              31.767256844947255
+            ],
+            [
+              35.19224524497986,
+              31.767507688298977
+            ],
+            [
+              35.19096314907074,
+              31.76789079319643
+            ],
+            [
+              35.18988490104675,
+              31.768310382454544
+            ],
+            [
+              35.189310908317566,
+              31.768620512422316
+            ],
+            [
+              35.18894076347351,
+              31.76890783778829
+            ],
+            [
+              35.18847405910492,
+              31.769455121731212
+            ]
+          ],
+          [
+            [
+              35.188302397727966,
+              31.769373029346156
+            ],
+            [
+              35.188812017440796,
+              31.76878925917397
+            ],
+            [
+              35.18921434879303,
+              31.76848825123966
+            ],
+            [
+              35.18991708755493,
+              31.76812339182456
+            ],
+            [
+              35.19269585609436,
+              31.767238601767872
+            ],
+            [
+              35.19351124763489,
+              31.76702424414073
+            ],
+            [
+              35.19367218017578,
+              31.767015122528534
+            ],
+            [
+              35.1941978931427,
+              31.767065291384355
+            ],
+            [
+              35.1944500207901,
+              31.767037926557308
+            ],
+            [
+              35.19563555717468,
+              31.76672779128488
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "primary",
+        "surface": "paved",
+        "shield_text_color_beta": "green",
+        "shield_text_hsl": "hsl(140, 74%, 37%)",
+        "shield_image": "il-highway-green-3",
+        "shield": "default",
+        "structure": "none",
+        "oneway": "true",
+        "ref": "386",
+        "shield_text_color": "black",
+        "shield_beta": "il-highway-green",
+        "reflen": 3,
+        "iso_3166_1": "IL",
+        "len": 2260,
+        "iso_3166_2": "IL-JM",
+        "name_en": "Herzl",
+        "name_ar": "هرتسل",
+        "name_ru": "Герцель",
+        "name_script": "Hebrew",
+        "class": "primary",
+        "name": "הרצל"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              35.18401086330414,
+              31.77587634481405
+            ],
+            [
+              35.1836621761322,
+              31.77522420968036
+            ],
+            [
+              35.18220841884613,
+              31.772811725760576
+            ],
+            [
+              35.18172025680542,
+              31.77165790686219
+            ]
+          ],
+          [
+            [
+              35.192062854766846,
+              31.78268016580236
+            ],
+            [
+              35.19288897514343,
+              31.782693845903324
+            ],
+            [
+              35.193082094192505,
+              31.782730326162635
+            ],
+            [
+              35.194342732429504,
+              31.78306320786409
+            ],
+            [
+              35.19511520862579,
+              31.783231928268833
+            ],
+            [
+              35.19562482833862,
+              31.783423448355236
+            ],
+            [
+              35.19595742225647,
+              31.783656007926893
+            ],
+            [
+              35.197067856788635,
+              31.784800557295682
+            ]
+          ],
+          [
+            [
+              35.19694983959198,
+              31.784800557295682
+            ],
+            [
+              35.19648313522339,
+              31.784312643560142
+            ],
+            [
+              35.19598960876465,
+              31.783952406533146
+            ],
+            [
+              35.19572138786316,
+              31.783697047790582
+            ],
+            [
+              35.19537270069122,
+              31.783482728301607
+            ],
+            [
+              35.19320547580719,
+              31.782935527353146
+            ],
+            [
+              35.192846059799194,
+              31.78287624705601
+            ],
+            [
+              35.19253492355347,
+              31.78291272724337
+            ],
+            [
+              35.192073583602905,
+              31.78316352814187
+            ]
+          ],
+          [
+            [
+              35.18203675746918,
+              31.771630543393456
+            ],
+            [
+              35.18242835998535,
+              31.772734196878503
+            ],
+            [
+              35.18429517745972,
+              31.775853542963887
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "tertiary",
+        "structure": "none",
+        "oneway": "false",
+        "iso_3166_1": "IL",
+        "len": 760,
+        "iso_3166_2": "IL-JM",
+        "name_en": "Balfour",
+        "name_ar": "بلفور",
+        "name_ru": "Артур Бальфур",
+        "name_script": "Hebrew",
+        "class": "tertiary",
+        "name": "בלפור"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              35.19725561141968,
+              31.77962945274335
+            ],
+            [
+              35.1970249414444,
+              31.779469846150846
+            ]
+          ],
+          [
+            [
+              35.19547998905182,
+              31.77776887878386
+            ],
+            [
+              35.19551217556,
+              31.777659432091184
+            ],
+            [
+              35.19550681114197,
+              31.777244445538315
+            ],
+            [
+              35.19544780254364,
+              31.776906982573152
+            ],
+            [
+              35.19545316696167,
+              31.776213811539535
+            ],
+            [
+              35.19549608230591,
+              31.77587634481405
+            ],
+            [
+              35.19600570201874,
+              31.774430696393708
+            ],
+            [
+              35.196086168289185,
+              31.774043058117883
+            ],
+            [
+              35.196075439453125,
+              31.77364629725919
+            ],
+            [
+              35.19611299037933,
+              31.773140082658472
+            ],
+            [
+              35.1962149143219,
+              31.77247880716031
+            ],
+            [
+              35.19627928733826,
+              31.771662467439526
+            ],
+            [
+              35.19639194011688,
+              31.77121096919285
+            ]
+          ],
+          [
+            [
+              35.19671380519867,
+              31.779323919882373
+            ],
+            [
+              35.196359753608704,
+              31.77921447502989
+            ],
+            [
+              35.19612908363342,
+              31.77910046983753
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "structure": "none",
+        "oneway": "false",
+        "len": 550,
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "name_en": "Shahar",
+        "name_script": "Hebrew",
+        "class": "street",
+        "name": "שחר"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.19564092159271,
+            31.781535590187715
+          ],
+          [
+            35.19568920135498,
+            31.781371426786535
+          ],
+          [
+            35.19561946392059,
+            31.7811890226656
+          ],
+          [
+            35.194090604782104,
+            31.78026787635889
+          ],
+          [
+            35.19350051879883,
+            31.779515448062526
+          ],
+          [
+            35.193296670913696,
+            31.779342160678524
+          ],
+          [
+            35.192851424217224,
+            31.779127831096517
+          ],
+          [
+            35.1924866437912,
+            31.779036626868404
+          ],
+          [
+            35.19163370132446,
+            31.779095909626903
+          ],
+          [
+            35.1914781332016,
+            31.77907766878218
+          ],
+          [
+            35.19138157367706,
+            31.77902294622642
+          ],
+          [
+            35.19127428531647,
+            31.77887701925279
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "structure": "none",
+        "oneway": "false",
+        "len": 610,
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "name_en": "Amiram Sivan",
+        "name_script": "Hebrew",
+        "class": "street",
+        "name": "עמירם סיוון"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.189343094825745,
+            31.775776016631227
+          ],
+          [
+            35.18924653530121,
+            31.775525195697995
+          ],
+          [
+            35.189208984375,
+            31.775269813685384
+          ],
+          [
+            35.18925726413727,
+            31.775046353845937
+          ],
+          [
+            35.18938064575195,
+            31.77486393725026
+          ],
+          [
+            35.18954157829285,
+            31.77484113515048
+          ],
+          [
+            35.192813873291016,
+            31.77396553026776
+          ],
+          [
+            35.193087458610535,
+            31.773869760480864
+          ],
+          [
+            35.193318128585815,
+            31.773723825376862
+          ],
+          [
+            35.19351124763489,
+            31.773514043261457
+          ],
+          [
+            35.193591713905334,
+            31.773349865621924
+          ],
+          [
+            35.19379019737244,
+            31.772697712676205
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "structure": "none",
+        "oneway": "false",
+        "len": 940,
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "name_en": "Moshe Kol",
+        "name_script": "Hebrew",
+        "class": "street",
+        "name": "משה קול"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.18971860408783,
+            31.772209735087344
+          ],
+          [
+            35.19100069999695,
+            31.7694140755478
+          ],
+          [
+            35.19129037857056,
+            31.769154115963246
+          ],
+          [
+            35.1917839050293,
+            31.768866791362086
+          ],
+          [
+            35.192105770111084,
+            31.768739091252925
+          ],
+          [
+            35.192336440086365,
+            31.768725409087907
+          ],
+          [
+            35.192583203315735,
+            31.768798380611244
+          ],
+          [
+            35.19272804260254,
+            31.768912398501186
+          ],
+          [
+            35.192851424217224,
+            31.76905834119532
+          ],
+          [
+            35.19291043281555,
+            31.769263572719453
+          ],
+          [
+            35.192352533340454,
+            31.77254721518966
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "structure": "none",
+        "oneway": "false",
+        "len": 550,
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "name_en": "Yaakov Schreiboim",
+        "name_script": "Hebrew",
+        "class": "street",
+        "name": "יעקב שרייבוים"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.19379019737244,
+            31.772697712676205
+          ],
+          [
+            35.19387066364288,
+            31.77229638550135
+          ],
+          [
+            35.193817019462585,
+            31.771521089437627
+          ],
+          [
+            35.193843841552734,
+            31.771311302326964
+          ],
+          [
+            35.19414961338043,
+            31.770517755474856
+          ],
+          [
+            35.194251537323,
+            31.77020763186671
+          ],
+          [
+            35.19428908824921,
+            31.76996591715711
+          ],
+          [
+            35.194321274757385,
+            31.768807502047608
+          ],
+          [
+            35.19424617290497,
+            31.768232849800157
+          ],
+          [
+            35.194063782691956,
+            31.76786342861351
+          ],
+          [
+            35.1939457654953,
+            31.76781326019045
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "structure": "none",
+        "oneway": "false",
+        "len": 390,
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "name_en": "HaMeyasdim",
+        "name_script": "Hebrew",
+        "class": "street",
+        "name": "המייסדים"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.18697738647461,
+            31.778297869305945
+          ],
+          [
+            35.188323855400085,
+            31.777960410184363
+          ],
+          [
+            35.189852714538574,
+            31.777422297146117
+          ],
+          [
+            35.19088804721832,
+            31.777121317301805
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "structure": "none",
+        "oneway": "false",
+        "len": 600,
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "name_en": "HaBanay",
+        "name_script": "Hebrew",
+        "class": "street",
+        "name": "הבנאי"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.19127428531647,
+            31.77887701925279
+          ],
+          [
+            35.1912260055542,
+            31.778703730672532
+          ],
+          [
+            35.19127428531647,
+            31.77853956224439
+          ],
+          [
+            35.191816091537476,
+            31.777928488311844
+          ],
+          [
+            35.192052125930786,
+            31.7775089426773
+          ],
+          [
+            35.192105770111084,
+            31.777340211831145
+          ],
+          [
+            35.19215404987335,
+            31.77687506033702
+          ],
+          [
+            35.192089676856995,
+            31.77621837189224
+          ],
+          [
+            35.19202530384064,
+            31.776063319773513
+          ],
+          [
+            35.19191801548004,
+            31.77591738813021
+          ],
+          [
+            35.191810727119446,
+            31.77579881850052
+          ],
+          [
+            35.19168198108673,
+            31.775716731744765
+          ],
+          [
+            35.19050180912018,
+            31.775461350260954
+          ],
+          [
+            35.19026577472687,
+            31.775351900837762
+          ],
+          [
+            35.19021213054657,
+            31.775288055281095
+          ],
+          [
+            35.19004583358765,
+            31.774713443287993
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "living_street",
+        "surface": "paved",
+        "structure": "none",
+        "oneway": "false",
+        "iso_3166_1": "IL",
+        "len": 270,
+        "iso_3166_2": "IL-JM",
+        "name_en": "Deganya",
+        "name_ru": "Деганья",
+        "name_script": "Hebrew",
+        "class": "street",
+        "name": "דגניה"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.19128501415253,
+            31.78338696836937
+          ],
+          [
+            35.19051790237427,
+            31.783428008352473
+          ],
+          [
+            35.18967568874359,
+            31.78334136836679
+          ],
+          [
+            35.18912315368652,
+            31.783149848110398
+          ],
+          [
+            35.188597440719604,
+            31.782853446931583
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "secondary",
+        "shield_text_color_beta": "black",
+        "shield_text_hsl": "hsl(230, 18%, 13%)",
+        "shield_image": "il-highway-black-15",
+        "shield": "default",
+        "structure": "tunnel",
+        "oneway": "true",
+        "name_script": "Hebrew",
+        "ref": "_ADDITIONAL_REF",
+        "shield_text_color": "black",
+        "shield_beta": "il-highway-black",
+        "reflen": 15,
+        "iso_3166_1": "IL",
+        "len": 240,
+        "iso_3166_2": "IL-JM",
+        "layer": -1,
+        "name_en": "Yitzhak Rabin",
+        "name_ar": "اسحق رابين",
+        "name_ru": "Ицхак Рабин",
+        "class": "secondary",
+        "name": "יצחק רבין"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              35.20640194416046,
+              31.782657365629603
+            ],
+            [
+              35.20712614059448,
+              31.782848886906038
+            ],
+            [
+              35.20764112472534,
+              31.782921847287938
+            ]
+          ],
+          [
+            [
+              35.20763576030731,
+              31.783022167719096
+            ],
+            [
+              35.20709931850433,
+              31.78294464739548
+            ],
+            [
+              35.20636439323425,
+              31.782753126317417
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "secondary",
+        "surface": "paved",
+        "shield_text_color_beta": "black",
+        "shield_text_hsl": "hsl(230, 18%, 13%)",
+        "shield_image": "il-highway-black-15",
+        "shield": "default",
+        "ref": "_ADDITIONAL_REF",
+        "structure": "none",
+        "oneway": "true",
+        "shield_text_color": "black",
+        "name_ar": "هَزاز",
+        "shield_beta": "il-highway-black",
+        "reflen": 15,
+        "iso_3166_1": "IL",
+        "len": 1460,
+        "iso_3166_2": "IL-JM",
+        "name_en": "Haim HaZaz",
+        "name_script": "Hebrew",
+        "class": "secondary",
+        "name": "חיים הזז"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              35.20896077156067,
+              31.7763095788995
+            ],
+            [
+              35.20877301692963,
+              31.771917859411403
+            ],
+            [
+              35.208778381347656,
+              31.771530210605576
+            ],
+            [
+              35.20896077156067,
+              31.769920310537316
+            ],
+            [
+              35.20895540714264,
+              31.769560017450587
+            ]
+          ],
+          [
+            [
+              35.209073424339294,
+              31.76957369949217
+            ],
+            [
+              35.20891785621643,
+              31.77187225375384
+            ],
+            [
+              35.20912170410156,
+              31.776305018551255
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "secondary",
+        "surface": "paved",
+        "shield_text_color_beta": "black",
+        "shield_text_hsl": "hsl(230, 18%, 13%)",
+        "shield_image": "il-highway-black-15",
+        "shield": "default",
+        "structure": "none",
+        "oneway": "true",
+        "ref": "_ADDITIONAL_REF",
+        "shield_text_color": "black",
+        "shield_beta": "il-highway-black",
+        "reflen": 15,
+        "iso_3166_1": "IL",
+        "len": 2090,
+        "iso_3166_2": "IL-JM",
+        "name_en": "Ben Zvi",
+        "name_ar": "بن تسفي",
+        "name_ru": "Бен Цви",
+        "name_script": "Hebrew",
+        "class": "secondary",
+        "name": "בן צבי"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              35.207791328430176,
+              31.784800557295682
+            ],
+            [
+              35.20797908306122,
+              31.78438104283711
+            ],
+            [
+              35.20820438861847,
+              31.78366968788346
+            ],
+            [
+              35.208327770233154,
+              31.78304952781778
+            ],
+            [
+              35.20852088928223,
+              31.78121182320038
+            ],
+            [
+              35.20867645740509,
+              31.78071933039824
+            ],
+            [
+              35.20876228809357,
+              31.780231395128155
+            ],
+            [
+              35.209041237831116,
+              31.777549985269005
+            ],
+            [
+              35.20896077156067,
+              31.7763095788995
+            ]
+          ],
+          [
+            [
+              35.20912170410156,
+              31.776305018551255
+            ],
+            [
+              35.20916998386383,
+              31.777153239452943
+            ]
+          ],
+          [
+            [
+              35.2091646194458,
+              31.777928488311844
+            ],
+            [
+              35.209073424339294,
+              31.77885421814237
+            ],
+            [
+              35.20887494087219,
+              31.78025875605256
+            ],
+            [
+              35.208794474601746,
+              31.780669168947156
+            ],
+            [
+              35.20861208438873,
+              31.781220943412748
+            ],
+            [
+              35.20843505859375,
+              31.78332312835947
+            ],
+            [
+              35.208343863487244,
+              31.783728967671948
+            ],
+            [
+              35.20789861679077,
+              31.784800557295682
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "tertiary",
+        "surface": "paved",
+        "structure": "none",
+        "oneway": "false",
+        "len": 250,
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "name_en": "Chopin",
+        "name_script": "Hebrew",
+        "class": "tertiary",
+        "name": "שופן"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.21399259567261,
+            31.768711726920884
+          ],
+          [
+            35.21494746208191,
+            31.768579465868626
+          ],
+          [
+            35.216551423072815,
+            31.768196363822682
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "tertiary",
+        "surface": "paved",
+        "structure": "none",
+        "oneway": "true",
+        "name_en": "Keren HaYesod",
+        "name_ar": "كيرين هَيسود",
+        "iso_3166_1": "IL",
+        "len": 450,
+        "iso_3166_2": "IL-JM",
+        "name_script": "Hebrew",
+        "class": "tertiary",
+        "name": "קרן היסוד"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.217785239219666,
+            31.775014430967644
+          ],
+          [
+            35.21791934967041,
+            31.77488673934438
+          ],
+          [
+            35.21809637546539,
+            31.774809212201376
+          ],
+          [
+            35.219646692276,
+            31.773463877902515
+          ],
+          [
+            35.22064447402954,
+            31.77288925457769
+          ],
+          [
+            35.22122919559479,
+            31.77250160984238
+          ],
+          [
+            35.22163152694702,
+            31.77230094604721
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "tertiary",
+        "surface": "paved",
+        "structure": "none",
+        "oneway": "false",
+        "len": 140,
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "name_en": "HaAri",
+        "name_script": "Hebrew",
+        "class": "tertiary",
+        "name": "האר\"י"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.213284492492676,
+            31.770946454044903
+          ],
+          [
+            35.213788747787476,
+            31.771812966365403
+          ],
+          [
+            35.213788747787476,
+            31.77196346504647
+          ],
+          [
+            35.21364390850067,
+            31.772123084592153
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "tertiary",
+        "surface": "paved",
+        "structure": "none",
+        "oneway": "false",
+        "iso_3166_1": "IL",
+        "len": 340,
+        "iso_3166_2": "IL-JM",
+        "name_en": "Dubnov",
+        "name_ar": "دوڨْنوڤ",
+        "name_ru": "Дубнов",
+        "name_script": "Hebrew",
+        "class": "tertiary",
+        "name": "דובנוב"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.22012948989868,
+            31.76797744765564
+          ],
+          [
+            35.21811246871948,
+            31.767913597009354
+          ],
+          [
+            35.216551423072815,
+            31.768196363822682
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "tertiary",
+        "surface": "paved",
+        "structure": "none",
+        "oneway": "true",
+        "iso_3166_1": "IL",
+        "len": 1120,
+        "iso_3166_2": "IL-JM",
+        "name_en": "Bezalel",
+        "name_ar": "بِتْسَلئيل",
+        "name_ru": "Бецалель",
+        "name_script": "Hebrew",
+        "class": "tertiary",
+        "name": "בצלאל"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              35.20846724510193,
+              31.782949207416323
+            ],
+            [
+              35.20869791507721,
+              31.78291728726576
+            ],
+            [
+              35.20896077156067,
+              31.782816966720844
+            ],
+            [
+              35.211031436920166,
+              31.781708873461724
+            ],
+            [
+              35.21360099315643,
+              31.78072389052882
+            ],
+            [
+              35.21391212940216,
+              31.780673729080206
+            ]
+          ],
+          [
+            [
+              35.21389603614807,
+              31.78074669117828
+            ],
+            [
+              35.21361172199249,
+              31.780805972840596
+            ],
+            [
+              35.21322011947632,
+              31.780938216411883
+            ],
+            [
+              35.21140158176422,
+              31.781603991518907
+            ],
+            [
+              35.211074352264404,
+              31.781749914189604
+            ],
+            [
+              35.20976006984711,
+              31.78244304373092
+            ],
+            [
+              35.208778381347656,
+              31.78299936763065
+            ],
+            [
+              35.20845651626587,
+              31.783054087833435
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "tertiary",
+        "surface": "paved",
+        "structure": "none",
+        "oneway": "false",
+        "len": 350,
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "name_en": "Agron",
+        "name_script": "Hebrew",
+        "class": "tertiary",
+        "name": "אגרון"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.22164225578308,
+            31.77760014841192
+          ],
+          [
+            35.220317244529724,
+            31.776916103210013
+          ],
+          [
+            35.21835386753082,
+            31.775698490233566
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "structure": "none",
+        "oneway": "true",
+        "name_ar": "رَداك",
+        "iso_3166_1": "IL",
+        "len": 370,
+        "iso_3166_2": "IL-JM",
+        "name_en": "Radak",
+        "name_script": "Hebrew",
+        "class": "street",
+        "name": "רד\"ק"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              35.21500110626221,
+              31.772538094122027
+            ],
+            [
+              35.21499574184418,
+              31.77241952016061
+            ],
+            [
+              35.214046239852905,
+              31.770431103394884
+            ],
+            [
+              35.214056968688965,
+              31.77031252673285
+            ]
+          ],
+          [
+            [
+              35.21500110626221,
+              31.772538094122027
+            ],
+            [
+              35.21464705467224,
+              31.772816286281042
+            ],
+            [
+              35.21460950374603,
+              31.77288013354375
+            ]
+          ],
+          [
+            [
+              35.21399796009064,
+              31.773190248193004
+            ],
+            [
+              35.21445393562317,
+              31.77297590435522
+            ],
+            [
+              35.214571952819824,
+              31.772852770436558
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "structure": "none",
+        "oneway": "false",
+        "len": 90,
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "name_en": "Shabazi",
+        "name_script": "Hebrew",
+        "class": "street",
+        "name": "ר' שלום שבזי"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.20962595939636,
+            31.78107045979408
+          ],
+          [
+            35.20893394947052,
+            31.781412467664154
+          ],
+          [
+            35.20888030529022,
+            31.781526470006426
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "structure": "none",
+        "oneway": "true",
+        "len": 180,
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "name_en": "Safed",
+        "name_script": "Hebrew",
+        "class": "street",
+        "name": "צפת"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.21222233772278,
+            31.779716096206798
+          ],
+          [
+            35.21111726760864,
+            31.779565610139414
+          ],
+          [
+            35.210334062576294,
+            31.779378642260028
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "structure": "none",
+        "oneway": "true",
+        "iso_3166_1": "IL",
+        "len": 340,
+        "iso_3166_2": "IL-JM",
+        "name_en": "Pinsker",
+        "name_ar": "پينسكير",
+        "name_ru": "Пинскер",
+        "name_script": "Hebrew",
+        "class": "street",
+        "name": "פינסקר"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              35.21711468696594,
+              31.769035537664564
+            ],
+            [
+              35.2169269323349,
+              31.76909938753657
+            ]
+          ],
+          [
+            [
+              35.21691620349884,
+              31.76904009837115
+            ],
+            [
+              35.21711468696594,
+              31.769035537664564
+            ]
+          ],
+          [
+            [
+              35.21742045879364,
+              31.768971687748447
+            ],
+            [
+              35.21815538406372,
+              31.76878925917397
+            ],
+            [
+              35.21841287612915,
+              31.768752773415898
+            ],
+            [
+              35.2194482088089,
+              31.768784698455008
+            ],
+            [
+              35.220022201538086,
+              31.768766455576866
+            ]
+          ],
+          [
+            [
+              35.22118091583252,
+              31.769391272104684
+            ],
+            [
+              35.22113800048828,
+              31.769259012023852
+            ],
+            [
+              35.22093951702118,
+              31.769108508943262
+            ]
+          ],
+          [
+            [
+              35.22093951702118,
+              31.769108508943262
+            ],
+            [
+              35.22108972072601,
+              31.769117630349072
+            ],
+            [
+              35.22120237350464,
+              31.76901273412814
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "structure": "none",
+        "oneway": "false",
+        "len": 430,
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "name_en": "Nayot",
+        "name_script": "Hebrew",
+        "class": "street",
+        "name": "ניות"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.206047892570496,
+            31.770549679904903
+          ],
+          [
+            35.20588159561157,
+            31.7703946182843
+          ],
+          [
+            35.20567238330841,
+            31.77026235963781
+          ],
+          [
+            35.205280780792236,
+            31.769861021897952
+          ],
+          [
+            35.20425081253052,
+            31.769195162262008
+          ],
+          [
+            35.204046964645386,
+            31.768866791362086
+          ],
+          [
+            35.20371973514557,
+            31.768542980027817
+          ],
+          [
+            35.20346224308014,
+            31.76812339182456
+          ],
+          [
+            35.2029687166214,
+            31.767927279294412
+          ],
+          [
+            35.202791690826416,
+            31.767927279294412
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "structure": "none",
+        "oneway": "false",
+        "len": 580,
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "name_en": "Yehoshua Yavin",
+        "name_script": "Hebrew",
+        "class": "street",
+        "name": "יהושוע יבין"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.20337104797363,
+            31.76740279025279
+          ],
+          [
+            35.204556584358215,
+            31.768305821711948
+          ],
+          [
+            35.20501792430878,
+            31.768611390967507
+          ],
+          [
+            35.20540416240692,
+            31.768816623483076
+          ],
+          [
+            35.2077054977417,
+            31.769851900565456
+          ],
+          [
+            35.20868182182312,
+            31.769956795834972
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "structure": "none",
+        "oneway": "false",
+        "len": 50,
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "name_en": "Hillel",
+        "name_script": "Hebrew",
+        "class": "street",
+        "name": "הלל"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.219791531562805,
+            31.779752577640807
+          ],
+          [
+            35.220301151275635,
+            31.779597531446882
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "structure": "none",
+        "oneway": "true",
+        "name_ar": "ديسْرائيلي",
+        "iso_3166_1": "IL",
+        "len": 400,
+        "iso_3166_2": "IL-JM",
+        "name_en": "DeIsraeli",
+        "name_script": "Hebrew",
+        "class": "street",
+        "name": "ד'ישראלי בנימין"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.21693229675293,
+            31.769856461231825
+          ],
+          [
+            35.21846115589142,
+            31.769847339898902
+          ],
+          [
+            35.22115409374237,
+            31.769920310537316
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "structure": "none",
+        "oneway": "true",
+        "iso_3166_1": "IL",
+        "len": 390,
+        "iso_3166_2": "IL-JM",
+        "name_en": "Alfasi",
+        "name_ar": "الفاسي",
+        "name_ru": "Альфаси",
+        "name_script": "Hebrew",
+        "class": "street",
+        "name": "אלפסי"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.21399796009064,
+            31.773190248193004
+          ],
+          [
+            35.21371364593506,
+            31.77295310179005
+          ],
+          [
+            35.21351516246796,
+            31.772884694060835
+          ],
+          [
+            35.213305950164795,
+            31.77287101250893
+          ],
+          [
+            35.21241009235382,
+            31.77294854127635
+          ],
+          [
+            35.21210968494415,
+            31.772912057158578
+          ],
+          [
+            35.21189510822296,
+            31.772834528360576
+          ],
+          [
+            35.21165370941162,
+            31.77270227320227
+          ],
+          [
+            35.21121382713318,
+            31.772337430405983
+          ],
+          [
+            35.211090445518494,
+            31.77227358276869
+          ],
+          [
+            35.21095097064972,
+            31.772269022221494
+          ],
+          [
+            35.210339426994324,
+            31.772510730913638
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "structure": "none",
+        "oneway": "true",
+        "iso_3166_1": "IL",
+        "len": 300,
+        "iso_3166_2": "IL-JM",
+        "name_en": "Ahad HaAm",
+        "name_ar": "احاد هَعام",
+        "name_ru": "Ахад ха-Ам",
+        "name_script": "Hebrew",
+        "class": "street",
+        "name": "אחד העם"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.21795153617859,
+            31.771033105642175
+          ],
+          [
+            35.21799981594086,
+            31.77161686165607
+          ],
+          [
+            35.21818220615387,
+            31.772328309317643
+          ],
+          [
+            35.21848261356354,
+            31.772962222816773
+          ],
+          [
+            35.21898150444031,
+            31.773532285203416
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "structure": "none",
+        "oneway": "true",
+        "len": 140,
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "name_en": "Ibn Ezra",
+        "name_script": "Hebrew",
+        "class": "street",
+        "name": "אבן עזרא"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.21399796009064,
+            31.773190248193004
+          ],
+          [
+            35.214062333106995,
+            31.7733407446334
+          ],
+          [
+            35.21411597728729,
+            31.773682781087373
+          ],
+          [
+            35.214067697525024,
+            31.774175311359258
+          ],
+          [
+            35.2140998840332,
+            31.77448998210444
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "structure": "none",
+        "oneway": "true",
+        "name_script": "Hebrew",
+        "access": "restricted",
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "len": 140,
+        "name_en": "Balfour",
+        "name_ar": "بلفور",
+        "name_ru": "Артур Бальфур",
+        "class": "street_limited",
+        "name": "בלפור"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.217082500457764,
+            31.772861891473198
+          ],
+          [
+            35.21715223789215,
+            31.77390624422091
+          ],
+          [
+            35.217066407203674,
+            31.77410234407705
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "trunk",
+        "surface": "paved",
+        "shield_text_color_beta": "red",
+        "shield_text_hsl": "hsl(0, 87%, 59%)",
+        "shield_image": "il-highway-red-2",
+        "shield": "default",
+        "structure": "none",
+        "oneway": "true",
+        "ref": "60",
+        "shield_text_color": "black",
+        "shield_beta": "il-highway-red",
+        "reflen": 2,
+        "iso_3166_1": "IL",
+        "len": 620,
+        "iso_3166_2": "IL-JM",
+        "name_en": "Hebron",
+        "name_ar": "طريق الخليل",
+        "name_ru": "Хеврон",
+        "name_script": "Hebrew",
+        "class": "trunk",
+        "name": "חברון"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              35.22622883319855,
+              31.768638755329235
+            ],
+            [
+              35.2264004945755,
+              31.768086905803898
+            ],
+            [
+              35.22636830806732,
+              31.767858867848915
+            ],
+            [
+              35.22596061229706,
+              31.76718843300604
+            ],
+            [
+              35.22568166255951,
+              31.766609209876563
+            ],
+            [
+              35.225547552108765,
+              31.766171369514126
+            ],
+            [
+              35.22548854351044,
+              31.765756331424484
+            ]
+          ],
+          [
+            [
+              35.225558280944824,
+              31.76567423575763
+            ],
+            [
+              35.22563338279724,
+              31.766171369514126
+            ],
+            [
+              35.22583723068237,
+              31.766773399478353
+            ],
+            [
+              35.22642731666565,
+              31.767849746319015
+            ],
+            [
+              35.22646486759186,
+              31.768105148816034
+            ],
+            [
+              35.22632539272308,
+              31.768520176370032
+            ],
+            [
+              35.22622883319855,
+              31.768638755329235
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "secondary",
+        "surface": "paved",
+        "shield_text_color_beta": "black",
+        "shield_text_hsl": "hsl(230, 18%, 13%)",
+        "shield_image": "il-highway-black-15",
+        "shield": "default",
+        "structure": "none",
+        "oneway": "false",
+        "name_script": "Hebrew",
+        "name_en": "Derekh Jericho",
+        "shield_text_color": "black",
+        "name_ar": "طريق اريحا",
+        "shield_beta": "il-highway-black",
+        "reflen": 15,
+        "iso_3166_1": "IL",
+        "len": 560,
+        "ref": "_ADDITIONAL_REF",
+        "name_de": "Jerichostraße",
+        "iso_3166_2": "IL-JM",
+        "class": "secondary",
+        "name": "דרך יריחו"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.239500403404236,
+            31.77892718167594
+          ],
+          [
+            35.23982226848602,
+            31.77834347179551
+          ],
+          [
+            35.24040162563324,
+            31.77590370702687
+          ],
+          [
+            35.240492820739746,
+            31.7739928930458
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "tertiary",
+        "structure": "none",
+        "oneway": "true",
+        "len": 440,
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "name_en": "Yizhak Karib",
+        "name_script": "Hebrew",
+        "class": "tertiary",
+        "name": "יצחק קריב"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.227258801460266,
+            31.775794258127092
+          ],
+          [
+            35.22692084312439,
+            31.77590826739487
+          ],
+          [
+            35.22561192512512,
+            31.776906982573152
+          ],
+          [
+            35.22523641586304,
+            31.777080274519875
+          ],
+          [
+            35.22313892841339,
+            31.777641190963138
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "tertiary",
+        "surface": "paved",
+        "structure": "none",
+        "oneway": "false",
+        "len": 110,
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "name_en": "HaTsanhanim",
+        "name_script": "Hebrew",
+        "class": "tertiary",
+        "name": "הצנחנים"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.22610545158386,
+            31.779515448062526
+          ],
+          [
+            35.22711932659149,
+            31.780117391189364
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "tertiary",
+        "surface": "paved",
+        "structure": "none",
+        "oneway": "false",
+        "name_script": "Hebrew",
+        "name_en": "HaNeviim",
+        "iso_3166_1": "IL",
+        "len": 170,
+        "iso_3166_2": "IL-JM",
+        "name_ar": "التعابير",
+        "name_ru": "ХаНевиим",
+        "class": "tertiary",
+        "name": "הנביאים"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              35.22223234176636,
+              31.78371072774108
+            ],
+            [
+              35.22260785102844,
+              31.783820167272367
+            ],
+            [
+              35.22392749786377,
+              31.783979766356595
+            ]
+          ],
+          [
+            [
+              35.22148132324219,
+              31.783724407689576
+            ],
+            [
+              35.221508145332336,
+              31.783719847706962
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "tertiary",
+        "surface": "paved",
+        "structure": "none",
+        "oneway": "true",
+        "iso_3166_1": "IL",
+        "len": 210,
+        "name_de": "Jaffastraße",
+        "iso_3166_2": "IL-JM",
+        "name_en": "Jaffa",
+        "name_script": "Hebrew",
+        "class": "tertiary",
+        "name": "יפו"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.22493600845337,
+            31.778849657919608
+          ],
+          [
+            35.225070118904114,
+            31.778785814777336
+          ],
+          [
+            35.225531458854675,
+            31.778056175735884
+          ],
+          [
+            35.225783586502075,
+            31.77773239656736
+          ],
+          [
+            35.22634148597717,
+            31.77729916914636
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "structure": "none",
+        "oneway": "true",
+        "len": 280,
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "name_en": "Koresh",
+        "name_script": "Hebrew",
+        "class": "street",
+        "name": "כורש"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.22409379482269,
+            31.778571483906006
+          ],
+          [
+            35.22412598133087,
+            31.778644447662657
+          ],
+          [
+            35.22410452365875,
+            31.778749332961993
+          ],
+          [
+            35.22399723529816,
+            31.778867898809295
+          ],
+          [
+            35.222570300102234,
+            31.779757137819047
+          ],
+          [
+            35.222039222717285,
+            31.780017067606963
+          ],
+          [
+            35.221787095069885,
+            31.78010827086817
+          ],
+          [
+            35.22169053554535,
+            31.780103710707266
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "structure": "none",
+        "oneway": "true",
+        "len": 390,
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "name_en": "HaAyin Het",
+        "name_script": "Hebrew",
+        "class": "street",
+        "name": "הע״ח"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.227527022361755,
+            31.780427481574137
+          ],
+          [
+            35.22743046283722,
+            31.780441162008344
+          ],
+          [
+            35.22737145423889,
+            31.7805004438665
+          ],
+          [
+            35.227038860321045,
+            31.781038538995006
+          ],
+          [
+            35.226786732673645,
+            31.781353186390618
+          ],
+          [
+            35.226550698280334,
+            31.781740794029417
+          ],
+          [
+            35.22645950317383,
+            31.781955117555697
+          ],
+          [
+            35.22642731666565,
+            31.78264368552327
+          ],
+          [
+            35.226556062698364,
+            31.78354200820995
+          ],
+          [
+            35.22661507129669,
+            31.783646887954703
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "structure": "none",
+        "oneway": "false",
+        "iso_3166_1": "IL",
+        "len": 340,
+        "iso_3166_2": "IL-JM",
+        "name_en": "Daniel",
+        "name_ar": "دانيال",
+        "name_ru": "Даниил",
+        "name_script": "Hebrew",
+        "class": "street",
+        "name": "דניאל"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              35.22547781467438,
+              31.781526470006426
+            ],
+            [
+              35.225273966789246,
+              31.782365522921836
+            ],
+            [
+              35.225037932395935,
+              31.783099687977682
+            ]
+          ],
+          [
+            [
+              35.22598206996918,
+              31.78098381759952
+            ],
+            [
+              35.225778222084045,
+              31.78148998927219
+            ],
+            [
+              35.22547245025635,
+              31.782415683452797
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "structure": "none",
+        "oneway": "false",
+        "len": 970,
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "name_en": "Chachmey Yossef",
+        "name_script": "Hebrew",
+        "class": "street",
+        "name": "חכמי יוסף"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.19043207168579,
+            31.76012348757169
+          ],
+          [
+            35.19072711467743,
+            31.76012348757169
+          ],
+          [
+            35.19088268280029,
+            31.760178221307214
+          ],
+          [
+            35.19102215766907,
+            31.760342422319553
+          ],
+          [
+            35.191113352775574,
+            31.76056135654953
+          ],
+          [
+            35.19119381904602,
+            31.76099466235283
+          ],
+          [
+            35.19118309020996,
+            31.761209033947523
+          ],
+          [
+            35.19098997116089,
+            31.761760924491654
+          ],
+          [
+            35.18871545791626,
+            31.766121200173643
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "structure": "none",
+        "oneway": "false",
+        "iso_3166_1": "IL",
+        "len": 190,
+        "iso_3166_2": "IL-JM",
+        "name_en": "Ruth",
+        "name_ar": "روت",
+        "name_ru": "Рут",
+        "name_script": "Hebrew",
+        "class": "street",
+        "name": "רות"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.217264890670776,
+            31.765154294842915
+          ],
+          [
+            35.21693229675293,
+            31.763457625221236
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "structure": "none",
+        "oneway": "false",
+        "len": 230,
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "name_en": "Negba",
+        "name_script": "Hebrew",
+        "class": "street",
+        "name": "נגבה"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.21221160888672,
+            31.763389210471146
+          ],
+          [
+            35.20974934101105,
+            31.763630942361857
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "tertiary",
+        "surface": "paved",
+        "structure": "none",
+        "oneway": "false",
+        "len": 1450,
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "name_en": "The American Rd",
+        "name_script": "Hebrew",
+        "class": "tertiary",
+        "name": "מעלות עיר דוד"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.236056447029114,
+            31.766121200173643
+          ],
+          [
+            35.23613154888153,
+            31.765920522539645
+          ],
+          [
+            35.23636221885681,
+            31.765587579141396
+          ],
+          [
+            35.236555337905884,
+            31.76541426566547
+          ],
+          [
+            35.237022042274475,
+            31.765177099330245
+          ],
+          [
+            35.237274169921875,
+            31.7649672978347
+          ],
+          [
+            35.23781061172485,
+            31.76436069518256
+          ],
+          [
+            35.239022970199585,
+            31.7634530642395
+          ],
+          [
+            35.239532589912415,
+            31.763270624784454
+          ],
+          [
+            35.24017095565796,
+            31.763138355954624
+          ],
+          [
+            35.24165153503418,
+            31.7630653799676
+          ],
+          [
+            35.242499113082886,
+            31.762887500758126
+          ],
+          [
+            35.24360954761505,
+            31.762869256717337
+          ],
+          [
+            35.24421036243439,
+            31.76281908558653
+          ],
+          [
+            35.24482727050781,
+            31.762654888968314
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "structure": "none",
+        "oneway": "false",
+        "len": 260,
+        "iso_3166_2": "IL-JM",
+        "iso_3166_1": "IL",
+        "name_en": "Gikhon",
+        "name_script": "Hebrew",
+        "class": "street",
+        "name": "גיחון"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            35.228471159935,
+            31.763548844809378
+          ],
+          [
+            35.2281653881073,
+            31.763370966529223
+          ],
+          [
+            35.22792398929596,
+            31.76330711270424
+          ],
+          [
+            35.22763431072235,
+            31.763284307756066
+          ],
+          [
+            35.22586941719055,
+            31.763694795963417
+          ]
+        ]
+      }
+    }
+  ],
+  "source_features": []
+}

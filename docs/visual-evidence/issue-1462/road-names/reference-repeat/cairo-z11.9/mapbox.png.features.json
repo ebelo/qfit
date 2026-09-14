@@ -1,0 +1,680 @@
+{
+  "features": [
+    {
+      "id": 7685519810,
+      "owner": "settlement-major-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "hamlet",
+        "name_script": "Arabic",
+        "name_fr": "Hadaiq el Qubbah",
+        "name_en": "Hadaiq el Qubbah",
+        "name_ar": "حدائق القبة",
+        "symbolrank": 11,
+        "name_es": "Hada'iq al-Qubbah",
+        "name_de": "Hadaiq el Qubbah",
+        "disputed": "false",
+        "filterrank": 2,
+        "name_zh-Hant": "庫巴區",
+        "iso_3166_1": "EG",
+        "name_zh-Hans": "库巴区",
+        "iso_3166_2": "EG-C",
+        "class": "settlement",
+        "name": "حدائق القبة",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.28253936767578,
+          30.08216633691056
+        ]
+      }
+    },
+    {
+      "id": 2716137660,
+      "owner": "settlement-major-label",
+      "properties": {
+        "type": "city",
+        "name_es": "El Cairo",
+        "disputed": "false",
+        "name_vi": "Cairo",
+        "iso_3166_1": "EG",
+        "capital": 2,
+        "iso_3166_2": "EG-C",
+        "filterrank": 1,
+        "name_fr": "Le Caire",
+        "name_ar": "القاهرة",
+        "name_de": "Kairo",
+        "name_en": "Cairo",
+        "name_ja": "カイロ",
+        "symbolrank": 6,
+        "name_ko": "카이로",
+        "name_pt": "Cairo",
+        "text_anchor": "bottom-left",
+        "name_zh-Hans": "开罗",
+        "name_ru": "Каир",
+        "name_script": "Arabic",
+        "name_zh-Hant": "開羅",
+        "name_it": "Il Cairo",
+        "class": "settlement",
+        "name": "القاهرة",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.235718727111816,
+          30.044392866079193
+        ]
+      }
+    },
+    {
+      "id": 275651200,
+      "owner": "settlement-major-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "吉薩",
+        "name_script": "Arabic",
+        "name_ru": "Гиза",
+        "name_zh-Hans": "吉萨",
+        "name_pt": "Gizé",
+        "name_ko": "기자",
+        "symbolrank": 7,
+        "name_ja": "ギーザ",
+        "name_it": "Giza",
+        "name_en": "Giza",
+        "name_de": "Giseh",
+        "name_ar": "الجيزة",
+        "name_fr": "Gizeh",
+        "filterrank": 1,
+        "iso_3166_2": "EG-GZ",
+        "disputed": "false",
+        "name_vi": "Giza",
+        "iso_3166_1": "EG",
+        "name_es": "Guiza",
+        "class": "settlement",
+        "name": "الجيزة",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.211814880371094,
+          29.98709233324223
+        ]
+      }
+    },
+    {
+      "id": 7685532900,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "village",
+        "name_script": "Arabic",
+        "name_fr": "Kirdasah",
+        "name_en": "Kirdasah",
+        "name_ar": "كرداسة",
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "EG",
+        "symbolrank": 18,
+        "name_de": "Kirdasah",
+        "iso_3166_2": "EG-GZ",
+        "class": "settlement",
+        "name": "كرداسة",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.111865043640137,
+          30.03157558316876
+        ]
+      }
+    },
+    {
+      "id": 3245691090,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "village",
+        "name_script": "Arabic",
+        "name_fr": "Kafr Hakim",
+        "symbolrank": 17,
+        "name_ar": "كفر الحكيم",
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-GZ",
+        "name_en": "Kafr Hakim",
+        "class": "settlement",
+        "name": "كفر الحكيم",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.11800193786621,
+          30.08194352685014
+        ]
+      }
+    },
+    {
+      "id": 3245682710,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "village",
+        "name_script": "Arabic",
+        "name_fr": "Bashteil",
+        "symbolrank": 17,
+        "name_ar": "بشتيل البلد",
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-GZ",
+        "name_en": "Bashteel Al-Balad",
+        "class": "settlement",
+        "name": "بشتيل البلد",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.185808181762695,
+          30.08684523223573
+        ]
+      }
+    },
+    {
+      "id": 3171939440,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "suburb",
+        "name_script": "Arabic",
+        "name_en": "Boulak",
+        "symbolrank": 16,
+        "name_ar": "بولاق",
+        "disputed": "false",
+        "filterrank": 3,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-C",
+        "class": "settlement_subdivision",
+        "name": "بولاق",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.23417377471924,
+          30.059177120992516
+        ]
+      }
+    },
+    {
+      "id": 3157552360,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "suburb",
+        "name_script": "Arabic",
+        "name_en": "Abdin",
+        "symbolrank": 16,
+        "name_ar": "عابدين",
+        "disputed": "false",
+        "filterrank": 3,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-C",
+        "class": "settlement_subdivision",
+        "name": "عابدين",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.24885082244873,
+          30.044987250563622
+        ]
+      }
+    },
+    {
+      "id": 138006218260,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "suburb",
+        "name_script": "Arabic",
+        "name_it": "Zamalek",
+        "name_fr": "Zamalek",
+        "name_en": "Zamalek",
+        "name_ar": "الزمالك",
+        "disputed": "false",
+        "symbolrank": 16,
+        "name_es": "Zamalek",
+        "filterrank": 3,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-GZ",
+        "class": "settlement_subdivision",
+        "name": "الزمالك",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.21962547302246,
+          30.063002837484518
+        ]
+      }
+    },
+    {
+      "id": 138006199890,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "suburb",
+        "name_script": "Arabic",
+        "symbolrank": 16,
+        "name_ar": "الجزيرة",
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-GZ",
+        "name_en": "Gezira",
+        "class": "settlement_subdivision",
+        "name": "الجزيره",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.223015785217285,
+          30.050336550428213
+        ]
+      }
+    },
+    {
+      "id": 3242827940,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "suburb",
+        "name_script": "Arabic",
+        "symbolrank": 16,
+        "name_ar": "روض الفرج",
+        "disputed": "false",
+        "filterrank": 3,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-C",
+        "name_en": "Rod El-Farag",
+        "class": "settlement_subdivision",
+        "name": "روض الفرج",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.236319541931152,
+          30.073216404709683
+        ]
+      }
+    },
+    {
+      "id": 3242799740,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "type": "suburb",
+        "name_zh-Hans": "杜吉区",
+        "iso_3166_1": "EG",
+        "filterrank": 2,
+        "iso_3166_2": "EG-GZ",
+        "name_de": "Duqqi",
+        "name_ja": "ドッキ",
+        "symbolrank": 12,
+        "disputed": "false",
+        "name_es": "Duqqī",
+        "name_ar": "الدقى",
+        "name_en": "Dokki",
+        "name_fr": "Dokki",
+        "name_it": "Doqqi",
+        "name_script": "Arabic",
+        "name_zh-Hant": "杜吉區",
+        "text_anchor": "bottom",
+        "class": "settlement_subdivision",
+        "name": "الدقى",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.212544441223145,
+          30.038894640533655
+        ]
+      }
+    },
+    {
+      "id": 3242794840,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "suburb",
+        "name_script": "Arabic",
+        "symbolrank": 16,
+        "name_ar": "إمبابة",
+        "disputed": "false",
+        "filterrank": 3,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-GZ",
+        "name_en": "Imbaba",
+        "class": "settlement_subdivision",
+        "name": "إمبابة",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.21593475341797,
+          30.088516212635298
+        ]
+      }
+    },
+    {
+      "id": 3242831420,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "suburb",
+        "name_script": "Arabic",
+        "symbolrank": 16,
+        "name_ar": "بولاق الدكرور",
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-GZ",
+        "name_en": "Bulaq Al-Dakrour",
+        "class": "settlement_subdivision",
+        "name": "بولاق الدكرور",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.191000938415527,
+          30.033879101138183
+        ]
+      }
+    },
+    {
+      "id": 7685526640,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "type": "neighbourhood",
+        "text_anchor": "bottom",
+        "name_script": "Arabic",
+        "name_ru": "Старый Каир",
+        "name_pt": "Cairo Velho",
+        "name_de": "Altkairo",
+        "symbolrank": 10,
+        "name_ja": "オールド・カイロ",
+        "name_es": "El Cairo Viejo",
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_2": "EG-C",
+        "iso_3166_1": "EG",
+        "name_ar": "القاهرة القديمة",
+        "name_en": "Old Cairo",
+        "name_fr": "Le Vieux Caire",
+        "name_it": "Il Cairo Vecchio",
+        "class": "settlement_subdivision",
+        "name": "القاهرة القديمة",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.233186721801758,
+          30.017381759165616
+        ]
+      }
+    },
+    {
+      "id": 12631171240,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "suburb",
+        "name_script": "Arabic",
+        "symbolrank": 16,
+        "name_ar": "ميت عقبة",
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-GZ",
+        "name_en": "Meet Okba",
+        "class": "settlement_subdivision",
+        "name": "ميت عقبة",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.19743824005127,
+          30.06318854811458
+        ]
+      }
+    },
+    {
+      "id": 77150475960,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 17,
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-C",
+        "name_script": "Latin",
+        "type": "neighbourhood",
+        "class": "settlement_subdivision",
+        "name": "Parcel 8547",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.318674087524414,
+          30.00311157415979
+        ]
+      }
+    },
+    {
+      "id": 7685523420,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "type": "suburb",
+        "text_anchor": "bottom",
+        "filterrank": 1,
+        "name_de": "Nasr City",
+        "symbolrank": 10,
+        "name_ja": "ナスル・シティ",
+        "name_zh-Hant": "納賽爾城",
+        "disputed": "false",
+        "name_es": "Nasr City",
+        "iso_3166_2": "EG-C",
+        "name_zh-Hans": "纳赛尔城",
+        "iso_3166_1": "EG",
+        "name_ar": "مدينة نصر",
+        "name_ru": "Наср-Сити",
+        "name_en": "Nasr City",
+        "name_fr": "Nasr City",
+        "name_it": "Nasr City",
+        "name_script": "Arabic",
+        "class": "settlement_subdivision",
+        "name": "مدينة نصر",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.342191696166992,
+          30.05211958618159
+        ]
+      }
+    },
+    {
+      "id": 7685917360,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "type": "suburb",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "赫利奧波利斯",
+        "name_script": "Arabic",
+        "name_ru": "Гелиополис",
+        "name_de": "Heliopolis",
+        "symbolrank": 11,
+        "name_ja": "ミスル・アル=ジャディーダ",
+        "name_es": "Heliópolis",
+        "filterrank": 1,
+        "disputed": "false",
+        "iso_3166_2": "EG-C",
+        "iso_3166_1": "EG",
+        "name_ar": "مصر الجديدة",
+        "name_en": "Heliopolis",
+        "name_fr": "Heliopolis",
+        "name_it": "Heliopolis",
+        "name_zh-Hans": "赫利奥波利斯",
+        "name_pt": "Heliopolis",
+        "class": "settlement_subdivision",
+        "name": "مصر الجديدة",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.332921981811523,
+          30.100583565992167
+        ]
+      }
+    },
+    {
+      "id": 7685532880,
+      "owner": "settlement-subdivision-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "suburb",
+        "name_script": "Arabic",
+        "name_fr": "Kom al Akhdar",
+        "name_en": "Kom al Akhdar",
+        "name_ar": "كوم الأخضر",
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "EG",
+        "symbolrank": 16,
+        "name_de": "Kom al Akhdar",
+        "iso_3166_2": "EG-GZ",
+        "class": "settlement_subdivision",
+        "name": "كوم الأخضر",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.15001678466797,
+          29.983338030518908
+        ]
+      }
+    },
+    {
+      "id": 167831214,
+      "owner": "poi-label",
+      "properties": {
+        "type": "Museum",
+        "sizerank": 16,
+        "category_zh-Hans": "博物馆",
+        "name_pt": "Grande Museu Egípcio",
+        "iso_3166_1": "EG",
+        "filterrank": 1,
+        "iso_3166_2": "EG-GZ",
+        "maki": "museum",
+        "category_en": "Museum",
+        "name_ar": "المتحف المصري الكبير",
+        "name_de": "Großes Ägyptisches Museum",
+        "name_es": "Gran Museo Egipcio",
+        "name_en": "Grand Egyptian Museum",
+        "name_fr": "Grand Musée égyptien",
+        "name_it": "Grande Museo Egiziano",
+        "name_ko": "이집트 대박물관",
+        "name_script": "Arabic",
+        "class": "arts_and_entertainment",
+        "name": "المتحف المصري الكبير"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.119418144226074,
+          29.993931490170482
+        ]
+      }
+    },
+    {
+      "id": 150720324,
+      "owner": "poi-label",
+      "properties": {
+        "type": "University",
+        "name_script": "Arabic",
+        "name_en": "Cairo University",
+        "sizerank": 15,
+        "name_ar": "جامعة القاهرة",
+        "category_en": "University",
+        "maki": "college",
+        "category_zh-Hans": "大学",
+        "filterrank": 1,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-GZ",
+        "class": "education",
+        "name": "جامعة القاهرة"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.208038330078125,
+          30.017493236904045
+        ]
+      }
+    },
+    {
+      "id": 249598471,
+      "owner": "poi-label",
+      "properties": {
+        "type": "Stadium",
+        "iso_3166_2": "EG-C",
+        "filterrank": 1,
+        "category_zh-Hans": "体育场",
+        "iso_3166_1": "EG",
+        "maki": "stadium",
+        "category_en": "Stadium",
+        "name_pt": "Estádio Internacional do Cairo",
+        "name_ar": "إستاد القاهرة الدولي",
+        "sizerank": 16,
+        "name_de": "Kairo International Stadion",
+        "name_es": "Estadio Internacional de El Cairo",
+        "name_en": "Cairo International Stadium",
+        "name_fr": "Stade international du Caire",
+        "name_it": "Stadio Internazionale del Cairo",
+        "name_script": "Arabic",
+        "class": "arts_and_entertainment",
+        "name": "إستاد القاهرة الدولي"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.312193870544434,
+          30.069056824556753
+        ]
+      }
+    }
+  ],
+  "source_features": []
+}

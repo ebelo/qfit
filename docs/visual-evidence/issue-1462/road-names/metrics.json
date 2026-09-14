@@ -1,0 +1,1498 @@
+[
+  {
+    "runtime": "3",
+    "camera": "bern-urban-z12-light",
+    "changed_pixels": 0,
+    "render_context": {
+      "requested_camera_zoom": 12.25,
+      "map_settings_output_dpi": 100.0,
+      "image_logical_dpi": [
+        100,
+        100
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        818712.148245084,
+        5926359.467815783,
+        839280.3476299326,
+        5940821.483008254
+      ],
+      "map_scale": 63263.4085409959,
+      "tile_render_scale": 63263.4085409959,
+      "vector_tile_zoom": 12.146055147472111,
+      "integer_render_zoom": 12,
+      "integer_fetch_zoom": 12
+    },
+    "reference": {
+      "before_mae": 0.007191801697530865,
+      "after_mae": 0.007191801697530865,
+      "relative_change_percent": 0.0
+    },
+    "reference-mercator": {
+      "before_mae": 0.007191801697530865,
+      "after_mae": 0.007191801697530865,
+      "relative_change_percent": 0.0
+    }
+  },
+  {
+    "runtime": "3",
+    "camera": "cairo-nile-z14",
+    "changed_pixels": 120939,
+    "render_context": {
+      "requested_camera_zoom": 14,
+      "map_settings_output_dpi": 100.0,
+      "image_logical_dpi": [
+        100,
+        100
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        3472782.2993977666,
+        3507108.5357614914,
+        3478897.2616605815,
+        3511408.118602533
+      ],
+      "map_scale": 18808.32388907131,
+      "tile_render_scale": 18808.32388907131,
+      "vector_tile_zoom": 13.89763779527545,
+      "integer_render_zoom": 14,
+      "integer_fetch_zoom": 14
+    },
+    "reference": {
+      "before_mae": 0.01576368577523602,
+      "after_mae": 0.017381488289760348,
+      "relative_change_percent": 10.262844220517362
+    },
+    "reference-mercator": {
+      "before_mae": 0.01576368577523602,
+      "after_mae": 0.017381488289760348,
+      "relative_change_percent": 10.262844220517362
+    }
+  },
+  {
+    "runtime": "3",
+    "camera": "cairo-nile-z14-activity",
+    "changed_pixels": 121442,
+    "render_context": {
+      "requested_camera_zoom": 14,
+      "map_settings_output_dpi": 100.0,
+      "image_logical_dpi": [
+        100,
+        100
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        3472782.2993977666,
+        3507108.5357614914,
+        3478897.2616605815,
+        3511408.118602533
+      ],
+      "map_scale": 18808.32388907131,
+      "tile_render_scale": 18808.32388907131,
+      "vector_tile_zoom": 13.89763779527545,
+      "integer_render_zoom": 14,
+      "integer_fetch_zoom": 14
+    },
+    "reference": {
+      "before_mae": 0.018253460875090777,
+      "after_mae": 0.020046447213144518,
+      "relative_change_percent": 9.822719923214695
+    },
+    "reference-mercator": {
+      "before_mae": 0.018253460875090777,
+      "after_mae": 0.020046447213144518,
+      "relative_change_percent": 9.822719923214695
+    }
+  },
+  {
+    "runtime": "3",
+    "camera": "cairo-z11.9",
+    "changed_pixels": 103537,
+    "render_context": {
+      "requested_camera_zoom": 11.9,
+      "map_settings_output_dpi": 100.0,
+      "image_logical_dpi": [
+        100,
+        100
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        3462732.071973784,
+        3500041.9696040032,
+        3488947.489084564,
+        3518474.684760021
+      ],
+      "map_scale": 80633.04967636643,
+      "tile_render_scale": 80633.04967636643,
+      "vector_tile_zoom": 11.81851744287337,
+      "integer_render_zoom": 12,
+      "integer_fetch_zoom": 12
+    },
+    "reference": {
+      "before_mae": 0.010445016339869282,
+      "after_mae": 0.012564292846768337,
+      "relative_change_percent": 20.28983428977171
+    },
+    "reference-mercator": {
+      "before_mae": 0.010445016339869282,
+      "after_mae": 0.012564292846768337,
+      "relative_change_percent": 20.28983428977171
+    }
+  },
+  {
+    "runtime": "3",
+    "camera": "cairo-z12",
+    "changed_pixels": 112790,
+    "render_context": {
+      "requested_camera_zoom": 12,
+      "map_settings_output_dpi": 100.0,
+      "image_logical_dpi": [
+        100,
+        100
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        3463609.8560035457,
+        3500659.1614999296,
+        3488069.7050548024,
+        3517857.4928640947
+      ],
+      "map_scale": 75233.29555627664,
+      "tile_render_scale": 75233.29555627664,
+      "vector_tile_zoom": 11.897637795275577,
+      "integer_render_zoom": 12,
+      "integer_fetch_zoom": 12
+    },
+    "reference": {
+      "before_mae": 0.013390659041394335,
+      "after_mae": 0.016059355709876544,
+      "relative_change_percent": 19.929539391844035
+    },
+    "reference-mercator": {
+      "before_mae": 0.013390659041394335,
+      "after_mae": 0.016059355709876544,
+      "relative_change_percent": 19.929539391844035
+    }
+  },
+  {
+    "runtime": "3",
+    "camera": "cairo-z12.1",
+    "changed_pixels": 121263,
+    "render_context": {
+      "requested_camera_zoom": 12.1,
+      "map_settings_output_dpi": 100.0,
+      "image_logical_dpi": [
+        100,
+        100
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        3464428.8574627577,
+        3501235.0219009384,
+        3487250.7035955903,
+        3517281.632463086
+      ],
+      "map_scale": 70195.14681604509,
+      "tile_render_scale": 70195.14681604509,
+      "vector_tile_zoom": 11.971459694368868,
+      "integer_render_zoom": 12,
+      "integer_fetch_zoom": 12
+    },
+    "reference": {
+      "before_mae": 0.013010388298838053,
+      "after_mae": 0.01625739832970225,
+      "relative_change_percent": 24.95705705535465
+    },
+    "reference-mercator": {
+      "before_mae": 0.013010388298838053,
+      "after_mae": 0.01625739832970225,
+      "relative_change_percent": 24.95705705535465
+    }
+  },
+  {
+    "runtime": "3",
+    "camera": "cairo-z14.9",
+    "changed_pixels": 89456,
+    "render_context": {
+      "requested_camera_zoom": 14.9,
+      "map_settings_output_dpi": 100.0,
+      "image_logical_dpi": [
+        100,
+        100
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        3474201.31695975,
+        3508106.282484761,
+        3477478.244098598,
+        3510410.3718792633
+      ],
+      "map_scale": 10079.131209547952,
+      "tile_render_scale": 10079.131209547952,
+      "vector_tile_zoom": 14.818517442873118,
+      "integer_render_zoom": 15,
+      "integer_fetch_zoom": 15
+    },
+    "reference": {
+      "before_mae": 0.020380140250544663,
+      "after_mae": 0.020492304375453886,
+      "relative_change_percent": 0.5503599265281094
+    },
+    "reference-mercator": {
+      "before_mae": 0.020380140250544663,
+      "after_mae": 0.020492304375453886,
+      "relative_change_percent": 0.5503599265281094
+    }
+  },
+  {
+    "runtime": "3",
+    "camera": "cairo-z15",
+    "changed_pixels": 83502,
+    "render_context": {
+      "requested_camera_zoom": 15,
+      "map_settings_output_dpi": 100.0,
+      "image_logical_dpi": [
+        100,
+        100
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        3474311.0399634703,
+        3508183.4314717515,
+        3477368.5210948777,
+        3510333.2228922728
+      ],
+      "map_scale": 9404.161944535655,
+      "tile_render_scale": 9404.161944535655,
+      "vector_tile_zoom": 14.89763779527545,
+      "integer_render_zoom": 15,
+      "integer_fetch_zoom": 15
+    },
+    "reference": {
+      "before_mae": 0.02091685843318809,
+      "after_mae": 0.021134135575526507,
+      "relative_change_percent": 1.0387656589656442
+    },
+    "reference-mercator": {
+      "before_mae": 0.02091685843318809,
+      "after_mae": 0.021134135575526507,
+      "relative_change_percent": 1.0387656589656442
+    }
+  },
+  {
+    "runtime": "3",
+    "camera": "cairo-z15.1",
+    "changed_pixels": 78061,
+    "render_context": {
+      "requested_camera_zoom": 15.1,
+      "map_settings_output_dpi": 100.0,
+      "image_logical_dpi": [
+        100,
+        100
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        3474413.415145872,
+        3508255.414021878,
+        3477266.145912476,
+        3510261.2403421463
+      ],
+      "map_scale": 8774.393352004561,
+      "tile_render_scale": 8774.393352004561,
+      "vector_tile_zoom": 14.971459694368994,
+      "integer_render_zoom": 15,
+      "integer_fetch_zoom": 15
+    },
+    "reference": {
+      "before_mae": 0.018429054330065357,
+      "after_mae": 0.01852563543936093,
+      "relative_change_percent": 0.5240698061105119
+    },
+    "reference-mercator": {
+      "before_mae": 0.018429054330065357,
+      "after_mae": 0.01852563543936093,
+      "relative_change_percent": 0.5240698061105119
+    }
+  },
+  {
+    "runtime": "3",
+    "camera": "geneva-streets-z18-light",
+    "changed_pixels": 0,
+    "render_context": {
+      "requested_camera_zoom": 18.0,
+      "map_settings_output_dpi": 100.0,
+      "image_logical_dpi": [
+        100,
+        100
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        684089.8173355398,
+        5812644.801312825,
+        684472.0024769657,
+        5812913.52524039
+      ],
+      "map_scale": 1175.5202430665988,
+      "tile_render_scale": 1175.5202430665988,
+      "vector_tile_zoom": 17.897637795275788,
+      "integer_render_zoom": 18,
+      "integer_fetch_zoom": 18
+    },
+    "reference": {
+      "before_mae": 0.006925111201888163,
+      "after_mae": 0.006925111201888163,
+      "relative_change_percent": 0.0
+    },
+    "reference-mercator": {
+      "before_mae": 0.006925111201888163,
+      "after_mae": 0.006925111201888163,
+      "relative_change_percent": 0.0
+    }
+  },
+  {
+    "runtime": "3",
+    "camera": "geneva-urban-z14-light",
+    "changed_pixels": 0,
+    "render_context": {
+      "requested_camera_zoom": 14.25,
+      "map_settings_output_dpi": 100.0,
+      "image_logical_dpi": [
+        100,
+        100
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        681264.6070199735,
+        5811293.095022159,
+        686406.6568661856,
+        5814908.598820277
+      ],
+      "map_scale": 15815.852135248975,
+      "tile_render_scale": 15815.852135248975,
+      "vector_tile_zoom": 14.146055147472111,
+      "integer_render_zoom": 14,
+      "integer_fetch_zoom": 14
+    },
+    "reference": {
+      "before_mae": 0.010529205246913581,
+      "after_mae": 0.010529205246913581,
+      "relative_change_percent": 0.0
+    },
+    "reference-mercator": {
+      "before_mae": 0.010529205246913581,
+      "after_mae": 0.010529205246913581,
+      "relative_change_percent": 0.0
+    }
+  },
+  {
+    "runtime": "3",
+    "camera": "jerusalem-city-z14",
+    "changed_pixels": 116766,
+    "render_context": {
+      "requested_camera_zoom": 14,
+      "map_settings_output_dpi": 100.0,
+      "image_logical_dpi": [
+        100,
+        100
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        3917058.387153722,
+        3732316.935358515,
+        3923173.3494165367,
+        3736616.5181995565
+      ],
+      "map_scale": 18808.32388907131,
+      "tile_render_scale": 18808.32388907131,
+      "vector_tile_zoom": 13.89763779527545,
+      "integer_render_zoom": 14,
+      "integer_fetch_zoom": 14
+    },
+    "reference": {
+      "before_mae": 0.016766868645606392,
+      "after_mae": 0.016460772966594046,
+      "relative_change_percent": -1.8255983599689933
+    },
+    "reference-mercator": {
+      "before_mae": 0.016766868645606392,
+      "after_mae": 0.016460772966594046,
+      "relative_change_percent": -1.8255983599689933
+    }
+  },
+  {
+    "runtime": "3",
+    "camera": "jerusalem-city-z14-activity",
+    "changed_pixels": 117409,
+    "render_context": {
+      "requested_camera_zoom": 14,
+      "map_settings_output_dpi": 100.0,
+      "image_logical_dpi": [
+        100,
+        100
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        3917058.387153722,
+        3732316.935358515,
+        3923173.3494165367,
+        3736616.5181995565
+      ],
+      "map_scale": 18808.32388907131,
+      "tile_render_scale": 18808.32388907131,
+      "vector_tile_zoom": 13.89763779527545,
+      "integer_render_zoom": 14,
+      "integer_fetch_zoom": 14
+    },
+    "reference": {
+      "before_mae": 0.01943281476942629,
+      "after_mae": 0.01904466911764706,
+      "relative_change_percent": -1.9973722612222986
+    },
+    "reference-mercator": {
+      "before_mae": 0.01943281476942629,
+      "after_mae": 0.01904466911764706,
+      "relative_change_percent": -1.9973722612222986
+    }
+  },
+  {
+    "runtime": "3",
+    "camera": "lausanne-lavaux-z10-light",
+    "changed_pixels": 0,
+    "render_context": {
+      "requested_camera_zoom": 10.25,
+      "map_settings_output_dpi": 100.0,
+      "image_logical_dpi": [
+        100,
+        100
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        706930.5793611014,
+        5830298.7658473775,
+        789203.3769004953,
+        5888146.826617263
+      ],
+      "map_scale": 253053.63416398215,
+      "tile_render_scale": 253053.63416398215,
+      "vector_tile_zoom": 10.146055147472122,
+      "integer_render_zoom": 10,
+      "integer_fetch_zoom": 10
+    },
+    "reference": {
+      "before_mae": 0.007600727351125635,
+      "after_mae": 0.007600727351125635,
+      "relative_change_percent": 0.0
+    },
+    "reference-mercator": {
+      "before_mae": 0.007600727351125635,
+      "after_mae": 0.007600727351125635,
+      "relative_change_percent": 0.0
+    }
+  },
+  {
+    "runtime": "3",
+    "camera": "switzerland-alps-z5-light",
+    "changed_pixels": 0,
+    "render_context": {
+      "requested_camera_zoom": 5.35,
+      "map_settings_output_dpi": 100.0,
+      "image_logical_dpi": [
+        100,
+        100
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        -315391.9260596817,
+        5045903.47656141,
+        2141031.575069368,
+        6773076.250792773
+      ],
+      "map_scale": 7555436.457705,
+      "tile_render_scale": 7555436.457705,
+      "vector_tile_zoom": 5.270208288101648,
+      "integer_render_zoom": 5,
+      "integer_fetch_zoom": 5
+    },
+    "reference": {
+      "before_mae": 0.03364307598039215,
+      "after_mae": 0.03364307598039215,
+      "relative_change_percent": 0.0
+    },
+    "reference-mercator": {
+      "before_mae": 0.021072873547567175,
+      "after_mae": 0.021072873547567175,
+      "relative_change_percent": 0.0
+    }
+  },
+  {
+    "runtime": "3",
+    "camera": "zurich-region-z8-light",
+    "changed_pixels": 0,
+    "render_context": {
+      "requested_camera_zoom": 8.2,
+      "map_settings_output_dpi": 100.0,
+      "image_logical_dpi": [
+        100,
+        100
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        780320.1684168805,
+        5884545.688159028,
+        1121016.734332232,
+        6124097.96106826
+      ],
+      "map_scale": 1047910.2052022377,
+      "tile_render_scale": 1047910.2052022377,
+      "vector_tile_zoom": 8.080675923441609,
+      "integer_render_zoom": 8,
+      "integer_fetch_zoom": 8
+    },
+    "reference": {
+      "before_mae": 0.020545329520697167,
+      "after_mae": 0.020545329520697167,
+      "relative_change_percent": 0.0
+    },
+    "reference-mercator": {
+      "before_mae": 0.020545329520697167,
+      "after_mae": 0.020545329520697167,
+      "relative_change_percent": 0.0
+    }
+  },
+  {
+    "runtime": "3",
+    "camera": "zurich-streets-z17-light",
+    "changed_pixels": 0,
+    "render_context": {
+      "requested_camera_zoom": 17.0,
+      "map_settings_output_dpi": 100.0,
+      "image_logical_dpi": [
+        100,
+        100
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        950475.5093674791,
+        6003543.480950285,
+        951239.879650331,
+        6004080.928805415
+      ],
+      "map_scale": 2351.040486133914,
+      "tile_render_scale": 2351.040486133914,
+      "vector_tile_zoom": 16.89763779527545,
+      "integer_render_zoom": 17,
+      "integer_fetch_zoom": 17
+    },
+    "reference": {
+      "before_mae": 0.008118471995279592,
+      "after_mae": 0.008118471995279592,
+      "relative_change_percent": 0.0
+    },
+    "reference-mercator": {
+      "before_mae": 0.008118471995279592,
+      "after_mae": 0.008118471995279592,
+      "relative_change_percent": 0.0
+    }
+  },
+  {
+    "runtime": "4",
+    "camera": "bern-urban-z12-light",
+    "changed_pixels": 0,
+    "render_context": {
+      "requested_camera_zoom": 12.25,
+      "map_settings_output_dpi": 96.0,
+      "image_logical_dpi": [
+        96,
+        96
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        818712.148245084,
+        5926359.467815783,
+        839280.3476299326,
+        5940821.483008254
+      ],
+      "map_scale": 60732.87219935607,
+      "tile_render_scale": 57388.94917647486,
+      "vector_tile_zoom": 12.318207169492558,
+      "integer_render_zoom": 12,
+      "integer_fetch_zoom": 12
+    },
+    "reference": {
+      "before_mae": 0.007304119008714597,
+      "after_mae": 0.007304119008714597,
+      "relative_change_percent": 0.0
+    },
+    "reference-mercator": {
+      "before_mae": 0.007304119008714597,
+      "after_mae": 0.007304119008714597,
+      "relative_change_percent": 0.0
+    }
+  },
+  {
+    "runtime": "4",
+    "camera": "cairo-nile-z14",
+    "changed_pixels": 121703,
+    "render_context": {
+      "requested_camera_zoom": 14,
+      "map_settings_output_dpi": 96.0,
+      "image_logical_dpi": [
+        96,
+        96
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        3472782.2993977666,
+        3507108.5357614914,
+        3478897.2616605815,
+        3511408.118602533
+      ],
+      "map_scale": 18055.99093350846,
+      "tile_render_scale": 17061.836670800407,
+      "vector_tile_zoom": 13.999999999999872,
+      "integer_render_zoom": 14,
+      "integer_fetch_zoom": 14
+    },
+    "reference": {
+      "before_mae": 0.015754730619099492,
+      "after_mae": 0.017326045070806102,
+      "relative_change_percent": 9.973604053894153
+    },
+    "reference-mercator": {
+      "before_mae": 0.015754730619099492,
+      "after_mae": 0.017326045070806102,
+      "relative_change_percent": 9.973604053894153
+    }
+  },
+  {
+    "runtime": "4",
+    "camera": "cairo-nile-z14-activity",
+    "changed_pixels": 122167,
+    "render_context": {
+      "requested_camera_zoom": 14,
+      "map_settings_output_dpi": 96.0,
+      "image_logical_dpi": [
+        96,
+        96
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        3472782.2993977666,
+        3507108.5357614914,
+        3478897.2616605815,
+        3511408.118602533
+      ],
+      "map_scale": 18055.99093350846,
+      "tile_render_scale": 17061.836670800407,
+      "vector_tile_zoom": 13.999999999999872,
+      "integer_render_zoom": 14,
+      "integer_fetch_zoom": 14
+    },
+    "reference": {
+      "before_mae": 0.01733667846768337,
+      "after_mae": 0.019056102487291213,
+      "relative_change_percent": 9.917839930024403
+    },
+    "reference-mercator": {
+      "before_mae": 0.01733667846768337,
+      "after_mae": 0.019056102487291213,
+      "relative_change_percent": 9.917839930024403
+    }
+  },
+  {
+    "runtime": "4",
+    "camera": "cairo-z11.9",
+    "changed_pixels": 103969,
+    "render_context": {
+      "requested_camera_zoom": 11.9,
+      "map_settings_output_dpi": 96.0,
+      "image_logical_dpi": [
+        96,
+        96
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        3462732.071973784,
+        3500041.9696040032,
+        3488947.489084564,
+        3518474.684760021
+      ],
+      "map_scale": 77407.72768931178,
+      "tile_render_scale": 73145.69506356098,
+      "vector_tile_zoom": 11.9282265374637,
+      "integer_render_zoom": 12,
+      "integer_fetch_zoom": 12
+    },
+    "reference": {
+      "before_mae": 0.010701930147058824,
+      "after_mae": 0.012711132670660858,
+      "relative_change_percent": 18.77420704483123
+    },
+    "reference-mercator": {
+      "before_mae": 0.010701930147058824,
+      "after_mae": 0.012711132670660858,
+      "relative_change_percent": 18.77420704483123
+    }
+  },
+  {
+    "runtime": "4",
+    "camera": "cairo-z12",
+    "changed_pixels": 112125,
+    "render_context": {
+      "requested_camera_zoom": 12,
+      "map_settings_output_dpi": 96.0,
+      "image_logical_dpi": [
+        96,
+        96
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        3463609.8560035457,
+        3500659.1614999296,
+        3488069.7050548024,
+        3517857.4928640947
+      ],
+      "map_scale": 72223.96373402559,
+      "tile_render_scale": 68247.34668319383,
+      "vector_tile_zoom": 11.999999999999988,
+      "integer_render_zoom": 12,
+      "integer_fetch_zoom": 12
+    },
+    "reference": {
+      "before_mae": 0.013116406817356572,
+      "after_mae": 0.016089011437908498,
+      "relative_change_percent": 22.663254212414046
+    },
+    "reference-mercator": {
+      "before_mae": 0.013116406817356572,
+      "after_mae": 0.016089011437908498,
+      "relative_change_percent": 22.663254212414046
+    }
+  },
+  {
+    "runtime": "4",
+    "camera": "cairo-z12.1",
+    "changed_pixels": 121314,
+    "render_context": {
+      "requested_camera_zoom": 12.1,
+      "map_settings_output_dpi": 96.0,
+      "image_logical_dpi": [
+        96,
+        96
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        3464428.8574627577,
+        3501235.0219009384,
+        3487250.7035955903,
+        3517281.632463086
+      ],
+      "map_scale": 67387.34094340328,
+      "tile_render_scale": 63677.02604026948,
+      "vector_tile_zoom": 12.133934016926375,
+      "integer_render_zoom": 12,
+      "integer_fetch_zoom": 12
+    },
+    "reference": {
+      "before_mae": 0.013005961782861293,
+      "after_mae": 0.01617640137073348,
+      "relative_change_percent": 24.37681765334769
+    },
+    "reference-mercator": {
+      "before_mae": 0.013005961782861293,
+      "after_mae": 0.01617640137073348,
+      "relative_change_percent": 24.37681765334769
+    }
+  },
+  {
+    "runtime": "4",
+    "camera": "cairo-z14.9",
+    "changed_pixels": 88620,
+    "render_context": {
+      "requested_camera_zoom": 14.9,
+      "map_settings_output_dpi": 96.0,
+      "image_logical_dpi": [
+        96,
+        96
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        3474201.31695975,
+        3508106.282484761,
+        3477478.244098598,
+        3510410.3718792633
+      ],
+      "map_scale": 9675.965961166034,
+      "tile_render_scale": 9143.211882947071,
+      "vector_tile_zoom": 14.928226537463472,
+      "integer_render_zoom": 15,
+      "integer_fetch_zoom": 15
+    },
+    "reference": {
+      "before_mae": 0.02038675676289034,
+      "after_mae": 0.02050283110929557,
+      "relative_change_percent": 0.5693615112753968
+    },
+    "reference-mercator": {
+      "before_mae": 0.02038675676289034,
+      "after_mae": 0.02050283110929557,
+      "relative_change_percent": 0.5693615112753968
+    }
+  },
+  {
+    "runtime": "4",
+    "camera": "cairo-z15",
+    "changed_pixels": 83967,
+    "render_context": {
+      "requested_camera_zoom": 15,
+      "map_settings_output_dpi": 96.0,
+      "image_logical_dpi": [
+        96,
+        96
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        3474311.0399634703,
+        3508183.4314717515,
+        3477368.5210948777,
+        3510333.2228922728
+      ],
+      "map_scale": 9027.99546675423,
+      "tile_render_scale": 8530.918335400203,
+      "vector_tile_zoom": 14.999999999999872,
+      "integer_render_zoom": 15,
+      "integer_fetch_zoom": 15
+    },
+    "reference": {
+      "before_mae": 0.020890447984749455,
+      "after_mae": 0.02120192674291939,
+      "relative_change_percent": 1.4910104292513053
+    },
+    "reference-mercator": {
+      "before_mae": 0.020890447984749455,
+      "after_mae": 0.02120192674291939,
+      "relative_change_percent": 1.4910104292513053
+    }
+  },
+  {
+    "runtime": "4",
+    "camera": "cairo-z15.1",
+    "changed_pixels": 76288,
+    "render_context": {
+      "requested_camera_zoom": 15.1,
+      "map_settings_output_dpi": 96.0,
+      "image_logical_dpi": [
+        96,
+        96
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        3474413.415145872,
+        3508255.414021878,
+        3477266.145912476,
+        3510261.2403421463
+      ],
+      "map_scale": 8423.417617924379,
+      "tile_render_scale": 7959.62825503271,
+      "vector_tile_zoom": 15.133934016926604,
+      "integer_render_zoom": 15,
+      "integer_fetch_zoom": 15
+    },
+    "reference": {
+      "before_mae": 0.01834535561909949,
+      "after_mae": 0.01850292415577342,
+      "relative_change_percent": 0.8589015113442773
+    },
+    "reference-mercator": {
+      "before_mae": 0.01834535561909949,
+      "after_mae": 0.01850292415577342,
+      "relative_change_percent": 0.8589015113442773
+    }
+  },
+  {
+    "runtime": "4",
+    "camera": "geneva-streets-z18-light",
+    "changed_pixels": 0,
+    "render_context": {
+      "requested_camera_zoom": 18.0,
+      "map_settings_output_dpi": 96.0,
+      "image_logical_dpi": [
+        96,
+        96
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        684089.8173355398,
+        5812644.801312825,
+        684472.0024769657,
+        5812913.52524039
+      ],
+      "map_scale": 1128.499433343935,
+      "tile_render_scale": 1066.3647919247005,
+      "vector_tile_zoom": 18.000000000000355,
+      "integer_render_zoom": 18,
+      "integer_fetch_zoom": 18
+    },
+    "reference": {
+      "before_mae": 0.0069738130900508346,
+      "after_mae": 0.0069738130900508346,
+      "relative_change_percent": 0.0
+    },
+    "reference-mercator": {
+      "before_mae": 0.0069738130900508346,
+      "after_mae": 0.0069738130900508346,
+      "relative_change_percent": 0.0
+    }
+  },
+  {
+    "runtime": "4",
+    "camera": "geneva-urban-z14-light",
+    "changed_pixels": 0,
+    "render_context": {
+      "requested_camera_zoom": 14.25,
+      "map_settings_output_dpi": 96.0,
+      "image_logical_dpi": [
+        96,
+        96
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        681264.6070199735,
+        5811293.095022159,
+        686406.6568661856,
+        5814908.598820277
+      ],
+      "map_scale": 15183.218049839017,
+      "tile_render_scale": 14347.237294118715,
+      "vector_tile_zoom": 14.318207169492558,
+      "integer_render_zoom": 14,
+      "integer_fetch_zoom": 14
+    },
+    "reference": {
+      "before_mae": 0.010571867057007989,
+      "after_mae": 0.010571867057007989,
+      "relative_change_percent": 0.0
+    },
+    "reference-mercator": {
+      "before_mae": 0.010571867057007989,
+      "after_mae": 0.010571867057007989,
+      "relative_change_percent": 0.0
+    }
+  },
+  {
+    "runtime": "4",
+    "camera": "jerusalem-city-z14",
+    "changed_pixels": 117576,
+    "render_context": {
+      "requested_camera_zoom": 14,
+      "map_settings_output_dpi": 96.0,
+      "image_logical_dpi": [
+        96,
+        96
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        3917058.387153722,
+        3732316.935358515,
+        3923173.3494165367,
+        3736616.5181995565
+      ],
+      "map_scale": 18055.99093350846,
+      "tile_render_scale": 17061.836670800407,
+      "vector_tile_zoom": 13.999999999999872,
+      "integer_render_zoom": 14,
+      "integer_fetch_zoom": 14
+    },
+    "reference": {
+      "before_mae": 0.016908419571532315,
+      "after_mae": 0.016582386982570807,
+      "relative_change_percent": -1.9282262755676456
+    },
+    "reference-mercator": {
+      "before_mae": 0.016908419571532315,
+      "after_mae": 0.016582386982570807,
+      "relative_change_percent": -1.9282262755676456
+    }
+  },
+  {
+    "runtime": "4",
+    "camera": "jerusalem-city-z14-activity",
+    "changed_pixels": 118215,
+    "render_context": {
+      "requested_camera_zoom": 14,
+      "map_settings_output_dpi": 96.0,
+      "image_logical_dpi": [
+        96,
+        96
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        3917058.387153722,
+        3732316.935358515,
+        3923173.3494165367,
+        3736616.5181995565
+      ],
+      "map_scale": 18055.99093350846,
+      "tile_render_scale": 17061.836670800407,
+      "vector_tile_zoom": 13.999999999999872,
+      "integer_render_zoom": 14,
+      "integer_fetch_zoom": 14
+    },
+    "reference": {
+      "before_mae": 0.018767485929557005,
+      "after_mae": 0.018310917075163396,
+      "relative_change_percent": -2.4327651349110986
+    },
+    "reference-mercator": {
+      "before_mae": 0.018767485929557005,
+      "after_mae": 0.018310917075163396,
+      "relative_change_percent": -2.4327651349110986
+    }
+  },
+  {
+    "runtime": "4",
+    "camera": "lausanne-lavaux-z10-light",
+    "changed_pixels": 0,
+    "render_context": {
+      "requested_camera_zoom": 10.25,
+      "map_settings_output_dpi": 96.0,
+      "image_logical_dpi": [
+        96,
+        96
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        706930.5793611014,
+        5830298.7658473775,
+        789203.3769004953,
+        5888146.826617263
+      ],
+      "map_scale": 242931.48879742288,
+      "tile_render_scale": 229555.79670589813,
+      "vector_tile_zoom": 10.318207169492569,
+      "integer_render_zoom": 10,
+      "integer_fetch_zoom": 10
+    },
+    "reference": {
+      "before_mae": 0.008125325662672477,
+      "after_mae": 0.008125325662672477,
+      "relative_change_percent": 0.0
+    },
+    "reference-mercator": {
+      "before_mae": 0.008125325662672477,
+      "after_mae": 0.008125325662672477,
+      "relative_change_percent": 0.0
+    }
+  },
+  {
+    "runtime": "4",
+    "camera": "switzerland-alps-z5-light",
+    "changed_pixels": 0,
+    "render_context": {
+      "requested_camera_zoom": 5.35,
+      "map_settings_output_dpi": 96.0,
+      "image_logical_dpi": [
+        96,
+        96
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        -315391.9260596817,
+        5045903.47656141,
+        2141031.575069368,
+        6773076.250792773
+      ],
+      "map_scale": 7253218.9993968,
+      "tile_render_scale": 6853860.215203822,
+      "vector_tile_zoom": 5.430831804206495,
+      "integer_render_zoom": 5,
+      "integer_fetch_zoom": 5
+    },
+    "reference": {
+      "before_mae": 0.03313677378358751,
+      "after_mae": 0.03313677378358751,
+      "relative_change_percent": 0.0
+    },
+    "reference-mercator": {
+      "before_mae": 0.02046116784676834,
+      "after_mae": 0.02046116784676834,
+      "relative_change_percent": 0.0
+    }
+  },
+  {
+    "runtime": "4",
+    "camera": "zurich-region-z8-light",
+    "changed_pixels": 0,
+    "render_context": {
+      "requested_camera_zoom": 8.2,
+      "map_settings_output_dpi": 96.0,
+      "image_logical_dpi": [
+        96,
+        96
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        780320.1684168805,
+        5884545.688159028,
+        1121016.734332232,
+        6124097.96106826
+      ],
+      "map_scale": 1005993.7969941482,
+      "tile_render_scale": 950604.2575763157,
+      "vector_tile_zoom": 8.258898873407745,
+      "integer_render_zoom": 8,
+      "integer_fetch_zoom": 8
+    },
+    "reference": {
+      "before_mae": 0.020955712145969498,
+      "after_mae": 0.020955712145969498,
+      "relative_change_percent": 0.0
+    },
+    "reference-mercator": {
+      "before_mae": 0.020955712145969498,
+      "after_mae": 0.020955712145969498,
+      "relative_change_percent": 0.0
+    }
+  },
+  {
+    "runtime": "4",
+    "camera": "zurich-streets-z17-light",
+    "changed_pixels": 0,
+    "render_context": {
+      "requested_camera_zoom": 17.0,
+      "map_settings_output_dpi": 96.0,
+      "image_logical_dpi": [
+        96,
+        96
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        950475.5093674791,
+        6003543.480950285,
+        951239.879650331,
+        6004080.928805415
+      ],
+      "map_scale": 2256.9988666885574,
+      "tile_render_scale": 2132.729583850051,
+      "vector_tile_zoom": 16.999999999999872,
+      "integer_render_zoom": 17,
+      "integer_fetch_zoom": 17
+    },
+    "reference": {
+      "before_mae": 0.008193611564996369,
+      "after_mae": 0.008193611564996369,
+      "relative_change_percent": 0.0
+    },
+    "reference-mercator": {
+      "before_mae": 0.008193611564996369,
+      "after_mae": 0.008193611564996369,
+      "relative_change_percent": 0.0
+    }
+  }
+]

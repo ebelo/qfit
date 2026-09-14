@@ -1,0 +1,1116 @@
+{
+  "features": [
+    {
+      "id": 352951500,
+      "owner": "settlement-major-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "洛桑",
+        "name_script": "Latin",
+        "name_ru": "Лозанна",
+        "name_zh-Hans": "洛桑",
+        "name_pt": "Lausana",
+        "name_ko": "로잔",
+        "symbolrank": 10,
+        "name_ja": "ローザンヌ",
+        "name_it": "Losanna",
+        "name_en": "Lausanne",
+        "name_de": "Lausanne",
+        "name_ar": "لوزان",
+        "name_fr": "Lausanne",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "disputed": "false",
+        "name_vi": "Lausanne",
+        "name_es": "Lausana",
+        "iso_3166_2": "CH-VD",
+        "class": "settlement",
+        "name": "Lausanne",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.63273811340332,
+          46.52184342595996
+        ]
+      }
+    },
+    {
+      "id": 2400249910,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "village",
+        "text_anchor": "bottom",
+        "symbolrank": 14,
+        "name_zh-Hant": "羅馬內勒敘洛桑",
+        "name_script": "Latin",
+        "name_it": "Romanel-sur-Lausanne",
+        "name_de": "Romanel-sur-Lausanne",
+        "name_es": "Romanel-sur-Lausanne",
+        "filterrank": 2,
+        "disputed": "false",
+        "iso_3166_2": "CH-VD",
+        "iso_3166_1": "CH",
+        "name_en": "Romanel-sur-Lausanne",
+        "name_fr": "Romanel-sur-Lausanne",
+        "name_zh-Hans": "罗马内勒叙洛桑",
+        "name_pt": "Romanel-sur-Lausanne",
+        "class": "settlement",
+        "name": "Romanel-sur-Lausanne",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.60552978515625,
+          46.56210619363489
+        ]
+      }
+    },
+    {
+      "id": 2401043970,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 15,
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-VD",
+        "name_script": "Latin",
+        "type": "village",
+        "class": "settlement",
+        "name": "L'Isle",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.411724090576172,
+          46.61873046353361
+        ]
+      }
+    },
+    {
+      "id": 1302999800,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 14,
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-VD",
+        "name_script": "Latin",
+        "type": "village",
+        "class": "settlement",
+        "name": "Cossonay-Ville",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.508970260620117,
+          46.613837159699614
+        ]
+      }
+    },
+    {
+      "id": 2400716250,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "village",
+        "text_anchor": "bottom",
+        "symbolrank": 15,
+        "name_de": "Montricher",
+        "disputed": "false",
+        "name_it": "Montricher",
+        "name_es": "Montricher",
+        "name_zh-Hant": "蒙特里謝爾",
+        "filterrank": 1,
+        "iso_3166_2": "CH-VD",
+        "iso_3166_1": "CH",
+        "name_en": "Montricher",
+        "name_fr": "Montricher",
+        "name_zh-Hans": "蒙特里谢尔",
+        "name_pt": "Montricher",
+        "name_script": "Latin",
+        "class": "settlement",
+        "name": "Montricher",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.375846862792969,
+          46.60015714576676
+        ]
+      }
+    },
+    {
+      "id": 2400336580,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "village",
+        "name_script": "Latin",
+        "symbolrank": 14,
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-VD",
+        "name_fr": "Echallens",
+        "class": "settlement",
+        "name": "Echallens",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.634712219238281,
+          46.63812246237964
+        ]
+      }
+    },
+    {
+      "id": 2400499690,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 15,
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-VD",
+        "name_script": "Latin",
+        "type": "village",
+        "class": "settlement",
+        "name": "Oron-la-Ville",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.827487945556641,
+          46.57089863052883
+        ]
+      }
+    },
+    {
+      "id": 37851618310,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "village",
+        "text_anchor": "bottom",
+        "symbolrank": 15,
+        "name_de": "Froideville",
+        "disputed": "false",
+        "name_it": "Froideville",
+        "filterrank": 2,
+        "name_es": "Froideville",
+        "iso_3166_2": "CH-VD",
+        "iso_3166_1": "CH",
+        "name_en": "Froideville",
+        "name_fr": "Froideville",
+        "name_zh-Hans": "弗鲁瓦德维尔",
+        "name_pt": "Froideville",
+        "name_script": "Latin",
+        "name_zh-Hant": "弗魯瓦德維爾",
+        "class": "settlement",
+        "name": "Froideville",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.681661605834961,
+          46.60121864978325
+        ]
+      }
+    },
+    {
+      "id": 2400533050,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "village",
+        "symbolrank": 14,
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-FR",
+        "name_script": "Latin",
+        "class": "settlement",
+        "name": "Ursy",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.83598518371582,
+          46.63499899279964
+        ]
+      }
+    },
+    {
+      "id": 2400920770,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "village",
+        "text_anchor": "bottom",
+        "symbolrank": 15,
+        "name_de": "Vuisternens-devant-Romont",
+        "disputed": "false",
+        "name_es": "Vuisternens-devant-Romont",
+        "name_it": "Vuisternens-devant-Romont",
+        "filterrank": 2,
+        "iso_3166_2": "CH-FR",
+        "iso_3166_1": "CH",
+        "name_en": "Vuisternens-devant-Romont",
+        "name_fr": "Vuisternens-devant-Romont",
+        "name_pt": "Vuisternens-devant-Romont",
+        "name_script": "Latin",
+        "class": "settlement",
+        "name": "Vuisternens-devant-Romont",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.929283142089844,
+          46.653089040584774
+        ]
+      }
+    },
+    {
+      "id": 14249296000,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "village",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "穆東",
+        "name_script": "Latin",
+        "name_zh-Hans": "穆东",
+        "name_pt": "Moudon",
+        "name_ko": "무동",
+        "symbolrank": 14,
+        "name_ja": "ムードン",
+        "name_it": "Moudon",
+        "name_de": "Moudon",
+        "name_es": "Moudon",
+        "filterrank": 1,
+        "disputed": "false",
+        "iso_3166_2": "CH-VD",
+        "iso_3166_1": "CH",
+        "name_ar": "مودون",
+        "name_en": "Moudon",
+        "name_fr": "Moudon",
+        "class": "settlement",
+        "name": "Moudon",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.800365447998047,
+          46.668051478063376
+        ]
+      }
+    },
+    {
+      "id": 3790830030,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "village",
+        "text_anchor": "bottom",
+        "symbolrank": 15,
+        "name_de": "Vuadens",
+        "disputed": "false",
+        "name_it": "Vuadens",
+        "name_es": "Vuadens",
+        "name_zh-Hant": "維阿當",
+        "filterrank": 1,
+        "iso_3166_2": "CH-FR",
+        "iso_3166_1": "CH",
+        "name_en": "Vuadens",
+        "name_fr": "Vuadens",
+        "name_zh-Hans": "维阿当",
+        "name_pt": "Vuadens",
+        "name_script": "Latin",
+        "class": "settlement",
+        "name": "Vuadens",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.023353576660156,
+          46.617433486309096
+        ]
+      }
+    },
+    {
+      "id": 7305439900,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "village",
+        "text_anchor": "bottom",
+        "symbolrank": 14,
+        "name_de": "Riaz",
+        "disputed": "false",
+        "name_it": "Riaz",
+        "name_es": "Riaz",
+        "name_zh-Hant": "里亞",
+        "filterrank": 2,
+        "iso_3166_2": "CH-FR",
+        "iso_3166_1": "CH",
+        "name_en": "Riaz",
+        "name_fr": "Riaz",
+        "name_zh-Hans": "里亚",
+        "name_pt": "Riaz",
+        "name_script": "Latin",
+        "class": "settlement",
+        "name": "Riaz",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.061634063720703,
+          46.64024396153678
+        ]
+      }
+    },
+    {
+      "id": 14250423410,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "town",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "比勒",
+        "name_script": "Latin",
+        "name_ru": "Бюль",
+        "name_zh-Hans": "比勒",
+        "name_pt": "Bulle",
+        "name_ko": "뷸",
+        "symbolrank": 12,
+        "name_ja": "ビュル",
+        "name_it": "Bulle",
+        "name_en": "Bulle",
+        "name_de": "Bulle",
+        "name_ar": "بول",
+        "name_fr": "Bulle",
+        "disputed": "false",
+        "name_es": "Bulle",
+        "name_vi": "Bulle",
+        "filterrank": 1,
+        "iso_3166_2": "CH-FR",
+        "iso_3166_1": "CH",
+        "class": "settlement",
+        "name": "Bulle",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.058115005493164,
+          46.61908417920324
+        ]
+      }
+    },
+    {
+      "id": 633448270,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "village",
+        "text_anchor": "bottom",
+        "symbolrank": 14,
+        "name_zh-Hant": "埃托瓦",
+        "name_script": "Latin",
+        "name_de": "Etoy",
+        "name_es": "Etoy",
+        "name_it": "Etoy",
+        "filterrank": 2,
+        "disputed": "false",
+        "iso_3166_2": "CH-VD",
+        "iso_3166_1": "CH",
+        "name_en": "Etoy",
+        "name_fr": "Etoy",
+        "name_zh-Hans": "埃托瓦",
+        "name_pt": "Etoy",
+        "name_ru": "Этуа",
+        "class": "settlement",
+        "name": "Etoy",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.419277191162109,
+          46.48610146142008
+        ]
+      }
+    },
+    {
+      "id": 2203767560,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "town",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "皮利",
+        "name_script": "Latin",
+        "name_ru": "Пюлли",
+        "name_zh-Hans": "皮利",
+        "name_pt": "Pully",
+        "name_ko": "퓰리",
+        "symbolrank": 13,
+        "name_ja": "ピュイー",
+        "name_it": "Pully",
+        "name_en": "Pully",
+        "name_de": "Pully",
+        "name_es": "Pully",
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_2": "CH-VD",
+        "iso_3166_1": "CH",
+        "name_fr": "Pully",
+        "class": "settlement",
+        "name": "Pully",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.661748886108398,
+          46.50979421587445
+        ]
+      }
+    },
+    {
+      "id": 2400859400,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "village",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "聖普雷",
+        "name_script": "Latin",
+        "name_ru": "Сен-Прe",
+        "name_zh-Hans": "圣普雷",
+        "name_pt": "Saint-Prex",
+        "name_it": "Saint-Prex",
+        "name_de": "Saint-Prex",
+        "name_es": "Saint-Prex",
+        "symbolrank": 14,
+        "name_ja": "サン・プレ",
+        "filterrank": 2,
+        "disputed": "false",
+        "iso_3166_2": "CH-VD",
+        "iso_3166_1": "CH",
+        "name_en": "Saint-Prex",
+        "name_fr": "Saint-Prex",
+        "class": "settlement",
+        "name": "Saint-Prex",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.458587646484375,
+          46.48090067260591
+        ]
+      }
+    },
+    {
+      "id": 266962080,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 14,
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "FR",
+        "name_script": "Latin",
+        "type": "village",
+        "class": "settlement",
+        "name": "Sciez",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.375246047973633,
+          46.33134314737802
+        ]
+      }
+    },
+    {
+      "id": 266959080,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 14,
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "FR",
+        "name_script": "Latin",
+        "type": "village",
+        "class": "settlement",
+        "name": "Publier",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.543731689453125,
+          46.387023837485174
+        ]
+      }
+    },
+    {
+      "id": 2400509670,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "town",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "勒南",
+        "name_script": "Latin",
+        "name_ru": "Ренан",
+        "name_zh-Hans": "勒南",
+        "name_pt": "Renens",
+        "name_ko": "레낭",
+        "symbolrank": 13,
+        "name_ja": "レナン",
+        "name_it": "Renens",
+        "disputed": "false",
+        "name_de": "Renens",
+        "name_es": "Renens",
+        "filterrank": 1,
+        "iso_3166_2": "CH-VD",
+        "iso_3166_1": "CH",
+        "name_fr": "Renens",
+        "name_en": "Renens",
+        "class": "settlement",
+        "name": "Renens VD",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.592826843261719,
+          46.534893722003176
+        ]
+      }
+    },
+    {
+      "id": 266921570,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "town",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "托農萊班",
+        "name_script": "Latin",
+        "name_ru": "Тонон-ле-Бен",
+        "name_zh-Hans": "托农莱班",
+        "name_pt": "Thonon-les-Bains",
+        "name_ko": "토농레뱅",
+        "symbolrank": 12,
+        "name_ja": "トノン＝レ＝バン",
+        "name_it": "Tonone",
+        "name_en": "Thonon-les-Bains",
+        "name_de": "Thonon-les-Bains",
+        "name_ar": "تونون لو بان",
+        "name_fr": "Thonon-les-Bains",
+        "disputed": "false",
+        "name_es": "Thonon-les-Bains",
+        "name_vi": "Thonon-les-Bains",
+        "filterrank": 1,
+        "iso_3166_1": "FR",
+        "class": "settlement",
+        "name": "Thonon-les-Bains",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.477985382080078,
+          46.37310898441393
+        ]
+      }
+    },
+    {
+      "id": 266983330,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "town",
+        "name_zh-Hans": "埃维昂莱班",
+        "name_ru": "Эвиан-ле-Бен",
+        "name_script": "Latin",
+        "name_ko": "에비앙레뱅",
+        "disputed": "false",
+        "filterrank": 1,
+        "name_zh-Hant": "埃維昂萊班",
+        "iso_3166_1": "FR",
+        "symbolrank": 13,
+        "name_ja": "エヴィアン＝レ＝バン",
+        "class": "settlement",
+        "name": "Évian-les-Bains",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.589822769165039,
+          46.40099433386408
+        ]
+      }
+    },
+    {
+      "id": 2818936670,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "town",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "莫爾日",
+        "name_script": "Latin",
+        "name_ru": "Морж",
+        "name_zh-Hans": "莫尔日",
+        "name_pt": "Morges",
+        "name_ko": "모르주",
+        "symbolrank": 13,
+        "name_ja": "モルジュ",
+        "name_it": "Morges",
+        "name_en": "Morges",
+        "name_de": "Morges",
+        "name_ar": "موريس",
+        "name_fr": "Morges",
+        "iso_3166_1": "CH",
+        "disputed": "false",
+        "name_es": "Morges",
+        "filterrank": 1,
+        "iso_3166_2": "CH-VD",
+        "class": "settlement",
+        "name": "Morges",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.498327255249023,
+          46.50932164339142
+        ]
+      }
+    },
+    {
+      "id": 2401087310,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "symbolrank": 14,
+        "disputed": "false",
+        "filterrank": 2,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-VD",
+        "name_script": "Latin",
+        "type": "village",
+        "class": "settlement",
+        "name": "Blonay",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.895208358764648,
+          46.465058843935566
+        ]
+      }
+    },
+    {
+      "id": 13731781420,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "village",
+        "name_script": "Latin",
+        "name_fr": "Saint-Gingolph",
+        "name_en": "Saint-Gingolph",
+        "disputed": "false",
+        "symbolrank": 15,
+        "filterrank": 2,
+        "name_zh-Hant": "聖岡戈勒弗",
+        "iso_3166_1": "CH",
+        "name_zh-Hans": "圣冈戈勒弗",
+        "iso_3166_2": "CH-VS",
+        "class": "settlement",
+        "name": "Saint-Gingolph",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.803884506225586,
+          46.39306237220481
+        ]
+      }
+    },
+    {
+      "id": 1975062970,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "town",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "埃格勒",
+        "name_script": "Latin",
+        "name_ru": "Эгль",
+        "name_zh-Hans": "埃格勒",
+        "name_pt": "Aigle",
+        "name_ko": "에이글",
+        "symbolrank": 13,
+        "name_ja": "エーグル",
+        "name_it": "Aigle",
+        "name_en": "Aigle",
+        "name_de": "Aigle",
+        "name_ar": "إيغل",
+        "disputed": "false",
+        "name_es": "Aigle",
+        "name_vi": "Aigle",
+        "filterrank": 2,
+        "iso_3166_2": "CH-VD",
+        "iso_3166_1": "CH",
+        "name_fr": "Aigle",
+        "class": "settlement",
+        "name": "Aigle",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.968851089477539,
+          46.31788834716829
+        ]
+      }
+    },
+    {
+      "id": 14200632320,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "village",
+        "text_anchor": "bottom",
+        "symbolrank": 14,
+        "name_zh-Hant": "沙泰勒聖但尼",
+        "name_script": "Latin",
+        "name_ru": "Шатель-Сен-Дени",
+        "name_de": "Châtel-Saint-Denis",
+        "name_es": "Châtel-Saint-Denis",
+        "name_it": "Châtel-Saint-Denis",
+        "filterrank": 1,
+        "disputed": "false",
+        "iso_3166_2": "CH-FR",
+        "iso_3166_1": "CH",
+        "name_ar": "شاتيل سانت دينيس",
+        "name_en": "Châtel-Saint-Denis",
+        "name_fr": "Châtel-Saint-Denis",
+        "name_ko": "샤텔생드니",
+        "name_zh-Hans": "沙泰勒圣但尼",
+        "name_pt": "Châtel-Saint-Denis",
+        "class": "settlement",
+        "name": "Châtel-Saint-Denis",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.89967155456543,
+          46.526508823993
+        ]
+      }
+    },
+    {
+      "id": 2203898730,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "town",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "呂特里",
+        "name_script": "Latin",
+        "name_ru": "Лютри",
+        "name_zh-Hans": "吕特里",
+        "name_pt": "Lutry",
+        "name_ko": "뤼트리",
+        "symbolrank": 13,
+        "name_ja": "リュトリ",
+        "name_it": "Lutry",
+        "disputed": "false",
+        "name_de": "Lutry",
+        "name_es": "Lutry",
+        "filterrank": 1,
+        "iso_3166_2": "CH-VD",
+        "iso_3166_1": "CH",
+        "name_fr": "Lutry",
+        "name_en": "Lutry",
+        "class": "settlement",
+        "name": "Lutry",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.686811447143555,
+          46.5032959840739
+        ]
+      }
+    },
+    {
+      "id": 29987479870,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "filterrank": 1,
+        "iso_3166_2": "CH-VS",
+        "disputed": "false",
+        "name_de": "Bouveret",
+        "symbolrank": 15,
+        "iso_3166_1": "CH",
+        "name_es": "Le Bouveret",
+        "name_en": "Bouveret",
+        "name_fr": "Le Bouveret",
+        "name_it": "Le Bouveret",
+        "name_zh-Hans": "布夫雷",
+        "name_pt": "Le Bouveret",
+        "name_ru": "Ле-Бувре",
+        "name_script": "Latin",
+        "name_zh-Hant": "布夫雷",
+        "type": "village",
+        "text_anchor": "bottom",
+        "class": "settlement",
+        "name": "Le Bouveret",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.854009628295898,
+          46.38287935846833
+        ]
+      }
+    },
+    {
+      "id": 1975074120,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "town",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "蒙特勒",
+        "name_script": "Latin",
+        "name_ru": "Монтрё",
+        "name_zh-Hans": "蒙特勒",
+        "name_pt": "Montreux",
+        "name_ko": "몽트뢰",
+        "symbolrank": 11,
+        "name_ja": "モントルー",
+        "name_it": "Montreux",
+        "name_en": "Montreux",
+        "name_de": "Montreux",
+        "name_ar": "مونترو",
+        "name_fr": "Montreux",
+        "iso_3166_1": "CH",
+        "disputed": "false",
+        "name_es": "Montreux",
+        "name_vi": "Montreux",
+        "iso_3166_2": "CH-VD",
+        "filterrank": 1,
+        "class": "settlement",
+        "name": "Montreux",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.912975311279297,
+          46.431054284963494
+        ]
+      }
+    },
+    {
+      "id": 37388142540,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "town",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "沃韋",
+        "name_script": "Latin",
+        "name_ru": "Веве",
+        "name_zh-Hans": "沃韦",
+        "name_pt": "Vevey",
+        "name_ko": "브베",
+        "symbolrank": 12,
+        "name_ja": "ヴェヴェイ",
+        "name_it": "Vevey",
+        "name_en": "Vevey",
+        "name_de": "Vevey",
+        "name_ar": "فيفي",
+        "name_fr": "Vevey",
+        "disputed": "false",
+        "name_es": "Vevey",
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-VD",
+        "filterrank": 1,
+        "class": "settlement",
+        "name": "Vevey",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.841907501220703,
+          46.46026992106354
+        ]
+      }
+    },
+    {
+      "id": 14808755680,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "village",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "格朗維拉爾",
+        "name_script": "Latin",
+        "name_de": "Grandvillard",
+        "symbolrank": 15,
+        "name_ja": "グランヴィラール",
+        "name_es": "Grandvillard",
+        "name_it": "Grandvillard",
+        "filterrank": 2,
+        "disputed": "false",
+        "iso_3166_2": "CH-FR",
+        "iso_3166_1": "CH",
+        "name_en": "Grandvillard",
+        "name_fr": "Grandvillard",
+        "name_zh-Hans": "格朗维拉尔",
+        "name_pt": "Grandvillard",
+        "class": "settlement",
+        "name": "Grandvillard",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.084980010986328,
+          46.53932184292103
+        ]
+      }
+    },
+    {
+      "id": 10798161331,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 13,
+        "type": "Military",
+        "name_script": "Latin",
+        "category_en": "Military Area",
+        "maki": "marker",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-VD",
+        "category_zh-Hans": "军事区",
+        "class": "industrial",
+        "name": "Zone militaire de l'Hongrin"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.023611068725586,
+          46.39957376877433
+        ]
+      }
+    },
+    {
+      "id": 28182624,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 1,
+        "type": "Nature Reserve",
+        "name_script": "Latin",
+        "name_it": "Parco naturale regionale Gruyère Pays-d'Enhaut",
+        "name_fr": "Parc naturel régional Gruyère Pays-d'Enhaut",
+        "name_de": "Regionaler Naturpark Gruyère Pays-d'Enhaut",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-FR",
+        "maki": "park",
+        "name_en": "Gruyère Pays-d’Enhaut Regional Nature Park",
+        "class": "park_like",
+        "name": "Parc naturel régional Gruyère Pays-d'Enhaut"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.124204635620117,
+          46.51197981016281
+        ]
+      }
+    },
+    {
+      "id": 3326174,
+      "owner": "water-point-label",
+      "properties": {
+        "sizerank": 2,
+        "name_script": "Latin",
+        "name_ru": "Женевское озеро",
+        "name_ja": "レマン湖",
+        "elevation_ft": 1221,
+        "name_en": "Lake Geneva",
+        "elevation_m": 372,
+        "name_de": "Genfersee",
+        "name_es": "Lago Lemán",
+        "filterrank": 1,
+        "disputed": "false",
+        "maki": "marker",
+        "name_fr": "Le Léman",
+        "iso_3166_1": "FR",
+        "class": "water",
+        "name": "Le Léman",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.52836799621582,
+          46.417328174061396
+        ]
+      }
+    },
+    {
+      "id": 268649480,
+      "owner": "natural-point-label",
+      "properties": {
+        "elevation_m": 2330,
+        "elevation_ft": 7645,
+        "name_en": "Tour d’Aï",
+        "filterrank": 1,
+        "name_de": "Tour d’Aï",
+        "disputed": "false",
+        "iso_3166_2": "CH-VD",
+        "maki": "mountain",
+        "name_fr": "Tour d'Aï",
+        "iso_3166_1": "CH",
+        "name_ar": "تاور دي أي",
+        "sizerank": 16,
+        "name_it": "Tour d'Aï",
+        "name_script": "Latin",
+        "class": "landform",
+        "name": "Tour d'Aï",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.001981735229492,
+          46.37222068190158
+        ]
+      }
+    }
+  ],
+  "source_features": []
+}

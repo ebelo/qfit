@@ -1,0 +1,3602 @@
+{
+  "artifacts": {
+    "3/bern-urban-z12-light/after/diff.png": {
+      "sha256": "cad698c12c3231ebb5c7fe0f3b3d0fd0c297d454eccacc82da24500ef09fa734",
+      "bytes": 462953
+    },
+    "3/bern-urban-z12-light/after/labels.json": {
+      "sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+      "bytes": 61995
+    },
+    "3/bern-urban-z12-light/after/metrics.json": {
+      "sha256": "2883ef777cb51be8afe83c0951d4d876e651cd9252295517c64d24f9494a151c",
+      "bytes": 354
+    },
+    "3/bern-urban-z12-light/after/qgis.png": {
+      "sha256": "be889599f5b5efda75b11be40c2242cbec8958dd3e931a0f592fd45b71f58c8d",
+      "bytes": 515310
+    },
+    "3/bern-urban-z12-light/after/runtime.json": {
+      "sha256": "14f1c83dc72b31ad2a3b6df681678317115e276a06461c3acbf5f2498ba13318",
+      "bytes": 758
+    },
+    "3/bern-urban-z12-light/control/diff.png": {
+      "sha256": "cad698c12c3231ebb5c7fe0f3b3d0fd0c297d454eccacc82da24500ef09fa734",
+      "bytes": 462953
+    },
+    "3/bern-urban-z12-light/control/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/bern-urban-z12-light/control/metrics.json": {
+      "sha256": "2883ef777cb51be8afe83c0951d4d876e651cd9252295517c64d24f9494a151c",
+      "bytes": 354
+    },
+    "3/bern-urban-z12-light/control/qgis.png": {
+      "sha256": "be889599f5b5efda75b11be40c2242cbec8958dd3e931a0f592fd45b71f58c8d",
+      "bytes": 515310
+    },
+    "3/bern-urban-z12-light/control/runtime.json": {
+      "sha256": "14f1c83dc72b31ad2a3b6df681678317115e276a06461c3acbf5f2498ba13318",
+      "bytes": 758
+    },
+    "3/bern-urban-z12-light/repeat/diff.png": {
+      "sha256": "cad698c12c3231ebb5c7fe0f3b3d0fd0c297d454eccacc82da24500ef09fa734",
+      "bytes": 462953
+    },
+    "3/bern-urban-z12-light/repeat/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/bern-urban-z12-light/repeat/metrics.json": {
+      "sha256": "2883ef777cb51be8afe83c0951d4d876e651cd9252295517c64d24f9494a151c",
+      "bytes": 354
+    },
+    "3/bern-urban-z12-light/repeat/qgis.png": {
+      "sha256": "be889599f5b5efda75b11be40c2242cbec8958dd3e931a0f592fd45b71f58c8d",
+      "bytes": 515310
+    },
+    "3/bern-urban-z12-light/repeat/runtime.json": {
+      "sha256": "14f1c83dc72b31ad2a3b6df681678317115e276a06461c3acbf5f2498ba13318",
+      "bytes": 758
+    },
+    "3/cairo-nile-z14/after/diff.png": {
+      "sha256": "59e0c8fbeb791feafcedda135ff7b5428d7a66d4d6e108d4855bba958144ae67",
+      "bytes": 407911
+    },
+    "3/cairo-nile-z14/after/labels.json": {
+      "sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+      "bytes": 61995
+    },
+    "3/cairo-nile-z14/after/metrics.json": {
+      "sha256": "e5745449159b1d9666a318362268c160a033e4fdbdea0e443411e33b49afb3bc",
+      "bytes": 355
+    },
+    "3/cairo-nile-z14/after/qgis.png": {
+      "sha256": "2fc2a57291216ff3e6e84905f4848a933a5ca8ead78c87367ec251ed8a71f5e5",
+      "bytes": 626024
+    },
+    "3/cairo-nile-z14/after/runtime.json": {
+      "sha256": "b92d951b2ffa2fab070dfa80aa3c4f245aa09b855c4b94a1a410d477296f6e2f",
+      "bytes": 760
+    },
+    "3/cairo-nile-z14/control/diff.png": {
+      "sha256": "9814f0eb7fb3c5f3079cab4392d8f3241f75bb7ae7ec1c886b86c7f8ce7461ef",
+      "bytes": 396570
+    },
+    "3/cairo-nile-z14/control/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/cairo-nile-z14/control/metrics.json": {
+      "sha256": "71781687b7885b0e52dc12eb56ead28898e9b86f9ff3a71038c99dea7575a362",
+      "bytes": 353
+    },
+    "3/cairo-nile-z14/control/qgis.png": {
+      "sha256": "7f3e1ee8169c1c820e106ebf52b1b90b2966aead11f5ac6c43156a34d75f194b",
+      "bytes": 572283
+    },
+    "3/cairo-nile-z14/control/runtime.json": {
+      "sha256": "b92d951b2ffa2fab070dfa80aa3c4f245aa09b855c4b94a1a410d477296f6e2f",
+      "bytes": 760
+    },
+    "3/cairo-nile-z14/pdf-after/diff.png": {
+      "sha256": "59e0c8fbeb791feafcedda135ff7b5428d7a66d4d6e108d4855bba958144ae67",
+      "bytes": 407911
+    },
+    "3/cairo-nile-z14/pdf-after/labels.json": {
+      "sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+      "bytes": 61995
+    },
+    "3/cairo-nile-z14/pdf-after/metrics.json": {
+      "sha256": "e5745449159b1d9666a318362268c160a033e4fdbdea0e443411e33b49afb3bc",
+      "bytes": 355
+    },
+    "3/cairo-nile-z14/pdf-after/pdf150-context.json": {
+      "sha256": "257d0b56e49f30da0273d0a094b48fe015f5a8aedc41b87c721e353106b6364e",
+      "bytes": 313
+    },
+    "3/cairo-nile-z14/pdf-after/pdf150-repeat-context.json": {
+      "sha256": "257d0b56e49f30da0273d0a094b48fe015f5a8aedc41b87c721e353106b6364e",
+      "bytes": 313
+    },
+    "3/cairo-nile-z14/pdf-after/pdf150-repeat.pdf": {
+      "sha256": "9384c8a12dc49f13e58458a65da52fb5ffa35f637470a67e04d273546c864f4c",
+      "bytes": 1393988
+    },
+    "3/cairo-nile-z14/pdf-after/pdf150-repeat.png": {
+      "sha256": "f79152f7c9310b16e38cf7471daad008a94373566433e3c5533b4a7c80895277",
+      "bytes": 522270
+    },
+    "3/cairo-nile-z14/pdf-after/pdf150-repeat.txt": {
+      "sha256": "ef6cbd2161eaea7943ce8693b9824d23d1793ffb1c0fca05b600d3899b44c977",
+      "bytes": 1
+    },
+    "3/cairo-nile-z14/pdf-after/pdf150.pdf": {
+      "sha256": "99fa9cc4e78b50154043e5e5c5a1c375de81e58353c52273b50fbf3f9b6a3b4f",
+      "bytes": 1393967
+    },
+    "3/cairo-nile-z14/pdf-after/pdf150.png": {
+      "sha256": "f79152f7c9310b16e38cf7471daad008a94373566433e3c5533b4a7c80895277",
+      "bytes": 522270
+    },
+    "3/cairo-nile-z14/pdf-after/pdf150.txt": {
+      "sha256": "ef6cbd2161eaea7943ce8693b9824d23d1793ffb1c0fca05b600d3899b44c977",
+      "bytes": 1
+    },
+    "3/cairo-nile-z14/pdf-after/placed-labels.json": {
+      "sha256": "504aec579032ffba207439eb39883b38d4d9a754c55eb091261ac162118ba754",
+      "bytes": 762140
+    },
+    "3/cairo-nile-z14/pdf-after/qgis.png": {
+      "sha256": "2fc2a57291216ff3e6e84905f4848a933a5ca8ead78c87367ec251ed8a71f5e5",
+      "bytes": 626024
+    },
+    "3/cairo-nile-z14/pdf-after/runtime.json": {
+      "sha256": "b92d951b2ffa2fab070dfa80aa3c4f245aa09b855c4b94a1a410d477296f6e2f",
+      "bytes": 760
+    },
+    "3/cairo-nile-z14/pdf-before/diff.png": {
+      "sha256": "9814f0eb7fb3c5f3079cab4392d8f3241f75bb7ae7ec1c886b86c7f8ce7461ef",
+      "bytes": 396570
+    },
+    "3/cairo-nile-z14/pdf-before/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/cairo-nile-z14/pdf-before/metrics.json": {
+      "sha256": "71781687b7885b0e52dc12eb56ead28898e9b86f9ff3a71038c99dea7575a362",
+      "bytes": 353
+    },
+    "3/cairo-nile-z14/pdf-before/pdf150-context.json": {
+      "sha256": "257d0b56e49f30da0273d0a094b48fe015f5a8aedc41b87c721e353106b6364e",
+      "bytes": 313
+    },
+    "3/cairo-nile-z14/pdf-before/pdf150-repeat-context.json": {
+      "sha256": "257d0b56e49f30da0273d0a094b48fe015f5a8aedc41b87c721e353106b6364e",
+      "bytes": 313
+    },
+    "3/cairo-nile-z14/pdf-before/pdf150-repeat.pdf": {
+      "sha256": "6edfaa0944b622eeefe11313b4fd491c1652129e0a68f070b7d7d3a9a968b1af",
+      "bytes": 1265688
+    },
+    "3/cairo-nile-z14/pdf-before/pdf150-repeat.png": {
+      "sha256": "078a1cf4586cb1676c7b6cd0710e5135edaf996be7f0d572ecc003c50f35019a",
+      "bytes": 493670
+    },
+    "3/cairo-nile-z14/pdf-before/pdf150-repeat.txt": {
+      "sha256": "ef6cbd2161eaea7943ce8693b9824d23d1793ffb1c0fca05b600d3899b44c977",
+      "bytes": 1
+    },
+    "3/cairo-nile-z14/pdf-before/pdf150.pdf": {
+      "sha256": "1e8b84f6131ef3ae51ff4cde5b579cfc097d4f0702f7cbfd8470d81c7ca18a0d",
+      "bytes": 1265667
+    },
+    "3/cairo-nile-z14/pdf-before/pdf150.png": {
+      "sha256": "078a1cf4586cb1676c7b6cd0710e5135edaf996be7f0d572ecc003c50f35019a",
+      "bytes": 493670
+    },
+    "3/cairo-nile-z14/pdf-before/pdf150.txt": {
+      "sha256": "ef6cbd2161eaea7943ce8693b9824d23d1793ffb1c0fca05b600d3899b44c977",
+      "bytes": 1
+    },
+    "3/cairo-nile-z14/pdf-before/placed-labels.json": {
+      "sha256": "83280ca238fde1f8738425f80d8487bfa678b7fa1d88db2d381ab3045cecf862",
+      "bytes": 560969
+    },
+    "3/cairo-nile-z14/pdf-before/qgis.png": {
+      "sha256": "7f3e1ee8169c1c820e106ebf52b1b90b2966aead11f5ac6c43156a34d75f194b",
+      "bytes": 572283
+    },
+    "3/cairo-nile-z14/pdf-before/runtime.json": {
+      "sha256": "b92d951b2ffa2fab070dfa80aa3c4f245aa09b855c4b94a1a410d477296f6e2f",
+      "bytes": 760
+    },
+    "3/cairo-nile-z14/repeat/diff.png": {
+      "sha256": "9814f0eb7fb3c5f3079cab4392d8f3241f75bb7ae7ec1c886b86c7f8ce7461ef",
+      "bytes": 396570
+    },
+    "3/cairo-nile-z14/repeat/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/cairo-nile-z14/repeat/metrics.json": {
+      "sha256": "71781687b7885b0e52dc12eb56ead28898e9b86f9ff3a71038c99dea7575a362",
+      "bytes": 353
+    },
+    "3/cairo-nile-z14/repeat/qgis.png": {
+      "sha256": "7f3e1ee8169c1c820e106ebf52b1b90b2966aead11f5ac6c43156a34d75f194b",
+      "bytes": 572283
+    },
+    "3/cairo-nile-z14/repeat/runtime.json": {
+      "sha256": "b92d951b2ffa2fab070dfa80aa3c4f245aa09b855c4b94a1a410d477296f6e2f",
+      "bytes": 760
+    },
+    "3/cairo-nile-z14-activity/after/diff.png": {
+      "sha256": "ab19890b07be50a3b634b711903e62a894505ef21d7c312692af2ef4c85f1542",
+      "bytes": 485976
+    },
+    "3/cairo-nile-z14-activity/after/labels.json": {
+      "sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+      "bytes": 61995
+    },
+    "3/cairo-nile-z14-activity/after/metrics.json": {
+      "sha256": "b6739511ee5d1449df63bd7c45db27408942096299070eaaa6cefa6f59bc6da1",
+      "bytes": 355
+    },
+    "3/cairo-nile-z14-activity/after/qgis.png": {
+      "sha256": "80652e86def5fd4c5f3f48d8feb9b54b7ae9b7ab6afd7a88d0970ec1ee19aaba",
+      "bytes": 678923
+    },
+    "3/cairo-nile-z14-activity/after/runtime.json": {
+      "sha256": "b92d951b2ffa2fab070dfa80aa3c4f245aa09b855c4b94a1a410d477296f6e2f",
+      "bytes": 760
+    },
+    "3/cairo-nile-z14-activity/control/diff.png": {
+      "sha256": "84962b96d2a6d02d803907ba21c419e2cb6d1af1344e130581dff4c2d695698d",
+      "bytes": 476933
+    },
+    "3/cairo-nile-z14-activity/control/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/cairo-nile-z14-activity/control/metrics.json": {
+      "sha256": "3a66496800b4063bcb544b911ed9f8c4e50d2fe615187a7a1c0bb2c7b90f030e",
+      "bytes": 353
+    },
+    "3/cairo-nile-z14-activity/control/qgis.png": {
+      "sha256": "5c9ceb64bbc6b8842d39bf776431b80dad31316382a8e30fd508df17a220a32d",
+      "bytes": 628171
+    },
+    "3/cairo-nile-z14-activity/control/runtime.json": {
+      "sha256": "b92d951b2ffa2fab070dfa80aa3c4f245aa09b855c4b94a1a410d477296f6e2f",
+      "bytes": 760
+    },
+    "3/cairo-nile-z14-activity/repeat/diff.png": {
+      "sha256": "84962b96d2a6d02d803907ba21c419e2cb6d1af1344e130581dff4c2d695698d",
+      "bytes": 476933
+    },
+    "3/cairo-nile-z14-activity/repeat/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/cairo-nile-z14-activity/repeat/metrics.json": {
+      "sha256": "3a66496800b4063bcb544b911ed9f8c4e50d2fe615187a7a1c0bb2c7b90f030e",
+      "bytes": 353
+    },
+    "3/cairo-nile-z14-activity/repeat/qgis.png": {
+      "sha256": "5c9ceb64bbc6b8842d39bf776431b80dad31316382a8e30fd508df17a220a32d",
+      "bytes": 628171
+    },
+    "3/cairo-nile-z14-activity/repeat/runtime.json": {
+      "sha256": "b92d951b2ffa2fab070dfa80aa3c4f245aa09b855c4b94a1a410d477296f6e2f",
+      "bytes": 760
+    },
+    "3/cairo-z11.9/after/diff.png": {
+      "sha256": "11384d4fb73ecc8a640cf14e057d117d280b9ae9b99054e72c99dd9ef5498888",
+      "bytes": 569984
+    },
+    "3/cairo-z11.9/after/labels.json": {
+      "sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+      "bytes": 61995
+    },
+    "3/cairo-z11.9/after/metrics.json": {
+      "sha256": "2ba63001bcd2b78ea9e8e008109e4bb0e1800aac83169447b080c0cb5148e60e",
+      "bytes": 355
+    },
+    "3/cairo-z11.9/after/qgis.png": {
+      "sha256": "ae1c8a7aacd645597fc7e473c2766781e0d5f9eea06cff709ac46487ec3dc7f5",
+      "bytes": 765600
+    },
+    "3/cairo-z11.9/after/runtime.json": {
+      "sha256": "64afdae4e4dd4808e231741e3105bb5a5d05a7eceda96a435a4a881c00f014d5",
+      "bytes": 760
+    },
+    "3/cairo-z11.9/control/diff.png": {
+      "sha256": "a3791ff247806ffaaefcea5e2441f2aed07269f7db1628fb4c934d851fd8985b",
+      "bytes": 567310
+    },
+    "3/cairo-z11.9/control/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/cairo-z11.9/control/metrics.json": {
+      "sha256": "8173ca034310923d703c727b6fd29c8582c78e3adabd89083401c7a46a2b10bc",
+      "bytes": 349
+    },
+    "3/cairo-z11.9/control/qgis.png": {
+      "sha256": "bc2708937a0e264370d6c09ba2fab9889451602b2758e424d9c4faedcc79098b",
+      "bytes": 720976
+    },
+    "3/cairo-z11.9/control/runtime.json": {
+      "sha256": "64afdae4e4dd4808e231741e3105bb5a5d05a7eceda96a435a4a881c00f014d5",
+      "bytes": 760
+    },
+    "3/cairo-z11.9/repeat/diff.png": {
+      "sha256": "a3791ff247806ffaaefcea5e2441f2aed07269f7db1628fb4c934d851fd8985b",
+      "bytes": 567310
+    },
+    "3/cairo-z11.9/repeat/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/cairo-z11.9/repeat/metrics.json": {
+      "sha256": "8173ca034310923d703c727b6fd29c8582c78e3adabd89083401c7a46a2b10bc",
+      "bytes": 349
+    },
+    "3/cairo-z11.9/repeat/qgis.png": {
+      "sha256": "bc2708937a0e264370d6c09ba2fab9889451602b2758e424d9c4faedcc79098b",
+      "bytes": 720976
+    },
+    "3/cairo-z11.9/repeat/runtime.json": {
+      "sha256": "64afdae4e4dd4808e231741e3105bb5a5d05a7eceda96a435a4a881c00f014d5",
+      "bytes": 760
+    },
+    "3/cairo-z12/after/diff.png": {
+      "sha256": "ecb85a568bc0faf6a6744f07e7a9c90baf174f20b5a1ae4c97e4cb26496c0e6f",
+      "bytes": 533165
+    },
+    "3/cairo-z12/after/labels.json": {
+      "sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+      "bytes": 61995
+    },
+    "3/cairo-z12/after/metrics.json": {
+      "sha256": "fb13ee4aa2df8e1e3def9cce98a62659439f7831582e0fe7c95d1851b055af01",
+      "bytes": 348
+    },
+    "3/cairo-z12/after/qgis.png": {
+      "sha256": "db570648307032100c36b03f70a7da28edab0f478bca72934d7a297041e3da4e",
+      "bytes": 791194
+    },
+    "3/cairo-z12/after/runtime.json": {
+      "sha256": "a1242fb55a7e4f4f67f5825dd19c9a99b5e96dcf93ef1ed02138c8aa2f0b6c3d",
+      "bytes": 762
+    },
+    "3/cairo-z12/control/diff.png": {
+      "sha256": "4610a51cb1636ef813b68f2e42c248e76971843832e4683f89c5d176926174b0",
+      "bytes": 528205
+    },
+    "3/cairo-z12/control/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/cairo-z12/control/metrics.json": {
+      "sha256": "ca445aaf5638aba51ed169ee2082a63ea5d31d45b3e1bfda3d8ccebae1b03ca2",
+      "bytes": 354
+    },
+    "3/cairo-z12/control/qgis.png": {
+      "sha256": "83901a28e4c11037034b48298914743cee50e795180d50d783e65e65566df0cd",
+      "bytes": 720038
+    },
+    "3/cairo-z12/control/runtime.json": {
+      "sha256": "a1242fb55a7e4f4f67f5825dd19c9a99b5e96dcf93ef1ed02138c8aa2f0b6c3d",
+      "bytes": 762
+    },
+    "3/cairo-z12/repeat/diff.png": {
+      "sha256": "4610a51cb1636ef813b68f2e42c248e76971843832e4683f89c5d176926174b0",
+      "bytes": 528205
+    },
+    "3/cairo-z12/repeat/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/cairo-z12/repeat/metrics.json": {
+      "sha256": "ca445aaf5638aba51ed169ee2082a63ea5d31d45b3e1bfda3d8ccebae1b03ca2",
+      "bytes": 354
+    },
+    "3/cairo-z12/repeat/qgis.png": {
+      "sha256": "83901a28e4c11037034b48298914743cee50e795180d50d783e65e65566df0cd",
+      "bytes": 720038
+    },
+    "3/cairo-z12/repeat/runtime.json": {
+      "sha256": "a1242fb55a7e4f4f67f5825dd19c9a99b5e96dcf93ef1ed02138c8aa2f0b6c3d",
+      "bytes": 762
+    },
+    "3/cairo-z12.1/after/diff.png": {
+      "sha256": "8ce7a8e12467053b8a934cf1c0d16497a15aacbf39dcc046e475b11d816042ad",
+      "bytes": 517234
+    },
+    "3/cairo-z12.1/after/labels.json": {
+      "sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+      "bytes": 61995
+    },
+    "3/cairo-z12.1/after/metrics.json": {
+      "sha256": "9a9b32e501d61fd1421a98899f9bde9a802b56ec69f1705653fa2a211b57b71d",
+      "bytes": 353
+    },
+    "3/cairo-z12.1/after/qgis.png": {
+      "sha256": "f41893c0275366988b63fd28b55807657c9838a2ff046a7997c9fc6b1c8443bd",
+      "bytes": 796346
+    },
+    "3/cairo-z12.1/after/runtime.json": {
+      "sha256": "b5a2f92297269b08daca2f09ef13a1b0b75520cc3b204fa731e31d9f83f2f57a",
+      "bytes": 763
+    },
+    "3/cairo-z12.1/control/diff.png": {
+      "sha256": "05690389420165c6e90e9c86c8e6b4b36e94cbb379d86283b99d2aa4c54115cc",
+      "bytes": 504991
+    },
+    "3/cairo-z12.1/control/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/cairo-z12.1/control/metrics.json": {
+      "sha256": "489fb7c8f5513938115516bd9999f4359b0bc53a2b201b7bb7e8b1d2a3742d9f",
+      "bytes": 354
+    },
+    "3/cairo-z12.1/control/qgis.png": {
+      "sha256": "c0d0a1c1ccc2a8958bcd4e4cb6f83c9cf56a2917c6b4419c3f4d2581dabbf8a2",
+      "bytes": 717844
+    },
+    "3/cairo-z12.1/control/runtime.json": {
+      "sha256": "b5a2f92297269b08daca2f09ef13a1b0b75520cc3b204fa731e31d9f83f2f57a",
+      "bytes": 763
+    },
+    "3/cairo-z12.1/repeat/diff.png": {
+      "sha256": "05690389420165c6e90e9c86c8e6b4b36e94cbb379d86283b99d2aa4c54115cc",
+      "bytes": 504991
+    },
+    "3/cairo-z12.1/repeat/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/cairo-z12.1/repeat/metrics.json": {
+      "sha256": "489fb7c8f5513938115516bd9999f4359b0bc53a2b201b7bb7e8b1d2a3742d9f",
+      "bytes": 354
+    },
+    "3/cairo-z12.1/repeat/qgis.png": {
+      "sha256": "c0d0a1c1ccc2a8958bcd4e4cb6f83c9cf56a2917c6b4419c3f4d2581dabbf8a2",
+      "bytes": 717844
+    },
+    "3/cairo-z12.1/repeat/runtime.json": {
+      "sha256": "b5a2f92297269b08daca2f09ef13a1b0b75520cc3b204fa731e31d9f83f2f57a",
+      "bytes": 763
+    },
+    "3/cairo-z14.9/after/diff.png": {
+      "sha256": "d6e0a88feb0e183160a67feec9a108d931074acd740f4b3cf80657457288c60b",
+      "bytes": 624052
+    },
+    "3/cairo-z14.9/after/labels.json": {
+      "sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+      "bytes": 61995
+    },
+    "3/cairo-z14.9/after/metrics.json": {
+      "sha256": "075eb4e7e1ecafcc03b2dfd01628b1f8b37416fde0890533e8e1416024449dfa",
+      "bytes": 353
+    },
+    "3/cairo-z14.9/after/qgis.png": {
+      "sha256": "6af2fdf6f920fc6c8029201e0eafb357e996013ffa2cff94c375d02446a83c8a",
+      "bytes": 677708
+    },
+    "3/cairo-z14.9/after/runtime.json": {
+      "sha256": "1ddd7c9faa87b1aef15f590ed27cb14d000073cc42e9218f81e9e6550c19281b",
+      "bytes": 762
+    },
+    "3/cairo-z14.9/control/diff.png": {
+      "sha256": "e9df9adfb6316e5c37760bf716f26e484d18bbd10da13c5f9747e9230cd7028a",
+      "bytes": 616163
+    },
+    "3/cairo-z14.9/control/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/cairo-z14.9/control/metrics.json": {
+      "sha256": "70b992cd5440a5708a503e84d59614bca89df582e686b4ec2e45caca06aad0b1",
+      "bytes": 354
+    },
+    "3/cairo-z14.9/control/qgis.png": {
+      "sha256": "54305a0075db2b79b64403995e94bfe362418be2cad104e07ddb92524e97800b",
+      "bytes": 669870
+    },
+    "3/cairo-z14.9/control/runtime.json": {
+      "sha256": "1ddd7c9faa87b1aef15f590ed27cb14d000073cc42e9218f81e9e6550c19281b",
+      "bytes": 762
+    },
+    "3/cairo-z14.9/repeat/diff.png": {
+      "sha256": "e9df9adfb6316e5c37760bf716f26e484d18bbd10da13c5f9747e9230cd7028a",
+      "bytes": 616163
+    },
+    "3/cairo-z14.9/repeat/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/cairo-z14.9/repeat/metrics.json": {
+      "sha256": "70b992cd5440a5708a503e84d59614bca89df582e686b4ec2e45caca06aad0b1",
+      "bytes": 354
+    },
+    "3/cairo-z14.9/repeat/qgis.png": {
+      "sha256": "54305a0075db2b79b64403995e94bfe362418be2cad104e07ddb92524e97800b",
+      "bytes": 669870
+    },
+    "3/cairo-z14.9/repeat/runtime.json": {
+      "sha256": "1ddd7c9faa87b1aef15f590ed27cb14d000073cc42e9218f81e9e6550c19281b",
+      "bytes": 762
+    },
+    "3/cairo-z15/after/diff.png": {
+      "sha256": "1a2a91c0b40102e401c77b279f99fbc0a5da7c520749749b407eb2a64bebe23f",
+      "bytes": 599503
+    },
+    "3/cairo-z15/after/labels.json": {
+      "sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+      "bytes": 61995
+    },
+    "3/cairo-z15/after/metrics.json": {
+      "sha256": "b463f873ff734ddb3ac2d35c0458474e7870c4f3711bc3fd43b22fdee0bf5c73",
+      "bytes": 344
+    },
+    "3/cairo-z15/after/qgis.png": {
+      "sha256": "cac752cb5cb880ab6c4e0acc3914de936be2af1970a21b84d80be85166dbf833",
+      "bytes": 633864
+    },
+    "3/cairo-z15/after/runtime.json": {
+      "sha256": "d9af58a72e50b3e14347a30bf000e635f54f548b59ee708c548114e65e026506",
+      "bytes": 761
+    },
+    "3/cairo-z15/control/diff.png": {
+      "sha256": "44fd9e6f78293ed7ef7d2dae6f7aa6206aa8c71591c48b34e7bbe42468b06eb6",
+      "bytes": 588615
+    },
+    "3/cairo-z15/control/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/cairo-z15/control/metrics.json": {
+      "sha256": "dfac7caa1bbbfaa719ca26ab047ee4240c8aa3035b503713fb1cc8f8995365b0",
+      "bytes": 354
+    },
+    "3/cairo-z15/control/qgis.png": {
+      "sha256": "d428756aa8e57a325cb1364b42d8c827a29ff715be1fdc070d1515e9b3d46899",
+      "bytes": 623072
+    },
+    "3/cairo-z15/control/runtime.json": {
+      "sha256": "d9af58a72e50b3e14347a30bf000e635f54f548b59ee708c548114e65e026506",
+      "bytes": 761
+    },
+    "3/cairo-z15/repeat/diff.png": {
+      "sha256": "44fd9e6f78293ed7ef7d2dae6f7aa6206aa8c71591c48b34e7bbe42468b06eb6",
+      "bytes": 588615
+    },
+    "3/cairo-z15/repeat/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/cairo-z15/repeat/metrics.json": {
+      "sha256": "dfac7caa1bbbfaa719ca26ab047ee4240c8aa3035b503713fb1cc8f8995365b0",
+      "bytes": 354
+    },
+    "3/cairo-z15/repeat/qgis.png": {
+      "sha256": "d428756aa8e57a325cb1364b42d8c827a29ff715be1fdc070d1515e9b3d46899",
+      "bytes": 623072
+    },
+    "3/cairo-z15/repeat/runtime.json": {
+      "sha256": "d9af58a72e50b3e14347a30bf000e635f54f548b59ee708c548114e65e026506",
+      "bytes": 761
+    },
+    "3/cairo-z15.1/after/diff.png": {
+      "sha256": "20915ebcd3a6580a2946063fc0012d26ec312aebedd0a10d0eebb2fe7824d3b1",
+      "bytes": 555090
+    },
+    "3/cairo-z15.1/after/labels.json": {
+      "sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+      "bytes": 61995
+    },
+    "3/cairo-z15.1/after/metrics.json": {
+      "sha256": "c1f002f40ddee5136d3eb4ecf5d6db463ccfde28f7b42b0367b97b93ef733ac6",
+      "bytes": 353
+    },
+    "3/cairo-z15.1/after/qgis.png": {
+      "sha256": "be3fcae5f03687ddf3ad5e9651d5465d9c2e4f3045c9758c357de24e13953161",
+      "bytes": 591892
+    },
+    "3/cairo-z15.1/after/runtime.json": {
+      "sha256": "420526613feac0cd76426316a1822d2273f78c6027677271b4cb4f424120f672",
+      "bytes": 761
+    },
+    "3/cairo-z15.1/control/diff.png": {
+      "sha256": "1f36d5cb6a6fc2ee513941c05d09f7ee4756ab15c67f96c0873614bf2f034501",
+      "bytes": 547408
+    },
+    "3/cairo-z15.1/control/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/cairo-z15.1/control/metrics.json": {
+      "sha256": "ed3ae9aad2ca01805f6ade4cd91c87fb19a89cd2d7a874cef869ec044471e426",
+      "bytes": 355
+    },
+    "3/cairo-z15.1/control/qgis.png": {
+      "sha256": "710d473447bed9cc869f39a83ad6c84b85384a98f6547e435b9b475501fba146",
+      "bytes": 586277
+    },
+    "3/cairo-z15.1/control/runtime.json": {
+      "sha256": "420526613feac0cd76426316a1822d2273f78c6027677271b4cb4f424120f672",
+      "bytes": 761
+    },
+    "3/cairo-z15.1/repeat/diff.png": {
+      "sha256": "1f36d5cb6a6fc2ee513941c05d09f7ee4756ab15c67f96c0873614bf2f034501",
+      "bytes": 547408
+    },
+    "3/cairo-z15.1/repeat/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/cairo-z15.1/repeat/metrics.json": {
+      "sha256": "ed3ae9aad2ca01805f6ade4cd91c87fb19a89cd2d7a874cef869ec044471e426",
+      "bytes": 355
+    },
+    "3/cairo-z15.1/repeat/qgis.png": {
+      "sha256": "710d473447bed9cc869f39a83ad6c84b85384a98f6547e435b9b475501fba146",
+      "bytes": 586277
+    },
+    "3/cairo-z15.1/repeat/runtime.json": {
+      "sha256": "420526613feac0cd76426316a1822d2273f78c6027677271b4cb4f424120f672",
+      "bytes": 761
+    },
+    "3/geneva-streets-z18-light/after/diff.png": {
+      "sha256": "cf53bd4b18dd9b4387a2658eec2a23ae18b9994a1672033e86252ee8bbb3c0c7",
+      "bytes": 209830
+    },
+    "3/geneva-streets-z18-light/after/labels.json": {
+      "sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+      "bytes": 61995
+    },
+    "3/geneva-streets-z18-light/after/metrics.json": {
+      "sha256": "d5ee6f1b7dd27922b7e0e01dc93e4355225a54809ac67c088a5bbcca496450ae",
+      "bytes": 356
+    },
+    "3/geneva-streets-z18-light/after/qgis.png": {
+      "sha256": "08ccd959983dda84dc2a219cb9229c4e62731b9c9389ce5877941af316c3d318",
+      "bytes": 261655
+    },
+    "3/geneva-streets-z18-light/after/runtime.json": {
+      "sha256": "bb2f6c78fd49bddbcc6efb000bd6d3c3db6e14aa38624f1f845e240f01256da9",
+      "bytes": 761
+    },
+    "3/geneva-streets-z18-light/control/diff.png": {
+      "sha256": "cf53bd4b18dd9b4387a2658eec2a23ae18b9994a1672033e86252ee8bbb3c0c7",
+      "bytes": 209830
+    },
+    "3/geneva-streets-z18-light/control/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/geneva-streets-z18-light/control/metrics.json": {
+      "sha256": "d5ee6f1b7dd27922b7e0e01dc93e4355225a54809ac67c088a5bbcca496450ae",
+      "bytes": 356
+    },
+    "3/geneva-streets-z18-light/control/qgis.png": {
+      "sha256": "08ccd959983dda84dc2a219cb9229c4e62731b9c9389ce5877941af316c3d318",
+      "bytes": 261655
+    },
+    "3/geneva-streets-z18-light/control/runtime.json": {
+      "sha256": "bb2f6c78fd49bddbcc6efb000bd6d3c3db6e14aa38624f1f845e240f01256da9",
+      "bytes": 761
+    },
+    "3/geneva-streets-z18-light/repeat/diff.png": {
+      "sha256": "cf53bd4b18dd9b4387a2658eec2a23ae18b9994a1672033e86252ee8bbb3c0c7",
+      "bytes": 209830
+    },
+    "3/geneva-streets-z18-light/repeat/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/geneva-streets-z18-light/repeat/metrics.json": {
+      "sha256": "d5ee6f1b7dd27922b7e0e01dc93e4355225a54809ac67c088a5bbcca496450ae",
+      "bytes": 356
+    },
+    "3/geneva-streets-z18-light/repeat/qgis.png": {
+      "sha256": "08ccd959983dda84dc2a219cb9229c4e62731b9c9389ce5877941af316c3d318",
+      "bytes": 261655
+    },
+    "3/geneva-streets-z18-light/repeat/runtime.json": {
+      "sha256": "bb2f6c78fd49bddbcc6efb000bd6d3c3db6e14aa38624f1f845e240f01256da9",
+      "bytes": 761
+    },
+    "3/geneva-urban-z14-light/after/diff.png": {
+      "sha256": "aa94a998e460efd1c1aeb99f1b6d99b49b993ea459841a542a090a6355be1630",
+      "bytes": 444245
+    },
+    "3/geneva-urban-z14-light/after/labels.json": {
+      "sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+      "bytes": 61995
+    },
+    "3/geneva-urban-z14-light/after/metrics.json": {
+      "sha256": "75dbdc2c7cc45139b5da62c2d7ca4fd17e84fc9ccb7fbedb08d209171e4a96ff",
+      "bytes": 354
+    },
+    "3/geneva-urban-z14-light/after/qgis.png": {
+      "sha256": "bc11e49289db93790122cceec967133a73212c6c0ece3debf1c7bb3d56bfe9d3",
+      "bytes": 495406
+    },
+    "3/geneva-urban-z14-light/after/runtime.json": {
+      "sha256": "fcbb7c6127442c1305369e08d0bf5257c21e6d66647bd22c76f2e77e5d636917",
+      "bytes": 763
+    },
+    "3/geneva-urban-z14-light/control/diff.png": {
+      "sha256": "aa94a998e460efd1c1aeb99f1b6d99b49b993ea459841a542a090a6355be1630",
+      "bytes": 444245
+    },
+    "3/geneva-urban-z14-light/control/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/geneva-urban-z14-light/control/metrics.json": {
+      "sha256": "75dbdc2c7cc45139b5da62c2d7ca4fd17e84fc9ccb7fbedb08d209171e4a96ff",
+      "bytes": 354
+    },
+    "3/geneva-urban-z14-light/control/qgis.png": {
+      "sha256": "bc11e49289db93790122cceec967133a73212c6c0ece3debf1c7bb3d56bfe9d3",
+      "bytes": 495406
+    },
+    "3/geneva-urban-z14-light/control/runtime.json": {
+      "sha256": "fcbb7c6127442c1305369e08d0bf5257c21e6d66647bd22c76f2e77e5d636917",
+      "bytes": 763
+    },
+    "3/geneva-urban-z14-light/repeat/diff.png": {
+      "sha256": "aa94a998e460efd1c1aeb99f1b6d99b49b993ea459841a542a090a6355be1630",
+      "bytes": 444245
+    },
+    "3/geneva-urban-z14-light/repeat/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/geneva-urban-z14-light/repeat/metrics.json": {
+      "sha256": "75dbdc2c7cc45139b5da62c2d7ca4fd17e84fc9ccb7fbedb08d209171e4a96ff",
+      "bytes": 354
+    },
+    "3/geneva-urban-z14-light/repeat/qgis.png": {
+      "sha256": "bc11e49289db93790122cceec967133a73212c6c0ece3debf1c7bb3d56bfe9d3",
+      "bytes": 495406
+    },
+    "3/geneva-urban-z14-light/repeat/runtime.json": {
+      "sha256": "fcbb7c6127442c1305369e08d0bf5257c21e6d66647bd22c76f2e77e5d636917",
+      "bytes": 763
+    },
+    "3/jerusalem-city-z14/after/diff.png": {
+      "sha256": "be36ce4746420c21c30ec10a3c052d97bead715a997883e5c90c677b6e89ba67",
+      "bytes": 562817
+    },
+    "3/jerusalem-city-z14/after/labels.json": {
+      "sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+      "bytes": 61995
+    },
+    "3/jerusalem-city-z14/after/metrics.json": {
+      "sha256": "d474658146e591ac8764eb645d0813cdeedfd9f1f93f2fdc7652e91867b368c4",
+      "bytes": 347
+    },
+    "3/jerusalem-city-z14/after/qgis.png": {
+      "sha256": "30fc8b6e787b177a44531f019bc40a1bcce67766314ca18c7c40d113584d2393",
+      "bytes": 591025
+    },
+    "3/jerusalem-city-z14/after/runtime.json": {
+      "sha256": "d049de0865b29a7686cbfe2a989ed5b5c2a7b1aacdb876f2000645588dc94f3c",
+      "bytes": 759
+    },
+    "3/jerusalem-city-z14/control/diff.png": {
+      "sha256": "a076b10a77f14e2cb3e9faa47ccf6e3a0a5c96a184171e207e1c98ce5ab111ad",
+      "bytes": 576057
+    },
+    "3/jerusalem-city-z14/control/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/jerusalem-city-z14/control/metrics.json": {
+      "sha256": "0fe57b74e24a0afe2a5f42cf37c9412d47a3516a8fe05fc9e10d80384e90017a",
+      "bytes": 355
+    },
+    "3/jerusalem-city-z14/control/qgis.png": {
+      "sha256": "b1b0c8171a44214fd7dfdf3a538a347b2a8675314dc503486e9dc46fc0fe6db4",
+      "bytes": 598033
+    },
+    "3/jerusalem-city-z14/control/runtime.json": {
+      "sha256": "d049de0865b29a7686cbfe2a989ed5b5c2a7b1aacdb876f2000645588dc94f3c",
+      "bytes": 759
+    },
+    "3/jerusalem-city-z14/pdf-after/diff.png": {
+      "sha256": "be36ce4746420c21c30ec10a3c052d97bead715a997883e5c90c677b6e89ba67",
+      "bytes": 562817
+    },
+    "3/jerusalem-city-z14/pdf-after/labels.json": {
+      "sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+      "bytes": 61995
+    },
+    "3/jerusalem-city-z14/pdf-after/metrics.json": {
+      "sha256": "d474658146e591ac8764eb645d0813cdeedfd9f1f93f2fdc7652e91867b368c4",
+      "bytes": 347
+    },
+    "3/jerusalem-city-z14/pdf-after/pdf150-context.json": {
+      "sha256": "a9197f9f690f967c3e5ceefa7818922142679234a4d7eeb782b6a768594100c4",
+      "bytes": 312
+    },
+    "3/jerusalem-city-z14/pdf-after/pdf150-repeat-context.json": {
+      "sha256": "a9197f9f690f967c3e5ceefa7818922142679234a4d7eeb782b6a768594100c4",
+      "bytes": 312
+    },
+    "3/jerusalem-city-z14/pdf-after/pdf150-repeat.pdf": {
+      "sha256": "c95ef8c09935d62d4185cd59a08dc41c306dba072a26fee9b60604c73ed940b4",
+      "bytes": 1183756
+    },
+    "3/jerusalem-city-z14/pdf-after/pdf150-repeat.png": {
+      "sha256": "b58fdf406516a00a11f7e431662deea5024f43a41b5b14ef13d666c81ff295f5",
+      "bytes": 519707
+    },
+    "3/jerusalem-city-z14/pdf-after/pdf150-repeat.txt": {
+      "sha256": "ef6cbd2161eaea7943ce8693b9824d23d1793ffb1c0fca05b600d3899b44c977",
+      "bytes": 1
+    },
+    "3/jerusalem-city-z14/pdf-after/pdf150.pdf": {
+      "sha256": "018f81060d83e99b4513a57c322e93a89ecbcb40521cd6dbaf22dc2d3e028056",
+      "bytes": 1183735
+    },
+    "3/jerusalem-city-z14/pdf-after/pdf150.png": {
+      "sha256": "b58fdf406516a00a11f7e431662deea5024f43a41b5b14ef13d666c81ff295f5",
+      "bytes": 519707
+    },
+    "3/jerusalem-city-z14/pdf-after/pdf150.txt": {
+      "sha256": "ef6cbd2161eaea7943ce8693b9824d23d1793ffb1c0fca05b600d3899b44c977",
+      "bytes": 1
+    },
+    "3/jerusalem-city-z14/pdf-after/placed-labels.json": {
+      "sha256": "08e8b4517b25b7d88790542578b98f7b03f001b28da76cf17428a2f02043c5d7",
+      "bytes": 564994
+    },
+    "3/jerusalem-city-z14/pdf-after/qgis.png": {
+      "sha256": "30fc8b6e787b177a44531f019bc40a1bcce67766314ca18c7c40d113584d2393",
+      "bytes": 591025
+    },
+    "3/jerusalem-city-z14/pdf-after/runtime.json": {
+      "sha256": "d049de0865b29a7686cbfe2a989ed5b5c2a7b1aacdb876f2000645588dc94f3c",
+      "bytes": 759
+    },
+    "3/jerusalem-city-z14/pdf-before/diff.png": {
+      "sha256": "a076b10a77f14e2cb3e9faa47ccf6e3a0a5c96a184171e207e1c98ce5ab111ad",
+      "bytes": 576057
+    },
+    "3/jerusalem-city-z14/pdf-before/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/jerusalem-city-z14/pdf-before/metrics.json": {
+      "sha256": "0fe57b74e24a0afe2a5f42cf37c9412d47a3516a8fe05fc9e10d80384e90017a",
+      "bytes": 355
+    },
+    "3/jerusalem-city-z14/pdf-before/pdf150-context.json": {
+      "sha256": "a9197f9f690f967c3e5ceefa7818922142679234a4d7eeb782b6a768594100c4",
+      "bytes": 312
+    },
+    "3/jerusalem-city-z14/pdf-before/pdf150-repeat-context.json": {
+      "sha256": "a9197f9f690f967c3e5ceefa7818922142679234a4d7eeb782b6a768594100c4",
+      "bytes": 312
+    },
+    "3/jerusalem-city-z14/pdf-before/pdf150-repeat.pdf": {
+      "sha256": "f726844650d4002487e66169eab7ebe73e69e8d42460ae9943863fcc6aa2582d",
+      "bytes": 1141860
+    },
+    "3/jerusalem-city-z14/pdf-before/pdf150-repeat.png": {
+      "sha256": "11b27102a01365be79305684faa3f11f222b34a6f1234066ae4570fa5c45b051",
+      "bytes": 529136
+    },
+    "3/jerusalem-city-z14/pdf-before/pdf150-repeat.txt": {
+      "sha256": "ef6cbd2161eaea7943ce8693b9824d23d1793ffb1c0fca05b600d3899b44c977",
+      "bytes": 1
+    },
+    "3/jerusalem-city-z14/pdf-before/pdf150.pdf": {
+      "sha256": "6c33f4db91424c2e5e99852d91bd784c2baa4b4260b344e9a7031e691cea1825",
+      "bytes": 1141839
+    },
+    "3/jerusalem-city-z14/pdf-before/pdf150.png": {
+      "sha256": "11b27102a01365be79305684faa3f11f222b34a6f1234066ae4570fa5c45b051",
+      "bytes": 529136
+    },
+    "3/jerusalem-city-z14/pdf-before/pdf150.txt": {
+      "sha256": "ef6cbd2161eaea7943ce8693b9824d23d1793ffb1c0fca05b600d3899b44c977",
+      "bytes": 1
+    },
+    "3/jerusalem-city-z14/pdf-before/placed-labels.json": {
+      "sha256": "bce000b870db4f940bb37db4a9fc4163120c425094d8d498cfacb90e853f2a85",
+      "bytes": 738746
+    },
+    "3/jerusalem-city-z14/pdf-before/qgis.png": {
+      "sha256": "b1b0c8171a44214fd7dfdf3a538a347b2a8675314dc503486e9dc46fc0fe6db4",
+      "bytes": 598033
+    },
+    "3/jerusalem-city-z14/pdf-before/runtime.json": {
+      "sha256": "d049de0865b29a7686cbfe2a989ed5b5c2a7b1aacdb876f2000645588dc94f3c",
+      "bytes": 759
+    },
+    "3/jerusalem-city-z14/repeat/diff.png": {
+      "sha256": "a076b10a77f14e2cb3e9faa47ccf6e3a0a5c96a184171e207e1c98ce5ab111ad",
+      "bytes": 576057
+    },
+    "3/jerusalem-city-z14/repeat/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/jerusalem-city-z14/repeat/metrics.json": {
+      "sha256": "0fe57b74e24a0afe2a5f42cf37c9412d47a3516a8fe05fc9e10d80384e90017a",
+      "bytes": 355
+    },
+    "3/jerusalem-city-z14/repeat/qgis.png": {
+      "sha256": "b1b0c8171a44214fd7dfdf3a538a347b2a8675314dc503486e9dc46fc0fe6db4",
+      "bytes": 598033
+    },
+    "3/jerusalem-city-z14/repeat/runtime.json": {
+      "sha256": "d049de0865b29a7686cbfe2a989ed5b5c2a7b1aacdb876f2000645588dc94f3c",
+      "bytes": 759
+    },
+    "3/jerusalem-city-z14-activity/after/diff.png": {
+      "sha256": "2de0e51917687dfe7a8b07bc2d77e9b34a98ab5382aa0ba6b9e7486540330faf",
+      "bytes": 603175
+    },
+    "3/jerusalem-city-z14-activity/after/labels.json": {
+      "sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+      "bytes": 61995
+    },
+    "3/jerusalem-city-z14-activity/after/metrics.json": {
+      "sha256": "19ca7f55e671ba1254a4f42643eb4d5f21a234dd611e31c28c9e6dd9dd5edfb2",
+      "bytes": 347
+    },
+    "3/jerusalem-city-z14-activity/after/qgis.png": {
+      "sha256": "54cd8f2ee262d8276ae949afafa02126aa960d3455215be486c17af12491a01b",
+      "bytes": 637347
+    },
+    "3/jerusalem-city-z14-activity/after/runtime.json": {
+      "sha256": "d049de0865b29a7686cbfe2a989ed5b5c2a7b1aacdb876f2000645588dc94f3c",
+      "bytes": 759
+    },
+    "3/jerusalem-city-z14-activity/control/diff.png": {
+      "sha256": "7e9151800af386aaa8647ed033a600e1f831af7ca21c9d5149e35e14db1b0933",
+      "bytes": 617561
+    },
+    "3/jerusalem-city-z14-activity/control/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/jerusalem-city-z14-activity/control/metrics.json": {
+      "sha256": "513a8cb759f9bf4cfcb6da23be725e72aed433e148b5d762c2831bfa2253ab25",
+      "bytes": 352
+    },
+    "3/jerusalem-city-z14-activity/control/qgis.png": {
+      "sha256": "cfd2f35e9cb4d6b87b205234ce152d4e88bf1d4d16e898a9c61cef097614a73c",
+      "bytes": 644132
+    },
+    "3/jerusalem-city-z14-activity/control/runtime.json": {
+      "sha256": "d049de0865b29a7686cbfe2a989ed5b5c2a7b1aacdb876f2000645588dc94f3c",
+      "bytes": 759
+    },
+    "3/jerusalem-city-z14-activity/repeat/diff.png": {
+      "sha256": "7e9151800af386aaa8647ed033a600e1f831af7ca21c9d5149e35e14db1b0933",
+      "bytes": 617561
+    },
+    "3/jerusalem-city-z14-activity/repeat/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/jerusalem-city-z14-activity/repeat/metrics.json": {
+      "sha256": "513a8cb759f9bf4cfcb6da23be725e72aed433e148b5d762c2831bfa2253ab25",
+      "bytes": 352
+    },
+    "3/jerusalem-city-z14-activity/repeat/qgis.png": {
+      "sha256": "cfd2f35e9cb4d6b87b205234ce152d4e88bf1d4d16e898a9c61cef097614a73c",
+      "bytes": 644132
+    },
+    "3/jerusalem-city-z14-activity/repeat/runtime.json": {
+      "sha256": "d049de0865b29a7686cbfe2a989ed5b5c2a7b1aacdb876f2000645588dc94f3c",
+      "bytes": 759
+    },
+    "3/lausanne-lavaux-z10-light/after/diff.png": {
+      "sha256": "93fe5268ab565d65105da3fc600ea3cd9862366c98a2778c471244423fa5f284",
+      "bytes": 674189
+    },
+    "3/lausanne-lavaux-z10-light/after/labels.json": {
+      "sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+      "bytes": 61995
+    },
+    "3/lausanne-lavaux-z10-light/after/metrics.json": {
+      "sha256": "fb1e9fd10ebac783ea7c59eb4e59408b895385d18a3a1e7e11259437829ab2bd",
+      "bytes": 354
+    },
+    "3/lausanne-lavaux-z10-light/after/qgis.png": {
+      "sha256": "01ee25249969a9312922d2a4dc3af934751d04729e1bbced7e44159d61bd8d46",
+      "bytes": 566216
+    },
+    "3/lausanne-lavaux-z10-light/after/runtime.json": {
+      "sha256": "d293af81ecc636b7f2ca0e9f2536a1689cb07ce7f6dba383e95a20ec6224ad91",
+      "bytes": 764
+    },
+    "3/lausanne-lavaux-z10-light/control/diff.png": {
+      "sha256": "93fe5268ab565d65105da3fc600ea3cd9862366c98a2778c471244423fa5f284",
+      "bytes": 674189
+    },
+    "3/lausanne-lavaux-z10-light/control/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/lausanne-lavaux-z10-light/control/metrics.json": {
+      "sha256": "fb1e9fd10ebac783ea7c59eb4e59408b895385d18a3a1e7e11259437829ab2bd",
+      "bytes": 354
+    },
+    "3/lausanne-lavaux-z10-light/control/qgis.png": {
+      "sha256": "01ee25249969a9312922d2a4dc3af934751d04729e1bbced7e44159d61bd8d46",
+      "bytes": 566216
+    },
+    "3/lausanne-lavaux-z10-light/control/runtime.json": {
+      "sha256": "d293af81ecc636b7f2ca0e9f2536a1689cb07ce7f6dba383e95a20ec6224ad91",
+      "bytes": 764
+    },
+    "3/lausanne-lavaux-z10-light/repeat/diff.png": {
+      "sha256": "93fe5268ab565d65105da3fc600ea3cd9862366c98a2778c471244423fa5f284",
+      "bytes": 674189
+    },
+    "3/lausanne-lavaux-z10-light/repeat/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/lausanne-lavaux-z10-light/repeat/metrics.json": {
+      "sha256": "fb1e9fd10ebac783ea7c59eb4e59408b895385d18a3a1e7e11259437829ab2bd",
+      "bytes": 354
+    },
+    "3/lausanne-lavaux-z10-light/repeat/qgis.png": {
+      "sha256": "01ee25249969a9312922d2a4dc3af934751d04729e1bbced7e44159d61bd8d46",
+      "bytes": 566216
+    },
+    "3/lausanne-lavaux-z10-light/repeat/runtime.json": {
+      "sha256": "d293af81ecc636b7f2ca0e9f2536a1689cb07ce7f6dba383e95a20ec6224ad91",
+      "bytes": 764
+    },
+    "3/switzerland-alps-z5-light/after/diff.png": {
+      "sha256": "c5ccd6bca06c8067cea91a515edb1f22065d8e65272da0913910d598c0006e40",
+      "bytes": 1092801
+    },
+    "3/switzerland-alps-z5-light/after/labels.json": {
+      "sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+      "bytes": 61995
+    },
+    "3/switzerland-alps-z5-light/after/metrics.json": {
+      "sha256": "b5f0219b3ba79a7bb077373682a07500d062671ad3168c2299e119f8f5dc680b",
+      "bytes": 348
+    },
+    "3/switzerland-alps-z5-light/after/qgis.png": {
+      "sha256": "e33cf6f0652b2dc2e13a236d9deed6d4be52e3834b4c107351d7f5d21b928d3e",
+      "bytes": 584554
+    },
+    "3/switzerland-alps-z5-light/after/runtime.json": {
+      "sha256": "b96b54ffcdcdc323fb0f6ee21cf45c2a57e234e02ba3c277b300e9e6374b92f0",
+      "bytes": 751
+    },
+    "3/switzerland-alps-z5-light/control/diff.png": {
+      "sha256": "c5ccd6bca06c8067cea91a515edb1f22065d8e65272da0913910d598c0006e40",
+      "bytes": 1092801
+    },
+    "3/switzerland-alps-z5-light/control/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/switzerland-alps-z5-light/control/metrics.json": {
+      "sha256": "b5f0219b3ba79a7bb077373682a07500d062671ad3168c2299e119f8f5dc680b",
+      "bytes": 348
+    },
+    "3/switzerland-alps-z5-light/control/qgis.png": {
+      "sha256": "e33cf6f0652b2dc2e13a236d9deed6d4be52e3834b4c107351d7f5d21b928d3e",
+      "bytes": 584554
+    },
+    "3/switzerland-alps-z5-light/control/runtime.json": {
+      "sha256": "b96b54ffcdcdc323fb0f6ee21cf45c2a57e234e02ba3c277b300e9e6374b92f0",
+      "bytes": 751
+    },
+    "3/switzerland-alps-z5-light/repeat/diff.png": {
+      "sha256": "c5ccd6bca06c8067cea91a515edb1f22065d8e65272da0913910d598c0006e40",
+      "bytes": 1092801
+    },
+    "3/switzerland-alps-z5-light/repeat/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/switzerland-alps-z5-light/repeat/metrics.json": {
+      "sha256": "b5f0219b3ba79a7bb077373682a07500d062671ad3168c2299e119f8f5dc680b",
+      "bytes": 348
+    },
+    "3/switzerland-alps-z5-light/repeat/qgis.png": {
+      "sha256": "e33cf6f0652b2dc2e13a236d9deed6d4be52e3834b4c107351d7f5d21b928d3e",
+      "bytes": 584554
+    },
+    "3/switzerland-alps-z5-light/repeat/runtime.json": {
+      "sha256": "b96b54ffcdcdc323fb0f6ee21cf45c2a57e234e02ba3c277b300e9e6374b92f0",
+      "bytes": 751
+    },
+    "3/zurich-region-z8-light/after/diff.png": {
+      "sha256": "783d4c97aad90bbaafc54d038ce3f2223ebf6ee9e78753b25d96c5d9355614b8",
+      "bytes": 936357
+    },
+    "3/zurich-region-z8-light/after/labels.json": {
+      "sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+      "bytes": 61995
+    },
+    "3/zurich-region-z8-light/after/metrics.json": {
+      "sha256": "31e9ddaa7baf9459bafdc6ac506af14335f76ad816ed48fe4169d4fb3e6a5a0b",
+      "bytes": 355
+    },
+    "3/zurich-region-z8-light/after/qgis.png": {
+      "sha256": "886180099efdbf4a7c3cdd75e7719408c34b71b69f36310765a9b2a4f7f9fdeb",
+      "bytes": 862479
+    },
+    "3/zurich-region-z8-light/after/runtime.json": {
+      "sha256": "eb5691f1386987ff3f5d562ae25bcdb8d3240e9b0fc46d7a212a0cccd2533515",
+      "bytes": 757
+    },
+    "3/zurich-region-z8-light/control/diff.png": {
+      "sha256": "783d4c97aad90bbaafc54d038ce3f2223ebf6ee9e78753b25d96c5d9355614b8",
+      "bytes": 936357
+    },
+    "3/zurich-region-z8-light/control/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/zurich-region-z8-light/control/metrics.json": {
+      "sha256": "31e9ddaa7baf9459bafdc6ac506af14335f76ad816ed48fe4169d4fb3e6a5a0b",
+      "bytes": 355
+    },
+    "3/zurich-region-z8-light/control/qgis.png": {
+      "sha256": "886180099efdbf4a7c3cdd75e7719408c34b71b69f36310765a9b2a4f7f9fdeb",
+      "bytes": 862479
+    },
+    "3/zurich-region-z8-light/control/runtime.json": {
+      "sha256": "eb5691f1386987ff3f5d562ae25bcdb8d3240e9b0fc46d7a212a0cccd2533515",
+      "bytes": 757
+    },
+    "3/zurich-region-z8-light/repeat/diff.png": {
+      "sha256": "783d4c97aad90bbaafc54d038ce3f2223ebf6ee9e78753b25d96c5d9355614b8",
+      "bytes": 936357
+    },
+    "3/zurich-region-z8-light/repeat/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/zurich-region-z8-light/repeat/metrics.json": {
+      "sha256": "31e9ddaa7baf9459bafdc6ac506af14335f76ad816ed48fe4169d4fb3e6a5a0b",
+      "bytes": 355
+    },
+    "3/zurich-region-z8-light/repeat/qgis.png": {
+      "sha256": "886180099efdbf4a7c3cdd75e7719408c34b71b69f36310765a9b2a4f7f9fdeb",
+      "bytes": 862479
+    },
+    "3/zurich-region-z8-light/repeat/runtime.json": {
+      "sha256": "eb5691f1386987ff3f5d562ae25bcdb8d3240e9b0fc46d7a212a0cccd2533515",
+      "bytes": 757
+    },
+    "3/zurich-streets-z17-light/after/diff.png": {
+      "sha256": "8c42ebc4cdcf1f5bfe626aac9518cfed7e173e7ec53cf6947a3d0f9bcb7cb775",
+      "bytes": 362497
+    },
+    "3/zurich-streets-z17-light/after/labels.json": {
+      "sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+      "bytes": 61995
+    },
+    "3/zurich-streets-z17-light/after/metrics.json": {
+      "sha256": "3b77ae1f02a36de56835166ef5dd38ca0ede5af77f42431453a6c6a8ead53297",
+      "bytes": 355
+    },
+    "3/zurich-streets-z17-light/after/qgis.png": {
+      "sha256": "87f065071da31fb6bca580413e5e1aa3006c1294126235b35f55aea2430e37ee",
+      "bytes": 315691
+    },
+    "3/zurich-streets-z17-light/after/runtime.json": {
+      "sha256": "40fa05c28e3e2670c2d5c0f34bd4ac476cdf8045d0ec11fd1dfba5b4f831d789",
+      "bytes": 758
+    },
+    "3/zurich-streets-z17-light/control/diff.png": {
+      "sha256": "8c42ebc4cdcf1f5bfe626aac9518cfed7e173e7ec53cf6947a3d0f9bcb7cb775",
+      "bytes": 362497
+    },
+    "3/zurich-streets-z17-light/control/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/zurich-streets-z17-light/control/metrics.json": {
+      "sha256": "3b77ae1f02a36de56835166ef5dd38ca0ede5af77f42431453a6c6a8ead53297",
+      "bytes": 355
+    },
+    "3/zurich-streets-z17-light/control/qgis.png": {
+      "sha256": "87f065071da31fb6bca580413e5e1aa3006c1294126235b35f55aea2430e37ee",
+      "bytes": 315691
+    },
+    "3/zurich-streets-z17-light/control/runtime.json": {
+      "sha256": "40fa05c28e3e2670c2d5c0f34bd4ac476cdf8045d0ec11fd1dfba5b4f831d789",
+      "bytes": 758
+    },
+    "3/zurich-streets-z17-light/repeat/diff.png": {
+      "sha256": "8c42ebc4cdcf1f5bfe626aac9518cfed7e173e7ec53cf6947a3d0f9bcb7cb775",
+      "bytes": 362497
+    },
+    "3/zurich-streets-z17-light/repeat/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/zurich-streets-z17-light/repeat/metrics.json": {
+      "sha256": "3b77ae1f02a36de56835166ef5dd38ca0ede5af77f42431453a6c6a8ead53297",
+      "bytes": 355
+    },
+    "3/zurich-streets-z17-light/repeat/qgis.png": {
+      "sha256": "87f065071da31fb6bca580413e5e1aa3006c1294126235b35f55aea2430e37ee",
+      "bytes": 315691
+    },
+    "3/zurich-streets-z17-light/repeat/runtime.json": {
+      "sha256": "40fa05c28e3e2670c2d5c0f34bd4ac476cdf8045d0ec11fd1dfba5b4f831d789",
+      "bytes": 758
+    },
+    "4/bern-urban-z12-light/after/diff.png": {
+      "sha256": "47569b470a1db86356a97c44c507428ed5b637f7b9edcea15ff4c3d5abd03b13",
+      "bytes": 465457
+    },
+    "4/bern-urban-z12-light/after/labels.json": {
+      "sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+      "bytes": 61995
+    },
+    "4/bern-urban-z12-light/after/metrics.json": {
+      "sha256": "79867876489184a79902e3093c6685afac10a284844b6788e549414cdd08e077",
+      "bytes": 354
+    },
+    "4/bern-urban-z12-light/after/qgis.png": {
+      "sha256": "b2f1f44db6aeb8e56078253828089941d2f647ad8f9d735993ae12a33808a51b",
+      "bytes": 519512
+    },
+    "4/bern-urban-z12-light/after/runtime.json": {
+      "sha256": "a02eacb9a36fd4ef9a0be1110379636159684e7daa21041498b0016d7f47bacf",
+      "bytes": 783
+    },
+    "4/bern-urban-z12-light/control/diff.png": {
+      "sha256": "47569b470a1db86356a97c44c507428ed5b637f7b9edcea15ff4c3d5abd03b13",
+      "bytes": 465457
+    },
+    "4/bern-urban-z12-light/control/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/bern-urban-z12-light/control/metrics.json": {
+      "sha256": "79867876489184a79902e3093c6685afac10a284844b6788e549414cdd08e077",
+      "bytes": 354
+    },
+    "4/bern-urban-z12-light/control/qgis.png": {
+      "sha256": "b2f1f44db6aeb8e56078253828089941d2f647ad8f9d735993ae12a33808a51b",
+      "bytes": 519512
+    },
+    "4/bern-urban-z12-light/control/runtime.json": {
+      "sha256": "a02eacb9a36fd4ef9a0be1110379636159684e7daa21041498b0016d7f47bacf",
+      "bytes": 783
+    },
+    "4/bern-urban-z12-light/repeat/diff.png": {
+      "sha256": "47569b470a1db86356a97c44c507428ed5b637f7b9edcea15ff4c3d5abd03b13",
+      "bytes": 465457
+    },
+    "4/bern-urban-z12-light/repeat/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/bern-urban-z12-light/repeat/metrics.json": {
+      "sha256": "79867876489184a79902e3093c6685afac10a284844b6788e549414cdd08e077",
+      "bytes": 354
+    },
+    "4/bern-urban-z12-light/repeat/qgis.png": {
+      "sha256": "b2f1f44db6aeb8e56078253828089941d2f647ad8f9d735993ae12a33808a51b",
+      "bytes": 519512
+    },
+    "4/bern-urban-z12-light/repeat/runtime.json": {
+      "sha256": "a02eacb9a36fd4ef9a0be1110379636159684e7daa21041498b0016d7f47bacf",
+      "bytes": 783
+    },
+    "4/cairo-nile-z14/after/diff.png": {
+      "sha256": "134af73da2e26c6862f062e63940a73fed9b1c3ad3780bf85dffbe180e09cca4",
+      "bytes": 398256
+    },
+    "4/cairo-nile-z14/after/labels.json": {
+      "sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+      "bytes": 61995
+    },
+    "4/cairo-nile-z14/after/metrics.json": {
+      "sha256": "2662d0c594839d1cddcca6522ca5c4e7c140c3f1946fcdcf50152beb15f80ce8",
+      "bytes": 351
+    },
+    "4/cairo-nile-z14/after/qgis.png": {
+      "sha256": "dcb444684a8b2901d1de5c095dba0678658fe5d75c6e04baf0bf20e6544916f3",
+      "bytes": 624206
+    },
+    "4/cairo-nile-z14/after/runtime.json": {
+      "sha256": "cf69b682b385437ebd03eef2de4f1361e0d7b27806c5ae21543765b53d4af7c3",
+      "bytes": 785
+    },
+    "4/cairo-nile-z14/control/diff.png": {
+      "sha256": "4e3bff5cbc5ec7c6835a6ae3230de48436fd0af30f050f2ccde84b7f2ef613a3",
+      "bytes": 385547
+    },
+    "4/cairo-nile-z14/control/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/cairo-nile-z14/control/metrics.json": {
+      "sha256": "f620eb7ddafbc1253f949f5bc1ced3938e6b95225de722b11facf5940804f9a2",
+      "bytes": 352
+    },
+    "4/cairo-nile-z14/control/qgis.png": {
+      "sha256": "4f3f074a25abdab41dbf147e014e695c2f1f62ca333fea0fc4f78b59c8925c11",
+      "bytes": 571882
+    },
+    "4/cairo-nile-z14/control/runtime.json": {
+      "sha256": "cf69b682b385437ebd03eef2de4f1361e0d7b27806c5ae21543765b53d4af7c3",
+      "bytes": 785
+    },
+    "4/cairo-nile-z14/pdf-after/diff.png": {
+      "sha256": "134af73da2e26c6862f062e63940a73fed9b1c3ad3780bf85dffbe180e09cca4",
+      "bytes": 398256
+    },
+    "4/cairo-nile-z14/pdf-after/labels.json": {
+      "sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+      "bytes": 61995
+    },
+    "4/cairo-nile-z14/pdf-after/metrics.json": {
+      "sha256": "2662d0c594839d1cddcca6522ca5c4e7c140c3f1946fcdcf50152beb15f80ce8",
+      "bytes": 351
+    },
+    "4/cairo-nile-z14/pdf-after/pdf150-context.json": {
+      "sha256": "257d0b56e49f30da0273d0a094b48fe015f5a8aedc41b87c721e353106b6364e",
+      "bytes": 313
+    },
+    "4/cairo-nile-z14/pdf-after/pdf150-repeat-context.json": {
+      "sha256": "257d0b56e49f30da0273d0a094b48fe015f5a8aedc41b87c721e353106b6364e",
+      "bytes": 313
+    },
+    "4/cairo-nile-z14/pdf-after/pdf150-repeat.pdf": {
+      "sha256": "8438f0baeabf06a624be5dc73e714f1e405d4ced3dfedc7efbf01b7aa6260d29",
+      "bytes": 7739776
+    },
+    "4/cairo-nile-z14/pdf-after/pdf150-repeat.png": {
+      "sha256": "c4bb86e9a89a502d52bd3d57ce21742cb629472aba3243bd67950ffa0ecf7d10",
+      "bytes": 824891
+    },
+    "4/cairo-nile-z14/pdf-after/pdf150-repeat.txt": {
+      "sha256": "ef6cbd2161eaea7943ce8693b9824d23d1793ffb1c0fca05b600d3899b44c977",
+      "bytes": 1
+    },
+    "4/cairo-nile-z14/pdf-after/pdf150.pdf": {
+      "sha256": "07f7f2e84d4408272e166e28d753592eda6b4f97d7ed1cfe98aa9197c60922fe",
+      "bytes": 7740299
+    },
+    "4/cairo-nile-z14/pdf-after/pdf150.png": {
+      "sha256": "28ba45443d83563dff346cf4efa0b34bc356c349b47418d3c522b97e29d81dec",
+      "bytes": 824912
+    },
+    "4/cairo-nile-z14/pdf-after/pdf150.txt": {
+      "sha256": "ef6cbd2161eaea7943ce8693b9824d23d1793ffb1c0fca05b600d3899b44c977",
+      "bytes": 1
+    },
+    "4/cairo-nile-z14/pdf-after/placed-labels.json": {
+      "sha256": "a7d11c8783bd3b7d49416aa682d93fc39b83dbcdc216e24cba25caf8506c2fd8",
+      "bytes": 754588
+    },
+    "4/cairo-nile-z14/pdf-after/qgis.png": {
+      "sha256": "dcb444684a8b2901d1de5c095dba0678658fe5d75c6e04baf0bf20e6544916f3",
+      "bytes": 624206
+    },
+    "4/cairo-nile-z14/pdf-after/runtime.json": {
+      "sha256": "cf69b682b385437ebd03eef2de4f1361e0d7b27806c5ae21543765b53d4af7c3",
+      "bytes": 785
+    },
+    "4/cairo-nile-z14/pdf-before/diff.png": {
+      "sha256": "4e3bff5cbc5ec7c6835a6ae3230de48436fd0af30f050f2ccde84b7f2ef613a3",
+      "bytes": 385547
+    },
+    "4/cairo-nile-z14/pdf-before/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/cairo-nile-z14/pdf-before/metrics.json": {
+      "sha256": "f620eb7ddafbc1253f949f5bc1ced3938e6b95225de722b11facf5940804f9a2",
+      "bytes": 352
+    },
+    "4/cairo-nile-z14/pdf-before/pdf150-context.json": {
+      "sha256": "257d0b56e49f30da0273d0a094b48fe015f5a8aedc41b87c721e353106b6364e",
+      "bytes": 313
+    },
+    "4/cairo-nile-z14/pdf-before/pdf150-repeat-context.json": {
+      "sha256": "257d0b56e49f30da0273d0a094b48fe015f5a8aedc41b87c721e353106b6364e",
+      "bytes": 313
+    },
+    "4/cairo-nile-z14/pdf-before/pdf150-repeat.pdf": {
+      "sha256": "0e4d13ad456ccbad7a1e20edae1285d066519a75727e4468fd3c060163f14673",
+      "bytes": 6724564
+    },
+    "4/cairo-nile-z14/pdf-before/pdf150-repeat.png": {
+      "sha256": "8d3a7356bf294ec34e6414a29127b7f9a989ffe6a309a442a871f5461cda8888",
+      "bytes": 771886
+    },
+    "4/cairo-nile-z14/pdf-before/pdf150-repeat.txt": {
+      "sha256": "ef6cbd2161eaea7943ce8693b9824d23d1793ffb1c0fca05b600d3899b44c977",
+      "bytes": 1
+    },
+    "4/cairo-nile-z14/pdf-before/pdf150.pdf": {
+      "sha256": "efbf13cd31dad4862772f67d19aef108c65172c2111bdeaee2b41eabbd2322fa",
+      "bytes": 6724800
+    },
+    "4/cairo-nile-z14/pdf-before/pdf150.png": {
+      "sha256": "c4dda1ea20c9959e2722f28ac129000eb8bbcaf80da1456247529f4b25b61223",
+      "bytes": 771934
+    },
+    "4/cairo-nile-z14/pdf-before/pdf150.txt": {
+      "sha256": "ef6cbd2161eaea7943ce8693b9824d23d1793ffb1c0fca05b600d3899b44c977",
+      "bytes": 1
+    },
+    "4/cairo-nile-z14/pdf-before/placed-labels.json": {
+      "sha256": "b3c338d15baa3483c3a19e285e4e82156b30fc9f748efd99803a316dffa03876",
+      "bytes": 561184
+    },
+    "4/cairo-nile-z14/pdf-before/qgis.png": {
+      "sha256": "4f3f074a25abdab41dbf147e014e695c2f1f62ca333fea0fc4f78b59c8925c11",
+      "bytes": 571882
+    },
+    "4/cairo-nile-z14/pdf-before/runtime.json": {
+      "sha256": "cf69b682b385437ebd03eef2de4f1361e0d7b27806c5ae21543765b53d4af7c3",
+      "bytes": 785
+    },
+    "4/cairo-nile-z14/repeat/diff.png": {
+      "sha256": "4e3bff5cbc5ec7c6835a6ae3230de48436fd0af30f050f2ccde84b7f2ef613a3",
+      "bytes": 385547
+    },
+    "4/cairo-nile-z14/repeat/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/cairo-nile-z14/repeat/metrics.json": {
+      "sha256": "f620eb7ddafbc1253f949f5bc1ced3938e6b95225de722b11facf5940804f9a2",
+      "bytes": 352
+    },
+    "4/cairo-nile-z14/repeat/qgis.png": {
+      "sha256": "4f3f074a25abdab41dbf147e014e695c2f1f62ca333fea0fc4f78b59c8925c11",
+      "bytes": 571882
+    },
+    "4/cairo-nile-z14/repeat/runtime.json": {
+      "sha256": "cf69b682b385437ebd03eef2de4f1361e0d7b27806c5ae21543765b53d4af7c3",
+      "bytes": 785
+    },
+    "4/cairo-nile-z14-activity/after/diff.png": {
+      "sha256": "0a8de42e84ce68b43b831cfe30fe2e26b6ae8e31e45c389508c45f662a2b1ea9",
+      "bytes": 465234
+    },
+    "4/cairo-nile-z14-activity/after/labels.json": {
+      "sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+      "bytes": 61995
+    },
+    "4/cairo-nile-z14-activity/after/metrics.json": {
+      "sha256": "8fc9ae18a4a6149a7c3d6f0c33c221569f6bb75c2da2a3d54f7ad442474aa549",
+      "bytes": 354
+    },
+    "4/cairo-nile-z14-activity/after/qgis.png": {
+      "sha256": "368e2b7556d6eb32df34f7707e2b879255bdc0818220395519412d5668b7aca8",
+      "bytes": 677753
+    },
+    "4/cairo-nile-z14-activity/after/runtime.json": {
+      "sha256": "cf69b682b385437ebd03eef2de4f1361e0d7b27806c5ae21543765b53d4af7c3",
+      "bytes": 785
+    },
+    "4/cairo-nile-z14-activity/control/diff.png": {
+      "sha256": "50bb44855e18a71b1ed8b771b981cef064c6612921a7e68817b5e50a045be041",
+      "bytes": 453335
+    },
+    "4/cairo-nile-z14-activity/control/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/cairo-nile-z14-activity/control/metrics.json": {
+      "sha256": "e9eeb0b99ef98094ef73814ce4673db54b1ec16cfa144729be78393e5c6d2486",
+      "bytes": 352
+    },
+    "4/cairo-nile-z14-activity/control/qgis.png": {
+      "sha256": "2466b6c3e286623cce438d5e4b240a39a5089ce7fe4e5a70dba04f51a458ac73",
+      "bytes": 627003
+    },
+    "4/cairo-nile-z14-activity/control/runtime.json": {
+      "sha256": "cf69b682b385437ebd03eef2de4f1361e0d7b27806c5ae21543765b53d4af7c3",
+      "bytes": 785
+    },
+    "4/cairo-nile-z14-activity/repeat/diff.png": {
+      "sha256": "50bb44855e18a71b1ed8b771b981cef064c6612921a7e68817b5e50a045be041",
+      "bytes": 453335
+    },
+    "4/cairo-nile-z14-activity/repeat/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/cairo-nile-z14-activity/repeat/metrics.json": {
+      "sha256": "e9eeb0b99ef98094ef73814ce4673db54b1ec16cfa144729be78393e5c6d2486",
+      "bytes": 352
+    },
+    "4/cairo-nile-z14-activity/repeat/qgis.png": {
+      "sha256": "2466b6c3e286623cce438d5e4b240a39a5089ce7fe4e5a70dba04f51a458ac73",
+      "bytes": 627003
+    },
+    "4/cairo-nile-z14-activity/repeat/runtime.json": {
+      "sha256": "cf69b682b385437ebd03eef2de4f1361e0d7b27806c5ae21543765b53d4af7c3",
+      "bytes": 785
+    },
+    "4/cairo-z11.9/after/diff.png": {
+      "sha256": "d48d6ac0cd416976296c397dfaadbc202d60ecb90621acfd457684a5b4dfe2c0",
+      "bytes": 582957
+    },
+    "4/cairo-z11.9/after/labels.json": {
+      "sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+      "bytes": 61995
+    },
+    "4/cairo-z11.9/after/metrics.json": {
+      "sha256": "bd800268b2e11815bcc4e8f6716a5027e8896b0a224a835cec2aea0aefac7863",
+      "bytes": 357
+    },
+    "4/cairo-z11.9/after/qgis.png": {
+      "sha256": "83506176541997682185aeee70e85a3092e3a54a95ade3e1643ba02ff85e7ab5",
+      "bytes": 772174
+    },
+    "4/cairo-z11.9/after/runtime.json": {
+      "sha256": "7bc7151a90db31ac982ad51fd84944a73967bc7f1dc8deedefc036597bfc6701",
+      "bytes": 782
+    },
+    "4/cairo-z11.9/control/diff.png": {
+      "sha256": "332d21e3e7d78e91185401f64d1368ca299a171d714097c360fc0aa3a3c8e07e",
+      "bytes": 583053
+    },
+    "4/cairo-z11.9/control/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/cairo-z11.9/control/metrics.json": {
+      "sha256": "9f6e96d9510df66b02f32aa8151dae3110aa1905edce07d188958c3ba4a0fa90",
+      "bytes": 349
+    },
+    "4/cairo-z11.9/control/qgis.png": {
+      "sha256": "dcff09769e10a23de3747fb3247ff873752ad9ba1ebfbbb5408a84e36b7fbc7a",
+      "bytes": 730893
+    },
+    "4/cairo-z11.9/control/runtime.json": {
+      "sha256": "7bc7151a90db31ac982ad51fd84944a73967bc7f1dc8deedefc036597bfc6701",
+      "bytes": 782
+    },
+    "4/cairo-z11.9/repeat/diff.png": {
+      "sha256": "332d21e3e7d78e91185401f64d1368ca299a171d714097c360fc0aa3a3c8e07e",
+      "bytes": 583053
+    },
+    "4/cairo-z11.9/repeat/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/cairo-z11.9/repeat/metrics.json": {
+      "sha256": "9f6e96d9510df66b02f32aa8151dae3110aa1905edce07d188958c3ba4a0fa90",
+      "bytes": 349
+    },
+    "4/cairo-z11.9/repeat/qgis.png": {
+      "sha256": "dcff09769e10a23de3747fb3247ff873752ad9ba1ebfbbb5408a84e36b7fbc7a",
+      "bytes": 730893
+    },
+    "4/cairo-z11.9/repeat/runtime.json": {
+      "sha256": "7bc7151a90db31ac982ad51fd84944a73967bc7f1dc8deedefc036597bfc6701",
+      "bytes": 782
+    },
+    "4/cairo-z12/after/diff.png": {
+      "sha256": "bfacf32c4074284e0d1286acd7432604b10ed3e4ed8526363ce415b01589971a",
+      "bytes": 519988
+    },
+    "4/cairo-z12/after/labels.json": {
+      "sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+      "bytes": 61995
+    },
+    "4/cairo-z12/after/metrics.json": {
+      "sha256": "c6fcd7ab2701629319e7c2ec82dc6d159282bf94bad79d573ada7425e4bc3705",
+      "bytes": 355
+    },
+    "4/cairo-z12/after/qgis.png": {
+      "sha256": "d52e5418856db8a7f12cf551ff7c3a0735d7fb4e1ba7f5e7b0c6e47dfb2cfca0",
+      "bytes": 791385
+    },
+    "4/cairo-z12/after/runtime.json": {
+      "sha256": "65b44eb9fa5a70f127612d3de418f5a9675e6b8169521163e764116e90498b8c",
+      "bytes": 785
+    },
+    "4/cairo-z12/control/diff.png": {
+      "sha256": "77a178498c0928fea39d2fd26cab9d3c6d5d915bae188baac1d8daeba24ddd60",
+      "bytes": 511271
+    },
+    "4/cairo-z12/control/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/cairo-z12/control/metrics.json": {
+      "sha256": "547b4ee01689bdd30c4ea24bc5c39a1f1877155a9bb28ec207951601e3a1f447",
+      "bytes": 355
+    },
+    "4/cairo-z12/control/qgis.png": {
+      "sha256": "a090a6a0e51ac5c3956e2fe264b98fb4200ae762b71bce644c9788ead72fd8af",
+      "bytes": 714178
+    },
+    "4/cairo-z12/control/runtime.json": {
+      "sha256": "65b44eb9fa5a70f127612d3de418f5a9675e6b8169521163e764116e90498b8c",
+      "bytes": 785
+    },
+    "4/cairo-z12/repeat/diff.png": {
+      "sha256": "77a178498c0928fea39d2fd26cab9d3c6d5d915bae188baac1d8daeba24ddd60",
+      "bytes": 511271
+    },
+    "4/cairo-z12/repeat/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/cairo-z12/repeat/metrics.json": {
+      "sha256": "547b4ee01689bdd30c4ea24bc5c39a1f1877155a9bb28ec207951601e3a1f447",
+      "bytes": 355
+    },
+    "4/cairo-z12/repeat/qgis.png": {
+      "sha256": "a090a6a0e51ac5c3956e2fe264b98fb4200ae762b71bce644c9788ead72fd8af",
+      "bytes": 714178
+    },
+    "4/cairo-z12/repeat/runtime.json": {
+      "sha256": "65b44eb9fa5a70f127612d3de418f5a9675e6b8169521163e764116e90498b8c",
+      "bytes": 785
+    },
+    "4/cairo-z12.1/after/diff.png": {
+      "sha256": "b8b257e4a95e177f85beffa3c750e17b241802a50b376ebe60e7879e6d3733e6",
+      "bytes": 513102
+    },
+    "4/cairo-z12.1/after/labels.json": {
+      "sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+      "bytes": 61995
+    },
+    "4/cairo-z12.1/after/metrics.json": {
+      "sha256": "3cb96d606e67923758eb1d10b123323f08d289a6ae4141351f70a361460b73ff",
+      "bytes": 354
+    },
+    "4/cairo-z12.1/after/qgis.png": {
+      "sha256": "3976529ced235fd714cace2c17512a0325871f9e6ab7516dbb4ddf52384e1c34",
+      "bytes": 799805
+    },
+    "4/cairo-z12.1/after/runtime.json": {
+      "sha256": "78b2977c702a45dd55f7d6f6dd9e3faa5f3767d85685b9b8c2396848442838e3",
+      "bytes": 786
+    },
+    "4/cairo-z12.1/control/diff.png": {
+      "sha256": "dd273a4153d6ea08eea80b7e3977a41b3104740ae0f90cb633d911753fa8e82f",
+      "bytes": 500489
+    },
+    "4/cairo-z12.1/control/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/cairo-z12.1/control/metrics.json": {
+      "sha256": "5402a2a5cb10f5b2006da39e23d26b11e403dda216a8e35337ce09c654c36342",
+      "bytes": 355
+    },
+    "4/cairo-z12.1/control/qgis.png": {
+      "sha256": "a589d83d8dc93e6bdff782ba9c57db0dffb6d44c18c1c9716754d88288527de8",
+      "bytes": 723577
+    },
+    "4/cairo-z12.1/control/runtime.json": {
+      "sha256": "78b2977c702a45dd55f7d6f6dd9e3faa5f3767d85685b9b8c2396848442838e3",
+      "bytes": 786
+    },
+    "4/cairo-z12.1/repeat/diff.png": {
+      "sha256": "dd273a4153d6ea08eea80b7e3977a41b3104740ae0f90cb633d911753fa8e82f",
+      "bytes": 500489
+    },
+    "4/cairo-z12.1/repeat/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/cairo-z12.1/repeat/metrics.json": {
+      "sha256": "5402a2a5cb10f5b2006da39e23d26b11e403dda216a8e35337ce09c654c36342",
+      "bytes": 355
+    },
+    "4/cairo-z12.1/repeat/qgis.png": {
+      "sha256": "a589d83d8dc93e6bdff782ba9c57db0dffb6d44c18c1c9716754d88288527de8",
+      "bytes": 723577
+    },
+    "4/cairo-z12.1/repeat/runtime.json": {
+      "sha256": "78b2977c702a45dd55f7d6f6dd9e3faa5f3767d85685b9b8c2396848442838e3",
+      "bytes": 786
+    },
+    "4/cairo-z14.9/after/diff.png": {
+      "sha256": "32ea5ca5633a17eefefb7aca796403eee28f89156fdd8e996c1870cf7f718816",
+      "bytes": 623793
+    },
+    "4/cairo-z14.9/after/labels.json": {
+      "sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+      "bytes": 61995
+    },
+    "4/cairo-z14.9/after/metrics.json": {
+      "sha256": "26983f93f779b1eca9bdbbed7f8c6fd4d5e8910f13b843515389ca6332a3c660",
+      "bytes": 348
+    },
+    "4/cairo-z14.9/after/qgis.png": {
+      "sha256": "d3eed8cf44ec8b4dd581df2d658eec31641a72c3db30ab96a63c65ba6776aee2",
+      "bytes": 676856
+    },
+    "4/cairo-z14.9/after/runtime.json": {
+      "sha256": "c604ffcb0eef8875f89932f0be7e3fe8e20f14bcf756be4c44ec373fcb9796a4",
+      "bytes": 783
+    },
+    "4/cairo-z14.9/control/diff.png": {
+      "sha256": "ce04ef88c507dab4ea38ed5f7904804e2165d193e12a1b8c1e722a7d43a87370",
+      "bytes": 614939
+    },
+    "4/cairo-z14.9/control/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/cairo-z14.9/control/metrics.json": {
+      "sha256": "e779c17d8d02bcb532e9177d770e371321852af96e4447f3e0c6a014d6b80f25",
+      "bytes": 352
+    },
+    "4/cairo-z14.9/control/qgis.png": {
+      "sha256": "8f1cf8dedafa589ae1ba446317d17695d23e045e8d3af60ae9f48b1c7c019997",
+      "bytes": 669196
+    },
+    "4/cairo-z14.9/control/runtime.json": {
+      "sha256": "c604ffcb0eef8875f89932f0be7e3fe8e20f14bcf756be4c44ec373fcb9796a4",
+      "bytes": 783
+    },
+    "4/cairo-z14.9/repeat/diff.png": {
+      "sha256": "ce04ef88c507dab4ea38ed5f7904804e2165d193e12a1b8c1e722a7d43a87370",
+      "bytes": 614939
+    },
+    "4/cairo-z14.9/repeat/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/cairo-z14.9/repeat/metrics.json": {
+      "sha256": "e779c17d8d02bcb532e9177d770e371321852af96e4447f3e0c6a014d6b80f25",
+      "bytes": 352
+    },
+    "4/cairo-z14.9/repeat/qgis.png": {
+      "sha256": "8f1cf8dedafa589ae1ba446317d17695d23e045e8d3af60ae9f48b1c7c019997",
+      "bytes": 669196
+    },
+    "4/cairo-z14.9/repeat/runtime.json": {
+      "sha256": "c604ffcb0eef8875f89932f0be7e3fe8e20f14bcf756be4c44ec373fcb9796a4",
+      "bytes": 783
+    },
+    "4/cairo-z15/after/diff.png": {
+      "sha256": "bad62728a881e33bd31af7ee5fab32c59abcc3394cf0c72074dd694bfadf297f",
+      "bytes": 596843
+    },
+    "4/cairo-z15/after/labels.json": {
+      "sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+      "bytes": 61995
+    },
+    "4/cairo-z15/after/metrics.json": {
+      "sha256": "f5e2930a1438c1e472e00f75a0661836bc827b3732e231fb854a3e70d3e4d65c",
+      "bytes": 347
+    },
+    "4/cairo-z15/after/qgis.png": {
+      "sha256": "c56cc443fb253af34b6c4ce1665ab3bfabed9947cda8cbbdc835312e429ceb14",
+      "bytes": 635723
+    },
+    "4/cairo-z15/after/runtime.json": {
+      "sha256": "62201897c3c8bea3d82f9e7f613be04f2809baa726b62253459e31dba93fec06",
+      "bytes": 784
+    },
+    "4/cairo-z15/control/diff.png": {
+      "sha256": "192be8d60fa23f99e4174891f2971f1e67c917889e9b6d4cc770dc53f6d6382d",
+      "bytes": 585529
+    },
+    "4/cairo-z15/control/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/cairo-z15/control/metrics.json": {
+      "sha256": "dbdd3922d3c33fd555a0359371f42a78945f236cf32d9ea8e3074bc824f9ca08",
+      "bytes": 354
+    },
+    "4/cairo-z15/control/qgis.png": {
+      "sha256": "b33c1ac84f8694db37639045b85d0da116b34d7db3636f0acaf2296b24fcd4d1",
+      "bytes": 621753
+    },
+    "4/cairo-z15/control/runtime.json": {
+      "sha256": "62201897c3c8bea3d82f9e7f613be04f2809baa726b62253459e31dba93fec06",
+      "bytes": 784
+    },
+    "4/cairo-z15/repeat/diff.png": {
+      "sha256": "192be8d60fa23f99e4174891f2971f1e67c917889e9b6d4cc770dc53f6d6382d",
+      "bytes": 585529
+    },
+    "4/cairo-z15/repeat/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/cairo-z15/repeat/metrics.json": {
+      "sha256": "dbdd3922d3c33fd555a0359371f42a78945f236cf32d9ea8e3074bc824f9ca08",
+      "bytes": 354
+    },
+    "4/cairo-z15/repeat/qgis.png": {
+      "sha256": "b33c1ac84f8694db37639045b85d0da116b34d7db3636f0acaf2296b24fcd4d1",
+      "bytes": 621753
+    },
+    "4/cairo-z15/repeat/runtime.json": {
+      "sha256": "62201897c3c8bea3d82f9e7f613be04f2809baa726b62253459e31dba93fec06",
+      "bytes": 784
+    },
+    "4/cairo-z15.1/after/diff.png": {
+      "sha256": "2e23be37fbd24c5c59063df90fade47abff536c0c511026fd23eaa5adefac3d0",
+      "bytes": 553587
+    },
+    "4/cairo-z15.1/after/labels.json": {
+      "sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+      "bytes": 61995
+    },
+    "4/cairo-z15.1/after/metrics.json": {
+      "sha256": "bc594b49a551f25b4a25c74d4ec30cf1353f4f1b5812c38f26740dd582278176",
+      "bytes": 353
+    },
+    "4/cairo-z15.1/after/qgis.png": {
+      "sha256": "6a73ecb6fab6333a539485a6261b32029cccb5f6fb310fa6906544d8410ed376",
+      "bytes": 590032
+    },
+    "4/cairo-z15.1/after/runtime.json": {
+      "sha256": "9d1148d13bb2a0b16cdf1d230f25cb03ca43947c352ecd967616932ce9d750b1",
+      "bytes": 783
+    },
+    "4/cairo-z15.1/control/diff.png": {
+      "sha256": "cfe7d1da5ebbf7b5885d5983963494a2004c0accf79c66a984069c167c9b91ff",
+      "bytes": 544224
+    },
+    "4/cairo-z15.1/control/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/cairo-z15.1/control/metrics.json": {
+      "sha256": "3972cb1bac01eecde2f573bb58998cb2ced2bb99f8fe87c921fd6ea765657981",
+      "bytes": 348
+    },
+    "4/cairo-z15.1/control/qgis.png": {
+      "sha256": "5f3190874f7dc92d01ac80ddd68e5df1bfc2b1a2a86f783e43811ddb00fe67aa",
+      "bytes": 582717
+    },
+    "4/cairo-z15.1/control/runtime.json": {
+      "sha256": "9d1148d13bb2a0b16cdf1d230f25cb03ca43947c352ecd967616932ce9d750b1",
+      "bytes": 783
+    },
+    "4/cairo-z15.1/repeat/diff.png": {
+      "sha256": "cfe7d1da5ebbf7b5885d5983963494a2004c0accf79c66a984069c167c9b91ff",
+      "bytes": 544224
+    },
+    "4/cairo-z15.1/repeat/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/cairo-z15.1/repeat/metrics.json": {
+      "sha256": "3972cb1bac01eecde2f573bb58998cb2ced2bb99f8fe87c921fd6ea765657981",
+      "bytes": 348
+    },
+    "4/cairo-z15.1/repeat/qgis.png": {
+      "sha256": "5f3190874f7dc92d01ac80ddd68e5df1bfc2b1a2a86f783e43811ddb00fe67aa",
+      "bytes": 582717
+    },
+    "4/cairo-z15.1/repeat/runtime.json": {
+      "sha256": "9d1148d13bb2a0b16cdf1d230f25cb03ca43947c352ecd967616932ce9d750b1",
+      "bytes": 783
+    },
+    "4/geneva-streets-z18-light/after/diff.png": {
+      "sha256": "280bdd4dcfbe4a74e5a7ae2c06ea4351f572a6f4e8db90b43f6a30cf5679d344",
+      "bytes": 210204
+    },
+    "4/geneva-streets-z18-light/after/labels.json": {
+      "sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+      "bytes": 61995
+    },
+    "4/geneva-streets-z18-light/after/metrics.json": {
+      "sha256": "91e19810abe0a12fd75815e24aede0ec06297d76618e3b75859d9a682aa3ec77",
+      "bytes": 356
+    },
+    "4/geneva-streets-z18-light/after/qgis.png": {
+      "sha256": "b8f175e538c415a385ffc97b1b77aae6116232543ca6861766cbc30911c8fc8d",
+      "bytes": 262776
+    },
+    "4/geneva-streets-z18-light/after/runtime.json": {
+      "sha256": "2f00820141ddea2c24f17a3e6fb47d3c4076b73142203c9f58546774d2b13c82",
+      "bytes": 783
+    },
+    "4/geneva-streets-z18-light/control/diff.png": {
+      "sha256": "280bdd4dcfbe4a74e5a7ae2c06ea4351f572a6f4e8db90b43f6a30cf5679d344",
+      "bytes": 210204
+    },
+    "4/geneva-streets-z18-light/control/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/geneva-streets-z18-light/control/metrics.json": {
+      "sha256": "91e19810abe0a12fd75815e24aede0ec06297d76618e3b75859d9a682aa3ec77",
+      "bytes": 356
+    },
+    "4/geneva-streets-z18-light/control/qgis.png": {
+      "sha256": "b8f175e538c415a385ffc97b1b77aae6116232543ca6861766cbc30911c8fc8d",
+      "bytes": 262776
+    },
+    "4/geneva-streets-z18-light/control/runtime.json": {
+      "sha256": "2f00820141ddea2c24f17a3e6fb47d3c4076b73142203c9f58546774d2b13c82",
+      "bytes": 783
+    },
+    "4/geneva-streets-z18-light/repeat/diff.png": {
+      "sha256": "280bdd4dcfbe4a74e5a7ae2c06ea4351f572a6f4e8db90b43f6a30cf5679d344",
+      "bytes": 210204
+    },
+    "4/geneva-streets-z18-light/repeat/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/geneva-streets-z18-light/repeat/metrics.json": {
+      "sha256": "91e19810abe0a12fd75815e24aede0ec06297d76618e3b75859d9a682aa3ec77",
+      "bytes": 356
+    },
+    "4/geneva-streets-z18-light/repeat/qgis.png": {
+      "sha256": "b8f175e538c415a385ffc97b1b77aae6116232543ca6861766cbc30911c8fc8d",
+      "bytes": 262776
+    },
+    "4/geneva-streets-z18-light/repeat/runtime.json": {
+      "sha256": "2f00820141ddea2c24f17a3e6fb47d3c4076b73142203c9f58546774d2b13c82",
+      "bytes": 783
+    },
+    "4/geneva-urban-z14-light/after/diff.png": {
+      "sha256": "ad26a08d4fbee66d4dcae7cfec0f020e746e614e1a76f4a0cf7d5453e5310b8d",
+      "bytes": 453246
+    },
+    "4/geneva-urban-z14-light/after/labels.json": {
+      "sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+      "bytes": 61995
+    },
+    "4/geneva-urban-z14-light/after/metrics.json": {
+      "sha256": "3505d8b0ef00eb9a81e84b89d15f509fd70f1d0470e1aba8fb5bf3fc7a4b6c55",
+      "bytes": 355
+    },
+    "4/geneva-urban-z14-light/after/qgis.png": {
+      "sha256": "9fa6f062a723a65a86e31b9d1161a5ed9f534f6feac09caef0c921a0a961f4d1",
+      "bytes": 492054
+    },
+    "4/geneva-urban-z14-light/after/runtime.json": {
+      "sha256": "666849ba4a149a5fc3f9467634a0c37b4e5e1ec053e7e38ace5fbc03ff8dcf50",
+      "bytes": 786
+    },
+    "4/geneva-urban-z14-light/control/diff.png": {
+      "sha256": "ad26a08d4fbee66d4dcae7cfec0f020e746e614e1a76f4a0cf7d5453e5310b8d",
+      "bytes": 453246
+    },
+    "4/geneva-urban-z14-light/control/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/geneva-urban-z14-light/control/metrics.json": {
+      "sha256": "3505d8b0ef00eb9a81e84b89d15f509fd70f1d0470e1aba8fb5bf3fc7a4b6c55",
+      "bytes": 355
+    },
+    "4/geneva-urban-z14-light/control/qgis.png": {
+      "sha256": "9fa6f062a723a65a86e31b9d1161a5ed9f534f6feac09caef0c921a0a961f4d1",
+      "bytes": 492054
+    },
+    "4/geneva-urban-z14-light/control/runtime.json": {
+      "sha256": "666849ba4a149a5fc3f9467634a0c37b4e5e1ec053e7e38ace5fbc03ff8dcf50",
+      "bytes": 786
+    },
+    "4/geneva-urban-z14-light/repeat/diff.png": {
+      "sha256": "ad26a08d4fbee66d4dcae7cfec0f020e746e614e1a76f4a0cf7d5453e5310b8d",
+      "bytes": 453246
+    },
+    "4/geneva-urban-z14-light/repeat/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/geneva-urban-z14-light/repeat/metrics.json": {
+      "sha256": "3505d8b0ef00eb9a81e84b89d15f509fd70f1d0470e1aba8fb5bf3fc7a4b6c55",
+      "bytes": 355
+    },
+    "4/geneva-urban-z14-light/repeat/qgis.png": {
+      "sha256": "9fa6f062a723a65a86e31b9d1161a5ed9f534f6feac09caef0c921a0a961f4d1",
+      "bytes": 492054
+    },
+    "4/geneva-urban-z14-light/repeat/runtime.json": {
+      "sha256": "666849ba4a149a5fc3f9467634a0c37b4e5e1ec053e7e38ace5fbc03ff8dcf50",
+      "bytes": 786
+    },
+    "4/jerusalem-city-z14/after/diff.png": {
+      "sha256": "d401ec10696e99ad47ec37f7d754a5b9bbffa35cf27bfdb04307305a51b0395f",
+      "bytes": 558545
+    },
+    "4/jerusalem-city-z14/after/labels.json": {
+      "sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+      "bytes": 61995
+    },
+    "4/jerusalem-city-z14/after/metrics.json": {
+      "sha256": "b8c01ff4b78e82ac66d090dc50d46320f41536905133844caeecdd0110abd3a8",
+      "bytes": 347
+    },
+    "4/jerusalem-city-z14/after/qgis.png": {
+      "sha256": "36a5d512dd57727c8e4f118888c9de637ff39c01af5f445a37b75372f90a0974",
+      "bytes": 591939
+    },
+    "4/jerusalem-city-z14/after/runtime.json": {
+      "sha256": "f17128134edde8870fa1a589d78ab92e30f8f0ab43bdb20a24c95964e717c0fe",
+      "bytes": 784
+    },
+    "4/jerusalem-city-z14/control/diff.png": {
+      "sha256": "d6a71167a260569a21074f756ae616e78be578f1367bd39bab957cbc1dbdd86b",
+      "bytes": 573244
+    },
+    "4/jerusalem-city-z14/control/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/jerusalem-city-z14/control/metrics.json": {
+      "sha256": "56a705b8a3e428089f8ceced57f2f9ad34add5d8d375add0df3ecd1185206fec",
+      "bytes": 355
+    },
+    "4/jerusalem-city-z14/control/qgis.png": {
+      "sha256": "3a4fea2c999391ca5c0f75024a7c156dda87c96c01b43d51c60cf1267add3ac6",
+      "bytes": 599427
+    },
+    "4/jerusalem-city-z14/control/runtime.json": {
+      "sha256": "f17128134edde8870fa1a589d78ab92e30f8f0ab43bdb20a24c95964e717c0fe",
+      "bytes": 784
+    },
+    "4/jerusalem-city-z14/pdf-after/diff.png": {
+      "sha256": "d401ec10696e99ad47ec37f7d754a5b9bbffa35cf27bfdb04307305a51b0395f",
+      "bytes": 558545
+    },
+    "4/jerusalem-city-z14/pdf-after/labels.json": {
+      "sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+      "bytes": 61995
+    },
+    "4/jerusalem-city-z14/pdf-after/metrics.json": {
+      "sha256": "b8c01ff4b78e82ac66d090dc50d46320f41536905133844caeecdd0110abd3a8",
+      "bytes": 347
+    },
+    "4/jerusalem-city-z14/pdf-after/pdf150-context.json": {
+      "sha256": "a9197f9f690f967c3e5ceefa7818922142679234a4d7eeb782b6a768594100c4",
+      "bytes": 312
+    },
+    "4/jerusalem-city-z14/pdf-after/pdf150-repeat-context.json": {
+      "sha256": "a9197f9f690f967c3e5ceefa7818922142679234a4d7eeb782b6a768594100c4",
+      "bytes": 312
+    },
+    "4/jerusalem-city-z14/pdf-after/pdf150-repeat.pdf": {
+      "sha256": "b5fd20e4e4354e44d56ad41685afeddec3c712b6f851a9065e1c936137324700",
+      "bytes": 7373443
+    },
+    "4/jerusalem-city-z14/pdf-after/pdf150-repeat.png": {
+      "sha256": "76224b71499977765d77f0b3ab51cc476b19a5c29f357f4d3a94de7353627f3b",
+      "bytes": 853186
+    },
+    "4/jerusalem-city-z14/pdf-after/pdf150-repeat.txt": {
+      "sha256": "ef6cbd2161eaea7943ce8693b9824d23d1793ffb1c0fca05b600d3899b44c977",
+      "bytes": 1
+    },
+    "4/jerusalem-city-z14/pdf-after/pdf150.pdf": {
+      "sha256": "676aec298034b41a6b04c72d73115b2768e4a2ba93c7107da8352ab359c53a41",
+      "bytes": 7374200
+    },
+    "4/jerusalem-city-z14/pdf-after/pdf150.png": {
+      "sha256": "95981c9ffc5e4f1359b11fdfff0d199556a811e0d5aaeadb1fe0aaaead59f0d7",
+      "bytes": 853206
+    },
+    "4/jerusalem-city-z14/pdf-after/pdf150.txt": {
+      "sha256": "ef6cbd2161eaea7943ce8693b9824d23d1793ffb1c0fca05b600d3899b44c977",
+      "bytes": 1
+    },
+    "4/jerusalem-city-z14/pdf-after/placed-labels.json": {
+      "sha256": "ffcbcfa08ddb4cb5cabcca587e9fb6c693b6d0d53d8dd081a4ba27c1924fc570",
+      "bytes": 572491
+    },
+    "4/jerusalem-city-z14/pdf-after/qgis.png": {
+      "sha256": "36a5d512dd57727c8e4f118888c9de637ff39c01af5f445a37b75372f90a0974",
+      "bytes": 591939
+    },
+    "4/jerusalem-city-z14/pdf-after/runtime.json": {
+      "sha256": "f17128134edde8870fa1a589d78ab92e30f8f0ab43bdb20a24c95964e717c0fe",
+      "bytes": 784
+    },
+    "4/jerusalem-city-z14/pdf-before/diff.png": {
+      "sha256": "d6a71167a260569a21074f756ae616e78be578f1367bd39bab957cbc1dbdd86b",
+      "bytes": 573244
+    },
+    "4/jerusalem-city-z14/pdf-before/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/jerusalem-city-z14/pdf-before/metrics.json": {
+      "sha256": "56a705b8a3e428089f8ceced57f2f9ad34add5d8d375add0df3ecd1185206fec",
+      "bytes": 355
+    },
+    "4/jerusalem-city-z14/pdf-before/pdf150-context.json": {
+      "sha256": "a9197f9f690f967c3e5ceefa7818922142679234a4d7eeb782b6a768594100c4",
+      "bytes": 312
+    },
+    "4/jerusalem-city-z14/pdf-before/pdf150-repeat-context.json": {
+      "sha256": "a9197f9f690f967c3e5ceefa7818922142679234a4d7eeb782b6a768594100c4",
+      "bytes": 312
+    },
+    "4/jerusalem-city-z14/pdf-before/pdf150-repeat.pdf": {
+      "sha256": "801010040cade394046e224ec3b6511dc3ec145a139b25761b73d2a546775c41",
+      "bytes": 6650772
+    },
+    "4/jerusalem-city-z14/pdf-before/pdf150-repeat.png": {
+      "sha256": "29b89a33cc23340312d0b35d557c529235eb29dd8d58d7f13d4f4eff5c5bc541",
+      "bytes": 848582
+    },
+    "4/jerusalem-city-z14/pdf-before/pdf150-repeat.txt": {
+      "sha256": "ef6cbd2161eaea7943ce8693b9824d23d1793ffb1c0fca05b600d3899b44c977",
+      "bytes": 1
+    },
+    "4/jerusalem-city-z14/pdf-before/pdf150.pdf": {
+      "sha256": "ad4e6dad7c9d2a9da44eebcb52396aa4cc73572348752adbcc2aef91d3439298",
+      "bytes": 6650994
+    },
+    "4/jerusalem-city-z14/pdf-before/pdf150.png": {
+      "sha256": "b363dad2b8640512ab10e5f2b6c3f0c1ac5f19c7a06a029efda820c640d5f615",
+      "bytes": 848593
+    },
+    "4/jerusalem-city-z14/pdf-before/pdf150.txt": {
+      "sha256": "ef6cbd2161eaea7943ce8693b9824d23d1793ffb1c0fca05b600d3899b44c977",
+      "bytes": 1
+    },
+    "4/jerusalem-city-z14/pdf-before/placed-labels.json": {
+      "sha256": "d1e0fa167e6d906e425d9eaafe327aea491220ab6c8c12e655deb4fc0f8bf46a",
+      "bytes": 749815
+    },
+    "4/jerusalem-city-z14/pdf-before/qgis.png": {
+      "sha256": "3a4fea2c999391ca5c0f75024a7c156dda87c96c01b43d51c60cf1267add3ac6",
+      "bytes": 599427
+    },
+    "4/jerusalem-city-z14/pdf-before/runtime.json": {
+      "sha256": "f17128134edde8870fa1a589d78ab92e30f8f0ab43bdb20a24c95964e717c0fe",
+      "bytes": 784
+    },
+    "4/jerusalem-city-z14/repeat/diff.png": {
+      "sha256": "d6a71167a260569a21074f756ae616e78be578f1367bd39bab957cbc1dbdd86b",
+      "bytes": 573244
+    },
+    "4/jerusalem-city-z14/repeat/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/jerusalem-city-z14/repeat/metrics.json": {
+      "sha256": "56a705b8a3e428089f8ceced57f2f9ad34add5d8d375add0df3ecd1185206fec",
+      "bytes": 355
+    },
+    "4/jerusalem-city-z14/repeat/qgis.png": {
+      "sha256": "3a4fea2c999391ca5c0f75024a7c156dda87c96c01b43d51c60cf1267add3ac6",
+      "bytes": 599427
+    },
+    "4/jerusalem-city-z14/repeat/runtime.json": {
+      "sha256": "f17128134edde8870fa1a589d78ab92e30f8f0ab43bdb20a24c95964e717c0fe",
+      "bytes": 784
+    },
+    "4/jerusalem-city-z14-activity/after/diff.png": {
+      "sha256": "bacc4e916308e6783147bc1ea0298733796d68cbed6fa086bc83a4bc908af993",
+      "bytes": 590147
+    },
+    "4/jerusalem-city-z14-activity/after/labels.json": {
+      "sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+      "bytes": 61995
+    },
+    "4/jerusalem-city-z14-activity/after/metrics.json": {
+      "sha256": "456349eb822403d637c7e0f152b3bd0786b39f8cc5d8ff789086a5fda82673e9",
+      "bytes": 351
+    },
+    "4/jerusalem-city-z14-activity/after/qgis.png": {
+      "sha256": "1854db0e6674245a4ecfb692f4cb9175dd8c112f8f189a5c4ee8c14c7d703fd9",
+      "bytes": 637438
+    },
+    "4/jerusalem-city-z14-activity/after/runtime.json": {
+      "sha256": "f17128134edde8870fa1a589d78ab92e30f8f0ab43bdb20a24c95964e717c0fe",
+      "bytes": 784
+    },
+    "4/jerusalem-city-z14-activity/control/diff.png": {
+      "sha256": "294d70d267a0de1cf260500c69c2ae2566fafe51d8fcf0cab05cf63ac5ea5786",
+      "bytes": 606268
+    },
+    "4/jerusalem-city-z14-activity/control/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/jerusalem-city-z14-activity/control/metrics.json": {
+      "sha256": "450aca4bf6c2347302f518ff5023a511ccaf0a95ac8b1ce21738f5f07b326ff5",
+      "bytes": 353
+    },
+    "4/jerusalem-city-z14-activity/control/qgis.png": {
+      "sha256": "c7ee3ccf11c23ff21bb0653c6155aab7ae1a444fbb0270cde8118721da2856fa",
+      "bytes": 646033
+    },
+    "4/jerusalem-city-z14-activity/control/runtime.json": {
+      "sha256": "f17128134edde8870fa1a589d78ab92e30f8f0ab43bdb20a24c95964e717c0fe",
+      "bytes": 784
+    },
+    "4/jerusalem-city-z14-activity/repeat/diff.png": {
+      "sha256": "294d70d267a0de1cf260500c69c2ae2566fafe51d8fcf0cab05cf63ac5ea5786",
+      "bytes": 606268
+    },
+    "4/jerusalem-city-z14-activity/repeat/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/jerusalem-city-z14-activity/repeat/metrics.json": {
+      "sha256": "450aca4bf6c2347302f518ff5023a511ccaf0a95ac8b1ce21738f5f07b326ff5",
+      "bytes": 353
+    },
+    "4/jerusalem-city-z14-activity/repeat/qgis.png": {
+      "sha256": "c7ee3ccf11c23ff21bb0653c6155aab7ae1a444fbb0270cde8118721da2856fa",
+      "bytes": 646033
+    },
+    "4/jerusalem-city-z14-activity/repeat/runtime.json": {
+      "sha256": "f17128134edde8870fa1a589d78ab92e30f8f0ab43bdb20a24c95964e717c0fe",
+      "bytes": 784
+    },
+    "4/lausanne-lavaux-z10-light/after/diff.png": {
+      "sha256": "fa28f07158bf1986802eb496ffdd771489534eb808acbc221f3f425535b9f90e",
+      "bytes": 683315
+    },
+    "4/lausanne-lavaux-z10-light/after/labels.json": {
+      "sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+      "bytes": 61995
+    },
+    "4/lausanne-lavaux-z10-light/after/metrics.json": {
+      "sha256": "c486e717850b0164d46df2b9929fa626d6cd21206bd50c011c3053510441b850",
+      "bytes": 356
+    },
+    "4/lausanne-lavaux-z10-light/after/qgis.png": {
+      "sha256": "f6353d9145caf654bc85c0064e2703da8de68bb0162c681e9d89f1a17ac0f0bf",
+      "bytes": 650991
+    },
+    "4/lausanne-lavaux-z10-light/after/runtime.json": {
+      "sha256": "955f9a7e23bd3e6f2c0a6826fa3de42f95b7b3fa87ba20df17bb5c021271f0e5",
+      "bytes": 787
+    },
+    "4/lausanne-lavaux-z10-light/control/diff.png": {
+      "sha256": "fa28f07158bf1986802eb496ffdd771489534eb808acbc221f3f425535b9f90e",
+      "bytes": 683315
+    },
+    "4/lausanne-lavaux-z10-light/control/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/lausanne-lavaux-z10-light/control/metrics.json": {
+      "sha256": "c486e717850b0164d46df2b9929fa626d6cd21206bd50c011c3053510441b850",
+      "bytes": 356
+    },
+    "4/lausanne-lavaux-z10-light/control/qgis.png": {
+      "sha256": "f6353d9145caf654bc85c0064e2703da8de68bb0162c681e9d89f1a17ac0f0bf",
+      "bytes": 650991
+    },
+    "4/lausanne-lavaux-z10-light/control/runtime.json": {
+      "sha256": "955f9a7e23bd3e6f2c0a6826fa3de42f95b7b3fa87ba20df17bb5c021271f0e5",
+      "bytes": 787
+    },
+    "4/lausanne-lavaux-z10-light/repeat/diff.png": {
+      "sha256": "fa28f07158bf1986802eb496ffdd771489534eb808acbc221f3f425535b9f90e",
+      "bytes": 683315
+    },
+    "4/lausanne-lavaux-z10-light/repeat/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/lausanne-lavaux-z10-light/repeat/metrics.json": {
+      "sha256": "c486e717850b0164d46df2b9929fa626d6cd21206bd50c011c3053510441b850",
+      "bytes": 356
+    },
+    "4/lausanne-lavaux-z10-light/repeat/qgis.png": {
+      "sha256": "f6353d9145caf654bc85c0064e2703da8de68bb0162c681e9d89f1a17ac0f0bf",
+      "bytes": 650991
+    },
+    "4/lausanne-lavaux-z10-light/repeat/runtime.json": {
+      "sha256": "955f9a7e23bd3e6f2c0a6826fa3de42f95b7b3fa87ba20df17bb5c021271f0e5",
+      "bytes": 787
+    },
+    "4/switzerland-alps-z5-light/after/diff.png": {
+      "sha256": "68254096a1ee3781c34081ceb7db600c54e3b5d8316473fa8e41ca1a2f480a3d",
+      "bytes": 1092461
+    },
+    "4/switzerland-alps-z5-light/after/labels.json": {
+      "sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+      "bytes": 61995
+    },
+    "4/switzerland-alps-z5-light/after/metrics.json": {
+      "sha256": "10f7158e57d15e394246036605b3b743ea291efc29ecc6ddb77734d5be3655a8",
+      "bytes": 354
+    },
+    "4/switzerland-alps-z5-light/after/qgis.png": {
+      "sha256": "727ddae21672d78ca218d85bcb124d3f04528a6076d5d6dd29a4a4e442d701df",
+      "bytes": 590732
+    },
+    "4/switzerland-alps-z5-light/after/runtime.json": {
+      "sha256": "51c2438f58f5c590a89481c974ede962cbc236c66fedbcb7e7c41fe9a925e2c6",
+      "bytes": 778
+    },
+    "4/switzerland-alps-z5-light/control/diff.png": {
+      "sha256": "68254096a1ee3781c34081ceb7db600c54e3b5d8316473fa8e41ca1a2f480a3d",
+      "bytes": 1092461
+    },
+    "4/switzerland-alps-z5-light/control/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/switzerland-alps-z5-light/control/metrics.json": {
+      "sha256": "10f7158e57d15e394246036605b3b743ea291efc29ecc6ddb77734d5be3655a8",
+      "bytes": 354
+    },
+    "4/switzerland-alps-z5-light/control/qgis.png": {
+      "sha256": "727ddae21672d78ca218d85bcb124d3f04528a6076d5d6dd29a4a4e442d701df",
+      "bytes": 590732
+    },
+    "4/switzerland-alps-z5-light/control/runtime.json": {
+      "sha256": "51c2438f58f5c590a89481c974ede962cbc236c66fedbcb7e7c41fe9a925e2c6",
+      "bytes": 778
+    },
+    "4/switzerland-alps-z5-light/repeat/diff.png": {
+      "sha256": "68254096a1ee3781c34081ceb7db600c54e3b5d8316473fa8e41ca1a2f480a3d",
+      "bytes": 1092461
+    },
+    "4/switzerland-alps-z5-light/repeat/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/switzerland-alps-z5-light/repeat/metrics.json": {
+      "sha256": "10f7158e57d15e394246036605b3b743ea291efc29ecc6ddb77734d5be3655a8",
+      "bytes": 354
+    },
+    "4/switzerland-alps-z5-light/repeat/qgis.png": {
+      "sha256": "727ddae21672d78ca218d85bcb124d3f04528a6076d5d6dd29a4a4e442d701df",
+      "bytes": 590732
+    },
+    "4/switzerland-alps-z5-light/repeat/runtime.json": {
+      "sha256": "51c2438f58f5c590a89481c974ede962cbc236c66fedbcb7e7c41fe9a925e2c6",
+      "bytes": 778
+    },
+    "4/zurich-region-z8-light/after/diff.png": {
+      "sha256": "b1a6a2222cdbcac4577fd8a79a5de097aa94657ef496f55ff196941f0e88d287",
+      "bytes": 1030850
+    },
+    "4/zurich-region-z8-light/after/labels.json": {
+      "sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+      "bytes": 61995
+    },
+    "4/zurich-region-z8-light/after/metrics.json": {
+      "sha256": "7381256003166832618a6f1ff5be73ea4d1a4c68ce2fcec684a131c9a2259206",
+      "bytes": 352
+    },
+    "4/zurich-region-z8-light/after/qgis.png": {
+      "sha256": "9f6bcda32a7e89301532fe9047a0906ac31e2def4c12eb584ddfd0bf8f5f22c3",
+      "bytes": 896401
+    },
+    "4/zurich-region-z8-light/after/runtime.json": {
+      "sha256": "7bdfbce26f984b1be7b19be67bf0cf13952e1989125d6f90da46089e8a952f1c",
+      "bytes": 779
+    },
+    "4/zurich-region-z8-light/control/diff.png": {
+      "sha256": "b1a6a2222cdbcac4577fd8a79a5de097aa94657ef496f55ff196941f0e88d287",
+      "bytes": 1030850
+    },
+    "4/zurich-region-z8-light/control/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/zurich-region-z8-light/control/metrics.json": {
+      "sha256": "7381256003166832618a6f1ff5be73ea4d1a4c68ce2fcec684a131c9a2259206",
+      "bytes": 352
+    },
+    "4/zurich-region-z8-light/control/qgis.png": {
+      "sha256": "9f6bcda32a7e89301532fe9047a0906ac31e2def4c12eb584ddfd0bf8f5f22c3",
+      "bytes": 896401
+    },
+    "4/zurich-region-z8-light/control/runtime.json": {
+      "sha256": "7bdfbce26f984b1be7b19be67bf0cf13952e1989125d6f90da46089e8a952f1c",
+      "bytes": 779
+    },
+    "4/zurich-region-z8-light/repeat/diff.png": {
+      "sha256": "b1a6a2222cdbcac4577fd8a79a5de097aa94657ef496f55ff196941f0e88d287",
+      "bytes": 1030850
+    },
+    "4/zurich-region-z8-light/repeat/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/zurich-region-z8-light/repeat/metrics.json": {
+      "sha256": "7381256003166832618a6f1ff5be73ea4d1a4c68ce2fcec684a131c9a2259206",
+      "bytes": 352
+    },
+    "4/zurich-region-z8-light/repeat/qgis.png": {
+      "sha256": "9f6bcda32a7e89301532fe9047a0906ac31e2def4c12eb584ddfd0bf8f5f22c3",
+      "bytes": 896401
+    },
+    "4/zurich-region-z8-light/repeat/runtime.json": {
+      "sha256": "7bdfbce26f984b1be7b19be67bf0cf13952e1989125d6f90da46089e8a952f1c",
+      "bytes": 779
+    },
+    "4/zurich-streets-z17-light/after/diff.png": {
+      "sha256": "74a3f23bdf41cb0fe94a51303d9c52523797321b9bfe50fe05176b11f47d1a41",
+      "bytes": 358593
+    },
+    "4/zurich-streets-z17-light/after/labels.json": {
+      "sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+      "bytes": 61995
+    },
+    "4/zurich-streets-z17-light/after/metrics.json": {
+      "sha256": "023c68be2d976fa80bf2469322c6fcf1a76a8e5657098fa31e7a10a333b7844c",
+      "bytes": 354
+    },
+    "4/zurich-streets-z17-light/after/qgis.png": {
+      "sha256": "0b2fb957571220b6e2703e426c53f3d670412aed5052b35b5c36c0ab88bc7122",
+      "bytes": 314904
+    },
+    "4/zurich-streets-z17-light/after/runtime.json": {
+      "sha256": "0f3b37576c8faec5312ca5f531cfb084a9db5ae3a389ab920b2068d81f423be3",
+      "bytes": 783
+    },
+    "4/zurich-streets-z17-light/control/diff.png": {
+      "sha256": "74a3f23bdf41cb0fe94a51303d9c52523797321b9bfe50fe05176b11f47d1a41",
+      "bytes": 358593
+    },
+    "4/zurich-streets-z17-light/control/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/zurich-streets-z17-light/control/metrics.json": {
+      "sha256": "023c68be2d976fa80bf2469322c6fcf1a76a8e5657098fa31e7a10a333b7844c",
+      "bytes": 354
+    },
+    "4/zurich-streets-z17-light/control/qgis.png": {
+      "sha256": "0b2fb957571220b6e2703e426c53f3d670412aed5052b35b5c36c0ab88bc7122",
+      "bytes": 314904
+    },
+    "4/zurich-streets-z17-light/control/runtime.json": {
+      "sha256": "0f3b37576c8faec5312ca5f531cfb084a9db5ae3a389ab920b2068d81f423be3",
+      "bytes": 783
+    },
+    "4/zurich-streets-z17-light/repeat/diff.png": {
+      "sha256": "74a3f23bdf41cb0fe94a51303d9c52523797321b9bfe50fe05176b11f47d1a41",
+      "bytes": 358593
+    },
+    "4/zurich-streets-z17-light/repeat/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/zurich-streets-z17-light/repeat/metrics.json": {
+      "sha256": "023c68be2d976fa80bf2469322c6fcf1a76a8e5657098fa31e7a10a333b7844c",
+      "bytes": 354
+    },
+    "4/zurich-streets-z17-light/repeat/qgis.png": {
+      "sha256": "0b2fb957571220b6e2703e426c53f3d670412aed5052b35b5c36c0ab88bc7122",
+      "bytes": 314904
+    },
+    "4/zurich-streets-z17-light/repeat/runtime.json": {
+      "sha256": "0f3b37576c8faec5312ca5f531cfb084a9db5ae3a389ab920b2068d81f423be3",
+      "bytes": 783
+    },
+    "README.md": {
+      "sha256": "588ff590a2b45ecf941537c81c49c273360fb02781a384054bd1f884c87b77ac",
+      "bytes": 14861
+    },
+    "audit.py": {
+      "sha256": "c6fd28c653a88b3c0bb38b40d2689955f9c644e4fe1a4fc07711ad33d132cb09",
+      "bytes": 6148
+    },
+    "audit3-after/audit.json": {
+      "sha256": "c02774fbf4336fe8d153aa615cb13124fc89f5fdc961cae915cddd6ca14c8843",
+      "bytes": 141274
+    },
+    "audit3-after/labels.json": {
+      "sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+      "bytes": 61995
+    },
+    "audit3-after/processed.json": {
+      "sha256": "b68cd8d658fe188ebed52ba5e3636607af1f24b8c81ba4a6700ec1648f1e36ff",
+      "bytes": 132451
+    },
+    "audit3-before/audit.json": {
+      "sha256": "75f8a87d790c5dc7bf08d98ba68db109e2e12c14be665c45c19af4cbf2aeac07",
+      "bytes": 141094
+    },
+    "audit3-before/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "audit3-before/processed.json": {
+      "sha256": "b68cd8d658fe188ebed52ba5e3636607af1f24b8c81ba4a6700ec1648f1e36ff",
+      "bytes": 132451
+    },
+    "audit4-after/audit.json": {
+      "sha256": "d767c58408b4fe69cef0acbcb32973066e8cc7890df06aded7d8c9fc0e999c5b",
+      "bytes": 141284
+    },
+    "audit4-after/labels.json": {
+      "sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+      "bytes": 61995
+    },
+    "audit4-after/processed.json": {
+      "sha256": "b68cd8d658fe188ebed52ba5e3636607af1f24b8c81ba4a6700ec1648f1e36ff",
+      "bytes": 132451
+    },
+    "audit4-before/audit.json": {
+      "sha256": "fcda19e894e61b804bfddd66f4b64ed567ac8270e4b12eecd870745b747a88c7",
+      "bytes": 141104
+    },
+    "audit4-before/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "audit4-before/processed.json": {
+      "sha256": "b68cd8d658fe188ebed52ba5e3636607af1f24b8c81ba4a6700ec1648f1e36ff",
+      "bytes": 132451
+    },
+    "cairo-nile-z14-activity-qgis3-crop.png": {
+      "sha256": "f40369ee4b19405efa265d58b3f763abdb9ebe7ff6a22705e21c366c7ea7468b",
+      "bytes": 158090
+    },
+    "cairo-nile-z14-activity-qgis3-full.png": {
+      "sha256": "5c4a702a1cdd94092cd4a2602044fcb4ddf9291a3c5a05ad3f74c2de1aaedcbd",
+      "bytes": 1501491
+    },
+    "cairo-nile-z14-activity-qgis4-crop.png": {
+      "sha256": "15ae073888fffd26f9b63c6b2bbcd048149f59dcdd4c57bded25981c1c540f16",
+      "bytes": 157447
+    },
+    "cairo-nile-z14-activity-qgis4-full.png": {
+      "sha256": "4165a057ade8c18333e0ce9ac75a1aee46999dbea7dd4e708cf018a36c475656",
+      "bytes": 1488710
+    },
+    "cairo-nile-z14-qgis3-crop.png": {
+      "sha256": "80af0b066be56f6cc9502389aeda470407d44476a88ef744da50f81298e5b9e6",
+      "bytes": 130035
+    },
+    "cairo-nile-z14-qgis3-full.png": {
+      "sha256": "de3414caeaaf5e9460b1467394836d9c44e9ddd1c1990762f617f279fd2ef906",
+      "bytes": 1406612
+    },
+    "cairo-nile-z14-qgis3-pdf150-crop.png": {
+      "sha256": "fa90edcd3107ae28a6a22beda4ec80ebad41bcdee48e6cd003f173d01d74fda2",
+      "bytes": 127725
+    },
+    "cairo-nile-z14-qgis4-crop.png": {
+      "sha256": "e1d6478df8bb85801dc6514cb3b6995e012d57aa17526bfc42c3e8692a70de29",
+      "bytes": 129629
+    },
+    "cairo-nile-z14-qgis4-full.png": {
+      "sha256": "b09dcd5cc7f5fba5a4b8c05bd134dcca85280d968e8a705380acd6dcb4b1c478",
+      "bytes": 1395098
+    },
+    "cairo-nile-z14-qgis4-pdf150-crop.png": {
+      "sha256": "06550d0f9d548db7d44efaaac1022cf2c1cc3302f14ec0ede7b1383baf05eba4",
+      "bytes": 145980
+    },
+    "cairo-z11.9-qgis3-crop.png": {
+      "sha256": "677264e60d0c8fa1748d790beff3dbb33ca05b69f94a1480e0adb4e96a66544a",
+      "bytes": 198870
+    },
+    "cairo-z11.9-qgis3-full.png": {
+      "sha256": "11acb252363b16d99b2e777e27577a7dd3907feace23856ee68d2c058b409a6a",
+      "bytes": 1636766
+    },
+    "cairo-z11.9-qgis4-crop.png": {
+      "sha256": "c95d29fb8277cc2a10bdce7482b54d3b8a238e892dae7496ba043a465b9708d7",
+      "bytes": 201522
+    },
+    "cairo-z11.9-qgis4-full.png": {
+      "sha256": "c7e3a20bb1e9b751fe8cbed09879046a99e12d27fd87e65a3767eac03cefed3b",
+      "bytes": 1645175
+    },
+    "cairo-z12-qgis3-crop.png": {
+      "sha256": "613363faa495ba701d8f19d8a091eb40fc265dcd5448acccc0d48a9d85920319",
+      "bytes": 203630
+    },
+    "cairo-z12-qgis3-full.png": {
+      "sha256": "fe374091e1ce147926f343249c144ede3a854ec9fa976b56d9c53a06fab4c25f",
+      "bytes": 1761436
+    },
+    "cairo-z12-qgis4-crop.png": {
+      "sha256": "ae7e0c5a94c15dfa7cc7d0e7e938c1c95447d0dfb253d41d5d0647ce313fef7a",
+      "bytes": 198816
+    },
+    "cairo-z12-qgis4-full.png": {
+      "sha256": "3a1ae0d76b2d80835fc02ad4ede0b019bbb2f245f267c1a11579c761a9141b45",
+      "bytes": 1752739
+    },
+    "cairo-z12.1-qgis3-crop.png": {
+      "sha256": "4ef94128855e535f0589167ecc38a9b7cc891a8b772a713490d6203ea86c9744",
+      "bytes": 203719
+    },
+    "cairo-z12.1-qgis3-full.png": {
+      "sha256": "b57bc77144e659f76099cb072e2b86857464d76b5b608ba6b974cbb1f320d722",
+      "bytes": 1747568
+    },
+    "cairo-z12.1-qgis4-crop.png": {
+      "sha256": "f46566a191f94aa28605ab53a769db2ad40f39e8d908a3677e8a7aec5f18a883",
+      "bytes": 205482
+    },
+    "cairo-z12.1-qgis4-full.png": {
+      "sha256": "d495fe53fd80a16e587359a8eb8363de1ee08fec2b7a5b807a0d63baae569dcb",
+      "bytes": 1755746
+    },
+    "cairo-z14.9-qgis3-crop.png": {
+      "sha256": "91dc4d3ed572fcdbf4082412fbbaf48d2e59873aed30bc85f01e687bf6f7ee25",
+      "bytes": 105431
+    },
+    "cairo-z14.9-qgis3-full.png": {
+      "sha256": "f3abb6a96904226e34f9b73e8fbdc3336d43ea6d577e65057bbc82d0948e87ab",
+      "bytes": 1215952
+    },
+    "cairo-z14.9-qgis4-crop.png": {
+      "sha256": "64c3bdbd9e9ba8c05e32f92c40b964e5bdc8d75cb5d47440278a3e9f09e926f3",
+      "bytes": 105223
+    },
+    "cairo-z14.9-qgis4-full.png": {
+      "sha256": "0cd4e4ec26411b8b04bf3db7d379576d36238f7f5dfec1395d4c4f1d430194c2",
+      "bytes": 1216669
+    },
+    "cairo-z15-qgis3-crop.png": {
+      "sha256": "aa8c084858f57c581bbf3a8c78fe3d20762de66a4fe6bbe138067daaeccf76ea",
+      "bytes": 102374
+    },
+    "cairo-z15-qgis3-full.png": {
+      "sha256": "5ebec15052055bf834ad40cf8c60cebc46cb24925f673280ed72637f2a1b0dc4",
+      "bytes": 1204603
+    },
+    "cairo-z15-qgis4-crop.png": {
+      "sha256": "21c4337cc844ede591d969d3a2c357bf34cc93d9b71634b3de6e0c4396aabc4e",
+      "bytes": 102144
+    },
+    "cairo-z15-qgis4-full.png": {
+      "sha256": "59c444ae0c01fa42accfc4520d7d31fdc87829e91b103854322518622d9c5f8e",
+      "bytes": 1204512
+    },
+    "cairo-z15.1-qgis3-crop.png": {
+      "sha256": "083572732f9998dafa6346fe5fec66be8b057183803e6c369013850ebae3ecc6",
+      "bytes": 98125
+    },
+    "cairo-z15.1-qgis3-full.png": {
+      "sha256": "1901837306295ad871bc2e906003160dc7bb95f4a06e6612384e824950bb88fc",
+      "bytes": 1234711
+    },
+    "cairo-z15.1-qgis4-crop.png": {
+      "sha256": "31c6a9343f859588410cf41151954cd1efbba05bffaf9c3a434e10cef6ec907b",
+      "bytes": 97771
+    },
+    "cairo-z15.1-qgis4-full.png": {
+      "sha256": "a7198353317d2d1054b59a94f143a1dab2f705a687a362ef04aa3c80abb29de0",
+      "bytes": 1228085
+    },
+    "generator-provenance.json": {
+      "sha256": "6e2116c8b66018d285692f5972adda8ee4ac2d977d8474ad5b6955816ba2bfac",
+      "bytes": 28035
+    },
+    "image-ids.json": {
+      "sha256": "b1d44fd942ac81703b6987333bdc2089e72f140887bf31db6a7ee23eeb694179",
+      "bytes": 167
+    },
+    "jerusalem-city-z14-activity-qgis3-crop.png": {
+      "sha256": "e068e7d7430c1e82f522e3ea0fab4db5cf73c3582977ebcb9a0ec3256a6f2cd7",
+      "bytes": 170334
+    },
+    "jerusalem-city-z14-activity-qgis3-full.png": {
+      "sha256": "d7eb5721227d22c83d6068befe95cd2a0d1b0bcddc0a2cbbd5fe685a2b38160b",
+      "bytes": 1537486
+    },
+    "jerusalem-city-z14-activity-qgis4-crop.png": {
+      "sha256": "c7329b983399a0b4f075e48b66590538d441b46333027ea8f3a89f49ce92fced",
+      "bytes": 169740
+    },
+    "jerusalem-city-z14-activity-qgis4-full.png": {
+      "sha256": "9f38db904d66f83f0ab3eee8eafa3965672c18862ed97fd420bf3345a8365ac3",
+      "bytes": 1536603
+    },
+    "jerusalem-city-z14-qgis3-crop.png": {
+      "sha256": "fb4e34654fbe58b5797bec69aa52b02abcc496fd4e4891429fb1fea4b41c5f0a",
+      "bytes": 149635
+    },
+    "jerusalem-city-z14-qgis3-full.png": {
+      "sha256": "8c78ece171d8d9fed6d9df4cee49aad9604eb17858587d65c5e33876b98b920f",
+      "bytes": 1451905
+    },
+    "jerusalem-city-z14-qgis3-pdf150-crop.png": {
+      "sha256": "eb11d8def33f8a665cdb7636f38472ae51346fc1ee1feaeee1c6e73e7c9fca79",
+      "bytes": 150085
+    },
+    "jerusalem-city-z14-qgis4-crop.png": {
+      "sha256": "49cc88c1ac0fa068fb40ec448a092abbba63602cc961687cb787422b3ef86690",
+      "bytes": 149218
+    },
+    "jerusalem-city-z14-qgis4-full.png": {
+      "sha256": "d975bc38ab57d92df2ae5deafddafec254fd844bf287f9a44c5dd7e76c4e0784",
+      "bytes": 1450232
+    },
+    "jerusalem-city-z14-qgis4-pdf150-crop.png": {
+      "sha256": "86b95c89b1a696752a02cc464ed20488075e106a04cfe7541074bddfe02badda",
+      "bytes": 195767
+    },
+    "metrics.json": {
+      "sha256": "3dc40d6b2323cdd7867caa4b3bae2c175eb8270f0cbf10c820a337478921cdcc",
+      "bytes": 38054
+    },
+    "pdf-audit.json": {
+      "sha256": "46c29c8175f3ba024955843486b6ee31a930565a78b72f737ef029f94700ecbe",
+      "bytes": 5485
+    },
+    "pdf_audit.py": {
+      "sha256": "cc1d70d915e049dd1ed65710d15b36dffb6ba1a7384b42501f90dc8741bf4538",
+      "bytes": 2845
+    },
+    "pdf_worker.py": {
+      "sha256": "da01832abd99f9c556088e34fba6ed0884140d908db647f0fba4f028c974f770",
+      "bytes": 2663
+    },
+    "placed-label-audit.json": {
+      "sha256": "0889f701f1034da614ed23b389b67632eaa5be3feff2346dc46083b7c9f7fd45",
+      "bytes": 352009
+    },
+    "placed-label-summary.json": {
+      "sha256": "4acbe688d8eb98705550c7d6d436133884f3bdfb66aa63bc447445f360248042",
+      "bytes": 1737
+    },
+    "reference/bern-urban-z12-light/mapbox.png": {
+      "sha256": "d683cf7c463166f75478d860ff4b8489a559b2c5425247bbe880a396d8ea80c1",
+      "bytes": 361359
+    },
+    "reference/bern-urban-z12-light/mapbox.png.features.json": {
+      "sha256": "98f38ee27a42813e999277bb62a15689eef21cae604bf23b7391864f7717cef3",
+      "bytes": 38736
+    },
+    "reference/bern-urban-z12-light/runtime.json": {
+      "sha256": "c7b952a8d7ffff6b66003bb31afd535f182917cabe3838f5d2a243b080d323a3",
+      "bytes": 1864
+    },
+    "reference/cairo-nile-z14/mapbox.png": {
+      "sha256": "6c8019d75ba5c4c87eeae6127ba996e520f29ce7e6462b619dc8ddd00133a048",
+      "bytes": 559539
+    },
+    "reference/cairo-nile-z14/mapbox.png.features.json": {
+      "sha256": "06ee6065b404459f4cb32e81ab08120a465bcf0c20b1b328c2d702bd36dc42a6",
+      "bytes": 148230
+    },
+    "reference/cairo-nile-z14/runtime.json": {
+      "sha256": "bb4c33f2f67a8319b98934025daec443263fec184465835a793ce41fa13e96f3",
+      "bytes": 1821
+    },
+    "reference/cairo-nile-z14-activity/mapbox.png": {
+      "sha256": "c9095334afc3d63e23bc8eae7ad9cb040a3984a7230a191949caf667b701d615",
+      "bytes": 593347
+    },
+    "reference/cairo-nile-z14-activity/mapbox.png.features.json": {
+      "sha256": "06ee6065b404459f4cb32e81ab08120a465bcf0c20b1b328c2d702bd36dc42a6",
+      "bytes": 148230
+    },
+    "reference/cairo-nile-z14-activity/runtime.json": {
+      "sha256": "26f3d48c5b3055e84a16ebb54da331ab9ac311672b035067f66a659c6bd617c6",
+      "bytes": 1821
+    },
+    "reference/cairo-z11.9/mapbox.png": {
+      "sha256": "a0f47a12eee9c3bc475fec8afae782a63777ae3fad09704d7695756a1299ce6a",
+      "bytes": 605565
+    },
+    "reference/cairo-z11.9/mapbox.png.features.json": {
+      "sha256": "abd9705587ff96cbcbf008105a18aa4fd7fb04b15a3fe0b85a5c78e3ed809d1c",
+      "bytes": 18235
+    },
+    "reference/cairo-z11.9/runtime.json": {
+      "sha256": "255e9c190213578af926a84f99c283c1b5aace22107fe247e9ca83f0038bc0f0",
+      "bytes": 1849
+    },
+    "reference/cairo-z12/mapbox.png": {
+      "sha256": "f001baffd8aee78035eb48f7061eaa706e79ba7715aeaafa942e6dc7ef4ed1a1",
+      "bytes": 710228
+    },
+    "reference/cairo-z12/mapbox.png.features.json": {
+      "sha256": "ee00b51800219a7a639aa488862788d6054bd0076728389faeceae54506a8c16",
+      "bytes": 214082
+    },
+    "reference/cairo-z12/runtime.json": {
+      "sha256": "539da5fe4671f8e51a11f0088a244214397cde5ca246feb50b37f4dbebb25219",
+      "bytes": 1818
+    },
+    "reference/cairo-z12.1/mapbox.png": {
+      "sha256": "e1737c7bd6a01de6d78fa5b348b527bf8a6b8f8f4d4253dd220e79f0b8616061",
+      "bytes": 686413
+    },
+    "reference/cairo-z12.1/mapbox.png.features.json": {
+      "sha256": "cf63e1069c0381438d5b026fe78ed0d29e0f205fff2ba439ad99062cbd682b75",
+      "bytes": 195441
+    },
+    "reference/cairo-z12.1/runtime.json": {
+      "sha256": "8e0c1dcbfbf92d8766a1fdb9cf8584c8b2fb1e0bfa7ad60a9ec7d0437c759416",
+      "bytes": 1895
+    },
+    "reference/cairo-z14.9/mapbox.png": {
+      "sha256": "bc7309d012268e78510ce04c9fcb01497ba0e46aba1582cd5d3d0e990f4ac8fa",
+      "bytes": 272744
+    },
+    "reference/cairo-z14.9/mapbox.png.features.json": {
+      "sha256": "2d8708e1c021a618f047db88ce68572780426d92a8739fbef86dd9bb2a732389",
+      "bytes": 47054
+    },
+    "reference/cairo-z14.9/runtime.json": {
+      "sha256": "5816fa06a9f689383c37c3014e4610f3653134a771fbcb24641a836b2d5f0324",
+      "bytes": 1849
+    },
+    "reference/cairo-z15/mapbox.png": {
+      "sha256": "f92706aab3dc4bda78a91523608f4c6c67d6222c1cb912f17e23661d4642f7f5",
+      "bytes": 332535
+    },
+    "reference/cairo-z15/mapbox.png.features.json": {
+      "sha256": "3d5cfce6a4e261fe3f65d93bcc585644bdc6934d5701658554ea526b779f254d",
+      "bytes": 86852
+    },
+    "reference/cairo-z15/runtime.json": {
+      "sha256": "d07043ca5ef5de1e8a992b96514696ccc5a84dabc3b990dfbb73209010d0dabe",
+      "bytes": 1819
+    },
+    "reference/cairo-z15.1/mapbox.png": {
+      "sha256": "b266737e0e3f861d0ab836645dc26ab27136f6b8d108976339976d4b009a5c7d",
+      "bytes": 410630
+    },
+    "reference/cairo-z15.1/mapbox.png.features.json": {
+      "sha256": "49bc45e508f1cf6d5aaf802973f13289f892f2cdb1ddd1da0ec3d1ab9baff96c",
+      "bytes": 80822
+    },
+    "reference/cairo-z15.1/runtime.json": {
+      "sha256": "e9ab8a025e54d9fcabf84a327c66e8d16f7d0348311af11ca2c87d4ce0331d9c",
+      "bytes": 1886
+    },
+    "reference/geneva-streets-z18-light/mapbox.png": {
+      "sha256": "09edd5148a12727ac7899cb962cc984e0ca0da61dd07d60477af080dd25e6ffc",
+      "bytes": 207791
+    },
+    "reference/geneva-streets-z18-light/mapbox.png.features.json": {
+      "sha256": "c4695ad355144e46b1495cb2b5be37c47ccad065d02da3569e779f0156e73978",
+      "bytes": 25363
+    },
+    "reference/geneva-streets-z18-light/runtime.json": {
+      "sha256": "1e9744ee60ffa04ae1a321aa4ec05d6bc8a97436a5f95c227e1c2569cd3f87fd",
+      "bytes": 1836
+    },
+    "reference/geneva-urban-z14-light/mapbox.png": {
+      "sha256": "a1088191221cd6083a1369d37d7608756c76cd19b96278f31dd73c608255cc76",
+      "bytes": 488903
+    },
+    "reference/geneva-urban-z14-light/mapbox.png.features.json": {
+      "sha256": "a18b7394ea57ff32c715573aee0183a49bcdc85ce83b97f139bd4a60451fb5a0",
+      "bytes": 62338
+    },
+    "reference/geneva-urban-z14-light/runtime.json": {
+      "sha256": "6c1eeeb138fd1986fbc3417fcfc85b1f8cca72a793207163f61d75498b354298",
+      "bytes": 1872
+    },
+    "reference/jerusalem-city-z14/mapbox.png": {
+      "sha256": "1939182a81f11179b97e98472809942508cd78a8d3cfd58953230d94b9c992af",
+      "bytes": 579359
+    },
+    "reference/jerusalem-city-z14/mapbox.png.features.json": {
+      "sha256": "7b9cc0d9008e00a9de4d9ae718b644e62bd60238e89e2c99ffcf0c830119f6ac",
+      "bytes": 136061
+    },
+    "reference/jerusalem-city-z14/runtime.json": {
+      "sha256": "4d00d15f3192efa42321ec96fddad1a3364bb15ca8a98578de4275d4bcb8fcd7",
+      "bytes": 1802
+    },
+    "reference/jerusalem-city-z14-activity/mapbox.png": {
+      "sha256": "47513458e4dd6e4454454fb372993027e7eb04fb1e2eed5207bdee3be6abf1ac",
+      "bytes": 609711
+    },
+    "reference/jerusalem-city-z14-activity/mapbox.png.features.json": {
+      "sha256": "7b9cc0d9008e00a9de4d9ae718b644e62bd60238e89e2c99ffcf0c830119f6ac",
+      "bytes": 136061
+    },
+    "reference/jerusalem-city-z14-activity/runtime.json": {
+      "sha256": "4db27e5d6bdef1991283625405fbb55e521b519b866b4f46eddb141ba42f0e33",
+      "bytes": 1802
+    },
+    "reference/lausanne-lavaux-z10-light/mapbox.png": {
+      "sha256": "1ae4bde1af23b8c80015b7d51499b2672e65313d076573fc88b65e293c3d0b97",
+      "bytes": 535603
+    },
+    "reference/lausanne-lavaux-z10-light/mapbox.png.features.json": {
+      "sha256": "96ca65e3122f40b480bef56ad75c5f504b12ee9cfc416473396c1ca528d6cf93",
+      "bytes": 29260
+    },
+    "reference/lausanne-lavaux-z10-light/runtime.json": {
+      "sha256": "3ebe57f789a700c4bf0e1303800c0b7c40878bc78e8817d0b1b8ed825502efa1",
+      "bytes": 1807
+    },
+    "reference/switzerland-alps-z5-light/mapbox.png": {
+      "sha256": "f82803bd3fac15796284956d8b9b7e26568ab8ecb274ef87baa756f085628803",
+      "bytes": 779768
+    },
+    "reference/switzerland-alps-z5-light/mapbox.png.features.json": {
+      "sha256": "e9ee37df2e0fe0c7b46448647bb23e39b29c99a0cbde5ee9c855de549cdac8ec",
+      "bytes": 99280
+    },
+    "reference/switzerland-alps-z5-light/runtime.json": {
+      "sha256": "b76c38734791a2f9bb10af6ef998d2a8e2c2b25ccfadc62988761e6e67f5556b",
+      "bytes": 1870
+    },
+    "reference/zurich-region-z8-light/mapbox.png": {
+      "sha256": "553784ddbf6e8f5ff1cc419667bab13ccebcda0f6606f92100cc53b0d4627313",
+      "bytes": 811324
+    },
+    "reference/zurich-region-z8-light/mapbox.png.features.json": {
+      "sha256": "5be3a5eff0e51565b9e4644661d33ea0ba30a3c004ac5c7a39e338d531deed42",
+      "bytes": 51600
+    },
+    "reference/zurich-region-z8-light/runtime.json": {
+      "sha256": "f6ed6f73264505da6e504a1380473798b56fca12eb4031f6346fff455e70b211",
+      "bytes": 1857
+    },
+    "reference/zurich-streets-z17-light/mapbox.png": {
+      "sha256": "abca923b79ccea72baf4cf4c407f3a0a48b3958d3aa9455f80b4ed78e7bde3ab",
+      "bytes": 303800
+    },
+    "reference/zurich-streets-z17-light/mapbox.png.features.json": {
+      "sha256": "7ffc954707c010ead25b40b492a6d060a69414286aed45aae8873183634eba6c",
+      "bytes": 46630
+    },
+    "reference/zurich-streets-z17-light/runtime.json": {
+      "sha256": "6d1ba4b82706f5eb31d209d58656da2e6eaa7882132dd06cb5053954af734a8d",
+      "bytes": 1729
+    },
+    "reference-mercator/bern-urban-z12-light/mapbox.png": {
+      "sha256": "d683cf7c463166f75478d860ff4b8489a559b2c5425247bbe880a396d8ea80c1",
+      "bytes": 361359
+    },
+    "reference-mercator/bern-urban-z12-light/mapbox.png.features.json": {
+      "sha256": "98f38ee27a42813e999277bb62a15689eef21cae604bf23b7391864f7717cef3",
+      "bytes": 38736
+    },
+    "reference-mercator/bern-urban-z12-light/runtime.json": {
+      "sha256": "2a9ce0bddbf51ccf5a7401e2f9253c01233a4518566a40f0bc9251bcec6821ad",
+      "bytes": 1869
+    },
+    "reference-mercator/cairo-nile-z14/mapbox.png": {
+      "sha256": "6c8019d75ba5c4c87eeae6127ba996e520f29ce7e6462b619dc8ddd00133a048",
+      "bytes": 559539
+    },
+    "reference-mercator/cairo-nile-z14/mapbox.png.features.json": {
+      "sha256": "06ee6065b404459f4cb32e81ab08120a465bcf0c20b1b328c2d702bd36dc42a6",
+      "bytes": 148230
+    },
+    "reference-mercator/cairo-nile-z14/runtime.json": {
+      "sha256": "abbc60a94476db902ac1ba3fb7fc774d7f968183ad2b12328bbae8066d0e55cc",
+      "bytes": 1826
+    },
+    "reference-mercator/cairo-nile-z14-activity/mapbox.png": {
+      "sha256": "c9095334afc3d63e23bc8eae7ad9cb040a3984a7230a191949caf667b701d615",
+      "bytes": 593347
+    },
+    "reference-mercator/cairo-nile-z14-activity/mapbox.png.features.json": {
+      "sha256": "06ee6065b404459f4cb32e81ab08120a465bcf0c20b1b328c2d702bd36dc42a6",
+      "bytes": 148230
+    },
+    "reference-mercator/cairo-nile-z14-activity/runtime.json": {
+      "sha256": "d8095629cb7c186a121b934f16fc46fb54e650b18b2978aac009830d5f119bde",
+      "bytes": 1826
+    },
+    "reference-mercator/cairo-z11.9/mapbox.png": {
+      "sha256": "a0f47a12eee9c3bc475fec8afae782a63777ae3fad09704d7695756a1299ce6a",
+      "bytes": 605565
+    },
+    "reference-mercator/cairo-z11.9/mapbox.png.features.json": {
+      "sha256": "abd9705587ff96cbcbf008105a18aa4fd7fb04b15a3fe0b85a5c78e3ed809d1c",
+      "bytes": 18235
+    },
+    "reference-mercator/cairo-z11.9/runtime.json": {
+      "sha256": "bb45f290d9e43bc957ac44e5650ffce7d92bb66e70c9ed6db48f8f9af7b647f2",
+      "bytes": 1854
+    },
+    "reference-mercator/cairo-z12/mapbox.png": {
+      "sha256": "f001baffd8aee78035eb48f7061eaa706e79ba7715aeaafa942e6dc7ef4ed1a1",
+      "bytes": 710228
+    },
+    "reference-mercator/cairo-z12/mapbox.png.features.json": {
+      "sha256": "ee00b51800219a7a639aa488862788d6054bd0076728389faeceae54506a8c16",
+      "bytes": 214082
+    },
+    "reference-mercator/cairo-z12/runtime.json": {
+      "sha256": "681321f4a704cfdca2a923865297cf84a8d389cb7b194b870babb3508904accb",
+      "bytes": 1823
+    },
+    "reference-mercator/cairo-z12.1/mapbox.png": {
+      "sha256": "e1737c7bd6a01de6d78fa5b348b527bf8a6b8f8f4d4253dd220e79f0b8616061",
+      "bytes": 686413
+    },
+    "reference-mercator/cairo-z12.1/mapbox.png.features.json": {
+      "sha256": "cf63e1069c0381438d5b026fe78ed0d29e0f205fff2ba439ad99062cbd682b75",
+      "bytes": 195441
+    },
+    "reference-mercator/cairo-z12.1/runtime.json": {
+      "sha256": "886f9799ae1cac010bc3cf23f195078d2eb231407574ed2125bad72ac66be93a",
+      "bytes": 1900
+    },
+    "reference-mercator/cairo-z14.9/mapbox.png": {
+      "sha256": "bc7309d012268e78510ce04c9fcb01497ba0e46aba1582cd5d3d0e990f4ac8fa",
+      "bytes": 272744
+    },
+    "reference-mercator/cairo-z14.9/mapbox.png.features.json": {
+      "sha256": "2d8708e1c021a618f047db88ce68572780426d92a8739fbef86dd9bb2a732389",
+      "bytes": 47054
+    },
+    "reference-mercator/cairo-z14.9/runtime.json": {
+      "sha256": "13b330d824bfd82e2e7c15aa95f12875a0365616728551d338a222fc43eb35fe",
+      "bytes": 1854
+    },
+    "reference-mercator/cairo-z15/mapbox.png": {
+      "sha256": "f92706aab3dc4bda78a91523608f4c6c67d6222c1cb912f17e23661d4642f7f5",
+      "bytes": 332535
+    },
+    "reference-mercator/cairo-z15/mapbox.png.features.json": {
+      "sha256": "3d5cfce6a4e261fe3f65d93bcc585644bdc6934d5701658554ea526b779f254d",
+      "bytes": 86852
+    },
+    "reference-mercator/cairo-z15/runtime.json": {
+      "sha256": "7e2af9c5a2e9056ac57a967f123f3f1cc025e403a6a8b0991d2d77b5665fad1b",
+      "bytes": 1824
+    },
+    "reference-mercator/cairo-z15.1/mapbox.png": {
+      "sha256": "b266737e0e3f861d0ab836645dc26ab27136f6b8d108976339976d4b009a5c7d",
+      "bytes": 410630
+    },
+    "reference-mercator/cairo-z15.1/mapbox.png.features.json": {
+      "sha256": "49bc45e508f1cf6d5aaf802973f13289f892f2cdb1ddd1da0ec3d1ab9baff96c",
+      "bytes": 80822
+    },
+    "reference-mercator/cairo-z15.1/runtime.json": {
+      "sha256": "30560ef70b73b2f8c270ba2298c9b0f74b092f0aad8f6205f9542867ead41a8d",
+      "bytes": 1891
+    },
+    "reference-mercator/geneva-streets-z18-light/mapbox.png": {
+      "sha256": "09edd5148a12727ac7899cb962cc984e0ca0da61dd07d60477af080dd25e6ffc",
+      "bytes": 207791
+    },
+    "reference-mercator/geneva-streets-z18-light/mapbox.png.features.json": {
+      "sha256": "c4695ad355144e46b1495cb2b5be37c47ccad065d02da3569e779f0156e73978",
+      "bytes": 25363
+    },
+    "reference-mercator/geneva-streets-z18-light/runtime.json": {
+      "sha256": "64b43bc76baeb22befaf3300c917efa597306541e562768a28158a89331ca34a",
+      "bytes": 1841
+    },
+    "reference-mercator/geneva-urban-z14-light/mapbox.png": {
+      "sha256": "a1088191221cd6083a1369d37d7608756c76cd19b96278f31dd73c608255cc76",
+      "bytes": 488903
+    },
+    "reference-mercator/geneva-urban-z14-light/mapbox.png.features.json": {
+      "sha256": "a18b7394ea57ff32c715573aee0183a49bcdc85ce83b97f139bd4a60451fb5a0",
+      "bytes": 62338
+    },
+    "reference-mercator/geneva-urban-z14-light/runtime.json": {
+      "sha256": "f9548f8bf7d62aca8dbe1bca8e7ce4bfe8b0e5fcc85ddaf56bd0f17305dcbd7d",
+      "bytes": 1877
+    },
+    "reference-mercator/jerusalem-city-z14/mapbox.png": {
+      "sha256": "1939182a81f11179b97e98472809942508cd78a8d3cfd58953230d94b9c992af",
+      "bytes": 579359
+    },
+    "reference-mercator/jerusalem-city-z14/mapbox.png.features.json": {
+      "sha256": "7b9cc0d9008e00a9de4d9ae718b644e62bd60238e89e2c99ffcf0c830119f6ac",
+      "bytes": 136061
+    },
+    "reference-mercator/jerusalem-city-z14/runtime.json": {
+      "sha256": "54b92354ecebe20c06ac812a697fe999cc82676c31bfb78fae5ab9d7beedaa6a",
+      "bytes": 1807
+    },
+    "reference-mercator/jerusalem-city-z14-activity/mapbox.png": {
+      "sha256": "47513458e4dd6e4454454fb372993027e7eb04fb1e2eed5207bdee3be6abf1ac",
+      "bytes": 609711
+    },
+    "reference-mercator/jerusalem-city-z14-activity/mapbox.png.features.json": {
+      "sha256": "7b9cc0d9008e00a9de4d9ae718b644e62bd60238e89e2c99ffcf0c830119f6ac",
+      "bytes": 136061
+    },
+    "reference-mercator/jerusalem-city-z14-activity/runtime.json": {
+      "sha256": "fdb09a78734cea19668ddf8ff36e6005d4658539ab99e201886c25ce4867b003",
+      "bytes": 1807
+    },
+    "reference-mercator/lausanne-lavaux-z10-light/mapbox.png": {
+      "sha256": "1ae4bde1af23b8c80015b7d51499b2672e65313d076573fc88b65e293c3d0b97",
+      "bytes": 535603
+    },
+    "reference-mercator/lausanne-lavaux-z10-light/mapbox.png.features.json": {
+      "sha256": "96ca65e3122f40b480bef56ad75c5f504b12ee9cfc416473396c1ca528d6cf93",
+      "bytes": 29260
+    },
+    "reference-mercator/lausanne-lavaux-z10-light/runtime.json": {
+      "sha256": "8cab4b17e0953c1450d8b82123364b79956f43526da360aff4e25fce6d0cc832",
+      "bytes": 1812
+    },
+    "reference-mercator/switzerland-alps-z5-light/mapbox.png": {
+      "sha256": "d44444381b991e897900645c06eeb3b0b0e887e4920208963320bc69ddcc9e0d",
+      "bytes": 777121
+    },
+    "reference-mercator/switzerland-alps-z5-light/mapbox.png.features.json": {
+      "sha256": "18470f531736b68db7cef4c564551fbb5844b46918ea509dc52a61c6b219793e",
+      "bytes": 96271
+    },
+    "reference-mercator/switzerland-alps-z5-light/runtime.json": {
+      "sha256": "b17048453d12d3ae0d6e8d95292d54f268cd3054133f1ed5b80325ccf2764e18",
+      "bytes": 1803
+    },
+    "reference-mercator/zurich-region-z8-light/mapbox.png": {
+      "sha256": "553784ddbf6e8f5ff1cc419667bab13ccebcda0f6606f92100cc53b0d4627313",
+      "bytes": 811324
+    },
+    "reference-mercator/zurich-region-z8-light/mapbox.png.features.json": {
+      "sha256": "5be3a5eff0e51565b9e4644661d33ea0ba30a3c004ac5c7a39e338d531deed42",
+      "bytes": 51600
+    },
+    "reference-mercator/zurich-region-z8-light/runtime.json": {
+      "sha256": "816dbfa65495dde06090477a62a5b2896e530204b286a4997abe07108c6cb115",
+      "bytes": 1862
+    },
+    "reference-mercator/zurich-streets-z17-light/mapbox.png": {
+      "sha256": "abca923b79ccea72baf4cf4c407f3a0a48b3958d3aa9455f80b4ed78e7bde3ab",
+      "bytes": 303800
+    },
+    "reference-mercator/zurich-streets-z17-light/mapbox.png.features.json": {
+      "sha256": "7ffc954707c010ead25b40b492a6d060a69414286aed45aae8873183634eba6c",
+      "bytes": 46630
+    },
+    "reference-mercator/zurich-streets-z17-light/runtime.json": {
+      "sha256": "06cbc199919f923ed321dd0e4ab85b29b6ca01050756a77e129e8a70e527f061",
+      "bytes": 1734
+    },
+    "reference-mercator-repeat/bern-urban-z12-light/mapbox.png": {
+      "sha256": "d683cf7c463166f75478d860ff4b8489a559b2c5425247bbe880a396d8ea80c1",
+      "bytes": 361359
+    },
+    "reference-mercator-repeat/bern-urban-z12-light/mapbox.png.features.json": {
+      "sha256": "98f38ee27a42813e999277bb62a15689eef21cae604bf23b7391864f7717cef3",
+      "bytes": 38736
+    },
+    "reference-mercator-repeat/bern-urban-z12-light/runtime.json": {
+      "sha256": "2a9ce0bddbf51ccf5a7401e2f9253c01233a4518566a40f0bc9251bcec6821ad",
+      "bytes": 1869
+    },
+    "reference-mercator-repeat/cairo-nile-z14/mapbox.png": {
+      "sha256": "6c8019d75ba5c4c87eeae6127ba996e520f29ce7e6462b619dc8ddd00133a048",
+      "bytes": 559539
+    },
+    "reference-mercator-repeat/cairo-nile-z14/mapbox.png.features.json": {
+      "sha256": "06ee6065b404459f4cb32e81ab08120a465bcf0c20b1b328c2d702bd36dc42a6",
+      "bytes": 148230
+    },
+    "reference-mercator-repeat/cairo-nile-z14/runtime.json": {
+      "sha256": "abbc60a94476db902ac1ba3fb7fc774d7f968183ad2b12328bbae8066d0e55cc",
+      "bytes": 1826
+    },
+    "reference-mercator-repeat/cairo-nile-z14-activity/mapbox.png": {
+      "sha256": "c9095334afc3d63e23bc8eae7ad9cb040a3984a7230a191949caf667b701d615",
+      "bytes": 593347
+    },
+    "reference-mercator-repeat/cairo-nile-z14-activity/mapbox.png.features.json": {
+      "sha256": "06ee6065b404459f4cb32e81ab08120a465bcf0c20b1b328c2d702bd36dc42a6",
+      "bytes": 148230
+    },
+    "reference-mercator-repeat/cairo-nile-z14-activity/runtime.json": {
+      "sha256": "d8095629cb7c186a121b934f16fc46fb54e650b18b2978aac009830d5f119bde",
+      "bytes": 1826
+    },
+    "reference-mercator-repeat/cairo-z11.9/mapbox.png": {
+      "sha256": "a0f47a12eee9c3bc475fec8afae782a63777ae3fad09704d7695756a1299ce6a",
+      "bytes": 605565
+    },
+    "reference-mercator-repeat/cairo-z11.9/mapbox.png.features.json": {
+      "sha256": "abd9705587ff96cbcbf008105a18aa4fd7fb04b15a3fe0b85a5c78e3ed809d1c",
+      "bytes": 18235
+    },
+    "reference-mercator-repeat/cairo-z11.9/runtime.json": {
+      "sha256": "bb45f290d9e43bc957ac44e5650ffce7d92bb66e70c9ed6db48f8f9af7b647f2",
+      "bytes": 1854
+    },
+    "reference-mercator-repeat/cairo-z12/mapbox.png": {
+      "sha256": "f001baffd8aee78035eb48f7061eaa706e79ba7715aeaafa942e6dc7ef4ed1a1",
+      "bytes": 710228
+    },
+    "reference-mercator-repeat/cairo-z12/mapbox.png.features.json": {
+      "sha256": "ee00b51800219a7a639aa488862788d6054bd0076728389faeceae54506a8c16",
+      "bytes": 214082
+    },
+    "reference-mercator-repeat/cairo-z12/runtime.json": {
+      "sha256": "681321f4a704cfdca2a923865297cf84a8d389cb7b194b870babb3508904accb",
+      "bytes": 1823
+    },
+    "reference-mercator-repeat/cairo-z12.1/mapbox.png": {
+      "sha256": "e1737c7bd6a01de6d78fa5b348b527bf8a6b8f8f4d4253dd220e79f0b8616061",
+      "bytes": 686413
+    },
+    "reference-mercator-repeat/cairo-z12.1/mapbox.png.features.json": {
+      "sha256": "cf63e1069c0381438d5b026fe78ed0d29e0f205fff2ba439ad99062cbd682b75",
+      "bytes": 195441
+    },
+    "reference-mercator-repeat/cairo-z12.1/runtime.json": {
+      "sha256": "886f9799ae1cac010bc3cf23f195078d2eb231407574ed2125bad72ac66be93a",
+      "bytes": 1900
+    },
+    "reference-mercator-repeat/cairo-z14.9/mapbox.png": {
+      "sha256": "bc7309d012268e78510ce04c9fcb01497ba0e46aba1582cd5d3d0e990f4ac8fa",
+      "bytes": 272744
+    },
+    "reference-mercator-repeat/cairo-z14.9/mapbox.png.features.json": {
+      "sha256": "2d8708e1c021a618f047db88ce68572780426d92a8739fbef86dd9bb2a732389",
+      "bytes": 47054
+    },
+    "reference-mercator-repeat/cairo-z14.9/runtime.json": {
+      "sha256": "13b330d824bfd82e2e7c15aa95f12875a0365616728551d338a222fc43eb35fe",
+      "bytes": 1854
+    },
+    "reference-mercator-repeat/cairo-z15/mapbox.png": {
+      "sha256": "f92706aab3dc4bda78a91523608f4c6c67d6222c1cb912f17e23661d4642f7f5",
+      "bytes": 332535
+    },
+    "reference-mercator-repeat/cairo-z15/mapbox.png.features.json": {
+      "sha256": "3d5cfce6a4e261fe3f65d93bcc585644bdc6934d5701658554ea526b779f254d",
+      "bytes": 86852
+    },
+    "reference-mercator-repeat/cairo-z15/runtime.json": {
+      "sha256": "7e2af9c5a2e9056ac57a967f123f3f1cc025e403a6a8b0991d2d77b5665fad1b",
+      "bytes": 1824
+    },
+    "reference-mercator-repeat/cairo-z15.1/mapbox.png": {
+      "sha256": "b266737e0e3f861d0ab836645dc26ab27136f6b8d108976339976d4b009a5c7d",
+      "bytes": 410630
+    },
+    "reference-mercator-repeat/cairo-z15.1/mapbox.png.features.json": {
+      "sha256": "49bc45e508f1cf6d5aaf802973f13289f892f2cdb1ddd1da0ec3d1ab9baff96c",
+      "bytes": 80822
+    },
+    "reference-mercator-repeat/cairo-z15.1/runtime.json": {
+      "sha256": "30560ef70b73b2f8c270ba2298c9b0f74b092f0aad8f6205f9542867ead41a8d",
+      "bytes": 1891
+    },
+    "reference-mercator-repeat/geneva-streets-z18-light/mapbox.png": {
+      "sha256": "09edd5148a12727ac7899cb962cc984e0ca0da61dd07d60477af080dd25e6ffc",
+      "bytes": 207791
+    },
+    "reference-mercator-repeat/geneva-streets-z18-light/mapbox.png.features.json": {
+      "sha256": "c4695ad355144e46b1495cb2b5be37c47ccad065d02da3569e779f0156e73978",
+      "bytes": 25363
+    },
+    "reference-mercator-repeat/geneva-streets-z18-light/runtime.json": {
+      "sha256": "64b43bc76baeb22befaf3300c917efa597306541e562768a28158a89331ca34a",
+      "bytes": 1841
+    },
+    "reference-mercator-repeat/geneva-urban-z14-light/mapbox.png": {
+      "sha256": "a1088191221cd6083a1369d37d7608756c76cd19b96278f31dd73c608255cc76",
+      "bytes": 488903
+    },
+    "reference-mercator-repeat/geneva-urban-z14-light/mapbox.png.features.json": {
+      "sha256": "a18b7394ea57ff32c715573aee0183a49bcdc85ce83b97f139bd4a60451fb5a0",
+      "bytes": 62338
+    },
+    "reference-mercator-repeat/geneva-urban-z14-light/runtime.json": {
+      "sha256": "f9548f8bf7d62aca8dbe1bca8e7ce4bfe8b0e5fcc85ddaf56bd0f17305dcbd7d",
+      "bytes": 1877
+    },
+    "reference-mercator-repeat/jerusalem-city-z14/mapbox.png": {
+      "sha256": "1939182a81f11179b97e98472809942508cd78a8d3cfd58953230d94b9c992af",
+      "bytes": 579359
+    },
+    "reference-mercator-repeat/jerusalem-city-z14/mapbox.png.features.json": {
+      "sha256": "7b9cc0d9008e00a9de4d9ae718b644e62bd60238e89e2c99ffcf0c830119f6ac",
+      "bytes": 136061
+    },
+    "reference-mercator-repeat/jerusalem-city-z14/runtime.json": {
+      "sha256": "54b92354ecebe20c06ac812a697fe999cc82676c31bfb78fae5ab9d7beedaa6a",
+      "bytes": 1807
+    },
+    "reference-mercator-repeat/jerusalem-city-z14-activity/mapbox.png": {
+      "sha256": "47513458e4dd6e4454454fb372993027e7eb04fb1e2eed5207bdee3be6abf1ac",
+      "bytes": 609711
+    },
+    "reference-mercator-repeat/jerusalem-city-z14-activity/mapbox.png.features.json": {
+      "sha256": "7b9cc0d9008e00a9de4d9ae718b644e62bd60238e89e2c99ffcf0c830119f6ac",
+      "bytes": 136061
+    },
+    "reference-mercator-repeat/jerusalem-city-z14-activity/runtime.json": {
+      "sha256": "fdb09a78734cea19668ddf8ff36e6005d4658539ab99e201886c25ce4867b003",
+      "bytes": 1807
+    },
+    "reference-mercator-repeat/lausanne-lavaux-z10-light/mapbox.png": {
+      "sha256": "1ae4bde1af23b8c80015b7d51499b2672e65313d076573fc88b65e293c3d0b97",
+      "bytes": 535603
+    },
+    "reference-mercator-repeat/lausanne-lavaux-z10-light/mapbox.png.features.json": {
+      "sha256": "96ca65e3122f40b480bef56ad75c5f504b12ee9cfc416473396c1ca528d6cf93",
+      "bytes": 29260
+    },
+    "reference-mercator-repeat/lausanne-lavaux-z10-light/runtime.json": {
+      "sha256": "8cab4b17e0953c1450d8b82123364b79956f43526da360aff4e25fce6d0cc832",
+      "bytes": 1812
+    },
+    "reference-mercator-repeat/switzerland-alps-z5-light/mapbox.png": {
+      "sha256": "d44444381b991e897900645c06eeb3b0b0e887e4920208963320bc69ddcc9e0d",
+      "bytes": 777121
+    },
+    "reference-mercator-repeat/switzerland-alps-z5-light/mapbox.png.features.json": {
+      "sha256": "18470f531736b68db7cef4c564551fbb5844b46918ea509dc52a61c6b219793e",
+      "bytes": 96271
+    },
+    "reference-mercator-repeat/switzerland-alps-z5-light/runtime.json": {
+      "sha256": "b17048453d12d3ae0d6e8d95292d54f268cd3054133f1ed5b80325ccf2764e18",
+      "bytes": 1803
+    },
+    "reference-mercator-repeat/zurich-region-z8-light/mapbox.png": {
+      "sha256": "553784ddbf6e8f5ff1cc419667bab13ccebcda0f6606f92100cc53b0d4627313",
+      "bytes": 811324
+    },
+    "reference-mercator-repeat/zurich-region-z8-light/mapbox.png.features.json": {
+      "sha256": "5be3a5eff0e51565b9e4644661d33ea0ba30a3c004ac5c7a39e338d531deed42",
+      "bytes": 51600
+    },
+    "reference-mercator-repeat/zurich-region-z8-light/runtime.json": {
+      "sha256": "816dbfa65495dde06090477a62a5b2896e530204b286a4997abe07108c6cb115",
+      "bytes": 1862
+    },
+    "reference-mercator-repeat/zurich-streets-z17-light/mapbox.png": {
+      "sha256": "abca923b79ccea72baf4cf4c407f3a0a48b3958d3aa9455f80b4ed78e7bde3ab",
+      "bytes": 303800
+    },
+    "reference-mercator-repeat/zurich-streets-z17-light/mapbox.png.features.json": {
+      "sha256": "7ffc954707c010ead25b40b492a6d060a69414286aed45aae8873183634eba6c",
+      "bytes": 46630
+    },
+    "reference-mercator-repeat/zurich-streets-z17-light/runtime.json": {
+      "sha256": "06cbc199919f923ed321dd0e4ab85b29b6ca01050756a77e129e8a70e527f061",
+      "bytes": 1734
+    },
+    "reference-repeat/bern-urban-z12-light/mapbox.png": {
+      "sha256": "d683cf7c463166f75478d860ff4b8489a559b2c5425247bbe880a396d8ea80c1",
+      "bytes": 361359
+    },
+    "reference-repeat/bern-urban-z12-light/mapbox.png.features.json": {
+      "sha256": "98f38ee27a42813e999277bb62a15689eef21cae604bf23b7391864f7717cef3",
+      "bytes": 38736
+    },
+    "reference-repeat/bern-urban-z12-light/runtime.json": {
+      "sha256": "c7b952a8d7ffff6b66003bb31afd535f182917cabe3838f5d2a243b080d323a3",
+      "bytes": 1864
+    },
+    "reference-repeat/cairo-nile-z14/mapbox.png": {
+      "sha256": "6c8019d75ba5c4c87eeae6127ba996e520f29ce7e6462b619dc8ddd00133a048",
+      "bytes": 559539
+    },
+    "reference-repeat/cairo-nile-z14/mapbox.png.features.json": {
+      "sha256": "06ee6065b404459f4cb32e81ab08120a465bcf0c20b1b328c2d702bd36dc42a6",
+      "bytes": 148230
+    },
+    "reference-repeat/cairo-nile-z14/runtime.json": {
+      "sha256": "bb4c33f2f67a8319b98934025daec443263fec184465835a793ce41fa13e96f3",
+      "bytes": 1821
+    },
+    "reference-repeat/cairo-nile-z14-activity/mapbox.png": {
+      "sha256": "c9095334afc3d63e23bc8eae7ad9cb040a3984a7230a191949caf667b701d615",
+      "bytes": 593347
+    },
+    "reference-repeat/cairo-nile-z14-activity/mapbox.png.features.json": {
+      "sha256": "06ee6065b404459f4cb32e81ab08120a465bcf0c20b1b328c2d702bd36dc42a6",
+      "bytes": 148230
+    },
+    "reference-repeat/cairo-nile-z14-activity/runtime.json": {
+      "sha256": "26f3d48c5b3055e84a16ebb54da331ab9ac311672b035067f66a659c6bd617c6",
+      "bytes": 1821
+    },
+    "reference-repeat/cairo-z11.9/mapbox.png": {
+      "sha256": "a0f47a12eee9c3bc475fec8afae782a63777ae3fad09704d7695756a1299ce6a",
+      "bytes": 605565
+    },
+    "reference-repeat/cairo-z11.9/mapbox.png.features.json": {
+      "sha256": "abd9705587ff96cbcbf008105a18aa4fd7fb04b15a3fe0b85a5c78e3ed809d1c",
+      "bytes": 18235
+    },
+    "reference-repeat/cairo-z11.9/runtime.json": {
+      "sha256": "255e9c190213578af926a84f99c283c1b5aace22107fe247e9ca83f0038bc0f0",
+      "bytes": 1849
+    },
+    "reference-repeat/cairo-z12/mapbox.png": {
+      "sha256": "f001baffd8aee78035eb48f7061eaa706e79ba7715aeaafa942e6dc7ef4ed1a1",
+      "bytes": 710228
+    },
+    "reference-repeat/cairo-z12/mapbox.png.features.json": {
+      "sha256": "ee00b51800219a7a639aa488862788d6054bd0076728389faeceae54506a8c16",
+      "bytes": 214082
+    },
+    "reference-repeat/cairo-z12/runtime.json": {
+      "sha256": "539da5fe4671f8e51a11f0088a244214397cde5ca246feb50b37f4dbebb25219",
+      "bytes": 1818
+    },
+    "reference-repeat/cairo-z12.1/mapbox.png": {
+      "sha256": "e1737c7bd6a01de6d78fa5b348b527bf8a6b8f8f4d4253dd220e79f0b8616061",
+      "bytes": 686413
+    },
+    "reference-repeat/cairo-z12.1/mapbox.png.features.json": {
+      "sha256": "cf63e1069c0381438d5b026fe78ed0d29e0f205fff2ba439ad99062cbd682b75",
+      "bytes": 195441
+    },
+    "reference-repeat/cairo-z12.1/runtime.json": {
+      "sha256": "8e0c1dcbfbf92d8766a1fdb9cf8584c8b2fb1e0bfa7ad60a9ec7d0437c759416",
+      "bytes": 1895
+    },
+    "reference-repeat/cairo-z14.9/mapbox.png": {
+      "sha256": "bc7309d012268e78510ce04c9fcb01497ba0e46aba1582cd5d3d0e990f4ac8fa",
+      "bytes": 272744
+    },
+    "reference-repeat/cairo-z14.9/mapbox.png.features.json": {
+      "sha256": "2d8708e1c021a618f047db88ce68572780426d92a8739fbef86dd9bb2a732389",
+      "bytes": 47054
+    },
+    "reference-repeat/cairo-z14.9/runtime.json": {
+      "sha256": "5816fa06a9f689383c37c3014e4610f3653134a771fbcb24641a836b2d5f0324",
+      "bytes": 1849
+    },
+    "reference-repeat/cairo-z15/mapbox.png": {
+      "sha256": "f92706aab3dc4bda78a91523608f4c6c67d6222c1cb912f17e23661d4642f7f5",
+      "bytes": 332535
+    },
+    "reference-repeat/cairo-z15/mapbox.png.features.json": {
+      "sha256": "3d5cfce6a4e261fe3f65d93bcc585644bdc6934d5701658554ea526b779f254d",
+      "bytes": 86852
+    },
+    "reference-repeat/cairo-z15/runtime.json": {
+      "sha256": "d07043ca5ef5de1e8a992b96514696ccc5a84dabc3b990dfbb73209010d0dabe",
+      "bytes": 1819
+    },
+    "reference-repeat/cairo-z15.1/mapbox.png": {
+      "sha256": "b266737e0e3f861d0ab836645dc26ab27136f6b8d108976339976d4b009a5c7d",
+      "bytes": 410630
+    },
+    "reference-repeat/cairo-z15.1/mapbox.png.features.json": {
+      "sha256": "49bc45e508f1cf6d5aaf802973f13289f892f2cdb1ddd1da0ec3d1ab9baff96c",
+      "bytes": 80822
+    },
+    "reference-repeat/cairo-z15.1/runtime.json": {
+      "sha256": "e9ab8a025e54d9fcabf84a327c66e8d16f7d0348311af11ca2c87d4ce0331d9c",
+      "bytes": 1886
+    },
+    "reference-repeat/geneva-streets-z18-light/mapbox.png": {
+      "sha256": "09edd5148a12727ac7899cb962cc984e0ca0da61dd07d60477af080dd25e6ffc",
+      "bytes": 207791
+    },
+    "reference-repeat/geneva-streets-z18-light/mapbox.png.features.json": {
+      "sha256": "c4695ad355144e46b1495cb2b5be37c47ccad065d02da3569e779f0156e73978",
+      "bytes": 25363
+    },
+    "reference-repeat/geneva-streets-z18-light/runtime.json": {
+      "sha256": "1e9744ee60ffa04ae1a321aa4ec05d6bc8a97436a5f95c227e1c2569cd3f87fd",
+      "bytes": 1836
+    },
+    "reference-repeat/geneva-urban-z14-light/mapbox.png": {
+      "sha256": "a1088191221cd6083a1369d37d7608756c76cd19b96278f31dd73c608255cc76",
+      "bytes": 488903
+    },
+    "reference-repeat/geneva-urban-z14-light/mapbox.png.features.json": {
+      "sha256": "a18b7394ea57ff32c715573aee0183a49bcdc85ce83b97f139bd4a60451fb5a0",
+      "bytes": 62338
+    },
+    "reference-repeat/geneva-urban-z14-light/runtime.json": {
+      "sha256": "6c1eeeb138fd1986fbc3417fcfc85b1f8cca72a793207163f61d75498b354298",
+      "bytes": 1872
+    },
+    "reference-repeat/jerusalem-city-z14/mapbox.png": {
+      "sha256": "1939182a81f11179b97e98472809942508cd78a8d3cfd58953230d94b9c992af",
+      "bytes": 579359
+    },
+    "reference-repeat/jerusalem-city-z14/mapbox.png.features.json": {
+      "sha256": "7b9cc0d9008e00a9de4d9ae718b644e62bd60238e89e2c99ffcf0c830119f6ac",
+      "bytes": 136061
+    },
+    "reference-repeat/jerusalem-city-z14/runtime.json": {
+      "sha256": "4d00d15f3192efa42321ec96fddad1a3364bb15ca8a98578de4275d4bcb8fcd7",
+      "bytes": 1802
+    },
+    "reference-repeat/jerusalem-city-z14-activity/mapbox.png": {
+      "sha256": "47513458e4dd6e4454454fb372993027e7eb04fb1e2eed5207bdee3be6abf1ac",
+      "bytes": 609711
+    },
+    "reference-repeat/jerusalem-city-z14-activity/mapbox.png.features.json": {
+      "sha256": "7b9cc0d9008e00a9de4d9ae718b644e62bd60238e89e2c99ffcf0c830119f6ac",
+      "bytes": 136061
+    },
+    "reference-repeat/jerusalem-city-z14-activity/runtime.json": {
+      "sha256": "4db27e5d6bdef1991283625405fbb55e521b519b866b4f46eddb141ba42f0e33",
+      "bytes": 1802
+    },
+    "reference-repeat/lausanne-lavaux-z10-light/mapbox.png": {
+      "sha256": "1ae4bde1af23b8c80015b7d51499b2672e65313d076573fc88b65e293c3d0b97",
+      "bytes": 535603
+    },
+    "reference-repeat/lausanne-lavaux-z10-light/mapbox.png.features.json": {
+      "sha256": "96ca65e3122f40b480bef56ad75c5f504b12ee9cfc416473396c1ca528d6cf93",
+      "bytes": 29260
+    },
+    "reference-repeat/lausanne-lavaux-z10-light/runtime.json": {
+      "sha256": "3ebe57f789a700c4bf0e1303800c0b7c40878bc78e8817d0b1b8ed825502efa1",
+      "bytes": 1807
+    },
+    "reference-repeat/switzerland-alps-z5-light/mapbox.png": {
+      "sha256": "f82803bd3fac15796284956d8b9b7e26568ab8ecb274ef87baa756f085628803",
+      "bytes": 779768
+    },
+    "reference-repeat/switzerland-alps-z5-light/mapbox.png.features.json": {
+      "sha256": "e9ee37df2e0fe0c7b46448647bb23e39b29c99a0cbde5ee9c855de549cdac8ec",
+      "bytes": 99280
+    },
+    "reference-repeat/switzerland-alps-z5-light/runtime.json": {
+      "sha256": "b76c38734791a2f9bb10af6ef998d2a8e2c2b25ccfadc62988761e6e67f5556b",
+      "bytes": 1870
+    },
+    "reference-repeat/zurich-region-z8-light/mapbox.png": {
+      "sha256": "553784ddbf6e8f5ff1cc419667bab13ccebcda0f6606f92100cc53b0d4627313",
+      "bytes": 811324
+    },
+    "reference-repeat/zurich-region-z8-light/mapbox.png.features.json": {
+      "sha256": "5be3a5eff0e51565b9e4644661d33ea0ba30a3c004ac5c7a39e338d531deed42",
+      "bytes": 51600
+    },
+    "reference-repeat/zurich-region-z8-light/runtime.json": {
+      "sha256": "f6ed6f73264505da6e504a1380473798b56fca12eb4031f6346fff455e70b211",
+      "bytes": 1857
+    },
+    "reference-repeat/zurich-streets-z17-light/mapbox.png": {
+      "sha256": "abca923b79ccea72baf4cf4c407f3a0a48b3958d3aa9455f80b4ed78e7bde3ab",
+      "bytes": 303800
+    },
+    "reference-repeat/zurich-streets-z17-light/mapbox.png.features.json": {
+      "sha256": "7ffc954707c010ead25b40b492a6d060a69414286aed45aae8873183634eba6c",
+      "bytes": 46630
+    },
+    "reference-repeat/zurich-streets-z17-light/runtime.json": {
+      "sha256": "6d1ba4b82706f5eb31d209d58656da2e6eaa7882132dd06cb5053954af734a8d",
+      "bytes": 1729
+    },
+    "registration.json": {
+      "sha256": "1c95b1f9b27bf546f1022c4101dc5364f4cd0a7166d46eff0b07d6b348468850",
+      "bytes": 55021
+    },
+    "repeat-controls.json": {
+      "sha256": "a894800bf0b7004c7696b5def457dc790df44419b128992b7bd0d04604dc8e72",
+      "bytes": 42401
+    },
+    "road-features-qgis3.json": {
+      "sha256": "81fe1b7d3d9e9ad92a927b4c1f76358208b8c57ce8ca0a4464cb78c08d600d59",
+      "bytes": 1893961
+    },
+    "road-features-qgis4.json": {
+      "sha256": "81fe1b7d3d9e9ad92a927b4c1f76358208b8c57ce8ca0a4464cb78c08d600d59",
+      "bytes": 1893961
+    },
+    "road_feature_audit.py": {
+      "sha256": "a6174ecaf8e901d7494e286315968de30dc92968d8e4d87aba805ba6279569b6",
+      "bytes": 4079
+    },
+    "road_name_capture.py": {
+      "sha256": "f0103169986dcc836b67b5eea86b9620050dbfe7bf4f6e360a9dc534a88c4747",
+      "bytes": 5814
+    },
+    "source.json": {
+      "sha256": "87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32",
+      "bytes": 96675
+    }
+  },
+  "count": 899,
+  "scope": "Named captured artifacts and derived audits; live upstream tile bytes not archived."
+}

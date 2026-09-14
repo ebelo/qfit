@@ -1,0 +1,34 @@
+[
+  {
+    "runtime": "3",
+    "camera": "cairo-nile-z14",
+    "distinct_road_texts_before": 87,
+    "distinct_road_texts_after": 123,
+    "nonroad_distinct_text_populations_identical": true,
+    "scope": "QgsLabelingResults.allLabels includes multiple position records per curved label; raw counts are NOT label counts. Distinct strings are not distinct features or placements. Nonroad spatial/density changes remain separate."
+  },
+  {
+    "runtime": "3",
+    "camera": "jerusalem-city-z14",
+    "distinct_road_texts_before": 229,
+    "distinct_road_texts_after": 143,
+    "nonroad_distinct_text_populations_identical": true,
+    "scope": "QgsLabelingResults.allLabels includes multiple position records per curved label; raw counts are NOT label counts. Distinct strings are not distinct features or placements. Nonroad spatial/density changes remain separate."
+  },
+  {
+    "runtime": "4",
+    "camera": "cairo-nile-z14",
+    "distinct_road_texts_before": 88,
+    "distinct_road_texts_after": 126,
+    "nonroad_distinct_text_populations_identical": true,
+    "scope": "QgsLabelingResults.allLabels includes multiple position records per curved label; raw counts are NOT label counts. Distinct strings are not distinct features or placements. Nonroad spatial/density changes remain separate."
+  },
+  {
+    "runtime": "4",
+    "camera": "jerusalem-city-z14",
+    "distinct_road_texts_before": 231,
+    "distinct_road_texts_after": 146,
+    "nonroad_distinct_text_populations_identical": true,
+    "scope": "QgsLabelingResults.allLabels includes multiple position records per curved label; raw counts are NOT label counts. Distinct strings are not distinct features or placements. Nonroad spatial/density changes remain separate."
+  }
+]
