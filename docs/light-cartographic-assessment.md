@@ -141,8 +141,8 @@ focused investigation before broad completion, not an assertion of a root cause.
 use unchanged runtime `bdc741cf38caf47e25cf1809055f506bb865efb9`.
 Fresh source SHA256 remains
 `87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32`.
-This slice adds a complete 14-owner source fixture and native water-companion
-regression, **not a production language or rendering fix**.
+This slice adds a complete 14-owner source fixture, pinned provenance/ordered-owner/
+canonical-content assertions, and native water-companion regression, **not a production language or rendering fix**.
 
 Every source symbol owner is accounted for: 13 request English/local-name
 coalesce; airport requests its distinct sizerank/ref/name expression. Both native
@@ -174,7 +174,7 @@ per-frame runtime metadata are retained. Source-language fidelity and common
 road/airport reader tasks remain OPEN; no aggregate error score or extra local
 labels compensates for the missing source content.
 
-Full local tests pass 2675 / 190 skips with 299 subtests; both complete Docker suites
+Full local tests pass 2676 / 190 skips with 299 subtests; both complete Docker suites
 pass 215 / 82 skips. The legacy native companion test passes 80 cases. All runtime,
 activity, font and packaging inputs are unchanged, so no new ZIP or output
 behavior is asserted. Next: repair a bounded audited content owner population,

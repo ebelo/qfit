@@ -1949,5 +1949,15 @@
         "mapbox:group": "Place labels, place-labels"
       }
     }
-  ]
+  ],
+  "metadata": {
+    "qfit:source-provenance": {
+      "style_url": "mapbox://styles/mapbox/light-v11",
+      "captured_date": "2026-09-14",
+      "source_sha256": "87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32",
+      "source_snapshot": "https://github.com/ebelo/qfit/blob/ca29374c534bf280f965e3ed74e81d411e573a9f/docs/visual-evidence/issue-1462/label-roles/source.json",
+      "label_layers_sha256": "0567bdf6b5815cc621744c5ff6984c87d75f7adb812f45b80131dd5a539817ba",
+      "canonicalization": "UTF-8 JSON, sorted keys, compact separators, ensure_ascii=False; layers array only"
+    }
+  }
 }
