@@ -842,8 +842,8 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
                         self.assertTrue(expression.prepare(context))
                         actual = expression.evaluate(context)
                         self.assertFalse(expression.hasEvalError(), expression.evalErrorString())
-                        # Converter serializes its px/mm factor to six decimals.
-                        self.assertAlmostEqual(actual, expected * 25.4 / 96, delta=0.0001)
+                        # Unit conversion occurs once, after source interpolation.
+                        self.assertAlmostEqual(actual, expected * 25.4 / 96, delta=1e-10)
 
     def test_light_name_fallback_requests_fields_and_preserves_null_empty_semantics(self):
         import json

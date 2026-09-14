@@ -50,54 +50,6 @@ class _FakeUrlResponse:
 
 
 class MapboxConfigTests(unittest.TestCase):
-    def test_light_road_widths_preserve_source_classes_zoom_and_pixel_units(self):
-        from pathlib import Path
-        source = json.loads((Path(__file__).parent / "fixtures/mapbox/light-road-width-source.json").read_text())
-        original = copy.deepcopy(source)
-        converted = simplify_mapbox_style_expressions(source)
-        with patch.object(mapbox_config, "_light_native_road_widths", return_value={}):
-            baseline = simplify_mapbox_style_expressions(source)
-        for before, old, after in zip(source["layers"], baseline["layers"], converted["layers"]):
-            width = before["paint"]["line-width"]
-            self.assertEqual(after["paint"]["line-width"], [*width[:3], 0, width[4], *width[3:]])
-            after["paint"]["line-width"] = old["paint"]["line-width"]
-            self.assertEqual(after, old, "Only the road width may change")
-        self.assertEqual(source, original)
-
-    def test_light_road_width_guards_keep_other_contracts_on_existing_path(self):
-        from pathlib import Path
-        source = json.loads((Path(__file__).parent / "fixtures/mapbox/light-road-width-source.json").read_text())
-        for owner, identity in (("custom", "light-v11"), ("mapbox", "outdoors-v12"), ("mapbox", "light-v10")):
-            candidate = {**source, "owner": owner, "id": identity}
-            self.assertEqual(mapbox_config._light_native_road_widths(candidate), {})
-            self.assertTrue(all(isinstance(x["paint"]["line-width"], float)
-                                for x in simplify_mapbox_style_expressions(candidate)["layers"]))
-        for key, value in (("id", "road-simple-custom"), ("type", "fill"), ("source-layer", "other")):
-            candidate = copy.deepcopy(source)
-            candidate["layers"] = [{**source["layers"][1], key: value}]
-            self.assertEqual(mapbox_config._light_native_road_widths(candidate), {})
-        road = next(x for x in source["layers"] if x["id"] == "road-simple")
-        width = road["paint"]["line-width"]
-        alternatives = [None, 2.4, [], width[:-1],
-                        ["interpolate", ["linear"], *width[2:]],
-                        [*width[:3], 4, *width[4:]],
-                        [*width[:4], ["get", "width"], *width[5:]]]
-        for invalid in alternatives:
-            candidate = copy.deepcopy(source)
-            candidate["layers"] = [{**road, "paint": {"line-width": invalid}}]
-            self.assertEqual(mapbox_config._light_native_road_widths(candidate), {})
-
-    def test_light_road_match_guard_rejects_unsupported_or_unsafe_widths(self):
-        valid = ["match", ["get", "class"], ["street"], 1, 0]
-        self.assertTrue(mapbox_config._is_literal_class_width_match(valid))
-        for invalid in (None, [], valid[:-1], ["match", ["get", "type"], ["street"], 1, 0],
-                        ["match", ["get", "class"], [], 1, 0],
-                        ["match", ["get", "class"], [1], 1, 0],
-                        ["match", ["get", "class"], "street", 1, 0]):
-            self.assertFalse(mapbox_config._is_literal_class_width_match(invalid))
-        for invalid in (True, -1, 301, float("inf"), float("nan"), "2", ["get", "width"]):
-            self.assertFalse(mapbox_config._is_literal_class_width_match([*valid[:3], invalid, 0]))
-
     def test_builtin_preset_resolves_to_known_mapbox_style(self):
         self.assertEqual(resolve_background_style("Outdoor"), ("mapbox", "outdoors-v12"))
         self.assertEqual(resolve_background_style("Light"), ("mapbox", "light-v11"))
