@@ -115,10 +115,10 @@ focused investigation before broad completion, not an assertion of a root cause.
 | C09 | N/A (source-scoped) | Recorded Light inventory contains no contour, hillshade or raster-dem layer. Missing Outdoors-like relief is not a Light defect; reassess if source intent changes. | — |
 | C10 | PARTIAL | Buildings appear in the street views; courtyards, transition visibility and road/footprint overlap are not systematically checked. | — |
 | C11 | OPEN (remaining scope) | Four source-owner class/zoom widths restored and urban networks improved below. Remaining class eligibility, road/path coverage, junctions and output scales need fixtures. | Major baseline finding scoped below |
-| C12 | PARTIAL | Road widths and ordinary national-boundary source width/continuous texture pass scoped native tests below. Other caps/joins/dashes/blur, full casing construction and output-scale continuity remain unvalidated. | — |
+| C12 | PARTIAL | Road widths, ordinary national-boundary core width/continuous texture and ordinary-only background width/opacity pass scoped native tests below. Other caps/joins/dashes/blur, full casing construction and output-scale continuity remain unvalidated. | — |
 | C13 | NOT ASSESSED | No named bridge/tunnel/at-grade crossing audit against structure attributes. | — |
 | C14 | NOT ASSESSED | Source has rail and aeroway layers; no systematic transport distinction/continuity checks. | — |
-| C15 | OPEN (remaining scope) | Ordinary national-boundary source width/solid texture and Lake Geneva owner/status attribution have a scoped repair below. Five-owner native eligibility and two disputed/two subdivision extents now have scoped evidence below; remaining paint/texture, wider maritime/worldview geography and output paths stay open. | Major baseline finding scoped below |
+| C15 | OPEN (remaining scope) | Ordinary national-boundary source width/solid texture and Lake Geneva owner/status attribution have a scoped repair below. Ordinary-only background width/opacity now has a guarded repair, with disputed fallback retained after a rejected broad candidate. Five-owner eligibility and two disputed/two subdivision extents have scoped evidence; blur, other owner paint, mixed fidelity and wider geography/output paths stay open. | Major baseline finding scoped below |
 | C16 | PARTIAL | Source symbol inventory available; sprite applicability, anchors, collision lifecycle and high-DPI behavior require dedicated checks. | — |
 | C17 | PARTIAL | Font-enabled Docker roles have earlier scoped validation. Desktop font distribution and multilingual fallback are not certified by these captures. | — |
 | C18 | OPEN | Text width, weight, wrapping and relative hierarchy remain visibly different. Blanket size probes were rejected, not accepted as a fix. | Minor |
@@ -132,8 +132,80 @@ focused investigation before broad completion, not an assertion of a root cause.
 | C26 | PARTIAL (diagnostic only) | Two-city synthetic routes remain visible with the width repair below. Real sparse/dense/shared routes and broader background/output coverage remain NOT ASSESSED. | — |
 | C27 | NOT ASSESSED | No grayscale, color-vision, low-vision or target physical-size assessment. | — |
 | C28 | PARTIAL; density consistency OPEN | Fresh two-city DPR2 PNGs retain native zoom, but physical-density PNGs and actual one-map PDFs change QGIS4 activation/detail. QGIS3 also changes label placement across PDF density. Production150-DPI settings are exercised, not a complete atlas or desktop installation. | Provisional major output-consistency finding |
-| C29 | PARTIAL; PDF repeat cells OPEN | Prior width-matrix and fresh density PNG repeats are byte-identical. Ten of12 PDF cells have identical rasterized repeats; both QGIS4 production150-DPI cells show small, unclassified variation. Cold/warm performance and interactive stability remain untested. | PDF variability severity unestablished |
+| C29 | PARTIAL; PDF repeat cells OPEN | Prior matrices and 48 new background PNG control pairs repeat exactly. Earlier Bern/Geneva PDF150 variation is now also observed in Lausanne/Kashmir QGIS4 production150-DPI outputs; other new repeated PDF modes are raster-identical. Cold/warm performance and interactive stability remain untested. | PDF variability severity unestablished |
 | C30 | NOT ASSESSED | Cropped basemap evidence does not validate complete user-facing attribution, legend, scale or north/context requirements. | — |
+
+### C12/C15: ordinary national-background paint and disputed guard — 2026-09-14
+
+The [national-background evidence][national-background] tests one bounded
+source-backed correction. Before is `c11b77ee2c5b6e99f807690d29f688721aa81f2e`;
+guarded runtime After is `58df4e72b88da58e9b3bab5d1fd34f219b7fd241`.
+The fresh source SHA256 remains
+`87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32`;
+all five complete boundary source owners match the fixture.
+
+A broad shared-background correction was **rejected**: its wider continuous
+halo dominates the still-thin disputed core in actual Kashmir/Cyprus detail.
+Twenty completed QGIS3 broad maps and explicit Before/rejected/retained crops
+are preserved. Interrupted frames are excluded. The retained correction applies
+only to the already-repaired ordinary core's `disputed IS 'false'` population,
+without changing source-owner eligibility or political classification.
+
+Exact Light `admin-0-boundary-bg` gets source-linear width 5.2px at z3 to 10.4px
+at z12, clamped and converted once by 25.4/96, and source opacity 0 at z3 to 0.5
+at z4, clamped. Native data-defined opacity is a percentage, not a multiplier.
+True/NULL/empty/other disputed values retain the actual converted width and
+35% opacity. The unchanged static opacity getter therefore remains 0.35 even
+when ordinary-feature effective opacity is 0.5. Unique source owners, exact
+source predicates and paint, and the already-repaired native ordinary core
+are required. Existing native overrides/custom symbols are preserved. Blur,
+color, order, filters, zoom gates and all other boundary paint stay unchanged.
+
+The new matrix has 24 cameras: seven Light presets, Kashmir z6.9/7/7.1,
+Cyprus z7, Swiss/US subdivisions, opacity z2.9/3/3.1/3.9/4/4.1, Lausanne width
+z11.9/12/12.1 and two synthetic activity overlays. Both Docker runtimes use
+1280×900, EPSG:3857 and their unchanged default DPI 100/96. All 48 native Before
+repeat pairs and 48 browser repeat pairs are byte-identical. All 48 guarded-head
+native recaptures match the initial narrowed candidate `93fcf48` in PNG bytes,
+complete labels, contexts and all boundary properties. The published audit
+records 240 actual browser/native Mercator anchor comparisons within 1e-6 pixel.
+Original source-globe references remain separate; native/source style-zoom,
+physical density and globe mismatch are **not resolved** by this registration.
+
+**Semantic paint correctness is not universal fidelity improvement.** Planar
+MAE relative change is +0.628007%/+0.261680% for the overview and
++0.560810%/+0.380376% for Zurich region (QGIS3/4; positive is worse), while
+Lausanne improves −0.159515%/−0.204019%. Source-globe overview also worsens
+(QGIS3 +1.68648%). Larger source-intended ordinary backgrounds are retained;
+blur/compositing/style-zoom fidelity remains OPEN, not noise or an accepted
+limitation. Maps and native-size detail crops were inspected independently of
+these aggregate metrics. Four urban cameras and the US admin1-only camera
+are byte-identical Before/After. Disputed detail `(450,180,870,480)` in all
+three Kashmir zooms is unchanged in both runtimes; this is not a whole-Kashmir
+or mixed-status Cyprus identity claim.
+
+| Coverage cell | Verdict | Observation / remaining work |
+| --- | --- | --- |
+| C12/C15: ordinary-only background source width/opacity | PASS (scoped mechanism) | 14 zooms × four disputed states × expression/96DPI/192DPI paint = 168 native cases per runtime, including clamps, requested field and opacity override. Core/source coupling and native-override guards are tested. |
+| C15: disputed fallback and other boundary owners | PASS (scoped preservation); broader paint OPEN | Only target background width/opacity properties change; status fallbacks and Kashmir disputed crops are preserved. Broad shared correction rejected; disputed/admin1 texture and blur remain unresolved. |
+| C01/C23: 24-camera matrix and static stop triplets | PARTIAL | Fixed cameras and registered Mercator anchors, unchanged labels/native contexts and 48 final-code recaptures. Source/native zoom and density still differ; no interactive transition or seam pass. |
+| C15/C04: ordinary-border visual fidelity | OPEN (mixed) | Lausanne improves modestly; overview/Zurich metrics worsen. Source-intended width/opacity is restored, not complete boundary fidelity. No limitation accepted. |
+| C25/C26: two synthetic overlay extents | PARTIAL (diagnostic) | Categorized Run/Ride/Hike lines remain visible in both runtimes. Real sparse/dense/shared routes and UI/accessibility coverage remain required. |
+| C28: actual one-map PDF96/150/192, Lausanne/Kashmir | PARTIAL | 48 primary PDFs use production settings, locked page/extents and matched viewing scale. Eight supporting native PNGs match the matrix; this is not a complete atlas task or desktop path. Density-dependent detail remains open. |
+| C29: 48 native control pairs and stable PDF modes | PASS (scoped repeats) | All native pairs repeat exactly. 20 of 24 new Before-or-After PDF repeat modes are raster-identical; PDF byte identity is not claimed. Public-generator replay reproduces 20 predeclared stable raster cells and four supporting native frames exactly. |
+| C29: QGIS4 PDF150, Lausanne/Kashmir | OPEN (cause/severity unestablished) | Before/After repeats differ 423/164 pixels in Lausanne and 189/45 in Kashmir. Public replay initial outputs differ 81/260 pixels from primary candidate initial outputs. Extends the earlier Bern/Geneva finding; not classified as harmless. |
+| Other required criteria/output/geography/accessibility cells | Unchanged | No absent fixture promoted to PASS; C01–C30 completion remains blocked by the recorded open/partial/unassessed cells. |
+
+The immutable package contains 242 native PNGs, 96 browser PNGs and 72 actual
+PDFs, including retained controls, diagnostic probes, rejected completed maps
+and 24 public-generator replay PDFs. Counts exclude derived crops/rasterizations.
+Named PDF operands, hashes and a metric verifier remove pairing ambiguity.
+Public capture workers verify the source and all 233 runtime Python file hashes.
+Live tile payloads are not archived. The initial mutable-source 30-frame matrix
+was invalidated in full and replaced using fixed checkouts; obsolete-image
+preflight failure generated no valid frame. Protected Gateway and per-container
+access passed for the replacements. No failed, blank or aborted capture is
+counted as valid. Historical sections below retain their original scope.
 
 ### C12/C15/C23: remaining boundary owners and real status fixtures — 2026-09-14
 
@@ -772,3 +844,5 @@ explicitly agreed scope reduction with follow-up ownership for excluded work.
 [density-pairs]: https://github.com/ebelo/qfit/blob/d52b956d51819039bc8fdd0ab9535a9776ba9354/docs/visual-evidence/issue-1462/density-output/pdf-pair-metrics.json
 
 [boundary-status]: https://github.com/ebelo/qfit/tree/0162c5b445a82da1a33df569f5aa3c2dbe620019/docs/visual-evidence/issue-1462/boundary-status
+
+[national-background]: https://github.com/ebelo/qfit/blob/c6393ee1ae6923b5b5482d1bbbc956f0e0a069ed/docs/visual-evidence/issue-1462/national-background/README.md
