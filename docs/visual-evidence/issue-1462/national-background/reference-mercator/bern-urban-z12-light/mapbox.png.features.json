@@ -1,0 +1,95 @@
+{
+  "features": [],
+  "source_features": [
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "CH",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "CH",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "CH",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "CH",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "CH",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "CH",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "CH",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "CH",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "CH",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "CH",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    }
+  ]
+}

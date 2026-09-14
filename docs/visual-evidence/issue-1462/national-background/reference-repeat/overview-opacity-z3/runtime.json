@@ -1,0 +1,113 @@
+{
+  "mapbox_gl_version": "3.10.0",
+  "projection_anchors": [
+    {
+      "lnglat": [
+        8.2,
+        46.80000000000002
+      ],
+      "expected_pixel": [
+        640,
+        450
+      ],
+      "actual_pixel": [
+        639.9999999999999,
+        449.99999999999943
+      ]
+    },
+    {
+      "lnglat": [
+        -18.1671875,
+        57.5157762260509
+      ],
+      "expected_pixel": [
+        340,
+        250
+      ],
+      "actual_pixel": [
+        428.1555876015709,
+        248.6859977179787
+      ]
+    },
+    {
+      "lnglat": [
+        34.567187499999996,
+        33.43136886268637
+      ],
+      "expected_pixel": [
+        940,
+        650
+      ],
+      "actual_pixel": [
+        962.6370191974197,
+        596.1766397211177
+      ]
+    },
+    {
+      "lnglat": [
+        -18.1671875,
+        33.43136886268637
+      ],
+      "expected_pixel": [
+        340,
+        650
+      ],
+      "actual_pixel": [
+        317.36298080258024,
+        596.1766397211178
+      ]
+    },
+    {
+      "lnglat": [
+        34.567187499999996,
+        57.5157762260509
+      ],
+      "expected_pixel": [
+        940,
+        250
+      ],
+      "actual_pixel": [
+        851.8444123984291,
+        248.6859977179787
+      ]
+    }
+  ],
+  "reference_projection": "source",
+  "source_projection": {
+    "name": "globe"
+  },
+  "actual_projection": {
+    "name": "globe",
+    "center": [
+      0,
+      0
+    ]
+  },
+  "center": [
+    8.2,
+    46.8
+  ],
+  "zoom": 3,
+  "bearing": 0,
+  "pitch": 0,
+  "bounds": [
+    [
+      -89.82669478057247,
+      -3.6724749856008714
+    ],
+    [
+      106.22669478057304,
+      79.56060006935499
+    ]
+  ],
+  "canvas_size_pixels": [
+    1280,
+    900
+  ],
+  "device_pixel_ratio": 1,
+  "map_loaded": true,
+  "tiles_loaded": true,
+  "map_error_count": 0,
+  "rendered_feature_count": 172,
+  "browser_version": "152.0.7977.64"
+}

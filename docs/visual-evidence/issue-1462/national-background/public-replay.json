@@ -1,0 +1,273 @@
+{
+  "native_png_replay_count": 4,
+  "pdf_replay_count": 24,
+  "native_png_labels_runtime_paint_identical": true,
+  "pairs": [
+    {
+      "qgis_major": "3",
+      "camera": "lausanne-lavaux-z10-light",
+      "dpi": 96,
+      "suffix": "",
+      "initial": "pdf/3/lausanne-lavaux-z10-light/pdf-after/pdf96.png",
+      "replay": "public-replay/3/lausanne-lavaux-z10-light/pdf96.png",
+      "initial_sha256": "35675bdd9eced55fb292ef703cb50f9105aac08946a08f76aaf5949b2d6e7422",
+      "replay_sha256": "35675bdd9eced55fb292ef703cb50f9105aac08946a08f76aaf5949b2d6e7422",
+      "changed_pixels": 0
+    },
+    {
+      "qgis_major": "3",
+      "camera": "lausanne-lavaux-z10-light",
+      "dpi": 96,
+      "suffix": "-repeat",
+      "initial": "pdf/3/lausanne-lavaux-z10-light/pdf-after/pdf96-repeat.png",
+      "replay": "public-replay/3/lausanne-lavaux-z10-light/pdf96-repeat.png",
+      "initial_sha256": "35675bdd9eced55fb292ef703cb50f9105aac08946a08f76aaf5949b2d6e7422",
+      "replay_sha256": "35675bdd9eced55fb292ef703cb50f9105aac08946a08f76aaf5949b2d6e7422",
+      "changed_pixels": 0
+    },
+    {
+      "qgis_major": "3",
+      "camera": "lausanne-lavaux-z10-light",
+      "dpi": 150,
+      "suffix": "",
+      "initial": "pdf/3/lausanne-lavaux-z10-light/pdf-after/pdf150.png",
+      "replay": "public-replay/3/lausanne-lavaux-z10-light/pdf150.png",
+      "initial_sha256": "bf122e5f1209e7c0ee065c8aba99624da349f81d6896ffe2204379777166b104",
+      "replay_sha256": "bf122e5f1209e7c0ee065c8aba99624da349f81d6896ffe2204379777166b104",
+      "changed_pixels": 0
+    },
+    {
+      "qgis_major": "3",
+      "camera": "lausanne-lavaux-z10-light",
+      "dpi": 150,
+      "suffix": "-repeat",
+      "initial": "pdf/3/lausanne-lavaux-z10-light/pdf-after/pdf150-repeat.png",
+      "replay": "public-replay/3/lausanne-lavaux-z10-light/pdf150-repeat.png",
+      "initial_sha256": "bf122e5f1209e7c0ee065c8aba99624da349f81d6896ffe2204379777166b104",
+      "replay_sha256": "bf122e5f1209e7c0ee065c8aba99624da349f81d6896ffe2204379777166b104",
+      "changed_pixels": 0
+    },
+    {
+      "qgis_major": "3",
+      "camera": "lausanne-lavaux-z10-light",
+      "dpi": 192,
+      "suffix": "",
+      "initial": "pdf/3/lausanne-lavaux-z10-light/pdf-after/pdf192.png",
+      "replay": "public-replay/3/lausanne-lavaux-z10-light/pdf192.png",
+      "initial_sha256": "b5c72e19145e9e6efd710c73077a271d0b07f9bd506f19ef921ca5cc776482bb",
+      "replay_sha256": "b5c72e19145e9e6efd710c73077a271d0b07f9bd506f19ef921ca5cc776482bb",
+      "changed_pixels": 0
+    },
+    {
+      "qgis_major": "3",
+      "camera": "lausanne-lavaux-z10-light",
+      "dpi": 192,
+      "suffix": "-repeat",
+      "initial": "pdf/3/lausanne-lavaux-z10-light/pdf-after/pdf192-repeat.png",
+      "replay": "public-replay/3/lausanne-lavaux-z10-light/pdf192-repeat.png",
+      "initial_sha256": "b5c72e19145e9e6efd710c73077a271d0b07f9bd506f19ef921ca5cc776482bb",
+      "replay_sha256": "b5c72e19145e9e6efd710c73077a271d0b07f9bd506f19ef921ca5cc776482bb",
+      "changed_pixels": 0
+    },
+    {
+      "qgis_major": "3",
+      "camera": "kashmir-z7",
+      "dpi": 96,
+      "suffix": "",
+      "initial": "pdf/3/kashmir-z7/pdf-after/pdf96.png",
+      "replay": "public-replay/3/kashmir-z7/pdf96.png",
+      "initial_sha256": "a1ae400859279edab825fe41d41b5bf8234f90c52f80f10797a589d248eacc2e",
+      "replay_sha256": "a1ae400859279edab825fe41d41b5bf8234f90c52f80f10797a589d248eacc2e",
+      "changed_pixels": 0
+    },
+    {
+      "qgis_major": "3",
+      "camera": "kashmir-z7",
+      "dpi": 96,
+      "suffix": "-repeat",
+      "initial": "pdf/3/kashmir-z7/pdf-after/pdf96-repeat.png",
+      "replay": "public-replay/3/kashmir-z7/pdf96-repeat.png",
+      "initial_sha256": "a1ae400859279edab825fe41d41b5bf8234f90c52f80f10797a589d248eacc2e",
+      "replay_sha256": "a1ae400859279edab825fe41d41b5bf8234f90c52f80f10797a589d248eacc2e",
+      "changed_pixels": 0
+    },
+    {
+      "qgis_major": "3",
+      "camera": "kashmir-z7",
+      "dpi": 150,
+      "suffix": "",
+      "initial": "pdf/3/kashmir-z7/pdf-after/pdf150.png",
+      "replay": "public-replay/3/kashmir-z7/pdf150.png",
+      "initial_sha256": "d71fc38204f3bc96665fa9edb2dca997e9a57005ce1cf5b2a4af275c4ea6680c",
+      "replay_sha256": "d71fc38204f3bc96665fa9edb2dca997e9a57005ce1cf5b2a4af275c4ea6680c",
+      "changed_pixels": 0
+    },
+    {
+      "qgis_major": "3",
+      "camera": "kashmir-z7",
+      "dpi": 150,
+      "suffix": "-repeat",
+      "initial": "pdf/3/kashmir-z7/pdf-after/pdf150-repeat.png",
+      "replay": "public-replay/3/kashmir-z7/pdf150-repeat.png",
+      "initial_sha256": "d71fc38204f3bc96665fa9edb2dca997e9a57005ce1cf5b2a4af275c4ea6680c",
+      "replay_sha256": "d71fc38204f3bc96665fa9edb2dca997e9a57005ce1cf5b2a4af275c4ea6680c",
+      "changed_pixels": 0
+    },
+    {
+      "qgis_major": "3",
+      "camera": "kashmir-z7",
+      "dpi": 192,
+      "suffix": "",
+      "initial": "pdf/3/kashmir-z7/pdf-after/pdf192.png",
+      "replay": "public-replay/3/kashmir-z7/pdf192.png",
+      "initial_sha256": "2e5eb1a4314fcc4a5282cb6e2a595516562b78eea96cf22f73ffeed0fdebc9c8",
+      "replay_sha256": "2e5eb1a4314fcc4a5282cb6e2a595516562b78eea96cf22f73ffeed0fdebc9c8",
+      "changed_pixels": 0
+    },
+    {
+      "qgis_major": "3",
+      "camera": "kashmir-z7",
+      "dpi": 192,
+      "suffix": "-repeat",
+      "initial": "pdf/3/kashmir-z7/pdf-after/pdf192-repeat.png",
+      "replay": "public-replay/3/kashmir-z7/pdf192-repeat.png",
+      "initial_sha256": "2e5eb1a4314fcc4a5282cb6e2a595516562b78eea96cf22f73ffeed0fdebc9c8",
+      "replay_sha256": "2e5eb1a4314fcc4a5282cb6e2a595516562b78eea96cf22f73ffeed0fdebc9c8",
+      "changed_pixels": 0
+    },
+    {
+      "qgis_major": "4",
+      "camera": "lausanne-lavaux-z10-light",
+      "dpi": 96,
+      "suffix": "",
+      "initial": "pdf/4/lausanne-lavaux-z10-light/pdf-after/pdf96.png",
+      "replay": "public-replay/4/lausanne-lavaux-z10-light/pdf96.png",
+      "initial_sha256": "1875bfd33fd16686f8be6b62b7056c366961b6d15c0d6739d3d15387a22818ee",
+      "replay_sha256": "1875bfd33fd16686f8be6b62b7056c366961b6d15c0d6739d3d15387a22818ee",
+      "changed_pixels": 0
+    },
+    {
+      "qgis_major": "4",
+      "camera": "lausanne-lavaux-z10-light",
+      "dpi": 96,
+      "suffix": "-repeat",
+      "initial": "pdf/4/lausanne-lavaux-z10-light/pdf-after/pdf96-repeat.png",
+      "replay": "public-replay/4/lausanne-lavaux-z10-light/pdf96-repeat.png",
+      "initial_sha256": "1875bfd33fd16686f8be6b62b7056c366961b6d15c0d6739d3d15387a22818ee",
+      "replay_sha256": "1875bfd33fd16686f8be6b62b7056c366961b6d15c0d6739d3d15387a22818ee",
+      "changed_pixels": 0
+    },
+    {
+      "qgis_major": "4",
+      "camera": "lausanne-lavaux-z10-light",
+      "dpi": 150,
+      "suffix": "",
+      "initial": "pdf/4/lausanne-lavaux-z10-light/pdf-after/pdf150.png",
+      "replay": "public-replay/4/lausanne-lavaux-z10-light/pdf150.png",
+      "initial_sha256": "a5cf29b00688a4aff0cb476196b24d2f1f19c4475e70884831bccba914483a39",
+      "replay_sha256": "0640e6a747993abe6f8ae4ecf77c4e419f9ae50e73bfea7220b6b3381869e157",
+      "changed_pixels": 81
+    },
+    {
+      "qgis_major": "4",
+      "camera": "lausanne-lavaux-z10-light",
+      "dpi": 150,
+      "suffix": "-repeat",
+      "initial": "pdf/4/lausanne-lavaux-z10-light/pdf-after/pdf150-repeat.png",
+      "replay": "public-replay/4/lausanne-lavaux-z10-light/pdf150-repeat.png",
+      "initial_sha256": "ac2a25aa7940308ddc71ecbedc58c8beb5d9d37b127bec9cdb0d320ac1d05742",
+      "replay_sha256": "ac2a25aa7940308ddc71ecbedc58c8beb5d9d37b127bec9cdb0d320ac1d05742",
+      "changed_pixels": 0
+    },
+    {
+      "qgis_major": "4",
+      "camera": "lausanne-lavaux-z10-light",
+      "dpi": 192,
+      "suffix": "",
+      "initial": "pdf/4/lausanne-lavaux-z10-light/pdf-after/pdf192.png",
+      "replay": "public-replay/4/lausanne-lavaux-z10-light/pdf192.png",
+      "initial_sha256": "49ce7fa8beee5ec6ea411546a00494e9c00cbb67b2480ed18851b9252a056acf",
+      "replay_sha256": "49ce7fa8beee5ec6ea411546a00494e9c00cbb67b2480ed18851b9252a056acf",
+      "changed_pixels": 0
+    },
+    {
+      "qgis_major": "4",
+      "camera": "lausanne-lavaux-z10-light",
+      "dpi": 192,
+      "suffix": "-repeat",
+      "initial": "pdf/4/lausanne-lavaux-z10-light/pdf-after/pdf192-repeat.png",
+      "replay": "public-replay/4/lausanne-lavaux-z10-light/pdf192-repeat.png",
+      "initial_sha256": "49ce7fa8beee5ec6ea411546a00494e9c00cbb67b2480ed18851b9252a056acf",
+      "replay_sha256": "49ce7fa8beee5ec6ea411546a00494e9c00cbb67b2480ed18851b9252a056acf",
+      "changed_pixels": 0
+    },
+    {
+      "qgis_major": "4",
+      "camera": "kashmir-z7",
+      "dpi": 96,
+      "suffix": "",
+      "initial": "pdf/4/kashmir-z7/pdf-after/pdf96.png",
+      "replay": "public-replay/4/kashmir-z7/pdf96.png",
+      "initial_sha256": "bb216e980e5eba4f374249f1fff7ff5bcadb7b45fde3255f09462cddf326dddf",
+      "replay_sha256": "bb216e980e5eba4f374249f1fff7ff5bcadb7b45fde3255f09462cddf326dddf",
+      "changed_pixels": 0
+    },
+    {
+      "qgis_major": "4",
+      "camera": "kashmir-z7",
+      "dpi": 96,
+      "suffix": "-repeat",
+      "initial": "pdf/4/kashmir-z7/pdf-after/pdf96-repeat.png",
+      "replay": "public-replay/4/kashmir-z7/pdf96-repeat.png",
+      "initial_sha256": "bb216e980e5eba4f374249f1fff7ff5bcadb7b45fde3255f09462cddf326dddf",
+      "replay_sha256": "bb216e980e5eba4f374249f1fff7ff5bcadb7b45fde3255f09462cddf326dddf",
+      "changed_pixels": 0
+    },
+    {
+      "qgis_major": "4",
+      "camera": "kashmir-z7",
+      "dpi": 150,
+      "suffix": "",
+      "initial": "pdf/4/kashmir-z7/pdf-after/pdf150.png",
+      "replay": "public-replay/4/kashmir-z7/pdf150.png",
+      "initial_sha256": "b6dde9d4ac71d8d35dacdc5fefe719940b44462ef94c35c15d2ebd146440bd04",
+      "replay_sha256": "8e95bbd76cbdd84ad76f242a4209794735c1d0c131f53eebe357f3749f0fa8bc",
+      "changed_pixels": 260
+    },
+    {
+      "qgis_major": "4",
+      "camera": "kashmir-z7",
+      "dpi": 150,
+      "suffix": "-repeat",
+      "initial": "pdf/4/kashmir-z7/pdf-after/pdf150-repeat.png",
+      "replay": "public-replay/4/kashmir-z7/pdf150-repeat.png",
+      "initial_sha256": "2aaf07f965dcc5fe8fb45485c0b4b780dd3d69ede7b9fa5903499191412ae254",
+      "replay_sha256": "2aaf07f965dcc5fe8fb45485c0b4b780dd3d69ede7b9fa5903499191412ae254",
+      "changed_pixels": 0
+    },
+    {
+      "qgis_major": "4",
+      "camera": "kashmir-z7",
+      "dpi": 192,
+      "suffix": "",
+      "initial": "pdf/4/kashmir-z7/pdf-after/pdf192.png",
+      "replay": "public-replay/4/kashmir-z7/pdf192.png",
+      "initial_sha256": "21ada9a198518941267af1bf99c151a584eec29e511ee864246a9e07b44d1e66",
+      "replay_sha256": "21ada9a198518941267af1bf99c151a584eec29e511ee864246a9e07b44d1e66",
+      "changed_pixels": 0
+    },
+    {
+      "qgis_major": "4",
+      "camera": "kashmir-z7",
+      "dpi": 192,
+      "suffix": "-repeat",
+      "initial": "pdf/4/kashmir-z7/pdf-after/pdf192-repeat.png",
+      "replay": "public-replay/4/kashmir-z7/pdf192-repeat.png",
+      "initial_sha256": "21ada9a198518941267af1bf99c151a584eec29e511ee864246a9e07b44d1e66",
+      "replay_sha256": "21ada9a198518941267af1bf99c151a584eec29e511ee864246a9e07b44d1e66",
+      "changed_pixels": 0
+    }
+  ],
+  "source_and_runtime_checked_by_public_generator": true,
+  "scope": "Both runtimes/two extents; known QGIS4/PDF150 category remains variable, not classified as noise or PASS."
+}

@@ -1,0 +1,1030 @@
+{
+  "pdf_files": 48,
+  "native_support_pngs": 8,
+  "viewing_dpi": 96,
+  "contexts": [
+    {
+      "qgis_major": "3",
+      "camera": "lausanne-lavaux-z10-light",
+      "variant": "pdf-before",
+      "dpi": 96,
+      "context": {
+        "dpi": 96,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 242931.48879742285,
+        "extent": [
+          706930.5793611014,
+          5830298.7658473775,
+          789203.3769004953,
+          5888146.826617263
+        ]
+      }
+    },
+    {
+      "qgis_major": "3",
+      "camera": "lausanne-lavaux-z10-light",
+      "variant": "pdf-before",
+      "dpi": 150,
+      "context": {
+        "dpi": 150,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 242931.48879742285,
+        "extent": [
+          706930.5793611014,
+          5830298.7658473775,
+          789203.3769004953,
+          5888146.826617263
+        ]
+      }
+    },
+    {
+      "qgis_major": "3",
+      "camera": "lausanne-lavaux-z10-light",
+      "variant": "pdf-before",
+      "dpi": 192,
+      "context": {
+        "dpi": 192,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 242931.48879742285,
+        "extent": [
+          706930.5793611014,
+          5830298.7658473775,
+          789203.3769004953,
+          5888146.826617263
+        ]
+      }
+    },
+    {
+      "qgis_major": "3",
+      "camera": "lausanne-lavaux-z10-light",
+      "variant": "pdf-after",
+      "dpi": 96,
+      "context": {
+        "dpi": 96,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 242931.48879742285,
+        "extent": [
+          706930.5793611014,
+          5830298.7658473775,
+          789203.3769004953,
+          5888146.826617263
+        ]
+      }
+    },
+    {
+      "qgis_major": "3",
+      "camera": "lausanne-lavaux-z10-light",
+      "variant": "pdf-after",
+      "dpi": 150,
+      "context": {
+        "dpi": 150,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 242931.48879742285,
+        "extent": [
+          706930.5793611014,
+          5830298.7658473775,
+          789203.3769004953,
+          5888146.826617263
+        ]
+      }
+    },
+    {
+      "qgis_major": "3",
+      "camera": "lausanne-lavaux-z10-light",
+      "variant": "pdf-after",
+      "dpi": 192,
+      "context": {
+        "dpi": 192,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 242931.48879742285,
+        "extent": [
+          706930.5793611014,
+          5830298.7658473775,
+          789203.3769004953,
+          5888146.826617263
+        ]
+      }
+    },
+    {
+      "qgis_major": "3",
+      "camera": "kashmir-z7",
+      "variant": "pdf-before",
+      "dpi": 96,
+      "context": {
+        "dpi": 96,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 2311166.839488791,
+        "extent": [
+          7968736.173754742,
+          3834481.4317260273,
+          8751451.343394946,
+          4384828.035379296
+        ]
+      }
+    },
+    {
+      "qgis_major": "3",
+      "camera": "kashmir-z7",
+      "variant": "pdf-before",
+      "dpi": 150,
+      "context": {
+        "dpi": 150,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 2311166.839488791,
+        "extent": [
+          7968736.173754742,
+          3834481.4317260273,
+          8751451.343394946,
+          4384828.035379296
+        ]
+      }
+    },
+    {
+      "qgis_major": "3",
+      "camera": "kashmir-z7",
+      "variant": "pdf-before",
+      "dpi": 192,
+      "context": {
+        "dpi": 192,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 2311166.839488791,
+        "extent": [
+          7968736.173754742,
+          3834481.4317260273,
+          8751451.343394946,
+          4384828.035379296
+        ]
+      }
+    },
+    {
+      "qgis_major": "3",
+      "camera": "kashmir-z7",
+      "variant": "pdf-after",
+      "dpi": 96,
+      "context": {
+        "dpi": 96,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 2311166.839488791,
+        "extent": [
+          7968736.173754742,
+          3834481.4317260273,
+          8751451.343394946,
+          4384828.035379296
+        ]
+      }
+    },
+    {
+      "qgis_major": "3",
+      "camera": "kashmir-z7",
+      "variant": "pdf-after",
+      "dpi": 150,
+      "context": {
+        "dpi": 150,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 2311166.839488791,
+        "extent": [
+          7968736.173754742,
+          3834481.4317260273,
+          8751451.343394946,
+          4384828.035379296
+        ]
+      }
+    },
+    {
+      "qgis_major": "3",
+      "camera": "kashmir-z7",
+      "variant": "pdf-after",
+      "dpi": 192,
+      "context": {
+        "dpi": 192,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 2311166.839488791,
+        "extent": [
+          7968736.173754742,
+          3834481.4317260273,
+          8751451.343394946,
+          4384828.035379296
+        ]
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "lausanne-lavaux-z10-light",
+      "variant": "pdf-before",
+      "dpi": 96,
+      "context": {
+        "dpi": 96,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 242931.48879742285,
+        "extent": [
+          706930.5793611014,
+          5830298.7658473775,
+          789203.3769004953,
+          5888146.826617263
+        ]
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "lausanne-lavaux-z10-light",
+      "variant": "pdf-before",
+      "dpi": 150,
+      "context": {
+        "dpi": 150,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 242931.48879742285,
+        "extent": [
+          706930.5793611014,
+          5830298.7658473775,
+          789203.3769004953,
+          5888146.826617263
+        ]
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "lausanne-lavaux-z10-light",
+      "variant": "pdf-before",
+      "dpi": 192,
+      "context": {
+        "dpi": 192,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 242931.48879742285,
+        "extent": [
+          706930.5793611014,
+          5830298.7658473775,
+          789203.3769004953,
+          5888146.826617263
+        ]
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "lausanne-lavaux-z10-light",
+      "variant": "pdf-after",
+      "dpi": 96,
+      "context": {
+        "dpi": 96,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 242931.48879742285,
+        "extent": [
+          706930.5793611014,
+          5830298.7658473775,
+          789203.3769004953,
+          5888146.826617263
+        ]
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "lausanne-lavaux-z10-light",
+      "variant": "pdf-after",
+      "dpi": 150,
+      "context": {
+        "dpi": 150,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 242931.48879742285,
+        "extent": [
+          706930.5793611014,
+          5830298.7658473775,
+          789203.3769004953,
+          5888146.826617263
+        ]
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "lausanne-lavaux-z10-light",
+      "variant": "pdf-after",
+      "dpi": 192,
+      "context": {
+        "dpi": 192,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 242931.48879742285,
+        "extent": [
+          706930.5793611014,
+          5830298.7658473775,
+          789203.3769004953,
+          5888146.826617263
+        ]
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "kashmir-z7",
+      "variant": "pdf-before",
+      "dpi": 96,
+      "context": {
+        "dpi": 96,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 2311166.839488791,
+        "extent": [
+          7968736.173754742,
+          3834481.4317260273,
+          8751451.343394946,
+          4384828.035379296
+        ]
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "kashmir-z7",
+      "variant": "pdf-before",
+      "dpi": 150,
+      "context": {
+        "dpi": 150,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 2311166.839488791,
+        "extent": [
+          7968736.173754742,
+          3834481.4317260273,
+          8751451.343394946,
+          4384828.035379296
+        ]
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "kashmir-z7",
+      "variant": "pdf-before",
+      "dpi": 192,
+      "context": {
+        "dpi": 192,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 2311166.839488791,
+        "extent": [
+          7968736.173754742,
+          3834481.4317260273,
+          8751451.343394946,
+          4384828.035379296
+        ]
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "kashmir-z7",
+      "variant": "pdf-after",
+      "dpi": 96,
+      "context": {
+        "dpi": 96,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 2311166.839488791,
+        "extent": [
+          7968736.173754742,
+          3834481.4317260273,
+          8751451.343394946,
+          4384828.035379296
+        ]
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "kashmir-z7",
+      "variant": "pdf-after",
+      "dpi": 150,
+      "context": {
+        "dpi": 150,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 2311166.839488791,
+        "extent": [
+          7968736.173754742,
+          3834481.4317260273,
+          8751451.343394946,
+          4384828.035379296
+        ]
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "kashmir-z7",
+      "variant": "pdf-after",
+      "dpi": 192,
+      "context": {
+        "dpi": 192,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 2311166.839488791,
+        "extent": [
+          7968736.173754742,
+          3834481.4317260273,
+          8751451.343394946,
+          4384828.035379296
+        ]
+      }
+    }
+  ],
+  "pairs": [
+    {
+      "qgis_major": "3",
+      "camera": "lausanne-lavaux-z10-light",
+      "dpi": 96,
+      "pair": "before-repeat",
+      "a": "pdf/3/lausanne-lavaux-z10-light/pdf-before/pdf96.png",
+      "b": "pdf/3/lausanne-lavaux-z10-light/pdf-before/pdf96-repeat.png",
+      "a_sha256": "3aa0f63d75d9d7fcbe50dba0c26f104a6a1679526262a8a48d966945556e7ad0",
+      "b_sha256": "3aa0f63d75d9d7fcbe50dba0c26f104a6a1679526262a8a48d966945556e7ad0",
+      "changed_pixels": 0,
+      "normalized_mae": 0.0,
+      "max_channel_delta": 0
+    },
+    {
+      "qgis_major": "3",
+      "camera": "lausanne-lavaux-z10-light",
+      "dpi": 96,
+      "pair": "after-repeat",
+      "a": "pdf/3/lausanne-lavaux-z10-light/pdf-after/pdf96.png",
+      "b": "pdf/3/lausanne-lavaux-z10-light/pdf-after/pdf96-repeat.png",
+      "a_sha256": "35675bdd9eced55fb292ef703cb50f9105aac08946a08f76aaf5949b2d6e7422",
+      "b_sha256": "35675bdd9eced55fb292ef703cb50f9105aac08946a08f76aaf5949b2d6e7422",
+      "changed_pixels": 0,
+      "normalized_mae": 0.0,
+      "max_channel_delta": 0
+    },
+    {
+      "qgis_major": "3",
+      "camera": "lausanne-lavaux-z10-light",
+      "dpi": 96,
+      "pair": "before-after",
+      "a": "pdf/3/lausanne-lavaux-z10-light/pdf-before/pdf96.png",
+      "b": "pdf/3/lausanne-lavaux-z10-light/pdf-after/pdf96.png",
+      "a_sha256": "3aa0f63d75d9d7fcbe50dba0c26f104a6a1679526262a8a48d966945556e7ad0",
+      "b_sha256": "35675bdd9eced55fb292ef703cb50f9105aac08946a08f76aaf5949b2d6e7422",
+      "changed_pixels": 9036,
+      "normalized_mae": 0.00010627269426289034,
+      "max_channel_delta": 18
+    },
+    {
+      "qgis_major": "3",
+      "camera": "lausanne-lavaux-z10-light",
+      "dpi": 150,
+      "pair": "before-repeat",
+      "a": "pdf/3/lausanne-lavaux-z10-light/pdf-before/pdf150.png",
+      "b": "pdf/3/lausanne-lavaux-z10-light/pdf-before/pdf150-repeat.png",
+      "a_sha256": "c0d89e1f11ce0a1f4aacb207a38d1dbd3d52becfddaaca8f0070970add5dbe7b",
+      "b_sha256": "c0d89e1f11ce0a1f4aacb207a38d1dbd3d52becfddaaca8f0070970add5dbe7b",
+      "changed_pixels": 0,
+      "normalized_mae": 0.0,
+      "max_channel_delta": 0
+    },
+    {
+      "qgis_major": "3",
+      "camera": "lausanne-lavaux-z10-light",
+      "dpi": 150,
+      "pair": "after-repeat",
+      "a": "pdf/3/lausanne-lavaux-z10-light/pdf-after/pdf150.png",
+      "b": "pdf/3/lausanne-lavaux-z10-light/pdf-after/pdf150-repeat.png",
+      "a_sha256": "bf122e5f1209e7c0ee065c8aba99624da349f81d6896ffe2204379777166b104",
+      "b_sha256": "bf122e5f1209e7c0ee065c8aba99624da349f81d6896ffe2204379777166b104",
+      "changed_pixels": 0,
+      "normalized_mae": 0.0,
+      "max_channel_delta": 0
+    },
+    {
+      "qgis_major": "3",
+      "camera": "lausanne-lavaux-z10-light",
+      "dpi": 150,
+      "pair": "before-after",
+      "a": "pdf/3/lausanne-lavaux-z10-light/pdf-before/pdf150.png",
+      "b": "pdf/3/lausanne-lavaux-z10-light/pdf-after/pdf150.png",
+      "a_sha256": "c0d89e1f11ce0a1f4aacb207a38d1dbd3d52becfddaaca8f0070970add5dbe7b",
+      "b_sha256": "bf122e5f1209e7c0ee065c8aba99624da349f81d6896ffe2204379777166b104",
+      "changed_pixels": 9045,
+      "normalized_mae": 0.00010664488017429195,
+      "max_channel_delta": 21
+    },
+    {
+      "qgis_major": "3",
+      "camera": "lausanne-lavaux-z10-light",
+      "dpi": 192,
+      "pair": "before-repeat",
+      "a": "pdf/3/lausanne-lavaux-z10-light/pdf-before/pdf192.png",
+      "b": "pdf/3/lausanne-lavaux-z10-light/pdf-before/pdf192-repeat.png",
+      "a_sha256": "bd75cb9915fef7bcc622885519dbdc9a41763abd7a36ea7d4b4e35f74c2fa49f",
+      "b_sha256": "bd75cb9915fef7bcc622885519dbdc9a41763abd7a36ea7d4b4e35f74c2fa49f",
+      "changed_pixels": 0,
+      "normalized_mae": 0.0,
+      "max_channel_delta": 0
+    },
+    {
+      "qgis_major": "3",
+      "camera": "lausanne-lavaux-z10-light",
+      "dpi": 192,
+      "pair": "after-repeat",
+      "a": "pdf/3/lausanne-lavaux-z10-light/pdf-after/pdf192.png",
+      "b": "pdf/3/lausanne-lavaux-z10-light/pdf-after/pdf192-repeat.png",
+      "a_sha256": "b5c72e19145e9e6efd710c73077a271d0b07f9bd506f19ef921ca5cc776482bb",
+      "b_sha256": "b5c72e19145e9e6efd710c73077a271d0b07f9bd506f19ef921ca5cc776482bb",
+      "changed_pixels": 0,
+      "normalized_mae": 0.0,
+      "max_channel_delta": 0
+    },
+    {
+      "qgis_major": "3",
+      "camera": "lausanne-lavaux-z10-light",
+      "dpi": 192,
+      "pair": "before-after",
+      "a": "pdf/3/lausanne-lavaux-z10-light/pdf-before/pdf192.png",
+      "b": "pdf/3/lausanne-lavaux-z10-light/pdf-after/pdf192.png",
+      "a_sha256": "bd75cb9915fef7bcc622885519dbdc9a41763abd7a36ea7d4b4e35f74c2fa49f",
+      "b_sha256": "b5c72e19145e9e6efd710c73077a271d0b07f9bd506f19ef921ca5cc776482bb",
+      "changed_pixels": 9038,
+      "normalized_mae": 0.00010663580246913582,
+      "max_channel_delta": 21
+    },
+    {
+      "qgis_major": "3",
+      "camera": "kashmir-z7",
+      "dpi": 96,
+      "pair": "before-repeat",
+      "a": "pdf/3/kashmir-z7/pdf-before/pdf96.png",
+      "b": "pdf/3/kashmir-z7/pdf-before/pdf96-repeat.png",
+      "a_sha256": "4a7604f4b4a0572f82a5a58eada0e82a7f04e1baf4ef6253b209b8a3e8ef787c",
+      "b_sha256": "4a7604f4b4a0572f82a5a58eada0e82a7f04e1baf4ef6253b209b8a3e8ef787c",
+      "changed_pixels": 0,
+      "normalized_mae": 0.0,
+      "max_channel_delta": 0
+    },
+    {
+      "qgis_major": "3",
+      "camera": "kashmir-z7",
+      "dpi": 96,
+      "pair": "after-repeat",
+      "a": "pdf/3/kashmir-z7/pdf-after/pdf96.png",
+      "b": "pdf/3/kashmir-z7/pdf-after/pdf96-repeat.png",
+      "a_sha256": "a1ae400859279edab825fe41d41b5bf8234f90c52f80f10797a589d248eacc2e",
+      "b_sha256": "a1ae400859279edab825fe41d41b5bf8234f90c52f80f10797a589d248eacc2e",
+      "changed_pixels": 0,
+      "normalized_mae": 0.0,
+      "max_channel_delta": 0
+    },
+    {
+      "qgis_major": "3",
+      "camera": "kashmir-z7",
+      "dpi": 96,
+      "pair": "before-after",
+      "a": "pdf/3/kashmir-z7/pdf-before/pdf96.png",
+      "b": "pdf/3/kashmir-z7/pdf-after/pdf96.png",
+      "a_sha256": "4a7604f4b4a0572f82a5a58eada0e82a7f04e1baf4ef6253b209b8a3e8ef787c",
+      "b_sha256": "a1ae400859279edab825fe41d41b5bf8234f90c52f80f10797a589d248eacc2e",
+      "changed_pixels": 3760,
+      "normalized_mae": 0.00010956449709513435,
+      "max_channel_delta": 14
+    },
+    {
+      "qgis_major": "3",
+      "camera": "kashmir-z7",
+      "dpi": 150,
+      "pair": "before-repeat",
+      "a": "pdf/3/kashmir-z7/pdf-before/pdf150.png",
+      "b": "pdf/3/kashmir-z7/pdf-before/pdf150-repeat.png",
+      "a_sha256": "a1be0f7535c096bb7812873fec2814e49b6a53324e990df04408fde38bdf8ef4",
+      "b_sha256": "a1be0f7535c096bb7812873fec2814e49b6a53324e990df04408fde38bdf8ef4",
+      "changed_pixels": 0,
+      "normalized_mae": 0.0,
+      "max_channel_delta": 0
+    },
+    {
+      "qgis_major": "3",
+      "camera": "kashmir-z7",
+      "dpi": 150,
+      "pair": "after-repeat",
+      "a": "pdf/3/kashmir-z7/pdf-after/pdf150.png",
+      "b": "pdf/3/kashmir-z7/pdf-after/pdf150-repeat.png",
+      "a_sha256": "d71fc38204f3bc96665fa9edb2dca997e9a57005ce1cf5b2a4af275c4ea6680c",
+      "b_sha256": "d71fc38204f3bc96665fa9edb2dca997e9a57005ce1cf5b2a4af275c4ea6680c",
+      "changed_pixels": 0,
+      "normalized_mae": 0.0,
+      "max_channel_delta": 0
+    },
+    {
+      "qgis_major": "3",
+      "camera": "kashmir-z7",
+      "dpi": 150,
+      "pair": "before-after",
+      "a": "pdf/3/kashmir-z7/pdf-before/pdf150.png",
+      "b": "pdf/3/kashmir-z7/pdf-after/pdf150.png",
+      "a_sha256": "a1be0f7535c096bb7812873fec2814e49b6a53324e990df04408fde38bdf8ef4",
+      "b_sha256": "d71fc38204f3bc96665fa9edb2dca997e9a57005ce1cf5b2a4af275c4ea6680c",
+      "changed_pixels": 3757,
+      "normalized_mae": 0.00011038149055918664,
+      "max_channel_delta": 21
+    },
+    {
+      "qgis_major": "3",
+      "camera": "kashmir-z7",
+      "dpi": 192,
+      "pair": "before-repeat",
+      "a": "pdf/3/kashmir-z7/pdf-before/pdf192.png",
+      "b": "pdf/3/kashmir-z7/pdf-before/pdf192-repeat.png",
+      "a_sha256": "1ee8b2e47fe3816ed98fb7a3cf4c28eea7fe031a8d01076bb3306ab984275ff6",
+      "b_sha256": "1ee8b2e47fe3816ed98fb7a3cf4c28eea7fe031a8d01076bb3306ab984275ff6",
+      "changed_pixels": 0,
+      "normalized_mae": 0.0,
+      "max_channel_delta": 0
+    },
+    {
+      "qgis_major": "3",
+      "camera": "kashmir-z7",
+      "dpi": 192,
+      "pair": "after-repeat",
+      "a": "pdf/3/kashmir-z7/pdf-after/pdf192.png",
+      "b": "pdf/3/kashmir-z7/pdf-after/pdf192-repeat.png",
+      "a_sha256": "2e5eb1a4314fcc4a5282cb6e2a595516562b78eea96cf22f73ffeed0fdebc9c8",
+      "b_sha256": "2e5eb1a4314fcc4a5282cb6e2a595516562b78eea96cf22f73ffeed0fdebc9c8",
+      "changed_pixels": 0,
+      "normalized_mae": 0.0,
+      "max_channel_delta": 0
+    },
+    {
+      "qgis_major": "3",
+      "camera": "kashmir-z7",
+      "dpi": 192,
+      "pair": "before-after",
+      "a": "pdf/3/kashmir-z7/pdf-before/pdf192.png",
+      "b": "pdf/3/kashmir-z7/pdf-after/pdf192.png",
+      "a_sha256": "1ee8b2e47fe3816ed98fb7a3cf4c28eea7fe031a8d01076bb3306ab984275ff6",
+      "b_sha256": "2e5eb1a4314fcc4a5282cb6e2a595516562b78eea96cf22f73ffeed0fdebc9c8",
+      "changed_pixels": 3763,
+      "normalized_mae": 0.00010994349128540304,
+      "max_channel_delta": 21
+    },
+    {
+      "qgis_major": "4",
+      "camera": "lausanne-lavaux-z10-light",
+      "dpi": 96,
+      "pair": "before-repeat",
+      "a": "pdf/4/lausanne-lavaux-z10-light/pdf-before/pdf96.png",
+      "b": "pdf/4/lausanne-lavaux-z10-light/pdf-before/pdf96-repeat.png",
+      "a_sha256": "878d7a095fa5b6a2edd4856ff267e94d21c32bdc27f938fca21ede81bd52799e",
+      "b_sha256": "878d7a095fa5b6a2edd4856ff267e94d21c32bdc27f938fca21ede81bd52799e",
+      "changed_pixels": 0,
+      "normalized_mae": 0.0,
+      "max_channel_delta": 0
+    },
+    {
+      "qgis_major": "4",
+      "camera": "lausanne-lavaux-z10-light",
+      "dpi": 96,
+      "pair": "after-repeat",
+      "a": "pdf/4/lausanne-lavaux-z10-light/pdf-after/pdf96.png",
+      "b": "pdf/4/lausanne-lavaux-z10-light/pdf-after/pdf96-repeat.png",
+      "a_sha256": "1875bfd33fd16686f8be6b62b7056c366961b6d15c0d6739d3d15387a22818ee",
+      "b_sha256": "1875bfd33fd16686f8be6b62b7056c366961b6d15c0d6739d3d15387a22818ee",
+      "changed_pixels": 0,
+      "normalized_mae": 0.0,
+      "max_channel_delta": 0
+    },
+    {
+      "qgis_major": "4",
+      "camera": "lausanne-lavaux-z10-light",
+      "dpi": 96,
+      "pair": "before-after",
+      "a": "pdf/4/lausanne-lavaux-z10-light/pdf-before/pdf96.png",
+      "b": "pdf/4/lausanne-lavaux-z10-light/pdf-after/pdf96.png",
+      "a_sha256": "878d7a095fa5b6a2edd4856ff267e94d21c32bdc27f938fca21ede81bd52799e",
+      "b_sha256": "1875bfd33fd16686f8be6b62b7056c366961b6d15c0d6739d3d15387a22818ee",
+      "changed_pixels": 9078,
+      "normalized_mae": 0.0001069603304284677,
+      "max_channel_delta": 18
+    },
+    {
+      "qgis_major": "4",
+      "camera": "lausanne-lavaux-z10-light",
+      "dpi": 150,
+      "pair": "before-repeat",
+      "a": "pdf/4/lausanne-lavaux-z10-light/pdf-before/pdf150.png",
+      "b": "pdf/4/lausanne-lavaux-z10-light/pdf-before/pdf150-repeat.png",
+      "a_sha256": "0d75aa62744fc9df08ade24e2b94d8f5556c36b6decb5a2ff71032f85c929060",
+      "b_sha256": "6c3351f0df56cf5a403aab0b1eaa1200ee711487bab89493d3d5f0b8ad7b7c5d",
+      "changed_pixels": 423,
+      "normalized_mae": 1.290168845315904e-06,
+      "max_channel_delta": 9
+    },
+    {
+      "qgis_major": "4",
+      "camera": "lausanne-lavaux-z10-light",
+      "dpi": 150,
+      "pair": "after-repeat",
+      "a": "pdf/4/lausanne-lavaux-z10-light/pdf-after/pdf150.png",
+      "b": "pdf/4/lausanne-lavaux-z10-light/pdf-after/pdf150-repeat.png",
+      "a_sha256": "a5cf29b00688a4aff0cb476196b24d2f1f19c4475e70884831bccba914483a39",
+      "b_sha256": "ac2a25aa7940308ddc71ecbedc58c8beb5d9d37b127bec9cdb0d320ac1d05742",
+      "changed_pixels": 164,
+      "normalized_mae": 3.812636165577342e-07,
+      "max_channel_delta": 3
+    },
+    {
+      "qgis_major": "4",
+      "camera": "lausanne-lavaux-z10-light",
+      "dpi": 150,
+      "pair": "before-after",
+      "a": "pdf/4/lausanne-lavaux-z10-light/pdf-before/pdf150.png",
+      "b": "pdf/4/lausanne-lavaux-z10-light/pdf-after/pdf150.png",
+      "a_sha256": "0d75aa62744fc9df08ade24e2b94d8f5556c36b6decb5a2ff71032f85c929060",
+      "b_sha256": "a5cf29b00688a4aff0cb476196b24d2f1f19c4475e70884831bccba914483a39",
+      "changed_pixels": 9856,
+      "normalized_mae": 0.00010618645606390705,
+      "max_channel_delta": 21
+    },
+    {
+      "qgis_major": "4",
+      "camera": "lausanne-lavaux-z10-light",
+      "dpi": 192,
+      "pair": "before-repeat",
+      "a": "pdf/4/lausanne-lavaux-z10-light/pdf-before/pdf192.png",
+      "b": "pdf/4/lausanne-lavaux-z10-light/pdf-before/pdf192-repeat.png",
+      "a_sha256": "1c28fd8f15017c231d096bff05134cca0237656b90a8ac569b64eac3acdbb867",
+      "b_sha256": "1c28fd8f15017c231d096bff05134cca0237656b90a8ac569b64eac3acdbb867",
+      "changed_pixels": 0,
+      "normalized_mae": 0.0,
+      "max_channel_delta": 0
+    },
+    {
+      "qgis_major": "4",
+      "camera": "lausanne-lavaux-z10-light",
+      "dpi": 192,
+      "pair": "after-repeat",
+      "a": "pdf/4/lausanne-lavaux-z10-light/pdf-after/pdf192.png",
+      "b": "pdf/4/lausanne-lavaux-z10-light/pdf-after/pdf192-repeat.png",
+      "a_sha256": "49ce7fa8beee5ec6ea411546a00494e9c00cbb67b2480ed18851b9252a056acf",
+      "b_sha256": "49ce7fa8beee5ec6ea411546a00494e9c00cbb67b2480ed18851b9252a056acf",
+      "changed_pixels": 0,
+      "normalized_mae": 0.0,
+      "max_channel_delta": 0
+    },
+    {
+      "qgis_major": "4",
+      "camera": "lausanne-lavaux-z10-light",
+      "dpi": 192,
+      "pair": "before-after",
+      "a": "pdf/4/lausanne-lavaux-z10-light/pdf-before/pdf192.png",
+      "b": "pdf/4/lausanne-lavaux-z10-light/pdf-after/pdf192.png",
+      "a_sha256": "1c28fd8f15017c231d096bff05134cca0237656b90a8ac569b64eac3acdbb867",
+      "b_sha256": "49ce7fa8beee5ec6ea411546a00494e9c00cbb67b2480ed18851b9252a056acf",
+      "changed_pixels": 9453,
+      "normalized_mae": 0.00010648375090777052,
+      "max_channel_delta": 21
+    },
+    {
+      "qgis_major": "4",
+      "camera": "kashmir-z7",
+      "dpi": 96,
+      "pair": "before-repeat",
+      "a": "pdf/4/kashmir-z7/pdf-before/pdf96.png",
+      "b": "pdf/4/kashmir-z7/pdf-before/pdf96-repeat.png",
+      "a_sha256": "bf602d9dab2d933d6f9a51d7e04745e4bad5542950d19bbb1e263ad356867564",
+      "b_sha256": "bf602d9dab2d933d6f9a51d7e04745e4bad5542950d19bbb1e263ad356867564",
+      "changed_pixels": 0,
+      "normalized_mae": 0.0,
+      "max_channel_delta": 0
+    },
+    {
+      "qgis_major": "4",
+      "camera": "kashmir-z7",
+      "dpi": 96,
+      "pair": "after-repeat",
+      "a": "pdf/4/kashmir-z7/pdf-after/pdf96.png",
+      "b": "pdf/4/kashmir-z7/pdf-after/pdf96-repeat.png",
+      "a_sha256": "bb216e980e5eba4f374249f1fff7ff5bcadb7b45fde3255f09462cddf326dddf",
+      "b_sha256": "bb216e980e5eba4f374249f1fff7ff5bcadb7b45fde3255f09462cddf326dddf",
+      "changed_pixels": 0,
+      "normalized_mae": 0.0,
+      "max_channel_delta": 0
+    },
+    {
+      "qgis_major": "4",
+      "camera": "kashmir-z7",
+      "dpi": 96,
+      "pair": "before-after",
+      "a": "pdf/4/kashmir-z7/pdf-before/pdf96.png",
+      "b": "pdf/4/kashmir-z7/pdf-after/pdf96.png",
+      "a_sha256": "bf602d9dab2d933d6f9a51d7e04745e4bad5542950d19bbb1e263ad356867564",
+      "b_sha256": "bb216e980e5eba4f374249f1fff7ff5bcadb7b45fde3255f09462cddf326dddf",
+      "changed_pixels": 3767,
+      "normalized_mae": 0.00011015908678286128,
+      "max_channel_delta": 14
+    },
+    {
+      "qgis_major": "4",
+      "camera": "kashmir-z7",
+      "dpi": 150,
+      "pair": "before-repeat",
+      "a": "pdf/4/kashmir-z7/pdf-before/pdf150.png",
+      "b": "pdf/4/kashmir-z7/pdf-before/pdf150-repeat.png",
+      "a_sha256": "41c00df96f724d54033c5ac5fc92c0398ace74e17aeddbe47d55adf23cd76b8c",
+      "b_sha256": "3438da040d6aba5ef41403a3e65bd04a4e8d15045959abd1f0c330e1caaab9f3",
+      "changed_pixels": 189,
+      "normalized_mae": 6.989832970225127e-07,
+      "max_channel_delta": 30
+    },
+    {
+      "qgis_major": "4",
+      "camera": "kashmir-z7",
+      "dpi": 150,
+      "pair": "after-repeat",
+      "a": "pdf/4/kashmir-z7/pdf-after/pdf150.png",
+      "b": "pdf/4/kashmir-z7/pdf-after/pdf150-repeat.png",
+      "a_sha256": "b6dde9d4ac71d8d35dacdc5fefe719940b44462ef94c35c15d2ebd146440bd04",
+      "b_sha256": "2aaf07f965dcc5fe8fb45485c0b4b780dd3d69ede7b9fa5903499191412ae254",
+      "changed_pixels": 45,
+      "normalized_mae": 3.290668119099491e-07,
+      "max_channel_delta": 25
+    },
+    {
+      "qgis_major": "4",
+      "camera": "kashmir-z7",
+      "dpi": 150,
+      "pair": "before-after",
+      "a": "pdf/4/kashmir-z7/pdf-before/pdf150.png",
+      "b": "pdf/4/kashmir-z7/pdf-after/pdf150.png",
+      "a_sha256": "41c00df96f724d54033c5ac5fc92c0398ace74e17aeddbe47d55adf23cd76b8c",
+      "b_sha256": "b6dde9d4ac71d8d35dacdc5fefe719940b44462ef94c35c15d2ebd146440bd04",
+      "changed_pixels": 4229,
+      "normalized_mae": 0.00011698325163398692,
+      "max_channel_delta": 30
+    },
+    {
+      "qgis_major": "4",
+      "camera": "kashmir-z7",
+      "dpi": 192,
+      "pair": "before-repeat",
+      "a": "pdf/4/kashmir-z7/pdf-before/pdf192.png",
+      "b": "pdf/4/kashmir-z7/pdf-before/pdf192-repeat.png",
+      "a_sha256": "a0d46002509282fb1a361b730058041d7ebaf93ac46f7199f04875ddbebcc092",
+      "b_sha256": "a0d46002509282fb1a361b730058041d7ebaf93ac46f7199f04875ddbebcc092",
+      "changed_pixels": 0,
+      "normalized_mae": 0.0,
+      "max_channel_delta": 0
+    },
+    {
+      "qgis_major": "4",
+      "camera": "kashmir-z7",
+      "dpi": 192,
+      "pair": "after-repeat",
+      "a": "pdf/4/kashmir-z7/pdf-after/pdf192.png",
+      "b": "pdf/4/kashmir-z7/pdf-after/pdf192-repeat.png",
+      "a_sha256": "21ada9a198518941267af1bf99c151a584eec29e511ee864246a9e07b44d1e66",
+      "b_sha256": "21ada9a198518941267af1bf99c151a584eec29e511ee864246a9e07b44d1e66",
+      "changed_pixels": 0,
+      "normalized_mae": 0.0,
+      "max_channel_delta": 0
+    },
+    {
+      "qgis_major": "4",
+      "camera": "kashmir-z7",
+      "dpi": 192,
+      "pair": "before-after",
+      "a": "pdf/4/kashmir-z7/pdf-before/pdf192.png",
+      "b": "pdf/4/kashmir-z7/pdf-after/pdf192.png",
+      "a_sha256": "a0d46002509282fb1a361b730058041d7ebaf93ac46f7199f04875ddbebcc092",
+      "b_sha256": "21ada9a198518941267af1bf99c151a584eec29e511ee864246a9e07b44d1e66",
+      "changed_pixels": 4043,
+      "normalized_mae": 0.00011849582425562818,
+      "max_channel_delta": 21
+    }
+  ],
+  "scope": "Actual one-map QgsPrintLayout export with production150DPI/forced-vector settings plus96/192 diagnostics. Not full atlas/task/UI/desktop; native density/label differences remain open. Raster comparisons are explicitly named; raw PDF files include timestamps and are not claimed byte-identical."
+}
