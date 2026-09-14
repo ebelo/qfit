@@ -54,6 +54,9 @@ Before interpreting a discrepancy:
   Record actual QGIS map/image DPI and continuous/integer render zoom; a
   converter pixel-to-mm constant or requested camera zoom is not that evidence.
   Record source **and** QGIS-preprocessed fingerprints and code commits.
+  Record the source-declared and actual browser projection. Preserve the original
+  reference separately from any explicitly requested planar diagnostic; configured
+  projection names alone do not establish geographic anchor registration.
 - Record QGIS/Qt/browser versions, font files/faces and actual `QFontInfo`
   resolution, fallback glyph coverage, and output path (interactive/PNG/PDF).
 - Use the credential route supported by the capture environment; validate

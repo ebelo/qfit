@@ -25,13 +25,54 @@ debug/mapbox-light-comparison/<camera>/<UTC timestamp>/
 A complete run writes:
 
 - `mapbox-gl-reference.png` — browser/Mapbox GL JS reference image
+- `browser-runtime.json` — actual browser/Mapbox GL versions, projection, camera, viewport and load-state evidence after successful capture
 - `qgis-vector-render.png` — qfit/QGIS native vector-tile render for the same camera
 - `mapbox-gl-vs-qgis-diff.png` — pixel diff for quick drift inspection
 - `metrics.json` — simple image-diff metrics such as changed-pixel ratio when diff generation runs
 - `qgis-label-styles.json` — token-free QGIS vector-tile label rule and label-setting snapshot when QGIS capture runs
 - `qgis-runtime.json` — token-free QGIS version/release and actual render-context metadata after a successful PNG capture
-- `manifest.json` — camera, output paths, capture status, metrics, and QGIS runtime metadata without any token values
+- `manifest.json` — camera, output paths, capture status, metrics, and browser/QGIS runtime metadata without any token values
 - `contact-sheet.jpg` — all-camera side-by-side thumbnail sheet when running the matrix mode
+
+## Source projection and explicit planar diagnostics
+
+Browser references preserve the source projection by default (`--reference-projection
+source`). Both recorded built-in styles declare `globe`; QGIS uses EPSG:3857 in
+this harness. Identical requested camera coordinates do **not** establish
+geographic registration at overview zooms. Never interpret an unregistered diff
+as a matched renderer-fidelity measurement.
+
+For a separately labelled planar diagnostic, explicitly request:
+
+```bash
+python3 validation/mapbox_outdoors_comparison.py switzerland-alps-z5-light \
+  --preset light --reference-projection mercator
+```
+
+This overrides only the browser Map constructor. The source snapshot/fingerprint,
+QGIS preprocessing and production plugin are unchanged. Retain the original
+source-projection reference separately; a diagnostic is not permission to replace
+source intent or accept a product-projection limitation. The option propagates
+through `--all-cameras` for either preset.
+
+`browser-runtime.json` and the manifest's `browser_runtime` record:
+
+- requested projection mode, the snapshot's declared projection (null if unknown),
+  and the actual `map.getProjection()` result;
+- actual center, zoom, bearing, pitch, bounds, canvas pixel dimensions and device
+  pixel ratio, plus browser and Mapbox GL versions;
+- map/tile loaded flags, map error count and rendered-feature count.
+
+Captures with map errors or unloaded maps/tiles are rejected before PNG creation;
+metadata is written only after a successful screenshot. Error payloads and URLs
+are not copied into this snapshot. Feature count and an idle event alone cannot
+prove complete, nonblank cartography: inspect the actual maps and loading evidence.
+`getProjection()` identifies the projection configuration, not a per-pixel globe
+blend or registration proof: Mapbox GL transitions toward planar behavior at
+higher zooms. Verify geographic anchors when registration matters. Mercator mode
+does not solve the separate native QGIS style-zoom/DPI mismatch below, and image
+metrics do not automatically certify comparability. Historical manifests without
+browser context remain historical; do not infer fresh projection evidence from them.
 
 ## Actual render context, not assumed scale/DPI
 
