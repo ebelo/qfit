@@ -1,7 +1,7 @@
 {
-  "documentation_head": "1c45398c682e7b41b4f30dd9a700bcd1c32bd01e",
+  "documentation_head": "03340c37e2c1dae0871c24bb4cf2aff6a7e3945a",
   "capture_production_head": "3ff79a9dbced1dd57cf9763963d5758b5a5a1af7",
-  "evidence_commit": "1339e85dd9e4bc4165e21f6101b0464ab5082191",
+  "evidence_commit": "d52b956d51819039bc8fdd0ab9535a9776ba9354",
   "changed_tracked_paths": [
     "docs/light-cartographic-assessment.md",
     "docs/mapbox-outdoors-comparison-harness.md"
