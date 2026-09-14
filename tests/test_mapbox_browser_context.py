@@ -5,7 +5,10 @@ import shutil
 import subprocess
 from pathlib import Path
 
-import pytest
+import tempfile
+import unittest
+
+from tests import _path  # noqa: F401
 
 from qfit.validation import mapbox_outdoors_comparison as comparison
 
@@ -13,15 +16,13 @@ from qfit.validation import mapbox_outdoors_comparison as comparison
 def _node(script, payload):
     node = shutil.which('node')
     if not node:
-        pytest.skip('Node.js is needed to execute the browser JavaScript regression')
+        raise unittest.SkipTest('Node.js is needed to execute the browser JavaScript regression')
     result = subprocess.run([node, '-e', script], input=json.dumps(payload),
                             text=True, capture_output=True, check=True)
     return json.loads(result.stdout)
 
 
-@pytest.mark.parametrize('preset', ['light', 'outdoors'])
-@pytest.mark.parametrize('projection', ['source', 'mercator'])
-def test_source_projection_is_preserved_and_actual_map_context_is_measured(preset, projection):
+def _check_source_projection_and_context(preset, projection):
     source = {'version': 8, 'projection': {'name': 'globe'}, 'sources': {}, 'layers': []}
     original = copy.deepcopy(source)
     html = comparison.build_mapbox_gl_html(
@@ -62,9 +63,7 @@ console.log(JSON.stringify({options, clean, failed: context.window.qfitMapboxSna
     assert 'unit-credential' not in json.dumps(result)
 
 
-@pytest.mark.parametrize('state,valid', [({}, True), ({'map_error_count': 1}, False),
-    ({'map_loaded': False}, False), ({'tiles_loaded': False}, False)])
-def test_capture_rejects_incomplete_maps_and_writes_metadata_only_after_png(state, valid):
+def _check_capture_completeness(state, valid):
     result = _node(r"""
 const fs = require('fs'), vm = require('vm');
 const payload = JSON.parse(fs.readFileSync(0, 'utf8'));
@@ -92,7 +91,7 @@ const context = {require: name => name === 'playwright' ? {chromium: {launch: as
         assert result['writes'] == ['closed']
 
 
-def test_projection_cli_survives_all_camera_subprocess_and_manifest(tmp_path):
+def _check_projection_manifest(tmp_path):
     args = comparison.build_parser().parse_args(['--preset', 'light', '--all-cameras',
                                                 '--reference-projection', 'mercator'])
     camera = next(iter(comparison.LIGHT_CAMERAS.values()))
@@ -118,8 +117,25 @@ def test_projection_cli_survives_all_camera_subprocess_and_manifest(tmp_path):
     assert 'unit-secret' not in result.paths.manifest_json.read_text()
 
 
-def test_default_projection_and_invalid_api_value():
-    assert comparison.build_parser().parse_args([]).reference_projection == 'source'
-    with pytest.raises(ValueError, match='Reference projection'):
-        comparison.build_mapbox_gl_html(camera=next(iter(comparison.LIGHT_CAMERAS.values())),
-                                       reference_projection='guess')
+class BrowserContextTests(unittest.TestCase):
+    def test_source_projection_and_actual_context(self):
+        for preset in ('light', 'outdoors'):
+            for projection in ('source', 'mercator'):
+                with self.subTest(preset=preset, projection=projection):
+                    _check_source_projection_and_context(preset, projection)
+
+    def test_capture_completeness_and_artifact_order(self):
+        for state, valid in (({}, True), ({'map_error_count': 1}, False),
+                             ({'map_loaded': False}, False), ({'tiles_loaded': False}, False)):
+            with self.subTest(state=state):
+                _check_capture_completeness(state, valid)
+
+    def test_projection_cli_subprocess_and_manifest(self):
+        with tempfile.TemporaryDirectory() as directory:
+            _check_projection_manifest(Path(directory))
+
+    def test_default_projection_and_invalid_api_value(self):
+        self.assertEqual(comparison.build_parser().parse_args([]).reference_projection, 'source')
+        with self.assertRaisesRegex(ValueError, 'Reference projection'):
+            comparison.build_mapbox_gl_html(camera=next(iter(comparison.LIGHT_CAMERAS.values())),
+                                           reference_projection='guess')
