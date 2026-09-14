@@ -1,0 +1,406 @@
+{
+  "final_reviewed_capture_head": "9ba1e49bb1f2e5ab75f7bd95b3e354e46833b901",
+  "initial_capture_implementation": "964710365c54f7cfaead3170fe43d505fa33d856",
+  "original_evidence_commit": "d894f1c7fb09176320a2a06a806ebeace19377c9",
+  "date_utc": "2026-09-14",
+  "scope": "30 QGIS final-head recaptures in the same active protected Gateway run; original same-run browser references and unchanged baseline repeats retained. No new browser/baseline claim.",
+  "runtime_code_sha256": {
+    "mapbox_config.py": "a2bdb887cbc4663e96a5a282dcdacb4c2477a4bfcfc3f1bfd6569f155c7a89db",
+    "visualization/infrastructure/background_map_service.py": "76c01bfb3159bfd0cd8e0d6583dc31b2cb937d58846b4b437cf41b0b985cbb1f",
+    "visualization/infrastructure/mapbox_light_strokes.py": "ba95dcc542d75e848cec435054ae975ca607a25c40cc2e44593b1d92a4273d74",
+    "visualization/infrastructure/mapbox_light_labels.py": "5b2310bce51a53b072e7a3932adb9abdea991116c29ef032de37d25151765cce",
+    "visualization/infrastructure/mapbox_open_fonts.py": "f1e94b2b42be6a6ddce758c0b2904cca66526e583bed3ee9b33580b37359b737",
+    "visualization/infrastructure/layer_style_service.py": "35383965327ea27c2a8e602b7716904de1adeadd0b0eed21227c053db03d283a",
+    "validation/mapbox_outdoors_comparison.py": "b746a1d2f2ebb24da62edb80ea9ad323e781edcbb389874d3b1c674ca79275cf",
+    "validation/mapbox_outdoors_runtime.py": "d38930e57ecb9c9c547973f032dd072d68ac70bcb475aae46e0b1627562e45a4",
+    "validation/mapbox_activity_overlay.py": "1bff513d9cb2bdd32ffc476aa92a7cc1270052a5182dcc6db06eb42a7cbfd6a2"
+  },
+  "runtime_image_identity": [
+    {
+      "qgis": "3.44.11-Solothurn",
+      "qt_compiled": "5.15.17",
+      "qt_runtime": "5.15.17",
+      "pyqt": "5.15.11",
+      "python": "3.13.7",
+      "qgis_major": "3",
+      "image": "qfit/qgis:3.44.11-fonts",
+      "image_id": "sha256:4a0e0a08993c8dcf206eb5d3947acb4ed018af07434ecb4e5e281a3c3d4ece6d",
+      "image_identity_audit": {
+        "before_cached_rebuild": {
+          "manifest": "sha256:144a796cb4ed7c3722d17dd37e555ad21cb3ca1deb5b0e50c21a1f2ac31da688",
+          "config": "sha256:5cd2836ff61cb273c7f9f4ce5845f258ee78b82a55b8313aa85db962405b086f",
+          "manifest list": "sha256:4a0e0a08993c8dcf206eb5d3947acb4ed018af07434ecb4e5e281a3c3d4ece6d",
+          "attestation manifest": "sha256:dd81539924312954793344ff4ca5eed2370486670e5fc61483036c56988a1cf8"
+        },
+        "after_cached_rebuild": {
+          "manifest": "sha256:144a796cb4ed7c3722d17dd37e555ad21cb3ca1deb5b0e50c21a1f2ac31da688",
+          "config": "sha256:5cd2836ff61cb273c7f9f4ce5845f258ee78b82a55b8313aa85db962405b086f",
+          "manifest list": "sha256:68b96dd09afa5e75815a1543c070a886fe3a7d33d307442100d5fb1d71b7a6f3",
+          "attestation manifest": "sha256:ecc2382ddd42de7936f09aaea00ec87f38e1813b77a88ba2182a6b26db5a7ab7"
+        },
+        "runtime_manifest_and_config_identical": true,
+        "note": "Required tests re-export cached image with new build attestation/index only. Identical runtime manifest pins identical layers/config. Per-frame index not recorded; runtime content unchanged."
+      },
+      "stroke_width_property_key": "5"
+    },
+    {
+      "qgis": "4.2.0-Bel\u00e9m do Par\u00e1",
+      "qt_compiled": "6.9.2",
+      "qt_runtime": "6.9.2",
+      "pyqt": "6.9.1",
+      "python": "3.13.7",
+      "qgis_major": "4",
+      "image": "qfit/qgis:4.2.0-fonts",
+      "image_id": "sha256:85c0002ea1f313b61d033e5be5e197a9ce6f2ab11705155dc6dc492c103fd984",
+      "image_identity_audit": {
+        "before_cached_rebuild": {
+          "manifest": "sha256:9c9312211a5f672241b2e2b1f81541e439ea8e128c4e95dc65b2167fef6453f7",
+          "config": "sha256:60104c9df516742351cf67c60a03f50cc3b65483c9725ecc774f4a22ce223106",
+          "manifest list": "sha256:85c0002ea1f313b61d033e5be5e197a9ce6f2ab11705155dc6dc492c103fd984",
+          "attestation manifest": "sha256:593e10c201488dabb0e75dafd1a34517448a3ca2dd66080a41325bb7c4925db6"
+        },
+        "after_cached_rebuild": {
+          "manifest": "sha256:9c9312211a5f672241b2e2b1f81541e439ea8e128c4e95dc65b2167fef6453f7",
+          "config": "sha256:60104c9df516742351cf67c60a03f50cc3b65483c9725ecc774f4a22ce223106",
+          "manifest list": "sha256:7ca41f04b0f7e0ca8b9eb00ddf27bef23d30ab1cd2e2c2e431f55b670d2681f0",
+          "attestation manifest": "sha256:c226687b880a57d8f4f7a8f866677709e4b039c459dca7d9fea14df568150e36"
+        },
+        "runtime_manifest_and_config_identical": true,
+        "note": "Required tests re-export cached image with new build attestation/index only. Identical runtime manifest pins identical layers/config. Per-frame index not recorded; runtime content unchanged."
+      },
+      "stroke_width_property_key": "5"
+    }
+  ],
+  "matrix": [
+    {
+      "qgis_major": "3",
+      "camera": "switzerland-alps-z5-light",
+      "sha256": {
+        "qgis.png": "b37eb8eb83173eaa5c0c4bb85cc614f1f5f8e4101446ecf642d18c16428a3dc4",
+        "labels.json": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+        "runtime.json": "74ec0cc31414e40b19253f8ac2156a4194f130bb3b4a87ccb9c4afc2270b9ff0",
+        "changed.json": "ecb4cda5e520b7c3fb2f9565939dae86f0e979d603b813f367aaa0038ca32676"
+      },
+      "all_identical": true
+    },
+    {
+      "qgis_major": "3",
+      "camera": "zurich-region-z8-light",
+      "sha256": {
+        "qgis.png": "63daf0808941fa5125686c8db3e793eca294c3b33bfaac4704e01e239ed5a5ab",
+        "labels.json": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+        "runtime.json": "df7081bced2c6522f7219c57fccf7dc4ec13a1806bf897d986ec890dcd84cf66",
+        "changed.json": "ecb4cda5e520b7c3fb2f9565939dae86f0e979d603b813f367aaa0038ca32676"
+      },
+      "all_identical": true
+    },
+    {
+      "qgis_major": "3",
+      "camera": "lausanne-lavaux-z10-light",
+      "sha256": {
+        "qgis.png": "c2092e6fad0d7775d64ddecb379ebd31c3b79c0abcda5db475c7cd79f25814d3",
+        "labels.json": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+        "runtime.json": "b23b4292addc0aab2f8c101bfe317f16bf738c9e26188f0483c96148fe294f13",
+        "changed.json": "ecb4cda5e520b7c3fb2f9565939dae86f0e979d603b813f367aaa0038ca32676"
+      },
+      "all_identical": true
+    },
+    {
+      "qgis_major": "3",
+      "camera": "bern-urban-z12-light",
+      "sha256": {
+        "qgis.png": "be889599f5b5efda75b11be40c2242cbec8958dd3e931a0f592fd45b71f58c8d",
+        "labels.json": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+        "runtime.json": "db3435f70d95f07f7715073c2584739b9f25ab5cab1e87b84d2f4317c2cfb7c0",
+        "changed.json": "ecb4cda5e520b7c3fb2f9565939dae86f0e979d603b813f367aaa0038ca32676"
+      },
+      "all_identical": true
+    },
+    {
+      "qgis_major": "3",
+      "camera": "geneva-urban-z14-light",
+      "sha256": {
+        "qgis.png": "bc11e49289db93790122cceec967133a73212c6c0ece3debf1c7bb3d56bfe9d3",
+        "labels.json": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+        "runtime.json": "e5dd55dffc76e86ecb25fab5a30a34d726b8042be25a10a99996b38477b2997c",
+        "changed.json": "ecb4cda5e520b7c3fb2f9565939dae86f0e979d603b813f367aaa0038ca32676"
+      },
+      "all_identical": true
+    },
+    {
+      "qgis_major": "3",
+      "camera": "zurich-streets-z17-light",
+      "sha256": {
+        "qgis.png": "87f065071da31fb6bca580413e5e1aa3006c1294126235b35f55aea2430e37ee",
+        "labels.json": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+        "runtime.json": "7154da7fadac914ea33211f81323d3cc9d61dd1e970bfd1420cf1e529ebdf10a",
+        "changed.json": "ecb4cda5e520b7c3fb2f9565939dae86f0e979d603b813f367aaa0038ca32676"
+      },
+      "all_identical": true
+    },
+    {
+      "qgis_major": "3",
+      "camera": "geneva-streets-z18-light",
+      "sha256": {
+        "qgis.png": "08ccd959983dda84dc2a219cb9229c4e62731b9c9389ce5877941af316c3d318",
+        "labels.json": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+        "runtime.json": "745de0f694db39f910b5c9e11a5f0d2056abef439edc889bfaa6609e3c84e193",
+        "changed.json": "ecb4cda5e520b7c3fb2f9565939dae86f0e979d603b813f367aaa0038ca32676"
+      },
+      "all_identical": true
+    },
+    {
+      "qgis_major": "3",
+      "camera": "geneva-width-z12.9",
+      "sha256": {
+        "qgis.png": "f85e35edab60bfd8fbba17932ead8a052de9810b9096c22b6a92a9e49afaca8c",
+        "labels.json": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+        "runtime.json": "844baa2133ffbc4447e2224ae948c1438d64760fb83e70071c5d93a5d20217de",
+        "changed.json": "ecb4cda5e520b7c3fb2f9565939dae86f0e979d603b813f367aaa0038ca32676"
+      },
+      "all_identical": true
+    },
+    {
+      "qgis_major": "3",
+      "camera": "geneva-width-z13.0",
+      "sha256": {
+        "qgis.png": "0946f5cfaafbf6444609cd2851db6ea885da94c9f548fa015881de66293bcdb4",
+        "labels.json": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+        "runtime.json": "7d96c45c03e682c838736f2a1d5e766cd27ed63141274e97ec2d2e4db5f22b52",
+        "changed.json": "ecb4cda5e520b7c3fb2f9565939dae86f0e979d603b813f367aaa0038ca32676"
+      },
+      "all_identical": true
+    },
+    {
+      "qgis_major": "3",
+      "camera": "geneva-width-z13.1",
+      "sha256": {
+        "qgis.png": "dc1f5153210005a29e24f4adfad8b4bc1cd500958628c9ea06f9f2cfa1e5c3c5",
+        "labels.json": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+        "runtime.json": "993cea3ea0deb3e7f5826b7e360893122e5344aa196628f934d7182d89be777e",
+        "changed.json": "ecb4cda5e520b7c3fb2f9565939dae86f0e979d603b813f367aaa0038ca32676"
+      },
+      "all_identical": true
+    },
+    {
+      "qgis_major": "3",
+      "camera": "bern-width-z12.9",
+      "sha256": {
+        "qgis.png": "8c2f6c4bd88fcbd660065dc18cf533ac5337af06f437dc8743dc0f32553b6ee1",
+        "labels.json": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+        "runtime.json": "390f248a56a4b98c27f751d3ce87f9c2f46a95c36f69431346f24267d038f4b8",
+        "changed.json": "ecb4cda5e520b7c3fb2f9565939dae86f0e979d603b813f367aaa0038ca32676"
+      },
+      "all_identical": true
+    },
+    {
+      "qgis_major": "3",
+      "camera": "bern-width-z13.0",
+      "sha256": {
+        "qgis.png": "36e74008b1e9e555918d5988c8ff508152fae0691e0a8d3fe35c84a034379d2c",
+        "labels.json": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+        "runtime.json": "12bb258d4a36007e86c9b66d430885e93320d6eb8c4fade365c7dfe4ffe3aa80",
+        "changed.json": "ecb4cda5e520b7c3fb2f9565939dae86f0e979d603b813f367aaa0038ca32676"
+      },
+      "all_identical": true
+    },
+    {
+      "qgis_major": "3",
+      "camera": "bern-width-z13.1",
+      "sha256": {
+        "qgis.png": "c9c16d5010183c4ab3937c72527f5cb111e055ba95311d43e5cf74100cc0c5eb",
+        "labels.json": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+        "runtime.json": "587fd81cf8d0f3615be709e729abb99d9d7a61b652d93a5fb7d8b651655879e9",
+        "changed.json": "ecb4cda5e520b7c3fb2f9565939dae86f0e979d603b813f367aaa0038ca32676"
+      },
+      "all_identical": true
+    },
+    {
+      "qgis_major": "3",
+      "camera": "geneva-urban-z14-light-activity",
+      "sha256": {
+        "qgis.png": "870970717a2eaab65adcf72a033fafd0416afc80265c207079c08449d80adeb6",
+        "labels.json": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+        "runtime.json": "e5dd55dffc76e86ecb25fab5a30a34d726b8042be25a10a99996b38477b2997c",
+        "changed.json": "ecb4cda5e520b7c3fb2f9565939dae86f0e979d603b813f367aaa0038ca32676"
+      },
+      "all_identical": true
+    },
+    {
+      "qgis_major": "3",
+      "camera": "bern-urban-z12-light-activity",
+      "sha256": {
+        "qgis.png": "44dbacffaac0270208d98db36821f4d191a797da04e5feb385dd3d816d017204",
+        "labels.json": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+        "runtime.json": "db3435f70d95f07f7715073c2584739b9f25ab5cab1e87b84d2f4317c2cfb7c0",
+        "changed.json": "ecb4cda5e520b7c3fb2f9565939dae86f0e979d603b813f367aaa0038ca32676"
+      },
+      "all_identical": true
+    },
+    {
+      "qgis_major": "4",
+      "camera": "switzerland-alps-z5-light",
+      "sha256": {
+        "qgis.png": "937a1ea57c4718e075dc4520e2241b4259b5ff73d906afa17c173d8d01690997",
+        "labels.json": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+        "runtime.json": "3806f1fe984edf922b8c64aebd4ce5febeea7fe884c51b8ec965586c123032ad",
+        "changed.json": "8f72c2211ee9248c4679029e06158b625092bd40550cdd4b796e99c1c5d9ff43"
+      },
+      "all_identical": true
+    },
+    {
+      "qgis_major": "4",
+      "camera": "zurich-region-z8-light",
+      "sha256": {
+        "qgis.png": "ecd13ec81d2f81b675091c6fd7ca8f35872b51c1bf6a7db86778dbc0113cff56",
+        "labels.json": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+        "runtime.json": "7d17ded44e1f126fb1ed887e8b2e7830a28460f96c279322fd7839956cfa2032",
+        "changed.json": "8f72c2211ee9248c4679029e06158b625092bd40550cdd4b796e99c1c5d9ff43"
+      },
+      "all_identical": true
+    },
+    {
+      "qgis_major": "4",
+      "camera": "lausanne-lavaux-z10-light",
+      "sha256": {
+        "qgis.png": "39d2cdd34c8bfd76c325c8f4f943476061632fac946f558b9c9f2238f34c16e4",
+        "labels.json": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+        "runtime.json": "70dd46470e8921747dd1ae540d9a043dae85617b28e2906b4833c7159ae1ea52",
+        "changed.json": "8f72c2211ee9248c4679029e06158b625092bd40550cdd4b796e99c1c5d9ff43"
+      },
+      "all_identical": true
+    },
+    {
+      "qgis_major": "4",
+      "camera": "bern-urban-z12-light",
+      "sha256": {
+        "qgis.png": "b2f1f44db6aeb8e56078253828089941d2f647ad8f9d735993ae12a33808a51b",
+        "labels.json": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+        "runtime.json": "ba998194d0fb4c7704c621fc2c51b2adaf0fbfe31e78c8f90fc1e4c1f384b636",
+        "changed.json": "8f72c2211ee9248c4679029e06158b625092bd40550cdd4b796e99c1c5d9ff43"
+      },
+      "all_identical": true
+    },
+    {
+      "qgis_major": "4",
+      "camera": "geneva-urban-z14-light",
+      "sha256": {
+        "qgis.png": "9fa6f062a723a65a86e31b9d1161a5ed9f534f6feac09caef0c921a0a961f4d1",
+        "labels.json": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+        "runtime.json": "3993867b1831d6e3c72127e495ab249dc7fb4c0394b5bbc48c3286120411d459",
+        "changed.json": "8f72c2211ee9248c4679029e06158b625092bd40550cdd4b796e99c1c5d9ff43"
+      },
+      "all_identical": true
+    },
+    {
+      "qgis_major": "4",
+      "camera": "zurich-streets-z17-light",
+      "sha256": {
+        "qgis.png": "0b2fb957571220b6e2703e426c53f3d670412aed5052b35b5c36c0ab88bc7122",
+        "labels.json": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+        "runtime.json": "8acb94868871a1ce240543650def941e49ffebd2dcf2fbdff2573f3d61b3b2a8",
+        "changed.json": "8f72c2211ee9248c4679029e06158b625092bd40550cdd4b796e99c1c5d9ff43"
+      },
+      "all_identical": true
+    },
+    {
+      "qgis_major": "4",
+      "camera": "geneva-streets-z18-light",
+      "sha256": {
+        "qgis.png": "b8f175e538c415a385ffc97b1b77aae6116232543ca6861766cbc30911c8fc8d",
+        "labels.json": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+        "runtime.json": "efdd4d0ff1bf6306358ef382021d31d57d73f0cd0f66a813908b6539a891532c",
+        "changed.json": "8f72c2211ee9248c4679029e06158b625092bd40550cdd4b796e99c1c5d9ff43"
+      },
+      "all_identical": true
+    },
+    {
+      "qgis_major": "4",
+      "camera": "geneva-width-z12.9",
+      "sha256": {
+        "qgis.png": "02822940f3235529bd18ac34d1d45b92ee3a7616b534fd00eece1877f0bb8bba",
+        "labels.json": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+        "runtime.json": "d1758aa59568c461d4778b907781bfc833b7817bbe86635055af5fe2cd436ed3",
+        "changed.json": "8f72c2211ee9248c4679029e06158b625092bd40550cdd4b796e99c1c5d9ff43"
+      },
+      "all_identical": true
+    },
+    {
+      "qgis_major": "4",
+      "camera": "geneva-width-z13.0",
+      "sha256": {
+        "qgis.png": "71993bb9fcd4339b4e9857100504f6076890c826b31479ea6b35f074ae0ee058",
+        "labels.json": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+        "runtime.json": "cd4855ba292fcfa4f5107f98382368a061888871c498555392edfd0f9dba6661",
+        "changed.json": "8f72c2211ee9248c4679029e06158b625092bd40550cdd4b796e99c1c5d9ff43"
+      },
+      "all_identical": true
+    },
+    {
+      "qgis_major": "4",
+      "camera": "geneva-width-z13.1",
+      "sha256": {
+        "qgis.png": "aaa393d1d1376ba8ff0cf592a3e26c45ab71d4be8b08dac4c5a3ab195fa16f40",
+        "labels.json": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+        "runtime.json": "d582d4788397c50c7ee419f1b504a7991467ce1a0b9dc57f9c2951e4700acfd9",
+        "changed.json": "8f72c2211ee9248c4679029e06158b625092bd40550cdd4b796e99c1c5d9ff43"
+      },
+      "all_identical": true
+    },
+    {
+      "qgis_major": "4",
+      "camera": "bern-width-z12.9",
+      "sha256": {
+        "qgis.png": "884f0fff9fb91ea438ab567ee1a918a7e1fb855faa630ae65f89abda2de30fc4",
+        "labels.json": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+        "runtime.json": "196b74c1019a5a3d38eeacf69e5eb5ab3d992cd48b7bf1c003660c3f1873f7e7",
+        "changed.json": "8f72c2211ee9248c4679029e06158b625092bd40550cdd4b796e99c1c5d9ff43"
+      },
+      "all_identical": true
+    },
+    {
+      "qgis_major": "4",
+      "camera": "bern-width-z13.0",
+      "sha256": {
+        "qgis.png": "5694fd9e44bd3b20e62916a1ff55e97ce0b2322e5a95f787e348805269031958",
+        "labels.json": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+        "runtime.json": "007af399119fd70b1d50c13dca8ffd0a1b82d98dfc2a83226ca3a2615730368f",
+        "changed.json": "8f72c2211ee9248c4679029e06158b625092bd40550cdd4b796e99c1c5d9ff43"
+      },
+      "all_identical": true
+    },
+    {
+      "qgis_major": "4",
+      "camera": "bern-width-z13.1",
+      "sha256": {
+        "qgis.png": "ef1d094934af22f2095bd2aa4f5b17f03ed826349d1e30a26bb816202fc3d3f4",
+        "labels.json": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+        "runtime.json": "313bdaa555be69f6f62cd82f6f7d5c06c5de58cacfcd1f4a4c7dc6599b149bc2",
+        "changed.json": "8f72c2211ee9248c4679029e06158b625092bd40550cdd4b796e99c1c5d9ff43"
+      },
+      "all_identical": true
+    },
+    {
+      "qgis_major": "4",
+      "camera": "geneva-urban-z14-light-activity",
+      "sha256": {
+        "qgis.png": "bd0721a37634917fdc913fb3a0e04ed75248c2fa2fefd8a924b6fb5b999dc320",
+        "labels.json": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+        "runtime.json": "3993867b1831d6e3c72127e495ab249dc7fb4c0394b5bbc48c3286120411d459",
+        "changed.json": "8f72c2211ee9248c4679029e06158b625092bd40550cdd4b796e99c1c5d9ff43"
+      },
+      "all_identical": true
+    },
+    {
+      "qgis_major": "4",
+      "camera": "bern-urban-z12-light-activity",
+      "sha256": {
+        "qgis.png": "ef749ae370d2350b0980ba2e11fb38944e1ba5fc6bb8d328a4b1318e0ff0440c",
+        "labels.json": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+        "runtime.json": "ba998194d0fb4c7704c621fc2c51b2adaf0fbfe31e78c8f90fc1e4c1f384b636",
+        "changed.json": "8f72c2211ee9248c4679029e06158b625092bd40550cdd4b796e99c1c5d9ff43"
+      },
+      "all_identical": true
+    }
+  ]
+}
