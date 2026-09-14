@@ -144,3 +144,38 @@ class LightNameFallbackTests(unittest.TestCase):
         labeling.styles.return_value = [self.rule("country-label-name-en")]
         self.assertEqual(labels.apply_light_name_fallback(labeling, self.source_style()), 0)
         labeling.setStyles.assert_not_called()
+
+
+class LightLabelContentFixtureTests(unittest.TestCase):
+    def test_complete_source_inventory_and_content_remain_pinned(self):
+        import hashlib
+        import json
+        from pathlib import Path
+
+        fixture = json.loads((Path(__file__).parent / "fixtures/mapbox/light-label-content-source.json").read_text())
+        self.assertEqual((fixture["version"], fixture["owner"], fixture["id"]), (8, "mapbox", "light-v11"))
+        expected_owners = [
+            ("road-label-simple", "road"),
+            ("waterway-label", "natural_label"),
+            ("natural-line-label", "natural_label"),
+            ("natural-point-label", "natural_label"),
+            ("water-line-label", "natural_label"),
+            ("water-point-label", "natural_label"),
+            ("poi-label", "poi_label"),
+            ("airport-label", "airport_label"),
+            ("settlement-subdivision-label", "place_label"),
+            ("settlement-minor-label", "place_label"),
+            ("settlement-major-label", "place_label"),
+            ("state-label", "place_label"),
+            ("country-label", "place_label"),
+            ("continent-label", "natural_label"),
+        ]
+        self.assertEqual([(r["id"], r["source-layer"]) for r in fixture["layers"]], expected_owners)
+        self.assertTrue(all(r["type"] == "symbol" for r in fixture["layers"]))
+        canonical = json.dumps(fixture["layers"], sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+        expected_hash = "0567bdf6b5815cc621744c5ff6984c87d75f7adb812f45b80131dd5a539817ba"
+        self.assertEqual(hashlib.sha256(canonical).hexdigest(), expected_hash)
+        provenance = fixture["metadata"]["qfit:source-provenance"]
+        self.assertEqual(provenance["label_layers_sha256"], expected_hash)
+        self.assertEqual(provenance["source_sha256"],
+                         "87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32")

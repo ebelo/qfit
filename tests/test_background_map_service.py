@@ -1189,6 +1189,80 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
                     self.assertFalse(expression.hasEvalError(), expression.evalErrorString())
                     self.assertEqual(None if result == NULL else result, expected)
 
+    def test_light_water_name_companions_select_exact_source_content(self):
+        import json
+        from pathlib import Path
+        from qgis.core import (
+            NULL, QgsExpression, QgsExpressionContext, QgsFeature, QgsField,
+            QgsFields, QgsGeometry, QgsRenderContext,
+        )
+        from qfit.mapbox_config import simplify_mapbox_style_expressions
+
+        source = json.loads((Path(__file__).parent / "fixtures/mapbox/light-label-content-source.json").read_text())
+        layer = MagicMock()
+        self.service._apply_mapbox_gl_style(
+            layer, simplify_mapbox_style_expressions(source), source_style_definition=source,
+        )
+        styles = list(layer.setLabeling.call_args.args[0].styles())
+        cases = [
+            ({"name_en": "Lake Geneva", "name": "Lac Léman"}, "Lake Geneva"),
+            ({"name_en": None, "name": "Lac Léman"}, "Lac Léman"),
+            ({"name": "القاهرة"}, "القاهرة"),
+            ({"name_en": "", "name": "ירושלים"}, ""),
+            ({"name_en": "Zürich — L’Aquila", "name": "local"}, "Zürich — L’Aquila"),
+            ({"name_en": "القاهرة / ירושלים 12", "name": "local"}, "القاهرة / ירושלים 12"),
+            ({"name_en": "English only"}, "English only"),
+            ({}, None),
+        ]
+        for owner, geometry, groups in (
+            ("water-line-label", "LINESTRING (0 0, 1 1)", ("ocean", "sea-bay", "other")),
+            ("water-point-label", "POINT (0 0)", ("ocean", "sea", "bay", "water", "other")),
+        ):
+            rules = [r for r in styles if r.styleName().startswith(owner + "-")]
+            # Assert the ordered population before lookup so duplicate/missing
+            # companions cannot be hidden by a dictionary or a passing local arm.
+            self.assertEqual([r.styleName() for r in rules], [
+                owner + "-" + group + "-" + arm
+                for group in groups for arm in ("name-en", "name")
+            ])
+            classes = ("ocean", "sea", "bay", "water", "reservoir")
+            for water_class in classes:
+                for properties, expected in cases:
+                    selected = []
+                    for rule in rules:
+                        settings = rule.labelSettings()
+                        predicate = QgsExpression(rule.filterExpression())
+                        text = QgsExpression(settings.fieldName)
+                        # Native vector-tile decoding requests both label and
+                        # filter columns. Absent MVT values occupy NULL fields.
+                        requested = settings.referencedFields(QgsRenderContext()) | predicate.referencedColumns()
+                        fields = QgsFields()
+                        for name in sorted(requested):
+                            fields.append(QgsField(name))
+                        self.assertIn("name_en", requested)
+                        feature = QgsFeature(fields)
+                        feature.setGeometry(QgsGeometry.fromWkt(geometry))
+                        attributes = dict(properties, **{
+                            "class": water_class, "worldview": "all",
+                            "_geom_type": "LineString" if owner == "water-line-label" else "Point",
+                        })
+                        for name, value in attributes.items():
+                            if name in requested:
+                                feature.setAttribute(name, value)
+                        context = QgsExpressionContext()
+                        context.setFields(fields)
+                        context.setFeature(feature)
+                        self.assertTrue(predicate.prepare(context))
+                        eligible = predicate.evaluate(context)
+                        self.assertFalse(predicate.hasEvalError(), predicate.evalErrorString())
+                        if eligible == 1:
+                            self.assertTrue(text.prepare(context))
+                            value = text.evaluate(context)
+                            self.assertFalse(text.hasEvalError(), text.evalErrorString())
+                            selected.append(None if value == NULL else value)
+                    with self.subTest(owner=owner, water_class=water_class, properties=properties):
+                        self.assertEqual(selected, [expected])
+
     def test_light_duplicate_spacing_survives_real_conversion_and_font_bands(self):
         try:
             from qgis.core import Qgis, QgsLabelThinningSettings
