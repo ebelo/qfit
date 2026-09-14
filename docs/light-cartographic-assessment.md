@@ -104,7 +104,7 @@ focused investigation before broad completion, not an assertion of a root cause.
 
 | ID | Current verdict | Observation / coverage and next validation | Finding severity |
 | --- | --- | --- | --- |
-| C01 | OPEN | Actual context is measured below: QGIS 3/4 use different DPI, requested camera zoom differs from native zoom, and the source overview uses globe versus native Mercator. Explicit planar overview registration is scoped below; tile payloads and extended outputs remain unvalidated. | Major validation gap |
+| C01 | OPEN | Map and runtime-normalized tile-render scales are now separated below; historical QGIS4 zoom metadata is corrected. Default DPI and fractional activation differ, and source globe is not native Mercator. Density-output divergence, tile payloads and extended outputs remain open. | Major validation gap |
 | C02 | OPEN | Live place features and rejected rank probes expose a major/minor role-handoff defect in inherited city/town gates and fixed rank eligibility. Other classes, types and null cases still need systematic fixtures. | Major |
 | C03 | NOT ASSESSED | No generalization, sparse-geometry or false-connection fixture audit. | — |
 | C04 | OPEN (remaining scope) | Source-owned road widths now have a scoped two-runtime repair below; global composition, regional fidelity and other visual hierarchies remain open. | Major baseline finding scoped below |
@@ -134,6 +134,80 @@ focused investigation before broad completion, not an assertion of a root cause.
 | C28 | PARTIAL | Two Docker PNG runtimes plus scoped native QGIS 3.34 width expressions checked below. Other older versions, Windows/macOS, interactive canvas, high-DPI and PDF still need separate cells. | — |
 | C29 | PARTIAL | All 30 current width-matrix repeat controls are byte-identical. Cold/warm cache, interactive responsiveness and pan/zoom stability remain untested. | — |
 | C30 | NOT ASSESSED | Cropped basemap evidence does not validate complete user-facing attribution, legend, scale or north/context requirements. | — |
+
+### C01/C28: corrected renderer scale and physical-density diagnosis — 2026-09-14
+
+The [fresh scale audit][scale-calibration] corrects **QGIS4 capture metadata** and
+adds native geometry/density fixtures. Baseline
+`6d8935571d83ba21f6024e27b06de88860374252`; metadata implementation `1a5fd9a`.
+No production style, renderer, font, activity or capture-default change is retained.
+The Light source SHA256 remains
+`87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32`.
+Original globe and explicit planar reference modes remain separate.
+
+**Historical metadata erratum:** the snapshot introduced in #1466 passed raw
+`map_scale` directly to tile-matrix zoom methods. QGIS3's Mapbox renderer does
+that, but QGIS4 first normalizes scale by reference DPI / output DPI. Historical
+QGIS4 zoom fields without `tile_render_scale` are therefore raw-matrix evaluations,
+**not actual renderer activation**. Original PNGs, recorded map DPI/extents,
+source/label inventories and controlled image comparisons remain valid; immutable
+artifacts are not rewritten or called fresh. Their QGIS4 zoom interpretation is
+superseded by this correction, including earlier sections below.
+
+The corrected snapshot calls native `calculateTileScaleForMap()` with actual map
+scale, CRS, extent, size and output DPI. It records `map_scale` and
+`tile_render_scale` separately, deriving continuous/render/fetch zoom from the
+latter. Native regressions independently compare against `scaleForRenderContext()`
+with a real painter; mock tests force different raw/render scales. An eight-map
+pass-through road-width expression trace records the renderer's actual
+`@vector_tile_zoom` and `@zoom_level`; every traced PNG is byte-identical to its
+unwrapped control and the variables match corrected metadata.
+
+| Requested camera / DPI | Actual QGIS3 zoom | Actual QGIS4 zoom |
+| --- | --- | --- |
+| Geneva z13 /96 | 12.941732 | 13.000000 (within floating precision) |
+| Geneva z13 /100 | 12.897638 | 13.000000 (within floating precision) |
+| Geneva z13.1 /96 | 13.025203 | 13.133934 |
+
+Both builds still interpolate fractional zoom linearly in scale; source camera
+zoom is logarithmic. The native tile matrix uses 0.28 mm standard pixels and a
+Mapbox 512/256 factor. Equalizing96DPI does not make both runtimes' fractional
+activation source-equivalent. The registered Geneva z13 crop still retains the
+QGIS-only city name at both default and diagnostic96DPI. **DPI-only calibration
+is not retained as a production/harness fix.** Geographic extent compensation
+would destroy the independently verified planar registration.
+
+**New output-consistency finding:** at identical geographic extent and physical
+map size, QGIS4's doubled-density PNG changes visible detail and label selection.
+Bern requested CSS z12.25 is actual12.318207 at1280×900/96DPI, but13.318207 at
+2560×1800/192DPI; Geneva14.25 similarly changes14.318207→15.318207. QGIS3 stays
+at12.220213 /14.220213. Map scale is unchanged in both. Real maps, corrected
+metadata and pass-through renderer traces establish this difference; no output
+limitation is accepted. C28's density-consistency cell remains **OPEN**.
+
+| Coverage cell | Verdict | Evidence / remaining scope |
+| --- | --- | --- |
+| C01: planar geometry, 19 cameras × five browser anchors, both native runtimes | PASS (scoped registration) | Seven presets plus Geneva/Bern z13/z14 triplets; browser anchors compared with actual native extent/pixel transforms within1e-6px. Original globe is separately recorded, not declared equivalent. |
+| C01: corrected renderer-scale measurement | PASS (scoped metadata) | 38 default-camera recaptures preserve PNG/labels/style bytes; only context metadata changes. Eight pass-through renderer traces verify actual variables; both complete native suites and legacy3.34.4 pass. Historical QGIS4 raw-matrix zoom claims are corrected, not silently reused. |
+| C01/C29: default and96DPI repeated controls | PASS (scoped repeats/isolation) | 38 default pairs plus38 DPI96 pairs, all152 PNG/label/style/runtime repeats byte-identical. All19 QGIS3 DPI96 probes change pixels; QGIS4 is already96 and unchanged. No semantic/usability pass follows from metric movement. |
+| C28: Bern/Geneva physical-density outputs, both runtimes | OPEN (actual QGIS4 output divergence) | Four192DPI PNG cells plus repeats and corrected-context recaptures. Same extent/physical scale and label/style settings; actual QGIS4 activation increases by1 and visible detail/labels change. Downsampled previews are labelled; no desktop/PDF or pixel-identity assertion. |
+| C01/C28: native geometry at three viewport shapes × five proportional pixel/DPI factors ×19 cameras | PASS (numerical geometry only) | 285 native cases per runtime verify extent, physical map scale and transformed center. They do not assert renderer-zoom invariance or newly rendered portrait/small/UI coverage. |
+| C01/C02/C23: fractional source zoom, expression scope and major/minor handoff | OPEN | Actual renderer traces find no `@map_scale` in this harness's existing expression scope. A logarithmic formula evaluated in an explicitly constructed map-settings scope is diagnostic, not a deployable label fix or proof of availability in the live job. Coordinate source-role eligibility, scope and integer activation before another rank repair. |
+
+The six-DPI offline audit records114 settings cells per runtime and explicitly
+separates raw-matrix zoom from runtime-specific renderer zoom. Its logarithmic
+96-DPI expression has sub3e-13 reconstruction error in the constructed scope;
+this does not fix the observed live-scope gap. An initial trace wrapper propagated
+that missing variable as NULL and changed widths; it is **invalid evidence** and
+excluded. The retained pass-through trace handles the missing value explicitly
+without changing original width results.
+
+Full local tests pass2672/187; both complete Docker suites pass212/82. Source
+runtime behavior and capture defaults remain unchanged. The numerical geometry
+fixture also passes285 cases on native QGIS3.34.4. Live tile payloads remain
+unarchived; actual desktop/PDF, activity/UI, accessibility and all other C01–C30
+coverage gaps remain open where recorded. No release, deployment or accepted
+limitation is implied.
 
 ### C01: source-preserving browser projection evidence — 2026-09-14 scoped update
 
@@ -466,3 +540,5 @@ explicitly agreed scope reduction with follow-up ownership for excluded work.
 [national-boundary]: https://github.com/ebelo/qfit/tree/242fbc552577c3d36550db7967044ac670e3a584/docs/visual-evidence/issue-1462/light-national-boundary
 
 [browser-projection]: https://github.com/ebelo/qfit/tree/9270b210cd624ddf0eaaa5ddbffe6c8dd29d374b/docs/visual-evidence/issue-1462/browser-projection
+
+[scale-calibration]: https://github.com/ebelo/qfit/tree/708f6b9276ee049f2f1d2d65abea1f8b102c632d/docs/visual-evidence/issue-1462/scale-calibration

@@ -78,13 +78,19 @@ browser context remain historical; do not infer fresh projection evidence from t
 
 `qgis-runtime.json` now includes `render_context`: requested browser camera zoom,
 actual map-settings output DPI, image logical DPI and device pixel ratio, both
-output sizes, visible extent/CRS, map scale, continuous `vector_tile_zoom`, native
+output sizes, visible extent/CRS, map scale, runtime-specific `tile_render_scale`,
+continuous `vector_tile_zoom`, native
 integer render zoom and matrix-clamped fetch zoom. The same object propagates
 into the comparison manifest through `qgis_runtime`. Old captures without this
 object do not establish these values.
 
-The harness intentionally records existing rendering without changing DPI or
-zoom policy. Do not infer map DPI from the converter's 96-DPI pixel-to-millimetre
+The harness records existing rendering without changing DPI or zoom policy.
+Native `calculateTileScaleForMap()` supplies the renderer scale before zoom
+conversion. QGIS4 normalizes Mapbox scale by reference DPI / output DPI; QGIS3
+does not. Old QGIS4 records without `tile_render_scale` incorrectly used raw map
+scale for zoom and must not be treated as actual renderer activation. Their PNGs
+and recorded physical map DPI/extents remain historical evidence; see the Light
+assessment erratum. Do not infer map DPI from the converter's 96-DPI pixel-to-millimetre
 constant or substitute requested camera zoom for native activation zoom. The
 Light audit measured 100-DPI map settings in QGIS 3.44.11 and 96 in QGIS 4.2.0;
 QGIS rounds integer rule zooms and interpolates continuous zoom in scale space.
@@ -97,6 +103,23 @@ On supported QGIS 3.28/3.30, the inherited tile-matrix API supplies the continuo
 zoom and a single matrix-clamped integer zoom. The capture snapshot reports that
 same integer for rendering and fetching, matching those versions’ renderer.
 Newer runtimes expose separate unclamped render and matrix-clamped fetch values.
+
+### Physical density is distinct from style-zoom calibration
+
+The [Light scale audit](light-cartographic-assessment.md) verifies that matching
+96 output DPI does not make both runtimes' `vector_tile_zoom` equal to the source
+camera. Both use scale-linear interpolation; QGIS4 additionally normalizes DPI.
+Do not adjust a registered extent or inject requested zoom to conceal differences.
+
+A2×-density output at the same physical map size doubles pixel dimensions and DPI
+while preserving extent. Actual QGIS4 PNGs nevertheless gain a native zoom level
+and change visible detail/labels; QGIS3 does not. That output-consistency finding
+is OPEN, not an accepted limitation or a reason to assume equivalent style output.
+Record CSS camera zoom separately from geometric device-pixel zoom. Geometry-only
+wide/portrait/small fixtures do not certify those actual maps, UI screens or PDFs.
+The current headless job also lacks `@map_scale` in its expression scope, as
+verified by pass-through renderer traces. A formula tested in a separately
+constructed map-settings scope is not proof it works in that job.
 
 ## Cameras
 
