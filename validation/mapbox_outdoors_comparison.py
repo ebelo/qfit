@@ -334,6 +334,7 @@ ALL_CAMERAS = {name: camera for preset in PRESETS.values() for name, camera in p
 class ComparisonPaths:
     run_dir: Path
     browser_png: Path
+    browser_runtime_json: Path
     qgis_png: Path
     diff_png: Path
     metrics_json: Path
@@ -360,6 +361,7 @@ class ComparisonConfig:
     qgis: bool = True
     diff: bool = True
     browser_timeout_ms: int = 120_000
+    reference_projection: str = "source"
     now: dt.datetime | None = None
 
 
@@ -369,6 +371,9 @@ class ComparisonResult:
     browser_captured: bool
     qgis_captured: bool
     diff_captured: bool
+    browser_runtime_captured: bool = False
+    browser_runtime: dict[str, object] = dataclasses.field(default_factory=dict)
+    reference_projection: str = "source"
     mapbox_source_style_captured: bool = False
     qgis_preprocessed_style_captured: bool = False
     qgis_label_styles_captured: bool = False
@@ -401,6 +406,7 @@ def build_comparison_paths(*, run_dir: Path) -> ComparisonPaths:
     return ComparisonPaths(
         run_dir=run_dir,
         browser_png=run_dir / "mapbox-gl-reference.png",
+        browser_runtime_json=run_dir / "browser-runtime.json",
         qgis_png=run_dir / "qgis-vector-render.png",
         diff_png=run_dir / "mapbox-gl-vs-qgis-diff.png",
         metrics_json=run_dir / "metrics.json",
@@ -529,6 +535,7 @@ def _redacted_manifest(
         "style_url": None if result.style_json_path is not None else camera.style_url,
         "outputs": {
             "browser_reference": str(result.paths.browser_png),
+            "browser_runtime": str(result.paths.browser_runtime_json),
             "qgis_vector_render": str(result.paths.qgis_png),
             "diff": str(result.paths.diff_png),
             "metrics": str(result.paths.metrics_json),
@@ -554,6 +561,7 @@ def _redacted_manifest(
         "activity_overlay": result.activity_overlay,
         "captured": {
             "browser_reference": result.browser_captured,
+            "browser_runtime": result.browser_runtime_captured,
             "qgis_vector_render": result.qgis_captured,
             "mapbox_source_style": result.mapbox_source_style_captured,
             "diff": result.diff_captured,
@@ -563,11 +571,15 @@ def _redacted_manifest(
         },
         "metrics": result.image_metrics,
         "qgis_runtime": result.qgis_runtime,
+        "browser_runtime": result.browser_runtime,
+        "reference_projection": result.reference_projection,
         "mapbox_source_style_sha256": source_style_sha256,
         "qgis_preprocessed_style_sha256": style_sha256,
         "notes": [
             "Mapbox tokens are intentionally excluded from this manifest.",
             "This is a manual visual QA aid, not a CI gate.",
+            "Reference projection is source-preserving unless explicitly overridden; "
+            "image metrics do not certify projection or scale comparability.",
             "QGIS runtime metadata helps compare version-sensitive Mapbox GL style conversion output.",
         ],
     }
@@ -583,9 +595,14 @@ def build_mapbox_gl_html(
     camera: MapboxComparisonCamera,
     style_definition: dict[str, object] | None = None,
     activity_overlay: bool = False,
+    reference_projection: str = "source",
 ) -> str:
     """Return token-free temporary HTML for the browser reference capture."""
 
+    if reference_projection not in ("source", "mercator"):
+        raise ValueError("Reference projection must be source or mercator.")
+    projection_option = "projection: 'mercator'," if reference_projection == "mercator" else ""
+    source_projection = json.dumps((style_definition or {}).get("projection"))
     style_json = json.dumps(style_definition if style_definition is not None else camera.style_url)
     center_json = json.dumps([camera.longitude, camera.latitude])
     activity_overlay_script = ""
@@ -621,6 +638,7 @@ def build_mapbox_gl_html(
       mapboxgl['access' + 'Token'] = credential;
       const map = new mapboxgl.Map({{
         container: 'map',
+        {projection_option}
         style: {style_json},
         center: {center_json},
         zoom: {camera.zoom},
@@ -631,6 +649,25 @@ def build_mapbox_gl_html(
         fadeDuration: 0,
       }});
       {activity_overlay_script}
+      let mapErrorCount = 0;
+      map.on('error', () => {{ mapErrorCount += 1; }});
+      window.qfitMapboxSnapshot = () => ({{
+        mapbox_gl_version: mapboxgl.version,
+        reference_projection: {json.dumps(reference_projection)},
+        source_projection: {source_projection},
+        actual_projection: map.getProjection(),
+        center: map.getCenter().toArray(),
+        zoom: map.getZoom(),
+        bearing: map.getBearing(),
+        pitch: map.getPitch(),
+        bounds: map.getBounds().toArray(),
+        canvas_size_pixels: [map.getCanvas().width, map.getCanvas().height],
+        device_pixel_ratio: window.devicePixelRatio,
+        map_loaded: map.loaded(),
+        tiles_loaded: map.areTilesLoaded(),
+        map_error_count: mapErrorCount,
+        rendered_feature_count: map.queryRenderedFeatures().length,
+      }});
       map.once('idle', () => {{ window.qfitMapboxReady = true; }});
     }};
   </script>
@@ -784,7 +821,13 @@ function environmentVariableIsConfigured(lowercaseName, uppercaseName) {
     await page.setContent(html, { waitUntil: 'domcontentloaded', timeout });
     await page.evaluate((value) => window.startQfitMapboxComparison(value), credential);
     await page.waitForFunction('window.qfitMapboxReady === true', undefined, { timeout });
+    const runtime = await page.evaluate(() => window.qfitMapboxSnapshot());
+    runtime.browser_version = browser.version();
+    if (runtime.map_error_count || !runtime.map_loaded || !runtime.tiles_loaded) {
+      throw new Error('Browser map is incomplete; capture rejected.');
+    }
     await page.screenshot({ path: outputPath, fullPage: false });
+    if (payload.runtimePath) fs.writeFileSync(payload.runtimePath, JSON.stringify(runtime, null, 2) + '\n');
   } finally {
     await browser.close();
   }
@@ -842,6 +885,8 @@ def render_browser_reference(  # pragma: no cover - depends on optional Node/Chr
     timeout_ms: int,
     style_definition: dict[str, object] | None = None,
     activity_overlay: bool = False,
+    reference_projection: str = "source",
+    browser_runtime_path: Path | None = None,
 ) -> None:
     node_binary = shutil.which("node")
     if not node_binary:
@@ -869,10 +914,12 @@ def render_browser_reference(  # pragma: no cover - depends on optional Node/Chr
             env=_node_capture_environment(),
             input=json.dumps({
                 "credential": token,
+                "runtimePath": str(browser_runtime_path) if browser_runtime_path is not None else None,
                 "html": build_mapbox_gl_html(
                     camera=camera,
                     style_definition=style_definition,
                     activity_overlay=activity_overlay,
+                    reference_projection=reference_projection,
                 ),
             }),
             capture_output=True,
@@ -1727,6 +1774,8 @@ def run_comparison(
     paths = build_comparison_paths(run_dir=run_dir)
 
     browser_captured = False
+    browser_runtime: dict[str, object] = {}
+    browser_runtime_captured = False
     qgis_captured = False
     diff_captured = False
     mapbox_source_style_captured = False
@@ -1754,10 +1803,15 @@ def run_comparison(
             token=config.token,
             output_path=paths.browser_png,
             timeout_ms=config.browser_timeout_ms,
+            reference_projection=config.reference_projection,
+            browser_runtime_path=paths.browser_runtime_json,
             style_definition=style_definition,
             activity_overlay=config.activity_overlay,
         )
         browser_captured = True
+        browser_runtime_captured = paths.browser_runtime_json.exists()
+        if browser_runtime_captured:
+            browser_runtime = json.loads(paths.browser_runtime_json.read_text(encoding="utf-8"))
 
     if config.qgis:
         qgis_renderer(
@@ -1802,6 +1856,9 @@ def run_comparison(
     result = ComparisonResult(
         paths=paths,
         browser_captured=browser_captured,
+        browser_runtime_captured=browser_runtime_captured,
+        browser_runtime=browser_runtime,
+        reference_projection=config.reference_projection,
         qgis_captured=qgis_captured,
         diff_captured=diff_captured,
         mapbox_source_style_captured=mapbox_source_style_captured,
@@ -1886,6 +1943,12 @@ def build_parser() -> argparse.ArgumentParser:
         "--output-root",
         default=None,
         help="Ignored/debug root where comparison artifacts are written. Defaults by preset.",
+    )
+    parser.add_argument(
+        "--reference-projection",
+        choices=("source", "mercator"),
+        default="source",
+        help="Preserve source projection (default), or explicitly request a planar Mercator diagnostic reference.",
     )
     parser.add_argument(
         "--skip-browser",
@@ -2016,6 +2079,7 @@ def _comparison_config(
         qgis=not args.skip_qgis,
         diff=not args.skip_diff,
         browser_timeout_ms=args.browser_timeout_ms,
+        reference_projection=args.reference_projection,
     )
 
 
@@ -2063,7 +2127,7 @@ def _single_camera_subprocess_command(
     ]
     if args.style_json is not None:
         command.extend(["--style-json", str(args.style_json.expanduser().resolve())])
-    command.extend(["--output-root", str(output_root)])
+    command.extend(["--output-root", str(output_root), "--reference-projection", args.reference_projection])
     if args.skip_browser:
         command.append("--skip-browser")
     if args.skip_qgis:
