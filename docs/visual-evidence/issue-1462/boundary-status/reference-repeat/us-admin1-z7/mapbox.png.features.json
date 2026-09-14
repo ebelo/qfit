@@ -1,0 +1,4602 @@
+{
+  "features": [
+    {
+      "owner": "admin-1-boundary",
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -109.7314453125,
+            40.99959341455485
+          ],
+          [
+            -109.05029296875,
+            41.00062984868538
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "admin-1-boundary",
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -109.05029296875,
+            41.00062984868538
+          ],
+          [
+            -106.8310546875,
+            41.00062984868538
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "admin-1-boundary",
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -109.05029296875,
+            41.00062984868538
+          ],
+          [
+            -109.05029296875,
+            40.94671366508001
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "admin-1-boundary",
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -106.9189453125,
+            41.00062984868538
+          ],
+          [
+            -104.05357360839844,
+            41.00114805963898
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "admin-1-boundary",
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -104.05288696289062,
+            43.00062985445004
+          ],
+          [
+            -104.05357360839844,
+            41.00114805963898
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "admin-1-boundary",
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -104.1064453125,
+            41.00114805963898
+          ],
+          [
+            -104.05357360839844,
+            41.00114805963898
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "admin-1-boundary",
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -104.05357360839844,
+            41.00114805963898
+          ],
+          [
+            -102.052001953125,
+            41.00218446932291
+          ],
+          [
+            -102.052001953125,
+            40.94671366508001
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "admin-1-boundary",
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -109.05029296875,
+            41.00062984868538
+          ],
+          [
+            -109.05097961425781,
+            39.142842478062505
+          ],
+          [
+            -109.05441284179688,
+            38.788345355085625
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "admin-1-boundary",
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -104.05357360839844,
+            41.00114805963898
+          ],
+          [
+            -102.052001953125,
+            41.00218446932291
+          ],
+          [
+            -102.052001953125,
+            40.002897916553906
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "admin-1-boundary-bg",
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -109.7314453125,
+            40.99959341455485
+          ],
+          [
+            -109.05029296875,
+            41.00062984868538
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "admin-1-boundary-bg",
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -109.05029296875,
+            41.00062984868538
+          ],
+          [
+            -106.8310546875,
+            41.00062984868538
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "admin-1-boundary-bg",
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -109.05029296875,
+            41.00062984868538
+          ],
+          [
+            -109.05029296875,
+            40.94671366508001
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "admin-1-boundary-bg",
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -106.9189453125,
+            41.00062984868538
+          ],
+          [
+            -104.05357360839844,
+            41.00114805963898
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "admin-1-boundary-bg",
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -104.05288696289062,
+            43.00062985445004
+          ],
+          [
+            -104.05357360839844,
+            41.00114805963898
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "admin-1-boundary-bg",
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -104.1064453125,
+            41.00114805963898
+          ],
+          [
+            -104.05357360839844,
+            41.00114805963898
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "admin-1-boundary-bg",
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -104.05357360839844,
+            41.00114805963898
+          ],
+          [
+            -102.052001953125,
+            41.00218446932291
+          ],
+          [
+            -102.052001953125,
+            40.94671366508001
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "admin-1-boundary-bg",
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -109.05029296875,
+            41.00062984868538
+          ],
+          [
+            -109.05097961425781,
+            39.142842478062505
+          ],
+          [
+            -109.05441284179688,
+            38.788345355085625
+          ]
+        ]
+      }
+    },
+    {
+      "owner": "admin-1-boundary-bg",
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -104.05357360839844,
+            41.00114805963898
+          ],
+          [
+            -102.052001953125,
+            41.00218446932291
+          ],
+          [
+            -102.052001953125,
+            40.002897916553906
+          ]
+        ]
+      }
+    }
+  ],
+  "source_features": [
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 1,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    },
+    {
+      "properties": {
+        "maritime": "false",
+        "disputed": "false",
+        "iso_3166_1": "US",
+        "admin_level": 2,
+        "worldview": "all"
+      }
+    }
+  ]
+}

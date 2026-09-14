@@ -1,0 +1,5 @@
+{
+  "native_worker_exact_body_preserved": true,
+  "browser_body_change": "Removed machine-specific Chromium override; optional --chromium supplies it. Same capture/audit hooks. Wrapper accepts explicit paths/camera/mode.",
+  "scope": "No native paint candidate; owner removal is diagnostic only."
+}

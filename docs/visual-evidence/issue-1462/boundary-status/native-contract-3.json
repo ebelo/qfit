@@ -1,0 +1,1684 @@
+{
+  "runtime": {
+    "qgis_version": "3.44.11-Solothurn",
+    "qgis_version_int": 34411,
+    "qgis_release_name": "Solothurn"
+  },
+  "rows": [
+    {
+      "camera": "cyprus-z7",
+      "properties": {
+        "admin_level": 0,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "CN"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "cyprus-z7",
+      "properties": {
+        "admin_level": 0,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "IN"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "cyprus-z7",
+      "properties": {
+        "admin_level": 0,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "JP"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "cyprus-z7",
+      "properties": {
+        "admin_level": 0,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "US"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": true,
+        "admin-1-boundary": false,
+        "admin-0-boundary": true,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "cyprus-z7",
+      "properties": {
+        "admin_level": 0,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "all"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": true,
+        "admin-1-boundary": false,
+        "admin-0-boundary": true,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "cyprus-z7",
+      "properties": {
+        "admin_level": 0,
+        "disputed": "false",
+        "maritime": "true",
+        "worldview": "CN"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "cyprus-z7",
+      "properties": {
+        "admin_level": 0,
+        "disputed": "true",
+        "maritime": "false",
+        "worldview": "CN"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "cyprus-z7",
+      "properties": {
+        "admin_level": 0,
+        "disputed": "true",
+        "maritime": "false",
+        "worldview": "IN"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "cyprus-z7",
+      "properties": {
+        "admin_level": 0,
+        "disputed": "true",
+        "maritime": "false",
+        "worldview": "JP"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "cyprus-z7",
+      "properties": {
+        "admin_level": 0,
+        "disputed": "true",
+        "maritime": "false",
+        "worldview": "US"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": true,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": true
+      }
+    },
+    {
+      "camera": "cyprus-z7",
+      "properties": {
+        "admin_level": 0,
+        "disputed": "true",
+        "maritime": "false",
+        "worldview": "all"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": true,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": true
+      }
+    },
+    {
+      "camera": "cyprus-z7",
+      "properties": {
+        "admin_level": 1,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "CN"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "cyprus-z7",
+      "properties": {
+        "admin_level": 1,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "IN"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "cyprus-z7",
+      "properties": {
+        "admin_level": 1,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "JP"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "cyprus-z7",
+      "properties": {
+        "admin_level": 1,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "US"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": true,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": true,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "cyprus-z7",
+      "properties": {
+        "admin_level": 1,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "all"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": true,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": true,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "cyprus-z7",
+      "properties": {
+        "admin_level": 2,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "all"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z6.9",
+      "properties": {
+        "admin_level": 0,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "CN"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z6.9",
+      "properties": {
+        "admin_level": 0,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "IN"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z6.9",
+      "properties": {
+        "admin_level": 0,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "JP"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z6.9",
+      "properties": {
+        "admin_level": 0,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "US"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": true,
+        "admin-1-boundary": false,
+        "admin-0-boundary": true,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z6.9",
+      "properties": {
+        "admin_level": 0,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "all"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": true,
+        "admin-1-boundary": false,
+        "admin-0-boundary": true,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z6.9",
+      "properties": {
+        "admin_level": 0,
+        "disputed": "true",
+        "maritime": "false",
+        "worldview": "CN"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z6.9",
+      "properties": {
+        "admin_level": 0,
+        "disputed": "true",
+        "maritime": "false",
+        "worldview": "JP"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z6.9",
+      "properties": {
+        "admin_level": 0,
+        "disputed": "true",
+        "maritime": "false",
+        "worldview": "US"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": true,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": true
+      }
+    },
+    {
+      "camera": "kashmir-z6.9",
+      "properties": {
+        "admin_level": 1,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "CN"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z6.9",
+      "properties": {
+        "admin_level": 1,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "IN"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z6.9",
+      "properties": {
+        "admin_level": 1,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "JP"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z6.9",
+      "properties": {
+        "admin_level": 1,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "US"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": true,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": true,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z6.9",
+      "properties": {
+        "admin_level": 1,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "all"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": true,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": true,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z6.9",
+      "properties": {
+        "admin_level": 2,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "CN"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z6.9",
+      "properties": {
+        "admin_level": 2,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "IN"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z6.9",
+      "properties": {
+        "admin_level": 2,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "US"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z6.9",
+      "properties": {
+        "admin_level": 2,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "all"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z7",
+      "properties": {
+        "admin_level": 0,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "CN"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z7",
+      "properties": {
+        "admin_level": 0,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "IN"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z7",
+      "properties": {
+        "admin_level": 0,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "JP"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z7",
+      "properties": {
+        "admin_level": 0,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "US"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": true,
+        "admin-1-boundary": false,
+        "admin-0-boundary": true,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z7",
+      "properties": {
+        "admin_level": 0,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "all"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": true,
+        "admin-1-boundary": false,
+        "admin-0-boundary": true,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z7",
+      "properties": {
+        "admin_level": 0,
+        "disputed": "true",
+        "maritime": "false",
+        "worldview": "CN"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z7",
+      "properties": {
+        "admin_level": 0,
+        "disputed": "true",
+        "maritime": "false",
+        "worldview": "JP"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z7",
+      "properties": {
+        "admin_level": 0,
+        "disputed": "true",
+        "maritime": "false",
+        "worldview": "US"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": true,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": true
+      }
+    },
+    {
+      "camera": "kashmir-z7",
+      "properties": {
+        "admin_level": 1,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "CN"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z7",
+      "properties": {
+        "admin_level": 1,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "IN"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z7",
+      "properties": {
+        "admin_level": 1,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "JP"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z7",
+      "properties": {
+        "admin_level": 1,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "US"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": true,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": true,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z7",
+      "properties": {
+        "admin_level": 1,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "all"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": true,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": true,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z7",
+      "properties": {
+        "admin_level": 2,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "CN"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z7",
+      "properties": {
+        "admin_level": 2,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "IN"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z7",
+      "properties": {
+        "admin_level": 2,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "US"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z7",
+      "properties": {
+        "admin_level": 2,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "all"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z7.1",
+      "properties": {
+        "admin_level": 0,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "CN"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z7.1",
+      "properties": {
+        "admin_level": 0,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "IN"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z7.1",
+      "properties": {
+        "admin_level": 0,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "JP"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z7.1",
+      "properties": {
+        "admin_level": 0,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "US"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": true,
+        "admin-1-boundary": false,
+        "admin-0-boundary": true,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z7.1",
+      "properties": {
+        "admin_level": 0,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "all"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": true,
+        "admin-1-boundary": false,
+        "admin-0-boundary": true,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z7.1",
+      "properties": {
+        "admin_level": 0,
+        "disputed": "true",
+        "maritime": "false",
+        "worldview": "CN"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z7.1",
+      "properties": {
+        "admin_level": 0,
+        "disputed": "true",
+        "maritime": "false",
+        "worldview": "JP"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z7.1",
+      "properties": {
+        "admin_level": 0,
+        "disputed": "true",
+        "maritime": "false",
+        "worldview": "US"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": true,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": true
+      }
+    },
+    {
+      "camera": "kashmir-z7.1",
+      "properties": {
+        "admin_level": 1,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "CN"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z7.1",
+      "properties": {
+        "admin_level": 1,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "IN"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z7.1",
+      "properties": {
+        "admin_level": 1,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "JP"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z7.1",
+      "properties": {
+        "admin_level": 1,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "US"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": true,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": true,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z7.1",
+      "properties": {
+        "admin_level": 1,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "all"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": true,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": true,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z7.1",
+      "properties": {
+        "admin_level": 2,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "CN"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z7.1",
+      "properties": {
+        "admin_level": 2,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "IN"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z7.1",
+      "properties": {
+        "admin_level": 2,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "US"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "kashmir-z7.1",
+      "properties": {
+        "admin_level": 2,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "all"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "swiss-admin1-z8",
+      "properties": {
+        "admin_level": 0,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "all"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": true,
+        "admin-1-boundary": false,
+        "admin-0-boundary": true,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "swiss-admin1-z8",
+      "properties": {
+        "admin_level": 1,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "all"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": true,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": true,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "swiss-admin1-z8",
+      "properties": {
+        "admin_level": 2,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "all"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "us-admin1-z7",
+      "properties": {
+        "admin_level": 1,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "all"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": true,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": true,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    },
+    {
+      "camera": "us-admin1-z7",
+      "properties": {
+        "admin_level": 2,
+        "disputed": "false",
+        "maritime": "false",
+        "worldview": "all"
+      },
+      "eligible_owners": {
+        "admin-1-boundary-bg": false,
+        "admin-0-boundary-bg": false,
+        "admin-1-boundary": false,
+        "admin-0-boundary": false,
+        "admin-0-boundary-disputed": false
+      }
+    }
+  ],
+  "native_boundary_inventory": [
+    {
+      "owner": "admin-1-boundary-bg",
+      "filter": "(\"admin_level\" IS 1) AND (\"maritime\" IS 'false') AND (\"worldview\" IN ('all', 'US'))",
+      "minzoom": 7,
+      "maxzoom": -1,
+      "symbol_opacity": 0.35,
+      "properties": {
+        "align_dash_pattern": "0",
+        "capstyle": "flat",
+        "customdash": "0.420026;0",
+        "customdash_map_unit_scale": "3x:0,0,0,0,0,0",
+        "customdash_unit": "MM",
+        "dash_pattern_offset": "0",
+        "dash_pattern_offset_map_unit_scale": "3x:0,0,0,0,0,0",
+        "dash_pattern_offset_unit": "MM",
+        "draw_inside_polygon": "0",
+        "joinstyle": "miter",
+        "line_color": "221,221,221,255,hsl:0.61111111111111116,0,0.8666666666666667,1",
+        "line_style": "solid",
+        "line_width": "0.420026",
+        "line_width_unit": "MM",
+        "offset": "0",
+        "offset_map_unit_scale": "3x:0,0,0,0,0,0",
+        "offset_unit": "MM",
+        "ring_filter": "0",
+        "trim_distance_end": "0",
+        "trim_distance_end_map_unit_scale": "3x:0,0,0,0,0,0",
+        "trim_distance_end_unit": "MM",
+        "trim_distance_start": "0",
+        "trim_distance_start_map_unit_scale": "3x:0,0,0,0,0,0",
+        "trim_distance_start_unit": "MM",
+        "tweak_dash_pattern_on_corners": "0",
+        "use_custom_dash": "1",
+        "width_map_unit_scale": "3x:0,0,0,0,0,0"
+      },
+      "width_mm_by_native_zoom": {
+        "3": 0.4200260416666666,
+        "6.9": 0.4200260416666666,
+        "7": 0.4200260416666666,
+        "7.1": 0.4200260416666666,
+        "8": 0.4200260416666666,
+        "12": 0.4200260416666666
+      },
+      "width_expression": null
+    },
+    {
+      "owner": "admin-0-boundary-bg",
+      "filter": "(\"admin_level\" IS 0) AND (\"maritime\" IS 'false') AND (\"worldview\" IN ('all', 'US'))",
+      "minzoom": 1,
+      "maxzoom": -1,
+      "symbol_opacity": 0.35,
+      "properties": {
+        "align_dash_pattern": "0",
+        "capstyle": "flat",
+        "customdash": "5;2",
+        "customdash_map_unit_scale": "3x:0,0,0,0,0,0",
+        "customdash_unit": "MM",
+        "dash_pattern_offset": "0",
+        "dash_pattern_offset_map_unit_scale": "3x:0,0,0,0,0,0",
+        "dash_pattern_offset_unit": "MM",
+        "draw_inside_polygon": "0",
+        "joinstyle": "miter",
+        "line_color": "221,221,221,255,hsl:0.61111111111111116,0,0.8666666666666667,1",
+        "line_style": "solid",
+        "line_width": "0.728045",
+        "line_width_unit": "MM",
+        "offset": "0",
+        "offset_map_unit_scale": "3x:0,0,0,0,0,0",
+        "offset_unit": "MM",
+        "ring_filter": "0",
+        "trim_distance_end": "0",
+        "trim_distance_end_map_unit_scale": "3x:0,0,0,0,0,0",
+        "trim_distance_end_unit": "MM",
+        "trim_distance_start": "0",
+        "trim_distance_start_map_unit_scale": "3x:0,0,0,0,0,0",
+        "trim_distance_start_unit": "MM",
+        "tweak_dash_pattern_on_corners": "0",
+        "use_custom_dash": "0",
+        "width_map_unit_scale": "3x:0,0,0,0,0,0"
+      },
+      "width_mm_by_native_zoom": {
+        "3": 0.728045138888889,
+        "6.9": 0.728045138888889,
+        "7": 0.728045138888889,
+        "7.1": 0.728045138888889,
+        "8": 0.728045138888889,
+        "12": 0.728045138888889
+      },
+      "width_expression": null
+    },
+    {
+      "owner": "admin-1-boundary",
+      "filter": "(\"admin_level\" IS 1) AND (\"maritime\" IS 'false') AND (\"worldview\" IN ('all', 'US'))",
+      "minzoom": 2,
+      "maxzoom": -1,
+      "symbol_opacity": 1.0,
+      "properties": {
+        "align_dash_pattern": "0",
+        "capstyle": "flat",
+        "customdash": "0.210013;0.210013;0.630039;0.210013",
+        "customdash_map_unit_scale": "3x:0,0,0,0,0,0",
+        "customdash_unit": "MM",
+        "dash_pattern_offset": "0",
+        "dash_pattern_offset_map_unit_scale": "3x:0,0,0,0,0,0",
+        "dash_pattern_offset_unit": "MM",
+        "draw_inside_polygon": "0",
+        "joinstyle": "miter",
+        "line_color": "180,181,182,255,hsl:0.61111111111111116,0.00784313725490196,0.70980392156862748,1",
+        "line_style": "solid",
+        "line_width": "0.105007",
+        "line_width_unit": "MM",
+        "offset": "0",
+        "offset_map_unit_scale": "3x:0,0,0,0,0,0",
+        "offset_unit": "MM",
+        "ring_filter": "0",
+        "trim_distance_end": "0",
+        "trim_distance_end_map_unit_scale": "3x:0,0,0,0,0,0",
+        "trim_distance_end_unit": "MM",
+        "trim_distance_start": "0",
+        "trim_distance_start_map_unit_scale": "3x:0,0,0,0,0,0",
+        "trim_distance_start_unit": "MM",
+        "tweak_dash_pattern_on_corners": "0",
+        "use_custom_dash": "1",
+        "width_map_unit_scale": "3x:0,0,0,0,0,0"
+      },
+      "width_mm_by_native_zoom": {
+        "3": 0.10500651041666666,
+        "6.9": 0.10500651041666666,
+        "7": 0.10500651041666666,
+        "7.1": 0.10500651041666666,
+        "8": 0.10500651041666666,
+        "12": 0.10500651041666666
+      },
+      "width_expression": null
+    },
+    {
+      "owner": "admin-0-boundary",
+      "filter": "(\"admin_level\" IS 0) AND (\"disputed\" IS 'false') AND (\"maritime\" IS 'false') AND (\"worldview\" IN ('all', 'US'))",
+      "minzoom": 1,
+      "maxzoom": -1,
+      "symbol_opacity": 1.0,
+      "properties": {
+        "align_dash_pattern": "0",
+        "capstyle": "flat",
+        "customdash": "1.82011;0",
+        "customdash_map_unit_scale": "3x:0,0,0,0,0,0",
+        "customdash_unit": "MM",
+        "dash_pattern_offset": "0",
+        "dash_pattern_offset_map_unit_scale": "3x:0,0,0,0,0,0",
+        "dash_pattern_offset_unit": "MM",
+        "draw_inside_polygon": "0",
+        "joinstyle": "miter",
+        "line_color": "178,178,178,255,hsl:0.61111111111111116,0,0.69803921568627447,1",
+        "line_style": "solid",
+        "line_width": "0.182011",
+        "line_width_unit": "MM",
+        "offset": "0",
+        "offset_map_unit_scale": "3x:0,0,0,0,0,0",
+        "offset_unit": "MM",
+        "ring_filter": "0",
+        "trim_distance_end": "0",
+        "trim_distance_end_map_unit_scale": "3x:0,0,0,0,0,0",
+        "trim_distance_end_unit": "MM",
+        "trim_distance_start": "0",
+        "trim_distance_start_map_unit_scale": "3x:0,0,0,0,0,0",
+        "trim_distance_start_unit": "MM",
+        "tweak_dash_pattern_on_corners": "0",
+        "use_custom_dash": "0",
+        "width_map_unit_scale": "3x:0,0,0,0,0,0"
+      },
+      "width_mm_by_native_zoom": {
+        "3": 0.17197916666666666,
+        "6.9": 0.3955520833333333,
+        "7": 0.40128472222222217,
+        "7.1": 0.40701736111111103,
+        "8": 0.4586111111111111,
+        "12": 0.6879166666666666
+      },
+      "width_expression": "(CASE WHEN @vector_tile_zoom <= 3 THEN 0.65 WHEN @vector_tile_zoom <= 12 THEN 0.65 + 1.95 * (@vector_tile_zoom - 3) / 9 ELSE 2.6 END) * 25.4 / 96"
+    },
+    {
+      "owner": "admin-0-boundary-disputed",
+      "filter": "(\"disputed\" IS 'true') AND (\"admin_level\" IS 0) AND (\"maritime\" IS 'false') AND (\"worldview\" IN ('all', 'US'))",
+      "minzoom": 1,
+      "maxzoom": -1,
+      "symbol_opacity": 1.0,
+      "properties": {
+        "align_dash_pattern": "0",
+        "capstyle": "flat",
+        "customdash": "0.364023;0.273017",
+        "customdash_map_unit_scale": "3x:0,0,0,0,0,0",
+        "customdash_unit": "MM",
+        "dash_pattern_offset": "0",
+        "dash_pattern_offset_map_unit_scale": "3x:0,0,0,0,0,0",
+        "dash_pattern_offset_unit": "MM",
+        "draw_inside_polygon": "0",
+        "joinstyle": "miter",
+        "line_color": "178,178,178,255,hsl:0.61111111111111116,0,0.69803921568627447,1",
+        "line_style": "solid",
+        "line_width": "0.182011",
+        "line_width_unit": "MM",
+        "offset": "0",
+        "offset_map_unit_scale": "3x:0,0,0,0,0,0",
+        "offset_unit": "MM",
+        "ring_filter": "0",
+        "trim_distance_end": "0",
+        "trim_distance_end_map_unit_scale": "3x:0,0,0,0,0,0",
+        "trim_distance_end_unit": "MM",
+        "trim_distance_start": "0",
+        "trim_distance_start_map_unit_scale": "3x:0,0,0,0,0,0",
+        "trim_distance_start_unit": "MM",
+        "tweak_dash_pattern_on_corners": "0",
+        "use_custom_dash": "1",
+        "width_map_unit_scale": "3x:0,0,0,0,0,0"
+      },
+      "width_mm_by_native_zoom": {
+        "3": 0.18201128472222225,
+        "6.9": 0.18201128472222225,
+        "7": 0.18201128472222225,
+        "7.1": 0.18201128472222225,
+        "8": 0.18201128472222225,
+        "12": 0.18201128472222225
+      },
+      "width_expression": null
+    }
+  ],
+  "preprocessed_owners": [
+    {
+      "id": "admin-1-boundary-bg",
+      "type": "line",
+      "source": "composite",
+      "source-layer": "admin",
+      "minzoom": 7,
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "admin_level"
+          ],
+          1
+        ],
+        [
+          "==",
+          [
+            "get",
+            "maritime"
+          ],
+          "false"
+        ],
+        [
+          "match",
+          [
+            "get",
+            "worldview"
+          ],
+          [
+            "all",
+            "US"
+          ],
+          true,
+          false
+        ]
+      ],
+      "paint": {
+        "line-color": "hsl(220, 0%, 87%)",
+        "line-width": 1.5875,
+        "line-opacity": 0.35,
+        "line-dasharray": [
+          1,
+          0
+        ],
+        "line-blur": 0.79375
+      },
+      "metadata": {
+        "mapbox:featureComponent": "admin-boundaries",
+        "mapbox:group": "Administrative boundaries, admin"
+      }
+    },
+    {
+      "id": "admin-0-boundary-bg",
+      "type": "line",
+      "source": "composite",
+      "source-layer": "admin",
+      "minzoom": 1,
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "admin_level"
+          ],
+          0
+        ],
+        [
+          "==",
+          [
+            "get",
+            "maritime"
+          ],
+          "false"
+        ],
+        [
+          "match",
+          [
+            "get",
+            "worldview"
+          ],
+          [
+            "all",
+            "US"
+          ],
+          true,
+          false
+        ]
+      ],
+      "paint": {
+        "line-width": 2.751666666666667,
+        "line-color": "hsl(220, 0%, 87%)",
+        "line-opacity": 0.35,
+        "line-blur": 0.6879166666666667
+      },
+      "metadata": {
+        "mapbox:featureComponent": "admin-boundaries",
+        "mapbox:group": "Administrative boundaries, admin"
+      }
+    },
+    {
+      "id": "admin-1-boundary",
+      "type": "line",
+      "source": "composite",
+      "source-layer": "admin",
+      "minzoom": 2,
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "admin_level"
+          ],
+          1
+        ],
+        [
+          "==",
+          [
+            "get",
+            "maritime"
+          ],
+          "false"
+        ],
+        [
+          "match",
+          [
+            "get",
+            "worldview"
+          ],
+          [
+            "all",
+            "US"
+          ],
+          true,
+          false
+        ]
+      ],
+      "layout": {},
+      "paint": {
+        "line-dasharray": [
+          2,
+          2,
+          6,
+          2
+        ],
+        "line-width": 0.396875,
+        "line-opacity": 1.0,
+        "line-color": "hsl(220, 1%, 71%)"
+      },
+      "metadata": {
+        "mapbox:featureComponent": "admin-boundaries",
+        "mapbox:group": "Administrative boundaries, admin"
+      }
+    },
+    {
+      "id": "admin-0-boundary",
+      "type": "line",
+      "source": "composite",
+      "source-layer": "admin",
+      "minzoom": 1,
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "admin_level"
+          ],
+          0
+        ],
+        [
+          "==",
+          [
+            "get",
+            "disputed"
+          ],
+          "false"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "maritime"
+          ],
+          "false"
+        ],
+        [
+          "match",
+          [
+            "get",
+            "worldview"
+          ],
+          [
+            "all",
+            "US"
+          ],
+          true,
+          false
+        ]
+      ],
+      "layout": {},
+      "paint": {
+        "line-color": "hsl(220, 0%, 70%)",
+        "line-width": 0.6879166666666667,
+        "line-dasharray": [
+          10,
+          0
+        ]
+      },
+      "metadata": {
+        "mapbox:featureComponent": "admin-boundaries",
+        "mapbox:group": "Administrative boundaries, admin"
+      }
+    },
+    {
+      "id": "admin-0-boundary-disputed",
+      "type": "line",
+      "source": "composite",
+      "source-layer": "admin",
+      "minzoom": 1,
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "disputed"
+          ],
+          "true"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "admin_level"
+          ],
+          0
+        ],
+        [
+          "==",
+          [
+            "get",
+            "maritime"
+          ],
+          "false"
+        ],
+        [
+          "match",
+          [
+            "get",
+            "worldview"
+          ],
+          [
+            "all",
+            "US"
+          ],
+          true,
+          false
+        ]
+      ],
+      "paint": {
+        "line-color": "hsl(220, 0%, 70%)",
+        "line-width": 0.6879166666666667,
+        "line-dasharray": [
+          2,
+          1.5
+        ]
+      },
+      "metadata": {
+        "mapbox:featureComponent": "admin-boundaries",
+        "mapbox:group": "Administrative boundaries, admin"
+      }
+    }
+  ],
+  "source_sha256": "87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32",
+  "scope": "Replay of distinct properties from browser loaded source-tile queries; not a QGIS decoded-feature or request trace. No image is rendered."
+}
