@@ -131,9 +131,93 @@ focused investigation before broad completion, not an assertion of a root cause.
 | C25 | PARTIAL (diagnostic only) | Synthetic Run/Ride/Hike overlays now exercise unchanged production categorization on two city extents below. Real activity data, UI/selection/start/end/direction states remain NOT ASSESSED. | — |
 | C26 | PARTIAL (diagnostic only) | Two-city synthetic routes remain visible with the width repair below. Real sparse/dense/shared routes and broader background/output coverage remain NOT ASSESSED. | — |
 | C27 | NOT ASSESSED | No grayscale, color-vision, low-vision or target physical-size assessment. | — |
-| C28 | PARTIAL; density consistency OPEN | Same-physical-size 96/192-DPI PNGs now show QGIS4 native zoom +1 and changed detail/labels; QGIS3 stays at the same zoom. Scoped native geometry/metadata tests also pass on3.34.4. Desktop, other platforms, interactive scaling and PDF remain unvalidated. | Provisional major output-consistency finding |
-| C29 | PARTIAL | All 30 current width-matrix repeat controls are byte-identical. Cold/warm cache, interactive responsiveness and pan/zoom stability remain untested. | — |
+| C28 | PARTIAL; density consistency OPEN | Fresh two-city DPR2 PNGs retain native zoom, but physical-density PNGs and actual one-map PDFs change QGIS4 activation/detail. QGIS3 also changes label placement across PDF density. Production150-DPI settings are exercised, not a complete atlas or desktop installation. | Provisional major output-consistency finding |
+| C29 | PARTIAL; PDF repeat cells OPEN | Prior width-matrix and fresh density PNG repeats are byte-identical. Ten of12 PDF cells have identical rasterized repeats; both QGIS4 production150-DPI cells show small, unclassified variation. Cold/warm performance and interactive stability remain untested. | PDF variability severity unestablished |
 | C30 | NOT ASSESSED | Cropped basemap evidence does not validate complete user-facing attribution, legend, scale or north/context requirements. | — |
+
+### C01/C28/C29: logical-density versus actual PDF output — 2026-09-14
+
+The [fresh two-city output audit][density-output] extends the density finding to
+**real one-map PDF files**, while separating QGIS's device-pixel-ratio API from
+physical export density. Production/source baseline is
+`3ff79a9dbced1dd57cf9763963d5758b5a5a1af7`; this slice changes documentation only.
+Light SHA256 remains `87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32`.
+No production styling, source/filter eligibility, font, capture default or PDF
+setting is changed; no workaround or limitation is accepted.
+
+Both Bern (actual requested camera12.25) and Geneva (14.25) use the same extent,
+source and openly licensed resolved Docker fonts, in QGIS3.44.11/Qt5.15.17 and
+4.2.0/Qt6.9.2. Original-globe and explicitly requested Mercator references are
+retained separately: their PNGs happen to match at these two urban cameras,
+with five planar anchors each within1e-6px. This is not an overview/projection
+pass or a new seven-preset sweep.
+
+**Device-pixel ratio is not print DPI.** At96DPI and1280×900 logical pixels,
+`setDevicePixelRatio(2)` produces2560×1800 device pixels without changing native
+tile zoom in either runtime. Four pass-through renderer traces preserve PNG
+bytes and confirm actual activation. All12 initial native mode/repeat cells
+(24 PNGs) are byte-identical, with complete label/style settings preserved.
+DPR2 previews are explicitly reduced2×; neither label-placement identity nor a
+real high-DPI desktop is certified. Saved PNG metadata remains96DPI, so these
+files must not be advertised as standalone same-physical-size print exports.
+
+**Actual PDF path.** A standalone one-map `QgsPrintLayout` uses the captured
+Light layer, locked layer set, same CRS/extent, and338.6667×238.125mm page/map
+size (960×675 PDF points). It calls the real
+`AtlasExportTask._build_pdf_export_settings()`:150DPI,
+`forceVectorOutput=True`, `rasterizeWholeImage=False`; only DPI varies for96/192
+diagnostics. Each of12 camera/runtime/DPI cells has unwrapped and traced exports,
+each repeated:48 actual PDFs, rasterized by Poppler at a fixed96DPI for inspection.
+This exercises production PDF settings, **not the complete atlas builder/task,
+cover/TOC/activities, packaged installation, map-context UI or another platform**.
+
+| Output / same physical map scale | QGIS3 Bern / Geneva native zoom | QGIS4 Bern / Geneva native zoom |
+| --- | --- | --- |
+| PDF96DPI | 12.220213 /14.220213 | 12.318207 /14.318207 |
+| PDF150DPI (production setting) | 12.219896 /14.219896 | 12.923461 /14.923461 |
+| PDF192DPI | 12.220213 /14.220213 | 13.318207 /15.318207 |
+
+QGIS4 integer activation changes12→13→13 and14→15→15. Unwrapped PDF maps show
+additional road/POI/building detail, including Felsenauviadukt/Universität Bern
+and central Geneva. This confirms the **OPEN/provisional-major print-density
+finding** independently of the earlier PNG diagnosis. QGIS3 retains integer12/14
+but still changes label placement (Bern Länggassstrasse and Geneva Boulevard
+Georges-Favon); its tiny150DPI continuous residual is about0.000316. Stable native
+zoom alone does not establish output consistency in either runtime.
+
+**Measured repeats, not presumed noise.** Ten of12 PDF cells (all QGIS3 and
+QGIS4 at96/192DPI) have identical decoded raster output across all four exports,
+including trace isolation. At QGIS4/150DPI, the unwrapped Bern and Geneva repeats
+change280 and145 pixels; traced repeats change240 and246. Traced/unwrapped
+comparisons also vary. These low-amplitude changes are retained and quantified,
+not classified as established noise or a C29 pass. PDF timestamps also differ:
+no PDF-file byte-identity claim is made. Native trace values repeat exactly,
+but strict pixel-isolation at150DPI is **not** certified; the96/192PDF and DPR2
+PNG traces are independently pixel-identical to their controls. The visible
+print-density finding occurs in unwrapped PDFs, not just traced probes.
+
+**Expression scope is output-specific.** PDF traces have actual `@map_scale`
+values60732.872199 and15183.218050; the parallel PNG trace still lacks that
+variable. The earlier headless-scope observation is not a universal QGIS/API
+limitation or proof about the desktop. A future source-zoom correction must
+coordinate the actual output scopes and major/minor handoff, not inject requested
+zoom or compensate geographic extent.
+
+| Coverage cell | Verdict | Remaining scope / next action |
+| --- | --- | --- |
+| C01/C28: two-city96DPI DPR1/DPR2 native PNG activation, both runtimes | PASS (scoped measurement); output parity PARTIAL | Actual traces and repeated real maps; not desktop scaling or standalone PNG physical-size certification. |
+| C28: two-city one-map PDF at96/150/192DPI, both runtimes | OPEN | QGIS4 print activation/detail changes; both runtimes show density-sensitive label placement. Investigate coherent render-context/label behavior; do not change production DPI to hide it. |
+| C29: repeated settled PNGs and10 PDF cells | PASS (scoped repeats) | All24 initial PNGs repeat exactly; four DPR2 trace PNGs and eight PDF-worker supporting PNGs match controls. Ten PDF cells have identical fixed-DPI rasterizations, not identical PDF bytes. |
+| C29: QGIS4 PDF150DPI, Bern/Geneva | OPEN (cause/severity unestablished) | Quantified variability in traced and unwrapped repeated outputs. Not a cold/warm cache or interactive-performance assessment. |
+| C01/C02/C23: actual expression scope/source zoom and role handoff | OPEN | Map-scale availability differs between parallel PNG and layout PDF; no deployable rank/zoom repair retained. |
+| C28/C30: complete atlas, packaged desktop, activities and output context | NOT ASSESSED for those cells | One-map PDFs do not validate the full product path, legends, attribution UI, accessible physical sizes or font distribution. |
+
+DPR2 is rejected as a substitute for a print-density fix. No change to geographic
+extent, source projection or production PDF defaults is retained. Full maps,
+readable mode-labelled crops, original PDFs, repeats, expression traces, exact
+runtime/source/Python hashes and resolved font inventories are public in the
+audit. Live tile payloads remain unarchived. All other C01–C30 gaps remain as
+recorded; this bounded validation slice does not complete #1462.
 
 ### C01/C28: corrected renderer scale and physical-density diagnosis — 2026-09-14
 
@@ -549,3 +633,5 @@ explicitly agreed scope reduction with follow-up ownership for excluded work.
 [browser-projection]: https://github.com/ebelo/qfit/tree/9270b210cd624ddf0eaaa5ddbffe6c8dd29d374b/docs/visual-evidence/issue-1462/browser-projection
 
 [scale-calibration]: https://github.com/ebelo/qfit/tree/82482c430e71b6cc78b4d58cac003d1f669675c7/docs/visual-evidence/issue-1462/scale-calibration
+
+[density-output]: https://github.com/ebelo/qfit/tree/1339e85dd9e4bc4165e21f6101b0464ab5082191/docs/visual-evidence/issue-1462/density-output
