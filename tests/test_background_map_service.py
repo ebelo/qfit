@@ -913,7 +913,7 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
         self.service._apply_mapbox_gl_style(
             layer, simplify_mapbox_style_expressions(source), source_style_definition=source,
         )
-        rules = {rule.styleName(): rule for rule in layer.setRenderer.call_args.args[0].styles()}
+        styles = layer.setRenderer.call_args.args[0].styles()
         contracts = {
             "admin-1-boundary-bg": (1, None, 7),
             "admin-0-boundary-bg": (0, None, 1),
@@ -921,7 +921,8 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
             "admin-0-boundary": (0, "false", 1),
             "admin-0-boundary-disputed": (0, "true", 1),
         }
-        self.assertEqual(list(rules), list(contracts))
+        self.assertEqual([rule.styleName() for rule in styles], list(contracts))
+        rules = {rule.styleName(): rule for rule in styles}
         fields = QgsFields()
         fields.append(QgsField("admin_level", QVariant.Int))
         for key in ("disputed", "maritime", "worldview"):

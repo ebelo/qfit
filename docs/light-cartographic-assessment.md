@@ -145,22 +145,22 @@ with all five complete boundary-owner fixtures matching the fresh source.
 
 Kashmir requested z6.9/7/7.1 and Cyprus z7 expose disputed features and worldview
 variants. Swiss cantonal borders z8 and US state borders z7 provide two admin-1
-extents. Both QGIS 3.44.11/Qt5 and 4.2.0/Qt6 use their unchanged native DPI100/96.
-Twelve browser PNGs and24 native control/repeat PNGs are byte-identical within
+extents. Both QGIS 3.44.11/Qt5 and 4.2.0/Qt6 use their unchanged native DPI 100/96.
+Twelve browser PNGs and 24 native control/repeat PNGs are byte-identical within
 every camera/runtime pair. Sixteen additional owner-removal PNGs attribute
 visible disputed/national-background and subdivision/background paint, with
 complete labels/settings, native context and nonremoved boundary rules unchanged.
 
 **Status semantics are not the paint defect.** The new native regression covers
-2240 combinations per runtime across all five owners: admin levels0/1/2/NULL,
+2,240 combinations per runtime across all five owners: admin levels 0/1/2/NULL,
 true/false/empty/NULL status strings and seven worldview values including
 nonmatching and comma-separated values. Ordinary/disputed national cores remain
 separate; their background intentionally includes both. Admin-1 owners do not
 require a disputed value. All five exclude maritime features and require the
 source's exact `all` or `US` worldview value. Native minimum zooms and owner order
-are asserted. The same test passes host QGIS3.34.4 and both Docker generations.
+are asserted. The same test passes host QGIS 3.34.4 and both Docker generations.
 
-Offline replay of365 distinct observed source-property/owner combinations per
+Offline replay of 365 distinct observed source-property/owner combinations per
 runtime also matches the source contracts. Public browser queries retain loaded
 source-tile properties and rendered-feature geometry. They include duplicated,
 buffered and offscreen fragments, **not** unique-feature counts or a QGIS decoder
@@ -170,32 +170,32 @@ a second maritime geographic fixture or an all-worldview rendering pass.
 
 | Coverage cell | Verdict | Observation / remaining work |
 | --- | --- | --- |
-| C02/C15: all five native owner/status/worldview contracts, three native builds | PASS (scoped eligibility) | 2240 synthetic combinations per runtime; source and actual native predicates agree. Missing disputed values are intentionally eligible for background/admin-1 owners. No status filter repair is warranted by these cases. |
+| C02/C15: all five native owner/status/worldview contracts, three native builds | PASS (scoped eligibility) | 2,240 synthetic combinations per runtime; source and actual native predicates agree. Missing disputed values are intentionally eligible for background/admin-1 owners. No status filter repair is warranted by these cases. |
 | C02/C15: observed properties from six browser cameras, both Docker converters | PASS (scoped replay) | 365 property/owner combinations per runtime. Saved source-property replay, not native decoded-feature/request tracing. |
 | C15: actual disputed/worldview and subdivision geographic fixtures | PARTIAL | Kashmir/Cyprus and Swiss/US extents plus both-runtime owner-removal maps identify visible paint. Maritime samples are loaded-tile exclusion evidence only; broader geography/worldviews, seams and outputs remain required. |
-| C12/C15/C23: remaining owner paint and z7 texture | OPEN | All four untouched widths remain constant; admin-1/disputed cores use post-z7 dashes even below7. Background opacity stays0.35 rather than source ramps to0.5. Blur remains unvalidated. Full maps show much fainter lines despite source-valid eligibility. |
-| C01/C29: unchanged repeats and comparability | PASS (scoped repeats); C01 OPEN | Twelve browser and24 native controls repeat identically. Source globe is preserved; no new anchor registration or source/native zoom/DPI equivalence is claimed. Six added cameras are not a fresh seven-preset sweep. |
+| C12/C15/C23: remaining owner paint and z7 texture | OPEN | All four untouched widths remain constant; admin-1/disputed cores use post-z7 dashes even below 7. Background opacity stays 0.35 rather than source ramps to 0.5. Blur remains unvalidated. Full maps show much fainter lines despite source-valid eligibility. |
+| C01/C29: unchanged repeats and comparability | PASS (scoped repeats); C01 OPEN | Twelve browser and 24 native controls repeat identically. Source globe is preserved; no new anchor registration or source/native zoom/DPI equivalence is claimed. Six added cameras are not a fresh seven-preset sweep. |
 | C28 and other required output/activity/accessibility cells | NOT ASSESSED by this slice | No new desktop/PDF/atlas/real-activity/UI or accessibility result. Production/runtime/package files are unchanged, not freshly certified in all paths. |
 
 Native paint inventories isolate the next hypothesis: admin-1 core width is fixed
-0.10500651mm, disputed core0.18201128mm; backgrounds0.42002604/0.72804514mm.
+0.10500651 mm, disputed core 0.18201128 mm; backgrounds 0.42002604/0.72804514 mm.
 Only the already-repaired ordinary national core retains source zoom-dependent
-width. Native admin-1 custom dash is0.210013/0.210013/0.630039/0.210013mm;
-disputed is0.364023/0.273017mm at every probed zoom. Source below7 instead asks
-continuous admin-1 `[2,0]` and disputed `[3,2,5]`, switching at7. This is a
+width. Native admin-1 custom dash is 0.210013/0.210013/0.630039/0.210013 mm;
+disputed is 0.364023/0.273017 mm at every probed zoom. Source below 7 instead asks
+continuous admin-1 `[2,0]` and disputed `[3,2,5]`, switching at 7. This is a
 source-backed paint/transition lead, **not a promoted correction** or permission
 to discard worldview/maritime/disputed semantics. Coordinate eventual dash/width
 repair with the still-open native/source zoom and density lifecycle.
 
 All actual maps and native-size owner/transition crops are public with exact
 worker reproduction, source/runtime/font snapshots and named artifact hashes.
-An inherited contrast heuristic rejected the sparse US QGIS4 map at stddev4.927;
+An inherited contrast heuristic rejected the sparse US QGIS 4 map at stddev 4.927;
 manual full-map inspection confirms towns/roads/landcover and the state line,
-with pixel extrema123–255 and owner-removal movement. This was a false validity
+with pixel extrema 123–255 and owner-removal movement. This was a false validity
 heuristic, not a blank capture or a relaxed cartographic acceptance gate.
 
-Full local2672/188; complete Docker suites213/82 each; diff-check pass. No package
-inputs changed, so no new ZIP behavior/build claim. Live tile bytes remain
+Full local: 2672 passed / 188 skipped. Complete Docker suites: 213 passed /
+82 skipped each; diff-check pass. No package inputs changed, so no new ZIP behavior/build claim. Live tile bytes remain
 unarchived. C15 and all other outstanding C01–C30 cells stay open as recorded;
 no limitation, release, deployment or holistic completion is implied.
 
