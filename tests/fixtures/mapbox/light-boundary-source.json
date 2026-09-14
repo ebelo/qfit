@@ -1,0 +1,445 @@
+{
+  "version": 8,
+  "name": "Mapbox Light",
+  "owner": "mapbox",
+  "id": "light-v11",
+  "sources": {
+    "composite": {
+      "url": "mapbox://mapbox.mapbox-streets-v8,mapbox.mapbox-terrain-v2,mapbox.mapbox-bathymetry-v2",
+      "type": "vector"
+    }
+  },
+  "layers": [
+    {
+      "id": "admin-1-boundary-bg",
+      "type": "line",
+      "source": "composite",
+      "source-layer": "admin",
+      "minzoom": 7,
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "admin_level"
+          ],
+          1
+        ],
+        [
+          "==",
+          [
+            "get",
+            "maritime"
+          ],
+          "false"
+        ],
+        [
+          "match",
+          [
+            "get",
+            "worldview"
+          ],
+          [
+            "all",
+            "US"
+          ],
+          true,
+          false
+        ]
+      ],
+      "paint": {
+        "line-color": "hsl(220, 0%, 87%)",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          3,
+          3,
+          12,
+          6
+        ],
+        "line-opacity": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          7,
+          0,
+          8,
+          0.5
+        ],
+        "line-dasharray": [
+          1,
+          0
+        ],
+        "line-blur": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          3,
+          0,
+          12,
+          3
+        ]
+      },
+      "metadata": {
+        "mapbox:featureComponent": "admin-boundaries",
+        "mapbox:group": "Administrative boundaries, admin"
+      }
+    },
+    {
+      "id": "admin-0-boundary-bg",
+      "type": "line",
+      "source": "composite",
+      "source-layer": "admin",
+      "minzoom": 1,
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "admin_level"
+          ],
+          0
+        ],
+        [
+          "==",
+          [
+            "get",
+            "maritime"
+          ],
+          "false"
+        ],
+        [
+          "match",
+          [
+            "get",
+            "worldview"
+          ],
+          [
+            "all",
+            "US"
+          ],
+          true,
+          false
+        ]
+      ],
+      "paint": {
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          3,
+          5.2,
+          12,
+          10.4
+        ],
+        "line-color": "hsl(220, 0%, 87%)",
+        "line-opacity": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          3,
+          0,
+          4,
+          0.5
+        ],
+        "line-blur": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          3,
+          0,
+          12,
+          2.6
+        ]
+      },
+      "metadata": {
+        "mapbox:featureComponent": "admin-boundaries",
+        "mapbox:group": "Administrative boundaries, admin"
+      }
+    },
+    {
+      "id": "admin-1-boundary",
+      "type": "line",
+      "source": "composite",
+      "source-layer": "admin",
+      "minzoom": 2,
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "admin_level"
+          ],
+          1
+        ],
+        [
+          "==",
+          [
+            "get",
+            "maritime"
+          ],
+          "false"
+        ],
+        [
+          "match",
+          [
+            "get",
+            "worldview"
+          ],
+          [
+            "all",
+            "US"
+          ],
+          true,
+          false
+        ]
+      ],
+      "layout": {},
+      "paint": {
+        "line-dasharray": [
+          "step",
+          [
+            "zoom"
+          ],
+          [
+            "literal",
+            [
+              2,
+              0
+            ]
+          ],
+          7,
+          [
+            "literal",
+            [
+              2,
+              2,
+              6,
+              2
+            ]
+          ]
+        ],
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          3,
+          0.3,
+          12,
+          1.5
+        ],
+        "line-opacity": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          2,
+          0,
+          3,
+          1
+        ],
+        "line-color": "hsl(220, 1%, 71%)"
+      },
+      "metadata": {
+        "mapbox:featureComponent": "admin-boundaries",
+        "mapbox:group": "Administrative boundaries, admin"
+      }
+    },
+    {
+      "id": "admin-0-boundary",
+      "type": "line",
+      "source": "composite",
+      "source-layer": "admin",
+      "minzoom": 1,
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "admin_level"
+          ],
+          0
+        ],
+        [
+          "==",
+          [
+            "get",
+            "disputed"
+          ],
+          "false"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "maritime"
+          ],
+          "false"
+        ],
+        [
+          "match",
+          [
+            "get",
+            "worldview"
+          ],
+          [
+            "all",
+            "US"
+          ],
+          true,
+          false
+        ]
+      ],
+      "layout": {},
+      "paint": {
+        "line-color": "hsl(220, 0%, 70%)",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          3,
+          0.65,
+          12,
+          2.6
+        ],
+        "line-dasharray": [
+          10,
+          0
+        ]
+      },
+      "metadata": {
+        "mapbox:featureComponent": "admin-boundaries",
+        "mapbox:group": "Administrative boundaries, admin"
+      }
+    },
+    {
+      "id": "admin-0-boundary-disputed",
+      "type": "line",
+      "source": "composite",
+      "source-layer": "admin",
+      "minzoom": 1,
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "disputed"
+          ],
+          "true"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "admin_level"
+          ],
+          0
+        ],
+        [
+          "==",
+          [
+            "get",
+            "maritime"
+          ],
+          "false"
+        ],
+        [
+          "match",
+          [
+            "get",
+            "worldview"
+          ],
+          [
+            "all",
+            "US"
+          ],
+          true,
+          false
+        ]
+      ],
+      "paint": {
+        "line-color": "hsl(220, 0%, 70%)",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          3,
+          0.65,
+          12,
+          2.6
+        ],
+        "line-dasharray": [
+          "step",
+          [
+            "zoom"
+          ],
+          [
+            "literal",
+            [
+              3,
+              2,
+              5
+            ]
+          ],
+          7,
+          [
+            "literal",
+            [
+              2,
+              1.5
+            ]
+          ]
+        ]
+      },
+      "metadata": {
+        "mapbox:featureComponent": "admin-boundaries",
+        "mapbox:group": "Administrative boundaries, admin"
+      }
+    }
+  ]
+}
