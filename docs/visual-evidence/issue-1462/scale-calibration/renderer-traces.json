@@ -1,0 +1,402 @@
+[
+  {
+    "qgis_major": "3",
+    "camera": "geneva-urban-z14-light",
+    "dpi": 96,
+    "actual_renderer_trace": {
+      "fields": [
+        "vector_tile_zoom",
+        "zoom_level",
+        "map_scale"
+      ],
+      "values": [
+        [
+          14.220212941573227,
+          14.0,
+          -1.0
+        ]
+      ]
+    },
+    "corrected_context": {
+      "requested_camera_zoom": 14.25,
+      "map_settings_output_dpi": 96.0,
+      "image_logical_dpi": [
+        96,
+        96
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        681264.6070199735,
+        5811293.095022159,
+        686406.6568661856,
+        5814908.598820277
+      ],
+      "map_scale": 15183.218049839017,
+      "tile_render_scale": 15183.218049839017,
+      "vector_tile_zoom": 14.220212941573227,
+      "integer_render_zoom": 14,
+      "integer_fetch_zoom": 14
+    },
+    "png_sha256": "0d88974e73f2ef0b755374f6421af3b3c6358f7d4a0fe3b8c3430cd071b15d8d",
+    "unwrapped_control_identical": true
+  },
+  {
+    "qgis_major": "3",
+    "camera": "geneva-urban-z14-light",
+    "dpi": 192,
+    "actual_renderer_trace": {
+      "fields": [
+        "vector_tile_zoom",
+        "zoom_level",
+        "map_scale"
+      ],
+      "values": [
+        [
+          14.220212941573227,
+          14.0,
+          -1.0
+        ]
+      ]
+    },
+    "corrected_context": {
+      "requested_camera_zoom": 15.25,
+      "map_settings_output_dpi": 192.0,
+      "image_logical_dpi": [
+        192,
+        192
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        2560,
+        1800
+      ],
+      "map_settings_size_pixels": [
+        2560,
+        1800
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        681264.6070199735,
+        5811293.095022159,
+        686406.6568661856,
+        5814908.598820277
+      ],
+      "map_scale": 15183.218049839017,
+      "tile_render_scale": 15183.218049839017,
+      "vector_tile_zoom": 14.220212941573227,
+      "integer_render_zoom": 14,
+      "integer_fetch_zoom": 14
+    },
+    "png_sha256": "d6e6141cdfcd93138d1fc21b99a3a847bc00acdafe6c2d56cd07d88c7d6158df",
+    "unwrapped_control_identical": true
+  },
+  {
+    "qgis_major": "3",
+    "camera": "bern-urban-z12-light",
+    "dpi": 96,
+    "actual_renderer_trace": {
+      "fields": [
+        "vector_tile_zoom",
+        "zoom_level",
+        "map_scale"
+      ],
+      "values": [
+        [
+          12.220212941573227,
+          12.0,
+          -1.0
+        ]
+      ]
+    },
+    "corrected_context": {
+      "requested_camera_zoom": 12.25,
+      "map_settings_output_dpi": 96.0,
+      "image_logical_dpi": [
+        96,
+        96
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        818712.148245084,
+        5926359.467815783,
+        839280.3476299326,
+        5940821.483008254
+      ],
+      "map_scale": 60732.87219935607,
+      "tile_render_scale": 60732.87219935607,
+      "vector_tile_zoom": 12.220212941573227,
+      "integer_render_zoom": 12,
+      "integer_fetch_zoom": 12
+    },
+    "png_sha256": "0bfdd18f7b99a1bb997817e182d305964c67e669986866e2b403c333ebb96950",
+    "unwrapped_control_identical": true
+  },
+  {
+    "qgis_major": "3",
+    "camera": "bern-urban-z12-light",
+    "dpi": 192,
+    "actual_renderer_trace": {
+      "fields": [
+        "vector_tile_zoom",
+        "zoom_level",
+        "map_scale"
+      ],
+      "values": [
+        [
+          12.220212941573227,
+          12.0,
+          -1.0
+        ]
+      ]
+    },
+    "corrected_context": {
+      "requested_camera_zoom": 13.25,
+      "map_settings_output_dpi": 192.0,
+      "image_logical_dpi": [
+        192,
+        192
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        2560,
+        1800
+      ],
+      "map_settings_size_pixels": [
+        2560,
+        1800
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        818712.148245084,
+        5926359.467815783,
+        839280.3476299326,
+        5940821.483008254
+      ],
+      "map_scale": 60732.87219935607,
+      "tile_render_scale": 60732.87219935607,
+      "vector_tile_zoom": 12.220212941573227,
+      "integer_render_zoom": 12,
+      "integer_fetch_zoom": 12
+    },
+    "png_sha256": "b138852152431b79f2ffaf692d21c11fe029477dff21a09c4ac521c327d2e58f",
+    "unwrapped_control_identical": true
+  },
+  {
+    "qgis_major": "4",
+    "camera": "geneva-urban-z14-light",
+    "dpi": 96,
+    "actual_renderer_trace": {
+      "fields": [
+        "vector_tile_zoom",
+        "zoom_level",
+        "map_scale"
+      ],
+      "values": [
+        [
+          14.318207169492558,
+          14.0,
+          -1.0
+        ]
+      ]
+    },
+    "corrected_context": {
+      "requested_camera_zoom": 14.25,
+      "map_settings_output_dpi": 96.0,
+      "image_logical_dpi": [
+        96,
+        96
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        681264.6070199735,
+        5811293.095022159,
+        686406.6568661856,
+        5814908.598820277
+      ],
+      "map_scale": 15183.218049839017,
+      "tile_render_scale": 14347.237294118715,
+      "vector_tile_zoom": 14.318207169492558,
+      "integer_render_zoom": 14,
+      "integer_fetch_zoom": 14
+    },
+    "png_sha256": "9fa6f062a723a65a86e31b9d1161a5ed9f534f6feac09caef0c921a0a961f4d1",
+    "unwrapped_control_identical": true
+  },
+  {
+    "qgis_major": "4",
+    "camera": "geneva-urban-z14-light",
+    "dpi": 192,
+    "actual_renderer_trace": {
+      "fields": [
+        "vector_tile_zoom",
+        "zoom_level",
+        "map_scale"
+      ],
+      "values": [
+        [
+          15.318207169492558,
+          15.0,
+          -1.0
+        ]
+      ]
+    },
+    "corrected_context": {
+      "requested_camera_zoom": 15.25,
+      "map_settings_output_dpi": 192.0,
+      "image_logical_dpi": [
+        192,
+        192
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        2560,
+        1800
+      ],
+      "map_settings_size_pixels": [
+        2560,
+        1800
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        681264.6070199735,
+        5811293.095022159,
+        686406.6568661856,
+        5814908.598820277
+      ],
+      "map_scale": 15183.218049839017,
+      "tile_render_scale": 7173.6186470593575,
+      "vector_tile_zoom": 15.318207169492558,
+      "integer_render_zoom": 15,
+      "integer_fetch_zoom": 15
+    },
+    "png_sha256": "fb0b5edcaa67e813431ce47bccc52c1a29783cc3e15b4a27bd5bc6e3f2ef0c5c",
+    "unwrapped_control_identical": true
+  },
+  {
+    "qgis_major": "4",
+    "camera": "bern-urban-z12-light",
+    "dpi": 96,
+    "actual_renderer_trace": {
+      "fields": [
+        "vector_tile_zoom",
+        "zoom_level",
+        "map_scale"
+      ],
+      "values": [
+        [
+          12.318207169492558,
+          12.0,
+          -1.0
+        ]
+      ]
+    },
+    "corrected_context": {
+      "requested_camera_zoom": 12.25,
+      "map_settings_output_dpi": 96.0,
+      "image_logical_dpi": [
+        96,
+        96
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        1280,
+        900
+      ],
+      "map_settings_size_pixels": [
+        1280,
+        900
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        818712.148245084,
+        5926359.467815783,
+        839280.3476299326,
+        5940821.483008254
+      ],
+      "map_scale": 60732.87219935607,
+      "tile_render_scale": 57388.94917647486,
+      "vector_tile_zoom": 12.318207169492558,
+      "integer_render_zoom": 12,
+      "integer_fetch_zoom": 12
+    },
+    "png_sha256": "b2f1f44db6aeb8e56078253828089941d2f647ad8f9d735993ae12a33808a51b",
+    "unwrapped_control_identical": true
+  },
+  {
+    "qgis_major": "4",
+    "camera": "bern-urban-z12-light",
+    "dpi": 192,
+    "actual_renderer_trace": {
+      "fields": [
+        "vector_tile_zoom",
+        "zoom_level",
+        "map_scale"
+      ],
+      "values": [
+        [
+          13.318207169492558,
+          13.0,
+          -1.0
+        ]
+      ]
+    },
+    "corrected_context": {
+      "requested_camera_zoom": 13.25,
+      "map_settings_output_dpi": 192.0,
+      "image_logical_dpi": [
+        192,
+        192
+      ],
+      "image_device_pixel_ratio": 1.0,
+      "image_size_pixels": [
+        2560,
+        1800
+      ],
+      "map_settings_size_pixels": [
+        2560,
+        1800
+      ],
+      "map_crs": "EPSG:3857",
+      "visible_extent": [
+        818712.148245084,
+        5926359.467815783,
+        839280.3476299326,
+        5940821.483008254
+      ],
+      "map_scale": 60732.87219935607,
+      "tile_render_scale": 28694.47458823743,
+      "vector_tile_zoom": 13.318207169492558,
+      "integer_render_zoom": 13,
+      "integer_fetch_zoom": 13
+    },
+    "png_sha256": "f96147876cefa3f1a4a3d3e83f4b8cac6f48c5335f10a7e2547baac67f4aad7d",
+    "unwrapped_control_identical": true
+  }
+]

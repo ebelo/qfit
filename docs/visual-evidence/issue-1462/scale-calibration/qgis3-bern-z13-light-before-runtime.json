@@ -1,0 +1,33 @@
+{
+  "qgis_version": "3.44.11-Solothurn",
+  "qgis_version_int": 34411,
+  "qgis_release_name": "Solothurn",
+  "render_context": {
+    "requested_camera_zoom": 13.0,
+    "map_settings_output_dpi": 100.0,
+    "image_logical_dpi": [
+      100,
+      100
+    ],
+    "image_device_pixel_ratio": 1.0,
+    "image_size_pixels": [
+      1280,
+      900
+    ],
+    "map_settings_size_pixels": [
+      1280,
+      900
+    ],
+    "map_crs": "EPSG:3857",
+    "visible_extent": [
+      822881.2856746936,
+      5929290.892570977,
+      835111.2102003229,
+      5937890.05825306
+    ],
+    "map_scale": 37616.64777814119,
+    "vector_tile_zoom": 12.897637795275493,
+    "integer_render_zoom": 13,
+    "integer_fetch_zoom": 13
+  }
+}

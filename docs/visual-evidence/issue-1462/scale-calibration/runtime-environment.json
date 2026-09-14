@@ -1,0 +1,22 @@
+[
+  {
+    "qgis": "3.44.11-Solothurn",
+    "qgis_dev_version": "f8f5812197f",
+    "qt_compiled": "5.15.17",
+    "qt_runtime": "5.15.17",
+    "pyqt": "5.15.11",
+    "python": "3.13.7",
+    "qgis_major": "3",
+    "image": "sha256:9bf850ffeb3a012cbd8956c9ea101fa8353f0df1d320884e6613b6739ab205b2"
+  },
+  {
+    "qgis": "4.2.0-Bel\u00e9m do Par\u00e1",
+    "qgis_dev_version": "ec9a7f91d0f",
+    "qt_compiled": "6.9.2",
+    "qt_runtime": "6.9.2",
+    "pyqt": "6.9.1",
+    "python": "3.13.7",
+    "qgis_major": "4",
+    "image": "sha256:313e91cd4cd9bc7460e623c4ca5314ee7c0b721fa0b03d9bb8bf682e641b23cf"
+  }
+]

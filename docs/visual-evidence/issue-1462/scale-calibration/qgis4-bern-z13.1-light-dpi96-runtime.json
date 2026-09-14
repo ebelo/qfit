@@ -1,0 +1,33 @@
+{
+  "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+  "qgis_version_int": 40200,
+  "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+  "render_context": {
+    "requested_camera_zoom": 13.1,
+    "map_settings_output_dpi": 96.0,
+    "image_logical_dpi": [
+      96,
+      96
+    ],
+    "image_device_pixel_ratio": 1.0,
+    "image_size_pixels": [
+      1280,
+      900
+    ],
+    "map_settings_size_pixels": [
+      1280,
+      900
+    ],
+    "map_crs": "EPSG:3857",
+    "visible_extent": [
+      823290.7864042995,
+      5929578.822771481,
+      834701.709470717,
+      5937602.128052556
+    ],
+    "map_scale": 33693.67047170508,
+    "vector_tile_zoom": 13.025202613188025,
+    "integer_render_zoom": 13,
+    "integer_fetch_zoom": 13
+  }
+}
