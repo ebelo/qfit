@@ -786,6 +786,51 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
         self.assertAlmostEqual(records[0]["vector_tile_zoom"] - records[1]["vector_tile_zoom"], 1)
         self.assertEqual(records[1]["map_scale"] / records[0]["map_scale"], 2)
 
+    def test_capture_camera_geometry_survives_physical_density_scaling(self):
+        from dataclasses import replace
+        import math
+        from qgis.core import (
+            QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsMapSettings,
+            QgsPointXY, QgsProject, QgsRectangle, QgsVectorTileMatrixSet,
+        )
+        from qgis.PyQt.QtCore import QSize
+        from qfit.validation.mapbox_outdoors_comparison import LIGHT_CAMERAS, camera_extent_web_mercator
+
+        cameras = list(LIGHT_CAMERAS.values())
+        for name in ("geneva-urban-z14-light", "bern-urban-z12-light"):
+            cameras.extend(replace(LIGHT_CAMERAS[name], zoom=z) for z in (12.9, 13, 13.1, 13.9, 14, 14.1))
+        crs = QgsCoordinateReferenceSystem("EPSG:3857")
+        transform = QgsCoordinateTransform(QgsCoordinateReferenceSystem("EPSG:4326"), crs, QgsProject.instance())
+        matrix = QgsVectorTileMatrixSet.fromWebMercator(0, 14)
+        for camera in cameras:
+            center = transform.transform(QgsPointXY(camera.longitude, camera.latitude))
+            for width, height in ((1280, 900), (900, 1280), (640, 480)):
+                css_camera = replace(camera, width=width, height=height)
+                extent = QgsRectangle(*camera_extent_web_mercator(css_camera))
+                baseline = QgsMapSettings()
+                baseline.setDestinationCrs(crs)
+                baseline.setExtent(extent)
+                baseline.setOutputSize(QSize(width, height))
+                baseline.setOutputDpi(96)
+                for density in (1, 1.25, 1.5, 2, 3):
+                    with self.subTest(camera=camera.name, zoom=camera.zoom, size=(width, height), density=density):
+                        # More output pixels at the same physical map size are not a tighter camera.
+                        physical = replace(css_camera, width=int(width * density), height=int(height * density),
+                                           zoom=camera.zoom + math.log2(density))
+                        actual_extent = QgsRectangle(*camera_extent_web_mercator(physical))
+                        settings = QgsMapSettings()
+                        settings.setDestinationCrs(crs)
+                        settings.setExtent(actual_extent)
+                        settings.setOutputSize(QSize(physical.width, physical.height))
+                        settings.setOutputDpi(96 * density)
+                        self.assertAlmostEqual(actual_extent.width() / extent.width(), 1, places=10)
+                        self.assertAlmostEqual(actual_extent.height() / extent.height(), 1, places=10)
+                        self.assertAlmostEqual(settings.scale() / baseline.scale(), 1, places=10)
+                        self.assertAlmostEqual(matrix.scaleToZoom(settings.scale()), matrix.scaleToZoom(baseline.scale()), places=9)
+                        pixel = settings.mapToPixel().transform(center)
+                        self.assertAlmostEqual(pixel.x(), physical.width / 2, delta=1e-6)
+                        self.assertAlmostEqual(pixel.y(), physical.height / 2, delta=1e-6)
+
     def test_light_road_native_widths_match_source_class_and_exponential_zoom(self):
         import json
         from pathlib import Path
