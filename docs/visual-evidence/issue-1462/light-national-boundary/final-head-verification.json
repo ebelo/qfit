@@ -1,0 +1,1038 @@
+{
+  "pr": 1468,
+  "final_head": "f8badbda587ef9c5b42113a9ad670d2e8ab91447",
+  "implementation_commit": "5ebb6ead8740c63971b273f278726aad9b399021",
+  "date_utc": "2026-09-14",
+  "source_sha256": "87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32",
+  "code_sha256": {
+    "mapbox_config.py": "a2bdb887cbc4663e96a5a282dcdacb4c2477a4bfcfc3f1bfd6569f155c7a89db",
+    "visualization/infrastructure/background_map_service.py": "0a846c0355821cc4dce7360b456dfb989c95343c0384ec894c0f26745cf69264",
+    "visualization/infrastructure/mapbox_light_strokes.py": "6b70749efac8f2377be2ef03901423cd031ca7db4d53e39fbe62c7563f9db15e",
+    "visualization/infrastructure/mapbox_light_labels.py": "5b2310bce51a53b072e7a3932adb9abdea991116c29ef032de37d25151765cce",
+    "visualization/infrastructure/mapbox_open_fonts.py": "f1e94b2b42be6a6ddce758c0b2904cca66526e583bed3ee9b33580b37359b737",
+    "visualization/infrastructure/layer_style_service.py": "35383965327ea27c2a8e602b7716904de1adeadd0b0eed21227c053db03d283a",
+    "validation/mapbox_outdoors_comparison.py": "b746a1d2f2ebb24da62edb80ea9ad323e781edcbb389874d3b1c674ca79275cf",
+    "validation/mapbox_outdoors_runtime.py": "d38930e57ecb9c9c547973f032dd072d68ac70bcb475aae46e0b1627562e45a4",
+    "validation/mapbox_activity_overlay.py": "1bff513d9cb2bdd32ffc476aa92a7cc1270052a5182dcc6db06eb42a7cbfd6a2"
+  },
+  "matrix": [
+    {
+      "qgis_major": "3",
+      "camera": "switzerland-alps-z5-light",
+      "png_sha256": "6a9d22710d2a67b183823581f41c787df1ebab339bf6a76814d2e36cc0cb3a41",
+      "labels_sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "boundaries_sha256": "1fb4fe436d45edb879b5e8c9e70c6b5eadb4feac3ce0660fefa023d4c4545f28",
+      "png_labels_boundaries_runtime_byte_identical": true,
+      "runtime": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 5.35,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            -315391.9260596817,
+            5045903.47656141,
+            2141031.575069368,
+            6773076.250792773
+          ],
+          "map_scale": 7555436.457705,
+          "vector_tile_zoom": 5.270208288101648,
+          "integer_render_zoom": 5,
+          "integer_fetch_zoom": 5
+        }
+      }
+    },
+    {
+      "qgis_major": "3",
+      "camera": "zurich-region-z8-light",
+      "png_sha256": "90e976950e21bb60cc6a1d6575a156541e8da52b76bc2e9acad9f10b81e64f28",
+      "labels_sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "boundaries_sha256": "1fb4fe436d45edb879b5e8c9e70c6b5eadb4feac3ce0660fefa023d4c4545f28",
+      "png_labels_boundaries_runtime_byte_identical": true,
+      "runtime": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 8.2,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            780320.1684168805,
+            5884545.688159028,
+            1121016.734332232,
+            6124097.96106826
+          ],
+          "map_scale": 1047910.2052022377,
+          "vector_tile_zoom": 8.080675923441609,
+          "integer_render_zoom": 8,
+          "integer_fetch_zoom": 8
+        }
+      }
+    },
+    {
+      "qgis_major": "3",
+      "camera": "lausanne-lavaux-z10-light",
+      "png_sha256": "dace51c1a2239544b2827425b395c741dbd7f47d782804b81df5dbe0bead4522",
+      "labels_sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "boundaries_sha256": "1fb4fe436d45edb879b5e8c9e70c6b5eadb4feac3ce0660fefa023d4c4545f28",
+      "png_labels_boundaries_runtime_byte_identical": true,
+      "runtime": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 10.25,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            706930.5793611014,
+            5830298.7658473775,
+            789203.3769004953,
+            5888146.826617263
+          ],
+          "map_scale": 253053.63416398215,
+          "vector_tile_zoom": 10.146055147472122,
+          "integer_render_zoom": 10,
+          "integer_fetch_zoom": 10
+        }
+      }
+    },
+    {
+      "qgis_major": "3",
+      "camera": "bern-urban-z12-light",
+      "png_sha256": "be889599f5b5efda75b11be40c2242cbec8958dd3e931a0f592fd45b71f58c8d",
+      "labels_sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "boundaries_sha256": "1fb4fe436d45edb879b5e8c9e70c6b5eadb4feac3ce0660fefa023d4c4545f28",
+      "png_labels_boundaries_runtime_byte_identical": true,
+      "runtime": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 12.25,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            818712.148245084,
+            5926359.467815783,
+            839280.3476299326,
+            5940821.483008254
+          ],
+          "map_scale": 63263.4085409959,
+          "vector_tile_zoom": 12.146055147472111,
+          "integer_render_zoom": 12,
+          "integer_fetch_zoom": 12
+        }
+      }
+    },
+    {
+      "qgis_major": "3",
+      "camera": "geneva-urban-z14-light",
+      "png_sha256": "bc11e49289db93790122cceec967133a73212c6c0ece3debf1c7bb3d56bfe9d3",
+      "labels_sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "boundaries_sha256": "1fb4fe436d45edb879b5e8c9e70c6b5eadb4feac3ce0660fefa023d4c4545f28",
+      "png_labels_boundaries_runtime_byte_identical": true,
+      "runtime": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 14.25,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            681264.6070199735,
+            5811293.095022159,
+            686406.6568661856,
+            5814908.598820277
+          ],
+          "map_scale": 15815.852135248975,
+          "vector_tile_zoom": 14.146055147472111,
+          "integer_render_zoom": 14,
+          "integer_fetch_zoom": 14
+        }
+      }
+    },
+    {
+      "qgis_major": "3",
+      "camera": "zurich-streets-z17-light",
+      "png_sha256": "87f065071da31fb6bca580413e5e1aa3006c1294126235b35f55aea2430e37ee",
+      "labels_sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "boundaries_sha256": "1fb4fe436d45edb879b5e8c9e70c6b5eadb4feac3ce0660fefa023d4c4545f28",
+      "png_labels_boundaries_runtime_byte_identical": true,
+      "runtime": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 17.0,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            950475.5093674791,
+            6003543.480950285,
+            951239.879650331,
+            6004080.928805415
+          ],
+          "map_scale": 2351.040486133914,
+          "vector_tile_zoom": 16.89763779527545,
+          "integer_render_zoom": 17,
+          "integer_fetch_zoom": 17
+        }
+      }
+    },
+    {
+      "qgis_major": "3",
+      "camera": "geneva-streets-z18-light",
+      "png_sha256": "08ccd959983dda84dc2a219cb9229c4e62731b9c9389ce5877941af316c3d318",
+      "labels_sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "boundaries_sha256": "1fb4fe436d45edb879b5e8c9e70c6b5eadb4feac3ce0660fefa023d4c4545f28",
+      "png_labels_boundaries_runtime_byte_identical": true,
+      "runtime": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 18.0,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            684089.8173355398,
+            5812644.801312825,
+            684472.0024769657,
+            5812913.52524039
+          ],
+          "map_scale": 1175.5202430665988,
+          "vector_tile_zoom": 17.897637795275788,
+          "integer_render_zoom": 18,
+          "integer_fetch_zoom": 18
+        }
+      }
+    },
+    {
+      "qgis_major": "3",
+      "camera": "lausanne-boundary-z11.9",
+      "png_sha256": "a972b345300d642015aa4995e19f7a124b75c624ad611dd833d6afa68b853e2a",
+      "labels_sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "boundaries_sha256": "1fb4fe436d45edb879b5e8c9e70c6b5eadb4feac3ce0660fefa023d4c4545f28",
+      "png_labels_boundaries_runtime_byte_identical": true,
+      "runtime": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 11.9,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            734959.2695754083,
+            5850006.438654312,
+            761174.6866861883,
+            5868439.153810329
+          ],
+          "map_scale": 80633.04967636571,
+          "vector_tile_zoom": 11.81851744287338,
+          "integer_render_zoom": 12,
+          "integer_fetch_zoom": 12
+        }
+      }
+    },
+    {
+      "qgis_major": "3",
+      "camera": "lausanne-boundary-z12.0",
+      "png_sha256": "c6ef1b6cdd7368d7aa6e736515dae265d5712561b63f3f991dcd07afd372e200",
+      "labels_sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "boundaries_sha256": "1fb4fe436d45edb879b5e8c9e70c6b5eadb4feac3ce0660fefa023d4c4545f28",
+      "png_labels_boundaries_runtime_byte_identical": true,
+      "runtime": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 12.0,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            735837.0536051701,
+            5850623.630550238,
+            760296.9026564265,
+            5867821.961914402
+          ],
+          "map_scale": 75233.29555627593,
+          "vector_tile_zoom": 11.897637795275587,
+          "integer_render_zoom": 12,
+          "integer_fetch_zoom": 12
+        }
+      }
+    },
+    {
+      "qgis_major": "3",
+      "camera": "lausanne-boundary-z12.1",
+      "png_sha256": "bdd091cfa0883865c10402eebf3e01bf526c42a7d4dd19e3c0c453e18030e7a0",
+      "labels_sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "boundaries_sha256": "1fb4fe436d45edb879b5e8c9e70c6b5eadb4feac3ce0660fefa023d4c4545f28",
+      "png_labels_boundaries_runtime_byte_identical": true,
+      "runtime": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 12.1,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            736656.055064382,
+            5851199.490951247,
+            759477.9011972146,
+            5867246.101513394
+          ],
+          "map_scale": 70195.14681604509,
+          "vector_tile_zoom": 11.971459694368868,
+          "integer_render_zoom": 12,
+          "integer_fetch_zoom": 12
+        }
+      }
+    },
+    {
+      "qgis_major": "3",
+      "camera": "lausanne-lavaux-z10-light-activity",
+      "png_sha256": "44a63e52f8eb9f160ed4351c8909f98256c2d07fa0c237309ba7ec30824cf8f9",
+      "labels_sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "boundaries_sha256": "1fb4fe436d45edb879b5e8c9e70c6b5eadb4feac3ce0660fefa023d4c4545f28",
+      "png_labels_boundaries_runtime_byte_identical": true,
+      "runtime": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 10.25,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            706930.5793611014,
+            5830298.7658473775,
+            789203.3769004953,
+            5888146.826617263
+          ],
+          "map_scale": 253053.63416398215,
+          "vector_tile_zoom": 10.146055147472122,
+          "integer_render_zoom": 10,
+          "integer_fetch_zoom": 10
+        }
+      }
+    },
+    {
+      "qgis_major": "3",
+      "camera": "zurich-region-z8-light-activity",
+      "png_sha256": "d14b41bea94938dd346d495299e76a57684c86554fc4c5860eb4a3fa08a53798",
+      "labels_sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "boundaries_sha256": "1fb4fe436d45edb879b5e8c9e70c6b5eadb4feac3ce0660fefa023d4c4545f28",
+      "png_labels_boundaries_runtime_byte_identical": true,
+      "runtime": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 8.2,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            780320.1684168805,
+            5884545.688159028,
+            1121016.734332232,
+            6124097.96106826
+          ],
+          "map_scale": 1047910.2052022377,
+          "vector_tile_zoom": 8.080675923441609,
+          "integer_render_zoom": 8,
+          "integer_fetch_zoom": 8
+        }
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "switzerland-alps-z5-light",
+      "png_sha256": "a5832479d37bd5bcb57b753a752b1eed2c8668ca80ace52db1f8edc2e4a77c15",
+      "labels_sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "boundaries_sha256": "6d6896c87a0175ed4d4cbb63a74efdc1042df5dae89f92ea68c98747e4623f92",
+      "png_labels_boundaries_runtime_byte_identical": true,
+      "runtime": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 5.35,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            -315391.9260596817,
+            5045903.47656141,
+            2141031.575069368,
+            6773076.250792773
+          ],
+          "map_scale": 7253218.9993968,
+          "vector_tile_zoom": 5.339399956577582,
+          "integer_render_zoom": 5,
+          "integer_fetch_zoom": 5
+        }
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "zurich-region-z8-light",
+      "png_sha256": "71f413a84e334d33ee5d0e99f569d309c7bed229171eaaea6d41b40593233a68",
+      "labels_sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "boundaries_sha256": "6d6896c87a0175ed4d4cbb63a74efdc1042df5dae89f92ea68c98747e4623f92",
+      "png_labels_boundaries_runtime_byte_identical": true,
+      "runtime": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 8.2,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            780320.1684168805,
+            5884545.688159028,
+            1121016.734332232,
+            6124097.96106826
+          ],
+          "map_scale": 1005993.7969941482,
+          "vector_tile_zoom": 8.157448886503945,
+          "integer_render_zoom": 8,
+          "integer_fetch_zoom": 8
+        }
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "lausanne-lavaux-z10-light",
+      "png_sha256": "c28a3a7a6d27609b5844c12d77ca468399122bd4cf275afa2c6c6772b7370f46",
+      "labels_sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "boundaries_sha256": "6d6896c87a0175ed4d4cbb63a74efdc1042df5dae89f92ea68c98747e4623f92",
+      "png_labels_boundaries_runtime_byte_identical": true,
+      "runtime": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 10.25,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            706930.5793611014,
+            5830298.7658473775,
+            789203.3769004953,
+            5888146.826617263
+          ],
+          "map_scale": 242931.48879742288,
+          "vector_tile_zoom": 10.220212941573237,
+          "integer_render_zoom": 10,
+          "integer_fetch_zoom": 10
+        }
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "bern-urban-z12-light",
+      "png_sha256": "b2f1f44db6aeb8e56078253828089941d2f647ad8f9d735993ae12a33808a51b",
+      "labels_sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "boundaries_sha256": "6d6896c87a0175ed4d4cbb63a74efdc1042df5dae89f92ea68c98747e4623f92",
+      "png_labels_boundaries_runtime_byte_identical": true,
+      "runtime": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 12.25,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            818712.148245084,
+            5926359.467815783,
+            839280.3476299326,
+            5940821.483008254
+          ],
+          "map_scale": 60732.87219935607,
+          "vector_tile_zoom": 12.220212941573227,
+          "integer_render_zoom": 12,
+          "integer_fetch_zoom": 12
+        }
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "geneva-urban-z14-light",
+      "png_sha256": "9fa6f062a723a65a86e31b9d1161a5ed9f534f6feac09caef0c921a0a961f4d1",
+      "labels_sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "boundaries_sha256": "6d6896c87a0175ed4d4cbb63a74efdc1042df5dae89f92ea68c98747e4623f92",
+      "png_labels_boundaries_runtime_byte_identical": true,
+      "runtime": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 14.25,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            681264.6070199735,
+            5811293.095022159,
+            686406.6568661856,
+            5814908.598820277
+          ],
+          "map_scale": 15183.218049839017,
+          "vector_tile_zoom": 14.220212941573227,
+          "integer_render_zoom": 14,
+          "integer_fetch_zoom": 14
+        }
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "zurich-streets-z17-light",
+      "png_sha256": "0b2fb957571220b6e2703e426c53f3d670412aed5052b35b5c36c0ab88bc7122",
+      "labels_sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "boundaries_sha256": "6d6896c87a0175ed4d4cbb63a74efdc1042df5dae89f92ea68c98747e4623f92",
+      "png_labels_boundaries_runtime_byte_identical": true,
+      "runtime": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 17.0,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            950475.5093674791,
+            6003543.480950285,
+            951239.879650331,
+            6004080.928805415
+          ],
+          "map_scale": 2256.9988666885574,
+          "vector_tile_zoom": 16.941732283464432,
+          "integer_render_zoom": 17,
+          "integer_fetch_zoom": 17
+        }
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "geneva-streets-z18-light",
+      "png_sha256": "b8f175e538c415a385ffc97b1b77aae6116232543ca6861766cbc30911c8fc8d",
+      "labels_sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "boundaries_sha256": "6d6896c87a0175ed4d4cbb63a74efdc1042df5dae89f92ea68c98747e4623f92",
+      "png_labels_boundaries_runtime_byte_identical": true,
+      "runtime": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 18.0,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            684089.8173355398,
+            5812644.801312825,
+            684472.0024769657,
+            5812913.52524039
+          ],
+          "map_scale": 1128.499433343935,
+          "vector_tile_zoom": 17.941732283464756,
+          "integer_render_zoom": 18,
+          "integer_fetch_zoom": 18
+        }
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "lausanne-boundary-z11.9",
+      "png_sha256": "5aa8c7f62d268aba5d2fe535600dc892b8bb0a900a00728c945a23dd51a51494",
+      "labels_sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "boundaries_sha256": "6d6896c87a0175ed4d4cbb63a74efdc1042df5dae89f92ea68c98747e4623f92",
+      "png_labels_boundaries_runtime_byte_identical": true,
+      "runtime": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 11.9,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            734959.2695754083,
+            5850006.438654312,
+            761174.6866861883,
+            5868439.153810329
+          ],
+          "map_scale": 77407.72768931108,
+          "vector_tile_zoom": 11.865776745158445,
+          "integer_render_zoom": 12,
+          "integer_fetch_zoom": 12
+        }
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "lausanne-boundary-z12.0",
+      "png_sha256": "cbbd534dfb35a6c01149ceb37545be1af9972c9fc0956cdadc9c8c76b7bee20b",
+      "labels_sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "boundaries_sha256": "6d6896c87a0175ed4d4cbb63a74efdc1042df5dae89f92ea68c98747e4623f92",
+      "png_labels_boundaries_runtime_byte_identical": true,
+      "runtime": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 12.0,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            735837.0536051701,
+            5850623.630550238,
+            760296.9026564265,
+            5867821.961914402
+          ],
+          "map_scale": 72223.96373402489,
+          "vector_tile_zoom": 11.941732283464564,
+          "integer_render_zoom": 12,
+          "integer_fetch_zoom": 12
+        }
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "lausanne-boundary-z12.1",
+      "png_sha256": "e2f85991a88948a5b731a5c3e300700f83890d7093f92602feab43d723056548",
+      "labels_sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "boundaries_sha256": "6d6896c87a0175ed4d4cbb63a74efdc1042df5dae89f92ea68c98747e4623f92",
+      "png_labels_boundaries_runtime_byte_identical": true,
+      "runtime": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 12.1,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            736656.055064382,
+            5851199.490951247,
+            759477.9011972146,
+            5867246.101513394
+          ],
+          "map_scale": 67387.34094340328,
+          "vector_tile_zoom": 12.025202613188227,
+          "integer_render_zoom": 12,
+          "integer_fetch_zoom": 12
+        }
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "lausanne-lavaux-z10-light-activity",
+      "png_sha256": "a9e43dce6e35e46d79f41e50f75431680447165d227c47d6668a9bc0303b2838",
+      "labels_sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "boundaries_sha256": "6d6896c87a0175ed4d4cbb63a74efdc1042df5dae89f92ea68c98747e4623f92",
+      "png_labels_boundaries_runtime_byte_identical": true,
+      "runtime": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 10.25,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            706930.5793611014,
+            5830298.7658473775,
+            789203.3769004953,
+            5888146.826617263
+          ],
+          "map_scale": 242931.48879742288,
+          "vector_tile_zoom": 10.220212941573237,
+          "integer_render_zoom": 10,
+          "integer_fetch_zoom": 10
+        }
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "zurich-region-z8-light-activity",
+      "png_sha256": "1676949fbb326ca41d5b81e43b2a3367958912d85d9364c18f0d3eb2ef3738bd",
+      "labels_sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "boundaries_sha256": "6d6896c87a0175ed4d4cbb63a74efdc1042df5dae89f92ea68c98747e4623f92",
+      "png_labels_boundaries_runtime_byte_identical": true,
+      "runtime": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 8.2,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            780320.1684168805,
+            5884545.688159028,
+            1121016.734332232,
+            6124097.96106826
+          ],
+          "map_scale": 1005993.7969941482,
+          "vector_tile_zoom": 8.157448886503945,
+          "integer_render_zoom": 8,
+          "integer_fetch_zoom": 8
+        }
+      }
+    }
+  ],
+  "freshness_scope": "24 QGIS outputs recaptured at exact final head in the same active protected Gateway run. Existing same-run browser references/unchanged controls retained, not claimed recaptured here. No upstream tile payload archive.",
+  "changes_since_implementation": [
+    "docs/light-cartographic-assessment.md",
+    "tests/test_qt6_class_enum_probe.py"
+  ],
+  "final_local_tests": {
+    "passed": 2668,
+    "skipped": 186,
+    "subtests": 291
+  },
+  "final_complete_docker_lanes": [
+    {
+      "qgis_major": "3",
+      "passed": 211,
+      "skipped": 82,
+      "image": {
+        "manifest": "sha256:144a796cb4ed7c3722d17dd37e555ad21cb3ca1deb5b0e50c21a1f2ac31da688",
+        "config": "sha256:5cd2836ff61cb273c7f9f4ce5845f258ee78b82a55b8313aa85db962405b086f",
+        "manifest list": "sha256:9bf850ffeb3a012cbd8956c9ea101fa8353f0df1d320884e6613b6739ab205b2"
+      },
+      "runtime_content_matches_capture": true
+    },
+    {
+      "qgis_major": "4",
+      "passed": 211,
+      "skipped": 82,
+      "image": {
+        "manifest": "sha256:9c9312211a5f672241b2e2b1f81541e439ea8e128c4e95dc65b2167fef6453f7",
+        "config": "sha256:60104c9df516742351cf67c60a03f50cc3b65483c9725ecc774f4a22ce223106",
+        "manifest list": "sha256:313e91cd4cd9bc7460e623c4ca5314ee7c0b721fa0b03d9bb8bf682e641b23cf"
+      },
+      "runtime_content_matches_capture": true
+    }
+  ]
+}
