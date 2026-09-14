@@ -131,7 +131,7 @@ focused investigation before broad completion, not an assertion of a root cause.
 | C25 | PARTIAL (diagnostic only) | Synthetic Run/Ride/Hike overlays now exercise unchanged production categorization on two city extents below. Real activity data, UI/selection/start/end/direction states remain NOT ASSESSED. | — |
 | C26 | PARTIAL (diagnostic only) | Two-city synthetic routes remain visible with the width repair below. Real sparse/dense/shared routes and broader background/output coverage remain NOT ASSESSED. | — |
 | C27 | NOT ASSESSED | No grayscale, color-vision, low-vision or target physical-size assessment. | — |
-| C28 | PARTIAL | Two Docker PNG runtimes plus scoped native QGIS 3.34 width expressions checked below. Other older versions, Windows/macOS, interactive canvas, high-DPI and PDF still need separate cells. | — |
+| C28 | PARTIAL; density consistency OPEN | Same-physical-size 96/192-DPI PNGs now show QGIS4 native zoom +1 and changed detail/labels; QGIS3 stays at the same zoom. Scoped native geometry/metadata tests also pass on3.34.4. Desktop, other platforms, interactive scaling and PDF remain unvalidated. | Provisional major output-consistency finding |
 | C29 | PARTIAL | All 30 current width-matrix repeat controls are byte-identical. Cold/warm cache, interactive responsiveness and pan/zoom stability remain untested. | — |
 | C30 | NOT ASSESSED | Cropped basemap evidence does not validate complete user-facing attribution, legend, scale or north/context requirements. | — |
 
