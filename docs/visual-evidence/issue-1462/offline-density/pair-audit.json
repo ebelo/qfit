@@ -1,0 +1,722 @@
+[
+  {
+    "version": 3,
+    "kind": "png",
+    "dpi": 96,
+    "left": "png-96-plain-0.png",
+    "right": "png-96-plain-1.png",
+    "left_sha256": "a209feb16fc99004764574e25c8bcb87bc223d6e359a18d7a3ca47a98da5ca9e",
+    "right_sha256": "a209feb16fc99004764574e25c8bcb87bc223d6e359a18d7a3ca47a98da5ca9e",
+    "changed_pixels": 0
+  },
+  {
+    "version": 3,
+    "kind": "png",
+    "dpi": 96,
+    "left": "png-96-plain-0.png",
+    "right": "png-96-trace-0.png",
+    "left_sha256": "a209feb16fc99004764574e25c8bcb87bc223d6e359a18d7a3ca47a98da5ca9e",
+    "right_sha256": "a209feb16fc99004764574e25c8bcb87bc223d6e359a18d7a3ca47a98da5ca9e",
+    "changed_pixels": 0
+  },
+  {
+    "version": 3,
+    "kind": "png",
+    "dpi": 96,
+    "left": "png-96-plain-0.png",
+    "right": "png-96-trace-1.png",
+    "left_sha256": "a209feb16fc99004764574e25c8bcb87bc223d6e359a18d7a3ca47a98da5ca9e",
+    "right_sha256": "a209feb16fc99004764574e25c8bcb87bc223d6e359a18d7a3ca47a98da5ca9e",
+    "changed_pixels": 0
+  },
+  {
+    "version": 3,
+    "kind": "png",
+    "dpi": 96,
+    "left": "png-96-plain-1.png",
+    "right": "png-96-trace-0.png",
+    "left_sha256": "a209feb16fc99004764574e25c8bcb87bc223d6e359a18d7a3ca47a98da5ca9e",
+    "right_sha256": "a209feb16fc99004764574e25c8bcb87bc223d6e359a18d7a3ca47a98da5ca9e",
+    "changed_pixels": 0
+  },
+  {
+    "version": 3,
+    "kind": "png",
+    "dpi": 96,
+    "left": "png-96-plain-1.png",
+    "right": "png-96-trace-1.png",
+    "left_sha256": "a209feb16fc99004764574e25c8bcb87bc223d6e359a18d7a3ca47a98da5ca9e",
+    "right_sha256": "a209feb16fc99004764574e25c8bcb87bc223d6e359a18d7a3ca47a98da5ca9e",
+    "changed_pixels": 0
+  },
+  {
+    "version": 3,
+    "kind": "png",
+    "dpi": 96,
+    "left": "png-96-trace-0.png",
+    "right": "png-96-trace-1.png",
+    "left_sha256": "a209feb16fc99004764574e25c8bcb87bc223d6e359a18d7a3ca47a98da5ca9e",
+    "right_sha256": "a209feb16fc99004764574e25c8bcb87bc223d6e359a18d7a3ca47a98da5ca9e",
+    "changed_pixels": 0
+  },
+  {
+    "version": 3,
+    "kind": "png",
+    "dpi": 150,
+    "left": "png-150-plain-0.png",
+    "right": "png-150-plain-1.png",
+    "left_sha256": "8f8c2065aa0c1a740a4d970da42acee15921679f2c0c77094bf8c870079d8ffa",
+    "right_sha256": "8f8c2065aa0c1a740a4d970da42acee15921679f2c0c77094bf8c870079d8ffa",
+    "changed_pixels": 0
+  },
+  {
+    "version": 3,
+    "kind": "png",
+    "dpi": 150,
+    "left": "png-150-plain-0.png",
+    "right": "png-150-trace-0.png",
+    "left_sha256": "8f8c2065aa0c1a740a4d970da42acee15921679f2c0c77094bf8c870079d8ffa",
+    "right_sha256": "8f8c2065aa0c1a740a4d970da42acee15921679f2c0c77094bf8c870079d8ffa",
+    "changed_pixels": 0
+  },
+  {
+    "version": 3,
+    "kind": "png",
+    "dpi": 150,
+    "left": "png-150-plain-0.png",
+    "right": "png-150-trace-1.png",
+    "left_sha256": "8f8c2065aa0c1a740a4d970da42acee15921679f2c0c77094bf8c870079d8ffa",
+    "right_sha256": "8f8c2065aa0c1a740a4d970da42acee15921679f2c0c77094bf8c870079d8ffa",
+    "changed_pixels": 0
+  },
+  {
+    "version": 3,
+    "kind": "png",
+    "dpi": 150,
+    "left": "png-150-plain-1.png",
+    "right": "png-150-trace-0.png",
+    "left_sha256": "8f8c2065aa0c1a740a4d970da42acee15921679f2c0c77094bf8c870079d8ffa",
+    "right_sha256": "8f8c2065aa0c1a740a4d970da42acee15921679f2c0c77094bf8c870079d8ffa",
+    "changed_pixels": 0
+  },
+  {
+    "version": 3,
+    "kind": "png",
+    "dpi": 150,
+    "left": "png-150-plain-1.png",
+    "right": "png-150-trace-1.png",
+    "left_sha256": "8f8c2065aa0c1a740a4d970da42acee15921679f2c0c77094bf8c870079d8ffa",
+    "right_sha256": "8f8c2065aa0c1a740a4d970da42acee15921679f2c0c77094bf8c870079d8ffa",
+    "changed_pixels": 0
+  },
+  {
+    "version": 3,
+    "kind": "png",
+    "dpi": 150,
+    "left": "png-150-trace-0.png",
+    "right": "png-150-trace-1.png",
+    "left_sha256": "8f8c2065aa0c1a740a4d970da42acee15921679f2c0c77094bf8c870079d8ffa",
+    "right_sha256": "8f8c2065aa0c1a740a4d970da42acee15921679f2c0c77094bf8c870079d8ffa",
+    "changed_pixels": 0
+  },
+  {
+    "version": 3,
+    "kind": "png",
+    "dpi": 192,
+    "left": "png-192-plain-0.png",
+    "right": "png-192-plain-1.png",
+    "left_sha256": "1cf38029dc5a036a43cbf683af892dc5ef9b9fbb2dd0584e47e5e717b849019f",
+    "right_sha256": "1cf38029dc5a036a43cbf683af892dc5ef9b9fbb2dd0584e47e5e717b849019f",
+    "changed_pixels": 0
+  },
+  {
+    "version": 3,
+    "kind": "png",
+    "dpi": 192,
+    "left": "png-192-plain-0.png",
+    "right": "png-192-trace-0.png",
+    "left_sha256": "1cf38029dc5a036a43cbf683af892dc5ef9b9fbb2dd0584e47e5e717b849019f",
+    "right_sha256": "1cf38029dc5a036a43cbf683af892dc5ef9b9fbb2dd0584e47e5e717b849019f",
+    "changed_pixels": 0
+  },
+  {
+    "version": 3,
+    "kind": "png",
+    "dpi": 192,
+    "left": "png-192-plain-0.png",
+    "right": "png-192-trace-1.png",
+    "left_sha256": "1cf38029dc5a036a43cbf683af892dc5ef9b9fbb2dd0584e47e5e717b849019f",
+    "right_sha256": "1cf38029dc5a036a43cbf683af892dc5ef9b9fbb2dd0584e47e5e717b849019f",
+    "changed_pixels": 0
+  },
+  {
+    "version": 3,
+    "kind": "png",
+    "dpi": 192,
+    "left": "png-192-plain-1.png",
+    "right": "png-192-trace-0.png",
+    "left_sha256": "1cf38029dc5a036a43cbf683af892dc5ef9b9fbb2dd0584e47e5e717b849019f",
+    "right_sha256": "1cf38029dc5a036a43cbf683af892dc5ef9b9fbb2dd0584e47e5e717b849019f",
+    "changed_pixels": 0
+  },
+  {
+    "version": 3,
+    "kind": "png",
+    "dpi": 192,
+    "left": "png-192-plain-1.png",
+    "right": "png-192-trace-1.png",
+    "left_sha256": "1cf38029dc5a036a43cbf683af892dc5ef9b9fbb2dd0584e47e5e717b849019f",
+    "right_sha256": "1cf38029dc5a036a43cbf683af892dc5ef9b9fbb2dd0584e47e5e717b849019f",
+    "changed_pixels": 0
+  },
+  {
+    "version": 3,
+    "kind": "png",
+    "dpi": 192,
+    "left": "png-192-trace-0.png",
+    "right": "png-192-trace-1.png",
+    "left_sha256": "1cf38029dc5a036a43cbf683af892dc5ef9b9fbb2dd0584e47e5e717b849019f",
+    "right_sha256": "1cf38029dc5a036a43cbf683af892dc5ef9b9fbb2dd0584e47e5e717b849019f",
+    "changed_pixels": 0
+  },
+  {
+    "version": 3,
+    "kind": "pdf",
+    "dpi": 96,
+    "left": "pdf-96-plain-0.png",
+    "right": "pdf-96-plain-1.png",
+    "left_sha256": "0a562132ed96881d58a073d43244e829728206570d687c262ea7d26db9928057",
+    "right_sha256": "0a562132ed96881d58a073d43244e829728206570d687c262ea7d26db9928057",
+    "changed_pixels": 0
+  },
+  {
+    "version": 3,
+    "kind": "pdf",
+    "dpi": 96,
+    "left": "pdf-96-plain-0.png",
+    "right": "pdf-96-trace-0.png",
+    "left_sha256": "0a562132ed96881d58a073d43244e829728206570d687c262ea7d26db9928057",
+    "right_sha256": "0a562132ed96881d58a073d43244e829728206570d687c262ea7d26db9928057",
+    "changed_pixels": 0
+  },
+  {
+    "version": 3,
+    "kind": "pdf",
+    "dpi": 96,
+    "left": "pdf-96-plain-0.png",
+    "right": "pdf-96-trace-1.png",
+    "left_sha256": "0a562132ed96881d58a073d43244e829728206570d687c262ea7d26db9928057",
+    "right_sha256": "0a562132ed96881d58a073d43244e829728206570d687c262ea7d26db9928057",
+    "changed_pixels": 0
+  },
+  {
+    "version": 3,
+    "kind": "pdf",
+    "dpi": 96,
+    "left": "pdf-96-plain-1.png",
+    "right": "pdf-96-trace-0.png",
+    "left_sha256": "0a562132ed96881d58a073d43244e829728206570d687c262ea7d26db9928057",
+    "right_sha256": "0a562132ed96881d58a073d43244e829728206570d687c262ea7d26db9928057",
+    "changed_pixels": 0
+  },
+  {
+    "version": 3,
+    "kind": "pdf",
+    "dpi": 96,
+    "left": "pdf-96-plain-1.png",
+    "right": "pdf-96-trace-1.png",
+    "left_sha256": "0a562132ed96881d58a073d43244e829728206570d687c262ea7d26db9928057",
+    "right_sha256": "0a562132ed96881d58a073d43244e829728206570d687c262ea7d26db9928057",
+    "changed_pixels": 0
+  },
+  {
+    "version": 3,
+    "kind": "pdf",
+    "dpi": 96,
+    "left": "pdf-96-trace-0.png",
+    "right": "pdf-96-trace-1.png",
+    "left_sha256": "0a562132ed96881d58a073d43244e829728206570d687c262ea7d26db9928057",
+    "right_sha256": "0a562132ed96881d58a073d43244e829728206570d687c262ea7d26db9928057",
+    "changed_pixels": 0
+  },
+  {
+    "version": 3,
+    "kind": "pdf",
+    "dpi": 150,
+    "left": "pdf-150-plain-0.png",
+    "right": "pdf-150-plain-1.png",
+    "left_sha256": "597d593b343743e5af8cbe61cdd53a007123289654664a1dccc99e1a339caf81",
+    "right_sha256": "597d593b343743e5af8cbe61cdd53a007123289654664a1dccc99e1a339caf81",
+    "changed_pixels": 0
+  },
+  {
+    "version": 3,
+    "kind": "pdf",
+    "dpi": 150,
+    "left": "pdf-150-plain-0.png",
+    "right": "pdf-150-trace-0.png",
+    "left_sha256": "597d593b343743e5af8cbe61cdd53a007123289654664a1dccc99e1a339caf81",
+    "right_sha256": "597d593b343743e5af8cbe61cdd53a007123289654664a1dccc99e1a339caf81",
+    "changed_pixels": 0
+  },
+  {
+    "version": 3,
+    "kind": "pdf",
+    "dpi": 150,
+    "left": "pdf-150-plain-0.png",
+    "right": "pdf-150-trace-1.png",
+    "left_sha256": "597d593b343743e5af8cbe61cdd53a007123289654664a1dccc99e1a339caf81",
+    "right_sha256": "597d593b343743e5af8cbe61cdd53a007123289654664a1dccc99e1a339caf81",
+    "changed_pixels": 0
+  },
+  {
+    "version": 3,
+    "kind": "pdf",
+    "dpi": 150,
+    "left": "pdf-150-plain-1.png",
+    "right": "pdf-150-trace-0.png",
+    "left_sha256": "597d593b343743e5af8cbe61cdd53a007123289654664a1dccc99e1a339caf81",
+    "right_sha256": "597d593b343743e5af8cbe61cdd53a007123289654664a1dccc99e1a339caf81",
+    "changed_pixels": 0
+  },
+  {
+    "version": 3,
+    "kind": "pdf",
+    "dpi": 150,
+    "left": "pdf-150-plain-1.png",
+    "right": "pdf-150-trace-1.png",
+    "left_sha256": "597d593b343743e5af8cbe61cdd53a007123289654664a1dccc99e1a339caf81",
+    "right_sha256": "597d593b343743e5af8cbe61cdd53a007123289654664a1dccc99e1a339caf81",
+    "changed_pixels": 0
+  },
+  {
+    "version": 3,
+    "kind": "pdf",
+    "dpi": 150,
+    "left": "pdf-150-trace-0.png",
+    "right": "pdf-150-trace-1.png",
+    "left_sha256": "597d593b343743e5af8cbe61cdd53a007123289654664a1dccc99e1a339caf81",
+    "right_sha256": "597d593b343743e5af8cbe61cdd53a007123289654664a1dccc99e1a339caf81",
+    "changed_pixels": 0
+  },
+  {
+    "version": 3,
+    "kind": "pdf",
+    "dpi": 192,
+    "left": "pdf-192-plain-0.png",
+    "right": "pdf-192-plain-1.png",
+    "left_sha256": "0a562132ed96881d58a073d43244e829728206570d687c262ea7d26db9928057",
+    "right_sha256": "0a562132ed96881d58a073d43244e829728206570d687c262ea7d26db9928057",
+    "changed_pixels": 0
+  },
+  {
+    "version": 3,
+    "kind": "pdf",
+    "dpi": 192,
+    "left": "pdf-192-plain-0.png",
+    "right": "pdf-192-trace-0.png",
+    "left_sha256": "0a562132ed96881d58a073d43244e829728206570d687c262ea7d26db9928057",
+    "right_sha256": "0a562132ed96881d58a073d43244e829728206570d687c262ea7d26db9928057",
+    "changed_pixels": 0
+  },
+  {
+    "version": 3,
+    "kind": "pdf",
+    "dpi": 192,
+    "left": "pdf-192-plain-0.png",
+    "right": "pdf-192-trace-1.png",
+    "left_sha256": "0a562132ed96881d58a073d43244e829728206570d687c262ea7d26db9928057",
+    "right_sha256": "0a562132ed96881d58a073d43244e829728206570d687c262ea7d26db9928057",
+    "changed_pixels": 0
+  },
+  {
+    "version": 3,
+    "kind": "pdf",
+    "dpi": 192,
+    "left": "pdf-192-plain-1.png",
+    "right": "pdf-192-trace-0.png",
+    "left_sha256": "0a562132ed96881d58a073d43244e829728206570d687c262ea7d26db9928057",
+    "right_sha256": "0a562132ed96881d58a073d43244e829728206570d687c262ea7d26db9928057",
+    "changed_pixels": 0
+  },
+  {
+    "version": 3,
+    "kind": "pdf",
+    "dpi": 192,
+    "left": "pdf-192-plain-1.png",
+    "right": "pdf-192-trace-1.png",
+    "left_sha256": "0a562132ed96881d58a073d43244e829728206570d687c262ea7d26db9928057",
+    "right_sha256": "0a562132ed96881d58a073d43244e829728206570d687c262ea7d26db9928057",
+    "changed_pixels": 0
+  },
+  {
+    "version": 3,
+    "kind": "pdf",
+    "dpi": 192,
+    "left": "pdf-192-trace-0.png",
+    "right": "pdf-192-trace-1.png",
+    "left_sha256": "0a562132ed96881d58a073d43244e829728206570d687c262ea7d26db9928057",
+    "right_sha256": "0a562132ed96881d58a073d43244e829728206570d687c262ea7d26db9928057",
+    "changed_pixels": 0
+  },
+  {
+    "version": 4,
+    "kind": "png",
+    "dpi": 96,
+    "left": "png-96-plain-0.png",
+    "right": "png-96-plain-1.png",
+    "left_sha256": "ef55c6157c7fd40a66357b6aae19397cf3e84f5f21ea90b8060468e331398c01",
+    "right_sha256": "ef55c6157c7fd40a66357b6aae19397cf3e84f5f21ea90b8060468e331398c01",
+    "changed_pixels": 0
+  },
+  {
+    "version": 4,
+    "kind": "png",
+    "dpi": 96,
+    "left": "png-96-plain-0.png",
+    "right": "png-96-trace-0.png",
+    "left_sha256": "ef55c6157c7fd40a66357b6aae19397cf3e84f5f21ea90b8060468e331398c01",
+    "right_sha256": "ef55c6157c7fd40a66357b6aae19397cf3e84f5f21ea90b8060468e331398c01",
+    "changed_pixels": 0
+  },
+  {
+    "version": 4,
+    "kind": "png",
+    "dpi": 96,
+    "left": "png-96-plain-0.png",
+    "right": "png-96-trace-1.png",
+    "left_sha256": "ef55c6157c7fd40a66357b6aae19397cf3e84f5f21ea90b8060468e331398c01",
+    "right_sha256": "ef55c6157c7fd40a66357b6aae19397cf3e84f5f21ea90b8060468e331398c01",
+    "changed_pixels": 0
+  },
+  {
+    "version": 4,
+    "kind": "png",
+    "dpi": 96,
+    "left": "png-96-plain-1.png",
+    "right": "png-96-trace-0.png",
+    "left_sha256": "ef55c6157c7fd40a66357b6aae19397cf3e84f5f21ea90b8060468e331398c01",
+    "right_sha256": "ef55c6157c7fd40a66357b6aae19397cf3e84f5f21ea90b8060468e331398c01",
+    "changed_pixels": 0
+  },
+  {
+    "version": 4,
+    "kind": "png",
+    "dpi": 96,
+    "left": "png-96-plain-1.png",
+    "right": "png-96-trace-1.png",
+    "left_sha256": "ef55c6157c7fd40a66357b6aae19397cf3e84f5f21ea90b8060468e331398c01",
+    "right_sha256": "ef55c6157c7fd40a66357b6aae19397cf3e84f5f21ea90b8060468e331398c01",
+    "changed_pixels": 0
+  },
+  {
+    "version": 4,
+    "kind": "png",
+    "dpi": 96,
+    "left": "png-96-trace-0.png",
+    "right": "png-96-trace-1.png",
+    "left_sha256": "ef55c6157c7fd40a66357b6aae19397cf3e84f5f21ea90b8060468e331398c01",
+    "right_sha256": "ef55c6157c7fd40a66357b6aae19397cf3e84f5f21ea90b8060468e331398c01",
+    "changed_pixels": 0
+  },
+  {
+    "version": 4,
+    "kind": "png",
+    "dpi": 150,
+    "left": "png-150-plain-0.png",
+    "right": "png-150-plain-1.png",
+    "left_sha256": "bab844221e9f74b096baec4cda025f34e3469af5230b13e55616983c430731ac",
+    "right_sha256": "bab844221e9f74b096baec4cda025f34e3469af5230b13e55616983c430731ac",
+    "changed_pixels": 0
+  },
+  {
+    "version": 4,
+    "kind": "png",
+    "dpi": 150,
+    "left": "png-150-plain-0.png",
+    "right": "png-150-trace-0.png",
+    "left_sha256": "bab844221e9f74b096baec4cda025f34e3469af5230b13e55616983c430731ac",
+    "right_sha256": "bab844221e9f74b096baec4cda025f34e3469af5230b13e55616983c430731ac",
+    "changed_pixels": 0
+  },
+  {
+    "version": 4,
+    "kind": "png",
+    "dpi": 150,
+    "left": "png-150-plain-0.png",
+    "right": "png-150-trace-1.png",
+    "left_sha256": "bab844221e9f74b096baec4cda025f34e3469af5230b13e55616983c430731ac",
+    "right_sha256": "bab844221e9f74b096baec4cda025f34e3469af5230b13e55616983c430731ac",
+    "changed_pixels": 0
+  },
+  {
+    "version": 4,
+    "kind": "png",
+    "dpi": 150,
+    "left": "png-150-plain-1.png",
+    "right": "png-150-trace-0.png",
+    "left_sha256": "bab844221e9f74b096baec4cda025f34e3469af5230b13e55616983c430731ac",
+    "right_sha256": "bab844221e9f74b096baec4cda025f34e3469af5230b13e55616983c430731ac",
+    "changed_pixels": 0
+  },
+  {
+    "version": 4,
+    "kind": "png",
+    "dpi": 150,
+    "left": "png-150-plain-1.png",
+    "right": "png-150-trace-1.png",
+    "left_sha256": "bab844221e9f74b096baec4cda025f34e3469af5230b13e55616983c430731ac",
+    "right_sha256": "bab844221e9f74b096baec4cda025f34e3469af5230b13e55616983c430731ac",
+    "changed_pixels": 0
+  },
+  {
+    "version": 4,
+    "kind": "png",
+    "dpi": 150,
+    "left": "png-150-trace-0.png",
+    "right": "png-150-trace-1.png",
+    "left_sha256": "bab844221e9f74b096baec4cda025f34e3469af5230b13e55616983c430731ac",
+    "right_sha256": "bab844221e9f74b096baec4cda025f34e3469af5230b13e55616983c430731ac",
+    "changed_pixels": 0
+  },
+  {
+    "version": 4,
+    "kind": "png",
+    "dpi": 192,
+    "left": "png-192-plain-0.png",
+    "right": "png-192-plain-1.png",
+    "left_sha256": "7f8bffad005212da65bf2277024202138885f82f2fb51f866364db73a779ecb1",
+    "right_sha256": "7f8bffad005212da65bf2277024202138885f82f2fb51f866364db73a779ecb1",
+    "changed_pixels": 0
+  },
+  {
+    "version": 4,
+    "kind": "png",
+    "dpi": 192,
+    "left": "png-192-plain-0.png",
+    "right": "png-192-trace-0.png",
+    "left_sha256": "7f8bffad005212da65bf2277024202138885f82f2fb51f866364db73a779ecb1",
+    "right_sha256": "7f8bffad005212da65bf2277024202138885f82f2fb51f866364db73a779ecb1",
+    "changed_pixels": 0
+  },
+  {
+    "version": 4,
+    "kind": "png",
+    "dpi": 192,
+    "left": "png-192-plain-0.png",
+    "right": "png-192-trace-1.png",
+    "left_sha256": "7f8bffad005212da65bf2277024202138885f82f2fb51f866364db73a779ecb1",
+    "right_sha256": "7f8bffad005212da65bf2277024202138885f82f2fb51f866364db73a779ecb1",
+    "changed_pixels": 0
+  },
+  {
+    "version": 4,
+    "kind": "png",
+    "dpi": 192,
+    "left": "png-192-plain-1.png",
+    "right": "png-192-trace-0.png",
+    "left_sha256": "7f8bffad005212da65bf2277024202138885f82f2fb51f866364db73a779ecb1",
+    "right_sha256": "7f8bffad005212da65bf2277024202138885f82f2fb51f866364db73a779ecb1",
+    "changed_pixels": 0
+  },
+  {
+    "version": 4,
+    "kind": "png",
+    "dpi": 192,
+    "left": "png-192-plain-1.png",
+    "right": "png-192-trace-1.png",
+    "left_sha256": "7f8bffad005212da65bf2277024202138885f82f2fb51f866364db73a779ecb1",
+    "right_sha256": "7f8bffad005212da65bf2277024202138885f82f2fb51f866364db73a779ecb1",
+    "changed_pixels": 0
+  },
+  {
+    "version": 4,
+    "kind": "png",
+    "dpi": 192,
+    "left": "png-192-trace-0.png",
+    "right": "png-192-trace-1.png",
+    "left_sha256": "7f8bffad005212da65bf2277024202138885f82f2fb51f866364db73a779ecb1",
+    "right_sha256": "7f8bffad005212da65bf2277024202138885f82f2fb51f866364db73a779ecb1",
+    "changed_pixels": 0
+  },
+  {
+    "version": 4,
+    "kind": "pdf",
+    "dpi": 96,
+    "left": "pdf-96-plain-0.png",
+    "right": "pdf-96-plain-1.png",
+    "left_sha256": "63b22965365ba4f7f2409fcfd791a03f1c1cb8ceb7f81632e4d915a73cfb0cc0",
+    "right_sha256": "63b22965365ba4f7f2409fcfd791a03f1c1cb8ceb7f81632e4d915a73cfb0cc0",
+    "changed_pixels": 0
+  },
+  {
+    "version": 4,
+    "kind": "pdf",
+    "dpi": 96,
+    "left": "pdf-96-plain-0.png",
+    "right": "pdf-96-trace-0.png",
+    "left_sha256": "63b22965365ba4f7f2409fcfd791a03f1c1cb8ceb7f81632e4d915a73cfb0cc0",
+    "right_sha256": "63b22965365ba4f7f2409fcfd791a03f1c1cb8ceb7f81632e4d915a73cfb0cc0",
+    "changed_pixels": 0
+  },
+  {
+    "version": 4,
+    "kind": "pdf",
+    "dpi": 96,
+    "left": "pdf-96-plain-0.png",
+    "right": "pdf-96-trace-1.png",
+    "left_sha256": "63b22965365ba4f7f2409fcfd791a03f1c1cb8ceb7f81632e4d915a73cfb0cc0",
+    "right_sha256": "63b22965365ba4f7f2409fcfd791a03f1c1cb8ceb7f81632e4d915a73cfb0cc0",
+    "changed_pixels": 0
+  },
+  {
+    "version": 4,
+    "kind": "pdf",
+    "dpi": 96,
+    "left": "pdf-96-plain-1.png",
+    "right": "pdf-96-trace-0.png",
+    "left_sha256": "63b22965365ba4f7f2409fcfd791a03f1c1cb8ceb7f81632e4d915a73cfb0cc0",
+    "right_sha256": "63b22965365ba4f7f2409fcfd791a03f1c1cb8ceb7f81632e4d915a73cfb0cc0",
+    "changed_pixels": 0
+  },
+  {
+    "version": 4,
+    "kind": "pdf",
+    "dpi": 96,
+    "left": "pdf-96-plain-1.png",
+    "right": "pdf-96-trace-1.png",
+    "left_sha256": "63b22965365ba4f7f2409fcfd791a03f1c1cb8ceb7f81632e4d915a73cfb0cc0",
+    "right_sha256": "63b22965365ba4f7f2409fcfd791a03f1c1cb8ceb7f81632e4d915a73cfb0cc0",
+    "changed_pixels": 0
+  },
+  {
+    "version": 4,
+    "kind": "pdf",
+    "dpi": 96,
+    "left": "pdf-96-trace-0.png",
+    "right": "pdf-96-trace-1.png",
+    "left_sha256": "63b22965365ba4f7f2409fcfd791a03f1c1cb8ceb7f81632e4d915a73cfb0cc0",
+    "right_sha256": "63b22965365ba4f7f2409fcfd791a03f1c1cb8ceb7f81632e4d915a73cfb0cc0",
+    "changed_pixels": 0
+  },
+  {
+    "version": 4,
+    "kind": "pdf",
+    "dpi": 150,
+    "left": "pdf-150-plain-0.png",
+    "right": "pdf-150-plain-1.png",
+    "left_sha256": "7695eee6a62cf76119f290614d64e4b6ac81c7b5e51d81c0cac68400e54d4e25",
+    "right_sha256": "7695eee6a62cf76119f290614d64e4b6ac81c7b5e51d81c0cac68400e54d4e25",
+    "changed_pixels": 0
+  },
+  {
+    "version": 4,
+    "kind": "pdf",
+    "dpi": 150,
+    "left": "pdf-150-plain-0.png",
+    "right": "pdf-150-trace-0.png",
+    "left_sha256": "7695eee6a62cf76119f290614d64e4b6ac81c7b5e51d81c0cac68400e54d4e25",
+    "right_sha256": "7695eee6a62cf76119f290614d64e4b6ac81c7b5e51d81c0cac68400e54d4e25",
+    "changed_pixels": 0
+  },
+  {
+    "version": 4,
+    "kind": "pdf",
+    "dpi": 150,
+    "left": "pdf-150-plain-0.png",
+    "right": "pdf-150-trace-1.png",
+    "left_sha256": "7695eee6a62cf76119f290614d64e4b6ac81c7b5e51d81c0cac68400e54d4e25",
+    "right_sha256": "7695eee6a62cf76119f290614d64e4b6ac81c7b5e51d81c0cac68400e54d4e25",
+    "changed_pixels": 0
+  },
+  {
+    "version": 4,
+    "kind": "pdf",
+    "dpi": 150,
+    "left": "pdf-150-plain-1.png",
+    "right": "pdf-150-trace-0.png",
+    "left_sha256": "7695eee6a62cf76119f290614d64e4b6ac81c7b5e51d81c0cac68400e54d4e25",
+    "right_sha256": "7695eee6a62cf76119f290614d64e4b6ac81c7b5e51d81c0cac68400e54d4e25",
+    "changed_pixels": 0
+  },
+  {
+    "version": 4,
+    "kind": "pdf",
+    "dpi": 150,
+    "left": "pdf-150-plain-1.png",
+    "right": "pdf-150-trace-1.png",
+    "left_sha256": "7695eee6a62cf76119f290614d64e4b6ac81c7b5e51d81c0cac68400e54d4e25",
+    "right_sha256": "7695eee6a62cf76119f290614d64e4b6ac81c7b5e51d81c0cac68400e54d4e25",
+    "changed_pixels": 0
+  },
+  {
+    "version": 4,
+    "kind": "pdf",
+    "dpi": 150,
+    "left": "pdf-150-trace-0.png",
+    "right": "pdf-150-trace-1.png",
+    "left_sha256": "7695eee6a62cf76119f290614d64e4b6ac81c7b5e51d81c0cac68400e54d4e25",
+    "right_sha256": "7695eee6a62cf76119f290614d64e4b6ac81c7b5e51d81c0cac68400e54d4e25",
+    "changed_pixels": 0
+  },
+  {
+    "version": 4,
+    "kind": "pdf",
+    "dpi": 192,
+    "left": "pdf-192-plain-0.png",
+    "right": "pdf-192-plain-1.png",
+    "left_sha256": "1d3b8b5d20c755e49ce8b5a135a28018e0616453f0c134dbd682343d053b02c7",
+    "right_sha256": "1d3b8b5d20c755e49ce8b5a135a28018e0616453f0c134dbd682343d053b02c7",
+    "changed_pixels": 0
+  },
+  {
+    "version": 4,
+    "kind": "pdf",
+    "dpi": 192,
+    "left": "pdf-192-plain-0.png",
+    "right": "pdf-192-trace-0.png",
+    "left_sha256": "1d3b8b5d20c755e49ce8b5a135a28018e0616453f0c134dbd682343d053b02c7",
+    "right_sha256": "1d3b8b5d20c755e49ce8b5a135a28018e0616453f0c134dbd682343d053b02c7",
+    "changed_pixels": 0
+  },
+  {
+    "version": 4,
+    "kind": "pdf",
+    "dpi": 192,
+    "left": "pdf-192-plain-0.png",
+    "right": "pdf-192-trace-1.png",
+    "left_sha256": "1d3b8b5d20c755e49ce8b5a135a28018e0616453f0c134dbd682343d053b02c7",
+    "right_sha256": "1d3b8b5d20c755e49ce8b5a135a28018e0616453f0c134dbd682343d053b02c7",
+    "changed_pixels": 0
+  },
+  {
+    "version": 4,
+    "kind": "pdf",
+    "dpi": 192,
+    "left": "pdf-192-plain-1.png",
+    "right": "pdf-192-trace-0.png",
+    "left_sha256": "1d3b8b5d20c755e49ce8b5a135a28018e0616453f0c134dbd682343d053b02c7",
+    "right_sha256": "1d3b8b5d20c755e49ce8b5a135a28018e0616453f0c134dbd682343d053b02c7",
+    "changed_pixels": 0
+  },
+  {
+    "version": 4,
+    "kind": "pdf",
+    "dpi": 192,
+    "left": "pdf-192-plain-1.png",
+    "right": "pdf-192-trace-1.png",
+    "left_sha256": "1d3b8b5d20c755e49ce8b5a135a28018e0616453f0c134dbd682343d053b02c7",
+    "right_sha256": "1d3b8b5d20c755e49ce8b5a135a28018e0616453f0c134dbd682343d053b02c7",
+    "changed_pixels": 0
+  },
+  {
+    "version": 4,
+    "kind": "pdf",
+    "dpi": 192,
+    "left": "pdf-192-trace-0.png",
+    "right": "pdf-192-trace-1.png",
+    "left_sha256": "1d3b8b5d20c755e49ce8b5a135a28018e0616453f0c134dbd682343d053b02c7",
+    "right_sha256": "1d3b8b5d20c755e49ce8b5a135a28018e0616453f0c134dbd682343d053b02c7",
+    "changed_pixels": 0
+  }
+]

@@ -1,0 +1,1254 @@
+{
+  "qgis": "4.2.0-Bel\u00e9m do Par\u00e1",
+  "qgis_revision": "ec9a7f91d0f",
+  "records": [
+    {
+      "file": "z12.25-png-96-plain-0.png",
+      "source_zoom": 12.25,
+      "dpi": 96,
+      "kind": "png",
+      "traced": false,
+      "repeat": 0,
+      "map_scale": 60732.87219935607,
+      "trace": []
+    },
+    {
+      "file": "z12.25-png-96-plain-1.png",
+      "source_zoom": 12.25,
+      "dpi": 96,
+      "kind": "png",
+      "traced": false,
+      "repeat": 1,
+      "map_scale": 60732.87219935607,
+      "trace": []
+    },
+    {
+      "file": "z12.25-png-96-trace-0.png",
+      "source_zoom": 12.25,
+      "dpi": 96,
+      "kind": "png",
+      "traced": true,
+      "repeat": 0,
+      "map_scale": 60732.87219935607,
+      "trace": [
+        [
+          12.318207169492558,
+          12.0,
+          -1.0
+        ]
+      ]
+    },
+    {
+      "file": "z12.25-png-96-trace-1.png",
+      "source_zoom": 12.25,
+      "dpi": 96,
+      "kind": "png",
+      "traced": true,
+      "repeat": 1,
+      "map_scale": 60732.87219935607,
+      "trace": [
+        [
+          12.318207169492558,
+          12.0,
+          -1.0
+        ]
+      ]
+    },
+    {
+      "file": "z12.25-pdf-96-plain-0.pdf",
+      "source_zoom": 12.25,
+      "dpi": 96,
+      "kind": "pdf",
+      "traced": false,
+      "repeat": 0,
+      "map_scale": 60732.87219935606,
+      "trace": []
+    },
+    {
+      "file": "z12.25-pdf-96-plain-1.pdf",
+      "source_zoom": 12.25,
+      "dpi": 96,
+      "kind": "pdf",
+      "traced": false,
+      "repeat": 1,
+      "map_scale": 60732.87219935606,
+      "trace": []
+    },
+    {
+      "file": "z12.25-pdf-96-trace-0.pdf",
+      "source_zoom": 12.25,
+      "dpi": 96,
+      "kind": "pdf",
+      "traced": true,
+      "repeat": 0,
+      "map_scale": 60732.87219935606,
+      "trace": [
+        [
+          12.318207169492558,
+          12.0,
+          60732.87219935606
+        ]
+      ]
+    },
+    {
+      "file": "z12.25-pdf-96-trace-1.pdf",
+      "source_zoom": 12.25,
+      "dpi": 96,
+      "kind": "pdf",
+      "traced": true,
+      "repeat": 1,
+      "map_scale": 60732.87219935606,
+      "trace": [
+        [
+          12.318207169492558,
+          12.0,
+          60732.87219935606
+        ]
+      ]
+    },
+    {
+      "file": "z12.25-png-150-plain-0.png",
+      "source_zoom": 12.25,
+      "dpi": 150,
+      "kind": "png",
+      "traced": false,
+      "repeat": 0,
+      "map_scale": 60732.87219935607,
+      "trace": []
+    },
+    {
+      "file": "z12.25-png-150-plain-1.png",
+      "source_zoom": 12.25,
+      "dpi": 150,
+      "kind": "png",
+      "traced": false,
+      "repeat": 1,
+      "map_scale": 60732.87219935607,
+      "trace": []
+    },
+    {
+      "file": "z12.25-png-150-trace-0.png",
+      "source_zoom": 12.25,
+      "dpi": 150,
+      "kind": "png",
+      "traced": true,
+      "repeat": 0,
+      "map_scale": 60732.87219935607,
+      "trace": [
+        [
+          12.318207169492558,
+          12.0,
+          -1.0
+        ]
+      ]
+    },
+    {
+      "file": "z12.25-png-150-trace-1.png",
+      "source_zoom": 12.25,
+      "dpi": 150,
+      "kind": "png",
+      "traced": true,
+      "repeat": 1,
+      "map_scale": 60732.87219935607,
+      "trace": [
+        [
+          12.318207169492558,
+          12.0,
+          -1.0
+        ]
+      ]
+    },
+    {
+      "file": "z12.25-pdf-150-plain-0.pdf",
+      "source_zoom": 12.25,
+      "dpi": 150,
+      "kind": "pdf",
+      "traced": false,
+      "repeat": 0,
+      "map_scale": 60732.87219935606,
+      "trace": []
+    },
+    {
+      "file": "z12.25-pdf-150-plain-1.pdf",
+      "source_zoom": 12.25,
+      "dpi": 150,
+      "kind": "pdf",
+      "traced": false,
+      "repeat": 1,
+      "map_scale": 60732.87219935606,
+      "trace": []
+    },
+    {
+      "file": "z12.25-pdf-150-trace-0.pdf",
+      "source_zoom": 12.25,
+      "dpi": 150,
+      "kind": "pdf",
+      "traced": true,
+      "repeat": 0,
+      "map_scale": 60732.87219935606,
+      "trace": [
+        [
+          12.318207169492558,
+          12.0,
+          60732.87219935606
+        ]
+      ]
+    },
+    {
+      "file": "z12.25-pdf-150-trace-1.pdf",
+      "source_zoom": 12.25,
+      "dpi": 150,
+      "kind": "pdf",
+      "traced": true,
+      "repeat": 1,
+      "map_scale": 60732.87219935606,
+      "trace": [
+        [
+          12.318207169492558,
+          12.0,
+          60732.87219935606
+        ]
+      ]
+    },
+    {
+      "file": "z12.25-png-192-plain-0.png",
+      "source_zoom": 12.25,
+      "dpi": 192,
+      "kind": "png",
+      "traced": false,
+      "repeat": 0,
+      "map_scale": 60732.87219935607,
+      "trace": []
+    },
+    {
+      "file": "z12.25-png-192-plain-1.png",
+      "source_zoom": 12.25,
+      "dpi": 192,
+      "kind": "png",
+      "traced": false,
+      "repeat": 1,
+      "map_scale": 60732.87219935607,
+      "trace": []
+    },
+    {
+      "file": "z12.25-png-192-trace-0.png",
+      "source_zoom": 12.25,
+      "dpi": 192,
+      "kind": "png",
+      "traced": true,
+      "repeat": 0,
+      "map_scale": 60732.87219935607,
+      "trace": [
+        [
+          12.318207169492558,
+          12.0,
+          -1.0
+        ]
+      ]
+    },
+    {
+      "file": "z12.25-png-192-trace-1.png",
+      "source_zoom": 12.25,
+      "dpi": 192,
+      "kind": "png",
+      "traced": true,
+      "repeat": 1,
+      "map_scale": 60732.87219935607,
+      "trace": [
+        [
+          12.318207169492558,
+          12.0,
+          -1.0
+        ]
+      ]
+    },
+    {
+      "file": "z12.25-pdf-192-plain-0.pdf",
+      "source_zoom": 12.25,
+      "dpi": 192,
+      "kind": "pdf",
+      "traced": false,
+      "repeat": 0,
+      "map_scale": 60732.87219935606,
+      "trace": []
+    },
+    {
+      "file": "z12.25-pdf-192-plain-1.pdf",
+      "source_zoom": 12.25,
+      "dpi": 192,
+      "kind": "pdf",
+      "traced": false,
+      "repeat": 1,
+      "map_scale": 60732.87219935606,
+      "trace": []
+    },
+    {
+      "file": "z12.25-pdf-192-trace-0.pdf",
+      "source_zoom": 12.25,
+      "dpi": 192,
+      "kind": "pdf",
+      "traced": true,
+      "repeat": 0,
+      "map_scale": 60732.87219935606,
+      "trace": [
+        [
+          12.318207169492558,
+          12.0,
+          60732.87219935606
+        ]
+      ]
+    },
+    {
+      "file": "z12.25-pdf-192-trace-1.pdf",
+      "source_zoom": 12.25,
+      "dpi": 192,
+      "kind": "pdf",
+      "traced": true,
+      "repeat": 1,
+      "map_scale": 60732.87219935606,
+      "trace": [
+        [
+          12.318207169492558,
+          12.0,
+          60732.87219935606
+        ]
+      ]
+    },
+    {
+      "file": "z12.9-png-96-plain-0.png",
+      "source_zoom": 12.9,
+      "dpi": 96,
+      "kind": "png",
+      "traced": false,
+      "repeat": 0,
+      "map_scale": 38703.863844657266,
+      "trace": []
+    },
+    {
+      "file": "z12.9-png-96-plain-1.png",
+      "source_zoom": 12.9,
+      "dpi": 96,
+      "kind": "png",
+      "traced": false,
+      "repeat": 1,
+      "map_scale": 38703.863844657266,
+      "trace": []
+    },
+    {
+      "file": "z12.9-png-96-trace-0.png",
+      "source_zoom": 12.9,
+      "dpi": 96,
+      "kind": "png",
+      "traced": true,
+      "repeat": 0,
+      "map_scale": 38703.863844657266,
+      "trace": [
+        [
+          12.928226537463662,
+          12.0,
+          -1.0
+        ]
+      ]
+    },
+    {
+      "file": "z12.9-png-96-trace-1.png",
+      "source_zoom": 12.9,
+      "dpi": 96,
+      "kind": "png",
+      "traced": true,
+      "repeat": 1,
+      "map_scale": 38703.863844657266,
+      "trace": [
+        [
+          12.928226537463662,
+          12.0,
+          -1.0
+        ]
+      ]
+    },
+    {
+      "file": "z12.9-pdf-96-plain-0.pdf",
+      "source_zoom": 12.9,
+      "dpi": 96,
+      "kind": "pdf",
+      "traced": false,
+      "repeat": 0,
+      "map_scale": 38703.86384465726,
+      "trace": []
+    },
+    {
+      "file": "z12.9-pdf-96-plain-1.pdf",
+      "source_zoom": 12.9,
+      "dpi": 96,
+      "kind": "pdf",
+      "traced": false,
+      "repeat": 1,
+      "map_scale": 38703.86384465726,
+      "trace": []
+    },
+    {
+      "file": "z12.9-pdf-96-trace-0.pdf",
+      "source_zoom": 12.9,
+      "dpi": 96,
+      "kind": "pdf",
+      "traced": true,
+      "repeat": 0,
+      "map_scale": 38703.86384465726,
+      "trace": [
+        [
+          12.928226537463662,
+          12.0,
+          38703.86384465726
+        ]
+      ]
+    },
+    {
+      "file": "z12.9-pdf-96-trace-1.pdf",
+      "source_zoom": 12.9,
+      "dpi": 96,
+      "kind": "pdf",
+      "traced": true,
+      "repeat": 1,
+      "map_scale": 38703.86384465726,
+      "trace": [
+        [
+          12.928226537463662,
+          12.0,
+          38703.86384465726
+        ]
+      ]
+    },
+    {
+      "file": "z12.9-png-150-plain-0.png",
+      "source_zoom": 12.9,
+      "dpi": 150,
+      "kind": "png",
+      "traced": false,
+      "repeat": 0,
+      "map_scale": 38703.863844657266,
+      "trace": []
+    },
+    {
+      "file": "z12.9-png-150-plain-1.png",
+      "source_zoom": 12.9,
+      "dpi": 150,
+      "kind": "png",
+      "traced": false,
+      "repeat": 1,
+      "map_scale": 38703.863844657266,
+      "trace": []
+    },
+    {
+      "file": "z12.9-png-150-trace-0.png",
+      "source_zoom": 12.9,
+      "dpi": 150,
+      "kind": "png",
+      "traced": true,
+      "repeat": 0,
+      "map_scale": 38703.863844657266,
+      "trace": [
+        [
+          12.928226537463662,
+          12.0,
+          -1.0
+        ]
+      ]
+    },
+    {
+      "file": "z12.9-png-150-trace-1.png",
+      "source_zoom": 12.9,
+      "dpi": 150,
+      "kind": "png",
+      "traced": true,
+      "repeat": 1,
+      "map_scale": 38703.863844657266,
+      "trace": [
+        [
+          12.928226537463662,
+          12.0,
+          -1.0
+        ]
+      ]
+    },
+    {
+      "file": "z12.9-pdf-150-plain-0.pdf",
+      "source_zoom": 12.9,
+      "dpi": 150,
+      "kind": "pdf",
+      "traced": false,
+      "repeat": 0,
+      "map_scale": 38703.86384465726,
+      "trace": []
+    },
+    {
+      "file": "z12.9-pdf-150-plain-1.pdf",
+      "source_zoom": 12.9,
+      "dpi": 150,
+      "kind": "pdf",
+      "traced": false,
+      "repeat": 1,
+      "map_scale": 38703.86384465726,
+      "trace": []
+    },
+    {
+      "file": "z12.9-pdf-150-trace-0.pdf",
+      "source_zoom": 12.9,
+      "dpi": 150,
+      "kind": "pdf",
+      "traced": true,
+      "repeat": 0,
+      "map_scale": 38703.86384465726,
+      "trace": [
+        [
+          12.928226537463662,
+          12.0,
+          38703.86384465726
+        ]
+      ]
+    },
+    {
+      "file": "z12.9-pdf-150-trace-1.pdf",
+      "source_zoom": 12.9,
+      "dpi": 150,
+      "kind": "pdf",
+      "traced": true,
+      "repeat": 1,
+      "map_scale": 38703.86384465726,
+      "trace": [
+        [
+          12.928226537463662,
+          12.0,
+          38703.86384465726
+        ]
+      ]
+    },
+    {
+      "file": "z12.9-png-192-plain-0.png",
+      "source_zoom": 12.9,
+      "dpi": 192,
+      "kind": "png",
+      "traced": false,
+      "repeat": 0,
+      "map_scale": 38703.863844657266,
+      "trace": []
+    },
+    {
+      "file": "z12.9-png-192-plain-1.png",
+      "source_zoom": 12.9,
+      "dpi": 192,
+      "kind": "png",
+      "traced": false,
+      "repeat": 1,
+      "map_scale": 38703.863844657266,
+      "trace": []
+    },
+    {
+      "file": "z12.9-png-192-trace-0.png",
+      "source_zoom": 12.9,
+      "dpi": 192,
+      "kind": "png",
+      "traced": true,
+      "repeat": 0,
+      "map_scale": 38703.863844657266,
+      "trace": [
+        [
+          12.928226537463662,
+          12.0,
+          -1.0
+        ]
+      ]
+    },
+    {
+      "file": "z12.9-png-192-trace-1.png",
+      "source_zoom": 12.9,
+      "dpi": 192,
+      "kind": "png",
+      "traced": true,
+      "repeat": 1,
+      "map_scale": 38703.863844657266,
+      "trace": [
+        [
+          12.928226537463662,
+          12.0,
+          -1.0
+        ]
+      ]
+    },
+    {
+      "file": "z12.9-pdf-192-plain-0.pdf",
+      "source_zoom": 12.9,
+      "dpi": 192,
+      "kind": "pdf",
+      "traced": false,
+      "repeat": 0,
+      "map_scale": 38703.86384465726,
+      "trace": []
+    },
+    {
+      "file": "z12.9-pdf-192-plain-1.pdf",
+      "source_zoom": 12.9,
+      "dpi": 192,
+      "kind": "pdf",
+      "traced": false,
+      "repeat": 1,
+      "map_scale": 38703.86384465726,
+      "trace": []
+    },
+    {
+      "file": "z12.9-pdf-192-trace-0.pdf",
+      "source_zoom": 12.9,
+      "dpi": 192,
+      "kind": "pdf",
+      "traced": true,
+      "repeat": 0,
+      "map_scale": 38703.86384465726,
+      "trace": [
+        [
+          12.928226537463662,
+          12.0,
+          38703.86384465726
+        ]
+      ]
+    },
+    {
+      "file": "z12.9-pdf-192-trace-1.pdf",
+      "source_zoom": 12.9,
+      "dpi": 192,
+      "kind": "pdf",
+      "traced": true,
+      "repeat": 1,
+      "map_scale": 38703.86384465726,
+      "trace": [
+        [
+          12.928226537463662,
+          12.0,
+          38703.86384465726
+        ]
+      ]
+    },
+    {
+      "file": "z13-png-96-plain-0.png",
+      "source_zoom": 13,
+      "dpi": 96,
+      "kind": "png",
+      "traced": false,
+      "repeat": 0,
+      "map_scale": 36111.98186701279,
+      "trace": []
+    },
+    {
+      "file": "z13-png-96-plain-1.png",
+      "source_zoom": 13,
+      "dpi": 96,
+      "kind": "png",
+      "traced": false,
+      "repeat": 1,
+      "map_scale": 36111.98186701279,
+      "trace": []
+    },
+    {
+      "file": "z13-png-96-trace-0.png",
+      "source_zoom": 13,
+      "dpi": 96,
+      "kind": "png",
+      "traced": true,
+      "repeat": 0,
+      "map_scale": 36111.98186701279,
+      "trace": [
+        [
+          12.999999999999988,
+          12.0,
+          -1.0
+        ]
+      ]
+    },
+    {
+      "file": "z13-png-96-trace-1.png",
+      "source_zoom": 13,
+      "dpi": 96,
+      "kind": "png",
+      "traced": true,
+      "repeat": 1,
+      "map_scale": 36111.98186701279,
+      "trace": [
+        [
+          12.999999999999988,
+          12.0,
+          -1.0
+        ]
+      ]
+    },
+    {
+      "file": "z13-pdf-96-plain-0.pdf",
+      "source_zoom": 13,
+      "dpi": 96,
+      "kind": "pdf",
+      "traced": false,
+      "repeat": 0,
+      "map_scale": 36111.981867012786,
+      "trace": []
+    },
+    {
+      "file": "z13-pdf-96-plain-1.pdf",
+      "source_zoom": 13,
+      "dpi": 96,
+      "kind": "pdf",
+      "traced": false,
+      "repeat": 1,
+      "map_scale": 36111.981867012786,
+      "trace": []
+    },
+    {
+      "file": "z13-pdf-96-trace-0.pdf",
+      "source_zoom": 13,
+      "dpi": 96,
+      "kind": "pdf",
+      "traced": true,
+      "repeat": 0,
+      "map_scale": 36111.981867012786,
+      "trace": [
+        [
+          12.999999999999988,
+          12.0,
+          36111.981867012786
+        ]
+      ]
+    },
+    {
+      "file": "z13-pdf-96-trace-1.pdf",
+      "source_zoom": 13,
+      "dpi": 96,
+      "kind": "pdf",
+      "traced": true,
+      "repeat": 1,
+      "map_scale": 36111.981867012786,
+      "trace": [
+        [
+          12.999999999999988,
+          12.0,
+          36111.981867012786
+        ]
+      ]
+    },
+    {
+      "file": "z13-png-150-plain-0.png",
+      "source_zoom": 13,
+      "dpi": 150,
+      "kind": "png",
+      "traced": false,
+      "repeat": 0,
+      "map_scale": 36111.98186701279,
+      "trace": []
+    },
+    {
+      "file": "z13-png-150-plain-1.png",
+      "source_zoom": 13,
+      "dpi": 150,
+      "kind": "png",
+      "traced": false,
+      "repeat": 1,
+      "map_scale": 36111.98186701279,
+      "trace": []
+    },
+    {
+      "file": "z13-png-150-trace-0.png",
+      "source_zoom": 13,
+      "dpi": 150,
+      "kind": "png",
+      "traced": true,
+      "repeat": 0,
+      "map_scale": 36111.98186701279,
+      "trace": [
+        [
+          12.999999999999988,
+          12.0,
+          -1.0
+        ]
+      ]
+    },
+    {
+      "file": "z13-png-150-trace-1.png",
+      "source_zoom": 13,
+      "dpi": 150,
+      "kind": "png",
+      "traced": true,
+      "repeat": 1,
+      "map_scale": 36111.98186701279,
+      "trace": [
+        [
+          12.999999999999988,
+          12.0,
+          -1.0
+        ]
+      ]
+    },
+    {
+      "file": "z13-pdf-150-plain-0.pdf",
+      "source_zoom": 13,
+      "dpi": 150,
+      "kind": "pdf",
+      "traced": false,
+      "repeat": 0,
+      "map_scale": 36111.981867012786,
+      "trace": []
+    },
+    {
+      "file": "z13-pdf-150-plain-1.pdf",
+      "source_zoom": 13,
+      "dpi": 150,
+      "kind": "pdf",
+      "traced": false,
+      "repeat": 1,
+      "map_scale": 36111.981867012786,
+      "trace": []
+    },
+    {
+      "file": "z13-pdf-150-trace-0.pdf",
+      "source_zoom": 13,
+      "dpi": 150,
+      "kind": "pdf",
+      "traced": true,
+      "repeat": 0,
+      "map_scale": 36111.981867012786,
+      "trace": [
+        [
+          12.999999999999988,
+          12.0,
+          36111.981867012786
+        ]
+      ]
+    },
+    {
+      "file": "z13-pdf-150-trace-1.pdf",
+      "source_zoom": 13,
+      "dpi": 150,
+      "kind": "pdf",
+      "traced": true,
+      "repeat": 1,
+      "map_scale": 36111.981867012786,
+      "trace": [
+        [
+          12.999999999999988,
+          12.0,
+          36111.981867012786
+        ]
+      ]
+    },
+    {
+      "file": "z13-png-192-plain-0.png",
+      "source_zoom": 13,
+      "dpi": 192,
+      "kind": "png",
+      "traced": false,
+      "repeat": 0,
+      "map_scale": 36111.98186701279,
+      "trace": []
+    },
+    {
+      "file": "z13-png-192-plain-1.png",
+      "source_zoom": 13,
+      "dpi": 192,
+      "kind": "png",
+      "traced": false,
+      "repeat": 1,
+      "map_scale": 36111.98186701279,
+      "trace": []
+    },
+    {
+      "file": "z13-png-192-trace-0.png",
+      "source_zoom": 13,
+      "dpi": 192,
+      "kind": "png",
+      "traced": true,
+      "repeat": 0,
+      "map_scale": 36111.98186701279,
+      "trace": [
+        [
+          12.999999999999988,
+          12.0,
+          -1.0
+        ]
+      ]
+    },
+    {
+      "file": "z13-png-192-trace-1.png",
+      "source_zoom": 13,
+      "dpi": 192,
+      "kind": "png",
+      "traced": true,
+      "repeat": 1,
+      "map_scale": 36111.98186701279,
+      "trace": [
+        [
+          12.999999999999988,
+          12.0,
+          -1.0
+        ]
+      ]
+    },
+    {
+      "file": "z13-pdf-192-plain-0.pdf",
+      "source_zoom": 13,
+      "dpi": 192,
+      "kind": "pdf",
+      "traced": false,
+      "repeat": 0,
+      "map_scale": 36111.981867012786,
+      "trace": []
+    },
+    {
+      "file": "z13-pdf-192-plain-1.pdf",
+      "source_zoom": 13,
+      "dpi": 192,
+      "kind": "pdf",
+      "traced": false,
+      "repeat": 1,
+      "map_scale": 36111.981867012786,
+      "trace": []
+    },
+    {
+      "file": "z13-pdf-192-trace-0.pdf",
+      "source_zoom": 13,
+      "dpi": 192,
+      "kind": "pdf",
+      "traced": true,
+      "repeat": 0,
+      "map_scale": 36111.981867012786,
+      "trace": [
+        [
+          12.999999999999988,
+          12.0,
+          36111.981867012786
+        ]
+      ]
+    },
+    {
+      "file": "z13-pdf-192-trace-1.pdf",
+      "source_zoom": 13,
+      "dpi": 192,
+      "kind": "pdf",
+      "traced": true,
+      "repeat": 1,
+      "map_scale": 36111.981867012786,
+      "trace": [
+        [
+          12.999999999999988,
+          12.0,
+          36111.981867012786
+        ]
+      ]
+    },
+    {
+      "file": "z13.1-png-96-plain-0.png",
+      "source_zoom": 13.1,
+      "dpi": 96,
+      "kind": "png",
+      "traced": false,
+      "repeat": 0,
+      "map_scale": 33693.67047170439,
+      "trace": []
+    },
+    {
+      "file": "z13.1-png-96-plain-1.png",
+      "source_zoom": 13.1,
+      "dpi": 96,
+      "kind": "png",
+      "traced": false,
+      "repeat": 1,
+      "map_scale": 33693.67047170439,
+      "trace": []
+    },
+    {
+      "file": "z13.1-png-96-trace-0.png",
+      "source_zoom": 13.1,
+      "dpi": 96,
+      "kind": "png",
+      "traced": true,
+      "repeat": 0,
+      "map_scale": 33693.67047170439,
+      "trace": [
+        [
+          13.133934016926222,
+          13.0,
+          -1.0
+        ]
+      ]
+    },
+    {
+      "file": "z13.1-png-96-trace-1.png",
+      "source_zoom": 13.1,
+      "dpi": 96,
+      "kind": "png",
+      "traced": true,
+      "repeat": 1,
+      "map_scale": 33693.67047170439,
+      "trace": [
+        [
+          13.133934016926222,
+          13.0,
+          -1.0
+        ]
+      ]
+    },
+    {
+      "file": "z13.1-pdf-96-plain-0.pdf",
+      "source_zoom": 13.1,
+      "dpi": 96,
+      "kind": "pdf",
+      "traced": false,
+      "repeat": 0,
+      "map_scale": 33693.67047170439,
+      "trace": []
+    },
+    {
+      "file": "z13.1-pdf-96-plain-1.pdf",
+      "source_zoom": 13.1,
+      "dpi": 96,
+      "kind": "pdf",
+      "traced": false,
+      "repeat": 1,
+      "map_scale": 33693.67047170439,
+      "trace": []
+    },
+    {
+      "file": "z13.1-pdf-96-trace-0.pdf",
+      "source_zoom": 13.1,
+      "dpi": 96,
+      "kind": "pdf",
+      "traced": true,
+      "repeat": 0,
+      "map_scale": 33693.67047170439,
+      "trace": [
+        [
+          13.133934016926222,
+          13.0,
+          33693.67047170439
+        ]
+      ]
+    },
+    {
+      "file": "z13.1-pdf-96-trace-1.pdf",
+      "source_zoom": 13.1,
+      "dpi": 96,
+      "kind": "pdf",
+      "traced": true,
+      "repeat": 1,
+      "map_scale": 33693.67047170439,
+      "trace": [
+        [
+          13.133934016926222,
+          13.0,
+          33693.67047170439
+        ]
+      ]
+    },
+    {
+      "file": "z13.1-png-150-plain-0.png",
+      "source_zoom": 13.1,
+      "dpi": 150,
+      "kind": "png",
+      "traced": false,
+      "repeat": 0,
+      "map_scale": 33693.67047170439,
+      "trace": []
+    },
+    {
+      "file": "z13.1-png-150-plain-1.png",
+      "source_zoom": 13.1,
+      "dpi": 150,
+      "kind": "png",
+      "traced": false,
+      "repeat": 1,
+      "map_scale": 33693.67047170439,
+      "trace": []
+    },
+    {
+      "file": "z13.1-png-150-trace-0.png",
+      "source_zoom": 13.1,
+      "dpi": 150,
+      "kind": "png",
+      "traced": true,
+      "repeat": 0,
+      "map_scale": 33693.67047170439,
+      "trace": [
+        [
+          13.133934016926222,
+          13.0,
+          -1.0
+        ]
+      ]
+    },
+    {
+      "file": "z13.1-png-150-trace-1.png",
+      "source_zoom": 13.1,
+      "dpi": 150,
+      "kind": "png",
+      "traced": true,
+      "repeat": 1,
+      "map_scale": 33693.67047170439,
+      "trace": [
+        [
+          13.133934016926222,
+          13.0,
+          -1.0
+        ]
+      ]
+    },
+    {
+      "file": "z13.1-pdf-150-plain-0.pdf",
+      "source_zoom": 13.1,
+      "dpi": 150,
+      "kind": "pdf",
+      "traced": false,
+      "repeat": 0,
+      "map_scale": 33693.67047170439,
+      "trace": []
+    },
+    {
+      "file": "z13.1-pdf-150-plain-1.pdf",
+      "source_zoom": 13.1,
+      "dpi": 150,
+      "kind": "pdf",
+      "traced": false,
+      "repeat": 1,
+      "map_scale": 33693.67047170439,
+      "trace": []
+    },
+    {
+      "file": "z13.1-pdf-150-trace-0.pdf",
+      "source_zoom": 13.1,
+      "dpi": 150,
+      "kind": "pdf",
+      "traced": true,
+      "repeat": 0,
+      "map_scale": 33693.67047170439,
+      "trace": [
+        [
+          13.133934016926222,
+          13.0,
+          33693.67047170439
+        ]
+      ]
+    },
+    {
+      "file": "z13.1-pdf-150-trace-1.pdf",
+      "source_zoom": 13.1,
+      "dpi": 150,
+      "kind": "pdf",
+      "traced": true,
+      "repeat": 1,
+      "map_scale": 33693.67047170439,
+      "trace": [
+        [
+          13.133934016926222,
+          13.0,
+          33693.67047170439
+        ]
+      ]
+    },
+    {
+      "file": "z13.1-png-192-plain-0.png",
+      "source_zoom": 13.1,
+      "dpi": 192,
+      "kind": "png",
+      "traced": false,
+      "repeat": 0,
+      "map_scale": 33693.67047170439,
+      "trace": []
+    },
+    {
+      "file": "z13.1-png-192-plain-1.png",
+      "source_zoom": 13.1,
+      "dpi": 192,
+      "kind": "png",
+      "traced": false,
+      "repeat": 1,
+      "map_scale": 33693.67047170439,
+      "trace": []
+    },
+    {
+      "file": "z13.1-png-192-trace-0.png",
+      "source_zoom": 13.1,
+      "dpi": 192,
+      "kind": "png",
+      "traced": true,
+      "repeat": 0,
+      "map_scale": 33693.67047170439,
+      "trace": [
+        [
+          13.133934016926222,
+          13.0,
+          -1.0
+        ]
+      ]
+    },
+    {
+      "file": "z13.1-png-192-trace-1.png",
+      "source_zoom": 13.1,
+      "dpi": 192,
+      "kind": "png",
+      "traced": true,
+      "repeat": 1,
+      "map_scale": 33693.67047170439,
+      "trace": [
+        [
+          13.133934016926222,
+          13.0,
+          -1.0
+        ]
+      ]
+    },
+    {
+      "file": "z13.1-pdf-192-plain-0.pdf",
+      "source_zoom": 13.1,
+      "dpi": 192,
+      "kind": "pdf",
+      "traced": false,
+      "repeat": 0,
+      "map_scale": 33693.67047170439,
+      "trace": []
+    },
+    {
+      "file": "z13.1-pdf-192-plain-1.pdf",
+      "source_zoom": 13.1,
+      "dpi": 192,
+      "kind": "pdf",
+      "traced": false,
+      "repeat": 1,
+      "map_scale": 33693.67047170439,
+      "trace": []
+    },
+    {
+      "file": "z13.1-pdf-192-trace-0.pdf",
+      "source_zoom": 13.1,
+      "dpi": 192,
+      "kind": "pdf",
+      "traced": true,
+      "repeat": 0,
+      "map_scale": 33693.67047170439,
+      "trace": [
+        [
+          13.133934016926222,
+          13.0,
+          33693.67047170439
+        ]
+      ]
+    },
+    {
+      "file": "z13.1-pdf-192-trace-1.pdf",
+      "source_zoom": 13.1,
+      "dpi": 192,
+      "kind": "pdf",
+      "traced": true,
+      "repeat": 1,
+      "map_scale": 33693.67047170439,
+      "trace": [
+        [
+          13.133934016926222,
+          13.0,
+          33693.67047170439
+        ]
+      ]
+    }
+  ]
+}

@@ -1,0 +1,343 @@
+{
+  "qgis": "3.44.11-Solothurn",
+  "qgis_revision": "f8f5812197f",
+  "qt": "5.15.17",
+  "geometry": "synthetic, not Mapbox data or a Light cartographic fixture",
+  "fixture_sha256": "331aae17f15dabad61a63a32cacea8047f799ca1b5ae09599de5b2ba1a0dedf4",
+  "generator_sha256": "4311716db2e6b5db613abcf0c8dbc7de1eaf6f2e610af1979fa11d08dbf043ae",
+  "crs": "EPSG:3857",
+  "extent": [
+    829000.0,
+    5930000.0,
+    839284.0996924242,
+    5937713.074769318
+  ],
+  "logical_pixels": [
+    640,
+    480
+  ],
+  "baseline_dpi": 96,
+  "trace_fields": [
+    "vector_tile_zoom",
+    "zoom_level",
+    "map_scale_or_minus_one"
+  ],
+  "native_zoom_density_verdict": {
+    "png": "PASS (scoped native zoom only)",
+    "pdf": "PASS (scoped native zoom only)"
+  },
+  "records": [
+    {
+      "file": "png-96-plain-0.png",
+      "kind": "png",
+      "dpi": 96,
+      "traced": false,
+      "repeat": 0,
+      "map_scale": 60732.87219935538,
+      "trace": [],
+      "sha256": "a209feb16fc99004764574e25c8bcb87bc223d6e359a18d7a3ca47a98da5ca9e"
+    },
+    {
+      "file": "png-96-plain-1.png",
+      "kind": "png",
+      "dpi": 96,
+      "traced": false,
+      "repeat": 1,
+      "map_scale": 60732.87219935538,
+      "trace": [],
+      "sha256": "a209feb16fc99004764574e25c8bcb87bc223d6e359a18d7a3ca47a98da5ca9e"
+    },
+    {
+      "file": "png-96-trace-0.png",
+      "kind": "png",
+      "dpi": 96,
+      "traced": true,
+      "repeat": 0,
+      "map_scale": 60732.87219935538,
+      "trace": [
+        [
+          12.220212941573248,
+          12.0,
+          -1.0
+        ]
+      ],
+      "sha256": "a209feb16fc99004764574e25c8bcb87bc223d6e359a18d7a3ca47a98da5ca9e"
+    },
+    {
+      "file": "png-96-trace-1.png",
+      "kind": "png",
+      "dpi": 96,
+      "traced": true,
+      "repeat": 1,
+      "map_scale": 60732.87219935538,
+      "trace": [
+        [
+          12.220212941573248,
+          12.0,
+          -1.0
+        ]
+      ],
+      "sha256": "a209feb16fc99004764574e25c8bcb87bc223d6e359a18d7a3ca47a98da5ca9e"
+    },
+    {
+      "file": "png-150-plain-0.png",
+      "kind": "png",
+      "dpi": 150,
+      "traced": false,
+      "repeat": 0,
+      "map_scale": 60732.87219935538,
+      "trace": [],
+      "sha256": "8f8c2065aa0c1a740a4d970da42acee15921679f2c0c77094bf8c870079d8ffa"
+    },
+    {
+      "file": "png-150-plain-1.png",
+      "kind": "png",
+      "dpi": 150,
+      "traced": false,
+      "repeat": 1,
+      "map_scale": 60732.87219935538,
+      "trace": [],
+      "sha256": "8f8c2065aa0c1a740a4d970da42acee15921679f2c0c77094bf8c870079d8ffa"
+    },
+    {
+      "file": "png-150-trace-0.png",
+      "kind": "png",
+      "dpi": 150,
+      "traced": true,
+      "repeat": 0,
+      "map_scale": 60732.87219935538,
+      "trace": [
+        [
+          12.220212941573248,
+          12.0,
+          -1.0
+        ]
+      ],
+      "sha256": "8f8c2065aa0c1a740a4d970da42acee15921679f2c0c77094bf8c870079d8ffa"
+    },
+    {
+      "file": "png-150-trace-1.png",
+      "kind": "png",
+      "dpi": 150,
+      "traced": true,
+      "repeat": 1,
+      "map_scale": 60732.87219935538,
+      "trace": [
+        [
+          12.220212941573248,
+          12.0,
+          -1.0
+        ]
+      ],
+      "sha256": "8f8c2065aa0c1a740a4d970da42acee15921679f2c0c77094bf8c870079d8ffa"
+    },
+    {
+      "file": "png-192-plain-0.png",
+      "kind": "png",
+      "dpi": 192,
+      "traced": false,
+      "repeat": 0,
+      "map_scale": 60732.87219935538,
+      "trace": [],
+      "sha256": "1cf38029dc5a036a43cbf683af892dc5ef9b9fbb2dd0584e47e5e717b849019f"
+    },
+    {
+      "file": "png-192-plain-1.png",
+      "kind": "png",
+      "dpi": 192,
+      "traced": false,
+      "repeat": 1,
+      "map_scale": 60732.87219935538,
+      "trace": [],
+      "sha256": "1cf38029dc5a036a43cbf683af892dc5ef9b9fbb2dd0584e47e5e717b849019f"
+    },
+    {
+      "file": "png-192-trace-0.png",
+      "kind": "png",
+      "dpi": 192,
+      "traced": true,
+      "repeat": 0,
+      "map_scale": 60732.87219935538,
+      "trace": [
+        [
+          12.220212941573248,
+          12.0,
+          -1.0
+        ]
+      ],
+      "sha256": "1cf38029dc5a036a43cbf683af892dc5ef9b9fbb2dd0584e47e5e717b849019f"
+    },
+    {
+      "file": "png-192-trace-1.png",
+      "kind": "png",
+      "dpi": 192,
+      "traced": true,
+      "repeat": 1,
+      "map_scale": 60732.87219935538,
+      "trace": [
+        [
+          12.220212941573248,
+          12.0,
+          -1.0
+        ]
+      ],
+      "sha256": "1cf38029dc5a036a43cbf683af892dc5ef9b9fbb2dd0584e47e5e717b849019f"
+    },
+    {
+      "file": "pdf-96-plain-0.pdf",
+      "kind": "pdf",
+      "dpi": 96,
+      "traced": false,
+      "repeat": 0,
+      "map_scale": 60732.87219935537,
+      "trace": [],
+      "sha256": "b9e3fff255137e464869d36239e9d91ce283562d4c9706ade4ffb17e42a4feb4"
+    },
+    {
+      "file": "pdf-96-plain-1.pdf",
+      "kind": "pdf",
+      "dpi": 96,
+      "traced": false,
+      "repeat": 1,
+      "map_scale": 60732.87219935537,
+      "trace": [],
+      "sha256": "ceff7ccb4951308a0d8342331305b4a4803455b4d9021753493bfc496ec726a2"
+    },
+    {
+      "file": "pdf-96-trace-0.pdf",
+      "kind": "pdf",
+      "dpi": 96,
+      "traced": true,
+      "repeat": 0,
+      "map_scale": 60732.87219935537,
+      "trace": [
+        [
+          12.220212941573248,
+          12.0,
+          60732.87219935537
+        ]
+      ],
+      "sha256": "1439d00ddd6da52ba7f729e0c01a7da0092ba51d6921eb99d2e04b8467a180a5"
+    },
+    {
+      "file": "pdf-96-trace-1.pdf",
+      "kind": "pdf",
+      "dpi": 96,
+      "traced": true,
+      "repeat": 1,
+      "map_scale": 60732.87219935537,
+      "trace": [
+        [
+          12.220212941573248,
+          12.0,
+          60732.87219935537
+        ]
+      ],
+      "sha256": "92af5e0eb7f0fb5e1057c886071b02dbaabd5156598eaf7553b228e6e5b58b1b"
+    },
+    {
+      "file": "pdf-150-plain-0.pdf",
+      "kind": "pdf",
+      "dpi": 150,
+      "traced": false,
+      "repeat": 0,
+      "map_scale": 60732.87219935537,
+      "trace": [],
+      "sha256": "361f7dbea3841e5be483bf0af23c7120cf14638bfd04720e6402f4ef01ae6073"
+    },
+    {
+      "file": "pdf-150-plain-1.pdf",
+      "kind": "pdf",
+      "dpi": 150,
+      "traced": false,
+      "repeat": 1,
+      "map_scale": 60732.87219935537,
+      "trace": [],
+      "sha256": "61f09007d2c028b38f9f365c3af17ad180487fd903e72e46a190bd04b27e832c"
+    },
+    {
+      "file": "pdf-150-trace-0.pdf",
+      "kind": "pdf",
+      "dpi": 150,
+      "traced": true,
+      "repeat": 0,
+      "map_scale": 60732.87219935537,
+      "trace": [
+        [
+          12.220212941573248,
+          12.0,
+          60732.87219935537
+        ]
+      ],
+      "sha256": "8156cdf7b81cedf942010a144f121217b3c52295346668c6c3d6ef951903cf80"
+    },
+    {
+      "file": "pdf-150-trace-1.pdf",
+      "kind": "pdf",
+      "dpi": 150,
+      "traced": true,
+      "repeat": 1,
+      "map_scale": 60732.87219935537,
+      "trace": [
+        [
+          12.220212941573248,
+          12.0,
+          60732.87219935537
+        ]
+      ],
+      "sha256": "d3a81512edc9f14ebe1dc60424326d52b663a6eb568c549e4e6bef9f428495c7"
+    },
+    {
+      "file": "pdf-192-plain-0.pdf",
+      "kind": "pdf",
+      "dpi": 192,
+      "traced": false,
+      "repeat": 0,
+      "map_scale": 60732.87219935537,
+      "trace": [],
+      "sha256": "e43e885864db37cc4afb7c40d0079cfb520dee1c18106848f48e10459e5a9d9e"
+    },
+    {
+      "file": "pdf-192-plain-1.pdf",
+      "kind": "pdf",
+      "dpi": 192,
+      "traced": false,
+      "repeat": 1,
+      "map_scale": 60732.87219935537,
+      "trace": [],
+      "sha256": "8eb5034dd7def55d020679ef6742f359db67d4bc56c5a1ee336425e4b236caa0"
+    },
+    {
+      "file": "pdf-192-trace-0.pdf",
+      "kind": "pdf",
+      "dpi": 192,
+      "traced": true,
+      "repeat": 0,
+      "map_scale": 60732.87219935537,
+      "trace": [
+        [
+          12.220212941573248,
+          12.0,
+          60732.87219935537
+        ]
+      ],
+      "sha256": "df5f850b20e7eb61d22cae81939a641fed7657683864fff550c722d7756e5997"
+    },
+    {
+      "file": "pdf-192-trace-1.pdf",
+      "kind": "pdf",
+      "dpi": 192,
+      "traced": true,
+      "repeat": 1,
+      "map_scale": 60732.87219935537,
+      "trace": [
+        [
+          12.220212941573248,
+          12.0,
+          60732.87219935537
+        ]
+      ],
+      "sha256": "2d33235a30da82966521e49b5f6cf04c11cefc77a7f980f21d3a4ccab3231ade"
+    }
+  ]
+}
