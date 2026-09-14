@@ -950,6 +950,95 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
                     self.assertEqual(predicate.evaluate(context) == 1, expected)
                     self.assertFalse(predicate.hasEvalError(), predicate.evalErrorString())
 
+    def test_light_national_background_width_opacity_and_native_paint(self):
+        import json
+        import math
+        from pathlib import Path
+        from qgis.core import (
+            QgsExpression, QgsExpressionContext, QgsExpressionContextScope,
+            QgsRenderContext, QgsSymbol, QgsSymbolLayer, QgsFeature, QgsField, QgsFields,
+        )
+        from qgis.PyQt.QtCore import QPointF
+        from qgis.PyQt.QtGui import QColor, QImage, QPainter, QPolygonF
+        from qfit.mapbox_config import simplify_mapbox_style_expressions
+        from qfit.visualization.infrastructure import mapbox_light_strokes
+
+        source = json.loads((Path(__file__).parent / "fixtures/mapbox/light-boundary-source.json").read_text())
+        converted = simplify_mapbox_style_expressions(source)
+        before_layer, after_layer = MagicMock(), MagicMock()
+        with patch.object(mapbox_light_strokes, "apply_light_national_background", return_value=0):
+            self.service._apply_mapbox_gl_style(before_layer, converted, source_style_definition=source)
+        self.service._apply_mapbox_gl_style(after_layer, converted, source_style_definition=source)
+        before = list(before_layer.setRenderer.call_args.args[0].styles())
+        after = list(after_layer.setRenderer.call_args.args[0].styles())
+        self.assertEqual([r.styleName() for r in before], [x["id"] for x in source["layers"]])
+        self.assertEqual([r.styleName() for r in after], [r.styleName() for r in before])
+        for old, new in zip(before, after):
+            self.assertEqual((new.filterExpression(), new.minZoomLevel(), new.maxZoomLevel()),
+                             (old.filterExpression(), old.minZoomLevel(), old.maxZoomLevel()))
+            self.assertEqual(new.symbol().opacity(), old.symbol().opacity())
+            self.assertEqual(new.symbol().symbolLayer(0).properties(), old.symbol().symbolLayer(0).properties())
+            if new.styleName() != "admin-0-boundary-bg":
+                self.assertEqual(new.symbol().dataDefinedProperties().toVariant(QgsSymbol.propertyDefinitions()),
+                                 old.symbol().dataDefinedProperties().toVariant(QgsSymbol.propertyDefinitions()))
+                self.assertEqual(new.symbol().symbolLayer(0).dataDefinedProperties().toVariant(QgsSymbolLayer.propertyDefinitions()),
+                                 old.symbol().symbolLayer(0).dataDefinedProperties().toVariant(QgsSymbolLayer.propertyDefinitions()))
+        symbol = next(r.symbol() for r in after if r.styleName() == "admin-0-boundary-bg")
+        self.assertFalse(next(r.symbol() for r in before if r.styleName() == "admin-0-boundary-bg")
+                         .dataDefinedProperties().hasActiveProperties())
+        width = QgsExpression(symbol.symbolLayer(0).dataDefinedProperties().property(QgsSymbolLayer.PropertyStrokeWidth).asExpression())
+        opacity = QgsExpression(symbol.dataDefinedProperties().property(QgsSymbol.PropertyOpacity).asExpression())
+        baseline_symbol = next(r.symbol() for r in before if r.styleName() == "admin-0-boundary-bg")
+        fields = QgsFields()
+        fields.append(QgsField("disputed"))
+        self.assertIn("disputed", width.referencedColumns())
+        self.assertIn("disputed", opacity.referencedColumns())
+        for zoom in (0, 2.9, 3, 3.1, 3.5, 3.9, 4, 4.1, 7, 11.9, 12, 12.1, 18, 24):
+            for disputed in ("false", "true", None, ""):
+                scope = QgsExpressionContextScope()
+                scope.setVariable("vector_tile_zoom", zoom)
+                context = QgsExpressionContext()
+                context.appendScope(scope)
+                context.setFields(fields)
+                feature = QgsFeature(fields)
+                feature.setAttribute("disputed", disputed)
+                context.setFeature(feature)
+                expected_width = 5.2 + 5.2 * min(1, max(0, (zoom - 3) / 9))
+                expected_opacity = 0.5 * min(1, max(0, zoom - 3))
+                if disputed != "false":
+                    expected_width = baseline_symbol.symbolLayer(0).width() * 96 / 25.4
+                    expected_opacity = baseline_symbol.opacity()
+                with self.subTest(zoom=zoom, disputed=disputed):
+                    for expression, expected in ((width, expected_width * 25.4 / 96), (opacity, 100 * expected_opacity)):
+                        self.assertTrue(expression.prepare(context))
+                        self.assertAlmostEqual(expression.evaluate(context), expected, delta=1e-10)
+                        self.assertFalse(expression.hasEvalError(), expression.evalErrorString())
+                # Exercise actual symbol painting: opacity must override, not multiply
+                # the converter's constant 0.35. Injected zoom is not DPI-calibration proof.
+                for dpi in (96, 192):
+                    image = QImage(200, 100, QImage.Format.Format_ARGB32)
+                    image.fill(QColor("white"))
+                    painter = QPainter(image)
+                    render_context = QgsRenderContext.fromQPainter(painter)
+                    render_context.setScaleFactor(dpi / 25.4)
+                    render_context.setExpressionContext(context)
+                    try:
+                        symbol.startRender(render_context)
+                        try:
+                            symbol.renderPolyline(QPolygonF([QPointF(10, 50), QPointF(190, 50)]), None, render_context)
+                        finally:
+                            symbol.stopRender(render_context)
+                    finally:
+                        painter.end()
+                    with self.subTest(zoom=zoom, dpi=dpi, disputed=disputed):
+                        self.assertAlmostEqual(image.pixelColor(100, 50).red(), 255 - 34 * expected_opacity, delta=1)
+                        painted = sum(image.pixelColor(100, y) != QColor("white") for y in range(100))
+                        if expected_opacity == 0:
+                            self.assertEqual(painted, 0)
+                        else:
+                            self.assertGreaterEqual(painted, math.floor(expected_width * dpi / 96))
+                            self.assertLessEqual(painted, math.ceil(expected_width * dpi / 96) + 1)
+
     def test_light_national_boundary_source_width_status_and_rendered_continuity(self):
         import json
         from pathlib import Path
@@ -968,7 +1057,8 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
         with patch.object(mapbox_light_strokes, "apply_light_national_boundary_stroke", return_value=0):
             self.service._apply_mapbox_gl_style(baseline_layer, converted, source_style_definition=source)
         candidate_layer = MagicMock()
-        self.service._apply_mapbox_gl_style(candidate_layer, converted, source_style_definition=source)
+        with patch.object(mapbox_light_strokes, "apply_light_national_background", return_value=0):
+            self.service._apply_mapbox_gl_style(candidate_layer, converted, source_style_definition=source)
         baseline = {rule.styleName(): rule for rule in baseline_layer.setRenderer.call_args.args[0].styles()}
         candidate = {rule.styleName(): rule for rule in candidate_layer.setRenderer.call_args.args[0].styles()}
         self.assertEqual(list(baseline), list(candidate))

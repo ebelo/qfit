@@ -180,3 +180,139 @@ class LightNationalBoundaryTests(unittest.TestCase):
             self.assertEqual(strokes.apply_light_national_boundary_stroke(renderer, source_style), 0)
             renderer.setStyles.assert_not_called()
         self.assertEqual(source_style, original)
+
+
+class LightNationalBackgroundTests(unittest.TestCase):
+    def source(self):
+        return json.loads((Path(__file__).parent / "fixtures/mapbox/light-boundary-source.json").read_text())
+
+    def test_exact_source_contract_and_duplicate_owners(self):
+        source_style = self.source()
+        original = copy.deepcopy(source_style)
+        self.assertTrue(strokes._has_national_background(source_style))
+        owner = next(x for x in source_style["layers"] if x["id"] == "admin-0-boundary-bg")
+        other_owners = [x for x in source_style["layers"] if x["id"] != owner["id"]]
+        for identity in ({"owner": "custom"}, {"id": "outdoors-v12"}, {"id": "light-v10"}):
+            self.assertFalse(strokes._has_national_background({**source_style, **identity}))
+        for key, value in (("id", "admin-1-boundary-bg"), ("type", "fill"),
+                           ("source-layer", "road"), ("paint", None)):
+            self.assertFalse(strokes._has_national_background({**source_style, "layers": [*other_owners, {**owner, key: value}]}))
+        for key in owner["paint"]:
+            altered = {**owner, "paint": {**owner["paint"], key: 1}}
+            self.assertFalse(strokes._has_national_background({**source_style, "layers": [*other_owners, altered]}))
+        for layers in ([None, {}], [*other_owners, owner, owner], []):
+            self.assertFalse(strokes._has_national_background({**source_style, "layers": layers}))
+        core = next(x for x in source_style["layers"] if x["id"] == "admin-0-boundary")
+        for owner_name in ("admin-0-boundary-bg", "admin-0-boundary"):
+            changed = copy.deepcopy(source_style)
+            next(x for x in changed["layers"] if x["id"] == owner_name)["filter"] = ["all"]
+            self.assertFalse(strokes._has_national_background(changed))
+        for layers in ([owner], [owner, core, core]):
+            self.assertFalse(strokes._has_national_background({**source_style, "layers": layers}))
+        self.assertEqual(source_style, original)
+
+    def test_native_override_and_symbol_guards(self):
+        class Stroke(MagicMock):
+            pass
+
+        def rule():
+            item = MagicMock()
+            item.styleName.return_value = "admin-0-boundary-bg"
+            item.layerName.return_value = "admin"
+            item.symbol().symbolLayerCount.return_value = 1
+            item.symbol().dataDefinedProperties().hasActiveProperties.return_value = False
+            item.symbol().opacity.return_value = 0.35
+            stroke = Stroke()
+            stroke.widthUnit.return_value = 9
+            stroke.useCustomDashPattern.return_value = False
+            stroke.width.return_value = 0.728
+            stroke.penStyle.return_value = 1
+            stroke.dataDefinedProperties().hasActiveProperties.return_value = False
+            item.symbol().symbolLayer.return_value = stroke
+            return item
+
+        rules = [rule() for _ in range(10)]
+        rules[1].styleName.return_value = "admin-0-boundary-disputed"
+        rules[2].layerName.return_value = "road"
+        rules[3].symbol.return_value = None
+        rules[4].symbol().symbolLayerCount.return_value = 2
+        rules[5].symbol().dataDefinedProperties().hasActiveProperties.return_value = True
+        rules[6].symbol().symbolLayer.return_value = object()
+        rules[7].symbol().symbolLayer().widthUnit.return_value = 3
+        rules[8].symbol().symbolLayer().useCustomDashPattern.return_value = True
+        rules[9].symbol().symbolLayer().dataDefinedProperties().hasActiveProperties.return_value = True
+        other_pen = rule()
+        other_pen.symbol().symbolLayer().penStyle.return_value = 2
+        rules.append(other_pen)
+        renderer = MagicMock()
+        renderer.styles.return_value = rules
+        native = SimpleNamespace(
+            Qgis=SimpleNamespace(RenderUnit=SimpleNamespace(Millimeters=9)),
+            QgsSimpleLineSymbolLayer=Stroke,
+            QgsSymbol=SimpleNamespace(PropertyOpacity=0),
+            QgsSymbolLayer=SimpleNamespace(PropertyStrokeWidth=44),
+            QgsProperty=SimpleNamespace(fromExpression=lambda value: value),
+        )
+        qt = SimpleNamespace(Qt=SimpleNamespace(PenStyle=SimpleNamespace(SolidLine=1)))
+        self.assertEqual(strokes.apply_light_national_background(renderer, {}), 0)
+        renderer.styles.assert_not_called()
+        source_style = self.source()
+        original = copy.deepcopy(source_style)
+        with patch.dict(sys.modules, {"qgis.core": native, "qgis.PyQt.QtCore": qt}), \
+                patch.object(strokes, "_has_repaired_ordinary_core", return_value=True):
+            self.assertEqual(strokes.apply_light_national_background(renderer, source_style), 1)
+            renderer.setStyles.assert_called_once_with(rules)
+            rules[0].symbol().symbolLayer().setDataDefinedProperty.assert_called_once_with(44, strokes._ordinary_background_expression(strokes._NATIONAL_BACKGROUND_WIDTH, 0.728))
+            rules[0].symbol().setDataDefinedProperty.assert_called_once_with(0, strokes._ordinary_background_expression(strokes._NATIONAL_BACKGROUND_OPACITY, 35.0))
+            for item in rules[1:]:
+                if item.symbol() is not None:
+                    item.symbol().setDataDefinedProperty.assert_not_called()
+            renderer.reset_mock()
+            renderer.styles.return_value = rules[1:]
+            self.assertEqual(strokes.apply_light_national_background(renderer, source_style), 0)
+            renderer.setStyles.assert_not_called()
+        self.assertEqual(source_style, original)
+
+    def test_background_requires_the_unique_repaired_native_core(self):
+        class Stroke(MagicMock):
+            pass
+
+        core = MagicMock()
+        core.styleName.return_value = "admin-0-boundary"
+        core.layerName.return_value = "admin"
+        core.symbol().symbolLayerCount.return_value = 1
+        line = Stroke()
+        line.widthUnit.return_value = 9
+        line.useCustomDashPattern.return_value = False
+        line.penStyle.return_value = 1
+        line.dataDefinedProperties().property().isActive.return_value = True
+        line.dataDefinedProperties().property().asExpression.return_value = strokes._NATIONAL_BOUNDARY_EXPRESSION
+        core.symbol().symbolLayer.return_value = line
+        native = SimpleNamespace(Qgis=SimpleNamespace(RenderUnit=SimpleNamespace(Millimeters=9)),
+                                 QgsSimpleLineSymbolLayer=Stroke, QgsSymbolLayer=SimpleNamespace(PropertyStrokeWidth=44))
+        qt = SimpleNamespace(Qt=SimpleNamespace(PenStyle=SimpleNamespace(SolidLine=1)))
+        with patch.dict(sys.modules, {"qgis.core": native, "qgis.PyQt.QtCore": qt}):
+            self.assertTrue(strokes._has_repaired_ordinary_core([core]))
+            for rules in ([], [core, core]):
+                self.assertFalse(strokes._has_repaired_ordinary_core(rules))
+            for target, method, invalid in ((core, "layerName", "other"),
+                                           (core.symbol(), "symbolLayerCount", 2),
+                                           (line, "widthUnit", 3),
+                                           (line, "useCustomDashPattern", True),
+                                           (line, "penStyle", 2),
+                                           (line.dataDefinedProperties().property(), "isActive", False),
+                                           (line.dataDefinedProperties().property(), "asExpression", "custom")):
+                mocked = getattr(target, method)
+                old = mocked.return_value
+                mocked.return_value = invalid
+                self.assertFalse(strokes._has_repaired_ordinary_core([core]))
+                mocked.return_value = old
+            core.symbol().symbolLayer.return_value = object()
+            self.assertFalse(strokes._has_repaired_ordinary_core([core]))
+            core.symbol.return_value = None
+            self.assertFalse(strokes._has_repaired_ordinary_core([core]))
+        renderer = MagicMock()
+        with (patch.object(strokes, "_has_repaired_ordinary_core", return_value=False),
+              patch.dict(sys.modules, {"qgis.core": MagicMock(), "qgis.PyQt.QtCore": MagicMock()})):
+            self.assertEqual(strokes.apply_light_national_background(renderer, self.source()), 0)
+        renderer.setStyles.assert_not_called()

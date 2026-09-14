@@ -726,10 +726,14 @@ class BackgroundMapService:
 
                         couple_outdoors_shield_backgrounds(renderer, labeling, style_definition)
                 if renderer is not None:
-                    from .mapbox_light_strokes import apply_light_national_boundary_stroke, apply_light_road_widths
+                    from .mapbox_light_strokes import (
+                        apply_light_national_background, apply_light_national_boundary_stroke,
+                        apply_light_road_widths,
+                    )
 
                     apply_light_road_widths(renderer, label_source)
                     apply_light_national_boundary_stroke(renderer, label_source)
+                    apply_light_national_background(renderer, label_source)
                     layer.setRenderer(renderer)
                 if labeling is not None:
                     layer.setLabeling(labeling)
