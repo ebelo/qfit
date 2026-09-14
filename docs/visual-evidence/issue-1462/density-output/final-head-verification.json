@@ -1,0 +1,20 @@
+{
+  "documentation_head": "1c45398c682e7b41b4f30dd9a700bcd1c32bd01e",
+  "capture_production_head": "3ff79a9dbced1dd57cf9763963d5758b5a5a1af7",
+  "evidence_commit": "1339e85dd9e4bc4165e21f6101b0464ab5082191",
+  "changed_tracked_paths": [
+    "docs/light-cartographic-assessment.md",
+    "docs/mapbox-outdoors-comparison-harness.md"
+  ],
+  "unchanged_runtime_python_files": 233,
+  "all_non_documentation_tracked_bytes_unchanged": true,
+  "proof": "No rendering implementation changed: entire tracked tree differs only in the two named Markdown files. Captures use the same production/runtime bytes. This is byte-identity proof, not a claim of new final-head recaptures.",
+  "inline_pr_images": {
+    "count": 3,
+    "complete": true,
+    "natural_dimensions": [
+      1500,
+      415
+    ]
+  }
+}
