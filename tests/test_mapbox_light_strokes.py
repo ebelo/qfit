@@ -213,9 +213,11 @@ class LightNationalBackgroundTests(unittest.TestCase):
             item.layerName.return_value = "admin"
             item.symbol().symbolLayerCount.return_value = 1
             item.symbol().dataDefinedProperties().hasActiveProperties.return_value = False
+            item.symbol().opacity.return_value = 0.35
             stroke = Stroke()
             stroke.widthUnit.return_value = 9
             stroke.useCustomDashPattern.return_value = False
+            stroke.width.return_value = 0.728
             stroke.penStyle.return_value = 1
             stroke.dataDefinedProperties().hasActiveProperties.return_value = False
             item.symbol().symbolLayer.return_value = stroke
@@ -251,8 +253,8 @@ class LightNationalBackgroundTests(unittest.TestCase):
         with patch.dict(sys.modules, {"qgis.core": native, "qgis.PyQt.QtCore": qt}):
             self.assertEqual(strokes.apply_light_national_background(renderer, source_style), 1)
             renderer.setStyles.assert_called_once_with(rules)
-            rules[0].symbol().symbolLayer().setDataDefinedProperty.assert_called_once_with(44, strokes._NATIONAL_BACKGROUND_WIDTH)
-            rules[0].symbol().setDataDefinedProperty.assert_called_once_with(0, strokes._NATIONAL_BACKGROUND_OPACITY)
+            rules[0].symbol().symbolLayer().setDataDefinedProperty.assert_called_once_with(44, strokes._ordinary_background_expression(strokes._NATIONAL_BACKGROUND_WIDTH, 0.728))
+            rules[0].symbol().setDataDefinedProperty.assert_called_once_with(0, strokes._ordinary_background_expression(strokes._NATIONAL_BACKGROUND_OPACITY, 35.0))
             for item in rules[1:]:
                 if item.symbol() is not None:
                     item.symbol().setDataDefinedProperty.assert_not_called()

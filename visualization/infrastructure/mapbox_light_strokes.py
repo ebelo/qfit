@@ -190,8 +190,15 @@ def _has_national_background(style):
             and owners[0].get("paint") == _NATIONAL_BACKGROUND_PAINT)
 
 
+def _ordinary_background_expression(expression, fallback):
+    # The shared owner includes disputes, whose thin native core is not repaired.
+    # Match the ordinary core's status predicate; absent/other statuses keep the
+    # converted background so a widened continuous halo cannot mask their texture.
+    return f"CASE WHEN \"disputed\" IS 'false' THEN ({expression}) ELSE {fallback!r} END"
+
+
 def apply_light_national_background(renderer, source_style: dict) -> int:
-    """Restore one audited background's width and opacity, not core/status paint.
+    """Restore the background only for the already-repaired ordinary core.
 
     Keep native blur behavior, color, owner order and eligibility unchanged.
     Active native properties or custom symbols retain their existing path.
@@ -217,10 +224,14 @@ def apply_light_national_background(renderer, source_style: dict) -> int:
                 or stroke.dataDefinedProperties().hasActiveProperties()):
             continue
         stroke.setDataDefinedProperty(
-            QgsSymbolLayer.PropertyStrokeWidth, QgsProperty.fromExpression(_NATIONAL_BACKGROUND_WIDTH)
+            QgsSymbolLayer.PropertyStrokeWidth, QgsProperty.fromExpression(
+                _ordinary_background_expression(_NATIONAL_BACKGROUND_WIDTH, stroke.width())
+            )
         )
         symbol.setDataDefinedProperty(
-            QgsSymbol.PropertyOpacity, QgsProperty.fromExpression(_NATIONAL_BACKGROUND_OPACITY)
+            QgsSymbol.PropertyOpacity, QgsProperty.fromExpression(
+                _ordinary_background_expression(_NATIONAL_BACKGROUND_OPACITY, symbol.opacity() * 100)
+            )
         )
         changed += 1
     if changed:
