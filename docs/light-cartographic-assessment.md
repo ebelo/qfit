@@ -107,15 +107,15 @@ focused investigation before broad completion, not an assertion of a root cause.
 | C01 | OPEN | Actual context is now measured below: QGIS 3/4 use different DPI, and requested camera zoom differs from native zoom. Earlier shared-DPI provenance is corrected. Tile payloads and extended outputs remain unvalidated. | Major validation gap |
 | C02 | OPEN | Live place features and rejected rank probes expose a major/minor role-handoff defect in inherited city/town gates and fixed rank eligibility. Other classes, types and null cases still need systematic fixtures. | Major |
 | C03 | NOT ASSESSED | No generalization, sparse-geometry or false-connection fixture audit. | — |
-| C04 | OPEN | Full-map review shows weak QGIS road figure–ground separation and different text prominence, especially Geneva z14. | Major |
-| C05 | PARTIAL | Road hierarchy has visible differences; class-to-visual-variable semantics have not been checked systematically. | — |
+| C04 | OPEN (remaining scope) | Source-owned road widths now have a scoped two-runtime repair below; global composition, regional fidelity and other visual hierarchies remain open. | Major baseline finding scoped below |
+| C05 | PARTIAL | Four road owners have source-class width tests below; other visual-variable encodings and classes remain unassessed. | — |
 | C06 | PARTIAL | Broad palette can be compared; class-interior lightness/contrast measurements and adjacent-class tests remain. | — |
 | C07 | PARTIAL | Urban/park/land areas appear in existing views. Agriculture, polygon holes and individual land-use class ownership are not validated. | — |
 | C08 | PARTIAL | Large water footprints are visually comparable. Minor streams, islands, confluences and water-label association need fixtures. | — |
 | C09 | N/A (source-scoped) | Recorded Light inventory contains no contour, hillshade or raster-dem layer. Missing Outdoors-like relief is not a Light defect; reassess if source intent changes. | — |
 | C10 | PARTIAL | Buildings appear in the street views; courtyards, transition visibility and road/footprint overlap are not systematically checked. | — |
-| C11 | OPEN | Street-network prominence differs in Geneva and Zurich. Inspect class filters, width/rank and actual visible road coverage. | Major |
-| C12 | PARTIAL | Stroke differences are visible, but cap/join/dash/casing and fractional-scale ownership are not isolated. | — |
+| C11 | OPEN (remaining scope) | Four source-owner class/zoom widths restored and urban networks improved below. Remaining class eligibility, road/path coverage, junctions and output scales need fixtures. | Major baseline finding scoped below |
+| C12 | PARTIAL | Scoped class/zoom widths and one-time units pass native tests below. Caps/joins/dashes/blur, full casing construction and output-scale continuity remain unvalidated. | — |
 | C13 | NOT ASSESSED | No named bridge/tunnel/at-grade crossing audit against structure attributes. | — |
 | C14 | NOT ASSESSED | Source has rail and aeroway layers; no systematic transport distinction/continuity checks. | — |
 | C15 | OPEN | Boundary appearance differs around Lake Geneva and regionally. Exact owner and status-filter attribution remain open. | Major |
@@ -128,12 +128,75 @@ focused investigation before broad completion, not an assertion of a root cause.
 | C22 | PARTIAL | Road duplicate removal has a scoped pass; the criterion as a whole is not passed. See the separate coverage-cell verdicts below. | — |
 | C23 | OPEN | Two-city z13/z14 triplets expose native rounding and requested/native zoom mismatch; no rank repair retained. Other intervals, outer bounds, size/width changes and interactive sequences remain unassessed. | Observed city-label mismatch; broader severity unestablished |
 | C24 | NOT ASSESSED | No deliberate tile-edge, clipping, adjacent-pan or world-wrap fixtures. | — |
-| C25 | NOT ASSESSED | These captures contain no current qfit activity overlays or UI state. Historical checks are not current certification. | — |
-| C26 | NOT ASSESSED | No current sparse/dense activity-on-road/water/forest comparisons. | — |
+| C25 | PARTIAL (diagnostic only) | Synthetic Run/Ride/Hike overlays now exercise unchanged production categorization on two city extents below. Real activity data, UI/selection/start/end/direction states remain NOT ASSESSED. | — |
+| C26 | PARTIAL (diagnostic only) | Two-city synthetic routes remain visible with the width repair below. Real sparse/dense/shared routes and broader background/output coverage remain NOT ASSESSED. | — |
 | C27 | NOT ASSESSED | No grayscale, color-vision, low-vision or target physical-size assessment. | — |
-| C28 | PARTIAL | Two Docker PNG runtimes checked. Windows/macOS, older supported QGIS, interactive canvas, high-DPI and PDF require separate cells. | — |
-| C29 | PARTIAL | Unchanged repeat controls passed in the prior capture matrix. Cold/warm cache, interactive responsiveness and pan/zoom stability are untested. | — |
+| C28 | PARTIAL | Two Docker PNG runtimes plus scoped native QGIS 3.34 width expressions checked below. Other older versions, Windows/macOS, interactive canvas, high-DPI and PDF still need separate cells. | — |
+| C29 | PARTIAL | All 30 current width-matrix repeat controls are byte-identical. Cold/warm cache, interactive responsiveness and pan/zoom stability remain untested. | — |
 | C30 | NOT ASSESSED | Cropped basemap evidence does not validate complete user-facing attribution, legend, scale or north/context requirements. | — |
+
+### C04/C11/C12: source-owned road widths — 2026-09-14 scoped update
+
+Baseline `8b5e661e54a5b84661e3a46eab4f79eef13b96f4`; retained implementation
+`964710365c54f7cfaead3170fe43d505fa33d856`.
+[Matched full maps, native-size crops, source and complete label/stroke audits][road-widths].
+Fresh source SHA256:
+`87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32`.
+All four whole source-owner fixtures match that source exactly.
+
+**Mechanism:** generic preprocessing collapses `road-simple`, `tunnel-simple`,
+`bridge-simple` and `bridge-case-simple` class/zoom width expressions to constants,
+converts them to millimetres, then the native converter treats those constants as
+pixels. The resulting fixed native core/casing widths are approximately
+0.168010/0.252016 mm. The Light-only native adapter restores the original numeric
+class groups and base-1.5 zoom interpolation, clamps both endpoints and converts
+pixels to millimetres once. It changes only fixed-width, single simple-line
+symbols belonging to these four unsplit owners. Existing active data-defined
+widths, non-millimetre symbols, other source contracts and non-Light styles keep
+their prior behavior. Generic preprocessing remains byte-identical to baseline.
+
+The rejected native-converter-only candidate `a01f188` belongs to the earlier
+interrupted run, not this fresh matrix. It improved modern captures but failed
+126/448 native QGIS 3.34 cases: equal expression endpoints omit the unit multiplier.
+Upstream QGIS 3.28 also uses exponent rather than Mapbox-base interpolation.
+The retained expression uses basic QGIS arithmetic; no duplicate artificial stop,
+version cutoff or near-equal endpoint workaround remains.
+
+**Independent dimensions:** source width semantics pass only in the native cases
+below. Whole maps show clearer urban street networks and road-width hierarchy,
+without changing label settings or other paint. Most reference MAE values improve;
+Zurich z8 has a repeatable small increase in both runtimes, explicitly retained as
+an OPEN reference-fidelity difference rather than called noise or an accepted
+renderer limitation. The source specifies much thinner secondary/tertiary roads
+than motorways at regional zooms; preserving a uniform width to improve an aggregate
+score would erase that distinction. This slice does not certify all feature
+eligibility, junction topology, label associations or global composition.
+
+| Coverage cell | Verdict | Evidence / remaining work |
+| --- | --- | --- |
+| C05/C11/C12: four source owners × eight representative classes including unknown/NULL × 14 zoom values; QGIS 3.34.4 host, 3.44.11 and 4.2.0 Docker | PASS (scoped native widths) | 448 cases per runtime verify original class values, base interpolation, endpoint clamping and one-time units to 1e-10 mm. Includes fractional stop neighborhoods; injected native zoom tests are not camera-alignment proof. QGIS 3.28 is source-inspected, not natively tested. |
+| C04/C11: seven Light presets in both Docker PNG runtimes | PASS (scoped street-width repair); broader hierarchy OPEN | Full-map and unscaled-detail inspection shows restored Geneva z14 street/block separation and differentiated Bern/Zurich/Geneva streets. Not a complete road/path inventory or topology audit. |
+| C01/C23: Geneva/Bern requested z12.9/13/13.1 triplets, both Docker runtimes | PARTIAL; scale alignment OPEN | Actual per-frame native zoom/DPI recorded. These static triplets exercise the candidate around requested z13, not calibrated source/native boundary equivalence or interactive continuity. Other stop/output intervals remain unassessed visually. |
+| C02/C10/C17–C22: settings-preservation guardrails for all 30 pairs | PASS (scoped preservation only) | Complete labels, native camera context, four owners' filters and all their other paint settings are identical before/after. This does not discharge existing label, building or semantic defects. |
+| C04/C06: Zurich regional reference fidelity, both runtimes | OPEN | Small repeatable MAE regression, with source-backed class separation retained. Full-map source/native-scale, palette, boundary and label differences still require follow-up; no limitation accepted. |
+| C25/C26: synthetic Run/Ride/Hike overlays on Geneva z14 and Bern z12, both Docker PNG runtimes | PASS (scoped visible overlay guardrail) | qfit's production categorized activity renderer is unchanged; all three diagnostic routes remain visible against the changed basemap. These are not real activities or UI/selected/start/end/direction states. |
+| C25–C28: real dense/shared routes, accessibility, actual desktop/packaged-font/PDF outputs | NOT ASSESSED by this slice | No broader activity or runtime/output pass follows from diagnostic PNGs or ZIP checks. |
+| C29: settled unchanged repeat captures, all 30 camera/runtime pairs | PASS (scoped repeats) | All unchanged PNG pairs are byte-identical. Cold/warm cache behavior, timed interaction and pan/zoom stability remain unassessed. |
+| C12/C13/C15/C24: caps/joins/dashes/blur, named crossings/structure order, boundary status/owner and tile seams | OPEN / NOT ASSESSED as in the main ledger | Restoring widths does not fix or validate these mechanisms. Follow with source-owner/status and dedicated topology fixtures. |
+
+The fresh matrix is **15 cameras × two font-enabled Docker runtimes**: seven
+presets, six two-city triplet cameras and two diagnostic overlay cameras. All
+30 unchanged repeats are byte-identical. Baseline and candidate use matched
+1280×900 offscreen PNG settings within each runtime; QGIS 3 uses 100 map DPI,
+QGIS 4 uses 96. Requested camera zoom remains different from continuous native
+style zoom. Runtime/font identities, source/preprocessed fingerprints, exact
+camera extents and all metrics are in the evidence manifest. Live upstream tile
+payloads are not archived; this is not a future-provider-data guarantee.
+
+Both full Docker test lanes, the full local suite, legacy native width cases,
+both plugin ZIP builds and package-content checks pass. Fonts remain a separate
+installation dependency. C04/C11 overall and the broader C01–C30 scope remain
+open where recorded; no release, deployment or limitation acceptance is implied.
 
 ### C01/C02/C23: capture-context audit and rejected rank repairs — 2026-09-11
 
@@ -280,3 +343,5 @@ explicitly agreed scope reduction with follow-up ownership for excluded work.
 [name-fallback-metrics]: https://github.com/ebelo/qfit/blob/d007ecd7fe19542d89e733cd3b701f085461de31/docs/visual-evidence/issue-1462/light-name-fallback/metrics.json
 
 [capture-context]: https://github.com/ebelo/qfit/tree/cc7ecd4ace62e3eb484dfe5dc7dedfc0195e0c3d/docs/visual-evidence/issue-1462/light-capture-context
+
+[road-widths]: https://github.com/ebelo/qfit/tree/d894f1c7fb09176320a2a06a806ebeace19377c9/docs/visual-evidence/issue-1462/light-road-widths
