@@ -1,0 +1,41 @@
+{
+  "mapbox_gl_version": "3.10.0",
+  "reference_projection": "mercator",
+  "source_projection": {
+    "name": "globe"
+  },
+  "actual_projection": {
+    "name": "mercator",
+    "center": [
+      0,
+      0
+    ]
+  },
+  "center": [
+    6.147,
+    46.202
+  ],
+  "zoom": 18,
+  "bearing": 0,
+  "pitch": 0,
+  "bounds": [
+    [
+      6.145283386232336,
+      46.20116461136041
+    ],
+    [
+      6.148716613771342,
+      46.20283537593562
+    ]
+  ],
+  "canvas_size_pixels": [
+    1280,
+    900
+  ],
+  "device_pixel_ratio": 1,
+  "map_loaded": true,
+  "tiles_loaded": true,
+  "map_error_count": 0,
+  "rendered_feature_count": 259,
+  "browser_version": "152.0.7977.64"
+}

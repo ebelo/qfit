@@ -1,0 +1,41 @@
+{
+  "mapbox_gl_version": "3.10.0",
+  "reference_projection": "source",
+  "source_projection": {
+    "name": "globe"
+  },
+  "actual_projection": {
+    "name": "globe",
+    "center": [
+      0,
+      0
+    ]
+  },
+  "center": [
+    7.447,
+    46.948
+  ],
+  "zoom": 12.25,
+  "bearing": 0,
+  "pitch": 0,
+  "bounds": [
+    [
+      7.354616360627546,
+      46.90363779808379
+    ],
+    [
+      7.539383639369987,
+      46.99232546542342
+    ]
+  ],
+  "canvas_size_pixels": [
+    1280,
+    900
+  ],
+  "device_pixel_ratio": 1,
+  "map_loaded": true,
+  "tiles_loaded": true,
+  "map_error_count": 0,
+  "rendered_feature_count": 1059,
+  "browser_version": "152.0.7977.64"
+}

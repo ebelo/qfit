@@ -1,0 +1,3356 @@
+{
+  "baseline": "1418e8ec1497c0865453a64a9eca0ae59a07fe53",
+  "candidate": "d95175b8917c66aefe97cf463c904091bae3540a",
+  "images": {
+    "3": "sha256:9bf850ffeb3a012cbd8956c9ea101fa8353f0df1d320884e6613b6739ab205b2",
+    "4": "sha256:313e91cd4cd9bc7460e623c4ca5314ee7c0b721fa0b03d9bb8bf682e641b23cf"
+  },
+  "date_utc": "2026-09-14",
+  "scope": "C01 browser context and explicit planar diagnostics; not production cartography changes",
+  "access": "Fresh same-active-run Gateway and per-container protected preflights authorized HTTP200; inherited environment and TLS preserved.",
+  "runtime_environment": [
+    {
+      "qgis": "3.44.11-Solothurn",
+      "qt_compiled": "5.15.17",
+      "qt_runtime": "5.15.17",
+      "pyqt": "5.15.11",
+      "python": "3.13.7",
+      "qgis_major": "3",
+      "image": "sha256:9bf850ffeb3a012cbd8956c9ea101fa8353f0df1d320884e6613b6739ab205b2"
+    },
+    {
+      "qgis": "4.2.0-Bel\u00e9m do Par\u00e1",
+      "qt_compiled": "6.9.2",
+      "qt_runtime": "6.9.2",
+      "pyqt": "6.9.1",
+      "python": "3.13.7",
+      "qgis_major": "4",
+      "image": "sha256:313e91cd4cd9bc7460e623c4ca5314ee7c0b721fa0b03d9bb8bf682e641b23cf"
+    }
+  ],
+  "output": "Headless browser PNG and two native QGIS Docker PNG generations; not desktop/PDF.",
+  "limitations": [
+    "Live tile payloads not archived. Source fingerprints are not future-data guarantees.",
+    "Source globe and planar diagnostics remain separate. No product limitation accepted.",
+    "QGIS3 DPI100 and QGIS4 DPI96/native style-zoom mismatch remain OPEN.",
+    "Configured globe at high zoom is not per-pixel globe-blend evidence."
+  ],
+  "source_sha256": {
+    "light-v11": "87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32",
+    "outdoors-v12": "da68d8ece0bb90c6d45fb36085b1e64f9d9e966175f1abf31fcddbf28bc1504c"
+  },
+  "browser": [
+    {
+      "camera": {
+        "name": "switzerland-alps-z5-outdoors",
+        "description": "z5 broad Switzerland-Alps context for landcover, terrain/water balance, major roads, and country-scale label density.",
+        "longitude": 8.2,
+        "latitude": 46.8,
+        "zoom": 5.35,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "outdoors-v12"
+      },
+      "source_projection_control_repeat_identical": true,
+      "source_default_before_after_identical": true,
+      "mercator_control_repeat_identical": true,
+      "projection_variants_identical": false,
+      "source_projection_sha256": "0a2c33f1e770fe232414cb5a3554280a655caef847dda0cb53e87cc6ec30469b",
+      "mercator_sha256": "f16d3153ca4180123189446b84d8a66a421fe28ab4d544d10b7827fd459a95cc",
+      "source_context": {
+        "mapbox_gl_version": "3.10.0",
+        "reference_projection": "source",
+        "source_projection": {
+          "name": "globe"
+        },
+        "actual_projection": {
+          "name": "globe",
+          "center": [
+            0,
+            0
+          ]
+        },
+        "center": [
+          8.2,
+          46.8
+        ],
+        "zoom": 5.35,
+        "bearing": 0,
+        "pitch": 0,
+        "bounds": [
+          [
+            -4.740609080079167,
+            40.66727704460254
+          ],
+          [
+            21.140609080080537,
+            52.20340357690284
+          ]
+        ],
+        "canvas_size_pixels": [
+          1280,
+          900
+        ],
+        "device_pixel_ratio": 1,
+        "map_loaded": true,
+        "tiles_loaded": true,
+        "map_error_count": 0,
+        "rendered_feature_count": 2607,
+        "browser_version": "152.0.7977.64"
+      },
+      "mercator_context": {
+        "mapbox_gl_version": "3.10.0",
+        "reference_projection": "mercator",
+        "source_projection": {
+          "name": "globe"
+        },
+        "actual_projection": {
+          "name": "mercator",
+          "center": [
+            0,
+            0
+          ]
+        },
+        "center": [
+          8.2,
+          46.8
+        ],
+        "zoom": 5.35,
+        "bearing": 0,
+        "pitch": 0,
+        "bounds": [
+          [
+            -2.8332138766738524,
+            41.22714516939652
+          ],
+          [
+            19.233213876672238,
+            51.85015210683707
+          ]
+        ],
+        "canvas_size_pixels": [
+          1280,
+          900
+        ],
+        "device_pixel_ratio": 1,
+        "map_loaded": true,
+        "tiles_loaded": true,
+        "map_error_count": 0,
+        "rendered_feature_count": 2421,
+        "browser_version": "152.0.7977.64"
+      }
+    },
+    {
+      "camera": {
+        "name": "valais-geneva-outdoors",
+        "description": "z7-z8 regional qfit map context spanning the Geneva/Valais corridor for terrain/outdoor features, main roads, and settlement visibility.",
+        "longitude": 7.14,
+        "latitude": 46.2,
+        "zoom": 8.15,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "outdoors-v12"
+      },
+      "source_projection_control_repeat_identical": true,
+      "source_default_before_after_identical": true,
+      "mercator_control_repeat_identical": true,
+      "projection_variants_identical": true,
+      "source_projection_sha256": "a5c9014c17328c0241b387e3c35b6becfdee21ca3e62e76f614cb4c9791cee43",
+      "mercator_sha256": "a5c9014c17328c0241b387e3c35b6becfdee21ca3e62e76f614cb4c9791cee43",
+      "source_context": {
+        "mapbox_gl_version": "3.10.0",
+        "reference_projection": "source",
+        "source_projection": {
+          "name": "globe"
+        },
+        "actual_projection": {
+          "name": "globe",
+          "center": [
+            0,
+            0
+          ]
+        },
+        "center": [
+          7.14,
+          46.2
+        ],
+        "zoom": 8.15,
+        "bearing": 0,
+        "pitch": 0,
+        "bounds": [
+          [
+            5.55577067119259,
+            45.42360296779603
+          ],
+          [
+            8.724229328808264,
+            46.96557916136305
+          ]
+        ],
+        "canvas_size_pixels": [
+          1280,
+          900
+        ],
+        "device_pixel_ratio": 1,
+        "map_loaded": true,
+        "tiles_loaded": true,
+        "map_error_count": 0,
+        "rendered_feature_count": 6205,
+        "browser_version": "152.0.7977.64"
+      },
+      "mercator_context": {
+        "mapbox_gl_version": "3.10.0",
+        "reference_projection": "mercator",
+        "source_projection": {
+          "name": "globe"
+        },
+        "actual_projection": {
+          "name": "mercator",
+          "center": [
+            0,
+            0
+          ]
+        },
+        "center": [
+          7.14,
+          46.2
+        ],
+        "zoom": 8.15,
+        "bearing": 0,
+        "pitch": 0,
+        "bounds": [
+          [
+            5.55577067119259,
+            45.42360296779603
+          ],
+          [
+            8.724229328808264,
+            46.96557916136305
+          ]
+        ],
+        "canvas_size_pixels": [
+          1280,
+          900
+        ],
+        "device_pixel_ratio": 1,
+        "map_loaded": true,
+        "tiles_loaded": true,
+        "map_error_count": 0,
+        "rendered_feature_count": 6205,
+        "browser_version": "152.0.7977.64"
+      }
+    },
+    {
+      "camera": {
+        "name": "lausanne-lavaux-z10-outdoors",
+        "description": "z9-z11 primary qfit activity-area target around Lausanne/Lavaux for road/trail hierarchy, labels, feature density, and color/width balance.",
+        "longitude": 6.72,
+        "latitude": 46.49,
+        "zoom": 10.25,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "outdoors-v12"
+      },
+      "source_projection_control_repeat_identical": true,
+      "source_default_before_after_identical": true,
+      "mercator_control_repeat_identical": true,
+      "projection_variants_identical": true,
+      "source_projection_sha256": "aee724985f6088ef87b245dae5061fdd9c5cb616c8c282f377e944c44568b454",
+      "mercator_sha256": "aee724985f6088ef87b245dae5061fdd9c5cb616c8c282f377e944c44568b454",
+      "source_context": {
+        "mapbox_gl_version": "3.10.0",
+        "reference_projection": "source",
+        "source_projection": {
+          "name": "globe"
+        },
+        "actual_projection": {
+          "name": "globe",
+          "center": [
+            0,
+            0
+          ]
+        },
+        "center": [
+          6.72,
+          46.49
+        ],
+        "zoom": 10.25,
+        "bearing": 0,
+        "pitch": 0,
+        "bounds": [
+          [
+            6.350465442516736,
+            46.31081843134572
+          ],
+          [
+            7.089534557486445,
+            46.6685932216846
+          ]
+        ],
+        "canvas_size_pixels": [
+          1280,
+          900
+        ],
+        "device_pixel_ratio": 1,
+        "map_loaded": true,
+        "tiles_loaded": true,
+        "map_error_count": 0,
+        "rendered_feature_count": 1913,
+        "browser_version": "152.0.7977.64"
+      },
+      "mercator_context": {
+        "mapbox_gl_version": "3.10.0",
+        "reference_projection": "mercator",
+        "source_projection": {
+          "name": "globe"
+        },
+        "actual_projection": {
+          "name": "mercator",
+          "center": [
+            0,
+            0
+          ]
+        },
+        "center": [
+          6.72,
+          46.49
+        ],
+        "zoom": 10.25,
+        "bearing": 0,
+        "pitch": 0,
+        "bounds": [
+          [
+            6.350465442516736,
+            46.31081843134572
+          ],
+          [
+            7.089534557486445,
+            46.6685932216846
+          ]
+        ],
+        "canvas_size_pixels": [
+          1280,
+          900
+        ],
+        "device_pixel_ratio": 1,
+        "map_loaded": true,
+        "tiles_loaded": true,
+        "map_error_count": 0,
+        "rendered_feature_count": 1913,
+        "browser_version": "152.0.7977.64"
+      }
+    },
+    {
+      "camera": {
+        "name": "geneva-airport-motorway-z14-outdoors",
+        "description": "z14 motorway/urban detail around Geneva airport for road-exit shields, motorway junction labels, urban POIs, and dense road hierarchy.",
+        "longitude": 6.103,
+        "latitude": 46.225,
+        "zoom": 14.25,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "outdoors-v12"
+      },
+      "source_projection_control_repeat_identical": true,
+      "source_default_before_after_identical": true,
+      "mercator_control_repeat_identical": true,
+      "projection_variants_identical": true,
+      "source_projection_sha256": "b90022425ed90a706e159b2dd2c300ce2e4e9cefcfc919b60a880fd7d9149a93",
+      "mercator_sha256": "b90022425ed90a706e159b2dd2c300ce2e4e9cefcfc919b60a880fd7d9149a93",
+      "source_context": {
+        "mapbox_gl_version": "3.10.0",
+        "reference_projection": "source",
+        "source_projection": {
+          "name": "globe"
+        },
+        "actual_projection": {
+          "name": "globe",
+          "center": [
+            0,
+            0
+          ]
+        },
+        "center": [
+          6.103,
+          46.225
+        ],
+        "zoom": 14.25,
+        "bearing": 0,
+        "pitch": 0,
+        "bounds": [
+          [
+            6.079904090157953,
+            46.21376403696465
+          ],
+          [
+            6.126095909842832,
+            46.23623366378857
+          ]
+        ],
+        "canvas_size_pixels": [
+          1280,
+          900
+        ],
+        "device_pixel_ratio": 1,
+        "map_loaded": true,
+        "tiles_loaded": true,
+        "map_error_count": 0,
+        "rendered_feature_count": 2719,
+        "browser_version": "152.0.7977.64"
+      },
+      "mercator_context": {
+        "mapbox_gl_version": "3.10.0",
+        "reference_projection": "mercator",
+        "source_projection": {
+          "name": "globe"
+        },
+        "actual_projection": {
+          "name": "mercator",
+          "center": [
+            0,
+            0
+          ]
+        },
+        "center": [
+          6.103,
+          46.225
+        ],
+        "zoom": 14.25,
+        "bearing": 0,
+        "pitch": 0,
+        "bounds": [
+          [
+            6.079904090157953,
+            46.21376403696465
+          ],
+          [
+            6.126095909842832,
+            46.23623366378857
+          ]
+        ],
+        "canvas_size_pixels": [
+          1280,
+          900
+        ],
+        "device_pixel_ratio": 1,
+        "map_loaded": true,
+        "tiles_loaded": true,
+        "map_error_count": 0,
+        "rendered_feature_count": 2719,
+        "browser_version": "152.0.7977.64"
+      }
+    },
+    {
+      "camera": {
+        "name": "chamonix-trails-z14-outdoors",
+        "description": "z13-z14 local outdoor detail around Chamonix for paths/trails, minor roads, POIs, and label emphasis.",
+        "longitude": 6.868,
+        "latitude": 45.923,
+        "zoom": 13.75,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "outdoors-v12"
+      },
+      "source_projection_control_repeat_identical": true,
+      "source_default_before_after_identical": true,
+      "mercator_control_repeat_identical": true,
+      "projection_variants_identical": true,
+      "source_projection_sha256": "60b89372014c92a81c4fbba0ebd45203dce3f4a317d2cb7158bc32ad305fb939",
+      "mercator_sha256": "60b89372014c92a81c4fbba0ebd45203dce3f4a317d2cb7158bc32ad305fb939",
+      "source_context": {
+        "mapbox_gl_version": "3.10.0",
+        "reference_projection": "source",
+        "source_projection": {
+          "name": "globe"
+        },
+        "actual_projection": {
+          "name": "globe",
+          "center": [
+            0,
+            0
+          ]
+        },
+        "center": [
+          6.868,
+          45.923
+        ],
+        "zoom": 13.75,
+        "bearing": 0,
+        "pitch": 0,
+        "bounds": [
+          [
+            6.835337451064618,
+            45.90702208939993
+          ],
+          [
+            6.900662548934662,
+            45.938973310286514
+          ]
+        ],
+        "canvas_size_pixels": [
+          1280,
+          900
+        ],
+        "device_pixel_ratio": 1,
+        "map_loaded": true,
+        "tiles_loaded": true,
+        "map_error_count": 0,
+        "rendered_feature_count": 1506,
+        "browser_version": "152.0.7977.64"
+      },
+      "mercator_context": {
+        "mapbox_gl_version": "3.10.0",
+        "reference_projection": "mercator",
+        "source_projection": {
+          "name": "globe"
+        },
+        "actual_projection": {
+          "name": "mercator",
+          "center": [
+            0,
+            0
+          ]
+        },
+        "center": [
+          6.868,
+          45.923
+        ],
+        "zoom": 13.75,
+        "bearing": 0,
+        "pitch": 0,
+        "bounds": [
+          [
+            6.835337451064618,
+            45.90702208939993
+          ],
+          [
+            6.900662548934662,
+            45.938973310286514
+          ]
+        ],
+        "canvas_size_pixels": [
+          1280,
+          900
+        ],
+        "device_pixel_ratio": 1,
+        "map_loaded": true,
+        "tiles_loaded": true,
+        "map_error_count": 0,
+        "rendered_feature_count": 1506,
+        "browser_version": "152.0.7977.64"
+      }
+    },
+    {
+      "camera": {
+        "name": "zermatt-piste-z17-outdoors",
+        "description": "z17 Zermatt ski-piste stress target for colored path casings, cycleway/piste overlays, and high-zoom outdoor route legibility.",
+        "longitude": 7.71664,
+        "latitude": 46.0127,
+        "zoom": 17.0,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "outdoors-v12"
+      },
+      "source_projection_control_repeat_identical": true,
+      "source_default_before_after_identical": true,
+      "mercator_control_repeat_identical": true,
+      "projection_variants_identical": true,
+      "source_projection_sha256": "f47ed750cedb4d369d3c53c625cb806c2a7eae449371cef362d996f747f972d6",
+      "mercator_sha256": "f47ed750cedb4d369d3c53c625cb806c2a7eae449371cef362d996f747f972d6",
+      "source_context": {
+        "mapbox_gl_version": "3.10.0",
+        "reference_projection": "source",
+        "source_projection": {
+          "name": "globe"
+        },
+        "actual_projection": {
+          "name": "globe",
+          "center": [
+            0,
+            0
+          ]
+        },
+        "center": [
+          7.71664,
+          46.0127
+        ],
+        "zoom": 17,
+        "bearing": 0,
+        "pitch": 0,
+        "bounds": [
+          [
+            7.713206772461319,
+            46.01102346248382
+          ],
+          [
+            7.720073227539331,
+            46.0143764866954
+          ]
+        ],
+        "canvas_size_pixels": [
+          1280,
+          900
+        ],
+        "device_pixel_ratio": 1,
+        "map_loaded": true,
+        "tiles_loaded": true,
+        "map_error_count": 0,
+        "rendered_feature_count": 382,
+        "browser_version": "152.0.7977.64"
+      },
+      "mercator_context": {
+        "mapbox_gl_version": "3.10.0",
+        "reference_projection": "mercator",
+        "source_projection": {
+          "name": "globe"
+        },
+        "actual_projection": {
+          "name": "mercator",
+          "center": [
+            0,
+            0
+          ]
+        },
+        "center": [
+          7.71664,
+          46.0127
+        ],
+        "zoom": 17,
+        "bearing": 0,
+        "pitch": 0,
+        "bounds": [
+          [
+            7.713206772461319,
+            46.01102346248382
+          ],
+          [
+            7.720073227539331,
+            46.0143764866954
+          ]
+        ],
+        "canvas_size_pixels": [
+          1280,
+          900
+        ],
+        "device_pixel_ratio": 1,
+        "map_loaded": true,
+        "tiles_loaded": true,
+        "map_error_count": 0,
+        "rendered_feature_count": 382,
+        "browser_version": "152.0.7977.64"
+      }
+    },
+    {
+      "camera": {
+        "name": "zermatt-trails-z18-outdoors",
+        "description": "z18 street/trail-level stress test around Zermatt for casing, widths, local labels, POIs, and high-detail symbol behavior.",
+        "longitude": 7.748,
+        "latitude": 46.02,
+        "zoom": 18.0,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "outdoors-v12"
+      },
+      "source_projection_control_repeat_identical": true,
+      "source_default_before_after_identical": true,
+      "mercator_control_repeat_identical": true,
+      "projection_variants_identical": true,
+      "source_projection_sha256": "6af55ff9a9751bab4578d0ebf70aea3061c141decd50de447f84bc15357876d0",
+      "mercator_sha256": "6af55ff9a9751bab4578d0ebf70aea3061c141decd50de447f84bc15357876d0",
+      "source_context": {
+        "mapbox_gl_version": "3.10.0",
+        "reference_projection": "source",
+        "source_projection": {
+          "name": "globe"
+        },
+        "actual_projection": {
+          "name": "globe",
+          "center": [
+            0,
+            0
+          ]
+        },
+        "center": [
+          7.748,
+          46.02
+        ],
+        "zoom": 18,
+        "bearing": 0,
+        "pitch": 0,
+        "bounds": [
+          [
+            7.746283386230232,
+            46.01916184824566
+          ],
+          [
+            7.749716613769209,
+            46.02083813904781
+          ]
+        ],
+        "canvas_size_pixels": [
+          1280,
+          900
+        ],
+        "device_pixel_ratio": 1,
+        "map_loaded": true,
+        "tiles_loaded": true,
+        "map_error_count": 0,
+        "rendered_feature_count": 366,
+        "browser_version": "152.0.7977.64"
+      },
+      "mercator_context": {
+        "mapbox_gl_version": "3.10.0",
+        "reference_projection": "mercator",
+        "source_projection": {
+          "name": "globe"
+        },
+        "actual_projection": {
+          "name": "mercator",
+          "center": [
+            0,
+            0
+          ]
+        },
+        "center": [
+          7.748,
+          46.02
+        ],
+        "zoom": 18,
+        "bearing": 0,
+        "pitch": 0,
+        "bounds": [
+          [
+            7.746283386230232,
+            46.01916184824566
+          ],
+          [
+            7.749716613769209,
+            46.02083813904781
+          ]
+        ],
+        "canvas_size_pixels": [
+          1280,
+          900
+        ],
+        "device_pixel_ratio": 1,
+        "map_loaded": true,
+        "tiles_loaded": true,
+        "map_error_count": 0,
+        "rendered_feature_count": 366,
+        "browser_version": "152.0.7977.64"
+      }
+    },
+    {
+      "camera": {
+        "name": "switzerland-alps-z5-light",
+        "description": "z5 country-wide Switzerland/Alps guardrail for background, water, major roads, and label density.",
+        "longitude": 8.2,
+        "latitude": 46.8,
+        "zoom": 5.35,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "light-v11"
+      },
+      "source_projection_control_repeat_identical": true,
+      "source_default_before_after_identical": true,
+      "mercator_control_repeat_identical": true,
+      "projection_variants_identical": false,
+      "source_projection_sha256": "f82803bd3fac15796284956d8b9b7e26568ab8ecb274ef87baa756f085628803",
+      "mercator_sha256": "d44444381b991e897900645c06eeb3b0b0e887e4920208963320bc69ddcc9e0d",
+      "source_context": {
+        "mapbox_gl_version": "3.10.0",
+        "reference_projection": "source",
+        "source_projection": {
+          "name": "globe"
+        },
+        "actual_projection": {
+          "name": "globe",
+          "center": [
+            0,
+            0
+          ]
+        },
+        "center": [
+          8.2,
+          46.8
+        ],
+        "zoom": 5.35,
+        "bearing": 0,
+        "pitch": 0,
+        "bounds": [
+          [
+            -4.740609080079167,
+            40.66727704460254
+          ],
+          [
+            21.140609080080537,
+            52.20340357690284
+          ]
+        ],
+        "canvas_size_pixels": [
+          1280,
+          900
+        ],
+        "device_pixel_ratio": 1,
+        "map_loaded": true,
+        "tiles_loaded": true,
+        "map_error_count": 0,
+        "rendered_feature_count": 2188,
+        "browser_version": "152.0.7977.64"
+      },
+      "mercator_context": {
+        "mapbox_gl_version": "3.10.0",
+        "reference_projection": "mercator",
+        "source_projection": {
+          "name": "globe"
+        },
+        "actual_projection": {
+          "name": "mercator",
+          "center": [
+            0,
+            0
+          ]
+        },
+        "center": [
+          8.2,
+          46.8
+        ],
+        "zoom": 5.35,
+        "bearing": 0,
+        "pitch": 0,
+        "bounds": [
+          [
+            -2.8332138766738524,
+            41.22714516939652
+          ],
+          [
+            19.233213876672238,
+            51.85015210683707
+          ]
+        ],
+        "canvas_size_pixels": [
+          1280,
+          900
+        ],
+        "device_pixel_ratio": 1,
+        "map_loaded": true,
+        "tiles_loaded": true,
+        "map_error_count": 0,
+        "rendered_feature_count": 2034,
+        "browser_version": "152.0.7977.64"
+      }
+    },
+    {
+      "camera": {
+        "name": "zurich-region-z8-light",
+        "description": "z8 regional context around Zurich for settlement hierarchy, major roads, water, and landuse balance.",
+        "longitude": 8.54,
+        "latitude": 47.38,
+        "zoom": 8.2,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "light-v11"
+      },
+      "source_projection_control_repeat_identical": true,
+      "source_default_before_after_identical": true,
+      "mercator_control_repeat_identical": true,
+      "projection_variants_identical": true,
+      "source_projection_sha256": "553784ddbf6e8f5ff1cc419667bab13ccebcda0f6606f92100cc53b0d4627313",
+      "mercator_sha256": "553784ddbf6e8f5ff1cc419667bab13ccebcda0f6606f92100cc53b0d4627313",
+      "source_context": {
+        "mapbox_gl_version": "3.10.0",
+        "reference_projection": "source",
+        "source_projection": {
+          "name": "globe"
+        },
+        "actual_projection": {
+          "name": "globe",
+          "center": [
+            0,
+            0
+          ]
+        },
+        "center": [
+          8.54,
+          47.38
+        ],
+        "zoom": 8.2,
+        "bearing": 0,
+        "pitch": 0,
+        "bounds": [
+          [
+            7.009735337956329,
+            46.646389827549456
+          ],
+          [
+            10.070264662043826,
+            48.10354264679685
+          ]
+        ],
+        "canvas_size_pixels": [
+          1280,
+          900
+        ],
+        "device_pixel_ratio": 1,
+        "map_loaded": true,
+        "tiles_loaded": true,
+        "map_error_count": 0,
+        "rendered_feature_count": 919,
+        "browser_version": "152.0.7977.64"
+      },
+      "mercator_context": {
+        "mapbox_gl_version": "3.10.0",
+        "reference_projection": "mercator",
+        "source_projection": {
+          "name": "globe"
+        },
+        "actual_projection": {
+          "name": "mercator",
+          "center": [
+            0,
+            0
+          ]
+        },
+        "center": [
+          8.54,
+          47.38
+        ],
+        "zoom": 8.2,
+        "bearing": 0,
+        "pitch": 0,
+        "bounds": [
+          [
+            7.009735337956329,
+            46.646389827549456
+          ],
+          [
+            10.070264662043826,
+            48.10354264679685
+          ]
+        ],
+        "canvas_size_pixels": [
+          1280,
+          900
+        ],
+        "device_pixel_ratio": 1,
+        "map_loaded": true,
+        "tiles_loaded": true,
+        "map_error_count": 0,
+        "rendered_feature_count": 919,
+        "browser_version": "152.0.7977.64"
+      }
+    },
+    {
+      "camera": {
+        "name": "lausanne-lavaux-z10-light",
+        "description": "z10 primary qfit activity-area target around Lausanne/Lavaux for roads, labels, feature density, and activity-line contrast.",
+        "longitude": 6.72,
+        "latitude": 46.49,
+        "zoom": 10.25,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "light-v11"
+      },
+      "source_projection_control_repeat_identical": true,
+      "source_default_before_after_identical": true,
+      "mercator_control_repeat_identical": true,
+      "projection_variants_identical": true,
+      "source_projection_sha256": "1ae4bde1af23b8c80015b7d51499b2672e65313d076573fc88b65e293c3d0b97",
+      "mercator_sha256": "1ae4bde1af23b8c80015b7d51499b2672e65313d076573fc88b65e293c3d0b97",
+      "source_context": {
+        "mapbox_gl_version": "3.10.0",
+        "reference_projection": "source",
+        "source_projection": {
+          "name": "globe"
+        },
+        "actual_projection": {
+          "name": "globe",
+          "center": [
+            0,
+            0
+          ]
+        },
+        "center": [
+          6.72,
+          46.49
+        ],
+        "zoom": 10.25,
+        "bearing": 0,
+        "pitch": 0,
+        "bounds": [
+          [
+            6.350465442516736,
+            46.31081843134572
+          ],
+          [
+            7.089534557486445,
+            46.6685932216846
+          ]
+        ],
+        "canvas_size_pixels": [
+          1280,
+          900
+        ],
+        "device_pixel_ratio": 1,
+        "map_loaded": true,
+        "tiles_loaded": true,
+        "map_error_count": 0,
+        "rendered_feature_count": 423,
+        "browser_version": "152.0.7977.64"
+      },
+      "mercator_context": {
+        "mapbox_gl_version": "3.10.0",
+        "reference_projection": "mercator",
+        "source_projection": {
+          "name": "globe"
+        },
+        "actual_projection": {
+          "name": "mercator",
+          "center": [
+            0,
+            0
+          ]
+        },
+        "center": [
+          6.72,
+          46.49
+        ],
+        "zoom": 10.25,
+        "bearing": 0,
+        "pitch": 0,
+        "bounds": [
+          [
+            6.350465442516736,
+            46.31081843134572
+          ],
+          [
+            7.089534557486445,
+            46.6685932216846
+          ]
+        ],
+        "canvas_size_pixels": [
+          1280,
+          900
+        ],
+        "device_pixel_ratio": 1,
+        "map_loaded": true,
+        "tiles_loaded": true,
+        "map_error_count": 0,
+        "rendered_feature_count": 423,
+        "browser_version": "152.0.7977.64"
+      }
+    },
+    {
+      "camera": {
+        "name": "bern-urban-z12-light",
+        "description": "z12 urban fit target around Bern for road hierarchy, rail/transit, POIs, buildings, and label emphasis.",
+        "longitude": 7.447,
+        "latitude": 46.948,
+        "zoom": 12.25,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "light-v11"
+      },
+      "source_projection_control_repeat_identical": true,
+      "source_default_before_after_identical": true,
+      "mercator_control_repeat_identical": true,
+      "projection_variants_identical": true,
+      "source_projection_sha256": "d683cf7c463166f75478d860ff4b8489a559b2c5425247bbe880a396d8ea80c1",
+      "mercator_sha256": "d683cf7c463166f75478d860ff4b8489a559b2c5425247bbe880a396d8ea80c1",
+      "source_context": {
+        "mapbox_gl_version": "3.10.0",
+        "reference_projection": "source",
+        "source_projection": {
+          "name": "globe"
+        },
+        "actual_projection": {
+          "name": "globe",
+          "center": [
+            0,
+            0
+          ]
+        },
+        "center": [
+          7.447,
+          46.948
+        ],
+        "zoom": 12.25,
+        "bearing": 0,
+        "pitch": 0,
+        "bounds": [
+          [
+            7.354616360627546,
+            46.90363779808379
+          ],
+          [
+            7.539383639369987,
+            46.99232546542342
+          ]
+        ],
+        "canvas_size_pixels": [
+          1280,
+          900
+        ],
+        "device_pixel_ratio": 1,
+        "map_loaded": true,
+        "tiles_loaded": true,
+        "map_error_count": 0,
+        "rendered_feature_count": 1059,
+        "browser_version": "152.0.7977.64"
+      },
+      "mercator_context": {
+        "mapbox_gl_version": "3.10.0",
+        "reference_projection": "mercator",
+        "source_projection": {
+          "name": "globe"
+        },
+        "actual_projection": {
+          "name": "mercator",
+          "center": [
+            0,
+            0
+          ]
+        },
+        "center": [
+          7.447,
+          46.948
+        ],
+        "zoom": 12.25,
+        "bearing": 0,
+        "pitch": 0,
+        "bounds": [
+          [
+            7.354616360627546,
+            46.90363779808379
+          ],
+          [
+            7.539383639369987,
+            46.99232546542342
+          ]
+        ],
+        "canvas_size_pixels": [
+          1280,
+          900
+        ],
+        "device_pixel_ratio": 1,
+        "map_loaded": true,
+        "tiles_loaded": true,
+        "map_error_count": 0,
+        "rendered_feature_count": 1059,
+        "browser_version": "152.0.7977.64"
+      }
+    },
+    {
+      "camera": {
+        "name": "geneva-urban-z14-light",
+        "description": "z14 dense urban detail around Geneva for minor roads, buildings, transit, POIs, and local label hierarchy.",
+        "longitude": 6.143,
+        "latitude": 46.204,
+        "zoom": 14.25,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "light-v11"
+      },
+      "source_projection_control_repeat_identical": true,
+      "source_default_before_after_identical": true,
+      "mercator_control_repeat_identical": true,
+      "projection_variants_identical": true,
+      "source_projection_sha256": "a1088191221cd6083a1369d37d7608756c76cd19b96278f31dd73c608255cc76",
+      "mercator_sha256": "a1088191221cd6083a1369d37d7608756c76cd19b96278f31dd73c608255cc76",
+      "source_context": {
+        "mapbox_gl_version": "3.10.0",
+        "reference_projection": "source",
+        "source_projection": {
+          "name": "globe"
+        },
+        "actual_projection": {
+          "name": "globe",
+          "center": [
+            0,
+            0
+          ]
+        },
+        "center": [
+          6.143,
+          46.204
+        ],
+        "zoom": 14.25,
+        "bearing": 0,
+        "pitch": 0,
+        "bounds": [
+          [
+            6.119904090155899,
+            46.19275973995667
+          ],
+          [
+            6.166095909840806,
+            46.2152379607258
+          ]
+        ],
+        "canvas_size_pixels": [
+          1280,
+          900
+        ],
+        "device_pixel_ratio": 1,
+        "map_loaded": true,
+        "tiles_loaded": true,
+        "map_error_count": 0,
+        "rendered_feature_count": 2664,
+        "browser_version": "152.0.7977.64"
+      },
+      "mercator_context": {
+        "mapbox_gl_version": "3.10.0",
+        "reference_projection": "mercator",
+        "source_projection": {
+          "name": "globe"
+        },
+        "actual_projection": {
+          "name": "mercator",
+          "center": [
+            0,
+            0
+          ]
+        },
+        "center": [
+          6.143,
+          46.204
+        ],
+        "zoom": 14.25,
+        "bearing": 0,
+        "pitch": 0,
+        "bounds": [
+          [
+            6.119904090155899,
+            46.19275973995667
+          ],
+          [
+            6.166095909840806,
+            46.2152379607258
+          ]
+        ],
+        "canvas_size_pixels": [
+          1280,
+          900
+        ],
+        "device_pixel_ratio": 1,
+        "map_loaded": true,
+        "tiles_loaded": true,
+        "map_error_count": 0,
+        "rendered_feature_count": 2664,
+        "browser_version": "152.0.7977.64"
+      }
+    },
+    {
+      "camera": {
+        "name": "zurich-streets-z17-light",
+        "description": "z17 street-level guardrail in central Zurich for casings, widths, symbols, buildings, and local labels.",
+        "longitude": 8.5417,
+        "latitude": 47.3769,
+        "zoom": 17.0,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "light-v11"
+      },
+      "source_projection_control_repeat_identical": true,
+      "source_default_before_after_identical": true,
+      "mercator_control_repeat_identical": true,
+      "projection_variants_identical": true,
+      "source_projection_sha256": "abca923b79ccea72baf4cf4c407f3a0a48b3958d3aa9455f80b4ed78e7bde3ab",
+      "mercator_sha256": "abca923b79ccea72baf4cf4c407f3a0a48b3958d3aa9455f80b4ed78e7bde3ab",
+      "source_context": {
+        "mapbox_gl_version": "3.10.0",
+        "reference_projection": "source",
+        "source_projection": {
+          "name": "globe"
+        },
+        "actual_projection": {
+          "name": "globe",
+          "center": [
+            0,
+            0
+          ]
+        },
+        "center": [
+          8.5417,
+          47.3769
+        ],
+        "zoom": 17,
+        "bearing": 0,
+        "pitch": 0,
+        "bounds": [
+          [
+            8.538266772461782,
+            47.37526528784227
+          ],
+          [
+            8.545133227539793,
+            47.37853466147982
+          ]
+        ],
+        "canvas_size_pixels": [
+          1280,
+          900
+        ],
+        "device_pixel_ratio": 1,
+        "map_loaded": true,
+        "tiles_loaded": true,
+        "map_error_count": 0,
+        "rendered_feature_count": 451,
+        "browser_version": "152.0.7977.64"
+      },
+      "mercator_context": {
+        "mapbox_gl_version": "3.10.0",
+        "reference_projection": "mercator",
+        "source_projection": {
+          "name": "globe"
+        },
+        "actual_projection": {
+          "name": "mercator",
+          "center": [
+            0,
+            0
+          ]
+        },
+        "center": [
+          8.5417,
+          47.3769
+        ],
+        "zoom": 17,
+        "bearing": 0,
+        "pitch": 0,
+        "bounds": [
+          [
+            8.538266772461782,
+            47.37526528784227
+          ],
+          [
+            8.545133227539793,
+            47.37853466147982
+          ]
+        ],
+        "canvas_size_pixels": [
+          1280,
+          900
+        ],
+        "device_pixel_ratio": 1,
+        "map_loaded": true,
+        "tiles_loaded": true,
+        "map_error_count": 0,
+        "rendered_feature_count": 451,
+        "browser_version": "152.0.7977.64"
+      }
+    },
+    {
+      "camera": {
+        "name": "geneva-streets-z18-light",
+        "description": "z18 street-level stress test in central Geneva for fine road hierarchy, symbols, POIs, and high-detail label behavior.",
+        "longitude": 6.147,
+        "latitude": 46.202,
+        "zoom": 18.0,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "light-v11"
+      },
+      "source_projection_control_repeat_identical": true,
+      "source_default_before_after_identical": true,
+      "mercator_control_repeat_identical": true,
+      "projection_variants_identical": true,
+      "source_projection_sha256": "09edd5148a12727ac7899cb962cc984e0ca0da61dd07d60477af080dd25e6ffc",
+      "mercator_sha256": "09edd5148a12727ac7899cb962cc984e0ca0da61dd07d60477af080dd25e6ffc",
+      "source_context": {
+        "mapbox_gl_version": "3.10.0",
+        "reference_projection": "source",
+        "source_projection": {
+          "name": "globe"
+        },
+        "actual_projection": {
+          "name": "globe",
+          "center": [
+            0,
+            0
+          ]
+        },
+        "center": [
+          6.147,
+          46.202
+        ],
+        "zoom": 18,
+        "bearing": 0,
+        "pitch": 0,
+        "bounds": [
+          [
+            6.145283386232336,
+            46.20116461136041
+          ],
+          [
+            6.148716613771342,
+            46.20283537593562
+          ]
+        ],
+        "canvas_size_pixels": [
+          1280,
+          900
+        ],
+        "device_pixel_ratio": 1,
+        "map_loaded": true,
+        "tiles_loaded": true,
+        "map_error_count": 0,
+        "rendered_feature_count": 259,
+        "browser_version": "152.0.7977.64"
+      },
+      "mercator_context": {
+        "mapbox_gl_version": "3.10.0",
+        "reference_projection": "mercator",
+        "source_projection": {
+          "name": "globe"
+        },
+        "actual_projection": {
+          "name": "mercator",
+          "center": [
+            0,
+            0
+          ]
+        },
+        "center": [
+          6.147,
+          46.202
+        ],
+        "zoom": 18,
+        "bearing": 0,
+        "pitch": 0,
+        "bounds": [
+          [
+            6.145283386232336,
+            46.20116461136041
+          ],
+          [
+            6.148716613771342,
+            46.20283537593562
+          ]
+        ],
+        "canvas_size_pixels": [
+          1280,
+          900
+        ],
+        "device_pixel_ratio": 1,
+        "map_loaded": true,
+        "tiles_loaded": true,
+        "map_error_count": 0,
+        "rendered_feature_count": 259,
+        "browser_version": "152.0.7977.64"
+      }
+    }
+  ],
+  "native": [
+    {
+      "qgis_major": "3",
+      "camera": "switzerland-alps-z5-outdoors",
+      "png_sha256": "c28b304d32995062cd0062610ce2ba8495b9836c6d71d9d507f6dbf27601790b",
+      "labels_sha256": "e8e52d651ee8d066177f69d8ac30f67d68ff3c8a68bdb3370a0e5e32414ebd7c",
+      "preprocessed_sha256": "0452517e8d503b8224aad386569a635afbb1c21e306789aa11dc46c3edec6e26",
+      "before_repeat_after_all_artifacts_byte_identical": true,
+      "runtime": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 5.35,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            -315391.9260596817,
+            5045903.47656141,
+            2141031.575069368,
+            6773076.250792773
+          ],
+          "map_scale": 7555436.457705,
+          "vector_tile_zoom": 5.270208288101648,
+          "integer_render_zoom": 5,
+          "integer_fetch_zoom": 5
+        }
+      },
+      "reference_metrics": {
+        "source": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1086994,
+          "changed_pixel_ratio": 0.9435711805555556,
+          "mean_absolute_channel_delta": 18.91167679398148,
+          "normalized_mean_absolute_channel_delta": 0.07416343840777051,
+          "rms_channel_delta": 33.96589728306384,
+          "normalized_rms_channel_delta": 0.13319959718848565,
+          "ssim_status": "unavailable"
+        },
+        "mercator": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 997347,
+          "changed_pixel_ratio": 0.8657526041666667,
+          "mean_absolute_channel_delta": 11.867392650462962,
+          "normalized_mean_absolute_channel_delta": 0.046538794707697895,
+          "rms_channel_delta": 27.767471608430338,
+          "normalized_rms_channel_delta": 0.10889204552325622,
+          "ssim_status": "unavailable"
+        }
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "switzerland-alps-z5-outdoors",
+      "png_sha256": "348ee424460e1d80000cea009f069802ad58950f507586d3e6ea0cec5645e22e",
+      "labels_sha256": "b3107fcf43790b23250af4981ad7eaf1ef265f6b2e8e7777ca243015a481ff17",
+      "preprocessed_sha256": "0452517e8d503b8224aad386569a635afbb1c21e306789aa11dc46c3edec6e26",
+      "before_repeat_after_all_artifacts_byte_identical": true,
+      "runtime": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 5.35,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            -315391.9260596817,
+            5045903.47656141,
+            2141031.575069368,
+            6773076.250792773
+          ],
+          "map_scale": 7253218.9993968,
+          "vector_tile_zoom": 5.339399956577582,
+          "integer_render_zoom": 5,
+          "integer_fetch_zoom": 5
+        }
+      },
+      "reference_metrics": {
+        "source": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1086968,
+          "changed_pixel_ratio": 0.9435486111111111,
+          "mean_absolute_channel_delta": 18.59712008101852,
+          "normalized_mean_absolute_channel_delta": 0.07292988267066086,
+          "rms_channel_delta": 33.22558070511909,
+          "normalized_rms_channel_delta": 0.13029639492203565,
+          "ssim_status": "unavailable"
+        },
+        "mercator": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 997035,
+          "changed_pixel_ratio": 0.8654817708333333,
+          "mean_absolute_channel_delta": 11.571922743055557,
+          "normalized_mean_absolute_channel_delta": 0.04538008918845317,
+          "rms_channel_delta": 26.751969101130857,
+          "normalized_rms_channel_delta": 0.10490968274953277,
+          "ssim_status": "unavailable"
+        }
+      }
+    },
+    {
+      "qgis_major": "3",
+      "camera": "valais-geneva-outdoors",
+      "png_sha256": "ced840ec07c9083cdff35b8660dc0562539549d138fefcecaa3d14b5ec27ec6d",
+      "labels_sha256": "e8e52d651ee8d066177f69d8ac30f67d68ff3c8a68bdb3370a0e5e32414ebd7c",
+      "preprocessed_sha256": "0452517e8d503b8224aad386569a635afbb1c21e306789aa11dc46c3edec6e26",
+      "before_repeat_after_all_artifacts_byte_identical": true,
+      "runtime": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 8.15,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            618465.5620812855,
+            5688457.45855726,
+            971176.766446661,
+            5936457.524126665
+          ],
+          "map_scale": 1084864.6787812975,
+          "vector_tile_zoom": 8.012991106054853,
+          "integer_render_zoom": 8,
+          "integer_fetch_zoom": 8
+        }
+      },
+      "reference_metrics": {
+        "source": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1151118,
+          "changed_pixel_ratio": 0.999234375,
+          "mean_absolute_channel_delta": 10.623368923611112,
+          "normalized_mean_absolute_channel_delta": 0.04166027028867103,
+          "rms_channel_delta": 20.49646891825542,
+          "normalized_rms_channel_delta": 0.08037830948335459,
+          "ssim_status": "unavailable"
+        },
+        "mercator": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1151118,
+          "changed_pixel_ratio": 0.999234375,
+          "mean_absolute_channel_delta": 10.623368923611112,
+          "normalized_mean_absolute_channel_delta": 0.04166027028867103,
+          "rms_channel_delta": 20.49646891825542,
+          "normalized_rms_channel_delta": 0.08037830948335459,
+          "ssim_status": "unavailable"
+        }
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "valais-geneva-outdoors",
+      "png_sha256": "e0a7bce2586276dac73696f7210e2a0ab638c3e0de04ddc9882c73b87baf142e",
+      "labels_sha256": "b3107fcf43790b23250af4981ad7eaf1ef265f6b2e8e7777ca243015a481ff17",
+      "preprocessed_sha256": "0452517e8d503b8224aad386569a635afbb1c21e306789aa11dc46c3edec6e26",
+      "before_repeat_after_all_artifacts_byte_identical": true,
+      "runtime": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 8.15,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            618465.5620812855,
+            5688457.45855726,
+            971176.766446661,
+            5936457.524126665
+          ],
+          "map_scale": 1041470.0916300456,
+          "vector_tile_zoom": 8.092471461812659,
+          "integer_render_zoom": 8,
+          "integer_fetch_zoom": 8
+        }
+      },
+      "reference_metrics": {
+        "source": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1151121,
+          "changed_pixel_ratio": 0.9992369791666667,
+          "mean_absolute_channel_delta": 10.671346932870371,
+          "normalized_mean_absolute_channel_delta": 0.04184841934458969,
+          "rms_channel_delta": 20.49959009296012,
+          "normalized_rms_channel_delta": 0.08039054938415734,
+          "ssim_status": "unavailable"
+        },
+        "mercator": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1151121,
+          "changed_pixel_ratio": 0.9992369791666667,
+          "mean_absolute_channel_delta": 10.671346932870371,
+          "normalized_mean_absolute_channel_delta": 0.04184841934458969,
+          "rms_channel_delta": 20.49959009296012,
+          "normalized_rms_channel_delta": 0.08039054938415734,
+          "ssim_status": "unavailable"
+        }
+      }
+    },
+    {
+      "qgis_major": "3",
+      "camera": "lausanne-lavaux-z10-outdoors",
+      "png_sha256": "d0363a9d6d4090d6647e9ad026be6cecad216e468656f9b35cced517195f9b3e",
+      "labels_sha256": "e8e52d651ee8d066177f69d8ac30f67d68ff3c8a68bdb3370a0e5e32414ebd7c",
+      "preprocessed_sha256": "0452517e8d503b8224aad386569a635afbb1c21e306789aa11dc46c3edec6e26",
+      "before_repeat_after_all_artifacts_byte_identical": true,
+      "runtime": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 10.25,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            706930.5793611014,
+            5830298.7658473775,
+            789203.3769004953,
+            5888146.826617263
+          ],
+          "map_scale": 253053.63416398215,
+          "vector_tile_zoom": 10.146055147472122,
+          "integer_render_zoom": 10,
+          "integer_fetch_zoom": 10
+        }
+      },
+      "reference_metrics": {
+        "source": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1145890,
+          "changed_pixel_ratio": 0.9946961805555555,
+          "mean_absolute_channel_delta": 6.834503182870371,
+          "normalized_mean_absolute_channel_delta": 0.026801973266158317,
+          "rms_channel_delta": 17.25119955020696,
+          "normalized_rms_channel_delta": 0.06765176294198808,
+          "ssim_status": "unavailable"
+        },
+        "mercator": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1145890,
+          "changed_pixel_ratio": 0.9946961805555555,
+          "mean_absolute_channel_delta": 6.834503182870371,
+          "normalized_mean_absolute_channel_delta": 0.026801973266158317,
+          "rms_channel_delta": 17.25119955020696,
+          "normalized_rms_channel_delta": 0.06765176294198808,
+          "ssim_status": "unavailable"
+        }
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "lausanne-lavaux-z10-outdoors",
+      "png_sha256": "fbaae46407a01c8631d413d24162782745ff5ac63c246e253e9b9f0e4ad5e980",
+      "labels_sha256": "b3107fcf43790b23250af4981ad7eaf1ef265f6b2e8e7777ca243015a481ff17",
+      "preprocessed_sha256": "0452517e8d503b8224aad386569a635afbb1c21e306789aa11dc46c3edec6e26",
+      "before_repeat_after_all_artifacts_byte_identical": true,
+      "runtime": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 10.25,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            706930.5793611014,
+            5830298.7658473775,
+            789203.3769004953,
+            5888146.826617263
+          ],
+          "map_scale": 242931.48879742288,
+          "vector_tile_zoom": 10.220212941573237,
+          "integer_render_zoom": 10,
+          "integer_fetch_zoom": 10
+        }
+      },
+      "reference_metrics": {
+        "source": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1146698,
+          "changed_pixel_ratio": 0.9953975694444445,
+          "mean_absolute_channel_delta": 6.736480324074074,
+          "normalized_mean_absolute_channel_delta": 0.0264175698983297,
+          "rms_channel_delta": 16.838033645430897,
+          "normalized_rms_channel_delta": 0.06603150449188587,
+          "ssim_status": "unavailable"
+        },
+        "mercator": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1146698,
+          "changed_pixel_ratio": 0.9953975694444445,
+          "mean_absolute_channel_delta": 6.736480324074074,
+          "normalized_mean_absolute_channel_delta": 0.0264175698983297,
+          "rms_channel_delta": 16.838033645430897,
+          "normalized_rms_channel_delta": 0.06603150449188587,
+          "ssim_status": "unavailable"
+        }
+      }
+    },
+    {
+      "qgis_major": "3",
+      "camera": "geneva-airport-motorway-z14-outdoors",
+      "png_sha256": "20722233c4facb472f7fc4020ad8e01b45a12a5c5fd571a45a73e6fc57a27ab6",
+      "labels_sha256": "e8e52d651ee8d066177f69d8ac30f67d68ff3c8a68bdb3370a0e5e32414ebd7c",
+      "preprocessed_sha256": "0452517e8d503b8224aad386569a635afbb1c21e306789aa11dc46c3edec6e26",
+      "before_repeat_after_all_artifacts_byte_identical": true,
+      "runtime": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 14.25,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            676811.8273882425,
+            5814671.480593224,
+            681953.8772344546,
+            5818286.984391342
+          ],
+          "map_scale": 15815.852135248975,
+          "vector_tile_zoom": 14.146055147472111,
+          "integer_render_zoom": 14,
+          "integer_fetch_zoom": 14
+        }
+      },
+      "reference_metrics": {
+        "source": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1090730,
+          "changed_pixel_ratio": 0.9468142361111112,
+          "mean_absolute_channel_delta": 14.789387152777778,
+          "normalized_mean_absolute_channel_delta": 0.05799759667755991,
+          "rms_channel_delta": 26.433660459518475,
+          "normalized_rms_channel_delta": 0.10366141356673912,
+          "ssim_status": "unavailable"
+        },
+        "mercator": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1090730,
+          "changed_pixel_ratio": 0.9468142361111112,
+          "mean_absolute_channel_delta": 14.789387152777778,
+          "normalized_mean_absolute_channel_delta": 0.05799759667755991,
+          "rms_channel_delta": 26.433660459518475,
+          "normalized_rms_channel_delta": 0.10366141356673912,
+          "ssim_status": "unavailable"
+        }
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "geneva-airport-motorway-z14-outdoors",
+      "png_sha256": "3ad5e3ade7bccda044fd2f22fe7c814da7bfc6a5ff150f9aeb2ee9c6a7139900",
+      "labels_sha256": "b3107fcf43790b23250af4981ad7eaf1ef265f6b2e8e7777ca243015a481ff17",
+      "preprocessed_sha256": "0452517e8d503b8224aad386569a635afbb1c21e306789aa11dc46c3edec6e26",
+      "before_repeat_after_all_artifacts_byte_identical": true,
+      "runtime": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 14.25,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            676811.8273882425,
+            5814671.480593224,
+            681953.8772344546,
+            5818286.984391342
+          ],
+          "map_scale": 15183.218049839017,
+          "vector_tile_zoom": 14.220212941573227,
+          "integer_render_zoom": 14,
+          "integer_fetch_zoom": 14
+        }
+      },
+      "reference_metrics": {
+        "source": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1093122,
+          "changed_pixel_ratio": 0.948890625,
+          "mean_absolute_channel_delta": 14.948866608796296,
+          "normalized_mean_absolute_channel_delta": 0.058623006309005084,
+          "rms_channel_delta": 26.63538551647998,
+          "normalized_rms_channel_delta": 0.10445249222149013,
+          "ssim_status": "unavailable"
+        },
+        "mercator": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1093122,
+          "changed_pixel_ratio": 0.948890625,
+          "mean_absolute_channel_delta": 14.948866608796296,
+          "normalized_mean_absolute_channel_delta": 0.058623006309005084,
+          "rms_channel_delta": 26.63538551647998,
+          "normalized_rms_channel_delta": 0.10445249222149013,
+          "ssim_status": "unavailable"
+        }
+      }
+    },
+    {
+      "qgis_major": "3",
+      "camera": "chamonix-trails-z14-outdoors",
+      "png_sha256": "a10b7ed253f46c2c58c2ab452b86292b908af87124d8acdf6fab063b88772793",
+      "labels_sha256": "e8e52d651ee8d066177f69d8ac30f67d68ff3c8a68bdb3370a0e5e32414ebd7c",
+      "preprocessed_sha256": "0452517e8d503b8224aad386569a635afbb1c21e306789aa11dc46c3edec6e26",
+      "before_repeat_after_all_artifacts_byte_identical": true,
+      "runtime": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 13.75,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            760906.2844527472,
+            5765461.943377765,
+            768178.2410836589,
+            5770575.037883874
+          ],
+          "map_scale": 22366.99259015649,
+          "vector_tile_zoom": 13.689063022831641,
+          "integer_render_zoom": 14,
+          "integer_fetch_zoom": 14
+        }
+      },
+      "reference_metrics": {
+        "source": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1130531,
+          "changed_pixel_ratio": 0.9813637152777778,
+          "mean_absolute_channel_delta": 8.696785300925926,
+          "normalized_mean_absolute_channel_delta": 0.03410504039578795,
+          "rms_channel_delta": 18.833965280396793,
+          "normalized_rms_channel_delta": 0.07385868737410507,
+          "ssim_status": "unavailable"
+        },
+        "mercator": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1130531,
+          "changed_pixel_ratio": 0.9813637152777778,
+          "mean_absolute_channel_delta": 8.696785300925926,
+          "normalized_mean_absolute_channel_delta": 0.03410504039578795,
+          "rms_channel_delta": 18.833965280396793,
+          "normalized_rms_channel_delta": 0.07385868737410507,
+          "ssim_status": "unavailable"
+        }
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "chamonix-trails-z14-outdoors",
+      "png_sha256": "809a2001752d96c0552e4e15d3f082523d3f65e768079498ca55c09029fd2c8c",
+      "labels_sha256": "b3107fcf43790b23250af4981ad7eaf1ef265f6b2e8e7777ca243015a481ff17",
+      "preprocessed_sha256": "0452517e8d503b8224aad386569a635afbb1c21e306789aa11dc46c3edec6e26",
+      "before_repeat_after_all_artifacts_byte_identical": true,
+      "runtime": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 13.75,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            760906.2844527472,
+            5765461.943377765,
+            768178.2410836589,
+            5770575.037883874
+          ],
+          "map_scale": 21472.312886550233,
+          "vector_tile_zoom": 13.741500501918376,
+          "integer_render_zoom": 14,
+          "integer_fetch_zoom": 14
+        }
+      },
+      "reference_metrics": {
+        "source": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1130098,
+          "changed_pixel_ratio": 0.9809878472222222,
+          "mean_absolute_channel_delta": 8.684124710648147,
+          "normalized_mean_absolute_channel_delta": 0.0340553910221496,
+          "rms_channel_delta": 18.921599277206862,
+          "normalized_rms_channel_delta": 0.07420235010669358,
+          "ssim_status": "unavailable"
+        },
+        "mercator": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1130098,
+          "changed_pixel_ratio": 0.9809878472222222,
+          "mean_absolute_channel_delta": 8.684124710648147,
+          "normalized_mean_absolute_channel_delta": 0.0340553910221496,
+          "rms_channel_delta": 18.921599277206862,
+          "normalized_rms_channel_delta": 0.07420235010669358,
+          "ssim_status": "unavailable"
+        }
+      }
+    },
+    {
+      "qgis_major": "3",
+      "camera": "zermatt-piste-z17-outdoors",
+      "png_sha256": "2465e9a153d521de2bf51bf0c9be6ea778a73ea35d62b08b74d88089c5ae0db4",
+      "labels_sha256": "e8e52d651ee8d066177f69d8ac30f67d68ff3c8a68bdb3370a0e5e32414ebd7c",
+      "preprocessed_sha256": "0452517e8d503b8224aad386569a635afbb1c21e306789aa11dc46c3edec6e26",
+      "before_repeat_after_all_artifacts_byte_identical": true,
+      "runtime": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 17.0,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            858630.2502935807,
+            5782115.913853658,
+            859394.6205764326,
+            5782653.361708788
+          ],
+          "map_scale": 2351.040486133914,
+          "vector_tile_zoom": 16.89763779527545,
+          "integer_render_zoom": 17,
+          "integer_fetch_zoom": 17
+        }
+      },
+      "reference_metrics": {
+        "source": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1149106,
+          "changed_pixel_ratio": 0.9974878472222222,
+          "mean_absolute_channel_delta": 1.0960364583333333,
+          "normalized_mean_absolute_channel_delta": 0.0042981821895424835,
+          "rms_channel_delta": 5.990068587201534,
+          "normalized_rms_channel_delta": 0.02349046504784915,
+          "ssim_status": "unavailable"
+        },
+        "mercator": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1149106,
+          "changed_pixel_ratio": 0.9974878472222222,
+          "mean_absolute_channel_delta": 1.0960364583333333,
+          "normalized_mean_absolute_channel_delta": 0.0042981821895424835,
+          "rms_channel_delta": 5.990068587201534,
+          "normalized_rms_channel_delta": 0.02349046504784915,
+          "ssim_status": "unavailable"
+        }
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "zermatt-piste-z17-outdoors",
+      "png_sha256": "a4aa6b72081a0434614734bc6bdc58ad8b209fd3133186cefc6e510b762c9602",
+      "labels_sha256": "b3107fcf43790b23250af4981ad7eaf1ef265f6b2e8e7777ca243015a481ff17",
+      "preprocessed_sha256": "0452517e8d503b8224aad386569a635afbb1c21e306789aa11dc46c3edec6e26",
+      "before_repeat_after_all_artifacts_byte_identical": true,
+      "runtime": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 17.0,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            858630.2502935807,
+            5782115.913853658,
+            859394.6205764326,
+            5782653.361708788
+          ],
+          "map_scale": 2256.9988666885574,
+          "vector_tile_zoom": 16.941732283464432,
+          "integer_render_zoom": 17,
+          "integer_fetch_zoom": 17
+        }
+      },
+      "reference_metrics": {
+        "source": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1149912,
+          "changed_pixel_ratio": 0.9981875,
+          "mean_absolute_channel_delta": 1.1552045717592592,
+          "normalized_mean_absolute_channel_delta": 0.004530214006899055,
+          "rms_channel_delta": 6.01237529213961,
+          "normalized_rms_channel_delta": 0.023577942322116116,
+          "ssim_status": "unavailable"
+        },
+        "mercator": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1149912,
+          "changed_pixel_ratio": 0.9981875,
+          "mean_absolute_channel_delta": 1.1552045717592592,
+          "normalized_mean_absolute_channel_delta": 0.004530214006899055,
+          "rms_channel_delta": 6.01237529213961,
+          "normalized_rms_channel_delta": 0.023577942322116116,
+          "ssim_status": "unavailable"
+        }
+      }
+    },
+    {
+      "qgis_major": "3",
+      "camera": "zermatt-trails-z18-outdoors",
+      "png_sha256": "82d565b024d5f0976bcb09af54c26b0bfb4fd6ca7c3f48f65de2c959dc1fea07",
+      "labels_sha256": "e8e52d651ee8d066177f69d8ac30f67d68ff3c8a68bdb3370a0e5e32414ebd7c",
+      "preprocessed_sha256": "0452517e8d503b8224aad386569a635afbb1c21e306789aa11dc46c3edec6e26",
+      "before_repeat_after_all_artifacts_byte_identical": true,
+      "runtime": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 18.0,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            862312.3220955707,
+            5783420.451771936,
+            862694.5072369965,
+            5783689.175699501
+          ],
+          "map_scale": 1175.5202430665988,
+          "vector_tile_zoom": 17.897637795275788,
+          "integer_render_zoom": 18,
+          "integer_fetch_zoom": 18
+        }
+      },
+      "reference_metrics": {
+        "source": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1147793,
+          "changed_pixel_ratio": 0.9963480902777778,
+          "mean_absolute_channel_delta": 5.9691631944444445,
+          "normalized_mean_absolute_channel_delta": 0.02340848311546841,
+          "rms_channel_delta": 18.578052253719022,
+          "normalized_rms_channel_delta": 0.0728551068773295,
+          "ssim_status": "unavailable"
+        },
+        "mercator": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1147793,
+          "changed_pixel_ratio": 0.9963480902777778,
+          "mean_absolute_channel_delta": 5.9691631944444445,
+          "normalized_mean_absolute_channel_delta": 0.02340848311546841,
+          "rms_channel_delta": 18.578052253719022,
+          "normalized_rms_channel_delta": 0.0728551068773295,
+          "ssim_status": "unavailable"
+        }
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "zermatt-trails-z18-outdoors",
+      "png_sha256": "e7ca3ed88b6d2415ad8ca07524c843afbd4c9a9230190f39ca52101827701b45",
+      "labels_sha256": "b3107fcf43790b23250af4981ad7eaf1ef265f6b2e8e7777ca243015a481ff17",
+      "preprocessed_sha256": "0452517e8d503b8224aad386569a635afbb1c21e306789aa11dc46c3edec6e26",
+      "before_repeat_after_all_artifacts_byte_identical": true,
+      "runtime": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 18.0,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            862312.3220955707,
+            5783420.451771936,
+            862694.5072369965,
+            5783689.175699501
+          ],
+          "map_scale": 1128.499433343935,
+          "vector_tile_zoom": 17.941732283464756,
+          "integer_render_zoom": 18,
+          "integer_fetch_zoom": 18
+        }
+      },
+      "reference_metrics": {
+        "source": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1148041,
+          "changed_pixel_ratio": 0.9965633680555556,
+          "mean_absolute_channel_delta": 5.932281828703704,
+          "normalized_mean_absolute_channel_delta": 0.023263850308641976,
+          "rms_channel_delta": 18.446895874451425,
+          "normalized_rms_channel_delta": 0.07234076813510362,
+          "ssim_status": "unavailable"
+        },
+        "mercator": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1148041,
+          "changed_pixel_ratio": 0.9965633680555556,
+          "mean_absolute_channel_delta": 5.932281828703704,
+          "normalized_mean_absolute_channel_delta": 0.023263850308641976,
+          "rms_channel_delta": 18.446895874451425,
+          "normalized_rms_channel_delta": 0.07234076813510362,
+          "ssim_status": "unavailable"
+        }
+      }
+    },
+    {
+      "qgis_major": "3",
+      "camera": "switzerland-alps-z5-light",
+      "png_sha256": "6a9d22710d2a67b183823581f41c787df1ebab339bf6a76814d2e36cc0cb3a41",
+      "labels_sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "preprocessed_sha256": "b68cd8d658fe188ebed52ba5e3636607af1f24b8c81ba4a6700ec1648f1e36ff",
+      "before_repeat_after_all_artifacts_byte_identical": true,
+      "runtime": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 5.35,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            -315391.9260596817,
+            5045903.47656141,
+            2141031.575069368,
+            6773076.250792773
+          ],
+          "map_scale": 7555436.457705,
+          "vector_tile_zoom": 5.270208288101648,
+          "integer_render_zoom": 5,
+          "integer_fetch_zoom": 5
+        }
+      },
+      "reference_metrics": {
+        "source": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1150246,
+          "changed_pixel_ratio": 0.9984774305555556,
+          "mean_absolute_channel_delta": 8.436700810185185,
+          "normalized_mean_absolute_channel_delta": 0.03308510121641249,
+          "rms_channel_delta": 15.88069652811898,
+          "normalized_rms_channel_delta": 0.0622772412867411,
+          "ssim_status": "unavailable"
+        },
+        "mercator": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1147624,
+          "changed_pixel_ratio": 0.9962013888888889,
+          "mean_absolute_channel_delta": 5.340046875,
+          "normalized_mean_absolute_channel_delta": 0.020941360294117646,
+          "rms_channel_delta": 11.543766407151287,
+          "normalized_rms_channel_delta": 0.045269672184907,
+          "ssim_status": "unavailable"
+        }
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "switzerland-alps-z5-light",
+      "png_sha256": "a5832479d37bd5bcb57b753a752b1eed2c8668ca80ace52db1f8edc2e4a77c15",
+      "labels_sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "preprocessed_sha256": "b68cd8d658fe188ebed52ba5e3636607af1f24b8c81ba4a6700ec1648f1e36ff",
+      "before_repeat_after_all_artifacts_byte_identical": true,
+      "runtime": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 5.35,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            -315391.9260596817,
+            5045903.47656141,
+            2141031.575069368,
+            6773076.250792773
+          ],
+          "map_scale": 7253218.9993968,
+          "vector_tile_zoom": 5.339399956577582,
+          "integer_render_zoom": 5,
+          "integer_fetch_zoom": 5
+        }
+      },
+      "reference_metrics": {
+        "source": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1150237,
+          "changed_pixel_ratio": 0.9984696180555556,
+          "mean_absolute_channel_delta": 8.313153645833333,
+          "normalized_mean_absolute_channel_delta": 0.03260060253267974,
+          "rms_channel_delta": 15.551155129434123,
+          "normalized_rms_channel_delta": 0.06098492207621225,
+          "ssim_status": "unavailable"
+        },
+        "mercator": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1147520,
+          "changed_pixel_ratio": 0.9961111111111111,
+          "mean_absolute_channel_delta": 5.203980034722222,
+          "normalized_mean_absolute_channel_delta": 0.02040776484204793,
+          "rms_channel_delta": 11.010139539182061,
+          "normalized_rms_channel_delta": 0.043177017800713965,
+          "ssim_status": "unavailable"
+        }
+      }
+    },
+    {
+      "qgis_major": "3",
+      "camera": "zurich-region-z8-light",
+      "png_sha256": "90e976950e21bb60cc6a1d6575a156541e8da52b76bc2e9acad9f10b81e64f28",
+      "labels_sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "preprocessed_sha256": "b68cd8d658fe188ebed52ba5e3636607af1f24b8c81ba4a6700ec1648f1e36ff",
+      "before_repeat_after_all_artifacts_byte_identical": true,
+      "runtime": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 8.2,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            780320.1684168805,
+            5884545.688159028,
+            1121016.734332232,
+            6124097.96106826
+          ],
+          "map_scale": 1047910.2052022377,
+          "vector_tile_zoom": 8.080675923441609,
+          "integer_render_zoom": 8,
+          "integer_fetch_zoom": 8
+        }
+      },
+      "reference_metrics": {
+        "source": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1145313,
+          "changed_pixel_ratio": 0.9941953125,
+          "mean_absolute_channel_delta": 5.2098417245370365,
+          "normalized_mean_absolute_channel_delta": 0.020430751860929554,
+          "rms_channel_delta": 8.12277290456863,
+          "normalized_rms_channel_delta": 0.03185401139046521,
+          "ssim_status": "unavailable"
+        },
+        "mercator": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1145313,
+          "changed_pixel_ratio": 0.9941953125,
+          "mean_absolute_channel_delta": 5.2098417245370365,
+          "normalized_mean_absolute_channel_delta": 0.020430751860929554,
+          "rms_channel_delta": 8.12277290456863,
+          "normalized_rms_channel_delta": 0.03185401139046521,
+          "ssim_status": "unavailable"
+        }
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "zurich-region-z8-light",
+      "png_sha256": "71f413a84e334d33ee5d0e99f569d309c7bed229171eaaea6d41b40593233a68",
+      "labels_sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "preprocessed_sha256": "b68cd8d658fe188ebed52ba5e3636607af1f24b8c81ba4a6700ec1648f1e36ff",
+      "before_repeat_after_all_artifacts_byte_identical": true,
+      "runtime": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 8.2,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            780320.1684168805,
+            5884545.688159028,
+            1121016.734332232,
+            6124097.96106826
+          ],
+          "map_scale": 1005993.7969941482,
+          "vector_tile_zoom": 8.157448886503945,
+          "integer_render_zoom": 8,
+          "integer_fetch_zoom": 8
+        }
+      },
+      "reference_metrics": {
+        "source": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1148357,
+          "changed_pixel_ratio": 0.9968376736111111,
+          "mean_absolute_channel_delta": 5.3234574652777775,
+          "normalized_mean_absolute_channel_delta": 0.02087630378540305,
+          "rms_channel_delta": 8.025076172060983,
+          "normalized_rms_channel_delta": 0.03147088694925876,
+          "ssim_status": "unavailable"
+        },
+        "mercator": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1148357,
+          "changed_pixel_ratio": 0.9968376736111111,
+          "mean_absolute_channel_delta": 5.3234574652777775,
+          "normalized_mean_absolute_channel_delta": 0.02087630378540305,
+          "rms_channel_delta": 8.025076172060983,
+          "normalized_rms_channel_delta": 0.03147088694925876,
+          "ssim_status": "unavailable"
+        }
+      }
+    },
+    {
+      "qgis_major": "3",
+      "camera": "lausanne-lavaux-z10-light",
+      "png_sha256": "dace51c1a2239544b2827425b395c741dbd7f47d782804b81df5dbe0bead4522",
+      "labels_sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "preprocessed_sha256": "b68cd8d658fe188ebed52ba5e3636607af1f24b8c81ba4a6700ec1648f1e36ff",
+      "before_repeat_after_all_artifacts_byte_identical": true,
+      "runtime": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 10.25,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            706930.5793611014,
+            5830298.7658473775,
+            789203.3769004953,
+            5888146.826617263
+          ],
+          "map_scale": 253053.63416398215,
+          "vector_tile_zoom": 10.146055147472122,
+          "integer_render_zoom": 10,
+          "integer_fetch_zoom": 10
+        }
+      },
+      "reference_metrics": {
+        "source": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1142302,
+          "changed_pixel_ratio": 0.9915815972222223,
+          "mean_absolute_channel_delta": 1.9412821180555555,
+          "normalized_mean_absolute_channel_delta": 0.007612871051198257,
+          "rms_channel_delta": 4.541690574792066,
+          "normalized_rms_channel_delta": 0.017810551273694377,
+          "ssim_status": "unavailable"
+        },
+        "mercator": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1142302,
+          "changed_pixel_ratio": 0.9915815972222223,
+          "mean_absolute_channel_delta": 1.9412821180555555,
+          "normalized_mean_absolute_channel_delta": 0.007612871051198257,
+          "rms_channel_delta": 4.541690574792066,
+          "normalized_rms_channel_delta": 0.017810551273694377,
+          "ssim_status": "unavailable"
+        }
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "lausanne-lavaux-z10-light",
+      "png_sha256": "c28a3a7a6d27609b5844c12d77ca468399122bd4cf275afa2c6c6772b7370f46",
+      "labels_sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "preprocessed_sha256": "b68cd8d658fe188ebed52ba5e3636607af1f24b8c81ba4a6700ec1648f1e36ff",
+      "before_repeat_after_all_artifacts_byte_identical": true,
+      "runtime": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 10.25,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            706930.5793611014,
+            5830298.7658473775,
+            789203.3769004953,
+            5888146.826617263
+          ],
+          "map_scale": 242931.48879742288,
+          "vector_tile_zoom": 10.220212941573237,
+          "integer_render_zoom": 10,
+          "integer_fetch_zoom": 10
+        }
+      },
+      "reference_metrics": {
+        "source": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1138857,
+          "changed_pixel_ratio": 0.9885911458333333,
+          "mean_absolute_channel_delta": 2.076193865740741,
+          "normalized_mean_absolute_channel_delta": 0.008141936728395062,
+          "rms_channel_delta": 4.669901856149729,
+          "normalized_rms_channel_delta": 0.01831334061235188,
+          "ssim_status": "unavailable"
+        },
+        "mercator": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 1138857,
+          "changed_pixel_ratio": 0.9885911458333333,
+          "mean_absolute_channel_delta": 2.076193865740741,
+          "normalized_mean_absolute_channel_delta": 0.008141936728395062,
+          "rms_channel_delta": 4.669901856149729,
+          "normalized_rms_channel_delta": 0.01831334061235188,
+          "ssim_status": "unavailable"
+        }
+      }
+    },
+    {
+      "qgis_major": "3",
+      "camera": "bern-urban-z12-light",
+      "png_sha256": "be889599f5b5efda75b11be40c2242cbec8958dd3e931a0f592fd45b71f58c8d",
+      "labels_sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "preprocessed_sha256": "b68cd8d658fe188ebed52ba5e3636607af1f24b8c81ba4a6700ec1648f1e36ff",
+      "before_repeat_after_all_artifacts_byte_identical": true,
+      "runtime": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 12.25,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            818712.148245084,
+            5926359.467815783,
+            839280.3476299326,
+            5940821.483008254
+          ],
+          "map_scale": 63263.4085409959,
+          "vector_tile_zoom": 12.146055147472111,
+          "integer_render_zoom": 12,
+          "integer_fetch_zoom": 12
+        }
+      },
+      "reference_metrics": {
+        "source": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 763013,
+          "changed_pixel_ratio": 0.6623376736111111,
+          "mean_absolute_channel_delta": 1.8339094328703702,
+          "normalized_mean_absolute_channel_delta": 0.007191801697530863,
+          "rms_channel_delta": 8.714706808280367,
+          "normalized_rms_channel_delta": 0.03417532081678575,
+          "ssim_status": "unavailable"
+        },
+        "mercator": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 763013,
+          "changed_pixel_ratio": 0.6623376736111111,
+          "mean_absolute_channel_delta": 1.8339094328703702,
+          "normalized_mean_absolute_channel_delta": 0.007191801697530863,
+          "rms_channel_delta": 8.714706808280367,
+          "normalized_rms_channel_delta": 0.03417532081678575,
+          "ssim_status": "unavailable"
+        }
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "bern-urban-z12-light",
+      "png_sha256": "b2f1f44db6aeb8e56078253828089941d2f647ad8f9d735993ae12a33808a51b",
+      "labels_sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "preprocessed_sha256": "b68cd8d658fe188ebed52ba5e3636607af1f24b8c81ba4a6700ec1648f1e36ff",
+      "before_repeat_after_all_artifacts_byte_identical": true,
+      "runtime": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 12.25,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            818712.148245084,
+            5926359.467815783,
+            839280.3476299326,
+            5940821.483008254
+          ],
+          "map_scale": 60732.87219935607,
+          "vector_tile_zoom": 12.220212941573227,
+          "integer_render_zoom": 12,
+          "integer_fetch_zoom": 12
+        }
+      },
+      "reference_metrics": {
+        "source": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 764659,
+          "changed_pixel_ratio": 0.6637664930555556,
+          "mean_absolute_channel_delta": 1.8625503472222222,
+          "normalized_mean_absolute_channel_delta": 0.007304119008714597,
+          "rms_channel_delta": 8.854311964548705,
+          "normalized_rms_channel_delta": 0.03472279201783806,
+          "ssim_status": "unavailable"
+        },
+        "mercator": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 764659,
+          "changed_pixel_ratio": 0.6637664930555556,
+          "mean_absolute_channel_delta": 1.8625503472222222,
+          "normalized_mean_absolute_channel_delta": 0.007304119008714597,
+          "rms_channel_delta": 8.854311964548705,
+          "normalized_rms_channel_delta": 0.03472279201783806,
+          "ssim_status": "unavailable"
+        }
+      }
+    },
+    {
+      "qgis_major": "3",
+      "camera": "geneva-urban-z14-light",
+      "png_sha256": "bc11e49289db93790122cceec967133a73212c6c0ece3debf1c7bb3d56bfe9d3",
+      "labels_sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "preprocessed_sha256": "b68cd8d658fe188ebed52ba5e3636607af1f24b8c81ba4a6700ec1648f1e36ff",
+      "before_repeat_after_all_artifacts_byte_identical": true,
+      "runtime": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 14.25,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            681264.6070199735,
+            5811293.095022159,
+            686406.6568661856,
+            5814908.598820277
+          ],
+          "map_scale": 15815.852135248975,
+          "vector_tile_zoom": 14.146055147472111,
+          "integer_render_zoom": 14,
+          "integer_fetch_zoom": 14
+        }
+      },
+      "reference_metrics": {
+        "source": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 450150,
+          "changed_pixel_ratio": 0.3907552083333333,
+          "mean_absolute_channel_delta": 2.684947337962963,
+          "normalized_mean_absolute_channel_delta": 0.010529205246913581,
+          "rms_channel_delta": 11.679349691160366,
+          "normalized_rms_channel_delta": 0.04580137133788379,
+          "ssim_status": "unavailable"
+        },
+        "mercator": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 450150,
+          "changed_pixel_ratio": 0.3907552083333333,
+          "mean_absolute_channel_delta": 2.684947337962963,
+          "normalized_mean_absolute_channel_delta": 0.010529205246913581,
+          "rms_channel_delta": 11.679349691160366,
+          "normalized_rms_channel_delta": 0.04580137133788379,
+          "ssim_status": "unavailable"
+        }
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "geneva-urban-z14-light",
+      "png_sha256": "9fa6f062a723a65a86e31b9d1161a5ed9f534f6feac09caef0c921a0a961f4d1",
+      "labels_sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "preprocessed_sha256": "b68cd8d658fe188ebed52ba5e3636607af1f24b8c81ba4a6700ec1648f1e36ff",
+      "before_repeat_after_all_artifacts_byte_identical": true,
+      "runtime": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 14.25,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            681264.6070199735,
+            5811293.095022159,
+            686406.6568661856,
+            5814908.598820277
+          ],
+          "map_scale": 15183.218049839017,
+          "vector_tile_zoom": 14.220212941573227,
+          "integer_render_zoom": 14,
+          "integer_fetch_zoom": 14
+        }
+      },
+      "reference_metrics": {
+        "source": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 457113,
+          "changed_pixel_ratio": 0.3967994791666667,
+          "mean_absolute_channel_delta": 2.6958260995370367,
+          "normalized_mean_absolute_channel_delta": 0.010571867057007987,
+          "rms_channel_delta": 11.691931111153254,
+          "normalized_rms_channel_delta": 0.04585071023981668,
+          "ssim_status": "unavailable"
+        },
+        "mercator": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 457113,
+          "changed_pixel_ratio": 0.3967994791666667,
+          "mean_absolute_channel_delta": 2.6958260995370367,
+          "normalized_mean_absolute_channel_delta": 0.010571867057007987,
+          "rms_channel_delta": 11.691931111153254,
+          "normalized_rms_channel_delta": 0.04585071023981668,
+          "ssim_status": "unavailable"
+        }
+      }
+    },
+    {
+      "qgis_major": "3",
+      "camera": "zurich-streets-z17-light",
+      "png_sha256": "87f065071da31fb6bca580413e5e1aa3006c1294126235b35f55aea2430e37ee",
+      "labels_sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "preprocessed_sha256": "b68cd8d658fe188ebed52ba5e3636607af1f24b8c81ba4a6700ec1648f1e36ff",
+      "before_repeat_after_all_artifacts_byte_identical": true,
+      "runtime": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 17.0,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            950475.5093674791,
+            6003543.480950285,
+            951239.879650331,
+            6004080.928805415
+          ],
+          "map_scale": 2351.040486133914,
+          "vector_tile_zoom": 16.89763779527545,
+          "integer_render_zoom": 17,
+          "integer_fetch_zoom": 17
+        }
+      },
+      "reference_metrics": {
+        "source": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 337406,
+          "changed_pixel_ratio": 0.29288715277777777,
+          "mean_absolute_channel_delta": 2.0702103587962966,
+          "normalized_mean_absolute_channel_delta": 0.008118471995279593,
+          "rms_channel_delta": 8.870762848956543,
+          "normalized_rms_channel_delta": 0.03478730529002566,
+          "ssim_status": "unavailable"
+        },
+        "mercator": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 337406,
+          "changed_pixel_ratio": 0.29288715277777777,
+          "mean_absolute_channel_delta": 2.0702103587962966,
+          "normalized_mean_absolute_channel_delta": 0.008118471995279593,
+          "rms_channel_delta": 8.870762848956543,
+          "normalized_rms_channel_delta": 0.03478730529002566,
+          "ssim_status": "unavailable"
+        }
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "zurich-streets-z17-light",
+      "png_sha256": "0b2fb957571220b6e2703e426c53f3d670412aed5052b35b5c36c0ab88bc7122",
+      "labels_sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "preprocessed_sha256": "b68cd8d658fe188ebed52ba5e3636607af1f24b8c81ba4a6700ec1648f1e36ff",
+      "before_repeat_after_all_artifacts_byte_identical": true,
+      "runtime": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 17.0,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            950475.5093674791,
+            6003543.480950285,
+            951239.879650331,
+            6004080.928805415
+          ],
+          "map_scale": 2256.9988666885574,
+          "vector_tile_zoom": 16.941732283464432,
+          "integer_render_zoom": 17,
+          "integer_fetch_zoom": 17
+        }
+      },
+      "reference_metrics": {
+        "source": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 336526,
+          "changed_pixel_ratio": 0.2921232638888889,
+          "mean_absolute_channel_delta": 2.089370949074074,
+          "normalized_mean_absolute_channel_delta": 0.008193611564996369,
+          "rms_channel_delta": 8.963244629454783,
+          "normalized_rms_channel_delta": 0.035149978939038366,
+          "ssim_status": "unavailable"
+        },
+        "mercator": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 336526,
+          "changed_pixel_ratio": 0.2921232638888889,
+          "mean_absolute_channel_delta": 2.089370949074074,
+          "normalized_mean_absolute_channel_delta": 0.008193611564996369,
+          "rms_channel_delta": 8.963244629454783,
+          "normalized_rms_channel_delta": 0.035149978939038366,
+          "ssim_status": "unavailable"
+        }
+      }
+    },
+    {
+      "qgis_major": "3",
+      "camera": "geneva-streets-z18-light",
+      "png_sha256": "08ccd959983dda84dc2a219cb9229c4e62731b9c9389ce5877941af316c3d318",
+      "labels_sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "preprocessed_sha256": "b68cd8d658fe188ebed52ba5e3636607af1f24b8c81ba4a6700ec1648f1e36ff",
+      "before_repeat_after_all_artifacts_byte_identical": true,
+      "runtime": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 18.0,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            684089.8173355398,
+            5812644.801312825,
+            684472.0024769657,
+            5812913.52524039
+          ],
+          "map_scale": 1175.5202430665988,
+          "vector_tile_zoom": 17.897637795275788,
+          "integer_render_zoom": 18,
+          "integer_fetch_zoom": 18
+        }
+      },
+      "reference_metrics": {
+        "source": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 165193,
+          "changed_pixel_ratio": 0.14339670138888888,
+          "mean_absolute_channel_delta": 1.7659033564814814,
+          "normalized_mean_absolute_channel_delta": 0.006925111201888163,
+          "rms_channel_delta": 7.862202049690183,
+          "normalized_rms_channel_delta": 0.030832164900745817,
+          "ssim_status": "unavailable"
+        },
+        "mercator": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 165193,
+          "changed_pixel_ratio": 0.14339670138888888,
+          "mean_absolute_channel_delta": 1.7659033564814814,
+          "normalized_mean_absolute_channel_delta": 0.006925111201888163,
+          "rms_channel_delta": 7.862202049690183,
+          "normalized_rms_channel_delta": 0.030832164900745817,
+          "ssim_status": "unavailable"
+        }
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "geneva-streets-z18-light",
+      "png_sha256": "b8f175e538c415a385ffc97b1b77aae6116232543ca6861766cbc30911c8fc8d",
+      "labels_sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "preprocessed_sha256": "b68cd8d658fe188ebed52ba5e3636607af1f24b8c81ba4a6700ec1648f1e36ff",
+      "before_repeat_after_all_artifacts_byte_identical": true,
+      "runtime": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 18.0,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            684089.8173355398,
+            5812644.801312825,
+            684472.0024769657,
+            5812913.52524039
+          ],
+          "map_scale": 1128.499433343935,
+          "vector_tile_zoom": 17.941732283464756,
+          "integer_render_zoom": 18,
+          "integer_fetch_zoom": 18
+        }
+      },
+      "reference_metrics": {
+        "source": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 165578,
+          "changed_pixel_ratio": 0.14373090277777778,
+          "mean_absolute_channel_delta": 1.778322337962963,
+          "normalized_mean_absolute_channel_delta": 0.0069738130900508346,
+          "rms_channel_delta": 7.918084998499116,
+          "normalized_rms_channel_delta": 0.031051313719604377,
+          "ssim_status": "unavailable"
+        },
+        "mercator": {
+          "pixel_count": 1152000,
+          "changed_pixel_count": 165578,
+          "changed_pixel_ratio": 0.14373090277777778,
+          "mean_absolute_channel_delta": 1.778322337962963,
+          "normalized_mean_absolute_channel_delta": 0.0069738130900508346,
+          "rms_channel_delta": 7.918084998499116,
+          "normalized_rms_channel_delta": 0.031051313719604377,
+          "ssim_status": "unavailable"
+        }
+      }
+    }
+  ],
+  "crops": [
+    {
+      "file": "qgis3-switzerland-alps-z5-light-crop.png",
+      "box": [
+        490,
+        280,
+        870,
+        580
+      ],
+      "rescaled": false,
+      "panels": [
+        "Mapbox: explicit Mercator",
+        "Before: QGIS 3",
+        "After: QGIS 3 (unchanged)"
+      ]
+    },
+    {
+      "file": "qgis4-lausanne-lavaux-z10-light-crop.png",
+      "box": [
+        160,
+        470,
+        540,
+        770
+      ],
+      "rescaled": false,
+      "panels": [
+        "Mapbox: explicit Mercator",
+        "Before: QGIS 4",
+        "After: QGIS 4 (unchanged)"
+      ]
+    },
+    {
+      "file": "qgis3-geneva-urban-z14-light-crop.png",
+      "box": [
+        470,
+        330,
+        850,
+        630
+      ],
+      "rescaled": false,
+      "panels": [
+        "Mapbox: explicit Mercator",
+        "Before: QGIS 3",
+        "After: QGIS 3 (unchanged)"
+      ]
+    },
+    {
+      "file": "qgis4-switzerland-alps-z5-outdoors-crop.png",
+      "box": [
+        490,
+        280,
+        870,
+        580
+      ],
+      "rescaled": false,
+      "panels": [
+        "Mapbox: explicit Mercator",
+        "Before: QGIS 4",
+        "After: QGIS 4 (unchanged)"
+      ]
+    },
+    {
+      "file": "light-projection-crop.png",
+      "box": [
+        490,
+        280,
+        870,
+        580
+      ],
+      "rescaled": false,
+      "panels": [
+        "Original source globe",
+        "Explicit Mercator diagnostic"
+      ]
+    },
+    {
+      "file": "outdoors-projection-crop.png",
+      "box": [
+        490,
+        280,
+        870,
+        580
+      ],
+      "rescaled": false,
+      "panels": [
+        "Original source globe",
+        "Explicit Mercator diagnostic"
+      ]
+    }
+  ],
+  "runtime_file_sha256": {
+    "mapbox_config.py": "a2bdb887cbc4663e96a5a282dcdacb4c2477a4bfcfc3f1bfd6569f155c7a89db",
+    "visualization/infrastructure/background_map_service.py": "0a846c0355821cc4dce7360b456dfb989c95343c0384ec894c0f26745cf69264",
+    "visualization/infrastructure/mapbox_light_strokes.py": "6b70749efac8f2377be2ef03901423cd031ca7db4d53e39fbe62c7563f9db15e",
+    "visualization/infrastructure/mapbox_light_labels.py": "5b2310bce51a53b072e7a3932adb9abdea991116c29ef032de37d25151765cce",
+    "visualization/infrastructure/mapbox_open_fonts.py": "f1e94b2b42be6a6ddce758c0b2904cca66526e583bed3ee9b33580b37359b737",
+    "validation/mapbox_outdoors_comparison.py": "f0bd0cc7ef9e4b12c9ed88332a5b4235018e31c523670ba98b455daebc865484",
+    "validation/mapbox_outdoors_runtime.py": "d38930e57ecb9c9c547973f032dd072d68ac70bcb475aae46e0b1627562e45a4"
+  },
+  "quality": {
+    "focused_unittest": "4 tests / 8 subcases; real Node executes generated HTML and browser capture script with controlled map fixtures",
+    "docker3": "211 passed / 82 expected skips",
+    "docker4": "211 passed / 82 expected skips"
+  }
+}
