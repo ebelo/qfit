@@ -122,7 +122,7 @@ focused investigation before broad completion, not an assertion of a root cause.
 | C16 | PARTIAL | Source symbol inventory available; sprite applicability, anchors, collision lifecycle and high-DPI behavior require dedicated checks. | — |
 | C17 | PARTIAL | Font-enabled Docker roles have earlier scoped validation. Desktop font distribution and multilingual fallback are not certified by these captures. | — |
 | C18 | OPEN | Text width, weight, wrapping and relative hierarchy remain visibly different. Blanket size probes were rejected, not accepted as a fix. | Minor |
-| C19 | OPEN (remaining scope) | Country/major-settlement English/local fallback now has scoped native-expression and matched-PNG passes below. Other source roles, multilingual/RTL rendering, long names and desktop/export coverage remain open. | Major baseline finding scoped below; remaining severity not established |
+| C19 | OPEN (remaining scope) | All 14 source label roles now have a content audit: country/major settlements and both water-label owners pass scoped cases; ten owners lose source content. Cairo/Jerusalem corroborate local-road and airport-code mismatches. RTL shaping, long names and desktop/export remain open. | Major baseline finding scoped below; remaining severity not established |
 | C20 | PARTIAL | Some named-road crops inspected during duplicate work; systematic association, rotation and curved-line placement remain. | — |
 | C21 | PARTIAL | Current dense views are available; survival/priority decisions and symbol/halo collision extents are not comprehensively audited. | — |
 | C22 | PARTIAL | Road duplicate removal has a scoped pass; the criterion as a whole is not passed. See the separate coverage-cell verdicts below. | — |
@@ -134,6 +134,53 @@ focused investigation before broad completion, not an assertion of a root cause.
 | C28 | PARTIAL; density consistency OPEN | Fresh two-city DPR2 PNGs retain native zoom, but physical-density PNGs and actual one-map PDFs change QGIS4 activation/detail. QGIS3 also changes label placement across PDF density. Production150-DPI settings are exercised, not a complete atlas or desktop installation. | Provisional major output-consistency finding |
 | C29 | PARTIAL; PDF repeat cells OPEN | Prior matrices and 48 new background PNG control pairs repeat exactly. Earlier Bern/Geneva PDF150 variation is now also observed in Lausanne/Kashmir QGIS4 production150-DPI outputs; other new repeated PDF modes are raster-identical. Cold/warm performance and interactive stability remain untested. | PDF variability severity unestablished |
 | C30 | NOT ASSESSED | Cropped basemap evidence does not validate complete user-facing attribution, legend, scale or north/context requirements. | — |
+
+### C19: complete label-role audit and multilingual baselines — 2026-09-14
+
+[Immutable source, native audits, reproducible workers and matched maps][label-roles]
+use unchanged runtime `bdc741cf38caf47e25cf1809055f506bb865efb9`.
+Fresh source SHA256 remains
+`87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32`.
+This slice adds a complete 14-owner source fixture and native water-companion
+regression, **not a production language or rendering fix**.
+
+Every source symbol owner is accounted for: 13 request English/local-name
+coalesce; airport requests its distinct sizerank/ref/name expression. Both native
+builds produce 39 rules. Each audit evaluates 264 applicable text cases, with
+116 mismatches across ten source owners. Those are synthetic content evaluations
+repeated across derived font/zoom bands, **not 116 missing labels in a map**.
+Expected strings include the original uppercase transform where applicable.
+The audit uses native text-requested columns and NULL for absent properties.
+It selects the appropriate water name arm, but does not evaluate full source/
+native class, geometry, zoom or feature eligibility.
+
+| Coverage cell | Verdict | Evidence / outstanding action |
+| --- | --- | --- |
+| C19: all 14 original symbol owners and all 39 native rules, QGIS3.44.11/Qt5.15.17 and QGIS4.2.0/Qt6.9.2 | PASS (scoped inventory) | Every native rule maps to one source owner; original text/transform, processed expression, native field requests, complete settings and explicit case results are public. Inventory completeness is not content correctness. |
+| C19: country and major settlements; water-line and water-point companion populations | PASS (scoped content) | Four owner families preserve tested English, NULL/missing, empty, accented, mixed-script and English-only values. The existing two-owner native repair remains intact; water uses 16 complementary English/local rules, not a missing fallback. |
+| C19/C02: native water companion selection, five classes × two geometry populations × eight name cases | PASS (scoped regression) | 80 cases in QGIS3.34.4, 3.44.11 and 4.2.0 assert the ordered 16-rule population before lookup, include predicate/text field requests, and require exactly one matching arm with the expected string. This is not a new scale/worldview/geographic coverage pass. |
+| C19: road, waterway, natural line/point, POI, subdivision, minor settlement, state and continent | OPEN | All nine owner families retain local-name-only expressions, sometimes uppercased; English-present/empty/English-only cases differ from source. Exact owner/derived-rule and existing-override guards are needed before repair. Other eligibility defects remain independent. |
+| C19: airport code/name contract | OPEN | At sizerank15 the source requires ref, not name. Cairo's observed feature has refCAI and renders CAI in the reference; both native maps show the local airport name. Lower-rank ref/name composition also differs in native evaluation. A generic coalesce-only repair is insufficient. |
+| C19: Cairo/Jerusalem regionz8 and urbanz14, both Docker PNG runtimes | OPEN (geographic corroboration) | Matched native-size crops show local Arabic/Hebrew roads versus source-requested English/transliterated names. Major settlement names retain the earlier repair. These extents are new; they are not a fresh seven-preset sweep. |
+| C17/C19/C20/C21: actual RTL glyph shaping, bidi/curved-line association, fallback fonts and collisions | PARTIAL observation; correctness NOT ASSESSED | Arabic/Hebrew glyphs appear in the native PNGs. Neither exact string evaluation nor visible glyph presence establishes contextual joining, ordering, per-glyph font resolution or correct placement. No forced-local browser or RTL-plugin diagnostic is claimed. |
+| C01/C29: four cameras, source and separate Mercator references, two native builds | PASS (scoped controls/registration) | All eight browser and eight native PNG repeat pairs are byte-identical. Native settings/context repeat too; each runtime's four label inventories equal its offline audit. Forty actual Mercator anchor comparisons are within1e-6px. |
+| C01/C23/C28 and remaining C19 output/edge cases | OPEN / NOT ASSESSED | QGIS3 uses100DPI, QGIS4 uses96DPI; requested/native style zoom remains different. No long-name, missing-font, actual desktop, PDF, pan/zoom or source-globe equivalence pass. |
+
+The fresh inventory contains **16 browser PNGs and16 native PNGs**. Browser
+source properties are from queryRenderedFeatures, not a native decoder trace;
+live tile bytes remain unarchived. Full maps, unscaled380×300 crops, original
+source-projection references, primary requested/resolved font settings and
+per-frame runtime metadata are retained. Source-language fidelity and common
+road/airport reader tasks remain OPEN; no aggregate error score or extra local
+labels compensates for the missing source content.
+
+Full local tests pass2675/190skips with299subtests; both complete Docker suites
+pass215/82skips. The legacy native companion test passes80cases. All runtime,
+activity, font and packaging inputs are unchanged, so no new ZIP or output
+behavior is asserted. Next: repair a bounded audited content owner population,
+keeping water companions, source transforms and role/zoom gates intact; audit
+actual RTL shaping separately. All wider C01–C30 gaps remain required. No
+limitation, release, deployment or holistic completion is accepted here.
 
 ### C12/C15: ordinary national-background paint and disputed guard — 2026-09-14
 
@@ -846,3 +893,5 @@ explicitly agreed scope reduction with follow-up ownership for excluded work.
 [boundary-status]: https://github.com/ebelo/qfit/tree/0162c5b445a82da1a33df569f5aa3c2dbe620019/docs/visual-evidence/issue-1462/boundary-status
 
 [national-background]: https://github.com/ebelo/qfit/blob/c6393ee1ae6923b5b5482d1bbbc956f0e0a069ed/docs/visual-evidence/issue-1462/national-background/README.md
+
+[label-roles]: https://github.com/ebelo/qfit/blob/ca29374c534bf280f965e3ed74e81d411e573a9f/docs/visual-evidence/issue-1462/label-roles/README.md
