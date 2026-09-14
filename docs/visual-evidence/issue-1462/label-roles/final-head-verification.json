@@ -1,21 +1,32 @@
 {
-  "final_head": "eab653f22c0acdafc87c9e1307dd2cad61d1d4ee",
+  "final_head": "f74d535bfa1aeef625129c328ba317cf71e13d32",
   "captured_baseline": "bdc741cf38caf47e25cf1809055f506bb865efb9",
   "all_runtime_sources_byte_identical": true,
   "runtime_python_file_count": 233,
   "only_tests_docs_changed": [
     "docs/light-cartographic-assessment.md",
     "tests/fixtures/mapbox/light-label-content-source.json",
-    "tests/test_background_map_service.py"
+    "tests/test_background_map_service.py",
+    "tests/test_mapbox_light_labels.py"
   ],
   "fixture_all_14_source_layers_exactly_match": true,
   "fresh_final_head_recapture_claimed": false,
   "validation": {
-    "local": "2675 passed / 190 skipped / 299 subtests",
+    "local": "2676 passed / 190 skipped / 299 subtests",
     "docker3": "215 passed / 82 skipped",
     "docker4": "215 passed / 82 skipped",
     "legacy": "QGIS3.34.4: one test / 80 cases passes",
     "diff_check": "pass",
-    "packaging": "unchanged production inputs; no ZIP build needed"
+    "packaging": "unchanged production inputs; no ZIP build needed",
+    "fixture_identity": "ordered 14-owner roster and canonical SHA256 pinned in automated pure test"
+  },
+  "review_fix": "Greptile fixture provenance/completeness finding addressed; all complete local/native suites rerun",
+  "fixture_provenance": {
+    "style_url": "mapbox://styles/mapbox/light-v11",
+    "captured_date": "2026-09-14",
+    "source_sha256": "87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32",
+    "source_snapshot": "https://github.com/ebelo/qfit/blob/ca29374c534bf280f965e3ed74e81d411e573a9f/docs/visual-evidence/issue-1462/label-roles/source.json",
+    "label_layers_sha256": "0567bdf6b5815cc621744c5ff6984c87d75f7adb812f45b80131dd5a539817ba",
+    "canonicalization": "UTF-8 JSON, sorted keys, compact separators, ensure_ascii=False; layers array only"
   }
 }
