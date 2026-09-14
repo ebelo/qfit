@@ -1,0 +1,182 @@
+[
+  {
+    "owner": "tunnel-simple",
+    "filter": "(\"structure\" IS 'tunnel') AND (CASE  WHEN @vector_tile_zoom >= 14 THEN (\"class\" IN ('motorway', 'motorway_link', 'trunk', 'trunk_link', 'primary', 'primary_link', 'secondary', 'secondary_link', 'tertiary', 'tertiary_link', 'street', 'street_limited', 'service', 'track')) ELSE (\"class\" IN ('motorway', 'motorway_link', 'trunk', 'trunk_link', 'primary', 'secondary', 'tertiary', 'street', 'street_limited', 'primary_link', 'track')) END) AND (_geom_type IS 'LineString')",
+    "minzoom": 13,
+    "maxzoom": -1,
+    "layers": [
+      {
+        "properties": {
+          "align_dash_pattern": "0",
+          "capstyle": "flat",
+          "customdash": "5;2",
+          "customdash_map_unit_scale": "3x:0,0,0,0,0,0",
+          "customdash_unit": "MM",
+          "dash_pattern_offset": "0",
+          "dash_pattern_offset_map_unit_scale": "3x:0,0,0,0,0,0",
+          "dash_pattern_offset_unit": "MM",
+          "draw_inside_polygon": "0",
+          "joinstyle": "miter",
+          "line_color": "255,255,255,255,hsl:0.61111111111111116,0.00784313725490196,1,1",
+          "line_style": "solid",
+          "line_width": "0.16801",
+          "line_width_unit": "MM",
+          "offset": "0",
+          "offset_map_unit_scale": "3x:0,0,0,0,0,0",
+          "offset_unit": "MM",
+          "ring_filter": "0",
+          "trim_distance_end": "0",
+          "trim_distance_end_map_unit_scale": "3x:0,0,0,0,0,0",
+          "trim_distance_end_unit": "MM",
+          "trim_distance_start": "0",
+          "trim_distance_start_map_unit_scale": "3x:0,0,0,0,0,0",
+          "trim_distance_start_unit": "MM",
+          "tweak_dash_pattern_on_corners": "0",
+          "use_custom_dash": "0",
+          "width_map_unit_scale": "3x:0,0,0,0,0,0"
+        },
+        "dd": {
+          "5": {
+            "active": true,
+            "expression": "(CASE WHEN @vector_tile_zoom <= 13 THEN (CASE WHEN \"class\" IN ('motorway', 'trunk', 'primary') THEN 2.4 WHEN \"class\" IN ('secondary', 'tertiary') THEN 1.5 WHEN \"class\" IN ('motorway_link', 'trunk_link', 'street', 'street_limited', 'primary_link') THEN 0.6 ELSE 0.5 END) WHEN @vector_tile_zoom <= 18 THEN ((CASE WHEN \"class\" IN ('motorway', 'trunk', 'primary') THEN 2.4 WHEN \"class\" IN ('secondary', 'tertiary') THEN 1.5 WHEN \"class\" IN ('motorway_link', 'trunk_link', 'street', 'street_limited', 'primary_link') THEN 0.6 ELSE 0.5 END) + ((CASE WHEN \"class\" IN ('motorway', 'trunk', 'primary') THEN 19.2 WHEN \"class\" IN ('secondary', 'tertiary') THEN 15.6 WHEN \"class\" IN ('motorway_link', 'trunk_link', 'street', 'street_limited', 'primary_link') THEN 10.799999999999999 ELSE 7.199999999999999 END) - (CASE WHEN \"class\" IN ('motorway', 'trunk', 'primary') THEN 2.4 WHEN \"class\" IN ('secondary', 'tertiary') THEN 1.5 WHEN \"class\" IN ('motorway_link', 'trunk_link', 'street', 'street_limited', 'primary_link') THEN 0.6 ELSE 0.5 END)) * ((1.5^(@vector_tile_zoom - 13) - 1) / (1.5^(18 - 13) - 1))) WHEN @vector_tile_zoom <= 22 THEN ((CASE WHEN \"class\" IN ('motorway', 'trunk', 'primary') THEN 19.2 WHEN \"class\" IN ('secondary', 'tertiary') THEN 15.6 WHEN \"class\" IN ('motorway_link', 'trunk_link', 'street', 'street_limited', 'primary_link') THEN 10.799999999999999 ELSE 7.199999999999999 END) + ((CASE WHEN \"class\" IN ('motorway', 'trunk', 'primary') THEN 192 WHEN \"class\" IN ('secondary', 'tertiary') THEN 156 WHEN \"class\" IN ('motorway_link', 'trunk_link', 'primary_link', 'street', 'street_limited') THEN 108 ELSE 72 END) - (CASE WHEN \"class\" IN ('motorway', 'trunk', 'primary') THEN 19.2 WHEN \"class\" IN ('secondary', 'tertiary') THEN 15.6 WHEN \"class\" IN ('motorway_link', 'trunk_link', 'street', 'street_limited', 'primary_link') THEN 10.799999999999999 ELSE 7.199999999999999 END)) * ((1.5^(@vector_tile_zoom - 18) - 1) / (1.5^(22 - 18) - 1))) ELSE (CASE WHEN \"class\" IN ('motorway', 'trunk', 'primary') THEN 192 WHEN \"class\" IN ('secondary', 'tertiary') THEN 156 WHEN \"class\" IN ('motorway_link', 'trunk_link', 'primary_link', 'street', 'street_limited') THEN 108 ELSE 72 END) END) * 25.4 / 96"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "owner": "road-simple",
+    "filter": "(CASE  WHEN @vector_tile_zoom >= 14 THEN (\"class\" IN ('motorway', 'motorway_link', 'trunk', 'trunk_link', 'primary', 'primary_link', 'secondary', 'secondary_link', 'tertiary', 'tertiary_link', 'street', 'street_limited', 'service', 'track'))  WHEN @vector_tile_zoom >= 13 THEN (\"class\" IN ('motorway', 'motorway_link', 'trunk', 'trunk_link', 'primary', 'secondary', 'tertiary', 'street', 'street_limited', 'primary_link', 'track'))  WHEN @vector_tile_zoom >= 12 THEN (\"class\" IN ('motorway', 'motorway_link', 'trunk', 'trunk_link', 'primary', 'secondary', 'tertiary', 'street', 'street_limited', 'primary_link'))  WHEN @vector_tile_zoom >= 11 THEN (\"class\" IN ('motorway', 'motorway_link', 'trunk', 'trunk_link', 'primary', 'secondary', 'tertiary', 'street'))  WHEN @vector_tile_zoom >= 10 THEN (\"class\" IN ('motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'motorway_link', 'trunk_link'))  WHEN @vector_tile_zoom >= 8 THEN (\"class\" IN ('motorway', 'trunk', 'primary', 'secondary'))  WHEN @vector_tile_zoom >= 6 THEN (\"class\" IN ('motorway', 'trunk', 'primary')) ELSE (\"class\" IN ('motorway', 'trunk')) END) AND (\"structure\" IN ('none', 'ford')) AND (_geom_type IS 'LineString')",
+    "minzoom": 5,
+    "maxzoom": -1,
+    "layers": [
+      {
+        "properties": {
+          "align_dash_pattern": "0",
+          "capstyle": "round",
+          "customdash": "5;2",
+          "customdash_map_unit_scale": "3x:0,0,0,0,0,0",
+          "customdash_unit": "MM",
+          "dash_pattern_offset": "0",
+          "dash_pattern_offset_map_unit_scale": "3x:0,0,0,0,0,0",
+          "dash_pattern_offset_unit": "MM",
+          "draw_inside_polygon": "0",
+          "joinstyle": "round",
+          "line_color": "255,255,255,255,hsl:0.61111111111111116,0.00784313725490196,1,1",
+          "line_style": "solid",
+          "line_width": "0.16801",
+          "line_width_unit": "MM",
+          "offset": "0",
+          "offset_map_unit_scale": "3x:0,0,0,0,0,0",
+          "offset_unit": "MM",
+          "ring_filter": "0",
+          "trim_distance_end": "0",
+          "trim_distance_end_map_unit_scale": "3x:0,0,0,0,0,0",
+          "trim_distance_end_unit": "MM",
+          "trim_distance_start": "0",
+          "trim_distance_start_map_unit_scale": "3x:0,0,0,0,0,0",
+          "trim_distance_start_unit": "MM",
+          "tweak_dash_pattern_on_corners": "0",
+          "use_custom_dash": "0",
+          "width_map_unit_scale": "3x:0,0,0,0,0,0"
+        },
+        "dd": {
+          "5": {
+            "active": true,
+            "expression": "(CASE WHEN @vector_tile_zoom <= 5 THEN (CASE WHEN \"class\" IN ('motorway', 'trunk', 'primary') THEN 0.44999999999999996 WHEN \"class\" IN ('secondary', 'tertiary') THEN 0.06 ELSE 0 END) WHEN @vector_tile_zoom <= 13 THEN ((CASE WHEN \"class\" IN ('motorway', 'trunk', 'primary') THEN 0.44999999999999996 WHEN \"class\" IN ('secondary', 'tertiary') THEN 0.06 ELSE 0 END) + ((CASE WHEN \"class\" IN ('motorway', 'trunk', 'primary') THEN 2.4 WHEN \"class\" IN ('secondary', 'tertiary') THEN 1.5 WHEN \"class\" IN ('motorway_link', 'trunk_link', 'primary_link', 'street', 'street_limited') THEN 0.6 ELSE 0.3 END) - (CASE WHEN \"class\" IN ('motorway', 'trunk', 'primary') THEN 0.44999999999999996 WHEN \"class\" IN ('secondary', 'tertiary') THEN 0.06 ELSE 0 END)) * ((1.5^(@vector_tile_zoom - 5) - 1) / (1.5^(13 - 5) - 1))) WHEN @vector_tile_zoom <= 18 THEN ((CASE WHEN \"class\" IN ('motorway', 'trunk', 'primary') THEN 2.4 WHEN \"class\" IN ('secondary', 'tertiary') THEN 1.5 WHEN \"class\" IN ('motorway_link', 'trunk_link', 'primary_link', 'street', 'street_limited') THEN 0.6 ELSE 0.3 END) + ((CASE WHEN \"class\" IN ('motorway', 'trunk', 'primary') THEN 19.2 WHEN \"class\" IN ('secondary', 'tertiary') THEN 15.6 WHEN \"class\" IN ('motorway_link', 'trunk_link', 'primary_link', 'street', 'street_limited') THEN 10.799999999999999 ELSE 6 END) - (CASE WHEN \"class\" IN ('motorway', 'trunk', 'primary') THEN 2.4 WHEN \"class\" IN ('secondary', 'tertiary') THEN 1.5 WHEN \"class\" IN ('motorway_link', 'trunk_link', 'primary_link', 'street', 'street_limited') THEN 0.6 ELSE 0.3 END)) * ((1.5^(@vector_tile_zoom - 13) - 1) / (1.5^(18 - 13) - 1))) WHEN @vector_tile_zoom <= 22 THEN ((CASE WHEN \"class\" IN ('motorway', 'trunk', 'primary') THEN 19.2 WHEN \"class\" IN ('secondary', 'tertiary') THEN 15.6 WHEN \"class\" IN ('motorway_link', 'trunk_link', 'primary_link', 'street', 'street_limited') THEN 10.799999999999999 ELSE 6 END) + ((CASE WHEN \"class\" IN ('motorway', 'trunk', 'primary') THEN 192 WHEN \"class\" IN ('secondary', 'tertiary') THEN 156 WHEN \"class\" IN ('motorway_link', 'trunk_link', 'primary_link', 'street', 'street_limited') THEN 108 ELSE 60 END) - (CASE WHEN \"class\" IN ('motorway', 'trunk', 'primary') THEN 19.2 WHEN \"class\" IN ('secondary', 'tertiary') THEN 15.6 WHEN \"class\" IN ('motorway_link', 'trunk_link', 'primary_link', 'street', 'street_limited') THEN 10.799999999999999 ELSE 6 END)) * ((1.5^(@vector_tile_zoom - 18) - 1) / (1.5^(22 - 18) - 1))) ELSE (CASE WHEN \"class\" IN ('motorway', 'trunk', 'primary') THEN 192 WHEN \"class\" IN ('secondary', 'tertiary') THEN 156 WHEN \"class\" IN ('motorway_link', 'trunk_link', 'primary_link', 'street', 'street_limited') THEN 108 ELSE 60 END) END) * 25.4 / 96"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "owner": "bridge-case-simple",
+    "filter": "(\"structure\" IS 'bridge') AND (CASE  WHEN @vector_tile_zoom >= 14 THEN (\"class\" IN ('motorway', 'motorway_link', 'trunk', 'trunk_link', 'primary', 'primary_link', 'secondary', 'secondary_link', 'tertiary', 'tertiary_link', 'street', 'street_limited', 'service', 'track')) ELSE (\"class\" IN ('motorway', 'motorway_link', 'trunk', 'trunk_link', 'primary', 'secondary', 'tertiary', 'street', 'street_limited', 'primary_link', 'track')) END) AND (_geom_type IS 'LineString')",
+    "minzoom": 13,
+    "maxzoom": -1,
+    "layers": [
+      {
+        "properties": {
+          "align_dash_pattern": "0",
+          "capstyle": "flat",
+          "customdash": "5;2",
+          "customdash_map_unit_scale": "3x:0,0,0,0,0,0",
+          "customdash_unit": "MM",
+          "dash_pattern_offset": "0",
+          "dash_pattern_offset_map_unit_scale": "3x:0,0,0,0,0,0",
+          "dash_pattern_offset_unit": "MM",
+          "draw_inside_polygon": "0",
+          "joinstyle": "miter",
+          "line_color": "247,247,247,255,hsl:0.61111111111111116,0.00784313725490196,0.96862745098039216,1",
+          "line_style": "solid",
+          "line_width": "0.252016",
+          "line_width_unit": "MM",
+          "offset": "0",
+          "offset_map_unit_scale": "3x:0,0,0,0,0,0",
+          "offset_unit": "MM",
+          "ring_filter": "0",
+          "trim_distance_end": "0",
+          "trim_distance_end_map_unit_scale": "3x:0,0,0,0,0,0",
+          "trim_distance_end_unit": "MM",
+          "trim_distance_start": "0",
+          "trim_distance_start_map_unit_scale": "3x:0,0,0,0,0,0",
+          "trim_distance_start_unit": "MM",
+          "tweak_dash_pattern_on_corners": "0",
+          "use_custom_dash": "0",
+          "width_map_unit_scale": "3x:0,0,0,0,0,0"
+        },
+        "dd": {
+          "5": {
+            "active": true,
+            "expression": "(CASE WHEN @vector_tile_zoom <= 13 THEN (CASE WHEN \"class\" IN ('motorway', 'trunk', 'primary') THEN 3.5999999999999996 WHEN \"class\" IN ('secondary', 'tertiary') THEN 2.4 WHEN \"class\" IN ('motorway_link', 'trunk_link', 'street', 'street_limited', 'primary_link') THEN 1.5 ELSE 0.75 END) WHEN @vector_tile_zoom <= 18 THEN ((CASE WHEN \"class\" IN ('motorway', 'trunk', 'primary') THEN 3.5999999999999996 WHEN \"class\" IN ('secondary', 'tertiary') THEN 2.4 WHEN \"class\" IN ('motorway_link', 'trunk_link', 'street', 'street_limited', 'primary_link') THEN 1.5 ELSE 0.75 END) + ((CASE WHEN \"class\" IN ('motorway', 'trunk', 'primary') THEN 21.599999999999998 WHEN \"class\" IN ('secondary', 'tertiary') THEN 18 WHEN \"class\" IN ('motorway_link', 'trunk_link', 'street', 'street_limited', 'primary_link') THEN 13.2 ELSE 9.6 END) - (CASE WHEN \"class\" IN ('motorway', 'trunk', 'primary') THEN 3.5999999999999996 WHEN \"class\" IN ('secondary', 'tertiary') THEN 2.4 WHEN \"class\" IN ('motorway_link', 'trunk_link', 'street', 'street_limited', 'primary_link') THEN 1.5 ELSE 0.75 END)) * ((1.5^(@vector_tile_zoom - 13) - 1) / (1.5^(18 - 13) - 1))) WHEN @vector_tile_zoom <= 22 THEN ((CASE WHEN \"class\" IN ('motorway', 'trunk', 'primary') THEN 21.599999999999998 WHEN \"class\" IN ('secondary', 'tertiary') THEN 18 WHEN \"class\" IN ('motorway_link', 'trunk_link', 'street', 'street_limited', 'primary_link') THEN 13.2 ELSE 9.6 END) + ((CASE WHEN \"class\" IN ('motorway', 'trunk', 'primary') THEN 216 WHEN \"class\" IN ('secondary', 'tertiary') THEN 180 WHEN \"class\" IN ('motorway_link', 'trunk_link', 'primary_link', 'street', 'street_limited') THEN 132 ELSE 96 END) - (CASE WHEN \"class\" IN ('motorway', 'trunk', 'primary') THEN 21.599999999999998 WHEN \"class\" IN ('secondary', 'tertiary') THEN 18 WHEN \"class\" IN ('motorway_link', 'trunk_link', 'street', 'street_limited', 'primary_link') THEN 13.2 ELSE 9.6 END)) * ((1.5^(@vector_tile_zoom - 18) - 1) / (1.5^(22 - 18) - 1))) ELSE (CASE WHEN \"class\" IN ('motorway', 'trunk', 'primary') THEN 216 WHEN \"class\" IN ('secondary', 'tertiary') THEN 180 WHEN \"class\" IN ('motorway_link', 'trunk_link', 'primary_link', 'street', 'street_limited') THEN 132 ELSE 96 END) END) * 25.4 / 96"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "owner": "bridge-simple",
+    "filter": "(\"structure\" IS 'bridge') AND (CASE  WHEN @vector_tile_zoom >= 14 THEN (\"class\" IN ('motorway', 'motorway_link', 'trunk', 'trunk_link', 'primary', 'primary_link', 'secondary', 'secondary_link', 'tertiary', 'tertiary_link', 'street', 'street_limited', 'service', 'track'))  WHEN @vector_tile_zoom >= 13 THEN (\"class\" IN ('motorway', 'motorway_link', 'trunk', 'trunk_link', 'primary', 'secondary', 'tertiary', 'street', 'street_limited', 'primary_link', 'track')) ELSE (\"class\" IN ('motorway', 'trunk')) END) AND (_geom_type IS 'LineString')",
+    "minzoom": 13,
+    "maxzoom": -1,
+    "layers": [
+      {
+        "properties": {
+          "align_dash_pattern": "0",
+          "capstyle": "round",
+          "customdash": "5;2",
+          "customdash_map_unit_scale": "3x:0,0,0,0,0,0",
+          "customdash_unit": "MM",
+          "dash_pattern_offset": "0",
+          "dash_pattern_offset_map_unit_scale": "3x:0,0,0,0,0,0",
+          "dash_pattern_offset_unit": "MM",
+          "draw_inside_polygon": "0",
+          "joinstyle": "miter",
+          "line_color": "255,255,255,255,hsl:0.61111111111111116,0.00784313725490196,1,1",
+          "line_style": "solid",
+          "line_width": "0.16801",
+          "line_width_unit": "MM",
+          "offset": "0",
+          "offset_map_unit_scale": "3x:0,0,0,0,0,0",
+          "offset_unit": "MM",
+          "ring_filter": "0",
+          "trim_distance_end": "0",
+          "trim_distance_end_map_unit_scale": "3x:0,0,0,0,0,0",
+          "trim_distance_end_unit": "MM",
+          "trim_distance_start": "0",
+          "trim_distance_start_map_unit_scale": "3x:0,0,0,0,0,0",
+          "trim_distance_start_unit": "MM",
+          "tweak_dash_pattern_on_corners": "0",
+          "use_custom_dash": "0",
+          "width_map_unit_scale": "3x:0,0,0,0,0,0"
+        },
+        "dd": {
+          "5": {
+            "active": true,
+            "expression": "(CASE WHEN @vector_tile_zoom <= 13 THEN (CASE WHEN \"class\" IN ('motorway', 'trunk', 'primary') THEN 2.4 WHEN \"class\" IN ('secondary', 'tertiary') THEN 1.5 WHEN \"class\" IN ('motorway_link', 'trunk_link', 'street', 'street_limited', 'primary_link') THEN 0.6 ELSE 0.5 END) WHEN @vector_tile_zoom <= 18 THEN ((CASE WHEN \"class\" IN ('motorway', 'trunk', 'primary') THEN 2.4 WHEN \"class\" IN ('secondary', 'tertiary') THEN 1.5 WHEN \"class\" IN ('motorway_link', 'trunk_link', 'street', 'street_limited', 'primary_link') THEN 0.6 ELSE 0.5 END) + ((CASE WHEN \"class\" IN ('motorway', 'trunk', 'primary') THEN 19.2 WHEN \"class\" IN ('secondary', 'tertiary') THEN 15.6 WHEN \"class\" IN ('motorway_link', 'trunk_link', 'street', 'street_limited', 'primary_link') THEN 10.799999999999999 ELSE 7.199999999999999 END) - (CASE WHEN \"class\" IN ('motorway', 'trunk', 'primary') THEN 2.4 WHEN \"class\" IN ('secondary', 'tertiary') THEN 1.5 WHEN \"class\" IN ('motorway_link', 'trunk_link', 'street', 'street_limited', 'primary_link') THEN 0.6 ELSE 0.5 END)) * ((1.5^(@vector_tile_zoom - 13) - 1) / (1.5^(18 - 13) - 1))) WHEN @vector_tile_zoom <= 22 THEN ((CASE WHEN \"class\" IN ('motorway', 'trunk', 'primary') THEN 19.2 WHEN \"class\" IN ('secondary', 'tertiary') THEN 15.6 WHEN \"class\" IN ('motorway_link', 'trunk_link', 'street', 'street_limited', 'primary_link') THEN 10.799999999999999 ELSE 7.199999999999999 END) + ((CASE WHEN \"class\" IN ('motorway', 'trunk', 'primary') THEN 192 WHEN \"class\" IN ('secondary', 'tertiary') THEN 156 WHEN \"class\" IN ('motorway_link', 'trunk_link', 'primary_link', 'street', 'street_limited') THEN 108 ELSE 72 END) - (CASE WHEN \"class\" IN ('motorway', 'trunk', 'primary') THEN 19.2 WHEN \"class\" IN ('secondary', 'tertiary') THEN 15.6 WHEN \"class\" IN ('motorway_link', 'trunk_link', 'street', 'street_limited', 'primary_link') THEN 10.799999999999999 ELSE 7.199999999999999 END)) * ((1.5^(@vector_tile_zoom - 18) - 1) / (1.5^(22 - 18) - 1))) ELSE (CASE WHEN \"class\" IN ('motorway', 'trunk', 'primary') THEN 192 WHEN \"class\" IN ('secondary', 'tertiary') THEN 156 WHEN \"class\" IN ('motorway_link', 'trunk_link', 'primary_link', 'street', 'street_limited') THEN 108 ELSE 72 END) END) * 25.4 / 96"
+          }
+        }
+      }
+    ]
+  }
+]

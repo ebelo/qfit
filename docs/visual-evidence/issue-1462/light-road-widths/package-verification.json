@@ -1,0 +1,14 @@
+[
+  {
+    "qgis_major": 3,
+    "zip": "qfit-0.53.3-qgis3.zip",
+    "adapter_sha256": "ba95dcc542d75e848cec435054ae975ca607a25c40cc2e44593b1d92a4273d74",
+    "entries": 278
+  },
+  {
+    "qgis_major": 4,
+    "zip": "qfit-0.53.3-qgis4.zip",
+    "adapter_sha256": "ba95dcc542d75e848cec435054ae975ca607a25c40cc2e44593b1d92a4273d74",
+    "entries": 278
+  }
+]
