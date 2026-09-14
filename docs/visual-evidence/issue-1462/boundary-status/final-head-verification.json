@@ -1,0 +1,20 @@
+{
+  "head_commit": "6d814a5f149876f4112cb6c4b6b5eea4ec4441db",
+  "baseline_commit": "be2d187939b01f81274e2847f011ac134c2f50e7",
+  "changed_files": [
+    "docs/light-cartographic-assessment.md",
+    "tests/test_background_map_service.py"
+  ],
+  "unchanged_runtime_python_files": 233,
+  "all_runtime_sha256_match_captured_baseline": true,
+  "all_other_tracked_files_unchanged": true,
+  "fresh_final_head_recapture": false,
+  "explanation": "Test and documentation changes only. Exact source byte identity, not fresh final-head map recaptures. Native test body unchanged since passing full local and both Docker gates.",
+  "validation": {
+    "full_local": "2672 passed / 188 skipped / 299 subtests",
+    "docker_3": "213 passed / 82 skipped",
+    "docker_4": "213 passed / 82 skipped",
+    "native_host": "QGIS3.34.4: focused39 passed /55 skipped /3129 subtests",
+    "diff_check": "pass"
+  }
+}
