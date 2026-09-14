@@ -38,13 +38,18 @@ def qgis_render_context_snapshot(*, settings, layer, image, camera_zoom: float) 
     """Record actual capture scale/DPI without calibrating or mutating rendering.
 
     For this harness's Mapbox tile matrix, the renderer derives its continuous
-    vector_tile_zoom and rounded integer zooms from the map settings scale.
+    vector_tile_zoom and rounded integer zooms from its runtime-specific tile
+    render scale. QGIS 4 normalizes Mapbox scale for DPI; raw map scale is not
+    the renderer input on every supported runtime.
     The requested browser camera zoom is not a substitute for those values.
     """
     scale = settings.scale()
     matrix = layer.tileMatrixSet()
     extent = settings.visibleExtent()
-    render_zoom, fetch_zoom = _integer_tile_zooms(matrix, scale)
+    tile_scale = matrix.calculateTileScaleForMap(
+        scale, settings.destinationCrs(), extent, settings.outputSize(), settings.outputDpi(),
+    )
+    render_zoom, fetch_zoom = _integer_tile_zooms(matrix, tile_scale)
     return {
         "requested_camera_zoom": camera_zoom,
         "map_settings_output_dpi": settings.outputDpi(),
@@ -55,7 +60,8 @@ def qgis_render_context_snapshot(*, settings, layer, image, camera_zoom: float) 
         "map_crs": settings.destinationCrs().authid(),
         "visible_extent": [extent.xMinimum(), extent.yMinimum(), extent.xMaximum(), extent.yMaximum()],
         "map_scale": scale,
-        "vector_tile_zoom": matrix.scaleToZoom(scale),
+        "tile_render_scale": tile_scale,
+        "vector_tile_zoom": matrix.scaleToZoom(tile_scale),
         "integer_render_zoom": render_zoom,
         "integer_fetch_zoom": fetch_zoom,
     }

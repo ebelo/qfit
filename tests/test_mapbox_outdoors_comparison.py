@@ -307,6 +307,7 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         image.width.return_value = 2560
         image.height.return_value = 1800
         matrix = layer.tileMatrixSet()
+        matrix.calculateTileScaleForMap.return_value = 34000.0
         matrix.scaleToZoom.return_value = 12.8976378
         matrix.scaleToZoomLevel.side_effect = [13, 12]
         result = qgis_render_context_snapshot(settings=settings, layer=layer, image=image, camera_zoom=13.0)
@@ -315,12 +316,16 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
             "image_logical_dpi": [100, 101], "image_device_pixel_ratio": 2.0,
             "image_size_pixels": [2560, 1800], "map_settings_size_pixels": [1280, 900],
             "map_crs": "EPSG:3857", "visible_extent": [1, 2, 3, 4],
-            "map_scale": 37616.647778, "vector_tile_zoom": 12.8976378,
+            "map_scale": 37616.647778, "tile_render_scale": 34000.0, "vector_tile_zoom": 12.8976378,
             "integer_render_zoom": 13, "integer_fetch_zoom": 12,
         })
         self.assertEqual(matrix.scaleToZoomLevel.call_args_list, [
-            unittest.mock.call(37616.647778, False), unittest.mock.call(37616.647778, True),
+            unittest.mock.call(34000.0, False), unittest.mock.call(34000.0, True),
         ])
+        matrix.scaleToZoom.assert_called_once_with(34000.0)
+        matrix.calculateTileScaleForMap.assert_called_once_with(
+            37616.647778, settings.destinationCrs(), extent, settings.outputSize(), 100.0,
+        )
         settings.setOutputDpi.assert_not_called()
         settings.setExtent.assert_not_called()
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -334,6 +339,9 @@ class MapboxOutdoorsComparisonTests(unittest.TestCase):
         from qfit.validation.mapbox_outdoors_runtime import qgis_render_context_snapshot
 
         class LegacyTileMatrix:
+            def calculateTileScaleForMap(self, scale, crs, extent, size, dpi):
+                return scale
+
             def scaleToZoom(self, scale):
                 return 19.25
 
