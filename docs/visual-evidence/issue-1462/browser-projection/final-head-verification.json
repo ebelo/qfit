@@ -1,0 +1,601 @@
+{
+  "exact_head": "7e6d0dd481de670bd8d092c18ea8b05eef6fc4e0",
+  "implementation": "d95175b8917c66aefe97cf463c904091bae3540a",
+  "published_evidence_commit": "9270b210cd624ddf0eaaa5ddbffe6c8dd29d374b",
+  "runtime_file_sha256": {
+    "mapbox_config.py": "a2bdb887cbc4663e96a5a282dcdacb4c2477a4bfcfc3f1bfd6569f155c7a89db",
+    "visualization/infrastructure/background_map_service.py": "0a846c0355821cc4dce7360b456dfb989c95343c0384ec894c0f26745cf69264",
+    "visualization/infrastructure/mapbox_light_strokes.py": "6b70749efac8f2377be2ef03901423cd031ca7db4d53e39fbe62c7563f9db15e",
+    "visualization/infrastructure/mapbox_light_labels.py": "5b2310bce51a53b072e7a3932adb9abdea991116c29ef032de37d25151765cce",
+    "visualization/infrastructure/mapbox_open_fonts.py": "f1e94b2b42be6a6ddce758c0b2904cca66526e583bed3ee9b33580b37359b737",
+    "validation/mapbox_outdoors_comparison.py": "f0bd0cc7ef9e4b12c9ed88332a5b4235018e31c523670ba98b455daebc865484",
+    "validation/mapbox_outdoors_runtime.py": "d38930e57ecb9c9c547973f032dd072d68ac70bcb475aae46e0b1627562e45a4"
+  },
+  "native_final_head_recaptures": [
+    {
+      "qgis_major": "3",
+      "camera": "switzerland-alps-z5-outdoors",
+      "png_sha256": "c28b304d32995062cd0062610ce2ba8495b9836c6d71d9d507f6dbf27601790b",
+      "png_labels_runtime_style_byte_identical": true
+    },
+    {
+      "qgis_major": "4",
+      "camera": "switzerland-alps-z5-outdoors",
+      "png_sha256": "348ee424460e1d80000cea009f069802ad58950f507586d3e6ea0cec5645e22e",
+      "png_labels_runtime_style_byte_identical": true
+    },
+    {
+      "qgis_major": "3",
+      "camera": "valais-geneva-outdoors",
+      "png_sha256": "ced840ec07c9083cdff35b8660dc0562539549d138fefcecaa3d14b5ec27ec6d",
+      "png_labels_runtime_style_byte_identical": true
+    },
+    {
+      "qgis_major": "4",
+      "camera": "valais-geneva-outdoors",
+      "png_sha256": "e0a7bce2586276dac73696f7210e2a0ab638c3e0de04ddc9882c73b87baf142e",
+      "png_labels_runtime_style_byte_identical": true
+    },
+    {
+      "qgis_major": "3",
+      "camera": "lausanne-lavaux-z10-outdoors",
+      "png_sha256": "d0363a9d6d4090d6647e9ad026be6cecad216e468656f9b35cced517195f9b3e",
+      "png_labels_runtime_style_byte_identical": true
+    },
+    {
+      "qgis_major": "4",
+      "camera": "lausanne-lavaux-z10-outdoors",
+      "png_sha256": "fbaae46407a01c8631d413d24162782745ff5ac63c246e253e9b9f0e4ad5e980",
+      "png_labels_runtime_style_byte_identical": true
+    },
+    {
+      "qgis_major": "3",
+      "camera": "geneva-airport-motorway-z14-outdoors",
+      "png_sha256": "20722233c4facb472f7fc4020ad8e01b45a12a5c5fd571a45a73e6fc57a27ab6",
+      "png_labels_runtime_style_byte_identical": true
+    },
+    {
+      "qgis_major": "4",
+      "camera": "geneva-airport-motorway-z14-outdoors",
+      "png_sha256": "3ad5e3ade7bccda044fd2f22fe7c814da7bfc6a5ff150f9aeb2ee9c6a7139900",
+      "png_labels_runtime_style_byte_identical": true
+    },
+    {
+      "qgis_major": "3",
+      "camera": "chamonix-trails-z14-outdoors",
+      "png_sha256": "a10b7ed253f46c2c58c2ab452b86292b908af87124d8acdf6fab063b88772793",
+      "png_labels_runtime_style_byte_identical": true
+    },
+    {
+      "qgis_major": "4",
+      "camera": "chamonix-trails-z14-outdoors",
+      "png_sha256": "809a2001752d96c0552e4e15d3f082523d3f65e768079498ca55c09029fd2c8c",
+      "png_labels_runtime_style_byte_identical": true
+    },
+    {
+      "qgis_major": "3",
+      "camera": "zermatt-piste-z17-outdoors",
+      "png_sha256": "2465e9a153d521de2bf51bf0c9be6ea778a73ea35d62b08b74d88089c5ae0db4",
+      "png_labels_runtime_style_byte_identical": true
+    },
+    {
+      "qgis_major": "4",
+      "camera": "zermatt-piste-z17-outdoors",
+      "png_sha256": "a4aa6b72081a0434614734bc6bdc58ad8b209fd3133186cefc6e510b762c9602",
+      "png_labels_runtime_style_byte_identical": true
+    },
+    {
+      "qgis_major": "3",
+      "camera": "zermatt-trails-z18-outdoors",
+      "png_sha256": "82d565b024d5f0976bcb09af54c26b0bfb4fd6ca7c3f48f65de2c959dc1fea07",
+      "png_labels_runtime_style_byte_identical": true
+    },
+    {
+      "qgis_major": "4",
+      "camera": "zermatt-trails-z18-outdoors",
+      "png_sha256": "e7ca3ed88b6d2415ad8ca07524c843afbd4c9a9230190f39ca52101827701b45",
+      "png_labels_runtime_style_byte_identical": true
+    },
+    {
+      "qgis_major": "3",
+      "camera": "switzerland-alps-z5-light",
+      "png_sha256": "6a9d22710d2a67b183823581f41c787df1ebab339bf6a76814d2e36cc0cb3a41",
+      "png_labels_runtime_style_byte_identical": true
+    },
+    {
+      "qgis_major": "4",
+      "camera": "switzerland-alps-z5-light",
+      "png_sha256": "a5832479d37bd5bcb57b753a752b1eed2c8668ca80ace52db1f8edc2e4a77c15",
+      "png_labels_runtime_style_byte_identical": true
+    },
+    {
+      "qgis_major": "3",
+      "camera": "zurich-region-z8-light",
+      "png_sha256": "90e976950e21bb60cc6a1d6575a156541e8da52b76bc2e9acad9f10b81e64f28",
+      "png_labels_runtime_style_byte_identical": true
+    },
+    {
+      "qgis_major": "4",
+      "camera": "zurich-region-z8-light",
+      "png_sha256": "71f413a84e334d33ee5d0e99f569d309c7bed229171eaaea6d41b40593233a68",
+      "png_labels_runtime_style_byte_identical": true
+    },
+    {
+      "qgis_major": "3",
+      "camera": "lausanne-lavaux-z10-light",
+      "png_sha256": "dace51c1a2239544b2827425b395c741dbd7f47d782804b81df5dbe0bead4522",
+      "png_labels_runtime_style_byte_identical": true
+    },
+    {
+      "qgis_major": "4",
+      "camera": "lausanne-lavaux-z10-light",
+      "png_sha256": "c28a3a7a6d27609b5844c12d77ca468399122bd4cf275afa2c6c6772b7370f46",
+      "png_labels_runtime_style_byte_identical": true
+    },
+    {
+      "qgis_major": "3",
+      "camera": "bern-urban-z12-light",
+      "png_sha256": "be889599f5b5efda75b11be40c2242cbec8958dd3e931a0f592fd45b71f58c8d",
+      "png_labels_runtime_style_byte_identical": true
+    },
+    {
+      "qgis_major": "4",
+      "camera": "bern-urban-z12-light",
+      "png_sha256": "b2f1f44db6aeb8e56078253828089941d2f647ad8f9d735993ae12a33808a51b",
+      "png_labels_runtime_style_byte_identical": true
+    },
+    {
+      "qgis_major": "3",
+      "camera": "geneva-urban-z14-light",
+      "png_sha256": "bc11e49289db93790122cceec967133a73212c6c0ece3debf1c7bb3d56bfe9d3",
+      "png_labels_runtime_style_byte_identical": true
+    },
+    {
+      "qgis_major": "4",
+      "camera": "geneva-urban-z14-light",
+      "png_sha256": "9fa6f062a723a65a86e31b9d1161a5ed9f534f6feac09caef0c921a0a961f4d1",
+      "png_labels_runtime_style_byte_identical": true
+    },
+    {
+      "qgis_major": "3",
+      "camera": "zurich-streets-z17-light",
+      "png_sha256": "87f065071da31fb6bca580413e5e1aa3006c1294126235b35f55aea2430e37ee",
+      "png_labels_runtime_style_byte_identical": true
+    },
+    {
+      "qgis_major": "4",
+      "camera": "zurich-streets-z17-light",
+      "png_sha256": "0b2fb957571220b6e2703e426c53f3d670412aed5052b35b5c36c0ab88bc7122",
+      "png_labels_runtime_style_byte_identical": true
+    },
+    {
+      "qgis_major": "3",
+      "camera": "geneva-streets-z18-light",
+      "png_sha256": "08ccd959983dda84dc2a219cb9229c4e62731b9c9389ce5877941af316c3d318",
+      "png_labels_runtime_style_byte_identical": true
+    },
+    {
+      "qgis_major": "4",
+      "camera": "geneva-streets-z18-light",
+      "png_sha256": "b8f175e538c415a385ffc97b1b77aae6116232543ca6861766cbc30911c8fc8d",
+      "png_labels_runtime_style_byte_identical": true
+    }
+  ],
+  "browser_final_head_end_to_end_manifests": {
+    "head": "7e6d0dd481de670bd8d092c18ea8b05eef6fc4e0",
+    "rows": [
+      {
+        "camera": "switzerland-alps-z5-light",
+        "reference_projection": "source",
+        "final_png_byte_identical": true,
+        "png_sha256": "f82803bd3fac15796284956d8b9b7e26568ab8ecb274ef87baa756f085628803",
+        "manifest": {
+          "camera": {
+            "name": "switzerland-alps-z5-light",
+            "description": "z5 country-wide Switzerland/Alps guardrail for background, water, major roads, and label density.",
+            "longitude": 8.2,
+            "latitude": 46.8,
+            "zoom": 5.35,
+            "width": 1280,
+            "height": 900,
+            "bearing": 0.0,
+            "pitch": 0.0,
+            "style_owner": "mapbox",
+            "style_id": "light-v11"
+          },
+          "style_url": null,
+          "outputs": {
+            "browser_reference": "mapbox-gl-reference.png",
+            "browser_runtime": "browser-runtime.json",
+            "qgis_vector_render": "qgis-vector-render.png",
+            "diff": "mapbox-gl-vs-qgis-diff.png",
+            "metrics": "metrics.json",
+            "mapbox_source_style": "mapbox-source-style.json",
+            "qgis_preprocessed_style": "qgis-preprocessed-style.json",
+            "qgis_label_styles": "qgis-label-styles.json",
+            "qgis_runtime": "qgis-runtime.json"
+          },
+          "style_json_path": "light-v11.json",
+          "qgis_contour_polygon_label_probe": false,
+          "qgis_contour_boundary_generator_label_probe": false,
+          "qgis_contour_bbox_edge_difference_label_probe": false,
+          "qgis_contour_bbox_edge_difference_source_style_label_probe": false,
+          "qgis_contour_bbox_edge_difference_source_style_high_zoom_label_probe": false,
+          "activity_overlay": false,
+          "captured": {
+            "browser_reference": true,
+            "browser_runtime": true,
+            "qgis_vector_render": false,
+            "mapbox_source_style": true,
+            "diff": false,
+            "qgis_preprocessed_style": false,
+            "qgis_label_styles": false,
+            "qgis_runtime": false
+          },
+          "metrics": {},
+          "qgis_runtime": {},
+          "browser_runtime": {
+            "mapbox_gl_version": "3.10.0",
+            "reference_projection": "source",
+            "source_projection": {
+              "name": "globe"
+            },
+            "actual_projection": {
+              "name": "globe",
+              "center": [
+                0,
+                0
+              ]
+            },
+            "center": [
+              8.2,
+              46.8
+            ],
+            "zoom": 5.35,
+            "bearing": 0,
+            "pitch": 0,
+            "bounds": [
+              [
+                -4.740609080079167,
+                40.66727704460254
+              ],
+              [
+                21.140609080080537,
+                52.20340357690284
+              ]
+            ],
+            "canvas_size_pixels": [
+              1280,
+              900
+            ],
+            "device_pixel_ratio": 1,
+            "map_loaded": true,
+            "tiles_loaded": true,
+            "map_error_count": 0,
+            "rendered_feature_count": 2188,
+            "browser_version": "152.0.7977.64"
+          },
+          "reference_projection": "source",
+          "mapbox_source_style_sha256": "87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32",
+          "qgis_preprocessed_style_sha256": null,
+          "notes": [
+            "Mapbox tokens are intentionally excluded from this manifest.",
+            "This is a manual visual QA aid, not a CI gate.",
+            "Reference projection is source-preserving unless explicitly overridden; image metrics do not certify projection or scale comparability.",
+            "QGIS runtime metadata helps compare version-sensitive Mapbox GL style conversion output."
+          ]
+        }
+      },
+      {
+        "camera": "switzerland-alps-z5-light",
+        "reference_projection": "mercator",
+        "final_png_byte_identical": true,
+        "png_sha256": "d44444381b991e897900645c06eeb3b0b0e887e4920208963320bc69ddcc9e0d",
+        "manifest": {
+          "camera": {
+            "name": "switzerland-alps-z5-light",
+            "description": "z5 country-wide Switzerland/Alps guardrail for background, water, major roads, and label density.",
+            "longitude": 8.2,
+            "latitude": 46.8,
+            "zoom": 5.35,
+            "width": 1280,
+            "height": 900,
+            "bearing": 0.0,
+            "pitch": 0.0,
+            "style_owner": "mapbox",
+            "style_id": "light-v11"
+          },
+          "style_url": null,
+          "outputs": {
+            "browser_reference": "mapbox-gl-reference.png",
+            "browser_runtime": "browser-runtime.json",
+            "qgis_vector_render": "qgis-vector-render.png",
+            "diff": "mapbox-gl-vs-qgis-diff.png",
+            "metrics": "metrics.json",
+            "mapbox_source_style": "mapbox-source-style.json",
+            "qgis_preprocessed_style": "qgis-preprocessed-style.json",
+            "qgis_label_styles": "qgis-label-styles.json",
+            "qgis_runtime": "qgis-runtime.json"
+          },
+          "style_json_path": "light-v11.json",
+          "qgis_contour_polygon_label_probe": false,
+          "qgis_contour_boundary_generator_label_probe": false,
+          "qgis_contour_bbox_edge_difference_label_probe": false,
+          "qgis_contour_bbox_edge_difference_source_style_label_probe": false,
+          "qgis_contour_bbox_edge_difference_source_style_high_zoom_label_probe": false,
+          "activity_overlay": false,
+          "captured": {
+            "browser_reference": true,
+            "browser_runtime": true,
+            "qgis_vector_render": false,
+            "mapbox_source_style": true,
+            "diff": false,
+            "qgis_preprocessed_style": false,
+            "qgis_label_styles": false,
+            "qgis_runtime": false
+          },
+          "metrics": {},
+          "qgis_runtime": {},
+          "browser_runtime": {
+            "mapbox_gl_version": "3.10.0",
+            "reference_projection": "mercator",
+            "source_projection": {
+              "name": "globe"
+            },
+            "actual_projection": {
+              "name": "mercator",
+              "center": [
+                0,
+                0
+              ]
+            },
+            "center": [
+              8.2,
+              46.8
+            ],
+            "zoom": 5.35,
+            "bearing": 0,
+            "pitch": 0,
+            "bounds": [
+              [
+                -2.8332138766738524,
+                41.22714516939652
+              ],
+              [
+                19.233213876672238,
+                51.85015210683707
+              ]
+            ],
+            "canvas_size_pixels": [
+              1280,
+              900
+            ],
+            "device_pixel_ratio": 1,
+            "map_loaded": true,
+            "tiles_loaded": true,
+            "map_error_count": 0,
+            "rendered_feature_count": 2034,
+            "browser_version": "152.0.7977.64"
+          },
+          "reference_projection": "mercator",
+          "mapbox_source_style_sha256": "87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32",
+          "qgis_preprocessed_style_sha256": null,
+          "notes": [
+            "Mapbox tokens are intentionally excluded from this manifest.",
+            "This is a manual visual QA aid, not a CI gate.",
+            "Reference projection is source-preserving unless explicitly overridden; image metrics do not certify projection or scale comparability.",
+            "QGIS runtime metadata helps compare version-sensitive Mapbox GL style conversion output."
+          ]
+        }
+      },
+      {
+        "camera": "switzerland-alps-z5-outdoors",
+        "reference_projection": "source",
+        "final_png_byte_identical": true,
+        "png_sha256": "0a2c33f1e770fe232414cb5a3554280a655caef847dda0cb53e87cc6ec30469b",
+        "manifest": {
+          "camera": {
+            "name": "switzerland-alps-z5-outdoors",
+            "description": "z5 broad Switzerland-Alps context for landcover, terrain/water balance, major roads, and country-scale label density.",
+            "longitude": 8.2,
+            "latitude": 46.8,
+            "zoom": 5.35,
+            "width": 1280,
+            "height": 900,
+            "bearing": 0.0,
+            "pitch": 0.0,
+            "style_owner": "mapbox",
+            "style_id": "outdoors-v12"
+          },
+          "style_url": null,
+          "outputs": {
+            "browser_reference": "mapbox-gl-reference.png",
+            "browser_runtime": "browser-runtime.json",
+            "qgis_vector_render": "qgis-vector-render.png",
+            "diff": "mapbox-gl-vs-qgis-diff.png",
+            "metrics": "metrics.json",
+            "mapbox_source_style": "mapbox-source-style.json",
+            "qgis_preprocessed_style": "qgis-preprocessed-style.json",
+            "qgis_label_styles": "qgis-label-styles.json",
+            "qgis_runtime": "qgis-runtime.json"
+          },
+          "style_json_path": "outdoors-v12.json",
+          "qgis_contour_polygon_label_probe": false,
+          "qgis_contour_boundary_generator_label_probe": false,
+          "qgis_contour_bbox_edge_difference_label_probe": false,
+          "qgis_contour_bbox_edge_difference_source_style_label_probe": false,
+          "qgis_contour_bbox_edge_difference_source_style_high_zoom_label_probe": false,
+          "activity_overlay": false,
+          "captured": {
+            "browser_reference": true,
+            "browser_runtime": true,
+            "qgis_vector_render": false,
+            "mapbox_source_style": true,
+            "diff": false,
+            "qgis_preprocessed_style": false,
+            "qgis_label_styles": false,
+            "qgis_runtime": false
+          },
+          "metrics": {},
+          "qgis_runtime": {},
+          "browser_runtime": {
+            "mapbox_gl_version": "3.10.0",
+            "reference_projection": "source",
+            "source_projection": {
+              "name": "globe"
+            },
+            "actual_projection": {
+              "name": "globe",
+              "center": [
+                0,
+                0
+              ]
+            },
+            "center": [
+              8.2,
+              46.8
+            ],
+            "zoom": 5.35,
+            "bearing": 0,
+            "pitch": 0,
+            "bounds": [
+              [
+                -4.740609080079167,
+                40.66727704460254
+              ],
+              [
+                21.140609080080537,
+                52.20340357690284
+              ]
+            ],
+            "canvas_size_pixels": [
+              1280,
+              900
+            ],
+            "device_pixel_ratio": 1,
+            "map_loaded": true,
+            "tiles_loaded": true,
+            "map_error_count": 0,
+            "rendered_feature_count": 2607,
+            "browser_version": "152.0.7977.64"
+          },
+          "reference_projection": "source",
+          "mapbox_source_style_sha256": "da68d8ece0bb90c6d45fb36085b1e64f9d9e966175f1abf31fcddbf28bc1504c",
+          "qgis_preprocessed_style_sha256": null,
+          "notes": [
+            "Mapbox tokens are intentionally excluded from this manifest.",
+            "This is a manual visual QA aid, not a CI gate.",
+            "Reference projection is source-preserving unless explicitly overridden; image metrics do not certify projection or scale comparability.",
+            "QGIS runtime metadata helps compare version-sensitive Mapbox GL style conversion output."
+          ]
+        }
+      },
+      {
+        "camera": "switzerland-alps-z5-outdoors",
+        "reference_projection": "mercator",
+        "final_png_byte_identical": true,
+        "png_sha256": "f16d3153ca4180123189446b84d8a66a421fe28ab4d544d10b7827fd459a95cc",
+        "manifest": {
+          "camera": {
+            "name": "switzerland-alps-z5-outdoors",
+            "description": "z5 broad Switzerland-Alps context for landcover, terrain/water balance, major roads, and country-scale label density.",
+            "longitude": 8.2,
+            "latitude": 46.8,
+            "zoom": 5.35,
+            "width": 1280,
+            "height": 900,
+            "bearing": 0.0,
+            "pitch": 0.0,
+            "style_owner": "mapbox",
+            "style_id": "outdoors-v12"
+          },
+          "style_url": null,
+          "outputs": {
+            "browser_reference": "mapbox-gl-reference.png",
+            "browser_runtime": "browser-runtime.json",
+            "qgis_vector_render": "qgis-vector-render.png",
+            "diff": "mapbox-gl-vs-qgis-diff.png",
+            "metrics": "metrics.json",
+            "mapbox_source_style": "mapbox-source-style.json",
+            "qgis_preprocessed_style": "qgis-preprocessed-style.json",
+            "qgis_label_styles": "qgis-label-styles.json",
+            "qgis_runtime": "qgis-runtime.json"
+          },
+          "style_json_path": "outdoors-v12.json",
+          "qgis_contour_polygon_label_probe": false,
+          "qgis_contour_boundary_generator_label_probe": false,
+          "qgis_contour_bbox_edge_difference_label_probe": false,
+          "qgis_contour_bbox_edge_difference_source_style_label_probe": false,
+          "qgis_contour_bbox_edge_difference_source_style_high_zoom_label_probe": false,
+          "activity_overlay": false,
+          "captured": {
+            "browser_reference": true,
+            "browser_runtime": true,
+            "qgis_vector_render": false,
+            "mapbox_source_style": true,
+            "diff": false,
+            "qgis_preprocessed_style": false,
+            "qgis_label_styles": false,
+            "qgis_runtime": false
+          },
+          "metrics": {},
+          "qgis_runtime": {},
+          "browser_runtime": {
+            "mapbox_gl_version": "3.10.0",
+            "reference_projection": "mercator",
+            "source_projection": {
+              "name": "globe"
+            },
+            "actual_projection": {
+              "name": "mercator",
+              "center": [
+                0,
+                0
+              ]
+            },
+            "center": [
+              8.2,
+              46.8
+            ],
+            "zoom": 5.35,
+            "bearing": 0,
+            "pitch": 0,
+            "bounds": [
+              [
+                -2.8332138766738524,
+                41.22714516939652
+              ],
+              [
+                19.233213876672238,
+                51.85015210683707
+              ]
+            ],
+            "canvas_size_pixels": [
+              1280,
+              900
+            ],
+            "device_pixel_ratio": 1,
+            "map_loaded": true,
+            "tiles_loaded": true,
+            "map_error_count": 0,
+            "rendered_feature_count": 2421,
+            "browser_version": "152.0.7977.64"
+          },
+          "reference_projection": "mercator",
+          "mapbox_source_style_sha256": "da68d8ece0bb90c6d45fb36085b1e64f9d9e966175f1abf31fcddbf28bc1504c",
+          "qgis_preprocessed_style_sha256": null,
+          "notes": [
+            "Mapbox tokens are intentionally excluded from this manifest.",
+            "This is a manual visual QA aid, not a CI gate.",
+            "Reference projection is source-preserving unless explicitly overridden; image metrics do not certify projection or scale comparability.",
+            "QGIS runtime metadata helps compare version-sensitive Mapbox GL style conversion output."
+          ]
+        }
+      }
+    ]
+  },
+  "notes": [
+    "Same active protected Gateway run and per-container preflight, all captures complete.",
+    "Original source and Mercator references retained from this run; final e2e PNGs byte-identical. No DPI/projection product limitation accepted."
+  ]
+}
