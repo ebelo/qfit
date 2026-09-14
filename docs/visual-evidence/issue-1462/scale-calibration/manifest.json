@@ -1,6 +1,6 @@
 {
   "baseline": "6d8935571d83ba21f6024e27b06de88860374252",
-  "candidate": "6d8935571d83ba21f6024e27b06de88860374252",
+  "candidate": "1a5fd9a75f2339a4116b3e9479549f7b003ff83b",
   "images": {
     "3": "sha256:9bf850ffeb3a012cbd8956c9ea101fa8353f0df1d320884e6613b6739ab205b2",
     "4": "sha256:313e91cd4cd9bc7460e623c4ca5314ee7c0b721fa0b03d9bb8bf682e641b23cf"
@@ -18232,5 +18232,19 @@
       "unwrapped_control_identical": true
     }
   ],
-  "metadata_erratum": "Old QGIS4 rows without tile_render_scale evaluate raw map scale, not actual renderer activation. Images and physical context remain valid."
+  "metadata_erratum": "Old QGIS4 rows without tile_render_scale evaluate raw map scale, not actual renderer activation. Images and physical context remain valid.",
+  "initial_source_acquisition_candidate": "6d8935571d83ba21f6024e27b06de88860374252",
+  "shared_isolation": "shared-isolation.json",
+  "packages": [
+    {
+      "qgis_major": 3,
+      "entries": 278,
+      "payload_identical_to_main": true
+    },
+    {
+      "qgis_major": 4,
+      "entries": 278,
+      "payload_identical_to_main": true
+    }
+  ]
 }

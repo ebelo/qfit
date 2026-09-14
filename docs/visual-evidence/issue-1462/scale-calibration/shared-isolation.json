@@ -1,0 +1,1955 @@
+{
+  "scope": "Shared metadata isolation only; no Outdoors product/style work",
+  "baseline": "6d8935571d83ba21f6024e27b06de88860374252",
+  "metadata_implementation": "1a5fd9a",
+  "head": "51358ed5a7c9d9a71ed44d7a6750fd508cc3dcfb",
+  "source_sha256": "da68d8ece0bb90c6d45fb36085b1e64f9d9e966175f1abf31fcddbf28bc1504c",
+  "browser": [
+    {
+      "camera": {
+        "name": "switzerland-alps-z5-outdoors",
+        "description": "z5 broad Switzerland-Alps context for landcover, terrain/water balance, major roads, and country-scale label density.",
+        "longitude": 8.2,
+        "latitude": 46.8,
+        "zoom": 5.35,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "outdoors-v12"
+      },
+      "png_sha256": "0a2c33f1e770fe232414cb5a3554280a655caef847dda0cb53e87cc6ec30469b",
+      "runtime": {
+        "mapbox_gl_version": "3.10.0",
+        "projection_anchors": [
+          {
+            "lnglat": [
+              8.2,
+              46.80000000000002
+            ],
+            "expected_pixel": [
+              640,
+              450
+            ],
+            "actual_pixel": [
+              640.0000000000018,
+              449.99999999999886
+            ]
+          },
+          {
+            "lnglat": [
+              3.028180995309502,
+              49.108584498401925
+            ],
+            "expected_pixel": [
+              340,
+              250
+            ],
+            "actual_pixel": [
+              356.1920536138333,
+              246.92261642985548
+            ]
+          },
+          {
+            "lnglat": [
+              13.371819004690495,
+              44.38793556421859
+            ],
+            "expected_pixel": [
+              940,
+              650
+            ],
+            "actual_pixel": [
+              949.5507225780766,
+              642.0472962674462
+            ]
+          },
+          {
+            "lnglat": [
+              3.028180995309502,
+              44.38793556421859
+            ],
+            "expected_pixel": [
+              340,
+              650
+            ],
+            "actual_pixel": [
+              330.4492774219267,
+              642.0472962674464
+            ]
+          },
+          {
+            "lnglat": [
+              13.371819004690495,
+              49.108584498401925
+            ],
+            "expected_pixel": [
+              940,
+              250
+            ],
+            "actual_pixel": [
+              923.8079463861699,
+              246.92261642985562
+            ]
+          }
+        ],
+        "reference_projection": "source",
+        "source_projection": {
+          "name": "globe"
+        },
+        "actual_projection": {
+          "name": "globe",
+          "center": [
+            0,
+            0
+          ]
+        },
+        "center": [
+          8.2,
+          46.8
+        ],
+        "zoom": 5.35,
+        "bearing": 0,
+        "pitch": 0,
+        "bounds": [
+          [
+            -4.740609080079167,
+            40.66727704460254
+          ],
+          [
+            21.140609080080537,
+            52.20340357690284
+          ]
+        ],
+        "canvas_size_pixels": [
+          1280,
+          900
+        ],
+        "device_pixel_ratio": 1,
+        "map_loaded": true,
+        "tiles_loaded": true,
+        "map_error_count": 0,
+        "rendered_feature_count": 2607,
+        "browser_version": "152.0.7977.64"
+      },
+      "repeat_identical": true
+    },
+    {
+      "camera": {
+        "name": "valais-geneva-outdoors",
+        "description": "z7-z8 regional qfit map context spanning the Geneva/Valais corridor for terrain/outdoor features, main roads, and settlement visibility.",
+        "longitude": 7.14,
+        "latitude": 46.2,
+        "zoom": 8.15,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "outdoors-v12"
+      },
+      "png_sha256": "a5c9014c17328c0241b387e3c35b6becfdee21ca3e62e76f614cb4c9791cee43",
+      "runtime": {
+        "mapbox_gl_version": "3.10.0",
+        "projection_anchors": [
+          {
+            "lnglat": [
+              7.14,
+              46.199999999999974
+            ],
+            "expected_pixel": [
+              640,
+              450
+            ],
+            "actual_pixel": [
+              639.999999999989,
+              450.00000000002206
+            ]
+          },
+          {
+            "lnglat": [
+              6.397392502121202,
+              46.54159216987535
+            ],
+            "expected_pixel": [
+              340,
+              250
+            ],
+            "actual_pixel": [
+              340,
+              250.00000000002208
+            ]
+          },
+          {
+            "lnglat": [
+              7.882607497878796,
+              45.85627086550636
+            ],
+            "expected_pixel": [
+              940,
+              650
+            ],
+            "actual_pixel": [
+              940,
+              650.000000000022
+            ]
+          },
+          {
+            "lnglat": [
+              6.397392502121202,
+              45.85627086550636
+            ],
+            "expected_pixel": [
+              340,
+              650
+            ],
+            "actual_pixel": [
+              340,
+              650.000000000022
+            ]
+          },
+          {
+            "lnglat": [
+              7.882607497878796,
+              46.54159216987535
+            ],
+            "expected_pixel": [
+              940,
+              250
+            ],
+            "actual_pixel": [
+              940,
+              250.00000000002208
+            ]
+          }
+        ],
+        "reference_projection": "source",
+        "source_projection": {
+          "name": "globe"
+        },
+        "actual_projection": {
+          "name": "globe",
+          "center": [
+            0,
+            0
+          ]
+        },
+        "center": [
+          7.14,
+          46.2
+        ],
+        "zoom": 8.15,
+        "bearing": 0,
+        "pitch": 0,
+        "bounds": [
+          [
+            5.55577067119259,
+            45.42360296779603
+          ],
+          [
+            8.724229328808264,
+            46.96557916136305
+          ]
+        ],
+        "canvas_size_pixels": [
+          1280,
+          900
+        ],
+        "device_pixel_ratio": 1,
+        "map_loaded": true,
+        "tiles_loaded": true,
+        "map_error_count": 0,
+        "rendered_feature_count": 6205,
+        "browser_version": "152.0.7977.64"
+      },
+      "repeat_identical": true
+    },
+    {
+      "camera": {
+        "name": "lausanne-lavaux-z10-outdoors",
+        "description": "z9-z11 primary qfit activity-area target around Lausanne/Lavaux for road/trail hierarchy, labels, feature density, and color/width balance.",
+        "longitude": 6.72,
+        "latitude": 46.49,
+        "zoom": 10.25,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "outdoors-v12"
+      },
+      "png_sha256": "aee724985f6088ef87b245dae5061fdd9c5cb616c8c282f377e944c44568b454",
+      "runtime": {
+        "mapbox_gl_version": "3.10.0",
+        "projection_anchors": [
+          {
+            "lnglat": [
+              6.719999999999999,
+              46.49000000000001
+            ],
+            "expected_pixel": [
+              640,
+              450
+            ],
+            "actual_pixel": [
+              640,
+              450.00000000004417
+            ]
+          },
+          {
+            "lnglat": [
+              6.546780676179119,
+              46.5694473891066
+            ],
+            "expected_pixel": [
+              340,
+              250
+            ],
+            "actual_pixel": [
+              340,
+              250
+            ]
+          },
+          {
+            "lnglat": [
+              6.893219323820878,
+              46.410436393913535
+            ],
+            "expected_pixel": [
+              940,
+              650
+            ],
+            "actual_pixel": [
+              940.0000000000883,
+              650.0000000000441
+            ]
+          },
+          {
+            "lnglat": [
+              6.546780676179119,
+              46.410436393913535
+            ],
+            "expected_pixel": [
+              340,
+              650
+            ],
+            "actual_pixel": [
+              340,
+              650.0000000000441
+            ]
+          },
+          {
+            "lnglat": [
+              6.893219323820878,
+              46.5694473891066
+            ],
+            "expected_pixel": [
+              940,
+              250
+            ],
+            "actual_pixel": [
+              940.0000000000883,
+              250
+            ]
+          }
+        ],
+        "reference_projection": "source",
+        "source_projection": {
+          "name": "globe"
+        },
+        "actual_projection": {
+          "name": "globe",
+          "center": [
+            0,
+            0
+          ]
+        },
+        "center": [
+          6.72,
+          46.49
+        ],
+        "zoom": 10.25,
+        "bearing": 0,
+        "pitch": 0,
+        "bounds": [
+          [
+            6.350465442516736,
+            46.31081843134572
+          ],
+          [
+            7.089534557486445,
+            46.6685932216846
+          ]
+        ],
+        "canvas_size_pixels": [
+          1280,
+          900
+        ],
+        "device_pixel_ratio": 1,
+        "map_loaded": true,
+        "tiles_loaded": true,
+        "map_error_count": 0,
+        "rendered_feature_count": 1913,
+        "browser_version": "152.0.7977.64"
+      },
+      "repeat_identical": true
+    },
+    {
+      "camera": {
+        "name": "geneva-airport-motorway-z14-outdoors",
+        "description": "z14 motorway/urban detail around Geneva airport for road-exit shields, motorway junction labels, urban POIs, and dense road hierarchy.",
+        "longitude": 6.103,
+        "latitude": 46.225,
+        "zoom": 14.25,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "outdoors-v12"
+      },
+      "png_sha256": "b90022425ed90a706e159b2dd2c300ce2e4e9cefcfc919b60a880fd7d9149a93",
+      "runtime": {
+        "mapbox_gl_version": "3.10.0",
+        "projection_anchors": [
+          {
+            "lnglat": [
+              6.102999999999999,
+              46.225
+            ],
+            "expected_pixel": [
+              640,
+              450
+            ],
+            "actual_pixel": [
+              640,
+              450.00000000070645
+            ]
+          },
+          {
+            "lnglat": [
+              6.092173792261194,
+              46.22999302331697
+            ],
+            "expected_pixel": [
+              340,
+              250
+            ],
+            "actual_pixel": [
+              340,
+              250.00000000070642
+            ]
+          },
+          {
+            "lnglat": [
+              6.1138262077388035,
+              46.220006522510985
+            ],
+            "expected_pixel": [
+              940,
+              650
+            ],
+            "actual_pixel": [
+              940,
+              650
+            ]
+          },
+          {
+            "lnglat": [
+              6.092173792261194,
+              46.220006522510985
+            ],
+            "expected_pixel": [
+              340,
+              650
+            ],
+            "actual_pixel": [
+              340,
+              650
+            ]
+          },
+          {
+            "lnglat": [
+              6.1138262077388035,
+              46.22999302331697
+            ],
+            "expected_pixel": [
+              940,
+              250
+            ],
+            "actual_pixel": [
+              940,
+              250.00000000070642
+            ]
+          }
+        ],
+        "reference_projection": "source",
+        "source_projection": {
+          "name": "globe"
+        },
+        "actual_projection": {
+          "name": "globe",
+          "center": [
+            0,
+            0
+          ]
+        },
+        "center": [
+          6.103,
+          46.225
+        ],
+        "zoom": 14.25,
+        "bearing": 0,
+        "pitch": 0,
+        "bounds": [
+          [
+            6.079904090157953,
+            46.21376403696465
+          ],
+          [
+            6.126095909842832,
+            46.23623366378857
+          ]
+        ],
+        "canvas_size_pixels": [
+          1280,
+          900
+        ],
+        "device_pixel_ratio": 1,
+        "map_loaded": true,
+        "tiles_loaded": true,
+        "map_error_count": 0,
+        "rendered_feature_count": 2719,
+        "browser_version": "152.0.7977.64"
+      },
+      "repeat_identical": true
+    },
+    {
+      "camera": {
+        "name": "chamonix-trails-z14-outdoors",
+        "description": "z13-z14 local outdoor detail around Chamonix for paths/trails, minor roads, POIs, and label emphasis.",
+        "longitude": 6.868,
+        "latitude": 45.923,
+        "zoom": 13.75,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "outdoors-v12"
+      },
+      "png_sha256": "60b89372014c92a81c4fbba0ebd45203dce3f4a317d2cb7158bc32ad305fb939",
+      "runtime": {
+        "mapbox_gl_version": "3.10.0",
+        "projection_anchors": [
+          {
+            "lnglat": [
+              6.868000000000001,
+              45.923
+            ],
+            "expected_pixel": [
+              640,
+              450
+            ],
+            "actual_pixel": [
+              640,
+              450
+            ]
+          },
+          {
+            "lnglat": [
+              6.8526894301867145,
+              45.930099816951504
+            ],
+            "expected_pixel": [
+              340,
+              250
+            ],
+            "actual_pixel": [
+              340.00000000070645,
+              250
+            ]
+          },
+          {
+            "lnglat": [
+              6.883310569813287,
+              45.91589927434519
+            ],
+            "expected_pixel": [
+              940,
+              650
+            ],
+            "actual_pixel": [
+              940,
+              649.9999999985871
+            ]
+          },
+          {
+            "lnglat": [
+              6.8526894301867145,
+              45.91589927434519
+            ],
+            "expected_pixel": [
+              340,
+              650
+            ],
+            "actual_pixel": [
+              340.00000000070645,
+              649.9999999985871
+            ]
+          },
+          {
+            "lnglat": [
+              6.883310569813287,
+              45.930099816951504
+            ],
+            "expected_pixel": [
+              940,
+              250
+            ],
+            "actual_pixel": [
+              940,
+              250
+            ]
+          }
+        ],
+        "reference_projection": "source",
+        "source_projection": {
+          "name": "globe"
+        },
+        "actual_projection": {
+          "name": "globe",
+          "center": [
+            0,
+            0
+          ]
+        },
+        "center": [
+          6.868,
+          45.923
+        ],
+        "zoom": 13.75,
+        "bearing": 0,
+        "pitch": 0,
+        "bounds": [
+          [
+            6.835337451064618,
+            45.90702208939993
+          ],
+          [
+            6.900662548934662,
+            45.938973310286514
+          ]
+        ],
+        "canvas_size_pixels": [
+          1280,
+          900
+        ],
+        "device_pixel_ratio": 1,
+        "map_loaded": true,
+        "tiles_loaded": true,
+        "map_error_count": 0,
+        "rendered_feature_count": 1506,
+        "browser_version": "152.0.7977.64"
+      },
+      "repeat_identical": true
+    },
+    {
+      "camera": {
+        "name": "zermatt-piste-z17-outdoors",
+        "description": "z17 Zermatt ski-piste stress target for colored path casings, cycleway/piste overlays, and high-zoom outdoor route legibility.",
+        "longitude": 7.71664,
+        "latitude": 46.0127,
+        "zoom": 17.0,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "outdoors-v12"
+      },
+      "png_sha256": "f47ed750cedb4d369d3c53c625cb806c2a7eae449371cef362d996f747f972d6",
+      "runtime": {
+        "mapbox_gl_version": "3.10.0",
+        "projection_anchors": [
+          {
+            "lnglat": [
+              7.716639999999999,
+              46.012699999999974
+            ],
+            "expected_pixel": [
+              640,
+              450
+            ],
+            "actual_pixel": [
+              640.0000000056514,
+              450.0000000113028
+            ]
+          },
+          {
+            "lnglat": [
+              7.715030674591065,
+              46.01344511147208
+            ],
+            "expected_pixel": [
+              340,
+              250
+            ],
+            "actual_pixel": [
+              340.00000000565143,
+              250.0000000113028
+            ]
+          },
+          {
+            "lnglat": [
+              7.718249325408935,
+              46.01195487848911
+            ],
+            "expected_pixel": [
+              940,
+              650
+            ],
+            "actual_pixel": [
+              940.0000000056514,
+              650.0000000084771
+            ]
+          },
+          {
+            "lnglat": [
+              7.715030674591065,
+              46.01195487848911
+            ],
+            "expected_pixel": [
+              340,
+              650
+            ],
+            "actual_pixel": [
+              340.00000000565143,
+              650.0000000084771
+            ]
+          },
+          {
+            "lnglat": [
+              7.718249325408935,
+              46.01344511147208
+            ],
+            "expected_pixel": [
+              940,
+              250
+            ],
+            "actual_pixel": [
+              940.0000000056514,
+              250.0000000113028
+            ]
+          }
+        ],
+        "reference_projection": "source",
+        "source_projection": {
+          "name": "globe"
+        },
+        "actual_projection": {
+          "name": "globe",
+          "center": [
+            0,
+            0
+          ]
+        },
+        "center": [
+          7.71664,
+          46.0127
+        ],
+        "zoom": 17,
+        "bearing": 0,
+        "pitch": 0,
+        "bounds": [
+          [
+            7.713206772461319,
+            46.01102346248382
+          ],
+          [
+            7.720073227539331,
+            46.0143764866954
+          ]
+        ],
+        "canvas_size_pixels": [
+          1280,
+          900
+        ],
+        "device_pixel_ratio": 1,
+        "map_loaded": true,
+        "tiles_loaded": true,
+        "map_error_count": 0,
+        "rendered_feature_count": 382,
+        "browser_version": "152.0.7977.64"
+      },
+      "repeat_identical": true
+    },
+    {
+      "camera": {
+        "name": "zermatt-trails-z18-outdoors",
+        "description": "z18 street/trail-level stress test around Zermatt for casing, widths, local labels, POIs, and high-detail symbol behavior.",
+        "longitude": 7.748,
+        "latitude": 46.02,
+        "zoom": 18.0,
+        "width": 1280,
+        "height": 900,
+        "bearing": 0.0,
+        "pitch": 0.0,
+        "style_owner": "mapbox",
+        "style_id": "outdoors-v12"
+      },
+      "png_sha256": "6af55ff9a9751bab4578d0ebf70aea3061c141decd50de447f84bc15357876d0",
+      "runtime": {
+        "mapbox_gl_version": "3.10.0",
+        "projection_anchors": [
+          {
+            "lnglat": [
+              7.747999999999999,
+              46.02000000000001
+            ],
+            "expected_pixel": [
+              640,
+              450
+            ],
+            "actual_pixel": [
+              639.9999999886971,
+              449.99999999434857
+            ]
+          },
+          {
+            "lnglat": [
+              7.747195337295532,
+              46.020372507812276
+            ],
+            "expected_pixel": [
+              340,
+              250
+            ],
+            "actual_pixel": [
+              339.9999999886972,
+              249.9999999943486
+            ]
+          },
+          {
+            "lnglat": [
+              7.748804662704467,
+              46.019627489678086
+            ],
+            "expected_pixel": [
+              940,
+              650
+            ],
+            "actual_pixel": [
+              939.9999999886971,
+              649.9999999943486
+            ]
+          },
+          {
+            "lnglat": [
+              7.747195337295532,
+              46.019627489678086
+            ],
+            "expected_pixel": [
+              340,
+              650
+            ],
+            "actual_pixel": [
+              339.9999999886972,
+              649.9999999943486
+            ]
+          },
+          {
+            "lnglat": [
+              7.748804662704467,
+              46.020372507812276
+            ],
+            "expected_pixel": [
+              940,
+              250
+            ],
+            "actual_pixel": [
+              939.9999999886971,
+              249.9999999943486
+            ]
+          }
+        ],
+        "reference_projection": "source",
+        "source_projection": {
+          "name": "globe"
+        },
+        "actual_projection": {
+          "name": "globe",
+          "center": [
+            0,
+            0
+          ]
+        },
+        "center": [
+          7.748,
+          46.02
+        ],
+        "zoom": 18,
+        "bearing": 0,
+        "pitch": 0,
+        "bounds": [
+          [
+            7.746283386230232,
+            46.01916184824566
+          ],
+          [
+            7.749716613769209,
+            46.02083813904781
+          ]
+        ],
+        "canvas_size_pixels": [
+          1280,
+          900
+        ],
+        "device_pixel_ratio": 1,
+        "map_loaded": true,
+        "tiles_loaded": true,
+        "map_error_count": 0,
+        "rendered_feature_count": 366,
+        "browser_version": "152.0.7977.64"
+      },
+      "repeat_identical": true
+    }
+  ],
+  "native": [
+    {
+      "qgis_major": "3",
+      "camera": "switzerland-alps-z5-outdoors",
+      "before_repeat_after_png_labels_style_identical": true,
+      "png_sha256": "c28b304d32995062cd0062610ce2ba8495b9836c6d71d9d507f6dbf27601790b",
+      "before_raw_scale_snapshot": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 5.35,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            -315391.9260596817,
+            5045903.47656141,
+            2141031.575069368,
+            6773076.250792773
+          ],
+          "map_scale": 7555436.457705,
+          "vector_tile_zoom": 5.270208288101648,
+          "integer_render_zoom": 5,
+          "integer_fetch_zoom": 5
+        }
+      },
+      "after_corrected_snapshot": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 5.35,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            -315391.9260596817,
+            5045903.47656141,
+            2141031.575069368,
+            6773076.250792773
+          ],
+          "map_scale": 7555436.457705,
+          "tile_render_scale": 7555436.457705,
+          "vector_tile_zoom": 5.270208288101648,
+          "integer_render_zoom": 5,
+          "integer_fetch_zoom": 5
+        }
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "switzerland-alps-z5-outdoors",
+      "before_repeat_after_png_labels_style_identical": true,
+      "png_sha256": "348ee424460e1d80000cea009f069802ad58950f507586d3e6ea0cec5645e22e",
+      "before_raw_scale_snapshot": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 5.35,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            -315391.9260596817,
+            5045903.47656141,
+            2141031.575069368,
+            6773076.250792773
+          ],
+          "map_scale": 7253218.9993968,
+          "vector_tile_zoom": 5.339399956577582,
+          "integer_render_zoom": 5,
+          "integer_fetch_zoom": 5
+        }
+      },
+      "after_corrected_snapshot": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 5.35,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            -315391.9260596817,
+            5045903.47656141,
+            2141031.575069368,
+            6773076.250792773
+          ],
+          "map_scale": 7253218.9993968,
+          "tile_render_scale": 6853860.215203822,
+          "vector_tile_zoom": 5.430831804206495,
+          "integer_render_zoom": 5,
+          "integer_fetch_zoom": 5
+        }
+      }
+    },
+    {
+      "qgis_major": "3",
+      "camera": "valais-geneva-outdoors",
+      "before_repeat_after_png_labels_style_identical": true,
+      "png_sha256": "ced840ec07c9083cdff35b8660dc0562539549d138fefcecaa3d14b5ec27ec6d",
+      "before_raw_scale_snapshot": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 8.15,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            618465.5620812855,
+            5688457.45855726,
+            971176.766446661,
+            5936457.524126665
+          ],
+          "map_scale": 1084864.6787812975,
+          "vector_tile_zoom": 8.012991106054853,
+          "integer_render_zoom": 8,
+          "integer_fetch_zoom": 8
+        }
+      },
+      "after_corrected_snapshot": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 8.15,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            618465.5620812855,
+            5688457.45855726,
+            971176.766446661,
+            5936457.524126665
+          ],
+          "map_scale": 1084864.6787812975,
+          "tile_render_scale": 1084864.6787812975,
+          "vector_tile_zoom": 8.012991106054853,
+          "integer_render_zoom": 8,
+          "integer_fetch_zoom": 8
+        }
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "valais-geneva-outdoors",
+      "before_repeat_after_png_labels_style_identical": true,
+      "png_sha256": "e0a7bce2586276dac73696f7210e2a0ab638c3e0de04ddc9882c73b87baf142e",
+      "before_raw_scale_snapshot": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 8.15,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            618465.5620812855,
+            5688457.45855726,
+            971176.766446661,
+            5936457.524126665
+          ],
+          "map_scale": 1041470.0916300456,
+          "vector_tile_zoom": 8.092471461812659,
+          "integer_render_zoom": 8,
+          "integer_fetch_zoom": 8
+        }
+      },
+      "after_corrected_snapshot": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 8.15,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            618465.5620812855,
+            5688457.45855726,
+            971176.766446661,
+            5936457.524126665
+          ],
+          "map_scale": 1041470.0916300456,
+          "tile_render_scale": 984127.2443230342,
+          "vector_tile_zoom": 8.197499074778332,
+          "integer_render_zoom": 8,
+          "integer_fetch_zoom": 8
+        }
+      }
+    },
+    {
+      "qgis_major": "3",
+      "camera": "lausanne-lavaux-z10-outdoors",
+      "before_repeat_after_png_labels_style_identical": true,
+      "png_sha256": "d0363a9d6d4090d6647e9ad026be6cecad216e468656f9b35cced517195f9b3e",
+      "before_raw_scale_snapshot": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 10.25,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            706930.5793611014,
+            5830298.7658473775,
+            789203.3769004953,
+            5888146.826617263
+          ],
+          "map_scale": 253053.63416398215,
+          "vector_tile_zoom": 10.146055147472122,
+          "integer_render_zoom": 10,
+          "integer_fetch_zoom": 10
+        }
+      },
+      "after_corrected_snapshot": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 10.25,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            706930.5793611014,
+            5830298.7658473775,
+            789203.3769004953,
+            5888146.826617263
+          ],
+          "map_scale": 253053.63416398215,
+          "tile_render_scale": 253053.63416398215,
+          "vector_tile_zoom": 10.146055147472122,
+          "integer_render_zoom": 10,
+          "integer_fetch_zoom": 10
+        }
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "lausanne-lavaux-z10-outdoors",
+      "before_repeat_after_png_labels_style_identical": true,
+      "png_sha256": "fbaae46407a01c8631d413d24162782745ff5ac63c246e253e9b9f0e4ad5e980",
+      "before_raw_scale_snapshot": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 10.25,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            706930.5793611014,
+            5830298.7658473775,
+            789203.3769004953,
+            5888146.826617263
+          ],
+          "map_scale": 242931.48879742288,
+          "vector_tile_zoom": 10.220212941573237,
+          "integer_render_zoom": 10,
+          "integer_fetch_zoom": 10
+        }
+      },
+      "after_corrected_snapshot": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 10.25,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            706930.5793611014,
+            5830298.7658473775,
+            789203.3769004953,
+            5888146.826617263
+          ],
+          "map_scale": 242931.48879742288,
+          "tile_render_scale": 229555.79670589813,
+          "vector_tile_zoom": 10.318207169492569,
+          "integer_render_zoom": 10,
+          "integer_fetch_zoom": 10
+        }
+      }
+    },
+    {
+      "qgis_major": "3",
+      "camera": "geneva-airport-motorway-z14-outdoors",
+      "before_repeat_after_png_labels_style_identical": true,
+      "png_sha256": "20722233c4facb472f7fc4020ad8e01b45a12a5c5fd571a45a73e6fc57a27ab6",
+      "before_raw_scale_snapshot": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 14.25,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            676811.8273882425,
+            5814671.480593224,
+            681953.8772344546,
+            5818286.984391342
+          ],
+          "map_scale": 15815.852135248975,
+          "vector_tile_zoom": 14.146055147472111,
+          "integer_render_zoom": 14,
+          "integer_fetch_zoom": 14
+        }
+      },
+      "after_corrected_snapshot": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 14.25,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            676811.8273882425,
+            5814671.480593224,
+            681953.8772344546,
+            5818286.984391342
+          ],
+          "map_scale": 15815.852135248975,
+          "tile_render_scale": 15815.852135248975,
+          "vector_tile_zoom": 14.146055147472111,
+          "integer_render_zoom": 14,
+          "integer_fetch_zoom": 14
+        }
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "geneva-airport-motorway-z14-outdoors",
+      "before_repeat_after_png_labels_style_identical": true,
+      "png_sha256": "3ad5e3ade7bccda044fd2f22fe7c814da7bfc6a5ff150f9aeb2ee9c6a7139900",
+      "before_raw_scale_snapshot": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 14.25,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            676811.8273882425,
+            5814671.480593224,
+            681953.8772344546,
+            5818286.984391342
+          ],
+          "map_scale": 15183.218049839017,
+          "vector_tile_zoom": 14.220212941573227,
+          "integer_render_zoom": 14,
+          "integer_fetch_zoom": 14
+        }
+      },
+      "after_corrected_snapshot": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 14.25,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            676811.8273882425,
+            5814671.480593224,
+            681953.8772344546,
+            5818286.984391342
+          ],
+          "map_scale": 15183.218049839017,
+          "tile_render_scale": 14347.237294118715,
+          "vector_tile_zoom": 14.318207169492558,
+          "integer_render_zoom": 14,
+          "integer_fetch_zoom": 14
+        }
+      }
+    },
+    {
+      "qgis_major": "3",
+      "camera": "chamonix-trails-z14-outdoors",
+      "before_repeat_after_png_labels_style_identical": true,
+      "png_sha256": "a10b7ed253f46c2c58c2ab452b86292b908af87124d8acdf6fab063b88772793",
+      "before_raw_scale_snapshot": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 13.75,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            760906.2844527472,
+            5765461.943377765,
+            768178.2410836589,
+            5770575.037883874
+          ],
+          "map_scale": 22366.99259015649,
+          "vector_tile_zoom": 13.689063022831641,
+          "integer_render_zoom": 14,
+          "integer_fetch_zoom": 14
+        }
+      },
+      "after_corrected_snapshot": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 13.75,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            760906.2844527472,
+            5765461.943377765,
+            768178.2410836589,
+            5770575.037883874
+          ],
+          "map_scale": 22366.99259015649,
+          "tile_render_scale": 22366.99259015649,
+          "vector_tile_zoom": 13.689063022831641,
+          "integer_render_zoom": 14,
+          "integer_fetch_zoom": 14
+        }
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "chamonix-trails-z14-outdoors",
+      "before_repeat_after_png_labels_style_identical": true,
+      "png_sha256": "809a2001752d96c0552e4e15d3f082523d3f65e768079498ca55c09029fd2c8c",
+      "before_raw_scale_snapshot": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 13.75,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            760906.2844527472,
+            5765461.943377765,
+            768178.2410836589,
+            5770575.037883874
+          ],
+          "map_scale": 21472.312886550233,
+          "vector_tile_zoom": 13.741500501918376,
+          "integer_render_zoom": 14,
+          "integer_fetch_zoom": 14
+        }
+      },
+      "after_corrected_snapshot": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 13.75,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            760906.2844527472,
+            5765461.943377765,
+            768178.2410836589,
+            5770575.037883874
+          ],
+          "map_scale": 21472.312886550233,
+          "tile_render_scale": 20290.057563927676,
+          "vector_tile_zoom": 13.810792884997275,
+          "integer_render_zoom": 14,
+          "integer_fetch_zoom": 14
+        }
+      }
+    },
+    {
+      "qgis_major": "3",
+      "camera": "zermatt-piste-z17-outdoors",
+      "before_repeat_after_png_labels_style_identical": true,
+      "png_sha256": "2465e9a153d521de2bf51bf0c9be6ea778a73ea35d62b08b74d88089c5ae0db4",
+      "before_raw_scale_snapshot": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 17.0,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            858630.2502935807,
+            5782115.913853658,
+            859394.6205764326,
+            5782653.361708788
+          ],
+          "map_scale": 2351.040486133914,
+          "vector_tile_zoom": 16.89763779527545,
+          "integer_render_zoom": 17,
+          "integer_fetch_zoom": 17
+        }
+      },
+      "after_corrected_snapshot": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 17.0,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            858630.2502935807,
+            5782115.913853658,
+            859394.6205764326,
+            5782653.361708788
+          ],
+          "map_scale": 2351.040486133914,
+          "tile_render_scale": 2351.040486133914,
+          "vector_tile_zoom": 16.89763779527545,
+          "integer_render_zoom": 17,
+          "integer_fetch_zoom": 17
+        }
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "zermatt-piste-z17-outdoors",
+      "before_repeat_after_png_labels_style_identical": true,
+      "png_sha256": "a4aa6b72081a0434614734bc6bdc58ad8b209fd3133186cefc6e510b762c9602",
+      "before_raw_scale_snapshot": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 17.0,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            858630.2502935807,
+            5782115.913853658,
+            859394.6205764326,
+            5782653.361708788
+          ],
+          "map_scale": 2256.9988666885574,
+          "vector_tile_zoom": 16.941732283464432,
+          "integer_render_zoom": 17,
+          "integer_fetch_zoom": 17
+        }
+      },
+      "after_corrected_snapshot": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 17.0,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            858630.2502935807,
+            5782115.913853658,
+            859394.6205764326,
+            5782653.361708788
+          ],
+          "map_scale": 2256.9988666885574,
+          "tile_render_scale": 2132.729583850051,
+          "vector_tile_zoom": 16.999999999999872,
+          "integer_render_zoom": 17,
+          "integer_fetch_zoom": 17
+        }
+      }
+    },
+    {
+      "qgis_major": "3",
+      "camera": "zermatt-trails-z18-outdoors",
+      "before_repeat_after_png_labels_style_identical": true,
+      "png_sha256": "82d565b024d5f0976bcb09af54c26b0bfb4fd6ca7c3f48f65de2c959dc1fea07",
+      "before_raw_scale_snapshot": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 18.0,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            862312.3220955707,
+            5783420.451771936,
+            862694.5072369965,
+            5783689.175699501
+          ],
+          "map_scale": 1175.5202430665988,
+          "vector_tile_zoom": 17.897637795275788,
+          "integer_render_zoom": 18,
+          "integer_fetch_zoom": 18
+        }
+      },
+      "after_corrected_snapshot": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 18.0,
+          "map_settings_output_dpi": 100.0,
+          "image_logical_dpi": [
+            100,
+            100
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            862312.3220955707,
+            5783420.451771936,
+            862694.5072369965,
+            5783689.175699501
+          ],
+          "map_scale": 1175.5202430665988,
+          "tile_render_scale": 1175.5202430665988,
+          "vector_tile_zoom": 17.897637795275788,
+          "integer_render_zoom": 18,
+          "integer_fetch_zoom": 18
+        }
+      }
+    },
+    {
+      "qgis_major": "4",
+      "camera": "zermatt-trails-z18-outdoors",
+      "before_repeat_after_png_labels_style_identical": true,
+      "png_sha256": "e7ca3ed88b6d2415ad8ca07524c843afbd4c9a9230190f39ca52101827701b45",
+      "before_raw_scale_snapshot": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 18.0,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            862312.3220955707,
+            5783420.451771936,
+            862694.5072369965,
+            5783689.175699501
+          ],
+          "map_scale": 1128.499433343935,
+          "vector_tile_zoom": 17.941732283464756,
+          "integer_render_zoom": 18,
+          "integer_fetch_zoom": 18
+        }
+      },
+      "after_corrected_snapshot": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 18.0,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            862312.3220955707,
+            5783420.451771936,
+            862694.5072369965,
+            5783689.175699501
+          ],
+          "map_scale": 1128.499433343935,
+          "tile_render_scale": 1066.3647919247005,
+          "vector_tile_zoom": 18.000000000000355,
+          "integer_render_zoom": 18,
+          "integer_fetch_zoom": 18
+        }
+      }
+    }
+  ],
+  "packages": [
+    {
+      "qgis_major": 3,
+      "entries": 278,
+      "payload_identical_to_main": true
+    },
+    {
+      "qgis_major": 4,
+      "entries": 278,
+      "payload_identical_to_main": true
+    }
+  ]
+}

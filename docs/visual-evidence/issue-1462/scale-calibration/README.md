@@ -117,3 +117,19 @@ payloads were not archived. C01–C30 gaps stay open as recorded in the reposito
 [Original globe overview](original-globe-mapbox.png) · [Manifest](manifest.json) · [Renderer traces](renderer-traces.json) · [Offline native audit](native-scale.py). Run the audit script from an ordinary qfit checkout in PyQGIS with an output JSON path as positional argument; no network or credential dependency.
 
 Next: source-scale-aware major/minor role eligibility with the actual expression scope and integer layer activation, plus the now-measured density inconsistency. Do not substitute requested zoom or presume a formula tested in a separate scope works in the job.
+
+## Shared metadata isolation — Outdoors, not product work
+
+All seven Outdoors cameras have fresh source-preserving browser references/repeats (14PNGs) and Before/Repeat/After native captures in both runtimes (42PNGs). PNGs, full label inventories and preprocessed styles are byte-identical within each native cell; only corrected metadata changes. The source declares globe and is not called registered to native Mercator. [Full isolation provenance](shared-isolation.json). Both278-entry plugin ZIP payloads equal main.
+
+| Camera | Original reference | QGIS3 Before /After | QGIS4 Before /After |
+|---|---|---|---|
+| switzerland-alps-z5-outdoors | [source](switzerland-alps-z5-outdoors-source-reference.png) | [Before](qgis3-switzerland-alps-z5-outdoors-before-qgis.png) / [After](qgis3-switzerland-alps-z5-outdoors-after-qgis.png) | [Before](qgis4-switzerland-alps-z5-outdoors-before-qgis.png) / [After](qgis4-switzerland-alps-z5-outdoors-after-qgis.png) |
+| valais-geneva-outdoors | [source](valais-geneva-outdoors-source-reference.png) | [Before](qgis3-valais-geneva-outdoors-before-qgis.png) / [After](qgis3-valais-geneva-outdoors-after-qgis.png) | [Before](qgis4-valais-geneva-outdoors-before-qgis.png) / [After](qgis4-valais-geneva-outdoors-after-qgis.png) |
+| lausanne-lavaux-z10-outdoors | [source](lausanne-lavaux-z10-outdoors-source-reference.png) | [Before](qgis3-lausanne-lavaux-z10-outdoors-before-qgis.png) / [After](qgis3-lausanne-lavaux-z10-outdoors-after-qgis.png) | [Before](qgis4-lausanne-lavaux-z10-outdoors-before-qgis.png) / [After](qgis4-lausanne-lavaux-z10-outdoors-after-qgis.png) |
+| geneva-airport-motorway-z14-outdoors | [source](geneva-airport-motorway-z14-outdoors-source-reference.png) | [Before](qgis3-geneva-airport-motorway-z14-outdoors-before-qgis.png) / [After](qgis3-geneva-airport-motorway-z14-outdoors-after-qgis.png) | [Before](qgis4-geneva-airport-motorway-z14-outdoors-before-qgis.png) / [After](qgis4-geneva-airport-motorway-z14-outdoors-after-qgis.png) |
+| chamonix-trails-z14-outdoors | [source](chamonix-trails-z14-outdoors-source-reference.png) | [Before](qgis3-chamonix-trails-z14-outdoors-before-qgis.png) / [After](qgis3-chamonix-trails-z14-outdoors-after-qgis.png) | [Before](qgis4-chamonix-trails-z14-outdoors-before-qgis.png) / [After](qgis4-chamonix-trails-z14-outdoors-after-qgis.png) |
+| zermatt-piste-z17-outdoors | [source](zermatt-piste-z17-outdoors-source-reference.png) | [Before](qgis3-zermatt-piste-z17-outdoors-before-qgis.png) / [After](qgis3-zermatt-piste-z17-outdoors-after-qgis.png) | [Before](qgis4-zermatt-piste-z17-outdoors-before-qgis.png) / [After](qgis4-zermatt-piste-z17-outdoors-after-qgis.png) |
+| zermatt-trails-z18-outdoors | [source](zermatt-trails-z18-outdoors-source-reference.png) | [Before](qgis3-zermatt-trails-z18-outdoors-before-qgis.png) / [After](qgis3-zermatt-trails-z18-outdoors-after-qgis.png) | [Before](qgis4-zermatt-trails-z18-outdoors-before-qgis.png) / [After](qgis4-zermatt-trails-z18-outdoors-after-qgis.png) |
+
+The manifest now labels the initial source-acquisition revision separately from the metadata implementation/validation head; old commit-pinned manifests remain immutable.
