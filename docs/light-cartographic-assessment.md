@@ -135,6 +135,45 @@ focused investigation before broad completion, not an assertion of a root cause.
 | C29 | PARTIAL | All 30 current width-matrix repeat controls are byte-identical. Cold/warm cache, interactive responsiveness and pan/zoom stability remain untested. | — |
 | C30 | NOT ASSESSED | Cropped basemap evidence does not validate complete user-facing attribution, legend, scale or north/context requirements. | — |
 
+### C01: source-preserving browser projection evidence — 2026-09-14 scoped update
+
+The [fresh browser-context evidence][browser-projection] adds actual browser
+measurement and an **explicit diagnostic**, not a production renderer change.
+Baseline `1418e8ec1497c0865453a64a9eca0ae59a07fe53`; implementation
+`d95175b`. Both source snapshots still declare globe: Light SHA256
+`87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32`,
+Outdoors `da68d8ece0bb90c6d45fb36085b1e64f9d9e966175f1abf31fcddbf28bc1504c`.
+Outdoors is a shared-harness isolation guardrail, not new Outdoors styling work.
+
+The default browser constructor preserves source projection. Optional
+`--reference-projection mercator` changes only that constructor, not the source
+snapshot, fingerprint, preprocessing, native layer or plugin. The manifest and
+`browser-runtime.json` identify source-declared, requested and actual configured
+projection, actual camera/bounds/canvas/DPR, browser/Mapbox versions and load state.
+Map errors or unloaded maps/tiles reject capture before PNG; metadata follows a
+successful screenshot. Error payloads/URLs are not retained in that snapshot.
+
+| Coverage cell | Verdict | Evidence and remaining scope |
+| --- | --- | --- |
+| C01: browser context, both seven-camera presets, source and explicit planar modes | PASS (scoped measurement) | 70 fresh browser captures: all 14 default Before/After/Repeat PNGs and all 14 Mercator repeat pairs are byte-identical. Actual context and zero map errors recorded; nonblank maps inspected. This is not class-completeness or matched-scale certification. |
+| C01: source intent versus planar diagnostic | PASS (scoped separation); geographic/product scope OPEN | Original globe reference remains separate. Only the two overview PNGs change between modes; the other 12 views are byte-identical. `getProjection()` still reports configured globe at high zoom, not its per-pixel planar blend. Earlier overview anchor registration remains the explicitly dated diagnostic above, not a new all-camera registration claim. |
+| C28/C29: native isolation and repeated settled PNGs | PASS (scoped unchanged output) | 28 camera/runtime cells × Before/Repeat/After = 84 PNGs in QGIS3.44.11/Qt5.15.17 and4.2.0/Qt6.9.2. Every cell's PNG, full labels, preprocessed style and actual native context is byte-identical. Both278-entry plugin ZIP payloads equal baseline. No desktop/PDF, activity UI, performance or temporal-pan pass. |
+| C01/C02/C23: physical DPI, native style-zoom and role handoff | OPEN | Mercator reference selection does not resolve native100/96-DPI differences or continuous/integer source-rule activation. No new rank/filter candidate is promoted. |
+
+Both complete Docker suites pass211/82; full pytest2672/186 with299 subtests;
+additional isolated unittest2854/186; nine package tests pass. Generated browser
+JavaScript is exercised by Node regressions (actual-context recording, projection
+preservation, incomplete-map rejection and artifact ordering); manifest/CLI
+propagation is tested through the normal configuration path. All16 changed Python
+statements are covered. These gates do not close C01 or the holistic ledger.
+Source/planar metrics are recorded separately, not called native rendering gains.
+Live tile payloads remain unarchived; no limitation is accepted on Emman's behalf.
+
+Next: establish coherent source/native geometry and style-zoom calibration before
+another C02 settlement-role repair. Keep all other coverage cells below open where
+recorded; browser projection metadata is not new RTL/topology/activity/accessibility,
+packaged-font/desktop/PDF or map-attribution validation.
+
 ### C12/C15: ordinary national-boundary stroke — 2026-09-14 scoped update
 
 Baseline `2985c8247eb05490dd4d26936c3b003a17a1de4d`; implementation
@@ -425,3 +464,5 @@ explicitly agreed scope reduction with follow-up ownership for excluded work.
 [road-widths]: https://github.com/ebelo/qfit/tree/d894f1c7fb09176320a2a06a806ebeace19377c9/docs/visual-evidence/issue-1462/light-road-widths
 
 [national-boundary]: https://github.com/ebelo/qfit/tree/242fbc552577c3d36550db7967044ac670e3a584/docs/visual-evidence/issue-1462/light-national-boundary
+
+[browser-projection]: https://github.com/ebelo/qfit/tree/9270b210cd624ddf0eaaa5ddbffe6c8dd29d374b/docs/visual-evidence/issue-1462/browser-projection
