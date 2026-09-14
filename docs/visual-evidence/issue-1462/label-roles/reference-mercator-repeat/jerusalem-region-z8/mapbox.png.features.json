@@ -1,0 +1,1453 @@
+{
+  "features": [
+    {
+      "id": 2424858924621985,
+      "owner": "country-label",
+      "properties": {
+        "type": "country",
+        "name_zh-Hant": "西岸地區",
+        "name_script": "Latin",
+        "name_ru": "Западный берег реки Иордан",
+        "name_zh-Hans": "约旦河西岸地区",
+        "name_pt": "Cisjordânia",
+        "name_ko": "요르단 강 서안 지구",
+        "symbolrank": 6,
+        "name_ja": "ヨルダン川西岸地区",
+        "name_it": "Cisgiordania",
+        "name_en": "West Bank",
+        "name_de": "Westjordanland",
+        "name_ar": "الضفة الغربية",
+        "name_fr": "Cisjordanie",
+        "filterrank": 0,
+        "name_vi": "Bờ Tây",
+        "disputed": "false",
+        "iso_3166_1": "PS",
+        "name_es": "Cisjordania",
+        "class": "country",
+        "name": "West Bank",
+        "worldview": "US"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.32997131347656,
+          32.300482635077685
+        ]
+      }
+    },
+    {
+      "id": 686411369321365,
+      "owner": "country-label",
+      "properties": {
+        "type": "country",
+        "name_zh-Hant": "加沙地帶",
+        "name_script": "Arabic",
+        "name_ru": "Сектор Газа",
+        "name_zh-Hans": "加沙地带",
+        "name_pt": "Faixa de Gaza",
+        "name_ko": "가자 지구",
+        "symbolrank": 6,
+        "name_ja": "ガザ地区",
+        "name_it": "Striscia di Gaza",
+        "name_en": "Gaza Strip",
+        "name_de": "Gazastreifen",
+        "name_ar": "قطاع غزة",
+        "name_fr": "Bande de Gaza",
+        "filterrank": 0,
+        "name_vi": "Dải Gaza",
+        "disputed": "false",
+        "iso_3166_1": "PS",
+        "name_es": "Franja de Gaza",
+        "class": "country",
+        "name": "قطاع غزة",
+        "worldview": "US"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.31304931640625,
+          31.36008685754277
+        ]
+      }
+    },
+    {
+      "id": 3619290069114005,
+      "owner": "country-label",
+      "properties": {
+        "type": "country",
+        "name_zh-Hant": "以色列",
+        "name_script": "Hebrew",
+        "name_ru": "Израиль",
+        "name_zh-Hans": "以色列",
+        "name_pt": "Israel",
+        "name_ko": "이스라엘",
+        "symbolrank": 5,
+        "name_ja": "イスラエル",
+        "name_it": "Israele",
+        "name_en": "Israel",
+        "name_de": "Israel",
+        "name_ar": "إسرائيل",
+        "name_fr": "Israël",
+        "filterrank": 0,
+        "disputed": "false",
+        "name_vi": "Israel",
+        "iso_3166_1": "IL",
+        "name_es": "Israel",
+        "class": "country",
+        "name": "ישראל",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.84210968017578,
+          31.84723225173113
+        ]
+      }
+    },
+    {
+      "id": 3551492922205075,
+      "owner": "country-label",
+      "properties": {
+        "type": "country",
+        "name_zh-Hant": "約旦",
+        "name_script": "Arabic",
+        "name_ru": "Иордания",
+        "name_zh-Hans": "约旦",
+        "name_pt": "Jordânia",
+        "name_ko": "요르단",
+        "symbolrank": 5,
+        "name_ja": "ヨルダン",
+        "name_it": "Giordania",
+        "name_en": "Jordan",
+        "name_de": "Jordanien",
+        "name_ar": "الأردن",
+        "name_fr": "Jordanie",
+        "filterrank": 0,
+        "disputed": "false",
+        "name_vi": "Jordan",
+        "iso_3166_1": "JO",
+        "name_es": "Jordania",
+        "class": "country",
+        "name": "الأردن",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          36.435813903808594,
+          31.01027680657836
+        ]
+      }
+    },
+    {
+      "id": 2784726030,
+      "owner": "settlement-major-label",
+      "properties": {
+        "type": "city",
+        "name_zh-Hant": "特拉維夫",
+        "name_script": "Hebrew",
+        "name_ru": "Тель-Авив",
+        "name_zh-Hans": "特拉维夫",
+        "name_pt": "Tel Aviv",
+        "name_ko": "텔아비브",
+        "symbolrank": 9,
+        "name_ja": "テルアビブ",
+        "name_it": "Tel Aviv",
+        "name_en": "Tel Aviv",
+        "name_de": "Tel Aviv",
+        "name_ar": "تل أبيب – يافا",
+        "name_fr": "Tel Aviv",
+        "filterrank": 1,
+        "iso_3166_2": "IL-TA",
+        "name_vi": "Tel Aviv",
+        "disputed": "true",
+        "iso_3166_1": "IL",
+        "text_anchor": "bottom-right",
+        "name_es": "Tel Aviv",
+        "class": "settlement",
+        "name": "תל אביב–יפו",
+        "worldview": "US"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.78168487548828,
+          32.08519254738235
+        ]
+      }
+    },
+    {
+      "id": 15062641340,
+      "owner": "settlement-major-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "扎爾卡",
+        "name_script": "Arabic",
+        "name_ru": "Эз-Зарка",
+        "name_zh-Hans": "扎尔卡",
+        "name_pt": "Zarqa",
+        "name_ko": "자르카",
+        "symbolrank": 9,
+        "name_ja": "ザルカ",
+        "name_it": "Zarqa",
+        "name_en": "Zarqa",
+        "name_de": "Zarka",
+        "name_ar": "الزرقاء",
+        "name_fr": "Zarka",
+        "filterrank": 1,
+        "iso_3166_2": "JO-AZ",
+        "disputed": "false",
+        "name_vi": "Zarqa",
+        "iso_3166_1": "JO",
+        "name_es": "Zarqa",
+        "class": "settlement",
+        "name": "الزرقاء",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          36.088714599609375,
+          32.06686505784364
+        ]
+      }
+    },
+    {
+      "id": 7387234800,
+      "owner": "settlement-major-label",
+      "properties": {
+        "name_es": "Beerseba",
+        "iso_3166_1": "IL",
+        "disputed": "false",
+        "name_vi": "Beersheba",
+        "capital": 4,
+        "iso_3166_2": "IL-D",
+        "filterrank": 1,
+        "name_fr": "Beer-Sheva",
+        "name_ar": "بئر السبع",
+        "name_de": "Beerscheba",
+        "name_en": "Beersheba",
+        "name_ja": "ベエルシェバ",
+        "symbolrank": 9,
+        "name_ko": "베르셰바",
+        "name_pt": "Bersebá",
+        "name_ru": "Беэр-Шева",
+        "name_script": "Hebrew",
+        "name_zh-Hant": "貝爾謝巴",
+        "name_it": "Bersabea",
+        "name_zh-Hans": "贝尔谢巴",
+        "text_anchor": "bottom",
+        "type": "city",
+        "class": "settlement",
+        "name": "באר שבע",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.79267120361328,
+          31.245681880715523
+        ]
+      }
+    },
+    {
+      "id": 5042666190,
+      "owner": "settlement-major-label",
+      "properties": {
+        "name_es": "Gaza",
+        "disputed": "false",
+        "name_vi": "Gaza",
+        "iso_3166_1": "PS",
+        "filterrank": 1,
+        "name_fr": "Gaza",
+        "name_ar": "غزة",
+        "name_de": "Gaza",
+        "name_en": "Gaza",
+        "name_ja": "ガザ",
+        "symbolrank": 9,
+        "name_ko": "가자",
+        "name_pt": "Gaza",
+        "text_anchor": "bottom",
+        "name_zh-Hans": "加沙",
+        "name_ru": "Газа",
+        "name_script": "Arabic",
+        "name_zh-Hant": "加薩",
+        "name_it": "Gaza",
+        "type": "city",
+        "class": "settlement",
+        "name": "غزة",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.458274841308594,
+          31.512995857454683
+        ]
+      }
+    },
+    {
+      "id": 16435048960,
+      "owner": "settlement-major-label",
+      "properties": {
+        "type": "city",
+        "name_es": "Amán",
+        "disputed": "false",
+        "name_vi": "Amman",
+        "iso_3166_1": "JO",
+        "capital": 2,
+        "iso_3166_2": "JO-AM",
+        "filterrank": 1,
+        "name_fr": "Amman",
+        "name_ar": "عمان",
+        "name_de": "Amman",
+        "name_en": "Amman",
+        "name_ja": "アンマン",
+        "symbolrank": 7,
+        "name_ko": "암만",
+        "name_pt": "Amã",
+        "text_anchor": "bottom-left",
+        "name_zh-Hans": "安曼",
+        "name_ru": "Амман",
+        "name_script": "Arabic",
+        "name_zh-Hant": "安曼",
+        "name_it": "Amman",
+        "class": "settlement",
+        "name": "عمان",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.923919677734375,
+          31.951579624162903
+        ]
+      }
+    },
+    {
+      "id": 290907350,
+      "owner": "settlement-major-label",
+      "properties": {
+        "type": "city",
+        "name_es": "Jerusalén",
+        "disputed": "false",
+        "name_vi": "Jerusalem",
+        "iso_3166_1": "IL",
+        "capital": 2,
+        "iso_3166_2": "IL-JM",
+        "filterrank": 1,
+        "name_fr": "Jérusalem",
+        "name_ar": "القدس",
+        "name_de": "Jerusalem",
+        "name_en": "Jerusalem",
+        "name_ja": "エルサレム",
+        "symbolrank": 8,
+        "name_ko": "예루살렘",
+        "name_pt": "Jerusalém",
+        "text_anchor": "bottom",
+        "name_zh-Hans": "耶路撒冷",
+        "name_ru": "Иерусалим",
+        "name_script": "Hebrew",
+        "name_zh-Hant": "耶路撒冷",
+        "name_it": "Gerusalemme",
+        "class": "settlement",
+        "name": "ירושלים",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.22594451904297,
+          31.778963663421166
+        ]
+      }
+    },
+    {
+      "id": 1963532000,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "town",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "里雄萊錫安",
+        "name_script": "Hebrew",
+        "name_ru": "Ришон-ле-Цион",
+        "name_zh-Hans": "里雄莱锡安",
+        "name_pt": "Rishon LeZion",
+        "name_ko": "리숀레지온",
+        "symbolrank": 10,
+        "name_ja": "リション・レツィオン",
+        "name_it": "Rishon LeZion",
+        "name_en": "Rishon LeZion",
+        "name_de": "Rischon LeZion",
+        "name_ar": "ريشون لتسيون",
+        "name_fr": "Rishon LeZion",
+        "filterrank": 2,
+        "disputed": "false",
+        "name_vi": "Rishon LeZion",
+        "iso_3166_1": "IL",
+        "name_es": "Rishon LeZion",
+        "iso_3166_2": "IL-M",
+        "class": "settlement",
+        "name": "ראשון לציון",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.8101806640625,
+          31.96352246974523
+        ]
+      }
+    },
+    {
+      "id": 16831298490,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "town",
+        "name_zh-Hant": "內坦亞",
+        "name_script": "Hebrew",
+        "name_ru": "Нетания",
+        "name_zh-Hans": "内坦亚",
+        "name_pt": "Netanya",
+        "name_ko": "네타냐",
+        "symbolrank": 10,
+        "name_ja": "ネタニヤ",
+        "name_it": "Natanya",
+        "name_en": "Netanya",
+        "name_de": "Netanja",
+        "name_ar": "نتانيا",
+        "name_fr": "Netanya",
+        "filterrank": 1,
+        "disputed": "false",
+        "name_vi": "Netanya",
+        "iso_3166_1": "IL",
+        "text_anchor": "bottom",
+        "name_es": "Netanya",
+        "iso_3166_2": "IL-M",
+        "class": "settlement",
+        "name": "נתניה",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.856529235839844,
+          32.32862728229361
+        ]
+      }
+    },
+    {
+      "id": 16561076490,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "name_zh-Hant": "海法",
+        "name_script": "Hebrew",
+        "name_ru": "Хайфа",
+        "name_zh-Hans": "海法",
+        "name_pt": "Haifa",
+        "name_ko": "하이파",
+        "symbolrank": 10,
+        "name_ja": "ハイファ",
+        "name_it": "Haifa",
+        "name_en": "Haifa",
+        "name_de": "Haifa",
+        "name_ar": "حيفا",
+        "name_fr": "Haïfa",
+        "filterrank": 1,
+        "iso_3166_2": "IL-HA",
+        "disputed": "false",
+        "name_vi": "Haifa",
+        "iso_3166_1": "IL",
+        "text_anchor": "bottom",
+        "name_es": "Haifa",
+        "class": "settlement",
+        "name": "חיפה",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.998321533203125,
+          32.81901782332612
+        ]
+      }
+    },
+    {
+      "id": 3002547670,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "town",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "杰寧",
+        "name_script": "Arabic",
+        "name_ru": "Дженин",
+        "name_zh-Hans": "杰宁",
+        "name_pt": "Jenin",
+        "name_ko": "제닌",
+        "symbolrank": 12,
+        "name_ja": "ジェニン",
+        "name_it": "Jenin",
+        "name_en": "Jenin",
+        "name_de": "Dschenin",
+        "name_ar": "جنين",
+        "disputed": "false",
+        "name_es": "Yenín",
+        "name_vi": "Jenin",
+        "iso_3166_1": "PS",
+        "filterrank": 2,
+        "name_fr": "Jénine",
+        "class": "settlement",
+        "name": "جنين",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.297698974609375,
+          32.46197758027952
+        ]
+      }
+    },
+    {
+      "id": 5735145250,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "town",
+        "text_anchor": "bottom",
+        "name_de": "Tafs",
+        "symbolrank": 13,
+        "name_ja": "タフス",
+        "filterrank": 2,
+        "name_es": "Tafas",
+        "disputed": "false",
+        "name_vi": "Tafas",
+        "iso_3166_2": "SY-DR",
+        "iso_3166_1": "SY",
+        "name_ar": "طفس",
+        "name_ru": "Тафс",
+        "name_en": "Tafs",
+        "name_fr": "Tafs",
+        "name_ko": "타프스",
+        "name_script": "Arabic",
+        "class": "settlement",
+        "name": "طفس",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          36.068458557128906,
+          32.73732805487708
+        ]
+      }
+    },
+    {
+      "id": 23317172810,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "village",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "紮塔利難民營",
+        "filterrank": 2,
+        "name_de": "Zaatari",
+        "symbolrank": 11,
+        "name_ja": "ザータリ難民キャンプ",
+        "name_es": "Zaatari",
+        "disputed": "false",
+        "iso_3166_2": "JO-MA",
+        "iso_3166_1": "JO",
+        "name_ar": "مخيم الزعتري",
+        "name_ru": "Заатари",
+        "name_en": "Al Zaatari Refugee Camp",
+        "name_fr": "Camp de réfugiés de Zaatari",
+        "name_ko": "자타리 난민 캠프",
+        "name_script": "Arabic",
+        "name_zh-Hans": "紮塔利难民营",
+        "name_pt": "Campo de Refugiados de Zaatari",
+        "class": "settlement",
+        "name": "مخيم الزعتري",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          36.326637268066406,
+          32.2940980965715
+        ]
+      }
+    },
+    {
+      "id": 70585923850,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "village",
+        "name_zh-Hant": "烏姆蓋斯",
+        "name_script": "Arabic",
+        "name_zh-Hans": "乌姆盖斯",
+        "name_pt": "Umm Qais",
+        "symbolrank": 11,
+        "name_ja": "ウンム・カイス",
+        "name_it": "Umm Qais",
+        "text_anchor": "bottom",
+        "name_es": "Umm Qais",
+        "disputed": "false",
+        "name_de": "Umm Qais",
+        "name_vi": "Umm Qais",
+        "filterrank": 2,
+        "iso_3166_2": "JO-IR",
+        "iso_3166_1": "JO",
+        "name_fr": "Umm Qeis",
+        "name_ar": "أم قيس",
+        "name_en": "Umm Qais",
+        "class": "settlement",
+        "name": "أم قيس",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.68462371826172,
+          32.6541180588781
+        ]
+      }
+    },
+    {
+      "id": 2935462030,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "town",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "納布盧斯",
+        "name_script": "Arabic",
+        "name_ru": "Наблус",
+        "name_zh-Hans": "纳布卢斯",
+        "name_pt": "Nablus",
+        "name_ko": "나블루스",
+        "symbolrank": 11,
+        "name_ja": "ナーブルス",
+        "name_it": "Nablus",
+        "name_en": "Nablus",
+        "name_de": "Nablus",
+        "name_ar": "نابلس",
+        "name_fr": "Naplouse",
+        "filterrank": 1,
+        "disputed": "false",
+        "name_vi": "Nablus",
+        "iso_3166_1": "PS",
+        "name_es": "Nablus",
+        "class": "settlement",
+        "name": "نابلس",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.25684356689453,
+          32.220643594936135
+        ]
+      }
+    },
+    {
+      "id": 8028700560,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "魯賽法",
+        "name_script": "Arabic",
+        "name_ru": "Эр-Русайфа",
+        "name_zh-Hans": "鲁赛法",
+        "name_pt": "Russeifa",
+        "symbolrank": 10,
+        "name_ja": "ルセイファ",
+        "name_de": "Russeifa",
+        "name_es": "Russeifa",
+        "filterrank": 1,
+        "disputed": "false",
+        "iso_3166_2": "JO-AZ",
+        "iso_3166_1": "JO",
+        "name_ar": "الرصيفة",
+        "name_en": "Al-Ruseifa",
+        "name_fr": "Russeifa",
+        "class": "settlement",
+        "name": "الرصيفة",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          36.04339599609375,
+          32.017391599804
+        ]
+      }
+    },
+    {
+      "id": 5735162350,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "德拉",
+        "name_script": "Arabic",
+        "name_ru": "Даръа",
+        "name_zh-Hans": "德拉",
+        "name_pt": "Daraa",
+        "name_ko": "다라아",
+        "symbolrank": 11,
+        "name_ja": "ダルアー",
+        "name_it": "Dar'a",
+        "name_en": "Dar’a",
+        "name_de": "Daraa",
+        "name_ar": "درعا",
+        "name_fr": "Deraa",
+        "disputed": "false",
+        "name_vi": "Daraa",
+        "name_es": "Daraa",
+        "iso_3166_1": "SY",
+        "iso_3166_2": "SY-DR",
+        "filterrank": 1,
+        "class": "settlement",
+        "name": "درعا",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          36.106910705566406,
+          32.62289432006328
+        ]
+      }
+    },
+    {
+      "id": 2784774610,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "town",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "拿撒勒",
+        "name_script": "Hebrew",
+        "name_ru": "Назарет",
+        "name_zh-Hans": "拿撒勒",
+        "name_pt": "Nazaré",
+        "name_ko": "나사렛",
+        "symbolrank": 11,
+        "name_ja": "ナザレ",
+        "name_it": "Nazaret",
+        "name_en": "Nazareth",
+        "name_de": "Nazareth",
+        "name_ar": "الناصرة",
+        "name_fr": "Nazareth",
+        "filterrank": 1,
+        "iso_3166_2": "IL-Z",
+        "capital": 4,
+        "disputed": "false",
+        "name_vi": "Nazareth",
+        "iso_3166_1": "IL",
+        "name_es": "Nazaret",
+        "class": "settlement",
+        "name": "נצרת",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.304908752441406,
+          32.706711174935194
+        ]
+      }
+    },
+    {
+      "id": 8028569200,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "village",
+        "name_script": "Arabic",
+        "name_fr": "Al Fuhays",
+        "symbolrank": 11,
+        "name_ar": "الفحيص",
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "JO",
+        "iso_3166_2": "JO-BA",
+        "name_en": "Al Fuhays",
+        "class": "settlement",
+        "name": "الفحيص",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.769081115722656,
+          32.00982271401364
+        ]
+      }
+    },
+    {
+      "id": 8028229080,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "賴姆薩",
+        "name_script": "Arabic",
+        "name_ru": "Эр-Рамта",
+        "name_zh-Hans": "赖姆萨",
+        "name_pt": "Ar Ramtha",
+        "name_ko": "아르람타",
+        "symbolrank": 11,
+        "name_ja": "アル・ラムサ",
+        "name_de": "Al Ramtha",
+        "name_es": "Ar Ramtha",
+        "filterrank": 1,
+        "disputed": "false",
+        "iso_3166_2": "JO-IR",
+        "iso_3166_1": "JO",
+        "name_ar": "الرمثا",
+        "name_en": "Ar Ramtha",
+        "name_fr": "Ar Ramtha",
+        "class": "settlement",
+        "name": "الرمثا",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          36.00700378417969,
+          32.55925671129718
+        ]
+      }
+    },
+    {
+      "id": 2708731610,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "name_zh-Hant": "伊爾比德",
+        "name_script": "Arabic",
+        "name_ru": "Ирбид",
+        "name_zh-Hans": "伊尔比德",
+        "name_pt": "Irbid",
+        "name_ko": "이르비드",
+        "symbolrank": 10,
+        "name_ja": "イルビド",
+        "name_it": "Irbid",
+        "name_en": "Irbid",
+        "name_de": "Irbid",
+        "name_ar": "إربد",
+        "name_fr": "Irbid",
+        "filterrank": 1,
+        "iso_3166_2": "JO-IR",
+        "disputed": "false",
+        "name_vi": "Irbid",
+        "iso_3166_1": "JO",
+        "text_anchor": "bottom",
+        "name_es": "Irbid",
+        "class": "settlement",
+        "name": "إربد",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.84941864013672,
+          32.55549489344868
+        ]
+      }
+    },
+    {
+      "id": 5735111840,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "text_anchor": "bottom",
+        "type": "town",
+        "name_script": "Arabic",
+        "name_ko": "알카프르",
+        "name_fr": "Al-Kafr",
+        "name_en": "Al-Kafr",
+        "disputed": "false",
+        "symbolrank": 13,
+        "name_ja": "アル゠カフル",
+        "name_de": "al-Kafr",
+        "name_ru": "Аль-Кафр",
+        "name_ar": "الكفر",
+        "filterrank": 2,
+        "iso_3166_1": "SY",
+        "iso_3166_2": "SY-SU",
+        "class": "settlement",
+        "name": "الكفر",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          36.64112091064453,
+          32.63445993843638
+        ]
+      }
+    },
+    {
+      "id": 5735112000,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "town",
+        "text_anchor": "bottom",
+        "name_vi": "Qurayya",
+        "filterrank": 1,
+        "name_de": "al-Kurja",
+        "name_ja": "アル゠クリャ",
+        "symbolrank": 13,
+        "disputed": "false",
+        "iso_3166_2": "SY-SU",
+        "iso_3166_1": "SY",
+        "name_ar": "القريا",
+        "name_ru": "Аль-Курья",
+        "name_en": "Al-Qurya",
+        "name_fr": "Al-Qoria",
+        "name_ko": "알쿠랴",
+        "name_script": "Arabic",
+        "class": "settlement",
+        "name": "القريا",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          36.59751892089844,
+          32.54391908027476
+        ]
+      }
+    },
+    {
+      "id": 5735111890,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "town",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "塞勒海德",
+        "name_zh-Hans": "塞勒海德",
+        "name_vi": "Salkhad",
+        "name_script": "Arabic",
+        "name_ru": "Сальхад",
+        "name_de": "Salchad",
+        "symbolrank": 13,
+        "name_ja": "サルハド",
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_2": "SY-SU",
+        "iso_3166_1": "SY",
+        "name_fr": "Salkhad",
+        "name_ar": "صلخد",
+        "name_en": "Salkhad",
+        "name_it": "Salkhad",
+        "name_ko": "살카드",
+        "class": "settlement",
+        "name": "صلخد",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          36.71150207519531,
+          32.49151987118654
+        ]
+      }
+    },
+    {
+      "id": 5670548540,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "蘇韋達",
+        "name_script": "Arabic",
+        "name_ru": "Ас-Сувейда",
+        "name_zh-Hans": "苏韦达",
+        "name_pt": "Suwayda",
+        "name_ko": "수와이다",
+        "symbolrank": 12,
+        "name_ja": "スワイダー",
+        "name_it": "al-Suwayda",
+        "name_en": "Suwayda",
+        "name_de": "as-Suweida",
+        "name_ar": "السويداء",
+        "name_fr": "Soueïda",
+        "filterrank": 1,
+        "iso_3166_2": "SY-SU",
+        "disputed": "false",
+        "name_vi": "Suwayda",
+        "iso_3166_1": "SY",
+        "name_es": "As-Suwayda",
+        "class": "settlement",
+        "name": "السويداء",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          36.56867980957031,
+          32.70931112969933
+        ]
+      }
+    },
+    {
+      "id": 2784768810,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "town",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "亞實基倫",
+        "name_script": "Hebrew",
+        "name_ru": "Ашкелон",
+        "name_zh-Hans": "阿什凯隆",
+        "name_pt": "Ascalão",
+        "name_ko": "아슐론",
+        "symbolrank": 11,
+        "name_ja": "アシュケロン",
+        "name_it": "Ascalona",
+        "name_en": "Ashkelon",
+        "name_de": "Aschkelon",
+        "name_ar": "أشكلون",
+        "name_fr": "Ascalon",
+        "filterrank": 2,
+        "disputed": "false",
+        "name_vi": "Ashkelon",
+        "iso_3166_1": "IL",
+        "name_es": "Ascalón",
+        "iso_3166_2": "IL-D",
+        "class": "settlement",
+        "name": "אשקלון",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.56504821777344,
+          31.665362856852596
+        ]
+      }
+    },
+    {
+      "id": 2999371140,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "town",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "希伯倫",
+        "name_script": "Arabic",
+        "name_ru": "Хеврон",
+        "name_zh-Hans": "希伯伦",
+        "name_pt": "Hebrom",
+        "name_ko": "헤브론",
+        "symbolrank": 11,
+        "name_ja": "ヘブロン",
+        "name_it": "Hebron",
+        "name_en": "Hebron",
+        "name_de": "Hebron",
+        "name_ar": "الخليل",
+        "name_fr": "Hébron",
+        "filterrank": 2,
+        "disputed": "false",
+        "name_vi": "Hebron",
+        "name_es": "Hebrón",
+        "iso_3166_1": "PS",
+        "class": "settlement",
+        "name": "الخليل",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.094451904296875,
+          31.52879978472697
+        ]
+      }
+    },
+    {
+      "id": 113009275660,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "name_zh-Hant": "阿里什",
+        "name_script": "Arabic",
+        "name_ru": "Эль-Ариш",
+        "name_zh-Hans": "阿里什",
+        "name_pt": "Alarixe",
+        "name_ko": "아리시",
+        "symbolrank": 10,
+        "name_ja": "アリーシュ",
+        "name_it": "Al-Arish",
+        "name_en": "El Arish",
+        "name_de": "El Arisch",
+        "name_ar": "العريش",
+        "name_fr": "El Ariche",
+        "disputed": "false",
+        "name_es": "El Arish",
+        "text_anchor": "bottom",
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-SIN",
+        "filterrank": 2,
+        "class": "settlement",
+        "name": "العريش",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          33.79840850830078,
+          31.12349696406733
+        ]
+      }
+    },
+    {
+      "id": 74568574020,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "village",
+        "text_anchor": "bottom",
+        "name_script": "Arabic",
+        "name_ru": "Авдат",
+        "name_pt": "Obodate",
+        "name_de": "Avdat",
+        "symbolrank": 11,
+        "name_ja": "アヴダト",
+        "name_es": "Avdat",
+        "name_it": "Avdat",
+        "name_vi": "Avdat",
+        "filterrank": 2,
+        "disputed": "false",
+        "iso_3166_2": "IL-D",
+        "iso_3166_1": "IL",
+        "name_ar": "عبدة",
+        "name_en": "Avdat",
+        "name_fr": "Avdat",
+        "class": "settlement",
+        "name": "عبدة",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.75593566894531,
+          30.80967992229391
+        ]
+      }
+    },
+    {
+      "id": 1963033990,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "town",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "阿什杜德",
+        "name_script": "Hebrew",
+        "name_ru": "Ашдод",
+        "name_zh-Hans": "阿什杜德",
+        "name_pt": "Asdode",
+        "name_ko": "아슈도드",
+        "symbolrank": 10,
+        "name_ja": "アシュドッド",
+        "name_it": "Ashdod",
+        "name_en": "Ashdod",
+        "name_de": "Aschdod",
+        "name_ar": "أشدود",
+        "name_fr": "Ashdod",
+        "filterrank": 1,
+        "iso_3166_2": "IL-D",
+        "disputed": "false",
+        "name_vi": "Ashdod",
+        "iso_3166_1": "IL",
+        "name_es": "Asdod",
+        "class": "settlement",
+        "name": "אשדוד",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.65293884277344,
+          31.797640426859502
+        ]
+      }
+    },
+    {
+      "id": 82370291720,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "town",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "努塞拉特難民營",
+        "name_zh-Hans": "努塞拉特难民营",
+        "name_script": "Arabic",
+        "name_ru": "Нусейрат",
+        "name_en": "Nuseirat",
+        "name_de": "Nuseirat",
+        "name_es": "Nuseirat",
+        "symbolrank": 12,
+        "name_ja": "ヌセイラト",
+        "disputed": "false",
+        "filterrank": 1,
+        "iso_3166_1": "PS",
+        "name_ar": "النصيرات",
+        "name_fr": "Nuseirat",
+        "name_ko": "안 누서이라트",
+        "class": "settlement",
+        "name": "النصيرات",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.393043518066406,
+          31.449167646732178
+        ]
+      }
+    },
+    {
+      "id": 7990974980,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "米底巴",
+        "name_script": "Arabic",
+        "name_ru": "Мадаба",
+        "name_zh-Hans": "米底巴",
+        "name_pt": "Madaba",
+        "name_ko": "마다바",
+        "symbolrank": 12,
+        "name_ja": "マダバ",
+        "name_it": "Madaba",
+        "name_en": "Madaba",
+        "name_de": "Madaba",
+        "name_ar": "مادبا",
+        "name_es": "Madaba",
+        "disputed": "false",
+        "iso_3166_1": "JO",
+        "filterrank": 2,
+        "iso_3166_2": "JO-MD",
+        "name_fr": "Madaba",
+        "class": "settlement",
+        "name": "مادبا",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.79448699951172,
+          31.716485846385325
+        ]
+      }
+    },
+    {
+      "id": 2468436860,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "town",
+        "name_zh-Hant": "拉姆安拉",
+        "name_script": "Arabic",
+        "name_ru": "Рамалла",
+        "name_zh-Hans": "拉姆安拉",
+        "name_pt": "Ramalá",
+        "name_ko": "라말라",
+        "symbolrank": 12,
+        "name_ja": "ラマッラー",
+        "name_it": "Ramallah",
+        "name_en": "Ramallah",
+        "name_de": "Ramallah",
+        "name_ar": "رام الله",
+        "name_fr": "Ramallah",
+        "filterrank": 1,
+        "capital": 2,
+        "name_vi": "Ramallah",
+        "disputed": "true",
+        "iso_3166_1": "PS",
+        "text_anchor": "bottom",
+        "name_es": "Ramala",
+        "class": "settlement",
+        "name": "رام الله",
+        "worldview": "US"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.19538879394531,
+          31.902918334772068
+        ]
+      }
+    },
+    {
+      "id": 2755850940,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "town",
+        "text_anchor": "bottom",
+        "name_zh-Hant": "阿拉德",
+        "name_script": "Hebrew",
+        "name_ru": "Арад",
+        "name_zh-Hans": "阿拉德",
+        "name_pt": "Arad",
+        "name_ko": "아라드",
+        "symbolrank": 13,
+        "name_ja": "アラド",
+        "name_it": "Arad",
+        "name_en": "Arad",
+        "name_de": "Arad",
+        "name_ar": "عراد",
+        "name_fr": "Arad",
+        "filterrank": 2,
+        "iso_3166_1": "IL",
+        "disputed": "false",
+        "name_vi": "Arad",
+        "name_es": "Arad",
+        "iso_3166_2": "IL-D",
+        "class": "settlement",
+        "name": "ערד",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.21461486816406,
+          31.261237377602498
+        ]
+      }
+    },
+    {
+      "id": 8028693520,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "city",
+        "text_anchor": "bottom",
+        "filterrank": 2,
+        "name_de": "Sahab",
+        "name_ja": "サハブ",
+        "symbolrank": 13,
+        "name_es": "Sahab",
+        "disputed": "false",
+        "iso_3166_2": "JO-AM",
+        "iso_3166_1": "JO",
+        "name_ar": "سحاب",
+        "name_en": "Sahab",
+        "name_fr": "Sahab",
+        "name_script": "Arabic",
+        "class": "settlement",
+        "name": "سحاب",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          36.00425720214844,
+          31.878723805312546
+        ]
+      }
+    },
+    {
+      "id": 2784733010,
+      "owner": "settlement-minor-label",
+      "properties": {
+        "type": "village",
+        "text_anchor": "bottom",
+        "name_script": "Hebrew",
+        "name_ru": "Эйн-Бокек",
+        "symbolrank": 12,
+        "name_ja": "エン・ボケック",
+        "name_it": "Ein Bokek",
+        "name_de": "Ein Bokek",
+        "name_es": "Ein Bokek",
+        "filterrank": 1,
+        "disputed": "false",
+        "iso_3166_2": "IL-D",
+        "iso_3166_1": "IL",
+        "name_ar": "عين بوكك",
+        "name_en": "Ein Bokek",
+        "name_fr": "Ein Bokek",
+        "class": "settlement",
+        "name": "עין בוקק",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.36396026611328,
+          31.201349340477492
+        ]
+      }
+    },
+    {
+      "id": 2921868591,
+      "owner": "airport-label",
+      "properties": {
+        "sizerank": 15,
+        "name_de": "Militärflugplatz Nevatim",
+        "name_es": "Base Aérea de Nevatim",
+        "name_ja": "ネバティム​空軍​基地",
+        "name_zh-Hant": "內瓦提姆空軍基地",
+        "disputed": "false",
+        "ref": "VTM",
+        "iso_3166_1": "IL",
+        "iso_3166_2": "IL-D",
+        "name_zh-Hans": "内瓦提姆空军基地",
+        "maki": "airport",
+        "name_ar": "قاعدة نفاطيم الجوية",
+        "name_ru": "Неватим",
+        "name_en": "Nevatim Airbase",
+        "name_fr": "Base aérienne de Nevatim",
+        "name_ko": "네바팀 공군기지",
+        "name_script": "Hebrew",
+        "class": "military",
+        "name": "בסיס חיל האוויר נבטים",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0299072265625,
+          31.199000016708382
+        ]
+      }
+    },
+    {
+      "id": 93511244,
+      "owner": "water-point-label",
+      "properties": {
+        "sizerank": 13,
+        "name_zh-Hant": "死海",
+        "name_vi": "Biển Chết",
+        "name_script": "Arabic",
+        "name_ru": "Мёртвое Море",
+        "name_zh-Hans": "死海",
+        "name_pt": "Mar Morto",
+        "name_ko": "사해",
+        "name_ja": "死海",
+        "name_it": "Mar Morto",
+        "name_en": "Dead Sea",
+        "name_de": "Totes Meer",
+        "name_ar": "البحر الميت",
+        "name_fr": "Mer Morte",
+        "elevation_ft": -1401,
+        "elevation_m": -427,
+        "name_es": "Mar Muerto",
+        "iso_3166_1": "PS",
+        "filterrank": 1,
+        "disputed": "false",
+        "maki": "marker",
+        "class": "water",
+        "name": "البحر الميت ים המלח",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.491676330566406,
+          31.540797277080273
+        ]
+      }
+    }
+  ],
+  "source_features": []
+}

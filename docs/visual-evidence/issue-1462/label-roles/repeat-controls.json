@@ -1,0 +1,226 @@
+[
+  {
+    "a": "3/cairo-region-z8/control/qgis.png",
+    "b": "3/cairo-region-z8/repeat/qgis.png",
+    "sha256_a": "a3432987aaae3d13602c755a476d26574a1524bbe99f3a1ab073fa59da110dd9",
+    "sha256_b": "a3432987aaae3d13602c755a476d26574a1524bbe99f3a1ab073fa59da110dd9",
+    "byte_identical": true
+  },
+  {
+    "a": "3/cairo-region-z8/control/labels.json",
+    "b": "3/cairo-region-z8/repeat/labels.json",
+    "sha256_a": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+    "sha256_b": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+    "byte_identical": true
+  },
+  {
+    "a": "3/cairo-region-z8/control/runtime.json",
+    "b": "3/cairo-region-z8/repeat/runtime.json",
+    "sha256_a": "92b81221b0fe0a8289d7cb4a353a0c545d112687e9cd62a7267bd4c7649f009f",
+    "sha256_b": "92b81221b0fe0a8289d7cb4a353a0c545d112687e9cd62a7267bd4c7649f009f",
+    "byte_identical": true
+  },
+  {
+    "a": "3/cairo-nile-z14/control/qgis.png",
+    "b": "3/cairo-nile-z14/repeat/qgis.png",
+    "sha256_a": "7f3e1ee8169c1c820e106ebf52b1b90b2966aead11f5ac6c43156a34d75f194b",
+    "sha256_b": "7f3e1ee8169c1c820e106ebf52b1b90b2966aead11f5ac6c43156a34d75f194b",
+    "byte_identical": true
+  },
+  {
+    "a": "3/cairo-nile-z14/control/labels.json",
+    "b": "3/cairo-nile-z14/repeat/labels.json",
+    "sha256_a": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+    "sha256_b": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+    "byte_identical": true
+  },
+  {
+    "a": "3/cairo-nile-z14/control/runtime.json",
+    "b": "3/cairo-nile-z14/repeat/runtime.json",
+    "sha256_a": "b92d951b2ffa2fab070dfa80aa3c4f245aa09b855c4b94a1a410d477296f6e2f",
+    "sha256_b": "b92d951b2ffa2fab070dfa80aa3c4f245aa09b855c4b94a1a410d477296f6e2f",
+    "byte_identical": true
+  },
+  {
+    "a": "3/jerusalem-region-z8/control/qgis.png",
+    "b": "3/jerusalem-region-z8/repeat/qgis.png",
+    "sha256_a": "11b71d987c606a85d538c4ff5e91a753dda649eecf73851dcea2a7c3590215ed",
+    "sha256_b": "11b71d987c606a85d538c4ff5e91a753dda649eecf73851dcea2a7c3590215ed",
+    "byte_identical": true
+  },
+  {
+    "a": "3/jerusalem-region-z8/control/labels.json",
+    "b": "3/jerusalem-region-z8/repeat/labels.json",
+    "sha256_a": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+    "sha256_b": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+    "byte_identical": true
+  },
+  {
+    "a": "3/jerusalem-region-z8/control/runtime.json",
+    "b": "3/jerusalem-region-z8/repeat/runtime.json",
+    "sha256_a": "56f812203ca6eee93c0bc61102c9f89d6f805514fe4b86e0b625cf2372210c54",
+    "sha256_b": "56f812203ca6eee93c0bc61102c9f89d6f805514fe4b86e0b625cf2372210c54",
+    "byte_identical": true
+  },
+  {
+    "a": "3/jerusalem-city-z14/control/qgis.png",
+    "b": "3/jerusalem-city-z14/repeat/qgis.png",
+    "sha256_a": "b1b0c8171a44214fd7dfdf3a538a347b2a8675314dc503486e9dc46fc0fe6db4",
+    "sha256_b": "b1b0c8171a44214fd7dfdf3a538a347b2a8675314dc503486e9dc46fc0fe6db4",
+    "byte_identical": true
+  },
+  {
+    "a": "3/jerusalem-city-z14/control/labels.json",
+    "b": "3/jerusalem-city-z14/repeat/labels.json",
+    "sha256_a": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+    "sha256_b": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+    "byte_identical": true
+  },
+  {
+    "a": "3/jerusalem-city-z14/control/runtime.json",
+    "b": "3/jerusalem-city-z14/repeat/runtime.json",
+    "sha256_a": "d049de0865b29a7686cbfe2a989ed5b5c2a7b1aacdb876f2000645588dc94f3c",
+    "sha256_b": "d049de0865b29a7686cbfe2a989ed5b5c2a7b1aacdb876f2000645588dc94f3c",
+    "byte_identical": true
+  },
+  {
+    "a": "4/cairo-region-z8/control/qgis.png",
+    "b": "4/cairo-region-z8/repeat/qgis.png",
+    "sha256_a": "ca48b2586c4f24e9ea43732700d86602398adeb2da0e61a9d03f8af76d8dcaca",
+    "sha256_b": "ca48b2586c4f24e9ea43732700d86602398adeb2da0e61a9d03f8af76d8dcaca",
+    "byte_identical": true
+  },
+  {
+    "a": "4/cairo-region-z8/control/labels.json",
+    "b": "4/cairo-region-z8/repeat/labels.json",
+    "sha256_a": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+    "sha256_b": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+    "byte_identical": true
+  },
+  {
+    "a": "4/cairo-region-z8/control/runtime.json",
+    "b": "4/cairo-region-z8/repeat/runtime.json",
+    "sha256_a": "bd5e8d9a91363dd9df32586eb79b00fab27d9acdd58039228623c0d977588eca",
+    "sha256_b": "bd5e8d9a91363dd9df32586eb79b00fab27d9acdd58039228623c0d977588eca",
+    "byte_identical": true
+  },
+  {
+    "a": "4/cairo-nile-z14/control/qgis.png",
+    "b": "4/cairo-nile-z14/repeat/qgis.png",
+    "sha256_a": "4f3f074a25abdab41dbf147e014e695c2f1f62ca333fea0fc4f78b59c8925c11",
+    "sha256_b": "4f3f074a25abdab41dbf147e014e695c2f1f62ca333fea0fc4f78b59c8925c11",
+    "byte_identical": true
+  },
+  {
+    "a": "4/cairo-nile-z14/control/labels.json",
+    "b": "4/cairo-nile-z14/repeat/labels.json",
+    "sha256_a": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+    "sha256_b": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+    "byte_identical": true
+  },
+  {
+    "a": "4/cairo-nile-z14/control/runtime.json",
+    "b": "4/cairo-nile-z14/repeat/runtime.json",
+    "sha256_a": "cf69b682b385437ebd03eef2de4f1361e0d7b27806c5ae21543765b53d4af7c3",
+    "sha256_b": "cf69b682b385437ebd03eef2de4f1361e0d7b27806c5ae21543765b53d4af7c3",
+    "byte_identical": true
+  },
+  {
+    "a": "4/jerusalem-region-z8/control/qgis.png",
+    "b": "4/jerusalem-region-z8/repeat/qgis.png",
+    "sha256_a": "a2b7c2a1a25953f40d660f7fa473b05574de4a6e40f067cb2838489f4cb51855",
+    "sha256_b": "a2b7c2a1a25953f40d660f7fa473b05574de4a6e40f067cb2838489f4cb51855",
+    "byte_identical": true
+  },
+  {
+    "a": "4/jerusalem-region-z8/control/labels.json",
+    "b": "4/jerusalem-region-z8/repeat/labels.json",
+    "sha256_a": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+    "sha256_b": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+    "byte_identical": true
+  },
+  {
+    "a": "4/jerusalem-region-z8/control/runtime.json",
+    "b": "4/jerusalem-region-z8/repeat/runtime.json",
+    "sha256_a": "e680fcc9d33d0f5bed2e0706d52cdcd604650c7ff5a8bd1e9284618aa3c7e065",
+    "sha256_b": "e680fcc9d33d0f5bed2e0706d52cdcd604650c7ff5a8bd1e9284618aa3c7e065",
+    "byte_identical": true
+  },
+  {
+    "a": "4/jerusalem-city-z14/control/qgis.png",
+    "b": "4/jerusalem-city-z14/repeat/qgis.png",
+    "sha256_a": "3a4fea2c999391ca5c0f75024a7c156dda87c96c01b43d51c60cf1267add3ac6",
+    "sha256_b": "3a4fea2c999391ca5c0f75024a7c156dda87c96c01b43d51c60cf1267add3ac6",
+    "byte_identical": true
+  },
+  {
+    "a": "4/jerusalem-city-z14/control/labels.json",
+    "b": "4/jerusalem-city-z14/repeat/labels.json",
+    "sha256_a": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+    "sha256_b": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+    "byte_identical": true
+  },
+  {
+    "a": "4/jerusalem-city-z14/control/runtime.json",
+    "b": "4/jerusalem-city-z14/repeat/runtime.json",
+    "sha256_a": "f17128134edde8870fa1a589d78ab92e30f8f0ab43bdb20a24c95964e717c0fe",
+    "sha256_b": "f17128134edde8870fa1a589d78ab92e30f8f0ab43bdb20a24c95964e717c0fe",
+    "byte_identical": true
+  },
+  {
+    "a": "reference/cairo-region-z8/mapbox.png",
+    "b": "reference-repeat/cairo-region-z8/mapbox.png",
+    "sha256_a": "43a2e5589e29f3c185ff1a12738253ec9a09b39406193b1ab657826de0d9c460",
+    "sha256_b": "43a2e5589e29f3c185ff1a12738253ec9a09b39406193b1ab657826de0d9c460",
+    "byte_identical": true
+  },
+  {
+    "a": "reference/cairo-nile-z14/mapbox.png",
+    "b": "reference-repeat/cairo-nile-z14/mapbox.png",
+    "sha256_a": "6c8019d75ba5c4c87eeae6127ba996e520f29ce7e6462b619dc8ddd00133a048",
+    "sha256_b": "6c8019d75ba5c4c87eeae6127ba996e520f29ce7e6462b619dc8ddd00133a048",
+    "byte_identical": true
+  },
+  {
+    "a": "reference/jerusalem-region-z8/mapbox.png",
+    "b": "reference-repeat/jerusalem-region-z8/mapbox.png",
+    "sha256_a": "7efd2ac29ef5d249546669b0269e78265d91affa7a49613b2f5ab19b30ba0d68",
+    "sha256_b": "7efd2ac29ef5d249546669b0269e78265d91affa7a49613b2f5ab19b30ba0d68",
+    "byte_identical": true
+  },
+  {
+    "a": "reference/jerusalem-city-z14/mapbox.png",
+    "b": "reference-repeat/jerusalem-city-z14/mapbox.png",
+    "sha256_a": "1939182a81f11179b97e98472809942508cd78a8d3cfd58953230d94b9c992af",
+    "sha256_b": "1939182a81f11179b97e98472809942508cd78a8d3cfd58953230d94b9c992af",
+    "byte_identical": true
+  },
+  {
+    "a": "reference-mercator/cairo-region-z8/mapbox.png",
+    "b": "reference-mercator-repeat/cairo-region-z8/mapbox.png",
+    "sha256_a": "43a2e5589e29f3c185ff1a12738253ec9a09b39406193b1ab657826de0d9c460",
+    "sha256_b": "43a2e5589e29f3c185ff1a12738253ec9a09b39406193b1ab657826de0d9c460",
+    "byte_identical": true
+  },
+  {
+    "a": "reference-mercator/cairo-nile-z14/mapbox.png",
+    "b": "reference-mercator-repeat/cairo-nile-z14/mapbox.png",
+    "sha256_a": "6c8019d75ba5c4c87eeae6127ba996e520f29ce7e6462b619dc8ddd00133a048",
+    "sha256_b": "6c8019d75ba5c4c87eeae6127ba996e520f29ce7e6462b619dc8ddd00133a048",
+    "byte_identical": true
+  },
+  {
+    "a": "reference-mercator/jerusalem-region-z8/mapbox.png",
+    "b": "reference-mercator-repeat/jerusalem-region-z8/mapbox.png",
+    "sha256_a": "7efd2ac29ef5d249546669b0269e78265d91affa7a49613b2f5ab19b30ba0d68",
+    "sha256_b": "7efd2ac29ef5d249546669b0269e78265d91affa7a49613b2f5ab19b30ba0d68",
+    "byte_identical": true
+  },
+  {
+    "a": "reference-mercator/jerusalem-city-z14/mapbox.png",
+    "b": "reference-mercator-repeat/jerusalem-city-z14/mapbox.png",
+    "sha256_a": "1939182a81f11179b97e98472809942508cd78a8d3cfd58953230d94b9c992af",
+    "sha256_b": "1939182a81f11179b97e98472809942508cd78a8d3cfd58953230d94b9c992af",
+    "byte_identical": true
+  }
+]

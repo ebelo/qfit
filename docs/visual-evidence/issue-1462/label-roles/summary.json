@@ -1,0 +1,123 @@
+{
+  "date_utc": "2026-09-14T17:08:40.846519+00:00",
+  "source_sha256": "87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32",
+  "source_owners": 14,
+  "native_rules_per_runtime": 39,
+  "content_cases_per_runtime": 264,
+  "mismatches_per_runtime": 116,
+  "owners": [
+    {
+      "owner": "road-label-simple",
+      "native_rules": 2,
+      "eligible_content_cases": 16,
+      "mismatches": 10,
+      "verdict": "OPEN"
+    },
+    {
+      "owner": "waterway-label",
+      "native_rules": 3,
+      "eligible_content_cases": 24,
+      "mismatches": 15,
+      "verdict": "OPEN"
+    },
+    {
+      "owner": "natural-line-label",
+      "native_rules": 2,
+      "eligible_content_cases": 16,
+      "mismatches": 10,
+      "verdict": "OPEN"
+    },
+    {
+      "owner": "natural-point-label",
+      "native_rules": 2,
+      "eligible_content_cases": 16,
+      "mismatches": 10,
+      "verdict": "OPEN"
+    },
+    {
+      "owner": "water-line-label",
+      "native_rules": 6,
+      "eligible_content_cases": 24,
+      "mismatches": 0,
+      "verdict": "PASS (scoped content)"
+    },
+    {
+      "owner": "water-point-label",
+      "native_rules": 10,
+      "eligible_content_cases": 40,
+      "mismatches": 0,
+      "verdict": "PASS (scoped content)"
+    },
+    {
+      "owner": "poi-label",
+      "native_rules": 3,
+      "eligible_content_cases": 24,
+      "mismatches": 15,
+      "verdict": "OPEN"
+    },
+    {
+      "owner": "airport-label",
+      "native_rules": 1,
+      "eligible_content_cases": 24,
+      "mismatches": 21,
+      "verdict": "OPEN"
+    },
+    {
+      "owner": "settlement-subdivision-label",
+      "native_rules": 1,
+      "eligible_content_cases": 8,
+      "mismatches": 5,
+      "verdict": "OPEN"
+    },
+    {
+      "owner": "settlement-minor-label",
+      "native_rules": 2,
+      "eligible_content_cases": 16,
+      "mismatches": 10,
+      "verdict": "OPEN"
+    },
+    {
+      "owner": "settlement-major-label",
+      "native_rules": 2,
+      "eligible_content_cases": 16,
+      "mismatches": 0,
+      "verdict": "PASS (scoped content)"
+    },
+    {
+      "owner": "state-label",
+      "native_rules": 1,
+      "eligible_content_cases": 8,
+      "mismatches": 5,
+      "verdict": "OPEN"
+    },
+    {
+      "owner": "country-label",
+      "native_rules": 1,
+      "eligible_content_cases": 8,
+      "mismatches": 0,
+      "verdict": "PASS (scoped content)"
+    },
+    {
+      "owner": "continent-label",
+      "native_rules": 3,
+      "eligible_content_cases": 24,
+      "mismatches": 15,
+      "verdict": "OPEN"
+    }
+  ],
+  "browser_png": 16,
+  "native_png": 16,
+  "native_png_repeat_pairs": 8,
+  "browser_png_repeat_pairs": 8,
+  "geographic_anchor_comparisons": 40,
+  "crop_box": [
+    400,
+    260,
+    780,
+    560
+  ],
+  "excluded_attempts": [
+    "Initial offline audits failed to write due to container default UID; no completed artifact from those attempts is included. Explicit user 1000:1000 produced final audits."
+  ],
+  "scope": "No production change. Content expression audit does not certify source/native eligibility, zoom alignment, glyph shaping, bidi placement, desktop or PDF. Live tile bytes not archived."
+}
