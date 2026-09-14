@@ -180,14 +180,51 @@ _NATIONAL_BACKGROUND_OPACITY = (
 )
 
 
+_NATIONAL_BACKGROUND_FILTER = [
+    "all", ["==", ["get", "admin_level"], 0],
+    ["==", ["get", "maritime"], "false"],
+    ["match", ["get", "worldview"], ["all", "US"], True, False],
+]
+_ORDINARY_NATIONAL_FILTER = [
+    "all", _NATIONAL_BACKGROUND_FILTER[1],
+    ["==", ["get", "disputed"], "false"], *_NATIONAL_BACKGROUND_FILTER[2:],
+]
+
+
+def _unique_source_owner(style, owner):
+    matches = [layer for layer in style.get("layers", [])
+               if isinstance(layer, dict) and layer.get("id") == owner]
+    return matches[0] if len(matches) == 1 else {}
+
+
 def _has_national_background(style):
-    if not _is_mapbox_light_style(style):
+    if not _has_solid_national_boundary(style):
         return False
-    owners = [layer for layer in style.get("layers", [])
-              if isinstance(layer, dict) and layer.get("id") == "admin-0-boundary-bg"]
-    return (len(owners) == 1 and owners[0].get("type") == "line"
-            and owners[0].get("source-layer") == "admin"
-            and owners[0].get("paint") == _NATIONAL_BACKGROUND_PAINT)
+    background = _unique_source_owner(style, "admin-0-boundary-bg")
+    core = _unique_source_owner(style, "admin-0-boundary")
+    return (background.get("type") == "line" and background.get("source-layer") == "admin"
+            and background.get("paint") == _NATIONAL_BACKGROUND_PAINT
+            and background.get("filter") == _NATIONAL_BACKGROUND_FILTER
+            and core.get("filter") == _ORDINARY_NATIONAL_FILTER)
+
+
+def _has_repaired_ordinary_core(styles):
+    from qgis.core import Qgis, QgsSimpleLineSymbolLayer, QgsSymbolLayer
+    from qgis.PyQt.QtCore import Qt
+
+    cores = [rule for rule in styles if rule.styleName() == "admin-0-boundary"]
+    if len(cores) != 1 or cores[0].layerName() != "admin":
+        return False
+    symbol = cores[0].symbol()
+    if symbol is None or symbol.symbolLayerCount() != 1:
+        return False
+    stroke = symbol.symbolLayer(0)
+    if (not isinstance(stroke, QgsSimpleLineSymbolLayer)
+            or stroke.widthUnit() != Qgis.RenderUnit.Millimeters
+            or stroke.useCustomDashPattern() or stroke.penStyle() != Qt.PenStyle.SolidLine):
+        return False
+    width = stroke.dataDefinedProperties().property(QgsSymbolLayer.PropertyStrokeWidth)
+    return width.isActive() and width.asExpression() == _NATIONAL_BOUNDARY_EXPRESSION
 
 
 def _ordinary_background_expression(expression, fallback):
@@ -200,6 +237,7 @@ def _ordinary_background_expression(expression, fallback):
 def apply_light_national_background(renderer, source_style: dict) -> int:
     """Restore the background only for the already-repaired ordinary core.
 
+    Require the matching source predicates and already-repaired ordinary core.
     Keep native blur behavior, color, owner order and eligibility unchanged.
     Active native properties or custom symbols retain their existing path.
     QGIS symbol opacity is a percentage; source opacity is a zero-to-one value.
@@ -210,6 +248,8 @@ def apply_light_national_background(renderer, source_style: dict) -> int:
     from qgis.PyQt.QtCore import Qt
 
     styles = list(renderer.styles())
+    if not _has_repaired_ordinary_core(styles):
+        return 0
     changed = 0
     for rule in styles:
         symbol = rule.symbol()

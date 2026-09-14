@@ -1057,7 +1057,8 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
         with patch.object(mapbox_light_strokes, "apply_light_national_boundary_stroke", return_value=0):
             self.service._apply_mapbox_gl_style(baseline_layer, converted, source_style_definition=source)
         candidate_layer = MagicMock()
-        self.service._apply_mapbox_gl_style(candidate_layer, converted, source_style_definition=source)
+        with patch.object(mapbox_light_strokes, "apply_light_national_background", return_value=0):
+            self.service._apply_mapbox_gl_style(candidate_layer, converted, source_style_definition=source)
         baseline = {rule.styleName(): rule for rule in baseline_layer.setRenderer.call_args.args[0].styles()}
         candidate = {rule.styleName(): rule for rule in candidate_layer.setRenderer.call_args.args[0].styles()}
         self.assertEqual(list(baseline), list(candidate))
