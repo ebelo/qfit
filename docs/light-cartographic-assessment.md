@@ -104,7 +104,7 @@ focused investigation before broad completion, not an assertion of a root cause.
 
 | ID | Current verdict | Observation / coverage and next validation | Finding severity |
 | --- | --- | --- | --- |
-| C01 | OPEN | Actual context is now measured below: QGIS 3/4 use different DPI, and requested camera zoom differs from native zoom. Earlier shared-DPI provenance is corrected. Tile payloads and extended outputs remain unvalidated. | Major validation gap |
+| C01 | OPEN | Actual context is measured below: QGIS 3/4 use different DPI, requested camera zoom differs from native zoom, and the source overview uses globe versus native Mercator. Explicit planar overview registration is scoped below; tile payloads and extended outputs remain unvalidated. | Major validation gap |
 | C02 | OPEN | Live place features and rejected rank probes expose a major/minor role-handoff defect in inherited city/town gates and fixed rank eligibility. Other classes, types and null cases still need systematic fixtures. | Major |
 | C03 | NOT ASSESSED | No generalization, sparse-geometry or false-connection fixture audit. | — |
 | C04 | OPEN (remaining scope) | Source-owned road widths now have a scoped two-runtime repair below; global composition, regional fidelity and other visual hierarchies remain open. | Major baseline finding scoped below |
@@ -115,10 +115,10 @@ focused investigation before broad completion, not an assertion of a root cause.
 | C09 | N/A (source-scoped) | Recorded Light inventory contains no contour, hillshade or raster-dem layer. Missing Outdoors-like relief is not a Light defect; reassess if source intent changes. | — |
 | C10 | PARTIAL | Buildings appear in the street views; courtyards, transition visibility and road/footprint overlap are not systematically checked. | — |
 | C11 | OPEN (remaining scope) | Four source-owner class/zoom widths restored and urban networks improved below. Remaining class eligibility, road/path coverage, junctions and output scales need fixtures. | Major baseline finding scoped below |
-| C12 | PARTIAL | Scoped class/zoom widths and one-time units pass native tests below. Caps/joins/dashes/blur, full casing construction and output-scale continuity remain unvalidated. | — |
+| C12 | PARTIAL | Road widths and ordinary national-boundary source width/continuous texture pass scoped native tests below. Other caps/joins/dashes/blur, full casing construction and output-scale continuity remain unvalidated. | — |
 | C13 | NOT ASSESSED | No named bridge/tunnel/at-grade crossing audit against structure attributes. | — |
 | C14 | NOT ASSESSED | Source has rail and aeroway layers; no systematic transport distinction/continuity checks. | — |
-| C15 | OPEN | Boundary appearance differs around Lake Geneva and regionally. Exact owner and status-filter attribution remain open. | Major |
+| C15 | OPEN (remaining scope) | Ordinary national-boundary source width/solid texture and Lake Geneva owner/status attribution have a scoped repair below. Other owners, disputed/maritime/worldview fixtures and output paths remain open. | Major baseline finding scoped below |
 | C16 | PARTIAL | Source symbol inventory available; sprite applicability, anchors, collision lifecycle and high-DPI behavior require dedicated checks. | — |
 | C17 | PARTIAL | Font-enabled Docker roles have earlier scoped validation. Desktop font distribution and multilingual fallback are not certified by these captures. | — |
 | C18 | OPEN | Text width, weight, wrapping and relative hierarchy remain visibly different. Blanket size probes were rejected, not accepted as a fix. | Minor |
@@ -134,6 +134,84 @@ focused investigation before broad completion, not an assertion of a root cause.
 | C28 | PARTIAL | Two Docker PNG runtimes plus scoped native QGIS 3.34 width expressions checked below. Other older versions, Windows/macOS, interactive canvas, high-DPI and PDF still need separate cells. | — |
 | C29 | PARTIAL | All 30 current width-matrix repeat controls are byte-identical. Cold/warm cache, interactive responsiveness and pan/zoom stability remain untested. | — |
 | C30 | NOT ASSESSED | Cropped basemap evidence does not validate complete user-facing attribution, legend, scale or north/context requirements. | — |
+
+### C12/C15: ordinary national-boundary stroke — 2026-09-14 scoped update
+
+Baseline `2985c8247eb05490dd4d26936c3b003a17a1de4d`; implementation
+`5ebb6ead8740c63971b273f278726aad9b399021` (source/runtime hashes in the manifest).
+[Matched maps, native-size crops, complete boundary/label inventories and attribution][national-boundary].
+Fresh source SHA256:
+`87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32`.
+The complete five-owner source fixture matches the fresh source.
+
+**Attribution comes before styling:** fresh browser `queryRenderedFeatures`
+identifies the Lake Geneva line as `admin-0-boundary`, with its background.
+Its visible CH–FR features have `admin_level: 0`, `disputed: "false"`,
+`maritime: "false"`, `worldview: "all"`. QGIS owner-removal probes in both
+Docker runtimes remove that same line. Removing `admin-0-boundary-disputed`
+is byte-identical in the Lausanne and Zurich attribution views. These are
+source-feature facts, not an independent political classification.
+
+**Mechanism and retained scope:** this source owner requests linear widths
+from 0.65 px at z3 to 2.6 px at z12, clamped outside that range, with the
+continuous `[10, 0]` dash pattern. Generic preprocessing collapses and converts
+the width to millimetres; native conversion interprets it as pixels again,
+producing a fixed approximately 0.182011 mm. At that width the native zero-gap
+custom pattern visibly breaks the ordinary border into dashes. A real native
+horizontal-line painting regression reproduces the gaps, rather than relying
+only on symbol properties.
+
+The exact-Light adapter restores this one owner's audited width using portable
+CASE arithmetic and one px/mm conversion, and renders its zero-gap pattern as a
+solid pen. Source and native status/worldview filters, rule order, zoom ranges,
+color, background owners and all other boundary paint remain unchanged. Active
+native overrides, custom patterns/units/symbols, changed source contracts,
+Outdoors and custom styles retain their prior path. This does not normalize
+other boundaries or extend the minimum QGIS version.
+
+**Probe decisions:** solid-only improves continuity but leaves the width wrong;
+valid width-only improves fidelity but retains a zero-gap custom pen. The
+combined source-width/solid candidate is retained for source semantics, not tiny
+aggregate pixel differences between those two valid width probes. Initial
+`least`/`greatest` width probes were invalid QGIS expressions: unchanged images
+are excluded as width evidence, not labelled neutral. Production outputs in the
+two attribution views match the valid combined probe byte-for-byte in each runtime.
+
+| Coverage cell | Verdict | Evidence / remaining work |
+| --- | --- | --- |
+| C02/C15: visible Lake Geneva CH–FR and Zurich-region national lines, browser attribution plus both Docker owner-removal probes | PASS (scoped ownership) | Exact source owners/status properties identified; removing the disputed owner changes no pixels in these extents. Not an actual disputed/coastal/worldview-specific fixture pass. |
+| C12/C15: source widths at 14 values including lower/upper fractional neighborhoods, 72 native status/worldview combinations, and actual horizontal-line painting; QGIS 3.34.4, 3.44.11 and 4.2.0 | PASS (scoped native behavior) | Source interpolation/clamping and one-time units within 1e-10 mm; only eligible ordinary national features survive the preserved predicate. Baseline has painted gaps; candidate is continuous. Older versions beyond the native lanes are not newly certified. |
+| C12/C15: seven Light presets plus Lausanne requested z11.9/12/12.1, both Docker PNG runtimes | PASS (scoped line repair); broader boundary fidelity OPEN | Lake and regional ordinary borders are continuous/readable. Static transition frames contain the affected border. Other owners, backgrounds, blur and actual source/native scale alignment remain unvalidated. |
+| C01/C04: low-zoom source globe versus native EPSG:3857 | OPEN; projection mismatch diagnosed | The original Light source requests globe projection and overview geography visibly differs from the native planar view. Explicit Mercator reference anchors align within 1e-6 px and its overview MAE improves 3.967% / 4.328%; original globe errors increase 2.440% / 2.510%. Keep both datasets separate; neither result closes scale/DPI or product-projection scope. No product or renderer limitation is accepted here. |
+| C02/C17–C22: complete labels, all five boundary filters/order/other paint and native context, all 24 matched pairs | PASS (scoped preservation) | Only ordinary national width and zero-gap representation change. Existing settlement role-handoff, typography/content and other semantic defects are not discharged. |
+| C25/C26: synthetic Run/Ride/Hike overlays in Lausanne and Zurich-region extents, both Docker PNG runtimes | PASS (scoped visible overlay guardrail) | Unchanged production activity renderer; diagnostic routes remain readable. Real shared/dense activity data and UI/selection/start/end/direction states remain NOT ASSESSED. |
+| C29: all 24 settled unchanged camera/runtime repeat controls | PASS (scoped repeats) | PNG repeats byte-identical. Cold/warm performance and interactive temporal stability remain unassessed. |
+| C12/C15/C23/C24/C27/C28: other boundary owners, actual disputed/maritime/worldview fixtures, pan/seams, accessibility, desktop/PDF | OPEN / NOT ASSESSED as in the main ledger | A corrected ordinary national line is not a criterion-wide boundary, output or accessibility pass. |
+
+**Projection diagnosis (not a source-style or production harness change):**
+actual browser `getProjection()` reports globe for the original overview. Its
+Geneva/Paris/Vienna anchors differ from measured QGIS Mercator placement by
+1.77/18.44/29.73 pixels. The original-globe browser control/repeat is byte-identical
+to the initial reference. With an explicit diagnostic Mercator camera override,
+the same three anchors align within 1e-6 pixels, and the two browser repeats are
+also byte-identical. Aligned overview reference MAE improves 3.967% / 4.328% in
+QGIS 3/4, versus an increase of 2.440% / 2.510% against the original unaligned
+globe image. This explains the guardrail discrepancy without changing the source
+snapshot, either QGIS image, or accepting a loss of globe support on Emman's behalf.
+Other cameras, native scale/DPI and interactive projection require follow-up.
+
+**Independent dimensions:** source width/texture and tested status semantics
+pass within the stated cells. Whole maps and readable crops establish the scoped
+usability repair. Reference fidelity must distinguish the original globe view
+from explicitly aligned planar diagnostics; regional/urban figures remain
+runtime-specific. Actual map DPI is 100 in QGIS 3 and 96 in QGIS 4, and native
+style zoom still differs from requested camera zoom. C01 alignment remains OPEN.
+Live tile payloads were not archived, and source hashes do not certify future data.
+
+The full local suite, both complete Docker test scripts, both ZIP builds and
+package-content checks pass. Fonts remain a separate installation dependency.
+C15 overall and the wider C01–C30 backlog remain open; no release, deployment,
+accepted limitation or holistic completion is implied.
 
 ### C04/C11/C12: source-owned road widths — 2026-09-14 scoped update
 
@@ -345,3 +423,5 @@ explicitly agreed scope reduction with follow-up ownership for excluded work.
 [capture-context]: https://github.com/ebelo/qfit/tree/cc7ecd4ace62e3eb484dfe5dc7dedfc0195e0c3d/docs/visual-evidence/issue-1462/light-capture-context
 
 [road-widths]: https://github.com/ebelo/qfit/tree/d894f1c7fb09176320a2a06a806ebeace19377c9/docs/visual-evidence/issue-1462/light-road-widths
+
+[national-boundary]: https://github.com/ebelo/qfit/tree/242fbc552577c3d36550db7967044ac670e3a584/docs/visual-evidence/issue-1462/light-national-boundary
