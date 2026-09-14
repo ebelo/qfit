@@ -1,0 +1,356 @@
+[
+  {
+    "runtime": "3",
+    "camera": "bern-urban-z12-light",
+    "dpi": 96,
+    "relative_to_unwrapped_control": {
+      "control": {
+        "changed_pixels": 0,
+        "mae": 0.0,
+        "bbox": null
+      },
+      "repeat": {
+        "changed_pixels": 0,
+        "mae": 0.0,
+        "bbox": null
+      },
+      "trace": {
+        "changed_pixels": 0,
+        "mae": 0.0,
+        "bbox": null
+      },
+      "trace-repeat": {
+        "changed_pixels": 0,
+        "mae": 0.0,
+        "bbox": null
+      }
+    }
+  },
+  {
+    "runtime": "3",
+    "camera": "bern-urban-z12-light",
+    "dpi": 150,
+    "relative_to_unwrapped_control": {
+      "control": {
+        "changed_pixels": 0,
+        "mae": 0.0,
+        "bbox": null
+      },
+      "repeat": {
+        "changed_pixels": 0,
+        "mae": 0.0,
+        "bbox": null
+      },
+      "trace": {
+        "changed_pixels": 0,
+        "mae": 0.0,
+        "bbox": null
+      },
+      "trace-repeat": {
+        "changed_pixels": 0,
+        "mae": 0.0,
+        "bbox": null
+      }
+    }
+  },
+  {
+    "runtime": "3",
+    "camera": "bern-urban-z12-light",
+    "dpi": 192,
+    "relative_to_unwrapped_control": {
+      "control": {
+        "changed_pixels": 0,
+        "mae": 0.0,
+        "bbox": null
+      },
+      "repeat": {
+        "changed_pixels": 0,
+        "mae": 0.0,
+        "bbox": null
+      },
+      "trace": {
+        "changed_pixels": 0,
+        "mae": 0.0,
+        "bbox": null
+      },
+      "trace-repeat": {
+        "changed_pixels": 0,
+        "mae": 0.0,
+        "bbox": null
+      }
+    }
+  },
+  {
+    "runtime": "3",
+    "camera": "geneva-urban-z14-light",
+    "dpi": 96,
+    "relative_to_unwrapped_control": {
+      "control": {
+        "changed_pixels": 0,
+        "mae": 0.0,
+        "bbox": null
+      },
+      "repeat": {
+        "changed_pixels": 0,
+        "mae": 0.0,
+        "bbox": null
+      },
+      "trace": {
+        "changed_pixels": 0,
+        "mae": 0.0,
+        "bbox": null
+      },
+      "trace-repeat": {
+        "changed_pixels": 0,
+        "mae": 0.0,
+        "bbox": null
+      }
+    }
+  },
+  {
+    "runtime": "3",
+    "camera": "geneva-urban-z14-light",
+    "dpi": 150,
+    "relative_to_unwrapped_control": {
+      "control": {
+        "changed_pixels": 0,
+        "mae": 0.0,
+        "bbox": null
+      },
+      "repeat": {
+        "changed_pixels": 0,
+        "mae": 0.0,
+        "bbox": null
+      },
+      "trace": {
+        "changed_pixels": 0,
+        "mae": 0.0,
+        "bbox": null
+      },
+      "trace-repeat": {
+        "changed_pixels": 0,
+        "mae": 0.0,
+        "bbox": null
+      }
+    }
+  },
+  {
+    "runtime": "3",
+    "camera": "geneva-urban-z14-light",
+    "dpi": 192,
+    "relative_to_unwrapped_control": {
+      "control": {
+        "changed_pixels": 0,
+        "mae": 0.0,
+        "bbox": null
+      },
+      "repeat": {
+        "changed_pixels": 0,
+        "mae": 0.0,
+        "bbox": null
+      },
+      "trace": {
+        "changed_pixels": 0,
+        "mae": 0.0,
+        "bbox": null
+      },
+      "trace-repeat": {
+        "changed_pixels": 0,
+        "mae": 0.0,
+        "bbox": null
+      }
+    }
+  },
+  {
+    "runtime": "4",
+    "camera": "bern-urban-z12-light",
+    "dpi": 96,
+    "relative_to_unwrapped_control": {
+      "control": {
+        "changed_pixels": 0,
+        "mae": 0.0,
+        "bbox": null
+      },
+      "repeat": {
+        "changed_pixels": 0,
+        "mae": 0.0,
+        "bbox": null
+      },
+      "trace": {
+        "changed_pixels": 0,
+        "mae": 0.0,
+        "bbox": null
+      },
+      "trace-repeat": {
+        "changed_pixels": 0,
+        "mae": 0.0,
+        "bbox": null
+      }
+    }
+  },
+  {
+    "runtime": "4",
+    "camera": "bern-urban-z12-light",
+    "dpi": 150,
+    "relative_to_unwrapped_control": {
+      "control": {
+        "changed_pixels": 0,
+        "mae": 0.0,
+        "bbox": null
+      },
+      "repeat": {
+        "changed_pixels": 280,
+        "mae": 1.0552832244008715e-06,
+        "bbox": [
+          146,
+          134,
+          805,
+          900
+        ]
+      },
+      "trace": {
+        "changed_pixels": 50,
+        "mae": 1.7020697167755993e-07,
+        "bbox": [
+          146,
+          426,
+          805,
+          900
+        ]
+      },
+      "trace-repeat": {
+        "changed_pixels": 280,
+        "mae": 1.0552832244008715e-06,
+        "bbox": [
+          146,
+          134,
+          805,
+          900
+        ]
+      }
+    }
+  },
+  {
+    "runtime": "4",
+    "camera": "bern-urban-z12-light",
+    "dpi": 192,
+    "relative_to_unwrapped_control": {
+      "control": {
+        "changed_pixels": 0,
+        "mae": 0.0,
+        "bbox": null
+      },
+      "repeat": {
+        "changed_pixels": 0,
+        "mae": 0.0,
+        "bbox": null
+      },
+      "trace": {
+        "changed_pixels": 0,
+        "mae": 0.0,
+        "bbox": null
+      },
+      "trace-repeat": {
+        "changed_pixels": 0,
+        "mae": 0.0,
+        "bbox": null
+      }
+    }
+  },
+  {
+    "runtime": "4",
+    "camera": "geneva-urban-z14-light",
+    "dpi": 96,
+    "relative_to_unwrapped_control": {
+      "control": {
+        "changed_pixels": 0,
+        "mae": 0.0,
+        "bbox": null
+      },
+      "repeat": {
+        "changed_pixels": 0,
+        "mae": 0.0,
+        "bbox": null
+      },
+      "trace": {
+        "changed_pixels": 0,
+        "mae": 0.0,
+        "bbox": null
+      },
+      "trace-repeat": {
+        "changed_pixels": 0,
+        "mae": 0.0,
+        "bbox": null
+      }
+    }
+  },
+  {
+    "runtime": "4",
+    "camera": "geneva-urban-z14-light",
+    "dpi": 150,
+    "relative_to_unwrapped_control": {
+      "control": {
+        "changed_pixels": 0,
+        "mae": 0.0,
+        "bbox": null
+      },
+      "repeat": {
+        "changed_pixels": 145,
+        "mae": 5.344498910675381e-07,
+        "bbox": [
+          594,
+          199,
+          1215,
+          880
+        ]
+      },
+      "trace": {
+        "changed_pixels": 325,
+        "mae": 8.964233841684822e-07,
+        "bbox": [
+          289,
+          199,
+          899,
+          898
+        ]
+      },
+      "trace-repeat": {
+        "changed_pixels": 145,
+        "mae": 5.344498910675381e-07,
+        "bbox": [
+          594,
+          199,
+          1215,
+          880
+        ]
+      }
+    }
+  },
+  {
+    "runtime": "4",
+    "camera": "geneva-urban-z14-light",
+    "dpi": 192,
+    "relative_to_unwrapped_control": {
+      "control": {
+        "changed_pixels": 0,
+        "mae": 0.0,
+        "bbox": null
+      },
+      "repeat": {
+        "changed_pixels": 0,
+        "mae": 0.0,
+        "bbox": null
+      },
+      "trace": {
+        "changed_pixels": 0,
+        "mae": 0.0,
+        "bbox": null
+      },
+      "trace-repeat": {
+        "changed_pixels": 0,
+        "mae": 0.0,
+        "bbox": null
+      }
+    }
+  }
+]

@@ -1,0 +1,3510 @@
+{
+  "baseline": "3ff79a9dbced1dd57cf9763963d5758b5a5a1af7",
+  "candidate": "3ff79a9dbced1dd57cf9763963d5758b5a5a1af7",
+  "images": {
+    "3": "sha256:9bf850ffeb3a012cbd8956c9ea101fa8353f0df1d320884e6613b6739ab205b2",
+    "4": "sha256:313e91cd4cd9bc7460e623c4ca5314ee7c0b721fa0b03d9bb8bf682e641b23cf"
+  },
+  "date_utc": "2026-09-14",
+  "scope": "Light C01/C28/C29 output-mode diagnosis; documentation only, no production candidate or accepted limitation",
+  "access": "Fresh same-active-run Gateway and every capture-container preflight authorized HTTP200 with inherited environment and verified TLS. All captures finished.",
+  "source_sha256": "87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32",
+  "native": [
+    {
+      "camera": "bern-urban-z12-light",
+      "version": "3",
+      "variant": "dpi96",
+      "runtime": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 12.25,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            818712.148245084,
+            5926359.467815783,
+            839280.3476299326,
+            5940821.483008254
+          ],
+          "map_scale": 60732.87219935607,
+          "tile_render_scale": 60732.87219935607,
+          "vector_tile_zoom": 12.220212941573227,
+          "integer_render_zoom": 12,
+          "integer_fetch_zoom": 12
+        }
+      },
+      "repeat_identical": true
+    },
+    {
+      "camera": "bern-urban-z12-light",
+      "version": "3",
+      "variant": "dpr2",
+      "runtime": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 12.25,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 2.0,
+          "image_size_pixels": [
+            2560,
+            1800
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            818712.148245084,
+            5926359.467815783,
+            839280.3476299326,
+            5940821.483008254
+          ],
+          "map_scale": 60732.87219935607,
+          "tile_render_scale": 60732.87219935607,
+          "vector_tile_zoom": 12.220212941573227,
+          "integer_render_zoom": 12,
+          "integer_fetch_zoom": 12
+        }
+      },
+      "repeat_identical": true
+    },
+    {
+      "camera": "bern-urban-z12-light",
+      "version": "3",
+      "variant": "dpi192",
+      "runtime": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 13.25,
+          "map_settings_output_dpi": 192.0,
+          "image_logical_dpi": [
+            192,
+            192
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            2560,
+            1800
+          ],
+          "map_settings_size_pixels": [
+            2560,
+            1800
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            818712.148245084,
+            5926359.467815783,
+            839280.3476299326,
+            5940821.483008254
+          ],
+          "map_scale": 60732.87219935607,
+          "tile_render_scale": 60732.87219935607,
+          "vector_tile_zoom": 12.220212941573227,
+          "integer_render_zoom": 12,
+          "integer_fetch_zoom": 12
+        }
+      },
+      "repeat_identical": true
+    },
+    {
+      "camera": "bern-urban-z12-light",
+      "version": "4",
+      "variant": "dpi96",
+      "runtime": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 12.25,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            818712.148245084,
+            5926359.467815783,
+            839280.3476299326,
+            5940821.483008254
+          ],
+          "map_scale": 60732.87219935607,
+          "tile_render_scale": 57388.94917647486,
+          "vector_tile_zoom": 12.318207169492558,
+          "integer_render_zoom": 12,
+          "integer_fetch_zoom": 12
+        }
+      },
+      "repeat_identical": true
+    },
+    {
+      "camera": "bern-urban-z12-light",
+      "version": "4",
+      "variant": "dpr2",
+      "runtime": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 12.25,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 2.0,
+          "image_size_pixels": [
+            2560,
+            1800
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            818712.148245084,
+            5926359.467815783,
+            839280.3476299326,
+            5940821.483008254
+          ],
+          "map_scale": 60732.87219935607,
+          "tile_render_scale": 57388.94917647486,
+          "vector_tile_zoom": 12.318207169492558,
+          "integer_render_zoom": 12,
+          "integer_fetch_zoom": 12
+        }
+      },
+      "repeat_identical": true
+    },
+    {
+      "camera": "bern-urban-z12-light",
+      "version": "4",
+      "variant": "dpi192",
+      "runtime": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 13.25,
+          "map_settings_output_dpi": 192.0,
+          "image_logical_dpi": [
+            192,
+            192
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            2560,
+            1800
+          ],
+          "map_settings_size_pixels": [
+            2560,
+            1800
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            818712.148245084,
+            5926359.467815783,
+            839280.3476299326,
+            5940821.483008254
+          ],
+          "map_scale": 60732.87219935607,
+          "tile_render_scale": 28694.47458823743,
+          "vector_tile_zoom": 13.318207169492558,
+          "integer_render_zoom": 13,
+          "integer_fetch_zoom": 13
+        }
+      },
+      "repeat_identical": true
+    },
+    {
+      "camera": "geneva-urban-z14-light",
+      "version": "3",
+      "variant": "dpi96",
+      "runtime": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 14.25,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            681264.6070199735,
+            5811293.095022159,
+            686406.6568661856,
+            5814908.598820277
+          ],
+          "map_scale": 15183.218049839017,
+          "tile_render_scale": 15183.218049839017,
+          "vector_tile_zoom": 14.220212941573227,
+          "integer_render_zoom": 14,
+          "integer_fetch_zoom": 14
+        }
+      },
+      "repeat_identical": true
+    },
+    {
+      "camera": "geneva-urban-z14-light",
+      "version": "3",
+      "variant": "dpr2",
+      "runtime": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 14.25,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 2.0,
+          "image_size_pixels": [
+            2560,
+            1800
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            681264.6070199735,
+            5811293.095022159,
+            686406.6568661856,
+            5814908.598820277
+          ],
+          "map_scale": 15183.218049839017,
+          "tile_render_scale": 15183.218049839017,
+          "vector_tile_zoom": 14.220212941573227,
+          "integer_render_zoom": 14,
+          "integer_fetch_zoom": 14
+        }
+      },
+      "repeat_identical": true
+    },
+    {
+      "camera": "geneva-urban-z14-light",
+      "version": "3",
+      "variant": "dpi192",
+      "runtime": {
+        "qgis_version": "3.44.11-Solothurn",
+        "qgis_version_int": 34411,
+        "qgis_release_name": "Solothurn",
+        "render_context": {
+          "requested_camera_zoom": 15.25,
+          "map_settings_output_dpi": 192.0,
+          "image_logical_dpi": [
+            192,
+            192
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            2560,
+            1800
+          ],
+          "map_settings_size_pixels": [
+            2560,
+            1800
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            681264.6070199735,
+            5811293.095022159,
+            686406.6568661856,
+            5814908.598820277
+          ],
+          "map_scale": 15183.218049839017,
+          "tile_render_scale": 15183.218049839017,
+          "vector_tile_zoom": 14.220212941573227,
+          "integer_render_zoom": 14,
+          "integer_fetch_zoom": 14
+        }
+      },
+      "repeat_identical": true
+    },
+    {
+      "camera": "geneva-urban-z14-light",
+      "version": "4",
+      "variant": "dpi96",
+      "runtime": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 14.25,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            1280,
+            900
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            681264.6070199735,
+            5811293.095022159,
+            686406.6568661856,
+            5814908.598820277
+          ],
+          "map_scale": 15183.218049839017,
+          "tile_render_scale": 14347.237294118715,
+          "vector_tile_zoom": 14.318207169492558,
+          "integer_render_zoom": 14,
+          "integer_fetch_zoom": 14
+        }
+      },
+      "repeat_identical": true
+    },
+    {
+      "camera": "geneva-urban-z14-light",
+      "version": "4",
+      "variant": "dpr2",
+      "runtime": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 14.25,
+          "map_settings_output_dpi": 96.0,
+          "image_logical_dpi": [
+            96,
+            96
+          ],
+          "image_device_pixel_ratio": 2.0,
+          "image_size_pixels": [
+            2560,
+            1800
+          ],
+          "map_settings_size_pixels": [
+            1280,
+            900
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            681264.6070199735,
+            5811293.095022159,
+            686406.6568661856,
+            5814908.598820277
+          ],
+          "map_scale": 15183.218049839017,
+          "tile_render_scale": 14347.237294118715,
+          "vector_tile_zoom": 14.318207169492558,
+          "integer_render_zoom": 14,
+          "integer_fetch_zoom": 14
+        }
+      },
+      "repeat_identical": true
+    },
+    {
+      "camera": "geneva-urban-z14-light",
+      "version": "4",
+      "variant": "dpi192",
+      "runtime": {
+        "qgis_version": "4.2.0-Bel\u00e9m do Par\u00e1",
+        "qgis_version_int": 40200,
+        "qgis_release_name": "Bel\u00e9m do Par\u00e1",
+        "render_context": {
+          "requested_camera_zoom": 15.25,
+          "map_settings_output_dpi": 192.0,
+          "image_logical_dpi": [
+            192,
+            192
+          ],
+          "image_device_pixel_ratio": 1.0,
+          "image_size_pixels": [
+            2560,
+            1800
+          ],
+          "map_settings_size_pixels": [
+            2560,
+            1800
+          ],
+          "map_crs": "EPSG:3857",
+          "visible_extent": [
+            681264.6070199735,
+            5811293.095022159,
+            686406.6568661856,
+            5814908.598820277
+          ],
+          "map_scale": 15183.218049839017,
+          "tile_render_scale": 7173.6186470593575,
+          "vector_tile_zoom": 15.318207169492558,
+          "integer_render_zoom": 15,
+          "integer_fetch_zoom": 15
+        }
+      },
+      "repeat_identical": true
+    }
+  ],
+  "pdf": [
+    {
+      "camera": "bern-urban-z12-light",
+      "version": "3",
+      "dpi": 96,
+      "unwrapped_context": {
+        "dpi": 96.0,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 60732.87219935606,
+        "extent": [
+          818712.148245084,
+          5926359.467815783,
+          839280.3476299326,
+          5940821.483008254
+        ],
+        "renderer_trace": []
+      },
+      "trace_context": {
+        "dpi": 96.0,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 60732.87219935606,
+        "extent": [
+          818712.148245084,
+          5926359.467815783,
+          839280.3476299326,
+          5940821.483008254
+        ],
+        "renderer_trace": [
+          [
+            12.220212941573227,
+            12.0,
+            60732.87219935606
+          ]
+        ]
+      },
+      "four_image_pair_metrics": [
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        }
+      ],
+      "trace_isolation": "pixel-identical across controls/traces/repeats"
+    },
+    {
+      "camera": "bern-urban-z12-light",
+      "version": "3",
+      "dpi": 150,
+      "unwrapped_context": {
+        "dpi": 150.0,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 60732.87219935606,
+        "extent": [
+          818712.148245084,
+          5926359.467815783,
+          839280.3476299326,
+          5940821.483008254
+        ],
+        "renderer_trace": []
+      },
+      "trace_context": {
+        "dpi": 150.0,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 60732.87219935606,
+        "extent": [
+          818712.148245084,
+          5926359.467815783,
+          839280.3476299326,
+          5940821.483008254
+        ],
+        "renderer_trace": [
+          [
+            12.219896478725026,
+            12.0,
+            60732.87219935606
+          ]
+        ]
+      },
+      "four_image_pair_metrics": [
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        }
+      ],
+      "trace_isolation": "pixel-identical across controls/traces/repeats"
+    },
+    {
+      "camera": "bern-urban-z12-light",
+      "version": "3",
+      "dpi": 192,
+      "unwrapped_context": {
+        "dpi": 192.0,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 60732.87219935606,
+        "extent": [
+          818712.148245084,
+          5926359.467815783,
+          839280.3476299326,
+          5940821.483008254
+        ],
+        "renderer_trace": []
+      },
+      "trace_context": {
+        "dpi": 192.0,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 60732.87219935606,
+        "extent": [
+          818712.148245084,
+          5926359.467815783,
+          839280.3476299326,
+          5940821.483008254
+        ],
+        "renderer_trace": [
+          [
+            12.220212941573227,
+            12.0,
+            60732.87219935606
+          ]
+        ]
+      },
+      "four_image_pair_metrics": [
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        }
+      ],
+      "trace_isolation": "pixel-identical across controls/traces/repeats"
+    },
+    {
+      "camera": "bern-urban-z12-light",
+      "version": "4",
+      "dpi": 96,
+      "unwrapped_context": {
+        "dpi": 96.0,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 60732.87219935606,
+        "extent": [
+          818712.148245084,
+          5926359.467815783,
+          839280.3476299326,
+          5940821.483008254
+        ],
+        "renderer_trace": []
+      },
+      "trace_context": {
+        "dpi": 96.0,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 60732.87219935606,
+        "extent": [
+          818712.148245084,
+          5926359.467815783,
+          839280.3476299326,
+          5940821.483008254
+        ],
+        "renderer_trace": [
+          [
+            12.318207169492558,
+            12.0,
+            60732.87219935606
+          ]
+        ]
+      },
+      "four_image_pair_metrics": [
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        }
+      ],
+      "trace_isolation": "pixel-identical across controls/traces/repeats"
+    },
+    {
+      "camera": "bern-urban-z12-light",
+      "version": "4",
+      "dpi": 150,
+      "unwrapped_context": {
+        "dpi": 150.0,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 60732.87219935606,
+        "extent": [
+          818712.148245084,
+          5926359.467815783,
+          839280.3476299326,
+          5940821.483008254
+        ],
+        "renderer_trace": []
+      },
+      "trace_context": {
+        "dpi": 150.0,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 60732.87219935606,
+        "extent": [
+          818712.148245084,
+          5926359.467815783,
+          839280.3476299326,
+          5940821.483008254
+        ],
+        "renderer_trace": [
+          [
+            12.923461203800372,
+            13.0,
+            60732.87219935606
+          ]
+        ]
+      },
+      "four_image_pair_metrics": [
+        {
+          "changed_pixels": 280,
+          "normalized_mae": 1.0552832244008715e-06,
+          "bbox": [
+            146,
+            134,
+            805,
+            900
+          ]
+        },
+        {
+          "changed_pixels": 50,
+          "normalized_mae": 1.7020697167755993e-07,
+          "bbox": [
+            146,
+            426,
+            805,
+            900
+          ]
+        },
+        {
+          "changed_pixels": 280,
+          "normalized_mae": 1.0552832244008715e-06,
+          "bbox": [
+            146,
+            134,
+            805,
+            900
+          ]
+        },
+        {
+          "changed_pixels": 240,
+          "normalized_mae": 1.0393972403776324e-06,
+          "bbox": [
+            198,
+            134,
+            805,
+            892
+          ]
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 240,
+          "normalized_mae": 1.0393972403776324e-06,
+          "bbox": [
+            198,
+            134,
+            805,
+            892
+          ]
+        }
+      ],
+      "trace_isolation": "NOT byte-identical; unclassified PDF150 variation in both traced and unwrapped repeats"
+    },
+    {
+      "camera": "bern-urban-z12-light",
+      "version": "4",
+      "dpi": 192,
+      "unwrapped_context": {
+        "dpi": 192.0,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 60732.87219935606,
+        "extent": [
+          818712.148245084,
+          5926359.467815783,
+          839280.3476299326,
+          5940821.483008254
+        ],
+        "renderer_trace": []
+      },
+      "trace_context": {
+        "dpi": 192.0,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 60732.87219935606,
+        "extent": [
+          818712.148245084,
+          5926359.467815783,
+          839280.3476299326,
+          5940821.483008254
+        ],
+        "renderer_trace": [
+          [
+            13.318207169492558,
+            13.0,
+            60732.87219935606
+          ]
+        ]
+      },
+      "four_image_pair_metrics": [
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        }
+      ],
+      "trace_isolation": "pixel-identical across controls/traces/repeats"
+    },
+    {
+      "camera": "geneva-urban-z14-light",
+      "version": "3",
+      "dpi": 96,
+      "unwrapped_context": {
+        "dpi": 96.0,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 15183.218049839015,
+        "extent": [
+          681264.6070199735,
+          5811293.095022159,
+          686406.6568661856,
+          5814908.598820277
+        ],
+        "renderer_trace": []
+      },
+      "trace_context": {
+        "dpi": 96.0,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 15183.218049839015,
+        "extent": [
+          681264.6070199735,
+          5811293.095022159,
+          686406.6568661856,
+          5814908.598820277
+        ],
+        "renderer_trace": [
+          [
+            14.220212941573227,
+            14.0,
+            15183.218049839015
+          ]
+        ]
+      },
+      "four_image_pair_metrics": [
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        }
+      ],
+      "trace_isolation": "pixel-identical across controls/traces/repeats"
+    },
+    {
+      "camera": "geneva-urban-z14-light",
+      "version": "3",
+      "dpi": 150,
+      "unwrapped_context": {
+        "dpi": 150.0,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 15183.218049839015,
+        "extent": [
+          681264.6070199735,
+          5811293.095022159,
+          686406.6568661856,
+          5814908.598820277
+        ],
+        "renderer_trace": []
+      },
+      "trace_context": {
+        "dpi": 150.0,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 15183.218049839015,
+        "extent": [
+          681264.6070199735,
+          5811293.095022159,
+          686406.6568661856,
+          5814908.598820277
+        ],
+        "renderer_trace": [
+          [
+            14.219896478725005,
+            14.0,
+            15183.218049839015
+          ]
+        ]
+      },
+      "four_image_pair_metrics": [
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        }
+      ],
+      "trace_isolation": "pixel-identical across controls/traces/repeats"
+    },
+    {
+      "camera": "geneva-urban-z14-light",
+      "version": "3",
+      "dpi": 192,
+      "unwrapped_context": {
+        "dpi": 192.0,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 15183.218049839015,
+        "extent": [
+          681264.6070199735,
+          5811293.095022159,
+          686406.6568661856,
+          5814908.598820277
+        ],
+        "renderer_trace": []
+      },
+      "trace_context": {
+        "dpi": 192.0,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 15183.218049839015,
+        "extent": [
+          681264.6070199735,
+          5811293.095022159,
+          686406.6568661856,
+          5814908.598820277
+        ],
+        "renderer_trace": [
+          [
+            14.220212941573227,
+            14.0,
+            15183.218049839015
+          ]
+        ]
+      },
+      "four_image_pair_metrics": [
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        }
+      ],
+      "trace_isolation": "pixel-identical across controls/traces/repeats"
+    },
+    {
+      "camera": "geneva-urban-z14-light",
+      "version": "4",
+      "dpi": 96,
+      "unwrapped_context": {
+        "dpi": 96.0,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 15183.218049839015,
+        "extent": [
+          681264.6070199735,
+          5811293.095022159,
+          686406.6568661856,
+          5814908.598820277
+        ],
+        "renderer_trace": []
+      },
+      "trace_context": {
+        "dpi": 96.0,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 15183.218049839015,
+        "extent": [
+          681264.6070199735,
+          5811293.095022159,
+          686406.6568661856,
+          5814908.598820277
+        ],
+        "renderer_trace": [
+          [
+            14.318207169492558,
+            14.0,
+            15183.218049839015
+          ]
+        ]
+      },
+      "four_image_pair_metrics": [
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        }
+      ],
+      "trace_isolation": "pixel-identical across controls/traces/repeats"
+    },
+    {
+      "camera": "geneva-urban-z14-light",
+      "version": "4",
+      "dpi": 150,
+      "unwrapped_context": {
+        "dpi": 150.0,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 15183.218049839015,
+        "extent": [
+          681264.6070199735,
+          5811293.095022159,
+          686406.6568661856,
+          5814908.598820277
+        ],
+        "renderer_trace": []
+      },
+      "trace_context": {
+        "dpi": 150.0,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 15183.218049839015,
+        "extent": [
+          681264.6070199735,
+          5811293.095022159,
+          686406.6568661856,
+          5814908.598820277
+        ],
+        "renderer_trace": [
+          [
+            14.923461203800361,
+            15.0,
+            15183.218049839015
+          ]
+        ]
+      },
+      "four_image_pair_metrics": [
+        {
+          "changed_pixels": 145,
+          "normalized_mae": 5.344498910675381e-07,
+          "bbox": [
+            594,
+            199,
+            1215,
+            880
+          ]
+        },
+        {
+          "changed_pixels": 325,
+          "normalized_mae": 8.964233841684822e-07,
+          "bbox": [
+            289,
+            199,
+            899,
+            898
+          ]
+        },
+        {
+          "changed_pixels": 145,
+          "normalized_mae": 5.344498910675381e-07,
+          "bbox": [
+            594,
+            199,
+            1215,
+            880
+          ]
+        },
+        {
+          "changed_pixels": 246,
+          "normalized_mae": 5.934549745824256e-07,
+          "bbox": [
+            289,
+            504,
+            1215,
+            898
+          ]
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 246,
+          "normalized_mae": 5.934549745824256e-07,
+          "bbox": [
+            289,
+            504,
+            1215,
+            898
+          ]
+        }
+      ],
+      "trace_isolation": "NOT byte-identical; unclassified PDF150 variation in both traced and unwrapped repeats"
+    },
+    {
+      "camera": "geneva-urban-z14-light",
+      "version": "4",
+      "dpi": 192,
+      "unwrapped_context": {
+        "dpi": 192.0,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 15183.218049839015,
+        "extent": [
+          681264.6070199735,
+          5811293.095022159,
+          686406.6568661856,
+          5814908.598820277
+        ],
+        "renderer_trace": []
+      },
+      "trace_context": {
+        "dpi": 192.0,
+        "production_default_dpi": 150.0,
+        "force_vector": true,
+        "rasterize_whole_image": false,
+        "page_mm": [
+          338.6666666666667,
+          238.125
+        ],
+        "map_scale": 15183.218049839015,
+        "extent": [
+          681264.6070199735,
+          5811293.095022159,
+          686406.6568661856,
+          5814908.598820277
+        ],
+        "renderer_trace": [
+          [
+            15.318207169492558,
+            15.0,
+            15183.218049839015
+          ]
+        ]
+      },
+      "four_image_pair_metrics": [
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        },
+        {
+          "changed_pixels": 0,
+          "normalized_mae": 0.0,
+          "bbox": null
+        }
+      ],
+      "trace_isolation": "pixel-identical across controls/traces/repeats"
+    }
+  ],
+  "browser": [
+    {
+      "camera": "bern-urban-z12-light",
+      "variant": "mercator",
+      "runtime": {
+        "mapbox_gl_version": "3.10.0",
+        "projection_anchors": [
+          {
+            "lnglat": [
+              7.446999999999999,
+              46.94800000000001
+            ],
+            "expected_pixel": [
+              640,
+              450
+            ],
+            "actual_pixel": [
+              640.0000000001766,
+              450
+            ]
+          },
+          {
+            "lnglat": [
+              7.40369516904478,
+              46.96770474199352
+            ],
+            "expected_pixel": [
+              340,
+              250
+            ],
+            "actual_pixel": [
+              340.0000000001766,
+              250.0000000001766
+            ]
+          },
+          {
+            "lnglat": [
+              7.490304830955219,
+              46.92828800141416
+            ],
+            "expected_pixel": [
+              940,
+              650
+            ],
+            "actual_pixel": [
+              940.0000000001766,
+              649.9999999998234
+            ]
+          },
+          {
+            "lnglat": [
+              7.40369516904478,
+              46.92828800141416
+            ],
+            "expected_pixel": [
+              340,
+              650
+            ],
+            "actual_pixel": [
+              340.0000000001766,
+              649.9999999998234
+            ]
+          },
+          {
+            "lnglat": [
+              7.490304830955219,
+              46.96770474199352
+            ],
+            "expected_pixel": [
+              940,
+              250
+            ],
+            "actual_pixel": [
+              940.0000000001766,
+              250.0000000001766
+            ]
+          }
+        ],
+        "reference_projection": "mercator",
+        "source_projection": {
+          "name": "globe"
+        },
+        "actual_projection": {
+          "name": "mercator",
+          "center": [
+            0,
+            0
+          ]
+        },
+        "center": [
+          7.447,
+          46.948
+        ],
+        "zoom": 12.25,
+        "bearing": 0,
+        "pitch": 0,
+        "bounds": [
+          [
+            7.354616360627546,
+            46.90363779808379
+          ],
+          [
+            7.539383639369987,
+            46.99232546542342
+          ]
+        ],
+        "canvas_size_pixels": [
+          1280,
+          900
+        ],
+        "device_pixel_ratio": 1,
+        "map_loaded": true,
+        "tiles_loaded": true,
+        "map_error_count": 0,
+        "rendered_feature_count": 1059,
+        "browser_version": "152.0.7977.64"
+      },
+      "png_sha256": "d683cf7c463166f75478d860ff4b8489a559b2c5425247bbe880a396d8ea80c1",
+      "repeat_identical": true
+    },
+    {
+      "camera": "bern-urban-z12-light",
+      "variant": "source",
+      "runtime": {
+        "mapbox_gl_version": "3.10.0",
+        "projection_anchors": [
+          {
+            "lnglat": [
+              7.446999999999999,
+              46.94800000000001
+            ],
+            "expected_pixel": [
+              640,
+              450
+            ],
+            "actual_pixel": [
+              640.0000000001766,
+              450
+            ]
+          },
+          {
+            "lnglat": [
+              7.40369516904478,
+              46.96770474199352
+            ],
+            "expected_pixel": [
+              340,
+              250
+            ],
+            "actual_pixel": [
+              340.0000000001766,
+              250.0000000001766
+            ]
+          },
+          {
+            "lnglat": [
+              7.490304830955219,
+              46.92828800141416
+            ],
+            "expected_pixel": [
+              940,
+              650
+            ],
+            "actual_pixel": [
+              940.0000000001766,
+              649.9999999998234
+            ]
+          },
+          {
+            "lnglat": [
+              7.40369516904478,
+              46.92828800141416
+            ],
+            "expected_pixel": [
+              340,
+              650
+            ],
+            "actual_pixel": [
+              340.0000000001766,
+              649.9999999998234
+            ]
+          },
+          {
+            "lnglat": [
+              7.490304830955219,
+              46.96770474199352
+            ],
+            "expected_pixel": [
+              940,
+              250
+            ],
+            "actual_pixel": [
+              940.0000000001766,
+              250.0000000001766
+            ]
+          }
+        ],
+        "reference_projection": "source",
+        "source_projection": {
+          "name": "globe"
+        },
+        "actual_projection": {
+          "name": "globe",
+          "center": [
+            0,
+            0
+          ]
+        },
+        "center": [
+          7.447,
+          46.948
+        ],
+        "zoom": 12.25,
+        "bearing": 0,
+        "pitch": 0,
+        "bounds": [
+          [
+            7.354616360627546,
+            46.90363779808379
+          ],
+          [
+            7.539383639369987,
+            46.99232546542342
+          ]
+        ],
+        "canvas_size_pixels": [
+          1280,
+          900
+        ],
+        "device_pixel_ratio": 1,
+        "map_loaded": true,
+        "tiles_loaded": true,
+        "map_error_count": 0,
+        "rendered_feature_count": 1059,
+        "browser_version": "152.0.7977.64"
+      },
+      "png_sha256": "d683cf7c463166f75478d860ff4b8489a559b2c5425247bbe880a396d8ea80c1",
+      "repeat_identical": true
+    },
+    {
+      "camera": "geneva-urban-z14-light",
+      "variant": "mercator",
+      "runtime": {
+        "mapbox_gl_version": "3.10.0",
+        "projection_anchors": [
+          {
+            "lnglat": [
+              6.143,
+              46.20399999999999
+            ],
+            "expected_pixel": [
+              640,
+              450
+            ],
+            "actual_pixel": [
+              639.9999999992935,
+              450.00000000141284
+            ]
+          },
+          {
+            "lnglat": [
+              6.132173792261195,
+              46.20899493307553
+            ],
+            "expected_pixel": [
+              340,
+              250
+            ],
+            "actual_pixel": [
+              339.99999999929355,
+              250.00000000141284
+            ]
+          },
+          {
+            "lnglat": [
+              6.153826207738805,
+              46.19900461273829
+            ],
+            "expected_pixel": [
+              940,
+              650
+            ],
+            "actual_pixel": [
+              939.9999999992935,
+              650.0000000014129
+            ]
+          },
+          {
+            "lnglat": [
+              6.132173792261195,
+              46.19900461273829
+            ],
+            "expected_pixel": [
+              340,
+              650
+            ],
+            "actual_pixel": [
+              339.99999999929355,
+              650.0000000014129
+            ]
+          },
+          {
+            "lnglat": [
+              6.153826207738805,
+              46.20899493307553
+            ],
+            "expected_pixel": [
+              940,
+              250
+            ],
+            "actual_pixel": [
+              939.9999999992935,
+              250.00000000141284
+            ]
+          }
+        ],
+        "reference_projection": "mercator",
+        "source_projection": {
+          "name": "globe"
+        },
+        "actual_projection": {
+          "name": "mercator",
+          "center": [
+            0,
+            0
+          ]
+        },
+        "center": [
+          6.143,
+          46.204
+        ],
+        "zoom": 14.25,
+        "bearing": 0,
+        "pitch": 0,
+        "bounds": [
+          [
+            6.119904090155899,
+            46.19275973995667
+          ],
+          [
+            6.166095909840806,
+            46.2152379607258
+          ]
+        ],
+        "canvas_size_pixels": [
+          1280,
+          900
+        ],
+        "device_pixel_ratio": 1,
+        "map_loaded": true,
+        "tiles_loaded": true,
+        "map_error_count": 0,
+        "rendered_feature_count": 2664,
+        "browser_version": "152.0.7977.64"
+      },
+      "png_sha256": "a1088191221cd6083a1369d37d7608756c76cd19b96278f31dd73c608255cc76",
+      "repeat_identical": true
+    },
+    {
+      "camera": "geneva-urban-z14-light",
+      "variant": "source",
+      "runtime": {
+        "mapbox_gl_version": "3.10.0",
+        "projection_anchors": [
+          {
+            "lnglat": [
+              6.143,
+              46.20399999999999
+            ],
+            "expected_pixel": [
+              640,
+              450
+            ],
+            "actual_pixel": [
+              639.9999999992935,
+              450.00000000141284
+            ]
+          },
+          {
+            "lnglat": [
+              6.132173792261195,
+              46.20899493307553
+            ],
+            "expected_pixel": [
+              340,
+              250
+            ],
+            "actual_pixel": [
+              339.99999999929355,
+              250.00000000141284
+            ]
+          },
+          {
+            "lnglat": [
+              6.153826207738805,
+              46.19900461273829
+            ],
+            "expected_pixel": [
+              940,
+              650
+            ],
+            "actual_pixel": [
+              939.9999999992935,
+              650.0000000014129
+            ]
+          },
+          {
+            "lnglat": [
+              6.132173792261195,
+              46.19900461273829
+            ],
+            "expected_pixel": [
+              340,
+              650
+            ],
+            "actual_pixel": [
+              339.99999999929355,
+              650.0000000014129
+            ]
+          },
+          {
+            "lnglat": [
+              6.153826207738805,
+              46.20899493307553
+            ],
+            "expected_pixel": [
+              940,
+              250
+            ],
+            "actual_pixel": [
+              939.9999999992935,
+              250.00000000141284
+            ]
+          }
+        ],
+        "reference_projection": "source",
+        "source_projection": {
+          "name": "globe"
+        },
+        "actual_projection": {
+          "name": "globe",
+          "center": [
+            0,
+            0
+          ]
+        },
+        "center": [
+          6.143,
+          46.204
+        ],
+        "zoom": 14.25,
+        "bearing": 0,
+        "pitch": 0,
+        "bounds": [
+          [
+            6.119904090155899,
+            46.19275973995667
+          ],
+          [
+            6.166095909840806,
+            46.2152379607258
+          ]
+        ],
+        "canvas_size_pixels": [
+          1280,
+          900
+        ],
+        "device_pixel_ratio": 1,
+        "map_loaded": true,
+        "tiles_loaded": true,
+        "map_error_count": 0,
+        "rendered_feature_count": 2664,
+        "browser_version": "152.0.7977.64"
+      },
+      "png_sha256": "a1088191221cd6083a1369d37d7608756c76cd19b96278f31dd73c608255cc76",
+      "repeat_identical": true
+    }
+  ],
+  "limitations": [
+    "Two-city, source-checkout Linux Docker validation, not a full atlas or packaged desktop certification.",
+    "Standalone one-map PDFs use actual AtlasExportTask PDF settings; no cover/TOC/activities/context/attribution UI has been certified.",
+    "Live vector-tile payloads are not archived.",
+    "QGIS4 PDF150 repeat variation remains unclassified; no pixel-noise or byte-identity claim for those cells.",
+    "DPR2 is a headless QGIS setting, not an actual high-DPI desktop; saved PNG DPI does not preserve on-screen physical sizing.",
+    "Other required coverage cells remain open; no source/filter/renderer/font change."
+  ],
+  "runtime_python_sha256": {
+    "__init__.py": "dddc4d1daead84f9881937088992d2bfdef3016579fdcaa705036803fb6ea786",
+    "activities/__init__.py": "3ce107e06db3596e6a320ad2e4720748e7ac951f137c50c41e9d97e6772af590",
+    "activities/application/__init__.py": "159f28b3f7e739ca381a76d5a8a74fdae3bbf1dbee565c0b234b4b1fa197cfa1",
+    "activities/application/activity_preview.py": "222278da368af1872d4cc4aa9cf565513c26f155f700c236a473414d5f23be87",
+    "activities/application/activity_preview_service.py": "9ab4839d001a8db00de21631c266196ef9a7306b5b3163f4bf4d362d51f5941e",
+    "activities/application/activity_selection_state.py": "fe5174bcd907c400f56efe372f3f50208542cbaa58f4b6adb07359dcc90858f2",
+    "activities/application/activity_storage.py": "98f0f88ec6234263fb55ad615395cb46eeff8fdae5e9939142a63fec3ba2fbaa",
+    "activities/application/activity_type_options.py": "1daf471d46e58107016a7dc6f95289d912264317c84fcb458d5b11a9550acfb9",
+    "activities/application/clear_database_messages.py": "ea3dbad98da281f8791ce277178656936adad18856f81cbc3e19ddd28024d01c",
+    "activities/application/fetch_result_service.py": "2aa76c67f1cb6262b2a43b54076eb38ec65872b6fe7d8a416f7ba57782791a9f",
+    "activities/application/fetch_task.py": "04e69b077bffc4c9325fd3d19c74a4972c542805b1dc54ca1ed1464792eff36e",
+    "activities/application/layer_summary.py": "63bbcd3535ade2a27f6d2fc344c794ce6a103b2a4720097be7038a1d7e5cd862",
+    "activities/application/load_workflow.py": "e99e9c128e3cca3002ab2d893f3abbf6371a30b02771578641e9343824bc9af4",
+    "activities/application/route_sync_task.py": "fe24c62a834f063ce51f4cbcabf7c4ad1f66bf2fb6f1fb631309f96705e1c46b",
+    "activities/application/storage_selection.py": "6d82c02e6289f6a5b72baa53bb0689600b63a87456c5baaf5316407b5c1bf29e",
+    "activities/application/store_task.py": "da8cb05525394608bf6cf709cfe841e7a8d4917ed0fa7731b06acb4873ad9936",
+    "activities/application/sync_controller.py": "26cbe089a2dce0a5f14b3a028b883125f69d96aa8b18527bd4f25620992d3652",
+    "activities/application/sync_strategy.py": "1113bf7e2bfad101f494f857de373beb45f55b9661d227e94f358b8185328369",
+    "activities/domain/__init__.py": "0a881183447277b205b748b99baf0bce89f44a81a9a6c06300f7cd72bd302143",
+    "activities/domain/activity_classification.py": "93a14319315f77533b87b2cecad2956f5ea63d36e0d7fd8c20b1e385988d1b0f",
+    "activities/domain/activity_query.py": "8e46f420728385fb6d327c5d810b24cf9e207ad0ccfe63a9c81cb54f5e23de7c",
+    "activities/domain/models.py": "cffe9e8718101d0e44c9e4adbfc5172f685d06e81209a16d95d3761e3e21199c",
+    "activities/infrastructure/__init__.py": "1f368ef96c31f3bff364a7648a3d19dae30e749ae628fa745e0edcb69f394250",
+    "activities/infrastructure/geopackage/__init__.py": "a866941ad0c9d9f3bc27869dd896477792f270df2f3fba4a73c77d6f7db480a4",
+    "activities/infrastructure/geopackage/activity_storage.py": "306d6fb64975474a668d8daedd2d7a992ac5d5291d16113e732fe6fdba15f960",
+    "activities/infrastructure/geopackage/gpkg_atlas_page_builder.py": "d30e4fc9b6194883618a6519250b2789cb8cc5e00ae34896c3203e252b26a056",
+    "activities/infrastructure/geopackage/gpkg_atlas_table_builders.py": "715e19a935654489bcef32018f725ddb29d0665ec336f0326175e99ba674d3ad",
+    "activities/infrastructure/geopackage/gpkg_io.py": "8712128f290ceb485427d0bbad092cb4df44447795f474ad89c742c691fd5fc5",
+    "activities/infrastructure/geopackage/gpkg_layer_builders.py": "ec911e4b5c0e9d8ba27a79cb4477fb3a85b795522a6e1b0d1235b7a77a3fa6f3",
+    "activities/infrastructure/geopackage/gpkg_point_layer_builder.py": "fedeb24a4e5129cdd9b18dd0f9a06ebaf3ff5695c6e2385c8caa3010f6895c7f",
+    "activities/infrastructure/geopackage/gpkg_route_layer_builders.py": "88ec3ad15215e07394da0906b3dacced2427986e86481bc1b5068c7da9a743b0",
+    "activities/infrastructure/geopackage/gpkg_schema.py": "c61f92d09e493ca16cb785dc2917c57f7e68831bc2f9af6e2c496c57039c9f50",
+    "activities/infrastructure/geopackage/gpkg_write_orchestration.py": "655f7474e33325f3e7dd681c2312c8b5216670ec4213a4a1fa6eb53b4b880748",
+    "activities/infrastructure/geopackage/gpkg_writer.py": "faff5e6758b4ca349ef5b61ef7c6e3ec5388554f4ad27d6bf8ee84cb15f78ddc",
+    "activities/infrastructure/geopackage/route_storage.py": "bb60192630b83178b8dbd9e05a52555071a7ea78f2c58d4a6c8786465cc4cc38",
+    "analysis/application/activity_heatmap_analysis.py": "c9f27b83a2bbdbc990355575e94081ca8a007715798f3b431a6439da3ecd5df7",
+    "analysis/application/analysis_controller.py": "850030bf7edfc455c607b8d7f5c4556781dec58af11ca88672fde806d34b0813",
+    "analysis/application/analysis_execution_dispatch.py": "8bfa31e2ed0dbe8232d792380155001753846269472891a834d7d3a38dc9bb92",
+    "analysis/application/analysis_models.py": "acd0e8fc199379c908aa51e67859ec259559bb0db30e6dc5afc329b1a77ee64d",
+    "analysis/application/analysis_request_builder.py": "12d5bfc335787c8ac63bf0185628b6c7e74356b1410b5a3d38eb33d8112837c5",
+    "analysis/application/analysis_result_builder.py": "09ff419af17b429adee9d810b8ad1398bd0a266135f6d2c92a41d6a76c808858",
+    "analysis/application/analysis_status_messages.py": "94fb3c1862d957cc27b97b1970a754b98a377e0afe0aca503cc7efedf5c7a636",
+    "analysis/application/analysis_workflow_building.py": "9a85f34c9df4ddc43bfe4c965919a599475d7251522f11b419459ca1b39e08b2",
+    "analysis/application/analysis_workflow_execution.py": "93c379f0ae24d5f5d6e8c6b578a54282717f4034aaf43890e48eaf99dbd8cd75",
+    "analysis/application/analysis_workflow_facade.py": "bc831a51f5d81fbf51ef198485d1dc325d6f01dbc3992923d0ad16d88c9a0fc4",
+    "analysis/application/analysis_workflow_port.py": "01ddf6f69407a77e35cea32853b244b80a09b1cc4ace13c4ced0218d1fc47fcf",
+    "analysis/application/analysis_workflow_provider.py": "8ec2f6421362f0e865683e95e943ac3cc82d8c4a45a5adb5bd4c2b980fad7413",
+    "analysis/application/frequent_start_points.py": "2780e8cf81da1da423281f9a25249aff35ab3d3227c6b155aba54c9a1db1f0c8",
+    "analysis/application/frequent_start_points_analysis.py": "c86a379e255c7d072836c97ad7bd0e877a96955a6652f5d9ba05e7fb5467bc4f",
+    "analysis/application/power_output_analysis.py": "6250b80ee5ec6ba420f9fbb7fdb09aaf08ed86e27266f3a0b54d5eb7144bc80c",
+    "analysis/application/sample_layer_helpers.py": "37d37adc50d3588420ec7a3beca74927151c6770768dee709fab28781853bff6",
+    "analysis/application/slope_grade_analysis.py": "5e543fe904e92d7b4b099d54cf10229bbe606421e0a85a4c719b5d3a00fe01f4",
+    "analysis/infrastructure/activity_heatmap_layer.py": "d3efaae7cfe3b1fc11ba0b59fb7208d943a655901c5353dcf43d30f20c8f38ff",
+    "analysis/infrastructure/frequent_start_points_layer.py": "1be7bb379bfa7f8f779f66daf0292b8725ca8acbd3e37941b4800e13f613967d",
+    "analysis/infrastructure/power_output_layer.py": "be83456b4dff4e1867976f4e748cf0ecf6397baf44f413bcbbb9fabab50469c9",
+    "analysis/infrastructure/slope_grade_layer.py": "2032d4684053a78ed7bc61f424765e081ca125c02780453ce300cdec0fba90dd",
+    "atlas/__init__.py": "c2a9fb77844dad6f7b9e7671af46686024a240821dae3a684aac10eaccedfbee",
+    "atlas/application/__init__.py": "90aa644d787c0126b475991e38936b8064828c254acf17f9e77d98749737c905",
+    "atlas/application/atlas_config.py": "e02dc3215c44d4e02e06945d4fb95f5e88bef2e3febfc942a099334742026233",
+    "atlas/cover_composer.py": "dc7cd3136aeeb48e0a337940d41ae33eee03298f47ba83803a8120c1b5fda5ad",
+    "atlas/cover_summary.py": "9445691fec1bb5f4fc88dfb5ef190f9591129df5d40c6cb733e9fc0703e05bd1",
+    "atlas/export_controller.py": "8b131ec8bf95ee1ace31e35c2425bc7ca52b690d5127dc0a584f0d634b95f101",
+    "atlas/export_coordinator.py": "5bce3dbaae625e49eb4588266eb80f24c4ca618a9a00eae46a13129dfd13ecd2",
+    "atlas/export_front_matter.py": "c8452f15471bcad27dbf5a85cbbe6e4dea8b7850fb7441a1c80fdf527e7bd0ed",
+    "atlas/export_page_runner.py": "6aa4f58d555a7f5345f7221f7d90e0d513316d2f293b0758cc1af660d829e3be",
+    "atlas/export_page_runtime_builder.py": "d6d49761a43130e5215f423b0879feedb3afffab6c2e89f419b6fc5b693aeaff",
+    "atlas/export_runtime.py": "295cde39aa52f5f2be2c2d361b45e69a017b89e4c2c0ad8c624f251ac6d2c9b9",
+    "atlas/export_service.py": "aff9758e3e5806248da62a8adf713e3360ae79b853e9ff2dd555bebcb120e763",
+    "atlas/export_task.py": "ac7ed5ac88cc4160eac4d1d15895ca6f7ce288657fcb88488a595bd7ec9e5e5c",
+    "atlas/export_use_case.py": "a52e1bfc0e1ff064cdadff5e70171baa1f24019ad5b4de61e7e1e1f81d8ed816",
+    "atlas/infrastructure/__init__.py": "bc823315fe03b9a7a779ba2c33df7c6e4f979236e40a0140d83f1fb3c79f2027",
+    "atlas/infrastructure/pdf_assembly.py": "04ba336015585536f0ba8377b68d069fcc22955b21261606937a7ad699cdbf45",
+    "atlas/layout_metrics.py": "37e52102c7bcf5c259a0ab3199fe14a246142a910307b849fbfbf9de386f815f",
+    "atlas/profile_backend_policy.py": "bd6adbb58e67c00a444df0a3825761784ebb0762cee6ae92ff5adb5622c16ae5",
+    "atlas/profile_export_workflow.py": "7b1f4825e6c01fdfd4dacec40ea9facc7cfc16cae6d4731eb2ce1b1c28151a85",
+    "atlas/profile_item.py": "0c2c7ec396656daf8238b90ace139e10c4c3e12cb4ebfeabbba5e020bc82c665",
+    "atlas/profile_payload_resolver.py": "6fe89de0eb9744b943b72a01914ba75ab3b1b9e34d78232f2710ffdefae1c891",
+    "atlas/profile_renderer.py": "81e32fc0fd53d7f4d153fbe59cb15eb56ef5228f9dad8c2352334441d8aca018",
+    "atlas/profile_style.py": "57e729d513a30745d8460ae8a0548bf52a9dc3de1a4da1bc7c08844a4ea46aad",
+    "atlas/publish_atlas.py": "1092485c695259ddd42dc31318276a6678bdad3020c8346aa88723fb9694ebc7",
+    "atlas/qgis_export_runtime.py": "7d3ee2cce019c066ac4a88af503085b7c48a9ec91ff5f5c35e68494158f8e105",
+    "configuration/__init__.py": "2ab18d63b0d9e40bd1343da05294eb92d7fd7aed4b9b5da0fe646d3d1a82eb68",
+    "configuration/application/__init__.py": "1c484fac0c25da69ab696deea63ffd02b743b12dfbda739253d59483adf38a35",
+    "configuration/application/config_connection_service.py": "1d9eff2e68fd59b7892bdddc6281f592db5db151d7e9b8336ea2a53537ae4513",
+    "configuration/application/config_status.py": "246643d8c2644cd19963ad33a7f9b281893f22c27a6a6c1ff48fa509ca013ff5",
+    "configuration/application/connection_status.py": "39f54fe2d05d6281a703bf525282e90c30edfaf07d006f858e17c407557fd36e",
+    "configuration/application/dock_settings_bindings.py": "077c68b21d7504465e24e94424930254327afe36afe7cf9079365aa9b632ddbd",
+    "configuration/application/settings_port.py": "f936b811b7816bd8a2db705593b2b989b1c8c1f1d1de504a060e9078f138a293",
+    "configuration/application/settings_service.py": "fe5be0f3bb11fa474e12e7754683d25a323603508b20f62501e73a32f3cb6678",
+    "configuration/application/ui_settings_binding.py": "0d1a6bca32321902ae2919fa90e455cde38a2575c9f011702a67b87c792cfd9f",
+    "configuration/infrastructure/__init__.py": "924eef0a9b057fd57461886d294f78d9b690c57e84f4558c0c06e2a932dc6028",
+    "configuration/infrastructure/credential_store.py": "81584818af729fde64a9fd8a6f18c165f45d39efd1887e9a7b0e88158d225f42",
+    "detailed_route_strategy.py": "dafe4976524cfb940876d9f69355b580116ded54f056445500fb44262ee9f7ec",
+    "mapbox_config.py": "a2bdb887cbc4663e96a5a282dcdacb4c2477a4bfcfc3f1bfd6569f155c7a89db",
+    "polyline_utils.py": "21d1af4198bb179a81537eef3b930688d2852c6b68000480c45db8bc6437d9c3",
+    "providers/__init__.py": "3886f40a88f3ac81b41b9bd98d092c0ac0b9cc0c07bd57aa6a34ed36f40ea752",
+    "providers/application/__init__.py": "aee4ee0aa55732b11c6761fd3ce5fc7e758cc0eac32d521999d57dcd47751367",
+    "providers/application/provider_registry.py": "22a620be5639bccfe946a546f30f22cd8a609159ad368b1573af12c0978ded8e",
+    "providers/domain/__init__.py": "e8b041a2d0aefa57966768093b7dfbe3985cfd508d3efe14b979132b8a086482",
+    "providers/domain/provider.py": "eb987ea8588a571abb679c32dc14c3aafa5cb07ed02cea271a9cf4de7dfe8eb7",
+    "providers/domain/route_gpx.py": "f589acafaf497dd9dbdb063f26bbf9b1d2bbc3167ea54dadd4ddba425feb3e43",
+    "providers/domain/routes.py": "08842e90695be478834e687047143542367fa5c6620227b060f4780f12a301a1",
+    "providers/infrastructure/__init__.py": "dad5392f5ace2af553a2cd1d4bde2701545bd88567387fa94d3e77e6886c3bf4",
+    "providers/infrastructure/strava_client.py": "4e9c4e2c57a0f3a8e376a7f2fe96b77fc44348ff8172d55308f375024bb11c06",
+    "providers/infrastructure/strava_provider.py": "aa401c59f2052ccaf56f321b75711b823fdca7bb178b5f3180cd7f8b56bee80e",
+    "qfit_cache.py": "b8f6883e1955b2cb66880d7514a7e04c090442ded413ba3317d0ea2bce0e6341",
+    "qfit_config_dialog.py": "7daa57ce7fc97b928f9ba0841100702412ad9736eb89ba36405bd933f07600f4",
+    "qfit_dockwidget.py": "e36fc43b94b10c9c57b5c325435f092cca454ec82e46138c6ac25190932435f2",
+    "qfit_plugin.py": "ebf0146e1ccec4fd249016d37e20c00a6d992801f0b27c31ccdbbf458234ce94",
+    "scripts/install_plugin.py": "7b18c74d0ebbcad17f8392bdc4e0e7573aa30deebd615ca616c692b6b1cb61fc",
+    "scripts/package_plugin.py": "3491098c603a3f04c647cb17d201d1c9fe993e63c251cf82c14d4dc4c1553839",
+    "scripts/run_plugin_security_scan.py": "7feac37928bf2c68d30e6726602ad7d4c10ee8493cfd60c641570878cd330cef",
+    "scripts/uninstall_plugin.py": "07dd399a721209d3e277bbb7023ea5571ee42e63f6f85043d3a523378309986e",
+    "sync_repository.py": "e0dc82b9bb75927fef03f94c87f9e32bc1e4d5bd6f6b9eb2787bd326b72f0f4d",
+    "time_utils.py": "27b47822605ba06152465d8da406ee1454ea2470600a4ef1021054846007ae5d",
+    "ui/__init__.py": "66565ecda92a23fb878068f983bbd55d53b379d798781fe95e00c841a7222dbb",
+    "ui/about_dock.py": "705f17664a2393392948dd03f8302e8e4ac1017f45571daa157404944fce9bc2",
+    "ui/about_info.py": "3e730f9e66ec9092fde1ff2ccd6e6b051aee6ecb3cbbdcdc7ecb903451cd76f9",
+    "ui/application/__init__.py": "c91da327e5f5d6abca4645160d0c15e0604d1f58216c6234025266f7f4fb560f",
+    "ui/application/dock_action_dispatcher.py": "9ab8adc67947f33dbcda687162e709ef61d16829158549e756e15ebb5e5bfe28",
+    "ui/application/dock_activity_workflow.py": "36d987037096c399e4eab928caaa10cefb1f68045187fed9ac841c69e06ceeab",
+    "ui/application/dock_atlas_workflow.py": "854f491a9d372ab0a24149a04e62e8b11a41410e90a694086233906131e5c33c",
+    "ui/application/dock_runtime_state.py": "3abbed89f8654aac900400d1155065b1de85ff4fa955587b0b37e3f20f840edd",
+    "ui/application/dock_summary_status.py": "d8f4c25831c61736db09c843f423eeab54d750d2289dbf853f6dca22186145bb",
+    "ui/application/dock_visual_workflow.py": "2bfe73f2f2a119f566a125b42674877d4babe016e90e024872b7154ffa9effc3",
+    "ui/application/dock_workflow_sections.py": "f1166a4b448e855edbc7a2e092f86af387cd986ddcccc972884927e444f78f02",
+    "ui/application/local_first_activity_controls.py": "e562bfae75d70dfa5f8d23e7c056b2c463eafaf200fd98c79b27d39d164867fe",
+    "ui/application/local_first_analysis_controls.py": "713d51798ed2f29ac044e4c01842b898a47833b5796c2f1657eb6de3630b8030",
+    "ui/application/local_first_atlas_controls.py": "68f3beb69260e43c09c4dcf979e4f924bd1fed753ce0d9a1d66dddab8bfc77ab",
+    "ui/application/local_first_backing_controls.py": "9ab37a14cd15897fd4dd790f66cd677127fbc2f730ab18e78174488c7b06774f",
+    "ui/application/local_first_basemap_controls.py": "57d387f8e4ee35de21b009731be941a55716d8b12e4ebc887c403416ad32d285",
+    "ui/application/local_first_connection_controls.py": "fb11b9752e9ccd4bfeb369bae7c8f809d116f002fd9849d4b65019d053a81a18",
+    "ui/application/local_first_control_installer.py": "2f4358037f87ebab873a13d2703c25b52ecae054a380c174b0621b07dc17fec2",
+    "ui/application/local_first_control_moves.py": "170df1c8b352455db15c9a5a67bd9a6fd5e2d7da4d258add3b11ed3e7f710cc1",
+    "ui/application/local_first_control_visibility.py": "1d292b3c0b69476c3adb90f52e59b7463b19db159ca2264e7b782a3698a30208",
+    "ui/application/local_first_filter_summary.py": "22d7a0358a0ed585d02b58b4ed199fe2f0fe9a41d3882259bc0ab325fd6928f1",
+    "ui/application/local_first_navigation.py": "0565c73dc3333c1a7fdcfd122e836ac5e45f256221ed8f02b9849e3f1375f070",
+    "ui/application/local_first_parity_audit.py": "ac62d25a23bddc035b59c5a3297539f71e34ce7d6f258eb244504ce16517ca5b",
+    "ui/application/local_first_progress_facts.py": "bb38ae2c02c075f3be0e0527234a8a749b2b86b63d2082dd2883b9b20f7b7b68",
+    "ui/application/stepper_presenter.py": "13286b6ac7eee4a05ecb20663e570d8cc83c8a2d5688f96faef1549eba93acca",
+    "ui/application/visual_workflow_action_builder.py": "852483226170cd2aecc6d2e0fb643426f08f49c68302b2d751e45773f1b9753e",
+    "ui/application/wizard_filter_summary.py": "35e51e945f1269cac9d413ba28130d2503e041fda3271756dec38ab6c4b56446",
+    "ui/application/wizard_footer_status.py": "5febe03fb75224610162b037c03a16c480af09f4362332e1a78335219ad7cbfe",
+    "ui/application/wizard_page_specs.py": "01084d2f217da3b04082bc511439038376983da73f43cbf4220388e52024ca80",
+    "ui/application/wizard_progress.py": "5b3ac8f0b9b5b57d9642f7ca4036da77853c9b1b599c009c4c5d1a229b3edc9f",
+    "ui/application/wizard_settings.py": "cf3661d282380ae6bc069ae5ed7ac1d18977a13ce6566457ca2a177506988c9a",
+    "ui/application/wizard_workflow_sections.py": "fdb0a37c291d135078a217e5988261da22c992ca55fd79042a26f8066fde2011",
+    "ui/application/workflow_footer_status.py": "7f07fd1ae39bdab84f2aee4566f7dd7ac83a2b50faa18f877fb4103c9b6dab06",
+    "ui/application/workflow_page_specs.py": "8cc1610dc42d26829abf9ee4190de5e946bd70d3f7dde19f18171a8681df4636",
+    "ui/application/workflow_progress.py": "e2bde1ade1c5b666731ca13cbeac5823f6aa3958d0510f10173a236eb80c46ad",
+    "ui/application/workflow_progress_facts.py": "c20746ec23ccc42825637fb2949c550050f3a97836b21ed5e227dffd15f49cdd",
+    "ui/application/workflow_settings.py": "0213ab5a4837fab114ebec0e38eeeb86853da32887f2878c1435cb1aaf2f6a67",
+    "ui/contextual_help.py": "228f839447a56ee6937a4c7cb2d58fb60eb886a61a44e1fae09ac57baffe5dcc",
+    "ui/dock_startup_coordinator.py": "1612ad15a05218241a5a1a3c41aa031769a8028949b7ea9d9e99a7e0ce0a62e2",
+    "ui/dockwidget/__init__.py": "2a0ce20cf60e998cdc59710151fa8c6ddc0f5b0b1538d7affd9e21609d00fcc8",
+    "ui/dockwidget/_qt_compat.py": "910319a6cac0598da707dc26770f06a3d91629c49fc87caee484cb848c7f10e9",
+    "ui/dockwidget/action_row.py": "6a952d7c1c03072b1daa561bbb2b98648728531834efa87e8bfd5eabf5ae58e7",
+    "ui/dockwidget/analysis_page.py": "86f13cb189362bd5b45a12e1ee7d1c2d6d1575aa7c401feb6d34697e5b07bcc3",
+    "ui/dockwidget/atlas_page.py": "8a5d8aa8dde7404de1ee5604438c1c1a0ce56a4c2fd4fda09c62f636fc12ded4",
+    "ui/dockwidget/connection_page.py": "a85f641d893fbd9c1abde50a65959f59e3fe49e608c34c0686aa6df5d8bfebbf",
+    "ui/dockwidget/footer_status_bar.py": "f121e0bc09d74333a609ea7a102ff5d6e42fdae0144a5a5741da41b60c50a023",
+    "ui/dockwidget/local_first_composition.py": "15882baab1fc2fab42036047669609da08deedcc232883835cc8e8870578c4a6",
+    "ui/dockwidget/local_first_shell.py": "1d1c5d8ddbc734eb5c45804ff4672fe46ad540d8f6f28134a4a08331256ed54b",
+    "ui/dockwidget/map_page.py": "ea29e211ea5fa25c76857409a4810ac7356fa40fff361d2a2d78e1ae6b30a3e9",
+    "ui/dockwidget/page_content_style.py": "a2da8f2311f9fe6f036c6e4958f535cd809aaf4cda77a83dee3ddbf84f722d84",
+    "ui/dockwidget/step_page.py": "bea769c1e12f4151d7c764a447912d81ae49a29a9972d756c356b0e0df935579",
+    "ui/dockwidget/stepper_bar.py": "464eeaf03c3b537cb423fa2e6a781d52dcbc8e8dabe0dd897c38c3c0b0b0eb3a",
+    "ui/dockwidget/sync_page.py": "0dbc55740fbcb1205231eac36a7536ed4312b889500e6c4683be61a6aee7eca7",
+    "ui/dockwidget/wizard_action_row.py": "49d65f15648785f09e33bba815da370d068cac6e3bbfbbe7f4ba689c30b8fca9",
+    "ui/dockwidget/wizard_composition.py": "3525465f8653537277530f4458020eae3626f4259adc7f7bbed0ad8879c6093b",
+    "ui/dockwidget/wizard_dock.py": "00c9a2d13a974161b7f7a00e543e1f61bdb6b17337b3510f71c3b0dbf707c705",
+    "ui/dockwidget/wizard_page.py": "9975e62b04cd9b60888c601e9056a0a00dd2eb881a6eb53a555d2fb019e90876",
+    "ui/dockwidget/wizard_page_state.py": "7cc08330c87ed77a8be7091743ec12f01b34739051a7134a30865e066ce4cd1c",
+    "ui/dockwidget/wizard_shell.py": "dabfa65907a88a6503c4a708f0cee794907ee5bdafdae8c9edcab26244c68c9b",
+    "ui/dockwidget/wizard_shell_presenter.py": "aac8d652270a05847dca29db54768fab12f278fcf62659af1bb19e16ea34d56d",
+    "ui/dockwidget/wizard_step_page.py": "277c616bf3a43a87230f4d57d352945783fb14905970bace1bc34b19fda5fabd",
+    "ui/dockwidget/wizard_stepper_bar.py": "ae0b6e3d86b5df37a774771f1b8a05c4e4ef54747f204424b23c176b485257e5",
+    "ui/dockwidget/workflow_composition.py": "2ece4e59e3cabd1580aaf3a38b95648d61ca5e7434dbd8b40b5c34ead41377b6",
+    "ui/dockwidget/workflow_dock.py": "b7240365f8be4994ca4d31a66638a791f07d531ea0be8b2ef5e0c3c0eabe6d51",
+    "ui/dockwidget/workflow_page.py": "c44f93f72c657c92667279e023d3d6899d3e882717065d282331ca2fa7f81861",
+    "ui/dockwidget/workflow_page_state.py": "46d704ba074bada514052ffba5ebe0c55894afa03a0013c1fdccf3793583eb8e",
+    "ui/dockwidget/workflow_shell.py": "c4367d418dc248a9142fc10041d829d7d025fe005b7e55e7a0da821500085e76",
+    "ui/dockwidget/workflow_shell_presenter.py": "42cf961d8e723fa4f77278b0730dca1a20a2f78eb425e0ff87527c90f0dff70e",
+    "ui/dockwidget_dependencies.py": "5a287c2fd0b340bdec6da04f17e7aa14a430c8cf717c152648aaf827d71e8c47",
+    "ui/qt_enum_compat.py": "5ac3fd66f0d76c157aa3551af2c2175e84e1d0fd0b6f44108e4fd092f43f8d78",
+    "ui/tokens.py": "faa03121d89801cb27e5252eb27f57c7d11f201ecf45d54efaa28a1572ab94b9",
+    "ui/widgets/__init__.py": "78a91f2d8e53a376bc6ef23c8987a7793d3b05044df50b3030f5ef94bb75eba6",
+    "ui/widgets/compat.py": "c015811917c15b449ebc2bc274fb8e3373334e021db9a6076920abdce8c686bd",
+    "ui/widgets/pill.py": "d84e5a97d494eca5889711d844cd530e7fc8d1c5e0cfc5b21b379585393c9434",
+    "ui/widgets/tokens.py": "3041353e3b2d36a70c0de9e5b3361e355e155b5afc2fa3bcae84f7d7cb477ec2",
+    "validation/__init__.py": "d3a7fdfd15f3ff25e687907ad3cd028fd7243d1a12c99f10201f6c3d1b3515a5",
+    "validation/atlas_export_harness.py": "1ca9e050a6415c5e436a5b8d2bbdd6553f7bd3a02572094629a94b9e0f63083b",
+    "validation/mapbox_activity_overlay.py": "1bff513d9cb2bdd32ffc476aa92a7cc1270052a5182dcc6db06eb42a7cbfd6a2",
+    "validation/mapbox_outdoors_comparison.py": "f0bd0cc7ef9e4b12c9ed88332a5b4235018e31c523670ba98b455daebc865484",
+    "validation/mapbox_outdoors_comparison_delta.py": "94f8766ef57f686b6145897c4a202f99f890b7da1bec2cbb0971e7d167096d9f",
+    "validation/mapbox_outdoors_contour_features.py": "fd29e7a719a77254b00d8d1b34d5586e341fb5ecd4a57a0fe40ee21a3c8cbb33",
+    "validation/mapbox_outdoors_label_settings.py": "1acaead8c4440a2c10067bee86acc6227741fcc7f71fe624d484e39f7a829ff4",
+    "validation/mapbox_outdoors_path_pedestrian_focus.py": "deaa5d380369b1f4d54abad3787c4e9408e030b4929fb1a3a339b2fd5fb43343",
+    "validation/mapbox_outdoors_rendered_layer_mask.py": "652383da3e8c73b9e0a954897591f601fc90fa99b619e4d4a5010e6ef8561e11",
+    "validation/mapbox_outdoors_road_features.py": "14995012effa86e6dd83f039a177344b11299f9d253f698eef12df9d3bcbb003",
+    "validation/mapbox_outdoors_runtime.py": "9493b222a6239bea4554a9653331fb6c5b640ed2b696f0f12c67939983ca423d",
+    "validation/mapbox_outdoors_source_crop_overlap.py": "2c6244d8054bbf26a622c1a998120d989457cf695734a4afbfdc0c18778eae63",
+    "validation/mapbox_outdoors_style_adjustment_probe.py": "884484777121cf65431e51e0d52b4a6e772df674640215a725676c64df24a027",
+    "validation/mapbox_outdoors_style_audit.py": "14809864323b6107142e44bce6158857bf847644708ad859d6f3092656c71eb3",
+    "validation/mapbox_outdoors_visual_crops.py": "205b58a1136a114781165a1d58343ebd043c0aacd49afb0b311e03c5a678d155",
+    "validation/qgis_import_compat_probe.py": "e20f9209b429a5329ccb1a6a81b47899c245776a7935efc2f84afc8990291bee",
+    "validation/scenario_env.py": "ede6d863521a61a14b0b9fbf19022286f7b0b7a9c2db68d74c86641eaf9852f1",
+    "validation_artifacts/validate_line_atlas_final.py": "aab8afc955943148eb0e1795b1fcf9a12db06dfd9f86a8d7d1a89995511550ad",
+    "validation_artifacts/validate_line_atlas_native_profile_v8.py": "a2a647ef08aee1ad600df1166e25de18beddde3fed8885278b280b5eedf7e26b",
+    "visualization/__init__.py": "f572748b7bf8a0422932df462c05adcda5390f56986bd19376ee5c34398d900b",
+    "visualization/application/__init__.py": "4e88e3069e6ebe3135dedca28f9cdb9cfa96d7b68936469be0d0526c9c58cc79",
+    "visualization/application/background_map_controller.py": "4f12206454149500d94ea4932897342ae3aa3c5452b28440717214de5ef89cee",
+    "visualization/application/background_map_messages.py": "74330709bdba07cc03fb9d0471d8e182a62f849a146adaaaa3b1b35246fb67fc",
+    "visualization/application/layer_gateway.py": "8d9357ee98044934f0a4e860a2e9a51d37ddeb745426313897e56cc5c1b16fc9",
+    "visualization/application/project_hygiene_port.py": "05516e6f5e2adf8f9ff4b7a92df983dbbd3cb7702d95a0dbb628a12308123b94",
+    "visualization/application/render_plan.py": "cbd04d83bfbd829e5f7a0ae19c1747cbeb134bcec7cff12ff3b91b5485c627bb",
+    "visualization/application/temporal_config.py": "5d81ef817554a00b1fbf54db0515b139ca42f5a7b51b0bfb609f355017b4cb05",
+    "visualization/application/visual_apply.py": "22dd2db76c710f30f84cc88b0519c6d5a4f46a388c7d207b25926abae7b6cba5",
+    "visualization/application/visual_apply_messages.py": "0cfa6eb28173cd665fd9479d847fb9c26069a8b046f6bbe0570c6704dae0b40f",
+    "visualization/infrastructure/__init__.py": "89cf57bf4845664b6a7a45d76eb6b6f1051c73bff3361718b7aa14cdeaa23747",
+    "visualization/infrastructure/background_map_service.py": "0a846c0355821cc4dce7360b456dfb989c95343c0384ec894c0f26745cf69264",
+    "visualization/infrastructure/layer_filter_service.py": "de4f6ec35c51ae42bbdce30ffd2e26f813d1c2c6c12c679c4f0a799ab08a2f32",
+    "visualization/infrastructure/layer_style_service.py": "35383965327ea27c2a8e602b7716904de1adeadd0b0eed21227c053db03d283a",
+    "visualization/infrastructure/map_canvas_service.py": "6e97bec7ad64babee79a0925482a3160bc42107491901def2a4acf6e9fe9b6a3",
+    "visualization/infrastructure/mapbox_light_labels.py": "5b2310bce51a53b072e7a3932adb9abdea991116c29ef032de37d25151765cce",
+    "visualization/infrastructure/mapbox_light_strokes.py": "6b70749efac8f2377be2ef03901423cd031ca7db4d53e39fbe62c7563f9db15e",
+    "visualization/infrastructure/mapbox_open_fonts.py": "f1e94b2b42be6a6ddce758c0b2904cca66526e583bed3ee9b33580b37359b737",
+    "visualization/infrastructure/mapbox_shield_collision.py": "08f23727b12bb3156e47289f81c021fe52df043339d3585ff5216ca2e1e7b24a",
+    "visualization/infrastructure/project_hygiene_service.py": "35e2ae208d86822f2da0226172bd5ad5df4925df53aeb5be3b2ef2f6fb92d85d",
+    "visualization/infrastructure/project_layer_loader.py": "b937356ad5db8a0ddd28e4670b99424b9d5ddf81b67ae9b5b6dcbb311815111c",
+    "visualization/infrastructure/qgis_layer_gateway.py": "3d52f82f841b76df009289f84e27215f1b6c81e0ecd17f36efb25e831b9438da",
+    "visualization/infrastructure/temporal_service.py": "925ae01aabc693ab868a146a8bac6773a01053eb82f4f2146140108084bef3d3",
+    "visualization/map_style.py": "3898f154610ec768c875f3cec6ddda86fe52c9571f8d8cbfb0d2c2ed73186e68"
+  },
+  "runtime_environment": {
+    "3": {
+      "qgis": "3.44.11-Solothurn",
+      "build": "f8f5812197f",
+      "qt": "5.15.17"
+    },
+    "4": {
+      "qgis": "4.2.0-Bel\u00e9m do Par\u00e1",
+      "build": "ec9a7f91d0f",
+      "qt": "6.9.2"
+    }
+  },
+  "density_movement": [
+    {
+      "version": "3",
+      "camera": "bern-urban-z12-light",
+      "pdf96_vs_pdf150": {
+        "changed_pixels": 124430,
+        "normalized_mae": 0.005139731980755265,
+        "bbox": [
+          0,
+          0,
+          1280,
+          900
+        ]
+      },
+      "pdf96_vs_pdf192": {
+        "changed_pixels": 33931,
+        "normalized_mae": 0.004285833106390705,
+        "bbox": [
+          5,
+          0,
+          1269,
+          900
+        ]
+      },
+      "png96_vs_dpr2_preview": {
+        "changed_pixels": 211422,
+        "normalized_mae": 0.0014598198075526508,
+        "bbox": [
+          0,
+          0,
+          1280,
+          900
+        ]
+      }
+    },
+    {
+      "version": "4",
+      "camera": "bern-urban-z12-light",
+      "pdf96_vs_pdf150": {
+        "changed_pixels": 182599,
+        "normalized_mae": 0.0074782169117647065,
+        "bbox": [
+          0,
+          0,
+          1280,
+          900
+        ]
+      },
+      "pdf96_vs_pdf192": {
+        "changed_pixels": 247197,
+        "normalized_mae": 0.008753155637254902,
+        "bbox": [
+          0,
+          0,
+          1280,
+          900
+        ]
+      },
+      "png96_vs_dpr2_preview": {
+        "changed_pixels": 212546,
+        "normalized_mae": 0.0014762901688453159,
+        "bbox": [
+          0,
+          0,
+          1280,
+          900
+        ]
+      }
+    },
+    {
+      "version": "3",
+      "camera": "geneva-urban-z14-light",
+      "pdf96_vs_pdf150": {
+        "changed_pixels": 170425,
+        "normalized_mae": 0.0070274952342047935,
+        "bbox": [
+          0,
+          0,
+          1280,
+          900
+        ]
+      },
+      "pdf96_vs_pdf192": {
+        "changed_pixels": 41720,
+        "normalized_mae": 0.005714918073710966,
+        "bbox": [
+          10,
+          3,
+          1265,
+          892
+        ]
+      },
+      "png96_vs_dpr2_preview": {
+        "changed_pixels": 196970,
+        "normalized_mae": 0.001580115286855483,
+        "bbox": [
+          0,
+          0,
+          1280,
+          900
+        ]
+      }
+    },
+    {
+      "version": "4",
+      "camera": "geneva-urban-z14-light",
+      "pdf96_vs_pdf150": {
+        "changed_pixels": 581686,
+        "normalized_mae": 0.020965620461147427,
+        "bbox": [
+          0,
+          0,
+          1280,
+          900
+        ]
+      },
+      "pdf96_vs_pdf192": {
+        "changed_pixels": 588376,
+        "normalized_mae": 0.021244781454248362,
+        "bbox": [
+          0,
+          0,
+          1280,
+          900
+        ]
+      },
+      "png96_vs_dpr2_preview": {
+        "changed_pixels": 196642,
+        "normalized_mae": 0.0015750794299201163,
+        "bbox": [
+          0,
+          0,
+          1280,
+          900
+        ]
+      }
+    }
+  ],
+  "qgis4_dpr_api_source": "https://github.com/qgis/QGIS/blob/ec9a7f91d0f39a9b8393af4e37db86bb7e800140/src/core/qgsmapsettings.h",
+  "pdf_settings_source": "atlas/export_task.py:AtlasExportTask._build_pdf_export_settings",
+  "pdf_viewer": "Poppler pdftoppm, all PDF pages rasterized at96DPI without rescaling",
+  "pdf_page_points": [
+    960,
+    675
+  ],
+  "artifacts": {
+    "qgis3-bern-urban-z12-light-density-full.png": {
+      "sha256": "0071accdb832f6780b793fb3fcf3ce2f5e4da065d9f0edbc58a3099cf1e6756f",
+      "bytes": 1193828
+    },
+    "qgis4-geneva-urban-z14-light-density-crop.png": {
+      "sha256": "d338a80264f321e19ee7c7d0b22aee59c35cb408ddb35eb965daa0f9f00b8bf8",
+      "bytes": 315174
+    },
+    "qgis4-geneva-urban-z14-light-density-full.png": {
+      "sha256": "fe783a1489a149ef0dba601253d8675b2db8c61323d05dc1b96f8f641f81f95e",
+      "bytes": 1844884
+    },
+    "qgis4-geneva-urban-z14-light-pdf-crop.png": {
+      "sha256": "fd83b134bde45d768611a915693c91ccfe54294ce93a2424adc758c900db309e",
+      "bytes": 333997
+    },
+    "pdf-trace-isolation.json": {
+      "sha256": "e207ce77d3e17ef41eb16f272f9bb9968ba2de9905bd8db049255214589dbb15",
+      "bytes": 6783
+    },
+    "qgis4-geneva-urban-z14-light-reference-pdf-full.png": {
+      "sha256": "e7b43ca4ead30423a9de3ac26d284ac1f7c65a285b0ff9c631a40a224459ac4e",
+      "bytes": 1748250
+    },
+    "qgis4-bern-urban-z12-light-pdf-crop.png": {
+      "sha256": "67086c1b1f293c3f8d9515d55ddd0ff86ea39dd8af8beeadacd90a6b9ea5db67",
+      "bytes": 299781
+    },
+    "qgis4-bern-urban-z12-light-reference-pdf-full.png": {
+      "sha256": "759355046596850866751fc93c4c58045a79c96f4a8823efb40491858e7c6cb6",
+      "bytes": 1353263
+    },
+    "light-v11.json": {
+      "sha256": "87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32",
+      "bytes": 96675
+    },
+    "qgis3-geneva-urban-z14-light-density-crop.png": {
+      "sha256": "c5df44a94cc415f86423af5fd2c787462e0a2c46c903d9c485ce8dfa6ad01098",
+      "bytes": 218597
+    },
+    "native-summary.json": {
+      "sha256": "7c72ac122ee8f60f43690fb2ed2dee0037964f8137a0832ae53887d99d4c5b6b",
+      "bytes": 9909
+    },
+    "qgis4-bern-urban-z12-light-pdf-full.png": {
+      "sha256": "2f07c683ecf929a6ae0156cc1b823191ddecc9b72f2824a1a648ee49b440bd22",
+      "bytes": 1409200
+    },
+    "qgis3-geneva-urban-z14-light-pdf-full.png": {
+      "sha256": "1f536b97ba7eb2111d7a1cb882a2f4f905d31996ee2f305f90b23187da844712",
+      "bytes": 1034343
+    },
+    "qgis3-bern-urban-z12-light-pdf-crop.png": {
+      "sha256": "d45771181ede019978d2b887f2dac48dd2afd94e17d8582367744f29bd797cd2",
+      "bytes": 197906
+    },
+    "qgis4-bern-urban-z12-light-density-crop.png": {
+      "sha256": "b4ca34e4f8f9b68ba099ea7a870542d425294e588ae4c8bfdae38637a47cb45b",
+      "bytes": 342092
+    },
+    "qgis4-geneva-urban-z14-light-pdf-full.png": {
+      "sha256": "53e474b91e386e1f5e9d13fe7b1741f47b6049496c6a2270d248499f5515f3f3",
+      "bytes": 1909519
+    },
+    "pdf-repeat-audit.json": {
+      "sha256": "98576eba6a7a412e55beb04447913a6b01fd50163c782a6b28566382cf3b5060",
+      "bytes": 1837
+    },
+    "qgis3-bern-urban-z12-light-pdf-full.png": {
+      "sha256": "bdf9551313f4a0cabe2a2cb6b61b9d9c97a98e361bb648dd43ea0b1bd860eafd",
+      "bytes": 873234
+    },
+    "qgis3-bern-urban-z12-light-reference-pdf-crop.png": {
+      "sha256": "95f11ee980355877a4728e051c6c438b2304568a4fdac4de029750e109b922fc",
+      "bytes": 269512
+    },
+    "qgis4-bern-urban-z12-light-density-full.png": {
+      "sha256": "3c1669a774b83ed07184cf94f9de0463f6cb19042951b3ea0a77f46f86033074",
+      "bytes": 1802657
+    },
+    "runtime-environment.json": {
+      "sha256": "886ddc8813a97834c8fece1fa11f12bbdf992fb70335572d1cd58741d17b12a7",
+      "bytes": 203
+    },
+    "qgis4-geneva-urban-z14-light-reference-pdf-crop.png": {
+      "sha256": "c23b09495db8488f73c9b3fcbd7ab875c84e3f35c7a61ad0d741dcc829b479c0",
+      "bytes": 308106
+    },
+    "qgis3-geneva-urban-z14-light-reference-pdf-full.png": {
+      "sha256": "95c71605ac95e56db78dd9f4d1966d0dac715359d0085a2082fec2622c37adeb",
+      "bytes": 1413101
+    },
+    "qgis3-geneva-urban-z14-light-density-full.png": {
+      "sha256": "448aa692691a59cc6825cf47c5ac01435ee59b5a15316f68486eb8ba6ef61d70",
+      "bytes": 1280768
+    },
+    "qgis3-bern-urban-z12-light-density-crop.png": {
+      "sha256": "e90894f827681ce1ad9a904c278a206ef9a04bd723d6194b0310e0b07601cc36",
+      "bytes": 236553
+    },
+    "qgis3-bern-urban-z12-light-reference-pdf-full.png": {
+      "sha256": "0de8961880233640b3750d91ac761f4203f46687b2cb0447724c473428696997",
+      "bytes": 1263776
+    },
+    "qgis4-bern-urban-z12-light-reference-pdf-crop.png": {
+      "sha256": "7f57bb8467c9f3b60a67dadb4824c01b516894dcd85c62d13a167604488d6690",
+      "bytes": 286691
+    },
+    "qgis3-geneva-urban-z14-light-reference-pdf-crop.png": {
+      "sha256": "ccc36f134879c68606a39f68d96e68839e6ac214f92e22746828c75c8b7c2809",
+      "bytes": 249555
+    },
+    "qgis3-geneva-urban-z14-light-pdf-crop.png": {
+      "sha256": "f6b788617a7d87c11da173af9ba2c9eb84439e3f8915e716b49530513534b759",
+      "bytes": 180832
+    },
+    "4/geneva-urban-z14-light/dpi192-repeat/style.json": {
+      "sha256": "b68cd8d658fe188ebed52ba5e3636607af1f24b8c81ba4a6700ec1648f1e36ff",
+      "bytes": 132451
+    },
+    "4/geneva-urban-z14-light/dpi192-repeat/qgis.png": {
+      "sha256": "fb0b5edcaa67e813431ce47bccc52c1a29783cc3e15b4a27bd5bc6e3f2ef0c5c",
+      "bytes": 2302361
+    },
+    "4/geneva-urban-z14-light/dpi192-repeat/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/geneva-urban-z14-light/dpi192-repeat/runtime.json": {
+      "sha256": "ea1795f064efcce699d08966cbebd5330447402220730c2abfc8b6c220e2efa4",
+      "bytes": 791
+    },
+    "4/geneva-urban-z14-light/pdfs-control/pdf150-context.json": {
+      "sha256": "8cdbd20562961efe364040b2472f812940e27a71b9d18dc7da03ad393cbb7797",
+      "bytes": 336
+    },
+    "4/geneva-urban-z14-light/pdfs-control/pdf150.png": {
+      "sha256": "1e97b61c53c41b73e5fecb0334bbb148b028d3712060c789a340764679471b41",
+      "bytes": 703684
+    },
+    "4/geneva-urban-z14-light/pdfs-control/pdf150.pdf": {
+      "sha256": "5188fd333310641918a85b042d10d30642d2e4a801eedd7e447f05ba80838a56",
+      "bytes": 5088870
+    },
+    "4/geneva-urban-z14-light/pdfs-control/pdf192-repeat-context.json": {
+      "sha256": "d33ca2cc8d241892c823d6e02ba81e350cf324f62a92abfc69e4c19af4891bac",
+      "bytes": 336
+    },
+    "4/geneva-urban-z14-light/pdfs-control/pdf96.png": {
+      "sha256": "b3240c8b2401e8a0982e425c999add621b58e31bdcf9d33533801baee051b464",
+      "bytes": 439899
+    },
+    "4/geneva-urban-z14-light/pdfs-control/pdf192.pdf": {
+      "sha256": "62c21e03ae6164e486f1eb8b182ad97fc14b628ac61e207e6ceccb650d6ccd71",
+      "bytes": 5047498
+    },
+    "4/geneva-urban-z14-light/pdfs-control/pdf150-repeat-context.json": {
+      "sha256": "8cdbd20562961efe364040b2472f812940e27a71b9d18dc7da03ad393cbb7797",
+      "bytes": 336
+    },
+    "4/geneva-urban-z14-light/pdfs-control/pdf96-repeat.pdf": {
+      "sha256": "cd5dcc29a263f8925e10836d43b805c1060d3fa6f661ecdc030232081f555723",
+      "bytes": 849024
+    },
+    "4/geneva-urban-z14-light/pdfs-control/pdf192-repeat.pdf": {
+      "sha256": "685cb098deb70359984f84a82c5eeccb6b946b485958efa0d4bc3c4721b2d06f",
+      "bytes": 5047519
+    },
+    "4/geneva-urban-z14-light/pdfs-control/pdf96.pdf": {
+      "sha256": "ce27b4c8269cf1377bef52e25f683cb909eeef487d12f2ed2609e7cb05097e4d",
+      "bytes": 849003
+    },
+    "4/geneva-urban-z14-light/pdfs-control/pdf150-repeat.pdf": {
+      "sha256": "a33de6d0e26693524bed53684778ef06edd5b9181f9f7657ea42f23cfa1665c5",
+      "bytes": 5089111
+    },
+    "4/geneva-urban-z14-light/pdfs-control/pdf192-repeat.png": {
+      "sha256": "174491db76eb8faa7c290f8062873ff9e60c06d76cff6d051bb21fc35d06c410",
+      "bytes": 695694
+    },
+    "4/geneva-urban-z14-light/pdfs-control/pdf96-context.json": {
+      "sha256": "ce4fe8ea372169cedd2eb5982c84baabeb3ac1b827a0e4c26abcc645f7ddb057",
+      "bytes": 335
+    },
+    "4/geneva-urban-z14-light/pdfs-control/pdf96-repeat.png": {
+      "sha256": "b3240c8b2401e8a0982e425c999add621b58e31bdcf9d33533801baee051b464",
+      "bytes": 439899
+    },
+    "4/geneva-urban-z14-light/pdfs-control/pdf150-repeat.png": {
+      "sha256": "f79743db715edf0150f3ee32638f96a34f540a14ffe097da9ed898ab42476d7a",
+      "bytes": 703678
+    },
+    "4/geneva-urban-z14-light/pdfs-control/pdf96-repeat-context.json": {
+      "sha256": "ce4fe8ea372169cedd2eb5982c84baabeb3ac1b827a0e4c26abcc645f7ddb057",
+      "bytes": 335
+    },
+    "4/geneva-urban-z14-light/pdfs-control/pdf192.png": {
+      "sha256": "174491db76eb8faa7c290f8062873ff9e60c06d76cff6d051bb21fc35d06c410",
+      "bytes": 695694
+    },
+    "4/geneva-urban-z14-light/pdfs-control/pdf192-context.json": {
+      "sha256": "d33ca2cc8d241892c823d6e02ba81e350cf324f62a92abfc69e4c19af4891bac",
+      "bytes": 336
+    },
+    "4/geneva-urban-z14-light/dpi192/style.json": {
+      "sha256": "b68cd8d658fe188ebed52ba5e3636607af1f24b8c81ba4a6700ec1648f1e36ff",
+      "bytes": 132451
+    },
+    "4/geneva-urban-z14-light/dpi192/qgis.png": {
+      "sha256": "fb0b5edcaa67e813431ce47bccc52c1a29783cc3e15b4a27bd5bc6e3f2ef0c5c",
+      "bytes": 2302361
+    },
+    "4/geneva-urban-z14-light/dpi192/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/geneva-urban-z14-light/dpi192/runtime.json": {
+      "sha256": "ea1795f064efcce699d08966cbebd5330447402220730c2abfc8b6c220e2efa4",
+      "bytes": 791
+    },
+    "4/geneva-urban-z14-light/dpr2-repeat/style.json": {
+      "sha256": "b68cd8d658fe188ebed52ba5e3636607af1f24b8c81ba4a6700ec1648f1e36ff",
+      "bytes": 132451
+    },
+    "4/geneva-urban-z14-light/dpr2-repeat/qgis.png": {
+      "sha256": "df3984692c0881ca65c22da24130df0326532ff8594d8ebc61960f1dbdc2c01c",
+      "bytes": 1306331
+    },
+    "4/geneva-urban-z14-light/dpr2-repeat/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/geneva-urban-z14-light/dpr2-repeat/runtime.json": {
+      "sha256": "111ebea9b07f5690253d88b29f9d9a2ac2888284d891320320766302a386dd23",
+      "bytes": 787
+    },
+    "4/geneva-urban-z14-light/dpr2-trace/renderer-trace.json": {
+      "sha256": "623bef8c483e01e2a5ffe31e81a839dae05da6144399078a1635552dd90850ac",
+      "bytes": 160
+    },
+    "4/geneva-urban-z14-light/dpi96/style.json": {
+      "sha256": "b68cd8d658fe188ebed52ba5e3636607af1f24b8c81ba4a6700ec1648f1e36ff",
+      "bytes": 132451
+    },
+    "4/geneva-urban-z14-light/dpi96/qgis.png": {
+      "sha256": "9fa6f062a723a65a86e31b9d1161a5ed9f534f6feac09caef0c921a0a961f4d1",
+      "bytes": 492054
+    },
+    "4/geneva-urban-z14-light/dpi96/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/geneva-urban-z14-light/dpi96/runtime.json": {
+      "sha256": "666849ba4a149a5fc3f9467634a0c37b4e5e1ec053e7e38ace5fbc03ff8dcf50",
+      "bytes": 786
+    },
+    "4/geneva-urban-z14-light/pdfs-trace/pdf150-context.json": {
+      "sha256": "178ee7307d7077a1dd5a13dee49ce4cf22a82d99c9e268594c94cd6ef08f2716",
+      "bytes": 414
+    },
+    "4/geneva-urban-z14-light/pdfs-trace/pdf150.png": {
+      "sha256": "17078c0c8748cf630b480e120a65517f0ba7aaf017562be4d05109bd3e037e47",
+      "bytes": 703689
+    },
+    "4/geneva-urban-z14-light/pdfs-trace/pdf150.pdf": {
+      "sha256": "9c628487ba9bab9554d5a373db0e0cf04067fb6c2d25b1060a62ca116ee3db45",
+      "bytes": 5089104
+    },
+    "4/geneva-urban-z14-light/pdfs-trace/pdf192-repeat-context.json": {
+      "sha256": "665453524145b518d3408eac5845090c2389affd662ad00a7363f04afc0c912e",
+      "bytes": 414
+    },
+    "4/geneva-urban-z14-light/pdfs-trace/pdf96.png": {
+      "sha256": "b3240c8b2401e8a0982e425c999add621b58e31bdcf9d33533801baee051b464",
+      "bytes": 439899
+    },
+    "4/geneva-urban-z14-light/pdfs-trace/pdf192.pdf": {
+      "sha256": "504c7b4f9d38a7a186e5699a76f9d741a0fd8bcbb80c3dfb824ab332c785b585",
+      "bytes": 5047498
+    },
+    "4/geneva-urban-z14-light/pdfs-trace/pdf150-repeat-context.json": {
+      "sha256": "178ee7307d7077a1dd5a13dee49ce4cf22a82d99c9e268594c94cd6ef08f2716",
+      "bytes": 414
+    },
+    "4/geneva-urban-z14-light/pdfs-trace/pdf96-repeat.pdf": {
+      "sha256": "5ce5689c9670ebb28c2944b29abc6f2f06099de4333d1915f9919d70f86d4227",
+      "bytes": 849024
+    },
+    "4/geneva-urban-z14-light/pdfs-trace/pdf192-repeat.pdf": {
+      "sha256": "c4fd721389e6320d4cb2d2cf54d9958eb01909b2e2392f3332a11f4e0cb5e0e0",
+      "bytes": 5047519
+    },
+    "4/geneva-urban-z14-light/pdfs-trace/pdf96.pdf": {
+      "sha256": "6a0399dde1f922eefe63f4bf8ae88314d0e7b93a4621652635935cfd3e995787",
+      "bytes": 849003
+    },
+    "4/geneva-urban-z14-light/pdfs-trace/pdf150-repeat.pdf": {
+      "sha256": "8cfc68f7c2daab0e5bdd667fea2799cdb1b01b5dbf40c467fabe4eb2f803a975",
+      "bytes": 5089111
+    },
+    "4/geneva-urban-z14-light/pdfs-trace/pdf192-repeat.png": {
+      "sha256": "174491db76eb8faa7c290f8062873ff9e60c06d76cff6d051bb21fc35d06c410",
+      "bytes": 695694
+    },
+    "4/geneva-urban-z14-light/pdfs-trace/pdf96-context.json": {
+      "sha256": "d53304b11583323a9873b6e6faaa8c00ba226ba5ce11cbab3825ae70625e8e13",
+      "bytes": 413
+    },
+    "4/geneva-urban-z14-light/pdfs-trace/pdf96-repeat.png": {
+      "sha256": "b3240c8b2401e8a0982e425c999add621b58e31bdcf9d33533801baee051b464",
+      "bytes": 439899
+    },
+    "4/geneva-urban-z14-light/pdfs-trace/pdf150-repeat.png": {
+      "sha256": "f79743db715edf0150f3ee32638f96a34f540a14ffe097da9ed898ab42476d7a",
+      "bytes": 703678
+    },
+    "4/geneva-urban-z14-light/pdfs-trace/pdf96-repeat-context.json": {
+      "sha256": "d53304b11583323a9873b6e6faaa8c00ba226ba5ce11cbab3825ae70625e8e13",
+      "bytes": 413
+    },
+    "4/geneva-urban-z14-light/pdfs-trace/pdf192.png": {
+      "sha256": "174491db76eb8faa7c290f8062873ff9e60c06d76cff6d051bb21fc35d06c410",
+      "bytes": 695694
+    },
+    "4/geneva-urban-z14-light/pdfs-trace/pdf192-context.json": {
+      "sha256": "665453524145b518d3408eac5845090c2389affd662ad00a7363f04afc0c912e",
+      "bytes": 414
+    },
+    "4/geneva-urban-z14-light/dpi96-repeat/style.json": {
+      "sha256": "b68cd8d658fe188ebed52ba5e3636607af1f24b8c81ba4a6700ec1648f1e36ff",
+      "bytes": 132451
+    },
+    "4/geneva-urban-z14-light/dpi96-repeat/qgis.png": {
+      "sha256": "9fa6f062a723a65a86e31b9d1161a5ed9f534f6feac09caef0c921a0a961f4d1",
+      "bytes": 492054
+    },
+    "4/geneva-urban-z14-light/dpi96-repeat/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/geneva-urban-z14-light/dpi96-repeat/runtime.json": {
+      "sha256": "666849ba4a149a5fc3f9467634a0c37b4e5e1ec053e7e38ace5fbc03ff8dcf50",
+      "bytes": 786
+    },
+    "4/geneva-urban-z14-light/dpr2/style.json": {
+      "sha256": "b68cd8d658fe188ebed52ba5e3636607af1f24b8c81ba4a6700ec1648f1e36ff",
+      "bytes": 132451
+    },
+    "4/geneva-urban-z14-light/dpr2/qgis.png": {
+      "sha256": "df3984692c0881ca65c22da24130df0326532ff8594d8ebc61960f1dbdc2c01c",
+      "bytes": 1306331
+    },
+    "4/geneva-urban-z14-light/dpr2/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/geneva-urban-z14-light/dpr2/runtime.json": {
+      "sha256": "111ebea9b07f5690253d88b29f9d9a2ac2888284d891320320766302a386dd23",
+      "bytes": 787
+    },
+    "4/bern-urban-z12-light/dpi192-repeat/style.json": {
+      "sha256": "b68cd8d658fe188ebed52ba5e3636607af1f24b8c81ba4a6700ec1648f1e36ff",
+      "bytes": 132451
+    },
+    "4/bern-urban-z12-light/dpi192-repeat/qgis.png": {
+      "sha256": "f96147876cefa3f1a4a3d3e83f4b8cac6f48c5335f10a7e2547baac67f4aad7d",
+      "bytes": 1939542
+    },
+    "4/bern-urban-z12-light/dpi192-repeat/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/bern-urban-z12-light/dpi192-repeat/runtime.json": {
+      "sha256": "5e12a86ab1bc9b60245275ce69d3a6ce29ce5d2f6b650f66e631c09a8bbcd2f4",
+      "bytes": 788
+    },
+    "4/bern-urban-z12-light/pdfs-control/pdf150-context.json": {
+      "sha256": "7baa2010b083650fceda2d4de859c731b2195c90100c8189c5810b3e8326afa4",
+      "bytes": 334
+    },
+    "4/bern-urban-z12-light/pdfs-control/pdf150.png": {
+      "sha256": "a3a3c701abf23d5d665a634ca1ad5243632d2770df22b2ff66f4c28d689c2601",
+      "bytes": 459153
+    },
+    "4/bern-urban-z12-light/pdfs-control/pdf150.pdf": {
+      "sha256": "64baf69a90ec31ef860bdede01e14c99195c61442277454fd424238dbd3056b0",
+      "bytes": 1382389
+    },
+    "4/bern-urban-z12-light/pdfs-control/pdf192-repeat-context.json": {
+      "sha256": "3543831409c831d7d26b19be585ab9001048d45926e39ca60fa5af07199c9d1c",
+      "bytes": 334
+    },
+    "4/bern-urban-z12-light/pdfs-control/pdf96.png": {
+      "sha256": "5dbb3584f5c762139e97c031059fa1b4cd6d6377e279b667fb9ecdfa8e1f07f1",
+      "bytes": 374265
+    },
+    "4/bern-urban-z12-light/pdfs-control/pdf192.pdf": {
+      "sha256": "abe8a71ec19fb0e46d48e01b6366289f1d86da499d1157d104c866f0e8f0c1c8",
+      "bytes": 1480590
+    },
+    "4/bern-urban-z12-light/pdfs-control/pdf150-repeat-context.json": {
+      "sha256": "7baa2010b083650fceda2d4de859c731b2195c90100c8189c5810b3e8326afa4",
+      "bytes": 334
+    },
+    "4/bern-urban-z12-light/pdfs-control/pdf96-repeat.pdf": {
+      "sha256": "23a756ff3e71e7476e8d3ba0011cb73b53387fcd9e2790e2276dacf58bc628c3",
+      "bytes": 805500
+    },
+    "4/bern-urban-z12-light/pdfs-control/pdf192-repeat.pdf": {
+      "sha256": "610e1c8ebde0705c6e2a7f95ffc3ffa1add14b24965bcb5eb5bc4be458982155",
+      "bytes": 1480611
+    },
+    "4/bern-urban-z12-light/pdfs-control/pdf96.pdf": {
+      "sha256": "98f414081505a901ab5bb44147c321906ba7fdf2307068f25f27c5e7f860b275",
+      "bytes": 805479
+    },
+    "4/bern-urban-z12-light/pdfs-control/pdf150-repeat.pdf": {
+      "sha256": "bf78f732618e62127f0d5986ca0a61104125a1719227e6838ea7e3267e44d9c9",
+      "bytes": 1381741
+    },
+    "4/bern-urban-z12-light/pdfs-control/pdf192-repeat.png": {
+      "sha256": "5a28cafff4acb33793b3c81eded5a09e03b7c660b2824ec99bbd347c2c346de9",
+      "bytes": 598266
+    },
+    "4/bern-urban-z12-light/pdfs-control/pdf96-context.json": {
+      "sha256": "1114627636a379dd75542f8706aa63f1ae8e5225627269ca5c457abed56657c3",
+      "bytes": 333
+    },
+    "4/bern-urban-z12-light/pdfs-control/pdf96-repeat.png": {
+      "sha256": "5dbb3584f5c762139e97c031059fa1b4cd6d6377e279b667fb9ecdfa8e1f07f1",
+      "bytes": 374265
+    },
+    "4/bern-urban-z12-light/pdfs-control/pdf150-repeat.png": {
+      "sha256": "f07db44b0ff87df7be8558ed4b639e068193ceda364b320d5313e9520664e5c4",
+      "bytes": 459139
+    },
+    "4/bern-urban-z12-light/pdfs-control/pdf96-repeat-context.json": {
+      "sha256": "1114627636a379dd75542f8706aa63f1ae8e5225627269ca5c457abed56657c3",
+      "bytes": 333
+    },
+    "4/bern-urban-z12-light/pdfs-control/pdf192.png": {
+      "sha256": "5a28cafff4acb33793b3c81eded5a09e03b7c660b2824ec99bbd347c2c346de9",
+      "bytes": 598266
+    },
+    "4/bern-urban-z12-light/pdfs-control/pdf192-context.json": {
+      "sha256": "3543831409c831d7d26b19be585ab9001048d45926e39ca60fa5af07199c9d1c",
+      "bytes": 334
+    },
+    "4/bern-urban-z12-light/dpi192/style.json": {
+      "sha256": "b68cd8d658fe188ebed52ba5e3636607af1f24b8c81ba4a6700ec1648f1e36ff",
+      "bytes": 132451
+    },
+    "4/bern-urban-z12-light/dpi192/qgis.png": {
+      "sha256": "f96147876cefa3f1a4a3d3e83f4b8cac6f48c5335f10a7e2547baac67f4aad7d",
+      "bytes": 1939542
+    },
+    "4/bern-urban-z12-light/dpi192/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/bern-urban-z12-light/dpi192/runtime.json": {
+      "sha256": "5e12a86ab1bc9b60245275ce69d3a6ce29ce5d2f6b650f66e631c09a8bbcd2f4",
+      "bytes": 788
+    },
+    "4/bern-urban-z12-light/dpr2-repeat/style.json": {
+      "sha256": "b68cd8d658fe188ebed52ba5e3636607af1f24b8c81ba4a6700ec1648f1e36ff",
+      "bytes": 132451
+    },
+    "4/bern-urban-z12-light/dpr2-repeat/qgis.png": {
+      "sha256": "de925a99d42e1b5ae5f68de6d20bb743ff36ea7b19556efefbbe926771dc1678",
+      "bytes": 1325968
+    },
+    "4/bern-urban-z12-light/dpr2-repeat/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/bern-urban-z12-light/dpr2-repeat/runtime.json": {
+      "sha256": "f9ab5e789df030d26a376674416ee579ba884d44006ddc98147bf1334d02b59a",
+      "bytes": 784
+    },
+    "4/bern-urban-z12-light/dpr2-trace/renderer-trace.json": {
+      "sha256": "aab80e9bcfb46e50a227ac21452462c52bf5079fffdbec98ac1ed58583aafe18",
+      "bytes": 160
+    },
+    "4/bern-urban-z12-light/dpi96/style.json": {
+      "sha256": "b68cd8d658fe188ebed52ba5e3636607af1f24b8c81ba4a6700ec1648f1e36ff",
+      "bytes": 132451
+    },
+    "4/bern-urban-z12-light/dpi96/qgis.png": {
+      "sha256": "b2f1f44db6aeb8e56078253828089941d2f647ad8f9d735993ae12a33808a51b",
+      "bytes": 519512
+    },
+    "4/bern-urban-z12-light/dpi96/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/bern-urban-z12-light/dpi96/runtime.json": {
+      "sha256": "a02eacb9a36fd4ef9a0be1110379636159684e7daa21041498b0016d7f47bacf",
+      "bytes": 783
+    },
+    "4/bern-urban-z12-light/pdfs-trace/pdf150-context.json": {
+      "sha256": "a88f146fe15122ddbed0a95d6ad3a95f091d54410406d0f6ee9484da11e6ce47",
+      "bytes": 411
+    },
+    "4/bern-urban-z12-light/pdfs-trace/pdf150.png": {
+      "sha256": "a3eac0ec6691938d7a4518ba9ff9beb66771955198b5c2722dd1c497948f4b34",
+      "bytes": 459149
+    },
+    "4/bern-urban-z12-light/pdfs-trace/pdf150.pdf": {
+      "sha256": "ead236903a4e3600484104f6d31d2fe1aaeba2ea4824f68d21f9c81493c14542",
+      "bytes": 1382779
+    },
+    "4/bern-urban-z12-light/pdfs-trace/pdf192-repeat-context.json": {
+      "sha256": "c5408785bca29cb1a329639d6f4b70b804f2160afa139df53aae35f414b4896a",
+      "bytes": 411
+    },
+    "4/bern-urban-z12-light/pdfs-trace/pdf96.png": {
+      "sha256": "5dbb3584f5c762139e97c031059fa1b4cd6d6377e279b667fb9ecdfa8e1f07f1",
+      "bytes": 374265
+    },
+    "4/bern-urban-z12-light/pdfs-trace/pdf192.pdf": {
+      "sha256": "cae1cdccdc5c705b0d57377f4efe60afa8c0cd2d651fa195835cdd96d5750037",
+      "bytes": 1480590
+    },
+    "4/bern-urban-z12-light/pdfs-trace/pdf150-repeat-context.json": {
+      "sha256": "a88f146fe15122ddbed0a95d6ad3a95f091d54410406d0f6ee9484da11e6ce47",
+      "bytes": 411
+    },
+    "4/bern-urban-z12-light/pdfs-trace/pdf96-repeat.pdf": {
+      "sha256": "40eba1893c3105a45a3dc9edaeebe4a8f0b10d61fec6e2049981b9e0e62b44be",
+      "bytes": 805500
+    },
+    "4/bern-urban-z12-light/pdfs-trace/pdf192-repeat.pdf": {
+      "sha256": "547d40c5581921d05cfd4a7182c3940d02defa3f78a1b4a8292e9d5a93f3d076",
+      "bytes": 1480611
+    },
+    "4/bern-urban-z12-light/pdfs-trace/pdf96.pdf": {
+      "sha256": "bb2bbf3c2e27e868f79b4ac85c180fddaad86294985cc755aa3fcb78cd51b497",
+      "bytes": 805479
+    },
+    "4/bern-urban-z12-light/pdfs-trace/pdf150-repeat.pdf": {
+      "sha256": "059e7e44c253a569efacf206b522fb24fb48cd32d96d756a0e4c1dbb5a753813",
+      "bytes": 1381741
+    },
+    "4/bern-urban-z12-light/pdfs-trace/pdf192-repeat.png": {
+      "sha256": "5a28cafff4acb33793b3c81eded5a09e03b7c660b2824ec99bbd347c2c346de9",
+      "bytes": 598266
+    },
+    "4/bern-urban-z12-light/pdfs-trace/pdf96-context.json": {
+      "sha256": "8855003d62d5b3a8f70e7412f0053ab1ab222aafec7fb96a05fbd83aaf6a9d39",
+      "bytes": 410
+    },
+    "4/bern-urban-z12-light/pdfs-trace/pdf96-repeat.png": {
+      "sha256": "5dbb3584f5c762139e97c031059fa1b4cd6d6377e279b667fb9ecdfa8e1f07f1",
+      "bytes": 374265
+    },
+    "4/bern-urban-z12-light/pdfs-trace/pdf150-repeat.png": {
+      "sha256": "f07db44b0ff87df7be8558ed4b639e068193ceda364b320d5313e9520664e5c4",
+      "bytes": 459139
+    },
+    "4/bern-urban-z12-light/pdfs-trace/pdf96-repeat-context.json": {
+      "sha256": "8855003d62d5b3a8f70e7412f0053ab1ab222aafec7fb96a05fbd83aaf6a9d39",
+      "bytes": 410
+    },
+    "4/bern-urban-z12-light/pdfs-trace/pdf192.png": {
+      "sha256": "5a28cafff4acb33793b3c81eded5a09e03b7c660b2824ec99bbd347c2c346de9",
+      "bytes": 598266
+    },
+    "4/bern-urban-z12-light/pdfs-trace/pdf192-context.json": {
+      "sha256": "c5408785bca29cb1a329639d6f4b70b804f2160afa139df53aae35f414b4896a",
+      "bytes": 411
+    },
+    "4/bern-urban-z12-light/dpi96-repeat/style.json": {
+      "sha256": "b68cd8d658fe188ebed52ba5e3636607af1f24b8c81ba4a6700ec1648f1e36ff",
+      "bytes": 132451
+    },
+    "4/bern-urban-z12-light/dpi96-repeat/qgis.png": {
+      "sha256": "b2f1f44db6aeb8e56078253828089941d2f647ad8f9d735993ae12a33808a51b",
+      "bytes": 519512
+    },
+    "4/bern-urban-z12-light/dpi96-repeat/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/bern-urban-z12-light/dpi96-repeat/runtime.json": {
+      "sha256": "a02eacb9a36fd4ef9a0be1110379636159684e7daa21041498b0016d7f47bacf",
+      "bytes": 783
+    },
+    "4/bern-urban-z12-light/dpr2/style.json": {
+      "sha256": "b68cd8d658fe188ebed52ba5e3636607af1f24b8c81ba4a6700ec1648f1e36ff",
+      "bytes": 132451
+    },
+    "4/bern-urban-z12-light/dpr2/qgis.png": {
+      "sha256": "de925a99d42e1b5ae5f68de6d20bb743ff36ea7b19556efefbbe926771dc1678",
+      "bytes": 1325968
+    },
+    "4/bern-urban-z12-light/dpr2/labels.json": {
+      "sha256": "ed4e2484f05118fb58a060227db626e90f0b0545914fcd157f8d824096f87600",
+      "bytes": 61949
+    },
+    "4/bern-urban-z12-light/dpr2/runtime.json": {
+      "sha256": "f9ab5e789df030d26a376674416ee579ba884d44006ddc98147bf1334d02b59a",
+      "bytes": 784
+    },
+    "3/geneva-urban-z14-light/dpi192-repeat/style.json": {
+      "sha256": "b68cd8d658fe188ebed52ba5e3636607af1f24b8c81ba4a6700ec1648f1e36ff",
+      "bytes": 132451
+    },
+    "3/geneva-urban-z14-light/dpi192-repeat/qgis.png": {
+      "sha256": "d6e6141cdfcd93138d1fc21b99a3a847bc00acdafe6c2d56cd07d88c7d6158df",
+      "bytes": 1308961
+    },
+    "3/geneva-urban-z14-light/dpi192-repeat/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/geneva-urban-z14-light/dpi192-repeat/runtime.json": {
+      "sha256": "169b02a8e52e5bdd33ab33e2ae21493b0cba59157c58f487ef5ee50c5f6450bd",
+      "bytes": 765
+    },
+    "3/geneva-urban-z14-light/pdfs-control/pdf150-context.json": {
+      "sha256": "8cdbd20562961efe364040b2472f812940e27a71b9d18dc7da03ad393cbb7797",
+      "bytes": 336
+    },
+    "3/geneva-urban-z14-light/pdfs-control/pdf150.png": {
+      "sha256": "2b943082b3ea1f686de84422136952729d5558edb812d428e7efb8cf5cf42e84",
+      "bytes": 438587
+    },
+    "3/geneva-urban-z14-light/pdfs-control/pdf150.pdf": {
+      "sha256": "3c65d2f8f29b81155f480a10115cd820efea55179fa40acacd2d9887a2bd3d98",
+      "bytes": 878621
+    },
+    "3/geneva-urban-z14-light/pdfs-control/pdf192-repeat-context.json": {
+      "sha256": "d33ca2cc8d241892c823d6e02ba81e350cf324f62a92abfc69e4c19af4891bac",
+      "bytes": 336
+    },
+    "3/geneva-urban-z14-light/pdfs-control/pdf96.png": {
+      "sha256": "e36641ad333e54017d81ea13656e66adeaf3d2b3cc602026e08a154482ede0dc",
+      "bytes": 441569
+    },
+    "3/geneva-urban-z14-light/pdfs-control/pdf192.pdf": {
+      "sha256": "82d293fb544542242549e7f8845fe424cab2898ba5f1cf882e00baf51a0679d4",
+      "bytes": 864891
+    },
+    "3/geneva-urban-z14-light/pdfs-control/pdf150-repeat-context.json": {
+      "sha256": "8cdbd20562961efe364040b2472f812940e27a71b9d18dc7da03ad393cbb7797",
+      "bytes": 336
+    },
+    "3/geneva-urban-z14-light/pdfs-control/pdf96-repeat.pdf": {
+      "sha256": "e24c83082d897520a61a8f81d9198d7796ee14cd7638992c202acb43c45790d7",
+      "bytes": 857690
+    },
+    "3/geneva-urban-z14-light/pdfs-control/pdf192-repeat.pdf": {
+      "sha256": "37ad237b03cb66a29f28c26d4d5bcb3d704372a631277df5e8ef9c923206f6b4",
+      "bytes": 864912
+    },
+    "3/geneva-urban-z14-light/pdfs-control/pdf96.pdf": {
+      "sha256": "acabfc5df7f379d5b499601fec7539903e0516dd955d93153ffa55b58fc94b6e",
+      "bytes": 857669
+    },
+    "3/geneva-urban-z14-light/pdfs-control/pdf150-repeat.pdf": {
+      "sha256": "bf919ec2a5c44c2a6d5bc73a90053ab7effae0ee5ff20c749225fffce1288131",
+      "bytes": 878642
+    },
+    "3/geneva-urban-z14-light/pdfs-control/pdf192-repeat.png": {
+      "sha256": "ee7f80996c74f131561bcf2c207ac4c3f926aa0d5600ea43be3c510c71f0a3ea",
+      "bytes": 436689
+    },
+    "3/geneva-urban-z14-light/pdfs-control/pdf96-context.json": {
+      "sha256": "ce4fe8ea372169cedd2eb5982c84baabeb3ac1b827a0e4c26abcc645f7ddb057",
+      "bytes": 335
+    },
+    "3/geneva-urban-z14-light/pdfs-control/pdf96-repeat.png": {
+      "sha256": "e36641ad333e54017d81ea13656e66adeaf3d2b3cc602026e08a154482ede0dc",
+      "bytes": 441569
+    },
+    "3/geneva-urban-z14-light/pdfs-control/pdf150-repeat.png": {
+      "sha256": "2b943082b3ea1f686de84422136952729d5558edb812d428e7efb8cf5cf42e84",
+      "bytes": 438587
+    },
+    "3/geneva-urban-z14-light/pdfs-control/pdf96-repeat-context.json": {
+      "sha256": "ce4fe8ea372169cedd2eb5982c84baabeb3ac1b827a0e4c26abcc645f7ddb057",
+      "bytes": 335
+    },
+    "3/geneva-urban-z14-light/pdfs-control/pdf192.png": {
+      "sha256": "ee7f80996c74f131561bcf2c207ac4c3f926aa0d5600ea43be3c510c71f0a3ea",
+      "bytes": 436689
+    },
+    "3/geneva-urban-z14-light/pdfs-control/pdf192-context.json": {
+      "sha256": "d33ca2cc8d241892c823d6e02ba81e350cf324f62a92abfc69e4c19af4891bac",
+      "bytes": 336
+    },
+    "3/geneva-urban-z14-light/dpi192/style.json": {
+      "sha256": "b68cd8d658fe188ebed52ba5e3636607af1f24b8c81ba4a6700ec1648f1e36ff",
+      "bytes": 132451
+    },
+    "3/geneva-urban-z14-light/dpi192/qgis.png": {
+      "sha256": "d6e6141cdfcd93138d1fc21b99a3a847bc00acdafe6c2d56cd07d88c7d6158df",
+      "bytes": 1308961
+    },
+    "3/geneva-urban-z14-light/dpi192/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/geneva-urban-z14-light/dpi192/runtime.json": {
+      "sha256": "169b02a8e52e5bdd33ab33e2ae21493b0cba59157c58f487ef5ee50c5f6450bd",
+      "bytes": 765
+    },
+    "3/geneva-urban-z14-light/dpr2-repeat/style.json": {
+      "sha256": "b68cd8d658fe188ebed52ba5e3636607af1f24b8c81ba4a6700ec1648f1e36ff",
+      "bytes": 132451
+    },
+    "3/geneva-urban-z14-light/dpr2-repeat/qgis.png": {
+      "sha256": "37c5ef7134aa5c741969264c3d7ca5a7c5ad0b42c7ece3a08156cf957ad5bbfd",
+      "bytes": 1314635
+    },
+    "3/geneva-urban-z14-light/dpr2-repeat/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/geneva-urban-z14-light/dpr2-repeat/runtime.json": {
+      "sha256": "43c104c5fcdbeab1ee953d604c5dc7f4cbdf714da43ccf29095bf430e981f1e0",
+      "bytes": 761
+    },
+    "3/geneva-urban-z14-light/dpr2-trace/renderer-trace.json": {
+      "sha256": "ea47699420a2a412bbf3a3a1f1d8ad15cd2f523a3d7127a642f09eb03f261532",
+      "bytes": 160
+    },
+    "3/geneva-urban-z14-light/dpi96/style.json": {
+      "sha256": "b68cd8d658fe188ebed52ba5e3636607af1f24b8c81ba4a6700ec1648f1e36ff",
+      "bytes": 132451
+    },
+    "3/geneva-urban-z14-light/dpi96/qgis.png": {
+      "sha256": "0d88974e73f2ef0b755374f6421af3b3c6358f7d4a0fe3b8c3430cd071b15d8d",
+      "bytes": 492009
+    },
+    "3/geneva-urban-z14-light/dpi96/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/geneva-urban-z14-light/dpi96/runtime.json": {
+      "sha256": "fb28bb44d4219922c18085ccabfbe5fefe47b3d3f7a274eb5717fb0209273545",
+      "bytes": 760
+    },
+    "3/geneva-urban-z14-light/pdfs-trace/pdf150-context.json": {
+      "sha256": "b7301ea9e772d393261ae996458869c61c78e5499f79677d1d06363ea35b1dbb",
+      "bytes": 414
+    },
+    "3/geneva-urban-z14-light/pdfs-trace/pdf150.png": {
+      "sha256": "2b943082b3ea1f686de84422136952729d5558edb812d428e7efb8cf5cf42e84",
+      "bytes": 438587
+    },
+    "3/geneva-urban-z14-light/pdfs-trace/pdf150.pdf": {
+      "sha256": "e866d06334d80efa68c9ba0390eb12081b42d72790e874dc725fa4e2e3575d39",
+      "bytes": 878621
+    },
+    "3/geneva-urban-z14-light/pdfs-trace/pdf192-repeat-context.json": {
+      "sha256": "a03f1e133e40a8e8e1e5cafde1b7a17673da851566a84da724d434359a8a9bfd",
+      "bytes": 414
+    },
+    "3/geneva-urban-z14-light/pdfs-trace/pdf96.png": {
+      "sha256": "e36641ad333e54017d81ea13656e66adeaf3d2b3cc602026e08a154482ede0dc",
+      "bytes": 441569
+    },
+    "3/geneva-urban-z14-light/pdfs-trace/pdf192.pdf": {
+      "sha256": "5c01b2b5660a9f0dcec6b197a7bebd08f551785d7befcf470f5c4bc36bc22c16",
+      "bytes": 864891
+    },
+    "3/geneva-urban-z14-light/pdfs-trace/pdf150-repeat-context.json": {
+      "sha256": "b7301ea9e772d393261ae996458869c61c78e5499f79677d1d06363ea35b1dbb",
+      "bytes": 414
+    },
+    "3/geneva-urban-z14-light/pdfs-trace/pdf96-repeat.pdf": {
+      "sha256": "dbf2a5a79bc349dcc83efbd4d00801f05309406db63ccd5d9e717584c8177be1",
+      "bytes": 857690
+    },
+    "3/geneva-urban-z14-light/pdfs-trace/pdf192-repeat.pdf": {
+      "sha256": "5017266da905648d36f0c45e5caf1326a2d13b0a48091041c2f5bd6a53ebebaa",
+      "bytes": 864912
+    },
+    "3/geneva-urban-z14-light/pdfs-trace/pdf96.pdf": {
+      "sha256": "c83fc2aa533b4abb0f5f937b96e82146de6775ea1f49643daa54d42538f3b5fa",
+      "bytes": 857669
+    },
+    "3/geneva-urban-z14-light/pdfs-trace/pdf150-repeat.pdf": {
+      "sha256": "4f93777cade9c4fed7345422c6865f36302c40be553e0827662775c376f3fc49",
+      "bytes": 878642
+    },
+    "3/geneva-urban-z14-light/pdfs-trace/pdf192-repeat.png": {
+      "sha256": "ee7f80996c74f131561bcf2c207ac4c3f926aa0d5600ea43be3c510c71f0a3ea",
+      "bytes": 436689
+    },
+    "3/geneva-urban-z14-light/pdfs-trace/pdf96-context.json": {
+      "sha256": "b9d5ae69b31fb5bc7d604e96711b879b52a323cd703dd437a98b9561ddd7ad9e",
+      "bytes": 413
+    },
+    "3/geneva-urban-z14-light/pdfs-trace/pdf96-repeat.png": {
+      "sha256": "e36641ad333e54017d81ea13656e66adeaf3d2b3cc602026e08a154482ede0dc",
+      "bytes": 441569
+    },
+    "3/geneva-urban-z14-light/pdfs-trace/pdf150-repeat.png": {
+      "sha256": "2b943082b3ea1f686de84422136952729d5558edb812d428e7efb8cf5cf42e84",
+      "bytes": 438587
+    },
+    "3/geneva-urban-z14-light/pdfs-trace/pdf96-repeat-context.json": {
+      "sha256": "b9d5ae69b31fb5bc7d604e96711b879b52a323cd703dd437a98b9561ddd7ad9e",
+      "bytes": 413
+    },
+    "3/geneva-urban-z14-light/pdfs-trace/pdf192.png": {
+      "sha256": "ee7f80996c74f131561bcf2c207ac4c3f926aa0d5600ea43be3c510c71f0a3ea",
+      "bytes": 436689
+    },
+    "3/geneva-urban-z14-light/pdfs-trace/pdf192-context.json": {
+      "sha256": "a03f1e133e40a8e8e1e5cafde1b7a17673da851566a84da724d434359a8a9bfd",
+      "bytes": 414
+    },
+    "3/geneva-urban-z14-light/dpi96-repeat/style.json": {
+      "sha256": "b68cd8d658fe188ebed52ba5e3636607af1f24b8c81ba4a6700ec1648f1e36ff",
+      "bytes": 132451
+    },
+    "3/geneva-urban-z14-light/dpi96-repeat/qgis.png": {
+      "sha256": "0d88974e73f2ef0b755374f6421af3b3c6358f7d4a0fe3b8c3430cd071b15d8d",
+      "bytes": 492009
+    },
+    "3/geneva-urban-z14-light/dpi96-repeat/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/geneva-urban-z14-light/dpi96-repeat/runtime.json": {
+      "sha256": "fb28bb44d4219922c18085ccabfbe5fefe47b3d3f7a274eb5717fb0209273545",
+      "bytes": 760
+    },
+    "3/geneva-urban-z14-light/dpr2/style.json": {
+      "sha256": "b68cd8d658fe188ebed52ba5e3636607af1f24b8c81ba4a6700ec1648f1e36ff",
+      "bytes": 132451
+    },
+    "3/geneva-urban-z14-light/dpr2/qgis.png": {
+      "sha256": "37c5ef7134aa5c741969264c3d7ca5a7c5ad0b42c7ece3a08156cf957ad5bbfd",
+      "bytes": 1314635
+    },
+    "3/geneva-urban-z14-light/dpr2/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/geneva-urban-z14-light/dpr2/runtime.json": {
+      "sha256": "43c104c5fcdbeab1ee953d604c5dc7f4cbdf714da43ccf29095bf430e981f1e0",
+      "bytes": 761
+    },
+    "3/bern-urban-z12-light/dpi192-repeat/style.json": {
+      "sha256": "b68cd8d658fe188ebed52ba5e3636607af1f24b8c81ba4a6700ec1648f1e36ff",
+      "bytes": 132451
+    },
+    "3/bern-urban-z12-light/dpi192-repeat/qgis.png": {
+      "sha256": "b138852152431b79f2ffaf692d21c11fe029477dff21a09c4ac521c327d2e58f",
+      "bytes": 1364783
+    },
+    "3/bern-urban-z12-light/dpi192-repeat/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/bern-urban-z12-light/dpi192-repeat/runtime.json": {
+      "sha256": "948b99fa784a1426cd559775b5e8cbc47a8ba854e73e9d74ffcc609e78503741",
+      "bytes": 762
+    },
+    "3/bern-urban-z12-light/pdfs-control/pdf150-context.json": {
+      "sha256": "7baa2010b083650fceda2d4de859c731b2195c90100c8189c5810b3e8326afa4",
+      "bytes": 334
+    },
+    "3/bern-urban-z12-light/pdfs-control/pdf150.png": {
+      "sha256": "0dc7473ffa117f363c2ec4e7ee44f654e163f96aaf53dbc221a7a9c4251f783c",
+      "bytes": 386012
+    },
+    "3/bern-urban-z12-light/pdfs-control/pdf150.pdf": {
+      "sha256": "45abc05ad07e5523edee429416b9d5b0e87d48f15d918606ccf7ab001fe7d4ab",
+      "bytes": 906613
+    },
+    "3/bern-urban-z12-light/pdfs-control/pdf192-repeat-context.json": {
+      "sha256": "3543831409c831d7d26b19be585ab9001048d45926e39ca60fa5af07199c9d1c",
+      "bytes": 334
+    },
+    "3/bern-urban-z12-light/pdfs-control/pdf96.png": {
+      "sha256": "abf214d185fc0d1d7619652a8d0bc8dff19b762d9d4bb8f5bb00c22d4dd62902",
+      "bytes": 371370
+    },
+    "3/bern-urban-z12-light/pdfs-control/pdf192.pdf": {
+      "sha256": "3b936d692905b316fb71b70b0c59343d5881ab7bc2319ae9f27beb0886d0fb59",
+      "bytes": 882067
+    },
+    "3/bern-urban-z12-light/pdfs-control/pdf150-repeat-context.json": {
+      "sha256": "7baa2010b083650fceda2d4de859c731b2195c90100c8189c5810b3e8326afa4",
+      "bytes": 334
+    },
+    "3/bern-urban-z12-light/pdfs-control/pdf96-repeat.pdf": {
+      "sha256": "5cb0a7bccb0f1f55a0d15b116113161fba2eeda280b13ba2fd01661a9b45e3f7",
+      "bytes": 792163
+    },
+    "3/bern-urban-z12-light/pdfs-control/pdf192-repeat.pdf": {
+      "sha256": "2337e62c82e03f14fa1349d4155778e90c6801ab4cf3c5931c56c2995a26adf5",
+      "bytes": 882088
+    },
+    "3/bern-urban-z12-light/pdfs-control/pdf96.pdf": {
+      "sha256": "b7ce5ba52840c3025d5ad7dac6e8434992c6b5c7a8960396bf3f78fcd1b7806d",
+      "bytes": 792142
+    },
+    "3/bern-urban-z12-light/pdfs-control/pdf150-repeat.pdf": {
+      "sha256": "c4ae1a7947bd218d6c91ee38b3b2f0ea0aa6f1a0c4fb8ddf7d19bbded3936dab",
+      "bytes": 906634
+    },
+    "3/bern-urban-z12-light/pdfs-control/pdf192-repeat.png": {
+      "sha256": "acd0332af8e6786b232907e643cafa18246910c5f3e0624f0b9c56f404168141",
+      "bytes": 385125
+    },
+    "3/bern-urban-z12-light/pdfs-control/pdf96-context.json": {
+      "sha256": "1114627636a379dd75542f8706aa63f1ae8e5225627269ca5c457abed56657c3",
+      "bytes": 333
+    },
+    "3/bern-urban-z12-light/pdfs-control/pdf96-repeat.png": {
+      "sha256": "abf214d185fc0d1d7619652a8d0bc8dff19b762d9d4bb8f5bb00c22d4dd62902",
+      "bytes": 371370
+    },
+    "3/bern-urban-z12-light/pdfs-control/pdf150-repeat.png": {
+      "sha256": "0dc7473ffa117f363c2ec4e7ee44f654e163f96aaf53dbc221a7a9c4251f783c",
+      "bytes": 386012
+    },
+    "3/bern-urban-z12-light/pdfs-control/pdf96-repeat-context.json": {
+      "sha256": "1114627636a379dd75542f8706aa63f1ae8e5225627269ca5c457abed56657c3",
+      "bytes": 333
+    },
+    "3/bern-urban-z12-light/pdfs-control/pdf192.png": {
+      "sha256": "acd0332af8e6786b232907e643cafa18246910c5f3e0624f0b9c56f404168141",
+      "bytes": 385125
+    },
+    "3/bern-urban-z12-light/pdfs-control/pdf192-context.json": {
+      "sha256": "3543831409c831d7d26b19be585ab9001048d45926e39ca60fa5af07199c9d1c",
+      "bytes": 334
+    },
+    "3/bern-urban-z12-light/dpi192/style.json": {
+      "sha256": "b68cd8d658fe188ebed52ba5e3636607af1f24b8c81ba4a6700ec1648f1e36ff",
+      "bytes": 132451
+    },
+    "3/bern-urban-z12-light/dpi192/qgis.png": {
+      "sha256": "b138852152431b79f2ffaf692d21c11fe029477dff21a09c4ac521c327d2e58f",
+      "bytes": 1364783
+    },
+    "3/bern-urban-z12-light/dpi192/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/bern-urban-z12-light/dpi192/runtime.json": {
+      "sha256": "948b99fa784a1426cd559775b5e8cbc47a8ba854e73e9d74ffcc609e78503741",
+      "bytes": 762
+    },
+    "3/bern-urban-z12-light/dpr2-repeat/style.json": {
+      "sha256": "b68cd8d658fe188ebed52ba5e3636607af1f24b8c81ba4a6700ec1648f1e36ff",
+      "bytes": 132451
+    },
+    "3/bern-urban-z12-light/dpr2-repeat/qgis.png": {
+      "sha256": "2de4e057e07efe080f2f5cbb7007a83b68cabfa578fa89d3f2fe7947c352ab2d",
+      "bytes": 1316970
+    },
+    "3/bern-urban-z12-light/dpr2-repeat/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/bern-urban-z12-light/dpr2-repeat/runtime.json": {
+      "sha256": "0e54917f999d152d0af08b9ac4a22db329bb79bb9f5b062bd846424186148a9f",
+      "bytes": 758
+    },
+    "3/bern-urban-z12-light/dpr2-trace/renderer-trace.json": {
+      "sha256": "fd5d9fa381341edc562e91b4638663577a28ccfc83ecde01a5cc041ea519ba49",
+      "bytes": 160
+    },
+    "3/bern-urban-z12-light/dpi96/style.json": {
+      "sha256": "b68cd8d658fe188ebed52ba5e3636607af1f24b8c81ba4a6700ec1648f1e36ff",
+      "bytes": 132451
+    },
+    "3/bern-urban-z12-light/dpi96/qgis.png": {
+      "sha256": "0bfdd18f7b99a1bb997817e182d305964c67e669986866e2b403c333ebb96950",
+      "bytes": 514964
+    },
+    "3/bern-urban-z12-light/dpi96/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/bern-urban-z12-light/dpi96/runtime.json": {
+      "sha256": "13b85ec48f194d5e32fc3887330639d761a9b09dd9d5b911cce8eb23524e8f0f",
+      "bytes": 757
+    },
+    "3/bern-urban-z12-light/pdfs-trace/pdf150-context.json": {
+      "sha256": "d867465c4e49a2f6ebb729864ab8d8af417438e7ae5ec8b791008c4889338120",
+      "bytes": 411
+    },
+    "3/bern-urban-z12-light/pdfs-trace/pdf150.png": {
+      "sha256": "0dc7473ffa117f363c2ec4e7ee44f654e163f96aaf53dbc221a7a9c4251f783c",
+      "bytes": 386012
+    },
+    "3/bern-urban-z12-light/pdfs-trace/pdf150.pdf": {
+      "sha256": "883e08593ca66f343c8a474316b5e22673be176762688892a9536f4f2673345a",
+      "bytes": 906613
+    },
+    "3/bern-urban-z12-light/pdfs-trace/pdf192-repeat-context.json": {
+      "sha256": "5fbd6c1085de8246f0a24ccabbd0f2659f4c946a031915f775cc1ad85a7fca37",
+      "bytes": 411
+    },
+    "3/bern-urban-z12-light/pdfs-trace/pdf96.png": {
+      "sha256": "abf214d185fc0d1d7619652a8d0bc8dff19b762d9d4bb8f5bb00c22d4dd62902",
+      "bytes": 371370
+    },
+    "3/bern-urban-z12-light/pdfs-trace/pdf192.pdf": {
+      "sha256": "8c2b8692a0f7c5091b9314bdce6fa03be6c5496fdb59de2229ccfe3bfbc062c4",
+      "bytes": 882067
+    },
+    "3/bern-urban-z12-light/pdfs-trace/pdf150-repeat-context.json": {
+      "sha256": "d867465c4e49a2f6ebb729864ab8d8af417438e7ae5ec8b791008c4889338120",
+      "bytes": 411
+    },
+    "3/bern-urban-z12-light/pdfs-trace/pdf96-repeat.pdf": {
+      "sha256": "905e9946a04366c2b14e6c281bf28519bf8584dbe14ab6a6e4c6808c9a959667",
+      "bytes": 792163
+    },
+    "3/bern-urban-z12-light/pdfs-trace/pdf192-repeat.pdf": {
+      "sha256": "b148b477a1e01cf0c343fe78111e3d35f185483a10c1f224efbc9da06cee60ed",
+      "bytes": 882088
+    },
+    "3/bern-urban-z12-light/pdfs-trace/pdf96.pdf": {
+      "sha256": "da36142cfb48d97371d05855016dc63a918e03a646bb14108b8e022ccc3432bb",
+      "bytes": 792142
+    },
+    "3/bern-urban-z12-light/pdfs-trace/pdf150-repeat.pdf": {
+      "sha256": "0fb745fbbdbdfd8e87b0a96717b4574972f318d672f347adccb1c7db2ae30f09",
+      "bytes": 906634
+    },
+    "3/bern-urban-z12-light/pdfs-trace/pdf192-repeat.png": {
+      "sha256": "acd0332af8e6786b232907e643cafa18246910c5f3e0624f0b9c56f404168141",
+      "bytes": 385125
+    },
+    "3/bern-urban-z12-light/pdfs-trace/pdf96-context.json": {
+      "sha256": "967892985b36efbc6668f4a8461b6fcd5f13ca59ecf71a9a5aaae12f3e6f1852",
+      "bytes": 410
+    },
+    "3/bern-urban-z12-light/pdfs-trace/pdf96-repeat.png": {
+      "sha256": "abf214d185fc0d1d7619652a8d0bc8dff19b762d9d4bb8f5bb00c22d4dd62902",
+      "bytes": 371370
+    },
+    "3/bern-urban-z12-light/pdfs-trace/pdf150-repeat.png": {
+      "sha256": "0dc7473ffa117f363c2ec4e7ee44f654e163f96aaf53dbc221a7a9c4251f783c",
+      "bytes": 386012
+    },
+    "3/bern-urban-z12-light/pdfs-trace/pdf96-repeat-context.json": {
+      "sha256": "967892985b36efbc6668f4a8461b6fcd5f13ca59ecf71a9a5aaae12f3e6f1852",
+      "bytes": 410
+    },
+    "3/bern-urban-z12-light/pdfs-trace/pdf192.png": {
+      "sha256": "acd0332af8e6786b232907e643cafa18246910c5f3e0624f0b9c56f404168141",
+      "bytes": 385125
+    },
+    "3/bern-urban-z12-light/pdfs-trace/pdf192-context.json": {
+      "sha256": "5fbd6c1085de8246f0a24ccabbd0f2659f4c946a031915f775cc1ad85a7fca37",
+      "bytes": 411
+    },
+    "3/bern-urban-z12-light/dpi96-repeat/style.json": {
+      "sha256": "b68cd8d658fe188ebed52ba5e3636607af1f24b8c81ba4a6700ec1648f1e36ff",
+      "bytes": 132451
+    },
+    "3/bern-urban-z12-light/dpi96-repeat/qgis.png": {
+      "sha256": "0bfdd18f7b99a1bb997817e182d305964c67e669986866e2b403c333ebb96950",
+      "bytes": 514964
+    },
+    "3/bern-urban-z12-light/dpi96-repeat/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/bern-urban-z12-light/dpi96-repeat/runtime.json": {
+      "sha256": "13b85ec48f194d5e32fc3887330639d761a9b09dd9d5b911cce8eb23524e8f0f",
+      "bytes": 757
+    },
+    "3/bern-urban-z12-light/dpr2/style.json": {
+      "sha256": "b68cd8d658fe188ebed52ba5e3636607af1f24b8c81ba4a6700ec1648f1e36ff",
+      "bytes": 132451
+    },
+    "3/bern-urban-z12-light/dpr2/qgis.png": {
+      "sha256": "2de4e057e07efe080f2f5cbb7007a83b68cabfa578fa89d3f2fe7947c352ab2d",
+      "bytes": 1316970
+    },
+    "3/bern-urban-z12-light/dpr2/labels.json": {
+      "sha256": "ed3343d4a76323e5918f7168bc200fa72ff7a2cfbd38e103b616c465e091c508",
+      "bytes": 61949
+    },
+    "3/bern-urban-z12-light/dpr2/runtime.json": {
+      "sha256": "0e54917f999d152d0af08b9ac4a22db329bb79bb9f5b062bd846424186148a9f",
+      "bytes": 758
+    },
+    "browser/geneva-urban-z14-light/mercator/mapbox.png": {
+      "sha256": "a1088191221cd6083a1369d37d7608756c76cd19b96278f31dd73c608255cc76",
+      "bytes": 488903
+    },
+    "browser/geneva-urban-z14-light/mercator/runtime.json": {
+      "sha256": "f9548f8bf7d62aca8dbe1bca8e7ce4bfe8b0e5fcc85ddaf56bd0f17305dcbd7d",
+      "bytes": 1877
+    },
+    "browser/geneva-urban-z14-light/source/mapbox.png": {
+      "sha256": "a1088191221cd6083a1369d37d7608756c76cd19b96278f31dd73c608255cc76",
+      "bytes": 488903
+    },
+    "browser/geneva-urban-z14-light/source/runtime.json": {
+      "sha256": "6c1eeeb138fd1986fbc3417fcfc85b1f8cca72a793207163f61d75498b354298",
+      "bytes": 1872
+    },
+    "browser/bern-urban-z12-light/mercator/mapbox.png": {
+      "sha256": "d683cf7c463166f75478d860ff4b8489a559b2c5425247bbe880a396d8ea80c1",
+      "bytes": 361359
+    },
+    "browser/bern-urban-z12-light/mercator/runtime.json": {
+      "sha256": "2a9ce0bddbf51ccf5a7401e2f9253c01233a4518566a40f0bc9251bcec6821ad",
+      "bytes": 1869
+    },
+    "browser/bern-urban-z12-light/source/mapbox.png": {
+      "sha256": "d683cf7c463166f75478d860ff4b8489a559b2c5425247bbe880a396d8ea80c1",
+      "bytes": 361359
+    },
+    "browser/bern-urban-z12-light/source/runtime.json": {
+      "sha256": "c7b952a8d7ffff6b66003bb31afd535f182917cabe3838f5d2a243b080d323a3",
+      "bytes": 1864
+    }
+  }
+}

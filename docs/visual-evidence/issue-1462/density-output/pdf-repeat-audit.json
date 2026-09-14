@@ -1,0 +1,108 @@
+[
+  {
+    "runtime": "3",
+    "camera": "bern-urban-z12-light",
+    "dpi": 96,
+    "bbox": null,
+    "mae": 0.0,
+    "changed_pixels": 0
+  },
+  {
+    "runtime": "3",
+    "camera": "bern-urban-z12-light",
+    "dpi": 150,
+    "bbox": null,
+    "mae": 0.0,
+    "changed_pixels": 0
+  },
+  {
+    "runtime": "3",
+    "camera": "bern-urban-z12-light",
+    "dpi": 192,
+    "bbox": null,
+    "mae": 0.0,
+    "changed_pixels": 0
+  },
+  {
+    "runtime": "3",
+    "camera": "geneva-urban-z14-light",
+    "dpi": 96,
+    "bbox": null,
+    "mae": 0.0,
+    "changed_pixels": 0
+  },
+  {
+    "runtime": "3",
+    "camera": "geneva-urban-z14-light",
+    "dpi": 150,
+    "bbox": null,
+    "mae": 0.0,
+    "changed_pixels": 0
+  },
+  {
+    "runtime": "3",
+    "camera": "geneva-urban-z14-light",
+    "dpi": 192,
+    "bbox": null,
+    "mae": 0.0,
+    "changed_pixels": 0
+  },
+  {
+    "runtime": "4",
+    "camera": "bern-urban-z12-light",
+    "dpi": 96,
+    "bbox": null,
+    "mae": 0.0,
+    "changed_pixels": 0
+  },
+  {
+    "runtime": "4",
+    "camera": "bern-urban-z12-light",
+    "dpi": 150,
+    "bbox": [
+      198,
+      134,
+      805,
+      892
+    ],
+    "mae": 1.0393972403776324e-06,
+    "changed_pixels": 240
+  },
+  {
+    "runtime": "4",
+    "camera": "bern-urban-z12-light",
+    "dpi": 192,
+    "bbox": null,
+    "mae": 0.0,
+    "changed_pixels": 0
+  },
+  {
+    "runtime": "4",
+    "camera": "geneva-urban-z14-light",
+    "dpi": 96,
+    "bbox": null,
+    "mae": 0.0,
+    "changed_pixels": 0
+  },
+  {
+    "runtime": "4",
+    "camera": "geneva-urban-z14-light",
+    "dpi": 150,
+    "bbox": [
+      289,
+      504,
+      1215,
+      898
+    ],
+    "mae": 5.934549745824256e-07,
+    "changed_pixels": 246
+  },
+  {
+    "runtime": "4",
+    "camera": "geneva-urban-z14-light",
+    "dpi": 192,
+    "bbox": null,
+    "mae": 0.0,
+    "changed_pixels": 0
+  }
+]

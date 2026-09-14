@@ -1,0 +1,14 @@
+{
+  "fields": [
+    "vector_tile_zoom",
+    "zoom_level",
+    "map_scale"
+  ],
+  "values": [
+    [
+      14.220212941573227,
+      14.0,
+      -1.0
+    ]
+  ]
+}
