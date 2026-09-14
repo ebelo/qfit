@@ -1,0 +1,9 @@
+{
+  "head": "cc32c99ee217fb87632fd1bd8e2d3dbff4ae8fe8",
+  "captured_runtime_head": "58df4e72b88da58e9b3bab5d1fd34f219b7fd241",
+  "runtime_files_compared": 233,
+  "all_runtime_files_byte_identical": true,
+  "captured_guarded_maps": 48,
+  "head_changes_since_capture": "docs/light-cartographic-assessment.md only",
+  "scope": "Runtime byte identity establishes applicability of all48 guarded-head native maps; no new final-doc-head capture is claimed."
+}
