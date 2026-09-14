@@ -1,5 +1,5 @@
 {
-  "exact_head": "7e6d0dd481de670bd8d092c18ea8b05eef6fc4e0",
+  "exact_head": "eb45e04400f4d5b7117c68984ccef487d9057951",
   "implementation": "d95175b8917c66aefe97cf463c904091bae3540a",
   "published_evidence_commit": "9270b210cd624ddf0eaaa5ddbffe6c8dd29d374b",
   "runtime_file_sha256": {
@@ -182,7 +182,7 @@
     }
   ],
   "browser_final_head_end_to_end_manifests": {
-    "head": "7e6d0dd481de670bd8d092c18ea8b05eef6fc4e0",
+    "head": "eb45e04400f4d5b7117c68984ccef487d9057951",
     "rows": [
       {
         "camera": "switzerland-alps-z5-light",
