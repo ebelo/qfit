@@ -899,6 +899,56 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
                         # Unit conversion occurs once, after source interpolation.
                         self.assertAlmostEqual(actual, expected * 25.4 / 96, delta=1e-10)
 
+    def test_light_all_boundary_owners_preserve_status_and_worldview_eligibility(self):
+        """Backgrounds intentionally include disputes; maritime and other worldviews do not."""
+        import itertools
+        import json
+        from pathlib import Path
+        from qgis.core import QgsExpression, QgsExpressionContext, QgsFeature, QgsField, QgsFields
+        from qgis.PyQt.QtCore import QVariant
+        from qfit.mapbox_config import simplify_mapbox_style_expressions
+
+        source = json.loads((Path(__file__).parent / "fixtures/mapbox/light-boundary-source.json").read_text())
+        layer = MagicMock()
+        self.service._apply_mapbox_gl_style(
+            layer, simplify_mapbox_style_expressions(source), source_style_definition=source,
+        )
+        rules = {rule.styleName(): rule for rule in layer.setRenderer.call_args.args[0].styles()}
+        contracts = {
+            "admin-1-boundary-bg": (1, None, 7),
+            "admin-0-boundary-bg": (0, None, 1),
+            "admin-1-boundary": (1, None, 2),
+            "admin-0-boundary": (0, "false", 1),
+            "admin-0-boundary-disputed": (0, "true", 1),
+        }
+        self.assertEqual(list(rules), list(contracts))
+        fields = QgsFields()
+        fields.append(QgsField("admin_level", QVariant.Int))
+        for key in ("disputed", "maritime", "worldview"):
+            fields.append(QgsField(key))
+        context = QgsExpressionContext()
+        context.setFields(fields)
+        for owner, (required_level, required_dispute, minimum_zoom) in contracts.items():
+            rule = rules[owner]
+            self.assertEqual(rule.layerName(), "admin")
+            self.assertEqual(rule.minZoomLevel(), minimum_zoom)
+            predicate = QgsExpression(rule.filterExpression())
+            self.assertFalse(predicate.hasParserError(), predicate.parserErrorString())
+            for level, disputed, maritime, worldview in itertools.product(
+                (0, 1, 2, None), ("false", "true", "", None),
+                ("false", "true", "", None), ("all", "US", "CN", "IN", "US,CN", "", None),
+            ):
+                feature = QgsFeature(fields)
+                feature.setAttributes([level, disputed, maritime, worldview])
+                context.setFeature(feature)
+                expected = (
+                    level == required_level and maritime == "false" and worldview in ("all", "US")
+                    and (required_dispute is None or disputed == required_dispute)
+                )
+                with self.subTest(owner=owner, level=level, disputed=disputed, maritime=maritime, worldview=worldview):
+                    self.assertEqual(predicate.evaluate(context) == 1, expected)
+                    self.assertFalse(predicate.hasEvalError(), predicate.evalErrorString())
+
     def test_light_national_boundary_source_width_status_and_rendered_continuity(self):
         import json
         from pathlib import Path
