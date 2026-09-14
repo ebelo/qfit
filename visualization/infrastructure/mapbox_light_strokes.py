@@ -1,4 +1,4 @@
-"""Source-backed Light road widths, independent of native converter versions."""
+"""Source-backed Light strokes, independent of native converter versions."""
 
 import math
 
@@ -94,6 +94,69 @@ def apply_light_road_widths(renderer, source_style: dict) -> int:
         if stroke.dataDefinedProperties().property(QgsSymbolLayer.PropertyStrokeWidth).isActive():
             continue
         stroke.setDataDefinedProperty(QgsSymbolLayer.PropertyStrokeWidth, QgsProperty.fromExpression(_width_expression(width)))
+        changed += 1
+    if changed:
+        renderer.setStyles(styles)
+    return changed
+
+
+_NATIONAL_BOUNDARY_WIDTH = ["interpolate", ["linear"], ["zoom"], 3, 0.65, 12, 2.6]
+_NATIONAL_BOUNDARY_EXPRESSION = (
+    "(CASE WHEN @vector_tile_zoom <= 3 THEN 0.65 "
+    "WHEN @vector_tile_zoom <= 12 THEN 0.65 + 1.95 * (@vector_tile_zoom - 3) / 9 "
+    "ELSE 2.6 END) * 25.4 / 96"
+)
+
+
+def _has_solid_national_boundary(style):
+    if not _is_mapbox_light_style(style):
+        return False
+    for layer in style.get("layers", []):
+        if not isinstance(layer, dict):
+            continue
+        paint = layer.get("paint")
+        if (layer.get("id") == "admin-0-boundary" and layer.get("type") == "line"
+                and layer.get("source-layer") == "admin" and isinstance(paint, dict)
+                and paint.get("line-width") == _NATIONAL_BOUNDARY_WIDTH
+                and paint.get("line-dasharray") == [10, 0]):
+            return True
+    return False
+
+
+def apply_light_national_boundary_stroke(renderer, source_style: dict) -> int:
+    """Restore the ordinary national boundary's source width and zero-gap line.
+
+    Native zero-gap custom dashes introduce visible gaps. Use a solid pen for
+    this audited source contract; preserve every status/worldview filter and
+    other owner, including disputed borders and administrative subdivisions.
+    Existing native overrides and changed source contracts are not adapted.
+    """
+    if not _has_solid_national_boundary(source_style):
+        return 0
+    from qgis.core import Qgis, QgsProperty, QgsSimpleLineSymbolLayer, QgsSymbolLayer
+    from qgis.PyQt.QtCore import Qt
+
+    styles = list(renderer.styles())
+    changed = 0
+    for rule in styles:
+        symbol = rule.symbol()
+        if (rule.styleName() != "admin-0-boundary" or rule.layerName() != "admin"
+                or symbol is None or symbol.symbolLayerCount() != 1):
+            continue
+        stroke = symbol.symbolLayer(0)
+        if (not isinstance(stroke, QgsSimpleLineSymbolLayer)
+                or stroke.widthUnit() != Qgis.RenderUnit.Millimeters
+                or stroke.customDashPatternUnit() != Qgis.RenderUnit.Millimeters
+                or not stroke.useCustomDashPattern() or stroke.penStyle() != Qt.PenStyle.SolidLine
+                or stroke.dataDefinedProperties().hasActiveProperties()):
+            continue
+        dash = stroke.customDashVector()
+        if len(dash) != 2 or dash[1] != 0 or not math.isclose(dash[0], stroke.width() * 10):
+            continue
+        stroke.setUseCustomDashPattern(False)
+        stroke.setDataDefinedProperty(
+            QgsSymbolLayer.PropertyStrokeWidth, QgsProperty.fromExpression(_NATIONAL_BOUNDARY_EXPRESSION)
+        )
         changed += 1
     if changed:
         renderer.setStyles(styles)

@@ -129,6 +129,7 @@ MODULE_SCOPE_ENUMS = [
     ("MouseButton", "LeftButton"),
     ("Orientation", "Horizontal"),
     ("PenStyle", "DashLine"),
+    ("PenStyle", "SolidLine"),
     ("PenCapStyle", "RoundCap"),
     ("PenJoinStyle", "RoundJoin"),
     ("TextInteractionFlag", "TextBrowserInteraction"),

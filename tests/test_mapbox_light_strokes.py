@@ -100,3 +100,83 @@ class LightRoadWidthTests(unittest.TestCase):
             renderer.styles.return_value = rules[2:]
             self.assertEqual(strokes.apply_light_road_widths(renderer, source()), 0)
             renderer.setStyles.assert_not_called()
+
+
+class LightNationalBoundaryTests(unittest.TestCase):
+    def source(self):
+        return json.loads((Path(__file__).parent / "fixtures/mapbox/light-boundary-source.json").read_text())
+
+    def test_source_contract_is_exact_light_ordinary_national_boundary(self):
+        source_style = self.source()
+        original = copy.deepcopy(source_style)
+        self.assertTrue(strokes._has_solid_national_boundary(source_style))
+        self.assertEqual(source_style, original)
+        for owner, identity in (("custom", "light-v11"), ("mapbox", "outdoors-v12"), ("mapbox", "light-v10")):
+            self.assertFalse(strokes._has_solid_national_boundary({**source_style, "owner": owner, "id": identity}))
+        layer = next(item for item in source_style["layers"] if item["id"] == "admin-0-boundary")
+        for key, value in (("id", "admin-0-boundary-disputed"), ("type", "fill"), ("source-layer", "road"), ("paint", None)):
+            self.assertFalse(strokes._has_solid_national_boundary({**source_style, "layers": [{**layer, key: value}]}))
+        for key, value in (("line-width", 2.6), ("line-width", ["interpolate", ["linear"], ["zoom"], 3, 1, 12, 3]),
+                           ("line-dasharray", [10, 1]), ("line-dasharray", ["literal", [10, 0]])):
+            altered = {**layer, "paint": {**layer["paint"], key: value}}
+            self.assertFalse(strokes._has_solid_national_boundary({**source_style, "layers": [altered]}))
+        self.assertFalse(strokes._has_solid_national_boundary({**source_style, "layers": [None, {}]}))
+
+    def test_adapter_preserves_native_overrides_other_rules_and_source(self):
+        class Stroke(MagicMock):
+            pass
+
+        def rule():
+            item = MagicMock()
+            item.styleName.return_value = "admin-0-boundary"
+            item.layerName.return_value = "admin"
+            item.symbol().symbolLayerCount.return_value = 1
+            stroke = Stroke()
+            stroke.widthUnit.return_value = 9
+            stroke.customDashPatternUnit.return_value = 9
+            stroke.useCustomDashPattern.return_value = True
+            stroke.penStyle.return_value = 1
+            stroke.width.return_value = 0.2
+            stroke.customDashVector.return_value = [2, 0]
+            stroke.dataDefinedProperties().hasActiveProperties.return_value = False
+            item.symbol().symbolLayer.return_value = stroke
+            return item
+
+        rules = [rule() for _ in range(14)]
+        rules[1].styleName.return_value = "admin-0-boundary-disputed"
+        rules[2].layerName.return_value = "other"
+        rules[3].symbol.return_value = None
+        rules[4].symbol().symbolLayerCount.return_value = 2
+        rules[5].symbol().symbolLayer.return_value = object()
+        for index, method, value in ((6, "widthUnit", 3), (7, "customDashPatternUnit", 3),
+                                     (8, "useCustomDashPattern", False), (9, "penStyle", 2),
+                                     (11, "customDashVector", [2, 0, 3, 0]),
+                                     (12, "customDashVector", [2, 1]), (13, "customDashVector", [3, 0])):
+            getattr(rules[index].symbol().symbolLayer(), method).return_value = value
+        rules[10].symbol().symbolLayer().dataDefinedProperties().hasActiveProperties.return_value = True
+        renderer = MagicMock()
+        renderer.styles.return_value = rules
+        native = SimpleNamespace(
+            Qgis=SimpleNamespace(RenderUnit=SimpleNamespace(Millimeters=9)),
+            QgsSimpleLineSymbolLayer=Stroke, QgsSymbolLayer=SimpleNamespace(PropertyStrokeWidth=44),
+            QgsProperty=SimpleNamespace(fromExpression=lambda expression: expression),
+        )
+        qt = SimpleNamespace(Qt=SimpleNamespace(PenStyle=SimpleNamespace(SolidLine=1)))
+        self.assertEqual(strokes.apply_light_national_boundary_stroke(renderer, {}), 0)
+        renderer.styles.assert_not_called()
+        source_style = self.source()
+        original = copy.deepcopy(source_style)
+        with patch.dict(sys.modules, {"qgis.core": native, "qgis.PyQt.QtCore": qt}):
+            self.assertEqual(strokes.apply_light_national_boundary_stroke(renderer, source_style), 1)
+            renderer.setStyles.assert_called_once_with(rules)
+            stroke = rules[0].symbol().symbolLayer()
+            stroke.setUseCustomDashPattern.assert_called_once_with(False)
+            stroke.setDataDefinedProperty.assert_called_once_with(44, strokes._NATIONAL_BOUNDARY_EXPRESSION)
+            for item in rules[6:]:
+                item.symbol().symbolLayer().setUseCustomDashPattern.assert_not_called()
+                item.symbol().symbolLayer().setDataDefinedProperty.assert_not_called()
+            renderer.reset_mock()
+            renderer.styles.return_value = rules[1:]
+            self.assertEqual(strokes.apply_light_national_boundary_stroke(renderer, source_style), 0)
+            renderer.setStyles.assert_not_called()
+        self.assertEqual(source_style, original)

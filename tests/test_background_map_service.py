@@ -845,6 +845,100 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
                         # Unit conversion occurs once, after source interpolation.
                         self.assertAlmostEqual(actual, expected * 25.4 / 96, delta=1e-10)
 
+    def test_light_national_boundary_source_width_status_and_rendered_continuity(self):
+        import json
+        from pathlib import Path
+        from qgis.core import (
+            QgsExpression, QgsExpressionContext, QgsExpressionContextScope,
+            QgsFeature, QgsField, QgsFields, QgsRenderContext, QgsSymbolLayer,
+        )
+        from qgis.PyQt.QtCore import QPointF, QVariant
+        from qgis.PyQt.QtGui import QColor, QImage, QPainter, QPolygonF
+        from qfit.mapbox_config import simplify_mapbox_style_expressions
+        from qfit.visualization.infrastructure import mapbox_light_strokes
+
+        source = json.loads((Path(__file__).parent / "fixtures/mapbox/light-boundary-source.json").read_text())
+        converted = simplify_mapbox_style_expressions(source)
+        baseline_layer = MagicMock()
+        with patch.object(mapbox_light_strokes, "apply_light_national_boundary_stroke", return_value=0):
+            self.service._apply_mapbox_gl_style(baseline_layer, converted, source_style_definition=source)
+        candidate_layer = MagicMock()
+        self.service._apply_mapbox_gl_style(candidate_layer, converted, source_style_definition=source)
+        baseline = {rule.styleName(): rule for rule in baseline_layer.setRenderer.call_args.args[0].styles()}
+        candidate = {rule.styleName(): rule for rule in candidate_layer.setRenderer.call_args.args[0].styles()}
+        self.assertEqual(list(baseline), list(candidate))
+        for name, rule in candidate.items():
+            before = baseline[name]
+            self.assertEqual(rule.filterExpression(), before.filterExpression())
+            self.assertEqual((rule.minZoomLevel(), rule.maxZoomLevel()), (before.minZoomLevel(), before.maxZoomLevel()))
+            before_stroke, after_stroke = before.symbol().symbolLayer(0), rule.symbol().symbolLayer(0)
+            expected = before_stroke.properties()
+            if name == "admin-0-boundary":
+                expected["use_custom_dash"] = "0"
+                self.assertTrue(after_stroke.dataDefinedProperties().property(QgsSymbolLayer.PropertyStrokeWidth).isActive())
+            else:
+                self.assertEqual(after_stroke.dataDefinedProperties().hasActiveProperties(), before_stroke.dataDefinedProperties().hasActiveProperties())
+            self.assertEqual(after_stroke.properties(), expected)
+
+        rule = candidate["admin-0-boundary"]
+        stroke = rule.symbol().symbolLayer(0)
+        expression = QgsExpression(stroke.dataDefinedProperties().property(QgsSymbolLayer.PropertyStrokeWidth).asExpression())
+        for zoom in (0, 2.9, 3, 3.1, 5, 7.9, 8, 8.1, 10, 11.9, 12, 12.1, 18, 24):
+            scope = QgsExpressionContextScope()
+            scope.setVariable("vector_tile_zoom", zoom)
+            context = QgsExpressionContext()
+            context.appendScope(scope)
+            with self.subTest(zoom=zoom):
+                self.assertTrue(expression.prepare(context))
+                self.assertAlmostEqual(expression.evaluate(context), (0.65 + 1.95 * min(1, max(0, (zoom - 3) / 9))) * 25.4 / 96, delta=1e-10)
+                self.assertFalse(expression.hasEvalError(), expression.evalErrorString())
+
+        fields = QgsFields()
+        fields.append(QgsField("admin_level", QVariant.Int))
+        for key in ("disputed", "maritime", "worldview"):
+            fields.append(QgsField(key))
+        predicate = QgsExpression(rule.filterExpression())
+        context = QgsExpressionContext()
+        context.setFields(fields)
+        for level in (0, 1):
+            for disputed in ("false", "true", None):
+                for maritime in ("false", "true", None):
+                    for worldview in ("all", "US", "CN", None):
+                        feature = QgsFeature(fields)
+                        feature.setAttributes([level, disputed, maritime, worldview])
+                        context.setFeature(feature)
+                        expected = level == 0 and disputed == "false" and maritime == "false" and worldview in ("all", "US")
+                        with self.subTest(level=level, disputed=disputed, maritime=maritime, worldview=worldview):
+                            self.assertEqual(predicate.evaluate(context) == 1, expected)
+                            self.assertFalse(predicate.hasEvalError(), predicate.evalErrorString())
+
+        # Exercise actual native line painting, not only symbol configuration.
+        # Explicit pixel/mm scale and native zoom also check DD width evaluation.
+        for name, rules in (("before", baseline), ("after", candidate)):
+            image = QImage(420, 100, QImage.Format.Format_ARGB32)
+            image.fill(QColor("white"))
+            painter = QPainter(image)
+            render_context = QgsRenderContext.fromQPainter(painter)
+            render_context.setScaleFactor(96 / 25.4)
+            scope = QgsExpressionContextScope()
+            scope.setVariable("vector_tile_zoom", 10)
+            render_context.expressionContext().appendScope(scope)
+            symbol = rules["admin-0-boundary"].symbol()
+            try:
+                symbol.startRender(render_context)
+                try:
+                    symbol.renderPolyline(QPolygonF([QPointF(10, 50), QPointF(410, 50)]), None, render_context)
+                finally:
+                    symbol.stopRender(render_context)
+            finally:
+                painter.end()
+            gaps = sum(image.pixelColor(x, 50) == QColor("white") for x in range(20, 400))
+            with self.subTest(render=name):
+                if name == "after":
+                    self.assertEqual(gaps, 0, "Ordinary national boundaries must be continuous")
+                else:
+                    self.assertGreater(gaps, 0, "The regression fixture must expose the zero-gap defect")
+
     def test_light_name_fallback_requests_fields_and_preserves_null_empty_semantics(self):
         import json
         from pathlib import Path
@@ -1067,7 +1161,7 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
     def test_coupled_svg_background_keeps_non_square_sprite_rendered_extent(self):
         import base64
         from qgis.PyQt.QtCore import QBuffer, QByteArray, QIODevice, QPointF
-        from qgis.PyQt.QtGui import QColor, QImage, QPainter
+        from qgis.PyQt.QtGui import QColor, QImage, QPainter, QPolygonF
         from qgis.core import (
             Qgis, QgsMarkerSymbol, QgsPalLayerSettings, QgsRasterMarkerSymbolLayer,
             QgsRenderContext, QgsTextRenderer,
