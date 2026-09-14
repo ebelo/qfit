@@ -180,3 +180,84 @@ class LightNationalBoundaryTests(unittest.TestCase):
             self.assertEqual(strokes.apply_light_national_boundary_stroke(renderer, source_style), 0)
             renderer.setStyles.assert_not_called()
         self.assertEqual(source_style, original)
+
+
+class LightNationalBackgroundTests(unittest.TestCase):
+    def source(self):
+        return json.loads((Path(__file__).parent / "fixtures/mapbox/light-boundary-source.json").read_text())
+
+    def test_exact_source_contract_and_duplicate_owners(self):
+        source_style = self.source()
+        original = copy.deepcopy(source_style)
+        self.assertTrue(strokes._has_national_background(source_style))
+        owner = next(x for x in source_style["layers"] if x["id"] == "admin-0-boundary-bg")
+        for identity in ({"owner": "custom"}, {"id": "outdoors-v12"}, {"id": "light-v10"}):
+            self.assertFalse(strokes._has_national_background({**source_style, **identity}))
+        for key, value in (("id", "admin-1-boundary-bg"), ("type", "fill"),
+                           ("source-layer", "road"), ("paint", None)):
+            self.assertFalse(strokes._has_national_background({**source_style, "layers": [{**owner, key: value}]}))
+        for key in owner["paint"]:
+            altered = {**owner, "paint": {**owner["paint"], key: 1}}
+            self.assertFalse(strokes._has_national_background({**source_style, "layers": [altered]}))
+        for layers in ([None, {}], [owner, owner], []):
+            self.assertFalse(strokes._has_national_background({**source_style, "layers": layers}))
+        self.assertEqual(source_style, original)
+
+    def test_native_override_and_symbol_guards(self):
+        class Stroke(MagicMock):
+            pass
+
+        def rule():
+            item = MagicMock()
+            item.styleName.return_value = "admin-0-boundary-bg"
+            item.layerName.return_value = "admin"
+            item.symbol().symbolLayerCount.return_value = 1
+            item.symbol().dataDefinedProperties().hasActiveProperties.return_value = False
+            stroke = Stroke()
+            stroke.widthUnit.return_value = 9
+            stroke.useCustomDashPattern.return_value = False
+            stroke.penStyle.return_value = 1
+            stroke.dataDefinedProperties().hasActiveProperties.return_value = False
+            item.symbol().symbolLayer.return_value = stroke
+            return item
+
+        rules = [rule() for _ in range(10)]
+        rules[1].styleName.return_value = "admin-0-boundary-disputed"
+        rules[2].layerName.return_value = "road"
+        rules[3].symbol.return_value = None
+        rules[4].symbol().symbolLayerCount.return_value = 2
+        rules[5].symbol().dataDefinedProperties().hasActiveProperties.return_value = True
+        rules[6].symbol().symbolLayer.return_value = object()
+        rules[7].symbol().symbolLayer().widthUnit.return_value = 3
+        rules[8].symbol().symbolLayer().useCustomDashPattern.return_value = True
+        rules[9].symbol().symbolLayer().dataDefinedProperties().hasActiveProperties.return_value = True
+        other_pen = rule()
+        other_pen.symbol().symbolLayer().penStyle.return_value = 2
+        rules.append(other_pen)
+        renderer = MagicMock()
+        renderer.styles.return_value = rules
+        native = SimpleNamespace(
+            Qgis=SimpleNamespace(RenderUnit=SimpleNamespace(Millimeters=9)),
+            QgsSimpleLineSymbolLayer=Stroke,
+            QgsSymbol=SimpleNamespace(PropertyOpacity=0),
+            QgsSymbolLayer=SimpleNamespace(PropertyStrokeWidth=44),
+            QgsProperty=SimpleNamespace(fromExpression=lambda value: value),
+        )
+        qt = SimpleNamespace(Qt=SimpleNamespace(PenStyle=SimpleNamespace(SolidLine=1)))
+        self.assertEqual(strokes.apply_light_national_background(renderer, {}), 0)
+        renderer.styles.assert_not_called()
+        source_style = self.source()
+        original = copy.deepcopy(source_style)
+        with patch.dict(sys.modules, {"qgis.core": native, "qgis.PyQt.QtCore": qt}):
+            self.assertEqual(strokes.apply_light_national_background(renderer, source_style), 1)
+            renderer.setStyles.assert_called_once_with(rules)
+            rules[0].symbol().symbolLayer().setDataDefinedProperty.assert_called_once_with(44, strokes._NATIONAL_BACKGROUND_WIDTH)
+            rules[0].symbol().setDataDefinedProperty.assert_called_once_with(0, strokes._NATIONAL_BACKGROUND_OPACITY)
+            for item in rules[1:]:
+                if item.symbol() is not None:
+                    item.symbol().setDataDefinedProperty.assert_not_called()
+            renderer.reset_mock()
+            renderer.styles.return_value = rules[1:]
+            self.assertEqual(strokes.apply_light_national_background(renderer, source_style), 0)
+            renderer.setStyles.assert_not_called()
+        self.assertEqual(source_style, original)
