@@ -121,6 +121,23 @@ The current headless job also lacks `@map_scale` in its expression scope, as
 verified by pass-through renderer traces. A formula tested in a separately
 constructed map-settings scope is not proof it works in that job.
 
+### Device-pixel ratio and PDF are separate output modes
+
+The [Light output-mode audit](light-cartographic-assessment.md) now distinguishes
+`QgsMapSettings.setDevicePixelRatio(2)` from doubling output size and DPI. At
+unchanged logical size/96DPI, DPR2 preserves native tile zoom in both Docker
+runtimes; saved PNG metadata still reports96DPI. This is not an actual desktop
+screen or a standalone same-physical-size print file.
+
+Actual one-map PDF exports using qfit's150DPI, forced-vector settings reproduce
+QGIS4 density-sensitive tile activation and detail at fixed extent/physical
+size. QGIS3 retains integer zoom but changes label placement. Ten of12 PDF cells
+have identical fixed96DPI rasterizations across repeats/traces; QGIS4's two150DPI
+cells have small, unclassified variation. Neither PDF-file identity nor full
+atlas/desktop consistency is established. These are mode comparisons, not a
+retained rendering fix. PDF expression scopes supply `@map_scale` in these
+fixtures, unlike the parallel PNG job; do not generalize one scope's availability.
+
 ## Cameras
 
 List supported Outdoors or Light cameras:
