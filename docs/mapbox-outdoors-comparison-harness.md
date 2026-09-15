@@ -711,7 +711,8 @@ matched evidence, the rejected attribute-only probe and remaining language/outpu
 
 The same native coalesce now applies to the exact `road-label-simple` and
 `road-label-simple-z12-to-z15` rules when the unique Light source owner retains
-its audited road/line/coalesce/no-transform contract. Native text overrides and
+its audited road/line/coalesce/no-transform contract and no source layer owns the
+generated size-band ID. Native text overrides and
 all feature/zoom/placement/font/duplicate settings are preserved. In particular,
 source `has(name)` still excludes English-only features without a local-name
 property. The [road-name evidence][road-name-evidence] separates exact content,

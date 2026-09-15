@@ -154,7 +154,8 @@ Only native `road-label-simple` and `road-label-simple-z12-to-z15` expression
 fields still equal to `"name"` become `coalesce("name_en", "name")`, before
 font splitting. Explicit columns request both fields from native decoding.
 NULL/missing English falls back; empty English stays empty. Existing native
-text overrides, changed/duplicate source owners, transforms, custom styles,
+text overrides, changed/duplicate source owners, source-owned generated-band ID
+collisions, transforms, custom styles,
 Outdoors, water companions and all other label roles are untouched.
 
 **Content is not eligibility.** The source's `has(name)` and seven road classes
@@ -197,7 +198,7 @@ The 16 actual PDFs and eight companion PNGs use production150-DPI forced-vector
 settings; all eight PNGs are byte-identical to their ordinary counterparts.
 The PDF hook does not establish full-atlas or interactive behavior.
 
-Full local tests pass 2678 /191 skips /311 subtests; both complete Docker
+Initial full local tests pass 2678 /191 skips /311 subtests; both complete Docker
 suites pass 216 /82 skips. Both QGIS packages build and nine package tests pass.
 Those capture-run preflight attempts failed before Python startup because the
 previously pinned Docker image IDs no longer existed after gate builds. A
