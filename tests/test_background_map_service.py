@@ -1189,6 +1189,82 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
                     self.assertFalse(expression.hasEvalError(), expression.evalErrorString())
                     self.assertEqual(None if result == NULL else result, expected)
 
+    def test_light_road_names_preserve_source_eligibility_and_native_settings(self):
+        import copy
+        import json
+        from pathlib import Path
+        from qgis.core import (
+            NULL, QgsExpression, QgsExpressionContext, QgsFeature, QgsField,
+            QgsFields, QgsGeometry, QgsRenderContext,
+        )
+        from qfit.mapbox_config import simplify_mapbox_style_expressions
+        from qfit.validation.mapbox_outdoors_comparison import qgis_label_styles_snapshot
+
+        source = json.loads((Path(__file__).parent / "fixtures/mapbox/light-label-content-source.json").read_text())
+        converted = simplify_mapbox_style_expressions(source)
+        before_layer, after_layer = MagicMock(), MagicMock()
+        with patch("qfit.visualization.infrastructure.mapbox_light_labels._light_road_name_fallback_rules", return_value=set()):
+            self.service._apply_mapbox_gl_style(before_layer, converted, source_style_definition=source)
+        self.service._apply_mapbox_gl_style(after_layer, converted, source_style_definition=source)
+        for layer in (before_layer, after_layer):
+            layer.labeling.return_value = layer.setLabeling.call_args.args[0]
+        before = qgis_label_styles_snapshot(before_layer)
+        after = qgis_label_styles_snapshot(after_layer)
+        normalized = copy.deepcopy(after)
+        names = ("road-label-simple", "road-label-simple-z12-to-z15")
+        self.assertEqual([r["style_name"] for r in after if r["layer_name"] == "road"], list(names))
+        for row in normalized:
+            if row["style_name"] in names:
+                self.assertEqual(row["label_settings"]["field_name"], 'coalesce("name_en", "name")')
+                row["label_settings"]["field_name"] = '"name"'
+        self.assertEqual(normalized, before, "Only the two road text fields may change")
+        rules = [r for r in after_layer.labeling().styles() if r.styleName() in names]
+        self.assertEqual([(r.minZoomLevel(), r.maxZoomLevel()) for r in rules], [(15, -1), (12, 14)])
+        owner = source["layers"][0]
+        allowed = ["motorway", "trunk", "primary", "secondary", "tertiary", "street", "street_limited"]
+        self.assertEqual(owner["filter"], ["all", ["has", "name"],
+                         ["match", ["get", "class"], allowed, True, False]])
+        cases = [
+            ({"name_en": "Nile Street", "name": "محلي"}, "Nile Street"),
+            ({"name_en": None, "name": "Genève"}, "Genève"),
+            ({"name": "القاهرة"}, "القاهرة"),
+            ({"name_en": "", "name": "ירושלים"}, ""),
+            ({"name_en": "Zürich — L’Aquila", "name": "local"}, "Zürich — L’Aquila"),
+            ({"name_en": "القاهرة / ירושלים 12", "name": "local"}, "القاهرة / ירושלים 12"),
+            ({"name_en": "English only"}, "English only"),
+            ({}, None),
+            ({"name": "", "name_en": "Empty local"}, "Empty local"),
+        ]
+        for rule in rules:
+            settings = rule.labelSettings()
+            predicate, expression = QgsExpression(rule.filterExpression()), QgsExpression(settings.fieldName)
+            text_requests = settings.referencedFields(QgsRenderContext())
+            self.assertTrue({"name_en", "name"}.issubset(text_requests))
+            requested = text_requests | predicate.referencedColumns()
+            fields = QgsFields()
+            for name in sorted(requested):
+                fields.append(QgsField(name))
+            for road_class in allowed + ["service", "path", "track", None]:
+                for properties, expected in cases:
+                    feature = QgsFeature(fields)
+                    feature.setGeometry(QgsGeometry.fromWkt("LINESTRING (0 0, 1 1)"))
+                    for name, value in dict(properties, **{"class": road_class}).items():
+                        feature.setAttribute(name, value)
+                    context = QgsExpressionContext()
+                    context.setFields(fields)
+                    context.setFeature(feature)
+                    with self.subTest(rule=rule.styleName(), road_class=road_class, properties=properties):
+                        self.assertTrue(predicate.prepare(context))
+                        selected = predicate.evaluate(context)
+                        self.assertFalse(predicate.hasEvalError(), predicate.evalErrorString())
+                        # MVT has no explicit NULL values; missing attributes are NULL
+                        # in the requested native schema. Empty strings still exist.
+                        self.assertEqual(selected == 1, "name" in properties and road_class in allowed)
+                        self.assertTrue(expression.prepare(context))
+                        actual = expression.evaluate(context)
+                        self.assertFalse(expression.hasEvalError(), expression.evalErrorString())
+                        self.assertEqual(None if actual == NULL else actual, expected)
+
     def test_light_water_name_companions_select_exact_source_content(self):
         import json
         from pathlib import Path

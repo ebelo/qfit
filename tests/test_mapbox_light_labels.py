@@ -146,6 +146,93 @@ class LightNameFallbackTests(unittest.TestCase):
         labeling.setStyles.assert_not_called()
 
 
+class LightRoadNameFallbackTests(unittest.TestCase):
+    @staticmethod
+    def source_style():
+        import json
+        from pathlib import Path
+        return json.loads((Path(__file__).parent / "fixtures/mapbox/light-label-content-source.json").read_text())
+
+    def test_changes_only_two_road_content_fields_and_is_idempotent(self):
+        import copy
+        source_style = self.source_style()
+        before = copy.deepcopy(source_style)
+        rule = LightNameFallbackTests.rule
+        owned = [rule(name, "road") for name in ("road-label-simple", "road-label-simple-z12-to-z15")]
+        literal = rule("road-label-simple", "road")
+        literal.labelSettings().isExpression = False
+        untouched = [literal, rule("road-label-simple-custom", "road"),
+                     rule("road-label-simple-name-en", "road"),
+                     rule("road-label-simple", "place_label"),
+                     rule("road-label-simple", "road", '"custom_name"'),
+                     rule("road-label-simple", "road", 'upper("name")'),
+                     rule("water-line-label-water-name", "natural_label"),
+                     rule("airport-label", "airport_label")]
+        labeling = MagicMock()
+        labeling.styles.return_value = owned + untouched
+        self.assertEqual(labels.apply_light_name_fallback(labeling, source_style), 2)
+        for item in owned:
+            self.assertEqual(item.labelSettings().fieldName, 'coalesce("name_en", "name")')
+            item.setLabelSettings.assert_called_once_with(item.labelSettings())
+        for item in untouched:
+            item.setLabelSettings.assert_not_called()
+        self.assertEqual(source_style, before)
+        labeling.setStyles.assert_called_once_with(owned + untouched)
+        labeling.reset_mock()
+        self.assertEqual(labels.apply_light_name_fallback(labeling, source_style), 0)
+        labeling.setStyles.assert_not_called()
+
+    def test_source_owned_size_band_collision_preserves_both_road_fields(self):
+        import copy
+        # Both the ordinary split and an owner outside the split range must
+        # decline repair if another source layer owns the generated rule ID.
+        for minzoom in (None, 16):
+            with self.subTest(minzoom=minzoom):
+                source = self.source_style()
+                owner = source["layers"][0]
+                if minzoom is not None:
+                    owner["minzoom"] = minzoom
+                collision = copy.deepcopy(owner)
+                collision["id"] = "road-label-simple-z12-to-z15"
+                collision["layout"]["text-field"] = ["get", "name"]
+                source["layers"].append(collision)
+                original = copy.deepcopy(source)
+                rules = [LightNameFallbackTests.rule(name, "road") for name in
+                         ("road-label-simple", "road-label-simple-z12-to-z15")]
+                labeling = MagicMock()
+                labeling.styles.return_value = rules
+                self.assertEqual(labels.apply_light_name_fallback(labeling, source), 0)
+                self.assertEqual(source, original)
+                labeling.setStyles.assert_not_called()
+                for rule in rules:
+                    self.assertEqual(rule.labelSettings().fieldName, '"name"')
+                    rule.setLabelSettings.assert_not_called()
+
+    def test_road_source_identity_duplicates_and_changed_contracts_are_noops(self):
+        import copy
+        original = self.source_style()
+        owner = original["layers"][0]
+        variants = [{}, {**original, "owner": "custom"}, {**original, "id": "outdoors-v12"},
+                    {**original, "id": "light-v10"}, {**original, "layers": [None]},
+                    {**original, "layers": [owner, copy.deepcopy(owner)]}]
+        for field, value in (("type", "line"), ("source-layer", "place_label")):
+            changed = copy.deepcopy(original)
+            changed["layers"][0][field] = value
+            variants.append(changed)
+        for field, value in (("text-field", ["get", "name"]),
+                             ("text-field", ["coalesce", ["get", "name_fr"], ["get", "name"]]),
+                             ("text-transform", "uppercase"), ("symbol-placement", "point")):
+            changed = copy.deepcopy(original)
+            changed["layers"][0]["layout"][field] = value
+            variants.append(changed)
+        for style in variants:
+            with self.subTest(style=style):
+                labeling = MagicMock()
+                labeling.styles.return_value = [LightNameFallbackTests.rule("road-label-simple", "road")]
+                self.assertEqual(labels.apply_light_name_fallback(labeling, style), 0)
+                labeling.setStyles.assert_not_called()
+
+
 class LightLabelContentFixtureTests(unittest.TestCase):
     def test_complete_source_inventory_and_content_remain_pinned(self):
         import hashlib

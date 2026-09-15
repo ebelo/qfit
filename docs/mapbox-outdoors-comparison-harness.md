@@ -699,7 +699,7 @@ maps as automatically better. See issue #1462 for the candidate comparison
 and reviewable before/after evidence.
 
 
-## Light country and major-settlement language fallback
+## Light place and road language fallback
 
 For the audited unsplit `country-label` and `settlement-major-label` rules in
 exact Light v11, the native adapter restores the source's English/local-name
@@ -708,6 +708,18 @@ inspect final `qgis-label-styles.json` for `coalesce("name_en", "name")` and ver
 both fields are requested by QGIS. Missing/NULL English falls back; empty English
 does not. See the [C19 scoped assessment](light-cartographic-assessment.md) for
 matched evidence, the rejected attribute-only probe and remaining language/output gaps.
+
+The same native coalesce now applies to the exact `road-label-simple` and
+`road-label-simple-z12-to-z15` rules when the unique Light source owner retains
+its audited road/line/coalesce/no-transform contract and no source layer owns the
+generated size-band ID. Native text overrides and
+all feature/zoom/placement/font/duplicate settings are preserved. In particular,
+source `has(name)` still excludes English-only features without a local-name
+property. The [road-name evidence][road-name-evidence] separates exact content,
+actual source-property replay, mixed reference metrics, PNG controls and actual
+one-map PDF observations; it is not a complete C19 or scale-alignment pass.
+
+[road-name-evidence]: https://github.com/ebelo/qfit/blob/7303f1bf106de1c7f0ff2f7f33e39d31df4cfd06/docs/visual-evidence/issue-1462/road-names/README.md
 
 ## Offline native density reproduction (Light #1462 diagnosis)
 
