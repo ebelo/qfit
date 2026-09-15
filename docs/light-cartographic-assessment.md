@@ -122,7 +122,7 @@ focused investigation before broad completion, not an assertion of a root cause.
 | C16 | PARTIAL | Source symbol inventory available; sprite applicability, anchors, collision lifecycle and high-DPI behavior require dedicated checks. | — |
 | C17 | PARTIAL | Font-enabled Docker roles have earlier scoped validation. Desktop font distribution and multilingual fallback are not certified by these captures. | — |
 | C18 | OPEN | Text width, weight, wrapping and relative hierarchy remain visibly different. Blanket size probes were rejected, not accepted as a fix. | Minor |
-| C19 | OPEN (remaining scope) | All 14 source label roles now have a content audit: country/major settlements and both water-label owners pass scoped cases; ten owners lose source content. Cairo/Jerusalem corroborate local-road and airport-code mismatches. RTL shaping, long names and desktop/export remain open. | Major baseline finding scoped below; remaining severity not established |
+| C19 | OPEN (remaining scope) | All 14 source roles are audited. Country/major settlements, water companions and the two road rules pass scoped content cases. Nine other owners remain open. Road-name fidelity is mixed despite restored source strings; RTL, long names and complete output coverage remain open. | Major baseline finding scoped below; remaining severity not established |
 | C20 | PARTIAL | Some named-road crops inspected during duplicate work; systematic association, rotation and curved-line placement remain. | — |
 | C21 | PARTIAL | Current dense views are available; survival/priority decisions and symbol/halo collision extents are not comprehensively audited. | — |
 | C22 | PARTIAL | Road duplicate removal has a scoped pass; the criterion as a whole is not passed. See the separate coverage-cell verdicts below. | — |
@@ -135,13 +135,85 @@ focused investigation before broad completion, not an assertion of a root cause.
 | C29 | PARTIAL; PDF repeat cells OPEN | Prior matrices and 48 new background PNG control pairs repeat exactly. Earlier Bern/Geneva PDF150 variation is now also observed in Lausanne/Kashmir QGIS4 production150-DPI outputs; other new repeated PDF modes are raster-identical. Cold/warm performance and interactive stability remain untested. | PDF variability severity unestablished |
 | C30 | NOT ASSESSED | Cropped basemap evidence does not validate complete user-facing attribution, legend, scale or north/context requirements. | — |
 
+### C19: source-owned road-name content — 2026-09-14
+
+[Matched Before/After maps, native/source contracts and reproducible workers][road-names]
+compare baseline `c1987b8134065e657b348fb9241d6c5dfbd8d96b` with runtime
+candidate `e49757024f54ed41de2418bfc3aa4a36628d3052`. These 2026-09-14 captures
+were audited and reused on 2026-09-15, not freshly rendered. All 899 original
+artifact hashes and 233 candidate runtime Python hashes match; a fresh protected
+source fetch equals the archived source, without certifying upstream tile bytes.
+Original source SHA256 is still
+`87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32`;
+all 14 symbol owners equal the pinned source fixture. The retained correction
+follows the existing English/local-name request, not a new locale policy.
+
+Only exact Light's unique `road-label-simple` source owner with `road`, symbol
+line placement, the recorded coalesce and no text transform is eligible.
+Only native `road-label-simple` and `road-label-simple-z12-to-z15` expression
+fields still equal to `"name"` become `coalesce("name_en", "name")`, before
+font splitting. Explicit columns request both fields from native decoding.
+NULL/missing English falls back; empty English stays empty. Existing native
+text overrides, changed/duplicate source owners, transforms, custom styles,
+Outdoors, water companions and all other label roles are untouched.
+
+**Content is not eligibility.** The source's `has(name)` and seven road classes
+are preserved: an English-only feature with no local `name` remains excluded,
+while an empty local name is still present. The complete native 39-rule
+inventory differs in exactly two `field_name` values. Filters, inclusive zoom
+bands 12–14 and 15+, fonts, requested/resolved primary faces, size, priority,
+duplicate spacing and all other serialized settings are unchanged. No requested
+camera zoom is substituted for native activation.
+
+| Coverage cell | Verdict | Evidence / outstanding action |
+| --- | --- | --- |
+| C19/C02: two road rules, nine text cases × 11 classes/absence cases × two rules | PASS (scoped native contract) | 198 cases in QGIS 3.34.4, 3.44.11 and 4.2.0 check requested fields, exact strings and source-property predicates. English-only text evaluation does not imply feature eligibility. |
+| C19/C02: actual browser-observed road properties | PASS (scoped property replay) | 676 distinct camera/property cases per build, replayed through both native bands and variants: 1,206 Before text mismatches become zero; property predicate disagreements are zero. Counts include camera repetitions, not unique roads or native-decoder/collision equivalence. |
+| C19/C17/C20–C22: complete source/native inventory and coupled settings | PASS (scoped preservation) | The two road rules' 10 synthetic content mismatches become zero; all other owners' 106 mismatches remain unchanged. Only road text changes; water companions and source-font mappings stay intact. |
+| C19: seven Light presets plus Cairo/Jerusalem z14, both headless PNG runtimes | PASS (scoped source-content repair); fidelity mixed | Expected English/transliterated road names replace local-only strings. All seven Swiss views are byte-identical Before/After. Reader-visible names improve in Cairo/Jerusalem; this is not a universal placement, density or pixel-fidelity pass. |
+| C23: Cairo requested z11.9/12/12.1 and z14.9/15/15.1 | OPEN alignment; scoped content/unchanged gates | The native rules retain their existing bounds. Native rounded activation can show roads below the source's z12 minimum. Correct English in those pre-existing extra labels does not resolve the feature/zoom defect. |
+| C25/C26: Cairo/Jerusalem synthetic Run/Ride/Hike overlays | PARTIAL diagnostic | Production activity encoding is unchanged and routes remain visible in matched maps. Real routes/UI/selected/direction/start/end states remain NOT ASSESSED. |
+| C01/C29: 17 cameras × both native PNG builds, original source and separate Mercator references | PASS (scoped controls/registration) | 34 native and 34 browser unchanged PNG pairs repeat byte-identically; 170 Mercator/native anchor comparisons register within 1e-6px. QGIS3/4 default DPI100/96, style-zoom, density and source-globe mismatch remain OPEN; tile bytes are not archived. |
+| C28/C29: Cairo/Jerusalem actual one-map150-DPI PDFs | PASS scoped content; QGIS4 repeat OPEN | All four QGIS3 repeat pairs are raster-identical; QGIS4 varies by 40/40 pixels in Cairo and 76/175 in Jerusalem (Before/After). Known density-dependent detail remains. Full atlas, desktop, arbitrary DPI and per-glyph RTL correctness are not established. |
+| C19: other source owners and multilingual/output edge cases | OPEN / NOT ASSESSED | Airport needs its separate sizerank/ref/name contract. Eight other coalesce populations, long names, forced-local RTL shaping/association, missing-script fonts, desktop and complete export coverage remain required. |
+
+**Independent dimensions and trade-offs:** exact source content passes in the
+stated cells. Map inspection confirms “6th October Bridge”, “Al Borg St”,
+“Al Tahrir St”, “HaNeviim” and “Bezalel” on the native maps. Source-language
+reader tasks improve, but Cairo's whole-map reference MAE worsens while
+Jerusalem improves. At z14, relative Mercator-reference MAE changes by
++10.2628%/+9.9736% in Cairo and −1.8256%/−1.9282% in Jerusalem (QGIS3/4).
+Cairo z12.1 worsens +24.9571%/+24.3768%; these transition trade-offs are not
+repeat noise. Actual PNG position records confirm native strings, but curved
+labels emit multiple records per full string: they are not label counts.
+Distinct road strings change 87→123/88→126 in Cairo and 229→143/231→146 in
+Jerusalem. These are not unique-feature counts. All non-road distinct-string
+populations remain identical; one duplicate natural-island occurrence disappears
+in Cairo. Broader collision/density/association findings stay open. Existing road-network,
+font/size, placement, collision population and style-zoom differences remain
+visible. Correct strings do not turn those open fidelity cells into passes.
+
+The 16 actual PDFs and eight companion PNGs use production150-DPI forced-vector
+settings; all eight PNGs are byte-identical to their ordinary counterparts.
+The PDF hook does not establish full-atlas or interactive behavior.
+
+Full local tests pass 2678 /191 skips /311 subtests; both complete Docker
+suites pass 216 /82 skips. Both QGIS packages build and nine package tests pass.
+Those capture-run preflight attempts failed before Python startup because the
+previously pinned Docker image IDs no longer existed after gate builds. A
+credential-free startup isolated that cause; the rebuilt font images were
+then tagged/pinned and every live container preflight authorized. No failed
+or blank native capture is counted. No credential, egress or TLS fallback.
+All broader C01–C30 coverage remains required; no limitation is accepted.
+
 ### C19: complete label-role audit and multilingual baselines — 2026-09-14
 
 [Immutable source, native audits, reproducible workers and matched maps][label-roles]
 use unchanged runtime `bdc741cf38caf47e25cf1809055f506bb865efb9`.
 Fresh source SHA256 remains
 `87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32`.
-This slice adds a complete 14-owner source fixture, pinned provenance/ordered-owner/
+This historical audit predates the road-name correction above. It adds a complete
+14-owner source fixture, pinned provenance/ordered-owner/
 canonical-content assertions, and native water-companion regression, **not a production language or rendering fix**.
 
 Every source symbol owner is accounted for: 13 request English/local-name
@@ -159,7 +231,7 @@ native class, geometry, zoom or feature eligibility.
 | C19: all 14 original symbol owners and all 39 native rules, QGIS 3.44.11/Qt 5.15.17 and QGIS 4.2.0/Qt 6.9.2 | PASS (scoped inventory) | Every native rule maps to one source owner; original text/transform, processed expression, native field requests, complete settings and explicit case results are public. Inventory completeness is not content correctness. |
 | C19: country and major settlements; water-line and water-point companion populations | PASS (scoped content) | Four owner families preserve tested English, NULL/missing, empty, accented, mixed-script and English-only values. The existing two-owner native repair remains intact; water uses 16 complementary English/local rules, not a missing fallback. |
 | C19/C02: native water companion selection, five classes × two geometry populations × eight name cases | PASS (scoped regression) | 80 cases in QGIS 3.34.4, 3.44.11 and 4.2.0 assert the ordered 16-rule population before lookup, include predicate/text field requests, and require exactly one matching arm with the expected string. This is not a new scale/worldview/geographic coverage pass. |
-| C19: road, waterway, natural line/point, POI, subdivision, minor settlement, state and continent | OPEN | All nine owner families retain local-name-only expressions, sometimes uppercased; English-present/empty/English-only cases differ from source. Exact owner/derived-rule and existing-override guards are needed before repair. Other eligibility defects remain independent. |
+| C19: waterway, natural line/point, POI, subdivision, minor settlement, state and continent | OPEN | These eight owner families retain local-name-only expressions, sometimes uppercased. Road was the ninth open family at this audit baseline and now has the separate scoped correction above. Other eligibility defects remain independent. |
 | C19: airport code/name contract | OPEN | At sizerank 15 the source requires ref, not name. Cairo's observed feature has `ref: CAI` and renders CAI in the reference; both native maps show the local airport name. Lower-rank ref/name composition also differs in native evaluation. A generic coalesce-only repair is insufficient. |
 | C19: Cairo/Jerusalem region z8 and urban z14, both Docker PNG runtimes | OPEN (geographic corroboration) | Matched native-size crops show local Arabic/Hebrew roads versus source-requested English/transliterated names. Major settlement names retain the earlier repair. These extents are new; they are not a fresh seven-preset sweep. |
 | C17/C19/C20/C21: actual RTL glyph shaping, bidi/curved-line association, fallback fonts and collisions | PARTIAL observation; correctness NOT ASSESSED | Arabic/Hebrew glyphs appear in the native PNGs. Neither exact string evaluation nor visible glyph presence establishes contextual joining, ordering, per-glyph font resolution or correct placement. No forced-local browser or RTL-plugin diagnostic is claimed. |
@@ -895,3 +967,5 @@ explicitly agreed scope reduction with follow-up ownership for excluded work.
 [national-background]: https://github.com/ebelo/qfit/blob/c6393ee1ae6923b5b5482d1bbbc956f0e0a069ed/docs/visual-evidence/issue-1462/national-background/README.md
 
 [label-roles]: https://github.com/ebelo/qfit/blob/ca29374c534bf280f965e3ed74e81d411e573a9f/docs/visual-evidence/issue-1462/label-roles/README.md
+
+[road-names]: https://github.com/ebelo/qfit/blob/7303f1bf106de1c7f0ff2f7f33e39d31df4cfd06/docs/visual-evidence/issue-1462/road-names/README.md
