@@ -122,7 +122,7 @@ focused investigation before broad completion, not an assertion of a root cause.
 | C16 | PARTIAL | Source symbol inventory available; sprite applicability, anchors, collision lifecycle and high-DPI behavior require dedicated checks. | — |
 | C17 | PARTIAL | Font-enabled Docker roles have earlier scoped validation. Desktop font distribution and multilingual fallback are not certified by these captures. | — |
 | C18 | OPEN | Text width, weight, wrapping and relative hierarchy remain visibly different. Blanket size probes were rejected, not accepted as a fix. | Minor |
-| C19 | OPEN (remaining scope) | All 14 source roles are audited. Country/major settlements, water companions, the two road rules, airport code/name branches and three waterway bands pass scoped content cases. Seven other owners remain open. Road-name fidelity is mixed despite restored source strings; RTL, long names and complete output coverage remain open. | Major baseline finding scoped below; remaining severity not established |
+| C19 | OPEN (remaining scope) | All 14 source roles are audited. Country/major settlements, water companions, the two road rules, airport code/name branches three waterway bands and natural line/point families pass scoped content cases. Five other owners remain open. Road-name fidelity is mixed despite restored source strings; RTL, long names and complete output coverage remain open. | Major baseline finding scoped below; remaining severity not established |
 | C20 | PARTIAL | Named-road crops and Rhone/Rhine bend/confluence PNGs have scoped inspection below; systematic association, rotation, long/RTL curved text and PDF legibility remain. | — |
 | C21 | PARTIAL | Current dense views are available; survival/priority decisions and symbol/halo collision extents are not comprehensively audited. | — |
 | C22 | PARTIAL | Road duplicate removal has a scoped pass; the criterion as a whole is not passed. See the separate coverage-cell verdicts below. | — |
@@ -134,6 +134,49 @@ focused investigation before broad completion, not an assertion of a root cause.
 | C28 | PARTIAL; density consistency OPEN | Fresh two-city DPR2 PNGs retain native zoom, but physical-density PNGs and actual one-map PDFs change QGIS4 activation/detail. QGIS3 also changes label placement across PDF density. Production150-DPI settings are exercised, not a complete atlas or desktop installation. | Provisional major output-consistency finding |
 | C29 | PARTIAL; PDF repeat cells OPEN | Prior matrices and 48 new background PNG control pairs repeat exactly. Earlier Bern/Geneva PDF150 variation is now also observed in Lausanne/Kashmir QGIS4 production150-DPI outputs; other new repeated PDF modes are raster-identical. Cold/warm performance and interactive stability remain untested. | PDF variability severity unestablished |
 | C30 | NOT ASSESSED | Cropped basemap evidence does not validate complete user-facing attribution, legend, scale or north/context requirements. | — |
+
+### C19/C20: source-owned natural-feature content — 2026-09-15
+
+[Fresh matched maps, native audits, actual PDFs and portable workers][natural-content]
+compare baseline `3436e3833f9603db17be3f707afc43a86432f5d8` with captured runtime
+`cbf2320`. Fresh full source SHA256 remains
+`87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32`; all14complete
+symbol owners match the pinned fixture. Live tile bytes are unarchived.
+
+The exact Light adapter restores source English/local coalesce for unique
+natural-line/point symbol/natural_label owners, retaining line-center/point placement
+and requiring no text transform. Only native expression fields still equal to
+`"name"` change, before font splitting; both name columns are explicitly requested.
+Missing/NULL English falls back; empty English stays empty. Other styles/roles,
+ambiguous or changed owners, native overrides, geometry/class/worldview/filterrank,
+zoom bounds, priority, typography and placement settings stay unchanged.
+
+| Coverage cell | Verdict | Evidence / remaining work |
+| --- | --- | --- |
+| C19/C02: native natural content and eligibility, QGIS3.34.4/3.44.11/4.2.0 | PASS (scoped contract) | Legacy native16text+1296eligibility cases; Docker also exercises font-derived bands. Ordinary/disputed classes, worldview, geometry and filterrank0/1/1.1/missing are checked. Not glyph/bidi or native/source zoom proof. |
+| C19/C02: all14source owners/39native rules in both Docker generations | PASS (scoped preservation) | Exactly4field_name values change (two owners/two font bands). Natural20synthetic mismatches→0/build; other50unchanged. Preprocessed bytes, all other label settings and requested/resolved fonts are identical. |
+| C19/C02: observed properties in14views | PASS (scoped replay) | 39camera/property sets, each through its own two native bands:18Before text mismatches→0After/build; predicate disagreements0. Observed landform/glacier classes only; not unique features, native decoder/fetch/zoom parity or collision survival. |
+| C19/C20: actual PNG names and geographic association | PARTIAL | Grand Combin, Grand Mont, Basòdino, Klein Grieshorn, Tour d’Aï and Gezira-Zamalek follow source text. Local glacier fallback remains. Centered point fixtures supplement edge-clipped regional labels; no tile-edge or systematic association pass. |
+| C01/C29:14cameras × both native PNG builds plus separate source/Mercator references | PASS (scoped repeats/registration); alignment OPEN | 112nativePNG/56repeat pairs match images/settings/context and normalized placements;56browserPNG/28pairs match.140actual anchors<1e-6px. Source globe, native100/96DPI, source/native zoom and unarchived tiles remain distinct/open. |
+| C18/C20–C22: typography, repetition and reference fidelity | OPEN / PARTIAL as recorded | Cairo label remains smaller and repeats twice versus one observed source occurrence. Cairo Mercator MAE+0.175452%/+0.174889%, Aletsch10+0.000826%/+0.000718% (QGIS3/4); four other changed views improve. No noise/accepted-limitation claim. All non-natural text/provider populations remain unchanged. |
+| C19/C28: actual one-map150DPI PDFs, Cairo14/Grand-Combin10, both builds | PASS (scoped visible content); broader C28 OPEN | 16PDFs, production forced-vector settings,338.667×238.125mm, viewed96DPI. Correct names visible; native type remains small. QGIS4 density/detail changes persist. Not complete atlas, desktop, PDF legibility or association certification. |
+| C29: unchanged actual PDF raster repeats | QGIS3 PASS (scoped); QGIS4 OPEN | All4QGIS3 raster pairs match. QGIS4 Cairo Before/After66/27changed pixels, Grand Combin261/271. Contexts unchanged; variability unclassified. No PDF-file identity claim. |
+| C19/C23–C28: other owners, long/RTL rendering, transitions/seams, activities/accessibility and desktop/full atlas | OPEN / NOT ASSESSED | Five other owners remain: POI, subdivision, minor settlement, state, continent. Static natural-feature maps do not complete these cells. |
+
+Six standard Swiss Before/After views are pixel-identical per build; Lausanne
+changes only the natural-name punctuation. Eight PDF-hook PNGs and two public-worker
+replays match ordinary maps/settings/context (30named byte checks). Both builds
+resolve Noto Sans Regular below8 and Barlow Medium from8 in these natural roles;
+Docker font availability is not ZIP-bundled/registered desktop font provisioning.
+
+Full local2687passed/194skipped/368subtests; completeDocker3/4scripts219passed/
+82skipped each without overrides; legacy native1test/1312subtests; bothZIPbuilds+
+9package tests; diff-check PASS. Stale image-ID, offline audit UID and missing nested
+mount-target startup failures were recovered and excluded. Every successful live
+capture had same-run protected Gateway/containerHTTP200/TLS authorization; all
+processes completed. No credential/egress/TLS fallback or failed/blank-frame pass.
+**C19 and #1462 remain OPEN:8OPEN/16PARTIAL/5NOTASSESSED/1source-backedN/A.**
+No absent coverage cell or limitation is accepted.
 
 ### C08/C19/C20: source-owned waterway content — 2026-09-15
 
@@ -1068,3 +1111,5 @@ explicitly agreed scope reduction with follow-up ownership for excluded work.
 [airport-content]: https://github.com/ebelo/qfit/blob/3a773fe351caf585cbfd6c68bac5e63fe18983be/docs/visual-evidence/issue-1462/airport-content/README.md
 
 [waterway-content]: https://github.com/ebelo/qfit/blob/ed3c0e139dcd3a7cb47d6c08da257c7821aa278a/docs/visual-evidence/issue-1462/waterway-content/README.md
+
+[natural-content]: https://github.com/ebelo/qfit/blob/88726798141796d6956dcf9df8299366e49ec0fb/docs/visual-evidence/issue-1462/natural-content/README.md
