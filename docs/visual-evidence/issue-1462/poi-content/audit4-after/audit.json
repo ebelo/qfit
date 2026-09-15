@@ -1,0 +1,4955 @@
+{
+  "scope": "Text evaluation in requested native schema; companion name arms only; no feature/zoom eligibility, render or shaping certification",
+  "source_sha256": "87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32",
+  "runtime": {
+    "qgis_version": "4.2.0-Belém do Pará",
+    "qgis_version_int": 40200,
+    "qgis_release_name": "Belém do Pará"
+  },
+  "summary": [
+    {
+      "owner": "road-label-simple",
+      "native_rules": 2,
+      "eligible_content_cases": 16,
+      "mismatches": 0,
+      "verdict": "PASS (scoped content)"
+    },
+    {
+      "owner": "waterway-label",
+      "native_rules": 3,
+      "eligible_content_cases": 24,
+      "mismatches": 0,
+      "verdict": "PASS (scoped content)"
+    },
+    {
+      "owner": "natural-line-label",
+      "native_rules": 2,
+      "eligible_content_cases": 16,
+      "mismatches": 0,
+      "verdict": "PASS (scoped content)"
+    },
+    {
+      "owner": "natural-point-label",
+      "native_rules": 2,
+      "eligible_content_cases": 16,
+      "mismatches": 0,
+      "verdict": "PASS (scoped content)"
+    },
+    {
+      "owner": "water-line-label",
+      "native_rules": 6,
+      "eligible_content_cases": 24,
+      "mismatches": 0,
+      "verdict": "PASS (scoped content)"
+    },
+    {
+      "owner": "water-point-label",
+      "native_rules": 10,
+      "eligible_content_cases": 40,
+      "mismatches": 0,
+      "verdict": "PASS (scoped content)"
+    },
+    {
+      "owner": "poi-label",
+      "native_rules": 3,
+      "eligible_content_cases": 24,
+      "mismatches": 0,
+      "verdict": "PASS (scoped content)"
+    },
+    {
+      "owner": "airport-label",
+      "native_rules": 1,
+      "eligible_content_cases": 24,
+      "mismatches": 0,
+      "verdict": "PASS (scoped content)"
+    },
+    {
+      "owner": "settlement-subdivision-label",
+      "native_rules": 1,
+      "eligible_content_cases": 8,
+      "mismatches": 5,
+      "verdict": "OPEN"
+    },
+    {
+      "owner": "settlement-minor-label",
+      "native_rules": 2,
+      "eligible_content_cases": 16,
+      "mismatches": 10,
+      "verdict": "OPEN"
+    },
+    {
+      "owner": "settlement-major-label",
+      "native_rules": 2,
+      "eligible_content_cases": 16,
+      "mismatches": 0,
+      "verdict": "PASS (scoped content)"
+    },
+    {
+      "owner": "state-label",
+      "native_rules": 1,
+      "eligible_content_cases": 8,
+      "mismatches": 5,
+      "verdict": "OPEN"
+    },
+    {
+      "owner": "country-label",
+      "native_rules": 1,
+      "eligible_content_cases": 8,
+      "mismatches": 0,
+      "verdict": "PASS (scoped content)"
+    },
+    {
+      "owner": "continent-label",
+      "native_rules": 3,
+      "eligible_content_cases": 24,
+      "mismatches": 15,
+      "verdict": "OPEN"
+    }
+  ],
+  "rules": [
+    {
+      "owner": "road-label-simple",
+      "source_layer": "road",
+      "source_text": [
+        "coalesce",
+        [
+          "get",
+          "name_en"
+        ],
+        [
+          "get",
+          "name"
+        ]
+      ],
+      "source_transform": "none",
+      "rule": "road-label-simple",
+      "filter": "(\"name\" IS NOT NULL) AND (\"class\" IN ('motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'street', 'street_limited'))",
+      "native_text": "coalesce(\"name_en\", \"name\")",
+      "requested_fields": [
+        "name",
+        "name_en"
+      ],
+      "minzoom": 15,
+      "maxzoom": -1,
+      "cases": [
+        {
+          "case": "english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English name",
+            "name": "Nom local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English name",
+          "native_text": "English name",
+          "matches": true
+        },
+        {
+          "case": "null-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": null,
+            "name": "Genève"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Genève",
+          "native_text": "Genève",
+          "matches": true
+        },
+        {
+          "case": "missing-english",
+          "airport_case": "default",
+          "properties": {
+            "name": "القاهرة"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة",
+          "native_text": "القاهرة",
+          "matches": true
+        },
+        {
+          "case": "empty-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "",
+            "name": "ירושלים"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "",
+          "native_text": "",
+          "matches": true
+        },
+        {
+          "case": "diacritics",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "Zürich — L’Aquila",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Zürich — L’Aquila",
+          "native_text": "Zürich — L’Aquila",
+          "matches": true
+        },
+        {
+          "case": "mixed-script",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "القاهرة / ירושלים 12",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة / ירושלים 12",
+          "native_text": "القاهرة / ירושלים 12",
+          "matches": true
+        },
+        {
+          "case": "english-only",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English only"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English only",
+          "native_text": "English only",
+          "matches": true
+        },
+        {
+          "case": "both-missing",
+          "airport_case": "default",
+          "properties": {},
+          "companion_arm_eligible": true,
+          "source_text": null,
+          "native_text": null,
+          "matches": true
+        }
+      ]
+    },
+    {
+      "owner": "road-label-simple",
+      "source_layer": "road",
+      "source_text": [
+        "coalesce",
+        [
+          "get",
+          "name_en"
+        ],
+        [
+          "get",
+          "name"
+        ]
+      ],
+      "source_transform": "none",
+      "rule": "road-label-simple-z12-to-z15",
+      "filter": "(\"name\" IS NOT NULL) AND (\"class\" IN ('motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'street', 'street_limited'))",
+      "native_text": "coalesce(\"name_en\", \"name\")",
+      "requested_fields": [
+        "name",
+        "name_en"
+      ],
+      "minzoom": 12,
+      "maxzoom": 14,
+      "cases": [
+        {
+          "case": "english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English name",
+            "name": "Nom local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English name",
+          "native_text": "English name",
+          "matches": true
+        },
+        {
+          "case": "null-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": null,
+            "name": "Genève"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Genève",
+          "native_text": "Genève",
+          "matches": true
+        },
+        {
+          "case": "missing-english",
+          "airport_case": "default",
+          "properties": {
+            "name": "القاهرة"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة",
+          "native_text": "القاهرة",
+          "matches": true
+        },
+        {
+          "case": "empty-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "",
+            "name": "ירושלים"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "",
+          "native_text": "",
+          "matches": true
+        },
+        {
+          "case": "diacritics",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "Zürich — L’Aquila",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Zürich — L’Aquila",
+          "native_text": "Zürich — L’Aquila",
+          "matches": true
+        },
+        {
+          "case": "mixed-script",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "القاهرة / ירושלים 12",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة / ירושלים 12",
+          "native_text": "القاهرة / ירושלים 12",
+          "matches": true
+        },
+        {
+          "case": "english-only",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English only"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English only",
+          "native_text": "English only",
+          "matches": true
+        },
+        {
+          "case": "both-missing",
+          "airport_case": "default",
+          "properties": {},
+          "companion_arm_eligible": true,
+          "source_text": null,
+          "native_text": null,
+          "matches": true
+        }
+      ]
+    },
+    {
+      "owner": "waterway-label",
+      "source_layer": "natural_label",
+      "source_text": [
+        "coalesce",
+        [
+          "get",
+          "name_en"
+        ],
+        [
+          "get",
+          "name"
+        ]
+      ],
+      "source_transform": "none",
+      "rule": "waterway-label-z13-to-z15",
+      "filter": "(CASE WHEN \"class\" IN ('canal', 'river', 'stream', 'disputed_canal', 'disputed_river', 'disputed_stream') THEN \"worldview\" IN ('all', 'US') ELSE FALSE END) AND (_geom_type IS 'LineString')",
+      "native_text": "coalesce(\"name_en\", \"name\")",
+      "requested_fields": [
+        "name",
+        "name_en"
+      ],
+      "minzoom": 13,
+      "maxzoom": 14,
+      "cases": [
+        {
+          "case": "english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English name",
+            "name": "Nom local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English name",
+          "native_text": "English name",
+          "matches": true
+        },
+        {
+          "case": "null-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": null,
+            "name": "Genève"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Genève",
+          "native_text": "Genève",
+          "matches": true
+        },
+        {
+          "case": "missing-english",
+          "airport_case": "default",
+          "properties": {
+            "name": "القاهرة"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة",
+          "native_text": "القاهرة",
+          "matches": true
+        },
+        {
+          "case": "empty-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "",
+            "name": "ירושלים"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "",
+          "native_text": "",
+          "matches": true
+        },
+        {
+          "case": "diacritics",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "Zürich — L’Aquila",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Zürich — L’Aquila",
+          "native_text": "Zürich — L’Aquila",
+          "matches": true
+        },
+        {
+          "case": "mixed-script",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "القاهرة / ירושלים 12",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة / ירושלים 12",
+          "native_text": "القاهرة / ירושלים 12",
+          "matches": true
+        },
+        {
+          "case": "english-only",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English only"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English only",
+          "native_text": "English only",
+          "matches": true
+        },
+        {
+          "case": "both-missing",
+          "airport_case": "default",
+          "properties": {},
+          "companion_arm_eligible": true,
+          "source_text": null,
+          "native_text": null,
+          "matches": true
+        }
+      ]
+    },
+    {
+      "owner": "waterway-label",
+      "source_layer": "natural_label",
+      "source_text": [
+        "coalesce",
+        [
+          "get",
+          "name_en"
+        ],
+        [
+          "get",
+          "name"
+        ]
+      ],
+      "source_transform": "none",
+      "rule": "waterway-label-z15-to-z17",
+      "filter": "(CASE WHEN \"class\" IN ('canal', 'river', 'stream', 'disputed_canal', 'disputed_river', 'disputed_stream') THEN \"worldview\" IN ('all', 'US') ELSE FALSE END) AND (_geom_type IS 'LineString')",
+      "native_text": "coalesce(\"name_en\", \"name\")",
+      "requested_fields": [
+        "name",
+        "name_en"
+      ],
+      "minzoom": 15,
+      "maxzoom": 16,
+      "cases": [
+        {
+          "case": "english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English name",
+            "name": "Nom local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English name",
+          "native_text": "English name",
+          "matches": true
+        },
+        {
+          "case": "null-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": null,
+            "name": "Genève"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Genève",
+          "native_text": "Genève",
+          "matches": true
+        },
+        {
+          "case": "missing-english",
+          "airport_case": "default",
+          "properties": {
+            "name": "القاهرة"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة",
+          "native_text": "القاهرة",
+          "matches": true
+        },
+        {
+          "case": "empty-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "",
+            "name": "ירושלים"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "",
+          "native_text": "",
+          "matches": true
+        },
+        {
+          "case": "diacritics",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "Zürich — L’Aquila",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Zürich — L’Aquila",
+          "native_text": "Zürich — L’Aquila",
+          "matches": true
+        },
+        {
+          "case": "mixed-script",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "القاهرة / ירושלים 12",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة / ירושלים 12",
+          "native_text": "القاهرة / ירושלים 12",
+          "matches": true
+        },
+        {
+          "case": "english-only",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English only"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English only",
+          "native_text": "English only",
+          "matches": true
+        },
+        {
+          "case": "both-missing",
+          "airport_case": "default",
+          "properties": {},
+          "companion_arm_eligible": true,
+          "source_text": null,
+          "native_text": null,
+          "matches": true
+        }
+      ]
+    },
+    {
+      "owner": "waterway-label",
+      "source_layer": "natural_label",
+      "source_text": [
+        "coalesce",
+        [
+          "get",
+          "name_en"
+        ],
+        [
+          "get",
+          "name"
+        ]
+      ],
+      "source_transform": "none",
+      "rule": "waterway-label-z17-plus",
+      "filter": "(CASE WHEN \"class\" IN ('canal', 'river', 'stream', 'disputed_canal', 'disputed_river', 'disputed_stream') THEN \"worldview\" IN ('all', 'US') ELSE FALSE END) AND (_geom_type IS 'LineString')",
+      "native_text": "coalesce(\"name_en\", \"name\")",
+      "requested_fields": [
+        "name",
+        "name_en"
+      ],
+      "minzoom": 17,
+      "maxzoom": -1,
+      "cases": [
+        {
+          "case": "english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English name",
+            "name": "Nom local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English name",
+          "native_text": "English name",
+          "matches": true
+        },
+        {
+          "case": "null-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": null,
+            "name": "Genève"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Genève",
+          "native_text": "Genève",
+          "matches": true
+        },
+        {
+          "case": "missing-english",
+          "airport_case": "default",
+          "properties": {
+            "name": "القاهرة"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة",
+          "native_text": "القاهرة",
+          "matches": true
+        },
+        {
+          "case": "empty-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "",
+            "name": "ירושלים"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "",
+          "native_text": "",
+          "matches": true
+        },
+        {
+          "case": "diacritics",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "Zürich — L’Aquila",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Zürich — L’Aquila",
+          "native_text": "Zürich — L’Aquila",
+          "matches": true
+        },
+        {
+          "case": "mixed-script",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "القاهرة / ירושלים 12",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة / ירושלים 12",
+          "native_text": "القاهرة / ירושלים 12",
+          "matches": true
+        },
+        {
+          "case": "english-only",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English only"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English only",
+          "native_text": "English only",
+          "matches": true
+        },
+        {
+          "case": "both-missing",
+          "airport_case": "default",
+          "properties": {},
+          "companion_arm_eligible": true,
+          "source_text": null,
+          "native_text": null,
+          "matches": true
+        }
+      ]
+    },
+    {
+      "owner": "natural-line-label",
+      "source_layer": "natural_label",
+      "source_text": [
+        "coalesce",
+        [
+          "get",
+          "name_en"
+        ],
+        [
+          "get",
+          "name"
+        ]
+      ],
+      "source_transform": "none",
+      "rule": "natural-line-label",
+      "filter": "(CASE WHEN \"class\" IN ('glacier', 'landform', 'disputed_glacier', 'disputed_landform') THEN \"worldview\" IN ('all', 'US') ELSE FALSE END) AND (\"filterrank\" <= 1) AND (_geom_type IS 'LineString')",
+      "native_text": "coalesce(\"name_en\", \"name\")",
+      "requested_fields": [
+        "name",
+        "name_en"
+      ],
+      "minzoom": 4,
+      "maxzoom": 7,
+      "cases": [
+        {
+          "case": "english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English name",
+            "name": "Nom local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English name",
+          "native_text": "English name",
+          "matches": true
+        },
+        {
+          "case": "null-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": null,
+            "name": "Genève"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Genève",
+          "native_text": "Genève",
+          "matches": true
+        },
+        {
+          "case": "missing-english",
+          "airport_case": "default",
+          "properties": {
+            "name": "القاهرة"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة",
+          "native_text": "القاهرة",
+          "matches": true
+        },
+        {
+          "case": "empty-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "",
+            "name": "ירושלים"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "",
+          "native_text": "",
+          "matches": true
+        },
+        {
+          "case": "diacritics",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "Zürich — L’Aquila",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Zürich — L’Aquila",
+          "native_text": "Zürich — L’Aquila",
+          "matches": true
+        },
+        {
+          "case": "mixed-script",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "القاهرة / ירושלים 12",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة / ירושלים 12",
+          "native_text": "القاهرة / ירושלים 12",
+          "matches": true
+        },
+        {
+          "case": "english-only",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English only"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English only",
+          "native_text": "English only",
+          "matches": true
+        },
+        {
+          "case": "both-missing",
+          "airport_case": "default",
+          "properties": {},
+          "companion_arm_eligible": true,
+          "source_text": null,
+          "native_text": null,
+          "matches": true
+        }
+      ]
+    },
+    {
+      "owner": "natural-line-label",
+      "source_layer": "natural_label",
+      "source_text": [
+        "coalesce",
+        [
+          "get",
+          "name_en"
+        ],
+        [
+          "get",
+          "name"
+        ]
+      ],
+      "source_transform": "none",
+      "rule": "natural-line-label-qfit-open-fonts-z8-plus",
+      "filter": "(CASE WHEN \"class\" IN ('glacier', 'landform', 'disputed_glacier', 'disputed_landform') THEN \"worldview\" IN ('all', 'US') ELSE FALSE END) AND (\"filterrank\" <= 1) AND (_geom_type IS 'LineString')",
+      "native_text": "coalesce(\"name_en\", \"name\")",
+      "requested_fields": [
+        "name",
+        "name_en"
+      ],
+      "minzoom": 8,
+      "maxzoom": -1,
+      "cases": [
+        {
+          "case": "english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English name",
+            "name": "Nom local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English name",
+          "native_text": "English name",
+          "matches": true
+        },
+        {
+          "case": "null-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": null,
+            "name": "Genève"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Genève",
+          "native_text": "Genève",
+          "matches": true
+        },
+        {
+          "case": "missing-english",
+          "airport_case": "default",
+          "properties": {
+            "name": "القاهرة"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة",
+          "native_text": "القاهرة",
+          "matches": true
+        },
+        {
+          "case": "empty-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "",
+            "name": "ירושלים"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "",
+          "native_text": "",
+          "matches": true
+        },
+        {
+          "case": "diacritics",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "Zürich — L’Aquila",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Zürich — L’Aquila",
+          "native_text": "Zürich — L’Aquila",
+          "matches": true
+        },
+        {
+          "case": "mixed-script",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "القاهرة / ירושלים 12",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة / ירושלים 12",
+          "native_text": "القاهرة / ירושלים 12",
+          "matches": true
+        },
+        {
+          "case": "english-only",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English only"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English only",
+          "native_text": "English only",
+          "matches": true
+        },
+        {
+          "case": "both-missing",
+          "airport_case": "default",
+          "properties": {},
+          "companion_arm_eligible": true,
+          "source_text": null,
+          "native_text": null,
+          "matches": true
+        }
+      ]
+    },
+    {
+      "owner": "natural-point-label",
+      "source_layer": "natural_label",
+      "source_text": [
+        "coalesce",
+        [
+          "get",
+          "name_en"
+        ],
+        [
+          "get",
+          "name"
+        ]
+      ],
+      "source_transform": "none",
+      "rule": "natural-point-label",
+      "filter": "(CASE WHEN \"class\" IN ('dock', 'glacier', 'landform', 'water_feature', 'wetland', 'disputed_dock', 'disputed_glacier', 'disputed_landform', 'disputed_water_feature', 'disputed_wetland') THEN \"worldview\" IN ('all', 'US') ELSE FALSE END) AND (\"filterrank\" <= 1) AND (_geom_type IS 'Point')",
+      "native_text": "coalesce(\"name_en\", \"name\")",
+      "requested_fields": [
+        "name",
+        "name_en"
+      ],
+      "minzoom": 4,
+      "maxzoom": 7,
+      "cases": [
+        {
+          "case": "english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English name",
+            "name": "Nom local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English name",
+          "native_text": "English name",
+          "matches": true
+        },
+        {
+          "case": "null-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": null,
+            "name": "Genève"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Genève",
+          "native_text": "Genève",
+          "matches": true
+        },
+        {
+          "case": "missing-english",
+          "airport_case": "default",
+          "properties": {
+            "name": "القاهرة"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة",
+          "native_text": "القاهرة",
+          "matches": true
+        },
+        {
+          "case": "empty-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "",
+            "name": "ירושלים"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "",
+          "native_text": "",
+          "matches": true
+        },
+        {
+          "case": "diacritics",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "Zürich — L’Aquila",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Zürich — L’Aquila",
+          "native_text": "Zürich — L’Aquila",
+          "matches": true
+        },
+        {
+          "case": "mixed-script",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "القاهرة / ירושלים 12",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة / ירושלים 12",
+          "native_text": "القاهرة / ירושלים 12",
+          "matches": true
+        },
+        {
+          "case": "english-only",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English only"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English only",
+          "native_text": "English only",
+          "matches": true
+        },
+        {
+          "case": "both-missing",
+          "airport_case": "default",
+          "properties": {},
+          "companion_arm_eligible": true,
+          "source_text": null,
+          "native_text": null,
+          "matches": true
+        }
+      ]
+    },
+    {
+      "owner": "natural-point-label",
+      "source_layer": "natural_label",
+      "source_text": [
+        "coalesce",
+        [
+          "get",
+          "name_en"
+        ],
+        [
+          "get",
+          "name"
+        ]
+      ],
+      "source_transform": "none",
+      "rule": "natural-point-label-qfit-open-fonts-z8-plus",
+      "filter": "(CASE WHEN \"class\" IN ('dock', 'glacier', 'landform', 'water_feature', 'wetland', 'disputed_dock', 'disputed_glacier', 'disputed_landform', 'disputed_water_feature', 'disputed_wetland') THEN \"worldview\" IN ('all', 'US') ELSE FALSE END) AND (\"filterrank\" <= 1) AND (_geom_type IS 'Point')",
+      "native_text": "coalesce(\"name_en\", \"name\")",
+      "requested_fields": [
+        "name",
+        "name_en"
+      ],
+      "minzoom": 8,
+      "maxzoom": -1,
+      "cases": [
+        {
+          "case": "english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English name",
+            "name": "Nom local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English name",
+          "native_text": "English name",
+          "matches": true
+        },
+        {
+          "case": "null-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": null,
+            "name": "Genève"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Genève",
+          "native_text": "Genève",
+          "matches": true
+        },
+        {
+          "case": "missing-english",
+          "airport_case": "default",
+          "properties": {
+            "name": "القاهرة"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة",
+          "native_text": "القاهرة",
+          "matches": true
+        },
+        {
+          "case": "empty-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "",
+            "name": "ירושלים"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "",
+          "native_text": "",
+          "matches": true
+        },
+        {
+          "case": "diacritics",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "Zürich — L’Aquila",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Zürich — L’Aquila",
+          "native_text": "Zürich — L’Aquila",
+          "matches": true
+        },
+        {
+          "case": "mixed-script",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "القاهرة / ירושלים 12",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة / ירושלים 12",
+          "native_text": "القاهرة / ירושלים 12",
+          "matches": true
+        },
+        {
+          "case": "english-only",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English only"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English only",
+          "native_text": "English only",
+          "matches": true
+        },
+        {
+          "case": "both-missing",
+          "airport_case": "default",
+          "properties": {},
+          "companion_arm_eligible": true,
+          "source_text": null,
+          "native_text": null,
+          "matches": true
+        }
+      ]
+    },
+    {
+      "owner": "water-line-label",
+      "source_layer": "natural_label",
+      "source_text": [
+        "coalesce",
+        [
+          "get",
+          "name_en"
+        ],
+        [
+          "get",
+          "name"
+        ]
+      ],
+      "source_transform": "none",
+      "rule": "water-line-label-ocean-name-en",
+      "filter": "(CASE WHEN \"class\" IN ('bay', 'ocean', 'reservoir', 'sea', 'water', 'disputed_bay', 'disputed_ocean', 'disputed_reservoir', 'disputed_sea', 'disputed_water') THEN \"worldview\" IN ('all', 'US') ELSE FALSE END) AND (_geom_type IS 'LineString') AND (\"class\" = 'ocean') AND (\"name_en\" IS NOT NULL)",
+      "native_text": "\"name_en\"",
+      "requested_fields": [
+        "name_en"
+      ],
+      "minzoom": 1,
+      "maxzoom": -1,
+      "cases": [
+        {
+          "case": "english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English name",
+            "name": "Nom local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English name",
+          "native_text": "English name",
+          "matches": true
+        },
+        {
+          "case": "null-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": null,
+            "name": "Genève"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "Genève",
+          "native_text": null,
+          "matches": false
+        },
+        {
+          "case": "missing-english",
+          "airport_case": "default",
+          "properties": {
+            "name": "القاهرة"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "القاهرة",
+          "native_text": null,
+          "matches": false
+        },
+        {
+          "case": "empty-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "",
+            "name": "ירושלים"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "",
+          "native_text": "",
+          "matches": true
+        },
+        {
+          "case": "diacritics",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "Zürich — L’Aquila",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Zürich — L’Aquila",
+          "native_text": "Zürich — L’Aquila",
+          "matches": true
+        },
+        {
+          "case": "mixed-script",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "القاهرة / ירושלים 12",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة / ירושלים 12",
+          "native_text": "القاهرة / ירושלים 12",
+          "matches": true
+        },
+        {
+          "case": "english-only",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English only"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English only",
+          "native_text": "English only",
+          "matches": true
+        },
+        {
+          "case": "both-missing",
+          "airport_case": "default",
+          "properties": {},
+          "companion_arm_eligible": false,
+          "source_text": null,
+          "native_text": null,
+          "matches": true
+        }
+      ]
+    },
+    {
+      "owner": "water-line-label",
+      "source_layer": "natural_label",
+      "source_text": [
+        "coalesce",
+        [
+          "get",
+          "name_en"
+        ],
+        [
+          "get",
+          "name"
+        ]
+      ],
+      "source_transform": "none",
+      "rule": "water-line-label-ocean-name",
+      "filter": "(CASE WHEN \"class\" IN ('bay', 'ocean', 'reservoir', 'sea', 'water', 'disputed_bay', 'disputed_ocean', 'disputed_reservoir', 'disputed_sea', 'disputed_water') THEN \"worldview\" IN ('all', 'US') ELSE FALSE END) AND (_geom_type IS 'LineString') AND (\"class\" = 'ocean') AND (\"name_en\" IS NULL)",
+      "native_text": "\"name\"",
+      "requested_fields": [
+        "name"
+      ],
+      "minzoom": 1,
+      "maxzoom": -1,
+      "cases": [
+        {
+          "case": "english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English name",
+            "name": "Nom local"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "English name",
+          "native_text": "Nom local",
+          "matches": false
+        },
+        {
+          "case": "null-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": null,
+            "name": "Genève"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Genève",
+          "native_text": "Genève",
+          "matches": true
+        },
+        {
+          "case": "missing-english",
+          "airport_case": "default",
+          "properties": {
+            "name": "القاهرة"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة",
+          "native_text": "القاهرة",
+          "matches": true
+        },
+        {
+          "case": "empty-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "",
+            "name": "ירושלים"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "",
+          "native_text": "ירושלים",
+          "matches": false
+        },
+        {
+          "case": "diacritics",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "Zürich — L’Aquila",
+            "name": "local"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "Zürich — L’Aquila",
+          "native_text": "local",
+          "matches": false
+        },
+        {
+          "case": "mixed-script",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "القاهرة / ירושלים 12",
+            "name": "local"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "القاهرة / ירושלים 12",
+          "native_text": "local",
+          "matches": false
+        },
+        {
+          "case": "english-only",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English only"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "English only",
+          "native_text": null,
+          "matches": false
+        },
+        {
+          "case": "both-missing",
+          "airport_case": "default",
+          "properties": {},
+          "companion_arm_eligible": true,
+          "source_text": null,
+          "native_text": null,
+          "matches": true
+        }
+      ]
+    },
+    {
+      "owner": "water-line-label",
+      "source_layer": "natural_label",
+      "source_text": [
+        "coalesce",
+        [
+          "get",
+          "name_en"
+        ],
+        [
+          "get",
+          "name"
+        ]
+      ],
+      "source_transform": "none",
+      "rule": "water-line-label-sea-bay-name-en",
+      "filter": "(CASE WHEN \"class\" IN ('bay', 'ocean', 'reservoir', 'sea', 'water', 'disputed_bay', 'disputed_ocean', 'disputed_reservoir', 'disputed_sea', 'disputed_water') THEN \"worldview\" IN ('all', 'US') ELSE FALSE END) AND (_geom_type IS 'LineString') AND (\"class\" IN ('sea', 'bay')) AND (\"name_en\" IS NOT NULL)",
+      "native_text": "\"name_en\"",
+      "requested_fields": [
+        "name_en"
+      ],
+      "minzoom": 1,
+      "maxzoom": -1,
+      "cases": [
+        {
+          "case": "english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English name",
+            "name": "Nom local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English name",
+          "native_text": "English name",
+          "matches": true
+        },
+        {
+          "case": "null-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": null,
+            "name": "Genève"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "Genève",
+          "native_text": null,
+          "matches": false
+        },
+        {
+          "case": "missing-english",
+          "airport_case": "default",
+          "properties": {
+            "name": "القاهرة"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "القاهرة",
+          "native_text": null,
+          "matches": false
+        },
+        {
+          "case": "empty-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "",
+            "name": "ירושלים"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "",
+          "native_text": "",
+          "matches": true
+        },
+        {
+          "case": "diacritics",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "Zürich — L’Aquila",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Zürich — L’Aquila",
+          "native_text": "Zürich — L’Aquila",
+          "matches": true
+        },
+        {
+          "case": "mixed-script",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "القاهرة / ירושלים 12",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة / ירושלים 12",
+          "native_text": "القاهرة / ירושלים 12",
+          "matches": true
+        },
+        {
+          "case": "english-only",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English only"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English only",
+          "native_text": "English only",
+          "matches": true
+        },
+        {
+          "case": "both-missing",
+          "airport_case": "default",
+          "properties": {},
+          "companion_arm_eligible": false,
+          "source_text": null,
+          "native_text": null,
+          "matches": true
+        }
+      ]
+    },
+    {
+      "owner": "water-line-label",
+      "source_layer": "natural_label",
+      "source_text": [
+        "coalesce",
+        [
+          "get",
+          "name_en"
+        ],
+        [
+          "get",
+          "name"
+        ]
+      ],
+      "source_transform": "none",
+      "rule": "water-line-label-sea-bay-name",
+      "filter": "(CASE WHEN \"class\" IN ('bay', 'ocean', 'reservoir', 'sea', 'water', 'disputed_bay', 'disputed_ocean', 'disputed_reservoir', 'disputed_sea', 'disputed_water') THEN \"worldview\" IN ('all', 'US') ELSE FALSE END) AND (_geom_type IS 'LineString') AND (\"class\" IN ('sea', 'bay')) AND (\"name_en\" IS NULL)",
+      "native_text": "\"name\"",
+      "requested_fields": [
+        "name"
+      ],
+      "minzoom": 1,
+      "maxzoom": -1,
+      "cases": [
+        {
+          "case": "english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English name",
+            "name": "Nom local"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "English name",
+          "native_text": "Nom local",
+          "matches": false
+        },
+        {
+          "case": "null-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": null,
+            "name": "Genève"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Genève",
+          "native_text": "Genève",
+          "matches": true
+        },
+        {
+          "case": "missing-english",
+          "airport_case": "default",
+          "properties": {
+            "name": "القاهرة"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة",
+          "native_text": "القاهرة",
+          "matches": true
+        },
+        {
+          "case": "empty-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "",
+            "name": "ירושלים"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "",
+          "native_text": "ירושלים",
+          "matches": false
+        },
+        {
+          "case": "diacritics",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "Zürich — L’Aquila",
+            "name": "local"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "Zürich — L’Aquila",
+          "native_text": "local",
+          "matches": false
+        },
+        {
+          "case": "mixed-script",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "القاهرة / ירושלים 12",
+            "name": "local"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "القاهرة / ירושלים 12",
+          "native_text": "local",
+          "matches": false
+        },
+        {
+          "case": "english-only",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English only"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "English only",
+          "native_text": null,
+          "matches": false
+        },
+        {
+          "case": "both-missing",
+          "airport_case": "default",
+          "properties": {},
+          "companion_arm_eligible": true,
+          "source_text": null,
+          "native_text": null,
+          "matches": true
+        }
+      ]
+    },
+    {
+      "owner": "water-line-label",
+      "source_layer": "natural_label",
+      "source_text": [
+        "coalesce",
+        [
+          "get",
+          "name_en"
+        ],
+        [
+          "get",
+          "name"
+        ]
+      ],
+      "source_transform": "none",
+      "rule": "water-line-label-other-name-en",
+      "filter": "(CASE WHEN \"class\" IN ('bay', 'ocean', 'reservoir', 'sea', 'water', 'disputed_bay', 'disputed_ocean', 'disputed_reservoir', 'disputed_sea', 'disputed_water') THEN \"worldview\" IN ('all', 'US') ELSE FALSE END) AND (_geom_type IS 'LineString') AND (CASE WHEN \"class\" IN ('ocean', 'sea', 'bay') THEN FALSE ELSE TRUE END) AND (\"name_en\" IS NOT NULL)",
+      "native_text": "\"name_en\"",
+      "requested_fields": [
+        "name_en"
+      ],
+      "minzoom": 1,
+      "maxzoom": -1,
+      "cases": [
+        {
+          "case": "english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English name",
+            "name": "Nom local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English name",
+          "native_text": "English name",
+          "matches": true
+        },
+        {
+          "case": "null-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": null,
+            "name": "Genève"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "Genève",
+          "native_text": null,
+          "matches": false
+        },
+        {
+          "case": "missing-english",
+          "airport_case": "default",
+          "properties": {
+            "name": "القاهرة"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "القاهرة",
+          "native_text": null,
+          "matches": false
+        },
+        {
+          "case": "empty-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "",
+            "name": "ירושלים"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "",
+          "native_text": "",
+          "matches": true
+        },
+        {
+          "case": "diacritics",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "Zürich — L’Aquila",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Zürich — L’Aquila",
+          "native_text": "Zürich — L’Aquila",
+          "matches": true
+        },
+        {
+          "case": "mixed-script",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "القاهرة / ירושלים 12",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة / ירושלים 12",
+          "native_text": "القاهرة / ירושלים 12",
+          "matches": true
+        },
+        {
+          "case": "english-only",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English only"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English only",
+          "native_text": "English only",
+          "matches": true
+        },
+        {
+          "case": "both-missing",
+          "airport_case": "default",
+          "properties": {},
+          "companion_arm_eligible": false,
+          "source_text": null,
+          "native_text": null,
+          "matches": true
+        }
+      ]
+    },
+    {
+      "owner": "water-line-label",
+      "source_layer": "natural_label",
+      "source_text": [
+        "coalesce",
+        [
+          "get",
+          "name_en"
+        ],
+        [
+          "get",
+          "name"
+        ]
+      ],
+      "source_transform": "none",
+      "rule": "water-line-label-other-name",
+      "filter": "(CASE WHEN \"class\" IN ('bay', 'ocean', 'reservoir', 'sea', 'water', 'disputed_bay', 'disputed_ocean', 'disputed_reservoir', 'disputed_sea', 'disputed_water') THEN \"worldview\" IN ('all', 'US') ELSE FALSE END) AND (_geom_type IS 'LineString') AND (CASE WHEN \"class\" IN ('ocean', 'sea', 'bay') THEN FALSE ELSE TRUE END) AND (\"name_en\" IS NULL)",
+      "native_text": "\"name\"",
+      "requested_fields": [
+        "name"
+      ],
+      "minzoom": 1,
+      "maxzoom": -1,
+      "cases": [
+        {
+          "case": "english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English name",
+            "name": "Nom local"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "English name",
+          "native_text": "Nom local",
+          "matches": false
+        },
+        {
+          "case": "null-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": null,
+            "name": "Genève"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Genève",
+          "native_text": "Genève",
+          "matches": true
+        },
+        {
+          "case": "missing-english",
+          "airport_case": "default",
+          "properties": {
+            "name": "القاهرة"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة",
+          "native_text": "القاهرة",
+          "matches": true
+        },
+        {
+          "case": "empty-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "",
+            "name": "ירושלים"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "",
+          "native_text": "ירושלים",
+          "matches": false
+        },
+        {
+          "case": "diacritics",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "Zürich — L’Aquila",
+            "name": "local"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "Zürich — L’Aquila",
+          "native_text": "local",
+          "matches": false
+        },
+        {
+          "case": "mixed-script",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "القاهرة / ירושלים 12",
+            "name": "local"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "القاهرة / ירושלים 12",
+          "native_text": "local",
+          "matches": false
+        },
+        {
+          "case": "english-only",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English only"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "English only",
+          "native_text": null,
+          "matches": false
+        },
+        {
+          "case": "both-missing",
+          "airport_case": "default",
+          "properties": {},
+          "companion_arm_eligible": true,
+          "source_text": null,
+          "native_text": null,
+          "matches": true
+        }
+      ]
+    },
+    {
+      "owner": "water-point-label",
+      "source_layer": "natural_label",
+      "source_text": [
+        "coalesce",
+        [
+          "get",
+          "name_en"
+        ],
+        [
+          "get",
+          "name"
+        ]
+      ],
+      "source_transform": "none",
+      "rule": "water-point-label-ocean-name-en",
+      "filter": "(CASE WHEN \"class\" IN ('bay', 'ocean', 'reservoir', 'sea', 'water', 'disputed_bay', 'disputed_ocean', 'disputed_reservoir', 'disputed_sea', 'disputed_water') THEN \"worldview\" IN ('all', 'US') ELSE FALSE END) AND (_geom_type IS 'Point') AND (\"class\" = 'ocean') AND (\"name_en\" IS NOT NULL)",
+      "native_text": "\"name_en\"",
+      "requested_fields": [
+        "name_en"
+      ],
+      "minzoom": 1,
+      "maxzoom": -1,
+      "cases": [
+        {
+          "case": "english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English name",
+            "name": "Nom local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English name",
+          "native_text": "English name",
+          "matches": true
+        },
+        {
+          "case": "null-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": null,
+            "name": "Genève"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "Genève",
+          "native_text": null,
+          "matches": false
+        },
+        {
+          "case": "missing-english",
+          "airport_case": "default",
+          "properties": {
+            "name": "القاهرة"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "القاهرة",
+          "native_text": null,
+          "matches": false
+        },
+        {
+          "case": "empty-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "",
+            "name": "ירושלים"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "",
+          "native_text": "",
+          "matches": true
+        },
+        {
+          "case": "diacritics",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "Zürich — L’Aquila",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Zürich — L’Aquila",
+          "native_text": "Zürich — L’Aquila",
+          "matches": true
+        },
+        {
+          "case": "mixed-script",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "القاهرة / ירושלים 12",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة / ירושלים 12",
+          "native_text": "القاهرة / ירושלים 12",
+          "matches": true
+        },
+        {
+          "case": "english-only",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English only"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English only",
+          "native_text": "English only",
+          "matches": true
+        },
+        {
+          "case": "both-missing",
+          "airport_case": "default",
+          "properties": {},
+          "companion_arm_eligible": false,
+          "source_text": null,
+          "native_text": null,
+          "matches": true
+        }
+      ]
+    },
+    {
+      "owner": "water-point-label",
+      "source_layer": "natural_label",
+      "source_text": [
+        "coalesce",
+        [
+          "get",
+          "name_en"
+        ],
+        [
+          "get",
+          "name"
+        ]
+      ],
+      "source_transform": "none",
+      "rule": "water-point-label-ocean-name",
+      "filter": "(CASE WHEN \"class\" IN ('bay', 'ocean', 'reservoir', 'sea', 'water', 'disputed_bay', 'disputed_ocean', 'disputed_reservoir', 'disputed_sea', 'disputed_water') THEN \"worldview\" IN ('all', 'US') ELSE FALSE END) AND (_geom_type IS 'Point') AND (\"class\" = 'ocean') AND (\"name_en\" IS NULL)",
+      "native_text": "\"name\"",
+      "requested_fields": [
+        "name"
+      ],
+      "minzoom": 1,
+      "maxzoom": -1,
+      "cases": [
+        {
+          "case": "english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English name",
+            "name": "Nom local"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "English name",
+          "native_text": "Nom local",
+          "matches": false
+        },
+        {
+          "case": "null-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": null,
+            "name": "Genève"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Genève",
+          "native_text": "Genève",
+          "matches": true
+        },
+        {
+          "case": "missing-english",
+          "airport_case": "default",
+          "properties": {
+            "name": "القاهرة"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة",
+          "native_text": "القاهرة",
+          "matches": true
+        },
+        {
+          "case": "empty-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "",
+            "name": "ירושלים"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "",
+          "native_text": "ירושלים",
+          "matches": false
+        },
+        {
+          "case": "diacritics",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "Zürich — L’Aquila",
+            "name": "local"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "Zürich — L’Aquila",
+          "native_text": "local",
+          "matches": false
+        },
+        {
+          "case": "mixed-script",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "القاهرة / ירושלים 12",
+            "name": "local"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "القاهرة / ירושלים 12",
+          "native_text": "local",
+          "matches": false
+        },
+        {
+          "case": "english-only",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English only"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "English only",
+          "native_text": null,
+          "matches": false
+        },
+        {
+          "case": "both-missing",
+          "airport_case": "default",
+          "properties": {},
+          "companion_arm_eligible": true,
+          "source_text": null,
+          "native_text": null,
+          "matches": true
+        }
+      ]
+    },
+    {
+      "owner": "water-point-label",
+      "source_layer": "natural_label",
+      "source_text": [
+        "coalesce",
+        [
+          "get",
+          "name_en"
+        ],
+        [
+          "get",
+          "name"
+        ]
+      ],
+      "source_transform": "none",
+      "rule": "water-point-label-sea-name-en",
+      "filter": "(CASE WHEN \"class\" IN ('bay', 'ocean', 'reservoir', 'sea', 'water', 'disputed_bay', 'disputed_ocean', 'disputed_reservoir', 'disputed_sea', 'disputed_water') THEN \"worldview\" IN ('all', 'US') ELSE FALSE END) AND (_geom_type IS 'Point') AND (\"class\" = 'sea') AND (\"name_en\" IS NOT NULL)",
+      "native_text": "\"name_en\"",
+      "requested_fields": [
+        "name_en"
+      ],
+      "minzoom": 1,
+      "maxzoom": -1,
+      "cases": [
+        {
+          "case": "english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English name",
+            "name": "Nom local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English name",
+          "native_text": "English name",
+          "matches": true
+        },
+        {
+          "case": "null-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": null,
+            "name": "Genève"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "Genève",
+          "native_text": null,
+          "matches": false
+        },
+        {
+          "case": "missing-english",
+          "airport_case": "default",
+          "properties": {
+            "name": "القاهرة"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "القاهرة",
+          "native_text": null,
+          "matches": false
+        },
+        {
+          "case": "empty-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "",
+            "name": "ירושלים"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "",
+          "native_text": "",
+          "matches": true
+        },
+        {
+          "case": "diacritics",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "Zürich — L’Aquila",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Zürich — L’Aquila",
+          "native_text": "Zürich — L’Aquila",
+          "matches": true
+        },
+        {
+          "case": "mixed-script",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "القاهرة / ירושלים 12",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة / ירושלים 12",
+          "native_text": "القاهرة / ירושלים 12",
+          "matches": true
+        },
+        {
+          "case": "english-only",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English only"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English only",
+          "native_text": "English only",
+          "matches": true
+        },
+        {
+          "case": "both-missing",
+          "airport_case": "default",
+          "properties": {},
+          "companion_arm_eligible": false,
+          "source_text": null,
+          "native_text": null,
+          "matches": true
+        }
+      ]
+    },
+    {
+      "owner": "water-point-label",
+      "source_layer": "natural_label",
+      "source_text": [
+        "coalesce",
+        [
+          "get",
+          "name_en"
+        ],
+        [
+          "get",
+          "name"
+        ]
+      ],
+      "source_transform": "none",
+      "rule": "water-point-label-sea-name",
+      "filter": "(CASE WHEN \"class\" IN ('bay', 'ocean', 'reservoir', 'sea', 'water', 'disputed_bay', 'disputed_ocean', 'disputed_reservoir', 'disputed_sea', 'disputed_water') THEN \"worldview\" IN ('all', 'US') ELSE FALSE END) AND (_geom_type IS 'Point') AND (\"class\" = 'sea') AND (\"name_en\" IS NULL)",
+      "native_text": "\"name\"",
+      "requested_fields": [
+        "name"
+      ],
+      "minzoom": 1,
+      "maxzoom": -1,
+      "cases": [
+        {
+          "case": "english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English name",
+            "name": "Nom local"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "English name",
+          "native_text": "Nom local",
+          "matches": false
+        },
+        {
+          "case": "null-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": null,
+            "name": "Genève"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Genève",
+          "native_text": "Genève",
+          "matches": true
+        },
+        {
+          "case": "missing-english",
+          "airport_case": "default",
+          "properties": {
+            "name": "القاهرة"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة",
+          "native_text": "القاهرة",
+          "matches": true
+        },
+        {
+          "case": "empty-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "",
+            "name": "ירושלים"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "",
+          "native_text": "ירושלים",
+          "matches": false
+        },
+        {
+          "case": "diacritics",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "Zürich — L’Aquila",
+            "name": "local"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "Zürich — L’Aquila",
+          "native_text": "local",
+          "matches": false
+        },
+        {
+          "case": "mixed-script",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "القاهرة / ירושלים 12",
+            "name": "local"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "القاهرة / ירושלים 12",
+          "native_text": "local",
+          "matches": false
+        },
+        {
+          "case": "english-only",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English only"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "English only",
+          "native_text": null,
+          "matches": false
+        },
+        {
+          "case": "both-missing",
+          "airport_case": "default",
+          "properties": {},
+          "companion_arm_eligible": true,
+          "source_text": null,
+          "native_text": null,
+          "matches": true
+        }
+      ]
+    },
+    {
+      "owner": "water-point-label",
+      "source_layer": "natural_label",
+      "source_text": [
+        "coalesce",
+        [
+          "get",
+          "name_en"
+        ],
+        [
+          "get",
+          "name"
+        ]
+      ],
+      "source_transform": "none",
+      "rule": "water-point-label-bay-name-en",
+      "filter": "(CASE WHEN \"class\" IN ('bay', 'ocean', 'reservoir', 'sea', 'water', 'disputed_bay', 'disputed_ocean', 'disputed_reservoir', 'disputed_sea', 'disputed_water') THEN \"worldview\" IN ('all', 'US') ELSE FALSE END) AND (_geom_type IS 'Point') AND (\"class\" = 'bay') AND (\"name_en\" IS NOT NULL)",
+      "native_text": "\"name_en\"",
+      "requested_fields": [
+        "name_en"
+      ],
+      "minzoom": 1,
+      "maxzoom": -1,
+      "cases": [
+        {
+          "case": "english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English name",
+            "name": "Nom local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English name",
+          "native_text": "English name",
+          "matches": true
+        },
+        {
+          "case": "null-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": null,
+            "name": "Genève"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "Genève",
+          "native_text": null,
+          "matches": false
+        },
+        {
+          "case": "missing-english",
+          "airport_case": "default",
+          "properties": {
+            "name": "القاهرة"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "القاهرة",
+          "native_text": null,
+          "matches": false
+        },
+        {
+          "case": "empty-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "",
+            "name": "ירושלים"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "",
+          "native_text": "",
+          "matches": true
+        },
+        {
+          "case": "diacritics",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "Zürich — L’Aquila",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Zürich — L’Aquila",
+          "native_text": "Zürich — L’Aquila",
+          "matches": true
+        },
+        {
+          "case": "mixed-script",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "القاهرة / ירושלים 12",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة / ירושלים 12",
+          "native_text": "القاهرة / ירושלים 12",
+          "matches": true
+        },
+        {
+          "case": "english-only",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English only"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English only",
+          "native_text": "English only",
+          "matches": true
+        },
+        {
+          "case": "both-missing",
+          "airport_case": "default",
+          "properties": {},
+          "companion_arm_eligible": false,
+          "source_text": null,
+          "native_text": null,
+          "matches": true
+        }
+      ]
+    },
+    {
+      "owner": "water-point-label",
+      "source_layer": "natural_label",
+      "source_text": [
+        "coalesce",
+        [
+          "get",
+          "name_en"
+        ],
+        [
+          "get",
+          "name"
+        ]
+      ],
+      "source_transform": "none",
+      "rule": "water-point-label-bay-name",
+      "filter": "(CASE WHEN \"class\" IN ('bay', 'ocean', 'reservoir', 'sea', 'water', 'disputed_bay', 'disputed_ocean', 'disputed_reservoir', 'disputed_sea', 'disputed_water') THEN \"worldview\" IN ('all', 'US') ELSE FALSE END) AND (_geom_type IS 'Point') AND (\"class\" = 'bay') AND (\"name_en\" IS NULL)",
+      "native_text": "\"name\"",
+      "requested_fields": [
+        "name"
+      ],
+      "minzoom": 1,
+      "maxzoom": -1,
+      "cases": [
+        {
+          "case": "english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English name",
+            "name": "Nom local"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "English name",
+          "native_text": "Nom local",
+          "matches": false
+        },
+        {
+          "case": "null-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": null,
+            "name": "Genève"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Genève",
+          "native_text": "Genève",
+          "matches": true
+        },
+        {
+          "case": "missing-english",
+          "airport_case": "default",
+          "properties": {
+            "name": "القاهرة"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة",
+          "native_text": "القاهرة",
+          "matches": true
+        },
+        {
+          "case": "empty-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "",
+            "name": "ירושלים"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "",
+          "native_text": "ירושלים",
+          "matches": false
+        },
+        {
+          "case": "diacritics",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "Zürich — L’Aquila",
+            "name": "local"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "Zürich — L’Aquila",
+          "native_text": "local",
+          "matches": false
+        },
+        {
+          "case": "mixed-script",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "القاهرة / ירושלים 12",
+            "name": "local"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "القاهرة / ירושלים 12",
+          "native_text": "local",
+          "matches": false
+        },
+        {
+          "case": "english-only",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English only"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "English only",
+          "native_text": null,
+          "matches": false
+        },
+        {
+          "case": "both-missing",
+          "airport_case": "default",
+          "properties": {},
+          "companion_arm_eligible": true,
+          "source_text": null,
+          "native_text": null,
+          "matches": true
+        }
+      ]
+    },
+    {
+      "owner": "water-point-label",
+      "source_layer": "natural_label",
+      "source_text": [
+        "coalesce",
+        [
+          "get",
+          "name_en"
+        ],
+        [
+          "get",
+          "name"
+        ]
+      ],
+      "source_transform": "none",
+      "rule": "water-point-label-water-name-en",
+      "filter": "(CASE WHEN \"class\" IN ('bay', 'ocean', 'reservoir', 'sea', 'water', 'disputed_bay', 'disputed_ocean', 'disputed_reservoir', 'disputed_sea', 'disputed_water') THEN \"worldview\" IN ('all', 'US') ELSE FALSE END) AND (_geom_type IS 'Point') AND (\"class\" = 'water') AND (\"name_en\" IS NOT NULL)",
+      "native_text": "\"name_en\"",
+      "requested_fields": [
+        "name_en"
+      ],
+      "minzoom": 1,
+      "maxzoom": -1,
+      "cases": [
+        {
+          "case": "english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English name",
+            "name": "Nom local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English name",
+          "native_text": "English name",
+          "matches": true
+        },
+        {
+          "case": "null-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": null,
+            "name": "Genève"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "Genève",
+          "native_text": null,
+          "matches": false
+        },
+        {
+          "case": "missing-english",
+          "airport_case": "default",
+          "properties": {
+            "name": "القاهرة"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "القاهرة",
+          "native_text": null,
+          "matches": false
+        },
+        {
+          "case": "empty-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "",
+            "name": "ירושלים"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "",
+          "native_text": "",
+          "matches": true
+        },
+        {
+          "case": "diacritics",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "Zürich — L’Aquila",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Zürich — L’Aquila",
+          "native_text": "Zürich — L’Aquila",
+          "matches": true
+        },
+        {
+          "case": "mixed-script",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "القاهرة / ירושלים 12",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة / ירושלים 12",
+          "native_text": "القاهرة / ירושלים 12",
+          "matches": true
+        },
+        {
+          "case": "english-only",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English only"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English only",
+          "native_text": "English only",
+          "matches": true
+        },
+        {
+          "case": "both-missing",
+          "airport_case": "default",
+          "properties": {},
+          "companion_arm_eligible": false,
+          "source_text": null,
+          "native_text": null,
+          "matches": true
+        }
+      ]
+    },
+    {
+      "owner": "water-point-label",
+      "source_layer": "natural_label",
+      "source_text": [
+        "coalesce",
+        [
+          "get",
+          "name_en"
+        ],
+        [
+          "get",
+          "name"
+        ]
+      ],
+      "source_transform": "none",
+      "rule": "water-point-label-water-name",
+      "filter": "(CASE WHEN \"class\" IN ('bay', 'ocean', 'reservoir', 'sea', 'water', 'disputed_bay', 'disputed_ocean', 'disputed_reservoir', 'disputed_sea', 'disputed_water') THEN \"worldview\" IN ('all', 'US') ELSE FALSE END) AND (_geom_type IS 'Point') AND (\"class\" = 'water') AND (\"name_en\" IS NULL)",
+      "native_text": "\"name\"",
+      "requested_fields": [
+        "name"
+      ],
+      "minzoom": 1,
+      "maxzoom": -1,
+      "cases": [
+        {
+          "case": "english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English name",
+            "name": "Nom local"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "English name",
+          "native_text": "Nom local",
+          "matches": false
+        },
+        {
+          "case": "null-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": null,
+            "name": "Genève"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Genève",
+          "native_text": "Genève",
+          "matches": true
+        },
+        {
+          "case": "missing-english",
+          "airport_case": "default",
+          "properties": {
+            "name": "القاهرة"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة",
+          "native_text": "القاهرة",
+          "matches": true
+        },
+        {
+          "case": "empty-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "",
+            "name": "ירושלים"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "",
+          "native_text": "ירושלים",
+          "matches": false
+        },
+        {
+          "case": "diacritics",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "Zürich — L’Aquila",
+            "name": "local"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "Zürich — L’Aquila",
+          "native_text": "local",
+          "matches": false
+        },
+        {
+          "case": "mixed-script",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "القاهرة / ירושלים 12",
+            "name": "local"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "القاهرة / ירושלים 12",
+          "native_text": "local",
+          "matches": false
+        },
+        {
+          "case": "english-only",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English only"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "English only",
+          "native_text": null,
+          "matches": false
+        },
+        {
+          "case": "both-missing",
+          "airport_case": "default",
+          "properties": {},
+          "companion_arm_eligible": true,
+          "source_text": null,
+          "native_text": null,
+          "matches": true
+        }
+      ]
+    },
+    {
+      "owner": "water-point-label",
+      "source_layer": "natural_label",
+      "source_text": [
+        "coalesce",
+        [
+          "get",
+          "name_en"
+        ],
+        [
+          "get",
+          "name"
+        ]
+      ],
+      "source_transform": "none",
+      "rule": "water-point-label-other-name-en",
+      "filter": "(CASE WHEN \"class\" IN ('bay', 'ocean', 'reservoir', 'sea', 'water', 'disputed_bay', 'disputed_ocean', 'disputed_reservoir', 'disputed_sea', 'disputed_water') THEN \"worldview\" IN ('all', 'US') ELSE FALSE END) AND (_geom_type IS 'Point') AND (CASE WHEN \"class\" IN ('ocean', 'sea', 'bay', 'water') THEN FALSE ELSE TRUE END) AND (\"name_en\" IS NOT NULL)",
+      "native_text": "\"name_en\"",
+      "requested_fields": [
+        "name_en"
+      ],
+      "minzoom": 1,
+      "maxzoom": -1,
+      "cases": [
+        {
+          "case": "english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English name",
+            "name": "Nom local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English name",
+          "native_text": "English name",
+          "matches": true
+        },
+        {
+          "case": "null-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": null,
+            "name": "Genève"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "Genève",
+          "native_text": null,
+          "matches": false
+        },
+        {
+          "case": "missing-english",
+          "airport_case": "default",
+          "properties": {
+            "name": "القاهرة"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "القاهرة",
+          "native_text": null,
+          "matches": false
+        },
+        {
+          "case": "empty-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "",
+            "name": "ירושלים"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "",
+          "native_text": "",
+          "matches": true
+        },
+        {
+          "case": "diacritics",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "Zürich — L’Aquila",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Zürich — L’Aquila",
+          "native_text": "Zürich — L’Aquila",
+          "matches": true
+        },
+        {
+          "case": "mixed-script",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "القاهرة / ירושלים 12",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة / ירושלים 12",
+          "native_text": "القاهرة / ירושלים 12",
+          "matches": true
+        },
+        {
+          "case": "english-only",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English only"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English only",
+          "native_text": "English only",
+          "matches": true
+        },
+        {
+          "case": "both-missing",
+          "airport_case": "default",
+          "properties": {},
+          "companion_arm_eligible": false,
+          "source_text": null,
+          "native_text": null,
+          "matches": true
+        }
+      ]
+    },
+    {
+      "owner": "water-point-label",
+      "source_layer": "natural_label",
+      "source_text": [
+        "coalesce",
+        [
+          "get",
+          "name_en"
+        ],
+        [
+          "get",
+          "name"
+        ]
+      ],
+      "source_transform": "none",
+      "rule": "water-point-label-other-name",
+      "filter": "(CASE WHEN \"class\" IN ('bay', 'ocean', 'reservoir', 'sea', 'water', 'disputed_bay', 'disputed_ocean', 'disputed_reservoir', 'disputed_sea', 'disputed_water') THEN \"worldview\" IN ('all', 'US') ELSE FALSE END) AND (_geom_type IS 'Point') AND (CASE WHEN \"class\" IN ('ocean', 'sea', 'bay', 'water') THEN FALSE ELSE TRUE END) AND (\"name_en\" IS NULL)",
+      "native_text": "\"name\"",
+      "requested_fields": [
+        "name"
+      ],
+      "minzoom": 1,
+      "maxzoom": -1,
+      "cases": [
+        {
+          "case": "english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English name",
+            "name": "Nom local"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "English name",
+          "native_text": "Nom local",
+          "matches": false
+        },
+        {
+          "case": "null-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": null,
+            "name": "Genève"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Genève",
+          "native_text": "Genève",
+          "matches": true
+        },
+        {
+          "case": "missing-english",
+          "airport_case": "default",
+          "properties": {
+            "name": "القاهرة"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة",
+          "native_text": "القاهرة",
+          "matches": true
+        },
+        {
+          "case": "empty-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "",
+            "name": "ירושלים"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "",
+          "native_text": "ירושלים",
+          "matches": false
+        },
+        {
+          "case": "diacritics",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "Zürich — L’Aquila",
+            "name": "local"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "Zürich — L’Aquila",
+          "native_text": "local",
+          "matches": false
+        },
+        {
+          "case": "mixed-script",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "القاهرة / ירושלים 12",
+            "name": "local"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "القاهرة / ירושלים 12",
+          "native_text": "local",
+          "matches": false
+        },
+        {
+          "case": "english-only",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English only"
+          },
+          "companion_arm_eligible": false,
+          "source_text": "English only",
+          "native_text": null,
+          "matches": false
+        },
+        {
+          "case": "both-missing",
+          "airport_case": "default",
+          "properties": {},
+          "companion_arm_eligible": true,
+          "source_text": null,
+          "native_text": null,
+          "matches": true
+        }
+      ]
+    },
+    {
+      "owner": "poi-label",
+      "source_layer": "poi_label",
+      "source_text": [
+        "coalesce",
+        [
+          "get",
+          "name_en"
+        ],
+        [
+          "get",
+          "name"
+        ]
+      ],
+      "source_transform": "none",
+      "rule": "poi-label-below-z16",
+      "filter": "\"filterrank\" <= 1",
+      "native_text": "coalesce(\"name_en\", \"name\")",
+      "requested_fields": [
+        "name",
+        "name_en"
+      ],
+      "minzoom": 6,
+      "maxzoom": 15,
+      "cases": [
+        {
+          "case": "english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English name",
+            "name": "Nom local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English name",
+          "native_text": "English name",
+          "matches": true
+        },
+        {
+          "case": "null-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": null,
+            "name": "Genève"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Genève",
+          "native_text": "Genève",
+          "matches": true
+        },
+        {
+          "case": "missing-english",
+          "airport_case": "default",
+          "properties": {
+            "name": "القاهرة"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة",
+          "native_text": "القاهرة",
+          "matches": true
+        },
+        {
+          "case": "empty-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "",
+            "name": "ירושלים"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "",
+          "native_text": "",
+          "matches": true
+        },
+        {
+          "case": "diacritics",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "Zürich — L’Aquila",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Zürich — L’Aquila",
+          "native_text": "Zürich — L’Aquila",
+          "matches": true
+        },
+        {
+          "case": "mixed-script",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "القاهرة / ירושלים 12",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة / ירושלים 12",
+          "native_text": "القاهرة / ירושלים 12",
+          "matches": true
+        },
+        {
+          "case": "english-only",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English only"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English only",
+          "native_text": "English only",
+          "matches": true
+        },
+        {
+          "case": "both-missing",
+          "airport_case": "default",
+          "properties": {},
+          "companion_arm_eligible": true,
+          "source_text": null,
+          "native_text": null,
+          "matches": true
+        }
+      ]
+    },
+    {
+      "owner": "poi-label",
+      "source_layer": "poi_label",
+      "source_text": [
+        "coalesce",
+        [
+          "get",
+          "name_en"
+        ],
+        [
+          "get",
+          "name"
+        ]
+      ],
+      "source_transform": "none",
+      "rule": "poi-label-z16-to-z17",
+      "filter": "\"filterrank\" <= 2",
+      "native_text": "coalesce(\"name_en\", \"name\")",
+      "requested_fields": [
+        "name",
+        "name_en"
+      ],
+      "minzoom": 16,
+      "maxzoom": 16,
+      "cases": [
+        {
+          "case": "english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English name",
+            "name": "Nom local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English name",
+          "native_text": "English name",
+          "matches": true
+        },
+        {
+          "case": "null-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": null,
+            "name": "Genève"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Genève",
+          "native_text": "Genève",
+          "matches": true
+        },
+        {
+          "case": "missing-english",
+          "airport_case": "default",
+          "properties": {
+            "name": "القاهرة"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة",
+          "native_text": "القاهرة",
+          "matches": true
+        },
+        {
+          "case": "empty-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "",
+            "name": "ירושלים"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "",
+          "native_text": "",
+          "matches": true
+        },
+        {
+          "case": "diacritics",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "Zürich — L’Aquila",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Zürich — L’Aquila",
+          "native_text": "Zürich — L’Aquila",
+          "matches": true
+        },
+        {
+          "case": "mixed-script",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "القاهرة / ירושלים 12",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة / ירושלים 12",
+          "native_text": "القاهرة / ירושלים 12",
+          "matches": true
+        },
+        {
+          "case": "english-only",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English only"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English only",
+          "native_text": "English only",
+          "matches": true
+        },
+        {
+          "case": "both-missing",
+          "airport_case": "default",
+          "properties": {},
+          "companion_arm_eligible": true,
+          "source_text": null,
+          "native_text": null,
+          "matches": true
+        }
+      ]
+    },
+    {
+      "owner": "poi-label",
+      "source_layer": "poi_label",
+      "source_text": [
+        "coalesce",
+        [
+          "get",
+          "name_en"
+        ],
+        [
+          "get",
+          "name"
+        ]
+      ],
+      "source_transform": "none",
+      "rule": "poi-label-z17-plus",
+      "filter": "\"filterrank\" <= 3",
+      "native_text": "coalesce(\"name_en\", \"name\")",
+      "requested_fields": [
+        "name",
+        "name_en"
+      ],
+      "minzoom": 17,
+      "maxzoom": -1,
+      "cases": [
+        {
+          "case": "english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English name",
+            "name": "Nom local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English name",
+          "native_text": "English name",
+          "matches": true
+        },
+        {
+          "case": "null-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": null,
+            "name": "Genève"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Genève",
+          "native_text": "Genève",
+          "matches": true
+        },
+        {
+          "case": "missing-english",
+          "airport_case": "default",
+          "properties": {
+            "name": "القاهرة"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة",
+          "native_text": "القاهرة",
+          "matches": true
+        },
+        {
+          "case": "empty-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "",
+            "name": "ירושלים"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "",
+          "native_text": "",
+          "matches": true
+        },
+        {
+          "case": "diacritics",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "Zürich — L’Aquila",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Zürich — L’Aquila",
+          "native_text": "Zürich — L’Aquila",
+          "matches": true
+        },
+        {
+          "case": "mixed-script",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "القاهرة / ירושלים 12",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة / ירושלים 12",
+          "native_text": "القاهرة / ירושלים 12",
+          "matches": true
+        },
+        {
+          "case": "english-only",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English only"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English only",
+          "native_text": "English only",
+          "matches": true
+        },
+        {
+          "case": "both-missing",
+          "airport_case": "default",
+          "properties": {},
+          "companion_arm_eligible": true,
+          "source_text": null,
+          "native_text": null,
+          "matches": true
+        }
+      ]
+    },
+    {
+      "owner": "airport-label",
+      "source_layer": "airport_label",
+      "source_text": [
+        "step",
+        [
+          "get",
+          "sizerank"
+        ],
+        [
+          "case",
+          [
+            "has",
+            "ref"
+          ],
+          [
+            "concat",
+            [
+              "get",
+              "ref"
+            ],
+            " -\n",
+            [
+              "coalesce",
+              [
+                "get",
+                "name_en"
+              ],
+              [
+                "get",
+                "name"
+              ]
+            ]
+          ],
+          [
+            "coalesce",
+            [
+              "get",
+              "name_en"
+            ],
+            [
+              "get",
+              "name"
+            ]
+          ]
+        ],
+        15,
+        [
+          "get",
+          "ref"
+        ]
+      ],
+      "source_transform": "none",
+      "rule": "airport-label",
+      "filter": "CASE WHEN \"class\" IN ('military', 'civil', 'disputed_military', 'disputed_civil') THEN \"worldview\" IN ('all', 'US') ELSE FALSE END",
+      "native_text": "CASE WHEN \"sizerank\" IS NULL THEN NULL WHEN \"sizerank\" >= 15 THEN \"ref\" WHEN \"ref\" IS NOT NULL THEN concat(\"ref\", ' -\\n', coalesce(\"name_en\", \"name\")) ELSE coalesce(\"name_en\", \"name\") END",
+      "requested_fields": [
+        "name",
+        "name_en",
+        "ref",
+        "sizerank"
+      ],
+      "minzoom": 8,
+      "maxzoom": -1,
+      "cases": [
+        {
+          "case": "english",
+          "airport_case": "small-no-ref",
+          "properties": {
+            "name_en": "English name",
+            "name": "Nom local",
+            "sizerank": 10
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English name",
+          "native_text": "English name",
+          "matches": true
+        },
+        {
+          "case": "english",
+          "airport_case": "small-ref",
+          "properties": {
+            "name_en": "English name",
+            "name": "Nom local",
+            "sizerank": 10,
+            "ref": "CAI"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "CAI -\nEnglish name",
+          "native_text": "CAI -\nEnglish name",
+          "matches": true
+        },
+        {
+          "case": "english",
+          "airport_case": "large-ref",
+          "properties": {
+            "name_en": "English name",
+            "name": "Nom local",
+            "sizerank": 15,
+            "ref": "JRS"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "JRS",
+          "native_text": "JRS",
+          "matches": true
+        },
+        {
+          "case": "null-english",
+          "airport_case": "small-no-ref",
+          "properties": {
+            "name_en": null,
+            "name": "Genève",
+            "sizerank": 10
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Genève",
+          "native_text": "Genève",
+          "matches": true
+        },
+        {
+          "case": "null-english",
+          "airport_case": "small-ref",
+          "properties": {
+            "name_en": null,
+            "name": "Genève",
+            "sizerank": 10,
+            "ref": "CAI"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "CAI -\nGenève",
+          "native_text": "CAI -\nGenève",
+          "matches": true
+        },
+        {
+          "case": "null-english",
+          "airport_case": "large-ref",
+          "properties": {
+            "name_en": null,
+            "name": "Genève",
+            "sizerank": 15,
+            "ref": "JRS"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "JRS",
+          "native_text": "JRS",
+          "matches": true
+        },
+        {
+          "case": "missing-english",
+          "airport_case": "small-no-ref",
+          "properties": {
+            "name": "القاهرة",
+            "sizerank": 10
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة",
+          "native_text": "القاهرة",
+          "matches": true
+        },
+        {
+          "case": "missing-english",
+          "airport_case": "small-ref",
+          "properties": {
+            "name": "القاهرة",
+            "sizerank": 10,
+            "ref": "CAI"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "CAI -\nالقاهرة",
+          "native_text": "CAI -\nالقاهرة",
+          "matches": true
+        },
+        {
+          "case": "missing-english",
+          "airport_case": "large-ref",
+          "properties": {
+            "name": "القاهرة",
+            "sizerank": 15,
+            "ref": "JRS"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "JRS",
+          "native_text": "JRS",
+          "matches": true
+        },
+        {
+          "case": "empty-english",
+          "airport_case": "small-no-ref",
+          "properties": {
+            "name_en": "",
+            "name": "ירושלים",
+            "sizerank": 10
+          },
+          "companion_arm_eligible": true,
+          "source_text": "",
+          "native_text": "",
+          "matches": true
+        },
+        {
+          "case": "empty-english",
+          "airport_case": "small-ref",
+          "properties": {
+            "name_en": "",
+            "name": "ירושלים",
+            "sizerank": 10,
+            "ref": "CAI"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "CAI -\n",
+          "native_text": "CAI -\n",
+          "matches": true
+        },
+        {
+          "case": "empty-english",
+          "airport_case": "large-ref",
+          "properties": {
+            "name_en": "",
+            "name": "ירושלים",
+            "sizerank": 15,
+            "ref": "JRS"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "JRS",
+          "native_text": "JRS",
+          "matches": true
+        },
+        {
+          "case": "diacritics",
+          "airport_case": "small-no-ref",
+          "properties": {
+            "name_en": "Zürich — L’Aquila",
+            "name": "local",
+            "sizerank": 10
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Zürich — L’Aquila",
+          "native_text": "Zürich — L’Aquila",
+          "matches": true
+        },
+        {
+          "case": "diacritics",
+          "airport_case": "small-ref",
+          "properties": {
+            "name_en": "Zürich — L’Aquila",
+            "name": "local",
+            "sizerank": 10,
+            "ref": "CAI"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "CAI -\nZürich — L’Aquila",
+          "native_text": "CAI -\nZürich — L’Aquila",
+          "matches": true
+        },
+        {
+          "case": "diacritics",
+          "airport_case": "large-ref",
+          "properties": {
+            "name_en": "Zürich — L’Aquila",
+            "name": "local",
+            "sizerank": 15,
+            "ref": "JRS"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "JRS",
+          "native_text": "JRS",
+          "matches": true
+        },
+        {
+          "case": "mixed-script",
+          "airport_case": "small-no-ref",
+          "properties": {
+            "name_en": "القاهرة / ירושלים 12",
+            "name": "local",
+            "sizerank": 10
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة / ירושלים 12",
+          "native_text": "القاهرة / ירושלים 12",
+          "matches": true
+        },
+        {
+          "case": "mixed-script",
+          "airport_case": "small-ref",
+          "properties": {
+            "name_en": "القاهرة / ירושלים 12",
+            "name": "local",
+            "sizerank": 10,
+            "ref": "CAI"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "CAI -\nالقاهرة / ירושלים 12",
+          "native_text": "CAI -\nالقاهرة / ירושלים 12",
+          "matches": true
+        },
+        {
+          "case": "mixed-script",
+          "airport_case": "large-ref",
+          "properties": {
+            "name_en": "القاهرة / ירושלים 12",
+            "name": "local",
+            "sizerank": 15,
+            "ref": "JRS"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "JRS",
+          "native_text": "JRS",
+          "matches": true
+        },
+        {
+          "case": "english-only",
+          "airport_case": "small-no-ref",
+          "properties": {
+            "name_en": "English only",
+            "sizerank": 10
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English only",
+          "native_text": "English only",
+          "matches": true
+        },
+        {
+          "case": "english-only",
+          "airport_case": "small-ref",
+          "properties": {
+            "name_en": "English only",
+            "sizerank": 10,
+            "ref": "CAI"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "CAI -\nEnglish only",
+          "native_text": "CAI -\nEnglish only",
+          "matches": true
+        },
+        {
+          "case": "english-only",
+          "airport_case": "large-ref",
+          "properties": {
+            "name_en": "English only",
+            "sizerank": 15,
+            "ref": "JRS"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "JRS",
+          "native_text": "JRS",
+          "matches": true
+        },
+        {
+          "case": "both-missing",
+          "airport_case": "small-no-ref",
+          "properties": {
+            "sizerank": 10
+          },
+          "companion_arm_eligible": true,
+          "source_text": null,
+          "native_text": null,
+          "matches": true
+        },
+        {
+          "case": "both-missing",
+          "airport_case": "small-ref",
+          "properties": {
+            "sizerank": 10,
+            "ref": "CAI"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "CAI -\n",
+          "native_text": "CAI -\n",
+          "matches": true
+        },
+        {
+          "case": "both-missing",
+          "airport_case": "large-ref",
+          "properties": {
+            "sizerank": 15,
+            "ref": "JRS"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "JRS",
+          "native_text": "JRS",
+          "matches": true
+        }
+      ]
+    },
+    {
+      "owner": "settlement-subdivision-label",
+      "source_layer": "place_label",
+      "source_text": [
+        "coalesce",
+        [
+          "get",
+          "name_en"
+        ],
+        [
+          "get",
+          "name"
+        ]
+      ],
+      "source_transform": "uppercase",
+      "rule": "settlement-subdivision-label",
+      "filter": "(CASE WHEN \"class\" IN ('settlement_subdivision', 'disputed_settlement_subdivision') THEN \"worldview\" IN ('all', 'US') ELSE FALSE END) AND (\"filterrank\" <= 3)",
+      "native_text": "upper(\"name\")",
+      "requested_fields": [
+        "name"
+      ],
+      "minzoom": 10,
+      "maxzoom": 14,
+      "cases": [
+        {
+          "case": "english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English name",
+            "name": "Nom local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "ENGLISH NAME",
+          "native_text": "NOM LOCAL",
+          "matches": false
+        },
+        {
+          "case": "null-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": null,
+            "name": "Genève"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "GENÈVE",
+          "native_text": "GENÈVE",
+          "matches": true
+        },
+        {
+          "case": "missing-english",
+          "airport_case": "default",
+          "properties": {
+            "name": "القاهرة"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة",
+          "native_text": "القاهرة",
+          "matches": true
+        },
+        {
+          "case": "empty-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "",
+            "name": "ירושלים"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "",
+          "native_text": "ירושלים",
+          "matches": false
+        },
+        {
+          "case": "diacritics",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "Zürich — L’Aquila",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "ZÜRICH — L’AQUILA",
+          "native_text": "LOCAL",
+          "matches": false
+        },
+        {
+          "case": "mixed-script",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "القاهرة / ירושלים 12",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة / ירושלים 12",
+          "native_text": "LOCAL",
+          "matches": false
+        },
+        {
+          "case": "english-only",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English only"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "ENGLISH ONLY",
+          "native_text": null,
+          "matches": false
+        },
+        {
+          "case": "both-missing",
+          "airport_case": "default",
+          "properties": {},
+          "companion_arm_eligible": true,
+          "source_text": null,
+          "native_text": null,
+          "matches": true
+        }
+      ]
+    },
+    {
+      "owner": "settlement-minor-label",
+      "source_layer": "place_label",
+      "source_text": [
+        "coalesce",
+        [
+          "get",
+          "name_en"
+        ],
+        [
+          "get",
+          "name"
+        ]
+      ],
+      "source_transform": "none",
+      "rule": "settlement-minor-label",
+      "filter": "((\"filterrank\" <= 2) AND (CASE WHEN \"class\" IN ('settlement', 'disputed_settlement') THEN \"worldview\" IN ('all', 'US') ELSE FALSE END) AND (\"symbolrank\" >= 15)) AND (\"type\" = 'town')",
+      "native_text": "\"name\"",
+      "requested_fields": [
+        "name"
+      ],
+      "minzoom": 2,
+      "maxzoom": 7,
+      "cases": [
+        {
+          "case": "english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English name",
+            "name": "Nom local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English name",
+          "native_text": "Nom local",
+          "matches": false
+        },
+        {
+          "case": "null-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": null,
+            "name": "Genève"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Genève",
+          "native_text": "Genève",
+          "matches": true
+        },
+        {
+          "case": "missing-english",
+          "airport_case": "default",
+          "properties": {
+            "name": "القاهرة"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة",
+          "native_text": "القاهرة",
+          "matches": true
+        },
+        {
+          "case": "empty-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "",
+            "name": "ירושלים"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "",
+          "native_text": "ירושלים",
+          "matches": false
+        },
+        {
+          "case": "diacritics",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "Zürich — L’Aquila",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Zürich — L’Aquila",
+          "native_text": "local",
+          "matches": false
+        },
+        {
+          "case": "mixed-script",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "القاهرة / ירושלים 12",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة / ירושלים 12",
+          "native_text": "local",
+          "matches": false
+        },
+        {
+          "case": "english-only",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English only"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English only",
+          "native_text": null,
+          "matches": false
+        },
+        {
+          "case": "both-missing",
+          "airport_case": "default",
+          "properties": {},
+          "companion_arm_eligible": true,
+          "source_text": null,
+          "native_text": null,
+          "matches": true
+        }
+      ]
+    },
+    {
+      "owner": "settlement-minor-label",
+      "source_layer": "place_label",
+      "source_text": [
+        "coalesce",
+        [
+          "get",
+          "name_en"
+        ],
+        [
+          "get",
+          "name"
+        ]
+      ],
+      "source_transform": "none",
+      "rule": "settlement-minor-label-qfit-open-fonts-z8-plus",
+      "filter": "((\"filterrank\" <= 2) AND (CASE WHEN \"class\" IN ('settlement', 'disputed_settlement') THEN \"worldview\" IN ('all', 'US') ELSE FALSE END) AND (\"symbolrank\" >= 15)) AND (\"type\" = 'town')",
+      "native_text": "\"name\"",
+      "requested_fields": [
+        "name"
+      ],
+      "minzoom": 8,
+      "maxzoom": 12,
+      "cases": [
+        {
+          "case": "english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English name",
+            "name": "Nom local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English name",
+          "native_text": "Nom local",
+          "matches": false
+        },
+        {
+          "case": "null-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": null,
+            "name": "Genève"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Genève",
+          "native_text": "Genève",
+          "matches": true
+        },
+        {
+          "case": "missing-english",
+          "airport_case": "default",
+          "properties": {
+            "name": "القاهرة"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة",
+          "native_text": "القاهرة",
+          "matches": true
+        },
+        {
+          "case": "empty-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "",
+            "name": "ירושלים"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "",
+          "native_text": "ירושלים",
+          "matches": false
+        },
+        {
+          "case": "diacritics",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "Zürich — L’Aquila",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Zürich — L’Aquila",
+          "native_text": "local",
+          "matches": false
+        },
+        {
+          "case": "mixed-script",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "القاهرة / ירושלים 12",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة / ירושלים 12",
+          "native_text": "local",
+          "matches": false
+        },
+        {
+          "case": "english-only",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English only"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English only",
+          "native_text": null,
+          "matches": false
+        },
+        {
+          "case": "both-missing",
+          "airport_case": "default",
+          "properties": {},
+          "companion_arm_eligible": true,
+          "source_text": null,
+          "native_text": null,
+          "matches": true
+        }
+      ]
+    },
+    {
+      "owner": "settlement-major-label",
+      "source_layer": "place_label",
+      "source_text": [
+        "coalesce",
+        [
+          "get",
+          "name_en"
+        ],
+        [
+          "get",
+          "name"
+        ]
+      ],
+      "source_transform": "none",
+      "rule": "settlement-major-label",
+      "filter": "((\"filterrank\" <= 2) AND (CASE WHEN \"class\" IN ('settlement', 'disputed_settlement') THEN \"worldview\" IN ('all', 'US') ELSE FALSE END) AND (\"symbolrank\" < 15)) AND (\"type\" = 'city')",
+      "native_text": "coalesce(\"name_en\", \"name\")",
+      "requested_fields": [
+        "name",
+        "name_en"
+      ],
+      "minzoom": 2,
+      "maxzoom": 7,
+      "cases": [
+        {
+          "case": "english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English name",
+            "name": "Nom local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English name",
+          "native_text": "English name",
+          "matches": true
+        },
+        {
+          "case": "null-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": null,
+            "name": "Genève"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Genève",
+          "native_text": "Genève",
+          "matches": true
+        },
+        {
+          "case": "missing-english",
+          "airport_case": "default",
+          "properties": {
+            "name": "القاهرة"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة",
+          "native_text": "القاهرة",
+          "matches": true
+        },
+        {
+          "case": "empty-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "",
+            "name": "ירושלים"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "",
+          "native_text": "",
+          "matches": true
+        },
+        {
+          "case": "diacritics",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "Zürich — L’Aquila",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Zürich — L’Aquila",
+          "native_text": "Zürich — L’Aquila",
+          "matches": true
+        },
+        {
+          "case": "mixed-script",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "القاهرة / ירושלים 12",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة / ירושלים 12",
+          "native_text": "القاهرة / ירושלים 12",
+          "matches": true
+        },
+        {
+          "case": "english-only",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English only"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English only",
+          "native_text": "English only",
+          "matches": true
+        },
+        {
+          "case": "both-missing",
+          "airport_case": "default",
+          "properties": {},
+          "companion_arm_eligible": true,
+          "source_text": null,
+          "native_text": null,
+          "matches": true
+        }
+      ]
+    },
+    {
+      "owner": "settlement-major-label",
+      "source_layer": "place_label",
+      "source_text": [
+        "coalesce",
+        [
+          "get",
+          "name_en"
+        ],
+        [
+          "get",
+          "name"
+        ]
+      ],
+      "source_transform": "none",
+      "rule": "settlement-major-label-qfit-open-fonts-z8-plus",
+      "filter": "((\"filterrank\" <= 2) AND (CASE WHEN \"class\" IN ('settlement', 'disputed_settlement') THEN \"worldview\" IN ('all', 'US') ELSE FALSE END) AND (\"symbolrank\" < 15)) AND (\"type\" = 'city')",
+      "native_text": "coalesce(\"name_en\", \"name\")",
+      "requested_fields": [
+        "name",
+        "name_en"
+      ],
+      "minzoom": 8,
+      "maxzoom": 14,
+      "cases": [
+        {
+          "case": "english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English name",
+            "name": "Nom local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English name",
+          "native_text": "English name",
+          "matches": true
+        },
+        {
+          "case": "null-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": null,
+            "name": "Genève"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Genève",
+          "native_text": "Genève",
+          "matches": true
+        },
+        {
+          "case": "missing-english",
+          "airport_case": "default",
+          "properties": {
+            "name": "القاهرة"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة",
+          "native_text": "القاهرة",
+          "matches": true
+        },
+        {
+          "case": "empty-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "",
+            "name": "ירושלים"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "",
+          "native_text": "",
+          "matches": true
+        },
+        {
+          "case": "diacritics",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "Zürich — L’Aquila",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Zürich — L’Aquila",
+          "native_text": "Zürich — L’Aquila",
+          "matches": true
+        },
+        {
+          "case": "mixed-script",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "القاهرة / ירושלים 12",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة / ירושלים 12",
+          "native_text": "القاهرة / ירושלים 12",
+          "matches": true
+        },
+        {
+          "case": "english-only",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English only"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English only",
+          "native_text": "English only",
+          "matches": true
+        },
+        {
+          "case": "both-missing",
+          "airport_case": "default",
+          "properties": {},
+          "companion_arm_eligible": true,
+          "source_text": null,
+          "native_text": null,
+          "matches": true
+        }
+      ]
+    },
+    {
+      "owner": "state-label",
+      "source_layer": "place_label",
+      "source_text": [
+        "coalesce",
+        [
+          "get",
+          "name_en"
+        ],
+        [
+          "get",
+          "name"
+        ]
+      ],
+      "source_transform": "uppercase",
+      "rule": "state-label",
+      "filter": "CASE WHEN \"class\" IN ('state', 'disputed_state') THEN \"worldview\" IN ('all', 'US') ELSE FALSE END",
+      "native_text": "upper(\"name\")",
+      "requested_fields": [
+        "name"
+      ],
+      "minzoom": 3,
+      "maxzoom": 8,
+      "cases": [
+        {
+          "case": "english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English name",
+            "name": "Nom local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "ENGLISH NAME",
+          "native_text": "NOM LOCAL",
+          "matches": false
+        },
+        {
+          "case": "null-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": null,
+            "name": "Genève"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "GENÈVE",
+          "native_text": "GENÈVE",
+          "matches": true
+        },
+        {
+          "case": "missing-english",
+          "airport_case": "default",
+          "properties": {
+            "name": "القاهرة"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة",
+          "native_text": "القاهرة",
+          "matches": true
+        },
+        {
+          "case": "empty-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "",
+            "name": "ירושלים"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "",
+          "native_text": "ירושלים",
+          "matches": false
+        },
+        {
+          "case": "diacritics",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "Zürich — L’Aquila",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "ZÜRICH — L’AQUILA",
+          "native_text": "LOCAL",
+          "matches": false
+        },
+        {
+          "case": "mixed-script",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "القاهرة / ירושלים 12",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة / ירושלים 12",
+          "native_text": "LOCAL",
+          "matches": false
+        },
+        {
+          "case": "english-only",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English only"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "ENGLISH ONLY",
+          "native_text": null,
+          "matches": false
+        },
+        {
+          "case": "both-missing",
+          "airport_case": "default",
+          "properties": {},
+          "companion_arm_eligible": true,
+          "source_text": null,
+          "native_text": null,
+          "matches": true
+        }
+      ]
+    },
+    {
+      "owner": "country-label",
+      "source_layer": "place_label",
+      "source_text": [
+        "coalesce",
+        [
+          "get",
+          "name_en"
+        ],
+        [
+          "get",
+          "name"
+        ]
+      ],
+      "source_transform": "none",
+      "rule": "country-label",
+      "filter": "CASE WHEN \"class\" IN ('country', 'disputed_country') THEN \"worldview\" IN ('all', 'US') ELSE FALSE END",
+      "native_text": "coalesce(\"name_en\", \"name\")",
+      "requested_fields": [
+        "name",
+        "name_en"
+      ],
+      "minzoom": 1,
+      "maxzoom": 9,
+      "cases": [
+        {
+          "case": "english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English name",
+            "name": "Nom local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English name",
+          "native_text": "English name",
+          "matches": true
+        },
+        {
+          "case": "null-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": null,
+            "name": "Genève"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Genève",
+          "native_text": "Genève",
+          "matches": true
+        },
+        {
+          "case": "missing-english",
+          "airport_case": "default",
+          "properties": {
+            "name": "القاهرة"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة",
+          "native_text": "القاهرة",
+          "matches": true
+        },
+        {
+          "case": "empty-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "",
+            "name": "ירושלים"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "",
+          "native_text": "",
+          "matches": true
+        },
+        {
+          "case": "diacritics",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "Zürich — L’Aquila",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "Zürich — L’Aquila",
+          "native_text": "Zürich — L’Aquila",
+          "matches": true
+        },
+        {
+          "case": "mixed-script",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "القاهرة / ירושלים 12",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة / ירושלים 12",
+          "native_text": "القاهرة / ירושלים 12",
+          "matches": true
+        },
+        {
+          "case": "english-only",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English only"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "English only",
+          "native_text": "English only",
+          "matches": true
+        },
+        {
+          "case": "both-missing",
+          "airport_case": "default",
+          "properties": {},
+          "companion_arm_eligible": true,
+          "source_text": null,
+          "native_text": null,
+          "matches": true
+        }
+      ]
+    },
+    {
+      "owner": "continent-label",
+      "source_layer": "natural_label",
+      "source_text": [
+        "coalesce",
+        [
+          "get",
+          "name_en"
+        ],
+        [
+          "get",
+          "name"
+        ]
+      ],
+      "source_transform": "uppercase",
+      "rule": "continent-label-below-z1_5",
+      "filter": "\"class\" IS 'continent'",
+      "native_text": "upper(\"name\")",
+      "requested_fields": [
+        "name"
+      ],
+      "minzoom": 1,
+      "maxzoom": 1,
+      "cases": [
+        {
+          "case": "english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English name",
+            "name": "Nom local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "ENGLISH NAME",
+          "native_text": "NOM LOCAL",
+          "matches": false
+        },
+        {
+          "case": "null-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": null,
+            "name": "Genève"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "GENÈVE",
+          "native_text": "GENÈVE",
+          "matches": true
+        },
+        {
+          "case": "missing-english",
+          "airport_case": "default",
+          "properties": {
+            "name": "القاهرة"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة",
+          "native_text": "القاهرة",
+          "matches": true
+        },
+        {
+          "case": "empty-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "",
+            "name": "ירושלים"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "",
+          "native_text": "ירושלים",
+          "matches": false
+        },
+        {
+          "case": "diacritics",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "Zürich — L’Aquila",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "ZÜRICH — L’AQUILA",
+          "native_text": "LOCAL",
+          "matches": false
+        },
+        {
+          "case": "mixed-script",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "القاهرة / ירושלים 12",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة / ירושלים 12",
+          "native_text": "LOCAL",
+          "matches": false
+        },
+        {
+          "case": "english-only",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English only"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "ENGLISH ONLY",
+          "native_text": null,
+          "matches": false
+        },
+        {
+          "case": "both-missing",
+          "airport_case": "default",
+          "properties": {},
+          "companion_arm_eligible": true,
+          "source_text": null,
+          "native_text": null,
+          "matches": true
+        }
+      ]
+    },
+    {
+      "owner": "continent-label",
+      "source_layer": "natural_label",
+      "source_text": [
+        "coalesce",
+        [
+          "get",
+          "name_en"
+        ],
+        [
+          "get",
+          "name"
+        ]
+      ],
+      "source_transform": "uppercase",
+      "rule": "continent-label-z1_5-to-z2_5",
+      "filter": "\"class\" IS 'continent'",
+      "native_text": "upper(\"name\")",
+      "requested_fields": [
+        "name"
+      ],
+      "minzoom": 2,
+      "maxzoom": 2,
+      "cases": [
+        {
+          "case": "english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English name",
+            "name": "Nom local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "ENGLISH NAME",
+          "native_text": "NOM LOCAL",
+          "matches": false
+        },
+        {
+          "case": "null-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": null,
+            "name": "Genève"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "GENÈVE",
+          "native_text": "GENÈVE",
+          "matches": true
+        },
+        {
+          "case": "missing-english",
+          "airport_case": "default",
+          "properties": {
+            "name": "القاهرة"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة",
+          "native_text": "القاهرة",
+          "matches": true
+        },
+        {
+          "case": "empty-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "",
+            "name": "ירושלים"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "",
+          "native_text": "ירושלים",
+          "matches": false
+        },
+        {
+          "case": "diacritics",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "Zürich — L’Aquila",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "ZÜRICH — L’AQUILA",
+          "native_text": "LOCAL",
+          "matches": false
+        },
+        {
+          "case": "mixed-script",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "القاهرة / ירושלים 12",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة / ירושלים 12",
+          "native_text": "LOCAL",
+          "matches": false
+        },
+        {
+          "case": "english-only",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English only"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "ENGLISH ONLY",
+          "native_text": null,
+          "matches": false
+        },
+        {
+          "case": "both-missing",
+          "airport_case": "default",
+          "properties": {},
+          "companion_arm_eligible": true,
+          "source_text": null,
+          "native_text": null,
+          "matches": true
+        }
+      ]
+    },
+    {
+      "owner": "continent-label",
+      "source_layer": "natural_label",
+      "source_text": [
+        "coalesce",
+        [
+          "get",
+          "name_en"
+        ],
+        [
+          "get",
+          "name"
+        ]
+      ],
+      "source_transform": "uppercase",
+      "rule": "continent-label-z2_5-plus",
+      "filter": "\"class\" IS 'continent'",
+      "native_text": "upper(\"name\")",
+      "requested_fields": [
+        "name"
+      ],
+      "minzoom": 3,
+      "maxzoom": 2,
+      "cases": [
+        {
+          "case": "english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English name",
+            "name": "Nom local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "ENGLISH NAME",
+          "native_text": "NOM LOCAL",
+          "matches": false
+        },
+        {
+          "case": "null-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": null,
+            "name": "Genève"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "GENÈVE",
+          "native_text": "GENÈVE",
+          "matches": true
+        },
+        {
+          "case": "missing-english",
+          "airport_case": "default",
+          "properties": {
+            "name": "القاهرة"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة",
+          "native_text": "القاهرة",
+          "matches": true
+        },
+        {
+          "case": "empty-english",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "",
+            "name": "ירושלים"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "",
+          "native_text": "ירושלים",
+          "matches": false
+        },
+        {
+          "case": "diacritics",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "Zürich — L’Aquila",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "ZÜRICH — L’AQUILA",
+          "native_text": "LOCAL",
+          "matches": false
+        },
+        {
+          "case": "mixed-script",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "القاهرة / ירושלים 12",
+            "name": "local"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "القاهرة / ירושלים 12",
+          "native_text": "LOCAL",
+          "matches": false
+        },
+        {
+          "case": "english-only",
+          "airport_case": "default",
+          "properties": {
+            "name_en": "English only"
+          },
+          "companion_arm_eligible": true,
+          "source_text": "ENGLISH ONLY",
+          "native_text": null,
+          "matches": false
+        },
+        {
+          "case": "both-missing",
+          "airport_case": "default",
+          "properties": {},
+          "companion_arm_eligible": true,
+          "source_text": null,
+          "native_text": null,
+          "matches": true
+        }
+      ]
+    }
+  ]
+}

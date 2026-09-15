@@ -1,0 +1,182 @@
+[
+  {
+    "a": "3/cairo-museum-z14/before/qgis.png",
+    "b": "3/cairo-museum-z14/before-pdf/qgis.png",
+    "identical": true,
+    "sha256": "6f5ddea059bc39edd8267741f1b4b93bbbf45529e826296c775ba16b6b9ecff2"
+  },
+  {
+    "a": "3/cairo-museum-z14/before/labels.json",
+    "b": "3/cairo-museum-z14/before-pdf/labels.json",
+    "identical": true,
+    "sha256": "e7de6f7d3a70957e8fdde9504ddd5fb89d72a71a196886a7e63ed2998bf97865"
+  },
+  {
+    "a": "3/cairo-museum-z14/before/runtime.json",
+    "b": "3/cairo-museum-z14/before-pdf/runtime.json",
+    "identical": true,
+    "sha256": "207c3a133d7d6315fac8c5f88dfa8849f6851ceb791f36a26d1a5a0b0dd59b69"
+  },
+  {
+    "a": "3/cairo-museum-z14/after/qgis.png",
+    "b": "3/cairo-museum-z14/after-pdf/qgis.png",
+    "identical": true,
+    "sha256": "67c99ef5a9fcc2630a17b317d53a3d2502701d7cca8d5d42fc2d77bb3d0d1657"
+  },
+  {
+    "a": "3/cairo-museum-z14/after/labels.json",
+    "b": "3/cairo-museum-z14/after-pdf/labels.json",
+    "identical": true,
+    "sha256": "e078eb25701774e704e4c00b7c8c4e694764e780bf796a6a055f5571e3dd0341"
+  },
+  {
+    "a": "3/cairo-museum-z14/after/runtime.json",
+    "b": "3/cairo-museum-z14/after-pdf/runtime.json",
+    "identical": true,
+    "sha256": "207c3a133d7d6315fac8c5f88dfa8849f6851ceb791f36a26d1a5a0b0dd59b69"
+  },
+  {
+    "a": "3/geneva-streets-z18-light/before/qgis.png",
+    "b": "3/geneva-streets-z18-light/before-pdf/qgis.png",
+    "identical": true,
+    "sha256": "08ccd959983dda84dc2a219cb9229c4e62731b9c9389ce5877941af316c3d318"
+  },
+  {
+    "a": "3/geneva-streets-z18-light/before/labels.json",
+    "b": "3/geneva-streets-z18-light/before-pdf/labels.json",
+    "identical": true,
+    "sha256": "e7de6f7d3a70957e8fdde9504ddd5fb89d72a71a196886a7e63ed2998bf97865"
+  },
+  {
+    "a": "3/geneva-streets-z18-light/before/runtime.json",
+    "b": "3/geneva-streets-z18-light/before-pdf/runtime.json",
+    "identical": true,
+    "sha256": "bb2f6c78fd49bddbcc6efb000bd6d3c3db6e14aa38624f1f845e240f01256da9"
+  },
+  {
+    "a": "3/geneva-streets-z18-light/after/qgis.png",
+    "b": "3/geneva-streets-z18-light/after-pdf/qgis.png",
+    "identical": true,
+    "sha256": "8524e6b067f8a494effe9854766878ddfe39343ca069abf7571d1739653e19d3"
+  },
+  {
+    "a": "3/geneva-streets-z18-light/after/labels.json",
+    "b": "3/geneva-streets-z18-light/after-pdf/labels.json",
+    "identical": true,
+    "sha256": "e078eb25701774e704e4c00b7c8c4e694764e780bf796a6a055f5571e3dd0341"
+  },
+  {
+    "a": "3/geneva-streets-z18-light/after/runtime.json",
+    "b": "3/geneva-streets-z18-light/after-pdf/runtime.json",
+    "identical": true,
+    "sha256": "bb2f6c78fd49bddbcc6efb000bd6d3c3db6e14aa38624f1f845e240f01256da9"
+  },
+  {
+    "a": "3/cairo-museum-z14/after/qgis.png",
+    "b": "3/cairo-museum-z14/after-replay/qgis.png",
+    "identical": true,
+    "sha256": "67c99ef5a9fcc2630a17b317d53a3d2502701d7cca8d5d42fc2d77bb3d0d1657"
+  },
+  {
+    "a": "3/cairo-museum-z14/after/labels.json",
+    "b": "3/cairo-museum-z14/after-replay/labels.json",
+    "identical": true,
+    "sha256": "e078eb25701774e704e4c00b7c8c4e694764e780bf796a6a055f5571e3dd0341"
+  },
+  {
+    "a": "3/cairo-museum-z14/after/runtime.json",
+    "b": "3/cairo-museum-z14/after-replay/runtime.json",
+    "identical": true,
+    "sha256": "207c3a133d7d6315fac8c5f88dfa8849f6851ceb791f36a26d1a5a0b0dd59b69"
+  },
+  {
+    "a": "4/cairo-museum-z14/before/qgis.png",
+    "b": "4/cairo-museum-z14/before-pdf/qgis.png",
+    "identical": true,
+    "sha256": "9290f1c0a5e5f282a3f75c00e76e726af902e252ecc61713891378e4a51c8f8e"
+  },
+  {
+    "a": "4/cairo-museum-z14/before/labels.json",
+    "b": "4/cairo-museum-z14/before-pdf/labels.json",
+    "identical": true,
+    "sha256": "9562de7befc14c6e7a71bcfd0508bf4dac2c1e425ddb65be09f1759336cbe58b"
+  },
+  {
+    "a": "4/cairo-museum-z14/before/runtime.json",
+    "b": "4/cairo-museum-z14/before-pdf/runtime.json",
+    "identical": true,
+    "sha256": "11ba706eded9f2695f19d14e1b6d2a67f2b150c4d30c63e59c4dd3dc3ee43e1a"
+  },
+  {
+    "a": "4/cairo-museum-z14/after/qgis.png",
+    "b": "4/cairo-museum-z14/after-pdf/qgis.png",
+    "identical": true,
+    "sha256": "eab863dcad2321cf2427581b99b2f6c4eadea49ade70ec76517ee646a6c573bb"
+  },
+  {
+    "a": "4/cairo-museum-z14/after/labels.json",
+    "b": "4/cairo-museum-z14/after-pdf/labels.json",
+    "identical": true,
+    "sha256": "12f9faa48a2cfe0851ed4cb8c752b404acf7d19005bfd5bf692432a75f233244"
+  },
+  {
+    "a": "4/cairo-museum-z14/after/runtime.json",
+    "b": "4/cairo-museum-z14/after-pdf/runtime.json",
+    "identical": true,
+    "sha256": "11ba706eded9f2695f19d14e1b6d2a67f2b150c4d30c63e59c4dd3dc3ee43e1a"
+  },
+  {
+    "a": "4/geneva-streets-z18-light/before/qgis.png",
+    "b": "4/geneva-streets-z18-light/before-pdf/qgis.png",
+    "identical": true,
+    "sha256": "b8f175e538c415a385ffc97b1b77aae6116232543ca6861766cbc30911c8fc8d"
+  },
+  {
+    "a": "4/geneva-streets-z18-light/before/labels.json",
+    "b": "4/geneva-streets-z18-light/before-pdf/labels.json",
+    "identical": true,
+    "sha256": "9562de7befc14c6e7a71bcfd0508bf4dac2c1e425ddb65be09f1759336cbe58b"
+  },
+  {
+    "a": "4/geneva-streets-z18-light/before/runtime.json",
+    "b": "4/geneva-streets-z18-light/before-pdf/runtime.json",
+    "identical": true,
+    "sha256": "2f00820141ddea2c24f17a3e6fb47d3c4076b73142203c9f58546774d2b13c82"
+  },
+  {
+    "a": "4/geneva-streets-z18-light/after/qgis.png",
+    "b": "4/geneva-streets-z18-light/after-pdf/qgis.png",
+    "identical": true,
+    "sha256": "c34b7850798565b62b0cb7f0e3bd03c813f0a2297a4e11076c57acaf194f2968"
+  },
+  {
+    "a": "4/geneva-streets-z18-light/after/labels.json",
+    "b": "4/geneva-streets-z18-light/after-pdf/labels.json",
+    "identical": true,
+    "sha256": "12f9faa48a2cfe0851ed4cb8c752b404acf7d19005bfd5bf692432a75f233244"
+  },
+  {
+    "a": "4/geneva-streets-z18-light/after/runtime.json",
+    "b": "4/geneva-streets-z18-light/after-pdf/runtime.json",
+    "identical": true,
+    "sha256": "2f00820141ddea2c24f17a3e6fb47d3c4076b73142203c9f58546774d2b13c82"
+  },
+  {
+    "a": "4/cairo-museum-z14/after/qgis.png",
+    "b": "4/cairo-museum-z14/after-replay/qgis.png",
+    "identical": true,
+    "sha256": "eab863dcad2321cf2427581b99b2f6c4eadea49ade70ec76517ee646a6c573bb"
+  },
+  {
+    "a": "4/cairo-museum-z14/after/labels.json",
+    "b": "4/cairo-museum-z14/after-replay/labels.json",
+    "identical": true,
+    "sha256": "12f9faa48a2cfe0851ed4cb8c752b404acf7d19005bfd5bf692432a75f233244"
+  },
+  {
+    "a": "4/cairo-museum-z14/after/runtime.json",
+    "b": "4/cairo-museum-z14/after-replay/runtime.json",
+    "identical": true,
+    "sha256": "11ba706eded9f2695f19d14e1b6d2a67f2b150c4d30c63e59c4dd3dc3ee43e1a"
+  }
+]

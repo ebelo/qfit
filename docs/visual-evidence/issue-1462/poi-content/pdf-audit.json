@@ -1,0 +1,218 @@
+[
+  {
+    "runtime": "3",
+    "camera": "cairo-museum-z14",
+    "variant": "before-pdf",
+    "a": "3/cairo-museum-z14/before-pdf/pdf150.png",
+    "b": "3/cairo-museum-z14/before-pdf/pdf150-repeat.png",
+    "changed_pixels": 0,
+    "max_channel_delta": 0,
+    "normalized_mae": 0.0,
+    "context": {
+      "dpi": 150,
+      "production_default_dpi": 150.0,
+      "force_vector": true,
+      "rasterize_whole_image": false,
+      "page_mm": [
+        338.6666666666667,
+        238.125
+      ],
+      "map_scale": 18055.990933508456,
+      "extent": [
+        3473850.966509382,
+        3507545.7773149833,
+        3479965.9287721966,
+        3511845.360156025
+      ]
+    }
+  },
+  {
+    "runtime": "3",
+    "camera": "cairo-museum-z14",
+    "variant": "after-pdf",
+    "a": "3/cairo-museum-z14/after-pdf/pdf150.png",
+    "b": "3/cairo-museum-z14/after-pdf/pdf150-repeat.png",
+    "changed_pixels": 0,
+    "max_channel_delta": 0,
+    "normalized_mae": 0.0,
+    "context": {
+      "dpi": 150,
+      "production_default_dpi": 150.0,
+      "force_vector": true,
+      "rasterize_whole_image": false,
+      "page_mm": [
+        338.6666666666667,
+        238.125
+      ],
+      "map_scale": 18055.990933508456,
+      "extent": [
+        3473850.966509382,
+        3507545.7773149833,
+        3479965.9287721966,
+        3511845.360156025
+      ]
+    }
+  },
+  {
+    "runtime": "3",
+    "camera": "geneva-streets-z18-light",
+    "variant": "before-pdf",
+    "a": "3/geneva-streets-z18-light/before-pdf/pdf150.png",
+    "b": "3/geneva-streets-z18-light/before-pdf/pdf150-repeat.png",
+    "changed_pixels": 0,
+    "max_channel_delta": 0,
+    "normalized_mae": 0.0,
+    "context": {
+      "dpi": 150,
+      "production_default_dpi": 150.0,
+      "force_vector": true,
+      "rasterize_whole_image": false,
+      "page_mm": [
+        338.6666666666667,
+        238.125
+      ],
+      "map_scale": 1128.4994333439347,
+      "extent": [
+        684089.8173355398,
+        5812644.801312825,
+        684472.0024769657,
+        5812913.52524039
+      ]
+    }
+  },
+  {
+    "runtime": "3",
+    "camera": "geneva-streets-z18-light",
+    "variant": "after-pdf",
+    "a": "3/geneva-streets-z18-light/after-pdf/pdf150.png",
+    "b": "3/geneva-streets-z18-light/after-pdf/pdf150-repeat.png",
+    "changed_pixels": 0,
+    "max_channel_delta": 0,
+    "normalized_mae": 0.0,
+    "context": {
+      "dpi": 150,
+      "production_default_dpi": 150.0,
+      "force_vector": true,
+      "rasterize_whole_image": false,
+      "page_mm": [
+        338.6666666666667,
+        238.125
+      ],
+      "map_scale": 1128.4994333439347,
+      "extent": [
+        684089.8173355398,
+        5812644.801312825,
+        684472.0024769657,
+        5812913.52524039
+      ]
+    }
+  },
+  {
+    "runtime": "4",
+    "camera": "cairo-museum-z14",
+    "variant": "before-pdf",
+    "a": "4/cairo-museum-z14/before-pdf/pdf150.png",
+    "b": "4/cairo-museum-z14/before-pdf/pdf150-repeat.png",
+    "changed_pixels": 83,
+    "max_channel_delta": 10,
+    "normalized_mae": 4.6296296296296297e-07,
+    "context": {
+      "dpi": 150,
+      "production_default_dpi": 150.0,
+      "force_vector": true,
+      "rasterize_whole_image": false,
+      "page_mm": [
+        338.6666666666667,
+        238.125
+      ],
+      "map_scale": 18055.990933508456,
+      "extent": [
+        3473850.966509382,
+        3507545.7773149833,
+        3479965.9287721966,
+        3511845.360156025
+      ]
+    }
+  },
+  {
+    "runtime": "4",
+    "camera": "cairo-museum-z14",
+    "variant": "after-pdf",
+    "a": "4/cairo-museum-z14/after-pdf/pdf150.png",
+    "b": "4/cairo-museum-z14/after-pdf/pdf150-repeat.png",
+    "changed_pixels": 56,
+    "max_channel_delta": 4,
+    "normalized_mae": 3.1318082788671023e-07,
+    "context": {
+      "dpi": 150,
+      "production_default_dpi": 150.0,
+      "force_vector": true,
+      "rasterize_whole_image": false,
+      "page_mm": [
+        338.6666666666667,
+        238.125
+      ],
+      "map_scale": 18055.990933508456,
+      "extent": [
+        3473850.966509382,
+        3507545.7773149833,
+        3479965.9287721966,
+        3511845.360156025
+      ]
+    }
+  },
+  {
+    "runtime": "4",
+    "camera": "geneva-streets-z18-light",
+    "variant": "before-pdf",
+    "a": "4/geneva-streets-z18-light/before-pdf/pdf150.png",
+    "b": "4/geneva-streets-z18-light/before-pdf/pdf150-repeat.png",
+    "changed_pixels": 21,
+    "max_channel_delta": 16,
+    "normalized_mae": 8.476307189542484e-07,
+    "context": {
+      "dpi": 150,
+      "production_default_dpi": 150.0,
+      "force_vector": true,
+      "rasterize_whole_image": false,
+      "page_mm": [
+        338.6666666666667,
+        238.125
+      ],
+      "map_scale": 1128.4994333439347,
+      "extent": [
+        684089.8173355398,
+        5812644.801312825,
+        684472.0024769657,
+        5812913.52524039
+      ]
+    }
+  },
+  {
+    "runtime": "4",
+    "camera": "geneva-streets-z18-light",
+    "variant": "after-pdf",
+    "a": "4/geneva-streets-z18-light/after-pdf/pdf150.png",
+    "b": "4/geneva-streets-z18-light/after-pdf/pdf150-repeat.png",
+    "changed_pixels": 25,
+    "max_channel_delta": 16,
+    "normalized_mae": 8.203976034858388e-07,
+    "context": {
+      "dpi": 150,
+      "production_default_dpi": 150.0,
+      "force_vector": true,
+      "rasterize_whole_image": false,
+      "page_mm": [
+        338.6666666666667,
+        238.125
+      ],
+      "map_scale": 1128.4994333439347,
+      "extent": [
+        684089.8173355398,
+        5812644.801312825,
+        684472.0024769657,
+        5812913.52524039
+      ]
+    }
+  }
+]

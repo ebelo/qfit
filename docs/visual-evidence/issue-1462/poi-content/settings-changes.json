@@ -1,0 +1,38 @@
+[
+  {
+    "runtime": "3",
+    "rule": "poi-label-below-z16",
+    "before": "\"name\"",
+    "after": "coalesce(\"name_en\", \"name\")"
+  },
+  {
+    "runtime": "3",
+    "rule": "poi-label-z16-to-z17",
+    "before": "\"name\"",
+    "after": "coalesce(\"name_en\", \"name\")"
+  },
+  {
+    "runtime": "3",
+    "rule": "poi-label-z17-plus",
+    "before": "\"name\"",
+    "after": "coalesce(\"name_en\", \"name\")"
+  },
+  {
+    "runtime": "4",
+    "rule": "poi-label-below-z16",
+    "before": "\"name\"",
+    "after": "coalesce(\"name_en\", \"name\")"
+  },
+  {
+    "runtime": "4",
+    "rule": "poi-label-z16-to-z17",
+    "before": "\"name\"",
+    "after": "coalesce(\"name_en\", \"name\")"
+  },
+  {
+    "runtime": "4",
+    "rule": "poi-label-z17-plus",
+    "before": "\"name\"",
+    "after": "coalesce(\"name_en\", \"name\")"
+  }
+]

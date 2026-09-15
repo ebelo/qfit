@@ -1,0 +1,591 @@
+{
+  "features": [
+    {
+      "id": 1216532071,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Place Of Worship",
+        "name_script": "Latin",
+        "category_en": "Synagogue",
+        "maki": "religious-jewish",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "犹太教堂",
+        "class": "religion",
+        "name": "Beth Yaacov"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.140914857387543,
+          46.20279489106886
+        ]
+      }
+    },
+    {
+      "id": 1863879941,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Restaurant",
+        "name_script": "Latin",
+        "category_en": "Restaurant",
+        "maki": "restaurant",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "餐馆",
+        "class": "food_and_drink",
+        "name": "Le Bologne"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.1407458782196045,
+          46.20766395536961
+        ]
+      }
+    },
+    {
+      "id": 1378764981,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 15,
+        "type": "Hotel",
+        "name_script": "Latin",
+        "brand": "Four Seasons",
+        "category_en": "Hotel",
+        "maki": "lodging",
+        "category_zh-Hans": "宾馆",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "class": "lodging",
+        "name": "Four Seasons Hôtel des Bergues"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.146794259548187,
+          46.20702355791224
+        ]
+      }
+    },
+    {
+      "id": 10766704100,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Theatre",
+        "name_script": "Latin",
+        "category_en": "Theater",
+        "maki": "theatre",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "剧院",
+        "class": "arts_and_entertainment",
+        "name": "Salle de l'Alhambra"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.146504580974579,
+          46.20274848159366
+        ]
+      }
+    },
+    {
+      "id": 87186094,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 14,
+        "type": "Bridge",
+        "name_script": "Latin",
+        "category_en": "Bridge",
+        "maki": "bridge",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "桥梁",
+        "class": "landmark",
+        "name": "Pont du Mont-Blanc"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.148666441440582,
+          46.20594507459603
+        ]
+      }
+    },
+    {
+      "id": 152567361,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 15,
+        "type": "Theatre",
+        "name_script": "Latin",
+        "category_en": "Theater",
+        "maki": "theatre",
+        "filterrank": 1,
+        "name_zh-Hant": "日內瓦大劇院",
+        "iso_3166_1": "CH",
+        "name_zh-Hans": "日内瓦大剧院",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "剧院",
+        "class": "arts_and_entertainment",
+        "name": "Grand Théâtre de Genève"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.142647564411163,
+          46.20177944279595
+        ]
+      }
+    },
+    {
+      "id": 6171499281,
+      "owner": "natural-point-label",
+      "properties": {
+        "sizerank": 16,
+        "name_script": "Latin",
+        "name_de": "Felsen des Niton",
+        "disputed": "false",
+        "elevation_ft": 1226,
+        "elevation_m": 374,
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "maki": "marker",
+        "class": "landform",
+        "name": "Pierre du Niton",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.154309809207916,
+          46.20564435774489
+        ]
+      }
+    },
+    {
+      "id": 6894464551,
+      "owner": "waterway-label",
+      "properties": {
+        "name_script": "Latin",
+        "name_it": "Rodano",
+        "name_fr": "Le Rhône",
+        "name_en": "Rhone",
+        "sizerank": 16,
+        "name_ar": "نهر الرون",
+        "disputed": "false",
+        "name_es": "Ródano",
+        "name_de": "Rhone",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "class": "river",
+        "name": "Le Rhône",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.148567199707031,
+            46.20631075891916
+          ],
+          [
+            6.147572100162506,
+            46.206342315320256
+          ],
+          [
+            6.146590411663055,
+            46.206019325416975
+          ],
+          [
+            6.143838465213776,
+            46.20565735171692
+          ],
+          [
+            6.141738295555115,
+            46.20514130303587
+          ],
+          [
+            6.13861083984375,
+            46.205130165241115
+          ]
+        ]
+      }
+    },
+    {
+      "id": 7982569681,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "len": 20,
+        "iso_3166_2": "CH-GE",
+        "layer": 0,
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "structure": "tunnel",
+        "oneway": "false",
+        "class": "street",
+        "name": "Rue Bautte"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.139517426490784,
+            46.207966517368476
+          ],
+          [
+            6.139308214187622,
+            46.208085314262036
+          ]
+        ]
+      }
+    },
+    {
+      "id": 4487232761,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "primary",
+        "surface": "paved",
+        "len": 310,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "false",
+        "structure": "none",
+        "class": "primary",
+        "name": "Quai du Mont-Blanc"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              6.151549816131592,
+              46.21038138499762
+            ],
+            [
+              6.151665151119232,
+              46.210487183841934
+            ]
+          ],
+          [
+            [
+              6.150297224521637,
+              46.20925099515088
+            ],
+            [
+              6.15072101354599,
+              46.209624082056536
+            ]
+          ],
+          [
+            [
+              6.147920787334442,
+              46.20711080090368
+            ],
+            [
+              6.150074601173401,
+              46.209043104830386
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 13544272461,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "secondary",
+        "surface": "paved",
+        "bike_lane": "right",
+        "len": 390,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "structure": "none",
+        "oneway": "true",
+        "class": "secondary",
+        "name": "Rue des Alpes"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.148883700370789,
+            46.20797208597858
+          ],
+          [
+            6.147244870662689,
+            46.2088222205027
+          ],
+          [
+            6.144187152385712,
+            46.210487183841934
+          ]
+        ]
+      }
+    },
+    {
+      "id": 50324001,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "secondary",
+        "surface": "paved",
+        "shield_text_color": "black",
+        "reflen": 3,
+        "iso_3166_1": "CH",
+        "len": 10,
+        "iso_3166_2": "CH-GE",
+        "name_script": "Latin",
+        "ref": "101",
+        "structure": "none",
+        "oneway": "false",
+        "shield_text_hsl": "hsl(230, 18%, 13%)",
+        "shield_image": "default-3",
+        "shield": "default",
+        "class": "secondary",
+        "name": "Rue de Chantepoulet"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.14248126745224,
+            46.20836003109446
+          ],
+          [
+            6.142599284648895,
+            46.20834889395229
+          ]
+        ]
+      }
+    },
+    {
+      "id": 42728371,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "unclassified",
+        "surface": "paved",
+        "len": 20,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "true",
+        "structure": "none",
+        "class": "street",
+        "name": "Rue du Rhône"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.150385737419128,
+            46.20354486275258
+          ],
+          [
+            6.149967312812805,
+            46.203630254918835
+          ]
+        ]
+      }
+    },
+    {
+      "id": 50702241,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "len": 160,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "false",
+        "structure": "none",
+        "class": "street",
+        "name": "Rue du Marché"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.145420968532562,
+            46.203498453910896
+          ],
+          [
+            6.146129071712494,
+            46.20337407802188
+          ],
+          [
+            6.147416532039642,
+            46.20304550155757
+          ]
+        ]
+      }
+    },
+    {
+      "id": 1731031111,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "len": 70,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "false",
+        "structure": "none",
+        "class": "street",
+        "name": "Rue Pécolat"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.146045923233032,
+            46.20865516453887
+          ],
+          [
+            6.146622598171234,
+            46.20915633090607
+          ]
+        ]
+      }
+    },
+    {
+      "id": 51065381,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "living_street",
+        "surface": "paved",
+        "bike_lane": "yes",
+        "len": 180,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "structure": "none",
+        "oneway": "true",
+        "class": "street",
+        "name": "Rue des Granges"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.144511699676514,
+            46.20182399667874
+          ],
+          [
+            6.145329773426056,
+            46.20150283663182
+          ],
+          [
+            6.145608723163605,
+            46.20141929758361
+          ],
+          [
+            6.146571636199951,
+            46.201009026192054
+          ]
+        ]
+      }
+    },
+    {
+      "id": 83674021,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "len": 180,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "false",
+        "structure": "none",
+        "class": "street",
+        "name": "Rue de Rive"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.14984393119812,
+            46.20250900807849
+          ],
+          [
+            6.150425970554352,
+            46.20238091716516
+          ],
+          [
+            6.15071028470993,
+            46.20230666142649
+          ],
+          [
+            6.151748299598694,
+            46.201996642633304
+          ],
+          [
+            6.152016520500183,
+            46.20192795559808
+          ]
+        ]
+      }
+    },
+    {
+      "id": 488632861,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "living_street",
+        "surface": "paved",
+        "len": 120,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "true",
+        "structure": "none",
+        "class": "street_limited",
+        "name": "Grand-Rue"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.145777702331543,
+            46.20187411975368
+          ],
+          [
+            6.1459144949913025,
+            46.20182399667874
+          ],
+          [
+            6.14611029624939,
+            46.201714468318784
+          ],
+          [
+            6.146641373634338,
+            46.20138959478032
+          ],
+          [
+            6.14684522151947,
+            46.20121323405496
+          ],
+          [
+            6.146834492683411,
+            46.201114843088476
+          ]
+        ]
+      }
+    }
+  ],
+  "source_features": []
+}

@@ -1,0 +1,1125 @@
+{
+  "features": [
+    {
+      "id": 95190379750,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Museum",
+        "name_script": "Latin",
+        "category_en": "Museum",
+        "maki": "museum",
+        "filterrank": 3,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "博物馆",
+        "class": "arts_and_entertainment",
+        "name": "Quartier Libre Services Industriels de Genève"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.144873797893524,
+          46.205380765077024
+        ]
+      }
+    },
+    {
+      "id": 45757985910,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Restaurant",
+        "name_script": "Latin",
+        "name_en": "Riverside Café",
+        "category_en": "Restaurant",
+        "maki": "restaurant",
+        "filterrank": 3,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "餐馆",
+        "class": "food_and_drink",
+        "name": "Riverside"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.145513504743576,
+          46.20478025170584
+        ]
+      }
+    },
+    {
+      "id": 120026518350,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Hotel",
+        "name_script": "Latin",
+        "brand": "Ruby Hotels",
+        "category_en": "Hotel",
+        "maki": "lodging",
+        "category_zh-Hans": "宾馆",
+        "filterrank": 3,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "class": "lodging",
+        "name": "Ruby Claire"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.146799623966217,
+          46.20382795583788
+        ]
+      }
+    },
+    {
+      "id": 57270413240,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Restaurant",
+        "name_script": "Latin",
+        "category_en": "Restaurant",
+        "maki": "restaurant",
+        "filterrank": 2,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "餐馆",
+        "class": "food_and_drink",
+        "name": "Edward’s"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.143918931484222,
+          46.203665525557454
+        ]
+      }
+    },
+    {
+      "id": 1317554131,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 15,
+        "type": "Hotel",
+        "name_script": "Latin",
+        "category_en": "Hotel",
+        "maki": "lodging",
+        "filterrank": 2,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "宾馆",
+        "class": "lodging",
+        "name": "The Ambassador"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.144464761018753,
+          46.20629590884181
+        ]
+      }
+    },
+    {
+      "id": 152582381,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 15,
+        "type": "Gallery",
+        "name_script": "Latin",
+        "category_en": "Art Gallery",
+        "maki": "art-gallery",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "美术馆",
+        "class": "arts_and_entertainment",
+        "name": "Cité du Temps"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.144833564758301,
+          46.20553576514405
+        ]
+      }
+    },
+    {
+      "id": 130279456880,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Bar",
+        "name_script": "Latin",
+        "category_en": "Bar",
+        "maki": "bar",
+        "filterrank": 3,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "酒吧",
+        "class": "food_and_drink",
+        "name": "Concrete"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.147018224000931,
+          46.204816449761125
+        ]
+      }
+    },
+    {
+      "id": 15399999080,
+      "owner": "poi-label",
+      "properties": {
+        "type": "Supermarket",
+        "sizerank": 16,
+        "name_ru": "ТЦ Глобус",
+        "name_fr": "Globus",
+        "name_en": "Globus Geneva",
+        "name_script": "Latin",
+        "brand": "Globus",
+        "name_pt": "Globus Genève",
+        "category_en": "Supermarket",
+        "maki": "grocery",
+        "category_zh-Hans": "超市",
+        "filterrank": 3,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "class": "food_and_drink_stores",
+        "name": "Globus"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.14740714430809,
+          46.203736994940016
+        ]
+      }
+    },
+    {
+      "id": 26379749110,
+      "owner": "poi-label",
+      "properties": {
+        "type": "Memorial",
+        "name_script": "Latin",
+        "sizerank": 16,
+        "name_ru": "Остров Руссо",
+        "category_en": "Memorial",
+        "maki": "monument",
+        "filterrank": 3,
+        "name_zh-Hant": "盧梭",
+        "iso_3166_1": "CH",
+        "name_zh-Hans": "卢梭",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "纪念碑",
+        "class": "historic",
+        "name": "Jean-Jacques Rousseau"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.147840321063995,
+          46.20601097220464
+        ]
+      }
+    },
+    {
+      "id": 12829815540,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Restaurant",
+        "name_script": "Latin",
+        "category_en": "Restaurant",
+        "maki": "restaurant",
+        "filterrank": 3,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "餐馆",
+        "class": "food_and_drink",
+        "name": "Le Baroque"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.147635132074356,
+          46.20405257292006
+        ]
+      }
+    },
+    {
+      "id": 2584419991,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 14,
+        "type": "Bridge",
+        "name_script": "Latin",
+        "category_en": "Bridge",
+        "maki": "bridge",
+        "filterrank": 2,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "桥梁",
+        "class": "landmark",
+        "name": "Pont des Bergues"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.146998107433319,
+          46.20578543499116
+        ]
+      }
+    },
+    {
+      "id": 11053703070,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Restaurant",
+        "name_script": "Latin",
+        "category_en": "Restaurant",
+        "maki": "restaurant",
+        "filterrank": 2,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "餐馆",
+        "class": "food_and_drink",
+        "name": "rooftop°42"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.147032976150513,
+          46.2041890134266
+        ]
+      }
+    },
+    {
+      "id": 6654986691,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 15,
+        "type": "Restaurant",
+        "name_script": "Latin",
+        "category_en": "Restaurant",
+        "maki": "restaurant",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "餐馆",
+        "class": "food_and_drink",
+        "name": "Le Lacustre"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.1489467322826385,
+          46.20448973824446
+        ]
+      }
+    },
+    {
+      "id": 6649107291,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Monument",
+        "name_script": "Latin",
+        "category_en": "Monument",
+        "maki": "monument",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "纪念堂",
+        "class": "historic",
+        "name": "Monument National"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.1503951251506805,
+          46.20466423213716
+        ]
+      }
+    },
+    {
+      "id": 87186094,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 13,
+        "type": "Bridge",
+        "name_script": "Latin",
+        "category_en": "Bridge",
+        "maki": "bridge",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "category_zh-Hans": "桥梁",
+        "class": "landmark",
+        "name": "Pont du Mont-Blanc"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.148666441440582,
+          46.205946002731906
+        ]
+      }
+    },
+    {
+      "id": 6894464551,
+      "owner": "waterway-label",
+      "properties": {
+        "name_script": "Latin",
+        "name_it": "Rodano",
+        "name_fr": "Le Rhône",
+        "name_en": "Rhone",
+        "sizerank": 16,
+        "name_ar": "نهر الرون",
+        "disputed": "false",
+        "name_es": "Ródano",
+        "name_de": "Rhone",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "class": "river",
+        "name": "Le Rhône",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.148223876953125,
+            46.20632189647455
+          ],
+          [
+            6.1475734412670135,
+            46.206342315320256
+          ],
+          [
+            6.146589070558548,
+            46.20601839728232
+          ],
+          [
+            6.143837124109268,
+            46.20565642357616
+          ],
+          [
+            6.141739636659622,
+            46.205142231185334
+          ],
+          [
+            6.139984130859375,
+            46.205135734138764
+          ]
+        ]
+      }
+    },
+    {
+      "id": 6894464551,
+      "owner": "waterway-label",
+      "properties": {
+        "name_script": "Latin",
+        "name_it": "Rodano",
+        "name_fr": "Le Rhône",
+        "name_en": "Rhone",
+        "sizerank": 16,
+        "name_ar": "نهر الرون",
+        "disputed": "false",
+        "name_es": "Ródano",
+        "name_de": "Rhone",
+        "filterrank": 1,
+        "iso_3166_1": "CH",
+        "iso_3166_2": "CH-GE",
+        "class": "river",
+        "name": "Le Rhône",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.148565858602524,
+            46.20631075891916
+          ],
+          [
+            6.1475734412670135,
+            46.206342315320256
+          ],
+          [
+            6.146589070558548,
+            46.20601839728232
+          ],
+          [
+            6.145477294921875,
+            46.205871751811856
+          ]
+        ]
+      }
+    },
+    {
+      "id": 625010491,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "len": 80,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "false",
+        "structure": "none",
+        "class": "street",
+        "name": "Rue Guillaume-Tell"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.144900619983673,
+            46.206486175154396
+          ],
+          [
+            6.145508140325546,
+            46.20665880645802
+          ],
+          [
+            6.145867556333542,
+            46.20675811561807
+          ]
+        ]
+      }
+    },
+    {
+      "id": 936129701,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "len": 90,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "false",
+        "structure": "none",
+        "class": "street",
+        "name": "Rue de la Confédération"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.144290417432785,
+            46.20377226551011
+          ],
+          [
+            6.144496947526932,
+            46.203722144166875
+          ],
+          [
+            6.144775897264481,
+            46.2036543874635
+          ],
+          [
+            6.145319044589996,
+            46.203522586513486
+          ],
+          [
+            6.14542230963707,
+            46.203498453910896
+          ]
+        ]
+      }
+    },
+    {
+      "id": 616415001,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "surface": "paved",
+        "access": "restricted",
+        "iso_3166_2": "CH-GE",
+        "bike_lane": "left",
+        "len": 200,
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "structure": "none",
+        "oneway": "true",
+        "class": "street_limited",
+        "name": "Rue du Rhône"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.146174669265747,
+            46.204471175031784
+          ],
+          [
+            6.146107614040375,
+            46.20448416928133
+          ],
+          [
+            6.145961433649063,
+            46.20450922961106
+          ],
+          [
+            6.145807206630707,
+            46.20452964913051
+          ],
+          [
+            6.145654320716858,
+            46.20454542784492
+          ],
+          [
+            6.145467907190323,
+            46.20455563759887
+          ],
+          [
+            6.145294904708862,
+            46.20456399103253
+          ],
+          [
+            6.1451782286167145,
+            46.20456863182844
+          ],
+          [
+            6.1450521647930145,
+            46.20456863182844
+          ],
+          [
+            6.14484965801239,
+            46.20456213471405
+          ],
+          [
+            6.144720911979675,
+            46.204551924961294
+          ],
+          [
+            6.1446404457092285,
+            46.20454264336624
+          ],
+          [
+            6.14455059170723,
+            46.2045250083313
+          ],
+          [
+            6.144097298383713,
+            46.2044182698412
+          ],
+          [
+            6.1437807977199554,
+            46.20435144215921
+          ],
+          [
+            6.143716424703598,
+            46.2043440168562
+          ],
+          [
+            6.143635958433151,
+            46.204339376041304
+          ]
+        ]
+      }
+    },
+    {
+      "id": 4575392091,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "primary",
+        "surface": "paved",
+        "shield_text_color": "black",
+        "reflen": 3,
+        "iso_3166_1": "CH",
+        "len": 260,
+        "iso_3166_2": "CH-GE",
+        "name_script": "Latin",
+        "ref": "102",
+        "structure": "none",
+        "oneway": "true",
+        "shield_text_hsl": "hsl(230, 18%, 13%)",
+        "shield_image": "default-3",
+        "shield": "default",
+        "class": "primary",
+        "name": "Quai du Général-Guisan"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              6.149630695581436,
+              46.204929684549285
+            ],
+            [
+              6.149653494358063,
+              46.20488049241587
+            ],
+            [
+              6.149673610925674,
+              46.204837797321005
+            ],
+            [
+              6.149725914001465,
+              46.204727346812916
+            ],
+            [
+              6.150030344724655,
+              46.20439135314575
+            ],
+            [
+              6.1500705778598785,
+              46.20434958583357
+            ],
+            [
+              6.1500853300094604,
+              46.20433380706294
+            ],
+            [
+              6.150219440460205,
+              46.204196438750586
+            ],
+            [
+              6.150239557027817,
+              46.204175090941476
+            ],
+            [
+              6.150332093238831,
+              46.20409805312656
+            ],
+            [
+              6.15040585398674,
+              46.204040506736504
+            ],
+            [
+              6.15053728222847,
+              46.20395418703842
+            ],
+            [
+              6.150573492050171,
+              46.20393005462543
+            ],
+            [
+              6.150617748498917,
+              46.20390870671281
+            ],
+            [
+              6.150676757097244,
+              46.20388921513319
+            ],
+            [
+              6.150816231966019,
+              46.20385487280936
+            ],
+            [
+              6.151052266359329,
+              46.20381217691741
+            ],
+            [
+              6.151411682367325,
+              46.203771337337514
+            ]
+          ],
+          [
+            [
+              6.150593608617783,
+              46.204163024784805
+            ],
+            [
+              6.150522530078888,
+              46.20422149921154
+            ],
+            [
+              6.15028515458107,
+              46.204414557194326
+            ],
+            [
+              6.150086671113968,
+              46.204606686340185
+            ],
+            [
+              6.149943172931671,
+              46.20474590993905
+            ],
+            [
+              6.1498962342739105,
+              46.2047848924835
+            ],
+            [
+              6.149763464927673,
+              46.20485636040982
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 13530943241,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "primary",
+        "surface": "paved",
+        "shield_text_hsl": "hsl(230, 18%, 13%)",
+        "shield_image": "default-3",
+        "shield": "default",
+        "shield_text_color": "black",
+        "reflen": 3,
+        "iso_3166_1": "CH",
+        "len": 220,
+        "iso_3166_2": "CH-GE",
+        "layer": 2,
+        "name_script": "Latin",
+        "ref": "102",
+        "structure": "bridge",
+        "oneway": "false",
+        "class": "primary",
+        "name": "Pont du Mont-Blanc"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.149630695581436,
+            46.204929684549285
+          ],
+          [
+            6.149562299251556,
+            46.205001152287224
+          ],
+          [
+            6.1492981016635895,
+            46.20528145342695
+          ],
+          [
+            6.148072332143784,
+            46.20656692212202
+          ]
+        ]
+      }
+    },
+    {
+      "id": 488649441,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "unclassified",
+        "surface": "paved",
+        "bike_lane": "left",
+        "len": 140,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "structure": "none",
+        "oneway": "true",
+        "class": "street",
+        "name": "Quai du Général-Guisan"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.14678755402565,
+            46.20468093897014
+          ],
+          [
+            6.146873384714127,
+            46.20466330397963
+          ],
+          [
+            6.147370934486389,
+            46.204561206554786
+          ],
+          [
+            6.147432625293732,
+            46.20454821232343
+          ],
+          [
+            6.148154139518738,
+            46.20439970660436
+          ],
+          [
+            6.1484988033771515,
+            46.204328238083974
+          ],
+          [
+            6.148553788661957,
+            46.20431710012437
+          ],
+          [
+            6.148596704006195,
+            46.20430874665317
+          ]
+        ]
+      }
+    },
+    {
+      "id": 42728371,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "unclassified",
+        "surface": "paved",
+        "len": 20,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "true",
+        "structure": "none",
+        "class": "street",
+        "name": "Rue du Rhône"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.150384396314621,
+            46.20354486275258
+          ],
+          [
+            6.1500705778598785,
+            46.20360797871436
+          ],
+          [
+            6.150023639202118,
+            46.20361818864251
+          ],
+          [
+            6.149967312812805,
+            46.203630254918835
+          ]
+        ]
+      }
+    },
+    {
+      "id": 2039464911,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "unclassified",
+        "surface": "paved",
+        "len": 90,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "true",
+        "structure": "none",
+        "class": "street",
+        "name": "Quai du Général-Guisan"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              6.150030344724655,
+              46.20439135314575
+            ],
+            [
+              6.150012910366058,
+              46.20427347642749
+            ],
+            [
+              6.149988770484924,
+              46.204227068201305
+            ],
+            [
+              6.149955242872238,
+              46.204184372598604
+            ],
+            [
+              6.149893552064896,
+              46.204143533295394
+            ],
+            [
+              6.149814426898956,
+              46.204122185465735
+            ],
+            [
+              6.149779558181763,
+              46.20411754463208
+            ],
+            [
+              6.14972859621048,
+              46.204109191130584
+            ],
+            [
+              6.149637401103973,
+              46.20409898129367
+            ]
+          ],
+          [
+            [
+              6.149637401103973,
+              46.20409898129367
+            ],
+            [
+              6.150026321411133,
+              46.204017302529905
+            ],
+            [
+              6.150073260068893,
+              46.204008020844554
+            ],
+            [
+              6.150226145982742,
+              46.20397739127165
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 8538671601,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "unclassified",
+        "surface": "paved",
+        "len": 70,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "true",
+        "structure": "none",
+        "class": "street",
+        "name": "Place du Port"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              6.150219440460205,
+              46.204196438750586
+            ],
+            [
+              6.150230169296265,
+              46.2041620966188
+            ],
+            [
+              6.150239557027817,
+              46.2041305389653
+            ],
+            [
+              6.150242239236832,
+              46.204097124959446
+            ],
+            [
+              6.150239557027817,
+              46.204047932080556
+            ],
+            [
+              6.150236874818802,
+              46.20400616450729
+            ],
+            [
+              6.150226145982742,
+              46.20397739127165
+            ],
+            [
+              6.1502207815647125,
+              46.20395975605527
+            ],
+            [
+              6.15021139383316,
+              46.20394119266351
+            ],
+            [
+              6.150195300579071,
+              46.20390592220187
+            ]
+          ],
+          [
+            [
+              6.150226145982742,
+              46.20397739127165
+            ],
+            [
+              6.150303930044174,
+              46.203993170144685
+            ],
+            [
+              6.15034282207489,
+              46.204008020844554
+            ],
+            [
+              6.150377690792084,
+              46.20402565604542
+            ],
+            [
+              6.15040585398674,
+              46.204040506736504
+            ],
+            [
+              6.150464862585068,
+              46.20409341229089
+            ],
+            [
+              6.150499731302261,
+              46.20415559945633
+            ],
+            [
+              6.150522530078888,
+              46.20422149921154
+            ]
+          ],
+          [
+            [
+              6.150226145982742,
+              46.20397739127165
+            ],
+            [
+              6.1505332589149475,
+              46.203921701095396
+            ],
+            [
+              6.150617748498917,
+              46.20390870671281
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 488647241,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "unclassified",
+        "surface": "paved",
+        "len": 40,
+        "iso_3166_2": "CH-GE",
+        "iso_3166_1": "CH",
+        "name_script": "Latin",
+        "oneway": "true",
+        "structure": "none",
+        "class": "street",
+        "name": "Place du Lac"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.148596704006195,
+            46.20430874665317
+          ],
+          [
+            6.14854171872139,
+            46.2042530568128
+          ],
+          [
+            6.148293614387512,
+            46.204047932080556
+          ],
+          [
+            6.148282885551453,
+            46.20403957856843
+          ],
+          [
+            6.148256063461304,
+            46.204008949013144
+          ]
+        ]
+      }
+    }
+  ],
+  "source_features": []
+}

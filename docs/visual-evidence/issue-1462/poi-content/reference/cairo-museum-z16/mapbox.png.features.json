@@ -1,0 +1,3223 @@
+{
+  "features": [
+    {
+      "id": 972294041,
+      "owner": "poi-label",
+      "properties": {
+        "type": "Place Of Worship",
+        "name_script": "Arabic",
+        "name_en": "Al Saraya",
+        "sizerank": 15,
+        "name_ar": "السرايا",
+        "category_en": "Mosque",
+        "maki": "religious-muslim",
+        "filterrank": 2,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-GZ",
+        "category_zh-Hans": "清真寺",
+        "class": "religion",
+        "name": "السرايا"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.228016763925552,
+          30.050360928086604
+        ]
+      }
+    },
+    {
+      "id": 972294011,
+      "owner": "poi-label",
+      "properties": {
+        "type": "Restaurant",
+        "name_script": "Arabic",
+        "name_en": "Al-Basha",
+        "sizerank": 15,
+        "name_ar": "الباشا",
+        "category_en": "Restaurant",
+        "maki": "restaurant",
+        "filterrank": 1,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-GZ",
+        "category_zh-Hans": "餐馆",
+        "class": "food_and_drink",
+        "name": "الباشا"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.227779388427734,
+          30.051835184844165
+        ]
+      }
+    },
+    {
+      "id": 971451911,
+      "owner": "poi-label",
+      "properties": {
+        "type": "Mall",
+        "name_script": "Arabic",
+        "name_en": "Ramses Mall",
+        "sizerank": 14,
+        "name_ar": "الملحق التجاري",
+        "category_en": "Mall",
+        "maki": "shop",
+        "filterrank": 1,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-C",
+        "category_zh-Hans": "购物中心",
+        "class": "store_like",
+        "name": "الملحق التجاري"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.232876926660538,
+          30.0512652188889
+        ]
+      }
+    },
+    {
+      "id": 7674189901,
+      "owner": "poi-label",
+      "properties": {
+        "type": "Restaurant",
+        "name_script": "Arabic",
+        "name_en": "Koshary Abou Tarek",
+        "sizerank": 16,
+        "name_ar": "كشري أبو طارق",
+        "category_en": "Restaurant",
+        "maki": "restaurant",
+        "filterrank": 2,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-C",
+        "category_zh-Hans": "餐馆",
+        "class": "food_and_drink",
+        "name": "كشري أبو طارق"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.237733066082,
+          30.05025064815561
+        ]
+      }
+    },
+    {
+      "id": 106776609450,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Hostel",
+        "name_script": "Latin",
+        "category_en": "Hostel",
+        "maki": "lodging",
+        "filterrank": 2,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-C",
+        "category_zh-Hans": "旅舍",
+        "class": "lodging",
+        "name": "Castle Hostel"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.236165314912796,
+          30.050643011982913
+        ]
+      }
+    },
+    {
+      "id": 67182461870,
+      "owner": "poi-label",
+      "properties": {
+        "type": "Supermarket",
+        "name_script": "Arabic",
+        "sizerank": 16,
+        "name_ar": "كشك سوبر جيت",
+        "category_en": "Supermarket",
+        "maki": "grocery",
+        "filterrank": 1,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-C",
+        "category_zh-Hans": "超市",
+        "class": "food_and_drink_stores",
+        "name": "كشك سوبر جيت"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.234263628721237,
+          30.05099938843162
+        ]
+      }
+    },
+    {
+      "id": 4950702901,
+      "owner": "poi-label",
+      "properties": {
+        "type": "Hotel",
+        "name_script": "Arabic",
+        "name_en": "Odeon",
+        "sizerank": 15,
+        "name_ar": "أوديون",
+        "category_en": "Hotel",
+        "maki": "lodging",
+        "filterrank": 1,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-C",
+        "category_zh-Hans": "宾馆",
+        "class": "lodging",
+        "name": "أوديون"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.238632947206497,
+          30.050552466622293
+        ]
+      }
+    },
+    {
+      "id": 120172271480,
+      "owner": "poi-label",
+      "properties": {
+        "type": "Tea",
+        "name_script": "Arabic",
+        "name_en": "Al Rifai",
+        "sizerank": 16,
+        "name_ar": "محمصة الرفاعي",
+        "category_en": "Shop",
+        "maki": "marker",
+        "filterrank": 2,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-GZ",
+        "category_zh-Hans": "商店",
+        "class": "store_like",
+        "name": "محمصة الرفاعي"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.22862160205841,
+          30.045683790342736
+        ]
+      }
+    },
+    {
+      "id": 5135865950,
+      "owner": "poi-label",
+      "properties": {
+        "type": "Restaurant",
+        "name_fr": "Chili's",
+        "sizerank": 16,
+        "name_ar": "تشيليز",
+        "name_script": "Latin",
+        "brand": "Chili's",
+        "category_en": "Restaurant",
+        "maki": "restaurant",
+        "category_zh-Hans": "餐馆",
+        "filterrank": 2,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-GZ",
+        "class": "food_and_drink",
+        "name": "Chili's"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.228466033935547,
+          30.048483830833774
+        ]
+      }
+    },
+    {
+      "id": 417217871,
+      "owner": "poi-label",
+      "properties": {
+        "type": "Restaurant",
+        "name_script": "Arabic",
+        "name_fr": "Nile City Boat",
+        "name_en": "Nile City Boat",
+        "sizerank": 15,
+        "name_ar": "نيل سيتي بوت",
+        "category_en": "Restaurant",
+        "maki": "restaurant",
+        "filterrank": 1,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-GZ",
+        "category_zh-Hans": "餐馆",
+        "class": "food_and_drink",
+        "name": "نيل سيتي بوت"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.228440552949905,
+          30.04826558839939
+        ]
+      }
+    },
+    {
+      "id": 3849646900,
+      "owner": "poi-label",
+      "properties": {
+        "type": "Restaurant",
+        "name_script": "Arabic",
+        "name_fr": "Blue Nile Boat",
+        "name_en": "Blue Nile Boat",
+        "sizerank": 16,
+        "name_ar": "بلو نيل بوت",
+        "category_en": "Restaurant",
+        "maki": "restaurant",
+        "filterrank": 1,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-GZ",
+        "category_zh-Hans": "餐馆",
+        "class": "food_and_drink",
+        "name": "بلو نيل بوت"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.22861087322235,
+          30.0454852770047
+        ]
+      }
+    },
+    {
+      "id": 107977298140,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Restaurant",
+        "name_script": "Latin",
+        "category_en": "Restaurant",
+        "maki": "restaurant",
+        "filterrank": 2,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-C",
+        "category_zh-Hans": "餐馆",
+        "class": "food_and_drink",
+        "name": "Bab El-Sharq"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.232569813728333,
+          30.046253788417957
+        ]
+      }
+    },
+    {
+      "id": 108731981,
+      "owner": "poi-label",
+      "properties": {
+        "type": "Museum",
+        "sizerank": 13,
+        "name_script": "Arabic",
+        "category_zh-Hans": "博物馆",
+        "category_en": "Museum",
+        "name_pt": "Museu Egípcio",
+        "filterrank": 1,
+        "name_it": "Museo di antichità egiziane",
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-C",
+        "maki": "museum",
+        "name_ar": "المتحف المصري",
+        "name_ru": "Египетский музей",
+        "name_de": "Ägyptisches Museum",
+        "name_es": "Museo Egipcio",
+        "name_en": "Egyptian Museum",
+        "name_fr": "Musée égyptien",
+        "name_ko": "이집트 박물관",
+        "class": "arts_and_entertainment",
+        "name": "المتحف المصري"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.233607828617096,
+          30.047796597711184
+        ]
+      }
+    },
+    {
+      "id": 309257851,
+      "owner": "poi-label",
+      "properties": {
+        "type": "Hotel",
+        "name_script": "Arabic",
+        "name_en": "The Nile Ritz-Carlton",
+        "sizerank": 13,
+        "name_ar": "النيل",
+        "category_en": "Hotel",
+        "maki": "lodging",
+        "category_zh-Hans": "宾馆",
+        "filterrank": 1,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-C",
+        "class": "lodging",
+        "name": "النيل"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.232557743787766,
+          30.045863728989588
+        ]
+      }
+    },
+    {
+      "id": 12622162030,
+      "owner": "poi-label",
+      "properties": {
+        "type": "Cafe",
+        "name_script": "Arabic",
+        "name_en": "Café Riche",
+        "sizerank": 16,
+        "name_ar": "قهوة ريش",
+        "category_en": "Cafe",
+        "maki": "cafe",
+        "filterrank": 2,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-C",
+        "category_zh-Hans": "咖啡馆",
+        "class": "food_and_drink",
+        "name": "قهوة ريش"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.238238662481308,
+          30.046967732500164
+        ]
+      }
+    },
+    {
+      "id": 3158705571,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 15,
+        "type": "Theatre",
+        "name_script": "Latin",
+        "category_en": "Theater",
+        "maki": "theatre",
+        "filterrank": 2,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-C",
+        "category_zh-Hans": "剧院",
+        "class": "arts_and_entertainment",
+        "name": "Rawabet Townhouse Theater"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.23798117041588,
+          30.04945314647334
+        ]
+      }
+    },
+    {
+      "id": 97214008430,
+      "owner": "poi-label",
+      "properties": {
+        "type": "Hotel",
+        "name_script": "Latin",
+        "name_en": "Almadiafa",
+        "sizerank": 16,
+        "name_ar": "المضيفه",
+        "category_en": "Hotel",
+        "maki": "lodging",
+        "filterrank": 2,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-C",
+        "category_zh-Hans": "宾馆",
+        "class": "lodging",
+        "name": "Almadiafa – المضيفه"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.235304325819016,
+          30.047264917463067
+        ]
+      }
+    },
+    {
+      "id": 128966770010,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Restaurant",
+        "name_script": "Arabic",
+        "category_en": "Restaurant",
+        "maki": "restaurant",
+        "filterrank": 2,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-C",
+        "category_zh-Hans": "餐馆",
+        "class": "food_and_drink",
+        "name": "سعد الحرامي"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.236574351787567,
+          30.049287144587908
+        ]
+      }
+    },
+    {
+      "id": 109336402060,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Hotel",
+        "name_script": "Latin",
+        "category_en": "Hotel",
+        "maki": "lodging",
+        "filterrank": 1,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-C",
+        "category_zh-Hans": "宾馆",
+        "class": "lodging",
+        "name": "Tahrir Plaza Suites Hotel"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.234863102436066,
+          30.048647512344004
+        ]
+      }
+    },
+    {
+      "id": 983283661,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 15,
+        "type": "Theatre",
+        "name_script": "Latin",
+        "name_fr": "Théâtre Qasr el Nil",
+        "name_de": "Theater Qasr el Nil",
+        "category_en": "Theater",
+        "maki": "theatre",
+        "filterrank": 1,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-C",
+        "category_zh-Hans": "剧院",
+        "class": "arts_and_entertainment",
+        "name": "Qasr el Nil Theatre"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.236826479434967,
+          30.04735894845706
+        ]
+      }
+    },
+    {
+      "id": 93064457680,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Hotel",
+        "name_script": "Latin",
+        "category_en": "Hotel",
+        "maki": "lodging",
+        "filterrank": 1,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-C",
+        "category_zh-Hans": "宾馆",
+        "class": "lodging",
+        "name": "Suisse Hotel"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.23734012246132,
+          30.04826791012995
+        ]
+      }
+    },
+    {
+      "id": 982469721,
+      "owner": "poi-label",
+      "properties": {
+        "type": "Place Of Worship",
+        "name_script": "Arabic",
+        "name_fr": "Cathédrale Arménienne Catholique de l'Annonciation",
+        "name_es": "Catedral Armenia Católica de la Anubciación",
+        "name_en": "Armenian Catholic Cathedral of Annunciation",
+        "sizerank": 15,
+        "name_ar": "كنيسة البشارة الأرمنية الكسليكية",
+        "category_en": "Church",
+        "maki": "religious-christian",
+        "filterrank": 1,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-C",
+        "category_zh-Hans": "基督教堂",
+        "class": "religion",
+        "name": "كنيسة البشارة الأرمنية الكسليكية"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.239546239376068,
+          30.046795922036736
+        ]
+      }
+    },
+    {
+      "id": 70149336880,
+      "owner": "poi-label",
+      "properties": {
+        "type": "Hotel",
+        "name_en": "NEW ONE SEASON",
+        "sizerank": 16,
+        "name_ar": "العبد للحلويات",
+        "name_script": "Arabic",
+        "brand": "عمارة حلواني العبد",
+        "category_en": "Hotel",
+        "maki": "lodging",
+        "category_zh-Hans": "宾馆",
+        "filterrank": 2,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-C",
+        "class": "lodging",
+        "name": "فندق نيو وان سيزون"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.240019649267197,
+          30.0495901268406
+        ]
+      }
+    },
+    {
+      "id": 7689772051,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 15,
+        "type": "Hotel",
+        "name_script": "Latin",
+        "category_en": "Hotel",
+        "maki": "lodging",
+        "filterrank": 2,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-C",
+        "category_zh-Hans": "宾馆",
+        "class": "lodging",
+        "name": "Amin Hotel"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.239683032035828,
+          30.04537615254418
+        ]
+      }
+    },
+    {
+      "id": 7689807161,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 15,
+        "type": "Hotel",
+        "name_script": "Latin",
+        "category_en": "Hotel",
+        "maki": "lodging",
+        "filterrank": 1,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-C",
+        "category_zh-Hans": "宾馆",
+        "class": "lodging",
+        "name": "Capital Hotel"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.239768862724304,
+          30.048242371090822
+        ]
+      }
+    },
+    {
+      "id": 979416951,
+      "owner": "poi-label",
+      "properties": {
+        "type": "Hotel",
+        "name_en": "Novotel Hotel Cairo El Borg",
+        "sizerank": 14,
+        "name_ar": "نوفوتيل",
+        "name_script": "Arabic",
+        "brand": "Novotel",
+        "category_en": "Hotel",
+        "maki": "lodging",
+        "category_zh-Hans": "宾馆",
+        "filterrank": 1,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-GZ",
+        "class": "lodging",
+        "name": "نوفوتيل"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.226588487625122,
+          30.044570485253843
+        ]
+      }
+    },
+    {
+      "id": 47640073250,
+      "owner": "poi-label",
+      "properties": {
+        "type": "Monument",
+        "name_script": "Arabic",
+        "name_ko": "카스르엘나일교",
+        "name_en": "Qasr El-Nile Bridge",
+        "sizerank": 16,
+        "name_ar": "كوبري قصر النيل",
+        "category_en": "Monument",
+        "maki": "monument",
+        "category_zh-Hans": "纪念堂",
+        "filterrank": 1,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-C",
+        "class": "historic",
+        "name": "كوبري قصر النيل"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.229833960533142,
+          30.043689351709645
+        ]
+      }
+    },
+    {
+      "id": 141106152020,
+      "owner": "poi-label",
+      "properties": {
+        "sizerank": 16,
+        "type": "Hotel",
+        "name_script": "Latin",
+        "category_en": "Hotel",
+        "maki": "lodging",
+        "filterrank": 2,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-C",
+        "category_zh-Hans": "宾馆",
+        "class": "lodging",
+        "name": "Royal Town Hotel"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.236456334590912,
+          30.045005825021306
+        ]
+      }
+    },
+    {
+      "id": 309257271,
+      "owner": "poi-label",
+      "properties": {
+        "type": "Square",
+        "name_script": "Arabic",
+        "name_ko": "타흐리르 광장",
+        "name_en": "El Tahrir Square",
+        "sizerank": 14,
+        "name_ar": "ميدان التحرير",
+        "category_en": "Square",
+        "maki": "marker",
+        "category_zh-Hans": "广场",
+        "filterrank": 1,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-C",
+        "class": "place_like",
+        "name": "ميدان التحرير"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.235745549201965,
+          30.044416084290063
+        ]
+      }
+    },
+    {
+      "id": 249429281,
+      "owner": "poi-label",
+      "properties": {
+        "type": "University",
+        "name_script": "Arabic",
+        "name_en": "AUC Library",
+        "sizerank": 13,
+        "name_ar": "مكتبة الجامعة الأمريكية",
+        "category_en": "University",
+        "maki": "college",
+        "category_zh-Hans": "大学",
+        "filterrank": 1,
+        "iso_3166_1": "EG",
+        "iso_3166_2": "EG-C",
+        "class": "education",
+        "name": "مكتبة الجامعة الأمريكية"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.23895615339279,
+          30.044096833413718
+        ]
+      }
+    },
+    {
+      "id": 8022856991,
+      "owner": "waterway-label",
+      "properties": {
+        "sizerank": 16,
+        "name_zh-Hant": "尼羅河",
+        "name_script": "Arabic",
+        "name_ru": "Нил",
+        "name_zh-Hans": "尼罗河",
+        "name_pt": "Rio Nilo",
+        "name_ko": "나일강",
+        "name_de": "Nil",
+        "name_es": "Río Nilo",
+        "filterrank": 1,
+        "disputed": "false",
+        "iso_3166_2": "EG-GZ",
+        "iso_3166_1": "EG",
+        "name_fr": "Nil",
+        "name_ar": "نهر النيل",
+        "name_en": "Nile",
+        "class": "river",
+        "name": "نهر النيل",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            31.22976690530777,
+            30.048887810241283
+          ],
+          [
+            31.229549646377563,
+            30.05006723494577
+          ],
+          [
+            31.227548718452454,
+            30.056019864970168
+          ]
+        ]
+      }
+    },
+    {
+      "id": 8022856991,
+      "owner": "waterway-label",
+      "properties": {
+        "sizerank": 16,
+        "name_zh-Hant": "尼羅河",
+        "name_script": "Arabic",
+        "name_ru": "Нил",
+        "name_zh-Hans": "尼罗河",
+        "name_pt": "Rio Nilo",
+        "name_ko": "나일강",
+        "name_de": "Nil",
+        "name_es": "Río Nilo",
+        "filterrank": 1,
+        "disputed": "false",
+        "iso_3166_2": "EG-GZ",
+        "iso_3166_1": "EG",
+        "name_fr": "Nil",
+        "name_ar": "نهر النيل",
+        "name_en": "Nile",
+        "class": "river",
+        "name": "نهر النيل",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            31.2299345433712,
+            30.044132821745777
+          ],
+          [
+            31.229978799819946,
+            30.044652909729976
+          ],
+          [
+            31.230000257492065,
+            30.047624788685454
+          ],
+          [
+            31.229549646377563,
+            30.05006723494577
+          ],
+          [
+            31.22914731502533,
+            30.0512652188889
+          ]
+        ]
+      }
+    },
+    {
+      "id": 8022856991,
+      "owner": "waterway-label",
+      "properties": {
+        "sizerank": 16,
+        "name_zh-Hant": "尼羅河",
+        "name_script": "Arabic",
+        "name_ru": "Нил",
+        "name_zh-Hans": "尼罗河",
+        "name_pt": "Rio Nilo",
+        "name_ko": "나일강",
+        "name_de": "Nil",
+        "name_es": "Río Nilo",
+        "filterrank": 1,
+        "disputed": "false",
+        "iso_3166_2": "EG-GZ",
+        "iso_3166_1": "EG",
+        "name_fr": "Nil",
+        "name_ar": "نهر النيل",
+        "name_en": "Nile",
+        "class": "river",
+        "name": "نهر النيل",
+        "worldview": "all"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            31.228325217962265,
+            30.039377605001363
+          ],
+          [
+            31.229209005832672,
+            30.04081255284885
+          ],
+          [
+            31.22967302799225,
+            30.04180632332003
+          ],
+          [
+            31.229817867279053,
+            30.04276757779607
+          ],
+          [
+            31.229978799819946,
+            30.044652909729976
+          ],
+          [
+            31.22999221086502,
+            30.046510344526013
+          ]
+        ]
+      }
+    },
+    {
+      "id": 6907151991,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "name_ar": "شارع الغلال",
+        "len": 380,
+        "iso_3166_2": "EG-C",
+        "iso_3166_1": "EG",
+        "name_en": "Al Ghelal St",
+        "name_script": "Arabic",
+        "structure": "none",
+        "oneway": "true",
+        "class": "street",
+        "name": "شارع الغلال"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            31.23283937573433,
+            30.050115990389116
+          ],
+          [
+            31.23258724808693,
+            30.050432900185868
+          ],
+          [
+            31.23252958059311,
+            30.05050487223285
+          ],
+          [
+            31.232447773218155,
+            30.050601221826767
+          ],
+          [
+            31.2322399020195,
+            30.050842675819
+          ],
+          [
+            31.23215138912201,
+            30.050943668419976
+          ],
+          [
+            31.232002526521683,
+            30.05111547168849
+          ],
+          [
+            31.23192608356476,
+            30.051204855703574
+          ],
+          [
+            31.231714189052582,
+            30.051449790708077
+          ],
+          [
+            31.23146340250969,
+            30.05175508799354
+          ],
+          [
+            31.23115763068199,
+            30.05212771192211
+          ],
+          [
+            31.23095914721489,
+            30.052378448729726
+          ],
+          [
+            31.230862587690353,
+            30.052475957316815
+          ],
+          [
+            31.230819672346115,
+            30.05252471157435
+          ],
+          [
+            31.230751276016235,
+            30.052586234769834
+          ],
+          [
+            31.230635941028595,
+            30.052641953857304
+          ],
+          [
+            31.230500489473343,
+            30.05270231616666
+          ],
+          [
+            31.230414658784866,
+            30.05273249730756
+          ],
+          [
+            31.23032346367836,
+            30.052756874376186
+          ]
+        ]
+      }
+    },
+    {
+      "id": 291813361,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "primary",
+        "name_ar": "شارع الجلاء",
+        "len": 3130,
+        "iso_3166_2": "EG-C",
+        "iso_3166_1": "EG",
+        "name_en": "Al Gala’ St",
+        "name_script": "Arabic",
+        "structure": "none",
+        "oneway": "true",
+        "class": "primary",
+        "name": "شارع الجلاء"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              31.23876839876175,
+              30.054979805647477
+            ],
+            [
+              31.23845860362053,
+              30.054693090944568
+            ],
+            [
+              31.238029450178146,
+              30.054268240910957
+            ],
+            [
+              31.237867176532745,
+              30.054108051080775
+            ],
+            [
+              31.237566769123077,
+              30.05378650984248
+            ],
+            [
+              31.236941814422607,
+              30.053203786237347
+            ],
+            [
+              31.236810386180878,
+              30.053095831089408
+            ],
+            [
+              31.236733943223953,
+              30.053023860925393
+            ],
+            [
+              31.235844790935516,
+              30.05219387864132
+            ],
+            [
+              31.235179603099823,
+              30.051562390957145
+            ],
+            [
+              31.23475581407547,
+              30.051142170818324
+            ],
+            [
+              31.234475523233414,
+              30.050933220914317
+            ],
+            [
+              31.234171092510223,
+              30.050720788059962
+            ],
+            [
+              31.234095990657806,
+              30.050668550403017
+            ],
+            [
+              31.233959197998047,
+              30.05056987919805
+            ]
+          ],
+          [
+            [
+              31.239127814769745,
+              30.054979805647477
+            ],
+            [
+              31.237940937280655,
+              30.0538224946539
+            ],
+            [
+              31.237299889326096,
+              30.053204947044776
+            ],
+            [
+              31.23678758740425,
+              30.052733658120488
+            ],
+            [
+              31.23626857995987,
+              30.052224059937174
+            ],
+            [
+              31.236245781183243,
+              30.052204326014007
+            ],
+            [
+              31.236212253570557,
+              30.05219387864132
+            ],
+            [
+              31.235844790935516,
+              30.05219387864132
+            ]
+          ],
+          [
+            [
+              31.234313249588013,
+              30.050554788299223
+            ],
+            [
+              31.23434141278267,
+              30.050620956069366
+            ],
+            [
+              31.234432607889175,
+              30.050741683114992
+            ],
+            [
+              31.23459219932556,
+              30.050882144204053
+            ],
+            [
+              31.234816163778305,
+              30.05108645088704
+            ],
+            [
+              31.235264092683792,
+              30.051513636225835
+            ],
+            [
+              31.235867589712143,
+              30.05212074700171
+            ],
+            [
+              31.23591184616089,
+              30.052141641761395
+            ],
+            [
+              31.23596280813217,
+              30.052153249959318
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 3058783621,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "secondary",
+        "name_ar": "شارع رمسيس",
+        "len": 400,
+        "iso_3166_2": "EG-C",
+        "iso_3166_1": "EG",
+        "name_en": "Ramsis St",
+        "name_script": "Arabic",
+        "structure": "none",
+        "oneway": "true",
+        "class": "secondary",
+        "name": "شارع رمسيس"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            31.23528555035591,
+            30.04992793354677
+          ],
+          [
+            31.235384792089462,
+            30.05003240961439
+          ],
+          [
+            31.235681176185608,
+            30.05036441060875
+          ],
+          [
+            31.23596951365471,
+            30.050740522278744
+          ],
+          [
+            31.236391961574554,
+            30.051178156590623
+          ],
+          [
+            31.23661458492279,
+            30.051409161720812
+          ],
+          [
+            31.236744672060013,
+            30.051544978555853
+          ],
+          [
+            31.236784905195236,
+            30.051591411619142
+          ],
+          [
+            31.236817091703415,
+            30.051637844660647
+          ],
+          [
+            31.23688817024231,
+            30.05172954985366
+          ]
+        ]
+      }
+    },
+    {
+      "id": 249429941,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "tertiary",
+        "surface": "paved",
+        "name_ar": "شارع شمبليون",
+        "iso_3166_1": "EG",
+        "len": 980,
+        "name_de": "Champollion-Straße",
+        "iso_3166_2": "EG-C",
+        "name_en": "Champollion St",
+        "name_script": "Arabic",
+        "structure": "none",
+        "oneway": "true",
+        "class": "tertiary",
+        "name": "شارع شمبليون"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            31.239795684814453,
+            30.052286744137604
+          ],
+          [
+            31.23953953385353,
+            30.052046454487126
+          ],
+          [
+            31.239453703165054,
+            30.051954749587566
+          ],
+          [
+            31.23901516199112,
+            30.05146604229833
+          ],
+          [
+            31.238717436790466,
+            30.05113520582863
+          ],
+          [
+            31.238476037979126,
+            30.050841514983887
+          ],
+          [
+            31.238262802362442,
+            30.05059193512298
+          ],
+          [
+            31.238126009702682,
+            30.050415487586008
+          ],
+          [
+            31.237944960594177,
+            30.050184480138043
+          ],
+          [
+            31.237778663635254,
+            30.049992940890675
+          ],
+          [
+            31.23775988817215,
+            30.04997204567765
+          ],
+          [
+            31.237720996141434,
+            30.04992793354677
+          ]
+        ]
+      }
+    },
+    {
+      "id": 286786961,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "name_ar": "شارع معروف",
+        "len": 380,
+        "iso_3166_2": "EG-C",
+        "iso_3166_1": "EG",
+        "name_en": "Maarouf St",
+        "name_script": "Arabic",
+        "structure": "none",
+        "oneway": "true",
+        "class": "street",
+        "name": "شارع معروف"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            31.236391961574554,
+            30.051178156590623
+          ],
+          [
+            31.23650997877121,
+            30.051101541704867
+          ],
+          [
+            31.237079948186874,
+            30.05073355726077
+          ],
+          [
+            31.237298548221588,
+            30.050598900150902
+          ],
+          [
+            31.237515807151794,
+            30.050459599499717
+          ],
+          [
+            31.237629801034927,
+            30.050386466579425
+          ],
+          [
+            31.237944960594177,
+            30.050184480138043
+          ],
+          [
+            31.2383633852005,
+            30.04992793354677
+          ]
+        ]
+      }
+    },
+    {
+      "id": 7117201021,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "name_ar": "شارع السياس",
+        "len": 100,
+        "iso_3166_2": "EG-C",
+        "iso_3166_1": "EG",
+        "name_en": "Al Sias St",
+        "name_script": "Arabic",
+        "structure": "none",
+        "oneway": "false",
+        "class": "street",
+        "name": "شارع السياس"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            31.23661458492279,
+            30.051409161720812
+          ],
+          [
+            31.237488985061646,
+            30.050822941620552
+          ]
+        ]
+      }
+    },
+    {
+      "id": 287096421,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "tertiary",
+        "name_ar": "شارع طلعت حرب",
+        "len": 740,
+        "iso_3166_2": "EG-C",
+        "iso_3166_1": "EG",
+        "name_en": "Talaat Harb St",
+        "name_script": "Arabic",
+        "structure": "none",
+        "oneway": "true",
+        "class": "tertiary",
+        "name": "شارع طلعت حرب"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            31.242385357618332,
+            30.053419696180185
+          ],
+          [
+            31.242245882749557,
+            30.053166640393272
+          ],
+          [
+            31.242236495018005,
+            30.053152710698157
+          ],
+          [
+            31.2421452999115,
+            30.053026182544414
+          ],
+          [
+            31.24188780784607,
+            30.052645436299215
+          ],
+          [
+            31.241757720708847,
+            30.052452740995264
+          ],
+          [
+            31.24160885810852,
+            30.05223915058164
+          ],
+          [
+            31.241101920604706,
+            30.051428895802417
+          ],
+          [
+            31.241009384393692,
+            30.05129540046775
+          ],
+          [
+            31.240930259227753,
+            30.051171191603473
+          ],
+          [
+            31.240514516830444,
+            30.050564075006463
+          ],
+          [
+            31.24043270945549,
+            30.05042245262632
+          ],
+          [
+            31.240299940109253,
+            30.050228592154653
+          ],
+          [
+            31.2400920689106,
+            30.04992793354677
+          ]
+        ]
+      }
+    },
+    {
+      "id": 5645611481,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "tertiary",
+        "surface": "paved",
+        "name_ar": "شارع الموسيقار محمد عبد الوهاب",
+        "len": 1390,
+        "iso_3166_2": "EG-GZ",
+        "iso_3166_1": "EG",
+        "name_en": "Al Moseqare Mohamed Abd Al Wahab St",
+        "name_script": "Arabic",
+        "structure": "none",
+        "oneway": "false",
+        "class": "tertiary",
+        "name": "شارع الموسيقار محمد عبد الوهاب"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            31.227291226387024,
+            30.050225109627746
+          ],
+          [
+            31.22729793190956,
+            30.05017751508099
+          ],
+          [
+            31.22733011841774,
+            30.049974367368193
+          ],
+          [
+            31.22735559940338,
+            30.049840870072913
+          ],
+          [
+            31.227385103702545,
+            30.04970737259768
+          ],
+          [
+            31.22741863131523,
+            30.049575035792472
+          ],
+          [
+            31.2274307012558,
+            30.049533245185657
+          ],
+          [
+            31.227444112300873,
+            30.049485650306423
+          ],
+          [
+            31.22745618224144,
+            30.049442698810424
+          ],
+          [
+            31.227484345436096,
+            30.049355634910015
+          ],
+          [
+            31.227511167526245,
+            30.049268570933066
+          ],
+          [
+            31.22755140066147,
+            30.049111855581685
+          ],
+          [
+            31.22758224606514,
+            30.048952818267907
+          ],
+          [
+            31.227605044841766,
+            30.048792619839617
+          ],
+          [
+            31.227701604366302,
+            30.048307379541072
+          ],
+          [
+            31.22772440314293,
+            30.048121640998602
+          ],
+          [
+            31.227736473083496,
+            30.047985819468963
+          ],
+          [
+            31.227784752845764,
+            30.04742744011253
+          ],
+          [
+            31.227788776159286,
+            30.047375200718562
+          ],
+          [
+            31.227794140577316,
+            30.047311352532972
+          ],
+          [
+            31.22784912586212,
+            30.046479000602744
+          ],
+          [
+            31.2278451025486,
+            30.046407025630288
+          ],
+          [
+            31.227841079235077,
+            30.046368716349434
+          ],
+          [
+            31.227824985980988,
+            30.046280488858372
+          ],
+          [
+            31.227808892726898,
+            30.046213157299164
+          ],
+          [
+            31.227790117263794,
+            30.046157434594875
+          ],
+          [
+            31.227767318487167,
+            30.04611448165558
+          ],
+          [
+            31.227737814188004,
+            30.04607617226158
+          ],
+          [
+            31.227701604366302,
+            30.04604018463553
+          ],
+          [
+            31.227654665708542,
+            30.04600535788822
+          ],
+          [
+            31.227601021528244,
+            30.045976335589415
+          ],
+          [
+            31.227542012929916,
+            30.045955439529024
+          ],
+          [
+            31.22748166322708,
+            30.045942669712176
+          ],
+          [
+            31.22740387916565,
+            30.045936865249416
+          ],
+          [
+            31.227033734321594,
+            30.045929899893665
+          ]
+        ]
+      }
+    },
+    {
+      "id": 6697026861,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "tertiary",
+        "surface": "paved",
+        "name_ar": "شارع الجزيره",
+        "len": 2360,
+        "iso_3166_2": "EG-GZ",
+        "iso_3166_1": "EG",
+        "name_en": "Al Gezira St",
+        "name_script": "Arabic",
+        "structure": "none",
+        "oneway": "true",
+        "class": "tertiary",
+        "name": "شارع الجزيره"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              31.226561665534973,
+              30.049655134406223
+            ],
+            [
+              31.22650533914566,
+              30.049828100756997
+            ],
+            [
+              31.226503998041153,
+              30.050225109627746
+            ]
+          ],
+          [
+            [
+              31.227090060710907,
+              30.045172994983616
+            ],
+            [
+              31.227033734321594,
+              30.045929899893665
+            ],
+            [
+              31.227033734321594,
+              30.04600535788822
+            ],
+            [
+              31.226965337991714,
+              30.04653240135498
+            ],
+            [
+              31.226918399333954,
+              30.04674252142658
+            ],
+            [
+              31.226896941661835,
+              30.04685280526371
+            ],
+            [
+              31.22685804963112,
+              30.04703622442615
+            ],
+            [
+              31.226711869239807,
+              30.047618984321304
+            ],
+            [
+              31.22662201523781,
+              30.048019484651775
+            ],
+            [
+              31.226580440998077,
+              30.048309701270654
+            ],
+            [
+              31.226564347743988,
+              30.04855348257331
+            ],
+            [
+              31.22656300663948,
+              30.049478685200242
+            ],
+            [
+              31.22656300663948,
+              30.049609861284665
+            ],
+            [
+              31.226561665534973,
+              30.049655134406223
+            ],
+            [
+              31.226565688848495,
+              30.050225109627746
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 229481171,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "motorway",
+        "surface": "paved",
+        "name_script": "Arabic",
+        "name_fr": "Pont du 6 Octobre",
+        "name_en": "6th October Bridge",
+        "name_es": "Puente del 6 de Octubre",
+        "name_de": "Brücke des 6. Oktober",
+        "name_ar": "كوبري 6 أكتوبر",
+        "structure": "bridge",
+        "oneway": "true",
+        "iso_3166_1": "EG",
+        "len": 4050,
+        "iso_3166_2": "EG-C",
+        "layer": 1,
+        "class": "motorway",
+        "name": "كوبري 6 أكتوبر"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            31.228466033935547,
+            30.049068903923583
+          ],
+          [
+            31.22883751988411,
+            30.049071225635302
+          ],
+          [
+            31.23074322938919,
+            30.0491431986718
+          ],
+          [
+            31.231801360845566,
+            30.04918266773413
+          ],
+          [
+            31.232808530330658,
+            30.049237227882614
+          ],
+          [
+            31.233135759830475,
+            30.049283662027875
+          ],
+          [
+            31.23342677950859,
+            30.049346348089443
+          ],
+          [
+            31.23366817831993,
+            30.049436894552784
+          ],
+          [
+            31.233854591846466,
+            30.04952395838174
+          ],
+          [
+            31.234019547700882,
+            30.04962030892996
+          ],
+          [
+            31.234179139137268,
+            30.04974219804336
+          ],
+          [
+            31.234302520751953,
+            30.04985363938721
+          ]
+        ]
+      }
+    },
+    {
+      "id": 109509881,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "trunk",
+        "name_ar": "شارع كورنيش النيل",
+        "iso_3166_1": "EG",
+        "len": 290,
+        "name_de": "Corniche el-Nil",
+        "iso_3166_2": "EG-C",
+        "name_en": "Kornish Al Nil St",
+        "name_script": "Arabic",
+        "structure": "none",
+        "oneway": "true",
+        "class": "trunk",
+        "name": "شارع كورنيش النيل"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            31.23146742582321,
+            30.04675761290629
+          ],
+          [
+            31.231486201286316,
+            30.0464546219889
+          ],
+          [
+            31.231498271226883,
+            30.046239857750535
+          ],
+          [
+            31.231523752212524,
+            30.04597749648154
+          ],
+          [
+            31.231545209884644,
+            30.04576853568166
+          ],
+          [
+            31.231555938720703,
+            30.045629228236834
+          ],
+          [
+            31.23151570558548,
+            30.04534016466384
+          ],
+          [
+            31.231514364480972,
+            30.045172994983616
+          ]
+        ]
+      }
+    },
+    {
+      "id": 5107359481,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "primary",
+        "name_ar": "ميدان عبد المنعم رياض",
+        "iso_3166_1": "EG",
+        "len": 260,
+        "iso_3166_2": "EG-C",
+        "name_en": "Abdul Moneim Riad Sq",
+        "name_fr": "Pl. Abdel-Moneim Riad",
+        "name_script": "Arabic",
+        "structure": "none",
+        "oneway": "true",
+        "class": "primary",
+        "name": "ميدان عبد المنعم رياض"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            31.23334363102913,
+            30.050225109627746
+          ],
+          [
+            31.233181357383728,
+            30.050099738577345
+          ],
+          [
+            31.233061999082565,
+            30.049998745115758
+          ],
+          [
+            31.232993602752686,
+            30.049918646779886
+          ],
+          [
+            31.232919842004776,
+            30.049826939910005
+          ],
+          [
+            31.232871562242508,
+            30.049713176839504
+          ],
+          [
+            31.232846081256866,
+            30.04958200089189
+          ],
+          [
+            31.232858151197433,
+            30.0495251192323
+          ],
+          [
+            31.232878267765045,
+            30.049435733701216
+          ],
+          [
+            31.232919842004776,
+            30.049346348089443
+          ],
+          [
+            31.23297080397606,
+            30.049274375200568
+          ],
+          [
+            31.23310089111328,
+            30.049106051304648
+          ],
+          [
+            31.233224272727966,
+            30.049014343682344
+          ],
+          [
+            31.233370453119278,
+            30.048945853124238
+          ],
+          [
+            31.23389482498169,
+            30.048711359668275
+          ],
+          [
+            31.23398333787918,
+            30.04867305127867
+          ],
+          [
+            31.23410001397133,
+            30.048608043068427
+          ]
+        ]
+      }
+    },
+    {
+      "id": 108731951,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "structure": "none",
+        "oneway": "false",
+        "access": "restricted",
+        "iso_3166_2": "EG-C",
+        "name_ar": "شارع وسيم حسن",
+        "iso_3166_1": "EG",
+        "len": 250,
+        "name_de": "Wasim-Hasan-Str.",
+        "name_en": "Wasem Hassn St",
+        "name_script": "Arabic",
+        "class": "street_limited",
+        "name": "شارع وسيم حسن"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            31.234302520751953,
+            30.04675064760825
+          ],
+          [
+            31.23428374528885,
+            30.04674832584213
+          ],
+          [
+            31.234039664268494,
+            30.04674019966029
+          ],
+          [
+            31.23374193906784,
+            30.046729751711197
+          ],
+          [
+            31.233633309602737,
+            30.046723947294552
+          ],
+          [
+            31.233602464199066,
+            30.04672278641121
+          ],
+          [
+            31.233088821172714,
+            30.046703051391887
+          ],
+          [
+            31.232789754867554,
+            30.046703051391887
+          ],
+          [
+            31.231834888458252,
+            30.046707694926184
+          ]
+        ]
+      }
+    },
+    {
+      "id": 3058783621,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "secondary",
+        "name_ar": "شارع رمسيس",
+        "len": 260,
+        "iso_3166_2": "EG-C",
+        "iso_3166_1": "EG",
+        "name_en": "Ramsis St",
+        "name_script": "Arabic",
+        "structure": "none",
+        "oneway": "true",
+        "class": "secondary",
+        "name": "شارع رمسيس"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            31.234847009181976,
+            30.04880306757113
+          ],
+          [
+            31.234789341688156,
+            30.0488251238895
+          ],
+          [
+            31.234738379716873,
+            30.048875040802486
+          ],
+          [
+            31.23472899198532,
+            30.048983000551473
+          ],
+          [
+            31.23472899198532,
+            30.049237227882614
+          ],
+          [
+            31.234762519598007,
+            30.049348669794668
+          ],
+          [
+            31.23484432697296,
+            30.04947636349806
+          ],
+          [
+            31.234952956438065,
+            30.049605217886423
+          ],
+          [
+            31.235111206769943,
+            30.049757289066008
+          ],
+          [
+            31.23528555035591,
+            30.04992793354677
+          ],
+          [
+            31.235384792089462,
+            30.05003240961439
+          ],
+          [
+            31.235556453466415,
+            30.050225109627746
+          ]
+        ]
+      }
+    },
+    {
+      "id": 108731921,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "tertiary",
+        "structure": "none",
+        "oneway": "true",
+        "name_ar": "شارع قصر النيل",
+        "iso_3166_1": "EG",
+        "len": 390,
+        "name_de": "Str. Qasr el Nil",
+        "iso_3166_2": "EG-C",
+        "name_en": "Kasr El Nil St",
+        "name_fr": "Rue Qasr el Nil",
+        "name_script": "Arabic",
+        "class": "tertiary",
+        "name": "شارع قصر النيل"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            31.238429099321365,
+            30.047594605988024
+          ],
+          [
+            31.23733878135681,
+            30.0471871386722
+          ],
+          [
+            31.236842572689056,
+            30.047025776508306
+          ],
+          [
+            31.23629540205002,
+            30.046847000854285
+          ],
+          [
+            31.23612105846405,
+            30.04679708291924
+          ],
+          [
+            31.235870271921158,
+            30.046713499343767
+          ],
+          [
+            31.23517155647278,
+            30.046531240469363
+          ],
+          [
+            31.234896630048752,
+            30.04645926553485
+          ],
+          [
+            31.234743744134903,
+            30.04641631272645
+          ],
+          [
+            31.23461902141571,
+            30.04638032522398
+          ]
+        ]
+      }
+    },
+    {
+      "id": 108731931,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "tertiary",
+        "name_ar": "شارع طلعت حرب",
+        "iso_3166_1": "EG",
+        "len": 390,
+        "name_de": "Tal'at Harb",
+        "iso_3166_2": "EG-C",
+        "name_en": "Talaat Harb St",
+        "name_script": "Arabic",
+        "structure": "none",
+        "oneway": "true",
+        "class": "tertiary",
+        "name": "شارع طلعت حرب"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            31.23696729540825,
+            30.045172994983616
+          ],
+          [
+            31.237314641475677,
+            30.045688433924823
+          ],
+          [
+            31.237456798553467,
+            30.045909003823482
+          ],
+          [
+            31.23801738023758,
+            30.046773865266474
+          ],
+          [
+            31.238214522600174,
+            30.04706756817309
+          ],
+          [
+            31.238435804843903,
+            30.047501736092002
+          ],
+          [
+            31.238466650247574,
+            30.047560940660787
+          ]
+        ]
+      }
+    },
+    {
+      "id": 287096421,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "tertiary",
+        "name_ar": "شارع طلعت حرب",
+        "len": 740,
+        "iso_3166_2": "EG-C",
+        "iso_3166_1": "EG",
+        "name_en": "Talaat Harb St",
+        "name_script": "Arabic",
+        "structure": "none",
+        "oneway": "true",
+        "class": "tertiary",
+        "name": "شارع طلعت حرب"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            31.239795684814453,
+            30.049472880944705
+          ],
+          [
+            31.23976081609726,
+            30.04941832092601
+          ],
+          [
+            31.239578425884247,
+            30.049133911831333
+          ],
+          [
+            31.239475160837173,
+            30.048978357123815
+          ],
+          [
+            31.23933970928192,
+            30.048774046092063
+          ],
+          [
+            31.239118427038193,
+            30.048439718040058
+          ],
+          [
+            31.238765716552734,
+            30.047906880374683
+          ],
+          [
+            31.238732188940048,
+            30.047856962973782
+          ],
+          [
+            31.23852699995041,
+            30.047663097480523
+          ]
+        ]
+      }
+    },
+    {
+      "id": 286759591,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "name_ar": "شارع هدي شعراوي",
+        "len": 410,
+        "iso_3166_2": "EG-C",
+        "iso_3166_1": "EG",
+        "name_en": "Hoda Shaarawy St",
+        "name_script": "Arabic",
+        "structure": "none",
+        "oneway": "true",
+        "class": "street",
+        "name": "شارع هدي شعراوي"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            31.23801738023758,
+            30.046773865266474
+          ],
+          [
+            31.23834192752838,
+            30.04663804188867
+          ],
+          [
+            31.23862087726593,
+            30.046520792498242
+          ],
+          [
+            31.238791197538376,
+            30.046451139329292
+          ],
+          [
+            31.23938262462616,
+            30.046206191962867
+          ],
+          [
+            31.239779591560364,
+            30.04604250641826
+          ],
+          [
+            31.239795684814453,
+            30.04603554106994
+          ]
+        ]
+      }
+    },
+    {
+      "id": 286786961,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "name_ar": "شارع معروف",
+        "len": 380,
+        "iso_3166_2": "EG-C",
+        "iso_3166_1": "EG",
+        "name_en": "Maarouf St",
+        "name_script": "Arabic",
+        "structure": "none",
+        "oneway": "true",
+        "class": "street",
+        "name": "شارع معروف"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            31.237881928682327,
+            30.050225109627746
+          ],
+          [
+            31.237944960594177,
+            30.050184480138043
+          ],
+          [
+            31.238439828157425,
+            30.049881499703588
+          ],
+          [
+            31.238540410995483,
+            30.04981533143942
+          ],
+          [
+            31.238675862550735,
+            30.04972826786657
+          ],
+          [
+            31.238913238048553,
+            30.049575035792472
+          ],
+          [
+            31.239578425884247,
+            30.049133911831333
+          ]
+        ]
+      }
+    },
+    {
+      "id": 287185361,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "name_ar": "شارع مصطفي ابو هيف",
+        "len": 220,
+        "iso_3166_2": "EG-C",
+        "iso_3166_1": "EG",
+        "name_en": "Moustafa Abou Hif St",
+        "name_script": "Arabic",
+        "structure": "none",
+        "oneway": "true",
+        "class": "street",
+        "name": "شارع مصطفي ابو هيف"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            31.23862087726593,
+            30.046520792498242
+          ],
+          [
+            31.238375455141068,
+            30.04605759800461
+          ],
+          [
+            31.238252073526382,
+            30.045823097710823
+          ],
+          [
+            31.238229274749756,
+            30.04577898373212
+          ],
+          [
+            31.238065659999847,
+            30.04547598982127
+          ],
+          [
+            31.237904727458954,
+            30.045172994983616
+          ]
+        ]
+      }
+    },
+    {
+      "id": 286787011,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "name_ar": "شارع محمد حجاج",
+        "len": 190,
+        "iso_3166_2": "EG-C",
+        "iso_3166_1": "EG",
+        "name_en": "Mohamed Hagag St",
+        "name_script": "Arabic",
+        "structure": "none",
+        "oneway": "false",
+        "class": "street",
+        "name": "شارع محمد حجاج"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            31.234847009181976,
+            30.04880306757113
+          ],
+          [
+            31.235146075487137,
+            30.04923954959041
+          ],
+          [
+            31.235178261995316,
+            30.049276696907498
+          ],
+          [
+            31.235447824001312,
+            30.04959360938983
+          ],
+          [
+            31.23546928167343,
+            30.049622630628747
+          ],
+          [
+            31.235661059617996,
+            30.049895429858836
+          ],
+          [
+            31.235893070697784,
+            30.050225109627746
+          ]
+        ]
+      }
+    },
+    {
+      "id": 6698764221,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "name_ar": "شارع طشتمر",
+        "len": 90,
+        "iso_3166_2": "EG-C",
+        "iso_3166_1": "EG",
+        "name_en": "Tashtamir St",
+        "name_script": "Arabic",
+        "structure": "none",
+        "oneway": "false",
+        "class": "street",
+        "name": "شارع طشتمر"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            31.237456798553467,
+            30.045909003823482
+          ],
+          [
+            31.237263679504395,
+            30.046033219287054
+          ],
+          [
+            31.23701423406601,
+            30.04616439993464
+          ],
+          [
+            31.236581057310104,
+            30.046368716349434
+          ]
+        ]
+      }
+    },
+    {
+      "id": 286787061,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "name_ar": "شارع سيد طه",
+        "len": 90,
+        "iso_3166_2": "EG-C",
+        "iso_3166_1": "EG",
+        "name_en": "Sayed Taha St",
+        "name_script": "Arabic",
+        "structure": "none",
+        "oneway": "false",
+        "class": "street",
+        "name": "شارع سيد طه"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            31.23611032962799,
+            30.049332417856974
+          ],
+          [
+            31.23596951365471,
+            30.048995769976372
+          ],
+          [
+            31.235765665769577,
+            30.048507048085753
+          ]
+        ]
+      }
+    },
+    {
+      "id": 247492681,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "tertiary",
+        "surface": "paved",
+        "structure": "none",
+        "oneway": "true",
+        "name_ar": "شارع قصر النيل",
+        "iso_3166_1": "EG",
+        "len": 820,
+        "name_de": "Str. Qasr el Nil",
+        "iso_3166_2": "EG-C",
+        "name_en": "Kasr El Nil St",
+        "name_fr": "Rue Qasr el Nil",
+        "name_script": "Arabic",
+        "class": "tertiary",
+        "name": "شارع قصر النيل"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            31.239452362060547,
+            30.047938223846117
+          ],
+          [
+            31.239614635705948,
+            30.047992784680133
+          ],
+          [
+            31.239646822214127,
+            30.048003232495986
+          ],
+          [
+            31.239984780550003,
+            30.0481181583976
+          ],
+          [
+            31.240250319242477,
+            30.048206384251813
+          ],
+          [
+            31.240399181842804,
+            30.0482563014766
+          ],
+          [
+            31.24073177576065,
+            30.048370066220528
+          ],
+          [
+            31.241160929203033,
+            30.048512852397877
+          ],
+          [
+            31.24131515622139,
+            30.048565091191833
+          ],
+          [
+            31.241643726825714,
+            30.048676533860146
+          ],
+          [
+            31.242322325706482,
+            30.048922635975146
+          ],
+          [
+            31.24279037117958,
+            30.049052651939974
+          ],
+          [
+            31.243293285369873,
+            30.04921284994765
+          ],
+          [
+            31.243942379951477,
+            30.049400908147774
+          ],
+          [
+            31.244173049926758,
+            30.049467076688813
+          ],
+          [
+            31.244671940803528,
+            30.04947520264696
+          ],
+          [
+            31.244779229164124,
+            30.049472880944705
+          ],
+          [
+            31.24522313475609,
+            30.0494659158376
+          ],
+          [
+            31.245288848876953,
+            30.04946359413512
+          ]
+        ]
+      }
+    },
+    {
+      "id": 286759591,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "name_ar": "شارع هدي شعراوي",
+        "len": 410,
+        "iso_3166_2": "EG-C",
+        "iso_3166_1": "EG",
+        "name_en": "Hoda Shaarawy St",
+        "name_script": "Arabic",
+        "structure": "none",
+        "oneway": "true",
+        "class": "street",
+        "name": "شارع هدي شعراوي"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            31.239452362060547,
+            30.04617716972291
+          ],
+          [
+            31.239779591560364,
+            30.04604250641826
+          ],
+          [
+            31.240141689777374,
+            30.045893912214495
+          ],
+          [
+            31.24087393283844,
+            30.045590918655165
+          ],
+          [
+            31.241867691278458,
+            30.045181121294064
+          ]
+        ]
+      }
+    },
+    {
+      "id": 287183891,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "name_ar": "شارع الفلكي",
+        "len": 190,
+        "iso_3166_2": "EG-C",
+        "iso_3166_1": "EG",
+        "name_en": "Al Falaky St",
+        "name_script": "Arabic",
+        "structure": "none",
+        "oneway": "true",
+        "class": "street",
+        "name": "شارع الفلكي"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            31.24062716960907,
+            30.04673671701069
+          ],
+          [
+            31.240141689777374,
+            30.045893912214495
+          ],
+          [
+            31.239748746156693,
+            30.04520898292472
+          ]
+        ]
+      }
+    },
+    {
+      "id": 13032269671,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "name_ar": "شارع الفضل",
+        "len": 60,
+        "iso_3166_2": "EG-C",
+        "iso_3166_1": "EG",
+        "name_en": "Al Fadl St",
+        "name_script": "Arabic",
+        "structure": "none",
+        "oneway": "false",
+        "class": "street",
+        "name": "شارع الفضل"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            31.241166293621063,
+            30.049259284104323
+          ],
+          [
+            31.240814924240112,
+            30.049276696907498
+          ],
+          [
+            31.240530610084534,
+            30.049290627147812
+          ]
+        ]
+      }
+    },
+    {
+      "id": 247492721,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "tertiary",
+        "surface": "paved",
+        "name_ar": "شارع الجزيره",
+        "len": 670,
+        "iso_3166_2": "EG-GZ",
+        "iso_3166_1": "EG",
+        "name_en": "Al Gezira St",
+        "name_script": "Arabic",
+        "structure": "none",
+        "oneway": "true",
+        "class": "tertiary",
+        "name": "شارع الجزيره"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            31.22719332575798,
+            30.043610409191402
+          ],
+          [
+            31.227165162563324,
+            30.043713731004047
+          ],
+          [
+            31.22714638710022,
+            30.043792673439953
+          ],
+          [
+            31.227136999368668,
+            30.04387858131345
+          ],
+          [
+            31.22713565826416,
+            30.04397958101535
+          ],
+          [
+            31.227136999368668,
+            30.044012086644642
+          ],
+          [
+            31.227134317159653,
+            30.04408638518585
+          ],
+          [
+            31.22712090611458,
+            30.044744621390407
+          ],
+          [
+            31.22706726193428,
+            30.04547018533117
+          ]
+        ]
+      }
+    },
+    {
+      "id": 14343519031,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "trunk",
+        "surface": "paved",
+        "structure": "tunnel",
+        "oneway": "true",
+        "name_ar": "شارع كورنيش النيل",
+        "iso_3166_1": "EG",
+        "len": 60,
+        "name_de": "Corniche el-Nil",
+        "iso_3166_2": "EG-C",
+        "layer": -1,
+        "name_en": "Kornish Al Nil St",
+        "name_script": "Arabic",
+        "class": "trunk",
+        "name": "شارع كورنيش النيل"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            31.23215675354004,
+            30.043764811410938
+          ],
+          [
+            31.232133954763412,
+            30.043793834357658
+          ],
+          [
+            31.232116520404816,
+            30.04382285729588
+          ],
+          [
+            31.232033371925354,
+            30.043950558123058
+          ],
+          [
+            31.23190999031067,
+            30.044145591795953
+          ],
+          [
+            31.23184695839882,
+            30.044275614031235
+          ]
+        ]
+      }
+    },
+    {
+      "id": 1925915651,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "primary",
+        "name_ar": "شارع التحرير",
+        "len": 590,
+        "iso_3166_2": "EG-C",
+        "iso_3166_1": "EG",
+        "name_en": "Al Tahrir St",
+        "name_script": "Arabic",
+        "structure": "none",
+        "oneway": "true",
+        "class": "primary",
+        "name": "شارع التحرير"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              31.234302520751953,
+              30.04435803875272
+            ],
+            [
+              31.233956515789032,
+              30.04430695865169
+            ],
+            [
+              31.233813017606735,
+              30.044286062239138
+            ],
+            [
+              31.233665496110916,
+              30.04426400491002
+            ],
+            [
+              31.233268529176712,
+              30.044215246586077
+            ],
+            [
+              31.233094185590744,
+              30.04418970650204
+            ],
+            [
+              31.232673078775406,
+              30.04412817809076
+            ],
+            [
+              31.232269406318665,
+              30.04406548872676
+            ]
+          ],
+          [
+            [
+              31.23229220509529,
+              30.043970293690748
+            ],
+            [
+              31.233260482549667,
+              30.044108442554517
+            ],
+            [
+              31.234049052000046,
+              30.04422105114969
+            ],
+            [
+              31.234113425016403,
+              30.04422801662561
+            ],
+            [
+              31.234302520751953,
+              30.044247752138048
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 108731861,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "primary",
+        "surface": "paved",
+        "name_ar": "ميدان التحرير",
+        "len": 260,
+        "iso_3166_2": "EG-C",
+        "iso_3166_1": "EG",
+        "name_en": "El Tahrir Sq",
+        "name_script": "Arabic",
+        "structure": "none",
+        "oneway": "true",
+        "class": "primary",
+        "name": "ميدان التحرير"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            31.23614653944969,
+            30.04429186679863
+          ],
+          [
+            31.23616397380829,
+            30.044360360574856
+          ],
+          [
+            31.236165314912796,
+            30.04444975068614
+          ],
+          [
+            31.23614251613617,
+            30.044536818898806
+          ],
+          [
+            31.23609557747841,
+            30.044616921586865
+          ],
+          [
+            31.236029863357544,
+            30.044685415138332
+          ],
+          [
+            31.235938668251038,
+            30.044742299577265
+          ],
+          [
+            31.235834062099457,
+            30.044777126768665
+          ],
+          [
+            31.23572275042534,
+            30.04478757492369
+          ],
+          [
+            31.235610097646713,
+            30.044772483143873
+          ],
+          [
+            31.235505491495132,
+            30.044733012324173
+          ],
+          [
+            31.235415637493134,
+            30.044671484250344
+          ],
+          [
+            31.23534858226776,
+            30.04459254251475
+          ],
+          [
+            31.235332489013672,
+            30.044565841619345
+          ],
+          [
+            31.235298961400986,
+            30.04447180797392
+          ],
+          [
+            31.235294938087463,
+            30.0443742915066
+          ],
+          [
+            31.235320419073105,
+            30.04427793585529
+          ],
+          [
+            31.235352605581284,
+            30.044219890237002
+          ],
+          [
+            31.235434412956238,
+            30.044130499918296
+          ],
+          [
+            31.23554304242134,
+            30.04406664964128
+          ],
+          [
+            31.23566910624504,
+            30.04403414402988
+          ],
+          [
+            31.235801875591278,
+            30.044035304944757
+          ],
+          [
+            31.23592659831047,
+            30.044071293299183
+          ],
+          [
+            31.236033886671066,
+            30.044136304486898
+          ],
+          [
+            31.236114352941513,
+            30.04422801662561
+          ],
+          [
+            31.23614653944969,
+            30.04429186679863
+          ]
+        ]
+      }
+    },
+    {
+      "id": 502118341,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "primary",
+        "name_ar": "شارع التحرير",
+        "len": 590,
+        "iso_3166_2": "EG-C",
+        "iso_3166_1": "EG",
+        "name_en": "Al Tahrir St",
+        "name_script": "Arabic",
+        "structure": "none",
+        "oneway": "true",
+        "class": "primary",
+        "name": "شارع التحرير"
+      },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              31.233959197998047,
+              30.044208281109263
+            ],
+            [
+              31.234049052000046,
+              30.04422105114969
+            ],
+            [
+              31.234113425016403,
+              30.04422801662561
+            ],
+            [
+              31.23449295759201,
+              30.044268648558656
+            ],
+            [
+              31.234699487686157,
+              30.044286062239138
+            ],
+            [
+              31.234828233718872,
+              30.044290705886766
+            ],
+            [
+              31.23490735888481,
+              30.04429302771048
+            ],
+            [
+              31.23503342270851,
+              30.04429186679863
+            ],
+            [
+              31.235113888978958,
+              30.044290705886766
+            ],
+            [
+              31.235320419073105,
+              30.04427793585529
+            ]
+          ],
+          [
+            [
+              31.235332489013672,
+              30.044565841619345
+            ],
+            [
+              31.23514875769615,
+              30.04450895707909
+            ],
+            [
+              31.234932839870453,
+              30.044464842515154
+            ],
+            [
+              31.23477727174759,
+              30.044432337034408
+            ],
+            [
+              31.234578788280487,
+              30.044399831543018
+            ],
+            [
+              31.233959197998047,
+              30.04430695865169
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 6715780721,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "residential",
+        "name_ar": "شارع الامير قدادار",
+        "len": 120,
+        "iso_3166_2": "EG-C",
+        "iso_3166_1": "EG",
+        "name_en": "Al Amir Qadadar St",
+        "name_script": "Arabic",
+        "structure": "none",
+        "oneway": "false",
+        "class": "street",
+        "name": "شارع الامير قدادار"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            31.237011551856995,
+            30.043517535559985
+          ],
+          [
+            31.23709738254547,
+            30.043812409039106
+          ],
+          [
+            31.2371926009655,
+            30.044136304486898
+          ],
+          [
+            31.237132251262665,
+            30.044580933430666
+          ]
+        ]
+      }
+    },
+    {
+      "id": 550549191,
+      "owner": "road-label-simple",
+      "properties": {
+        "type": "tertiary",
+        "surface": "paved",
+        "name_ar": "شارع منصور",
+        "len": 940,
+        "iso_3166_2": "EG-C",
+        "iso_3166_1": "EG",
+        "name_en": "Mansour St",
+        "name_script": "Arabic",
+        "structure": "none",
+        "oneway": "false",
+        "class": "tertiary",
+        "name": "شارع منصور"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            31.239909678697586,
+            30.043058970728595
+          ],
+          [
+            31.23959317803383,
+            30.041925900169815
+          ],
+          [
+            31.239491254091263,
+            30.04155788163675
+          ],
+          [
+            31.239452362060547,
+            30.041422051107233
+          ]
+        ]
+      }
+    }
+  ],
+  "source_features": []
+}

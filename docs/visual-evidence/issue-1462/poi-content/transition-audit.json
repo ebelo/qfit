@@ -1,0 +1,170 @@
+[
+  {
+    "runtime": "3",
+    "camera": "geneva-poi-z15-9",
+    "requested_zoom": 15.9,
+    "native_continuous_zoom": 15.818517442873286,
+    "native_integer_render_zoom": 16,
+    "native_integer_fetch_zoom": 16,
+    "source_rendered_poi_records": 6,
+    "native_poi_placement_records": 37,
+    "native_active_provider_ids": [
+      "26"
+    ],
+    "scope": "Counts from different pipelines, not unique features or source/native feature-ID parity. Baseline activation retained After; no interactive transition pass."
+  },
+  {
+    "runtime": "3",
+    "camera": "geneva-poi-z16",
+    "requested_zoom": 16,
+    "native_continuous_zoom": 15.89763779527562,
+    "native_integer_render_zoom": 16,
+    "native_integer_fetch_zoom": 16,
+    "source_rendered_poi_records": 33,
+    "native_poi_placement_records": 34,
+    "native_active_provider_ids": [
+      "26"
+    ],
+    "scope": "Counts from different pipelines, not unique features or source/native feature-ID parity. Baseline activation retained After; no interactive transition pass."
+  },
+  {
+    "runtime": "3",
+    "camera": "geneva-poi-z16-1",
+    "requested_zoom": 16.1,
+    "native_continuous_zoom": 15.971459694368827,
+    "native_integer_render_zoom": 16,
+    "native_integer_fetch_zoom": 16,
+    "source_rendered_poi_records": 28,
+    "native_poi_placement_records": 30,
+    "native_active_provider_ids": [
+      "26"
+    ],
+    "scope": "Counts from different pipelines, not unique features or source/native feature-ID parity. Baseline activation retained After; no interactive transition pass."
+  },
+  {
+    "runtime": "3",
+    "camera": "geneva-poi-z16-9",
+    "requested_zoom": 16.9,
+    "native_continuous_zoom": 16.81851744287312,
+    "native_integer_render_zoom": 17,
+    "native_integer_fetch_zoom": 17,
+    "source_rendered_poi_records": 11,
+    "native_poi_placement_records": 18,
+    "native_active_provider_ids": [
+      "27"
+    ],
+    "scope": "Counts from different pipelines, not unique features or source/native feature-ID parity. Baseline activation retained After; no interactive transition pass."
+  },
+  {
+    "runtime": "3",
+    "camera": "geneva-poi-z17",
+    "requested_zoom": 17,
+    "native_continuous_zoom": 16.89763779527545,
+    "native_integer_render_zoom": 17,
+    "native_integer_fetch_zoom": 17,
+    "source_rendered_poi_records": 17,
+    "native_poi_placement_records": 16,
+    "native_active_provider_ids": [
+      "27"
+    ],
+    "scope": "Counts from different pipelines, not unique features or source/native feature-ID parity. Baseline activation retained After; no interactive transition pass."
+  },
+  {
+    "runtime": "3",
+    "camera": "geneva-poi-z17-1",
+    "requested_zoom": 17.1,
+    "native_continuous_zoom": 16.971459694368995,
+    "native_integer_render_zoom": 17,
+    "native_integer_fetch_zoom": 17,
+    "source_rendered_poi_records": 15,
+    "native_poi_placement_records": 14,
+    "native_active_provider_ids": [
+      "27"
+    ],
+    "scope": "Counts from different pipelines, not unique features or source/native feature-ID parity. Baseline activation retained After; no interactive transition pass."
+  },
+  {
+    "runtime": "4",
+    "camera": "geneva-poi-z15-9",
+    "requested_zoom": 15.9,
+    "native_continuous_zoom": 15.928226537463622,
+    "native_integer_render_zoom": 16,
+    "native_integer_fetch_zoom": 16,
+    "source_rendered_poi_records": 6,
+    "native_poi_placement_records": 37,
+    "native_active_provider_ids": [
+      "26"
+    ],
+    "scope": "Counts from different pipelines, not unique features or source/native feature-ID parity. Baseline activation retained After; no interactive transition pass."
+  },
+  {
+    "runtime": "4",
+    "camera": "geneva-poi-z16",
+    "requested_zoom": 16,
+    "native_continuous_zoom": 16.00000000000005,
+    "native_integer_render_zoom": 16,
+    "native_integer_fetch_zoom": 16,
+    "source_rendered_poi_records": 33,
+    "native_poi_placement_records": 34,
+    "native_active_provider_ids": [
+      "26"
+    ],
+    "scope": "Counts from different pipelines, not unique features or source/native feature-ID parity. Baseline activation retained After; no interactive transition pass."
+  },
+  {
+    "runtime": "4",
+    "camera": "geneva-poi-z16-1",
+    "requested_zoom": 16.1,
+    "native_continuous_zoom": 16.1339340169263,
+    "native_integer_render_zoom": 16,
+    "native_integer_fetch_zoom": 16,
+    "source_rendered_poi_records": 28,
+    "native_poi_placement_records": 30,
+    "native_active_provider_ids": [
+      "26"
+    ],
+    "scope": "Counts from different pipelines, not unique features or source/native feature-ID parity. Baseline activation retained After; no interactive transition pass."
+  },
+  {
+    "runtime": "4",
+    "camera": "geneva-poi-z16-9",
+    "requested_zoom": 16.9,
+    "native_continuous_zoom": 16.92822653746347,
+    "native_integer_render_zoom": 17,
+    "native_integer_fetch_zoom": 17,
+    "source_rendered_poi_records": 11,
+    "native_poi_placement_records": 18,
+    "native_active_provider_ids": [
+      "27"
+    ],
+    "scope": "Counts from different pipelines, not unique features or source/native feature-ID parity. Baseline activation retained After; no interactive transition pass."
+  },
+  {
+    "runtime": "4",
+    "camera": "geneva-poi-z17",
+    "requested_zoom": 17,
+    "native_continuous_zoom": 16.999999999999872,
+    "native_integer_render_zoom": 17,
+    "native_integer_fetch_zoom": 17,
+    "source_rendered_poi_records": 17,
+    "native_poi_placement_records": 16,
+    "native_active_provider_ids": [
+      "27"
+    ],
+    "scope": "Counts from different pipelines, not unique features or source/native feature-ID parity. Baseline activation retained After; no interactive transition pass."
+  },
+  {
+    "runtime": "4",
+    "camera": "geneva-poi-z17-1",
+    "requested_zoom": 17.1,
+    "native_continuous_zoom": 17.133934016926602,
+    "native_integer_render_zoom": 17,
+    "native_integer_fetch_zoom": 17,
+    "source_rendered_poi_records": 15,
+    "native_poi_placement_records": 14,
+    "native_active_provider_ids": [
+      "27"
+    ],
+    "scope": "Counts from different pipelines, not unique features or source/native feature-ID parity. Baseline activation retained After; no interactive transition pass."
+  }
+]
