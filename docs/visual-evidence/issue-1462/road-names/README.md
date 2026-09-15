@@ -260,3 +260,9 @@ all233 runtime Python hashes are pinned in final provenance. The only runtime
 file changed since e497570 is the collision guard in `mapbox_light_labels.py`.
 No full atlas, desktop, accessibility, topology/seams or holistic completion
 claim follows. #1462 remains OPEN.
+
+Integration: [PR #1476](https://github.com/ebelo/qfit/pull/1476) merged at
+2026-09-15 10:17:47UTC. Clean main `ce90038949761aa64140a8c49dbb4555c48fe94e`
+has the same complete tree as reviewed final035ce92.
+[Merge, final image-loading and public-proof verification](merged-gates.json).
+This completes the scoped road-name slice, not #1462.

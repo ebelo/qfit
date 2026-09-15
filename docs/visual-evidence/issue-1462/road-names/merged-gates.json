@@ -1,0 +1,38 @@
+{
+  "headRefOid": "035ce920662ba07a7d54e40fb6fa31069c2b59b4",
+  "mergeCommit": {
+    "oid": "ce90038949761aa64140a8c49dbb4555c48fe94e"
+  },
+  "mergedAt": "2026-09-15T10:17:47Z",
+  "state": "MERGED",
+  "url": "https://github.com/ebelo/qfit/pull/1476",
+  "verified_at_utc": "2026-09-15T10:18:41.933425+00:00",
+  "main_clean": true,
+  "main_tree_equals_reviewed_head": true,
+  "all_11_exact_head_checks_success": true,
+  "codex_final_clean": true,
+  "greptile_final_confidence": "5/5",
+  "unresolved_review_threads": 0,
+  "public_render_proof_byte_verified": true,
+  "inline_images": [
+    {
+      "alt": "Cairo QGIS 3 Before and After",
+      "complete": true,
+      "width": 1140,
+      "height": 335
+    },
+    {
+      "alt": "Jerusalem QGIS 4 Before and After",
+      "complete": true,
+      "width": 1140,
+      "height": 335
+    },
+    {
+      "alt": "Cairo actual PDF Before and After",
+      "complete": true,
+      "width": 1140,
+      "height": 335
+    }
+  ],
+  "source_render_reference_scope": "Original PNG Before/After and browser references2026-09-14; final-head34PNG+4PDF-hookPNG+8actualPDF2026-09-15, not new browser reference captures."
+}

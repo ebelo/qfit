@@ -2489,8 +2489,8 @@
       "bytes": 783
     },
     "README.md": {
-      "sha256": "216a0650619325357c98b7087ef29afcded92fc4276ebb4bfc24e2247d5666dc",
-      "bytes": 19334
+      "sha256": "1f09a2b514816a728f716cf20ea7b416dd44aeb4242053f83f1b3b25d3b34d41",
+      "bytes": 19674
     },
     "audit.py": {
       "sha256": "c6fd28c653a88b3c0bb38b40d2689955f9c644e4fe1a4fc07711ad33d132cb09",
@@ -4539,8 +4539,12 @@
     "final-head/3/jerusalem-city-z14/pdf-after/pdf150-repeat.png": {
       "sha256": "b58fdf406516a00a11f7e431662deea5024f43a41b5b14ef13d666c81ff295f5",
       "bytes": 519707
+    },
+    "merged-gates.json": {
+      "sha256": "bf7b22a447bb0152ff147275eb6080d3d79f681ec444b182810f4b27e8713e72",
+      "bytes": 1153
     }
   },
-  "count": 1135,
+  "count": 1136,
   "scope": "Named captured artifacts and derived audits; live upstream tile bytes not archived."
 }
