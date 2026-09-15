@@ -159,3 +159,13 @@ required in the repository C01–C30 ledger. The issue remains OPEN.
 [Final-head verification](final-head-verification.json) records the exact review head,
 233 runtime byte matches, documentation-only delta and completed local/native/package gates.
 No fresh final-head recapture is claimed.
+
+## Integration
+
+[PR #1478](https://github.com/ebelo/qfit/pull/1478) merged 2026-09-15T12:01:11Z.
+[Final checks, reviews, fresh Sonar and public-image verification](merged-gates.json)
+record all11checks green, exact-head Codex clean/Greptile5/5 and zero unresolved
+Sonar issues. Main `3436e3833f9603db17be3f707afc43a86432f5d8` is clean and its entire tree equals
+reviewed `280a23596bf904e0ffc36c4fc3285180766ef67f`. The public Sonar read used the ordinary browser
+route after the shell protected proxy denied that unrelated host; no Mapbox/proxy/
+egress/TLS policy changed. All capture processes finished. **#1462 remains OPEN.**

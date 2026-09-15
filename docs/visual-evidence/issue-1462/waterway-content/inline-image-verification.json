@@ -1,0 +1,28 @@
+{
+  "verified_at_utc": "2026-09-15T11:57:15.645823+00:00",
+  "pr": "https://github.com/ebelo/qfit/pull/1478",
+  "method": "OpenClaw browser DOM: completed inline images with nonzero native dimensions",
+  "images": [
+    {
+      "filename": "geneva-urban-z14-light-qgis3-crop.png",
+      "commit": "eb2368b77c5bde558267b7779b9eefb1139b2017",
+      "complete": true,
+      "naturalWidth": 1140,
+      "naturalHeight": 335
+    },
+    {
+      "filename": "basel-rhine-z14-qgis4-crop.png",
+      "commit": "eb2368b77c5bde558267b7779b9eefb1139b2017",
+      "complete": true,
+      "naturalWidth": 1140,
+      "naturalHeight": 335
+    },
+    {
+      "filename": "geneva-confluence-z15-qgis3-crop.png",
+      "commit": "eb2368b77c5bde558267b7779b9eefb1139b2017",
+      "complete": true,
+      "naturalWidth": 1140,
+      "naturalHeight": 335
+    }
+  ]
+}

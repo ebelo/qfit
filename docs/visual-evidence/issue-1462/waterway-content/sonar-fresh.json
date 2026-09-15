@@ -1,0 +1,18 @@
+{
+  "method": "Public Sonar API read through OpenClaw managed browser, credentials omitted",
+  "issues": {
+    "checked_at_utc": "2026-09-15T12:00:00.810Z",
+    "http_status": 200,
+    "total": 0,
+    "issues": []
+  },
+  "quality_gate": {
+    "checked_at_utc": "2026-09-15T12:00:43.173Z",
+    "http_status": 200,
+    "status": "OK",
+    "new_coverage": 100.0,
+    "new_duplicated_lines_density": 0.0,
+    "new_security_hotspots_reviewed": 100.0
+  },
+  "recovery": "Shell protected proxy rejected public Sonar CONNECT with403; ordinary browser public-read route succeeded. No proxy/egress permission, Mapbox credential or TLS verification changed."
+}

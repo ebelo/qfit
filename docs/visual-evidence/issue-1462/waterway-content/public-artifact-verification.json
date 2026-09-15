@@ -1,0 +1,35 @@
+{
+  "commit": "eb2368b77c5bde558267b7779b9eefb1139b2017",
+  "files": [
+    {
+      "path": "source.json",
+      "verified": true,
+      "sha256": "87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32"
+    },
+    {
+      "path": "final-head-verification.json",
+      "verified": true,
+      "sha256": "b5844af59c12765fefca1791ce7c6af42942edb21eb83430621e7301d50ac13d"
+    },
+    {
+      "path": "geneva-urban-z14-light-qgis3-crop.png",
+      "verified": true,
+      "sha256": "d7a1c413fa1f479766071baa5900ec1e1e7ccecb609548cb5c5b28bbc08ad4d8"
+    },
+    {
+      "path": "basel-rhine-z14-qgis4-crop.png",
+      "verified": true,
+      "sha256": "d8a0cf5545a9ca6e1c6d5843a24af0dba334dea2169f07453f04e4fbd475b261"
+    },
+    {
+      "path": "geneva-confluence-z15-qgis3-crop.png",
+      "verified": true,
+      "sha256": "cf84ddc6467fd17f24b4296a1f9b4e2764fbfbc1dcfc73ea99e8907a9664c035"
+    },
+    {
+      "path": "README.md",
+      "verified": true,
+      "sha256": "6125f821a33107a69a1e22afb6e6f223a3e9babfd0947109e5e78014ffa9c0b3"
+    }
+  ]
+}
