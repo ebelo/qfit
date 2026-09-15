@@ -125,6 +125,8 @@ Positive relative Mercator MAE movement is worse, not a semantic score.
 | QGIS4 | geneva-streets-z18-light | before-pdf | 21 |
 | QGIS4 | geneva-streets-z18-light | after-pdf | 25 |
 
+[Final-head runtime identity](final-head-verification.json) · [Public byte reads](public-bytes-verification.json).
+
 ## Reproduction and gates
 
 Use a checkout named qfit at the pinned revision, Python/PyQGIS and the matching

@@ -1,0 +1,12 @@
+{
+  "verified_at_utc": "2026-09-15T13:36:18.619764+00:00",
+  "final_head": "4b617d61a69ca4eb445f5e7b54c666c78413ef04",
+  "captured_runtime": "9ff2eb68092a0a762b19bf9fdc4462a5df6d4b80",
+  "runtime_and_package_python_files": 233,
+  "all_runtime_hashes_identical": true,
+  "files_changed_since_capture": [
+    "docs/light-cartographic-assessment.md",
+    "docs/mapbox-outdoors-comparison-harness.md"
+  ],
+  "scope": "Only documentation differs; all233runtime/package Python inputs exactly match the candidate in all PNG/PDF captures and portable replay."
+}

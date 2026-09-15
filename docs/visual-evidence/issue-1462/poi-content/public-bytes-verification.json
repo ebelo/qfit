@@ -1,0 +1,51 @@
+{
+  "evidence_commit": "b68a29e7e1d1d67d55acab854eb312de32c41f4a",
+  "files": [
+    {
+      "file": "README.md",
+      "public_sha256": "6f8c4f0f57b74e6cbb16a0a0e1a15da1ecd3dd3dbc85be824e1f450a08da3fdf",
+      "matches_local": true
+    },
+    {
+      "file": "source.json",
+      "public_sha256": "87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32",
+      "matches_local": true
+    },
+    {
+      "file": "cairo-museum-z14-qgis4-crop.png",
+      "public_sha256": "e4743193a1702b692a1b21d734bea8d7c3d688751ddb2aa88340b5cec3a54be6",
+      "matches_local": true,
+      "dimensions": [
+        1140,
+        335
+      ]
+    },
+    {
+      "file": "geneva-streets-z18-light-qgis3-crop.png",
+      "public_sha256": "3fc46a66dbd63cae796a56fbd114792cbccb3607b60ea8ef7e1141f9a10a9e82",
+      "matches_local": true,
+      "dimensions": [
+        1140,
+        335
+      ]
+    },
+    {
+      "file": "geneva-urban-z14-light-qgis4-crop.png",
+      "public_sha256": "68fb152753d0ac479051952b81840a91a31fd8a940dee5efe881fc04db1d4978",
+      "matches_local": true,
+      "dimensions": [
+        1140,
+        335
+      ]
+    },
+    {
+      "file": "cairo-museum-z14-qgis4-full.png",
+      "public_sha256": "743c568382327fe4777b168585779041f291e9a1d5b838d9bad78c7bef4358da",
+      "matches_local": true,
+      "dimensions": [
+        3840,
+        935
+      ]
+    }
+  ]
+}
