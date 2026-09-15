@@ -2489,8 +2489,8 @@
       "bytes": 783
     },
     "README.md": {
-      "sha256": "588ff590a2b45ecf941537c81c49c273360fb02781a384054bd1f884c87b77ac",
-      "bytes": 14861
+      "sha256": "e48a4ef073220604468e5ac1984da21e761d66b6e08c9a959655a54f6c2eb37e",
+      "bytes": 15298
     },
     "audit.py": {
       "sha256": "c6fd28c653a88b3c0bb38b40d2689955f9c644e4fe1a4fc07711ad33d132cb09",
@@ -3595,8 +3595,12 @@
     "source.json": {
       "sha256": "87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32",
       "bytes": 96675
+    },
+    "resumed-verification.json": {
+      "sha256": "53b102da679c2935fb8f786d8694181d542bd65a70424bd4ea574b3692774c1d",
+      "bytes": 703
     }
   },
-  "count": 899,
+  "count": 900,
   "scope": "Named captured artifacts and derived audits; live upstream tile bytes not archived."
 }

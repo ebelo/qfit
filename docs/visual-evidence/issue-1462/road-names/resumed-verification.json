@@ -1,0 +1,17 @@
+{
+  "verified_at_utc": "2026-09-15T09:55:02.063881+00:00",
+  "original_evidence_commit": "1b2a765ec5e5709c3122d785e15546212faaee13",
+  "original_artifacts_verified": 899,
+  "original_artifact_failures": [],
+  "candidate_runtime_commit": "e49757024f54ed41de2418bfc3aa4a36628d3052",
+  "runtime_python_hashes_verified": 233,
+  "runtime_drift": [],
+  "current_source_equals_archive": true,
+  "source_sha256": "87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32",
+  "fresh_preflight": {
+    "ok": true,
+    "reason": "mapbox_authorized",
+    "http_status": 200
+  },
+  "scope": "Historical 2026-09-14 PNG/PDF reuse and current source equality; no fresh renders or tile-byte identity claimed."
+}

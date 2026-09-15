@@ -2,7 +2,7 @@
 
 **Before:** `c1987b8134065e657b348fb9241d6c5dfbd8d96b`.
 **After runtime:** `e49757024f54ed41de2418bfc3aa4a36628d3052`.
-Fresh source SHA256: `87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32`.
+Source captured 2026-09-14; SHA256: `87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32`.
 All 14 source symbol owners match the repository fixture.
 
 Map data © OpenStreetMap contributors; reference cartography © Mapbox.
@@ -25,7 +25,7 @@ Cairo z12.1 worsens **24.9571% / 24.3768%**. All seven Swiss PNG views are
 byte-identical Before/After. These are repeatable trade-offs, not noise.
 
 Reader tasks inspected: identifying/following roads named by the source
-(e.g. 6th October Bridge, Al Borg St, Al Tahrir St, HaNeviim, Betsalel), and
+(e.g. 6th October Bridge, Al Borg St, Al Tahrir St, HaNeviim, Bezalel), and
 following synthetic activity tracks. Source names improve those tasks. Existing
 native premature road activation below source z12, size/font, placement, density,
 and physical-output differences remain OPEN. No universal usability or fidelity
@@ -91,6 +91,14 @@ startup isolated that cause; rebuilt font images were tagged/pinned before
 resuming. Failed attempts are excluded. No credential/egress/TLS fallback;
 all capture processes finished within the same authorized run.
 
+## Resumed verification — 2026-09-15
+
+The 2026-09-14 captures above are reused, not fresh renders. All 899 original
+manifest entries and all 233 candidate runtime Python hashes were verified.
+Fresh protected Gateway preflight and source retrieval succeeded; the current
+complete Light source equals the archived source. This does not establish
+unchanged upstream tile bytes. No capture was started in this resumed audit.
+
 ## Matched maps
 
 Panels: **Mapbox explicit-Mercator reference | QGIS Before | QGIS After**.
@@ -131,7 +139,7 @@ placement differences remain. Full-image error worsens despite this text repair.
 ![QGIS4 Jerusalem road detail](jerusalem-city-z14-qgis4-crop.png)
 
 [QGIS3full](jerusalem-city-z14-qgis3-full.png) / [QGIS4full](jerusalem-city-z14-qgis4-full.png).
-HaNeviim, Betsalel, Ben Zvi and Hillel illustrate English/transliterated content.
+HaNeviim, Bezalel, Ben Zvi and Hillel illustrate English/transliterated content.
 Non-road POI/subdivision names remain local; this slice does not modify them.
 
 ### Pre-existing premature zoom activation, not a scale fix
