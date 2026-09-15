@@ -1,0 +1,1171 @@
+{
+  "png_cells": [
+    {
+      "runtime": "3",
+      "camera": "bern-urban-z12-light",
+      "comparisons": {
+        "qgis.png": {
+          "historical": "3/bern-urban-z12-light/after/qgis.png",
+          "final": "final-head/3/bern-urban-z12-light/after/qgis.png",
+          "historical_sha256": "be889599f5b5efda75b11be40c2242cbec8958dd3e931a0f592fd45b71f58c8d",
+          "final_sha256": "be889599f5b5efda75b11be40c2242cbec8958dd3e931a0f592fd45b71f58c8d",
+          "byte_identical": true
+        },
+        "labels.json": {
+          "historical": "3/bern-urban-z12-light/after/labels.json",
+          "final": "final-head/3/bern-urban-z12-light/after/labels.json",
+          "historical_sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+          "final_sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+          "byte_identical": true
+        },
+        "runtime.json": {
+          "historical": "3/bern-urban-z12-light/after/runtime.json",
+          "final": "final-head/3/bern-urban-z12-light/after/runtime.json",
+          "historical_sha256": "14f1c83dc72b31ad2a3b6df681678317115e276a06461c3acbf5f2498ba13318",
+          "final_sha256": "14f1c83dc72b31ad2a3b6df681678317115e276a06461c3acbf5f2498ba13318",
+          "byte_identical": true
+        }
+      },
+      "changed_pixels": 0,
+      "max_channel_delta": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "3",
+      "camera": "cairo-nile-z14",
+      "comparisons": {
+        "qgis.png": {
+          "historical": "3/cairo-nile-z14/after/qgis.png",
+          "final": "final-head/3/cairo-nile-z14/after/qgis.png",
+          "historical_sha256": "2fc2a57291216ff3e6e84905f4848a933a5ca8ead78c87367ec251ed8a71f5e5",
+          "final_sha256": "2fc2a57291216ff3e6e84905f4848a933a5ca8ead78c87367ec251ed8a71f5e5",
+          "byte_identical": true
+        },
+        "labels.json": {
+          "historical": "3/cairo-nile-z14/after/labels.json",
+          "final": "final-head/3/cairo-nile-z14/after/labels.json",
+          "historical_sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+          "final_sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+          "byte_identical": true
+        },
+        "runtime.json": {
+          "historical": "3/cairo-nile-z14/after/runtime.json",
+          "final": "final-head/3/cairo-nile-z14/after/runtime.json",
+          "historical_sha256": "b92d951b2ffa2fab070dfa80aa3c4f245aa09b855c4b94a1a410d477296f6e2f",
+          "final_sha256": "b92d951b2ffa2fab070dfa80aa3c4f245aa09b855c4b94a1a410d477296f6e2f",
+          "byte_identical": true
+        }
+      },
+      "changed_pixels": 0,
+      "max_channel_delta": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "3",
+      "camera": "cairo-nile-z14-activity",
+      "comparisons": {
+        "qgis.png": {
+          "historical": "3/cairo-nile-z14-activity/after/qgis.png",
+          "final": "final-head/3/cairo-nile-z14-activity/after/qgis.png",
+          "historical_sha256": "80652e86def5fd4c5f3f48d8feb9b54b7ae9b7ab6afd7a88d0970ec1ee19aaba",
+          "final_sha256": "80652e86def5fd4c5f3f48d8feb9b54b7ae9b7ab6afd7a88d0970ec1ee19aaba",
+          "byte_identical": true
+        },
+        "labels.json": {
+          "historical": "3/cairo-nile-z14-activity/after/labels.json",
+          "final": "final-head/3/cairo-nile-z14-activity/after/labels.json",
+          "historical_sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+          "final_sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+          "byte_identical": true
+        },
+        "runtime.json": {
+          "historical": "3/cairo-nile-z14-activity/after/runtime.json",
+          "final": "final-head/3/cairo-nile-z14-activity/after/runtime.json",
+          "historical_sha256": "b92d951b2ffa2fab070dfa80aa3c4f245aa09b855c4b94a1a410d477296f6e2f",
+          "final_sha256": "b92d951b2ffa2fab070dfa80aa3c4f245aa09b855c4b94a1a410d477296f6e2f",
+          "byte_identical": true
+        }
+      },
+      "changed_pixels": 0,
+      "max_channel_delta": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "3",
+      "camera": "cairo-z11.9",
+      "comparisons": {
+        "qgis.png": {
+          "historical": "3/cairo-z11.9/after/qgis.png",
+          "final": "final-head/3/cairo-z11.9/after/qgis.png",
+          "historical_sha256": "ae1c8a7aacd645597fc7e473c2766781e0d5f9eea06cff709ac46487ec3dc7f5",
+          "final_sha256": "ae1c8a7aacd645597fc7e473c2766781e0d5f9eea06cff709ac46487ec3dc7f5",
+          "byte_identical": true
+        },
+        "labels.json": {
+          "historical": "3/cairo-z11.9/after/labels.json",
+          "final": "final-head/3/cairo-z11.9/after/labels.json",
+          "historical_sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+          "final_sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+          "byte_identical": true
+        },
+        "runtime.json": {
+          "historical": "3/cairo-z11.9/after/runtime.json",
+          "final": "final-head/3/cairo-z11.9/after/runtime.json",
+          "historical_sha256": "64afdae4e4dd4808e231741e3105bb5a5d05a7eceda96a435a4a881c00f014d5",
+          "final_sha256": "64afdae4e4dd4808e231741e3105bb5a5d05a7eceda96a435a4a881c00f014d5",
+          "byte_identical": true
+        }
+      },
+      "changed_pixels": 0,
+      "max_channel_delta": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "3",
+      "camera": "cairo-z12",
+      "comparisons": {
+        "qgis.png": {
+          "historical": "3/cairo-z12/after/qgis.png",
+          "final": "final-head/3/cairo-z12/after/qgis.png",
+          "historical_sha256": "db570648307032100c36b03f70a7da28edab0f478bca72934d7a297041e3da4e",
+          "final_sha256": "db570648307032100c36b03f70a7da28edab0f478bca72934d7a297041e3da4e",
+          "byte_identical": true
+        },
+        "labels.json": {
+          "historical": "3/cairo-z12/after/labels.json",
+          "final": "final-head/3/cairo-z12/after/labels.json",
+          "historical_sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+          "final_sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+          "byte_identical": true
+        },
+        "runtime.json": {
+          "historical": "3/cairo-z12/after/runtime.json",
+          "final": "final-head/3/cairo-z12/after/runtime.json",
+          "historical_sha256": "a1242fb55a7e4f4f67f5825dd19c9a99b5e96dcf93ef1ed02138c8aa2f0b6c3d",
+          "final_sha256": "a1242fb55a7e4f4f67f5825dd19c9a99b5e96dcf93ef1ed02138c8aa2f0b6c3d",
+          "byte_identical": true
+        }
+      },
+      "changed_pixels": 0,
+      "max_channel_delta": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "3",
+      "camera": "cairo-z12.1",
+      "comparisons": {
+        "qgis.png": {
+          "historical": "3/cairo-z12.1/after/qgis.png",
+          "final": "final-head/3/cairo-z12.1/after/qgis.png",
+          "historical_sha256": "f41893c0275366988b63fd28b55807657c9838a2ff046a7997c9fc6b1c8443bd",
+          "final_sha256": "f41893c0275366988b63fd28b55807657c9838a2ff046a7997c9fc6b1c8443bd",
+          "byte_identical": true
+        },
+        "labels.json": {
+          "historical": "3/cairo-z12.1/after/labels.json",
+          "final": "final-head/3/cairo-z12.1/after/labels.json",
+          "historical_sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+          "final_sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+          "byte_identical": true
+        },
+        "runtime.json": {
+          "historical": "3/cairo-z12.1/after/runtime.json",
+          "final": "final-head/3/cairo-z12.1/after/runtime.json",
+          "historical_sha256": "b5a2f92297269b08daca2f09ef13a1b0b75520cc3b204fa731e31d9f83f2f57a",
+          "final_sha256": "b5a2f92297269b08daca2f09ef13a1b0b75520cc3b204fa731e31d9f83f2f57a",
+          "byte_identical": true
+        }
+      },
+      "changed_pixels": 0,
+      "max_channel_delta": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "3",
+      "camera": "cairo-z14.9",
+      "comparisons": {
+        "qgis.png": {
+          "historical": "3/cairo-z14.9/after/qgis.png",
+          "final": "final-head/3/cairo-z14.9/after/qgis.png",
+          "historical_sha256": "6af2fdf6f920fc6c8029201e0eafb357e996013ffa2cff94c375d02446a83c8a",
+          "final_sha256": "6af2fdf6f920fc6c8029201e0eafb357e996013ffa2cff94c375d02446a83c8a",
+          "byte_identical": true
+        },
+        "labels.json": {
+          "historical": "3/cairo-z14.9/after/labels.json",
+          "final": "final-head/3/cairo-z14.9/after/labels.json",
+          "historical_sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+          "final_sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+          "byte_identical": true
+        },
+        "runtime.json": {
+          "historical": "3/cairo-z14.9/after/runtime.json",
+          "final": "final-head/3/cairo-z14.9/after/runtime.json",
+          "historical_sha256": "1ddd7c9faa87b1aef15f590ed27cb14d000073cc42e9218f81e9e6550c19281b",
+          "final_sha256": "1ddd7c9faa87b1aef15f590ed27cb14d000073cc42e9218f81e9e6550c19281b",
+          "byte_identical": true
+        }
+      },
+      "changed_pixels": 0,
+      "max_channel_delta": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "3",
+      "camera": "cairo-z15",
+      "comparisons": {
+        "qgis.png": {
+          "historical": "3/cairo-z15/after/qgis.png",
+          "final": "final-head/3/cairo-z15/after/qgis.png",
+          "historical_sha256": "cac752cb5cb880ab6c4e0acc3914de936be2af1970a21b84d80be85166dbf833",
+          "final_sha256": "cac752cb5cb880ab6c4e0acc3914de936be2af1970a21b84d80be85166dbf833",
+          "byte_identical": true
+        },
+        "labels.json": {
+          "historical": "3/cairo-z15/after/labels.json",
+          "final": "final-head/3/cairo-z15/after/labels.json",
+          "historical_sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+          "final_sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+          "byte_identical": true
+        },
+        "runtime.json": {
+          "historical": "3/cairo-z15/after/runtime.json",
+          "final": "final-head/3/cairo-z15/after/runtime.json",
+          "historical_sha256": "d9af58a72e50b3e14347a30bf000e635f54f548b59ee708c548114e65e026506",
+          "final_sha256": "d9af58a72e50b3e14347a30bf000e635f54f548b59ee708c548114e65e026506",
+          "byte_identical": true
+        }
+      },
+      "changed_pixels": 0,
+      "max_channel_delta": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "3",
+      "camera": "cairo-z15.1",
+      "comparisons": {
+        "qgis.png": {
+          "historical": "3/cairo-z15.1/after/qgis.png",
+          "final": "final-head/3/cairo-z15.1/after/qgis.png",
+          "historical_sha256": "be3fcae5f03687ddf3ad5e9651d5465d9c2e4f3045c9758c357de24e13953161",
+          "final_sha256": "be3fcae5f03687ddf3ad5e9651d5465d9c2e4f3045c9758c357de24e13953161",
+          "byte_identical": true
+        },
+        "labels.json": {
+          "historical": "3/cairo-z15.1/after/labels.json",
+          "final": "final-head/3/cairo-z15.1/after/labels.json",
+          "historical_sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+          "final_sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+          "byte_identical": true
+        },
+        "runtime.json": {
+          "historical": "3/cairo-z15.1/after/runtime.json",
+          "final": "final-head/3/cairo-z15.1/after/runtime.json",
+          "historical_sha256": "420526613feac0cd76426316a1822d2273f78c6027677271b4cb4f424120f672",
+          "final_sha256": "420526613feac0cd76426316a1822d2273f78c6027677271b4cb4f424120f672",
+          "byte_identical": true
+        }
+      },
+      "changed_pixels": 0,
+      "max_channel_delta": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "3",
+      "camera": "geneva-streets-z18-light",
+      "comparisons": {
+        "qgis.png": {
+          "historical": "3/geneva-streets-z18-light/after/qgis.png",
+          "final": "final-head/3/geneva-streets-z18-light/after/qgis.png",
+          "historical_sha256": "08ccd959983dda84dc2a219cb9229c4e62731b9c9389ce5877941af316c3d318",
+          "final_sha256": "08ccd959983dda84dc2a219cb9229c4e62731b9c9389ce5877941af316c3d318",
+          "byte_identical": true
+        },
+        "labels.json": {
+          "historical": "3/geneva-streets-z18-light/after/labels.json",
+          "final": "final-head/3/geneva-streets-z18-light/after/labels.json",
+          "historical_sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+          "final_sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+          "byte_identical": true
+        },
+        "runtime.json": {
+          "historical": "3/geneva-streets-z18-light/after/runtime.json",
+          "final": "final-head/3/geneva-streets-z18-light/after/runtime.json",
+          "historical_sha256": "bb2f6c78fd49bddbcc6efb000bd6d3c3db6e14aa38624f1f845e240f01256da9",
+          "final_sha256": "bb2f6c78fd49bddbcc6efb000bd6d3c3db6e14aa38624f1f845e240f01256da9",
+          "byte_identical": true
+        }
+      },
+      "changed_pixels": 0,
+      "max_channel_delta": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "3",
+      "camera": "geneva-urban-z14-light",
+      "comparisons": {
+        "qgis.png": {
+          "historical": "3/geneva-urban-z14-light/after/qgis.png",
+          "final": "final-head/3/geneva-urban-z14-light/after/qgis.png",
+          "historical_sha256": "bc11e49289db93790122cceec967133a73212c6c0ece3debf1c7bb3d56bfe9d3",
+          "final_sha256": "bc11e49289db93790122cceec967133a73212c6c0ece3debf1c7bb3d56bfe9d3",
+          "byte_identical": true
+        },
+        "labels.json": {
+          "historical": "3/geneva-urban-z14-light/after/labels.json",
+          "final": "final-head/3/geneva-urban-z14-light/after/labels.json",
+          "historical_sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+          "final_sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+          "byte_identical": true
+        },
+        "runtime.json": {
+          "historical": "3/geneva-urban-z14-light/after/runtime.json",
+          "final": "final-head/3/geneva-urban-z14-light/after/runtime.json",
+          "historical_sha256": "fcbb7c6127442c1305369e08d0bf5257c21e6d66647bd22c76f2e77e5d636917",
+          "final_sha256": "fcbb7c6127442c1305369e08d0bf5257c21e6d66647bd22c76f2e77e5d636917",
+          "byte_identical": true
+        }
+      },
+      "changed_pixels": 0,
+      "max_channel_delta": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "3",
+      "camera": "jerusalem-city-z14",
+      "comparisons": {
+        "qgis.png": {
+          "historical": "3/jerusalem-city-z14/after/qgis.png",
+          "final": "final-head/3/jerusalem-city-z14/after/qgis.png",
+          "historical_sha256": "30fc8b6e787b177a44531f019bc40a1bcce67766314ca18c7c40d113584d2393",
+          "final_sha256": "30fc8b6e787b177a44531f019bc40a1bcce67766314ca18c7c40d113584d2393",
+          "byte_identical": true
+        },
+        "labels.json": {
+          "historical": "3/jerusalem-city-z14/after/labels.json",
+          "final": "final-head/3/jerusalem-city-z14/after/labels.json",
+          "historical_sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+          "final_sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+          "byte_identical": true
+        },
+        "runtime.json": {
+          "historical": "3/jerusalem-city-z14/after/runtime.json",
+          "final": "final-head/3/jerusalem-city-z14/after/runtime.json",
+          "historical_sha256": "d049de0865b29a7686cbfe2a989ed5b5c2a7b1aacdb876f2000645588dc94f3c",
+          "final_sha256": "d049de0865b29a7686cbfe2a989ed5b5c2a7b1aacdb876f2000645588dc94f3c",
+          "byte_identical": true
+        }
+      },
+      "changed_pixels": 0,
+      "max_channel_delta": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "3",
+      "camera": "jerusalem-city-z14-activity",
+      "comparisons": {
+        "qgis.png": {
+          "historical": "3/jerusalem-city-z14-activity/after/qgis.png",
+          "final": "final-head/3/jerusalem-city-z14-activity/after/qgis.png",
+          "historical_sha256": "54cd8f2ee262d8276ae949afafa02126aa960d3455215be486c17af12491a01b",
+          "final_sha256": "54cd8f2ee262d8276ae949afafa02126aa960d3455215be486c17af12491a01b",
+          "byte_identical": true
+        },
+        "labels.json": {
+          "historical": "3/jerusalem-city-z14-activity/after/labels.json",
+          "final": "final-head/3/jerusalem-city-z14-activity/after/labels.json",
+          "historical_sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+          "final_sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+          "byte_identical": true
+        },
+        "runtime.json": {
+          "historical": "3/jerusalem-city-z14-activity/after/runtime.json",
+          "final": "final-head/3/jerusalem-city-z14-activity/after/runtime.json",
+          "historical_sha256": "d049de0865b29a7686cbfe2a989ed5b5c2a7b1aacdb876f2000645588dc94f3c",
+          "final_sha256": "d049de0865b29a7686cbfe2a989ed5b5c2a7b1aacdb876f2000645588dc94f3c",
+          "byte_identical": true
+        }
+      },
+      "changed_pixels": 0,
+      "max_channel_delta": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "3",
+      "camera": "lausanne-lavaux-z10-light",
+      "comparisons": {
+        "qgis.png": {
+          "historical": "3/lausanne-lavaux-z10-light/after/qgis.png",
+          "final": "final-head/3/lausanne-lavaux-z10-light/after/qgis.png",
+          "historical_sha256": "01ee25249969a9312922d2a4dc3af934751d04729e1bbced7e44159d61bd8d46",
+          "final_sha256": "01ee25249969a9312922d2a4dc3af934751d04729e1bbced7e44159d61bd8d46",
+          "byte_identical": true
+        },
+        "labels.json": {
+          "historical": "3/lausanne-lavaux-z10-light/after/labels.json",
+          "final": "final-head/3/lausanne-lavaux-z10-light/after/labels.json",
+          "historical_sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+          "final_sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+          "byte_identical": true
+        },
+        "runtime.json": {
+          "historical": "3/lausanne-lavaux-z10-light/after/runtime.json",
+          "final": "final-head/3/lausanne-lavaux-z10-light/after/runtime.json",
+          "historical_sha256": "d293af81ecc636b7f2ca0e9f2536a1689cb07ce7f6dba383e95a20ec6224ad91",
+          "final_sha256": "d293af81ecc636b7f2ca0e9f2536a1689cb07ce7f6dba383e95a20ec6224ad91",
+          "byte_identical": true
+        }
+      },
+      "changed_pixels": 0,
+      "max_channel_delta": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "3",
+      "camera": "switzerland-alps-z5-light",
+      "comparisons": {
+        "qgis.png": {
+          "historical": "3/switzerland-alps-z5-light/after/qgis.png",
+          "final": "final-head/3/switzerland-alps-z5-light/after/qgis.png",
+          "historical_sha256": "e33cf6f0652b2dc2e13a236d9deed6d4be52e3834b4c107351d7f5d21b928d3e",
+          "final_sha256": "e33cf6f0652b2dc2e13a236d9deed6d4be52e3834b4c107351d7f5d21b928d3e",
+          "byte_identical": true
+        },
+        "labels.json": {
+          "historical": "3/switzerland-alps-z5-light/after/labels.json",
+          "final": "final-head/3/switzerland-alps-z5-light/after/labels.json",
+          "historical_sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+          "final_sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+          "byte_identical": true
+        },
+        "runtime.json": {
+          "historical": "3/switzerland-alps-z5-light/after/runtime.json",
+          "final": "final-head/3/switzerland-alps-z5-light/after/runtime.json",
+          "historical_sha256": "b96b54ffcdcdc323fb0f6ee21cf45c2a57e234e02ba3c277b300e9e6374b92f0",
+          "final_sha256": "b96b54ffcdcdc323fb0f6ee21cf45c2a57e234e02ba3c277b300e9e6374b92f0",
+          "byte_identical": true
+        }
+      },
+      "changed_pixels": 0,
+      "max_channel_delta": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "3",
+      "camera": "zurich-region-z8-light",
+      "comparisons": {
+        "qgis.png": {
+          "historical": "3/zurich-region-z8-light/after/qgis.png",
+          "final": "final-head/3/zurich-region-z8-light/after/qgis.png",
+          "historical_sha256": "886180099efdbf4a7c3cdd75e7719408c34b71b69f36310765a9b2a4f7f9fdeb",
+          "final_sha256": "886180099efdbf4a7c3cdd75e7719408c34b71b69f36310765a9b2a4f7f9fdeb",
+          "byte_identical": true
+        },
+        "labels.json": {
+          "historical": "3/zurich-region-z8-light/after/labels.json",
+          "final": "final-head/3/zurich-region-z8-light/after/labels.json",
+          "historical_sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+          "final_sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+          "byte_identical": true
+        },
+        "runtime.json": {
+          "historical": "3/zurich-region-z8-light/after/runtime.json",
+          "final": "final-head/3/zurich-region-z8-light/after/runtime.json",
+          "historical_sha256": "eb5691f1386987ff3f5d562ae25bcdb8d3240e9b0fc46d7a212a0cccd2533515",
+          "final_sha256": "eb5691f1386987ff3f5d562ae25bcdb8d3240e9b0fc46d7a212a0cccd2533515",
+          "byte_identical": true
+        }
+      },
+      "changed_pixels": 0,
+      "max_channel_delta": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "3",
+      "camera": "zurich-streets-z17-light",
+      "comparisons": {
+        "qgis.png": {
+          "historical": "3/zurich-streets-z17-light/after/qgis.png",
+          "final": "final-head/3/zurich-streets-z17-light/after/qgis.png",
+          "historical_sha256": "87f065071da31fb6bca580413e5e1aa3006c1294126235b35f55aea2430e37ee",
+          "final_sha256": "87f065071da31fb6bca580413e5e1aa3006c1294126235b35f55aea2430e37ee",
+          "byte_identical": true
+        },
+        "labels.json": {
+          "historical": "3/zurich-streets-z17-light/after/labels.json",
+          "final": "final-head/3/zurich-streets-z17-light/after/labels.json",
+          "historical_sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+          "final_sha256": "1e929f443c07f537b1880301e355430029ee21a588f22033a1eba389bfd66792",
+          "byte_identical": true
+        },
+        "runtime.json": {
+          "historical": "3/zurich-streets-z17-light/after/runtime.json",
+          "final": "final-head/3/zurich-streets-z17-light/after/runtime.json",
+          "historical_sha256": "40fa05c28e3e2670c2d5c0f34bd4ac476cdf8045d0ec11fd1dfba5b4f831d789",
+          "final_sha256": "40fa05c28e3e2670c2d5c0f34bd4ac476cdf8045d0ec11fd1dfba5b4f831d789",
+          "byte_identical": true
+        }
+      },
+      "changed_pixels": 0,
+      "max_channel_delta": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "4",
+      "camera": "bern-urban-z12-light",
+      "comparisons": {
+        "qgis.png": {
+          "historical": "4/bern-urban-z12-light/after/qgis.png",
+          "final": "final-head/4/bern-urban-z12-light/after/qgis.png",
+          "historical_sha256": "b2f1f44db6aeb8e56078253828089941d2f647ad8f9d735993ae12a33808a51b",
+          "final_sha256": "b2f1f44db6aeb8e56078253828089941d2f647ad8f9d735993ae12a33808a51b",
+          "byte_identical": true
+        },
+        "labels.json": {
+          "historical": "4/bern-urban-z12-light/after/labels.json",
+          "final": "final-head/4/bern-urban-z12-light/after/labels.json",
+          "historical_sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+          "final_sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+          "byte_identical": true
+        },
+        "runtime.json": {
+          "historical": "4/bern-urban-z12-light/after/runtime.json",
+          "final": "final-head/4/bern-urban-z12-light/after/runtime.json",
+          "historical_sha256": "a02eacb9a36fd4ef9a0be1110379636159684e7daa21041498b0016d7f47bacf",
+          "final_sha256": "a02eacb9a36fd4ef9a0be1110379636159684e7daa21041498b0016d7f47bacf",
+          "byte_identical": true
+        }
+      },
+      "changed_pixels": 0,
+      "max_channel_delta": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "4",
+      "camera": "cairo-nile-z14",
+      "comparisons": {
+        "qgis.png": {
+          "historical": "4/cairo-nile-z14/after/qgis.png",
+          "final": "final-head/4/cairo-nile-z14/after/qgis.png",
+          "historical_sha256": "dcb444684a8b2901d1de5c095dba0678658fe5d75c6e04baf0bf20e6544916f3",
+          "final_sha256": "dcb444684a8b2901d1de5c095dba0678658fe5d75c6e04baf0bf20e6544916f3",
+          "byte_identical": true
+        },
+        "labels.json": {
+          "historical": "4/cairo-nile-z14/after/labels.json",
+          "final": "final-head/4/cairo-nile-z14/after/labels.json",
+          "historical_sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+          "final_sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+          "byte_identical": true
+        },
+        "runtime.json": {
+          "historical": "4/cairo-nile-z14/after/runtime.json",
+          "final": "final-head/4/cairo-nile-z14/after/runtime.json",
+          "historical_sha256": "cf69b682b385437ebd03eef2de4f1361e0d7b27806c5ae21543765b53d4af7c3",
+          "final_sha256": "cf69b682b385437ebd03eef2de4f1361e0d7b27806c5ae21543765b53d4af7c3",
+          "byte_identical": true
+        }
+      },
+      "changed_pixels": 0,
+      "max_channel_delta": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "4",
+      "camera": "cairo-nile-z14-activity",
+      "comparisons": {
+        "qgis.png": {
+          "historical": "4/cairo-nile-z14-activity/after/qgis.png",
+          "final": "final-head/4/cairo-nile-z14-activity/after/qgis.png",
+          "historical_sha256": "368e2b7556d6eb32df34f7707e2b879255bdc0818220395519412d5668b7aca8",
+          "final_sha256": "368e2b7556d6eb32df34f7707e2b879255bdc0818220395519412d5668b7aca8",
+          "byte_identical": true
+        },
+        "labels.json": {
+          "historical": "4/cairo-nile-z14-activity/after/labels.json",
+          "final": "final-head/4/cairo-nile-z14-activity/after/labels.json",
+          "historical_sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+          "final_sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+          "byte_identical": true
+        },
+        "runtime.json": {
+          "historical": "4/cairo-nile-z14-activity/after/runtime.json",
+          "final": "final-head/4/cairo-nile-z14-activity/after/runtime.json",
+          "historical_sha256": "cf69b682b385437ebd03eef2de4f1361e0d7b27806c5ae21543765b53d4af7c3",
+          "final_sha256": "cf69b682b385437ebd03eef2de4f1361e0d7b27806c5ae21543765b53d4af7c3",
+          "byte_identical": true
+        }
+      },
+      "changed_pixels": 0,
+      "max_channel_delta": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "4",
+      "camera": "cairo-z11.9",
+      "comparisons": {
+        "qgis.png": {
+          "historical": "4/cairo-z11.9/after/qgis.png",
+          "final": "final-head/4/cairo-z11.9/after/qgis.png",
+          "historical_sha256": "83506176541997682185aeee70e85a3092e3a54a95ade3e1643ba02ff85e7ab5",
+          "final_sha256": "83506176541997682185aeee70e85a3092e3a54a95ade3e1643ba02ff85e7ab5",
+          "byte_identical": true
+        },
+        "labels.json": {
+          "historical": "4/cairo-z11.9/after/labels.json",
+          "final": "final-head/4/cairo-z11.9/after/labels.json",
+          "historical_sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+          "final_sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+          "byte_identical": true
+        },
+        "runtime.json": {
+          "historical": "4/cairo-z11.9/after/runtime.json",
+          "final": "final-head/4/cairo-z11.9/after/runtime.json",
+          "historical_sha256": "7bc7151a90db31ac982ad51fd84944a73967bc7f1dc8deedefc036597bfc6701",
+          "final_sha256": "7bc7151a90db31ac982ad51fd84944a73967bc7f1dc8deedefc036597bfc6701",
+          "byte_identical": true
+        }
+      },
+      "changed_pixels": 0,
+      "max_channel_delta": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "4",
+      "camera": "cairo-z12",
+      "comparisons": {
+        "qgis.png": {
+          "historical": "4/cairo-z12/after/qgis.png",
+          "final": "final-head/4/cairo-z12/after/qgis.png",
+          "historical_sha256": "d52e5418856db8a7f12cf551ff7c3a0735d7fb4e1ba7f5e7b0c6e47dfb2cfca0",
+          "final_sha256": "d52e5418856db8a7f12cf551ff7c3a0735d7fb4e1ba7f5e7b0c6e47dfb2cfca0",
+          "byte_identical": true
+        },
+        "labels.json": {
+          "historical": "4/cairo-z12/after/labels.json",
+          "final": "final-head/4/cairo-z12/after/labels.json",
+          "historical_sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+          "final_sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+          "byte_identical": true
+        },
+        "runtime.json": {
+          "historical": "4/cairo-z12/after/runtime.json",
+          "final": "final-head/4/cairo-z12/after/runtime.json",
+          "historical_sha256": "65b44eb9fa5a70f127612d3de418f5a9675e6b8169521163e764116e90498b8c",
+          "final_sha256": "65b44eb9fa5a70f127612d3de418f5a9675e6b8169521163e764116e90498b8c",
+          "byte_identical": true
+        }
+      },
+      "changed_pixels": 0,
+      "max_channel_delta": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "4",
+      "camera": "cairo-z12.1",
+      "comparisons": {
+        "qgis.png": {
+          "historical": "4/cairo-z12.1/after/qgis.png",
+          "final": "final-head/4/cairo-z12.1/after/qgis.png",
+          "historical_sha256": "3976529ced235fd714cace2c17512a0325871f9e6ab7516dbb4ddf52384e1c34",
+          "final_sha256": "3976529ced235fd714cace2c17512a0325871f9e6ab7516dbb4ddf52384e1c34",
+          "byte_identical": true
+        },
+        "labels.json": {
+          "historical": "4/cairo-z12.1/after/labels.json",
+          "final": "final-head/4/cairo-z12.1/after/labels.json",
+          "historical_sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+          "final_sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+          "byte_identical": true
+        },
+        "runtime.json": {
+          "historical": "4/cairo-z12.1/after/runtime.json",
+          "final": "final-head/4/cairo-z12.1/after/runtime.json",
+          "historical_sha256": "78b2977c702a45dd55f7d6f6dd9e3faa5f3767d85685b9b8c2396848442838e3",
+          "final_sha256": "78b2977c702a45dd55f7d6f6dd9e3faa5f3767d85685b9b8c2396848442838e3",
+          "byte_identical": true
+        }
+      },
+      "changed_pixels": 0,
+      "max_channel_delta": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "4",
+      "camera": "cairo-z14.9",
+      "comparisons": {
+        "qgis.png": {
+          "historical": "4/cairo-z14.9/after/qgis.png",
+          "final": "final-head/4/cairo-z14.9/after/qgis.png",
+          "historical_sha256": "d3eed8cf44ec8b4dd581df2d658eec31641a72c3db30ab96a63c65ba6776aee2",
+          "final_sha256": "d3eed8cf44ec8b4dd581df2d658eec31641a72c3db30ab96a63c65ba6776aee2",
+          "byte_identical": true
+        },
+        "labels.json": {
+          "historical": "4/cairo-z14.9/after/labels.json",
+          "final": "final-head/4/cairo-z14.9/after/labels.json",
+          "historical_sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+          "final_sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+          "byte_identical": true
+        },
+        "runtime.json": {
+          "historical": "4/cairo-z14.9/after/runtime.json",
+          "final": "final-head/4/cairo-z14.9/after/runtime.json",
+          "historical_sha256": "c604ffcb0eef8875f89932f0be7e3fe8e20f14bcf756be4c44ec373fcb9796a4",
+          "final_sha256": "c604ffcb0eef8875f89932f0be7e3fe8e20f14bcf756be4c44ec373fcb9796a4",
+          "byte_identical": true
+        }
+      },
+      "changed_pixels": 0,
+      "max_channel_delta": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "4",
+      "camera": "cairo-z15",
+      "comparisons": {
+        "qgis.png": {
+          "historical": "4/cairo-z15/after/qgis.png",
+          "final": "final-head/4/cairo-z15/after/qgis.png",
+          "historical_sha256": "c56cc443fb253af34b6c4ce1665ab3bfabed9947cda8cbbdc835312e429ceb14",
+          "final_sha256": "c56cc443fb253af34b6c4ce1665ab3bfabed9947cda8cbbdc835312e429ceb14",
+          "byte_identical": true
+        },
+        "labels.json": {
+          "historical": "4/cairo-z15/after/labels.json",
+          "final": "final-head/4/cairo-z15/after/labels.json",
+          "historical_sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+          "final_sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+          "byte_identical": true
+        },
+        "runtime.json": {
+          "historical": "4/cairo-z15/after/runtime.json",
+          "final": "final-head/4/cairo-z15/after/runtime.json",
+          "historical_sha256": "62201897c3c8bea3d82f9e7f613be04f2809baa726b62253459e31dba93fec06",
+          "final_sha256": "62201897c3c8bea3d82f9e7f613be04f2809baa726b62253459e31dba93fec06",
+          "byte_identical": true
+        }
+      },
+      "changed_pixels": 0,
+      "max_channel_delta": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "4",
+      "camera": "cairo-z15.1",
+      "comparisons": {
+        "qgis.png": {
+          "historical": "4/cairo-z15.1/after/qgis.png",
+          "final": "final-head/4/cairo-z15.1/after/qgis.png",
+          "historical_sha256": "6a73ecb6fab6333a539485a6261b32029cccb5f6fb310fa6906544d8410ed376",
+          "final_sha256": "6a73ecb6fab6333a539485a6261b32029cccb5f6fb310fa6906544d8410ed376",
+          "byte_identical": true
+        },
+        "labels.json": {
+          "historical": "4/cairo-z15.1/after/labels.json",
+          "final": "final-head/4/cairo-z15.1/after/labels.json",
+          "historical_sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+          "final_sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+          "byte_identical": true
+        },
+        "runtime.json": {
+          "historical": "4/cairo-z15.1/after/runtime.json",
+          "final": "final-head/4/cairo-z15.1/after/runtime.json",
+          "historical_sha256": "9d1148d13bb2a0b16cdf1d230f25cb03ca43947c352ecd967616932ce9d750b1",
+          "final_sha256": "9d1148d13bb2a0b16cdf1d230f25cb03ca43947c352ecd967616932ce9d750b1",
+          "byte_identical": true
+        }
+      },
+      "changed_pixels": 0,
+      "max_channel_delta": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "4",
+      "camera": "geneva-streets-z18-light",
+      "comparisons": {
+        "qgis.png": {
+          "historical": "4/geneva-streets-z18-light/after/qgis.png",
+          "final": "final-head/4/geneva-streets-z18-light/after/qgis.png",
+          "historical_sha256": "b8f175e538c415a385ffc97b1b77aae6116232543ca6861766cbc30911c8fc8d",
+          "final_sha256": "b8f175e538c415a385ffc97b1b77aae6116232543ca6861766cbc30911c8fc8d",
+          "byte_identical": true
+        },
+        "labels.json": {
+          "historical": "4/geneva-streets-z18-light/after/labels.json",
+          "final": "final-head/4/geneva-streets-z18-light/after/labels.json",
+          "historical_sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+          "final_sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+          "byte_identical": true
+        },
+        "runtime.json": {
+          "historical": "4/geneva-streets-z18-light/after/runtime.json",
+          "final": "final-head/4/geneva-streets-z18-light/after/runtime.json",
+          "historical_sha256": "2f00820141ddea2c24f17a3e6fb47d3c4076b73142203c9f58546774d2b13c82",
+          "final_sha256": "2f00820141ddea2c24f17a3e6fb47d3c4076b73142203c9f58546774d2b13c82",
+          "byte_identical": true
+        }
+      },
+      "changed_pixels": 0,
+      "max_channel_delta": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "4",
+      "camera": "geneva-urban-z14-light",
+      "comparisons": {
+        "qgis.png": {
+          "historical": "4/geneva-urban-z14-light/after/qgis.png",
+          "final": "final-head/4/geneva-urban-z14-light/after/qgis.png",
+          "historical_sha256": "9fa6f062a723a65a86e31b9d1161a5ed9f534f6feac09caef0c921a0a961f4d1",
+          "final_sha256": "9fa6f062a723a65a86e31b9d1161a5ed9f534f6feac09caef0c921a0a961f4d1",
+          "byte_identical": true
+        },
+        "labels.json": {
+          "historical": "4/geneva-urban-z14-light/after/labels.json",
+          "final": "final-head/4/geneva-urban-z14-light/after/labels.json",
+          "historical_sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+          "final_sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+          "byte_identical": true
+        },
+        "runtime.json": {
+          "historical": "4/geneva-urban-z14-light/after/runtime.json",
+          "final": "final-head/4/geneva-urban-z14-light/after/runtime.json",
+          "historical_sha256": "666849ba4a149a5fc3f9467634a0c37b4e5e1ec053e7e38ace5fbc03ff8dcf50",
+          "final_sha256": "666849ba4a149a5fc3f9467634a0c37b4e5e1ec053e7e38ace5fbc03ff8dcf50",
+          "byte_identical": true
+        }
+      },
+      "changed_pixels": 0,
+      "max_channel_delta": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "4",
+      "camera": "jerusalem-city-z14",
+      "comparisons": {
+        "qgis.png": {
+          "historical": "4/jerusalem-city-z14/after/qgis.png",
+          "final": "final-head/4/jerusalem-city-z14/after/qgis.png",
+          "historical_sha256": "36a5d512dd57727c8e4f118888c9de637ff39c01af5f445a37b75372f90a0974",
+          "final_sha256": "36a5d512dd57727c8e4f118888c9de637ff39c01af5f445a37b75372f90a0974",
+          "byte_identical": true
+        },
+        "labels.json": {
+          "historical": "4/jerusalem-city-z14/after/labels.json",
+          "final": "final-head/4/jerusalem-city-z14/after/labels.json",
+          "historical_sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+          "final_sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+          "byte_identical": true
+        },
+        "runtime.json": {
+          "historical": "4/jerusalem-city-z14/after/runtime.json",
+          "final": "final-head/4/jerusalem-city-z14/after/runtime.json",
+          "historical_sha256": "f17128134edde8870fa1a589d78ab92e30f8f0ab43bdb20a24c95964e717c0fe",
+          "final_sha256": "f17128134edde8870fa1a589d78ab92e30f8f0ab43bdb20a24c95964e717c0fe",
+          "byte_identical": true
+        }
+      },
+      "changed_pixels": 0,
+      "max_channel_delta": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "4",
+      "camera": "jerusalem-city-z14-activity",
+      "comparisons": {
+        "qgis.png": {
+          "historical": "4/jerusalem-city-z14-activity/after/qgis.png",
+          "final": "final-head/4/jerusalem-city-z14-activity/after/qgis.png",
+          "historical_sha256": "1854db0e6674245a4ecfb692f4cb9175dd8c112f8f189a5c4ee8c14c7d703fd9",
+          "final_sha256": "1854db0e6674245a4ecfb692f4cb9175dd8c112f8f189a5c4ee8c14c7d703fd9",
+          "byte_identical": true
+        },
+        "labels.json": {
+          "historical": "4/jerusalem-city-z14-activity/after/labels.json",
+          "final": "final-head/4/jerusalem-city-z14-activity/after/labels.json",
+          "historical_sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+          "final_sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+          "byte_identical": true
+        },
+        "runtime.json": {
+          "historical": "4/jerusalem-city-z14-activity/after/runtime.json",
+          "final": "final-head/4/jerusalem-city-z14-activity/after/runtime.json",
+          "historical_sha256": "f17128134edde8870fa1a589d78ab92e30f8f0ab43bdb20a24c95964e717c0fe",
+          "final_sha256": "f17128134edde8870fa1a589d78ab92e30f8f0ab43bdb20a24c95964e717c0fe",
+          "byte_identical": true
+        }
+      },
+      "changed_pixels": 0,
+      "max_channel_delta": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "4",
+      "camera": "lausanne-lavaux-z10-light",
+      "comparisons": {
+        "qgis.png": {
+          "historical": "4/lausanne-lavaux-z10-light/after/qgis.png",
+          "final": "final-head/4/lausanne-lavaux-z10-light/after/qgis.png",
+          "historical_sha256": "f6353d9145caf654bc85c0064e2703da8de68bb0162c681e9d89f1a17ac0f0bf",
+          "final_sha256": "f6353d9145caf654bc85c0064e2703da8de68bb0162c681e9d89f1a17ac0f0bf",
+          "byte_identical": true
+        },
+        "labels.json": {
+          "historical": "4/lausanne-lavaux-z10-light/after/labels.json",
+          "final": "final-head/4/lausanne-lavaux-z10-light/after/labels.json",
+          "historical_sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+          "final_sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+          "byte_identical": true
+        },
+        "runtime.json": {
+          "historical": "4/lausanne-lavaux-z10-light/after/runtime.json",
+          "final": "final-head/4/lausanne-lavaux-z10-light/after/runtime.json",
+          "historical_sha256": "955f9a7e23bd3e6f2c0a6826fa3de42f95b7b3fa87ba20df17bb5c021271f0e5",
+          "final_sha256": "955f9a7e23bd3e6f2c0a6826fa3de42f95b7b3fa87ba20df17bb5c021271f0e5",
+          "byte_identical": true
+        }
+      },
+      "changed_pixels": 0,
+      "max_channel_delta": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "4",
+      "camera": "switzerland-alps-z5-light",
+      "comparisons": {
+        "qgis.png": {
+          "historical": "4/switzerland-alps-z5-light/after/qgis.png",
+          "final": "final-head/4/switzerland-alps-z5-light/after/qgis.png",
+          "historical_sha256": "727ddae21672d78ca218d85bcb124d3f04528a6076d5d6dd29a4a4e442d701df",
+          "final_sha256": "727ddae21672d78ca218d85bcb124d3f04528a6076d5d6dd29a4a4e442d701df",
+          "byte_identical": true
+        },
+        "labels.json": {
+          "historical": "4/switzerland-alps-z5-light/after/labels.json",
+          "final": "final-head/4/switzerland-alps-z5-light/after/labels.json",
+          "historical_sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+          "final_sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+          "byte_identical": true
+        },
+        "runtime.json": {
+          "historical": "4/switzerland-alps-z5-light/after/runtime.json",
+          "final": "final-head/4/switzerland-alps-z5-light/after/runtime.json",
+          "historical_sha256": "51c2438f58f5c590a89481c974ede962cbc236c66fedbcb7e7c41fe9a925e2c6",
+          "final_sha256": "51c2438f58f5c590a89481c974ede962cbc236c66fedbcb7e7c41fe9a925e2c6",
+          "byte_identical": true
+        }
+      },
+      "changed_pixels": 0,
+      "max_channel_delta": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "4",
+      "camera": "zurich-region-z8-light",
+      "comparisons": {
+        "qgis.png": {
+          "historical": "4/zurich-region-z8-light/after/qgis.png",
+          "final": "final-head/4/zurich-region-z8-light/after/qgis.png",
+          "historical_sha256": "9f6bcda32a7e89301532fe9047a0906ac31e2def4c12eb584ddfd0bf8f5f22c3",
+          "final_sha256": "9f6bcda32a7e89301532fe9047a0906ac31e2def4c12eb584ddfd0bf8f5f22c3",
+          "byte_identical": true
+        },
+        "labels.json": {
+          "historical": "4/zurich-region-z8-light/after/labels.json",
+          "final": "final-head/4/zurich-region-z8-light/after/labels.json",
+          "historical_sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+          "final_sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+          "byte_identical": true
+        },
+        "runtime.json": {
+          "historical": "4/zurich-region-z8-light/after/runtime.json",
+          "final": "final-head/4/zurich-region-z8-light/after/runtime.json",
+          "historical_sha256": "7bdfbce26f984b1be7b19be67bf0cf13952e1989125d6f90da46089e8a952f1c",
+          "final_sha256": "7bdfbce26f984b1be7b19be67bf0cf13952e1989125d6f90da46089e8a952f1c",
+          "byte_identical": true
+        }
+      },
+      "changed_pixels": 0,
+      "max_channel_delta": 0,
+      "normalized_mae": 0.0
+    },
+    {
+      "runtime": "4",
+      "camera": "zurich-streets-z17-light",
+      "comparisons": {
+        "qgis.png": {
+          "historical": "4/zurich-streets-z17-light/after/qgis.png",
+          "final": "final-head/4/zurich-streets-z17-light/after/qgis.png",
+          "historical_sha256": "0b2fb957571220b6e2703e426c53f3d670412aed5052b35b5c36c0ab88bc7122",
+          "final_sha256": "0b2fb957571220b6e2703e426c53f3d670412aed5052b35b5c36c0ab88bc7122",
+          "byte_identical": true
+        },
+        "labels.json": {
+          "historical": "4/zurich-streets-z17-light/after/labels.json",
+          "final": "final-head/4/zurich-streets-z17-light/after/labels.json",
+          "historical_sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+          "final_sha256": "0df5c05b8a1fdc04bb66dc68b2bb3dde4708f668e5dbd9e246da450105db196e",
+          "byte_identical": true
+        },
+        "runtime.json": {
+          "historical": "4/zurich-streets-z17-light/after/runtime.json",
+          "final": "final-head/4/zurich-streets-z17-light/after/runtime.json",
+          "historical_sha256": "0f3b37576c8faec5312ca5f531cfb084a9db5ae3a389ab920b2068d81f423be3",
+          "final_sha256": "0f3b37576c8faec5312ca5f531cfb084a9db5ae3a389ab920b2068d81f423be3",
+          "byte_identical": true
+        }
+      },
+      "changed_pixels": 0,
+      "max_channel_delta": 0,
+      "normalized_mae": 0.0
+    }
+  ],
+  "pdf_cells": [
+    {
+      "runtime": "3",
+      "camera": "cairo-nile-z14",
+      "historical_after_vs_final": {
+        "changed_pixels": 0,
+        "max_channel_delta": 0,
+        "normalized_mae": 0.0
+      },
+      "final_repeat": {
+        "changed_pixels": 0,
+        "max_channel_delta": 0,
+        "normalized_mae": 0.0
+      },
+      "context_identical": true,
+      "supporting_png_identical": true,
+      "operands": {
+        "pdf150.png": {
+          "historical": "3/cairo-nile-z14/pdf-after/pdf150.png",
+          "final": "final-head/3/cairo-nile-z14/pdf-after/pdf150.png",
+          "historical_sha256": "f79152f7c9310b16e38cf7471daad008a94373566433e3c5533b4a7c80895277",
+          "final_sha256": "f79152f7c9310b16e38cf7471daad008a94373566433e3c5533b4a7c80895277"
+        },
+        "pdf150-repeat.png": {
+          "historical": "3/cairo-nile-z14/pdf-after/pdf150-repeat.png",
+          "final": "final-head/3/cairo-nile-z14/pdf-after/pdf150-repeat.png",
+          "historical_sha256": "f79152f7c9310b16e38cf7471daad008a94373566433e3c5533b4a7c80895277",
+          "final_sha256": "f79152f7c9310b16e38cf7471daad008a94373566433e3c5533b4a7c80895277"
+        },
+        "qgis.png": {
+          "historical": "3/cairo-nile-z14/pdf-after/qgis.png",
+          "final": "final-head/3/cairo-nile-z14/pdf-after/qgis.png",
+          "historical_sha256": "2fc2a57291216ff3e6e84905f4848a933a5ca8ead78c87367ec251ed8a71f5e5",
+          "final_sha256": "2fc2a57291216ff3e6e84905f4848a933a5ca8ead78c87367ec251ed8a71f5e5"
+        }
+      }
+    },
+    {
+      "runtime": "3",
+      "camera": "jerusalem-city-z14",
+      "historical_after_vs_final": {
+        "changed_pixels": 0,
+        "max_channel_delta": 0,
+        "normalized_mae": 0.0
+      },
+      "final_repeat": {
+        "changed_pixels": 0,
+        "max_channel_delta": 0,
+        "normalized_mae": 0.0
+      },
+      "context_identical": true,
+      "supporting_png_identical": true,
+      "operands": {
+        "pdf150.png": {
+          "historical": "3/jerusalem-city-z14/pdf-after/pdf150.png",
+          "final": "final-head/3/jerusalem-city-z14/pdf-after/pdf150.png",
+          "historical_sha256": "b58fdf406516a00a11f7e431662deea5024f43a41b5b14ef13d666c81ff295f5",
+          "final_sha256": "b58fdf406516a00a11f7e431662deea5024f43a41b5b14ef13d666c81ff295f5"
+        },
+        "pdf150-repeat.png": {
+          "historical": "3/jerusalem-city-z14/pdf-after/pdf150-repeat.png",
+          "final": "final-head/3/jerusalem-city-z14/pdf-after/pdf150-repeat.png",
+          "historical_sha256": "b58fdf406516a00a11f7e431662deea5024f43a41b5b14ef13d666c81ff295f5",
+          "final_sha256": "b58fdf406516a00a11f7e431662deea5024f43a41b5b14ef13d666c81ff295f5"
+        },
+        "qgis.png": {
+          "historical": "3/jerusalem-city-z14/pdf-after/qgis.png",
+          "final": "final-head/3/jerusalem-city-z14/pdf-after/qgis.png",
+          "historical_sha256": "30fc8b6e787b177a44531f019bc40a1bcce67766314ca18c7c40d113584d2393",
+          "final_sha256": "30fc8b6e787b177a44531f019bc40a1bcce67766314ca18c7c40d113584d2393"
+        }
+      }
+    },
+    {
+      "runtime": "4",
+      "camera": "cairo-nile-z14",
+      "historical_after_vs_final": {
+        "changed_pixels": 51,
+        "max_channel_delta": 29,
+        "normalized_mae": 7.625272331154684e-07
+      },
+      "final_repeat": {
+        "changed_pixels": 31,
+        "max_channel_delta": 29,
+        "normalized_mae": 6.774237472766885e-07
+      },
+      "context_identical": true,
+      "supporting_png_identical": true,
+      "operands": {
+        "pdf150.png": {
+          "historical": "4/cairo-nile-z14/pdf-after/pdf150.png",
+          "final": "final-head/4/cairo-nile-z14/pdf-after/pdf150.png",
+          "historical_sha256": "28ba45443d83563dff346cf4efa0b34bc356c349b47418d3c522b97e29d81dec",
+          "final_sha256": "07a5b6546833b9e4bfceebc224d3f982f45ed463dcaf203f19fbf48714caaaa4"
+        },
+        "pdf150-repeat.png": {
+          "historical": "4/cairo-nile-z14/pdf-after/pdf150-repeat.png",
+          "final": "final-head/4/cairo-nile-z14/pdf-after/pdf150-repeat.png",
+          "historical_sha256": "c4bb86e9a89a502d52bd3d57ce21742cb629472aba3243bd67950ffa0ecf7d10",
+          "final_sha256": "c4bb86e9a89a502d52bd3d57ce21742cb629472aba3243bd67950ffa0ecf7d10"
+        },
+        "qgis.png": {
+          "historical": "4/cairo-nile-z14/pdf-after/qgis.png",
+          "final": "final-head/4/cairo-nile-z14/pdf-after/qgis.png",
+          "historical_sha256": "dcb444684a8b2901d1de5c095dba0678658fe5d75c6e04baf0bf20e6544916f3",
+          "final_sha256": "dcb444684a8b2901d1de5c095dba0678658fe5d75c6e04baf0bf20e6544916f3"
+        }
+      }
+    },
+    {
+      "runtime": "4",
+      "camera": "jerusalem-city-z14",
+      "historical_after_vs_final": {
+        "changed_pixels": 210,
+        "max_channel_delta": 15,
+        "normalized_mae": 9.350036310820624e-07
+      },
+      "final_repeat": {
+        "changed_pixels": 35,
+        "max_channel_delta": 6,
+        "normalized_mae": 1.8382352941176472e-07
+      },
+      "context_identical": true,
+      "supporting_png_identical": true,
+      "operands": {
+        "pdf150.png": {
+          "historical": "4/jerusalem-city-z14/pdf-after/pdf150.png",
+          "final": "final-head/4/jerusalem-city-z14/pdf-after/pdf150.png",
+          "historical_sha256": "95981c9ffc5e4f1359b11fdfff0d199556a811e0d5aaeadb1fe0aaaead59f0d7",
+          "final_sha256": "c64464f4d29c6cf54983e4dbeaa6a548e6cbe2061d799587f778f2aaae96221c"
+        },
+        "pdf150-repeat.png": {
+          "historical": "4/jerusalem-city-z14/pdf-after/pdf150-repeat.png",
+          "final": "final-head/4/jerusalem-city-z14/pdf-after/pdf150-repeat.png",
+          "historical_sha256": "76224b71499977765d77f0b3ab51cc476b19a5c29f357f4d3a94de7353627f3b",
+          "final_sha256": "76224b71499977765d77f0b3ab51cc476b19a5c29f357f4d3a94de7353627f3b"
+        },
+        "qgis.png": {
+          "historical": "4/jerusalem-city-z14/pdf-after/qgis.png",
+          "final": "final-head/4/jerusalem-city-z14/pdf-after/qgis.png",
+          "historical_sha256": "36a5d512dd57727c8e4f118888c9de637ff39c01af5f445a37b75372f90a0974",
+          "final_sha256": "36a5d512dd57727c8e4f118888c9de637ff39c01af5f445a37b75372f90a0974"
+        }
+      }
+    }
+  ],
+  "scope": "Fresh final-head PNG identity and repeated PDF150 raster comparison at96DPI; no PDF-file identity, full-atlas or desktop claim."
+}

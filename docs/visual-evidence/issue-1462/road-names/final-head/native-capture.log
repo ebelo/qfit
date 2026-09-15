@@ -1,0 +1,68 @@
+container_preflight_authorized 3 switzerland-alps-z5-light after
+switzerland-alps-z5-light after 0.03364307598039215
+container_preflight_authorized 3 zurich-region-z8-light after
+zurich-region-z8-light after 0.020545329520697167
+container_preflight_authorized 3 lausanne-lavaux-z10-light after
+lausanne-lavaux-z10-light after 0.007600727351125635
+container_preflight_authorized 3 bern-urban-z12-light after
+bern-urban-z12-light after 0.007191801697530863
+container_preflight_authorized 3 geneva-urban-z14-light after
+geneva-urban-z14-light after 0.010529205246913581
+container_preflight_authorized 3 zurich-streets-z17-light after
+zurich-streets-z17-light after 0.008118471995279593
+container_preflight_authorized 3 geneva-streets-z18-light after
+geneva-streets-z18-light after 0.006925111201888163
+container_preflight_authorized 3 cairo-nile-z14 after
+cairo-nile-z14 after 0.017381488289760348
+container_preflight_authorized 3 jerusalem-city-z14 after
+jerusalem-city-z14 after 0.016460772966594046
+container_preflight_authorized 3 cairo-z11.9 after
+cairo-z11.9 after 0.012564292846768335
+container_preflight_authorized 3 cairo-z12 after
+cairo-z12 after 0.016059355709876544
+container_preflight_authorized 3 cairo-z12.1 after
+cairo-z12.1 after 0.01625739832970225
+container_preflight_authorized 3 cairo-z14.9 after
+cairo-z14.9 after 0.020492304375453886
+container_preflight_authorized 3 cairo-z15 after
+cairo-z15 after 0.021134135575526507
+container_preflight_authorized 3 cairo-z15.1 after
+cairo-z15.1 after 0.018525635439360928
+container_preflight_authorized 3 cairo-nile-z14-activity after
+cairo-nile-z14-activity after 0.020046447213144518
+container_preflight_authorized 3 jerusalem-city-z14-activity after
+jerusalem-city-z14-activity after 0.01904466911764706
+container_preflight_authorized 4 switzerland-alps-z5-light after
+switzerland-alps-z5-light after 0.03313677378358751
+container_preflight_authorized 4 zurich-region-z8-light after
+zurich-region-z8-light after 0.0209557121459695
+container_preflight_authorized 4 lausanne-lavaux-z10-light after
+lausanne-lavaux-z10-light after 0.008125325662672477
+container_preflight_authorized 4 bern-urban-z12-light after
+bern-urban-z12-light after 0.007304119008714597
+container_preflight_authorized 4 geneva-urban-z14-light after
+geneva-urban-z14-light after 0.010571867057007987
+container_preflight_authorized 4 zurich-streets-z17-light after
+zurich-streets-z17-light after 0.008193611564996369
+container_preflight_authorized 4 geneva-streets-z18-light after
+geneva-streets-z18-light after 0.0069738130900508346
+container_preflight_authorized 4 cairo-nile-z14 after
+cairo-nile-z14 after 0.0173260450708061
+container_preflight_authorized 4 jerusalem-city-z14 after
+jerusalem-city-z14 after 0.016582386982570807
+container_preflight_authorized 4 cairo-z11.9 after
+cairo-z11.9 after 0.012711132670660858
+container_preflight_authorized 4 cairo-z12 after
+cairo-z12 after 0.016089011437908498
+container_preflight_authorized 4 cairo-z12.1 after
+cairo-z12.1 after 0.01617640137073348
+container_preflight_authorized 4 cairo-z14.9 after
+cairo-z14.9 after 0.020502831109295568
+container_preflight_authorized 4 cairo-z15 after
+cairo-z15 after 0.02120192674291939
+container_preflight_authorized 4 cairo-z15.1 after
+cairo-z15.1 after 0.01850292415577342
+container_preflight_authorized 4 cairo-nile-z14-activity after
+cairo-nile-z14-activity after 0.019056102487291213
+container_preflight_authorized 4 jerusalem-city-z14-activity after
+jerusalem-city-z14-activity after 0.0183109170751634

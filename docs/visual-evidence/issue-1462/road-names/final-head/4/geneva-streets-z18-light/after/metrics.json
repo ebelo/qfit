@@ -1,0 +1,10 @@
+{
+  "pixel_count": 1152000,
+  "changed_pixel_count": 165578,
+  "changed_pixel_ratio": 0.14373090277777778,
+  "mean_absolute_channel_delta": 1.778322337962963,
+  "normalized_mean_absolute_channel_delta": 0.0069738130900508346,
+  "rms_channel_delta": 7.918084998499116,
+  "normalized_rms_channel_delta": 0.031051313719604377,
+  "ssim_status": "unavailable"
+}

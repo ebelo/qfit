@@ -186,3 +186,77 @@ archived source instead of a fresh fetch and accepts an explicit Chromium path.
 PDF hook is the actual capturedimplementation. Offline content/property audits need
 no credentials or network. Font installation is Docker-scoped; ZIPs do not bundle
 or install desktop faces. These reproducible pieces do not imply immutable live tiles.
+
+## Final-head verification — 2026-09-15
+
+Final code: `035ce920662ba07a7d54e40fb6fa31069c2b59b4`. Codex found that a
+source-owned layer could collide with the generated road-size-band ID. The
+adapter now declines road repair in that case; regression cases include normal
+base bounds and minzoom 16. No source owner is reclassified as a generated rule.
+The source snapshot used for these maps has no such collision.
+
+[Final source/runtime/gate provenance](final-head/final-head-provenance.json) ·
+[named render comparisons](final-head/render-verification.json) ·
+[executable verifier](final-head/verify_final.py) ·
+[exact-head CI and reviews](final-head/review-gates.json).
+
+Fresh same-run Gateway and all 38 container preflights succeeded with HTTP200
+and verified TLS. All captures completed before the run ended: **34 fresh native
+PNGs, 4 PDF-hook PNGs and 8 actual PDFs**, excluding derived rasters/panels.
+The 2026-09-14 browser references and Before maps remain historical; no fresh
+reference or frozen upstream tile-byte claim. The complete current Light source
+was independently fetched and equals the archived source.
+
+All **34 final-head PNGs, complete label inventories and runtime snapshots are
+byte-identical** to the published original candidate, as are all four PDF-hook
+PNGs. Thus the original native PNG After panels also represent the final head.
+QGIS3 final PDFs rasterize identically to the original After and their new
+repeats. QGIS4 final initial rasters differ by **51 pixels in Cairo /210 in
+Jerusalem** from the original After; fresh final repeats differ by **31/35**.
+All PDF contexts are identical. These differences remain unclassified C29
+variability, not a repeatability pass or presumed noise. PDF-file bytes are not
+compared. Density-dependent native detail remains OPEN.
+
+### Final PDF output
+
+Panels are **historical Mapbox PNG context | historical QGIS4 PDF Before c1987b8 |
+fresh QGIS4 PDF Final 035ce92**. PDFs use production150DPI and are viewed at96DPI;
+crops are unscaled380×300 at `(400,260,780,560)`. PNG reference is context only,
+not browser PDF proof.
+
+![Final Cairo PDF](final-head/cairo-nile-z14-qgis4-pdf150-crop.png)
+
+[Cairo full comparison](final-head/cairo-nile-z14-qgis4-pdf150-full.png) ·
+[final PDF](final-head/4/cairo-nile-z14/pdf-after/pdf150.pdf) ·
+[repeat](final-head/4/cairo-nile-z14/pdf-after/pdf150-repeat.pdf).
+
+![Final Jerusalem PDF](final-head/jerusalem-city-z14-qgis4-pdf150-crop.png)
+
+[Jerusalem full comparison](final-head/jerusalem-city-z14-qgis4-pdf150-full.png) ·
+[final PDF](final-head/4/jerusalem-city-z14/pdf-after/pdf150.pdf).
+QGIS3 equivalents, all final PNGs, unchanged contexts and actual placement
+records are in the matching final-head runtime/camera folders. Source-requested
+road names remain visible; unrelated labels, native density detail and broader
+association/RTL/output limitations are not certified by this correction.
+
+Full final local suite: **2679 passed /191 skipped /313 subtests**; complete
+Docker3/4: **216 passed /82 skipped each**. Both ZIP builds and9 package tests
+pass. All11 CI/security/CodeQL/Sonar/Greptile checks pass; final-head Codex
+completed clean, Greptile5/5, initial review thread fixed/replied/resolved.
+Fresh Sonar issues API after final analysis: HTTP200,total0. No outstanding
+review is accepted as a limitation.
+
+To recompute comparisons from this evidence tree (requires Pillow, NumPy and
+Poppler, no network or credentials):
+
+```bash
+python3 final-head/verify_final.py --historical . --final final-head
+```
+
+Live replay uses the existing portable worker with `--repo` at final035ce92,
+in a writable copy of the original evidence tree, as described above. Native
+PNG worker and PDF hook are unchanged from the captured originals; source and
+all233 runtime Python hashes are pinned in final provenance. The only runtime
+file changed since e497570 is the collision guard in `mapbox_light_labels.py`.
+No full atlas, desktop, accessibility, topology/seams or holistic completion
+claim follows. #1462 remains OPEN.
