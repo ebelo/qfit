@@ -887,5 +887,6 @@
   "reference-mercator-repeat/zurich-streets-z17-light/mapbox.png.features.json": "7ffc954707c010ead25b40b492a6d060a69414286aed45aae8873183634eba6c",
   "reference-mercator-repeat/zurich-region-z8-light/mapbox.png": "553784ddbf6e8f5ff1cc419667bab13ccebcda0f6606f92100cc53b0d4627313",
   "reference-mercator-repeat/zurich-region-z8-light/runtime.json": "816dbfa65495dde06090477a62a5b2896e530204b286a4997abe07108c6cb115",
-  "reference-mercator-repeat/zurich-region-z8-light/mapbox.png.features.json": "5be3a5eff0e51565b9e4644661d33ea0ba30a3c004ac5c7a39e338d531deed42"
+  "reference-mercator-repeat/zurich-region-z8-light/mapbox.png.features.json": "5be3a5eff0e51565b9e4644661d33ea0ba30a3c004ac5c7a39e338d531deed42",
+  "final-head-verification.json": "3c0ce137e54d64d1ca0074859990f17206cf1c27a94180eceb485036aa33d90f"
 }
