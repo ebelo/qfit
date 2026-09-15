@@ -745,3 +745,21 @@ missing/empty semantics. Only the unique audited source owner and unsplit native
 other roles/styles and text overrides remain unchanged. See the
 [airport coverage cells](light-cartographic-assessment.md) for Cairo/Geneva/Bern
 maps, no-ref removals, source-property replay, mixed fidelity and actual-PDF gaps.
+
+
+### Light waterway name content
+
+The exact Light native adapter restores source English/local-name coalesce for
+waterway spacing bands generated from the unique audited symbol/line/natural_label
+owner. It uses the actual preprocessing generator's spacing contract and clipped
+IDs; source-owned generated-ID collisions decline repair. Only native expression
+fields still equal to `"name"` change before font splitting. Missing/NULL English
+falls back, empty English is retained, and both columns are explicitly requested.
+Other styles/roles, native overrides, geometry/class/worldview eligibility,
+fonts/size/placement/spacing and zoom bounds stay unchanged.
+
+The [waterway coverage cells](light-cartographic-assessment.md) separate exact text
+and native contract tests from actual Rhone/Rhine PNG/PDF evidence, repetition,
+source/native activation, PDF density/variability and still-open curved/RTL/long-name
+coverage. English-only text is permitted by this source predicate, unlike the road
+source's separate `has(name)` gate. No general label-locale policy is introduced.
