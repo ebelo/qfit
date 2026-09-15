@@ -182,6 +182,32 @@ class LightRoadNameFallbackTests(unittest.TestCase):
         self.assertEqual(labels.apply_light_name_fallback(labeling, source_style), 0)
         labeling.setStyles.assert_not_called()
 
+    def test_source_owned_size_band_collision_preserves_both_road_fields(self):
+        import copy
+        # Both the ordinary split and an owner outside the split range must
+        # decline repair if another source layer owns the generated rule ID.
+        for minzoom in (None, 16):
+            with self.subTest(minzoom=minzoom):
+                source = self.source_style()
+                owner = source["layers"][0]
+                if minzoom is not None:
+                    owner["minzoom"] = minzoom
+                collision = copy.deepcopy(owner)
+                collision["id"] = "road-label-simple-z12-to-z15"
+                collision["layout"]["text-field"] = ["get", "name"]
+                source["layers"].append(collision)
+                original = copy.deepcopy(source)
+                rules = [LightNameFallbackTests.rule(name, "road") for name in
+                         ("road-label-simple", "road-label-simple-z12-to-z15")]
+                labeling = MagicMock()
+                labeling.styles.return_value = rules
+                self.assertEqual(labels.apply_light_name_fallback(labeling, source), 0)
+                self.assertEqual(source, original)
+                labeling.setStyles.assert_not_called()
+                for rule in rules:
+                    self.assertEqual(rule.labelSettings().fieldName, '"name"')
+                    rule.setLabelSettings.assert_not_called()
+
     def test_road_source_identity_duplicates_and_changed_contracts_are_noops(self):
         import copy
         original = self.source_style()

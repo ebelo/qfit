@@ -84,7 +84,12 @@ def _light_name_fallback_owners(source_style):
 def _light_road_name_fallback_rules(source_style):
     if not _is_mapbox_light_style(source_style):
         return set()
-    owners = [layer for layer in source_style.get("layers", [])
+    layers = source_style.get("layers", [])
+    # A source-owned layer must never be mistaken for our generated size band.
+    derived_ids = _ROAD_LABEL_RULES - {_ROAD_LABEL_ID}
+    if any(isinstance(layer, dict) and layer.get("id") in derived_ids for layer in layers):
+        return set()
+    owners = [layer for layer in layers
               if isinstance(layer, dict) and layer.get("id") == _ROAD_LABEL_ID]
     if len(owners) != 1:
         return set()
