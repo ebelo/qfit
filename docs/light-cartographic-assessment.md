@@ -122,7 +122,7 @@ focused investigation before broad completion, not an assertion of a root cause.
 | C16 | PARTIAL | Source symbol inventory available; sprite applicability, anchors, collision lifecycle and high-DPI behavior require dedicated checks. | — |
 | C17 | PARTIAL | Font-enabled Docker roles have earlier scoped validation. Desktop font distribution and multilingual fallback are not certified by these captures. | — |
 | C18 | OPEN | Text width, weight, wrapping and relative hierarchy remain visibly different. Blanket size probes were rejected, not accepted as a fix. | Minor |
-| C19 | OPEN (remaining scope) | All 14 source roles are audited. Country/major settlements, water companions, the two road rules, airport code/name branches, three waterway bands and natural line/point families pass scoped content cases. Five other owners remain open. Road-name fidelity is mixed despite restored source strings; RTL, long names and complete output coverage remain open. | Major baseline finding scoped below; remaining severity not established |
+| C19 | OPEN (remaining scope) | All 14 source roles are audited. Country/major settlements, water companions, the two road rules, airport code/name branches, three waterway bands, natural line/point families and POI density bands pass scoped content cases. Four other owners remain open; POI content changes expose documented Cairo road-label collision trade-offs. Road-name fidelity is mixed despite restored source strings; RTL, long names and complete output coverage remain open. | Major baseline finding scoped below; remaining severity not established |
 | C20 | PARTIAL | Named-road crops and Rhone/Rhine bend/confluence PNGs have scoped inspection below; systematic association, rotation, long/RTL curved text and PDF legibility remain. | — |
 | C21 | PARTIAL | Current dense views are available; survival/priority decisions and symbol/halo collision extents are not comprehensively audited. | — |
 | C22 | PARTIAL | Road duplicate removal has a scoped pass; the criterion as a whole is not passed. See the separate coverage-cell verdicts below. | — |
@@ -134,6 +134,57 @@ focused investigation before broad completion, not an assertion of a root cause.
 | C28 | PARTIAL; density consistency OPEN | Fresh two-city DPR2 PNGs retain native zoom, but physical-density PNGs and actual one-map PDFs change QGIS4 activation/detail. QGIS3 also changes label placement across PDF density. Production150-DPI settings are exercised, not a complete atlas or desktop installation. | Provisional major output-consistency finding |
 | C29 | PARTIAL; PDF repeat cells OPEN | Prior matrices and 48 new background PNG control pairs repeat exactly. Earlier Bern/Geneva PDF150 variation is now also observed in Lausanne/Kashmir QGIS4 production150-DPI outputs; other new repeated PDF modes are raster-identical. Cold/warm performance and interactive stability remain untested. | PDF variability severity unestablished |
 | C30 | NOT ASSESSED | Cropped basemap evidence does not validate complete user-facing attribution, legend, scale or north/context requirements. | — |
+
+### C19/C21/C23: source-owned POI content — 2026-09-15
+
+The [fresh matched maps, audits and actual PDFs][poi-content] compare baseline
+`a2d1f30ed53a30ab752e86c5eb3d353669e068ab` with captured runtime
+`9ff2eb68092a0a762b19bf9fdc4462a5df6d4b80`. Fresh source SHA256 remains
+`87413e46c074e13aef420958a3ad101961766e6645336608e399ceccaffc6d32`;
+all 14 complete symbol owners match the fixture. Live tile bytes are unarchived.
+
+Only the unique exact-Light symbol/poi_label/point/no-transform/coalesce owner
+is eligible. The actual density-band generator supplies the native IDs, including
+a single clipped band's original ID; source-owned ID collisions decline repair.
+Only native expression `"name"` changes to explicit `coalesce("name_en", "name")`.
+Missing/NULL English falls back; intentional empty English stays empty. Native
+text overrides, other styles/roles, rank thresholds, zooms, fonts, placement,
+priority and all non-content settings remain unchanged. This is the existing
+source language request, not a new locale or density policy.
+
+| Coverage cell | Verdict | Evidence / remaining work |
+| --- | --- | --- |
+| C19/C02: three POI density bands, QGIS3.34.4/3.44.11/4.2.0 | PASS (scoped contract) | 24 text and 72 rank/name-presence cases per build. Native bounds6–15/16/17+ and thresholds1/2/3 remain unchanged. No invented class/worldview/has(name) gate. String evaluation is not long-name/RTL shaping proof. |
+| C19/C02: complete14source-owner/39native-rule audit, both Docker builds | PASS (scoped preservation) | Exactly3field_name values change; POI15synthetic mismatches→0, other35unchanged. Preprocessing is byte-identical. Four other content owners remain open. |
+| C19/C02: observed POI properties in15views | PASS (scoped replay) | 208distinct camera/property sets replay through3bands:138Before text mismatches→0After/build, predicate disagreements0. Source eligibility uses each band's representative zoom, not an assumed camera/native zoom match. Not unique POIs, native decoding/fetch parity or collision survival. |
+| C17/C18: POI requested/resolved faces and typographic treatment | OPEN / PARTIAL | Native6–15band resolves Noto Sans Regular;16/17+resolve Barlow Italic. The source requests DIN Pro Italic throughout. Existing low-band font-role, size, wrapping and hierarchy gaps remain, not a font-fidelity pass. Docker fonts are not ZIP-bundled/registered desktop fonts. |
+| C19/C20: actual POI names, seven Swiss presets plus Cairo14/16 | PASS (scoped visible strings); association PARTIAL | Historical Museum of Bern, Voltaire Museum, UN human-rights office, International Museum of the Reformation, Egyptian Museum, Flower clock, Riverside Café and Globus Geneva follow source properties. No whole-language/glyph/long-name or universal association pass. |
+| C01/C29:15views, both native builds and source/globe plus Mercator references | PASS (scoped repeats/registration); alignment OPEN | 120nativePNG/60repeat pairs match image/settings/context and normalized placements;60browserPNG/30pairs match.270named checks and150actual Mercator/native anchors<1e-6px. Four Swiss preset views are Before/After identical/build. Source/native zoom,100/96DPI and unarchived tile revision remain distinct. |
+| C18/C21/C22: fidelity and collision populations | OPEN | Cairo14 Mercator MAE+0.316478%/+1.106202%; Cairo16+0.452360%/+0.341386% (QGIS3/4). Most changed cells worsen modestly; Bern12 and Geneva16/16.1 improve. All17Cairo14 POI placements remain, but QGIS3 loses four street names and gains two; QGIS4 loses two and gains one. Both reduce an Al Gezira St duplicate. The other28camera/runtime non-POI text/provider populations are unchanged. These are repeatable trade-offs, not noise or accepted limitations. |
+| C23: source/native density transition triplets | OPEN | Requested15.9/16/16.1 and16.9/17/17.1 retain original native bounds and expose activation at16 already at15.9, and17 at16.9. At15.9, source query has6rendered POI records while native has37placement records/build; these are different pipelines, not unique-feature counts or decoder parity. No interactive or source/native zoom-equivalence pass. |
+| C19/C28: actual one-map150DPI PDFs, Cairo14/Geneva18, both builds | PASS (scoped visible museum content); broader C28 OPEN | 16actualPDFs, production forced-vector settings,338.667×238.125mm, viewed96DPI. Correct museum names visible; native text stays small and QGIS4 export detail differs from PNG. Not full atlas, desktop, print-legibility or complete activity/UI coverage. |
+| C29: actual PDF raster repeats | QGIS3 PASS (scoped); QGIS4 OPEN | All4QGIS3 pairs identical. QGIS4 Cairo Before/After vary83/56pixels; Geneva21/25. Contexts unchanged; variability unclassified, no PDF-file identity claim. |
+| Remaining required C19/C23–C30 cells | OPEN / NOT ASSESSED | Four other content owners remain: subdivision, minor settlement, state and continent. Long/RTL shaping, topology/seams, real activities/accessibility, packaged desktop/full atlas/context and all broader ledger gaps remain required. |
+
+Cairo14 QGIS3 loses Champollion St, Adly St, Al Sheikh Rihan St and Al Azhr St;
+Al Azhr Bridge and Sirilanka St appear. QGIS4 loses Champollion St/Adly St and
+gains Sirilanka St. Both retain one of two Al Gezira St occurrences (24→12curved
+placement records). These are collision consequences of longer source-requested
+POI text, not changed road eligibility. Correct content is retained; font metrics,
+priority and source/native selection need coordinated C18/C21 follow-up. No
+alternative style candidate or rank/font/collision workaround was promoted here.
+
+Eight PDF-hook PNGs and two portable-worker replays equal ordinary maps/settings/
+contexts (30named byte comparisons); all233runtime/package Python hashes are pinned.
+Every live capture completed exit0 after same-run protected Gateway and successful
+per-containerHTTP200/TLS preflight. No credential/egress/TLS fallback or failed/blank
+frame counted. Main was not used as a moving Before checkout.
+
+Full local2691passed/195skipped/383subtests; completeDocker3/4scripts220passed/
+82skipped each without overrides; legacy native1test/96subtests; bothZIPbuilds and
+9package tests; diff-check PASS. **C19 and #1462 remain OPEN:8OPEN/16PARTIAL/
+5NOTASSESSED/1source-backedN/A.** No absent coverage cell or limitation is accepted.
+
 
 ### C19/C20: source-owned natural-feature content — 2026-09-15
 
@@ -1113,3 +1164,5 @@ explicitly agreed scope reduction with follow-up ownership for excluded work.
 [waterway-content]: https://github.com/ebelo/qfit/blob/ed3c0e139dcd3a7cb47d6c08da257c7821aa278a/docs/visual-evidence/issue-1462/waterway-content/README.md
 
 [natural-content]: https://github.com/ebelo/qfit/blob/88726798141796d6956dcf9df8299366e49ec0fb/docs/visual-evidence/issue-1462/natural-content/README.md
+
+[poi-content]: https://github.com/ebelo/qfit/blob/b68a29e7e1d1d67d55acab854eb312de32c41f4a/docs/visual-evidence/issue-1462/poi-content/README.md

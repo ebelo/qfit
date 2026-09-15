@@ -449,3 +449,79 @@ class LightNaturalNameFallbackTests(unittest.TestCase):
         owner = next(x for x in source["layers"] if x["id"] == "natural-line-label")
         source["layers"].append(copy.deepcopy(owner))
         self.assertEqual(labels._light_natural_name_fallback_owners(source), {"natural-point-label"})
+
+
+class LightPoiNameFallbackTests(unittest.TestCase):
+    def test_only_owned_density_bands_change_and_reapplication_is_noop(self):
+        import copy
+        source = LightRoadNameFallbackTests.source_style()
+        original = copy.deepcopy(source)
+        rule = LightNameFallbackTests.rule
+        names = ("poi-label-below-z16", "poi-label-z16-to-z17", "poi-label-z17-plus")
+        owned = [rule(name, "poi_label") for name in names]
+        literal = rule(names[0], "poi_label")
+        literal.labelSettings().isExpression = False
+        others = [literal, rule("poi-label", "poi_label"),
+                  rule("poi-label-custom", "poi_label"),
+                  rule(names[0], "waterway"), rule(names[1], "poi_label", 'upper("name")'),
+                  rule(names[2], "poi_label", '"custom_name"'),
+                  rule("water-line-label-water-name", "poi_label")]
+        labeling = MagicMock()
+        labeling.styles.return_value = owned + others
+        self.assertEqual(labels.apply_light_name_fallback(labeling, source), 3)
+        for item in owned:
+            self.assertEqual(item.labelSettings().fieldName, 'coalesce("name_en", "name")')
+            item.setLabelSettings.assert_called_once_with(item.labelSettings())
+        for item in others:
+            item.setLabelSettings.assert_not_called()
+        self.assertEqual(source, original)
+        labeling.setStyles.assert_called_once_with(owned + others)
+        labeling.reset_mock()
+        self.assertEqual(labels.apply_light_name_fallback(labeling, source), 0)
+        labeling.setStyles.assert_not_called()
+
+    def test_changed_source_contract_and_ambiguous_ownership_are_noops(self):
+        import copy
+        original = LightRoadNameFallbackTests.source_style()
+        owner = next(x for x in original["layers"] if x["id"] == "poi-label")
+        variants = [{}, {**original, "owner": "custom"}, {**original, "id": "outdoors-v12"},
+                    {**original, "id": "light-v10"}, {**original, "layers": [None]},
+                    {**original, "layers": [owner, copy.deepcopy(owner)]}]
+        for key, value in (("type", "line"), ("source-layer", "waterway"), ("layout", {})):
+            changed = copy.deepcopy(owner)
+            changed[key] = value
+            variants.append({**original, "layers": [changed]})
+        for key, value in (("text-field", ["get", "name"]), ("text-transform", "uppercase"),
+                           ("symbol-placement", "line")):
+            changed = copy.deepcopy(owner)
+            changed["layout"][key] = value
+            variants.append({**original, "layers": [changed]})
+        for name in ("poi-label-below-z16", "poi-label-z16-to-z17", "poi-label-z17-plus"):
+            collision = copy.deepcopy(owner)
+            collision["id"] = name
+            collision["layout"]["text-field"] = ["get", "name"]
+            variants.append({**original, "layers": [owner, collision]})
+        for source in variants:
+            with self.subTest(source=source):
+                self.assertEqual(labels._light_poi_name_fallback_rules(source), set())
+
+    def test_generated_rules_follow_clipped_source_bands_without_claiming_source_ids(self):
+        import copy
+        source = LightRoadNameFallbackTests.source_style()
+        owner = copy.deepcopy(next(x for x in source["layers"] if x["id"] == "poi-label"))
+        owner["minzoom"] = 16
+        owner["maxzoom"] = 17
+        source["layers"] = [owner]
+        self.assertEqual(labels._light_poi_name_fallback_rules(source), {"poi-label"})
+        collision = copy.deepcopy(owner)
+        collision["id"] = "poi-label"
+        source["layers"].append(collision)
+        self.assertEqual(labels._light_poi_name_fallback_rules(source), set())
+
+    def test_unknown_density_filter_is_noop(self):
+        import copy
+        source = LightRoadNameFallbackTests.source_style()
+        owner = copy.deepcopy(next(x for x in source["layers"] if x["id"] == "poi-label"))
+        source["layers"] = [owner]
+        owner["filter"] = ["<=", ["get", "filterrank"], 1]
+        self.assertEqual(labels._light_poi_name_fallback_rules(source), set())

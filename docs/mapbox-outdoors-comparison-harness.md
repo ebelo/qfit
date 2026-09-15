@@ -779,3 +779,20 @@ See the [natural-feature coverage cells](light-cartographic-assessment.md) for
 centered point/line examples, complete native/property audits, matched PNG/PDF
 controls and mixed fidelity. Correct strings do not certify natural-label size,
 rotation, repetition, source/native zoom, glyph shaping or complete output parity.
+
+
+### Light POI name content
+
+The native exact-Light adapter restores English/local-name coalesce for density
+bands generated from the unique symbol/poi_label/point/no-transform source owner.
+It uses the actual preprocessing generator, including the original ID retained
+by a single clipped band. Source-owned generated-ID collisions decline repair;
+unknown density layouts and native text overrides retain existing conversion.
+Both name columns are explicitly requested. Missing/NULL English falls back and
+empty English stays empty. Native rank thresholds1/2/3, zooms, fonts, size,
+priority and placement are unchanged; other styles/roles are isolated.
+
+See the [POI coverage cells](light-cartographic-assessment.md) for complete native
+and observed-property audits, matched PNG/PDF output, collision-population changes,
+and unresolved italic-role, wrapping, source/native zoom and output-density gaps.
+Source-correct strings are not a universal reference-fidelity or collision pass.

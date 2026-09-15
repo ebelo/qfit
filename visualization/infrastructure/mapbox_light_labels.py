@@ -4,6 +4,7 @@ import math
 
 from ...mapbox_config import (
     _is_mapbox_light_style, _waterway_label_symbol_spacing_layer_variants,
+    _poi_label_filter_layer_variants,
 )
 
 _ROAD_LABEL_ID = "road-label-simple"
@@ -130,6 +131,31 @@ def _light_waterway_name_fallback_rules(source_style):
     return rules
 
 
+def _light_poi_name_fallback_rules(source_style):
+    """Resolve the unique POI owner's actual density bands, including clipped IDs."""
+    if not _is_mapbox_light_style(source_style):
+        return set()
+    layers = source_style.get("layers", [])
+    owners = [layer for layer in layers
+              if isinstance(layer, dict) and layer.get("id") == "poi-label"]
+    if len(owners) != 1:
+        return set()
+    owner = owners[0]
+    layout = owner.get("layout", {})
+    if (owner.get("type") != "symbol" or owner.get("source-layer") != "poi_label"
+            or layout.get("symbol-placement", "point") != "point"
+            or layout.get("text-field") != _NAME_EN_FALLBACK
+            or layout.get("text-transform", "none") != "none"):
+        return set()
+    variants = _poi_label_filter_layer_variants(owner)
+    rules = {variant["id"] for variant in variants or []}
+    # One clipped band retains the original ID; only other source owners collide.
+    if any(isinstance(layer, dict) and layer is not owner and layer.get("id") in rules
+           for layer in layers):
+        return set()
+    return rules
+
+
 def _light_natural_name_fallback_owners(source_style):
     """Match the two unsplit natural-feature owners, before native font bands."""
     if not _is_mapbox_light_style(source_style):
@@ -166,6 +192,7 @@ def apply_light_name_fallback(labeling, source_style: dict) -> int:
     owners.update(dict.fromkeys(_light_road_name_fallback_rules(source_style), "road"))
     owners.update(dict.fromkeys(_light_waterway_name_fallback_rules(source_style), "natural_label"))
     owners.update(dict.fromkeys(_light_natural_name_fallback_owners(source_style), "natural_label"))
+    owners.update(dict.fromkeys(_light_poi_name_fallback_rules(source_style), "poi_label"))
     if not owners:
         return 0
     styles = list(labeling.styles())
