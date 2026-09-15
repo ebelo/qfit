@@ -389,3 +389,63 @@ class LightWaterwayNameFallbackTests(unittest.TestCase):
         collision["id"] = "waterway-label-z15-to-z17"
         source["layers"].append(collision)
         self.assertEqual(labels._light_waterway_name_fallback_rules(source), set())
+
+
+class LightNaturalNameFallbackTests(unittest.TestCase):
+    def test_only_unsplit_natural_owners_change_and_reapplication_is_noop(self):
+        import copy
+        source = LightRoadNameFallbackTests.source_style()
+        original = copy.deepcopy(source)
+        rule = LightNameFallbackTests.rule
+        names = ("natural-line-label", "natural-point-label")
+        owned = [rule(name, "natural_label") for name in names]
+        literal = rule(names[0], "natural_label")
+        literal.labelSettings().isExpression = False
+        others = [literal, rule(names[0], "place_label"),
+                  rule(names[0], "natural_label", 'upper("name")'),
+                  rule(names[1], "natural_label", '"custom_name"'),
+                  rule(names[1] + "-qfit-open-fonts-z8-plus", "natural_label"),
+                  rule("water-line-label-water-name", "natural_label"),
+                  rule("continent-label", "natural_label")]
+        labeling = MagicMock()
+        labeling.styles.return_value = owned + others
+        self.assertEqual(labels.apply_light_name_fallback(labeling, source), 2)
+        for item in owned:
+            self.assertEqual(item.labelSettings().fieldName, 'coalesce("name_en", "name")')
+            item.setLabelSettings.assert_called_once_with(item.labelSettings())
+        for item in others:
+            item.setLabelSettings.assert_not_called()
+        self.assertEqual(source, original)
+        labeling.setStyles.assert_called_once_with(owned + others)
+        labeling.reset_mock()
+        self.assertEqual(labels.apply_light_name_fallback(labeling, source), 0)
+        labeling.setStyles.assert_not_called()
+
+    def test_changed_ambiguous_and_other_source_contracts_are_noops(self):
+        import copy
+        original = LightRoadNameFallbackTests.source_style()
+        for name in ("natural-line-label", "natural-point-label"):
+            owner = next(x for x in original["layers"] if x["id"] == name)
+            source = {**original, "layers": [owner]}
+            variants = [{}, {**source, "owner": "custom"}, {**source, "id": "outdoors-v12"},
+                        {**source, "id": "light-v10"}, {**source, "layers": [None]},
+                        {**source, "layers": [owner, copy.deepcopy(owner)]}]
+            for key, value in (("type", "line"), ("source-layer", "place_label"), ("layout", {})):
+                changed = copy.deepcopy(owner)
+                changed[key] = value
+                variants.append({**source, "layers": [changed]})
+            for key, value in (("text-field", ["get", "name"]), ("text-transform", "uppercase"),
+                               ("symbol-placement", "line")):
+                changed = copy.deepcopy(owner)
+                changed["layout"][key] = value
+                variants.append({**source, "layers": [changed]})
+            for candidate in variants:
+                with self.subTest(owner=name, source=candidate):
+                    self.assertEqual(labels._light_natural_name_fallback_owners(candidate), set())
+
+    def test_ambiguous_owner_does_not_disable_the_other_natural_family(self):
+        import copy
+        source = LightRoadNameFallbackTests.source_style()
+        owner = next(x for x in source["layers"] if x["id"] == "natural-line-label")
+        source["layers"].append(copy.deepcopy(owner))
+        self.assertEqual(labels._light_natural_name_fallback_owners(source), {"natural-point-label"})

@@ -763,3 +763,19 @@ and native contract tests from actual Rhone/Rhine PNG/PDF evidence, repetition,
 source/native activation, PDF density/variability and still-open curved/RTL/long-name
 coverage. English-only text is permitted by this source predicate, unlike the road
 source's separate `has(name)` gate. No general label-locale policy is introduced.
+
+
+### Light natural-feature name content
+
+The native exact-Light adapter restores the source English/local-name coalesce
+for unique natural-line/point owners before font splitting. Original line-center/
+point placement and no-transform contracts must match; only native expression
+fields still using `"name"` change. Explicit name_en/name requests preserve
+missing/NULL fallback and intentional empty English. Class/worldview/filterrank,
+geometry, zoom, typography, priority and placement stay unchanged; other styles,
+roles, changed/ambiguous owners and native overrides remain untouched.
+
+See the [natural-feature coverage cells](light-cartographic-assessment.md) for
+centered point/line examples, complete native/property audits, matched PNG/PDF
+controls and mixed fidelity. Correct strings do not certify natural-label size,
+rotation, repetition, source/native zoom, glyph shaping or complete output parity.

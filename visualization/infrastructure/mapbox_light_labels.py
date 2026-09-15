@@ -130,8 +130,29 @@ def _light_waterway_name_fallback_rules(source_style):
     return rules
 
 
+def _light_natural_name_fallback_owners(source_style):
+    """Match the two unsplit natural-feature owners, before native font bands."""
+    if not _is_mapbox_light_style(source_style):
+        return set()
+    result = set()
+    for name, placement in (("natural-line-label", "line-center"),
+                            ("natural-point-label", "point")):
+        owners = [layer for layer in source_style.get("layers", [])
+                  if isinstance(layer, dict) and layer.get("id") == name]
+        if len(owners) != 1:
+            continue
+        owner = owners[0]
+        layout = owner.get("layout", {})
+        if (owner.get("type") == "symbol" and owner.get("source-layer") == "natural_label"
+                and layout.get("symbol-placement", "point") == placement
+                and layout.get("text-field") == _NAME_EN_FALLBACK
+                and layout.get("text-transform", "none") == "none"):
+            result.add(name)
+    return result
+
+
 def apply_light_name_fallback(labeling, source_style: dict) -> int:
-    """Restore audited Light place/road/waterway content before font-band splitting.
+    """Restore audited Light name content before font-band splitting.
 
     These source layouts miss the preprocessing helper's layout guards.
     Road rules include only the original and the known derived size band;
@@ -144,6 +165,7 @@ def apply_light_name_fallback(labeling, source_style: dict) -> int:
     owners = dict.fromkeys(_light_name_fallback_owners(source_style), "place_label")
     owners.update(dict.fromkeys(_light_road_name_fallback_rules(source_style), "road"))
     owners.update(dict.fromkeys(_light_waterway_name_fallback_rules(source_style), "natural_label"))
+    owners.update(dict.fromkeys(_light_natural_name_fallback_owners(source_style), "natural_label"))
     if not owners:
         return 0
     styles = list(labeling.styles())
