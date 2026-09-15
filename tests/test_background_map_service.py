@@ -1345,6 +1345,82 @@ class ApplyLabelPriorityRealTests(unittest.TestCase):
                             self.assertEqual(selected == 1, water_class in allowed
                                              and worldview in ("all", "US") and geometry_type == "LineString")
 
+    def test_light_poi_names_preserve_density_bands_and_settings(self):
+        import copy
+        import json
+        from pathlib import Path
+        from qgis.core import (
+            NULL, QgsExpression, QgsExpressionContext, QgsFeature, QgsField,
+            QgsFields, QgsGeometry, QgsRenderContext,
+        )
+        from qfit.mapbox_config import simplify_mapbox_style_expressions
+        from qfit.validation.mapbox_outdoors_comparison import qgis_label_styles_snapshot
+
+        source = json.loads((Path(__file__).parent / "fixtures/mapbox/light-label-content-source.json").read_text())
+        converted = simplify_mapbox_style_expressions(source)
+        before_layer, after_layer = MagicMock(), MagicMock()
+        with patch("qfit.visualization.infrastructure.mapbox_light_labels._light_poi_name_fallback_rules", return_value=set()):
+            self.service._apply_mapbox_gl_style(before_layer, converted, source_style_definition=source)
+        self.service._apply_mapbox_gl_style(after_layer, converted, source_style_definition=source)
+        for layer in (before_layer, after_layer):
+            layer.labeling.return_value = layer.setLabeling.call_args.args[0]
+        before, after = qgis_label_styles_snapshot(before_layer), qgis_label_styles_snapshot(after_layer)
+        names = ["poi-label-below-z16", "poi-label-z16-to-z17", "poi-label-z17-plus"]
+        normalized = copy.deepcopy(after)
+        changed = []
+        for row in normalized:
+            if row["style_name"] in names:
+                self.assertEqual(row["label_settings"]["field_name"], 'coalesce("name_en", "name")')
+                row["label_settings"]["field_name"] = '"name"'
+                changed.append(row["style_name"])
+        self.assertEqual(changed, names)
+        self.assertEqual(normalized, before, "Only the three POI text fields may change")
+        rules = [r for r in after_layer.labeling().styles() if r.styleName() in names]
+        self.assertEqual([(r.minZoomLevel(), r.maxZoomLevel()) for r in rules], [(6, 15), (16, 16), (17, -1)])
+        owner = next(x for x in source["layers"] if x["id"] == "poi-label")
+        self.assertEqual(owner["filter"], ["<=", ["get", "filterrank"],
+                         ["+", ["step", ["zoom"], 0, 16, 1, 17, 2], 1]])
+        cases = [({"name_en": "National Museum", "name": "Musée national"}, "National Museum"),
+                 ({"name_en": None, "name": "L’Arve"}, "L’Arve"),
+                 ({"name": "القاهرة"}, "القاهرة"),
+                 ({"name_en": "", "name": "ירושלים"}, ""),
+                 ({"name_en": "Zürich / ירושלים 12", "name": "local"}, "Zürich / ירושלים 12"),
+                 ({"name_en": "English only"}, "English only"), ({}, None),
+                 ({"name_en": "A deliberately long museum name — Zürich, Genève and القاهرة", "name": "local"},
+                  "A deliberately long museum name — Zürich, Genève and القاهرة")]
+        for limit, rule in enumerate(rules, 1):
+            settings = rule.labelSettings()
+            predicate, expression = QgsExpression(rule.filterExpression()), QgsExpression(settings.fieldName)
+            requested = settings.referencedFields(QgsRenderContext())
+            self.assertTrue({"name_en", "name"}.issubset(requested))
+            fields = QgsFields()
+            for name in sorted(requested | predicate.referencedColumns()):
+                fields.append(QgsField(name))
+            feature = QgsFeature(fields)
+            feature.setGeometry(QgsGeometry.fromWkt("LINESTRING (0 0, 1 1, 2 0)"))
+            context = QgsExpressionContext()
+            context.setFields(fields)
+            for properties, expected in cases:
+                feature.setAttributes([properties.get(field.name()) for field in fields])
+                context.setFeature(feature)
+                with self.subTest(rule=rule.styleName(), properties=properties):
+                    self.assertTrue(expression.prepare(context))
+                    actual = expression.evaluate(context)
+                    self.assertFalse(expression.hasEvalError(), expression.evalErrorString())
+                    self.assertEqual(None if actual == NULL else actual, expected)
+            # The native density bands retain source rank thresholds 1/2/3.
+            # Content repair must not introduce class, worldview or has(name) gates.
+            for rank in (0, 1, 1.1, 2, 2.1, 3, 3.1, None):
+                for properties in ({"name": "local"}, {"name_en": "English only"}, {}):
+                    feature.setAttributes([properties.get(field.name()) for field in fields])
+                    feature.setAttribute("filterrank", rank)
+                    context.setFeature(feature)
+                    with self.subTest(rule=rule.styleName(), rank=rank, properties=properties):
+                        self.assertTrue(predicate.prepare(context))
+                        selected = predicate.evaluate(context)
+                        self.assertFalse(predicate.hasEvalError(), predicate.evalErrorString())
+                        self.assertEqual(selected == 1, rank is not None and rank <= limit)
+
     def test_light_natural_names_preserve_source_rank_geometry_worldview_and_settings(self):
         import copy
         import json
